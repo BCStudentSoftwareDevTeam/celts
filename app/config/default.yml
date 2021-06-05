@@ -1,0 +1,26 @@
+secret_key: "123"
+use_shibboleth: False
+use_tracy: False
+use_banner: False
+override_file: "local-override.yml"
+
+db:
+    db_name: "celts"
+    host: "db"
+    username: "lsf_user"
+    password: "password"
+
+user:
+    debug: "ramsayb2"
+
+mail:
+    enabled: False
+    server: "smtp.gmail.com" # use smtp.gmail.com for gmail, mail.berea.edu for Berea
+    port: 465                # use port 465 for gmail, use 25 for Berea
+    username: ''             # add the email of the sender (for gmail)
+    password: ''             # Add the password of the sender (for gmail)
+    tls: False
+    ssl: True
+    default_sender: '' #FIXME: Add sender email address
+    override_addr: "j5u6j9w6v1h0p3g1@bereacs.slack.com"
+    reply_to_address: "j5u6j9w6v1h0p3g1@bereacs.slack.com"
