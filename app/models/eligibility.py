@@ -1,4 +1,8 @@
-class Eligibility:
+from app.models import*
+from app.models.user import User
+from app.models.program import Program
+
+class Eligibility(baseModel):
     eligibilityID = PrimaryKeyField()
-    user_id = ForeignKeyField(null=False)
-    program_id = ForeignKeyField(null=False)
+    user = ForeignKeyField(User, null=False)
+    program = ForeignKeyField(Program, null=False)

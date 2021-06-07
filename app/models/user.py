@@ -1,3 +1,5 @@
+from app.models import*
+
 class User(baseModel):
     userID = PrimaryKeyField()
     bnumber = CharField(null=False)

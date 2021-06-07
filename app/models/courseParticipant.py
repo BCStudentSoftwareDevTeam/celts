@@ -1,5 +1,9 @@
-class CourseParticipant:
+from app.models import*
+from app.models.course import Course
+from app.models.user import User
+
+class CourseParticipant(baseModel):
     trackedHoursID = PrimaryKeyField()
-    course_id = ForeignKeyField(null=False)
-    user_id = ForeignKeyField(null=False)
+    course = ForeignKeyField(Course, null=False)
+    user = ForeignKeyField(User, null=False)
     hoursEarned = CharField(null=False)

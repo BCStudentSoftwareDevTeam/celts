@@ -1,6 +1,9 @@
-class OutsideParticipant:
+from app.models import*
+from app.models.event import Event
+
+class OutsideParticipant(baseModel):
     outsideParticipantID = PrimaryKeyField()
-    event_id = ForeignKeyField(null=False)
+    event = ForeignKeyField(Event, null=False)
     firstName = CharField(null=False)
     lastName = CharField(null=False)
     email = CharField(null=False)

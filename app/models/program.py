@@ -1,3 +1,6 @@
-class Program:
+from app.models import*
+from app.models.partner import Partner
+
+class Program(baseModel):
     programName = PrimaryKeyField()
-    partner_id = ForeignKeyField(null=False)
+    partner = ForeignKeyField(Partner, null=False)

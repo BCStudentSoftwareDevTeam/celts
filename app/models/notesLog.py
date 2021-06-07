@@ -1,6 +1,9 @@
-class NotesLog:
+from app.models import*
+from app.models.user import User
+
+class NotesLog(baseModel):
     noteID = PrimaryKeyField()
-    createdBy_id = ForeignKeyField(null=False)
+    createdBy = ForeignKeyField(User, null=False)
     createdOn = Date(null=False)
     noteContent = CharField(null=False)
     isPrivate = Boolean(null=True)
