@@ -1,9 +1,9 @@
 from app.models import*
 
-lass EmailTemplate(baseModel):
+class EmailTemplate(baseModel):
     emailTemplateID = PrimaryKeyField()
-    subject = CharField(null=False)
-    body = CharField(null=False)
-    action = CharField(null=False)
-    purpose = CharField(null=False)
-    replyToAddress = CharField(null=False)
+    subject = CharField()
+    body = CharField()
+    action = CharField()
+    purpose = CharField()
+    replyToAddress = CharField()

@@ -4,6 +4,6 @@ from app.models.event import Event
 
 class EventParticipant(baseModel):
     participantID = PrimaryKeyField()
-    user = ForeignKeyField(User, null=False)
-    event = ForeignKeyField(Event, null=False)
+    user = ForeignKeyField(User)
+    event = ForeignKeyField(Event)
     hoursEarned = CharField(null=True)

@@ -4,5 +4,5 @@ from app.models.program import Program
 
 class Eligibility(baseModel):
     eligibilityID = PrimaryKeyField()
-    user = ForeignKeyField(User, null=False)
-    program = ForeignKeyField(Program, null=False)
+    user = ForeignKeyField(User)
+    program = ForeignKeyField(Program)

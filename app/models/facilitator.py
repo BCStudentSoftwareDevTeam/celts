@@ -4,5 +4,5 @@ from app.models.event import Event
 
 class Facilitator(baseModel):
     facilitatorID = PrimaryKeyField()
-    user = ForeignKeyField(User, null=False)
-    event = ForeignKeyField(Event, null=False)
+    user = ForeignKeyField(User)
+    event = ForeignKeyField(Event)

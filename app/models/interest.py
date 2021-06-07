@@ -4,5 +4,5 @@ from app.models.user import User
 
 class Interest(baseModel):
     interestID = PrimaryKeyField()
-    program = ForeignKeyField(Program, null=False)
-    user = ForeignKeyField(User, null=False)
+    program = ForeignKeyField(Program)
+    user = ForeignKeyField(User)
