@@ -22,14 +22,14 @@ app = Flask(__name__)
 # ensure ENV matches flask environment (for config2)
 os.environ["ENV"] = app.get_env()
 
+# Update application config from config2
 app.config.update(config.get())
-override_path = "app/config/" + app.config.override_file
-try:
-    with open(override_path, 'r') as ymlfile:
-        app.config.update(yaml.load(ymlfile, Loader=yaml.FullLoader))
-except FileNotFoundError e:
-    Path(override_path).touch() # create it if it doesn't exist
 
+# Override configuration with our local instance configuration
+with open("app/config/" + app.config.override_file, 'r') as ymlfile:
+    app.config.update(yaml.load(ymlfile, Loader=yaml.FullLoader))
+
+# set the secret key after configuration is set up
 app.secret_key = app.config['secret_key']
 
 # Make 'env' a variable everywhere

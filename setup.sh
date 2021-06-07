@@ -25,14 +25,13 @@ python3 -m pip install -r requirements.txt
 # To generate a new requirements.txt file, run "pip freeze > requirements.txt"
 
 echo
-if [[ ! -e app/config/secret_config.yaml ]]; then
-	cp app/config/example_secret_config.yaml app/config/secret_config.yaml
-	echo "Remember to edit your mail settings and MySQL connection information in 'app/config/instance.yaml'"
+if [[ ! -e app/config/local-override.yaml ]]; then
+	touch app/config/local-override.yaml
+	echo "Remember to edit your specific mail settings and MySQL connection information in 'app/config/local-override.yaml'"
 	echo
 	echo "If your database has not been set up, you will need to run database/reset_database.sh"
 fi
 
 export FLASK_APP=app.py
 export FLASK_ENV=development
-export ENV=$FLASK_ENV
 export FLASK_RUN_PORT=8080
