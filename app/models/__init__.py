@@ -1,9 +1,8 @@
-from peewee import *
+from peewee import * # import all so we don't have to import in each model file
 import os
 
 # from app import login
 from app import app
-
 
 def getMySQLDB():
     if os.environ.get("USING_CONTAINER", False):

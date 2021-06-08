@@ -32,7 +32,7 @@ if [[ ! -e app/config/local-override.yml ]]; then
 	echo "If your database has not been set up, you will need to run database/reset_database.sh"
 fi
 
-export FLASK_APP=app.py
+export FLASK_APP=run.py
 export FLASK_ENV=development
 export FLASK_RUN_PORT=8080
 export FLASK_RUN_HOST=0.0.0.0   # To allow external routing to the application for development

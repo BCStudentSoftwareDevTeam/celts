@@ -7,7 +7,6 @@ import os
 import sys
 
 from app import app
-# sys.path.insert(0,'/home/ubuntu/workspace/')
 
 # Builds the server configuration
 if os.getenv('IP'):

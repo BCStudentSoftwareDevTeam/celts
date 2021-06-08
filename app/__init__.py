@@ -32,12 +32,12 @@ with open("app/config/" + config.override_file, 'r') as ymlfile:
     try:
         app.config.update(yaml.load(ymlfile, Loader=yaml.FullLoader))
     except TypeError:
-        print(f"There was an error loading the override config file {config.override_file}.yml. It might just be empty.")
+        print(f"There was an error loading the override config file {config.override_file}. It might just be empty.")
 
 # set the secret key after configuration is set up
 app.secret_key = app.config['secret_key']
 
-# Make 'env' a variable everywhere
+# Make 'ENV' a variable everywhere
 @app.context_processor
 def inject_environment():
     return dict(ENV=get_env())

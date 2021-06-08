@@ -1,6 +1,6 @@
-from app.models import*
+from app.models import *
 from app.models.term import Term
-from app.models.status import CourseStatus
+from app.models.courseStatus import CourseStatus
 
 class Course(baseModel):
     courseName = PrimaryKeyField()

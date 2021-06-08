@@ -1,4 +1,4 @@
-from app.models import*
+from app.models import *
 
 class Term(baseModel):
     termID = PrimaryKeyField()

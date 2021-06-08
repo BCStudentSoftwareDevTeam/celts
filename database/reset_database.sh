@@ -31,7 +31,7 @@ else
     ./migrate_db.sh
 fi
 
-rm -rf lsf_migrations
+rm -rf migrations
 rm -rf migrations.json
 
 # Adding data we need in all environments, unless we are restoring from backup
