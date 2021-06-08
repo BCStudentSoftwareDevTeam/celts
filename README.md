@@ -10,7 +10,7 @@ Python 3.6+
  * unixodbc-dev
 
 ## Developing on CELTS
-1. Pull down the repo: git clone <URL>
+1. Pull down the repo in your home directory: git clone <URL>
 2. Run ```source setup.sh```
 3. Ensure mysql is running. You may need to do ```sudo systemctl start mysql```
 4. In the database directory, run ```./reset_database.sh```

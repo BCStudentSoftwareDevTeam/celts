@@ -5,9 +5,9 @@ use_banner: False
 override_file: "local-override.yml"
 
 db:
-    db_name: "celts"
+    name: "celts"
     host: "db"
-    username: "lsf_user"
+    username: "celts_user"
     password: "password"
 
 user:

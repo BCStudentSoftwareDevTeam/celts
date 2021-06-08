@@ -1,4 +1,6 @@
 from flask import Flask
+from flask.helpers import get_env
+from config2.config import config
 import os
 import yaml
 
@@ -20,14 +22,17 @@ app = Flask(__name__)
 ################################################
 
 # ensure ENV matches flask environment (for config2)
-os.environ["ENV"] = app.get_env()
+os.environ["ENV"] = get_env()
 
 # Update application config from config2
 app.config.update(config.get())
 
 # Override configuration with our local instance configuration
-with open("app/config/" + app.config.override_file, 'r') as ymlfile:
-    app.config.update(yaml.load(ymlfile, Loader=yaml.FullLoader))
+with open("app/config/" + config.override_file, 'r') as ymlfile:
+    try:
+        app.config.update(yaml.load(ymlfile, Loader=yaml.FullLoader))
+    except TypeError:
+        print(f"There was an error loading the override config file {config.override_file}.yml. It might just be empty.")
 
 # set the secret key after configuration is set up
 app.secret_key = app.config['secret_key']
@@ -35,4 +40,4 @@ app.secret_key = app.config['secret_key']
 # Make 'env' a variable everywhere
 @app.context_processor
 def inject_environment():
-    return dict(env=app.get_env())
+    return dict(ENV=get_env())
