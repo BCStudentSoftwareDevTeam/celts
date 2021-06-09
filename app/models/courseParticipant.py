@@ -3,7 +3,6 @@ from app.models.course import Course
 from app.models.user import User
 
 class CourseParticipant(baseModel):
-    trackedHoursID = PrimaryKeyField()
     course = ForeignKeyField(Course)
     user = ForeignKeyField(User)
     hoursEarned = CharField()

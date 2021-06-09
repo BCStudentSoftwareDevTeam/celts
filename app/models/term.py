@@ -1,7 +1,8 @@
 from app.models import *
 
 class Term(baseModel):
-    termID = PrimaryKeyField()
-    termName = CharField()
-    year = CharField()
+    description = CharField()
+    year = IntegerField()
     academicYear = CharField()
+    isBreak = BooleanField(default=False)
+    isSummer = BooleanField(default=False)

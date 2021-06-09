@@ -1,8 +1,7 @@
 from app.models import*
 
 class User(baseModel):
-    userID = PrimaryKeyField()
-    bnumber = CharField()
+    bnumber = CharField(unique=True)
     email = CharField()
     phoneNumber = CharField()
     firstName = CharField()

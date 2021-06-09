@@ -5,6 +5,7 @@ attrs==21.2.0
 blessings==1.7
 blinker==1.4
 certifi==2020.12.5
+cffi==1.14.5
 chardet==4.0.0
 click==8.0.1
 codecov==2.1.11
@@ -12,6 +13,7 @@ coloredlogs==15.0
 colour-runner==0.1.1
 config2==0.3.2
 coverage==5.5
+cryptography==3.4.7
 deepdiff==5.5.0
 deepmerge==0.3.0
 distlib==0.3.1
@@ -38,8 +40,11 @@ MarkupSafe==2.0.1
 mybad==0.1.4
 ordered-set==4.0.2
 packaging==20.9
+peewee==3.14.4
+peewee-migrations==0.3.19
 pluggy==0.13.1
 py==1.10.0
+pycparser==2.20
 Pygments==2.9.0
 PyMySQL==1.0.2
 pyparsing==2.4.7

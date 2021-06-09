@@ -1,2 +1,2 @@
 
-print("Inserting base data for all environments")
+print("Inserting base data needed in all environments.")

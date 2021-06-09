@@ -3,7 +3,6 @@ from app.models.term import Term
 from app.models.program import Program
 
 class Event(baseModel):
-    eventID = PrimaryKeyField()
     eventName = CharField()
     term = ForeignKeyField(Term)
     timeStart = CharField()
