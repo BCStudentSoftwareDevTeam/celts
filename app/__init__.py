@@ -5,7 +5,7 @@ import os
 import yaml
 
 # Initialize our application
-app = Flask(__name__)
+app = Flask(__name__, template_folder="templates")
 
 ######### Set up App Configuration #############
 # Uses config2 - https://pypi.org/project/config2/ - with the addition of an uncommitted 
@@ -30,12 +30,27 @@ app.config.update(config.get())
 # Override configuration with our local instance configuration
 with open("app/config/" + config.override_file, 'r') as ymlfile:
     try:
-        app.config.update(yaml.load(ymlfile, Loader=yaml.FullLoader))
+        # Need to fix this
+        #app.config.update(yaml.load(ymlfile, Loader=yaml.FullLoader))
+        pass
     except TypeError:
         print(f"There was an error loading the override config file {config.override_file}. It might just be empty.")
 
 # set the secret key after configuration is set up
 app.secret_key = app.config['secret_key']
+
+
+######### Blueprints #############
+from app.controllers.admin import admin_bp as admin_bp
+app.register_blueprint(admin_bp)
+
+from app.controllers.events import events_bp as events_bp
+app.register_blueprint(events_bp)
+
+from app.controllers.main import main_bp as main_bp
+app.register_blueprint(main_bp)
+##################################
+
 
 # Make 'ENV' a variable everywhere
 @app.context_processor

@@ -3,7 +3,7 @@ if [[ `pwd` =~ tests$ ]]; then
 fi
 
 BASE_URL=http://localhost:8080
-SENSITIVE_URL=http://lsf.berea.edu
+SENSITIVE_URL=http://celts.berea.edu
 VERBOSE="--verbose "
 FLASK_ENV="testing"
 
@@ -30,7 +30,7 @@ function ui {
 # no-ui
 function no_ui {
 	header non-UI
-	python -m pytest $FLAGS #-m "unit or integration"
+	python -m pytest $FLAGS -m "unit or integration"
 
 	#header integration
 	#python -m pytest $FLAGS -m integration

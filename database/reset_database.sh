@@ -29,6 +29,7 @@ mysql -u root -proot --execute="DROP DATABASE \`celts\`; DROP USER 'celts_user';
 echo "Recreating databases and users"
 mysql -u root -proot --execute="CREATE DATABASE IF NOT EXISTS \`celts\`; CREATE USER IF NOT EXISTS 'celts_user'@'%' IDENTIFIED BY 'password'; GRANT ALL PRIVILEGES ON *.* TO 'celts_user'@'%';"
 
+
 # remove ahead of time in case we didn't clean up last time
 rm -rf migrations
 rm -rf migrations.json
