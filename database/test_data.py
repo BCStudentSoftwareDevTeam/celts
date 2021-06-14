@@ -58,9 +58,18 @@ programs = [
     {
         "id": 1,
         "programName": "Empty Bowls"
-    }
+    },
+    {
+        "id": 2,
+        "programName": "Berea Buddies"
+    },
+    {
+        "id": 3,
+        "programName": "Adopt A Grandparent"
+    },
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
+
 
 events = [
     {
@@ -71,6 +80,33 @@ events = [
         "timeEnd": "9pm",
         "location": "a big room",
         "program": 1
-    }
+    },
+    {
+        "id": 2,
+        "term": 1,
+        "description": "Berea Buddies Training",
+        "timeStart": "6pm",
+        "timeEnd": "9pm",
+        "location": "a big room",
+        "program": 2
+    },
+    {
+        "id": 3,
+        "term": 3,
+        "description": "Adopt A Grandparent",
+        "timeStart": "6pm",
+        "timeEnd": "9pm",
+        "location": "a big room",
+        "program": 3
+    },
+    {
+        "id": 4,
+        "term": 3,
+        "description": "Berea Buddies First Meetup",
+        "timeStart": "6pm",
+        "timeEnd": "9pm",
+        "location": "a big room",
+        "program": 2
+    },
 ]
 Event.insert_many(events).on_conflict_replace().execute()

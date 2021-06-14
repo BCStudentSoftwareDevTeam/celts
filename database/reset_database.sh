@@ -1,6 +1,5 @@
 #!/bin/bash
 
-########### Process Arguments ############
 PRODUCTION=0
 if [ "`hostname`" == 'celts.berea.edu' ]; then
 	echo "DO NOT RUN THIS SCRIPT ON PRODUCTION UNLESS YOU REALLY REALLY KNOW WHAT YOU ARE DOING"
@@ -8,6 +7,7 @@ if [ "`hostname`" == 'celts.berea.edu' ]; then
 	exit 1
 fi
 
+########### Process Arguments ############
 BACKUP=0
 TEST=1
 if [ "$1" == "real" ]; then
