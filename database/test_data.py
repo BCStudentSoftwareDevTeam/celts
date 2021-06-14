@@ -7,6 +7,7 @@ from datetime import *
 from app.models.term import Term
 from app.models.program import Program
 from app.models.event import Event
+from app.models.programEvent import ProgramEvent
 
 print("Inserting data for demo and testing purposes.")
 terms = [
@@ -79,7 +80,6 @@ events = [
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "a big room",
-        "program": 1
     },
     {
         "id": 2,
@@ -88,7 +88,6 @@ events = [
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "a big room",
-        "program": 2
     },
     {
         "id": 3,
@@ -97,7 +96,6 @@ events = [
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "a big room",
-        "program": 3
     },
     {
         "id": 4,
@@ -106,7 +104,26 @@ events = [
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "a big room",
-        "program": 2
     },
 ]
 Event.insert_many(events).on_conflict_replace().execute()
+
+programEvents = [
+    {
+        "program": 1,
+        "event": 1
+    },
+    {
+        "program": 2,
+        "event": 2
+    },
+    {
+        "program": 3,
+        "event": 3
+    },
+    {
+        "program": 2,
+        "event": 4
+    },
+]
+ProgramEvent.insert_many(programEvents).on_conflict_replace().execute()
