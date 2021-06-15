@@ -8,6 +8,7 @@ from app.models.term import Term
 from app.models.program import Program
 from app.models.event import Event
 from app.models.programEvent import ProgramEvent
+from app.models.user import User
 
 print("Inserting data for demo and testing purposes.")
 terms = [
@@ -127,3 +128,17 @@ programEvents = [
     },
 ]
 ProgramEvent.insert_many(programEvents).on_conflict_replace().execute()
+
+users = [
+    {
+        "username": "escalerapadronl",
+        "bnumber": "B00712312",
+        "email": "escalerapadronl@berea.edu",
+        "phoneNumber": "828-458-9049",
+        "firstName": "Lisandro",
+        "lastName": "Padron",
+        "isStudent": True,
+    },
+]
+
+User.insert_many(users).on_conflict_replace().execute()

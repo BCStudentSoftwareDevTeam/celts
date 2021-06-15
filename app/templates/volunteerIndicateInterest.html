@@ -1,8 +1,11 @@
-
+<head>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script type="text/javascript" src="/static/js/volunteerIndicateInterest.js"></script>
+</head>
 
 <h2>Which programs do you want to receive communications about?</h2>
 <ul>
   {% for program in programs %}
-  <li>{{program.programName}} <input type="checkbox"></li>
+  <li>{{program.programName}} <input id="{{ program }}" data-value="{{ program }}" type="checkbox" onclick="updateInterest()"></li>
   {% endfor %}
 </ul>
