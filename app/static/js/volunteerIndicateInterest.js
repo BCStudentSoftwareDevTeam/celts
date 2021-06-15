@@ -1,4 +1,7 @@
-function updateInterest(){
-  data = $('').attr("id");
-  console.log(data);
+function updateInterest(el){
+  if ($(el).is(':checked')){
+    console.log($(el).attr('id'))
+  }
+
+
 }

@@ -4,8 +4,9 @@
 </head>
 
 <h2>Which programs do you want to receive communications about?</h2>
-<ul>
+  <div class="form-check form-switch">
   {% for program in programs %}
-  <li>{{program.programName}} <input id="{{ program }}" data-value="{{ program }}" type="checkbox" onclick="updateInterest()"></li>
+  <input class="form-check-input" onclick="updateInterest(this)" type="checkbox" id="{{ program }}">
+  <label class="form-check-label" for="{{ program }}">{{program.programName}}</label>
   {% endfor %}
-</ul>
+  </div>
