@@ -3,6 +3,7 @@ from app.models.user import User
 from app.controllers.events.volunteerRegisterEvent import volunteerRegister
 from app.models.event import Event
 from peewee import DoesNotExist
+from app.controllers.events.meetsReqsForEvent import isEligibleForProgram
 
 @pytest.mark.integration
 def test_noUserVolunteerRegister():
@@ -23,7 +24,7 @@ def test_noUserVolunteerRegister():
 def test_noEventVolunteerRegister():
 
     with pytest.raises(DoesNotExist):
-        volunteer = volunteerRegister("khatts", 15)
+        volunteer = volunteerRegister("khatts", 1500)
 
     with pytest.raises(DoesNotExist):
         volunteer = volunteerRegister("khatts", "Event")

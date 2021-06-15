@@ -2,6 +2,8 @@ from app.models import*
 from app.models.event import Event
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
+from app.controllers.events.meetsReqsForEvent import isEligibleForProgram
+# from app.controllers.
 import pytest
 
 #Fixme: Import meetReqforEvent
@@ -13,5 +15,9 @@ def volunteerRegister(userid,  eventid):
     event = Event.get(Event.id == eventid)
     #Assuming the student meets the requirement for the events (function wriiten by Zach and KArina)
 
-    eventParticipant = EventParticipant.create(user = user, event = event, rsvp = True)
-    return eventParticipant
+    if isEligibleForProgram(event, user) == True:
+
+        eventParticipant = EventParticipant.create(user = user, event = event, rsvp = True)
+        return eventParticipant
+    else:
+        return ("User is not eligible for the program")
