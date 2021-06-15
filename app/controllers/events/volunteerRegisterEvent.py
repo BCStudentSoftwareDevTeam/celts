@@ -5,11 +5,13 @@ from app.models.user import User
 import pytest
 
 #Fixme: Import meetReqforEvent
-meetReqForEvent = False
-def volunteerRegister(user:User, event:Event):
+#meetReqForEvent = False
+#meetReq = meetReqForEvent
+def volunteerRegister(userid,  eventid):
+
+    user = User.get(User.username == userid)
+    event = Event.get(Event.id == eventid)
     #Assuming the student meets the requirement for the events (function wriiten by Zach and KArina)
-    if meetReqForEvent:
-        eventParticipant = EventParticipant.create(user = user, event = event, rsvp = True)
-        return eventParticipant
-    else:
-        raise ValueError()
+
+    eventParticipant = EventParticipant.create(user = user, event = event, rsvp = True)
+    return eventParticipant
