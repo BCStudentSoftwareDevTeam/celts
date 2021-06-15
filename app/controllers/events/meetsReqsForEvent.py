@@ -7,6 +7,7 @@
 from app.models.user import User
 from app.models.programBan import ProgramBan
 from app.models.programEvent import ProgramEvent
+
 def isEligibleForProgram(event):
     if ProgramBan.user == User:
         return False
@@ -16,5 +17,4 @@ def isEligibleForProgram(event):
     for requirement in req_list:
         if not_completed:
             return False
-        else:
-            return True
+    return True
