@@ -16,3 +16,7 @@ def volunteerIndicateInterest():
 @main_bp.route('/updateInterest/<program_id>', methods = ['POST'])
 def updateInterest(program_id, user_id):
     pass
+
+@main_bp.route('/volunteerIndicateInterest', methods = ['POST'])
+def indicateInterestController(program_id, user_id):
+    current_user = username

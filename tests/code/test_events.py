@@ -2,6 +2,7 @@ import pytest
 from peewee import DoesNotExist
 
 from app.logic.events import getEvents
+from app.controllers.main.volunteerIndicateInterest import indicateInterestController
 
 @pytest.mark.integration
 def test_getEventsNoProgram():
@@ -29,4 +30,6 @@ def test_getEventsInvalidProgram():
     with pytest.raises(DoesNotExist):
         getEvents(program_id= "asdf")
 
-
+@pytest.mark.integration
+def test_currentUseris():
+    current_user = 'ramsayb2'
