@@ -32,4 +32,6 @@ def test_getEventsInvalidProgram():
 
 @pytest.mark.integration
 def test_currentUseris():
-    current_user = 'ramsayb2'
+    user = indicateInterestController()
+
+    assert user == 'ramsayb2'
