@@ -7,7 +7,8 @@ from datetime import *
 from app.models.term import Term
 from app.models.program import Program
 from app.models.event import Event
-from app.models.programEvent import ProgramEvent
+from app.models.preqForProgram import PreqForProgram
+#from app.models.programEvent import ProgramEvent
 
 print("Inserting data for demo and testing purposes.")
 terms = [
@@ -68,6 +69,10 @@ programs = [
         "id": 3,
         "programName": "Adopt A Grandparent"
     },
+    {
+        "id": 4,
+        "programName": "Training"
+    }
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
 
@@ -84,7 +89,7 @@ events = [
     },
     {
         "id": 2,
-        "program": 2,
+        "program": 4,
         "term": 1,
         "description": "Berea Buddies Training",
         "timeStart": "6pm",
@@ -109,13 +114,62 @@ events = [
         "timeEnd": "9pm",
         "location": "a big room",
     },
+    {
+        "id": 5,
+        "program": 4,
+        "term": 3,
+        "description": "Tutoring Training",
+        "timeStart": "1am",
+        "timeEnd": "9pm",
+        "location": "a bigish room",
+    },
+    {
+        "id": 6,
+        "program": 4,
+        "term": 3,
+        "description": "Making Bowls Training",
+        "timeStart": "6pm",
+        "timeEnd": "9pm",
+        "location": "a big room",
+    },
+    {
+        "id": 7,
+        "program": 4,
+        "term": 3,
+        "description": "How To Make Buddies Training",
+        "timeStart": "6pm",
+        "timeEnd": "9pm",
+        "location": "Outisde",
+    },
+    {
+        "id": 8,
+        "program": 4,
+        "term": 3,
+        "description": "Adoption 101 Training",
+        "timeStart": "6pm",
+        "timeEnd": "9pm",
+        "location": "a big room",
+    },
+    {
+        "id": 9,
+        "program": 4,
+        "term": 3,
+        "description": "Cleaning Bowls Training",
+        "timeStart": "6pm",
+        "timeEnd": "9pm",
+        "location": "Dining Dishes Room",
+    }
 ]
 Event.insert_many(events).on_conflict_replace().execute()
 
-programEvents = [
+preqForProgram = [
     {
         "program": 1,
         "event": 1
+    },
+    {
+        "program": 1,
+        "event": 2
     },
     {
         "program": 2,
@@ -126,8 +180,42 @@ programEvents = [
         "event": 3
     },
     {
-        "program": 2,
-        "event": 4
+        "program": 1,
+        "event": 6
     },
+    {
+        "program": 1,
+        "event": 7
+    },
+    {
+        "program": 3,
+        "event": 8
+    },
+    {
+        "program": 1,
+        "event": 9
+    }
+
 ]
-ProgramEvent.insert_many(programEvents).on_conflict_replace().execute()
+PreqForProgram.insert_many(preqForProgram).on_conflict_replace().execute()
+
+#
+# programEvents = [
+#     {
+#         "program": 1,
+#         "event": 1
+#     },
+#     {
+#         "program": 2,
+#         "event": 2
+#     },
+#     {
+#         "program": 3,
+#         "event": 3
+#     },
+#     {
+#         "program": 2,
+#         "event": 4
+#     },
+# ]
+# ProgramEvent.insert_many(programEvents).on_conflict_replace().execute()

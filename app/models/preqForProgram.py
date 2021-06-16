@@ -2,7 +2,7 @@ from app.models import *
 from app.models.program import Program
 from app.models.event import Event
 
-class ProgramEvent(baseModel):
+class PreqForProgram(baseModel):
     program = ForeignKeyField(Program)
     event = ForeignKeyField(Event)
 
