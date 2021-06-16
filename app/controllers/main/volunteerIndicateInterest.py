@@ -11,9 +11,11 @@ current_user = User.get(User.username == "escalerapadronl") #FIXME: Remove once 
 @main_bp.route('/volunteerIndicateInterest', methods = ['GET'])
 def volunteerIndicateInterest():
     programs = Program.select()
+    interests = Interest.select().where(Interest.user == current_user.username)
     return render_template('volunteerIndicateInterest.html',
                            title="Volunteer Interest",
-                           programs = programs)
+                           programs = programs,
+                           interests = interests)
 
 
 @main_bp.route('/updateInterest/<program_id>/<num_interest>', methods = ['POST'])
@@ -23,14 +25,14 @@ def updateInterest(program_id, num_interest):
     shows interest in a program or by deleting the row from the table when a
     user no longer shows interest in a program.
     """
-    print(type(num_interest))
     num_interest = int(num_interest)
-    if num_interest:
-        print("Stepped into if")
-        Interest.get_or_create(program = program_id, user = current_user.username)
-    else:
-        print("stepped into else")
-        deleted_interest = Interest.get(Interest.program == program_id and Interest.user == current_user.username)
-        print(deleted_interest)
-        deleted_interest.delete_instance()
-    return jsonify({"Success": False})
+    try:
+        if num_interest:
+            Interest.get_or_create(program = program_id, user = current_user.username)
+        else:
+            deleted_interest = Interest.get(Interest.program == program_id and Interest.user == current_user.username)
+            deleted_interest.delete_instance()
+        return jsonify({"Success": True})
+    except Exception as e:
+        print("Error Updating Interest: ", e)
+        return jsonify({"Success": False}),500

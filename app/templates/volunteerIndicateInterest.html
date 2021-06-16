@@ -3,10 +3,10 @@
   <script type="text/javascript" src="/static/js/volunteerIndicateInterest.js"></script>
 </head>
 
-<h2>Which programs do you want to receive communications about?</h2>
+<h2>Which programs do you want to receive information about?</h2>
   <div class="form-check form-switch">
   {% for program in programs %}
-  <input class="form-check-input" onclick="updateInterest(this)" type="checkbox" id="{{ program }}">
-  <label class="form-check-label" for="{{ program }}">{{program.programName}}</label>
+    <input class="form-check-input" onclick="updateInterest(this)" type="checkbox" id="{{ program }}" {% if %} checked {endif}>
+    <label class="form-check-label" for="{{ program }}">{{program.programName}}</label>
   {% endfor %}
   </div>
