@@ -8,7 +8,6 @@ from app.models.term import Term
 from app.models.program import Program
 from app.models.event import Event
 from app.models.preqForProgram import PreqForProgram
-#from app.models.programEvent import ProgramEvent
 
 print("Inserting data for demo and testing purposes.")
 terms = [
@@ -158,6 +157,15 @@ events = [
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "Dining Dishes Room",
+    },
+    {
+        "id": 10,
+        "program": 4,
+        "term": 3,
+        "description": "Whole Celts Training",
+        "timeStart": "6pm",
+        "timeEnd": "9pm",
+        "location": "Dining Dishes Room",
     }
 ]
 Event.insert_many(events).on_conflict_replace().execute()
@@ -169,7 +177,11 @@ preqForProgram = [
     },
     {
         "program": 1,
-        "event": 2
+        "event": 10
+    },
+    {
+        "program": 2,
+        "event": 10
     },
     {
         "program": 2,
@@ -198,24 +210,3 @@ preqForProgram = [
 
 ]
 PreqForProgram.insert_many(preqForProgram).on_conflict_replace().execute()
-
-#
-# programEvents = [
-#     {
-#         "program": 1,
-#         "event": 1
-#     },
-#     {
-#         "program": 2,
-#         "event": 2
-#     },
-#     {
-#         "program": 3,
-#         "event": 3
-#     },
-#     {
-#         "program": 2,
-#         "event": 4
-#     },
-# ]
-# ProgramEvent.insert_many(programEvents).on_conflict_replace().execute()
