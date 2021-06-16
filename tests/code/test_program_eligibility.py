@@ -1,4 +1,5 @@
 import pytest
+from app.models.eventParticipant import EventParticipant
 from peewee import DoesNotExist
 from app.models.user import User
 from app.models.event import Event
@@ -31,8 +32,9 @@ from app.controllers.events.meetsReqsForEvent import isEligibleForProgram
 @pytest.mark.integration
 def test_volunteerEligible():
 
-    user = User.get(User.username == "lamichhanes2")
-    event = Event.get(Event.id == 2)
+    user = User.get(User.username == "khatts")
+    event = Event.get(Event.id == 1)
+    attended = EventParticipant.get(EventParticipant.attended == 1)
 
     eligible = isEligibleForProgram(event, user)
     assert eligible

@@ -5,25 +5,23 @@
 # if so: true
 # if you're banned: false
 from app.models.user import User
+from app.models.event import Event
+from app.models.eventParticipant import EventParticipant
 from app.models.programBan import ProgramBan
-from app.models.programEvent import ProgramEvent
+from app.models.preqForProgram import PreqForProgram
 
 def isEligibleForProgram(event, user):
 
     # Find a program that the event belongs to
-    program = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event == event)  # assuming that the event belongs to one program
+    program = Event.select(Event.program).where(Event.id == event)  # assuming that the event belongs to one program
     # See if the user is banned from that program
     # If banned, return False
+    if (ProgramBan.select().where(ProgramBan.user == user)) and (ProgramBan.select().where(ProgramBan.program == program)):
+        return False
     # Find all the events that are required for the program
     # Did the user attend that event
     # If not, reurn false
-    # return true
-    if (ProgramBan.select().where(ProgramBan.user == user)) and (ProgramBan.select().where(ProgramBan.program == program)):
-        return False
-    # req_list = [] # check if class is required, if so add it to the list
-    # if ProgramEvent.isRequiredForProgram:
-    #     req_list.append()
-    # for requirement in req_list:
-    #     if not ProgramEvent.isRequiredForProgram:
-    #         return False
+    for requirement in PreqForProgram.select().where(PreqForProgram.event == event):
+        if not EventParticipant.select().where(EventParticipant.attended == True):
+            return False
     return True

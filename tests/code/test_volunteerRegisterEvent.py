@@ -40,6 +40,7 @@ def test_volunteerRegister():
     #try:
 
     volunteer = volunteerRegister("khatts", 1)
+    print(volunteer)
     assert volunteer.user.username == "khatts"
     assert volunteer.event.id == 1
     assert volunteer.rsvp == True

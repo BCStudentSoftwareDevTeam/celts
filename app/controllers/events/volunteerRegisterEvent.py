@@ -15,9 +15,8 @@ def volunteerRegister(userid,  eventid):
     event = Event.get(Event.id == eventid)
     #Assuming the student meets the requirement for the events (function wriiten by Zach and KArina)
 
-    if isEligibleForProgram(event, user) == True:
-
-        eventParticipant = EventParticipant.create(user = user, event = event, rsvp = True)
+    if isEligibleForProgram(event, user):
+        eventParticipant = EventParticipant.get(EventParticipant.user == user, EventParticipant.event == event, EventParticipant.rsvp == True)
         return eventParticipant
     else:
         return ("User is not eligible for the program")

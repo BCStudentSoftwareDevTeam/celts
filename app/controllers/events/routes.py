@@ -8,7 +8,7 @@ from app.logic.events import getEvents
 def events():
     events = getEvents()
 
-    return render_template("events/event_list.html", 
+    return render_template("events/event_list.html",
             events=events,
             user="ramsayb2"
             )
