@@ -24,6 +24,11 @@ Test should be added in `tests/code/`, logically grouped into files named `test_
 
 ## Other Tasks
 
+### Accessing the Logged-in user
+The currently logged-in user is stored in Flask's request global variable `g`. Import it with `from flask import g`, and then you can access the user data in your controller with `g.current_user`. Jinja templates can also access this variable without an import, with `{{g.current_user}}`.
+
+The default user is set in defaults.yml. If you want to change the user for testing purposes, add a `default_user` item in `config/local-override.yml`. The user will be loaded from the database, or created if none exists. Since there is no Active Directory data in development, if you want the data to be correct you should add the user to `database/test_data.py`.
+
 ### Resetting Database
 1. Run ```reset_database.sh``` to rebuild your database. If you want to preserve your data, run ```migrate_db.sh```or do it manually (see below).
 
