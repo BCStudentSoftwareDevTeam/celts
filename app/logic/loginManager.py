@@ -40,6 +40,7 @@ def getLoginUser():
         user = User.get_by_id(username)
     except DoesNotExist as e:
         # Create the user from Shibboleth
+        # FIXME We need to identify the proper shibboleth attributes to insert into user
         user = User.create(
             username=username,
             firstName="Not",
