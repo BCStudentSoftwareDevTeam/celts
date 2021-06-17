@@ -9,6 +9,7 @@ from app.models.program import Program
 from app.models.event import Event
 from app.models.preqForProgram import PreqForProgram
 from app.models.user import User
+from app.models.interest import Interest
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -27,6 +28,7 @@ users = [
             "phoneNumber": "8439743909"
         },
 ]
+
 User.insert_many(users).on_conflict_replace().execute()
 
 terms = [
@@ -229,3 +231,20 @@ preqForProgram = [
 
 ]
 PreqForProgram.insert_many(preqForProgram).on_conflict_replace().execute()
+
+interest = [
+
+    {
+        "program" : 1,
+        "user": "khatts"
+    },
+    {
+        "program": 2,
+        "user" : "lamichhanes2"
+    },
+    {
+        "program": 4,
+        "user": "lamichhanes2"
+    }
+]
+Interest.insert_many(interest).on_conflict_replace().execute()

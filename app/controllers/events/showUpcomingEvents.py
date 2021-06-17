@@ -8,36 +8,16 @@ def showUpcomingEvents(userid):
 
     user = User.get(User.username == userid)
 
-
-    joinedTable = (Interest.select()
-                        .join(Event, on=(Interest.program == Event.program))
+    interestedEvent = (Event.select(Event, Interest)
+                        .join(Interest, on=(Event.program == Interest.program))
                         .where(Interest.user == user))
 
-    for table in joinedTable.objects():
-         print(table.event.description)
-    # upcomingEvents = joinedTable.select(joinedTable.event.description)
-    # print(list(upcomingEvents))
-    print(list(joinedTable))
+    upcomingEvents = []
+    for event in interestedEvent.objects():
+        print(event.description)
+        upcomingEvents.append(event.description)
+    print(upcomingEvents)
 
+    print()
 
-
-    # interestedPrograms = Interest.select(Interest.program).where(Interest.user == user)
-    # print(len(interestedPrograms))
-    # # upcomingEvents = Event.select(Event.description).where(Event.program == interestedPrograms)
-    #
-    # #if len(interestedPrograms) == 1:
-    # upcomingEvents = Event.select(Event.description).where(Event.program == interestedPrograms)
-    # return upcomingEvents
-    # print(type(upcomingEvents))
-    # print(list(upcomingEvents))
-    # else:
-    #     for program in list(interestedPrograms):
-    #         #upcomingEvents = Event.select().join().where(Event.program == interestedPrograms[program])
-    #         upcomingEvents = Event.select(Event.description).where(Event.program == program)
-    #         print(list(upcomingEvents))
-    #         print(program)
-    # else:
-    #     for program in range(len(interestedPrograms)):
-    #         upcomingEvents = Event.select(Event.description).join(Event.program).where(Event.program == interestedPrograms[program])
-    #
     return upcomingEvents
