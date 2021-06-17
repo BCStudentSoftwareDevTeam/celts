@@ -4,6 +4,7 @@ This file will need to be changed if the format of models changes (new fields, d
 
 from datetime import *
 
+from app.models.user import User
 from app.models.term import Term
 from app.models.program import Program
 from app.models.event import Event
@@ -14,19 +15,31 @@ from app.models.interest import Interest
 print("Inserting data for demo and testing purposes.")
 users = [
     {
+        "username": "ramsayb2",
+        "bnumber": "B000173723",
+        "email": "ramsayb2@berea.edu",
+        "phoneNumber": "555-555-5555",
+        "firstName": "Brian",
+        "lastName": "Ramsay",
+        "isStudent": False,
+        "isFaculty": False,
+        "isCeltsAdmin": True,
+        "isCeltsStudentStaff": False
+    },
+    {
         "username": "khatts",
         "bnumber": "B00759107",
         "firstName": "Sreynit",
         "lastName": "Khatt",
         "phoneNumber": "12345678"
     },
-        {
+    {
             "username": "lamichhanes2",
             "bnumber": "B00733993",
             "firstName": "Sandesh",
             "lastName": "Lamichhane",
             "phoneNumber": "8439743909"
-        },
+    },
 ]
 
 User.insert_many(users).on_conflict_replace().execute()

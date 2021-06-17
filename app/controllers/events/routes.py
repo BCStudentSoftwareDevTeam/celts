@@ -3,6 +3,7 @@ from flask import Flask, redirect, flash
 
 from app.controllers.events import events_bp
 from app.logic.events import getEvents
+from app.controllers.showUpcomingEvents import showUpcomingEvents
 
 @events_bp.route('/events', methods=['GET'])
 def events():
@@ -12,3 +13,9 @@ def events():
             events=events,
             user="ramsayb2"
             )
+
+@events_bp.route('/events', methods=['GET'])
+def showUpcomingEvent():
+    upcomingEvents = showUpcomingEvents("khatts") #FIXME: use g.current_user when that gets implemented
+    return render_template('showUpcomingEvents.html',
+                            upcomingEvents = upcomingEvents)

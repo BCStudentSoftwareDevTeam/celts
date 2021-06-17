@@ -2,22 +2,28 @@ from app.models.program import Program
 from app.models.interest import Interest
 from app.models.event import Event
 from app.models.user import User
+from flask import render_template
+from app.controllers.events import events_bp
 
 
-def showUpcomingEvents(userid):
+def getUpcomingEventsForUser(username):
 
-    user = User.get(User.username == userid)
+    user = User.get(User.username == username)
+    interestedEvent = (Event.select()
+                            .join(Interest, on=(Event.program == Interest.program))
+                            .where(Interest.user == user))
 
-    interestedEvent = (Event.select(Event, Interest)
-                        .join(Interest, on=(Event.program == Interest.program))
-                        .where(Interest.user == user))
+    #upcomingEvents = []
+    # for event in interestedEvent.objects():
+    #     #FIXME: Change event.description to event.eventName. When the eventName column is filled
+    #     upcomingEvents.append({"description": event.description, "program":event.program, "startDate": event.startDate})
 
-    upcomingEvents = []
-    for event in interestedEvent.objects():
-        print(event.description)
-        upcomingEvents.append(event.description)
-    print(upcomingEvents)
+    return list(interestedEvent)
 
-    print()
 
-    return upcomingEvents
+@events_bp.route('events/upcoming')
+def showUpcomingEvents(username):
+
+    user = User.get(User.username == "khatts") #FIXME: remove line once g.current_user gets implemented
+    interestedEvent = getUpcomingEventsForUser(user)
+    return render_template('showUpcomingEvents.html', upcomingEvents = list(interestedEvent))
