@@ -5,7 +5,6 @@ pem add app.models.course.Course
 pem add app.models.term.Term
 pem add app.models.courseStatus.CourseStatus
 pem add app.models.courseParticipant.CourseParticipant
-pem add app.models.eligibility.Eligibility
 pem add app.models.emailTemplate.EmailTemplate
 pem add app.models.event.Event
 pem add app.models.eventParticipant.EventParticipant
