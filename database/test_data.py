@@ -230,9 +230,10 @@ Users = [
 ]
 User.insert_many(Users).on_conflict_replace().execute()
 
+
 EventParticipants = [
     {
-        "user" : "khatts",
+        "user" : "lamichhanes2",
         "event" : "1",
         "rsvp" : True,
         "attended" : True,

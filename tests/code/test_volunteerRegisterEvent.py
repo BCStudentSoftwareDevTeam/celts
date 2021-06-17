@@ -35,12 +35,14 @@ def test_noEventVolunteerRegister():
     with pytest.raises(DoesNotExist):
         volunteer = volunteerRegister("khatts", 0)
 
+
 @pytest.mark.integration
 def test_volunteerRegister():
-    #try:
 
-    volunteer = volunteerRegister("khatts", 1)
+    volunteer = volunteerRegister("lamichhanes2", 1)
+
     print(volunteer)
-    assert volunteer.user.username == "khatts"
+
+    assert volunteer.user.username == "lamichhanes2"
     assert volunteer.event.id == 1
     assert volunteer.rsvp == True
