@@ -1,13 +1,15 @@
+import os
+
 from flask import Flask
 from flask.helpers import get_env
+
 from config2.config import config
-import os
 import yaml
 
 # Initialize our application
 app = Flask(__name__, template_folder="templates")
 
-######### Set up App Configuration #############
+######### Set up Application Configuration #############
 # Uses config2 - https://pypi.org/project/config2/ - with the addition of an uncommitted 
 # override yml to set instance parameters. By default, 'local-override.yml'
 #
@@ -19,7 +21,7 @@ app = Flask(__name__, template_folder="templates")
 #     ↓
 # default.yml
 #
-################################################
+##########################################################
 
 # ensure ENV matches flask environment (for config2)
 os.environ["ENV"] = get_env()
@@ -51,8 +53,13 @@ from app.controllers.main import main_bp as main_bp
 app.register_blueprint(main_bp)
 ##################################
 
-
 # Make 'ENV' a variable everywhere
 @app.context_processor
 def inject_environment():
-    return dict(ENV=get_env())
+    return dict( env=get_env() )
+
+from app.logic.loginManager import getLoginUser
+from flask import g
+@app.before_request
+def load_user():
+    g.current_user = getLoginUser()
