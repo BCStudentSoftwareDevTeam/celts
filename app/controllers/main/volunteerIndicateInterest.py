@@ -14,6 +14,7 @@ def volunteerIndicateInterest():
     interests = Interest.select().where(Interest.user == current_user.username)
     return render_template('volunteerIndicateInterest.html',
                            title="Volunteer Interest",
+                           user = current_user,
                            programs = programs,
                            interests = interests)
 
@@ -25,14 +26,17 @@ def updateInterest(program_id, num_interest):
     shows interest in a program or by deleting the row from the table when a
     user no longer shows interest in a program.
     """
-    num_interest = int(num_interest)
+    num_interest = int(num_interest) #change this to a boolean
     try:
         if num_interest:
             Interest.get_or_create(program = program_id, user = current_user.username)
         else:
-            deleted_interest = Interest.get(Interest.program == program_id and Interest.user == current_user.username)
+            deleted_interest = Interest.get(Interest.program == program_id and Interest.user == current_user.username) #change this to get_or_none
             deleted_interest.delete_instance()
-        return jsonify({"Success": True})
+        return jsonify({"Success": True}) #remove this
     except Exception as e:
         print("Error Updating Interest: ", e)
         return jsonify({"Success": False}),500
+
+
+#add a route for delete interest

@@ -4,9 +4,10 @@
 </head>
 
 <h2>Which programs do you want to receive information about?</h2>
+<input id="{{ user.username }}" hidden>
   <div class="form-check form-switch">
   {% for program in programs %}
-    <input class="form-check-input" onclick="updateInterest(this)" type="checkbox" id="{{ program }}" {% if %} checked {endif}>
+    <input class="form-check-input" onclick="updateInterest(this)" type="checkbox" id="{{ program }}" >
     <label class="form-check-label" for="{{ program }}">{{program.programName}}</label>
   {% endfor %}
   </div>

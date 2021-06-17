@@ -1,6 +1,8 @@
 function updateInterest(el){
   //create bool var storing interest or no interest
   var interest = $(el).is(':checked');
+  var userID = $("#escalerapadronl").attr("id")
+  console.log(userID);
   numInterest = Number(interest) //changed interest to a number because JS booleans and Python Booleans are cased differently but 1 and 0 work the same for both
   //create var with program id
   var programID = $(el).attr('id');
