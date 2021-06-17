@@ -1,0 +1,19 @@
+<h1>Say something</h1>
+<table class="table">
+  <thead class="tableHeader">
+    <th scope="col"><h4><strong>Program</strong></h4>
+    <th scope="col"><h4><strong>Description</strong></h4>
+    <th scope="col"><h4><strong>Start Date</strong></h4>
+    <th scope="col"><h4><strong>End Date</strong></h4>
+      </thead>
+
+  {% for event in upcomingEvents %}
+  <tr>
+    <td>{{event.programName}}</td>
+    <td>{{event.description}}</td>
+    <td>{{event.startDate}}</td>
+    <td>{{event.endDate}}</td>
+  </tr>
+  {% endfor %}
+
+</table>

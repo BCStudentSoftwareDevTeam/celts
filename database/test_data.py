@@ -29,16 +29,18 @@ users = [
     {
         "username": "khatts",
         "bnumber": "B00759107",
+        "email": "khatts@berea.edu",
         "firstName": "Sreynit",
         "lastName": "Khatt",
         "phoneNumber": "12345678"
     },
     {
-            "username": "lamichhanes2",
-            "bnumber": "B00733993",
-            "firstName": "Sandesh",
-            "lastName": "Lamichhane",
-            "phoneNumber": "8439743909"
+        "username": "lamichhanes2",
+        "bnumber": "B00733993",
+        "email": "lamichhanes2@berea.edu",
+        "firstName": "Sandesh",
+        "lastName": "Lamichhane",
+        "phoneNumber": "8439743909"
     },
 ]
 

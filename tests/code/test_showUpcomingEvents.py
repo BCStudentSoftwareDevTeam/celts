@@ -25,8 +25,8 @@ def test_doesntExist():
         upcomingEvent = getUpcomingEventsForUser(user)
 
 @pytest.mark.integration
-def show():
-    user = "lamichhanes2"
+def test_show():
+    user = "ramsayb2"
     upcomingEvent = getUpcomingEventsForUser(user)
 
     assert upcomingEvent
