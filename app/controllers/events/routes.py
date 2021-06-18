@@ -17,7 +17,5 @@ def events():
 @events_bp.route('/events/upcoming_events', methods=['GET'])
 def showUpcomingEvent():
     upcomingEvents = showUpcomingEvents(g.current_user.username)
-    random_var = "hello"
     return render_template('/events/showUpcomingEvents.html',
-                            random_var = random_var,
                             upcomingEvents = upcomingEvents)

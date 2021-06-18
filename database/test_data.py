@@ -32,6 +32,7 @@ users = [
         "email": "khatts@berea.edu",
         "firstName": "Sreynit",
         "lastName": "Khatt",
+        "isStudent": True,
         "phoneNumber": "12345678"
     },
     {
@@ -40,6 +41,7 @@ users = [
         "email": "lamichhanes2@berea.edu",
         "firstName": "Sandesh",
         "lastName": "Lamichhane",
+        "isStudent": True,
         "phoneNumber": "8439743909"
     },
 ]
@@ -118,90 +120,111 @@ events = [
         "program": 1,
         "term": 1,
         "description": "Empty Bowls Spring 2021",
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
+        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 2,
         "program": 4,
         "term": 1,
         "description": "Berea Buddies Training",
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
+        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 3,
         "program": 3,
         "term": 3,
         "description": "Adopt A Grandparent",
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
+        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 4,
         "program": 2,
         "term": 3,
         "description": "Berea Buddies First Meetup",
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
+        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 5,
         "program": 4,
         "term": 3,
         "description": "Tutoring Training",
-        "timeStart": "1am",
-        "timeEnd": "9pm",
+        "timeStart": datetime.strptime("3:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a bigish room",
+        "startDate": datetime.strptime("2021 6 18","%Y %m %d"),
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 6,
         "program": 4,
         "term": 3,
         "description": "Making Bowls Training",
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
+        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 7,
         "program": 4,
         "term": 3,
         "description": "How To Make Buddies Training",
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Outisde",
+        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 8,
         "program": 4,
         "term": 3,
         "description": "Adoption 101 Training",
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
+        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 9,
         "program": 4,
         "term": 3,
         "description": "Cleaning Bowls Training",
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Dining Dishes Room",
+        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
+
     },
     {
         "id": 10,
         "program": 4,
         "term": 3,
         "description": "Whole Celts Training",
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Dining Dishes Room",
+        "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
+        "endDate": datetime.strptime("2021 7 12","%Y %m %d")
     }
 ]
 Event.insert_many(events).on_conflict_replace().execute()
@@ -260,6 +283,15 @@ interest = [
     {
         "program": 4,
         "user": "lamichhanes2"
+    },
+    {
+        "program": 2,
+        "user" : "ramsayb2"
+    },
+    {
+        "program": 4,
+        "user": "ramsayb2"
     }
+
 ]
 Interest.insert_many(interest).on_conflict_replace().execute()
