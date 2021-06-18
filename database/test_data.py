@@ -3,15 +3,30 @@ Chech phpmyadmin to see if your changes are reflected
 This file will need to be changed if the format of models changes (new fields, dropping fields, renaming...)'''
 
 from datetime import *
-
 from app.models.eventParticipant import EventParticipant
+from app.models.user import User
 from app.models.term import Term
 from app.models.program import Program
 from app.models.event import Event
-from app.models.user import User
 from app.models.preqForProgram import PreqForProgram
 
 print("Inserting data for demo and testing purposes.")
+users = [
+    {
+        "username": "ramsayb2",
+        "bnumber": "B000173723",
+        "email": "ramsayb2@berea.edu",
+        "phoneNumber": "555-555-5555",
+        "firstName": "Brian",
+        "lastName": "Ramsay",
+        "isStudent": False,
+        "isFaculty": False,
+        "isCeltsAdmin": True,
+        "isCeltsStudentStaff": False
+    },
+]
+User.insert_many(users).on_conflict_replace().execute()
+
 terms = [
     {
         "id": 1,

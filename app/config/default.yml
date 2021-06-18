@@ -3,15 +3,13 @@ use_shibboleth: False
 use_tracy: False
 use_banner: False
 override_file: "local-override.yml"
+default_user: "ramsayb2"
 
 db:
     name: "celts"
     host: "db"
     username: "celts_user"
     password: "password"
-
-user:
-    debug: "ramsayb2"
 
 mail:
     enabled: False
