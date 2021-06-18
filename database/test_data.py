@@ -9,6 +9,8 @@ from app.models.term import Term
 from app.models.program import Program
 from app.models.event import Event
 from app.models.programEvent import ProgramEvent
+from app.models.course import Course
+from app.models.courseStatus import CourseStatus
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -144,3 +146,42 @@ programEvents = [
     },
 ]
 ProgramEvent.insert_many(programEvents).on_conflict_replace().execute()
+coursestatus = [
+    {
+        "status": "Approve"
+    }
+]
+CourseStatus.insert_many(coursestatus).on_conflict_replace().execute()
+courses = [
+    {
+        "courseName": "Databases",
+        "term": 2,
+        "status": 1,
+        "courseCredit": "",
+        "createdBy": "",
+        "isAllSectionsServiceLearning": False,
+        "isPermanentlyDesignated": False,
+        "sectionBQuestion1": "",
+        "sectionBQuestion2": "",
+        "sectionBQuestion3": "",
+        "sectionBQuestion4": "",
+        "sectionBQuestion5": "",
+        "sectionBQuestion6": ""
+    },
+    {
+        "courseName": "Spanish Help",
+        "term": 1,
+        "status": 1,
+        "courseCredit": "",
+        "createdBy": "",
+        "isAllSectionsServiceLearning": False,
+        "isPermanentlyDesignated": False,
+        "sectionBQuestion1": "",
+        "sectionBQuestion2": "",
+        "sectionBQuestion3": "",
+        "sectionBQuestion4": "",
+        "sectionBQuestion5": "",
+        "sectionBQuestion6": ""
+    },
+]
+Course.insert_many(courses).on_conflict_replace().execute()
