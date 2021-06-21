@@ -1,14 +1,12 @@
 $(document).ready(function() {
 $(".form-check-input").click(function updateInterest(el){
   //create bool var storing interest or no interest
+  var programID = $(this).attr('id');
   var interest = $(this).is(':checked');
   var userID = $("#escalerapadronl").attr("id")
-  console.log(userID);
-  var programID = $(el).attr('id');
-  console.log(programID);
+  console.log(programID)
   //create ajax call with data
   console.log("Enter Function");
-  console.log(interest);
   if (interest) {
     console.log("Enter IF");
   $.ajax({

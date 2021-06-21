@@ -11,13 +11,14 @@ current_user = User.get(User.username == "escalerapadronl") #FIXME: Remove once 
 @main_bp.route('/volunteerIndicateInterest', methods = ['GET'])
 def volunteerIndicateInterest():
     programs = Program.select()
-    interests = Interest.select().where(Interest.user == current_user.username)
+    interests = Interest.select().where(Interest.user_id == current_user.username)
+    interests_ids = [interest.program_id for interest in interests]
     return render_template('volunteerIndicateInterest.html',
                            title="Volunteer Interest",
                            user = current_user,
                            programs = programs,
-                           interests = interests)
-
+                           interests = interests,
+                           interests_ids = interests_ids)
 
 # @main_bp.route('/updateInterest/<program_id>/<num_interest>', methods = ['POST'])
 # def updateInterest(program_id, num_interest):
@@ -44,10 +45,8 @@ def addInterest(program_id, userID):
     This function updates the interest table by adding a new row when a user
     shows interest in a program
     """
-    print(userID)
-    print(program_id)
     try:
-        Interest.create(program = program_id, user = current_user.username)
+        Interest.get_or_create(program = program_id, user = current_user.username)
         return jsonify({"Success": True}) #remove this
     except Exception as e:
         print("Error Updating Interest: ", e)

@@ -8,7 +8,12 @@
 <input id="{{ user.username }}" hidden>
   <div class="form-check form-switch">
   {% for program in programs %}
-    <input class="form-check-input"  type="checkbox" id="{{ program.program_id }}" >
-    <label class="form-check-label" for="{{ program.program_id }}">{{program.programName}}</label>
+    {% set status = '' %}
+      {% if program.id in interests_ids %}
+        {% set status = 'checked' %}
+      {% else %}
+      {% endif %}
+      <input class="form-check-input"  type="checkbox" id="{{ program.id }}" {{ status }}>
+      <label class="form-check-label" for="{{ program.id }}">{{program.programName}}</label>
   {% endfor %}
   </div>
