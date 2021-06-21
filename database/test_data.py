@@ -86,10 +86,6 @@ programs = [
         "id": 3,
         "programName": "Adopt A Grandparent"
     },
-    {
-        "id": 4,
-        "programName": "Training"
-    }
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
 
@@ -106,9 +102,10 @@ events = [
     },
     {
         "id": 2,
-        "program": 4,
+        "program": None,
         "term": 1,
         "description": "Berea Buddies Training",
+        "isTraining": True,
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "a big room",
@@ -133,45 +130,51 @@ events = [
     },
     {
         "id": 5,
-        "program": 4,
+        "program": None,
         "term": 3,
         "description": "Tutoring Training",
+        "isTraining": True,
         "timeStart": "1am",
         "timeEnd": "9pm",
         "location": "a bigish room",
     },
     {
         "id": 6,
-        "program": 4,
+        "program": None,
         "term": 3,
         "description": "Making Bowls Training",
+        "isTraining": True,
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "a big room",
     },
     {
         "id": 7,
-        "program": 4,
+        "program": None,
         "term": 3,
         "description": "How To Make Buddies Training",
+        "isTraining": True,
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "Outisde",
     },
     {
         "id": 8,
-        "program": 4,
+        "program": None,
         "term": 3,
         "description": "Adoption 101 Training",
+        "isTraining": True,
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "a big room",
     },
     {
         "id": 9,
-        "program": 4,
+        "program": None,
         "term": 3,
         "description": "Cleaning Bowls Training",
+        "isTraining": True,
+        "isPrerequisiteForProgram": True,
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "Dining Dishes Room",
