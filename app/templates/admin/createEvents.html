@@ -1,0 +1,73 @@
+
+<script src="static/js/createEvents.js"></script>
+
+<link rel = "stylesheet" href = "/static/css/createEvents.css" />
+
+
+
+<div align="center" style="margin-bottom: 50px;">
+  <h1 id ="title"> Create Event</h1>
+  <h2> New Event Form</h2>
+</div>
+<div>
+  <div>
+    <label for='eName'> Event Name *</label> <br>
+    <input type='text' id='inputEventName' onfocusout="getEventName()">
+  </div> <br>
+  <div>
+    <label for='term'> Term *</label> <br>
+    <select name='term' id='inputEventTerm' onfocusout="getEventTerm()">
+      <option value='fall2021' selected ="selected"> Fall 2021 </option>
+      <option value='spring2022'>Spring 2022 </option>
+      </select>
+  </div> <br>
+  <div>
+      <p>Is this a recurring event? </p>
+      <form id='isRecurringEvent'>
+        <input type='radio' id='yes' name="recurringEvent" value="Yes" onclick=isRecurringEvent()">
+        <label for="recurringEventYes">Yes </label>
+        <input type="radio" id="no" name="recurringEvent" value="No" onclick=isNotRecurringEvent()">
+        <label for="recurringEventNo">No</label>
+      </form>
+  </div><br><br>
+
+  <div>
+      <label for='location'> Location </label><br>
+      <input type='text' id='inputEventLocation' onfocusout="getEventLocation()">
+  </div>
+</div>
+<div align='center'>
+  <div>
+    <label for='isRequired'> This event is required for the program *</label>
+    <label class="switch">
+    <input type="checkbox">
+    <span class="slider round"></span>
+    </label>
+  </div>
+  <div>
+    <label for='rsvp'> Requires RSVP * </label>
+    <label class="switch">
+    <input type="checkbox">
+    <span class="slider round"></span>
+    </label>
+  </div>
+  <div>
+    <label for='serviceHours'> This event earns service hours. </label>
+    <label class="switch">
+    <input type="checkbox">
+    <span class="slider round"></span>
+    </label>
+  </div>
+  <div>
+    <label for='description'> Description * </label> <br>
+    <input type='text' id='inputEventDescription' onfocusout="getEventDescription()">
+  </div>
+  <div>
+    <label for='facilitators'> Facilitators * </label> <br>
+    <input type='text' id='inputEventFacilitators' onfocusout="getEventFacilitators">
+  </div>
+  <div>
+    <label for='addFile'> Attach File * </label> <br>
+    <input type='file'>
+  </div>
+</div>
