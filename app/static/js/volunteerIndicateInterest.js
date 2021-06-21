@@ -15,7 +15,9 @@ $(".form-check-input").click(function updateInterest(el){
     data: programID, userID,
     success: function(response) {
       if (response) {
-        //Add flasher to give user feedback that database is updated
+        $("#flasher-container").prepend('<div class="alert" id="flasher" data-dismiss="alert" role="alert">This is a success alert—check it out!</div>');
+        $("#flasher").delay(3000).fadeOut();
+
       }
     },
     error: function(request, status, error) {
@@ -31,7 +33,9 @@ $(".form-check-input").click(function updateInterest(el){
     data: programID, userID,
     success: function(response) {
       if (response) {
-        //Add flasher to give user feedback that database is updated
+        $("#flasher-container").prepend('<div class="alert" id="flasher" data-dismiss="alert" role="alert">This is a success alert—check it out!</div>');
+        $("#flasher").delay(3000).fadeOut();
+
       }
     },
     error: function(request, status, error) {
@@ -39,6 +43,5 @@ $(".form-check-input").click(function updateInterest(el){
     }
   });
 }
-
 });
 });

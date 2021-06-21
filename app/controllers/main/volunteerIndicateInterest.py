@@ -20,25 +20,6 @@ def volunteerIndicateInterest():
                            interests = interests,
                            interests_ids = interests_ids)
 
-# @main_bp.route('/updateInterest/<program_id>/<num_interest>', methods = ['POST'])
-# def updateInterest(program_id, num_interest):
-#     """
-#     This function updates the interest table by adding a new row when a user
-#     shows interest in a program or by deleting the row from the table when a
-#     user no longer shows interest in a program.
-#     """
-#     num_interest = int(num_interest) #change this to a boolean
-#     try:
-#         if num_interest:
-#             Interest.get_or_create(program = program_id, user = current_user.username)
-#         else:
-#             deleted_interest = Interest.get(Interest.program == program_id and Interest.user == current_user.username) #change this to get_or_none
-#             deleted_interest.delete_instance()
-#         return jsonify({"Success": True}) #remove this
-#     except Exception as e:
-#         print("Error Updating Interest: ", e)
-#         return jsonify({"Success": False}),500
-
 @main_bp.route('/addInterest/<program_id>/<userID>', methods = ['POST'])
 def addInterest(program_id, userID):
     """
@@ -47,7 +28,7 @@ def addInterest(program_id, userID):
     """
     try:
         Interest.get_or_create(program = program_id, user = current_user.username)
-        return jsonify({"Success": True}) #remove this
+        return jsonify({"Success": True})
     except Exception as e:
         print("Error Updating Interest: ", e)
         return jsonify({"Success": False}),500
@@ -59,18 +40,9 @@ def deleteInterest(program_id, userID):
     removes interest from a program
     """
     try:
-        deleted_interest = Interest.get(Interest.program == program_id and Interest.user == current_user.username) #change this to get_or_none
+        deleted_interest = Interest.get(Interest.program == program_id and Interest.user == current_user.username)
         deleted_interest.delete_instance()
-        return jsonify({"Success": True}) #remove this
+        return jsonify({"Success": True})
     except Exception as e:
         print("Error Updating Interest: ", e)
         return jsonify({"Success": False}),500
-
-
-
-#separate the update interest route into two:Addinterest and deleted_interest
-#passing the programID and UserId from the html with the javascript
-#first part of the conditional will be the Addinterestroute and second part will be delete interest route
-#last part is conditional in the py file should in be javascript file
-
-#add a route for delete interest
