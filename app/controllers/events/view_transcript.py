@@ -7,12 +7,16 @@ from app.models.user import User
 from app.models.event import Event
 from app.models.term import Term
 
-def ViewCourseTranscript():
+def getSLCourseTranscript(user):
     courseList = []
     courses = Course.select()
     for course in courses:
-        cName = Course.get(Course.courseName == 2)
-        cTerm = Course.term
-        cAccruedHours = CourseParticipant.hoursEarned
-        courseList.append([cName, cTerm, cAccruedHours])
-    return courseList
+        cName = course.courseName
+        cTerm = course.term
+        if course.isAllSectionsServiceLearning:
+            courseList.append([cName, cTerm])
+
+    if courseList == []:
+        return [["", 0], ["", 0], ["", 0], ["", 0]]
+    else:
+        return courseList

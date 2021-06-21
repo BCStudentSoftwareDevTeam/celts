@@ -16,7 +16,7 @@ print("Inserting data for demo and testing purposes.")
 users = [
     {
         "username": "ramsayb2",
-        "bnumber": "B000173723",
+        "bnumber": "B00173723",
         "email": "ramsayb2@berea.edu",
         "phoneNumber": "555-555-5555",
         "firstName": "Brian",
@@ -24,6 +24,18 @@ users = [
         "isStudent": False,
         "isFaculty": False,
         "isCeltsAdmin": True,
+        "isCeltsStudentStaff": False
+    },
+    {
+        "username": "neillz",
+        "bnumber": "B00751864",
+        "email": "neillz@berea.edu",
+        "phoneNumber": "555-555-5555",
+        "firstName": "Zach",
+        "lastName": "Neill",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
         "isCeltsStudentStaff": False
     },
 ]
@@ -154,12 +166,13 @@ coursestatus = [
 CourseStatus.insert_many(coursestatus).on_conflict_replace().execute()
 courses = [
     {
+        "id": 1,
         "courseName": "Databases",
         "term": 2,
         "status": 1,
         "courseCredit": "",
         "createdBy": "",
-        "isAllSectionsServiceLearning": False,
+        "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
         "sectionBQuestion1": "",
         "sectionBQuestion2": "",
@@ -169,12 +182,13 @@ courses = [
         "sectionBQuestion6": ""
     },
     {
+        "id": 2,
         "courseName": "Spanish Help",
         "term": 1,
         "status": 1,
         "courseCredit": "",
         "createdBy": "",
-        "isAllSectionsServiceLearning": False,
+        "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
         "sectionBQuestion1": "",
         "sectionBQuestion2": "",
