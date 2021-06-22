@@ -12,16 +12,19 @@ function getEventTerm(){
 }
 
 function isRecurringEvent(){
-  var recurringEvent = document.getElementById("yes").value;
-  console.log(recurringEvent);
-  return recurringEvent
+  document.getElementsByName("recurringEvent")
+    .forEach(radio => {
+      if (radio.checked){
+        console.log(radio.value);
+      }
+    });
 }
 
-function isNotRecurringEvent(){
-  var recurringEvent = document.getElementById("no").value;
-  console.log(recurringEvent);
-  return recurringEvent
-}
+// function isNotRecurringEvent(){
+//   var recurringEvent = document.getElementById("no").value;
+//   console.log(recurringEvent);
+//   return recurringEvent
+// }
 
 function getEventLocation() {
     var location = document.getElementById("inputEventLocation").value;
