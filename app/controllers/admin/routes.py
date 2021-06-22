@@ -1,5 +1,6 @@
 from flask import request, render_template
 from flask import Flask, redirect, flash
+from app.controllers.admin.createEvents import createEvents
 
 from app.controllers.admin import admin_bp
 
@@ -9,4 +10,5 @@ def testing():
 
 @admin_bp.route('/create_event', methods=['GET'])
 def createEvent():
-    return render_template("admin/createEvents.html")
+    return render_template("admin/createEvents.html",
+                            event = createEvents)

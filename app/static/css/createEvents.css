@@ -62,3 +62,9 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+
+#drop_zone {
+  border: 5px solid grey;
+  width:  140px;
+  height: 70px;
+}

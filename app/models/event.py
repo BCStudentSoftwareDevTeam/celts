@@ -9,6 +9,7 @@ class Event(baseModel):
     timeStart = CharField()
     timeEnd = CharField()
     location = CharField()
+    isRecurring = BooleanField(default=False)
     isRequiredForProgram = BooleanField(default=False)
     isRsvpRequired = BooleanField(default=False)
     isService = BooleanField(default=False)
