@@ -1,13 +1,12 @@
-function removeParticipants() {
+function removeParticipants(btn) {
 
-$("#row2").remove();
-console.log("CLICK!")
-
+  var row = btn.parentNode.parentNode;
+  row.parentNode.removeChild(row);
 }
 
-function removeVolunteer() {
+function removeVolunteer(btn) {
 
-$("tr").filter(":contains(this)").remove()
-console.log("CLICK!")
+var row = btn.parentNode.parentNode;
+row.parentNode.removeChild(row);
 
 }

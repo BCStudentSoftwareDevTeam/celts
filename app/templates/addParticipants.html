@@ -6,7 +6,7 @@
   <h2>Add Volunteers*</h2>
     <input type="text" id="Volsearch" placeholder="Search for names.." title="Type in a name" onclick="livesearch()">
     <button type="button">+</button>
-    <table>
+    <table id="Volunteertable">
       <tr>
         <th>Name</th>
         <th>Remove</th>
@@ -14,7 +14,7 @@
       {% for User in eventParticipants %}
         <tr id={{User.bnumber}}>
             <td>{{ User.firstName + " " + User.lastName }}</td>
-            <td><button onclick="removeVolunteer()" type="button">x</button></td>
+            <td><button onclick="removeVolunteer(this)" type="button">x</button></td>
         </tr>
       {% endfor %}
   </table>
@@ -23,7 +23,7 @@
   <h2>Add Outside Participants</h2>
     <input type="text" id="Outsearch" placeholder="Search for names.." title="Type in a name" onclick="livesearch()">
     <button type="button">+</button>
-    <table>
+    <table id="OutsideTable">
       <tr>
         <th>Name</th>
         <th>Email</th>
@@ -35,7 +35,7 @@
                 <td>{{ OutsideParticipant.firstName + " " + OutsideParticipant.lastName }}</td>
                 <td>{{ OutsideParticipant.email }}</td>
                 <td>{{ OutsideParticipant.phoneNumber }}</td>
-                <td><button onclick="removeParticipants()" type="button">x</button></td>
+                <td><button onclick="removeParticipants(this)" type="button">x</button></td>
             </tr>
           {% endfor %}
   </table>
