@@ -11,6 +11,8 @@ from app.models.event import Event
 from app.models.programEvent import ProgramEvent
 from app.models.course import Course
 from app.models.courseStatus import CourseStatus
+from app.models.courseInstructors import CourseInstructors
+from app.models.courseParticipant import CourseParticipant
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -199,3 +201,36 @@ courses = [
     },
 ]
 Course.insert_many(courses).on_conflict_replace().execute()
+
+courseInstructorRecords = [
+    {
+        "id": 1,
+        "course": Course.get_by_id(1),
+        "user": User.get_by_id("neillz")
+    },
+    {
+        "id": 2,
+        "course": Course.get_by_id(2),
+        "user": User.get_by_id("neillz")
+    },
+    {
+        "id": 3,
+        "course": Course.get_by_id(2),
+        "user": User.get_by_id("ramsayb2")
+    },
+]
+CourseInstructors.insert_many(courseInstructorRecords).on_conflict_replace().execute()
+
+courseHoursEarned = [
+    {
+        "course": Course.get_by_id(1),
+        "user": User.get_by_id("neillz"),
+        "hoursEarned": "2"
+    },
+    {
+        "course": Course.get_by_id(2),
+        "user": User.get_by_id("neillz"),
+        "hoursEarned": "3"
+    },
+]
+CourseParticipant.insert_many(courseHoursEarned).on_conflict_replace().execute()

@@ -15,5 +15,5 @@ def test_getCourseTranscript():
 
     user = User.get_by_id("neillz")
     transcript = getSLCourseTranscript(user)
-    assert transcript[0] == ["Databases", 2]
-    assert transcript[1] == ["Spanish Help", 1]
+    assert transcript[0] == ["Databases", "Spring B 2021", ["Zach Neill"], "2"]
+    assert transcript[1] == ["Spanish Help", "Spring A 2021", ["Zach Neill","Brian Ramsay"], "3"]
