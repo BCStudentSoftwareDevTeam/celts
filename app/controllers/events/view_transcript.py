@@ -1,11 +1,11 @@
 from app.models.course import Course
 from app.models.courseParticipant import CourseParticipant
-from app.models.courseStatus import CourseStatus
 from app.models.program import Program
 from app.models.courseInstructors import CourseInstructors
 from app.models.user import User
-from app.models.event import Event
 from app.models.term import Term
+from app.models.eventParticipant import EventParticipant
+
 
 def getSLCourseTranscript(user):
     courseList = []
@@ -30,7 +30,33 @@ def getSLCourseTranscript(user):
         i+=1
 
     if courseList == []:
-        return [["", 0], ["", 0], ["", 0], ["", 0]]
+        return [["", "", [None], ""],
+                ["", "", [None], ""],
+                ["", "", [None], ""],
+                ["", "", [None], ""]]
     else:
-        # print(courseList)
         return courseList
+
+def getProgramTranscript(user):
+    programList = []
+    programs = Program.select()
+    pHoursAccrued = EventParticipant.select()
+    i=0
+    for program in programs:
+        pName = program.programName
+        pTerm = program.term.description
+
+        pHoursEarned = []
+        for hours in pHoursAccrued:
+            pHoursEarned.append(hours.hoursEarned)
+            print(pHoursEarned)
+        programList.append([pName, pTerm, pHoursEarned[i]])
+        i+=1
+
+    if programList == []:
+        return [["", "", ""],
+                ["", "", ""],
+                ["", "", ""]]
+    else:
+        print(programList)
+        return programList
