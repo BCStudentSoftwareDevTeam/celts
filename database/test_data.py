@@ -13,6 +13,8 @@ from app.models.course import Course
 from app.models.courseStatus import CourseStatus
 from app.models.courseInstructors import CourseInstructors
 from app.models.courseParticipant import CourseParticipant
+from app.models.eventParticipant import EventParticipant
+
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -91,15 +93,18 @@ Term.insert_many(terms).on_conflict_replace().execute()
 programs = [
     {
         "id": 1,
-        "programName": "Empty Bowls"
+        "programName": "Empty Bowls",
+        "term": 1
     },
     {
         "id": 2,
-        "programName": "Berea Buddies"
+        "programName": "Berea Buddies",
+        "term": 2
     },
     {
         "id": 3,
-        "programName": "Adopt A Grandparent"
+        "programName": "Adopt A Grandparent",
+        "term": 3
     },
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
@@ -234,3 +239,21 @@ courseHoursEarned = [
     },
 ]
 CourseParticipant.insert_many(courseHoursEarned).on_conflict_replace().execute()
+
+programHoursEarned = [
+    {
+        "user": User.get_by_id("neillz"),
+        "event": 2,
+        "rsvp": True,
+        "attended": True,
+        "hoursEarned": "2"
+    },
+    {
+        "user": User.get_by_id("neillz"),
+        "event": 3,
+        "rsvp": True,
+        "attended": True,
+        "hoursEarned": "3"
+    },
+]
+EventParticipant.insert_many(programHoursEarned).on_conflict_replace().execute()
