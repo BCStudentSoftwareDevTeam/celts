@@ -22,7 +22,7 @@ function header {
 # ui
 function ui {
 	header UI
-	python -m pytest $FLAGS $UI_URLS /tests/ui/smoke_test.py tests/ui/functional_test.py
+	python -m pytest $FLAGS $UI_URLS tests/ui/smoke_test.py tests/ui/functional_test.py
 	#header functional
 	#python -m pytest $FLAGS $UI_URLS tests/ui/functional_test.py
 }
