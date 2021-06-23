@@ -297,5 +297,19 @@ programHoursEarned = [
         "attended": True,
         "hoursEarned": 3
     },
+    {
+        "user": User.get_by_id("neillz"),
+        "event": 4,
+        "rsvp": True,
+        "attended": True,
+        "hoursEarned": 1
+    },
+    {
+        "user": User.get_by_id("neillz"),
+        "event": 5,
+        "rsvp": True,
+        "attended": True,
+        "hoursEarned": 1 
+        },
 ]
 EventParticipant.insert_many(programHoursEarned).on_conflict_replace().execute()
