@@ -25,7 +25,6 @@ dominate==2.6.0
 filelock==3.0.12
 Flask==2.0.1
 Flask-Admin==1.5.8
-Flask-Bootstrap==3.3.7.1
 Flask-Login==0.5.0
 Flask-Mail==0.9.1
 Flask-Migrate==3.0.0
