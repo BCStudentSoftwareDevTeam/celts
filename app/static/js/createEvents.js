@@ -104,9 +104,10 @@ function dragOverHandler(ev) {
   ev.preventDefault();
 }
 
-function createNewEvent(){
-  createEvents()
-}
+// function createNewEvent(){
+//   createEvents()
+// }
+
 function createDict(){
   var eventName = $("#inputEventName").val();
   var term = $("#inputEventTerm").find("option:selected").attr("value");
@@ -122,7 +123,7 @@ function createDict(){
   var facilitators = $("#inputEventFacilitators").val();
 
   var eventDict = {evName: eventName,
-                   evterm: term,
+                   evTerm: term,
                    evRecurringEvent: recurringEvents,
                    evStartDate: startDate,
                    evStartTime: startTime,
@@ -134,23 +135,33 @@ function createDict(){
                    evDescription: description,
                    evFacilitators: facilitators
   }
-
   return eventDict;
-
-
 }
+
 function createNewEvent(){
   events = createDict()
   var data = JSON.stringify(events);
-
+  //var data = "hello"
+  console.log(data)
   $.ajax({
    method: "POST",
+   async: false,
    url: '/createEvents',
-   data: data,
-   dataType: "json",
    contentType: "application/json",
-   success: function(response) {
-     alert("Something in progress")
-   }
-
+   dataType: "json",
+   data: data,
+   success: function(result) {
+     alert(result)
+     console.log(result)
+   },
+  error: function(result, error){
+    alert(error)
+  }
+  });
 }
+
+
+// $(result).each(function (index, value) {
+  //   var events = $.parseJSON(value);
+  // });
+  // console.log(events)

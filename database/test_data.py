@@ -68,7 +68,14 @@ terms = [
         "isBreak": True,
         "isSummer": False
     },
-
+    {
+        "id":6,
+        "description": "Winter Break 2022",
+        "year": 2022,
+        "academicYear": "2022-2023",
+        "isBreak": True,
+        "isSummer": False
+    },
 ]
 Term.insert_many(terms).on_conflict_replace().execute()
 

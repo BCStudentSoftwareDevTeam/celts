@@ -17,8 +17,9 @@
   <div>
     <label for='term'> Term *</label> <br>
     <select name='term' id='inputEventTerm' >
-      <option value='fall2021' selected ="selected"> Fall 2021 </option>
-      <option value='spring2022'>Spring 2022 </option>
+      {%for description in listOfTermDescriptions %}
+      <option value='{{description}}'> {{description}} </option>
+      {% endfor %}
       </select>
   </div> <br>
   <div>
@@ -86,4 +87,5 @@
 </div>
   <div>
     <button type="button" onclick="createNewEvent()">Save</button>
+</div>
 </div>
