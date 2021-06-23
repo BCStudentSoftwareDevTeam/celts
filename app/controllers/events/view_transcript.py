@@ -5,6 +5,7 @@ from app.models.courseInstructors import CourseInstructors
 from app.models.user import User
 from app.models.term import Term
 from app.models.eventParticipant import EventParticipant
+from app.models.event import Event
 
 
 def getSLCourseTranscript(user):
@@ -42,6 +43,16 @@ def getProgramTranscript(user):
     programs = Program.select()
     pHoursAccrued = EventParticipant.select()
     i=0
+    for event in pHoursAccrued:
+        hours = event.hoursEarned # the hours of the event you participated in
+        print("Hours: " + hours)
+
+        eventID = event.event.id # the event number associated with the event
+        print("Event ID: " + str(eventID))
+
+        programID = event.event.program.id # the program number associated with the event number
+        print("Program ID: " + str(programID))
+
     for program in programs:
         pName = program.programName
         pTerm = program.term.description
@@ -49,7 +60,7 @@ def getProgramTranscript(user):
         pHoursEarned = []
         for hours in pHoursAccrued:
             pHoursEarned.append(hours.hoursEarned)
-            print(pHoursEarned)
+            # print(pHoursEarned)
         programList.append([pName, pTerm, pHoursEarned[i]])
         i+=1
 

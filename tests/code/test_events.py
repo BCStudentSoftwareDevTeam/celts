@@ -8,7 +8,7 @@ def test_getEventsNoProgram():
     # No program is given
     events = getEvents()
 
-    assert len(events) == 9
+    assert len(events) == 10
 
     assert events[0].description == "Empty Bowls Spring 2021"
     assert events[1].description == "Berea Buddies Training"

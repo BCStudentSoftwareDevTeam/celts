@@ -106,7 +106,8 @@ programs = [
     },
     {
         "id": 4,
-        "programName": "Training"
+        "programName": "Training",
+        "term": 4
     }
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
@@ -165,7 +166,7 @@ events = [
         "description": "Making Bowls Training",
         "timeStart": "6pm",
         "timeEnd": "9pm",
-        "location": "a big room",
+        "location": "a big room", 
     },
     {
         "id": 7,
