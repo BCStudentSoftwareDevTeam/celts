@@ -166,7 +166,7 @@ events = [
         "description": "Making Bowls Training",
         "timeStart": "6pm",
         "timeEnd": "9pm",
-        "location": "a big room", 
+        "location": "a big room",
     },
     {
         "id": 7,
@@ -272,12 +272,12 @@ courseHoursEarned = [
     {
         "course": Course.get_by_id(1),
         "user": User.get_by_id("neillz"),
-        "hoursEarned": "2"
+        "hoursEarned": 2
     },
     {
         "course": Course.get_by_id(2),
         "user": User.get_by_id("neillz"),
-        "hoursEarned": "3"
+        "hoursEarned": 3
     },
 ]
 CourseParticipant.insert_many(courseHoursEarned).on_conflict_replace().execute()
@@ -288,14 +288,14 @@ programHoursEarned = [
         "event": 2,
         "rsvp": True,
         "attended": True,
-        "hoursEarned": "2"
+        "hoursEarned": 2
     },
     {
         "user": User.get_by_id("neillz"),
         "event": 3,
         "rsvp": True,
         "attended": True,
-        "hoursEarned": "3"
+        "hoursEarned": 3
     },
 ]
 EventParticipant.insert_many(programHoursEarned).on_conflict_replace().execute()

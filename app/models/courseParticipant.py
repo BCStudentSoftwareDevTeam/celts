@@ -5,4 +5,4 @@ from app.models.user import User
 class CourseParticipant(baseModel):
     course = ForeignKeyField(Course)
     user = ForeignKeyField(User)
-    hoursEarned = CharField()
+    hoursEarned = FloatField()

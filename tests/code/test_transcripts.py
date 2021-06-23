@@ -14,8 +14,8 @@ from app.models.eventParticipant import EventParticipant
 def test_getTranscripts():
     user = User.get_by_id("neillz")
     transcript = getSLCourseTranscript(user)
-    assert transcript[0] == ["Databases", "Spring B 2021", ["Zach Neill"], "2"]
-    assert transcript[1] == ["Spanish Help", "Spring A 2021", ["Zach Neill","Brian Ramsay"], "3"]
+    assert transcript[0] == ["Databases", "Spring B 2021", ["Zach Neill"], 2.0]
+    assert transcript[1] == ["Spanish Help", "Spring A 2021", ["Zach Neill","Brian Ramsay"], 3.0]
     transcript = getProgramTranscript(user)
-    assert transcript[0] == ["Empty Bowls", "Spring A 2021", "2"]
-    assert transcript[1] == ["Berea Buddies", "Spring B 2021", "3"]
+    assert transcript[0] == ["Empty Bowls", "Spring A 2021", 2.0]
+    assert transcript[1] == ["Berea Buddies", "Spring B 2021", 3.0]

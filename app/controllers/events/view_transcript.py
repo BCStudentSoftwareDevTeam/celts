@@ -40,34 +40,33 @@ def getSLCourseTranscript(user):
 
 def getProgramTranscript(user):
     programList = []
+    pList = []
     programs = Program.select()
     pHoursAccrued = EventParticipant.select()
-    i=0
+    i = 0
+    programSum = 0
+    programSumList = []
     for event in pHoursAccrued:
         hours = event.hoursEarned # the hours of the event you participated in
-        print("Hours: " + hours)
 
-        eventID = event.event.id # the event number associated with the event
-        print("Event ID: " + str(eventID))
+        programSum = float(hours)+programSum
+        programSumList.append(programSum)
+        # eventID = event.event.id # the event number associated with the event
 
         programID = event.event.program.id # the program number associated with the event number
-        print("Program ID: " + str(programID))
+        pList.append([event.event.program.programName, event.event.program.term.description])
+        print(pList)
+    print(programSumList)
 
     for program in programs:
         pName = program.programName
         pTerm = program.term.description
-
-        pHoursEarned = []
-        for hours in pHoursAccrued:
-            pHoursEarned.append(hours.hoursEarned)
-            # print(pHoursEarned)
-        programList.append([pName, pTerm, pHoursEarned[i]])
-        i+=1
-
+        pHours = programSumList[i]
+        programList.append([pName, pTerm, pHours])
+        i += 1
     if programList == []:
         return [["", "", ""],
                 ["", "", ""],
                 ["", "", ""]]
     else:
-        print(programList)
         return programList
