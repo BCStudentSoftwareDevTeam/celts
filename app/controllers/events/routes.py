@@ -3,7 +3,7 @@ from flask import Flask, redirect, flash
 
 from app.controllers.events import events_bp
 from app.logic.events import getEvents
-from app.controllers.events.showUpcomingEvents import showUpcomingEvents
+from app.logic.getUpcomingEvents import getUpcomingEventsForUser
 
 @events_bp.route('/events', methods=['GET'])
 def events():
@@ -16,6 +16,6 @@ def events():
 
 @events_bp.route('/events/upcoming_events', methods=['GET'])
 def showUpcomingEvent():
-    upcomingEvents = showUpcomingEvents(g.current_user.username)
+    upcomingEvents = getUpcomingEventsForUser(g.current_user)
     return render_template('/events/showUpcomingEvents.html',
                             upcomingEvents = upcomingEvents)
