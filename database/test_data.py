@@ -8,7 +8,6 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.program import Program
 from app.models.event import Event
-from app.models.preqForProgram import PreqForProgram
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -95,6 +94,8 @@ events = [
         "program": 1,
         "term": 1,
         "description": "Empty Bowls Spring 2021",
+        "isTraining": True,
+        "isPrerequisiteForProgram": True,
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "a big room",
@@ -105,6 +106,7 @@ events = [
         "term": 1,
         "description": "Berea Buddies Training",
         "isTraining": True,
+        "isPrerequisiteForProgram": True,
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "a big room",
@@ -114,6 +116,8 @@ events = [
         "program": 3,
         "term": 3,
         "description": "Adopt A Grandparent",
+        "isTraining": True,
+        "isPrerequisiteForProgram": True,
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "a big room",
@@ -123,6 +127,8 @@ events = [
         "program": 2,
         "term": 3,
         "description": "Berea Buddies First Meetup",
+        "isTraining": True,
+        "isPrerequisiteForProgram": True,
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "a big room",
@@ -133,6 +139,7 @@ events = [
         "term": 3,
         "description": "Tutoring Training",
         "isTraining": True,
+        "isPrerequisiteForProgram": True,
         "timeStart": "1am",
         "timeEnd": "9pm",
         "location": "a bigish room",
@@ -143,6 +150,7 @@ events = [
         "term": 3,
         "description": "Making Bowls Training",
         "isTraining": True,
+        "isPrerequisiteForProgram": True,
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "a big room",
@@ -153,6 +161,7 @@ events = [
         "term": 3,
         "description": "How To Make Buddies Training",
         "isTraining": True,
+        "isPrerequisiteForProgram": True,
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "Outisde",
@@ -163,6 +172,7 @@ events = [
         "term": 3,
         "description": "Adoption 101 Training",
         "isTraining": True,
+        "isPrerequisiteForProgram": True,
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "a big room",
@@ -180,56 +190,17 @@ events = [
     },
     {
         "id": 10,
-        "program": 4,
+        "program": None,
         "term": 3,
         "description": "Whole Celts Training",
+        "isTraining": True,
+        "isPrerequisiteForProgram": True,
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "Dining Dishes Room",
     }
 ]
 Event.insert_many(events).on_conflict_replace().execute()
-
-preqForProgram = [
-    {
-        "program": 1,
-        "event": 1
-    },
-    {
-        "program": 1,
-        "event": 10
-    },
-    {
-        "program": 2,
-        "event": 10
-    },
-    {
-        "program": 2,
-        "event": 2
-    },
-    {
-        "program": 3,
-        "event": 3
-    },
-    {
-        "program": 1,
-        "event": 6
-    },
-    {
-        "program": 1,
-        "event": 7
-    },
-    {
-        "program": 3,
-        "event": 8
-    },
-    {
-        "program": 1,
-        "event": 9
-    }
-
-]
-PreqForProgram.insert_many(preqForProgram).on_conflict_replace().execute()
 
 Users = [
     {

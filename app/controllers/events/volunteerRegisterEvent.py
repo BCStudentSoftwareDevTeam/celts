@@ -20,9 +20,8 @@ def volunteerRegister(userid,  eventid):
     # by Zach and KArina)
 
     if isEligibleForProgram(event, user):
-        if EventParticipant.select()
-                           .where(EventParticipant.user == user,
-                                  EventParticipant.event == event) is None:
+        if EventParticipant.select().where(EventParticipant.user == user,
+                                           EventParticipant.event == event) is None:
             eventParticipant = EventParticipant.create(user = user,
                                                        event = event,
                                                        rsvp = True)
@@ -31,3 +30,4 @@ def volunteerRegister(userid,  eventid):
         return eventParticipant
     else:
         return ("User is not eligible for the program")
+    print(eventParticipant)
