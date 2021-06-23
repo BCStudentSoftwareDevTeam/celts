@@ -4,8 +4,13 @@
 </head>
 <div>
   <h2>Add Volunteers*</h2>
-    <input type="text" id="Volsearch" placeholder="Search for names.." title="Type in a name" onclick="livesearch()">
+    <input type="text" id="Volsearch" placeholder="Search for names.." title="Type in a name" onkeyup="searchVolunteers()">
     <button type="button">+</button>
+    {% for User in eventParticipants %}
+    <ul id="Volul">
+      <li class="Volunteers">{{ User.firstName + " " + User.lastName }}</li>
+    </ul>
+    {% endfor %}
     <table id="Volunteertable">
       <tr>
         <th>Name</th>
@@ -21,8 +26,13 @@
 </div>
 <div>
   <h2>Add Outside Participants</h2>
-    <input type="text" id="Outsearch" placeholder="Search for names.." title="Type in a name" onclick="livesearch()">
+    <input type="text" id="Outsearch" placeholder="Search for names.." title="Type in a name" onkeyup="searchParticipants()"">
     <button type="button">+</button>
+    {% for OutsideParticipant in outsideParticipants %}
+    <ul id="Partul">
+      <li class="outsidepart">{{ OutsideParticipant.firstName + " " + OutsideParticipant.lastName }}</li>
+    </ul>
+    {% endfor %}
     <table id="OutsideTable">
       <tr>
         <th>Name</th>
