@@ -3,19 +3,17 @@ from flask import json, jsonify
 from app.models.program import Program
 from app.models.user import User
 from app.models.interest import Interest
-
+from flask import g
 from app.controllers.main import main_bp
-
-current_user = User.get(User.username == "escalerapadronl") #FIXME: Remove once authentication is built
 
 @main_bp.route('/volunteerIndicateInterest', methods = ['GET'])
 def volunteerIndicateInterest():
     programs = Program.select()
-    interests = Interest.select().where(Interest.user_id == current_user.username)
+    interests = Interest.select().where(Interest.user_id == g.current_user)
     interests_ids = [interest.program_id for interest in interests]
     return render_template('volunteerIndicateInterest.html',
                            title="Volunteer Interest",
-                           user = current_user,
+                           user = g.current_user,
                            programs = programs,
                            interests = interests,
                            interests_ids = interests_ids)
@@ -27,7 +25,7 @@ def addInterest(program_id, userID):
     shows interest in a program
     """
     try:
-        Interest.get_or_create(program = program_id, user = current_user.username)
+        Interest.get_or_create(program = program_id, user = g.current_user)
         return jsonify({"Success": True})
     except Exception as e:
         print("Error Updating Interest: ", e)
@@ -40,7 +38,7 @@ def deleteInterest(program_id, userID):
     removes interest from a program
     """
     try:
-        deleted_interest = Interest.get(Interest.program == program_id and Interest.user == current_user.username)
+        deleted_interest = Interest.get(Interest.program == program_id and Interest.user == g.current_user)
         deleted_interest.delete_instance()
         return jsonify({"Success": True})
     except Exception as e:

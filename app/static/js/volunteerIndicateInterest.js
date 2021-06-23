@@ -10,7 +10,7 @@ $(".form-check-input").click(function updateInterest(el){
     data: programID, userID,
     success: function(response) {
       if (response) {
-        $("#flasher-container").prepend('<div class="alert" id="flasher" data-dismiss="alert" role="alert">This is a success alert—check it out!</div>');
+        $("#flasher-container").prepend('<div class="alert alert-success"" id="flasher" data-dismiss="alert" role="alert">Your Interest have been Updated</div>');
         $("#flasher").delay(3000).fadeOut();
       }
     },
@@ -26,7 +26,7 @@ $(".form-check-input").click(function updateInterest(el){
     data: programID, userID,
     success: function(response) {
       if (response) {
-        $("#flasher-container").prepend('<div class="alert" id="flasher" data-dismiss="alert" role="alert">This is a success alert—check it out!</div>');
+        $("#flasher-container").prepend('<div class="alert alert-success" id="flasher" data-dismiss="alert" role="alert">Your Interest have been Updated</div>');
         $("#flasher").delay(3000).fadeOut();
       }
     },
