@@ -1,79 +1,24 @@
-//import createEvents from 'app/controllers/admin/createEvents.py';
-//{% from 'app.controllers.admin.createEvents' import createEvents %}
+$('input[type="radio"]').click(function(){
+        var elemetnId = $(this).attr("id");
+        if(elementId == '#yes'){
+          $("#pickEndDate").show();
+        }else{
+          $("#pickEndDate").hide();
+        }
+    });
 
-// function getEventName() {
-//   var name = document.getElementById("inputEventName").value;
-//   // nameValue.value = nameValue.value.toUpperCase();
-//   return name
-// }
+function toggleEndDate(){
+  if ($('input[name="recurringEvent"]:checked').val() == 'true'){
+    $("div.endDate").show();
+  }else{
+   $("div.endDate").hide();
+  }
 
-// function getEventTerm(){
-//   var term = document.getElementById("inputEventTerm").value;
-//   return term
-// }
+}
+function hideEndDate(){
+  $("#pickEndDate").hide();
+}
 
-// function isRecurringEvent(){
-//   var recurringEvent
-//   document.getElementsByName("recurringEvent")
-//     .forEach(radio => {
-//       if (radio.checked){
-//         recurringEvent= radio.value;
-//       }
-//     });
-//   if (recurringEvent == "true"){
-//     recurringEvent = true;
-//   }else{
-//     recurringEvent = false;
-//   }
-//   return recurringEvent;
-// }
-
-// function getStartDate(){
-//   var startDate = document.getElementById("pickStartDate").value;
-//   console.log(startDate)
-//   return startDate
-// }
-
-// function getStartTime(){
-//   var startTime = document.getElementById("pickStartTime").value;
-//   console.log(startTime)
-//   return startTime
-// }
-
-// function getEndTime(){
-//   var endTime = document.getElementById("pickEndTime").value;
-//   console.log(endTime)
-//   return endTime
-// }
-// function getEventLocation() {
-//     var location = document.getElementById("inputEventLocation").value;
-//     return location
-// }
-
-// function getIsRequiredForProgram() {
-//   var requiredForProgram = document.getElementById("checkIsRequired").checked;
-//   return requiredForProgram
-// }
-
-// function getRequireForRSVP(){
-//   var requireForRSVP = document.getElementById("rsvp").checked;
-//   return requireForRSVP
-// }
-
-// function getEarnServiceHours(){
-//   var serviceHours = document.getElementById("earnServiceHours").checked;
-//   return serviceHours
-// }
-//
-// function getEventDescription() {
-//     var description = document.getElementById("inputEventDescription").value;
-//     return description
-// }
-//
-// function getEventFacilitators() {
-//     var facilitators = document.getElementById("inputEventFacilitators").value;
-//     return facilitators
-// }
 
 function dropHandler(ev) {
   console.log('File(s) dropped');
@@ -104,15 +49,12 @@ function dragOverHandler(ev) {
   ev.preventDefault();
 }
 
-// function createNewEvent(){
-//   createEvents()
-// }
-
 function createDict(){
   var eventName = $("#inputEventName").val();
   var term = $("#inputEventTerm").find("option:selected").attr("value");
   var recurringEvents= $('input[name="recurringEvent"]:checked').val();
   var startDate = $("#pickStartDate").val();
+  var endDate = $("#pickEndDate").val();
   var startTime = $("#pickStartTime").val();
   var endTime = $("#pickEndTime").val();
   var location = $("#inputEventLocation").val();
@@ -126,6 +68,7 @@ function createDict(){
                    evTerm: term,
                    evRecurringEvent: recurringEvents,
                    evStartDate: startDate,
+                   evEndDate: endDate,
                    evStartTime: startTime,
                    evEndTime: endTime,
                    evLocation: location,
@@ -159,9 +102,3 @@ function createNewEvent(){
   }
   });
 }
-
-
-// $(result).each(function (index, value) {
-  //   var events = $.parseJSON(value);
-  // });
-  // console.log(events)

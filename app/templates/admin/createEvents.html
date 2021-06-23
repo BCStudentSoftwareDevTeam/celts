@@ -1,4 +1,4 @@
-
+<!-- {% extends "base.html"%} -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="static/js/createEvents.js"></script>
 <link rel = "stylesheet" href = "/static/css/createEvents.css" />
@@ -25,16 +25,23 @@
   <div>
       <p>Is this a recurring event? </p>
       <form>
-        <input type='radio' id='yes' name="recurringEvent" value=true>
-        <label for="recurringEventYes">Yes </label>
-        <input type="radio" id="no" name="recurringEvent" value=false>
+        <input type='radio' id='yes' name="recurringEvent" value=true onclick="toggleEndDate()">
+        <label for="recurringEventYes" >Yes </label>
+        <input type="radio" id="no" name="recurringEvent" value=false checked onclick="toggleEndDate()">
         <label for="recurringEventNo">No</label>
       </form>
   </div><br>
   <div>
-    <label for="startDate">Start Date:</label>
-    <input type="date" id="pickStartDate" name="eventStartDate"
-       min="2020-01-01" max="2031-12-31">  <!--FixMe: change min and max if needed -->
+    <div>
+      <label for="startDate">Start Date:</label>
+      <input type="date" id="pickStartDate" name="eventStartDate"
+         min="2020-01-01" max="2031-12-31">  <!--FixMe: change min and max if needed -->
+    </div>
+    <div class="endDate" hidden=true>
+      <label for="endDate">End Date:</label>
+      <input type="date" id="pickEndDate" name="eventEndDate"
+         min="2020-01-01" max="2031-12-31">
+    </div>
   </div><br>
   <div>
     <label for="startTime">Start Time:</label>
@@ -79,6 +86,7 @@
   <div>
     <label for='facilitators'> Facilitators * </label> <br>
     <input type='text' id='inputEventFacilitators'>
+    <select class="selectpicker" data-show-subtext="true" data-live-search="true">
   </div> <br>
     <div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
   <p> Drag and drop a file</p>

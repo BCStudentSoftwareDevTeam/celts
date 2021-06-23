@@ -1,0 +1,55 @@
+.main-content {
+    min-height: 100vh;
+    margin-bottom: -80px;
+}
+
+
+#flash_container {
+    min-height: 55px;
+}
+
+#flasher {
+    margin-bottom: 5px;
+    position: fixed;
+    width: 80%;
+    z-index: 3;
+}
+
+.footer {
+  background-color: #e9ebec;
+  color:#1e2433;
+  text-align: center !important;
+  height: 80px;
+  line-height: 80px; /* Vertically center the text there */
+}
+
+.footerlink {
+  font-weight: bold;
+}
+
+.skipContent {
+  left:0px;
+  position:absolute;
+  top:auto;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+  z-index:0;
+}
+
+.skipContent:focus, .skipContent:active {
+  color: #fff;
+  background-color: #337ab7;
+  border-color: #2e6da4;
+  left: -34%;
+  top: -1%;
+  width: 12%;
+  height: auto;
+  overflow:auto;
+  margin: 10px 35%;
+  padding:5px;
+  border-radius: 4px;
+  text-align:center;
+  font-size:1.2em;
+  z-index:999;
+}

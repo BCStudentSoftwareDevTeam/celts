@@ -21,7 +21,8 @@ def createEvents():
                               isRequiredForProgram = rspFunctional['evRequiredForProgram'],
                               isService= rspFunctional['evServiceHours'],
                               startDate= rspFunctional['evStartDate'],
-                              endDate= rspFunctional['evFacilitators'],
+                              endDate= rspFunctional['evEndDate'],
+                              facilitators = rspFunctional['evFacilitators']
      )
 
     return("it worked!!!!!!!!!! :D")
