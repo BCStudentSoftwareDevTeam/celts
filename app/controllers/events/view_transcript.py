@@ -45,25 +45,27 @@ def getProgramTranscript(user):
     pHoursAccrued = EventParticipant.select()
     i = 0
     programSum = 0
-    programSumList = []
+    programSumDict = {}
     for event in pHoursAccrued:
-        hours = event.hoursEarned # the hours of the event you participated in
-
-        programSum = float(hours)
-        programSumList.append(programSum)
         # eventID = event.event.id # the event number associated with the event
 
         programID = event.event.program.id # the program number associated with the event number
+
+        hours = float(event.hoursEarned) # the hours of the event you participated in
+        if event.event.program.programName in programSumDict:
+            programSumDict[event.event.program.programName] += hours
+        else:
+            programSumDict[event.event.program.programName] = hours
         if [event.event.program.programName, event.event.program.term.description] not in pList:
             pList.append([event.event.program.programName, event.event.program.term.description])
             programs.append(event.event.program)
         print(pList)
-    print(programSumList)
+    print(programSumDict)
 
     for program in programs:
         pName = program.programName
         pTerm = program.term.description
-        pHours = programSumList[i]
+        pHours = programSumDict[pName]
         programList.append([pName, pTerm, pHours])
         i += 1
     if programList == []:
