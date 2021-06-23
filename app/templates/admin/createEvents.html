@@ -1,10 +1,26 @@
-<!-- {% extends "base.html"%} -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{% extends "base.html"%}
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+{% block scripts %}
+  {{super()}}
 <script src="static/js/createEvents.js"></script>
-<link rel = "stylesheet" href = "/static/css/createEvents.css" />
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.js"></script>
+{% endblock %}
+
+{% block styles %}
+  {{super()}}
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.css" />
+
+  <link rel = "stylesheet" href = "/static/css/createEvents.css" />
+{% endblock %}
 
 
 
+
+
+{% block app_content %}
 <div align="center" style="margin-bottom: 50px;">
   <h1 id ="title"> Create Event</h1>
   <h2> New Event Form</h2>
@@ -85,8 +101,12 @@
   </div>
   <div>
     <label for='facilitators'> Facilitators * </label> <br>
-    <input type='text' id='inputEventFacilitators'>
-    <select class="selectpicker" data-show-subtext="true" data-live-search="true">
+    <select class="selectpicker" data-live-search="true">
+      {%for description in listOfTermDescriptions %}
+      <option value='{{description}}'> {{description}} </option>
+      {% endfor %}
+    </select>
+    <!-- <input type='text' id='inputEventFacilitators'> -->
   </div> <br>
     <div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
   <p> Drag and drop a file</p>
@@ -97,3 +117,4 @@
     <button type="button" onclick="createNewEvent()">Save</button>
 </div>
 </div>
+{% endblock %}

@@ -15,7 +15,6 @@ class Event(baseModel):
     isService = BooleanField(default=False)
     startDate = DateField(null=True)
     endDate = DateField(null=True)
-    facilitators = CharField(null=True)
     files = CharField(null=True)
 
     def __str__(self):
