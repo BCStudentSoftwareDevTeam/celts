@@ -1,3 +1,9 @@
+$( document ).ready(function() {
+    $(".Volunteers").hide();
+    $(".outsidepart").hide();
+
+});
+
 function removeParticipants(btn) {
 
   var row = btn.parentNode.parentNode;
@@ -6,38 +12,43 @@ function removeParticipants(btn) {
 
 function removeVolunteer(btn) {
 
-var row = btn.parentNode.parentNode;
-row.parentNode.removeChild(row);
+  var row = btn.parentNode.parentNode;
+  row.parentNode.removeChild(row);
 
 }
 
-
 function searchParticipants() {
-    let input = document.getElementById('Outsearch').value
-    input=input.toLowerCase();
-    let x = document.getElementsByClassName('outsidepart');
-
+    let input = $('#Outsearch').val()
+    input = input.toLowerCase();
+    let x = $('.outsidepart');
     for (i = 0; i < x.length; i++) {
-        if (!x[i].innerHTML.toLowerCase().includes(input)) {
-            x[i].style.display="none";
+        if (!$('.outsidepart').index().html().toLowerCase().includes(input) || !input) {
+            $(".outsidepart").hide();
         }
         else {
-            x[i].style.display="list-item";
+          $(".outsidepart").show();
         }
     }
 }
 
 function searchVolunteers() {
-    let input = document.getElementById('Volsearch').value
-    input=input.toLowerCase();
-    let x = document.getElementsByClassName('Volunteers');
-
+    let input = $('#Volsearch').val()
+    input = input.toLowerCase();
+    let x = $('.Volunteers');
     for (i = 0; i < x.length; i++) {
-        if (!x[i].innerHTML.toLowerCase().includes(input)) {
-            x[i].style.display="none";
+        if (!x[i].html().toLowerCase().includes(input) || !input) {
+            $(".Volunteers").hide();
         }
         else {
-            x[i].style.display="list-item";
+            $(".Volunteers").show();
         }
     }
+}
+
+function textboxValue() {
+firstName = $("#firstNameTextarea").value;
+lastName = $("#lastNameTextarea").value;
+emailEntry = $("#emailTextarea").value;
+phoneNumber = $("#phoneNumberTextarea").value;
+// $("#OutsideTable").append('<tr><td>{{ firstName + "" + lastName }}</td><td>{{ emailEntry }}</td> <td>{{ phoneNumber }}</td><td><button onclick="removeParticipants(this)" type="button">x</button></td></tr>');
 }
