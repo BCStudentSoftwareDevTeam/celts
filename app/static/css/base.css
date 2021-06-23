@@ -1,8 +1,8 @@
 .main-content {
-    min-height: 100vh;
+    min-height: calc(100vh + 80px);
+    max-height: calc(100vh + 80px);
     margin-bottom: -80px;
 }
-
 
 #flash_container {
     min-height: 55px;
