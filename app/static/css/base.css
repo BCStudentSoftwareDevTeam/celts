@@ -1,11 +1,14 @@
 .main-content {
-    min-height: calc(100vh + 80px);
-    max-height: calc(100vh + 80px);
+    min-height: 100vh;
     margin-bottom: -80px;
 }
 
 .spacer {
     height: 100px;
+}
+
+.scroll-container {
+    max-height: 100vh;
 }
 
 #flash_container {
