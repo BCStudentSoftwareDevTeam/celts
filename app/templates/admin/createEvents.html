@@ -17,6 +17,7 @@
 {% endblock %}
 
 {% block app_content %}
+
 <div align="center" style="margin-bottom: 50px;">
   <h1 id ="title"> Create Event</h1>
   <h2> New Event Form</h2>
@@ -32,7 +33,11 @@
       <label for='term'> Term *</label> <br>
       <select name='term' id='inputEventTerm' >
         {%for description in listOfTermDescriptions %}
-        <option value='{{description}}'> {{description}} </option>
+          {%if description == theCurrentTerm%}
+            <option value='{{description}}' selected> {{description}} </option>
+          {%else%}
+              <option value='{{description}}'> {{description}} </option>
+          {%endif%}
         {% endfor %}
         </select>
     </div> <br>
