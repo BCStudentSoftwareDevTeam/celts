@@ -22,6 +22,15 @@
     z-index: 3;
 }
 
+.hamburger-menu {
+    top: 10px;
+    left: 10px;
+}
+
+.bi-list {
+    font-size: 2rem;
+}
+
 .footer {
   background-color: #e9ebec;
   color:#1e2433;
