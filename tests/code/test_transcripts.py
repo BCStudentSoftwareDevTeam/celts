@@ -10,6 +10,30 @@ from app.models.courseParticipant import CourseParticipant
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 
+@pytest.mark.integration
+def test_noGetSLTranscript():
+
+    with pytest.raises(DoesNotExist):
+        sLcourse = getSLCourseTranscript(User.get_by_id("ggiuo"))
+    with pytest.raises(DoesNotExist):
+        sLcourse = getSLCourseTranscript(User.get_by_id(69809))
+
+@pytest.mark.integration
+def test_noGetProgramTranscript():
+
+    with pytest.raises(DoesNotExist):
+        sLcourse = getProgramTranscript(User.get_by_id("adfafa"))
+    with pytest.raises(DoesNotExist):
+        sLcourse = getProgramTranscript(User.get_by_id(56498))
+
+@pytest.mark.integration
+def test_noGetUser():
+
+    with pytest.raises(DoesNotExist):
+        sLcourse = getUser(User.get_by_id("vhvkj"))
+    with pytest.raises(DoesNotExist):
+        sLcourse = getUser(User.get_by_id(468598))
+
 
 @pytest.mark.integration
 def test_getTranscripts():
