@@ -36,14 +36,22 @@ def test_noGetUser():
 
 
 @pytest.mark.integration
-def test_getTranscripts():
+def test_getSLTranscripts():
     user = User.get_by_id("neillz")
     transcript = getSLCourseTranscript(user)
     assert transcript[0] == ["Databases", "Spring B 2021", ["Zach Neill"], 2.0]
     assert transcript[1] == ["Spanish Help", "Spring A 2021", ["Zach Neill","Brian Ramsay"], 3.0]
+
+@pytest.mark.integration
+def test_getProgramTranscripts():
+    user = User.get_by_id("neillz")
     transcript = getProgramTranscript(user)
     assert transcript[0] == ["Training", "Fall 2021", 3.0]
     assert transcript[1] == ["Adopt A Grandparent", "Summer 2021", 3.0]
     assert transcript[2] == ["Berea Buddies", "Spring B 2021", 1.0]
+
+@pytest.mark.integration
+def test_getUser():
+    user = User.get_by_id("neillz")
     name = getUser(user)
     assert name == "Zach Neill"
