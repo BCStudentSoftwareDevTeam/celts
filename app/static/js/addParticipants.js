@@ -4,17 +4,14 @@ $( document ).ready(function() {
 
 });
 
-function removeParticipants(btn) {
+function removeParticipants(e) {
 
-  var row = btn.parent().parent();
-  row.parent().removeChild(row);
+  $(e).parent().parent().remove();
 }
 
-function removeVolunteer(btn) {
+function removeVolunteer(e) {
 
-  var row = btn.parent().parent();
-  row.parent().removeChild(row);
-
+  $(e).parent().parent().remove();
 }
 
 function textboxValue() {
@@ -22,7 +19,5 @@ firstName = $("#firstNameTextarea").val();
 lastName = $("#lastNameTextarea").val();
 emailEntry = $("#emailTextarea").val();
 phoneNumber = $("#phoneNumberTextarea").val();
-console.log(firstName)
-console.log(phoneNumber)
-// $("#OutsideTable").append('<tr><td>{{ firstName + "" + lastName }}</td><td>{{ emailEntry }}</td> <td>{{ phoneNumber }}</td><td><button onclick="removeParticipants(this)" type="button">x</button></td></tr>');
+$("#OutsideTable").append('<tr id="removeRow"><td>' + firstName + " " + lastName + " " + '</td><td>' + emailEntry + " " +'</td><td>' + phoneNumber + " " + '</td><td><button id="removeButton" onclick="removeParticipants(this)" type="button">x</button></td></tr>');
 }

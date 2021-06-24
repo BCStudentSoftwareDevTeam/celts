@@ -11,7 +11,7 @@
 
 <head>
 </head>
-<div>
+<div class= "form-check-inline">
   <h2>Add Volunteers*</h2>
     <input type="text" id="Volsearch" placeholder="Search for names.." title="Type in a name" onkeyup="searchVolunteers()">
     <button type="button" class="btn btn-secondary btn-sm">+</button>
@@ -20,20 +20,20 @@
       <li class="Volunteers">{{ User.firstName + " " + User.lastName }}</li>
     </ul>
     {% endfor %}
-    <table id="Volunteertable">
+    <table class="table table-striped" id="Volunteertable">
       <tr>
-        <th>Name</th>
-        <th>Remove</th>
+        <th scope="col">Name</th>
+        <th scope="col">Remove</th>
       </tr>
       {% for User in eventParticipants %}
         <tr id={{User.bnumber}}>
             <td>{{ User.firstName + " " + User.lastName }}</td>
-            <td><button onclick="removeVolunteer(this)" type="button">x</button></td>
+            <td><button id="removeButton" onclick="removeVolunteer(this)" type="button">x</button></td>
         </tr>
       {% endfor %}
   </table>
 </div>
-<span style="display: inline">
+<div class= "form-check-inline">
   <h2>Add Outside Participants</h2>
     <input type="text" id="Outsearch" placeholder="Search for names.." title="Type in a name" onkeyup="searchParticipants()"">
     <button class="btn btn-secondary btn-sm" type="button">+</button>
@@ -46,29 +46,29 @@
       <li class="outsidepart">{{ OutsideParticipant.firstName + " " + OutsideParticipant.lastName }}</li>
     </ul>
     {% endfor %}
-    <table id="OutsideTable">
-      <tr>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Phone Number</th>
-        <th>Remove</th>
+    <table class="table table-striped" id="OutsideTable">
+      <tr id="tableRow">
+        <th scope="col">Name</th>
+        <th scope="col">Email</th>
+        <th scope="col">Phone Number</th>
+        <th scope="col">Remove</th>
         </tr>
           {% for OutsideParticipant in outsideParticipants %}
             <tr id="this-row2">
                 <td>{{ OutsideParticipant.firstName + " " + OutsideParticipant.lastName }}</td>
                 <td>{{ OutsideParticipant.email }}</td>
                 <td>{{ OutsideParticipant.phoneNumber }}</td>
-                <td><button onclick="removeParticipants(this)" type="button">x</button></td>
+                <td><button id="removeButton" onclick="removeParticipants(this)" type="button">x</button></td>
             </tr>
           {% endfor %}
   </table>
-</span>
+</div>
 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Create Participant</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -91,7 +91,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" onclick="textboxValue()" class="btn btn-primary">Create Participant</button>
+        <button type="button" onclick="textboxValue()" data-bs-dismiss="modal" class="btn btn-primary">Create Participant</button>
       </div>
     </div>
   </div>
