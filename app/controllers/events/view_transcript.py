@@ -10,44 +10,41 @@ from app.models.event import Event
 
 def getSLCourseTranscript(user):
     courseList = []
-    courses = Course.select()
-    cHoursAccrued = CourseParticipant.select()
-    i=0
+    cList = []
+    courses = []
+    cHoursAccrued = CourseParticipant.select().where(CourseParticipant.user == user)
+    courseSumDict = {}
+    for course in cHoursAccrued:
+        hours = float(course.hoursEarned) # the hours of the event you participated in
+        if course.course.courseName in courseSumDict:
+            courseSumDict[course.course.courseName] += hours
+        else:
+            courseSumDict[course.course.courseName] = hours
+
+        if [course.course.courseName, course.course.term.description] not in cList:
+            cList.append([course.course.courseName, course.course.term.description])
+            courses.append(course.course)
+
     for course in courses:
         cName = course.courseName
-
         cTerm = course.term.description
-
         cInstructor = CourseInstructors.select().where(CourseInstructors.course==course)
         instructorList = []
         for instructor in cInstructor:
             instructorList.append(instructor.user.firstName+" "+ instructor.user.lastName)
 
-        cHoursEarned = []
-        for hours in cHoursAccrued:
-            cHoursEarned.append(hours.hoursEarned)
-        if course.isAllSectionsServiceLearning:
-            courseList.append([cName, cTerm, instructorList, cHoursEarned[i]])
-        i+=1
+        cHours = courseSumDict[cName]
+        courseList.append([cName, cTerm, instructorList, cHours])
 
-    if courseList == []:
-        return [["", "", [None], ""],
-                ["", "", [None], ""],
-                ["", "", [None], ""],
-                ["", "", [None], ""]]
-    else:
-        return courseList
+    return courseList
 
 def getProgramTranscript(user):
     programList = []
     pList = []
     programs = []
-    pHoursAccrued = EventParticipant.select()
-    i = 0
-    programSum = 0
+    pHoursAccrued = EventParticipant.select().where(EventParticipant.user == user)
     programSumDict = {}
     for event in pHoursAccrued:
-        # eventID = event.event.id # the event number associated with the event
 
         programID = event.event.program.id # the program number associated with the event number
 
@@ -56,21 +53,18 @@ def getProgramTranscript(user):
             programSumDict[event.event.program.programName] += hours
         else:
             programSumDict[event.event.program.programName] = hours
+
         if [event.event.program.programName, event.event.program.term.description] not in pList:
             pList.append([event.event.program.programName, event.event.program.term.description])
             programs.append(event.event.program)
-        print(pList)
-    print(programSumDict)
 
     for program in programs:
         pName = program.programName
         pTerm = program.term.description
         pHours = programSumDict[pName]
         programList.append([pName, pTerm, pHours])
-        i += 1
-    if programList == []:
-        return [["", "", ""],
-                ["", "", ""],
-                ["", "", ""]]
-    else:
-        return programList
+
+    return programList
+
+def getUser(user):
+    return user.firstName + " " + user.lastName

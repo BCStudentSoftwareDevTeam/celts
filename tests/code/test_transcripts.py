@@ -3,6 +3,7 @@ from peewee import DoesNotExist
 
 from app.controllers.events.view_transcript import getSLCourseTranscript
 from app.controllers.events.view_transcript import getProgramTranscript
+from app.controllers.events.view_transcript import getUser
 from app.models.term import Term
 from app.models.course import Course
 from app.models.courseParticipant import CourseParticipant
@@ -20,3 +21,5 @@ def test_getTranscripts():
     assert transcript[0] == ["Training", "Fall 2021", 3.0]
     assert transcript[1] == ["Adopt A Grandparent", "Summer 2021", 3.0]
     assert transcript[2] == ["Berea Buddies", "Spring B 2021", 1.0]
+    name = getUser(user)
+    assert name == "Zach Neill"
