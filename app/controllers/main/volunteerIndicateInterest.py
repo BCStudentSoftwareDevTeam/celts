@@ -7,6 +7,7 @@ from flask import g
 from app.controllers.main import main_bp
 
 @main_bp.route('/volunteerIndicateInterest', methods = ['GET'])
+
 def volunteerIndicateInterest():
     programs = Program.select()
     interests = Interest.select().where(Interest.user_id == g.current_user)
@@ -26,10 +27,10 @@ def addInterest(program_id, userID):
     """
     try:
         Interest.get_or_create(program = program_id, user = g.current_user)
-        return jsonify({"Success": True})
+        # return jsonify({"Success": True})
     except Exception as e:
         print("Error Updating Interest: ", e)
-        return jsonify({"Success": False}),500
+        # return jsonify({"Success": False}),500
 
 @main_bp.route('/deleteInterest/<program_id>/<userID>', methods = ['POST'])
 def deleteInterest(program_id, userID):
@@ -40,7 +41,7 @@ def deleteInterest(program_id, userID):
     try:
         deleted_interest = Interest.get(Interest.program == program_id and Interest.user == g.current_user)
         deleted_interest.delete_instance()
-        return jsonify({"Success": True})
+        # return jsonify({"Success": True})
     except Exception as e:
         print("Error Updating Interest: ", e)
-        return jsonify({"Success": False}),500
+        # return jsonify({"Success": False}),500

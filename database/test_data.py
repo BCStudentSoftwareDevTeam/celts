@@ -145,17 +145,3 @@ programEvents = [
     },
 ]
 ProgramEvent.insert_many(programEvents).on_conflict_replace().execute()
-
-users = [
-    {
-        "username": "escalerapadronl",
-        "bnumber": "B00712312",
-        "email": "escalerapadronl@berea.edu",
-        "phoneNumber": "828-458-9049",
-        "firstName": "Lisandro",
-        "lastName": "Padron",
-        "isStudent": True,
-    },
-]
-
-User.insert_many(users).on_conflict_replace().execute()
