@@ -9,6 +9,11 @@ from app.models.event import Event
 
 
 def getSLCourseTranscript(user):
+    """
+    Returns a service-learning course list that contains a name of the course, term,
+    list of instructors who teach the course, and hours earned for each course that the user took.
+    :user: model object
+    """
     courseList = []
     cList = []
     courses = []
@@ -39,6 +44,11 @@ def getSLCourseTranscript(user):
     return courseList
 
 def getProgramTranscript(user):
+    """
+    Returns a list of programs that the user participated in. The list includes a program name,
+    term, and hours earned for each program that the user attended.
+    :user: model object
+    """
     programList = []
     pList = []
     programs = []
@@ -67,4 +77,8 @@ def getProgramTranscript(user):
     return programList
 
 def getUser(user):
+    """
+    Returns the user's first and last name.
+    :user: model object
+    """
     return user.firstName + " " + user.lastName
