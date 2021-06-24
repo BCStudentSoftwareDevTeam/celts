@@ -76,16 +76,16 @@ function createNewEvent(){
   $.ajax({
    method: "POST",
    url: '/createEvents',
-   contentType: "application/html",
-   dataType: "json",
+   contentType: "application/json",
+   dataType: "text",
    data: data,
    success: function(result) {
      alert(result)
      console.log(result)
    },
-   error: function(result, error){
-     alert(error)
-     console.log(error)
+   error: function(xhr, status, error){
+     alert("Something went wrong!");         // FIXME: This is not a fix.
+     console.log("Something went wrong!")
    }
   });
 }

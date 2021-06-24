@@ -32,4 +32,4 @@ def createEvents():
                                           event_id = eventID )
 
 
-    return ""
+    return "Successfully add event!"

@@ -37,7 +37,7 @@
             {% endblock %}
         </nav>
         <div class="col">
-            <div class="main-content">
+            <div class="main-content container">
                 <div id="flash_container">
                     {% with messages = get_flashed_messages(with_categories=true) %}
                         {% if messages %}
@@ -50,6 +50,7 @@
                 {% block app_content %}
                     {# application content needs to be provided in the app_content block #}
                 {% endblock %}
+                <div class="spacer my-0"></div>
             </div>
             {% block footer %}
             <footer class="footer mt-auto bg-light">
