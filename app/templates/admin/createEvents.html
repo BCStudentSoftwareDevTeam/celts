@@ -27,7 +27,7 @@
     <div class="col-6">
     <div>
       <label for='eName'> Event Name *</label> <br>
-      <input type='text' id='inputEventName'>
+      <input type='text' id='inputEventName' required>
     </div> <br>
     <div>
       <label for='term'> Term *</label> <br>
@@ -54,7 +54,7 @@
       <div>
         <label for="startDate">Start Date:</label>
         <input type="date" id="pickStartDate" name="eventStartDate"
-           min="2020-01-01" max="2031-12-31">  <!--FixMe: change min and max if needed -->
+           min="2020-01-01" max="2031-12-31" required>  <!--FixMe: change min and max if needed -->
       </div>
       <div class="endDates d-none" id="showEndDate" >
         <label for="endDate">End Date:</label>
@@ -65,15 +65,15 @@
     <div>
       <label for="startTime">Start Time:</label>
 
-      <input type="time" id="pickStartTime" name="eventStartTime">
+      <input type="time" id="pickStartTime" name="eventStartTime" required>
 
       <label for="endTime">End Time:</label>
 
-      <input type="time" id="pickEndTime" name="eventEndTime">
+      <input type="time" id="pickEndTime" name="eventEndTime" required>
     </div><br>
     <div>
         <label for='location'> Location </label><br>
-        <input type='text' id='inputEventLocation'>
+        <input type='text' id='inputEventLocation' required>
     </div>
   </div>
   <div class="col-6">
@@ -100,11 +100,11 @@
     </div>
     <div>
       <label for='description'> Description * </label> <br>
-      <input type='text' id='inputEventDescription'>
+      <input type='text' id='inputEventDescription' required>
     </div>
     <div>
       <label for='facilitators'> Facilitators * </label> <br>
-      <select class="selectpicker" id="inputEventFacilitators" data-live-search="true">
+      <select class="selectpicker" id="inputEventFacilitators" data-live-search="true" required>
         {%for facilitator in listOfEventFacilitators %}
         <option value={{facilitator.username}}> {{facilitator.firstName}} {{facilitator.lastName}}</option>
         {% endfor %}
