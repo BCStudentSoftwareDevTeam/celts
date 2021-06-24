@@ -36,8 +36,8 @@
                 {% include 'sidebar.html' %}
             {% endblock %}
         </nav>
-        <div class="col scroll-container overflow-scroll">
-            <div class="main-content container overflow-scroll">
+        <div class="col scroll-container overflow-auto">
+            <div class="main-content container">
                 <div id="flash_container">
                     {% with messages = get_flashed_messages(with_categories=true) %}
                         {% if messages %}
