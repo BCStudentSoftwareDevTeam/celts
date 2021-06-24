@@ -13,11 +13,11 @@
 </head>
 <div class= "form-check-inline">
   <h2>Add Volunteers*</h2>
-    <input type="text" id="Volsearch" placeholder="Search for names.." title="Type in a name" onkeyup="searchVolunteers()">
+    <input type="text" id="Volsearch" placeholder="Search for names.." title="Type in a name">
     <button type="button" class="btn btn-secondary btn-sm">+</button>
     {% for User in eventParticipants %}
     <ul id="Volul">
-      <li class="Volunteers">{{ User.firstName + " " + User.lastName }}</li>
+      <li class="Volunteers"><a href="#" onclick="addResult()">{{ User.firstName + " " + User.lastName }}</a></li>
     </ul>
     {% endfor %}
     <table class="table table-striped" id="Volunteertable">
@@ -35,7 +35,7 @@
 </div>
 <div class= "form-check-inline">
   <h2>Add Outside Participants</h2>
-    <input type="text" id="Outsearch" placeholder="Search for names.." title="Type in a name" onkeyup="searchParticipants()"">
+    <input type="text" id="Outsearch" placeholder="Search for names.." title="Type in a name">
     <button class="btn btn-secondary btn-sm" type="button">+</button>
     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">
         Create Participant
@@ -72,22 +72,25 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+      <form>
         <div class="form-group">
           <label for="exampleFormControlTextarea1">First Name:</label>
-          <textarea class="form-control" id="firstNameTextarea" rows="1" placeholder="First Name"></textarea>
+          <input class="form-control" type="text" id="firstNameTextarea" rows="1" placeholder="First Name">
+
         </div>
         <div class="form-group">
           <label for="exampleFormControlTextarea1">Last Name:</label>
-          <textarea class="form-control" id="lastNameTextarea" rows="1" placeholder="Last Name"></textarea>
+          <input class="form-control" type="text" id="lastNameTextarea" rows="1" placeholder="Last Name">
         </div>
         <div class="form-group">
           <label for="exampleFormControlTextarea1">Email:</label>
-          <textarea class="form-control" id="emailTextarea" rows="1" placeholder="Email"></textarea>
+          <input class="form-control" id="emailTextarea" rows="1" placeholder="Email">
         </div>
         <div class="form-group">
           <label for="exampleFormControlTextarea1">Phone Number:</label>
-          <textarea class="form-control" id="phoneNumberTextarea" rows="1" placeholder="Phone Number"></textarea>
+          <input class="form-control" id="phoneNumberTextarea" rows="1" placeholder="Phone Number">
         </div>
+      </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
