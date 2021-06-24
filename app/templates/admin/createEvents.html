@@ -16,105 +16,104 @@
   <link rel = "stylesheet" href = "/static/css/createEvents.css" />
 {% endblock %}
 
-
-
-
-
 {% block app_content %}
 <div align="center" style="margin-bottom: 50px;">
   <h1 id ="title"> Create Event</h1>
   <h2> New Event Form</h2>
 </div>
-<div align='center' style="width: 600px; float: left;">
-  <div>
-    <label for='eName'> Event Name *</label> <br>
-    <input type='text' id='inputEventName'>
-  </div> <br>
-  <div>
-    <label for='term'> Term *</label> <br>
-    <select name='term' id='inputEventTerm' >
-      {%for description in listOfTermDescriptions %}
-      <option value='{{description}}'> {{description}} </option>
-      {% endfor %}
-      </select>
-  </div> <br>
-  <div>
-      <p>Is this a recurring event? </p>
-      <form>
-        <input type='radio' id='yes' name="recurringEvent" value=true onclick="toggleEndDate()">
-        <label for="recurringEventYes" >Yes </label>
-        <input type="radio" id="no" name="recurringEvent" value=false checked onclick="toggleEndDate()">
-        <label for="recurringEventNo">No</label>
-      </form>
-  </div><br>
-  <div>
+<div class = "container-fluid d-block">
+  <div class= "row justify-content-start">
+    <div class="col-6">
     <div>
-      <label for="startDate">Start Date:</label>
-      <input type="date" id="pickStartDate" name="eventStartDate"
-         min="2020-01-01" max="2031-12-31">  <!--FixMe: change min and max if needed -->
+      <label for='eName'> Event Name *</label> <br>
+      <input type='text' id='inputEventName'>
+    </div> <br>
+    <div>
+      <label for='term'> Term *</label> <br>
+      <select name='term' id='inputEventTerm' >
+        {%for description in listOfTermDescriptions %}
+        <option value='{{description}}'> {{description}} </option>
+        {% endfor %}
+        </select>
+    </div> <br>
+    <div>
+        <p>Is this a recurring event? </p>
+        <form>
+          <input data-target="#showEndDate" type='radio' id='yes' name="recurringEvent" value=true onclick="toggleEndDate()">
+          <label for="recurringEventYes" >Yes </label>
+          <input data-target="#showEndDate"type="radio" id="no" name="recurringEvent" value=false  onclick="toggleEndDate()" checked>
+          <label for="recurringEventNo">No</label>
+        </form>
+    </div><br>
+    <div>
+      <div>
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="pickStartDate" name="eventStartDate"
+           min="2020-01-01" max="2031-12-31">  <!--FixMe: change min and max if needed -->
+      </div>
+      <div class="endDates d-none" id="showEndDate" >
+        <label for="endDate">End Date:</label>
+        <input type="date" id="pickEndDate" name="eventEndDate"
+           min="2020-01-01" max="2031-12-31" >
+      </div>
+    </div><br>
+    <div>
+      <label for="startTime">Start Time:</label>
+
+      <input type="time" id="pickStartTime" name="eventStartTime">
+
+      <label for="endTime">End Time:</label>
+
+      <input type="time" id="pickEndTime" name="eventEndTime">
+    </div><br>
+    <div>
+        <label for='location'> Location </label><br>
+        <input type='text' id='inputEventLocation'>
     </div>
-    <div class="endDate" hidden=true>
-      <label for="endDate">End Date:</label>
-      <input type="date" id="pickEndDate" name="eventEndDate"
-         min="2020-01-01" max="2031-12-31">
+  </div>
+  <div class="col-6">
+    <div>
+      <label for='isRequired'> This event is required for the program *</label>
+      <label class="switch">
+      <input type="checkbox" id="checkIsRequired">
+      <span class="slider round"></span>
+      </label>
     </div>
-  </div><br>
-  <div>
-    <label for="startTime">Start Time:</label>
+    <div>
+      <label for='rsvp'> Requires RSVP * </label>
+      <label class="switch">
+      <input type="checkbox" id="rsvp">
+      <span class="slider round"></span>
+      </label>
+    </div>
+    <div>
+      <label for='serviceHours'> This event earns service hours. </label>
+      <label class="switch">
+      <input type="checkbox" id="earnServiceHours">
+      <span class="slider round"></span>
+      </label>
+    </div>
+    <div>
+      <label for='description'> Description * </label> <br>
+      <input type='text' id='inputEventDescription'>
+    </div>
+    <div>
+      <label for='facilitators'> Facilitators * </label> <br>
+      <select class="selectpicker" id="inputEventFacilitators" data-live-search="true">
+        {%for facilitator in listOfEventFacilitators %}
+        <option value={{facilitator.username}}> {{facilitator.firstName}} {{facilitator.lastName}}</option>
+        {% endfor %}
+      </select>
+    </div> <br>
+      <div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
+    <p> Drag and drop a file</p>
 
-    <input type="time" id="pickStartTime" name="eventStartTime">
+  </div>
+    <div>
+      <button type="button" onclick="createNewEvent()">Save</button>
+  </div>
+</div>
+</div>
+</div>
 
-    <label for="endTime">End Time:</label>
-
-    <input type="time" id="pickEndTime" name="eventEndTime">
-  </div><br>
-  <div>
-      <label for='location'> Location </label><br>
-      <input type='text' id='inputEventLocation'>
-  </div>
-</div>
-<div align='center' style="width: 600px; float: right;" >
-  <div>
-    <label for='isRequired'> This event is required for the program *</label>
-    <label class="switch">
-    <input type="checkbox" id="checkIsRequired">
-    <span class="slider round"></span>
-    </label>
-  </div>
-  <div>
-    <label for='rsvp'> Requires RSVP * </label>
-    <label class="switch">
-    <input type="checkbox" id="rsvp">
-    <span class="slider round"></span>
-    </label>
-  </div>
-  <div>
-    <label for='serviceHours'> This event earns service hours. </label>
-    <label class="switch">
-    <input type="checkbox" id="earnServiceHours">
-    <span class="slider round"></span>
-    </label>
-  </div>
-  <div>
-    <label for='description'> Description * </label> <br>
-    <input type='text' id='inputEventDescription'>
-  </div>
-  <div>
-    <label for='facilitators'> Facilitators * </label> <br>
-    <select class="selectpicker" data-live-search="true">
-      {%for description in listOfTermDescriptions %}
-      <option value='{{description}}'> {{description}} </option>
-      {% endfor %}
-    </select>
-    <!-- <input type='text' id='inputEventFacilitators'> -->
-  </div> <br>
-    <div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
-  <p> Drag and drop a file</p>
-  <!-- <label for='addFile'> Attach File * </label> <br>
-  <input type='file' id="upload"> -->
-</div>
-  <div>
-    <button type="button" onclick="createNewEvent()">Save</button>
-</div>
-</div>
 {% endblock %}

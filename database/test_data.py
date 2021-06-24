@@ -23,7 +23,43 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": True,
         "isCeltsStudentStaff": False
+    },{
+            "username": "lamichhanes2",
+            "bnumber": "B00733993",
+            "email": "lamichhanes2@berea.edu",
+            "phoneNumber": "555-555-5555",
+            "firstName": "Sandesh",
+            "lastName": "Lamichhane",
+            "isStudent": False,
+            "isFaculty": True,
+            "isCeltsAdmin": True,
+            "isCeltsStudentStaff": True
     },
+    {
+            "username": "khatts",
+            "bnumber": "B00759107",
+            "email": "khatts@berea.edu",
+            "phoneNumber": "555-555-5555",
+            "firstName": "Sreynit",
+            "lastName": "Khatt",
+            "isStudent": False,
+            "isFaculty": True,
+            "isCeltsAdmin": False,
+            "isCeltsStudentStaff": False
+    },
+    {
+            "username": "bryanta",
+            "bnumber": "B0000000",
+            "email": "bryanta@berea.edu",
+            "phoneNumber": "555-555-5555",
+            "firstName": "Alex",
+            "lastName": "Bryant",
+            "isStudent": True,
+            "isFaculty": False,
+            "isCeltsAdmin": False,
+            "isCeltsStudentStaff": True
+    },
+
 ]
 User.insert_many(users).on_conflict_replace().execute()
 

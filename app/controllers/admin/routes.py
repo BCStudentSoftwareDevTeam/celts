@@ -3,7 +3,7 @@ from flask import Flask, redirect, flash
 from app.controllers.admin.createEvents import createEvents
 
 from app.controllers.admin import admin_bp
-from app.logic.adminCreateEvent import getTermDescription
+from app.logic.adminCreateEvent import getTermDescription, getFacilitators
 
 @admin_bp.route('/testing', methods=['GET'])
 def testing():
@@ -12,5 +12,7 @@ def testing():
 @admin_bp.route('/create_event', methods=['GET'])
 def createEvent():
     termDescriptions = getTermDescription()
+    eventFacilitator = getFacilitators()
     return render_template("admin/createEvents.html",
-                            listOfTermDescriptions = termDescriptions)
+                            listOfTermDescriptions = termDescriptions,
+                            listOfEventFacilitators = eventFacilitator )

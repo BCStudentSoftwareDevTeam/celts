@@ -4,7 +4,7 @@ from flask import json, jsonify
 from flask import request
 from app.controllers.admin import admin_bp
 from app.logic.adminCreateEvent import getTermDescription
-
+from app.models.facilitator import Facilitator
 @admin_bp.route('/createEvents', methods=['POST'])
 def createEvents():
 
@@ -18,17 +18,18 @@ def createEvents():
                               timeEnd= rspFunctional['evEndTime'],
                               location = rspFunctional['evLocation'],
                               isRecurring = rspFunctional['evRecurringEvent'],
+                              isRsvpRequired = rspFunctional['evRSVP'],
                               isRequiredForProgram = rspFunctional['evRequiredForProgram'],
                               isService= rspFunctional['evServiceHours'],
                               startDate= rspFunctional['evStartDate'],
-                              endDate= rspFunctional['evEndDate'],
-                              facilitators = rspFunctional['evFacilitators']
-     )
+                              endDate= rspFunctional['evEndDate'])
 
-    return("it worked!!!!!!!!!! :D")
+    eventID = Event.select(Event.id).where((Event.eventName == rspFunctional['evName']) &
+                                           (Event.description == rspFunctional['evDescription']) &
+                                           (Event.startDate == rspFunctional['evStartDate']))
 
-    #what do we pass
+    facilitatorEntry = Facilitator.create(user_id = rspFunctional['evFacilitators'],
+                                          event_id = eventID )
 
-    #how to get value from js
 
-    #add to event table in database
+    return ""

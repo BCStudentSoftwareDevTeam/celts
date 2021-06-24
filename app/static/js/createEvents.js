@@ -1,24 +1,12 @@
-$('input[type="radio"]').click(function(){
-        var elemetnId = $(this).attr("id");
-        if(elementId == '#yes'){
-          $("#pickEndDate").show();
-        }else{
-          $("#pickEndDate").hide();
-        }
-    });
 
 function toggleEndDate(){
-  if ($('input[name="recurringEvent"]:checked').val() == 'true'){
-    $("div.endDate").show();
+  if ($('input[name="recurringEvent"]:checked').val() == "true"){
+    $(".endDates").removeClass("d-none");
   }else{
-   $("div.endDate").hide();
+    $(".endDates").addClass("d-none");
   }
 
 }
-function hideEndDate(){
-  $("#pickEndDate").hide();
-}
-
 
 function dropHandler(ev) {
   console.log('File(s) dropped');
@@ -60,7 +48,7 @@ function createDict(){
   var location = $("#inputEventLocation").val();
   var requiredForProgram = $("#checkIsRequired").is(":checked");
   var requireForRSVP = $("#rsvp").is(":checked");
-  var serviceHours = $("#earnServiceHours").is("checked");
+  var serviceHours = $("#earnServiceHours").is(":checked");
   var description = $("#inputEventDescription").val();
   var facilitators = $("#inputEventFacilitators").val();
 
@@ -84,21 +72,20 @@ function createDict(){
 function createNewEvent(){
   events = createDict()
   var data = JSON.stringify(events);
-  //var data = "hello"
   console.log(data)
   $.ajax({
    method: "POST",
-   async: false,
    url: '/createEvents',
-   contentType: "application/json",
+   contentType: "application/html",
    dataType: "json",
    data: data,
    success: function(result) {
      alert(result)
      console.log(result)
    },
-  error: function(result, error){
-    alert(error)
-  }
+   error: function(result, error){
+     alert(error)
+     console.log(error)
+   }
   });
 }
