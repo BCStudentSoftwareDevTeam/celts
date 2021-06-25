@@ -6,22 +6,16 @@ from datetime import date, datetime, time
 
 def getUpcomingEventsForUser(user):
 
-    interestedEvent = (Event.select(Event, Program, Interest)
+    interestedEvents = (Event.select(Event, Program)
                             .join(Program)
                             .join(Interest, on=(Event.program == Interest.program))
                             .where(Interest.user == user)
                             )
     upcomingEvents = []
-    for event in interestedEvent.objects():
-        today = date.today()
-        times = datetime.now().time()
-        event_time = event.timeStart
-        #FIXME: Change event.description to event.eventName (or just add it to the dict). When the eventName column is filled
-        if event.startDate >= today and event.timeStart > times:
-            upcomingEvents.append(
-                                    {"description": event.description,
-                                    "program":event.program,
-                                    "startDate": event.startDate,
-                                    "programName":event.programName,
-                                    "endDate": event.endDate})
+
+    for event in interestedEvents.objects():
+
+        if event.startDate >= date.today() and event.timeStart > datetime.now().time():
+            upcomingEvents.append(event)
+
     return upcomingEvents

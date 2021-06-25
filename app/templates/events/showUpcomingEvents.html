@@ -1,18 +1,23 @@
 <table class="table">
-  <thead class="tableHeader">
-    <th scope="col"><h4><strong>Program</strong></h4>
-    <th scope="col"><h4><strong>Description</strong></h4>
-    <th scope="col"><h4><strong>Start Date</strong></h4>
-    <th scope="col"><h4><strong>End Date</strong></h4>
-      </thead>
 
-  {% for event in upcomingEvents %}
-  <tr>
-    <td>{{event.programName}}</td>
-    <td>{{event.description}}</td>
-    <td>{{event.startDate}}</td>
-    <td>{{event.endDate}}</td>
-  </tr>
-  {% endfor %}
+  {% if upcomingEvents|length > 0 %}
+    <thead class="tableHeader">
+      <th scope="col"><h4><strong>Program</strong></h4>
+      <th scope="col"><h4><strong>Event Name</strong></h4>
+      <th scope="col"><h4><strong>Start Date</strong></h4>
+      <th scope="col"><h4><strong>End Date</strong></h4>
+        </thead>
+    {% for event in upcomingEvents %}
+    <tr>
+      <td>{{event.programName}}</td>
+      <td>{{event.eventName}}</td>
+      <td>{{event.startDate}}</td>
+      <td>{{event.endDate}}</td>
+    </tr>
+    {% endfor %}
+  {% else %}
+    <h2> Please be more interesting <h2>
+      <!-- FIXME: There should be a link here to where they can select interests to programs -->
+  {% endif %}
 
 </table>

@@ -3,7 +3,7 @@ use_shibboleth: False
 use_tracy: False
 use_banner: False
 override_file: "local-override.yml"
-default_user: "ramsayb2"
+default_user: "bryanta"
 
 db:
     name: "celts"
