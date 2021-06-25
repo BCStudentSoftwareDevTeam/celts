@@ -2,7 +2,7 @@ $(document).ready(function() {
 $(".form-check-input").click(function updateInterest(el){
   var programID = $(this).attr('id');
   var interest = $(this).is(':checked');
-  var userID = $(this).attr("id")
+
   if (interest) {
     var routeUrl = "/addInterest/"
   }
@@ -11,8 +11,8 @@ $(".form-check-input").click(function updateInterest(el){
   }
   $.ajax({
     method: "POST",
-    url: routeUrl + programID + '/' + userID,
-    date: programID, userID,
+    url: routeUrl + programID,
+    date: programID,
     success: function(response) {
         msgFlash("Your interest have been updated", "success")
     },
@@ -20,7 +20,7 @@ $(".form-check-input").click(function updateInterest(el){
     console.log(status,error);
       msgFlash("Error Updating Interest", "danger")
 
-    } 
+    }
       });
     });
   });
