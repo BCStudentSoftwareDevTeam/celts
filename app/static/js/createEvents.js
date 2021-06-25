@@ -84,7 +84,7 @@ function createNewEvent(){
      console.log(result)
    },
    error: function(xhr, status, error){
-     alert("Something went wrong!");         // FIXME: This is not a fix.
+     alert("Something went wrong!");    
      console.log("Something went wrong!")
    }
   });
