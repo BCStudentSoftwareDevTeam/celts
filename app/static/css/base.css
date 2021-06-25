@@ -3,6 +3,9 @@
     margin-bottom: -80px;
 }
 
+.spacer {
+    height: 100px;
+}
 
 #flash_container {
     min-height: 55px;
@@ -20,7 +23,7 @@
   color:#1e2433;
   text-align: center !important;
   height: 80px;
-  line-height: 80px; /* Vertically center the text there */
+  line-height: 80px; /* Vertically center the text */
 }
 
 .footerlink {
