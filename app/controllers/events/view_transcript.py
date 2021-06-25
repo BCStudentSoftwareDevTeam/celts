@@ -6,6 +6,8 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.eventParticipant import EventParticipant
 from app.models.event import Event
+from peewee import *
+
 
 
 def getSLCourseTranscript(user):
@@ -14,6 +16,15 @@ def getSLCourseTranscript(user):
     list of instructors who teach the course, and hours earned for each course that the user took.
     :user: model object
     """
+    # query = (CourseParticipant
+    #     .select(CourseParticipant.user, fn.SUM(CourseParticipant.hoursEarned))
+    #     # .join(Course, on=(CourseParticipant.course.courseName == Course.courseName))
+    #     # .switch(CourseParticipant)
+    #     .join(CourseParticipant.user, on=(User == CourseParticipant.user))
+    #     # .group_by(CourseParticipant.user)
+    #     .order_by(fn.SUM(CourseParticipant.hoursEarned).desc()))
+    # print(fn.SUM(CourseParticipant.hoursEarned))
+
     courseList = []
     cList = []
     courses = []
@@ -49,6 +60,20 @@ def getProgramTranscript(user):
     term, and hours earned for each program that the user attended.
     :user: model object
     """
+
+    query = (EventParticipant
+        .select(EventParticipant.user, fn.SUM(EventParticipant.hoursEarned)).alias("sum_hours")
+        # .join(Event, on=(EventParticipant.event.eventName == Event.eventName))
+        # .switch(EventParticipant)
+        # .join(Event)
+        # .where(EventParticipant.user == user)
+        .group_by(EventParticipant.user)
+        .order_by(fn.SUM(EventParticipant.hoursEarned).desc()))
+    print(query)
+    for eUser in query.tuples():
+        print(eUser)
+
+
     programList = []
     pList = []
     programs = []
