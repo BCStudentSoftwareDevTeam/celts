@@ -37,9 +37,9 @@
             {% endblock %}
         </nav>
         <nav class="col-md-auto d-lg-none">
-            <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
-              <div class="offcanvas-body">
-                  <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <div class="offcanvas offcanvas-start w-auto" tabindex="-1" id="offcanvasSidebar" aria-labelledby="sidebar">
+              <div class="offcanvas-body p-0">
+                  <!-- <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button> -->
                   {% include 'sidebar.html' %}
               </div>
             </div>
@@ -57,8 +57,7 @@
                 </div>
 
                 <div class="hamburger-menu d-lg-none position-fixed">
-                    <!-- <i class="bi bi-list" role="button" aria-label="Sidebar menu"></i> -->
-                    <button class="btn btn-dark" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
+                    <button class="btn btn-dark" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="sidebar">
                         <i class="bi bi-list" role="button" aria-label="Sidebar"></i>
                     </button>
                 </div>
