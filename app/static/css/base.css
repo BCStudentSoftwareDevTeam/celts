@@ -22,12 +22,11 @@
     z-index: 3;
 }
 
-.hamburger-menu {
-    top: 10px;
-    left: 10px;
+.bi-list {
+    font-size: 2rem;
 }
 
-.bi-list {
+.bi-x {
     font-size: 2rem;
 }
 
