@@ -24,14 +24,14 @@
 </div>
 <div class = "container-fluid d-block">
   <div class= "row justify-content-start">
-    <div class="col-6">
-    <div>
-      <label for='eName'> Event Name *</label> <br>
-      <input type='text' id='inputEventName' required>
+    <div class="col-auto">
+    <div class="form-group">
+      <label for='eventName'> Event Name *</label> <br>
+      <textarea class="form-control" id='inputEventName' rows='1' style="max-width: 40%" required></textarea>
     </div> <br>
-    <div>
+    <div class="form-group">
       <label for='term'> Term *</label> <br>
-      <select name='term' id='inputEventTerm' >
+      <select class="form-control" name='term' id='inputEventTerm' style="max-width: 40%">
         {%for description in listOfTermDescriptions %}
           {%if description == theCurrentTerm%}
             <option value='{{description}}' selected> {{description}} </option>
@@ -41,14 +41,14 @@
         {% endfor %}
         </select>
     </div> <br>
-    <div>
-        <p>Is this a recurring event? </p>
-        <form>
-          <input data-target="#showEndDate" type='radio' id='yes' name="recurringEvent" value=true onclick="toggleEndDate()">
-          <label for="recurringEventYes" >Yes </label>
-          <input data-target="#showEndDate"type="radio" id="no" name="recurringEvent" value=false  onclick="toggleEndDate()" checked>
-          <label for="recurringEventNo">No</label>
-        </form>
+    <p>Is this a recurring event? </p>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" data-target="#showEndDate" type='radio' id='yes' name="recurringEvent" value=true onclick="toggleEndDate()">
+      <label class="form-check-label" for="recurringEventYes" >Yes </label>
+    </div>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" data-target="#showEndDate" type="radio" id="no" name="recurringEvent" value=false  onclick="toggleEndDate()" checked>
+      <label class="form-check-label" for="recurringEventNo">No</label>
     </div><br>
     <div>
       <div>
@@ -76,7 +76,7 @@
         <input type='text' id='inputEventLocation' required>
     </div>
   </div>
-  <div class="col-6">
+  <div class="col-auto">
     <div>
       <label for='isRequired'> This event is required for the program *</label>
       <label class="switch">
