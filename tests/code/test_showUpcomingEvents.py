@@ -11,30 +11,22 @@ def test_getsCorrectUpcomingEvent():
 
     user = "khatts"
     upcomingEvent = getUpcomingEventsForUser(user)
-
+    assert len(upcomingEvent) == 1
     assert "Empty Bowls Spring" == upcomingEvent[0].eventName
 
-    with pytest.raises(AssertionError):
-        assert "Potatoes" == upcomingEvent[0].eventName
-        assert 156456 == upcomingEvent[0].eventName
-        assert " Empty Bowls Spring" == upcomingEvent[0].eventName
-        assert "Empty Bowls Spring " == upcomingEvent[0].eventName
-        assert " Empty Bowls Spring " == upcomingEvent[0].eventName
+    user = "ramsayb2"
+    upcomingEvent = getUpcomingEventsForUser(user)
+    assert len(upcomingEvent) == 5
+    assert "Training" == upcomingEvent[0].program.programName
+
 
 @pytest.mark.integration
 def test_userWithNoInterestedEvent():
 
-    user = "bryanta"
+    user ="asdfasd" #invalid user
     upcomingEvent = getUpcomingEventsForUser(user)
+    assert len(upcomingEvent) == 0
 
-    with pytest.raises(IndexError):
-        assert "Empty Bowls Spring" == upcomingEvent[0].eventName
-        assert 132154 == upcomingEvent[15].eventName
-
-
-@pytest.mark.integration
-def test_getUpcomingEvents():
-    user = "ramsayb2"
+    user = "bryanta" #no interest selected
     upcomingEvent = getUpcomingEventsForUser(user)
-
-    assert len(upcomingEvent) > 0
+    assert len(upcomingEvent) == 0

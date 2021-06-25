@@ -4,7 +4,7 @@ from app.models.program import Program
 
 class Event(baseModel):
     eventName = CharField()
-    program = ForeignKeyField(Program)
+    program = ForeignKeyField(Program, backref="events")
     term = ForeignKeyField(Term)
     description = CharField()
     timeStart = TimeField()

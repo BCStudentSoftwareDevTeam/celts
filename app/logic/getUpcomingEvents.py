@@ -6,14 +6,13 @@ from datetime import date, datetime, time
 
 def getUpcomingEventsForUser(user):
 
-    interestedEvents = (Event.select(Event, Program)
-                            .join(Program)
+    interestedEvents = (Event.select()
                             .join(Interest, on=(Event.program == Interest.program))
                             .where(Interest.user == user)
                             )
     upcomingEvents = []
 
-    for event in interestedEvents.objects():
+    for event in interestedEvents:
 
         if event.startDate >= date.today() and event.timeStart > datetime.now().time():
             upcomingEvents.append(event)
