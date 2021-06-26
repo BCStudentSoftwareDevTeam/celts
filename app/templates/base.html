@@ -38,15 +38,15 @@
         </nav>
         <nav class="col-md-auto d-lg-none">
             <div class="offcanvas offcanvas-start w-auto" tabindex="-1" id="offcanvasSidebar" aria-labelledby="sidebar">
-              <div class="offcanvas-body p-0">
-                  <button type="button" class="btn btn-dark position-absolute top-0 start-100 rounded-0 rounded-end" data-bs-dismiss="offcanvas" aria-label="Close">
-                      <i class="bi bi-x"></i>
-                  </button>
-                  {% include 'sidebar.html' %}
-              </div>
+                <div class="offcanvas-body p-0">
+                    <button type="button" class="btn btn-dark position-absolute top-0 start-100 rounded-0 rounded-end" data-bs-dismiss="offcanvas" aria-label="Close">
+                        <i class="bi bi-x"></i>
+                    </button>
+                    {% include 'sidebar.html' %}
+                </div>
             </div>
         </nav>
-        <div class="col scroll-container overflow-auto">
+        <div class="col-12 col-md scroll-container overflow-auto">
             <div class="main-content container">
                 <div id="flash_container">
                     {% with messages = get_flashed_messages(with_categories=true) %}
