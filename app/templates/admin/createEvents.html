@@ -3,17 +3,19 @@
 {% block scripts %}
   {{super()}}
 <script src="static/js/createEvents.js"></script>
-
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 {% endblock %}
 
 {% block styles %}
   {{super()}}
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.css" />
+  <!-- <link rel = "stylesheet" href = "/static/css/createEvents.css" /> -->
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
-  <link rel = "stylesheet" href = "/static/css/createEvents.css" />
 {% endblock %}
 
 {% block app_content %}
@@ -27,7 +29,7 @@
     <div class="col-auto">
     <div class="form-group">
       <label for='eventName'> Event Name *</label> <br>
-      <textarea class="form-control" id='inputEventName' rows='1' style="max-width: 40%" required></textarea>
+      <input class="form-control" id='inputEventName' required>
     </div> <br>
     <div class="form-group">
       <label for='term'> Term *</label> <br>
@@ -50,18 +52,44 @@
       <input class="form-check-input" data-target="#showEndDate" type="radio" id="no" name="recurringEvent" value=false  onclick="toggleEndDate()" checked>
       <label class="form-check-label" for="recurringEventNo">No</label>
     </div><br>
-    <div>
+    <!-- <div>
       <div>
         <label for="startDate">Start Date:</label>
         <input type="date" id="pickStartDate" name="eventStartDate"
            min="2020-01-01" max="2031-12-31" required>  <!--FixMe: change min and max if needed -->
-      </div>
+      <!-- </div>
       <div class="endDates d-none" id="showEndDate" >
         <label for="endDate">End Date:</label>
         <input type="date" id="pickEndDate" name="eventEndDate"
            min="2020-01-01" max="2031-12-31" >
       </div>
-    </div><br>
+    </div><br> -->
+
+    <!-- datePickerS -->
+ <div class="form-group col-xs-12">
+     <div  class="form-group col-xs-6">
+       <!--datePicker for start date-->
+       <label for="startDatePicker" id="startDatePickerLabel"><span class="tooltip-right" data-tooltip="Required">Start Date<span class="required-mark">*</span></span></label>
+         <div class='input-group date' id="startDate">
+           <input type='text' class="form-control datePicker" id='startDatePicker' name="startDate" placeholder="Start Date" data-width="320px" onchange="updateDate(this)" readonly/>
+           <span class="input-group-addon" id="calendarIconStart">
+             <span class="glyphicon glyphicon-calendar"></span>
+           </span>
+         </div>
+     </div>
+     <div class="form-group col-xs-6 d-none" id ="endDateStyle">
+       <!--datePicker for End date-->
+     <label for="endDatePicker" id="endDatePickerLabel""><span class="tooltip-right" data-tooltip="Required">End Date<span class="required-mark">*</span></span></label>
+       <div class='input-group date'>
+           <input type='text' class="form-control datePicker" id='endDatePicker' name="endDate" placeholder="End Date" data-width="320px" onchange="updateDate(this)" readonly/>
+           <span class="input-group-addon" id="calendarIconEnd">
+             <span class="glyphicon glyphicon-calendar"></span>
+           </span>
+       </div>
+     </div>​
+   </div>
+
+
     <div>
       <label for="startTime">Start Time:</label>
 
@@ -73,17 +101,20 @@
     </div><br>
     <div>
         <label for='location'> Location </label><br>
-        <input type='text' id='inputEventLocation' required>
+          <textarea class="form-control" id='inputEventLocation' rows='1' style="max-width: 40%" required></textarea>
     </div>
   </div>
   <div class="col-auto">
+
     <div>
-      <label for='isRequired'> This event is required for the program *</label>
-      <label class="switch">
-      <input type="checkbox" id="checkIsRequired">
-      <span class="slider round"></span>
-      </label>
+      <div col-xs-6>
+        <label class="custom-control-label right" for="checkIsRequired">This event is required for the program *</label>
+      </div>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="checkIsRequired"/>
+        </div>
     </div>
+
     <div>
       <label for='rsvp'> Requires RSVP * </label>
       <label class="switch">
@@ -100,7 +131,7 @@
     </div>
     <div>
       <label for='description'> Description * </label> <br>
-      <input type='text' id='inputEventDescription' required>
+        <textarea class="form-control" id='inputEventDescription' rows='1' style="max-width: 40%" required></textarea>
     </div>
     <div>
       <label for='facilitators'> Facilitators * </label> <br>
@@ -113,9 +144,9 @@
       <div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
     <p> Drag and drop a file</p>
 
-  </div>
+  </div><br>
     <div>
-      <button type="button" onclick="createNewEvent()">Save</button>
+      <button type="button" class="btn btn-primary" onclick="createNewEvent()">Save</button>
   </div>
 </div>
 </div>
