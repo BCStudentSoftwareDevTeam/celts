@@ -106,29 +106,26 @@
   </div>
   <div class="col-auto">
 
+
     <div>
-      <div col-xs-6>
-        <label class="custom-control-label right" for="checkIsRequired">This event is required for the program *</label>
-      </div>
         <div class="form-check form-switch">
+          <label class="custom-control-label" for="checkIsRequired">This event is required for the program *</label>
           <input class="form-check-input" type="checkbox" id="checkIsRequired"/>
         </div>
     </div>
 
-    <div>
-      <label for='rsvp'> Requires RSVP * </label>
-      <label class="switch">
-      <input type="checkbox" id="rsvp">
-      <span class="slider round"></span>
-      </label>
+    <div class="form-check form-switch">
+      <label class="custom-control-label" for='rsvp'>Requires RSVP *</label>
+      <input class="form-check-input" type="checkbox" id="rsvp"/>
     </div>
+
     <div>
-      <label for='serviceHours'> This event earns service hours. </label>
-      <label class="switch">
-      <input type="checkbox" id="earnServiceHours">
-      <span class="slider round"></span>
-      </label>
-    </div>
+        <div class="form-check form-switch">
+          <label class="custom-control-label"for='serviceHours'> This event earns service hours.</label>
+          <input class="form-check-input" type="checkbox" id="earnServiceHours"/>
+        </div>
+    </div><br>
+
     <div>
       <label for='description'> Description * </label> <br>
         <textarea class="form-control" id='inputEventDescription' rows='1' style="max-width: 40%" required></textarea>
