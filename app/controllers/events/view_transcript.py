@@ -16,43 +16,45 @@ def getSLCourseTranscript(user):
     list of instructors who teach the course, and hours earned for each course that the user took.
     :user: model object
     """
-    # query = (CourseParticipant
-    #     .select(CourseParticipant.user, fn.SUM(CourseParticipant.hoursEarned))
-    #     # .join(Course, on=(CourseParticipant.course.courseName == Course.courseName))
-    #     # .switch(CourseParticipant)
-    #     .join(CourseParticipant.user, on=(User == CourseParticipant.user))
-    #     # .group_by(CourseParticipant.user)
-    #     .order_by(fn.SUM(CourseParticipant.hoursEarned).desc()))
-    # print(fn.SUM(CourseParticipant.hoursEarned))
+    query = (CourseParticipant
+        .select(CourseParticipant.hoursEarned)
+        .where(CourseParticipant.user == user))
+        # .join(Course, on=(CourseParticipant.course.courseName == Course.courseName))
+        # .switch(CourseParticipant)
+        # .join(CourseParticipant.user, on=(User == CourseParticipant.user))
+        # .group_by(CourseParticipant.user)
+        # .order_by(fn.SUM(CourseParticipant.hoursEarned).desc()))
+    print(query)
+    # print(CourseParticipant.user)
 
-    courseList = []
-    cList = []
-    courses = []
-    cHoursAccrued = CourseParticipant.select().where(CourseParticipant.user == user)
-    courseSumDict = {}
-    for course in cHoursAccrued:
-        hours = float(course.hoursEarned) # the hours of the event you participated in
-        if course.course.courseName in courseSumDict:
-            courseSumDict[course.course.courseName] += hours
-        else:
-            courseSumDict[course.course.courseName] = hours
-
-        if [course.course.courseName, course.course.term.description] not in cList:
-            cList.append([course.course.courseName, course.course.term.description])
-            courses.append(course.course)
-
-    for course in courses:
-        cName = course.courseName
-        cTerm = course.term.description
-        cInstructor = CourseInstructors.select().where(CourseInstructors.course==course)
-        instructorList = []
-        for instructor in cInstructor:
-            instructorList.append(instructor.user.firstName+" "+ instructor.user.lastName)
-
-        cHours = courseSumDict[cName]
-        courseList.append([cName, cTerm, instructorList, cHours])
-
-    return courseList
+    # courseList = []
+    # cList = []
+    # courses = []
+    # cHoursAccrued = CourseParticipant.select().where(CourseParticipant.user == user)
+    # courseSumDict = {}
+    # for course in cHoursAccrued:
+    #     hours = float(course.hoursEarned) # the hours of the event you participated in
+    #     if course.course.courseName in courseSumDict:
+    #         courseSumDict[course.course.courseName] += hours
+    #     else:
+    #         courseSumDict[course.course.courseName] = hours
+    #
+    #     if [course.course.courseName, course.course.term.description] not in cList:
+    #         cList.append([course.course.courseName, course.course.term.description])
+    #         courses.append(course.course)
+    #
+    # for course in courses:
+    #     cName = course.courseName
+    #     cTerm = course.term.description
+    #     cInstructor = CourseInstructors.select().where(CourseInstructors.course==course)
+    #     instructorList = []
+    #     for instructor in cInstructor:
+    #         instructorList.append(instructor.user.firstName+" "+ instructor.user.lastName)
+    #
+    #     cHours = courseSumDict[cName]
+    #     courseList.append([cName, cTerm, instructorList, cHours])
+    #
+    # return courseList
 
 def getProgramTranscript(user):
     """
