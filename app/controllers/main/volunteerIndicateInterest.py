@@ -5,6 +5,7 @@ from app.models.user import User
 from app.models.interest import Interest
 from flask import g
 from app.controllers.main import main_bp
+from flask import request
 
 @main_bp.route('/volunteerIndicateInterest', methods = ['GET'])
 
@@ -19,29 +20,35 @@ def volunteerIndicateInterest():
                            interests = interests,
                            interests_ids = interests_ids)
 
-@main_bp.route('/addInterest/<program_id>/<userID>', methods = ['POST'])
-def addInterest(program_id, userID):
+@main_bp.route('/deleteInterest/<program_id>', methods = ['POST'])
+@main_bp.route('/addInterest/<program_id>', methods = ['POST'])
+def updateInterest(program_id):
     """
     This function updates the interest table by adding a new row when a user
     shows interest in a program
     """
+    rule = request.url_rule
     try:
-        Interest.get_or_create(program = program_id, user = g.current_user)
-        # return jsonify({"Success": True})
+        if 'addInterest' in rule.rule:
+            Interest.get_or_create(program = program_id, user = g.current_user)
+        else:
+            deleted_interest = Interest.get(Interest.program == program_id and Interest.user == g.current_user)
+            deleted_interest.delete_instance()
+        return jsonify(success=True)
     except Exception as e:
-        print("Error Updating Interest: ", e)
-        # return jsonify({"Success": False}),500
+        print(e)
+        return "Error Updating Interest", 500
 
-@main_bp.route('/deleteInterest/<program_id>/<userID>', methods = ['POST'])
-def deleteInterest(program_id, userID):
-    """
-    This function updates the interest table by removing a row when the user
-    removes interest from a program
-    """
-    try:
-        deleted_interest = Interest.get(Interest.program == program_id and Interest.user == g.current_user)
-        deleted_interest.delete_instance()
-        # return jsonify({"Success": True})
-    except Exception as e:
-        print("Error Updating Interest: ", e)
-        # return jsonify({"Success": False}),500
+# @main_bp.route('/deleteInterest/<program_id>', methods = ['POST'])
+# def deleteInterest(program_id):
+#     """
+#     This function updates the interest table by removing a row when the user
+#     removes interest from a program
+#     """
+#     try:
+#         deleted_interest = Interest.get(Interest.program == program_id and Interest.user == g.current_user)
+#         deleted_interest.delete_instance()
+#         return jsonify(success=True)
+#     except Exception as e:
+#         print(e)
+#         return "Error Updating Interest", 500
