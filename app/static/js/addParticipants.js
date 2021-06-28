@@ -53,6 +53,14 @@ function textboxValue() {
   $('#phoneNumberTextarea').val('').blur();
   changeCounter = [];
   $('#createParticipantBtn').prop('disabled', true);
+  $.ajax({
+    method: "POST",
+    url: "/createParticipant",
+    data: JSON.stringify(firstName, lastName, emailEntry, phoneNumber),
+    contentType: "application/json",
+    success: function(response) {
+      print("Success")
+    });
 }
 
 function checkForChange(input) {
