@@ -1,8 +1,8 @@
-changeCounter = [];
 $( document ).ready(function() {
     $(".Volunteers").hide();
     $(".outsidepart").hide();
-
+    changeCounter = [];
+    $('#createParticipantBtn').prop('disabled', true);
 });
 
 $(document).ready(function(){
@@ -34,12 +34,10 @@ function addResult(){
 }
 
 function removeParticipants(e) {
-
   $(e).parent().parent().remove();
 }
 
 function removeVolunteer(e) {
-
   $(e).parent().parent().remove();
 }
 
@@ -54,15 +52,14 @@ function textboxValue() {
   $('#emailTextarea').val('').blur();
   $('#phoneNumberTextarea').val('').blur();
   changeCounter = [];
+  $('#createParticipantBtn').prop('disabled', true);
 }
 
-function countChange(input) {
+function checkForChange(input) {
   if (!changeCounter.includes(input)) {
     changeCounter.push(input);
-    console.log(input);
   }
   if (changeCounter.length > 3) {
-    $('#createpartipant').removeAttr( "disabled" );
-    console.log("cleared")
+    $('#createParticipantBtn').prop('disabled', false);
   }
 }
