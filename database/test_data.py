@@ -268,12 +268,12 @@ courseHoursEarned = [
     {
         "course": Course.get_by_id(1),
         "user": User.get_by_id("neillz"),
-        "hoursEarned": 2
+        "hoursEarned": 2.0
     },
     {
         "course": Course.get_by_id(2),
         "user": User.get_by_id("neillz"),
-        "hoursEarned": 3
+        "hoursEarned": 3.0
     },
 ]
 CourseParticipant.insert_many(courseHoursEarned).on_conflict_replace().execute()

@@ -8,6 +8,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.event import Event
 from flask import g
 from peewee import *
+from playhouse.shortcuts import model_to_dict
 
 
 
@@ -19,20 +20,32 @@ def getSLCourseTranscript(user):
     """
     # user = g.current_user
 
-    hoursEarnedForCourse = (CourseParticipant
-        .select(CourseParticipant.hoursEarned)
-        .where(CourseParticipant.user == user))
-        # .join(Course, on=(CourseParticipant.course.courseName == Course.courseName))
-        # .switch(CourseParticipant)
-        # .join(CourseParticipant.user, on=(User == CourseParticipant.user))
-        # .group_by(CourseParticipant.user)
-        # .order_by(fn.SUM(CourseParticipant.hoursEarned).desc()))
-    print(hoursEarnedForCourse)
+    # hoursEarnedForCourse = (CourseParticipant
+    #     .select(CourseParticipant.hoursEarned)
+    #     .where(CourseParticipant.user == user))
+    #     # .join(Course, on=(CourseParticipant.course.courseName == Course.courseName))
+    #     # .switch(CourseParticipant)
+    #     # .join(CourseParticipant.user, on=(User == CourseParticipant.user))
+    #     # .group_by(CourseParticipant.user)
+    #     # .order_by(fn.SUM(CourseParticipant.hoursEarned).desc()))
+    # print(hoursEarnedForCourse)
 
     #Goal: Course Name(Course Table) , Semester(Term Table) , Instructor(CourseInstructors Table), Hours(CourseParticipant)
-    sLCourseInformation = CourseParticipant.select(Course.id).join()
+    sLCourseInformation = (CourseParticipant.select(CourseParticipant.course, CourseParticipant.user, fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned"))
+    # .join(Course)
+    # .join(User)
+    .group_by(CourseParticipant.course, CourseParticipant.user)
+    .where(CourseParticipant.user== user))
+    courses = [item for item in sLCourseInformation.objects()]
+    return courses
+    # sLCourseInformation = (Course.select(Course.courseName)
+    #                         .join(CourseParticipant,
+    #                                 on=(CourseParticipant.course.courseName == Course.courseName))
+    #                         .join(User,
+    #                                 on=(User.username==CourseParticipant.username))
+    #                         )
+    print(courses)
     print(sLCourseInformation)
-
 
     # courseList = []
     # cList = []
@@ -61,7 +74,11 @@ def getSLCourseTranscript(user):
     #     cHours = courseSumDict[cName]
     #     courseList.append([cName, cTerm, instructorList, cHours])
     #
-    # return courseList
+    # return sLCourseInformation
+
+    # make test, expect dictionary
+    # turn the query result into a dictionary to reference by key
+    # use list of instructors that we already had outside of query
 
 def getProgramTranscript(user):
     """
@@ -78,9 +95,10 @@ def getProgramTranscript(user):
         # .where(EventParticipant.user == user)
         .group_by(EventParticipant.user)
         .order_by(fn.SUM(EventParticipant.hoursEarned).desc()))
-    print(query)
+    # print(query)
     for eUser in query.tuples():
-        print(eUser)
+        # print(eUser)
+        pass
 
 
     programList = []
@@ -91,7 +109,7 @@ def getProgramTranscript(user):
     for event in pHoursAccrued:
 
         programID = event.event.program.id # the program number associated with the event number
-
+        # print(event.event.term.description)
         hours = float(event.hoursEarned) # the hours of the event you participated in
         if event.event.program.programName in programSumDict:
             programSumDict[event.event.program.programName] += hours
