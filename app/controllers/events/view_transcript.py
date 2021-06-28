@@ -6,6 +6,7 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.eventParticipant import EventParticipant
 from app.models.event import Event
+from flask import g
 from peewee import *
 
 
@@ -16,7 +17,9 @@ def getSLCourseTranscript(user):
     list of instructors who teach the course, and hours earned for each course that the user took.
     :user: model object
     """
-    query = (CourseParticipant
+    # user = g.current_user
+
+    hoursEarnedForCourse = (CourseParticipant
         .select(CourseParticipant.hoursEarned)
         .where(CourseParticipant.user == user))
         # .join(Course, on=(CourseParticipant.course.courseName == Course.courseName))
@@ -24,8 +27,12 @@ def getSLCourseTranscript(user):
         # .join(CourseParticipant.user, on=(User == CourseParticipant.user))
         # .group_by(CourseParticipant.user)
         # .order_by(fn.SUM(CourseParticipant.hoursEarned).desc()))
-    print(query)
-    # print(CourseParticipant.user)
+    print(hoursEarnedForCourse)
+
+    #Goal: Course Name(Course Table) , Semester(Term Table) , Instructor(CourseInstructors Table), Hours(CourseParticipant)
+    sLCourseInformation = CourseParticipant.select(Course.id).join()
+    print(sLCourseInformation)
+
 
     # courseList = []
     # cList = []

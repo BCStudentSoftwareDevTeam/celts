@@ -40,6 +40,7 @@ users = [
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False
     },
+
 ]
 User.insert_many(users).on_conflict_replace().execute()
 
@@ -253,15 +254,10 @@ courseInstructorRecords = [
     {
         "id": 1,
         "course": Course.get_by_id(1),
-        "user": User.get_by_id("neillz")
+        "user": User.get_by_id("ramsayb2")
     },
     {
         "id": 2,
-        "course": Course.get_by_id(2),
-        "user": User.get_by_id("neillz")
-    },
-    {
-        "id": 3,
         "course": Course.get_by_id(2),
         "user": User.get_by_id("ramsayb2")
     },
@@ -309,7 +305,7 @@ programHoursEarned = [
         "event": 5,
         "rsvp": True,
         "attended": True,
-        "hoursEarned": 1 
+        "hoursEarned": 1
         },
 ]
 EventParticipant.insert_many(programHoursEarned).on_conflict_replace().execute()
