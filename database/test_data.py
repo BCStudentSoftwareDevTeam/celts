@@ -10,7 +10,7 @@ from app.models.program import Program
 from app.models.event import Event
 from app.models.course import Course
 from app.models.courseStatus import CourseStatus
-from app.models.courseInstructors import CourseInstructors
+from app.models.courseInstructor import CourseInstructor
 from app.models.courseParticipant import CourseParticipant
 from app.models.eventParticipant import EventParticipant
 
@@ -262,7 +262,7 @@ courseInstructorRecords = [
         "user": User.get_by_id("ramsayb2")
     },
 ]
-CourseInstructors.insert_many(courseInstructorRecords).on_conflict_replace().execute()
+CourseInstructor.insert_many(courseInstructorRecords).on_conflict_replace().execute()
 
 courseHoursEarned = [
     {

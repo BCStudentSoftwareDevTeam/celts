@@ -1,7 +1,7 @@
 from app.models.course import Course
 from app.models.courseParticipant import CourseParticipant
 from app.models.program import Program
-from app.models.courseInstructors import CourseInstructors
+from app.models.courseInstructor import CourseInstructor
 from app.models.user import User
 from app.models.term import Term
 from app.models.eventParticipant import EventParticipant
@@ -32,21 +32,25 @@ def getSLCourseTranscript(user):
 
     #Goal: Course Name(Course Table) , Semester(Term Table) , Instructor(CourseInstructors Table), Hours(CourseParticipant)
     sLCourseInformation = (CourseParticipant.select(CourseParticipant.course, CourseParticipant.user, fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned"))
-    # .join(Course)
-    # .join(User)
+
     .group_by(CourseParticipant.course, CourseParticipant.user)
     .where(CourseParticipant.user== user))
     courses = [item for item in sLCourseInformation.objects()]
-    return courses
-    # sLCourseInformation = (Course.select(Course.courseName)
-    #                         .join(CourseParticipant,
-    #                                 on=(CourseParticipant.course.courseName == Course.courseName))
-    #                         .join(User,
-    #                                 on=(User.username==CourseParticipant.username))
-    #                         )
-    print(courses)
-    print(sLCourseInformation)
+    user_full_name = [(courses[0].user.firstName + " "+ courses[0].user.lastName)]
+    course_name = courses[0].course.courseName
+    description = courses[0].course.term.description
+    hours = courses[0].hoursEarned
+    courseId = courses[0].course
+    cInstructor = CourseInstructor.select().where(CourseInstructor.course==courseId)
+    #print(cInstructor)
+    instructorList = []
+    for instructor in cInstructor.objects():
+        instructorList.append(instructor.user.firstName+" "+ instructor.user.lastName)
 
+    #print(instructorList)
+    listsOfSLCourseInfo = [user_full_name, course_name, description, hours, instructorList]
+
+    return listsOfSLCourseInfo
     # courseList = []
     # cList = []
     # courses = []
@@ -66,11 +70,6 @@ def getSLCourseTranscript(user):
     # for course in courses:
     #     cName = course.courseName
     #     cTerm = course.term.description
-    #     cInstructor = CourseInstructors.select().where(CourseInstructors.course==course)
-    #     instructorList = []
-    #     for instructor in cInstructor:
-    #         instructorList.append(instructor.user.firstName+" "+ instructor.user.lastName)
-    #
     #     cHours = courseSumDict[cName]
     #     courseList.append([cName, cTerm, instructorList, cHours])
     #

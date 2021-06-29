@@ -40,15 +40,23 @@ def test_getSLTranscripts():
     user = User.get_by_id("neillz")
     # print(user)
     transcript = getSLCourseTranscript(user)
-    print (transcript, "sdvdvgnw")
-    assert transcript and len(transcript) > 0
-    assert transcript[0].user.firstName == "Zach"
-    assert transcript[0].course.courseName == "Databases"
-    assert transcript[0].course.term.description == "Spring B 2021"
-    assert transcript[0].hoursEarned == 2.0
-    assert transcript[0].courseInstructors == []
-    assert transcript[0] == ["Databases", "Spring B 2021", ["Zach Neill"], 2.0]
+    print (transcript)
+    # assert transcript and len(transcript) > 0
+    # assert transcript[0].course.courseName == "Databases"
+    # assert transcript[0].course.term.description == "Spring B 2021"
+    # assert transcript[0].hoursEarned == 2.0
+    # assert transcript[0].courseInstructor == []
+    # assert transcript[0] == ["Databases", "Spring B 2021", ["Zach Neill"], 2.0]
     # assert transcript[1] == ["Spanish Help", "Spring A 2021", ["Zach Neill","Brian Ramsay"], 3.0]
+
+    assert transcript == [["Zach Neill"], "Databases" , "Spring B 2021" , 2.0, ["Brian Ramsay"]]
+    assert transcript[0] == ["Zach Neill"]
+    assert transcript[1] == "Databases"
+    assert transcript[2] == "Spring B 2021"
+    assert transcript[3] == 2.0
+    assert transcript[4] == ["Brian Ramsay"]
+    # assert transcript[4] == "Brian Ramsay"
+
 
     # user = User.get_by_id("ramsayb2")
     # transcript = getSLCourseTranscript(user)
