@@ -42,6 +42,7 @@ function removeVolunteer(e) {
 }
 
 function textboxValue() {
+  eventID = "2";
   firstName = $("#firstNameTextarea").val();
   lastName = $("#lastNameTextarea").val();
   emailEntry = $("#emailTextarea").val();
@@ -53,14 +54,26 @@ function textboxValue() {
   $('#phoneNumberTextarea').val('').blur();
   changeCounter = [];
   $('#createParticipantBtn').prop('disabled', true);
+  // $.ajax({
+  //   method: "POST",
+  //   url: "/createParticipant",
+  //   data: JSON.stringify(firstName, lastName, emailEntry, phoneNumber),
+  //   contentType: "application/json",
+  //   success: function(response) {
+  //     print("Success")
+  //   });
   $.ajax({
     method: "POST",
-    url: "/createParticipant",
-    data: JSON.stringify(firstName, lastName, emailEntry, phoneNumber),
-    contentType: "application/json",
+    url: "/createParticipant/"+eventID,
+    data: eventID, //firstName, lastName, emailEntry, phoneNumber,
     success: function(response) {
-      print("Success")
-    });
+        console.log("Updated", "success")
+    },
+    error: function(request, status, error) {
+    console.log(status,error);
+      print("Error 500");
+    }
+      });
 }
 
 function checkForChange(input) {
