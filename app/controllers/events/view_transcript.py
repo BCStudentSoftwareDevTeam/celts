@@ -39,7 +39,7 @@ def getSLCourseTranscript(user):
     print(courses)
     print(len(courses))
 
-    for i in courses:
+    for i in range(0,len(courses)):
         print(i)
         user_full_name = [(courses[i].user.firstName + " "+ courses[i].user.lastName)]
         course_name = courses[i].course.courseName
