@@ -49,13 +49,11 @@ def test_getSLTranscripts():
     # assert transcript[0] == ["Databases", "Spring B 2021", ["Zach Neill"], 2.0]
     # assert transcript[1] == ["Spanish Help", "Spring A 2021", ["Zach Neill","Brian Ramsay"], 3.0]
 
-    assert transcript == [["Zach Neill"], "Databases" , "Spring B 2021" , 2.0, ["Brian Ramsay"]]
-    assert transcript[0] == ["Zach Neill"]
-    assert transcript[1] == "Databases"
-    assert transcript[2] == "Spring B 2021"
-    assert transcript[3] == 2.0
-    assert transcript[4] == ["Brian Ramsay"]
-    # assert transcript[4] == "Brian Ramsay"
+    assert transcript[0]['fullname'] == ["Zach Neill"]
+    assert transcript[1]['coursename'] == "Databases"
+    assert transcript[2]['termname'] == "Spring B 2021"
+    assert transcript[3]['hour'] == 2.0
+    assert transcript[4]['instructorname'] == ["Brian Ramsay"]
 
 
     # user = User.get_by_id("ramsayb2")

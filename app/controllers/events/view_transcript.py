@@ -36,19 +36,22 @@ def getSLCourseTranscript(user):
     .group_by(CourseParticipant.course, CourseParticipant.user)
     .where(CourseParticipant.user== user))
     courses = [item for item in sLCourseInformation.objects()]
-    user_full_name = [(courses[0].user.firstName + " "+ courses[0].user.lastName)]
-    course_name = courses[0].course.courseName
-    description = courses[0].course.term.description
-    hours = courses[0].hoursEarned
-    courseId = courses[0].course
-    cInstructor = CourseInstructor.select().where(CourseInstructor.course==courseId)
-    #print(cInstructor)
-    instructorList = []
-    for instructor in cInstructor.objects():
-        instructorList.append(instructor.user.firstName+" "+ instructor.user.lastName)
+    print(courses)
+    print(len(courses))
 
-    #print(instructorList)
-    listsOfSLCourseInfo = [user_full_name, course_name, description, hours, instructorList]
+    for i in courses:
+        print(i)
+        user_full_name = [(courses[i].user.firstName + " "+ courses[i].user.lastName)]
+        course_name = courses[i].course.courseName
+        description = courses[i].course.term.description
+        hours = courses[i].hoursEarned
+        courseId = courses[i].course
+        cInstructor = CourseInstructor.select().where(CourseInstructor.course==courseId)
+        instructorList = []
+        for instructor in cInstructor.objects():
+            instructorList.append(instructor.user.firstName+" "+ instructor.user.lastName)
+
+        listsOfSLCourseInfo = [{"fullname": user_full_name}, {"coursename": course_name}, {"termname": description}, {"hour": hours}, {"instructorname": instructorList}]
 
     return listsOfSLCourseInfo
     # courseList = []
