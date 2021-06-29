@@ -1,5 +1,4 @@
 {% extends "base.html"%}
-<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
 {% block scripts %}
   {{super()}}
 <script src="static/js/createEvents.js"></script>
@@ -13,7 +12,6 @@
   {{super()}}
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.css" />
-  <!-- <link rel = "stylesheet" href = "/static/css/createEvents.css" /> -->
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
 {% endblock %}
@@ -24,16 +22,17 @@
   <h1 id ="title"> Create Event</h1>
   <h2> New Event Form</h2>
 </div>
-<div class = "container-fluid d-block">
-  <div class= "row justify-content-start">
-    <div class="col-auto">
+<div>
+  <div >
+    <div class="row">
+      <div class="col-sm-6">
     <div class="form-group">
       <label for='eventName'> Event Name *</label> <br>
       <input class="form-control" id='inputEventName' required>
-    </div> <br>
+    </div><br>
     <div class="form-group">
       <label for='term'> Term *</label> <br>
-      <select class="form-control" name='term' id='inputEventTerm' style="max-width: 40%">
+      <select class="form-control" name='term' id='inputEventTerm'>
         {%for description in listOfTermDescriptions %}
           {%if description == theCurrentTerm%}
             <option value='{{description}}' selected> {{description}} </option>
@@ -52,21 +51,9 @@
       <input class="form-check-input" data-target="#showEndDate" type="radio" id="no" name="recurringEvent" value=false  onclick="toggleEndDate()" checked>
       <label class="form-check-label" for="recurringEventNo">No</label>
     </div><br>
-    <!-- <div>
-      <div>
-        <label for="startDate">Start Date:</label>
-        <input type="date" id="pickStartDate" name="eventStartDate"
-           min="2020-01-01" max="2031-12-31" required>  <!--FixMe: change min and max if needed -->
-      <!-- </div>
-      <div class="endDates d-none" id="showEndDate" >
-        <label for="endDate">End Date:</label>
-        <input type="date" id="pickEndDate" name="eventEndDate"
-           min="2020-01-01" max="2031-12-31" >
-      </div>
-    </div><br> -->
 
     <!-- datePickerS -->
- <div class="form-group col-xs-12">
+ <div class="form-group col-xs-2.5">
      <div  class="form-group col-xs-6">
        <!--datePicker for start date-->
        <label for="startDatePicker" id="startDatePickerLabel"><span class="tooltip-right" data-tooltip="Required">Start Date<span class="required-mark">*</span></span></label>
@@ -89,24 +76,27 @@
      </div>​
    </div>
 
-
-    <div>
+    <div class="form-inline">
+    <div class='input-group time col-xs-12'>
+      <div class='form-group input-group time col-xs-2'>
       <label for="startTime">Start Time:</label>
+      <input type='text' class="form-control timePicker" id='pickStartTime' name="eventEndTime" placeholder="Start Time" readonly/>
+      </div>
 
-      <input type="time" id="pickStartTime" name="eventStartTime" required>
+      <div class='form-group input-group time col-xs-2'  style="margin-left:6px;">
+        <label for="endTime">End Time:</label>
+        <input type='text' class="form-control timePicker" id='pickEndTime' name="eventEndTime" placeholder="End Time" readonly/>
 
-      <label for="endTime">End Time:</label>
-
-      <input type="time" id="pickEndTime" name="eventEndTime" required>
-    </div><br>
-    <div>
-        <label for='location'> Location </label><br>
-          <textarea class="form-control" id='inputEventLocation' rows='1' style="max-width: 40%" required></textarea>
+      </div>
     </div>
-  </div>
-  <div class="col-auto">
+    </div><br>
 
-
+    <div>
+        <label for='location'> Location *</label><br>
+          <input class="form-control" id='inputEventLocation' required>
+    </div>
+    </div>
+  <div class="col-sm-6 col-sm-offset-0.5">
     <div>
         <div class="form-check form-switch">
           <label class="custom-control-label" for="checkIsRequired">This event is required for the program *</label>
@@ -128,8 +118,8 @@
 
     <div>
       <label for='description'> Description * </label> <br>
-        <textarea class="form-control" id='inputEventDescription' rows='1' style="max-width: 40%" required></textarea>
-    </div>
+        <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' required></textarea>
+    </div><br>
     <div>
       <label for='facilitators'> Facilitators * </label> <br>
       <select class="selectpicker" id="inputEventFacilitators" data-live-search="true" required>
@@ -142,9 +132,11 @@
     <p> Drag and drop a file</p>
 
   </div><br>
-    <div>
-      <button type="button" class="btn btn-primary" onclick="createNewEvent()">Save</button>
-  </div>
+
+</div>
+<div>
+  <button type="button" class="btn btn-primary pull-right" onclick="createNewEvent()">Save</button>
+</div>
 </div>
 </div>
 </div>

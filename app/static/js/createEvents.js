@@ -9,14 +9,47 @@ function toggleEndDate(){
 
 $(document).ready(function(){
 
-$("#calendarIconStart").click(function() {
-  $("#startDatePicker").datepicker().datepicker("show"); // Shows the start date datepicker when glyphicon is clicked
-});
-
-$("#calendarIconEnd").click(function() {
-    $("#endDatePicker").datepicker().datepicker("show"); // Shows the start date datepicker when glyphicon is clicked
+  $("#calendarIconStart").click(function() {
+    $("#startDatePicker").datepicker().datepicker("show"); // Shows the start date datepicker when glyphicon is clicked
   });
-});
+
+  $("#calendarIconEnd").click(function() {
+      $("#endDatePicker").datepicker().datepicker("show"); // Shows the start date datepicker when glyphicon is clicked
+    });
+
+    // $("#timeIconStart").click(function() {
+    //   $("#startTimePicker").timepicker().timepicker(); // Shows the start date datepicker when glyphicon is clicked
+    // });
+    //
+    // $("#pickEndTime").click(function() {
+    //   $("#pickEndTime").timepicker().timepicker(); // Shows the start date datepicker when glyphicon is clicked
+    // });
+
+    $("#pickStartTime").click(function() {
+      $('#pickStartTime').timepicker().focus();
+    });
+
+
+    $("#pickEndTime").click(function() {
+      $('#pickEndTime').timepicker().focus();
+    });
+    // $("#pickEndTime").click(function() {
+    //   $("#pickEndTime").timepicker({
+    //     timeFormat: 'h:mm p',
+    //     interval: 60,
+    //     minTime: '10',
+    //     maxTime: '6:00pm',
+    //     defaultTime: '11',
+    //     startTime: '10:00',
+    //     dynamic: false,
+    //     dropdown: true,
+    //     scrollbar: true
+    //   }); // Shows the start date datepicker when glyphicon is clicked
+    // });
+      });
+
+
+
 
 function fillDates(response) { // prefill term start and term end
   $("#primary-cutoff-warning").hide();
@@ -156,8 +189,8 @@ function createDict(){
   var eventName = $("#inputEventName").val();
   var term = $("#inputEventTerm").find("option:selected").attr("value");
   var recurringEvents= $('input[name="recurringEvent"]:checked').val();
-  var startDate = $("#startDatePicker").val();
-  var endDate = $("#endDatePicker").val();
+  var startDate = $("#startDatePicker").datepicker("option", "dateFormat", "yy-mm-dd" ).val();
+  var endDate =  $("#endDatePicker").datepicker("option", "dateFormat", "yy-mm-dd" ).val();
   var startTime = $("#pickStartTime").val();
   var endTime = $("#pickEndTime").val();
   var location = $("#inputEventLocation").val();

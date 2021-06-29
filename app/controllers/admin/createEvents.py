@@ -16,16 +16,17 @@ def createEvents():
 
     print(rspFunctional['evStartDate'])
     print(rspFunctional['evEndDate'])
+    print(type(rspFunctional['evStartDate']))
 
-    dateStarts = datetime.datetime.strptime(rspFunctional['evStartDate'], "%m/%d/%Y").strftime("%Y-%m-%d")
-    dateEnds = datetime.datetime.strptime(rspFunctional['evEndDate'], "%m/%d/%Y").strftime("%Y-%m-%d")
-
-    dateStart = datetime.datetime.strptime(dateStarts, "%Y-%m-%d")
-    dateEnd = datetime.datetime.strptime(dateEnds, "%Y-%m-%d")
-    print(dateStart)
-    print("HI"*500)
-    print(type(dateStart))
-    print(dateEnd)
+    # dateStarts = datetime.datetime.strptime(rspFunctional['evStartDate'], "%m/%d/%Y").strftime("%Y-%m-%d")
+    # dateEnds = datetime.datetime.strptime(rspFunctional['evEndDate'], "%m/%d/%Y").strftime("%Y-%m-%d")
+    #
+    # dateStart = datetime.datetime.strptime(dateStarts, "%Y-%m-%d")
+    # dateEnd = datetime.datetime.strptime(dateEnds, "%Y-%m-%d")
+    # print(dateStart)
+    # print("HI"*500)
+    # print(type(dateStart))
+    # print(dateEnd)
     eventEntry = Event.create(eventName = rspFunctional['evName'],
                               term_id = term,
                               description= rspFunctional['evDescription'],
@@ -36,8 +37,8 @@ def createEvents():
                               isRsvpRequired = rspFunctional['evRSVP'],
                               isRequiredForProgram = rspFunctional['evRequiredForProgram'],
                               isService= rspFunctional['evServiceHours'],
-                              startDate =   dateStart,
-                              endDate =  dateEnd)
+                              startDate =   rspFunctional['evStartDate'],
+                              endDate =  rspFunctional['evEndDate'])
 
     eventID = Event.select(Event.id).where((Event.eventName == rspFunctional['evName']) &
                                            (Event.description == rspFunctional['evDescription']) &
