@@ -22,18 +22,22 @@ def addParticipants():
                             outsideParticipants = outsideParticipants,
                             eventParticipants = eventParticipants)
 
-@admin_bp.route("/createParticipant/<eventID>", methods = ['POST'])
-def createParticipant(eventID):  # firstName, lastName, email, phoneNumber):
-    # rsp = (request.data).decode("utf-8")  # This turns byte data into a string
+@admin_bp.route("/createParticipant", methods = ['POST'])
+def createParticipant():  # firstName, lastName, email, phoneNumber):
+    print("\nLOOK HERE "*5)
+    # print(request.data)
+    rsp = (request.data)  #.decode("utf-8")  # This turns byte data into a string
     # print(rsp)
-    # rspFunctional = json.loads(rsp)
-    # print(rspFunctional)
+    rspFunctional = json.loads(rsp)
+    print(rspFunctional)
     # try:
-    OutsideParticipant.insert(OutsideParticipant.event_id == 2).on_conflict_replace().execute()
+    # emailEntry = "" #FIXME
+    op = OutsideParticipant.insert(OutsideParticipant.event_id == event, OutsideParticipant.email == emailEntry).on_conflict_replace().execute()
                                         # OutsideParticipant.firstName == firstName,
                                         # OutsideParticipant.lastName == lastName,
                                         # OutsideParticipant.email == email,
                                         # OutsideParticipant.phoneNumber == phoneNumber))
+    op.firstName = firstName, op.lastName = lastName
 
     # except:
         # return "", 500

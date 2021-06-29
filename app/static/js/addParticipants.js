@@ -42,39 +42,58 @@ function removeVolunteer(e) {
 }
 
 function textboxValue() {
-  eventID = "2";
   firstName = $("#firstNameTextarea").val();
-  lastName = $("#lastNameTextarea").val();
-  emailEntry = $("#emailTextarea").val();
-  phoneNumber = $("#phoneNumberTextarea").val();
-  $("#OutsideTable").append('<tr id="removeRow"><td>' + firstName + " " + lastName + " " + '</td><td>' + emailEntry + " " +'</td><td>' + phoneNumber + " " + '</td><td><button id="removeButton" onclick="removeParticipants(this)" type="button">x</button></td></tr>');
-  $('#firstNameTextarea').val('').blur();
-  $('#lastNameTextarea').val('').blur();
-  $('#emailTextarea').val('').blur();
-  $('#phoneNumberTextarea').val('').blur();
+  console.log(firstName);
+  // lastName = $("#lastNameTextarea").val();
+  // emailEntry = $("#emailTextarea").val();
+  // phoneNumber = $("#phoneNumberTextarea").val();
+  // $("#OutsideTable").append('<tr id="removeRow"><td>' + firstName + " " + lastName + " " + '</td><td>' + emailEntry + " " +'</td><td>' + phoneNumber + " " + '</td><td><button id="removeButton" onclick="removeParticipants(this)" type="button">x</button></td></tr>');
+  // $('#firstNameTextarea').val('').blur();
+  // $('#lastNameTextarea').val('').blur();
+  // $('#emailTextarea').val('').blur();
+  // $('#phoneNumberTextarea').val('').blur();
+  var formValues = {
+      event: "2",
+      firstName: $("#firstNameTextarea").val(),
+      lastName: $("#lastNameTextarea").val(),
+      emailEntry: $("#emailTextarea").val(),
+      phoneNumber: $("#phoneNumberTextarea").val(),
+    };
+
   changeCounter = [];
   $('#createParticipantBtn').prop('disabled', true);
-  // $.ajax({
-  //   method: "POST",
-  //   url: "/createParticipant",
-  //   data: JSON.stringify(firstName, lastName, emailEntry, phoneNumber),
-  //   contentType: "application/json",
-  //   success: function(response) {
-  //     print("Success")
-  //   });
+  // $( "#createParticipantBtn" ).click(function() {
+  //   console.log("Btn clicked");
+  // $( "#target" ).submit();
+  // });
+  // $("#addParticipantsForm").submit(function() {
+    // e.preventDefault();
+  var form = $("#addParticipantsForm").serialize();
+  console.log(form);
   $.ajax({
     method: "POST",
-    url: "/createParticipant/"+eventID,
-    data: eventID, //firstName, lastName, emailEntry, phoneNumber,
+    url: "/createParticipant",
+    data: form,
+    contentType: "application/json",
     success: function(response) {
-        console.log("Updated", "success")
-    },
-    error: function(request, status, error) {
-    console.log(status,error);
-      print("Error 500");
+      print("Success");
     }
-      });
-}
+  });
+  // });
+};
+  // $.ajax({
+  //   method: "POST",
+  //   url: "/createParticipant/"+eventID,
+  //   data: eventID, //firstName, lastName, emailEntry, phoneNumber,
+  //   success: function(response) {
+  //       console.log("Updated", "success")
+  //   },
+  //   error: function(request, status, error) {
+  //   console.log(status,error);
+  //     print("Error 500");
+  //   }
+  //     });
+
 
 function checkForChange(input) {
   if (!changeCounter.includes(input)) {
