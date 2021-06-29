@@ -1,28 +1,86 @@
 $( document ).ready(function() {
     $(".Volunteers").hide();
     $(".outsidepart").hide();
-
+    changeCounter = [];
+    $('#createParticipantBtn').prop('disabled', true);
 });
 
-function removeParticipants(btn) {
+$(document).ready(function(){
+  $("#Outsearch").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#Partul li").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      if(!value) {
+        $(".outsidepart").hide();
+      }
+      });
+    });
+  });
 
-  var row = btn.parent().parent();
-  row.parent().removeChild(row);
+$(document).ready(function(){
+  $("#Volsearch").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#Volul li").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      if(!value) {
+        $(".Volunteers").hide();
+      }
+    });
+  });
+});
+
+function addResult(){
+  console.log("Added!")
 }
 
-function removeVolunteer(btn) {
+function removeParticipants(e) {
+  $(e).parent().parent().remove();
+}
 
-  var row = btn.parent().parent();
-  row.parent().removeChild(row);
-
+function removeVolunteer(e) {
+  $(e).parent().parent().remove();
 }
 
 function textboxValue() {
-firstName = $("#firstNameTextarea").val();
-lastName = $("#lastNameTextarea").val();
-emailEntry = $("#emailTextarea").val();
-phoneNumber = $("#phoneNumberTextarea").val();
-console.log(firstName)
-console.log(phoneNumber)
-// $("#OutsideTable").append('<tr><td>{{ firstName + "" + lastName }}</td><td>{{ emailEntry }}</td> <td>{{ phoneNumber }}</td><td><button onclick="removeParticipants(this)" type="button">x</button></td></tr>');
+  eventID = "2";
+  firstName = $("#firstNameTextarea").val();
+  lastName = $("#lastNameTextarea").val();
+  emailEntry = $("#emailTextarea").val();
+  phoneNumber = $("#phoneNumberTextarea").val();
+  $("#OutsideTable").append('<tr id="removeRow"><td>' + firstName + " " + lastName + " " + '</td><td>' + emailEntry + " " +'</td><td>' + phoneNumber + " " + '</td><td><button id="removeButton" onclick="removeParticipants(this)" type="button">x</button></td></tr>');
+  $('#firstNameTextarea').val('').blur();
+  $('#lastNameTextarea').val('').blur();
+  $('#emailTextarea').val('').blur();
+  $('#phoneNumberTextarea').val('').blur();
+  changeCounter = [];
+  $('#createParticipantBtn').prop('disabled', true);
+  // $.ajax({
+  //   method: "POST",
+  //   url: "/createParticipant",
+  //   data: JSON.stringify(firstName, lastName, emailEntry, phoneNumber),
+  //   contentType: "application/json",
+  //   success: function(response) {
+  //     print("Success")
+  //   });
+  $.ajax({
+    method: "POST",
+    url: "/createParticipant/"+eventID,
+    data: eventID, //firstName, lastName, emailEntry, phoneNumber,
+    success: function(response) {
+        console.log("Updated", "success")
+    },
+    error: function(request, status, error) {
+    console.log(status,error);
+      print("Error 500");
+    }
+      });
+}
+
+function checkForChange(input) {
+  if (!changeCounter.includes(input)) {
+    changeCounter.push(input);
+  }
+  if (changeCounter.length > 3) {
+    $('#createParticipantBtn').prop('disabled', false);
+  }
 }

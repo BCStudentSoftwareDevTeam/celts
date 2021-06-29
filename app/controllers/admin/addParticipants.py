@@ -4,6 +4,7 @@ from app.controllers.admin import admin_bp
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
+from peewee import *
 
 @admin_bp.route('/addParticipants', methods = ['GET'])
 def addParticipants():
@@ -20,3 +21,20 @@ def addParticipants():
                             title="Add Participants",
                             outsideParticipants = outsideParticipants,
                             eventParticipants = eventParticipants)
+
+@admin_bp.route("/createParticipant/<eventID>", methods = ['POST'])
+def createParticipant(eventID):  # firstName, lastName, email, phoneNumber):
+    # rsp = (request.data).decode("utf-8")  # This turns byte data into a string
+    # print(rsp)
+    # rspFunctional = json.loads(rsp)
+    # print(rspFunctional)
+    # try:
+    OutsideParticipant.insert(OutsideParticipant.event_id == 2).on_conflict_replace().execute()
+                                        # OutsideParticipant.firstName == firstName,
+                                        # OutsideParticipant.lastName == lastName,
+                                        # OutsideParticipant.email == email,
+                                        # OutsideParticipant.phoneNumber == phoneNumber))
+
+    # except:
+        # return "", 500
+    return " "

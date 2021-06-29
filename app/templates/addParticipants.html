@@ -11,31 +11,31 @@
 
 <head>
 </head>
-<div>
+<div class= "form-check-inline">
   <h2>Add Volunteers*</h2>
-    <input type="text" id="Volsearch" placeholder="Search for names.." title="Type in a name" onkeyup="searchVolunteers()">
+    <input type="text" id="Volsearch" placeholder="Search for names.." title="Type in a name">
     <button type="button" class="btn btn-secondary btn-sm">+</button>
     {% for User in eventParticipants %}
     <ul id="Volul">
-      <li class="Volunteers">{{ User.firstName + " " + User.lastName }}</li>
+      <li class="Volunteers"><a href="#" onclick="addResult()">{{ User.firstName + " " + User.lastName }}</a></li>
     </ul>
     {% endfor %}
-    <table id="Volunteertable">
+    <table class="table table-striped" id="Volunteertable">
       <tr>
-        <th>Name</th>
-        <th>Remove</th>
+        <th scope="col">Name</th>
+        <th scope="col">Remove</th>
       </tr>
       {% for User in eventParticipants %}
         <tr id={{User.bnumber}}>
             <td>{{ User.firstName + " " + User.lastName }}</td>
-            <td><button onclick="removeVolunteer(this)" type="button">x</button></td>
+            <td><button id="removeButton" onclick="removeVolunteer(this)" type="button">x</button></td>
         </tr>
       {% endfor %}
   </table>
 </div>
-<span style="display: inline">
+<div class= "form-check-inline">
   <h2>Add Outside Participants</h2>
-    <input type="text" id="Outsearch" placeholder="Search for names.." title="Type in a name" onkeyup="searchParticipants()"">
+    <input type="text" id="Outsearch" placeholder="Search for names.." title="Type in a name">
     <button class="btn btn-secondary btn-sm" type="button">+</button>
     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">
         Create Participant
@@ -46,52 +46,55 @@
       <li class="outsidepart">{{ OutsideParticipant.firstName + " " + OutsideParticipant.lastName }}</li>
     </ul>
     {% endfor %}
-    <table id="OutsideTable">
-      <tr>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Phone Number</th>
-        <th>Remove</th>
+    <table class="table table-striped" id="OutsideTable">
+      <tr id="tableRow">
+        <th scope="col">Name</th>
+        <th scope="col">Email</th>
+        <th scope="col">Phone Number</th>
+        <th scope="col">Remove</th>
         </tr>
           {% for OutsideParticipant in outsideParticipants %}
             <tr id="this-row2">
                 <td>{{ OutsideParticipant.firstName + " " + OutsideParticipant.lastName }}</td>
                 <td>{{ OutsideParticipant.email }}</td>
                 <td>{{ OutsideParticipant.phoneNumber }}</td>
-                <td><button onclick="removeParticipants(this)" type="button">x</button></td>
+                <td><button id="removeButton" onclick="removeParticipants(this)" type="button">x</button></td>
             </tr>
           {% endfor %}
   </table>
-</span>
+</div>
 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Create Participant</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+      <form>
         <div class="form-group">
           <label for="exampleFormControlTextarea1">First Name:</label>
-          <textarea class="form-control" id="firstNameTextarea" rows="1" placeholder="First Name"></textarea>
+          <input class="form-control" id="firstNameTextarea" rows="1" oninput="checkForChange('firstname')" placeholder="First Name">
+
         </div>
         <div class="form-group">
           <label for="exampleFormControlTextarea1">Last Name:</label>
-          <textarea class="form-control" id="lastNameTextarea" rows="1" placeholder="Last Name"></textarea>
+          <input class="form-control" id="lastNameTextarea" rows="1" oninput="checkForChange('lastname')" placeholder="Last Name">
         </div>
         <div class="form-group">
           <label for="exampleFormControlTextarea1">Email:</label>
-          <textarea class="form-control" id="emailTextarea" rows="1" placeholder="Email"></textarea>
+          <input class="form-control" id="emailTextarea" rows="1" oninput="checkForChange('email')" placeholder="Email">
         </div>
         <div class="form-group">
           <label for="exampleFormControlTextarea1">Phone Number:</label>
-          <textarea class="form-control" id="phoneNumberTextarea" rows="1" placeholder="Phone Number"></textarea>
+          <input class="form-control" id="phoneNumberTextarea" rows="1" oninput="checkForChange('phone')" placeholder="Phone Number">
         </div>
+      </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" onclick="textboxValue()" class="btn btn-primary">Create Participant</button>
+        <button type="button" id="createParticipantBtn" onclick="textboxValue()" data-bs-dismiss="modal" class="btn btn-primary" disabled>Create Participant</button>
       </div>
     </div>
   </div>

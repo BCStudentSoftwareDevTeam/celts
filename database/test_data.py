@@ -9,6 +9,8 @@ from app.models.term import Term
 from app.models.program import Program
 from app.models.event import Event
 from app.models.programEvent import ProgramEvent
+from app.models.outsideParticipant import OutsideParticipant
+from app.models.eventParticipant import EventParticipant
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -24,6 +26,30 @@ users = [
         "isCeltsAdmin": True,
         "isCeltsStudentStaff": False
     },
+    {
+        "username": "heggens",
+        "bnumber": "B0001212121",
+        "email": "heggens@berea.edu",
+        "phoneNumber": "555-555-5555",
+        "firstName": "Scott",
+        "lastName": "Heggen",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": False
+    },
+    {
+        "username": "mansuper",
+        "bnumber": "B0001221222",
+        "email": "superman2@berea.edu",
+        "phoneNumber": "444-333-3434",
+        "firstName": "Super",
+        "lastName": "Man",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": False
+    }
 ]
 User.insert_many(users).on_conflict_replace().execute()
 
@@ -125,6 +151,24 @@ events = [
 ]
 Event.insert_many(events).on_conflict_replace().execute()
 
+eventParticipants = [
+    {
+            "user": "heggens",
+            "event": 2,
+            "rsvp": True,
+            "attended": False,
+            "hoursEarned": "120"
+    },
+    {
+            "user": "mansuper",
+            "event": 3,
+            "rsvp": True,
+            "attended": True,
+            "hoursEarned": "133"
+    }
+]
+EventParticipant.insert_many(eventParticipants).on_conflict_replace().execute()
+
 programEvents = [
     {
         "program": 1,
@@ -144,3 +188,21 @@ programEvents = [
     },
 ]
 ProgramEvent.insert_many(programEvents).on_conflict_replace().execute()
+
+outsideP = [
+    {
+        "event": 1,
+        "firstName": "Tyler",
+        "lastName": "Parton",
+        "email": "partont@berea.edu",
+        "phoneNumber": "859-985-3333"
+    },
+    {
+        "event": 2,
+        "firstName": "Zach",
+        "lastName": "Neill",
+        "email": "neillz@berea.edu",
+        "phoneNumber": "859-985-3343"
+    }
+]
+OutsideParticipant.insert_many(outsideP).on_conflict_replace().execute()
