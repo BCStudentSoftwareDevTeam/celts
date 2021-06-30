@@ -42,16 +42,6 @@ function removeVolunteer(e) {
 }
 
 function textboxValue() {
-  firstName = $("#firstNameTextarea").val();
-  console.log(firstName);
-  // lastName = $("#lastNameTextarea").val();
-  // emailEntry = $("#emailTextarea").val();
-  // phoneNumber = $("#phoneNumberTextarea").val();
-  // $("#OutsideTable").append('<tr id="removeRow"><td>' + firstName + " " + lastName + " " + '</td><td>' + emailEntry + " " +'</td><td>' + phoneNumber + " " + '</td><td><button id="removeButton" onclick="removeParticipants(this)" type="button">x</button></td></tr>');
-  // $('#firstNameTextarea').val('').blur();
-  // $('#lastNameTextarea').val('').blur();
-  // $('#emailTextarea').val('').blur();
-  // $('#phoneNumberTextarea').val('').blur();
   var formValues = {
       event: "2",
       firstName: $("#firstNameTextarea").val(),
@@ -59,20 +49,31 @@ function textboxValue() {
       emailEntry: $("#emailTextarea").val(),
       phoneNumber: $("#phoneNumberTextarea").val(),
     };
-
   changeCounter = [];
   $('#createParticipantBtn').prop('disabled', true);
-  var form = $("#addParticipantsForm").serialize();
-  console.log(form);
+  var formStringified = JSON.stringify(formValues, null, 2);
   $.ajax({
     method: "POST",
     url: "/createParticipant",
-    data: form,
-    contentType: "application/json",
+    data: formStringified,
+    contentType: "application/json; charset=utf-8",
     success: function(response) {
-      print("Success");
+      console.log("Success");
+    },
+    error: function(request, status, error) {
+      console.log(status,error);
     }
   });
+
+  firstName = $("#firstNameTextarea").val();
+  lastName = $("#lastNameTextarea").val();
+  emailEntry = $("#emailTextarea").val();
+  phoneNumber = $("#phoneNumberTextarea").val();
+  $("#OutsideTable").append('<tr id="removeRow"><td>' + firstName + " " + lastName + " " + '</td><td>' + emailEntry + " " +'</td><td>' + phoneNumber + " " + '</td><td><button id="removeButton" onclick="removeParticipants(this)" type="button">x</button></td></tr>');
+  $('#firstNameTextarea').val('').blur();
+  $('#lastNameTextarea').val('').blur();
+  $('#emailTextarea').val('').blur();
+  $('#phoneNumberTextarea').val('').blur();
 };
 
 function checkForChange(input) {

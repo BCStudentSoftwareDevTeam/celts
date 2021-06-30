@@ -13,32 +13,31 @@ def addParticipants():
                                                     OutsideParticipant.lastName,
                                                     OutsideParticipant.email,
                                                     OutsideParticipant.phoneNumber)
+
     eventParticipants = (User.select(User.firstName, User.lastName, User.bnumber)
                                         .join(EventParticipant, on = (User.username == EventParticipant.user_id)))
-    # outsidePartList = []
-    # outsidePartList.append(outsideParticipants)
+
     return render_template('addParticipants.html',
                             title="Add Participants",
                             outsideParticipants = outsideParticipants,
                             eventParticipants = eventParticipants)
 
 @admin_bp.route("/createParticipant", methods = ['POST'])
-def createParticipant():  # firstName, lastName, email, phoneNumber):
-    print("\nLOOK HERE "*5)
-    # print(request.data)
-    rsp = (request.data)  #.decode("utf-8")  # This turns byte data into a string
-    # print(rsp)
-    rspFunctional = json.loads(rsp)
-    print(rspFunctional)
-    # try:
-    # emailEntry = "" #FIXME
-    op = OutsideParticipant.insert(OutsideParticipant.event_id == event, OutsideParticipant.email == emailEntry).on_conflict_replace().execute()
-                                        # OutsideParticipant.firstName == firstName,
-                                        # OutsideParticipant.lastName == lastName,
-                                        # OutsideParticipant.email == email,
-                                        # OutsideParticipant.phoneNumber == phoneNumber))
-    op.firstName = firstName, op.lastName = lastName
-
-    # except:
-        # return "", 500
-    return " "
+def createParticipant():
+    try:
+        rsp = (request.data).decode("utf-8")
+        rspFunctional = json.loads(rsp);
+        participantData = [
+            {
+                "event": 2,
+                "email": rspFunctional["emailEntry"],
+                "firstName": rspFunctional["firstName"],
+                "lastName": rspFunctional["lastName"],
+                "phoneNumber": rspFunctional["phoneNumber"]
+            }
+        ]
+        OutsideParticipant.insert_many(participantData).on_conflict_replace().execute()
+        return jsonify(success=True)
+    except Exception as e:
+        print(e)
+        return "Error Updating Participant Data", 500
