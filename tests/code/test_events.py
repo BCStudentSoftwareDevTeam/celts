@@ -31,5 +31,11 @@ def test_getEventsInvalidProgram():
     with pytest.raises(DoesNotExist):
         getEvents(program_id= "asdf")
 
-# @pytest.mark.integration
-# def test_updateInterest():
+@pytest.mark.integration
+def test_updateInterest():
+    addition = updateInterest(program_id = 2)
+    rule = "addInterest"
+    interests = interest.select(program_id = 2, user = "ramsayb2")
+    assert interests
+    rule = "deleteInterest"
+    assert interests == False
