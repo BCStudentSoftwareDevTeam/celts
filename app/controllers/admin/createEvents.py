@@ -18,15 +18,6 @@ def createEvents():
     print(rspFunctional['evEndDate'])
     print(type(rspFunctional['evStartDate']))
 
-    # dateStarts = datetime.datetime.strptime(rspFunctional['evStartDate'], "%m/%d/%Y").strftime("%Y-%m-%d")
-    # dateEnds = datetime.datetime.strptime(rspFunctional['evEndDate'], "%m/%d/%Y").strftime("%Y-%m-%d")
-    #
-    # dateStart = datetime.datetime.strptime(dateStarts, "%Y-%m-%d")
-    # dateEnd = datetime.datetime.strptime(dateEnds, "%Y-%m-%d")
-    # print(dateStart)
-    # print("HI"*500)
-    # print(type(dateStart))
-    # print(dateEnd)
     eventEntry = Event.create(eventName = rspFunctional['evName'],
                               term_id = term,
                               description= rspFunctional['evDescription'],

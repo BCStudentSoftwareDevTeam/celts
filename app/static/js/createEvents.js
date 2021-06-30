@@ -17,14 +17,6 @@ $(document).ready(function(){
       $("#endDatePicker").datepicker().datepicker("show"); // Shows the start date datepicker when glyphicon is clicked
     });
 
-    // $("#timeIconStart").click(function() {
-    //   $("#startTimePicker").timepicker().timepicker(); // Shows the start date datepicker when glyphicon is clicked
-    // });
-    //
-    // $("#pickEndTime").click(function() {
-    //   $("#pickEndTime").timepicker().timepicker(); // Shows the start date datepicker when glyphicon is clicked
-    // });
-
     $("#pickStartTime").click(function() {
       $('#pickStartTime').timepicker().focus();
     });
@@ -33,19 +25,6 @@ $(document).ready(function(){
     $("#pickEndTime").click(function() {
       $('#pickEndTime').timepicker().focus();
     });
-    // $("#pickEndTime").click(function() {
-    //   $("#pickEndTime").timepicker({
-    //     timeFormat: 'h:mm p',
-    //     interval: 60,
-    //     minTime: '10',
-    //     maxTime: '6:00pm',
-    //     defaultTime: '11',
-    //     startTime: '10:00',
-    //     dynamic: false,
-    //     dropdown: true,
-    //     scrollbar: true
-    //   }); // Shows the start date datepicker when glyphicon is clicked
-    // });
       });
 
 
