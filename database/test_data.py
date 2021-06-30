@@ -105,11 +105,11 @@ programs = [
         "programName": "Adopt A Grandparent",
         "term": 3
     },
-    {
-        "id": 4,
-        "programName": "Training",
-        "term": 4
-    }
+    # {
+    #     "id": 4,
+    #     "programName": "Training",
+    #     "term": 4
+    # }
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
 
@@ -126,7 +126,7 @@ events = [
     },
     {
         "id": 2,
-        "program": 4,
+        "program": 2,
         "term": 1,
         "description": "Berea Buddies Training",
         "timeStart": "6pm",
@@ -153,58 +153,58 @@ events = [
     },
     {
         "id": 5,
-        "program": 4,
+        "program": 2,
         "term": 3,
         "description": "Tutoring Training",
         "timeStart": "1am",
         "timeEnd": "9pm",
         "location": "a bigish room",
     },
-    {
-        "id": 6,
-        "program": 4,
-        "term": 3,
-        "description": "Making Bowls Training",
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
-        "location": "a big room",
-    },
-    {
-        "id": 7,
-        "program": 4,
-        "term": 3,
-        "description": "How To Make Buddies Training",
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
-        "location": "Outisde",
-    },
-    {
-        "id": 8,
-        "program": 4,
-        "term": 3,
-        "description": "Adoption 101 Training",
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
-        "location": "a big room",
-    },
-    {
-        "id": 9,
-        "program": 4,
-        "term": 3,
-        "description": "Cleaning Bowls Training",
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
-        "location": "Dining Dishes Room",
-    },
-    {
-        "id": 10,
-        "program": 4,
-        "term": 3,
-        "description": "Whole Celts Training",
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
-        "location": "Dining Dishes Room",
-    }
+    # {
+    #     "id": 6,
+    #     "program": 4,
+    #     "term": 3,
+    #     "description": "Making Bowls Training",
+    #     "timeStart": "6pm",
+    #     "timeEnd": "9pm",
+    #     "location": "a big room",
+    # },
+    # {
+    #     "id": 7,
+    #     "program": 4,
+    #     "term": 3,
+    #     "description": "How To Make Buddies Training",
+    #     "timeStart": "6pm",
+    #     "timeEnd": "9pm",
+    #     "location": "Outisde",
+    # },
+    # {
+    #     "id": 8,
+    #     "program": 4,
+    #     "term": 3,
+    #     "description": "Adoption 101 Training",
+    #     "timeStart": "6pm",
+    #     "timeEnd": "9pm",
+    #     "location": "a big room",
+    # },
+    # {
+    #     "id": 9,
+    #     "program": 4,
+    #     "term": 3,
+    #     "description": "Cleaning Bowls Training",
+    #     "timeStart": "6pm",
+    #     "timeEnd": "9pm",
+    #     "location": "Dining Dishes Room",
+    # },
+    # {
+    #     "id": 10,
+    #     "program": 4,
+    #     "term": 3,
+    #     "description": "Whole Celts Training",
+    #     "timeStart": "6pm",
+    #     "timeEnd": "9pm",
+    #     "location": "Dining Dishes Room",
+    # }
 ]
 Event.insert_many(events).on_conflict_replace().execute()
 

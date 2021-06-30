@@ -6,9 +6,9 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.eventParticipant import EventParticipant
 from app.models.event import Event
-from flask import g
+# from flask import g
 from peewee import *
-from playhouse.shortcuts import model_to_dict
+# from playhouse.shortcuts import model_to_dict
 
 
 
@@ -18,29 +18,16 @@ def getSLCourseTranscript(user):
     list of instructors who teach the course, and hours earned for each course that the user took.
     :user: model object
     """
-    # user = g.current_user
-
-    # hoursEarnedForCourse = (CourseParticipant
-    #     .select(CourseParticipant.hoursEarned)
-    #     .where(CourseParticipant.user == user))
-    #     # .join(Course, on=(CourseParticipant.course.courseName == Course.courseName))
-    #     # .switch(CourseParticipant)
-    #     # .join(CourseParticipant.user, on=(User == CourseParticipant.user))
-    #     # .group_by(CourseParticipant.user)
-    #     # .order_by(fn.SUM(CourseParticipant.hoursEarned).desc()))
-    # print(hoursEarnedForCourse)
-
-    #Goal: Course Name(Course Table) , Semester(Term Table) , Instructor(CourseInstructors Table), Hours(CourseParticipant)
     sLCourseInformation = (CourseParticipant.select(CourseParticipant.course, CourseParticipant.user, fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned"))
 
     .group_by(CourseParticipant.course, CourseParticipant.user)
     .where(CourseParticipant.user== user))
     courses = [item for item in sLCourseInformation.objects()]
-    print(courses)
-    print(len(courses))
 
+    allCoursesList = []
+    listOfEachSLCourseInfo = []
     for i in range(0,len(courses)):
-        print(i)
+
         user_full_name = [(courses[i].user.firstName + " "+ courses[i].user.lastName)]
         course_name = courses[i].course.courseName
         description = courses[i].course.term.description
@@ -50,37 +37,12 @@ def getSLCourseTranscript(user):
         instructorList = []
         for instructor in cInstructor.objects():
             instructorList.append(instructor.user.firstName+" "+ instructor.user.lastName)
+        #creates a list for all information of a course that a courseParticipant is involved in
+        listOfEachSLCourseInfo = [{"fullName": user_full_name}, {"courseName": course_name}, {"termName": description}, {"cHoursAccrued": hours}, {"cInstructorName": instructorList}]
+        allCoursesList.append(listOfEachSLCourseInfo)
 
-        listsOfSLCourseInfo = [{"fullname": user_full_name}, {"coursename": course_name}, {"termname": description}, {"hour": hours}, {"instructorname": instructorList}]
+    return allCoursesList
 
-    return listsOfSLCourseInfo
-    # courseList = []
-    # cList = []
-    # courses = []
-    # cHoursAccrued = CourseParticipant.select().where(CourseParticipant.user == user)
-    # courseSumDict = {}
-    # for course in cHoursAccrued:
-    #     hours = float(course.hoursEarned) # the hours of the event you participated in
-    #     if course.course.courseName in courseSumDict:
-    #         courseSumDict[course.course.courseName] += hours
-    #     else:
-    #         courseSumDict[course.course.courseName] = hours
-    #
-    #     if [course.course.courseName, course.course.term.description] not in cList:
-    #         cList.append([course.course.courseName, course.course.term.description])
-    #         courses.append(course.course)
-    #
-    # for course in courses:
-    #     cName = course.courseName
-    #     cTerm = course.term.description
-    #     cHours = courseSumDict[cName]
-    #     courseList.append([cName, cTerm, instructorList, cHours])
-    #
-    # return sLCourseInformation
-
-    # make test, expect dictionary
-    # turn the query result into a dictionary to reference by key
-    # use list of instructors that we already had outside of query
 
 def getProgramTranscript(user):
     """
@@ -89,20 +51,15 @@ def getProgramTranscript(user):
     :user: model object
     """
 
-    query = (EventParticipant
+    programInformation = (EventParticipant
         .select(EventParticipant.user, fn.SUM(EventParticipant.hoursEarned)).alias("sum_hours")
-        # .join(Event, on=(EventParticipant.event.eventName == Event.eventName))
-        # .switch(EventParticipant)
-        # .join(Event)
-        # .where(EventParticipant.user == user)
         .group_by(EventParticipant.user)
         .order_by(fn.SUM(EventParticipant.hoursEarned).desc()))
-    # print(query)
-    for eUser in query.tuples():
-        # print(eUser)
-        pass
+    # for eUser in programInformation.tuples():
+    #     print(eUser[1])
 
-
+    programsInfo = [item for item in programInformation.objects()]
+    print(programsInfo)
     programList = []
     pList = []
     programs = []
@@ -112,11 +69,11 @@ def getProgramTranscript(user):
 
         programID = event.event.program.id # the program number associated with the event number
         # print(event.event.term.description)
-        hours = float(event.hoursEarned) # the hours of the event you participated in
-        if event.event.program.programName in programSumDict:
-            programSumDict[event.event.program.programName] += hours
-        else:
-            programSumDict[event.event.program.programName] = hours
+        # hours = float(event.hoursEarned) # the hours of the event you participated in
+        # if event.event.program.programName in programSumDict:
+        #     programSumDict[event.event.program.programName] += hours
+        # else:
+        #     programSumDict[event.event.program.programName] = hours
 
         if [event.event.program.programName, event.event.program.term.description] not in pList:
             pList.append([event.event.program.programName, event.event.program.term.description])

@@ -40,39 +40,33 @@ def test_getSLTranscripts():
     user = User.get_by_id("neillz")
     # print(user)
     transcript = getSLCourseTranscript(user)
-    print (transcript)
-    # assert transcript and len(transcript) > 0
-    # assert transcript[0].course.courseName == "Databases"
-    # assert transcript[0].course.term.description == "Spring B 2021"
-    # assert transcript[0].hoursEarned == 2.0
-    # assert transcript[0].courseInstructor == []
-    # assert transcript[0] == ["Databases", "Spring B 2021", ["Zach Neill"], 2.0]
-    # assert transcript[1] == ["Spanish Help", "Spring A 2021", ["Zach Neill","Brian Ramsay"], 3.0]
 
-    assert transcript[0]['fullname'] == ["Zach Neill"]
-    assert transcript[1]['coursename'] == "Databases"
-    assert transcript[2]['termname'] == "Spring B 2021"
-    assert transcript[3]['hour'] == 2.0
-    assert transcript[4]['instructorname'] == ["Brian Ramsay"]
+    assert transcript[0][0]['fullName'] == ["Zach Neill"]
+    assert transcript[0][1]['courseName'] == "Databases"
+    assert transcript[0][2]['termName'] == "Spring B 2021"
+    assert transcript[0][3]['cHoursAccrued'] == 2.0
+    assert transcript[0][4]['cInstructorName'] == ["Brian Ramsay"]
 
+    assert transcript[1][0]['fullName'] == ["Zach Neill"]
+    assert transcript[1][1]['courseName'] == "Spanish Help"
+    assert transcript[1][2]['termName'] == "Spring A 2021"
+    assert transcript[1][3]['cHoursAccrued'] == 3.0
+    assert transcript[1][4]['cInstructorName'] == ["Brian Ramsay"]
+
+
+@pytest.mark.integration
+def test_getProgramTranscripts():
+    user = User.get_by_id("neillz")
+    transcript = getProgramTranscript(user)
+    print(transcript, "here")
+    assert transcript[0] == ["Berea Buddies", "Fall 2021", 4.0]
+    assert transcript[1] == ["Adopt A Grandparent", "Summer 2021", 3.0]
+    # assert transcript[3] == ["Empty Bowls", "Sping A 2021", 20.0]
 
     # user = User.get_by_id("ramsayb2")
-    # transcript = getSLCourseTranscript(user)
-    # assert transcript[0] == ["Spanish Help", "Spring A 2021", ["Zach Neill", "Brian Ramsay"], 4.0]
-    # assert transcript[1] == ["French Help", "Spring B 2021", ["Brian Ramsay"], 6.0]
-
-# @pytest.mark.integration
-# def test_getProgramTranscripts():
-#     user = User.get_by_id("neillz")
-#     transcript = getProgramTranscript(user)
-#     assert transcript[0] == ["Training", "Fall 2021", 3.0]
-#     assert transcript[1] == ["Adopt A Grandparent", "Summer 2021", 3.0]
-#     assert transcript[2] == ["Berea Buddies", "Spring B 2021", 1.0]
-#
-#     user = User.get_by_id("ramsayb2")
-#     transcript = getProgramTranscript(user)
-#     assert transcript[0] == ["Training", "Fall 2021", 4.0]
-#     assert transcript[1] == ["Adopt A Grandparent", "Summer 2021", 2.0]
+    # transcript = getProgramTranscript(user)
+    # assert transcript[0] == ["Training", "Fall 2021", 4.0]
+    # assert transcript[1] == ["Adopt A Grandparent", "Summer 2021", 2.0]
 
 # @pytest.mark.integration
 # def test_getUser():
