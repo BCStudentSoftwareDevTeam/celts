@@ -55,15 +55,17 @@ def getProgramTranscript(user):
         .select(EventParticipant.user, fn.SUM(EventParticipant.hoursEarned)).alias("sum_hours")
         .group_by(EventParticipant.user)
         .order_by(fn.SUM(EventParticipant.hoursEarned).desc()))
-    # for eUser in programInformation.tuples():
-    #     print(eUser[1])
+
+    for eUser in programInformation.tuples():
+        print(eUser)
+
 
     programsInfo = [item for item in programInformation.objects()]
     print(programsInfo)
     programList = []
     pList = []
     programs = []
-    pHoursAccrued = EventParticipant.select().where(EventParticipant.user == user)
+    pHoursAccrued = EventParticipant.select(EventParticipant.event).where(EventParticipant.user == user)
     programSumDict = {}
     for event in pHoursAccrued:
 
@@ -82,8 +84,7 @@ def getProgramTranscript(user):
     for program in programs:
         pName = program.programName
         pTerm = program.term.description
-        pHours = programSumDict[pName]
-        programList.append([pName, pTerm, pHours])
+        programList.append([pName, pTerm])
 
     return programList
 
