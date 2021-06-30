@@ -22,15 +22,18 @@
     <h1 id ="title"> Create Event</h1>
     <h2> New Event Form</h2>
   </div>
-
-  <div>
-    <div>
+  <form data-toggle="validator" role="form">
     <div class="row">
       <div class="col-sm-6">
+
         <div class="form-group">
           <label for='eventName'> Event Name *</label> <br>
           <input class="form-control" id='inputEventName' required>
-        </div><br>
+          <div class="invalid-feedback">
+            Please choose an even name.
+          </div>
+        </div>
+
         <div class="form-group">
           <label for='term'> Term *</label> <br>
           <select class="form-control" name='term' id='inputEventTerm'>
@@ -43,34 +46,36 @@
             {% endfor %}
           </select>
         </div>
-        <div>
+        <div class="form-group">
           <p>Is this a recurring event? </p>
           <div class="form-check form-check-inline">
             <input class="form-check-input" data-target="#showEndDate" type='radio' id='yes' name="recurringEvent" value=true onclick="toggleEndDate()">
             <label class="form-check-label" for="recurringEventYes" >Yes </label>
           </div>
 
-          <div class="form-check form-check-inline">
+          <div class="form-check form-check-inline form-group">
             <input class="form-check-input" data-target="#showEndDate" type="radio" id="no" name="recurringEvent" value=false  onclick="toggleEndDate()" checked>
             <label class="form-check-label" for="recurringEventNo">No</label>
           </div>
-        </div><br>
+        </div>
 
         <!-- datePickerS -->
-        <div class="form-inline">
+        <div class="form-inline col-sx-12">
           <div  class="form-group" >
+            <div class="col-xs-6">
             <!--datePicker for start date-->
-            <label for="startDatePicker" id="startDatePickerLabel"><span>Start Date<span class="required-mark">*</span></span></label>
+            <label for="startDatePicker" id="startDatePickerLabel"><span>Start Date *</span></label>
             <div class='input-group date' id="startDate">
-              <input type='text' class="form-control datePicker" id='startDatePicker' name="startDate" placeholder="Start Date" onchange="updateDate(this)" readonly/>
+              <input type='text' class="form-control datePicker" id='startDatePicker' name="startDate" placeholder="Start Date" onchange="updateDate(this)" readonly required/>
               <span class="input-group-addon" id="calendarIconStart">
                 <span class="glyphicon glyphicon-calendar"></span>
               </span>
             </div>
-          </div>
-          <div class="form-group d-none" id ="endDateStyle">
+            </div>
+
+          <div class="d-none col-xs-6 " id ="endDateStyle">
             <!--datePicker for End date-->
-            <br><label for="endDatePicker" id="endDatePickerLabel""><span>End Date<span class="required-mark">*</span></span></label>
+            <label for="endDatePicker" id="endDatePickerLabel""><span>End Date *</span></label>
             <div class='input-group date'>
               <input type='text' class="form-control datePicker" id='endDatePicker' name="endDate" placeholder="End Date" onchange="updateDate(this)" readonly/>
               <span class="input-group-addon" id="calendarIconEnd">
@@ -78,35 +83,37 @@
               </span>
             </div>
           </div>​
-        </div><br>
-
-        <div class="form-inline">
-          <div class='input-group time col-xs-12'>
-            <div class='form-group input-group time col-xs-2'>
-              <label for="startTime">Start Time:</label>
-              <input type='text' class="form-control timePicker" id='pickStartTime' name="eventEndTime" placeholder="Start Time" readonly/>
-            </div>
-            <div class='form-group input-group time col-xs-2'  style="margin-left:6px;">
-              <label for="endTime">End Time:</label>
-              <input type='text' class="form-control timePicker" id='pickEndTime' name="eventEndTime" placeholder="End Time" readonly/>
-            </div>
           </div>
         </div><br>
 
-        <div>
+
+        <div class="form-inline">
+          <div class='input-group time col-xs-12'>
+              <div class='form-group input-group time col-xs-2'>
+                <label for="startTime">Start Time: *</label>
+                <input type='time' class="form-control timePicker" id='pickStartTime' name="eventStartTime" required/>
+              </div>
+              <div class='form-group input-group time col-xs-2'  style="margin-left:6px;">
+                <label for="endTime">End Time: *</label>
+                <input type='time' class="form-control timePicker" id='pickEndTime' name="eventEndTime" requried/>
+              </div>
+          </div>
+        </div><br>
+
+        <div class="form-group">
           <label for='location'> Location *</label><br>
           <input class="form-control" id='inputEventLocation' required>
         </div>
       </div>
 
-      <div class="col-sm-6 col-sm-offset-0.5">
+      <div class="col-sm-6 col-sm-offset-0.5 form-group">
         <div class="form-check form-switch">
-          <label class="custom-control-label" for="checkIsRequired">This event is required for the program *</label>
+          <label class="custom-control-label" for="checkIsRequired">This event is required for the program</label>
           <input class="form-check-input" type="checkbox" id="checkIsRequired"/>
         </div>
 
         <div class="form-check form-switch">
-          <label class="custom-control-label" for='rsvp'>Requires RSVP *</label>
+          <label class="custom-control-label" for='rsvp'>Requires RSVP</label>
           <input class="form-check-input" type="checkbox" id="rsvp"/>
         </div>
 
@@ -115,14 +122,14 @@
           <input class="form-check-input" type="checkbox" id="earnServiceHours"/>
         </div><br>
 
-        <div>
+        <div class="form-group">
           <label for='description'> Description * </label> <br>
           <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' required></textarea>
         </div><br>
 
         <div>
-          <label for='facilitators'> Facilitators * </label> <br>
-          <select class="selectpicker" id="inputEventFacilitators" data-live-search="true" required>
+          <label for='facilitators'> Facilitators *</label> <br>
+          <select class="selectpicker" id="inputEventFacilitators" data-live-search="true">
             {%for facilitator in listOfEventFacilitators %}
               <option value={{facilitator.username}}> {{facilitator.firstName}} {{facilitator.lastName}}</option>
             {% endfor %}
@@ -135,10 +142,9 @@
       </div>
 
       <div>
-        <button type="button" class="btn btn-primary pull-right" onclick="createNewEvent()">Save</button>
+        <button type="submit" class="btn btn-primary pull-right" onclick="createNewEvent()">Save</button>
       </div>
       </div>
-    </div>
-  </div>
+</form>
 
 {% endblock %}

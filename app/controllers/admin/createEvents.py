@@ -14,10 +14,6 @@ def createEvents():
     rspFunctional = json.loads(rsp)
     term = Term.select(Term.id).where(Term.description == rspFunctional['evTerm'])
 
-    print(rspFunctional['evStartDate'])
-    print(rspFunctional['evEndDate'])
-    print(type(rspFunctional['evStartDate']))
-
     eventEntry = Event.create(eventName = rspFunctional['evName'],
                               term_id = term,
                               description= rspFunctional['evDescription'],
