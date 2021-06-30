@@ -62,12 +62,6 @@ function textboxValue() {
 
   changeCounter = [];
   $('#createParticipantBtn').prop('disabled', true);
-  // $( "#createParticipantBtn" ).click(function() {
-  //   console.log("Btn clicked");
-  // $( "#target" ).submit();
-  // });
-  // $("#addParticipantsForm").submit(function() {
-    // e.preventDefault();
   var form = $("#addParticipantsForm").serialize();
   console.log(form);
   $.ajax({
@@ -79,21 +73,7 @@ function textboxValue() {
       print("Success");
     }
   });
-  // });
 };
-  // $.ajax({
-  //   method: "POST",
-  //   url: "/createParticipant/"+eventID,
-  //   data: eventID, //firstName, lastName, emailEntry, phoneNumber,
-  //   success: function(response) {
-  //       console.log("Updated", "success")
-  //   },
-  //   error: function(request, status, error) {
-  //   console.log(status,error);
-  //     print("Error 500");
-  //   }
-  //     });
-
 
 function checkForChange(input) {
   if (!changeCounter.includes(input)) {
