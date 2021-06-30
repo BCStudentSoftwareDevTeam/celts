@@ -40,6 +40,19 @@ users = [
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False
     },
+    {
+        "username": "khatts",
+        "bnumber": "B00759107",
+        "email": "khatts@berea.edu",
+        "phoneNumber": "555-555-5555",
+        "firstName": "Sreynit",
+        "lastName": "Khatt",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": False
+    },
+
 
 ]
 User.insert_many(users).on_conflict_replace().execute()
@@ -307,5 +320,34 @@ programHoursEarned = [
         "attended": True,
         "hoursEarned": 1
         },
+    {
+        "user": User.get_by_id("neillz"),
+        "event": 1,
+        "rsvp": True,
+        "attended": True,
+        "hoursEarned": 8,
+        },
+    {
+        "user": User.get_by_id("khatts"),
+        "event": 1,
+        "rsvp": True,
+        "attended": True,
+        "hoursEarned": 3,
+        },
+    {
+        "user": User.get_by_id("khatts"),
+        "event": 2,
+        "rsvp": True,
+        "attended": True,
+        "hoursEarned": 2,
+        },
+    {
+        "user": User.get_by_id("khatts"),
+        "event": 5,
+        "rsvp": True,
+        "attended": True,
+        "hoursEarned": 8,
+        },
+
 ]
 EventParticipant.insert_many(programHoursEarned).on_conflict_replace().execute()

@@ -18,8 +18,8 @@ def getSLCourseTranscript(user):
     list of instructors who teach the course, and hours earned for each course that the user took.
     :user: model object
     """
-    sLCourseInformation = (CourseParticipant.select(CourseParticipant.course, CourseParticipant.user, fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned"))
-
+    sLCourseInformation = (CourseParticipant
+    .select(CourseParticipant.course, CourseParticipant.user, fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned"))
     .group_by(CourseParticipant.course, CourseParticipant.user)
     .where(CourseParticipant.user== user))
     courses = [item for item in sLCourseInformation.objects()]
@@ -50,42 +50,27 @@ def getProgramTranscript(user):
     term, and hours earned for each program that the user attended.
     :user: model object
     """
-
+    # Add up hours earned for each program they've participated in
     programInformation = (EventParticipant
-        .select(EventParticipant.user, fn.SUM(EventParticipant.hoursEarned)).alias("sum_hours")
-        .group_by(EventParticipant.user)
-        .order_by(fn.SUM(EventParticipant.hoursEarned).desc()))
-    # for eUser in programInformation.tuples():
-    #     print(eUser[1])
+        .select(EventParticipant.event , fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
+        .where(EventParticipant.user == user)
+        .join(Event)
+        .join(Program)
+        .group_by(EventParticipant.event.program)
+    )
 
-    programsInfo = [item for item in programInformation.objects()]
-    print(programsInfo)
-    programList = []
-    pList = []
-    programs = []
-    pHoursAccrued = EventParticipant.select().where(EventParticipant.user == user)
-    programSumDict = {}
-    for event in pHoursAccrued:
+    programTranscript = []
+    for item in programInformation:
+        print()
+        programTranscript.append(item.event.program.programName)
+        programTranscript.append(item.event.term.description)
+        programTranscript.append(item.hoursEarned)
+    print("here", programTranscript)
 
-        programID = event.event.program.id # the program number associated with the event number
-        # print(event.event.term.description)
-        # hours = float(event.hoursEarned) # the hours of the event you participated in
-        # if event.event.program.programName in programSumDict:
-        #     programSumDict[event.event.program.programName] += hours
-        # else:
-        #     programSumDict[event.event.program.programName] = hours
+    #Note: It is kind of wierd to get the term for a program because it has more than one events that might be in different term
+    #When do we want to generate a transcript for the students. Is it by the end of each term? year?
 
-        if [event.event.program.programName, event.event.program.term.description] not in pList:
-            pList.append([event.event.program.programName, event.event.program.term.description])
-            programs.append(event.event.program)
-
-    for program in programs:
-        pName = program.programName
-        pTerm = program.term.description
-        pHours = programSumDict[pName]
-        programList.append([pName, pTerm, pHours])
-
-    return programList
+    #Note: Create list of list for the trancript
 
 def getUser(user):
     """
