@@ -10,28 +10,36 @@ from app.models.facilitator import Facilitator
 @admin_bp.route('/createEvents', methods=['POST'])
 def createEvents():
 
-    rsp = (request.data).decode("utf-8") # This turns byte data into a string
-    rspFunctional = json.loads(rsp)
-    term = Term.select(Term.id).where(Term.description == rspFunctional['evTerm'])
+    eventCheckBoxes = ['eventRequiredForProgram','eventRSVP', 'eventServiceHours' ]
 
-    eventEntry = Event.create(eventName = rspFunctional['evName'],
+    newEventData = request.form.copy() #since request.form returns a immutable dict. we need to copy to change it
+
+    for checkBox in eventCheckBoxes:
+        if checkBox not in newEventData:
+            newEventData[checkBox] = 0
+
+    print(newEventData['eventRequiredForProgram'])
+
+    term = Term.select(Term.id).where(Term.description == newEventData['eventTerm'])
+
+    eventEntry = Event.create(eventName = newEventData['eventName'],
                               term_id = term,
-                              description= rspFunctional['evDescription'],
-                              timeStart = rspFunctional['evStartTime'],
-                              timeEnd= rspFunctional['evEndTime'],
-                              location = rspFunctional['evLocation'],
-                              isRecurring = rspFunctional['evRecurringEvent'],
-                              isRsvpRequired = rspFunctional['evRSVP'],
-                              isRequiredForProgram = rspFunctional['evRequiredForProgram'],
-                              isService= rspFunctional['evServiceHours'],
-                              startDate =   rspFunctional['evStartDate'],
-                              endDate =  rspFunctional['evEndDate'])
+                              description= newEventData['eventDescription'],
+                              timeStart = newEventData['eventStartTime'],
+                              timeEnd= newEventData['eventEndTime'],
+                              location = newEventData['eventLocation'],
+                              isRecurring = newEventData['recurringEvent'],
+                              isRsvpRequired = newEventData['eventRSVP'], #rsvp
+                              isRequiredForProgram = newEventData['eventRequiredForProgram'],
+                              isService= newEventData['eventServiceHours'],
+                              startDate =   newEventData['eventStartDate'],
+                              endDate =  newEventData['eventEndDate'])
 
-    eventID = Event.select(Event.id).where((Event.eventName == rspFunctional['evName']) &
-                                           (Event.description == rspFunctional['evDescription']) &
-                                           (Event.startDate == rspFunctional['evStartDate']))
+    eventID = Event.select(Event.id).where((Event.eventName == newEventData['eventName']) &
+                                           (Event.description == newEventData['eventDescription']) &
+                                           (Event.startDate == newEventData['eventStartDate']))
 
-    facilitatorEntry = Facilitator.create(user_id = rspFunctional['evFacilitators'],
+    facilitatorEntry = Facilitator.create(user_id = newEventData['eventFacilitator'],
                                           event_id = eventID )
 
 

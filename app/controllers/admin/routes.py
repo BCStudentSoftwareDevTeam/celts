@@ -5,7 +5,7 @@ from app.controllers.admin.createEvents import createEvents
 from app.controllers.admin import admin_bp
 from app.logic.adminCreateEvent import getTermDescription, getFacilitators, getCurrentTerm
 
-@admin_bp.route('/testing', methods=['GET'])
+@admin_bp.route('/testing_things', methods=['GET'])
 def testing():
     return "<h1>Hello</h1>"
 
@@ -15,6 +15,17 @@ def createEvent():
     eventFacilitator = getFacilitators()
     currentTerm = getCurrentTerm()
     return render_template("admin/createEvents.html",
+                            listOfTermDescriptions = termDescriptions,
+                            listOfEventFacilitators = eventFacilitator,
+                            theCurrentTerm = currentTerm )
+
+
+@admin_bp.route('/create_event1', methods=['GET'])
+def createEvent1():
+    termDescriptions = getTermDescription()
+    eventFacilitator = getFacilitators()
+    currentTerm = getCurrentTerm()
+    return render_template("admin/testing.html",
                             listOfTermDescriptions = termDescriptions,
                             listOfEventFacilitators = eventFacilitator,
                             theCurrentTerm = currentTerm )

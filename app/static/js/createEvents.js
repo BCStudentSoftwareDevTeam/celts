@@ -1,13 +1,17 @@
 
-function toggleEndDate(){
-  if ($('input[name="recurringEvent"]:checked').val() == "true"){
-    $("#endDateStyle").removeClass("d-none");
-  }else{
-    $("#endDateStyle").addClass("d-none");
-  }
-}
+// function toggleEndDate(){
+//   if ($('input[name="recurringEvent"]:checked').val() == "true"){
+//     $("#endDateStyle").removeClass("d-none");
+//   }else{
+//     $("#endDateStyle").addClass("d-none");
+//   }
+// }
 
 $(document).ready(function(){
+
+  $.datepicker.setDefaults({
+    dateFormat:'yy-mm-dd'
+  });
 
   $("#calendarIconStart").click(function() {
     $("#startDatePicker").datepicker().datepicker("show"); // Shows the start date datepicker when glyphicon is clicked
@@ -16,15 +20,6 @@ $(document).ready(function(){
   $("#calendarIconEnd").click(function() {
       $("#endDatePicker").datepicker().datepicker("show"); // Shows the start date datepicker when glyphicon is clicked
     });
-    //
-    // $("#pickStartTime").click(function() {
-    //   $('#pickStartTime').timepicker().focus();
-    // });
-    //
-    //
-    // $("#pickEndTime").click(function() {
-    //   $('#pickEndTime').timepicker().focus();
-    // });
 });
 
 function updateDate(obj) { // updates max and min dates of the datepickers as the other datepicker changes
@@ -32,12 +27,12 @@ function updateDate(obj) { // updates max and min dates of the datepickers as th
   var newMonth = dateToChange.getMonth();
   var newYear = dateToChange.getFullYear();
   if(obj.id == "endDatePicker"){
-    var newDay = dateToChange.getDate();
+    var newDay = dateToChange.getDate() + 1;
     $("#startDatePicker").datepicker({maxDate: new Date(newYear, newMonth, newDay)});
     $("#startDatePicker").datepicker("option", "maxDate", new Date(newYear, newMonth, newDay));
   }
   if(obj.id == "startDatePicker"){
-    var newDay = dateToChange.getDate();
+    var newDay = dateToChange.getDate() + 1;
     $("#endDatePicker").datepicker({minDate: new Date(newYear, newMonth, newDay)});
     $("#endDatePicker").datepicker( "option", "minDate", new Date(newYear, newMonth, newDay));
   }
@@ -73,81 +68,61 @@ function dragOverHandler(ev) {
   ev.preventDefault();
 }
 
+
+// function createEventValuesDict(){
+//   var eventName = $("#inputEventName").val();
+//   var term = $("#inputEventTerm").find("option:selected").attr("value");
+//   var recurringEvents= $('input[name="recurringEvent"]:checked').val();
+//   var startDate = $("#startDatePicker").datepicker("option", "dateFormat", "yy-mm-dd" ).val();
+//   var endDate =  $("#endDatePicker").datepicker("option", "dateFormat", "yy-mm-dd" ).val();
+//   var startTime = $("#pickStartTime").val();
+//   var endTime = $("#pickEndTime").val();
+//   var location = $("#inputEventLocation").val();
+//   var requiredForProgram = $("#checkIsRequired").is(":checked");
+//   var requireForRSVP = $("#rsvp").is(":checked");
+//   var serviceHours = $("#earnServiceHours").is(":checked");
+//   var description = $("#inputEventDescription").val();
+//   var facilitators = $("#inputEventFacilitators").val();
 //
-// (function () {
-//   'use strict'
+//   var eventDict = {evName: eventName,
+//                    evTerm: term,
+//                    evRecurringEvent: recurringEvents,
+//                    evStartDate: startDate,
+//                    evEndDate: endDate,
+//                    evStartTime: startTime,
+//                    evEndTime: endTime,
+//                    evLocation: location,
+//                    evRequiredForProgram: requiredForProgram,
+//                    evRSVP: requireForRSVP,
+//                    evServiceHours: serviceHours,
+//                    evDescription: description,
+//                    evFacilitators: facilitators
+//   }
+//   return eventDict;
+// }
+
+
+
+// function createNewEvent(){
 //
-//   // Fetch all the forms we want to apply custom Bootstrap validation styles to
-//   var forms = document.querySelectorAll('.needs-validation')
 //
-//   // Loop over them and prevent submission
-//   Array.prototype.slice.call(forms)
-//     .forEach(function (form) {
-//       form.addEventListener('submit', function (event) {
-//         if (!form.checkValidity()) {
-//           event.preventDefault()
-//           event.stopPropagation()
-//         }
+//       events = createEventValuesDict()
+//       var data = JSON.stringify(events);
+//       console.log(data)
+//       $.ajax({
+//        method: "POST",
+//        url: '/createEvents',
+//        contentType: "application/json",
+//        dataType: "text",
+//        data: data,
+//        success: function(result) {
+//          alert(result)
+//          console.log(result)
+//        },
+//        error: function(xhr, status, error){
+//          alert("Something went wrong! " + String(error));
+//          console.log("Something went wrong!")
+//        }
+//       });
 //
-//         form.classList.add('was-validated')
-//         alert("please fill out all required (*) fields")
-//       }, false)
-//     })
-// })()
-
-
-
-function createDict(){
-  var eventName = $("#inputEventName").val();
-  var term = $("#inputEventTerm").find("option:selected").attr("value");
-  var recurringEvents= $('input[name="recurringEvent"]:checked').val();
-  var startDate = $("#startDatePicker").datepicker("option", "dateFormat", "yy-mm-dd" ).val();
-  var endDate =  $("#endDatePicker").datepicker("option", "dateFormat", "yy-mm-dd" ).val();
-  var startTime = $("#pickStartTime").val();
-  var endTime = $("#pickEndTime").val();
-  var location = $("#inputEventLocation").val();
-  var requiredForProgram = $("#checkIsRequired").is(":checked");
-  var requireForRSVP = $("#rsvp").is(":checked");
-  var serviceHours = $("#earnServiceHours").is(":checked");
-  var description = $("#inputEventDescription").val();
-  var facilitators = $("#inputEventFacilitators").val();
-
-  var eventDict = {evName: eventName,
-                   evTerm: term,
-                   evRecurringEvent: recurringEvents,
-                   evStartDate: startDate,
-                   evEndDate: endDate,
-                   evStartTime: startTime,
-                   evEndTime: endTime,
-                   evLocation: location,
-                   evRequiredForProgram: requiredForProgram,
-                   evRSVP: requireForRSVP,
-                   evServiceHours: serviceHours,
-                   evDescription: description,
-                   evFacilitators: facilitators
-  }
-  return eventDict;
-}
-
-function createNewEvent(){
-
-    events = createDict()
-    var data = JSON.stringify(events);
-    console.log(data)
-    $.ajax({
-     method: "POST",
-     url: '/createEvents',
-     contentType: "application/json",
-     dataType: "text",
-     data: data,
-     success: function(result) {
-       alert(result)
-       console.log(result)
-     },
-     error: function(xhr, status, error){
-       alert("Something went wrong! " + String(error));
-       console.log("Something went wrong!")
-     }
-    });
-
-}
+// }
