@@ -1,10 +1,10 @@
 {% extends "base.html"%}
 {% block scripts %}
   {{super()}}
-  <script src="static/js/createEvents.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="/static/js/createEvents.js"></script>
 
 {% endblock %}
 
@@ -19,13 +19,15 @@
 {% block app_content %}
 
   <div align="center" style="margin-bottom: 50px;">
-    <h1 id ="title"> Create Event</h1>
+    <h1 id ="title">{{program.programName}}</h1>
     <h2> New Event Form</h2>
   </div>
   <form data-toggle="validator" role="form" action="/createEvents" method='post'>
     <div class="row">
       <div class="col-sm-6">
-
+        <div>
+          <input type="hidden" value="{{program.id}}" name="programId">
+        </div>
         <div class="form-group">
           <label for='eventName'> Event Name *</label> <br>
           <input class="form-control" id='inputEventName' name="eventName" required>
@@ -63,7 +65,7 @@
               <!--datePicker for start date-->
               <label for="startDatePicker" id="startDatePickerLabel"><span>Start Date *</span></label>
               <div class='input-group date' id="startDate">
-                <input type='text' class="form-control datePicker readonly" id='startDatePicker' name="eventStartDate" placeholder="Start Date" onchange="updateDate(this)" readonly required />
+                <input type='text' class="form-control datePicker readonly" id='startDatePicker' name="eventStartDate" placeholder="Start Date" onchange="updateDate(this)"  required />
                 <span class="input-group-addon" id="calendarIconStart">
                   <span class="glyphicon glyphicon-calendar"></span>
                 </span>
@@ -74,7 +76,7 @@
             <!--datePicker for End date-->
             <label for="endDatePicker" id="endDatePickerLabel""><span>End Date *</span></label>
             <div class='input-group date'>
-              <input type='text' class="form-control datePicker readonly" id='endDatePicker' name="eventEndDate" placeholder="End Date" onchange="updateDate(this)"  readonly required />
+              <input type='text' class="form-control datePicker readonly" id='endDatePicker' name="eventEndDate" placeholder="End Date" onchange="updateDate(this)" required />
               <span class="input-group-addon" id="calendarIconEnd">
                 <span class="glyphicon glyphicon-calendar"></span>
               </span>

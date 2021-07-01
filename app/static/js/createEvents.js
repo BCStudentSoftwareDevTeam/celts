@@ -9,6 +9,11 @@
 
 $(document).ready(function(){
 
+  $(".readonly").on('keydown paste', function(e){ //makes the input fields act like readonly (readonly doesn't work with required)
+        if(e.keyCode != 9) // ignore tab
+            e.preventDefault();
+    });
+
   $.datepicker.setDefaults({
     dateFormat:'yy-mm-dd'
   });

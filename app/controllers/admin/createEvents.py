@@ -5,42 +5,33 @@ from flask import json, jsonify
 from flask import request
 from app.controllers.admin import admin_bp
 from app.logic.adminCreateEvent import getTermDescription
+from app.logic.adminNewEvent import createEvent, manageNewEventData
+from app.logic.validateNewEvent import validateNewEventData
 from app.models.facilitator import Facilitator
+from flask import flash, redirect, url_for, g
 
 @admin_bp.route('/createEvents', methods=['POST'])
 def createEvents():
 
-    eventCheckBoxes = ['eventRequiredForProgram','eventRSVP', 'eventServiceHours' ]
+    if g.current_user.isCeltsAdmin:
+        #add check for admin
 
-    newEventData = request.form.copy() #since request.form returns a immutable dict. we need to copy to change it
+        EventData = request.form.copy() #since request.form returns a immutable dict. we need to copy to change it
+        newEventData= manageNewEventData(EventData)
 
-    for checkBox in eventCheckBoxes:
-        if checkBox not in newEventData:
-            newEventData[checkBox] = 0
+        # add function to validate data ()
+        validNewEventData = validateNewEventData(newEventData)
 
-    print(newEventData['eventRequiredForProgram'])
-
-    term = Term.select(Term.id).where(Term.description == newEventData['eventTerm'])
-
-    eventEntry = Event.create(eventName = newEventData['eventName'],
-                              term_id = term,
-                              description= newEventData['eventDescription'],
-                              timeStart = newEventData['eventStartTime'],
-                              timeEnd= newEventData['eventEndTime'],
-                              location = newEventData['eventLocation'],
-                              isRecurring = newEventData['recurringEvent'],
-                              isRsvpRequired = newEventData['eventRSVP'], #rsvp
-                              isRequiredForProgram = newEventData['eventRequiredForProgram'],
-                              isService= newEventData['eventServiceHours'],
-                              startDate =   newEventData['eventStartDate'],
-                              endDate =  newEventData['eventEndDate'])
-
-    eventID = Event.select(Event.id).where((Event.eventName == newEventData['eventName']) &
-                                           (Event.description == newEventData['eventDescription']) &
-                                           (Event.startDate == newEventData['eventStartDate']))
-
-    facilitatorEntry = Facilitator.create(user_id = newEventData['eventFacilitator'],
-                                          event_id = eventID )
+        if validNewEventData:
+            createEvent(newEventData)
 
 
-    return "Successfully add event!"
+            flash("Event successfully created!")
+            return redirect(url_for("admin.createEvent", program_id=newEventData['programId']))
+
+        else:
+            flash("Invalid input. Please double check all input fields. (for now validateNewEventData returns false)")
+            return redirect(url_for("admin.createEvent", program_id=2)) #FIXME: have this redirect to main programs page (or some appropriate non admin page).
+
+    flash("Only celts admins can create an event!")
+    return redirect(url_for("admin.createEvent", program_id=2)) #FIXME: have this redirect to main programs page (or some appropriate non admin page).
