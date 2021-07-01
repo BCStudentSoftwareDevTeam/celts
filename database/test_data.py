@@ -118,11 +118,7 @@ programs = [
         "programName": "Adopt A Grandparent",
         "term": 3
     },
-    # {
-    #     "id": 4,
-    #     "programName": "Training",
-    #     "term": 4
-    # }
+
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
 
@@ -173,51 +169,7 @@ events = [
         "timeEnd": "9pm",
         "location": "a bigish room",
     },
-    # {
-    #     "id": 6,
-    #     "program": 4,
-    #     "term": 3,
-    #     "description": "Making Bowls Training",
-    #     "timeStart": "6pm",
-    #     "timeEnd": "9pm",
-    #     "location": "a big room",
-    # },
-    # {
-    #     "id": 7,
-    #     "program": 4,
-    #     "term": 3,
-    #     "description": "How To Make Buddies Training",
-    #     "timeStart": "6pm",
-    #     "timeEnd": "9pm",
-    #     "location": "Outisde",
-    # },
-    # {
-    #     "id": 8,
-    #     "program": 4,
-    #     "term": 3,
-    #     "description": "Adoption 101 Training",
-    #     "timeStart": "6pm",
-    #     "timeEnd": "9pm",
-    #     "location": "a big room",
-    # },
-    # {
-    #     "id": 9,
-    #     "program": 4,
-    #     "term": 3,
-    #     "description": "Cleaning Bowls Training",
-    #     "timeStart": "6pm",
-    #     "timeEnd": "9pm",
-    #     "location": "Dining Dishes Room",
-    # },
-    # {
-    #     "id": 10,
-    #     "program": 4,
-    #     "term": 3,
-    #     "description": "Whole Celts Training",
-    #     "timeStart": "6pm",
-    #     "timeEnd": "9pm",
-    #     "location": "Dining Dishes Room",
-    # }
+
 ]
 Event.insert_many(events).on_conflict_replace().execute()
 
@@ -288,6 +240,22 @@ courseHoursEarned = [
         "user": User.get_by_id("neillz"),
         "hoursEarned": 3.0
     },
+    {
+        "course": Course.get_by_id(2),
+        "user": User.get_by_id("khatts"),
+        "hoursEarned": 4.0
+    },
+    {
+        "course": Course.get_by_id(2),
+        "user": User.get_by_id("khatts"),
+        "hoursEarned": 4.0
+    },
+    {
+        "course": Course.get_by_id(1),
+        "user": User.get_by_id("khatts"),
+        "hoursEarned": 1
+    },
+
 ]
 CourseParticipant.insert_many(courseHoursEarned).on_conflict_replace().execute()
 

@@ -6,11 +6,7 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.eventParticipant import EventParticipant
 from app.models.event import Event
-# from flask import g
 from peewee import *
-# from playhouse.shortcuts import model_to_dict
-
-
 
 def getSLCourseTranscript(user):
     """
@@ -21,7 +17,7 @@ def getSLCourseTranscript(user):
     sLCourseInformation = (CourseParticipant
     .select(CourseParticipant.course, CourseParticipant.user, fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned"))
     .group_by(CourseParticipant.course, CourseParticipant.user)
-    .where(CourseParticipant.user== user))
+    .where(CourseParticipant.user == user))
     courses = [item for item in sLCourseInformation.objects()]
 
     allCoursesList = []
@@ -56,30 +52,19 @@ def getProgramTranscript(user):
         .where(EventParticipant.user == user)
         .join(Event)
         .join(Program)
-        .group_by(EventParticipant.event.program)
-    )
+        .group_by(EventParticipant.event.program))
 
     listOfProgramsTranscript = []
     programTranscript = []
 
     for i in range(0, len(programInformation)):
-        print(i)
-        programname = programInformation[i].event.program.programName
+
+        programName = programInformation[i].event.program.programName
+        #FIXME: If there are more than one events for the program and the term.description are different:
+            #term = "earliest term - final term"
         term = programInformation[i].event.term.description
-        cHoursAccrued = programInformation[i].hoursEarned
-        programTranscript = [programname, term, cHoursAccrued]
+        totalHoursEarnedForProgram = programInformation[i].hoursEarned
+        programTranscript = [ programName , term , totalHoursEarnedForProgram ]
         listOfProgramsTranscript.append(programTranscript)
-    print("here", programTranscript)
-    print("list", listOfProgramsTranscript)
 
-    #Note: It is kind of wierd to get the term for a program because it has more than one events that might be in different term
-    #When do we want to generate a transcript for the students. Is it by the end of each term? year?
-
-    #Note: Create list of list for the trancript
-
-def getUser(user):
-    """
-    Returns the user's first and last name.
-    :user: model object
-    """
-    return user.firstName + " " + user.lastName
+    return listOfProgramsTranscript
