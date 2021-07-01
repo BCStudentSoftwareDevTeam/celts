@@ -59,13 +59,18 @@ def getProgramTranscript(user):
         .group_by(EventParticipant.event.program)
     )
 
+    listOfProgramsTranscript = []
     programTranscript = []
-    for item in programInformation:
-        print()
-        programTranscript.append(item.event.program.programName)
-        programTranscript.append(item.event.term.description)
-        programTranscript.append(item.hoursEarned)
+
+    for i in range(0, len(programInformation)):
+        print(i)
+        programname = programInformation[i].event.program.programName
+        term = programInformation[i].event.term.description
+        cHoursAccrued = programInformation[i].hoursEarned
+        programTranscript = [programname, term, cHoursAccrued]
+        listOfProgramsTranscript.append(programTranscript)
     print("here", programTranscript)
+    print("list", listOfProgramsTranscript)
 
     #Note: It is kind of wierd to get the term for a program because it has more than one events that might be in different term
     #When do we want to generate a transcript for the students. Is it by the end of each term? year?
