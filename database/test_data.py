@@ -8,7 +8,6 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.program import Program
 from app.models.event import Event
-from app.models.programEvent import ProgramEvent
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -92,6 +91,7 @@ Program.insert_many(programs).on_conflict_replace().execute()
 events = [
     {
         "id": 1,
+        "program": 1,
         "term": 1,
         "description": "Empty Bowls Spring 2021",
         "timeStart": "6pm",
@@ -100,6 +100,7 @@ events = [
     },
     {
         "id": 2,
+        "program": 2,
         "term": 1,
         "description": "Berea Buddies Training",
         "timeStart": "6pm",
@@ -109,6 +110,7 @@ events = [
     {
         "id": 3,
         "term": 3,
+        "program": 3,
         "description": "Adopt A Grandparent",
         "timeStart": "6pm",
         "timeEnd": "9pm",
@@ -116,6 +118,7 @@ events = [
     },
     {
         "id": 4,
+        "program": 4,
         "term": 3,
         "description": "Berea Buddies First Meetup",
         "timeStart": "6pm",
@@ -124,23 +127,3 @@ events = [
     },
 ]
 Event.insert_many(events).on_conflict_replace().execute()
-
-programEvents = [
-    {
-        "program": 1,
-        "event": 1
-    },
-    {
-        "program": 2,
-        "event": 2
-    },
-    {
-        "program": 3,
-        "event": 3
-    },
-    {
-        "program": 2,
-        "event": 4
-    },
-]
-ProgramEvent.insert_many(programEvents).on_conflict_replace().execute()
