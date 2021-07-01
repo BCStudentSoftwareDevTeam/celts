@@ -12,9 +12,4 @@ def getUpcomingEventsForUser(user):
                             )
     upcomingEvents = []
 
-    for event in interestedEvents:
-
-        if event.startDate >= date.today() and event.timeStart > datetime.now().time():
-            upcomingEvents.append(event)
-
-    return upcomingEvents
+    return [e for e in interestedEvents if e.startDate >= date.today() and e.timeStart > datetime.now().time()]
