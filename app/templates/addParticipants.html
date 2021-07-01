@@ -2,6 +2,7 @@
 
 {% block scripts %}
 {{super()}}
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.5.4/bootstrap-select.js"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/addParticipants.js') }}?u={{lastStaticUpdate}}"></script>
 
@@ -13,24 +14,20 @@
 </head>
 <div class= "form-check-inline">
   <h2>Add Volunteers*</h2>
-    <input type="text" id="Volsearch" placeholder="Search for names.." title="Type in a name">
-    <button type="button" class="btn btn-secondary btn-sm">+</button>
-    {% for User in eventParticipants %}
-    <ul id="Volul">
-      <li class="Volunteers"><a href="#" onclick="addResult()">{{ User.firstName + " " + User.lastName }}</a></li>
-    </ul>
-    {% endfor %}
+    <div>
+      <input type="text" id="Volsearch" placeholder="Search for names.." title="Type in a name">
+      <button type="button" class="btn btn-secondary btn-sm">+</button>
+      {% for User in eventParticipants %}
+      <div id="Volul">
+        <a style = "list-style-type: none; margin: 0" class="dropdown-item Volunteers" href="#" onclick="addVolunteer(this)">{{ User.firstName + " " + User.lastName }}</a>
+      </div>
+      {% endfor %}
+    </div>
     <table class="table table-striped" id="Volunteertable">
       <tr>
         <th scope="col">Name</th>
         <th scope="col">Remove</th>
       </tr>
-      {% for User in eventParticipants %}
-        <tr id={{User.bnumber}}>
-            <td>{{ User.firstName + " " + User.lastName }}</td>
-            <td><button id="removeButton" onclick="removeVolunteer(this)" type="button">x</button></td>
-        </tr>
-      {% endfor %}
   </table>
 </div>
 <div class= "form-check-inline">
@@ -42,9 +39,9 @@
     </button>
 
     {% for OutsideParticipant in outsideParticipants %}
-    <ul id="Partul">
-      <li class="outsidepart">{{ OutsideParticipant.firstName + " " + OutsideParticipant.lastName }}</li>
-    </ul>
+    <div id="Partul">
+      <a style = "list-style-type: none;" class="dropdown-item outsidepart" href="#" onclick="addResult()" class="dropdown-item" href="#" onclick="addResult()">{{ OutsideParticipant.firstName + " " + OutsideParticipant.lastName }}</a>
+    </div>
     {% endfor %}
     <table class="table table-striped" id="OutsideTable">
       <tr id="tableRow">
@@ -72,29 +69,29 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-      <form id="addParticipantsForm" method = "POST">
+      <form class="row g-3" data-toggle="validator" action="/createParticipant" method="post" role="form" id="addParticipantsForm">
         <div class="form-group">
           <label for="exampleFormControlTextarea1">First Name:</label>
-          <input class="form-control" id="firstNameTextarea" name="firstNameTextarea" rows="1" oninput="checkForChange('firstname')" placeholder="First Name">
+          <input class="form-control" type="text" id="firstNameTextarea" name="firstNameTextarea" rows="1" placeholder="First Name" required>
 
         </div>
         <div class="form-group">
           <label for="exampleFormControlTextarea1">Last Name:</label>
-          <input class="form-control" id="lastNameTextarea" name="lastNameTextarea" rows="1" oninput="checkForChange('lastname')" placeholder="Last Name">
+          <input class="form-control" type="text" id="lastNameTextarea" name="lastNameTextarea" rows="1" placeholder="Last Name" required>
         </div>
         <div class="form-group">
           <label for="exampleFormControlTextarea1">Email:</label>
-          <input class="form-control" id="emailTextarea" name="emailTextarea" rows="1" type="email" oninput="checkForChange('email')" placeholder="Email" required>
+          <input class="form-control" type="text" id="emailTextarea" name="emailTextarea" rows="1" placeholder="Email" required>
         </div>
         <div class="form-group">
           <label for="exampleFormControlTextarea1">Phone Number:</label>
-          <input class="form-control" id="phoneNumberTextarea" name="phoneNumberTextarea" rows="1" oninput="checkForChange('phone')" placeholder="Phone Number">
+          <input class="form-control" type="text" id="phoneNumberTextarea" name="phoneNumberTextarea" rows="1" placeholder="Phone Number" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" id="createParticipantBtn" class="btn btn-primary">Create Participant</button>
         </div>
       </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" id="createParticipantBtn" onclick="textboxValue()" data-bs-dismiss="modal" class="btn btn-primary" disabled>Create Participant</button>
       </div>
     </div>
   </div>
