@@ -32,8 +32,25 @@ $(document).ready(function(){
 function addResult(){
   console.log("Added!")
 }
-
 function removeParticipants(e) {
+  // var $row = $(e);
+  //console.log($row.find(':nth-child(2)').text());
+  // console.log($(e).parent().parent()[0].(document).text("td:nth-child(2)"));
+  text = $(e).parent().parent()[0].textContent;
+  text2 = JSON.stringify(text);
+  console.log(text2);
+  $.ajax({
+    method: "POST",
+    url: "/removeParticipant",
+    data: text2,
+    contentType: "application/json; charset=utf-8",
+    success: function(response) {
+      console.log("Success");
+    },
+    error: function(request, status, error) {
+      console.log(status,error);
+    }
+  });
   $(e).parent().parent().remove();
 }
 

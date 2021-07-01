@@ -84,18 +84,17 @@
         </div>
         <div class="form-group">
           <label for="exampleFormControlTextarea1">Email:</label>
-          <input class="form-control" id="emailTextarea" name="emailTextarea" rows="1" oninput="checkForChange('email')" placeholder="Email">
+          <input class="form-control" id="emailTextarea" name="emailTextarea" rows="1" type="email" oninput="checkForChange('email')" placeholder="Email" required>
         </div>
         <div class="form-group">
           <label for="exampleFormControlTextarea1">Phone Number:</label>
           <input class="form-control" id="phoneNumberTextarea" name="phoneNumberTextarea" rows="1" oninput="checkForChange('phone')" placeholder="Phone Number">
         </div>
-        <button type="button" id="createParticipantBtn" onclick="textboxValue()" data-bs-dismiss="modal" class="btn btn-primary" disabled>Create Participant</button>
-
       </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" id="createParticipantBtn" onclick="textboxValue()" data-bs-dismiss="modal" class="btn btn-primary" disabled>Create Participant</button>
       </div>
     </div>
   </div>

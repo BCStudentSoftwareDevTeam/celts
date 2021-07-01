@@ -22,6 +22,26 @@ def addParticipants():
                             outsideParticipants = outsideParticipants,
                             eventParticipants = eventParticipants)
 
+@admin_bp.route("/removeParticipant", methods = ['POST'])
+def removeParticipant():
+    try:
+        # print(request.data)
+        rsp = (request.data).decode("utf-8")
+        rspFunctional = json.loads(rsp);
+        print(rspFunctional*5)
+        participantData = [
+            {
+                "event": 2,
+                "email": rspFunctional["emailEntry"],
+            }
+        ]
+        removeData = OutsideParticipant.select().where(OutsideParticipant.email==rspFunctional["emailEntry"])
+        removeData.delete_instance()
+        return jsonify(success=True)
+    except Exception as e:
+        print(e)
+        return "Error Removing Participant Data", 500
+
 @admin_bp.route("/createParticipant", methods = ['POST'])
 def createParticipant():
     try:
