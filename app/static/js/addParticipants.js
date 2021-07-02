@@ -25,41 +25,17 @@ function removeParticipants(e) {
 function removeVolunteer(e) {
   $(e).parent().parent().remove();
 }
+
 count = 0;
 function addOutsideParticipant() {
   console.log("Function called");
   opList = ["email", "firstName", "lastName", "phoneNumber"];
   opList.forEach(item => {
     $("<input type='text'/>")
-   .attr("value", $('#'+item+'Textarea').val())
-   .attr("id", item+count)
-   .attr("name", item+count)
-   .appendTo("#OutsideTable")
-  }
-)
+    .attr("value", $('#'+item+'Textarea').val())
+    .attr("id", item+count)
+    .attr("name", item+count)
+    .appendTo("#OutsideTable")
+  })
 count++;
 }
-
-
-// function textboxValue() {
-//   var formValues = {
-//       event: "2",
-//       firstName: $("#firstNameTextarea").val(),
-//       lastName: $("#lastNameTextarea").val(),
-//       emailEntry: $("#emailTextarea").val(),
-//       phoneNumber: $("#phoneNumberTextarea").val(),
-//     };
-//   var formStringified = JSON.stringify(formValues, null, 2);
-//   $.ajax({
-//     method: "POST",
-//     url: "/createParticipant",
-//     data: formStringified,
-//     contentType: "application/json; charset=utf-8",
-//     success: function(response) {
-//       console.log("Success");
-//     },
-//     error: function(request, status, error) {
-//       console.log(status,error);
-//     }
-//   });
-// };
