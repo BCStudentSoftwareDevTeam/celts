@@ -28,5 +28,3 @@ def test_getEventsInvalidProgram():
     # Invalid program
     with pytest.raises(DoesNotExist):
         getEvents(program_id= "asdf")
-
-
