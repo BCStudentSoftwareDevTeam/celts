@@ -5,9 +5,10 @@ from app.models.user import User
 
 def getTermDescription():
 
-    termDescription = Term.select(Term.description)
-    description = [des.description for des in termDescription.objects()]
-    return description
+    termDescriptions = Term.select(Term.description)
+    descriptions = [des.description for des in termDescriptions.objects()]
+
+    return descriptions
 
 def getCurrentTerm():
 

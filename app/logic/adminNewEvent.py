@@ -15,13 +15,13 @@ def manageNewEventData(eventData):
 
 def createEvent(newEventData):
 
-    term = Term.select(Term.id).where(Term.description == newEventData['eventTerm'])        # separate function
+    term = Term.select(Term.id).where(Term.description == newEventData['eventTerm'])
 
     eventEntry = Event.create(eventName = newEventData['eventName'],
                               term_id = term,
                               description= newEventData['eventDescription'],
                               timeStart = newEventData['eventStartTime'],
-                              timeEnd= newEventData['eventEndTime'],
+                              timeEnd = newEventData['eventEndTime'],
                               location = newEventData['eventLocation'],
                               isRecurring = newEventData['recurringEvent'],
                               isRsvpRequired = newEventData['eventRSVP'], #rsvp

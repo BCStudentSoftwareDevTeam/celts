@@ -37,11 +37,17 @@ function updateDate(obj) { // updates max and min dates of the datepickers as th
     $("#startDatePicker").datepicker("option", "maxDate", new Date(newYear, newMonth, newDay));
   }
   if(obj.id == "startDatePicker"){
+    if($('input[name="recurringEvent"]:checked').val() == 'true'){ //recurring event shouldn't have same start and end date
+      var newDay = dateToChange.getDate() + 2;
+    }else{
     var newDay = dateToChange.getDate() + 1;
+    }
     $("#endDatePicker").datepicker({minDate: new Date(newYear, newMonth, newDay)});
     $("#endDatePicker").datepicker( "option", "minDate", new Date(newYear, newMonth, newDay));
   }
 }
+
+
 
 
 function dropHandler(ev) {

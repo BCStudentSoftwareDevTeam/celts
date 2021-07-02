@@ -15,22 +15,20 @@ def createEvents():
 
     if g.current_user.isCeltsAdmin:
         #add check for admin
-
-        EventData = request.form.copy() #since request.form returns a immutable dict. we need to copy to change it
+        EventData = request.form.copy() #since request.form returns a immutable dict. we need to copy to change the
         newEventData= manageNewEventData(EventData)
 
         # add function to validate data ()
-        validNewEventData = validateNewEventData(newEventData)
+        validNewEventData, eventErrorMessage = validateNewEventData(newEventData)
 
         if validNewEventData:
             createEvent(newEventData)
-
 
             flash("Event successfully created!")
             return redirect(url_for("admin.createEvent", program_id=newEventData['programId']))
 
         else:
-            flash("Invalid input. Please double check all input fields. (for now validateNewEventData returns false)")
+            flash(eventErrorMessage)
             return redirect(url_for("admin.createEvent", program_id=2)) #FIXME: have this redirect to main programs page (or some appropriate non admin page).
 
     flash("Only celts admins can create an event!")
