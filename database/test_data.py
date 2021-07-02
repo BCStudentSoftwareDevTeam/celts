@@ -106,17 +106,14 @@ programs = [
     {
         "id": 1,
         "programName": "Empty Bowls",
-        "term": 1
     },
     {
         "id": 2,
         "programName": "Berea Buddies",
-        "term": 2
     },
     {
         "id": 3,
         "programName": "Adopt A Grandparent",
-        "term": 3
     },
 
 ]
