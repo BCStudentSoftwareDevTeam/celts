@@ -100,7 +100,7 @@ events = [
     },
     {
         "id": 2,
-        "program": 2,
+        "program": 1,
         "term": 1,
         "description": "Berea Buddies Training",
         "timeStart": "6pm",
@@ -109,7 +109,7 @@ events = [
     },
     {
         "id": 3,
-        "term": 3,
+        "term": 1,
         "program": 3,
         "description": "Adopt A Grandparent",
         "timeStart": "6pm",
@@ -118,8 +118,8 @@ events = [
     },
     {
         "id": 4,
-        "program": 4,
-        "term": 3,
+        "program": 1,
+        "term": 1,
         "description": "Berea Buddies First Meetup",
         "timeStart": "6pm",
         "timeEnd": "9pm",
