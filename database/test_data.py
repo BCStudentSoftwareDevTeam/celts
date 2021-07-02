@@ -8,13 +8,8 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.program import Program
 from app.models.event import Event
-<<<<<<< HEAD
-from app.models.programEvent import ProgramEvent
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
-=======
-from app.models.preqForProgram import PreqForProgram
->>>>>>> development
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -159,7 +154,7 @@ events = [
     },
     {
         "id": 5,
-        "program": None,
+        "program": 2,
         "term": 3,
         "description": "Tutoring Training",
         "isTraining": True,
@@ -169,7 +164,7 @@ events = [
     },
     {
         "id": 6,
-        "program": None,
+        "program": 1,
         "term": 3,
         "description": "Making Bowls Training",
         "isTraining": True,
@@ -179,7 +174,7 @@ events = [
     },
     {
         "id": 7,
-        "program": None,
+        "program": 2,
         "term": 3,
         "description": "How To Make Buddies Training",
         "isTraining": True,
@@ -189,7 +184,7 @@ events = [
     },
     {
         "id": 8,
-        "program": None,
+        "program": 3,
         "term": 3,
         "description": "Adoption 101 Training",
         "isTraining": True,
@@ -199,7 +194,7 @@ events = [
     },
     {
         "id": 9,
-        "program": None,
+        "program": 2,
         "term": 3,
         "description": "Cleaning Bowls Training",
         "isTraining": True,
@@ -210,7 +205,7 @@ events = [
     },
     {
         "id": 10,
-        "program": 4,
+        "program": 3,
         "term": 3,
         "description": "Whole Celts Training",
         "timeStart": "6pm",
@@ -220,7 +215,6 @@ events = [
 ]
 Event.insert_many(events).on_conflict_replace().execute()
 
-<<<<<<< HEAD
 eventParticipants = [
     {
             "user": "heggens",
@@ -239,51 +233,6 @@ eventParticipants = [
 ]
 EventParticipant.insert_many(eventParticipants).on_conflict_replace().execute()
 
-programEvents = [
-=======
-preqForProgram = [
->>>>>>> development
-    {
-        "program": 1,
-        "event": 1
-    },
-    {
-        "program": 1,
-        "event": 10
-    },
-    {
-        "program": 2,
-        "event": 10
-    },
-    {
-        "program": 2,
-        "event": 2
-    },
-    {
-        "program": 3,
-        "event": 3
-    },
-    {
-        "program": 1,
-        "event": 6
-    },
-    {
-        "program": 1,
-        "event": 7
-    },
-    {
-        "program": 3,
-        "event": 8
-    },
-    {
-        "program": 1,
-        "event": 9
-    }
-
-]
-<<<<<<< HEAD
-ProgramEvent.insert_many(programEvents).on_conflict_replace().execute()
-
 outsideP = [
     {
         "event": 1,
@@ -301,6 +250,3 @@ outsideP = [
     }
 ]
 OutsideParticipant.insert_many(outsideP).on_conflict_replace().execute()
-=======
-PreqForProgram.insert_many(preqForProgram).on_conflict_replace().execute()
->>>>>>> development

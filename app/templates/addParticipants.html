@@ -5,6 +5,7 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.5.4/bootstrap-select.js"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/addParticipants.js') }}?u={{lastStaticUpdate}}"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 {% endblock %}
 
@@ -14,13 +15,10 @@
 </head>
 <div class= "form-check-inline">
   <h2>Add Volunteers*</h2>
-    <div>
-      <input type="text" id="Volsearch" placeholder="Search for names.." title="Type in a name">
-      {% for User in eventParticipants %}
-      <div id="Volul">
-        <a style = "list-style-type: none; margin: 0" class="dropdown-item Volunteers" href="#" onclick="addVolunteer(this)">{{ User.firstName + " " + User.lastName }}</a>
-      </div>
-      {% endfor %}
+  <div class="ui-widget">
+    <input id="#volunteerInput" oninput="volunteerSearch()"
+    style= '.ui-autocomplete-loading { background: white url("images/ui-anim_basic_16x16.gif") right center no-repeat; }'>
+
     </div>
     <table class="table table-striped" id="Volunteertable">
       <tr>
@@ -30,8 +28,8 @@
   </table>
 </div>
 <div class= "form-check-inline">
-  <h2>Add Outside Participants</h2>
-    <button class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#opModal" type="button">+</button>
+  <h2 style="position: absolute; top: 2em;">Add Outside Participants</h2>
+    <button class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#particpantsModal" type="button">+</button>
     <table class="table table-striped" id="OutsideTable">
       <tr id="tableRow">
         <th scope="col">Name</th>
@@ -39,18 +37,9 @@
         <th scope="col">Phone Number</th>
         <th scope="col">Remove</th>
         </tr>
-          {% for OutsideParticipant in outsideParticipants %}
-            <tr id="this-row2">
-                <td>{{ OutsideParticipant.firstName + " " + OutsideParticipant.lastName }}</td>
-                <td>{{ OutsideParticipant.email }}</td>
-                <td>{{ OutsideParticipant.phoneNumber }}</td>
-                <td><button id="removeButton" onclick="removeParticipants(this)" type="button">x</button></td>
-            </tr>
-          {% endfor %}
   </table>
 </div>
-
-<div class="modal fade" id="opModal" tabindex="-1" aria-labelledby="opModalLabel" aria-hidden="true">
+<div class="modal fade" id="particpantsModal" tabindex="-1" aria-labelledby="opModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -60,20 +49,20 @@
       <div class="modal-body">
       <form class="row g-3" data-toggle="validator" role="form" id="addParticipantsForm">
         <div class="form-group">
-          <label for="opFormControlTextarea1">First Name:</label>
+          <label for="firstNameTextarea">First Name:</label>
           <input class="form-control" type="text" id="firstNameTextarea" name="firstNameTextarea" rows="1" placeholder="First Name" required>
 
         </div>
         <div class="form-group">
-          <label for="opFormControlTextarea1">Last Name:</label>
+          <label for="lastNameTextarea">Last Name:</label>
           <input class="form-control" type="text" id="lastNameTextarea" name="lastNameTextarea" rows="1" placeholder="Last Name" required>
         </div>
         <div class="form-group">
-          <label for="opFormControlTextarea1">Email:</label>
+          <label for="emailTextarea">Email:</label>
           <input class="form-control" type="text" id="emailTextarea" name="emailTextarea" rows="1" placeholder="Email" required>
         </div>
         <div class="form-group">
-          <label for="opFormControlTextarea1">Phone Number:</label>
+          <label for="phoneNumberTextarea">Phone Number:</label>
           <input class="form-control" type="text" id="phoneNumberTextarea" name="phoneNumberTextarea" rows="1" placeholder="Phone Number" required>
         </div>
         <div class="modal-footer">

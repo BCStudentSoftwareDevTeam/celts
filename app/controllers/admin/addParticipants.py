@@ -8,26 +8,12 @@ from peewee import *
 
 @admin_bp.route('/addParticipants', methods = ['GET'])
 def addParticipants():
-    partDict = {}
-    outsideParticipants = OutsideParticipant.select(
-                                                    OutsideParticipant.firstName,
-                                                    OutsideParticipant.lastName,
-                                                    OutsideParticipant.email,
-                                                    OutsideParticipant.phoneNumber)
-
+    
     eventParticipants = (User.select(User.firstName, User.lastName, User.bnumber)
                                         .join(EventParticipant, on = (User.username == EventParticipant.user_id)))
 
-    for participant in outsideParticipants:
-        username = participant.email.split("@")[0].lstrip()
-        partDict[username] = []
-        for i in (participant.firstName, participant.lastName, participant.phoneNumber, participant.email):
-            partDict[username].append(i)
-    print(partDict)
-
     return render_template('addParticipants.html',
                             title="Add Participants",
-                            outsideParticipants = outsideParticipants,
                             eventParticipants = eventParticipants)
 
 # @admin_bp.route("/removeParticipant", methods = ['POST'])
