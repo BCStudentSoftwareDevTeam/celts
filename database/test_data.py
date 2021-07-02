@@ -135,6 +135,7 @@ events = [
         "program": 2,
         "term": 1,
         "description": "Berea Buddies Training",
+        "isTraining": True,
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "a big room",
@@ -316,3 +317,4 @@ programHoursEarned = [
 
 ]
 EventParticipant.insert_many(programHoursEarned).on_conflict_replace().execute()
+ 
