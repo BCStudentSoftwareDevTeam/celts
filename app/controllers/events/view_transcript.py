@@ -52,50 +52,6 @@ def getProgramTranscript(user):
     username = User.get_by_id(user)
     # Add up hours earned for each program they've participated in
     programInformation = (EventParticipant
-<<<<<<< HEAD
-        .select(EventParticipant.user, fn.SUM(EventParticipant.hoursEarned)).alias("sum_hours")
-        .group_by(EventParticipant.user)
-        .order_by(fn.SUM(EventParticipant.hoursEarned).desc()))
-
-    for eUser in programInformation.tuples():
-        print(eUser)
-
-
-    programsInfo = [item for item in programInformation.objects()]
-    print(programsInfo)
-    programList = []
-    pList = []
-    programs = []
-    pHoursAccrued = EventParticipant.select(EventParticipant.event).where(EventParticipant.user == user)
-    programSumDict = {}
-    for event in pHoursAccrued:
-
-        programID = event.event.program.id # the program number associated with the event number
-        # print(event.event.term.description)
-        # hours = float(event.hoursEarned) # the hours of the event you participated in
-        # if event.event.program.programName in programSumDict:
-        #     programSumDict[event.event.program.programName] += hours
-        # else:
-        #     programSumDict[event.event.program.programName] = hours
-
-        if [event.event.program.programName, event.event.program.term.description] not in pList:
-            pList.append([event.event.program.programName, event.event.program.term.description])
-            programs.append(event.event.program)
-
-    for program in programs:
-        pName = program.programName
-        pTerm = program.term.description
-        programList.append([pName, pTerm])
-
-    return programList
-
-def getUser(user):
-    """
-    Returns the user's first and last name.
-    :user: model object
-    """
-    return user.firstName + " " + user.lastName
-=======
         .select(EventParticipant.event , fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
         .where(EventParticipant.user == username)
         .join(Event)
@@ -116,4 +72,3 @@ def getUser(user):
         listOfProgramsTranscript.append(programTranscript)
 
     return listOfProgramsTranscript
->>>>>>> 9fb178f272a47c8672026e297c01a880cbd9b19d

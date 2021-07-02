@@ -177,6 +177,7 @@ coursestatus = [
     }
 ]
 CourseStatus.insert_many(coursestatus).on_conflict_replace().execute()
+
 courses = [
     {
         "id": 1,
@@ -317,4 +318,3 @@ programHoursEarned = [
 
 ]
 EventParticipant.insert_many(programHoursEarned).on_conflict_replace().execute()
- 
