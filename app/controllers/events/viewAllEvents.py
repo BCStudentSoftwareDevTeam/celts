@@ -7,6 +7,8 @@ from app.models.event import Event
 
 def groupingEvents(termID):
 
-    groupEvents = Event.select(Event.description).where(Event.term == termID).group_by(Event.program)
-
+    groupEvents = Event.select(Event.description).where(Event.term == termID).order_by(Event.program)
+    # pID = Event.program.id
+    for i in list(groupEvents):
+        print(groupEvents.program)
     return list(groupEvents)
