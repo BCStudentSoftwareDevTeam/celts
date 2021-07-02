@@ -1,15 +1,5 @@
 $(document).ready(function(){
   $(".Volunteers").hide();
-  $(".outsidepart").hide();
-  $("#Outsearch").on("keyup", function() {
-    var value = $(this).val().toLowerCase();
-    $("#Partul a").filter(function() {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-      if(!value) {
-        $(".outsidepart").hide();
-      }
-      });
-    });
   $("#Volsearch").on("keyup", function() {
     var value = $(this).val().toLowerCase();
     $("#Volul a").filter(function() {
@@ -28,30 +18,28 @@ function addVolunteer(e){
 
 }
 function removeParticipants(e) {
-  // var $row = $(e);
-  //console.log($row.find(':nth-child(2)').text());
-  // console.log($(e).parent().parent()[0].(document).text("td:nth-child(2)"));
   text = $(e).parent().parent()[0].textContent;
-  text2 = JSON.stringify(text);
-  // console.log(text2);
-  $.ajax({
-    method: "POST",
-    url: "/removeParticipant",
-    data: text2,
-    contentType: "application/json; charset=utf-8",
-    success: function(response) {
-      console.log("Success");
-    },
-    error: function(request, status, error) {
-      console.log(status,error);
-    }
-  });
   $(e).parent().parent().remove();
 }
 
 function removeVolunteer(e) {
   $(e).parent().parent().remove();
 }
+count = 0;
+function addOutsideParticipant() {
+  console.log("Function called");
+  opList = ["email", "firstName", "lastName", "phoneNumber"];
+  opList.forEach(item => {
+    $("<input type='text'/>")
+   .attr("value", $('#'+item+'Textarea').val())
+   .attr("id", item+count)
+   .attr("name", item+count)
+   .appendTo("#OutsideTable")
+  }
+)
+count++;
+}
+
 
 // function textboxValue() {
 //   var formValues = {

@@ -50,13 +50,14 @@ def addParticipants():
 #         print(e)
 #         return "Error Removing Participant Data", 500
 
-@admin_bp.route("/createParticipant", methods = ['POST'])
-def createParticipant():
-
-        OutsideParticipant.get_or_create(
-                                        event_id= 2,
-                                        firstName= request.form['firstNameTextarea'],
-                                        lastName= request.form['lastNameTextarea'],
-                                        email= request.form['emailTextarea'],
-                                        phoneNumber= request.form['phoneNumberTextarea'])
-        return redirect("/addParticipants")
+# @admin_bp.route("/createParticipant", methods = ['POST'])
+# def createParticipant():
+#
+#         OutsideParticipant.get_or_create(
+#                                         event_id= 2,
+#                                         firstName= request.form['firstNameTextarea'],
+#                                         lastName= request.form['lastNameTextarea'],
+#                                         email= request.form['emailTextarea'],
+#                                         phoneNumber= request.form['phoneNumberTextarea'])
+#         # return redirect("/addParticipants")
+#         return "Successfully added"
