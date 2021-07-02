@@ -10,33 +10,33 @@ from app.controllers.events.meetsReqsForEvent import isEligibleForProgram
 def test_noUserVolunteerRegister():
 
     user = User.get(User.username == "asdlkfje")
-    event = Event.get(Event.id == 1)
+    program = Event.get(Event.id == 1)
     with pytest.raises(DoesNotExist):
-        eligible = isEligibleForProgram(event, "lamichhanes2")
+        eligible = isEligibleForProgram(program, "lamichhanes2")
 
     user = User.get(User.username == 123156)
-    event = Event.get(Event.id == 1)
+    program = Event.get(Event.id == 1)
     with pytest.raises(DoesNotExist):
-        eligible = isEligibleForProgram(event, 135156)
+        eligible = isEligibleForProgram(program, 135156)
 
     user = User.get(User.username == "khatts")
-    event = Event.get(Event.id == 1)
+    program = Event.get(Event.id == 1)
     with pytest.raises(DoesNotExist):
-        eligible = isEligibleForProgram(event, user)
+        eligible = isEligibleForProgram(program, user)
 
     user = User.get(User.username == "khatts")
-    event = Event.get(Event.id == 1)
+    program = Event.get(Event.id == 1)
     with pytest.raises(DoesNotExist):
-        eligible = isEligibleForProgram(event, user)
+        eligible = isEligibleForProgram(program, user)
 
 
 @pytest.mark.integration
 def test_volunteerEligible():
 
     user = User.get(User.username == "lamichhanes2")
-    event = Event.get(Event.id == 1)
+    program = Event.get(Event.id == 1)
     attended = EventParticipant.get(EventParticipant.attended == 1)
 
-    eligible = isEligibleForProgram(event, user)
+    eligible = isEligibleForProgram(program, user)
 
     assert eligible

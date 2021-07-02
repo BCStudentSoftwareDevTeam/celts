@@ -19,7 +19,7 @@ def volunteerRegister(userid,  eventid):
     # Assuming the student meets the requirement for the events (function wriiten
     # by Zach and KArina)
 
-    if isEligibleForProgram(event, user):
+    if isEligibleForProgram(program, user):
         if EventParticipant.select().where(EventParticipant.user == user,
                                            EventParticipant.event == event) is None:
             eventParticipant = EventParticipant.create(user = user,

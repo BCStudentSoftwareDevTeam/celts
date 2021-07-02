@@ -4,7 +4,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.programBan import ProgramBan
 
 
-def isEligibleForProgram(event, user):
+def isEligibleForProgram(program, user):
     """
     Checks if the user is banned from an event. Checks if the user has completed
     specific prerequisite(s) for the event.
@@ -13,7 +13,7 @@ def isEligibleForProgram(event, user):
     :return: True if the user is not banned and meets the requirements, and False otherwise
     """
 
-    program = Event.select(Event.program).where(Event.id == event)
+    program = Event.select(Event.program).where(Event.id == program)
     # assuming that the event belongs to one program
 
     if (ProgramBan.select().where(ProgramBan.user == user)) and (ProgramBan.select().where(ProgramBan.program == program)):
