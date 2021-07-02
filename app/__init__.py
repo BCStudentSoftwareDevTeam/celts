@@ -30,11 +30,10 @@ os.environ["ENV"] = get_env()
 app.config.update(config.get())
 
 # Override configuration with our local instance configuration
+from app.logic.utils import deep_update
 with open("app/config/" + config.override_file, 'r') as ymlfile:
     try:
-        # Need to fix this
-        #app.config.update(yaml.load(ymlfile, Loader=yaml.FullLoader))
-        pass
+        deep_update(app.config, yaml.load(ymlfile, Loader=yaml.FullLoader))
     except TypeError:
         print(f"There was an error loading the override config file {config.override_file}. It might just be empty.")
 

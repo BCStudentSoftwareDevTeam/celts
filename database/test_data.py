@@ -40,6 +40,19 @@ users = [
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False
     },
+    {
+        "username": "khatts",
+        "bnumber": "B00759107",
+        "email": "khatts@berea.edu",
+        "phoneNumber": "555-555-5555",
+        "firstName": "Sreynit",
+        "lastName": "Khatt",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": False
+    },
+
 
 ]
 User.insert_many(users).on_conflict_replace().execute()
@@ -93,23 +106,16 @@ programs = [
     {
         "id": 1,
         "programName": "Empty Bowls",
-        "term": 1
     },
     {
         "id": 2,
         "programName": "Berea Buddies",
-        "term": 2
     },
     {
         "id": 3,
         "programName": "Adopt A Grandparent",
-        "term": 3
     },
-    # {
-    #     "id": 4,
-    #     "programName": "Training",
-    #     "term": 4
-    # }
+
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
 
@@ -129,6 +135,7 @@ events = [
         "program": 2,
         "term": 1,
         "description": "Berea Buddies Training",
+        "isTraining": True,
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "a big room",
@@ -160,51 +167,7 @@ events = [
         "timeEnd": "9pm",
         "location": "a bigish room",
     },
-    # {
-    #     "id": 6,
-    #     "program": 4,
-    #     "term": 3,
-    #     "description": "Making Bowls Training",
-    #     "timeStart": "6pm",
-    #     "timeEnd": "9pm",
-    #     "location": "a big room",
-    # },
-    # {
-    #     "id": 7,
-    #     "program": 4,
-    #     "term": 3,
-    #     "description": "How To Make Buddies Training",
-    #     "timeStart": "6pm",
-    #     "timeEnd": "9pm",
-    #     "location": "Outisde",
-    # },
-    # {
-    #     "id": 8,
-    #     "program": 4,
-    #     "term": 3,
-    #     "description": "Adoption 101 Training",
-    #     "timeStart": "6pm",
-    #     "timeEnd": "9pm",
-    #     "location": "a big room",
-    # },
-    # {
-    #     "id": 9,
-    #     "program": 4,
-    #     "term": 3,
-    #     "description": "Cleaning Bowls Training",
-    #     "timeStart": "6pm",
-    #     "timeEnd": "9pm",
-    #     "location": "Dining Dishes Room",
-    # },
-    # {
-    #     "id": 10,
-    #     "program": 4,
-    #     "term": 3,
-    #     "description": "Whole Celts Training",
-    #     "timeStart": "6pm",
-    #     "timeEnd": "9pm",
-    #     "location": "Dining Dishes Room",
-    # }
+
 ]
 Event.insert_many(events).on_conflict_replace().execute()
 
@@ -275,6 +238,22 @@ courseHoursEarned = [
         "user": User.get_by_id("neillz"),
         "hoursEarned": 3.0
     },
+    {
+        "course": Course.get_by_id(2),
+        "user": User.get_by_id("khatts"),
+        "hoursEarned": 4.0
+    },
+    {
+        "course": Course.get_by_id(2),
+        "user": User.get_by_id("khatts"),
+        "hoursEarned": 4.0
+    },
+    {
+        "course": Course.get_by_id(1),
+        "user": User.get_by_id("khatts"),
+        "hoursEarned": 1
+    },
+
 ]
 CourseParticipant.insert_many(courseHoursEarned).on_conflict_replace().execute()
 
@@ -307,5 +286,35 @@ programHoursEarned = [
         "attended": True,
         "hoursEarned": 1
         },
+    {
+        "user": User.get_by_id("neillz"),
+        "event": 1,
+        "rsvp": True,
+        "attended": True,
+        "hoursEarned": 8,
+        },
+    {
+        "user": User.get_by_id("khatts"),
+        "event": 1,
+        "rsvp": True,
+        "attended": True,
+        "hoursEarned": 3,
+        },
+    {
+        "user": User.get_by_id("khatts"),
+        "event": 2,
+        "rsvp": True,
+        "attended": True,
+        "hoursEarned": 2,
+        },
+    {
+        "user": User.get_by_id("khatts"),
+        "event": 5,
+        "rsvp": True,
+        "attended": True,
+        "hoursEarned": 8,
+        },
+
 ]
 EventParticipant.insert_many(programHoursEarned).on_conflict_replace().execute()
+ 

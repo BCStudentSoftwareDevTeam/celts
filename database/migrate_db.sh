@@ -16,5 +16,6 @@ pem add app.models.program.Program
 pem add app.models.user.User
 pem add app.models.programBan.ProgramBan
 pem add app.models.courseInstructor.CourseInstructor
+
 pem watch
 pem migrate

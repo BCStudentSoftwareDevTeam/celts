@@ -6,11 +6,9 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.eventParticipant import EventParticipant
 from app.models.event import Event
-# from flask import g
+from peewee import DoesNotExist
+
 from peewee import *
-# from playhouse.shortcuts import model_to_dict
-
-
 
 def getSLCourseTranscript(user):
     """
@@ -18,27 +16,28 @@ def getSLCourseTranscript(user):
     list of instructors who teach the course, and hours earned for each course that the user took.
     :user: model object
     """
-    sLCourseInformation = (CourseParticipant.select(CourseParticipant.course, CourseParticipant.user, fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned"))
-
+    username = User.get_by_id(user)
+    sLCourseInformation = (CourseParticipant
+    .select(CourseParticipant.course, CourseParticipant.user, fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned"))
     .group_by(CourseParticipant.course, CourseParticipant.user)
-    .where(CourseParticipant.user== user))
+    .where(CourseParticipant.user == username))
+
     courses = [item for item in sLCourseInformation.objects()]
 
     allCoursesList = []
     listOfEachSLCourseInfo = []
     for i in range(0,len(courses)):
 
-        user_full_name = [(courses[i].user.firstName + " "+ courses[i].user.lastName)]
+        user_full_name = courses[i].user.firstName + " "+ courses[i].user.lastName
         course_name = courses[i].course.courseName
         description = courses[i].course.term.description
         hours = courses[i].hoursEarned
-        courseId = courses[i].course
-        cInstructor = CourseInstructor.select().where(CourseInstructor.course==courseId)
+        cInstructor = CourseInstructor.select().where(CourseInstructor.course== courses[i].course)
         instructorList = []
         for instructor in cInstructor.objects():
             instructorList.append(instructor.user.firstName+" "+ instructor.user.lastName)
         #creates a list for all information of a course that a courseParticipant is involved in
-        listOfEachSLCourseInfo = [{"fullName": user_full_name}, {"courseName": course_name}, {"termName": description}, {"cHoursAccrued": hours}, {"cInstructorName": instructorList}]
+        listOfEachSLCourseInfo = [ user_full_name , course_name , description , hours , instructorList ]
         allCoursesList.append(listOfEachSLCourseInfo)
 
     return allCoursesList
@@ -50,8 +49,10 @@ def getProgramTranscript(user):
     term, and hours earned for each program that the user attended.
     :user: model object
     """
-
+    username = User.get_by_id(user)
+    # Add up hours earned for each program they've participated in
     programInformation = (EventParticipant
+<<<<<<< HEAD
         .select(EventParticipant.user, fn.SUM(EventParticipant.hoursEarned)).alias("sum_hours")
         .group_by(EventParticipant.user)
         .order_by(fn.SUM(EventParticipant.hoursEarned).desc()))
@@ -94,3 +95,25 @@ def getUser(user):
     :user: model object
     """
     return user.firstName + " " + user.lastName
+=======
+        .select(EventParticipant.event , fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
+        .where(EventParticipant.user == username)
+        .join(Event)
+        .join(Program)
+        .group_by(EventParticipant.event.program))
+
+    listOfProgramsTranscript = []
+    programTranscript = []
+
+    for i in range(0, len(programInformation)):
+
+        programName = programInformation[i].event.program.programName
+        #FIXME: If there are more than one events for the program and the term.description are different:
+            #term = "earliest term - final term"
+        term = programInformation[i].event.term.description
+        totalHoursEarnedForProgram = programInformation[i].hoursEarned
+        programTranscript = [ programName , term , totalHoursEarnedForProgram ]
+        listOfProgramsTranscript.append(programTranscript)
+
+    return listOfProgramsTranscript
+>>>>>>> 9fb178f272a47c8672026e297c01a880cbd9b19d
