@@ -8,7 +8,6 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.program import Program
 from app.models.event import Event
-from app.models.programEvent import ProgramEvent
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -136,6 +135,7 @@ Program.insert_many(programs).on_conflict_replace().execute()
 events = [
     {
         "id": 1,
+        "program": 1,
         "term": 1,
         "description": "Empty Bowls Spring 2021",
         "timeStart": "6pm",
@@ -144,14 +144,20 @@ events = [
     },
     {
         "id": 2,
+        "program": None,
         "term": 1,
+        "eventName": "Berea Buddies",
         "description": "Berea Buddies Training",
+        "isTraining": True,
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "a big room",
+        "startDate": "2021-06-15",
+        "endDate": "2021-06-20"
     },
     {
         "id": 3,
+        "program": 3,
         "term": 3,
         "description": "Adopt A Grandparent",
         "timeStart": "6pm",
@@ -160,31 +166,72 @@ events = [
     },
     {
         "id": 4,
+        "program": 2,
         "term": 3,
         "description": "Berea Buddies First Meetup",
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "a big room",
     },
+    {
+        "id": 5,
+        "program": None,
+        "term": 3,
+        "description": "Tutoring Training",
+        "isTraining": True,
+        "timeStart": "1am",
+        "timeEnd": "9pm",
+        "location": "a bigish room",
+    },
+    {
+        "id": 6,
+        "program": None,
+        "term": 3,
+        "description": "Making Bowls Training",
+        "isTraining": True,
+        "timeStart": "6pm",
+        "timeEnd": "9pm",
+        "location": "a big room",
+    },
+    {
+        "id": 7,
+        "program": None,
+        "term": 3,
+        "description": "How To Make Buddies Training",
+        "isTraining": True,
+        "timeStart": "6pm",
+        "timeEnd": "9pm",
+        "location": "Outisde",
+    },
+    {
+        "id": 8,
+        "program": None,
+        "term": 3,
+        "description": "Adoption 101 Training",
+        "isTraining": True,
+        "timeStart": "6pm",
+        "timeEnd": "9pm",
+        "location": "a big room",
+    },
+    {
+        "id": 9,
+        "program": None,
+        "term": 3,
+        "description": "Cleaning Bowls Training",
+        "isTraining": True,
+        "isPrerequisiteForProgram": True,
+        "timeStart": "6pm",
+        "timeEnd": "9pm",
+        "location": "Dining Dishes Room",
+    },
+    {
+        "id": 10,
+        "program": 4,
+        "term": 3,
+        "description": "Whole Celts Training",
+        "timeStart": "6pm",
+        "timeEnd": "9pm",
+        "location": "Dining Dishes Room",
+    }
 ]
 Event.insert_many(events).on_conflict_replace().execute()
-
-programEvents = [
-    {
-        "program": 1,
-        "event": 1
-    },
-    {
-        "program": 2,
-        "event": 2
-    },
-    {
-        "program": 3,
-        "event": 3
-    },
-    {
-        "program": 2,
-        "event": 4
-    },
-]
-ProgramEvent.insert_many(programEvents).on_conflict_replace().execute()

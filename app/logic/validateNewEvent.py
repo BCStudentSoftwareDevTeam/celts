@@ -9,6 +9,11 @@ def validateNewEventData(newEventData):
     if newEventData['eventEndTime'] <=  newEventData['eventStartTime']:
         return (False, "Event start time is after event end time")
 
+
+    if newEventData['eventIsTraining'] == 'on' and newEventData['eventRequiredForProgram'] == False: #default value for checked button is on
+        return (False, "A training event must be required for the program.")
+
+
     # Event name, Description and Event Start date
     event = Event.select().where((Event.eventName == newEventData['eventName']) &
                              (Event.description == newEventData['eventDescription']) &

@@ -5,13 +5,13 @@ from app.models.facilitator import Facilitator
 
 def manageNewEventData(eventData):
 
-    eventCheckBoxes = ['eventRequiredForProgram','eventRSVP', 'eventServiceHours' ]
+    eventCheckBoxes = ['eventRequiredForProgram','eventRSVP', 'eventServiceHours', 'eventIsTraining']
 
     for checkBox in eventCheckBoxes:
         if checkBox not in eventData:
-            eventData[checkBox] = 0
+            eventData[checkBox] = False
 
-    return(eventData)
+    return eventData
 
 def createEvent(newEventData):
 
@@ -26,8 +26,9 @@ def createEvent(newEventData):
                               isRecurring = newEventData['recurringEvent'],
                               isRsvpRequired = newEventData['eventRSVP'], #rsvp
                               isRequiredForProgram = newEventData['eventRequiredForProgram'],
-                              isService= newEventData['eventServiceHours'],
-                              startDate =   newEventData['eventStartDate'],
+                              isTraining = newEventData['eventIsTraining'],
+                              isService = newEventData['eventServiceHours'],
+                              startDate =  newEventData['eventStartDate'],
                               endDate =  newEventData['eventEndDate'],
                               program_id = newEventData['programId'])
 
