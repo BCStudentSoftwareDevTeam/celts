@@ -8,13 +8,30 @@ from peewee import *
 
 @admin_bp.route('/addParticipants', methods = ['GET'])
 def addParticipants():
-    
+
     eventParticipants = (User.select(User.firstName, User.lastName, User.bnumber)
                                         .join(EventParticipant, on = (User.username == EventParticipant.user_id)))
 
     return render_template('addParticipants.html',
                             title="Add Participants",
                             eventParticipants = eventParticipants)
+
+@admin_bp.route('/eventParticipants', methods = ['GET'])
+def eventParticipants(query="Sco"):
+
+    query = query.strip()
+    search = query.upper() + "%"
+    results = User.select().where(User.firstName ** search | User.lastName ** search)
+    print(results)
+
+    participantsDict = {}
+    # for participant in eventParticipants:
+    #     fullName = participant.firstName + " " + participant.lastName
+    #     participantsDict[fullName] = fullName
+    # print(participantsDict)
+
+    return participantsDict
+
 
 # @admin_bp.route("/removeParticipant", methods = ['POST'])
 # def removeParticipant():
