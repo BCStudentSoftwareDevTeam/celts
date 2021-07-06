@@ -2,24 +2,25 @@
 
 {% block scripts %}
 {{super()}}
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.5.4/bootstrap-select.js"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/addParticipants.js') }}?u={{lastStaticUpdate}}"></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 {% endblock %}
 
 {% block app_content %}
 
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <div class= "form-check-inline">
   <h2>Add Volunteers*</h2>
   <div class="ui-widget">
-    <input id="#volunteerInput" oninput="volunteerSearch()"
-    style= '.ui-autocomplete-loading { background: white url("images/ui-anim_basic_16x16.gif") right center no-repeat; }'>
-
-    </div>
+    <input id="volunteerInput" type="input" oninput="searchVolunteer()">
+  </div>
     <table class="table table-striped" id="Volunteertable">
       <tr>
         <th scope="col">Name</th>
