@@ -38,6 +38,18 @@ users = [
         "isCeltsStudentStaff": False
     },
     {
+        "username": "heggens2",
+        "bnumber": "B0001212199",
+        "email": "heggens@berea.edu",
+        "phoneNumber": "555-555-5555",
+        "firstName": "Scotts",
+        "lastName": "Heggens",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": False
+    },
+    {
         "username": "mansuper",
         "bnumber": "B0001221222",
         "email": "superman2@berea.edu",

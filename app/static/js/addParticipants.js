@@ -1,24 +1,38 @@
 
 function searchVolunteer(){
-  $("#volunteerInput").autocomplete({
-    source: "/eventParticipants",
-    minLength: 2,
+var query = $("#volunteerInput").val()
+$("#volunteerInput").autocomplete({
+  minLength: 2,
+  source: function(request, response){
+    $.ajax({
+      url: "/searchVolunteers/" + query,
+      type: "GET",
+      contentType: "application/json",
+      data: query,
+      dataType: "json",
+      success: function(dictToJSON) {
+        response($.map( dictToJSON, function( item ) {
+          return {
+            label: item,
+            value: dictToJSON[item]
+        }
+      }))
+    },
+      error: function(request, status, error) {
+        console.log(status,error);
+      }
+    })
+  },
+  select: function( event, ui ) {
+    var volunteerName = ui.item.value
+    $("#Volunteertable").append('<tr><td>' + volunteerName + '</td><td><button id="removeButton" onclick="removeRow(this)" type="button">x</button></td></tr>')
+
+    }
   });
 };
 
 
-function addVolunteer(e){
-  volunteersName = $(e).text()
-  $("#Volunteertable").append('<tr><td>' + volunteersName + '</td><td><button id="removeButton" onclick="removeVolunteer(this)" type="button">x</button></td></tr>')
-}
-
-function removeParticipant(e) {
-  var removeParticipant = $(this).attr("id")
-  $("#"+removeParticipant).remove()
-  $(e).parent().parent().remove();
-}
-
-function removeVolunteer(e) {
+function removeRow(e) {
   $(e).parent().parent().remove();
 }
 
@@ -28,7 +42,7 @@ function addOutsideParticipant() {
   lastName = $("#lastNameTextarea").val();
   emailEntry = $("#emailTextarea").val();
   phoneNumber = $("#phoneNumberTextarea").val();
-  $("#OutsideTable").append('<tr id="removeRow"><td>' + firstName + " " + lastName + " " + '</td><td>' + emailEntry + " " +'</td><td>' + phoneNumber + " " + '</td><td><button id=' +count+ ' onclick="removeParticipant($(this))" type="button">x</button></td></tr>');
+  $("#OutsideTable").append('<tr id="removeRow"><td>' + firstName + " " + lastName + " " + '</td><td>' + emailEntry + " " +'</td><td>' + phoneNumber + " " + '</td><td><button id=' +count+ ' onclick="removeRow($(this))" type="button">x</button></td></tr>');
   opList = ["email", "firstName", "lastName", "phoneNumber"];
   opList.forEach(item => {
     $("<input type='text' hidden/>")
