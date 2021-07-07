@@ -9,25 +9,15 @@ from app.models.program import Program
 @pytest.mark.integration
 def test_noUserVolunteerRegister():
 
-    user = User.get(User.username == "asdlkfje")
-    program = Program.get(Program.id == 2)
     with pytest.raises(DoesNotExist):
-        eligible = isEligibleForProgram(program, "asdlkfje")
+        eligible = isEligibleForProgram(2, "asdlkfje") #user doesn't exist
 
-    user = User.get(User.username == 123156)
-    program = Program.get(Program.id == 1)
     with pytest.raises(DoesNotExist):
-        eligible = isEligibleForProgram(program, 135156)
+        eligible = isEligibleForProgram(2, 135156)
 
-    # user = User.get(User.username == "khatts")
-    # program = Event.get(Event.id == 1)
-    # with pytest.raises(DoesNotExist):
-    #     eligible = isEligibleForProgram(program, user)
-    #
-    # user = User.get(User.username == "khatts")
-    # program = Event.get(Event.id == 1)
-    # with pytest.raises(DoesNotExist):
-    #     eligible = isEligibleForProgram(program, user)
+    with pytest.raises(DoesNotExist):
+        eligible = isEligibleForProgram(9, "lamichhanes2") #Program doesn't exist
+
 
 
 @pytest.mark.integration
