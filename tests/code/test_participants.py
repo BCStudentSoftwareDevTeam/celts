@@ -12,3 +12,9 @@ def test_searchVolunteers():
 def test_searchAdmins(): # admins aren't students & shouldn't show in search
     search = searchVolunteers("Br")
     assert "Brian Ramsay" not in search
+
+@pytest.mark.integration
+def test_noResults():
+
+    search = searchVolunteers("XXZ")
+    assert search == '{}'
