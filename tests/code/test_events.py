@@ -8,7 +8,7 @@ def test_getEventsNoProgram():
     # No program is given
     events = getEvents()
 
-    assert len(events) == 4
+    assert len(events) == 9
 
     assert events[0].description == "Empty Bowls Spring 2021"
     assert events[1].description == "Berea Buddies Training"
@@ -19,14 +19,12 @@ def test_getEventsWithProgram():
     # Single program
     events = getEvents(program_id=2)
 
-    assert len(events) == 2
+    assert len(events) == 1
 
-    assert events[0].description == "Berea Buddies Training"
+    assert events[0].description == "Berea Buddies First Meetup"
 
 @pytest.mark.integration
 def test_getEventsInvalidProgram():
     # Invalid program
     with pytest.raises(DoesNotExist):
         getEvents(program_id= "asdf")
-
-

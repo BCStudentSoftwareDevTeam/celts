@@ -8,6 +8,10 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.program import Program
 from app.models.event import Event
+<<<<<<< HEAD
+=======
+from app.models.preqForProgram import PreqForProgram
+>>>>>>> 8513aba3ea321b222ba3633bba225ab2ae627a88
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -100,17 +104,27 @@ events = [
     },
     {
         "id": 2,
+<<<<<<< HEAD
         "program": 1,
+=======
+        "program": None,
+>>>>>>> 8513aba3ea321b222ba3633bba225ab2ae627a88
         "term": 1,
         "description": "Berea Buddies Training",
+        "isTraining": True,
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "a big room",
     },
     {
         "id": 3,
+<<<<<<< HEAD
         "term": 1,
         "program": 3,
+=======
+        "program": 3,
+        "term": 3,
+>>>>>>> 8513aba3ea321b222ba3633bba225ab2ae627a88
         "description": "Adopt A Grandparent",
         "timeStart": "6pm",
         "timeEnd": "9pm",
@@ -118,12 +132,121 @@ events = [
     },
     {
         "id": 4,
+<<<<<<< HEAD
         "program": 1,
         "term": 1,
+=======
+        "program": 2,
+        "term": 3,
+>>>>>>> 8513aba3ea321b222ba3633bba225ab2ae627a88
         "description": "Berea Buddies First Meetup",
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "a big room",
     },
+    {
+        "id": 5,
+        "program": None,
+        "term": 3,
+        "description": "Tutoring Training",
+        "isTraining": True,
+        "timeStart": "1am",
+        "timeEnd": "9pm",
+        "location": "a bigish room",
+    },
+    {
+        "id": 6,
+        "program": None,
+        "term": 3,
+        "description": "Making Bowls Training",
+        "isTraining": True,
+        "timeStart": "6pm",
+        "timeEnd": "9pm",
+        "location": "a big room",
+    },
+    {
+        "id": 7,
+        "program": None,
+        "term": 3,
+        "description": "How To Make Buddies Training",
+        "isTraining": True,
+        "timeStart": "6pm",
+        "timeEnd": "9pm",
+        "location": "Outisde",
+    },
+    {
+        "id": 8,
+        "program": None,
+        "term": 3,
+        "description": "Adoption 101 Training",
+        "isTraining": True,
+        "timeStart": "6pm",
+        "timeEnd": "9pm",
+        "location": "a big room",
+    },
+    {
+        "id": 9,
+        "program": None,
+        "term": 3,
+        "description": "Cleaning Bowls Training",
+        "isTraining": True,
+        "isPrerequisiteForProgram": True,
+        "timeStart": "6pm",
+        "timeEnd": "9pm",
+        "location": "Dining Dishes Room",
+    },
+    {
+        "id": 10,
+        "program": 4,
+        "term": 3,
+        "description": "Whole Celts Training",
+        "timeStart": "6pm",
+        "timeEnd": "9pm",
+        "location": "Dining Dishes Room",
+    }
 ]
 Event.insert_many(events).on_conflict_replace().execute()
+<<<<<<< HEAD
+=======
+
+preqForProgram = [
+    {
+        "program": 1,
+        "event": 1
+    },
+    {
+        "program": 1,
+        "event": 10
+    },
+    {
+        "program": 2,
+        "event": 10
+    },
+    {
+        "program": 2,
+        "event": 2
+    },
+    {
+        "program": 3,
+        "event": 3
+    },
+    {
+        "program": 1,
+        "event": 6
+    },
+    {
+        "program": 1,
+        "event": 7
+    },
+    {
+        "program": 3,
+        "event": 8
+    },
+    {
+        "program": 1,
+        "event": 9
+    }
+
+]
+PreqForProgram.insert_many(preqForProgram).on_conflict_replace().execute()
+>>>>>>> 8513aba3ea321b222ba3633bba225ab2ae627a88
