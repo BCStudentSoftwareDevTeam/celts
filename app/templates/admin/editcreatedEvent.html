@@ -1,0 +1,154 @@
+{% extends "base.html"%}
+{% block scripts %}
+  {{super()}}
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="/static/js/createEvents.js"></script>
+
+{% endblock %}
+
+{% block styles %}
+  {{super()}}
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.css" />
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+{% endblock %}
+
+{% block app_content %}
+
+  <div align="center" style="margin-bottom: 50px;">
+    <h1 id ="title">{{program.programName}}</h1>
+    <h2> New Event Form</h2>
+  </div>
+  <form data-toggle="validator" role="form" action="/createEvents" method='post'>
+    <div class="row">
+      <div class="col-sm-6">
+        <div>
+          <input type="hidden" value="{{program.id}}" name="programId">
+        </div>
+        <div class="form-group">
+          <label for='eventName'> Event Name *</label> <br>
+          <input class="form-control" id='inputEventName' name="eventName" required>
+        </div>
+
+        <div class="form-group">
+          <label for='term'> Term *</label> <br>
+          <select class="form-control" name='eventTerm' id='inputEventTerm'>
+            {%for description in listOfTermDescriptions %}
+              {%if description == theCurrentTerm%}
+                <option value='{{description}}' selected> {{description}} </option>
+              {%else%}
+                <option value='{{description}}'> {{description}} </option>
+              {%endif%}
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <p>Is this a recurring event? </p>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" data-target="#showEndDate" type='radio' id='yes' name="recurringEvent" value=true >
+            <label class="form-check-label" for="recurringEventYes" >Yes </label>
+          </div>
+
+          <div class="form-check form-check-inline form-group">
+            <input class="form-check-input" data-target="#showEndDate" type="radio" id="no" name="recurringEvent" value=false  checked>
+            <label class="form-check-label" for="recurringEventNo">No</label>
+          </div>
+        </div>
+
+        <!-- datePickerS -->
+        <div class="form-inline col-sx-12">
+          <div  class="form-group" >
+            <div class="col-xs-6">
+              <!--datePicker for start date-->
+              <label for="startDatePicker" id="startDatePickerLabel"><span>Start Date *</span></label>
+              <div class='input-group date' id="startDate">
+                <input type='text' class="form-control datePicker readonly" id='startDatePicker' name="eventStartDate" placeholder="Start Date" onchange="updateDate(this)"  required />
+                <span class="input-group-addon" id="calendarIconStart">
+                  <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+              </div>
+            </div>
+
+          <div class="col-xs-6 " id ="endDateStyle">
+            <!--datePicker for End date-->
+            <label for="endDatePicker" id="endDatePickerLabel""><span>End Date *</span></label>
+            <div class='input-group date'>
+              <input type='text' class="form-control datePicker readonly" id='endDatePicker' name="eventEndDate" placeholder="End Date" onchange="updateDate(this)" required />
+              <span class="input-group-addon" id="calendarIconEnd">
+                <span class="glyphicon glyphicon-calendar"></span>
+              </span>
+            </div>
+          </div>​
+          </div>
+        </div><br>
+
+
+        <div class="form-inline">
+          <div class='input-group time col-xs-12'>
+              <div class='form-group input-group time col-xs-2'>
+                <label for="startTime">Start Time: *</label>
+                <input type='time' class="form-control timePicker" id='pickStartTime' name="eventStartTime" required/>
+              </div>
+              <div class='form-group input-group time col-xs-2'  style="margin-left:6px;">
+                <label for="endTime">End Time: *</label>
+                <input type='time' class="form-control timePicker" id='pickEndTime' name="eventEndTime" required/>
+              </div>
+          </div>
+        </div><br>
+
+        <div class="form-group">
+          <label for='location'>Location *</label><br>
+          <input class="form-control" id='inputEventLocation'  name="eventLocation" required>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-sm-offset-0.5 form-group">
+        <div class="form-check form-switch">
+          <label class="custom-control-label" for="checkIsRequired">This event is required for the program</label>
+          <input class="form-check-input" type="checkbox" id="checkIsRequired" name="eventRequiredForProgram"/>
+        </div>
+
+        <div class="form-check form-switch">
+          <label class="custom-control-label" for="checkIsTraining">This event is a training for the program</label>
+          <input class="form-check-input" type="checkbox" id="checkIsTraining"  name="eventIsTraining"/>
+        </div>
+
+        <div class="form-check form-switch">
+          <label class="custom-control-label" for='rsvp'>Requires RSVP</label>
+          <input class="form-check-input" type="checkbox" id="rsvp"  name="eventRSVP"/>
+        </div>
+
+        <div class="form-check form-switch">
+          <label class="custom-control-label"for='serviceHours'> This event earns service hours.</label>
+          <input class="form-check-input" type="checkbox" id="earnServiceHours"  name="eventServiceHours" />
+        </div><br>
+
+        <div class="form-group">
+          <label for='description'> Description * </label> <br>
+          <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' name="eventDescription" required></textarea>
+        </div><br>
+
+        <div>
+          <label for='facilitators'> Facilitators *</label> <br>
+          <select class="selectpicker" id="inputEventFacilitators" data-live-search="true"  name="eventFacilitator">
+            {%for facilitator in listOfEventFacilitators %}
+              <option value={{facilitator.username}}> {{facilitator.firstName}} {{facilitator.lastName}}</option>
+            {% endfor %}
+          </select>
+        </div><br>
+
+        <div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
+          <p> Drag and drop a file</p>
+        </div><br>
+      </div>
+
+      <div>
+        <button type="submit" class="btn btn-primary pull-right">Save</button>
+      </div>
+      </div>
+</form>
+
+{% endblock %}
