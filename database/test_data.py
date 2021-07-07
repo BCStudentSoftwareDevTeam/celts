@@ -8,6 +8,7 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.program import Program
 from app.models.event import Event
+from app.models.programBan import ProgramBan
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -238,3 +239,12 @@ EventParticipants = [
     }
 ]
 EventParticipant.insert_many(EventParticipants).on_conflict_replace().execute()
+
+bannedUser = [
+    {
+        "user": "khatts",
+        "program": 1,
+
+    }
+]
+ProgramBan.insert_many(bannedUser).on_conflict_replace().execute()

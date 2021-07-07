@@ -3,7 +3,7 @@ from app.models.user import User
 from app.controllers.events.volunteerRegisterEvent import volunteerRegister
 from app.models.event import Event
 from peewee import DoesNotExist
-from app.controllers.events.meetsReqsForEvent import isEligibleForProgram
+from app.controllers.events.programEligibility import isEligibleForProgram
 
 @pytest.mark.integration
 def test_noUserVolunteerRegister():
