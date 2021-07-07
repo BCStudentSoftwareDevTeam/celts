@@ -23,6 +23,31 @@ users = [
         "isCeltsAdmin": True,
         "isCeltsStudentStaff": False
     },
+    {
+        "username" : "khatts",
+        "bnumber" : "B00759107",
+        "email": "khatts@berea.edu",
+        "phoneNumber": "555-555-5555",
+        "firstName" : "Sreynit",
+        "lastName" : "Khatt",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": False
+    },
+    {
+        "username" : "lamichhanes2",
+        "bnumber": "B00733993",
+        "email": "lamichhanes2@berea.edu",
+        "phoneNumber": "555-555-5555",
+        "firstName": "Sandesh",
+        "lastName":"Lamichhane",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": False
+
+    }
 ]
 User.insert_many(users).on_conflict_replace().execute()
 
@@ -201,23 +226,6 @@ events = [
     }
 ]
 Event.insert_many(events).on_conflict_replace().execute()
-
-Users = [
-    {
-        "username" : "khatts",
-        "bnumber" : "B00759107",
-        "firstName" : "Sreynit",
-        "lastName" : "Khatt",
-    },
-    {
-        "username" : "lamichhanes2",
-        "bnumber": "B00733993",
-        "firstName": "Sandesh",
-        "lastName":"Lamichhane",
-
-    }
-]
-User.insert_many(Users).on_conflict_replace().execute()
 
 
 EventParticipants = [

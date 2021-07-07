@@ -8,7 +8,7 @@ def isEligibleForProgram(program, user):
     """
     Checks if the user is banned from an event. Checks if the user has completed
     specific prerequisite(s) for the event.
-    :param event: the name of the event that is passed in
+    :param program: the name of the program that is passed in
     :param user: the user that is logged into the system
     :return: True if the user is not banned and meets the requirements, and False otherwise
     """

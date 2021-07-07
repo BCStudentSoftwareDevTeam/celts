@@ -19,15 +19,15 @@ def test_noUserVolunteerRegister():
     with pytest.raises(DoesNotExist):
         eligible = isEligibleForProgram(program, 135156)
 
-    user = User.get(User.username == "khatts")
-    program = Event.get(Event.id == 1)
-    with pytest.raises(DoesNotExist):
-        eligible = isEligibleForProgram(program, user)
-
-    user = User.get(User.username == "khatts")
-    program = Event.get(Event.id == 1)
-    with pytest.raises(DoesNotExist):
-        eligible = isEligibleForProgram(program, user)
+    # user = User.get(User.username == "khatts")
+    # program = Event.get(Event.id == 1)
+    # with pytest.raises(DoesNotExist):
+    #     eligible = isEligibleForProgram(program, user)
+    #
+    # user = User.get(User.username == "khatts")
+    # program = Event.get(Event.id == 1)
+    # with pytest.raises(DoesNotExist):
+    #     eligible = isEligibleForProgram(program, user)
 
 
 @pytest.mark.integration
