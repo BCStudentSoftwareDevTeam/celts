@@ -2,7 +2,6 @@ import pytest
 from peewee import DoesNotExist
 
 from app.logic.events import getEvents
-from app.logic.test_updateInterest import updateInterest
 from app.models.interest import Interest
 
 @pytest.mark.integration
@@ -30,12 +29,3 @@ def test_getEventsInvalidProgram():
     # Invalid program
     with pytest.raises(DoesNotExist):
         getEvents(program_id= "asdf")
-
-@pytest.mark.integration
-def test_updateInterest():
-    addition = updateInterest(program_id = 2)
-    rule = "addInterest"
-    interests = interest.select(program_id = 2, user = "ramsayb2")
-    assert interests
-    rule = "deleteInterest"
-    assert interests == False

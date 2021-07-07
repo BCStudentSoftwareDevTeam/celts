@@ -25,6 +25,18 @@ users = [
         "isCeltsAdmin": True,
         "isCeltsStudentStaff": False
     },
+    {
+        "username": "khatts",
+        "bnumber": "B000178663",
+        "email": "khatts@berea.edu",
+        "phoneNumber": "555-555-5555",
+        "firstName": "Syrenit",
+        "lastName": "Khatt",
+        "isStudent": False,
+        "isFaculty": False,
+        "isCeltsAdmin": True,
+        "isCeltsStudentStaff": False
+    },
 ]
 User.insert_many(users).on_conflict_replace().execute()
 
