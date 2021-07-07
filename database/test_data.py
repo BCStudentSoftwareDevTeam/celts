@@ -10,6 +10,7 @@ from app.models.program import Program
 from app.models.event import Event
 from app.models.programBan import ProgramBan
 
+
 print("Inserting data for demo and testing purposes.")
 users = [
     {
@@ -193,6 +194,7 @@ events = [
         "location": "Outisde",
     },
     {
+
         "id": 8,
         "program": None,
         "term": 3,
