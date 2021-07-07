@@ -1,8 +1,27 @@
 <h1>Event List</h1>
 
+{% for program in programs %}
+  <th>{{program.programName}}</th>
+
+{% endfor %}
 <ul>
     {{user}}
     {% for event in events %}
         <li>{{event}} </li>
     {% endfor %}
+
+    {# set program_store  = event.program #}
+    {# set event_store  = event #}
+    {# endfor #}
+     {# for item in program_store() #}
+
+
+      {# if program_store == program_store #}
+        {# program_store.append(event_store) #}
+      {# else #}
+        {# program_store.append(program_store) #}
+      {# endif #}
+      <li>{# item #} </li>
+    {# endfor #}
+
 </ul>
