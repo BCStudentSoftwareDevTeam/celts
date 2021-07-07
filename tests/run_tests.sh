@@ -7,7 +7,7 @@ SENSITIVE_URL=http://celts.berea.edu
 VERBOSE="--verbose "
 FLASK_ENV="testing"
 
-FLAGS="${VERBOSE}--capture=no --disable-pytest-warnings --strict-markers --tb=line -rs --ignore=database/test_data.py --ignore=tests/mail_test.py --ignore=db_test.py"
+FLAGS="${VERBOSE}--capture=no --disable-pytest-warnings --strict-markers --tb=line -rs --ignore=tests/code/test_events.py --ignore=tests/code/test_utils.py --ignore=database/test_data.py --ignore=tests/mail_test.py --ignore=db_test.py"
 UI_URLS="--verify-base-url --base-url $BASE_URL --sensitive-url $SENSITIVE_URL"
 
 RED='\033[0;31m'
