@@ -7,12 +7,7 @@ from app.models.event import Event
 
 def groupingEvents(termID):
 
-    groupEvents = Event.select().where(Event.term == termID).order_by(Event.program)
-
-
-# events = [item for item in groupEvents.objects()]
-
-    #check if the program are the same
-
-
-    return list(groupEvents)
+    groupEvents = (Event.select(Event.description,Event.program).where(Event.term == termID).order_by(Event.program))
+    for item in list(groupEvents.objects()):
+        print(item.program)
+    return groupEvents

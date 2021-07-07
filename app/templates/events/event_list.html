@@ -1,3 +1,22 @@
+{% extends "base.html"%}
+{% block scripts %}
+  {{super()}}
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="/static/js/createEvents.js"></script>
+
+{% endblock %}
+
+{% block styles %}
+  {{super()}}
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.css" />
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+{% endblock %}
+
+{% block app_content %}
 <h1>Event List</h1>
 
 {% for program in programs %}
@@ -5,23 +24,10 @@
 
 {% endfor %}
 <ul>
-    {{user}}
     {% for event in events %}
         <li>{{event}} </li>
     {% endfor %}
 
-    {# set program_store  = event.program #}
-    {# set event_store  = event #}
-    {# endfor #}
-     {# for item in program_store() #}
-
-
-      {# if program_store == program_store #}
-        {# program_store.append(event_store) #}
-      {# else #}
-        {# program_store.append(program_store) #}
-      {# endif #}
-      <li>{# item #} </li>
-    {# endfor #}
-
 </ul>
+
+{% endblock %}

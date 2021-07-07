@@ -9,6 +9,6 @@ from app.controllers.events.viewAllEvents import groupingEvents
 @pytest.mark.integration
 def test_groupingEvents():
 
-    term = Term.get_by_id(1)
+    term = Term.get_by_id(3)
     events = groupingEvents(term)
     print(events)
