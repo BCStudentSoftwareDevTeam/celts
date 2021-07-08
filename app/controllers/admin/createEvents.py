@@ -1,3 +1,4 @@
+from dateutil import parser
 import datetime
 from app.models.event import Event
 from app.models.term import Term
@@ -18,9 +19,10 @@ def createEvent():
         eventData = request.form.copy() #since request.form returns a immutable dict. we need to copy to change the
         newEventData= setValueForUncheckedBox(eventData)
 
-        print(newEventData['eventStartDate'], newEventData['eventEndDate'])
 
-        print(type(newEventData['eventStartDate']))
+        startDate = parser.parse(newEventData['eventStartDate'], dayfirst=True) ##THIS IS WHAT WE WANT
+        print(startDate)
+        print(type(startDate))
 
 
         # add function to validate data ()
