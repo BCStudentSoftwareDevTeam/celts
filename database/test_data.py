@@ -49,7 +49,21 @@ users = [
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False
 
+    },
+    {
+        "username" : "ayisie",
+        "bnumber": "B00739736",
+        "email": "ayisie@berea.edu",
+        "phoneNumber": "192202903939",
+        "firstName": "Ebenezer",
+        "lastName":"Ayisi",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": False
+
     }
+
 ]
 User.insert_many(users).on_conflict_replace().execute()
 
@@ -237,6 +251,14 @@ EventParticipants = [
         "event" : "1",
         "rsvp" : True,
         "attended" : True,
+        "hoursEarned" : None,
+
+    },
+    {
+        "user" : "ayisie",
+        "event" : "1",
+        "rsvp" : True,
+        "attended" : False,
         "hoursEarned" : None,
     }
 ]

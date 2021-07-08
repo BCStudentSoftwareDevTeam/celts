@@ -19,7 +19,11 @@ def isEligibleForProgram(program, user):
     if (ProgramBan.select().where(ProgramBan.user == user)) and (ProgramBan.select().where(ProgramBan.program == programid)):
         return False
 
+    #Check for events that are prerequisite for program
+    #If that event is not attended return False
+    #cases: no required events, not attended
     for requirement in Event.select().where(Event.isPrerequisiteForProgram == True):
+        print(requirement)
         if not EventParticipant.select().where(EventParticipant.attended == True):
             return False
     return True

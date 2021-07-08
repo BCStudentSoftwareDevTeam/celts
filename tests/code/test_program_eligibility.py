@@ -25,8 +25,24 @@ def test_volunteerEligible():
 
     user = User.get(User.username == "lamichhanes2")
     program = Program.get(Program.id == 2)
-    attended = EventParticipant.get(EventParticipant.attended == 1)
 
     eligible = isEligibleForProgram(program, user)
 
     assert eligible
+
+    user2 = User.get(User.username == "khatts") #user that is banned from a program
+    program2 = Program.get(Program.id == 1)
+
+
+    eligible2 = isEligibleForProgram(program2, user2)
+
+    assert eligible2 == False
+
+    # user haven't attend the required event
+    user3 = User.get(User.username == "ayisie")
+    program3 = Program.get(Program.id == 1)
+
+    eligible3 = isEligibleForProgram(program3, user3)
+    print(eligible3)
+
+    assert eligible3 == False
