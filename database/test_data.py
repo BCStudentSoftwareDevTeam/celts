@@ -8,7 +8,6 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.program import Program
 from app.models.event import Event
-from app.models.preqForProgram import PreqForProgram
 from app.models.user import User
 from app.models.interest import Interest
 
@@ -115,10 +114,6 @@ programs = [
         "id": 3,
         "programName": "Adopt A Grandparent"
     },
-    {
-        "id": 4,
-        "programName": "Training"
-    }
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
 
@@ -138,7 +133,7 @@ events = [
     },
     {
         "id": 2,
-        "program": 4,
+        "program": 1,
         "term": 1,
         "eventName": "Berea Buddies",
         "description": "Berea Buddies Training",
@@ -174,7 +169,7 @@ events = [
     },
     {
         "id": 5,
-        "program": 4,
+        "program": 2,
         "term": 3,
         "eventName": "Tutoring",
         "description": "Tutoring Training",
@@ -186,7 +181,7 @@ events = [
     },
     {
         "id": 6,
-        "program": 4,
+        "program": 3,
         "term": 3,
         "eventName": "Making Bowls",
         "description": "Making Bowls Training",
@@ -198,7 +193,7 @@ events = [
     },
     {
         "id": 7,
-        "program": 4,
+        "program": 1,
         "term": 3,
         "eventName": "How To Make Buddies",
         "description": "How To Make Buddies Training",
@@ -210,7 +205,7 @@ events = [
     },
     {
         "id": 8,
-        "program": 4,
+        "program": 2,
         "term": 3,
         "eventName": "Adoption",
         "description": "Adoption 101 Training",
@@ -222,7 +217,7 @@ events = [
     },
     {
         "id": 9,
-        "program": 4,
+        "program": 2,
         "term": 3,
         "eventName": "Cleaning Bowls",
         "description": "Cleaning Bowls Training",
@@ -235,7 +230,7 @@ events = [
     },
     {
         "id": 10,
-        "program": 4,
+        "program": 3,
         "term": 3,
         "eventName": "Whole Celts Training",
         "description": "Whole Celts Training",
@@ -248,47 +243,6 @@ events = [
 ]
 Event.insert_many(events).on_conflict_replace().execute()
 
-preqForProgram = [
-    {
-        "program": 1,
-        "event": 1
-    },
-    {
-        "program": 1,
-        "event": 10
-    },
-    {
-        "program": 2,
-        "event": 10
-    },
-    {
-        "program": 2,
-        "event": 2
-    },
-    {
-        "program": 3,
-        "event": 3
-    },
-    {
-        "program": 1,
-        "event": 6
-    },
-    {
-        "program": 1,
-        "event": 7
-    },
-    {
-        "program": 3,
-        "event": 8
-    },
-    {
-        "program": 1,
-        "event": 9
-    }
-
-]
-PreqForProgram.insert_many(preqForProgram).on_conflict_replace().execute()
-
 interest = [
 
     {
@@ -300,7 +254,7 @@ interest = [
         "user" : "lamichhanes2"
     },
     {
-        "program": 4,
+        "program": 3,
         "user": "lamichhanes2"
     },
     {
@@ -308,7 +262,7 @@ interest = [
         "user" : "ramsayb2"
     },
     {
-        "program": 4,
+        "program": 3,
         "user": "ramsayb2"
     }
 

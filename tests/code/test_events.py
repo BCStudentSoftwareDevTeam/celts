@@ -17,7 +17,7 @@ def test_getEventsWithProgram():
     # Single program
     events = getEvents(program_id=2)
 
-    assert len(events) == 1
+    assert len(events) == 4
 
     assert events[0].description == "Berea Buddies First Meetup"
 

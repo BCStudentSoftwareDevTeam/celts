@@ -4,13 +4,14 @@ from app.models.program import Program
 
 class Event(baseModel):
     eventName = CharField()
-    program = ForeignKeyField(Program, backref="events")
+    program = ForeignKeyField(Program, null = True)
     term = ForeignKeyField(Term)
     description = CharField()
     timeStart = TimeField()
     timeEnd = TimeField()
     location = CharField()
-    isRequiredForProgram = BooleanField(default=False)
+    isPrerequisiteForProgram = BooleanField(default=False)
+    isTraining = BooleanField(default=False)
     isRsvpRequired = BooleanField(default=False)
     isService = BooleanField(default=False)
     startDate = DateField(null=True)

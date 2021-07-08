@@ -4,7 +4,11 @@
 }
 
 .spacer {
-    height: 100px;
+    height: 100px; /* 80px + whatever spacing above the footer we want (in this case 20px) */
+}
+
+.scroll-container {
+    max-height: 100vh;
 }
 
 #flash_container {
@@ -16,6 +20,14 @@
     position: fixed;
     width: 80%;
     z-index: 3;
+}
+
+.bi-list {
+    font-size: 2rem;
+}
+
+.bi-x {
+    font-size: 2rem;
 }
 
 .footer {
