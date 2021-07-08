@@ -19,7 +19,7 @@
     <h1 id ="title">{{program.programName}}</h1>
     <h2> New Event Form</h2>
   </div>
-  <form data-toggle="validator" role="form" action="/createEvents" method='post'>
+  <form data-toggle="validator" role="form" action="/createEvent" method='post'>
     <div class="row">
       <div class="col-sm-6">
         <div>
@@ -35,9 +35,9 @@
           <select class="form-control" name='eventTerm' id='inputEventTerm'>
             {%for term in listOfTerms %}
               {%if term.isCurrentTerm == 1%}
-                <option value='{{term.description}}' selected> {{term.description}} </option>
+                <option value='{{term}}' selected> {{term.description}} </option>
               {%else%}
-                <option value='{{term.description}}'> {{term.description}} </option>
+                <option value='{{term}}'> {{term.description}} </option>
               {%endif%}
             {% endfor %}
           </select>
@@ -135,10 +135,6 @@
               <option value={{facilitator.username}}> {{facilitator.firstName}} {{facilitator.lastName}}</option>
             {% endfor %}
           </select>
-        </div><br>
-
-        <div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
-          <p> Drag and drop a file</p>
         </div><br>
       </div>
 

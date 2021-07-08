@@ -4,7 +4,7 @@ from app.models.term import Term
 from flask import json, jsonify
 from flask import request
 from app.controllers.admin import admin_bp
-from app.logic.adminNewEvent import createEvent, manageNewEventData
+from app.logic.adminNewEvent import createEvent, setValueForUncheckedBox
 from app.logic.validateNewEvent import validateNewEventData
 from app.models.facilitator import Facilitator
 from flask import flash, redirect, url_for, g
@@ -15,7 +15,7 @@ def createEvents():
     if g.current_user.isCeltsAdmin:
         #add check for admin
         EventData = request.form.copy() #since request.form returns a immutable dict. we need to copy to change the
-        newEventData= manageNewEventData(EventData)
+        newEventData= setValueForUncheckedBox(EventData)
 
         # add function to validate data ()
         validNewEventData, eventErrorMessage = validateNewEventData(newEventData)
