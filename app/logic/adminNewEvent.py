@@ -11,7 +11,7 @@ def setValueForUncheckedBox(eventData):
 
     return eventData
 
-def createEvent(newEventData):
+def createNewEvent(newEventData):
 
     eventEntry = Event.create(eventName = newEventData['eventName'],
                               term = newEventData['eventTerm'],
