@@ -18,7 +18,11 @@ def addRemoveInterest(rule, program_id, currentUser):
     if 'addInterest' in str(rule):
         Interest.get_or_create(program = program_id, user = currentUser)
         return "Successfully added interest"
+
     elif 'deleteInterest' in str(rule):
-        deleted_interest = Interest.get(Interest.program == program_id, Interest.user == currentUser)
-        deleted_interest.delete_instance()
-        return "Successfully removed interest"
+        try:
+            deleted_interest = Interest.get(Interest.program == program_id, Interest.user == currentUser)
+            deleted_interest.delete_instance()
+            return "Successfully removed interest"
+        except:
+            return "This interest does not exist"

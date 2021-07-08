@@ -51,9 +51,8 @@ def test_addRemoveInvalidInterest():
     user = "lamichhanes2"
     rule = 'deleteInterest'
     program_id = 2
-    with pytest.raises(DoesNotExist):
-        addInterest = addRemoveInterest(rule, program_id, user)
-        assert addInterest == "Successfully removed interest"
+    addInterest = addRemoveInterest(rule, program_id, user)
+    assert addInterest == "This interest does not exist"
 
     # test for incorrect rule
     rule = "lkejfiv"
