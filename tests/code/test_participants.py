@@ -5,8 +5,8 @@ from app.models.user import User
 
 @pytest.mark.integration
 def test_searchVolunteers():
-    search = searchVolunteers("Sc")
-    assert "Scott Heggen" in search
+    search = searchVolunteers("Sa")
+    assert "Sandesh Lamichhane" in search
 
 @pytest.mark.integration
 def test_searchAdmins(): # admins aren't students & shouldn't show in search
