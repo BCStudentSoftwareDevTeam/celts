@@ -8,8 +8,7 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.program import Program
 from app.models.event import Event
-from app.models.outsideParticipant import OutsideParticipant
-from app.models.eventParticipant import EventParticipant
+from app.models.interest import Interest
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -26,42 +25,34 @@ users = [
         "isCeltsStudentStaff": False
     },
     {
-        "username": "heggens",
-        "bnumber": "B0001212121",
-        "email": "heggens@berea.edu",
-        "phoneNumber": "555-555-5555",
-        "firstName": "Scott",
-        "lastName": "Heggen",
+        "username": "khatts",
+        "bnumber": "B00759107",
+        "email": "khatts@berea.edu",
+        "firstName": "Sreynit",
+        "lastName": "Khatt",
         "isStudent": True,
-        "isFaculty": False,
-        "isCeltsAdmin": False,
-        "isCeltsStudentStaff": False
+        "phoneNumber": "12345678"
     },
     {
-        "username": "heggens2",
-        "bnumber": "B0001212199",
-        "email": "heggens@berea.edu",
-        "phoneNumber": "555-555-5555",
-        "firstName": "Scotts",
-        "lastName": "Heggens",
+        "username": "lamichhanes2",
+        "bnumber": "B00733993",
+        "email": "lamichhanes2@berea.edu",
+        "firstName": "Sandesh",
+        "lastName": "Lamichhane",
         "isStudent": True,
-        "isFaculty": False,
-        "isCeltsAdmin": False,
-        "isCeltsStudentStaff": False
+        "phoneNumber": "8439743909"
     },
     {
-        "username": "mansuper",
-        "bnumber": "B0001221222",
-        "email": "superman2@berea.edu",
-        "phoneNumber": "444-333-3434",
-        "firstName": "Super",
-        "lastName": "Man",
+        "username": "bryanta",
+        "bnumber": "B00715348",
+        "email": "bryanta@berea.edu",
+        "firstName": "Alex",
+        "lastName": "Bryant",
         "isStudent": True,
-        "isFaculty": False,
-        "isCeltsAdmin": False,
-        "isCeltsStudentStaff": False
-    }
+        "phoneNumber": "85943311598"
+    },
 ]
+
 User.insert_many(users).on_conflict_replace().execute()
 
 terms = [
@@ -131,134 +122,147 @@ events = [
         "id": 1,
         "program": 1,
         "term": 1,
+        "eventName": "Empty Bowls Spring",
         "description": "Empty Bowls Spring 2021",
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
+        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 2,
-        "program": None,
+        "program": 1,
         "term": 1,
+        "eventName": "Berea Buddies",
         "description": "Berea Buddies Training",
-        "isTraining": True,
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
+        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 3,
         "program": 3,
         "term": 3,
+        "eventName": "Adopt",
         "description": "Adopt A Grandparent",
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
+        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 4,
         "program": 2,
         "term": 3,
+        "eventName": "First Meetup",
         "description": "Berea Buddies First Meetup",
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
+        "timeStart": datetime.strptime("6:00 am", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 am", "%I:%M %p"),
         "location": "a big room",
+        "startDate": datetime.strptime("2021 6 25","%Y %m %d"),
+        "endDate": datetime.strptime("2021 6 25","%Y %m %d")
     },
     {
         "id": 5,
         "program": 2,
         "term": 3,
+        "eventName": "Tutoring",
         "description": "Tutoring Training",
-        "isTraining": True,
-        "timeStart": "1am",
-        "timeEnd": "9pm",
+        "timeStart": datetime.strptime("3:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a bigish room",
+        "startDate": datetime.strptime("2021 6 18","%Y %m %d"),
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 6,
-        "program": 1,
+        "program": 3,
         "term": 3,
+        "eventName": "Making Bowls",
         "description": "Making Bowls Training",
-        "isTraining": True,
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
+        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 7,
-        "program": 2,
+        "program": 1,
         "term": 3,
+        "eventName": "How To Make Buddies",
         "description": "How To Make Buddies Training",
-        "isTraining": True,
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Outisde",
+        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 8,
-        "program": 3,
+        "program": 2,
         "term": 3,
+        "eventName": "Adoption",
         "description": "Adoption 101 Training",
-        "isTraining": True,
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
+        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 9,
         "program": 2,
         "term": 3,
+        "eventName": "Cleaning Bowls",
         "description": "Cleaning Bowls Training",
-        "isTraining": True,
-        "isPrerequisiteForProgram": True,
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Dining Dishes Room",
+        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
+
     },
     {
         "id": 10,
         "program": 3,
         "term": 3,
+        "eventName": "Whole Celts Training",
         "description": "Whole Celts Training",
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Dining Dishes Room",
+        "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
+        "endDate": datetime.strptime("2021 7 12","%Y %m %d")
     }
 ]
 Event.insert_many(events).on_conflict_replace().execute()
 
-eventParticipants = [
-    {
-            "user": "heggens",
-            "event": 2,
-            "rsvp": True,
-            "attended": False,
-            "hoursEarned": "120"
-    },
-    {
-            "user": "mansuper",
-            "event": 3,
-            "rsvp": True,
-            "attended": True,
-            "hoursEarned": "133"
-    }
-]
-EventParticipant.insert_many(eventParticipants).on_conflict_replace().execute()
+interest = [
 
-outsideP = [
     {
-        "event": 1,
-        "firstName": "Tyler",
-        "lastName": "Parton",
-        "email": "partont@berea.edu",
-        "phoneNumber": "859-985-3333"
+        "program" : 1,
+        "user": "khatts"
     },
     {
-        "event": 2,
-        "firstName": "Zach",
-        "lastName": "Neill",
-        "email": "neillz@berea.edu",
-        "phoneNumber": "859-985-3343"
+        "program": 2,
+        "user" : "lamichhanes2"
+    },
+    {
+        "program": 3,
+        "user": "lamichhanes2"
+    },
+    {
+        "program": 2,
+        "user" : "ramsayb2"
+    },
+    {
+        "program": 3,
+        "user": "ramsayb2"
     }
 ]
-OutsideParticipant.insert_many(outsideP).on_conflict_replace().execute()
+Interest.insert_many(interest).on_conflict_replace().execute()
