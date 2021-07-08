@@ -10,7 +10,7 @@
 
 {% block styles %}
   {{super()}}
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.css" />
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
@@ -28,7 +28,7 @@
         <div>
           <input type="hidden" value="{{program.id}}" name="programId">
         </div>
-        <div class="form-group">
+        <div class="form-group" style="padding: 0 0 1rem 0;">
           <label for='eventName'> Event Name *</label> <br>
           <input class="form-control" id='inputEventName' name="eventName" required>
         </div>
@@ -57,11 +57,11 @@
             <label class="form-check-label" for="recurringEventNo">No</label>
           </div>
         </div>
-
+        <div class="flex-container">
         <!-- datePickerS -->
-        <div class="form-inline col-xs-12">
+        <div style="display:flex" class="form-inline">
           <div  class="form-group" >
-            <div class="col-xs-6">
+            <div style="padding: 1rem 1rem 1rem 0;" class="d-inline-flex">
               <!--datePicker for start date-->
               <label for="startDatePicker" id="startDatePickerLabel"><span>Start Date *</span></label>
               <div class='input-group date' id="startDate">
@@ -72,7 +72,7 @@
               </div>
             </div>
 
-          <div class="col-xs-6 " id ="endDateStyle">
+          <div class="d-inline-flex" id ="endDateStyle">
             <!--datePicker for End date-->
             <label for="endDatePicker" id="endDatePickerLabel""><span>End Date *</span></label>
             <div class='input-group date'>
@@ -85,8 +85,7 @@
           </div>
         </div><br>
 
-
-        <div class="form-inline">
+        <div style="display:flex" class="form-inline">
           <div class='input-group time col-xs-12'>
               <div class='form-group input-group time col-xs-2'>
                 <label for="startTime">Start Time: *</label>
@@ -98,7 +97,7 @@
               </div>
           </div>
         </div><br>
-
+</div>
         <div class="form-group">
           <label for='location'>Location *</label><br>
           <input class="form-control" id='inputEventLocation'  name="eventLocation" required>
