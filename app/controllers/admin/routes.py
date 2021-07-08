@@ -3,7 +3,7 @@ from flask import Flask, redirect, flash
 from app.controllers.admin.createEvents import createEvents
 from app.models.program import Program
 from app.controllers.admin import admin_bp
-from app.logic.adminCreateEvent import getTermDescription, getFacilitators, getCurrentTerm
+from app.logic.adminCreateEvent import getTerms, getFacilitators
 from flask import g
 
 @admin_bp.route('/testing_things', methods=['GET'])
@@ -12,9 +12,8 @@ def testing():
 
 @admin_bp.route('/<program_id>/create_event', methods=['GET'])
 def createEvent(program_id):
-    termDescriptions = getTermDescription()
+    listOfTerms = getTerms()
     eventFacilitator = getFacilitators()
-    currentTerm = getCurrentTerm()
     user = g.current_user
     try:
         program = Program.get_by_id(program_id)
@@ -25,6 +24,5 @@ def createEvent(program_id):
     return render_template("admin/createEvents.html",
                             user = user,
                             program = program,
-                            listOfTermDescriptions = termDescriptions,
-                            listOfEventFacilitators = eventFacilitator,
-                            theCurrentTerm = currentTerm)
+                            listOfTerms = listOfTerms,
+                            listOfEventFacilitators = eventFacilitator)

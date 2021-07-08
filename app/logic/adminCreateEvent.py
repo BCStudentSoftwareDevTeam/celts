@@ -3,23 +3,12 @@ from app.models.term import Term
 from app.models.user import User
 
 
-def getTermDescription():
-
-    termDescriptions = Term.select(Term.description)
-    descriptions = [des.description for des in termDescriptions.objects()]
-
-
+def getTerms():
 
     listOfTerms = [term for term in Term.select()]
-    print(listOfTerms)
-
-    return descriptions
-
-def getCurrentTerm():
-
-    currentTerm = Term.select(Term.description).where(Term.isCurrentTerm == 1)
-    term = [t.description for t in currentTerm.objects()] #This could be done better. but how??
-    return term[0]
+    # currentTerm = Term.select(Term.description).where(Term.isCurrentTerm == 1)
+    # term = [t.description for t in currentTerm.objects()] #This could be done better. but how??
+    return listOfTerms
 
 def getFacilitators():
 

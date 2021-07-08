@@ -4,7 +4,6 @@ from app.models.term import Term
 from flask import json, jsonify
 from flask import request
 from app.controllers.admin import admin_bp
-from app.logic.adminCreateEvent import getTermDescription
 from app.logic.adminNewEvent import createEvent, manageNewEventData
 from app.logic.validateNewEvent import validateNewEventData
 from app.models.facilitator import Facilitator
