@@ -7,4 +7,4 @@ class EventParticipant(baseModel):
     event = ForeignKeyField(Event)
     rsvp = BooleanField(default=False)
     attended = BooleanField(default=False)
-    hoursEarned = CharField(null=True)
+    hoursEarned = FloatField(null=True)
