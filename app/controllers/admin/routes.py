@@ -28,3 +28,22 @@ def createEvent(program_id):
                             listOfTermDescriptions = termDescriptions,
                             listOfEventFacilitators = eventFacilitator,
                             theCurrentTerm = currentTerm)
+
+@admin_bp.route('/<program_id>/edit_event', methods=['GET'])
+def editEvent(program_id):
+
+    termDescriptions = getTermDescription()
+    eventFacilitator = getFacilitators()
+    currentTerm = getCurrentTerm()
+    user = g.current_user
+    try:
+        program = Program.get_by_id(program_id)
+
+    except:
+        return render_template(404)
+    return render_template("admin/createEvents.html",
+                            user = user,
+                            program = program,
+                            listOfTermDescriptions = termDescriptions,
+                            listOfEventFacilitators = eventFacilitator,
+                            theCurrentTerm = currentTerm)
