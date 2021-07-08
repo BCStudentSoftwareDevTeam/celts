@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+{{super()}}
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.5.4/bootstrap-select.js"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/addParticipants.js') }}?u={{lastStaticUpdate}}"></script>
+{% endblock %}
+
+{% block app_content %}
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<div class= "form-check-inline">
+  <h2>Add Volunteers*</h2>
+  <div class="ui-widget">
+    <input id="volunteerInput" type="input" oninput="searchVolunteer()">
+  </div>
+    <table class="table table-striped" id="Volunteertable">
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Remove</th>
+      </tr>
+  </table>
+</div>
+<div class= "form-check-inline">
+  <h2 style="position: absolute; top: 2em;">Add Outside Participants</h2>
+    <button class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#particpantsModal" type="button">+</button>
+    <table class="table table-striped" id="OutsideTable">
+      <tr id="tableRow">
+        <th scope="col">Name</th>
+        <th scope="col">Email</th>
+        <th scope="col">Phone Number</th>
+        <th scope="col">Remove</th>
+        </tr>
+  </table>
+</div>
+<div class="modal fade" id="particpantsModal" tabindex="-1" aria-labelledby="opModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="opModalLabel">Create Participant</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      <form class="row g-3" data-toggle="validator" role="form" id="addParticipantsForm">
+        <div class="form-group">
+          <label for="firstNameTextarea">First Name:</label>
+          <input class="form-control" type="text" id="firstNameTextarea" name="firstNameTextarea" rows="1" placeholder="First Name" required>
+        </div>
+        <div class="form-group">
+          <label for="lastNameTextarea">Last Name:</label>
+          <input class="form-control" type="text" id="lastNameTextarea" name="lastNameTextarea" rows="1" placeholder="Last Name" required>
+        </div>
+        <div class="form-group">
+          <label for="emailTextarea">Email:</label>
+          <input class="form-control" type="text" id="emailTextarea" name="emailTextarea" rows="1" placeholder="Email" required>
+        </div>
+        <div class="form-group">
+          <label for="phoneNumberTextarea">Phone Number:</label>
+          <input class="form-control" type="text" id="phoneNumberTextarea" name="phoneNumberTextarea" rows="1" placeholder="Phone Number" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" onclick="addOutsideParticipant()" id="createParticipantBtn" class="btn btn-primary">Create Participant</button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
