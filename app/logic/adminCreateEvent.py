@@ -8,6 +8,11 @@ def getTermDescription():
     termDescriptions = Term.select(Term.description)
     descriptions = [des.description for des in termDescriptions.objects()]
 
+
+
+    listOfTerms = [term for term in Term.select()]
+    print(listOfTerms)
+
     return descriptions
 
 def getCurrentTerm():
