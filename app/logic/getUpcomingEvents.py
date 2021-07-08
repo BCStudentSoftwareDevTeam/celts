@@ -10,6 +10,4 @@ def getUpcomingEventsForUser(user):
                             .join(Interest, on=(Event.program == Interest.program))
                             .where(Interest.user == user)
                             )
-    upcomingEvents = []
-
     return [e for e in interestedEvents if e.startDate >= date.today() and e.timeStart > datetime.now().time()]
