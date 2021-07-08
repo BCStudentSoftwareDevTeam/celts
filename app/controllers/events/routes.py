@@ -10,6 +10,7 @@ def events(term):
 
     events = groupingEvents(term)
     programs = Program.select()
+    print(list(programs), "here")
     for event in events:
         print(event.program)
 
