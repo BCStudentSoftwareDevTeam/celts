@@ -13,5 +13,4 @@ def getTerms():
 def getFacilitators():
 
     facilitators = User.select(User).where((User.isFaculty == 1) | (User.isCeltsAdmin == 1) | (User.isCeltsStudentStaff == 1))
-    listOfFacilitators = [fac for fac in facilitators.objects()]
-    return listOfFacilitators
+    return facilitators

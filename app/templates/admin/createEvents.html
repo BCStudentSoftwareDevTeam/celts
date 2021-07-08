@@ -131,7 +131,7 @@
         <div>
           <label for='facilitators'> Facilitators *</label> <br>
           <select class="selectpicker" id="inputEventFacilitators" data-live-search="true"  name="eventFacilitator">
-            {%for facilitator in listOfEventFacilitators %}
+            {%for facilitator in facilitators.objects() %}
               <option value={{facilitator.username}}> {{facilitator.firstName}} {{facilitator.lastName}}</option>
             {% endfor %}
           </select>

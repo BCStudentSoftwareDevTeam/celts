@@ -13,7 +13,7 @@ def testing():
 @admin_bp.route('/<program_id>/create_event', methods=['GET'])
 def createEvent(program_id):
     listOfTerms = getTerms()
-    eventFacilitator = getFacilitators()
+    facilitators = getFacilitators()
     user = g.current_user
     try:
         program = Program.get_by_id(program_id)
@@ -25,4 +25,4 @@ def createEvent(program_id):
                             user = user,
                             program = program,
                             listOfTerms = listOfTerms,
-                            listOfEventFacilitators = eventFacilitator)
+                            facilitators = facilitators)
