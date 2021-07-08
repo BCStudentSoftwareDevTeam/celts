@@ -10,35 +10,33 @@ from peewee import DoesNotExist
 
 from peewee import *
 
-def getSLCourseTranscript(user):
+def getSlCourseTranscript(user):
     """
     Returns a service-learning course list that contains a name of the course, term,
     list of instructors who teach the course, and hours earned for each course that the user took.
     :user: model object
     """
     username = User.get_by_id(user)
-    sLCourseInformation = (CourseParticipant
+    slCourseInformation = (CourseParticipant
     .select(CourseParticipant.course, CourseParticipant.user, fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned"))
     .group_by(CourseParticipant.course, CourseParticipant.user)
     .where(CourseParticipant.user == username))
 
-    courses = [item for item in sLCourseInformation.objects()]
-
     allCoursesList = []
-    listOfEachSLCourseInfo = []
-    for i in range(0,len(courses)):
-
-        user_full_name = courses[i].user.firstName + " "+ courses[i].user.lastName
-        course_name = courses[i].course.courseName
-        description = courses[i].course.term.description
-        hours = courses[i].hoursEarned
-        cInstructor = CourseInstructor.select().where(CourseInstructor.course== courses[i].course)
+    listOfEachSlCourseInfo = []
+    
+    for course in slCourseInformation:
+        user_full_name = course.user.firstName + " "+ course.user.lastName
+        course_name = course.course.courseName
+        description = course.course.term.description
+        hours = course.hoursEarned
+        cInstructor = CourseInstructor.select().where(CourseInstructor.course== course.course)
         instructorList = []
         for instructor in cInstructor.objects():
             instructorList.append(instructor.user.firstName+" "+ instructor.user.lastName)
         #creates a list for all information of a course that a courseParticipant is involved in
-        listOfEachSLCourseInfo = [ user_full_name , course_name , description , hours , instructorList ]
-        allCoursesList.append(listOfEachSLCourseInfo)
+        listOfEachSlCourseInfo = [ user_full_name , course_name , description , hours , instructorList ]
+        allCoursesList.append(listOfEachSlCourseInfo)
 
     return allCoursesList
 
@@ -61,13 +59,13 @@ def getProgramTranscript(user):
     listOfProgramsTranscript = []
     programTranscript = []
 
-    for i in range(0, len(programInformation)):
+    for program in programInformation:
 
-        programName = programInformation[i].event.program.programName
+        programName = program.event.program.programName
         #FIXME: If there are more than one events for the program and the term.description are different:
             #term = "earliest term - final term"
-        term = programInformation[i].event.term.description
-        totalHoursEarnedForProgram = programInformation[i].hoursEarned
+        term = program.event.term.description
+        totalHoursEarnedForProgram = program.hoursEarned
         programTranscript = [ programName , term , totalHoursEarnedForProgram ]
         listOfProgramsTranscript.append(programTranscript)
 
