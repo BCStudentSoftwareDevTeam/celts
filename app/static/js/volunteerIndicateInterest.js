@@ -19,6 +19,7 @@ $(document).ready(function() {
       error: function(request, status, error) {
         console.log(status,error);
         msgFlash("Error Updating Interest", "danger")
+        window.location.reload(true);
       }
     });
   });

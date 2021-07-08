@@ -1,25 +1,8 @@
-from flask import request, render_template
-from flask import json, jsonify
-from app.models.program import Program
-from app.models.user import User
-from app.models.interest import Interest
 from flask import g
 from app.controllers.main import main_bp
 from flask import request
 from app.logic.addRemoveInterest import addRemoveInterest
-
-@main_bp.route('/volunteerIndicateInterest', methods = ['GET'])
-
-def volunteerIndicateInterest():
-    programs = Program.select()
-    interests = Interest.select().where(Interest.user_id == g.current_user)
-    interests_ids = [interest.program_id for interest in interests]
-    return render_template('volunteerIndicateInterest.html',
-                           title="Volunteer Interest",
-                           user = g.current_user,
-                           programs = programs,
-                           interests = interests,
-                           interests_ids = interests_ids)
+# from app.models.program import Program
 
 
 

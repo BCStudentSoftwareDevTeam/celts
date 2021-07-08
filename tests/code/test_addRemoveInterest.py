@@ -1,55 +1,61 @@
 import pytest
 from app.logic.addRemoveInterest import addRemoveInterest
-from flask import json
+from peewee import IntegrityError, DoesNotExist
 
 @pytest.mark.integration
 def test_addRemoveInterest():
     user = "ramsayb2"
     program_id = 1
+
+    # test adding and removing test cases for different users
     rule = 'addInterest'
     addInterest = addRemoveInterest(rule, program_id, user)
-    print(addInterest)
-
-    assert addInterest == 'True'
+    assert addInterest == "Successfully added interest"
 
     rule = 'deleteInterest'
-
     addInterest = addRemoveInterest(rule, program_id, user)
-    assert addInterest == 'True'
+    assert addInterest == 'Successfully removed interest'
 
     rule = 'addInterest'
     user = "khatts"
     addInterest = addRemoveInterest(rule, program_id, user)
-    assert addInterest == 'True'
+    assert addInterest == 'Successfully added interest'
 
     rule = 'deleteInterest'
     addInterest = addRemoveInterest(rule, program_id, user)
-    assert addInterest == 'True'
+    assert addInterest == 'Successfully removed interest'
 
+    # test add and removing interest with different program id
     rule = 'addInterest'
     program_id = 3
     addInterest = addRemoveInterest(rule, program_id, user)
-    assert addInterest == 'True'
+    assert addInterest == 'Successfully added interest'
 
     rule = 'deleteInterest'
     addInterest = addRemoveInterest(rule, program_id, user)
-    assert addInterest == 'True'
+    assert addInterest == 'Successfully removed interest'
 
+@pytest.mark.integration
+def test_addRemoveInvalidInterest():
 
+    program_id = 3
 
+    #test for user that doesn't exist
+    user = "al;skfjelh"
+    rule = 'addInterest'
+    with pytest.raises(IntegrityError):
+        addInterest = addRemoveInterest(rule, program_id, user)
+        assert addInterest == "Successfully added interest"
 
+    #test removing interest that doesn't exist
+    user = "lamichhanes2"
+    rule = 'deleteInterest'
+    program_id = 2
+    with pytest.raises(DoesNotExist):
+        addInterest = addRemoveInterest(rule, program_id, user)
+        assert addInterest == "Successfully removed interest"
 
-
-
-
-# def test_interestUpdate(program_id):
-#     """
-#     This function updates the interest table by adding a new row when a user
-#     shows interest in a program
-#     """
-#     rule = "addInterest"
-#     if 'addInterest' in rule:
-#         Interest.get_or_create(program = program_id, user= g.current_user.username)
-#     else:
-#         deleted_interest = Interest.get(Interest.program == program_id and Interest.user == g.current_user.username)
-#         deleted_interest.delete_instance()
+    # test for incorrect rule
+    rule = "lkejfiv"
+    addInterest = addRemoveInterest(rule, program_id, user)
+    assert addInterest == None
