@@ -9,6 +9,7 @@ from app.logic.validateNewEvent import validateNewEventData
 from app.models.facilitator import Facilitator
 from flask import flash, redirect, url_for, g
 
+
 @admin_bp.route('/createEvent', methods=['POST'])
 def createEvent():
 
@@ -17,6 +18,11 @@ def createEvent():
         eventData = request.form.copy() #since request.form returns a immutable dict. we need to copy to change the
         newEventData= setValueForUncheckedBox(eventData)
 
+        print(newEventData['eventStartDate'], newEventData['eventEndDate'])
+
+        print(type(newEventData['eventStartDate']))
+
+
         # add function to validate data ()
         validNewEventData, eventErrorMessage = validateNewEventData(newEventData)
 
@@ -24,11 +30,11 @@ def createEvent():
             createNewEvent(newEventData)
 
             flash("Event successfully created!")
-            return redirect(url_for("admin.createEventPage", program_id=newEventData['programId']))
+            return redirect(url_for("admin.createEventPage", program=newEventData['programId']))
 
         else:
             flash(eventErrorMessage)
-            return redirect(url_for("admin.createEventPage", program_id=2)) #FIXME: have this redirect to main programs page (or some appropriate non admin page).
+            return redirect(url_for("admin.createEventPage", program=2)) #FIXME: have this redirect to main programs page (or some appropriate non admin page).
 
     flash("Only celts admins can create an event!")
-    return redirect(url_for("admin.createEventPage", program_id=2)) #FIXME: have this redirect to main programs page (or some appropriate non admin page).
+    return redirect(url_for("admin.createEventPage", program=2)) #FIXME: have this redirect to main programs page (or some appropriate non admin page).

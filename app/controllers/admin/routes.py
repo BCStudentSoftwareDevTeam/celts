@@ -10,13 +10,13 @@ from flask import g
 def testing():
     return "<h1>Hello</h1>"
 
-@admin_bp.route('/<program_id>/create_event', methods=['GET'])
-def createEventPage(program_id):
+@admin_bp.route('/<program>/create_event', methods=['GET'])
+def createEventPage(program):
     listOfTerms = getTerms()
     facilitators = getFacilitators()
     user = g.current_user
     try:
-        program = Program.get_by_id(program_id)
+        program = Program.get_by_id(program)
 
     except:
         return render_template(404)

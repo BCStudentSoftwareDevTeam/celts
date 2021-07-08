@@ -7,7 +7,7 @@ $(document).ready(function(){
     });
 
   $.datepicker.setDefaults({
-    dateFormat:'yy-mm-dd'
+    dateFormat:'mm-dd-yy'
   });
 
   $("#calendarIconStart").click(function() {
