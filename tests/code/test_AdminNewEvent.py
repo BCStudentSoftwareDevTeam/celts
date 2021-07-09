@@ -1,18 +1,18 @@
 import pytest
-from app.logic.adminNewEvent import manageNewEventData, createEvent
+from app.logic.adminNewEvent import setValueForUncheckedBox, createNewEvent
 
 @pytest.mark.integration
-def test_manageNewEventData():
+def test_setValueForUncheckedBox():
 
     # test that there is a return
-    assert manageNewEventData({})
+    assert setValueForUncheckedBox({})
 
     # tets for return type
-    assert type(manageNewEventData({}))== type({})
+    assert type(setValueForUncheckedBox({}))== type({})
 
     # test for no keys
     eventData = {}
-    newData = manageNewEventData(eventData)
+    newData = setValueForUncheckedBox(eventData)
     assert newData['eventRequiredForProgram'] == False
     assert newData['eventRSVP'] == False
     assert newData['eventServiceHours'] == False
@@ -20,9 +20,10 @@ def test_manageNewEventData():
 
     #test for one missing key
     eventData = {'eventRequiredForProgram':'on','eventRSVP':'', 'eventServiceHours':True }
-    newData = manageNewEventData(eventData)
+    newData = setValueForUncheckedBox(eventData)
 
-    assert newData['eventIsTraining'] == False
+    assert newData['eventIsTraining'] == False  #the value of newData['eventIsTraining'] is false
+
     with pytest.raises(AssertionError):
         assert newData['eventRSVP'] == 'gfg'
         assert newData['eventServiceHours'] == False
@@ -30,7 +31,7 @@ def test_manageNewEventData():
 
     # test for dict with values
     eventData = {'eventRequiredForProgram':1,'eventRSVP':2, 'eventServiceHours':3, 'eventIsTraining':4}
-    newData = manageNewEventData(eventData)
+    newData = setValueForUncheckedBox(eventData)
 
     assert newData['eventRequiredForProgram'] == 1
     assert newData['eventRSVP'] == 2
@@ -40,5 +41,5 @@ def test_manageNewEventData():
 
 
 
-def test_createEvent():
+def test_createNewEvent():
     pass
