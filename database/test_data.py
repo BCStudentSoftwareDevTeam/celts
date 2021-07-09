@@ -268,8 +268,13 @@ events = [
         "description": "How To Make Buddies Training",
         "isTraining": True,
         "isPrerequisiteForProgram": False,
+<<<<<<< HEAD
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+=======
+        "timeStart": "6pm",
+        "timeEnd": "9pm",
+>>>>>>> 83dbdbc4d62baefba4dee3c710c9ce9609c39db3
         "location": "Outisde",
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
