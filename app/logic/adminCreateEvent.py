@@ -12,7 +12,7 @@ def getTermDescription():
 
 def getCurrentTerm():
 
-    currentTerm = Term.select(Term.description).where(Term.isCurrentTerm == 1)
+    currentTerm = Term.select(Term.description).where(Term.isCurrentTerm)
     term = [t.description for t in currentTerm.objects()] #This could be done better. but how??
     return term[0]
 

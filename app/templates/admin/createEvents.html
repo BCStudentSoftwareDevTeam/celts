@@ -1,9 +1,7 @@
 {% extends "base.html"%}
 {% block scripts %}
   {{super()}}
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.js"></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script src="/static/js/createEvents.js"></script>
 
 {% endblock %}
@@ -12,25 +10,25 @@
   {{super()}}
   <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.css" />
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
 {% endblock %}
 
 {% block app_content %}
 
-  <div align="center" style="margin-bottom: 50px;">
+  <div align="center" class="mb-5">
     <h1 id ="title">{{program.programName}}</h1>
     <h2> New Event Form</h2>
   </div>
+  <div class="container">
   <form data-toggle="validator" role="form" action="/createEvents" method='post'>
-    <div class="row">
+    <div class="row g-5">
       <div class="col-sm-6">
         <div>
           <input type="hidden" value="{{program.id}}" name="programId">
         </div>
-        <div class="form-group" style="padding: 0 0 1rem 0;">
+        <div class="form-group pb-3">
           <label for='eventName'> Event Name *</label> <br>
-          <input class="form-control" id='inputEventName' name="eventName" required>
+          <input class="form-control" id='inputEventName' name="eventName" value="{{eventInfo.eventName}}" required>
         </div>
 
         <div class="form-group">
@@ -59,13 +57,13 @@
         </div>
         <div class="flex-container">
         <!-- datePickerS -->
-        <div style="display:flex" class="form-inline">
+        <div class="form-inline d-flex">
           <div  class="form-group" >
-            <div style="padding: 1rem 1rem 1rem 0;" class="d-inline-flex">
+            <div class="d-inline-flex pe-5">
               <!--datePicker for start date-->
               <label for="startDatePicker" id="startDatePickerLabel"><span>Start Date *</span></label>
               <div class='input-group date' id="startDate">
-                <input type='text' class="form-control datePicker readonly" id='startDatePicker' name="eventStartDate" placeholder="Start Date" onchange="updateDate(this)"  required />
+                <input type='text' class="form-control readonly" id='startDatePicker' name="eventStartDate" placeholder="Start Date" onchange="updateDate(this)" value="{{eventInfo.startDate}}"  required />
                 <span class="input-group-addon" id="calendarIconStart">
                   <span class="glyphicon glyphicon-calendar"></span>
                 </span>
@@ -74,9 +72,9 @@
 
           <div class="d-inline-flex" id ="endDateStyle">
             <!--datePicker for End date-->
-            <label for="endDatePicker" id="endDatePickerLabel""><span>End Date *</span></label>
+            <label for="endDatePicker" id="endDatePickerLabel""><span>End Date * </span></label>
             <div class='input-group date'>
-              <input type='text' class="form-control datePicker readonly" id='endDatePicker' name="eventEndDate" placeholder="End Date" onchange="updateDate(this)" required />
+              <input type='text' class="form-control readonly" id='endDatePicker' name="eventEndDate" placeholder="End Date" onchange="updateDate(this)" value="{{eventInfo.endDate}}" required />
               <span class="input-group-addon" id="calendarIconEnd">
                 <span class="glyphicon glyphicon-calendar"></span>
               </span>
@@ -89,18 +87,18 @@
           <div class='input-group time col-xs-12'>
               <div class='form-group input-group time col-xs-2'>
                 <label for="startTime">Start Time: *</label>
-                <input type='time' class="form-control timePicker" id='pickStartTime' name="eventStartTime" required/>
+                <input type='time' class="form-control timePicker" id='pickStartTime' name="eventStartTime" value="{{eventInfo.timeStart}}" required/>
               </div>
               <div class='form-group input-group time col-xs-2'  style="margin-left:6px;">
                 <label for="endTime">End Time: *</label>
-                <input type='time' class="form-control timePicker" id='pickEndTime' name="eventEndTime" required/>
+                <input type='time' class="form-control timePicker" id='pickEndTime' name="eventEndTime" value="{{eventInfo.timeEnd}}" required/>
               </div>
           </div>
         </div><br>
 </div>
         <div class="form-group">
           <label for='location'>Location *</label><br>
-          <input class="form-control" id='inputEventLocation'  name="eventLocation" required>
+          <input class="form-control" id='inputEventLocation'  name="eventLocation" value="{{eventInfo.location}}" required>
         </div>
       </div>
 
@@ -127,7 +125,7 @@
 
         <div class="form-group">
           <label for='description'> Description * </label> <br>
-          <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' name="eventDescription" required></textarea>
+          <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' name="eventDescription" value={{eventInfo.description}} required></textarea>
         </div><br>
 
         <div>
@@ -149,5 +147,6 @@
       </div>
       </div>
 </form>
+</div>
 
 {% endblock %}
