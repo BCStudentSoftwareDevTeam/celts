@@ -1,62 +1,51 @@
 from flask import request, render_template
 from flask import Flask, redirect, flash
-from app.controllers.admin.createEvents import createEvents
+from app.controllers.admin.createEvents import createEvent
 from app.models.program import Program
 from app.models.event import Event
+from app.models.term import Term
 from app.controllers.admin import admin_bp
-from app.logic.adminCreateEvent import getTermDescription, getFacilitators, getCurrentTerm
+from app.logic.getAllFacilitators import getAllFacilitators
 from flask import g
 
 @admin_bp.route('/testing_things', methods=['GET'])
 def testing():
     return "<h1>Hello</h1>"
 
-@admin_bp.route('/<program_id>/create_event', methods=['GET'])
-def createEvent(program_id):
-    termDescriptions = getTermDescription()
-    eventFacilitator = getFacilitators()
-    currentTerm = getCurrentTerm()
-    user = g.current_user
+@admin_bp.route('/<program>/create_event', methods=['GET'])
+def createEventPage(program):
+    listOfTerms = Term.select()
     eventInfo = ""
-    eventRoute = "/createEvents"
-
+    facilitators = getAllFacilitators()
     try:
-        program = Program.get_by_id(program_id)
+        program = Program.get_by_id(program)
 
     except:
         return render_template(404)
 
     return render_template("admin/createEvents.html",
-                            user = user,
                             program = program,
-                            listOfTermDescriptions = termDescriptions,
-                            listOfEventFacilitators = eventFacilitator,
-                            theCurrentTerm = currentTerm,
-                            eventInfo = eventInfo,
-                            eventRoute = eventRoute)
+                            listOfTerms = listOfTerms,
+                            facilitators = facilitators,
+                            eventInfo = eventInfo)
 
 @admin_bp.route('/<program_id>/edit_event', methods=['GET'])
-def editEvent(program_id):
+def editEvent(program):
 
     eventId = 2
-    termDescriptions = getTermDescription()
-    eventFacilitator = getFacilitators()
-    currentTerm = getCurrentTerm()
-    user = g.current_user
+    facilitators = getAllFacilitators()
+    listOfTerms = Term.select()
     eventInfo = Event.get_by_id(eventId)
     eventRoute = "/eventEdit"
-    print(eventInfo.eventName)
     try:
-        program = Program.get_by_id(program_id)
+        program = Program.get_by_id(program)
 
     except:
         return render_template(404)
+
     return render_template("admin/createEvents.html",
-                            user = user,
                             program = program,
-                            listOfTermDescriptions = termDescriptions,
-                            listOfEventFacilitators = eventFacilitator,
-                            theCurrentTerm = currentTerm,
+                            facilitators = facilitators,
+                            listOfTerms = listOfTerms,
                             eventInfo = eventInfo,
-                            eventRoute = eventRoute,
                             eventId = eventId)

@@ -8,13 +8,18 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.program import Program
 from app.models.event import Event
+from app.models.course import Course
+from app.models.courseStatus import CourseStatus
+from app.models.courseInstructor import CourseInstructor
+from app.models.courseParticipant import CourseParticipant
+from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
 
 print("Inserting data for demo and testing purposes.")
 users = [
     {
         "username": "ramsayb2",
-        "bnumber": "B000173723",
+        "bnumber": "B00173723",
         "email": "ramsayb2@berea.edu",
         "phoneNumber": "555-555-5555",
         "firstName": "Brian",
@@ -25,13 +30,40 @@ users = [
         "isCeltsStudentStaff": False
     },
     {
+        "username": "neillz",
+        "bnumber": "B00751864",
+        "email": "neillz@berea.edu",
+        "phoneNumber": "555-555-5555",
+        "firstName": "Zach",
+        "lastName": "Neill",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": False
+    },
+    {
         "username": "khatts",
         "bnumber": "B00759107",
         "email": "khatts@berea.edu",
+        "phoneNumber": "555-555-5555",
         "firstName": "Sreynit",
         "lastName": "Khatt",
         "isStudent": True,
-        "phoneNumber": "12345678"
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": False
+    },
+    {
+        "username": "agliullovak",
+        "bnumber": "B00759117",
+        "email": "agliullovak@berea.edu",
+        "phoneNumber": "555-555-5555",
+        "firstName": "Karina",
+        "lastName": "Agliullova",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": False
     },
     {
         "username": "lamichhanes2",
@@ -108,16 +140,17 @@ Term.insert_many(terms).on_conflict_replace().execute()
 programs = [
     {
         "id": 1,
-        "programName": "Empty Bowls"
+        "programName": "Empty Bowls",
     },
     {
         "id": 2,
-        "programName": "Berea Buddies"
+        "programName": "Berea Buddies",
     },
     {
         "id": 3,
-        "programName": "Adopt A Grandparent"
+        "programName": "Adopt A Grandparent",
     },
+
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
 
@@ -137,7 +170,7 @@ events = [
     },
     {
         "id": 2,
-        "program": 2,
+        "program": 1,
         "term": 1,
         "eventName": "Berea Buddies",
         "description": "Berea Buddies Training",
@@ -244,8 +277,162 @@ events = [
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d")
     }
+
 ]
 Event.insert_many(events).on_conflict_replace().execute()
+
+coursestatus = [
+    {
+        "status": "Approve"
+    }
+]
+CourseStatus.insert_many(coursestatus).on_conflict_replace().execute()
+
+courses = [
+    {
+        "id": 1,
+        "courseName": "Databases",
+        "term": 2,
+        "status": 1,
+        "courseCredit": "",
+        "createdBy": "",
+        "isAllSectionsServiceLearning": True,
+        "isPermanentlyDesignated": False,
+        "sectionBQuestion1": "",
+        "sectionBQuestion2": "",
+        "sectionBQuestion3": "",
+        "sectionBQuestion4": "",
+        "sectionBQuestion5": "",
+        "sectionBQuestion6": ""
+    },
+    {
+        "id": 2,
+        "courseName": "Spanish Help",
+        "term": 1,
+        "status": 1,
+        "courseCredit": "",
+        "createdBy": "",
+        "isAllSectionsServiceLearning": True,
+        "isPermanentlyDesignated": False,
+        "sectionBQuestion1": "",
+        "sectionBQuestion2": "",
+        "sectionBQuestion3": "",
+        "sectionBQuestion4": "",
+        "sectionBQuestion5": "",
+        "sectionBQuestion6": ""
+
+    },
+]
+Course.insert_many(courses).on_conflict_replace().execute()
+
+courseInstructorRecords = [
+    {
+
+        "id": 1,
+        "course": Course.get_by_id(1),
+        "user": User.get_by_id("ramsayb2")
+    },
+    {
+        "id": 2,
+        "course": Course.get_by_id(2),
+        "user": User.get_by_id("ramsayb2")
+    },
+
+
+]
+CourseInstructor.insert_many(courseInstructorRecords).on_conflict_replace().execute()
+
+
+courseHoursEarned = [
+    {
+        "course": Course.get_by_id(1),
+        "user": User.get_by_id("neillz"),
+        "hoursEarned": 2.0
+    },
+    {
+        "course": Course.get_by_id(2),
+        "user": User.get_by_id("neillz"),
+        "hoursEarned": 3.0
+    },
+    {
+        "course": Course.get_by_id(2),
+        "user": User.get_by_id("khatts"),
+        "hoursEarned": 4.0
+    },
+    {
+        "course": Course.get_by_id(2),
+        "user": User.get_by_id("khatts"),
+        "hoursEarned": 4.0
+    },
+    {
+        "course": Course.get_by_id(1),
+        "user": User.get_by_id("khatts"),
+        "hoursEarned": 1
+    },
+
+]
+CourseParticipant.insert_many(courseHoursEarned).on_conflict_replace().execute()
+
+programHoursEarned = [
+    {
+        "user": User.get_by_id("neillz"),
+        "event": 2,
+        "rsvp": True,
+        "attended": True,
+        "hoursEarned": 2
+    },
+    {
+        "user": User.get_by_id("neillz"),
+        "event": 3,
+        "rsvp": True,
+        "attended": True,
+        "hoursEarned": 3
+    },
+    {
+        "user": User.get_by_id("neillz"),
+        "event": 4,
+        "rsvp": True,
+        "attended": True,
+        "hoursEarned": 1
+    },
+    {
+        "user": User.get_by_id("neillz"),
+        "event": 5,
+        "rsvp": True,
+        "attended": True,
+        "hoursEarned": 1
+        },
+    {
+        "user": User.get_by_id("neillz"),
+        "event": 1,
+        "rsvp": True,
+        "attended": True,
+        "hoursEarned": 8,
+        },
+    {
+        "user": User.get_by_id("khatts"),
+        "event": 1,
+        "rsvp": True,
+        "attended": True,
+        "hoursEarned": 3,
+        },
+    {
+        "user": User.get_by_id("khatts"),
+        "event": 2,
+        "rsvp": True,
+        "attended": True,
+        "hoursEarned": 2,
+        },
+    {
+        "user": User.get_by_id("khatts"),
+        "event": 5,
+        "rsvp": True,
+        "attended": True,
+        "hoursEarned": 8,
+        },
+
+]
+EventParticipant.insert_many(programHoursEarned).on_conflict_replace().execute()
 
 interest = [
 

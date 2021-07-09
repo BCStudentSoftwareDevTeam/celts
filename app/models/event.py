@@ -4,11 +4,11 @@ from app.models.program import Program
 
 class Event(baseModel):
     eventName = CharField()
-    program = ForeignKeyField(Program.id, null = True)
+    program = ForeignKeyField(Program, null = True)
     term = ForeignKeyField(Term)
     description = CharField()
-    timeStart = CharField()
-    timeEnd = CharField()
+    timeStart = TimeField()
+    timeEnd = TimeField()
     location = CharField()
     isRecurring = BooleanField(default=False)
     isPrerequisiteForProgram = BooleanField(default=False)
