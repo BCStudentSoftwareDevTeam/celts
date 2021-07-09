@@ -41,6 +41,7 @@ def test_volunteerRegister():
 
     volunteer = volunteerRegister("lamichhanes2", 10)
 
+    print(volunteer)
     assert volunteer.user.username == "lamichhanes2"
     assert volunteer.event.id == 10
     assert volunteer.rsvp == True
@@ -48,7 +49,9 @@ def test_volunteerRegister():
     # the user has already registered for the event
     volunteer2 = volunteerRegister("lamichhanes2", 10)
     assert volunteer2
+    print(volunteer2)
 
     # the user is not eligible to register
     volunteer3 = volunteerRegister("ayisie", 7)
+    print(volunteer3)
     assert volunteer3

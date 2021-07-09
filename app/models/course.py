@@ -3,7 +3,7 @@ from app.models.term import Term
 from app.models.courseStatus import CourseStatus
 
 class Course(baseModel):
-    courseName = PrimaryKeyField()
+    courseName = CharField()
     term = ForeignKeyField(Term)
     status = ForeignKeyField(CourseStatus)
     courseCredit = CharField()

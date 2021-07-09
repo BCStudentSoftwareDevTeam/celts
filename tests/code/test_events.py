@@ -8,7 +8,9 @@ def test_getEventsNoProgram():
     # No program is given, get all events
     events = getEvents()
 
+
     assert len(events) > 0
+
 
     assert events[0].description == "Empty Bowls Spring 2021"
     assert events[1].description == "Berea Buddies Training"
@@ -20,7 +22,7 @@ def test_getEventsWithProgram():
     events = getEvents(program_id=2)
 
 
-    assert len(events) == 1
+    assert len(events) > 0
 
 
     assert events[0].description == "Berea Buddies First Meetup"
