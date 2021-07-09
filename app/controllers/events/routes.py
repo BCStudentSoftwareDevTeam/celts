@@ -1,9 +1,10 @@
-from flask import request, render_template
+from flask import request, render_template, g
 from flask import Flask, redirect, flash
 
 from app.models.program import Program
 from app.controllers.events import events_bp
 from app.logic.events import groupingEvents
+from app.logic.getUpcomingEvents import getUpcomingEventsForUser
 
 @events_bp.route('/events/<term>', methods=['GET'])
 def events(term):
@@ -14,8 +15,14 @@ def events(term):
     for event in events:
         print(event.program)
 
-    return render_template("events/event_list.html",
+    return render_template("/events/event_list.html",
             events=events,
             programs = programs,
             user="ramsayb2"
             )
+
+@events_bp.route('/events/upcoming_events', methods=['GET'])
+def showUpcomingEvent():
+    upcomingEvents = getUpcomingEventsForUser(g.current_user)
+    return render_template('/events/showUpcomingEvents.html',
+                            upcomingEvents = upcomingEvents)

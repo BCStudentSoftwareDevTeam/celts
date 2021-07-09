@@ -3,6 +3,9 @@
   {{super()}}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="/static/js/viewAllEvents.js"></<script>
+
+  </script>
 {% endblock %}
 
 {% block styles %}
@@ -14,21 +17,13 @@
 
 {% block app_content %}
 <h1>Event List</h1>
-{% for program in programs %}
-  <li>{{program.programName}}</li>
-  {% for event in events %}
-      {% if event.program.programName == program.programName %}
-        <li>{{event}} </li>
-      {% endif %}
-  {% endfor %}
-{% endfor %}
+
 {% for program in programs %}
 <div class="accordion" id="accordionExample">
   <div class="accordion-item">
     <h2 class="accordion-header" id="headingOne">
-      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" onclick="evt()">
         {{program.programName}}
-
       </button>
     </h2>
     <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
