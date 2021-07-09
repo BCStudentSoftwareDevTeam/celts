@@ -23,9 +23,8 @@ def isEligibleForProgram(program, user):
     requiredEvents = Event.select().where((Event.isPrerequisiteForProgram == True) & (Event.program == program))
 
     if requiredEvents:
-        # for each prerequisite event
         for event in requiredEvents:
-            # If that event is not attended return False
+            # If requiredEvent(s) is not attended return False
             if not EventParticipant.select().where((EventParticipant.attended == True) & (EventParticipant.user == user) & (EventParticipant.event == event.id)):
                 return False
 

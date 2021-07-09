@@ -37,7 +37,7 @@ def test_volunteerEligible():
     assert eligible
 
     # user that is banned from a program
-    eligible = isEligibleForProgram(1,  "khatts")
+    eligible = isEligibleForProgram(3,  "khatts")
     assert not eligible
 
     # user hasn't attend the required event

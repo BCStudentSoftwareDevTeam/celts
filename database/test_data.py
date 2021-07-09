@@ -239,7 +239,7 @@ events = [
         "eventName": "Tutoring",
         "description": "Tutoring Training",
         "isTraining": True,
-        "isPrerequisiteForProgram": True,
+        "isPrerequisiteForProgram": False,
         "timeStart": datetime.strptime("3:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a bigish room",
@@ -253,7 +253,7 @@ events = [
         "eventName": "Making Bowls",
         "description": "Making Bowls Training",
         "isTraining": True,
-        "isPrerequisiteForProgram": True,
+        "isPrerequisiteForProgram": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
@@ -268,13 +268,8 @@ events = [
         "description": "How To Make Buddies Training",
         "isTraining": True,
         "isPrerequisiteForProgram": False,
-<<<<<<< HEAD
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-=======
-        "timeStart": "6pm",
-        "timeEnd": "9pm",
->>>>>>> 83dbdbc4d62baefba4dee3c710c9ce9609c39db3
         "location": "Outisde",
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
@@ -287,7 +282,7 @@ events = [
         "eventName": "Adoption",
         "description": "Adoption 101 Training",
         "isTraining": True,
-        "isPrerequisiteForProgram": True,
+        "isPrerequisiteForProgram": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
@@ -550,7 +545,7 @@ Interest.insert_many(interest).on_conflict_replace().execute()
 bannedUser = [
     {
         "user": "khatts",
-        "program": 1,
+        "program": 3,
     }
 ]
 ProgramBan.insert_many(bannedUser).on_conflict_replace().execute()

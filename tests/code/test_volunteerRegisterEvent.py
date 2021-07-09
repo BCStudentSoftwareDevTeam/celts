@@ -49,15 +49,7 @@ def test_volunteerRegister():
     # the user has already registered for the event
     volunteer2 = volunteerRegister("lamichhanes2", 10)
     assert volunteer2
-<<<<<<< HEAD
-    print(volunteer2)
 
-    # the user is not eligible to register
+    # the user is not eligible to register (reason: hasn't attended all prerequisite events)
     volunteer3 = volunteerRegister("ayisie", 7)
-    print(volunteer3)
-=======
-
-    # the user is not eligible to register
-    volunteer3 = volunteerRegister("ayisie", 7)
->>>>>>> 83dbdbc4d62baefba4dee3c710c9ce9609c39db3
     assert volunteer3
