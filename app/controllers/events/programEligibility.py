@@ -20,16 +20,13 @@ def isEligibleForProgram(program, user):
         return False
 
     # Check for events that are prerequisite for program
-    print("Program", program)
-    requiredEvents = Event.select().where(Event.isPrerequisiteForProgram == True & Event.program == program)
+    requiredEvents = Event.select().where((Event.isPrerequisiteForProgram == True) & (Event.program == program))
 
     if requiredEvents:
-        print(len(requiredEvents))
         # for each prerequisite event
         for event in requiredEvents:
-            print(event)
             # If that event is not attended return False
-            if not EventParticipant.select().where(EventParticipant.attended == True & EventParticipant.user == user):
+            if not EventParticipant.select().where((EventParticipant.attended == True) & (EventParticipant.user == user) & (EventParticipant.event == event.id)):
                 return False
 
     return True

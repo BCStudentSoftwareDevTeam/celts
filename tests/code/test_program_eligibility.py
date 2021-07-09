@@ -41,7 +41,5 @@ def test_volunteerEligible():
     assert not eligible
 
     # user hasn't attend the required event
-    print("---------------------------------------------------")
     eligible3 = isEligibleForProgram(1, "ayisie")
     assert not eligible3
-

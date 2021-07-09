@@ -236,11 +236,11 @@ events = [
     },
     {
         "id": 10,
-        "program": None,
+        "program": 3,
         "term": 3,
         "description": "Whole Celts Training",
         "isTraining": True,
-        "isPrerequisiteForProgram": True,
+        "isPrerequisiteForProgram": False,
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "Dining Dishes Room",
@@ -275,7 +275,23 @@ EventParticipants = [
         "rsvp" : True,
         "attended" : False,
         "hoursEarned" : None,
-    }
+    },
+    {
+        "user" : "lamichhanes2",
+        "event" : "4",
+        "rsvp" : True,
+        "attended" : True,
+        "hoursEarned" : None,
+
+    },
+    {
+        "user" : "lamichhanes2",
+        "event" : "3",
+        "rsvp" : True,
+        "attended" : True,
+        "hoursEarned" : None,
+
+    },
 ]
 EventParticipant.insert_many(EventParticipants).on_conflict_replace().execute()
 

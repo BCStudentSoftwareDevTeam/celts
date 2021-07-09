@@ -39,10 +39,8 @@ def test_noEventVolunteerRegister():
 @pytest.mark.integration
 def test_volunteerRegister():
 
-    volunteer = volunteerRegister("lamichhanes2", 3)
-
-    print(volunteer)
+    volunteer = volunteerRegister("lamichhanes2", 10)
 
     assert volunteer.user.username == "lamichhanes2"
-    assert volunteer.event.id == 3
+    assert volunteer.event.id == 10
     assert volunteer.rsvp == True
