@@ -1,0 +1,50 @@
+{% extends "base.html"%}
+{% block scripts %}
+  {{super()}}
+
+{% endblock %}
+
+{% block styles %}
+  {{super()}}
+
+
+{% endblock %}
+
+{% block app_content %}
+
+<h1>Berea Buddies</h1>
+
+<div>
+  <table>
+    <tr>
+      <th>Present</th>
+      <th>Name</th>
+      <th>Role</th>
+      <th>Email</th>
+      <th>Phone Number</th>
+      <th>RSVP</th>
+      <th>Total Hours</th>
+    </tr>
+
+
+  {% for participant in eventParticipantsData%}
+  <tr>
+    <td>Check Box</td>
+    <td>{{participant.user.firstName}} {{participant.user.lastName}}</td>
+    <td></td
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+
+  {%endfor%}
+
+
+  </table>
+
+
+
+</div>
+
+{% endblock %}
