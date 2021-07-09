@@ -17,6 +17,22 @@ $(document).ready(function(){
   $("#calendarIconEnd").click(function() {
       $("#endDatePicker").datepicker().datepicker("show"); // Shows the start date datepicker when glyphicon is clicked
     });
+
+  $("#checkIsTraining").click(function(){
+    var status = $("input[name='eventIsTraining']:checked").val()
+    console.log(status);
+    console.log(typeof(status));
+
+    if ($("input[name='eventIsTraining']:checked").val() == 'on'){
+      $("#checkIsRequired").prop('checked', true);
+      $("#checkIsRequired").prop('disabled', true);
+
+    }else{
+      $("#checkIsRequired").prop('disabled', false);
+    }
+
+
+  });
 });
 
 function updateDate(obj) { // updates max and min dates of the datepickers as the other datepicker changes
