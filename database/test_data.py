@@ -202,11 +202,11 @@ events = [
     },
     {
         "id": 7,
-        "program": None,
+        "program": 1,
         "term": 3,
         "description": "How To Make Buddies Training",
         "isTraining": True,
-        "isPrerequisiteForProgram": True,
+        "isPrerequisiteForProgram": False,
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "Outisde",
