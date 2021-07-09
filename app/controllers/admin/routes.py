@@ -29,7 +29,7 @@ def createEventPage(program):
                             facilitators = facilitators,
                             eventInfo = eventInfo)
 
-@admin_bp.route('/<program_id>/edit_event', methods=['GET'])
+@admin_bp.route('/<program>/edit_event', methods=['GET'])
 def editEvent(program):
 
     eventId = 2

@@ -33,14 +33,13 @@ def createNewEvent(newEventData):
 
 def eventEdit(newEventData):
 
-    term = Term.select(Term.id).where(Term.description == newEventData['eventTerm'])
     eventId = newEventData['eventId']
     eventInfo = Event.get_by_id(eventId)
     print(newEventData['programId'])
     eventData = {
             "id": eventId,
             "program": newEventData['programId'],
-            "term": term,
+            "term": newEventData['eventTerm'],
             "eventName": newEventData['eventName'],
             "description": newEventData['eventDescription'],
             "timeStart": newEventData['eventStartTime'],
@@ -49,7 +48,7 @@ def eventEdit(newEventData):
             "startDate": newEventData['eventStartDate'],
             "endDate": newEventData['eventEndDate']
         }
-    eventEntry = Event.insert_many(eventData).on_conflict_replace().execute()
+    eventEntry = Event.update(**eventData).where(Event.id == eventId).execute()
 
     facilitatorEntry = Facilitator.create(user = newEventData['eventFacilitator'],
                                           event = eventEntry )
