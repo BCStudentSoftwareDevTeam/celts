@@ -29,7 +29,7 @@ function updateDate(obj) { // updates max and min dates of the datepickers as th
     $("#startDatePicker").datepicker("option", "maxDate", new Date(  newYear, newMonth, newDay));
   }
   if(obj.id == "startDatePicker"){
-    var newDay = dateToChange.getDate() + 1;
+    var newDay = dateToChange.getDate();
     $("#endDatePicker").datepicker({minDate: new Date(  newYear, newMonth, newDay)});
     $("#endDatePicker").datepicker( "option", "minDate", new Date(  newYear, newMonth, newDay));
   }

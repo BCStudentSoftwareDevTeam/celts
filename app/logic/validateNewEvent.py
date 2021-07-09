@@ -6,7 +6,7 @@ def validateNewEventData(newEventData):
         return (False, "Event start date is after event end date")
 
 
-    if newEventData['eventEndTime'] <=  newEventData['eventStartTime']:
+    if newEventData['eventEndDate'] ==  newEventData['eventStartDate'] and newEventData['eventEndTime'] <=  newEventData['eventStartTime']:
         return (False, "Event start time is after event end time")
 
 
