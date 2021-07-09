@@ -18,6 +18,7 @@ def createEvent(program_id):
     currentTerm = getCurrentTerm()
     user = g.current_user
     eventInfo = ""
+    eventRoute = "/createEvents"
 
     try:
         program = Program.get_by_id(program_id)
@@ -31,7 +32,8 @@ def createEvent(program_id):
                             listOfTermDescriptions = termDescriptions,
                             listOfEventFacilitators = eventFacilitator,
                             theCurrentTerm = currentTerm,
-                            eventInfo = eventInfo)
+                            eventInfo = eventInfo,
+                            eventRoute = eventRoute)
 
 @admin_bp.route('/<program_id>/edit_event', methods=['GET'])
 def editEvent(program_id):
@@ -42,7 +44,8 @@ def editEvent(program_id):
     currentTerm = getCurrentTerm()
     user = g.current_user
     eventInfo = Event.get_by_id(eventId)
-
+    eventRoute = "/eventEdit"
+    print(eventInfo.eventName)
     try:
         program = Program.get_by_id(program_id)
 
@@ -54,4 +57,6 @@ def editEvent(program_id):
                             listOfTermDescriptions = termDescriptions,
                             listOfEventFacilitators = eventFacilitator,
                             theCurrentTerm = currentTerm,
-                            eventInfo = eventInfo)
+                            eventInfo = eventInfo,
+                            eventRoute = eventRoute,
+                            eventId = eventId)

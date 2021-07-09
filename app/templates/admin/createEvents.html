@@ -24,6 +24,7 @@
       <div class="col-sm-6">
         <div>
           <input type="hidden" value="{{program.id}}" name="programId">
+          <input type="hidden" value="{{eventId}}" name="eventId">
         </div>
         <div class="form-group pb-3">
           <label for='eventName'> Event Name *</label> <br>
@@ -62,7 +63,8 @@
               <!--datePicker for start date-->
               <label for="startDatePicker" id="startDatePickerLabel"><span>Start Date *</span></label>
               <div class='input-group date' id="startDate">
-                <input type='text' class="form-control readonly" id='startDatePicker' name="eventStartDate" placeholder="Start Date" onchange="updateDate(this)" value="{{eventInfo.startDate}}"  required />
+                <input type='text' style="background-color: inherit;" class="form-control"
+                id='startDatePicker' name="eventStartDate" placeholder="Start Date" onchange="updateDate(this)" value="{{eventInfo.startDate}}" readonly required />
                 <span class="input-group-addon" id="calendarIconStart">
                   <span class="glyphicon glyphicon-calendar"></span>
                 </span>
@@ -72,11 +74,11 @@
           <div class="d-inline-flex" id ="endDateStyle">
             <!--datePicker for End date-->
             <label for="endDatePicker" id="endDatePickerLabel""><span>End Date * </span></label>
-            <div class='input-group date'>
-              <input type='text' class="form-control readonly" id='endDatePicker' name="eventEndDate" placeholder="End Date" onchange="updateDate(this)" value="{{eventInfo.endDate}}" required />
-              <span class="input-group-addon" id="calendarIconEnd">
+            <div class='input-group date' id="endDate">
+              <input type='text' style="background-color: inherit;" class="form-control"
+              id='endDatePicker' name="eventEndDate" placeholder="End Date" onchange="updateDate(this)" value="{{eventInfo.endDate}}" readonly required />
+              <span class="input-group-addon">
                 <span class="glyphicon glyphicon-calendar"></span>
-              </span>
             </div>
           </div>​
           </div>
