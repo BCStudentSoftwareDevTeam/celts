@@ -14,16 +14,22 @@ def isEligibleForProgram(program, user):
     :return: True if the user is not banned and meets the requirements, and False otherwise
     """
     user = User.get_by_id(user)
-    programid = Program.get_by_id(program)
+    program = Program.get_by_id(program)
 
-    if (ProgramBan.select().where(ProgramBan.user == user)) and (ProgramBan.select().where(ProgramBan.program == programid)):
+    if (ProgramBan.select().where(ProgramBan.user == user)) and (ProgramBan.select().where(ProgramBan.program == program)):
         return False
 
-    #Check for events that are prerequisite for program
-    #If that event is not attended return False
-    #cases: no required events, not attended
-    for requirement in Event.select().where(Event.isPrerequisiteForProgram == True):
-        print(requirement)
-        if not EventParticipant.select().where(EventParticipant.attended == True):
-            return False
+    # Check for events that are prerequisite for program
+    print("Program", program)
+    requiredEvents = Event.select().where(Event.isPrerequisiteForProgram == True & Event.program == program)
+
+    if requiredEvents:
+        print(len(requiredEvents))
+        # for each prerequisite event
+        for event in requiredEvents:
+            print(event)
+            # If that event is not attended return False
+            if not EventParticipant.select().where(EventParticipant.attended == True & EventParticipant.user == user):
+                return False
+
     return True

@@ -5,11 +5,10 @@ from app.logic.events import getEvents
 
 @pytest.mark.integration
 def test_getEventsNoProgram():
-    # No program is given
+    # No program is given, get all events
     events = getEvents()
 
-    assert len(events) == 10
-
+    assert len(events) > 0
 
     assert events[0].description == "Empty Bowls Spring 2021"
     assert events[1].description == "Berea Buddies Training"

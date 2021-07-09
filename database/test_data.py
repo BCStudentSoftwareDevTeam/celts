@@ -125,6 +125,10 @@ programs = [
         "id": 3,
         "programName": "Adopt A Grandparent"
     },
+    {
+        "id": 4,
+        "programName": "No Required Events"
+    },
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
 
@@ -237,6 +241,17 @@ events = [
         "description": "Whole Celts Training",
         "isTraining": True,
         "isPrerequisiteForProgram": True,
+        "timeStart": "6pm",
+        "timeEnd": "9pm",
+        "location": "Dining Dishes Room",
+    },
+    {
+        "id": 11,
+        "program": 4,
+        "term": 3,
+        "description": "Not a required event",
+        "isTraining": False,
+        "isPrerequisiteForProgram": False,
         "timeStart": "6pm",
         "timeEnd": "9pm",
         "location": "Dining Dishes Room",

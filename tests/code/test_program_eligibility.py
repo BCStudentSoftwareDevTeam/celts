@@ -23,26 +23,25 @@ def test_noUserVolunteerRegister():
 @pytest.mark.integration
 def test_volunteerEligible():
 
+    # user has attended all required events
     user = User.get(User.username == "lamichhanes2")
     program = Program.get(Program.id == 2)
 
+    eligible = isEligibleForProgram(2, "lamichhanes2")
+    assert eligible
     eligible = isEligibleForProgram(program, user)
-
     assert eligible
 
-    user2 = User.get(User.username == "khatts") #user that is banned from a program
-    program2 = Program.get(Program.id == 1)
+    # there are no required events
+    eligible = isEligibleForProgram(4, "ayisie")
+    assert eligible
 
+    # user that is banned from a program
+    eligible = isEligibleForProgram(1,  "khatts")
+    assert not eligible
 
-    eligible2 = isEligibleForProgram(program2, user2)
+    # user hasn't attend the required event
+    print("---------------------------------------------------")
+    eligible3 = isEligibleForProgram(1, "ayisie")
+    assert not eligible3
 
-    assert eligible2 == False
-
-    # user haven't attend the required event
-    user3 = User.get(User.username == "ayisie")
-    program3 = Program.get(Program.id == 1)
-
-    eligible3 = isEligibleForProgram(program3, user3)
-    print(eligible3)
-
-    assert eligible3 == False
