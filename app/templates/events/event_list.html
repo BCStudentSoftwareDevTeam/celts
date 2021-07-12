@@ -28,11 +28,28 @@
     </h2>
     <div id="collapseOne" class="accordion-collapse collapse hide" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
       <div class="accordion-body">
-        {% for event in events %}
-            {% if event.program.programName == program.programName %}
-              <li>{{event}} </li>
-            {% endif %}
-        {% endfor %}
+              <table>
+                <thead>
+                  <tr>
+                   <th scope="col">Event Name</th>
+                   <th scope="col">Date</th>
+                   <th scope="col">Time</th>
+                   <th scope="col">Location</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for event in events %}
+                      {% if event.program.programName == program.programName %}
+                  <tr>
+                    <td>{{event.eventName}}</td>
+                    <td>{{event.startDate}}</td>
+                    <td>{{event.timeStart}}</td>
+                    <td>{{event.location}}</td>
+                  </tr>
+                  {% endif %}
+              {% endfor %}
+                </tbody>
+              </table>
       </div>
     </div>
   </div>

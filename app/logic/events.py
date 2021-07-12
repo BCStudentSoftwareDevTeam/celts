@@ -12,7 +12,7 @@ def getEvents(program_id=None):
 
 def groupingEvents(termID):
 
-    groupEvents = (Event.select(Event.description,Event.program).where(Event.term == termID).order_by(Event.program))
+    groupEvents = (Event.select().where(Event.term == termID).order_by(Event.program))
     for item in list(groupEvents.objects()):
         print(item.program)
     return groupEvents
