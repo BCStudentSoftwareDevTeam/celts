@@ -12,8 +12,7 @@ def events(term):
     events = groupingEvents(term)
     programs = Program.select()
     print(list(programs), "here")
-    for event in events:
-        print(event.program)
+    print(events, "Events")
 
     return render_template("/events/event_list.html",
             events=events,
