@@ -1,55 +1,49 @@
 import pytest
 from app.models.user import User
-from app.controllers.events.volunteerRegisterEvent import volunteerRegister
+from app.controllers.events.userRsvpForEvent import userRsvpForEvent
 from app.models.event import Event
 from peewee import DoesNotExist
 from app.controllers.events.programEligibility import isEligibleForProgram
 
 @pytest.mark.integration
-def test_noUserVolunteerRegister():
+def test_notUserRsvpForEvent():
 
     with pytest.raises(DoesNotExist):
-        volunteer = volunteerRegister("asdkl", 1)
+        volunteer = userRsvpForEvent("asdkl", 1)
 
     with pytest.raises(DoesNotExist):
-        volunteer = volunteerRegister(132546, 1)
-
-    with pytest.raises(DoesNotExist):
-        volunteer = volunteerRegister(" khatts", 1)
-
-    with pytest.raises(DoesNotExist):
-        volunteer = volunteerRegister("khatts ", 1)
+        volunteer = userRsvpForEvent(132546, 1)
 
 @pytest.mark.integration
-def test_noEventVolunteerRegister():
+def test_noEventUserRsvpForEvent():
 
     with pytest.raises(DoesNotExist):
-        volunteer = volunteerRegister("khatts", 1500)
+        volunteer = userRsvpForEvent("khatts", 1500)
 
     with pytest.raises(DoesNotExist):
-        volunteer = volunteerRegister("khatts", "Event")
+        volunteer = userRsvpForEvent("khatts", "Event")
 
     with pytest.raises(DoesNotExist):
-        volunteer = volunteerRegister("khatts", -1)
+        volunteer = userRsvpForEvent("khatts", -1)
 
     with pytest.raises(DoesNotExist):
-        volunteer = volunteerRegister("khatts", 0)
+        volunteer = userRsvpForEvent("khatts", 0)
 
 
 @pytest.mark.integration
-def test_volunteerRegister():
+def test_userRsvpForEvent():
 
-    volunteer = volunteerRegister("lamichhanes2", 10)
+    volunteer = userRsvpForEvent("lamichhanes2", 10)
 
-    print(volunteer)
-    assert volunteer.user.username == "lamichhanes2"
-    assert volunteer.event.id == 10
-    assert volunteer.rsvp == True
+    assert volunteer[0].user.username == "lamichhanes2"
+    assert volunteer[0].event.id == 10
+    assert volunteer[0].rsvp == True
 
     # the user has already registered for the event
-    volunteer2 = volunteerRegister("lamichhanes2", 10)
+    volunteer2 = userRsvpForEvent("lamichhanes2", 10)
+
     assert volunteer2
 
     # the user is not eligible to register (reason: hasn't attended all prerequisite events)
-    volunteer3 = volunteerRegister("ayisie", 7)
-    assert volunteer3
+    volunteer3 = userRsvpForEvent("ayisie", 7)
+    assert volunteer3 == None

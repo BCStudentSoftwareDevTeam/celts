@@ -1,13 +1,12 @@
 import pytest
 from app.models.eventParticipant import EventParticipant
-from app.controllers.events.volunteerRegisterEvent import volunteerRegister
 from peewee import DoesNotExist
 from app.models.user import User
 from app.models.event import Event
 from app.controllers.events.programEligibility import isEligibleForProgram
 from app.models.program import Program
 @pytest.mark.integration
-def test_noUserVolunteerRegister():
+def test_doesNotExistIsEligibleForProgram():
 
     with pytest.raises(DoesNotExist):
         eligible = isEligibleForProgram(2, "asdlkfje") #user doesn't exist
@@ -21,7 +20,7 @@ def test_noUserVolunteerRegister():
 
 
 @pytest.mark.integration
-def test_volunteerEligible():
+def test_isEligibleForProgram():
 
     # user has attended all required events
     user = User.get(User.username == "lamichhanes2")

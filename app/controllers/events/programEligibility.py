@@ -7,10 +7,10 @@ from app.models.program import Program
 
 def isEligibleForProgram(program, user):
     """
-    Checks if the user is banned from an event. Checks if the user has completed
-    specific prerequisite(s) for the event.
-    :param program: the id of the program that is passed in
-    :param user: the user that is logged into the system
+    Verifies if a given user is eligible for a program by
+    checking if they are banned from a program and if they have attended all the required events for a program.
+    :param program: accepts a Program object or programid
+    :param user: accepts a User object or userid
     :return: True if the user is not banned and meets the requirements, and False otherwise
     """
     user = User.get_by_id(user)
