@@ -17,7 +17,7 @@ def createEventPage(program):
     listOfTerms = Term.select()
     eventInfo = ""
     facilitators = getAllFacilitators()
-    notRecurring = "Checked"
+    
     try:
         program = Program.get_by_id(program)
 
@@ -28,8 +28,7 @@ def createEventPage(program):
                             program = program,
                             listOfTerms = listOfTerms,
                             facilitators = facilitators,
-                            eventInfo = eventInfo,
-                            notRecurring = notRecurring)
+                            eventInfo = eventInfo)
 
 @admin_bp.route('/<program>/<eventId>/edit_event', methods=['GET'])
 def editEvent(program, eventId):
@@ -37,24 +36,12 @@ def editEvent(program, eventId):
     facilitators = getAllFacilitators()
     listOfTerms = Term.select()
     eventInfo = Event.get_by_id(eventId)
-    isRecurring = ""
-    isPrerequisiteForProgram = ""
-    isTraining = ""
-    isRsvpRequired = ""
-    isService = ""
-    notRecurring = "Checked"
 
-    if eventInfo.isRecurring:
-        isRecurring = "Checked"
-        notRecurring = ""
-    if eventInfo.isPrerequisiteForProgram:
-        isPrerequisiteForProgram = "Checked"
-    if eventInfo.isTraining:
-        isTraining = "Checked"
-    if eventInfo.isRsvpRequired:
-        isRsvpRequired = "Checked"
-    if  eventInfo.isService:
-        isService = "Checked"
+    isRecurring = "Checked" if eventInfo.isRecurring else ""
+    isPrerequisiteForProgram = "Checked" if eventInfo.isPrerequisiteForProgram else ""
+    isTraining = "Checked" if eventInfo.isTraining else ""
+    isRsvpRequired = "Checked" if eventInfo.isRsvpRequired else ""
+    isService = "Checked" if eventInfo.isService else ""
 
     try:
         program = Program.get_by_id(program)
@@ -72,5 +59,4 @@ def editEvent(program, eventId):
                             isPrerequisiteForProgram = isPrerequisiteForProgram,
                             isTraining = isTraining,
                             isRsvpRequired = isRsvpRequired,
-                            isService = isService,
-                            notRecurring = notRecurring)
+                            isService = isService)

@@ -6,20 +6,20 @@ from datetime import *
 
 @pytest.mark.integration
 def test_beforeEdit():
-    eventId = 2
+    eventId = 4
     beforeEdit = Event.get_by_id(eventId)
 
-    assert beforeEdit.eventName == "Berea Buddies"
+    assert beforeEdit.eventName == "First Meetup"
 
 @pytest.mark.integration
 def test_afterEdit():
     eventFunction: editEvent(newEventData)
-    eventId = 2
+    eventId = 4
     eventData = {
                     "id": eventId,
                     "program": 1,
                     "term": 1,
-                    "eventName": "Berea Buddies",
+                    "eventName": "First Meetup",
                     "description": "This is a Test",
                     "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
                     "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),

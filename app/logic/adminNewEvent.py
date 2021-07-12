@@ -34,7 +34,6 @@ def createNewEvent(newEventData):
 def eventEdit(newEventData):
 
     eventId = newEventData['eventId']
-    eventInfo = Event.get_by_id(eventId)
     eventData = {
             "id": eventId,
             "program": newEventData['programId'],
@@ -44,7 +43,7 @@ def eventEdit(newEventData):
             "timeStart": newEventData['eventStartTime'],
             "timeEnd": newEventData['eventEndTime'],
             "location": newEventData['eventLocation'],
-            "isRecurring": bool(newEventData['eventIsRecurring']),
+            "isRecurring": newEventData['eventIsRecurring'],
             "isPrerequisiteForProgram": newEventData['eventRequiredForProgram'],
             "isTraining": newEventData['eventIsTraining'],
             "isRsvpRequired": newEventData['eventRSVP'],
