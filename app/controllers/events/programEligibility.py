@@ -7,9 +7,9 @@ from app.models.program import Program
 
 def isEligibleForProgram(program, user):
     """
-    Verifies if a given user is eligible for a program by
-    checking if they are banned from a program and if they have attended all the required events for a program.
-    :param program: accepts a Program object or programid
+    Verifies if a given user is eligible for a program by checking if they are
+    banned from a program and if they have attended all the required events for a program.
+    :param program: accepts a Program object or a valid programid
     :param user: accepts a User object or userid
     :return: True if the user is not banned and meets the requirements, and False otherwise
     """
@@ -24,8 +24,8 @@ def isEligibleForProgram(program, user):
 
     if requiredEvents:
         for event in requiredEvents:
-            # If requiredEvent(s) is not attended return False
-            if not EventParticipant.select().where((EventParticipant.attended == True) & (EventParticipant.user == user) & (EventParticipant.event == event.id)):
+            attendedRequiredEvents = (EventParticipant.select().where((EventParticipant.attended == True)
+                                    & (EventParticipant.user == user) & (EventParticipant.event == event.id)))
+            if not attendedRequiredEvents:
                 return False
-
     return True

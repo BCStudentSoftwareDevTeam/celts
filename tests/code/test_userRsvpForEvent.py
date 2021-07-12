@@ -35,15 +35,15 @@ def test_userRsvpForEvent():
 
     volunteer = userRsvpForEvent("lamichhanes2", 10)
 
-    assert volunteer[0].user.username == "lamichhanes2"
-    assert volunteer[0].event.id == 10
-    assert volunteer[0].rsvp == True
+    assert volunteer.user.username == "lamichhanes2"
+    assert volunteer.event.id == 10
+    assert volunteer.rsvp == True
 
     # the user has already registered for the event
-    volunteer2 = userRsvpForEvent("lamichhanes2", 10)
-
-    assert volunteer2
+    volunteer = userRsvpForEvent("lamichhanes2", 10)
+    assert volunteer.event.id == 10
+    assert volunteer
 
     # the user is not eligible to register (reason: hasn't attended all prerequisite events)
-    volunteer3 = userRsvpForEvent("ayisie", 7)
-    assert volunteer3 == None
+    with pytest.raises(Exception):
+        volunteer = userRsvpForEvent("ayisie", 7)

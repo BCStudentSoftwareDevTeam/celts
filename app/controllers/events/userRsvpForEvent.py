@@ -8,22 +8,20 @@ import pytest
 def userRsvpForEvent(userid,  eventid):
     """
     Lets the user RSVP for an event if they are eligible and create an entry for them is in the EventParticipant table
-    :param userid: it is the username of a user
-    :param eventid: an integer
-    :return: eventParticipant entry for that user; otherwise raise an exception error
+    :param userid: accepts a User object or a username of a user
+    :param eventid: accepts an Event object or a valid eventid
+    :return: eventParticipant entry for the given user and event; otherwise raise an exception
     """
 
     user = User.get(User.username == userid)
     event = Event.get(Event.id == eventid)
     program = Event.select(Event.program).where(Event.id == event)
 
-    try:
-        if isEligibleForProgram(program, user):
+    if isEligibleForProgram(program, user):
         #checks if user isn't already registerd for event
-            eventParticipant = EventParticipant.get_or_create(user = user,
+        eventParticipant, newParticipant = EventParticipant.get_or_create(user = user,
                                                        event = event,
                                                        rsvp = True)
-            return eventParticipant
-    except Exception as err:
+        return eventParticipant
 
-        raise ("User is not eligible", err)
+    raise Exception("User is not eligible")
