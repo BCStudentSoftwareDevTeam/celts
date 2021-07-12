@@ -1,7 +1,7 @@
 {% extends "base.html"%}
 {% block scripts %}
   {{super()}}
-
+  <script src="/static/js/trackVolunteerHours.js"></script>
 {% endblock %}
 
 {% block styles %}
@@ -12,42 +12,68 @@
 
 {% block app_content %}
 
-<h1>Berea Buddies</h1>
-<div class="ui-widget">
-    <input id="volunteerInput" type="input" oninput="searchVolunteer()">
+<h1 align="center">{{eventParticipantsData[0].event.program.programName}}</h1><br>
+<h3 align="center">{{eventParticipantsData[0].event.eventName}}</h3><br>
+
+  <div class="btn-group">
+    <a href="#" class="btn btn-outline-primary" id="eventFormButton">Event Form</a>
+    <a href="#" class="btn btn-outline-secondary" id="trackHoursButton">Track Hours</a>
   </div>
 
+<form action = "/updateTrackHours" method="post"><br>
+  <div class="ui-widget">
+    <input id="trackHoursInput" type="input" placeholder="Search">
+    <span><i class="bi bi-search" style="margin-left: -25px;"></i></span>
+  </div>
 <div>
-  <table>
-    <tr>
-      <th>Present</th>
-      <th>Name</th>
-      <th>Role</th>
-      <th>Email</th>
-      <th>Phone Number</th>
-      <th>RSVP</th>
-      <th>Total Hours</th>
-    </tr>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Present</th>
+        <th>Name</th>
+        <th>Role</th>
+        <th>Email</th>
+        <th>Phone Number</th>
+        <th>RSVP</th>
+        <th>Total Hours</th>
+      </tr>
+    </thead>
 
-
+  <tbody id="myTable">
   {% for participant in eventParticipantsData%}
   <tr>
-    <td>Check Box</td>
+    {% if participant.attended == 1 %}
+      <td><input type="checkbox" name="attended" checked></td>
+    {% else %}
+      <td><input type="checkbox" name="attended"></td>
+    {% endif %}
+
     <td>{{participant.user.firstName}} {{participant.user.lastName}}</td>
-    <td></td
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
+    <td>Volunteer</td>
+    <td>{{participant.user.email}}</td>
+    <td>{{participant.user.phoneNumber}}</td>
+    {% if participant.rsvp == 1 %}
+      <td>Yes</td>
+    {% else %}
+      <td>No</td>
+    {% endif %}
+
+    <td><input style="max-width: 90px;" type ="number" min="0" value="{{participant.hoursEarned}}" class="form-control number-only form-control input-sm"></td>
   </tr>
 
   {%endfor%}
-
+ </tbody>
 
   </table>
 
 
 
 </div>
+
+<div>
+  <button type="submit" class="btn btn-primary float-end">Save</button>
+</div>
+
+</form>
 
 {% endblock %}
