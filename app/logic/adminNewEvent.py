@@ -3,7 +3,7 @@ from app.models.facilitator import Facilitator
 
 def setValueForUncheckedBox(eventData):
 
-    eventCheckBoxes = ['eventRequiredForProgram','eventRSVP', 'eventServiceHours', 'eventIsTraining']
+    eventCheckBoxes = ['eventRequiredForProgram','eventRSVP', 'eventServiceHours', 'eventIsTraining', 'eventIsRecurring']
 
     for checkBox in eventCheckBoxes:
         if checkBox not in eventData:
@@ -19,7 +19,7 @@ def createNewEvent(newEventData):
                               timeStart = newEventData['eventStartTime'],
                               timeEnd = newEventData['eventEndTime'],
                               location = newEventData['eventLocation'],
-                              isRecurring = newEventData['recurringEvent'],
+                              isRecurring = newEventData['eventIsRecurring'],
                               isRsvpRequired = newEventData['eventRSVP'],
                               isRequiredForProgram = newEventData['eventRequiredForProgram'],
                               isTraining = newEventData['eventIsTraining'],
@@ -35,12 +35,6 @@ def eventEdit(newEventData):
 
     eventId = newEventData['eventId']
     eventInfo = Event.get_by_id(eventId)
-    # status = False
-    # if bool(newEventData['recurringEvent']):
-    #     status = True
-    #     print(status)
-    print((newEventData['recurringEvent']))
-    print(bool(newEventData['recurringEvent']))
     eventData = {
             "id": eventId,
             "program": newEventData['programId'],
@@ -50,7 +44,7 @@ def eventEdit(newEventData):
             "timeStart": newEventData['eventStartTime'],
             "timeEnd": newEventData['eventEndTime'],
             "location": newEventData['eventLocation'],
-            "isRecurring": bool(newEventData['recurringEvent']),
+            "isRecurring": bool(newEventData['eventIsRecurring']),
             "isPrerequisiteForProgram": newEventData['eventRequiredForProgram'],
             "isTraining": newEventData['eventIsTraining'],
             "isRsvpRequired": newEventData['eventRSVP'],
