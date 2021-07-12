@@ -19,10 +19,16 @@
   </div>
   <form data-toggle="validator" role="form" action="/createEvent" method='post'>
     <div class="row p-2">
+      <div class="flex-container">
+        <form action="/home">
+          <input type="{{deleteButton}}" onclick="{% set eventDelete = True %}" class="btn btn-danger float-end" value="Cancel Event"/>
+        </form>
+      </div>
       <div class="col-md-6 col-sm-12 ">
         <div>
           <input type="hidden" value="{{program.id}}" name="programId">
           <input type="hidden" value="{{eventId}}" name="eventId">
+          <input type="hidden" value="{{eventDelete}}" name="eventDelete">
         </div>
         <div class="d-grid gap-1.5">
           <div class="form-group">

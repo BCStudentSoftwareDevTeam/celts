@@ -31,9 +31,13 @@ def createEvent():
                 return redirect(url_for("admin.createEventPage", program=newEventData['programId']))
 
             else:
-                eventEdit(newEventData)
-                flash("Event successfully updated!")
-                return redirect(url_for("admin.createEventPage", program=newEventData['programId']))
+                if eventDelete:
+                    Delete()
+
+                else:
+                    eventEdit(newEventData)
+                    flash("Event successfully updated!")
+                    return redirect(url_for("admin.createEventPage", program=newEventData['programId']))
         else:
             flash(eventErrorMessage)
             return redirect(url_for("admin.createEventPage", program=2)) #FIXME: have this redirect to main programs page (or some appropriate non admin page).
