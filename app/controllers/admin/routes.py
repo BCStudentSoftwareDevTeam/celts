@@ -17,6 +17,7 @@ def createEventPage(program):
     listOfTerms = Term.select()
     eventInfo = ""
     facilitators = getAllFacilitators()
+    notRecurring = "Checked"
     try:
         program = Program.get_by_id(program)
 
@@ -27,16 +28,34 @@ def createEventPage(program):
                             program = program,
                             listOfTerms = listOfTerms,
                             facilitators = facilitators,
-                            eventInfo = eventInfo)
+                            eventInfo = eventInfo,
+                            notRecurring = notRecurring)
 
-@admin_bp.route('/<program>/edit_event', methods=['GET'])
-def editEvent(program):
+@admin_bp.route('/<program>/<eventId>/edit_event', methods=['GET'])
+def editEvent(program, eventId):
 
-    eventId = 2
     facilitators = getAllFacilitators()
     listOfTerms = Term.select()
     eventInfo = Event.get_by_id(eventId)
-    eventRoute = "/eventEdit"
+    isRecurring = ""
+    isPrerequisiteForProgram = ""
+    isTraining = ""
+    isRsvpRequired = ""
+    isService = ""
+    notRecurring = "Checked"
+
+    if eventInfo.isRecurring:
+        isRecurring = "Checked"
+        notRecurring = ""
+    if eventInfo.isPrerequisiteForProgram:
+        isPrerequisiteForProgram = "Checked"
+    if eventInfo.isTraining:
+        isTraining = "Checked"
+    if eventInfo.isRsvpRequired:
+        isRsvpRequired = "Checked"
+    if  eventInfo.isService:
+        isService = "Checked"
+
     try:
         program = Program.get_by_id(program)
 
@@ -48,4 +67,10 @@ def editEvent(program):
                             facilitators = facilitators,
                             listOfTerms = listOfTerms,
                             eventInfo = eventInfo,
-                            eventId = eventId)
+                            eventId = eventId,
+                            isRecurring = isRecurring,
+                            isPrerequisiteForProgram = isPrerequisiteForProgram,
+                            isTraining = isTraining,
+                            isRsvpRequired = isRsvpRequired,
+                            isService = isService,
+                            notRecurring = notRecurring)

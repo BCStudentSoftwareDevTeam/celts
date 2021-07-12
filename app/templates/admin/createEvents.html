@@ -46,12 +46,12 @@
         <div class="form-group">
           <p>Is this a recurring event? </p>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" data-target="#showEndDate" type='radio' id='yes' name="recurringEvent" value=true >
+            <input class="form-check-input" data-target="#showEndDate" type='radio' id='yes' name="recurringEvent" value=True {{isRecurring}}>
             <label class="form-check-label" for="recurringEventYes" >Yes </label>
           </div>
 
           <div class="form-check form-check-inline form-group">
-            <input class="form-check-input" data-target="#showEndDate" type="radio" id="no" name="recurringEvent" value=false  checked>
+            <input class="form-check-input" data-target="#showEndDate" type="radio" id="no" name="recurringEvent" value=False {{notRecurring}}>
             <label class="form-check-label" for="recurringEventNo">No</label>
           </div>
         </div><br>
@@ -108,32 +108,32 @@
       <div class="col-md-6 col-sm-12 form-group">
         <div class="form-check form-switch">
           <label class="custom-control-label" for="checkIsRequired">This event is required for the program</label>
-          <input class="form-check-input" type="checkbox" id="checkIsRequired" name="eventRequiredForProgram"/>
+          <input class="form-check-input" type="checkbox" id="checkIsRequired" name="eventRequiredForProgram" {{isRequiredForProgram}}/>
         </div>
 
         <div class="form-check form-switch">
           <label class="custom-control-label" for="checkIsTraining">This event is a training for the program</label>
-          <input class="form-check-input" type="checkbox" id="checkIsTraining"  name="eventIsTraining"/>
+          <input class="form-check-input" type="checkbox" id="checkIsTraining" name="eventIsTraining" {{isTraining}}/>
         </div>
 
         <div class="form-check form-switch">
           <label class="custom-control-label" for='rsvp'>Requires RSVP</label>
-          <input class="form-check-input" type="checkbox" id="rsvp"  name="eventRSVP"/>
+          <input class="form-check-input" type="checkbox" id="rsvp" name="eventRSVP" {{isRsvpRequired}}/>
         </div>
 
         <div class="form-check form-switch">
-          <label class="custom-control-label"for='serviceHours'> This event earns service hours.</label>
-          <input class="form-check-input" type="checkbox" id="earnServiceHours"  name="eventServiceHours" />
+          <label class="custom-control-label" for='serviceHours'> This event earns service hours.</label>
+          <input class="form-check-input" type="checkbox" id="earnServiceHours" name="eventServiceHours" {{isService}}/>
         </div><br>
 
         <div class="form-group">
           <label for='description'> Description * </label> <br>
-          <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' name="eventDescription" value={{eventInfo.description}} required></textarea>
+          <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' name="eventDescription" required>{{eventInfo.description}}</textarea>
         </div><br>
 
         <div class='form-group'>
           <label for='facilitators'> Facilitators *</label> <br>
-          <select class="dropdown form-control" id="inputEventFacilitators"  name="eventFacilitator">
+          <select class="dropdown form-control" id="inputEventFacilitators" name="eventFacilitator">
             {%for facilitator in facilitators.objects() %}
               <option value={{facilitator.username}}> {{facilitator.firstName}} {{facilitator.lastName}}</option>
             {% endfor %}
