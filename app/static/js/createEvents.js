@@ -1,6 +1,24 @@
 
 $(document).ready(function(){
 
+  $("#checkIsRecurring").click(function() {
+    var recurringStatus = $("input[name='eventIsRecurring']:checked").val()
+    if (recurringStatus == 'on'){
+      $("#endDateStyle").removeClass('d-none')
+      $("#endDatePicker").prop('required', true);
+
+      $("#selectEventFrequency").removeClass('d-none')
+    }else{
+      $("#endDateStyle").addClass('d-none')
+      $("#endDatePicker").prop('required', false);
+
+      $("#selectEventFrequency").addClass('d-none')
+    }
+  }
+
+)
+
+
   $(".readonly").on('keydown paste', function(e){ //makes the input fields act like readonly (readonly doesn't work with required)
         if(e.keyCode != 9) // ignore tab
             e.preventDefault();
@@ -19,7 +37,6 @@ $(document).ready(function(){
     });
 
   $("#checkIsTraining").click(function(){
-    var status = $("input[name='eventIsTraining']:checked").val()
 
     if ($("input[name='eventIsTraining']:checked").val() == 'on'){
       $("#checkIsRequired").prop('checked', true);
