@@ -8,5 +8,4 @@ def test_getAllFacilitators():
 
 
     assert userFacilitator[0].username == "ramsayb2"
-    assert userFacilitator[0].isFaculty == 0
     assert userFacilitator[0].isFaculty == False

@@ -20,12 +20,9 @@ $(document).ready(function(){
 
   $("#checkIsTraining").click(function(){
     var status = $("input[name='eventIsTraining']:checked").val()
-    console.log(status);
-    console.log(typeof(status));
 
     if ($("input[name='eventIsTraining']:checked").val() == 'on'){
       $("#checkIsRequired").prop('checked', true);
-      $("#checkIsRequired").prop('disabled', true);
 
     }else{
       $("#checkIsRequired").prop('disabled', false);
