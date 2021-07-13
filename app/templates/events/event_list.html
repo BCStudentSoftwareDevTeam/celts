@@ -17,18 +17,32 @@
 
 {% block app_content %}
 <h1 class="text-center">Event List</h1>
+<div class="btn-group d-flex justify-content-center" role="group" aria-label="button-bar ">
+  <button type="button" class="btn btn-outline-secondary">Student Led Service</button>
+  <button type="button" class="btn btn-outline-secondary">Training and Education</button>
+  <button type="button" class="btn btn-outline-secondary">Bonner Scholars</button>
+  <button type="button" class="btn btn-outline-secondary">One-time Events</button>
+</div>
 
 {% for program in programs %}
-<div class="accordion" id="accordionExample">
+<div class="accordion" id="accordion_{{program.id}}">
   <div class="accordion-item">
-    <h2 class="accordion-header" id="headingOne">
-      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" >
+    <h2 class="accordion-header" id="accordion__header_{{program.id}}">
+      <button class="accordion-button"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#accordion__body_{{program.id}}"
+              aria-expanded="true"
+              aria-controls="accordion__body_{{program.id}}" >
         {{program.programName}}
       </button>
     </h2>
-    <div id="collapseOne" class="accordion-collapse collapse hide" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+    <div id="accordion__body_{{program.id}}"
+         class="accordion-collapse collapse hide"
+         aria-labelledby="accordion__header_{{program.id}}"
+         data-bs-parent="#accordion_{{program.id}}">
       <div class="accordion-body">
-              <table>
+              <table class="table table-striped">
                 <thead>
                   <tr>
                    <th scope="col">Event Name</th>
@@ -41,7 +55,7 @@
                   {% for event in events %}
                       {% if event.program.programName == program.programName %}
                   <tr>
-                    <td>{{event.eventName}}</td>
+                    <td> <a href="#" class="link-primary">{{event.eventName}}</a></td> {# FIXME:change href#}
                     <td>{{event.startDate}}</td>
                     <td>{{event.timeStart}}</td>
                     <td>{{event.location}}</td>
