@@ -16,8 +16,8 @@ def home():
 @main_bp.route('/volunteerIndicateInterest', methods = ['GET'])
 def volunteerIndicateInterest():
     programs = Program.select()
-    interests = Interest.select().where(Interest.user_id == g.current_user)
-    interests_ids = [interest.program_id for interest in interests]
+    interests = Interest.select().where(Interest.user == g.current_user)
+    interests_ids = [interest.program for interest in interests]
     return render_template('volunteerIndicateInterest.html',
                            title="Volunteer Interest",
                            user = g.current_user,

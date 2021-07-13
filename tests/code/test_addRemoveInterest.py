@@ -9,31 +9,27 @@ def test_addRemoveInterest():
 
     # test adding and removing test cases for different users
     rule = 'addInterest'
-    addInterest = addRemoveInterest(rule, program_id, user)
-    assert addInterest == "Successfully added interest"
+    result = addRemoveInterest(rule, program_id, user)
+    assert result == "Successfully added interest"
 
     rule = 'deleteInterest'
-    addInterest = addRemoveInterest(rule, program_id, user)
-    assert addInterest == 'Successfully removed interest'
+    result = addRemoveInterest(rule, program_id, user)
+    assert result == 'Successfully removed interest'
 
     rule = 'addInterest'
     user = "khatts"
-    addInterest = addRemoveInterest(rule, program_id, user)
-    assert addInterest == 'Successfully added interest'
-
-    rule = 'deleteInterest'
-    addInterest = addRemoveInterest(rule, program_id, user)
-    assert addInterest == 'Successfully removed interest'
+    result = addRemoveInterest(rule, program_id, user)
+    assert result == 'Successfully added interest'
 
     # test add and removing interest with different program id
     rule = 'addInterest'
     program_id = 3
-    addInterest = addRemoveInterest(rule, program_id, user)
-    assert addInterest == 'Successfully added interest'
+    result = addRemoveInterest(rule, program_id, user)
+    assert result == 'Successfully added interest'
 
     rule = 'deleteInterest'
-    addInterest = addRemoveInterest(rule, program_id, user)
-    assert addInterest == 'Successfully removed interest'
+    result = addRemoveInterest(rule, program_id, user)
+    assert result == 'Successfully removed interest'
 
 @pytest.mark.integration
 def test_addRemoveInvalidInterest():
@@ -44,17 +40,17 @@ def test_addRemoveInvalidInterest():
     user = "al;skfjelh"
     rule = 'addInterest'
     with pytest.raises(IntegrityError):
-        addInterest = addRemoveInterest(rule, program_id, user)
-        assert addInterest == "Successfully added interest"
+        result = addRemoveInterest(rule, program_id, user)
+        result == "Successfully added interest"
 
     #test removing interest that doesn't exist
     user = "lamichhanes2"
     rule = 'deleteInterest'
-    program_id = 2
-    addInterest = addRemoveInterest(rule, program_id, user)
-    assert addInterest == "This interest does not exist"
+    program_id = 1
+    result = addRemoveInterest(rule, program_id, user)
+    assert result == "This interest does not exist"
 
     # test for incorrect rule
     rule = "lkejfiv"
-    addInterest = addRemoveInterest(rule, program_id, user)
-    assert addInterest == None
+    result = addRemoveInterest(rule, program_id, user)
+    assert result == None
