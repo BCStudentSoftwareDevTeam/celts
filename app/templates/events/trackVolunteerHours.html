@@ -43,9 +43,9 @@
   {% for participant in eventParticipantsData%}
   <tr>
     {% if participant.attended == 1 %}
-      <td><input type="checkbox" name="attended" checked></td>
+      <td><input type="checkbox" name="{{participant.user.username}}Attended" checked></td>
     {% else %}
-      <td><input type="checkbox" name="attended"></td>
+      <td><input type="checkbox" name="{{participant.user.username}}Attended"></td>
     {% endif %}
 
     <td>{{participant.user.firstName}} {{participant.user.lastName}}</td>
@@ -58,7 +58,7 @@
       <td>No</td>
     {% endif %}
 
-    <td><input style="max-width: 90px;" type ="number" min="0" value="{{participant.hoursEarned}}" class="form-control number-only form-control input-sm"></td>
+    <td><input class="form-control number-only form-control input-sm" name="{{participant.user.username}}Hours"style="max-width: 90px;" type ="number" min="0" value="{{participant.hoursEarned}}" ></td>
   </tr>
 
   {%endfor%}
