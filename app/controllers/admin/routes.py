@@ -6,7 +6,10 @@ from app.models.event import Event
 from app.models.term import Term
 from app.controllers.admin import admin_bp
 from app.logic.getAllFacilitators import getAllFacilitators
-from flask import g
+from app.models.eventParticipant import EventParticipant
+from app.models.outsideParticipant import OutsideParticipant
+from app.models.facilitator import Facilitator
+from flask import g, flash, redirect, url_for
 
 @admin_bp.route('/testing_things', methods=['GET'])
 def testing():
@@ -37,7 +40,7 @@ def editEvent(program, eventId):
     facilitators = getAllFacilitators()
     listOfTerms = Term.select()
     eventInfo = Event.get_by_id(eventId)
-    deleteButton = "button"
+    deleteButton = "submit"
 
     isRecurring = "Checked" if eventInfo.isRecurring else ""
     isPrerequisiteForProgram = "Checked" if eventInfo.isPrerequisiteForProgram else ""
@@ -63,3 +66,29 @@ def editEvent(program, eventId):
                             isRsvpRequired = isRsvpRequired,
                             isService = isService,
                             deleteButton = deleteButton)
+
+@admin_bp.route('/<program>/<eventId>/deleteEvent', methods=['POST'])
+
+def deleteEvent(program, eventId):
+
+    try:
+        if EventParticipant.get_or_none(EventParticipant.event_id == eventId):
+            EventParticipant.get(EventParticipant.event_id == eventId).delete_instance()
+
+        if Facilitator.get_or_none(Facilitator.event_id == eventId):
+            Facilitator.get(Facilitator.event_id == eventId).delete_instance()
+
+        if OutsideParticipant.get_or_none(OutsideParticipant.event_id == eventId):
+            OutsideParticipant.get(OutsideParticipant.event_id == eventId).delete_instance()
+
+        if Event.get_or_none(Event.id == eventId):
+            deleteEvent = Event.get_by_id(eventId)
+            deleteEvent.delete_instance()
+
+        flash("Event canceled")
+        return redirect(url_for("admin.createEventPage", program=program))
+
+    except Exception as e:
+        #TODO We have to return some sort of error page
+        print('Error while canceling event:', e)
+        return "",500
