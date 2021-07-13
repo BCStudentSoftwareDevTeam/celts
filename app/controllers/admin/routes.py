@@ -10,6 +10,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.facilitator import Facilitator
 from flask import g, flash, redirect, url_for
+from app.controllers.admin.deleteEvent import deleteEvent
 
 @admin_bp.route('/testing_things', methods=['GET'])
 def testing():
@@ -66,3 +67,15 @@ def editEvent(program, eventId):
                             isRsvpRequired = isRsvpRequired,
                             isService = isService,
                             deleteButton = deleteButton)
+
+@admin_bp.route('/<program>/<eventId>/deleteEvent', methods=['POST'])
+def deleteRoute(program, eventId):
+
+    try:
+        deleteEvent(program, eventId)
+        flash("Event canceled")
+        return redirect(url_for("admin.createEventPage", program=program)) #FIXME: Redirect to events page, not create page
+
+    except Excepttion as e:
+        print('Error while canceling event:', e)
+        return "", 500

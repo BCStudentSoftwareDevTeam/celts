@@ -1,12 +1,11 @@
 import pytest
-from app.logic.getAllFacilitators import getAllFacilitators
-
+from app.controllers.admin.deleteEvent import deleteEvent
+from app.models.event import Event
 
 @pytest.mark.integration
-def test_getAllFacilitators():
-    userFacilitator = getAllFacilitators()
+def test_deleteEvent():
+    program = 1
+    eventId = 2
+    deletingEvent = deleteEvent(program, eventId)
 
-
-    assert userFacilitator[0].username == "ramsayb2"
-    assert userFacilitator[0].isFaculty == 0
-    assert userFacilitator[0].isFaculty == False
+    assert Event.get_or_none(Event.id == eventId) is None

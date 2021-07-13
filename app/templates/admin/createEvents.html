@@ -17,7 +17,7 @@
     <h1 id ="title">{{program.programName}}</h1>
     <h2> New Event Form</h2>
   </div>
-  <form action="/{{program}}/{{eventId}}/deleteEvent" method='post'>
+  <form action="/{{program.id}}/{{eventId}}/deleteEvent" method='post'>
     <input type="{{deleteButton}}" class="btn btn-danger float-end" value="Cancel Event"/>
     <div>
       <input type="hidden" value="{{program.id}}" name="programId">
