@@ -11,9 +11,7 @@ $(document).ready(function(){
       $("#endDateStyle").addClass('d-none')
       $("#endDatePicker").prop('required', false);
     }
-  }
-
-)
+  });
 
 
   $(".readonly").on('keydown paste', function(e){ //makes the input fields act like readonly (readonly doesn't work with required)
@@ -31,6 +29,29 @@ $(document).ready(function(){
 
   $("#calendarIconEnd").click(function() {
       $("#endDatePicker").datepicker().datepicker("show"); // Shows the start date datepicker when glyphicon is clicked
+    });
+
+    $("#startDate, #endDate").click(function(){
+      console.log("Learning js today")
+
+      if ( $("#startDatePicker").val() && $("#endDatePicker").val()){
+        console.log("Learning jquery library today")
+
+        var eventDatesAndName = {eventName:$("#inputEventName").val(),
+                                 eventStartDate:$("#startDatePicker").val(),
+                                 eventEndDate:$("#endDatePicker").val()}
+        $.ajax({
+          type:"POST",
+          url: "/makeRecurringEvents",
+          data: eventDatesAndName, //get the startDate, endDate and eventName as a dictionary
+          success: function(e){
+            console.log("something happened")
+          },
+          error: function(error){
+            console.log("something bad happened")
+          }
+        });
+      }
     });
 
   $("#checkIsTraining").click(function(){

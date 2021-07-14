@@ -1,13 +1,17 @@
 from app.models.event import Event
 from datetime import *
-# from datetime import timedelta
 from app.models.facilitator import Facilitator
-# from dateutil import parser
+from app.controllers.admin import admin_bp
+from flask import request
 
-def calculateRecurringEventFrequency(recurringEventInfo):
+
+@admin_bp.route('/makeRecurringEvents', methods=['POST'])
+def calculateRecurringEventFrequency():
     """
     """
+    recurringEventInfo = request.form.copy()
 
+    print(recurringEventInfo)
     eventName = recurringEventInfo['eventName']
 
     endDate = datetime.strptime(recurringEventInfo['eventEndDate'], '%m/%d/%Y')
@@ -24,6 +28,8 @@ def calculateRecurringEventFrequency(recurringEventInfo):
         recurringEvents.append({'eventName': f"{eventName} week {counter}",
         'Date':startDate.strftime('%m/%d/%Y')})
         startDate += timedelta(days=7)
+
+    return recurringEvents
 
 
 def setValueForUncheckedBox(eventData):
