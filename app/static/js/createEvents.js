@@ -7,12 +7,9 @@ $(document).ready(function(){
       $("#endDateStyle").removeClass('d-none')
       $("#endDatePicker").prop('required', true);
 
-      $("#selectEventFrequency").removeClass('d-none')
     }else{
       $("#endDateStyle").addClass('d-none')
       $("#endDatePicker").prop('required', false);
-
-      $("#selectEventFrequency").addClass('d-none')
     }
   }
 

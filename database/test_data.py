@@ -15,6 +15,7 @@ from app.models.courseInstructor import CourseInstructor
 from app.models.courseParticipant import CourseParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
+from app.models.facilitator import Facilitator
 
 
 print("Inserting data for demo and testing purposes.")
@@ -557,3 +558,12 @@ bannedUser = [
     }
 ]
 ProgramBan.insert_many(bannedUser).on_conflict_replace().execute()
+
+facilitators = [
+
+    {
+    'user': 'ramsayb2',
+    'event': 1
+    }
+]
+Facilitator.insert_many(facilitators).on_conflict_replace().execute()
