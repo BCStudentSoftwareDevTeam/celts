@@ -1,11 +1,26 @@
 import pytest
 from peewee import DoesNotExist
 
+from app.models.event import Event
+from app.models.program import Program
 from app.logic.events import getEvents
 from app.models.interest import Interest
 
 @pytest.mark.integration
-def test_getEventsNoProgram():
+def test_event_model():
+    # single program
+    event = Event.get_by_id(12)
+    assert event.singleProgram == Program.get_by_id(3)
+
+    # no program
+    event = Event.get_by_id(13)
+    assert event.singleProgram == None
+    assert event.noProgram
+
+    # multi program
+
+@pytest.mark.integration
+def test_getAllEvents():
     # No program is given, get all events
     events = getEvents()
 
