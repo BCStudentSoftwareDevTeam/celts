@@ -17,12 +17,20 @@
 
 {% block app_content %}
 <h1 class="text-center">Event List</h1>
-<div class="btn-group d-flex justify-content-center" role="group" aria-label="button-bar ">
-  <button type="button" class="btn btn-outline-secondary">Student Led Service</button>
-  <button type="button" class="btn btn-outline-secondary">Training and Education</button>
-  <button type="button" class="btn btn-outline-secondary">Bonner Scholars</button>
-  <button type="button" class="btn btn-outline-secondary">One-time Events</button>
-</div>
+<ul class="nav nav-pills nav-fill">
+  <li class="nav-item">
+    <a class="nav-link active" href="#">Student Led Service</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#">Training and Education</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#">Bonner Scholars</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#">One-time Events</a>
+  </li>
+</ul>
 
 {% for program in programs %}
 <div class="accordion" id="accordion_{{program.id}}">
@@ -49,6 +57,7 @@
                    <th scope="col">Date</th>
                    <th scope="col">Time</th>
                    <th scope="col">Location</th>
+                   <th scope="col">Invitation</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -59,6 +68,7 @@
                     <td>{{event.startDate}}</td>
                     <td>{{event.timeStart}}</td>
                     <td>{{event.location}}</td>
+                    <td><button type="button" class="btn btn-warning">Email</button></td>
                   </tr>
                   {% endif %}
               {% endfor %}
