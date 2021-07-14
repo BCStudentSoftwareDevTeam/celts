@@ -16,8 +16,14 @@
 <h3 align="center">{{eventParticipantsData[0].event.eventName}}</h3><br>
 
   <div class="btn-group">
-    <a href="#" class="btn btn-outline-primary" id="eventFormButton">Event Form</a>
-    <a href="#" class="btn btn-outline-secondary" id="trackHoursButton">Track Hours</a>
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link" href="https://google.com">Event Form</a> <!--FIXME: link to event page-->
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="#">Track Hours</a>
+      </li>
+    </ul>
   </div>
 
 <form action = "/updateTrackHours" method="post"><br>
