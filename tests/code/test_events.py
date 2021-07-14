@@ -2,6 +2,7 @@ import pytest
 from peewee import DoesNotExist
 
 from app.logic.events import getEvents
+from app.models.interest import Interest
 
 @pytest.mark.integration
 def test_getEventsNoProgram():
