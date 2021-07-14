@@ -12,8 +12,8 @@
 
 {% block app_content %}
 
-<h1 align="center">{{eventParticipantsData[0].event.program.programName}}</h1><br>
-<h3 align="center">{{eventParticipantsData[0].event.eventName}}</h3><br>
+<!-- <h1 align="center">{{eventParticipantsData[0].event.program.programName}}</h1><br>
+<h3 align="center">{{eventParticipantsData[0].event.eventName}}</h3><br> -->
 
   <div class="btn-group">
     <a href="#" class="btn btn-outline-primary" id="eventFormButton">Event Form</a>
@@ -21,9 +21,12 @@
   </div>
 
 <form action = "/updateTrackHours" method="post"><br>
-  <div class="ui-widget">
+  <div class="ui-widget input-group">
     <input id="trackHoursInput" type="input" placeholder="Search">
-    <span><i class="bi bi-search" style="margin-left: -25px;"></i></span>
+    <span class="input-group-text" style="padding:0 0 0 0rem;"><i class="bi bi-search" style="margin-left:-35px;"></i></span>
+    <div><button type="button" class="btn btn-secondary btn-sm">
+        <i class="bi bi-plus-circle"></i>
+    </button></div>
   </div>
 <div>
   <table class="table">
