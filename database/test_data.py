@@ -171,6 +171,14 @@ programs = [
         "id": 4,
         "programName": "No Required Events"
     },
+    {
+        "id": 5,
+        "programName": "Food Drive"
+    },
+    {
+        "id": 6,
+        "programName": "Cool Program"
+    },
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
 
@@ -181,7 +189,6 @@ events = [
         "eventName": "Empty Bowls Spring",
         "description": "Empty Bowls Spring 2021",
         "isTraining": True,
-        "noProgram": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
@@ -194,7 +201,6 @@ events = [
         "eventName": "Berea Buddies",
         "description": "Berea Buddies Training",
         "isTraining": True,
-        "noProgram": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
@@ -207,7 +213,6 @@ events = [
         "eventName": "Adopt",
         "description": "Adopt A Grandparent",
         "isTraining": True,
-        "noProgram": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
@@ -220,7 +225,6 @@ events = [
         "eventName": "First Meetup",
         "description": "Berea Buddies First Meetup",
         "isTraining": False,
-        "noProgram": False,
         "timeStart": datetime.strptime("6:00 am", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 am", "%I:%M %p"),
         "location": "a big room",
@@ -233,7 +237,6 @@ events = [
         "eventName": "Tutoring",
         "description": "Tutoring Training",
         "isTraining": False,
-        "noProgram": False,
         "timeStart": datetime.strptime("3:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a bigish room",
@@ -246,7 +249,6 @@ events = [
         "eventName": "Making Bowls",
         "description": "Making Bowls Training",
         "isTraining": True,
-        "noProgram": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
@@ -259,7 +261,6 @@ events = [
         "eventName": "How To Make Buddies",
         "description": "How To Make Buddies Training",
         "isTraining": True,
-        "noProgram": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Outisde",
@@ -273,7 +274,6 @@ events = [
         "eventName": "Adoption",
         "description": "Adoption 101 Training",
         "isTraining": True,
-        "noProgram": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
@@ -286,7 +286,6 @@ events = [
         "eventName": "Cleaning Bowls",
         "description": "Cleaning Bowls Training",
         "isTraining": True,
-        "noProgram": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Dining Dishes Room",
@@ -300,7 +299,6 @@ events = [
         "eventName": "Whole Celts Training",
         "description": "Whole Celts Training",
         "isTraining": True,
-        "noProgram": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Dining Dishes Room",
@@ -313,7 +311,6 @@ events = [
         "eventName": "Dummy Event",
         "description": "Not a required event",
         "isTraining": False,
-        "noProgram": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Dining Dishes Room",
@@ -326,10 +323,33 @@ events = [
         "eventName": "Dummy Event",
         "description": "Not a required event",
         "isTraining": False,
-        "noProgram": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Dining Dishes Room",
+        "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
+        "endDate": datetime.strptime("2021 7 12","%Y %m %d")
+    },
+    {
+        "id": 13,
+        "term": 2,
+        "eventName": "unaffiliated event",
+        "description": "Test event with no program",
+        "isTraining": False,
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+        "location": "Dining Dishes Room",
+        "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
+        "endDate": datetime.strptime("2021 7 12","%Y %m %d")
+    },
+    {
+        "id": 14,
+        "term": 2,
+        "eventName": "All Volunteer Training",
+        "description": "testing multiple programs",
+        "isTraining": True,
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+        "location": "A Big Room",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d")
     }
@@ -385,6 +405,14 @@ program_events = [
     {
         "event_id": 12,
         "program_id": 3
+    },
+    {
+        "event_id": 14,
+        "program_id": 5
+    },
+    {
+        "event_id": 14,
+        "program_id": 6
     },
 ]
 ProgramEvent.insert_many(program_events).on_conflict_replace().execute()

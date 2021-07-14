@@ -9,7 +9,6 @@ class Event(baseModel):
     timeStart = TimeField()
     timeEnd = TimeField()
     location = CharField()
-    noProgram = BooleanField(default=False)
     isTraining = BooleanField(default=False)
     isRsvpRequired = BooleanField(default=False)
     isService = BooleanField(default=False)
@@ -19,3 +18,14 @@ class Event(baseModel):
 
     def __str__(self):
         return f"{self.id}: {self.description}"
+
+    @property
+    def noProgram(self):
+        return not self.programEvents.exists()
+    
+    @property
+    def singleProgram(self):
+        if self.programEvents.count() == 1:
+            return self.programEvents.get().program
+        else:
+            return None

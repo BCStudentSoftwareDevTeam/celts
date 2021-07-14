@@ -18,6 +18,10 @@ def test_event_model():
     assert event.noProgram
 
     # multi program
+    event = Event.get_by_id(14)
+    assert event.singleProgram == None
+    assert not event.noProgram
+
 
 @pytest.mark.integration
 def test_getAllEvents():
