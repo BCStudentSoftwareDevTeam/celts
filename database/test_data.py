@@ -152,6 +152,10 @@ programs = [
         "id": 4,
         "programName": "No Required Events"
     },
+    {
+        "id": 5,
+        "programName": "Trainings"
+    },
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
 
@@ -312,8 +316,21 @@ events = [
         "location": "Dining Dishes Room",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d")
+    },
+    {
+        "id": 12,
+        "program": 5,
+        "term": 3,
+        "eventName": "Volunteer Training",
+        "description": "Training for volunteers",
+        "isTraining": True,
+        "isPrerequisiteForProgram": False,
+        "timeStart": datetime.strptime("10:00 am", "%I:%M %p"),
+        "timeEnd": datetime.strptime("12:00 pm", "%I:%M %p"),
+        "location": "Woods Penn",
+        "startDate": datetime.strptime("2020 01 09","%Y %m %d"),
+        "endDate": datetime.strptime("2020 01 09","%Y %m %d")
     }
-
 ]
 Event.insert_many(events).on_conflict_replace().execute()
 
