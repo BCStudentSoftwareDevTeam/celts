@@ -1,0 +1,12 @@
+$(document).ready(function(){
+  $("#trackHoursInput").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#myTable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+  $("#eventFormButton").removeClass("btn-outline-primary").addClass("btn-outline-secondary");
+  $("#trackHoursButton").removeClass("btn-outline-secondary").addClass("btn-primary");
+
+});
