@@ -1,6 +1,7 @@
 import pytest
 from app.logic.adminNewEvent import setValueForUncheckedBox, createNewEvent
 
+
 @pytest.mark.integration
 def test_setValueForUncheckedBox():
 
@@ -24,19 +25,12 @@ def test_setValueForUncheckedBox():
 
     assert newData['eventIsTraining'] == False  #the value of newData['eventIsTraining'] is false
 
-    with pytest.raises(AssertionError):
-        assert newData['eventRSVP'] == 'gfg'
-        assert newData['eventServiceHours'] == False
-        assert newData['eventRequiredForProgram'] == 1
+    # check that the setValueForUncheckedBox does not change existing keys
+    assert newData['eventRSVP'] == ''
+    assert newData['eventServiceHours'] == True
+    assert newData['eventRequiredForProgram'] == 'on'
 
-    # test for dict with values
-    eventData = {'eventRequiredForProgram':1,'eventRSVP':2, 'eventServiceHours':3, 'eventIsTraining':4}
-    newData = setValueForUncheckedBox(eventData)
-
-    assert newData['eventRequiredForProgram'] == 1
-    assert newData['eventRSVP'] == 2
-    assert newData['eventServiceHours'] == 3
-    assert newData['eventIsTraining'] == 4
+    
 
 
 

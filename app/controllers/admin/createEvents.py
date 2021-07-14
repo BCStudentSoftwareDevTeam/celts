@@ -10,8 +10,12 @@ from flask import flash, redirect, url_for, g
 @admin_bp.route('/createEvent', methods=['POST'])
 def createEvent():
 
-    if g.current_user.isCeltsAdmin:
+    if not g.current_user.isCeltsAdmin:
 
+        flash("Only celts admins can create an event!")
+        return redirect(url_for("admin.createEventPage", program=2)) #FIXME: have this redirect to main programs page (or some appropriate non admin page).
+
+    else:
         eventData = request.form.copy() # request.form returns a immutable dict so we need to copy to make changes
         newEventData= setValueForUncheckedBox(eventData)
 
@@ -37,6 +41,3 @@ def createEvent():
         else:
             flash(validationErrorMessage)
             return redirect(url_for("admin.createEventPage", program=2)) #FIXME: have this redirect to main programs page (or some appropriate non admin page).
-
-    flash("Only celts admins can create an event!")
-    return redirect(url_for("admin.createEventPage", program=2)) #FIXME: have this redirect to main programs page (or some appropriate non admin page).
