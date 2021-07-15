@@ -1,7 +1,7 @@
 from app.models.event import Event
 from app.models.program import Program
 from peewee import DoesNotExist
-
+from app.models.programCategory import ProgramCategory
 def getEvents(program_id=None):
 
     if program_id:
@@ -12,7 +12,8 @@ def getEvents(program_id=None):
 
 def groupingEvents(termID):
 
-    groupEvents = (Event.select().where(Event.term == termID).order_by(Event.program))
+    groupEvents = (Event.select().join(Program).join(ProgramCategory).where(Event.term == termID).order_by(Event.program.programCategory,Event.program))
+    print(groupEvents)
     for item in list(groupEvents.objects()):
-        print(item.program)
+        print(item, item.program, item.program.programCategory)
     return groupEvents

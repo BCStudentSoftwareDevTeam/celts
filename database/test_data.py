@@ -202,14 +202,6 @@ programs = [
         "programName": "A Program for Training and Education",  #FIXME: Change this to a real CELTS Program
         "programCategory": "Training and Education"
     },
-    {
-        "id": 4,
-        "programName": "No Required Events"
-    },
-    {
-        "id": 5,
-        "programName": "Trainings"
-    },
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
 

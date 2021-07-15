@@ -17,69 +17,68 @@
 
 {% block app_content %}
 <h1 class="text-center">Event List</h1>
-<p>
-  <a class="btn btn-primary" id="collapse1" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-    Student Led Service
-  </a>
-  <button class="btn btn-primary" id="collapse2" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2__body" aria-expanded="false" aria-controls="collapseExample">
-    Training and Education
+{% for programmm in programs %}
+    {{ programmm.programCategory }}
+{% endfor %}
+
+<!-- <p>
+  {% for prog in programCategoryVar %}
+  <button class="btn btn-primary" id="button_{{prog}}" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+    {{prog}}
   </button>
-  <button class="btn btn-primary" id="collapse3" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3__body" aria-expanded="false" aria-controls="collapseExample">
-    Bonner Scholars
-  </button>
-  <button class="btn btn-primary" id="collapse4" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4__body" aria-expanded="false" aria-controls="collapseExample">
-    One-time Events
-  </button>
+  {% endfor %}
 </p>
-  <div class="collapse" id="collapseExample">
+  <div class="collapse" id="collapseExample" data-bs-parent="#button_{{prog}}">
     <div class="card card-body">
       {% for program in programs %}
-      <div class="accordion" id="accordion_{{program.id}}">
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="accordion__header_{{program.id}}">
-            <button class="accordion-button"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#accordion__body_{{program.id}}"
-                    aria-expanded="true"
-                    aria-controls="accordion__body_{{program.id}}" >
-              {{program.programName}}
-            </button>
-          </h2>
-          <div id="accordion__body_{{program.id}}"
-               class="accordion-collapse collapse hide"
-               aria-labelledby="accordion__header_{{program.id}}"
-               data-bs-parent="#accordion_{{program.id}}">
-            <div class="accordion-body">
-                    <table class="table table-striped">
-                      <thead>
-                        <tr>
-                         <th scope="col">Event Name</th>
-                         <th scope="col">Date</th>
-                         <th scope="col">Time</th>
-                         <th scope="col">Location</th>
-                         <th scope="col">Invitation</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% for event in events %}
-                            {% if event.program.programName == program.programName %}
-                        <tr>
-                          <td> <a href="#" class="link-primary">{{event.eventName}}</a></td> {# FIXME:change href #}
-                          <td>{{event.startDate}}</td>
-                          <td>{{event.timeStart}}</td>
-                          <td>{{event.location}}</td>
-                          <td><button type="button" class="btn btn-warning">Email</button></td>
-                        </tr>
-                        {% endif %}
-                    {% endfor %}
-                  </tbody>
-                </table>
+            <div class="accordion" id="accordion_{{program.id}}">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="accordion__header_{{program.id}}">
+                  <button class="accordion-button"
+                          type="button"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#accordion__body_{{program.id}}"
+                          aria-expanded="true"
+                          aria-controls="accordion__body_{{program.id}}" >
+                      {{program.programName}}
+                  </button>
+                </h2>
+                <div id="accordion__body_{{program.id}}"
+                     class="accordion-collapse collapse hide"
+                     aria-labelledby="accordion__header_{{program.id}}"
+                     data-bs-parent="#accordion_{{program.id}}">
+                  <div class="accordion-body">
+                          <table class="table table-striped">
+                            <thead>
+                              <tr>
+                               <th scope="col">Event Name</th>
+                               <th scope="col">Date</th>
+                               <th scope="col">Time</th>
+                               <th scope="col">Location</th>
+                               <th scope="col">Invitation</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for event in events %}
+                                  {% if event.program.programName == program.programName %}
+                              <tr>
+                                <td> <a href="#" class="link-primary">{{event.eventName}}</a></td> {# FIXME:change href #}
+                                <td>{{event.startDate}}</td>
+                                <td>{{event.timeStart}}</td>
+                                <td>{{event.location}}</td>
+                                <td><button type="button" class="btn btn-warning">Email</button></td>
+                              </tr>
+                              {% endif %}
+                          {% endfor %}
+                        </tbody>
+                      </table>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-  {% endfor %}
+{% endfor %}
 </div>
-</div>
+</div> -->
+
+
 {% endblock %}
