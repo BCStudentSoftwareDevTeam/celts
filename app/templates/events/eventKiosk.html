@@ -1,0 +1,28 @@
+{% extends "base.html"%}
+{% block scripts %}
+  {{super()}}
+  <script src="/static/js/eventKiosk.js"></script>
+
+{% endblock %}
+
+{% block styles %}
+  {{super()}}
+
+{% endblock %}
+
+{% block app_content %}
+<div>
+  <h1 align="center" class="mb-5">{{event.eventName}}</h1>
+  <h2 align="center">{{bNumberToUser}}</h2>
+</div>
+<form action="/{{eventid}}/signintoKiosk">
+  <div>
+    <input type="hidden" value="{{bNumberToUser}}" name="bNumberToUser"/>
+    <input type="hidden" value={{eventid}} name="eventid"/>
+  </div>
+  <div class="mx-auto px-5">
+    <input style="font-size: 2rem;" class="input-lg form-control" type="text" placeholder="Scanner Kiosk Sign-in" aria-label="Enter scanner data" autofocus/>
+  </div>
+  <button type="submit" class="btn btn-success">Yeee</button>
+</form>
+{% endblock %}
