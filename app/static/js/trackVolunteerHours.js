@@ -1,4 +1,5 @@
 $(document).ready(function(){
+  $('[data-bs-toggle="tooltip"]').tooltip();
   $("#trackHoursInput").on("keyup", function() {
     var value = $(this).val().toLowerCase();
     $("#myTable tr").filter(function() {

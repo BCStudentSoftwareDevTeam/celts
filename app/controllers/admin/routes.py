@@ -12,12 +12,17 @@ def testing():
 
 @admin_bp.route('/<programID>/<eventID>/track_hours', methods=['GET'])
 def trackVolunteerHoursPage(programID, eventID):
+
     eventParticipantsData = (EventParticipant.select(EventParticipant)
                                 .join(Event)
                                 .where((EventParticipant.event == eventID) & (Event.program == programID)))
-    eventParticipantsData = eventParticipantsData.objects()
 
-    attendedPreq = prereqParticipants(programID)
+    prereqEvents = Event.select().where(Event.program == programID)
+
+    prlist = [prereq.id for prereq in prereqEvents if prereq.isPrerequisiteForProgram]
+    attendedPreq = prereqParticipants(programID, prlist)
 
     return render_template("/events/trackVolunteerHours.html",
-                            eventParticipantsData = list(eventParticipantsData), attendedPreq=attendedPreq )
+                            eventParticipantsData = list(eventParticipantsData.objects()),
+                            attendedPreq=attendedPreq,
+                            prlist = prlist )

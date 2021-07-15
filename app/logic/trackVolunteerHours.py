@@ -11,35 +11,11 @@ def trackVolunteerHours():
 
     return trackHours
 
-def prereqParticipants(programID):
-    prereqEvents = Event.select().where(Event.program == programID)
-    prlist = []
-    eventPreqDataList = []
-
-    for prereq in prereqEvents:
-        if prereq.isPrerequisiteForProgram:
-            prlist.append(prereq.id)
-
-    eventPreqData = (EventParticipant.select()
-                                     .where(EventParticipant.event.in_(prlist)))
-
-    for i in eventPreqData:
-        eventPreqDataList.append(i.user.username)
-
-    attendedPreq = list(filter(lambda user: eventPreqDataList.count(user) == len(prlist), eventPreqDataList))
-
-    for user in attendedPreq:
-        if user in attendedPreq:
-            attendedPreq.remove(user)
-
+def prereqParticipants(programID, prlist):
+    """
+    This function tracks the users who have attended every Prerequisite
+    event and adds them to a list that will not flag them when tracking hours.
+    """
+    eventPreqDataList = [participant.user.username for participant in (EventParticipant.select().where(EventParticipant.event.in_(prlist)))]
+    attendedPreq = list(dict.fromkeys(filter(lambda user: eventPreqDataList.count(user) == len(prlist), eventPreqDataList)))
     return attendedPreq
-
-
-# Useful Junk
-
-# <!-- <th></th> -->
-    # <!-- <td>
-    #   {% if attendedPreq[participant.user.username]=="Warning" %}
-    #     <span class="bi bi-exclamation-triangle"></span>
-    #   {% endif %}
-    # </td> -->

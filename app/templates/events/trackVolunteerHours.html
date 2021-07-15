@@ -14,7 +14,6 @@
 
 <h1 align="center">{{eventParticipantsData[0].event.program.programName}}</h1><br>
 <h3 align="center">{{eventParticipantsData[0].event.eventName}}</h3><br>
-
   <div class="btn-group">
     <ul class="nav nav-tabs">
       <li class="nav-item">
@@ -36,6 +35,7 @@
     <thead>
       <tr>
         <th>Present</th>
+        <th></th>
         <th>Name</th>
         <th>Role</th>
         <th>Email</th>
@@ -53,7 +53,12 @@
     {% else %}
       <td><input type="checkbox" name="{{participant.user.username}}Attended"></td>
     {% endif %}
-
+      <td>
+        {% if participant.user.username not in attendedPreq and prlist%}
+          <span data-bs-toggle="tooltip" title="Did Not Complete All Prerequesites">
+          <span style="color:red" class="bi bi-exclamation-triangle"></span></span>
+        {% endif %}
+      </td>
     <td>{{participant.user.firstName}} {{participant.user.lastName}}</td>
     <td>Volunteer</td>
     <td>{{participant.user.email}}</td>
@@ -64,7 +69,7 @@
       <td>No</td>
     {% endif %}
 
-    <td><input class="form-control number-only form-control input-sm" name="{{participant.user.username}}Hours"style="max-width: 90px;" type ="number" min="0" value="{{participant.hoursEarned}}" ></td>
+    <td><input class="form-control number-only form-control input-sm" name="{{participant.user.username}}Hours"style="max-width: 90px;" type ="number" min="0" max="999" value="{{participant.hoursEarned}}" ></td>
   </tr>
 
   {%endfor%}
