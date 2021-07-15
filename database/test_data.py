@@ -3,17 +3,19 @@ Chech phpmyadmin to see if your changes are reflected
 This file will need to be changed if the format of models changes (new fields, dropping fields, renaming...)'''
 
 from datetime import *
-
+from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.term import Term
 from app.models.program import Program
 from app.models.event import Event
+from app.models.programBan import ProgramBan
 from app.models.course import Course
 from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseParticipant import CourseParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
+from app.models.programCategory import ProgramCategory
 
 
 print("Inserting data for demo and testing purposes.")
@@ -32,6 +34,18 @@ users = [
     },
     {
 
+        "username" : "khatts",
+        "bnumber" : "B00759107",
+        "email": "khatts@berea.edu",
+        "phoneNumber": "555-555-5555",
+        "firstName" : "Sreynit",
+        "lastName" : "Khatt",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": False
+    },
+    {
         "username": "neillz",
         "bnumber": "B00751864",
         "email": "neillz@berea.edu",
@@ -43,17 +57,31 @@ users = [
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False
     },
+
     {
-        "username": "khatts",
-        "bnumber": "B00759107",
-        "email": "khatts@berea.edu",
+        "username" : "lamichhanes2",
+        "bnumber": "B00733993",
+        "email": "lamichhanes2@berea.edu",
         "phoneNumber": "555-555-5555",
-        "firstName": "Sreynit",
-        "lastName": "Khatt",
+        "firstName": "Sandesh",
+        "lastName":"Lamichhane",
         "isStudent": True,
         "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False
+    },
+    {
+        "username" : "ayisie",
+        "bnumber": "B00739736",
+        "email": "ayisie@berea.edu",
+        "phoneNumber": "192202903939",
+        "firstName": "Ebenezer",
+        "lastName":"Ayisi",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": False
+
     },
     {
         "username": "agliullovak",
@@ -68,15 +96,6 @@ users = [
         "isCeltsStudentStaff": False
     },
     {
-        "username": "lamichhanes2",
-        "bnumber": "B00733993",
-        "email": "lamichhanes2@berea.edu",
-        "firstName": "Sandesh",
-        "lastName": "Lamichhane",
-        "isStudent": True,
-        "phoneNumber": "8439743909"
-    },
-    {
         "username": "bryanta",
         "bnumber": "B00715348",
         "email": "bryanta@berea.edu",
@@ -84,6 +103,7 @@ users = [
         "lastName": "Bryant",
         "isStudent": True,
         "phoneNumber": "85943311598"
+
     },
 
 ]
@@ -135,18 +155,52 @@ terms = [
 ]
 Term.insert_many(terms).on_conflict_replace().execute()
 
+programCategories = [
+    {
+        "categoryName": "Student Led Service"
+    },
+    {
+        "categoryName": "Training and Education"
+    },
+    {
+        "categoryName": "Bonner Scholars"
+    },
+    {
+        "categoryName": "One-time Events"
+    }
+]
+ProgramCategory.insert_many(programCategories).on_conflict_replace().execute()
+
 programs = [
     {
         "id": 1,
         "programName": "Empty Bowls",
+        "programCategory": "One-time Events"
     },
     {
         "id": 2,
         "programName": "Berea Buddies",
+        "programCategory": "Student Led Service"
     },
     {
         "id": 3,
         "programName": "Adopt A Grandparent",
+        "programCategory": "Student Led Service"
+    },
+    {
+        "id": 4,
+        "programName": "No Required Events",
+        "programCategory": "One-time Events"
+    },
+    {
+        "id": 5,
+        "programName": "First Year Bonners",
+        "programCategory": "Bonner Scholars"
+    },
+    {
+        "id": 6,
+        "programName": "A Program for Training and Education",  #FIXME: Change this to a real CELTS Program
+        "programCategory": "Training and Education"
     },
     {
         "id": 4,
@@ -260,6 +314,7 @@ events = [
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
+
         "id": 8,
         "program": 2,
         "term": 3,
@@ -280,7 +335,7 @@ events = [
         "term": 3,
         "eventName": "Cleaning Bowls",
         "description": "Cleaning Bowls Training",
-        "isTraining": True,
+        "isTraining": False,
         "isPrerequisiteForProgram": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
@@ -300,8 +355,8 @@ events = [
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Dining Dishes Room",
-        "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 7 12","%Y %m %d")
+        "startDate": datetime.strptime("2021 1 12","%Y %m %d"),
+        "endDate": datetime.strptime("2021 6 12","%Y %m %d")
     },
     {
         "id": 11,
@@ -320,17 +375,31 @@ events = [
     {
         "id": 12,
         "program": 5,
-        "term": 3,
+        "term": 2,
+        "eventName": "Welcoming New Bonners",
+        "description": "All Bonners Meet",
+        "isTraining": False,
+        "isPrerequisiteForProgram": False,
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+        "location": "Dining Dishes Room",
+        "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
+        "endDate": datetime.strptime("2021 7 12","%Y %m %d")
+    },
+    {
+        "id": 13,
+        "program": 6,
+        "term": 2,
         "eventName": "Volunteer Training",
         "description": "Training for volunteers",
-        "isTraining": True,
+        "isTraining": False,
         "isPrerequisiteForProgram": False,
-        "timeStart": datetime.strptime("10:00 am", "%I:%M %p"),
-        "timeEnd": datetime.strptime("12:00 pm", "%I:%M %p"),
-        "location": "Woods Penn",
-        "startDate": datetime.strptime("2020 01 09","%Y %m %d"),
-        "endDate": datetime.strptime("2020 01 09","%Y %m %d")
-    }
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+        "location": "Dining Dishes Room",
+        "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
+        "endDate": datetime.strptime("2021 7 12","%Y %m %d")
+    },
 ]
 Event.insert_many(events).on_conflict_replace().execute()
 
@@ -420,9 +489,8 @@ courseHoursEarned = [
     {
         "course": Course.get_by_id(1),
         "user": User.get_by_id("khatts"),
-        "hoursEarned": 1
+        "hoursEarned": 1.0
     },
-
 ]
 CourseParticipant.insert_many(courseHoursEarned).on_conflict_replace().execute()
 
@@ -483,13 +551,43 @@ programHoursEarned = [
         "attended": True,
         "hoursEarned": 8,
     },
+    {
+        "user" : "lamichhanes2",
+        "event" : "1",
+        "rsvp" : True,
+        "attended" : True,
+        "hoursEarned" : None,
 
+    },
+    {
+        "user" : "ayisie",
+        "event" : "1",
+        "rsvp" : True,
+        "attended" : False,
+        "hoursEarned" : None,
+    },
+    {
+        "user" : "lamichhanes2",
+        "event" : "4",
+        "rsvp" : True,
+        "attended" : True,
+        "hoursEarned" : None,
+
+    },
+    {
+        "user" : "lamichhanes2",
+        "event" : "3",
+        "rsvp" : True,
+        "attended" : True,
+        "hoursEarned" : None,
+    },
 ]
 EventParticipant.insert_many(programHoursEarned).on_conflict_replace().execute()
+
 interest = [
 
     {
-        "program" : 1,
+        "program": 1,
         "user": "khatts"
     },
     {
@@ -510,3 +608,11 @@ interest = [
     }
 ]
 Interest.insert_many(interest).on_conflict_replace().execute()
+
+bannedUser = [
+    {
+        "user": "khatts",
+        "program": 3,
+    }
+]
+ProgramBan.insert_many(bannedUser).on_conflict_replace().execute()
