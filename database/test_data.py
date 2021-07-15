@@ -166,7 +166,7 @@ programCategories = [
         "categoryName": "Bonner Scholars"
     },
     {
-        "categoryName": "One-Time Event"
+        "categoryName": "One-time Events"
     }
 ]
 ProgramCategory.insert_many(programCategories).on_conflict_replace().execute()
@@ -175,7 +175,7 @@ programs = [
     {
         "id": 1,
         "programName": "Empty Bowls",
-        "programCategory": "One-Time Event"
+        "programCategory": "One-time Events"
     },
     {
         "id": 2,
@@ -190,7 +190,7 @@ programs = [
     {
         "id": 4,
         "programName": "No Required Events",
-        "programCategory": "One-Time Event"
+        "programCategory": "One-time Events"
     },
     {
         "id": 5,
