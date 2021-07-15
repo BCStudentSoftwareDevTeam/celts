@@ -17,7 +17,7 @@ def createEventPage(program):
     listOfTerms = Term.select()
     eventInfo = ""
     facilitators = getAllFacilitators()
-    
+
     try:
         program = Program.get_by_id(program)
 
@@ -50,6 +50,7 @@ def editEvent(program, eventId):
         return render_template(404)
 
     return render_template("admin/createEvents.html",
+                            user = g.current_user,
                             program = program,
                             facilitators = facilitators,
                             listOfTerms = listOfTerms,
