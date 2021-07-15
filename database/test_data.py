@@ -15,6 +15,7 @@ from app.models.courseInstructor import CourseInstructor
 from app.models.courseParticipant import CourseParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
+from app.models.programCategory import ProgramCategory
 
 
 print("Inserting data for demo and testing purposes.")
@@ -154,22 +155,52 @@ terms = [
 ]
 Term.insert_many(terms).on_conflict_replace().execute()
 
+programCategories = [
+    {
+        "categoryName": "Student Led Service"
+    },
+    {
+        "categoryName": "Training and Education"
+    },
+    {
+        "categoryName": "Bonner Scholars"
+    },
+    {
+        "categoryName": "One-Time Event"
+    }
+]
+ProgramCategory.insert_many(programCategories).on_conflict_replace().execute()
+
 programs = [
     {
         "id": 1,
         "programName": "Empty Bowls",
+        "programCategory": "One-Time Event"
     },
     {
         "id": 2,
         "programName": "Berea Buddies",
+        "programCategory": "Student Led Service"
     },
     {
         "id": 3,
         "programName": "Adopt A Grandparent",
+        "programCategory": "Student Led Service"
     },
     {
         "id": 4,
-        "programName": "No Required Events"
+        "programName": "No Required Events",
+        "programCategory": "One-Time Event"
+    },
+    {
+        "id": 5,
+        "programName": "First Year Bonners",
+        "programCategory": "Bonner Scholars"
+    },
+    {
+        "id": 6,
+        "programName": "A Program for Training and Education",  #FIXME: Change this to a real CELTS Program
+        "programCategory": "Training and Education"
     },
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
@@ -331,8 +362,35 @@ events = [
         "location": "Dining Dishes Room",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d")
-    }
-
+    },
+    {
+        "id": 12,
+        "program": 5,
+        "term": 2,
+        "eventName": "Welcoming New Bonners",
+        "description": "All Bonners Meet",
+        "isTraining": False,
+        "isPrerequisiteForProgram": False,
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+        "location": "Dining Dishes Room",
+        "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
+        "endDate": datetime.strptime("2021 7 12","%Y %m %d")
+    },
+    {
+        "id": 13,
+        "program": 6,
+        "term": 2,
+        "eventName": "Volunteer Training",
+        "description": "Training for volunteers",
+        "isTraining": False,
+        "isPrerequisiteForProgram": False,
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+        "location": "Dining Dishes Room",
+        "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
+        "endDate": datetime.strptime("2021 7 12","%Y %m %d")
+    },
 ]
 Event.insert_many(events).on_conflict_replace().execute()
 
