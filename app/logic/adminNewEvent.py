@@ -3,6 +3,7 @@ from datetime import *
 from app.models.facilitator import Facilitator
 from app.controllers.admin import admin_bp
 from flask import request
+import json
 
 
 @admin_bp.route('/makeRecurringEvents', methods=['POST'])
@@ -11,11 +12,10 @@ def calculateRecurringEventFrequency():
     """
     recurringEventInfo = request.form.copy()
 
-    print(recurringEventInfo)
     eventName = recurringEventInfo['eventName']
 
-    endDate = datetime.strptime(recurringEventInfo['eventEndDate'], '%m/%d/%Y')
-    startDate = datetime.strptime(recurringEventInfo['eventStartDate'], '%m/%d/%Y')
+    endDate = datetime.strptime(recurringEventInfo['eventEndDate'], '%m-%d-%Y')
+    startDate = datetime.strptime(recurringEventInfo['eventStartDate'], '%m-%d-%Y')
 
     recurringEvents = []
 
@@ -26,10 +26,11 @@ def calculateRecurringEventFrequency():
     for i in range(0, ((endDate-startDate).days +1), 7):
         counter += 1
         recurringEvents.append({'eventName': f"{eventName} week {counter}",
-        'Date':startDate.strftime('%m/%d/%Y')})
+                                'Date':startDate.strftime('%m-%d-%Y'),
+                                "week":counter})
         startDate += timedelta(days=7)
-
-    return recurringEvents
+    jsonData = json.dumps(recurringEvents)
+    return jsonData
 
 
 def setValueForUncheckedBox(eventData):
@@ -45,6 +46,13 @@ def setValueForUncheckedBox(eventData):
 def createNewEvent(newEventData):
 
     try:
+        if newEventData['eventIsRecurring'] == 1:
+            for entry in range(1,len(newEventData)):
+                if f"week{entry}" in newEventData:
+                    newEventData[f"week{entry}"] = parser.parse(newEventData[f"week{entry}"])
+                else:
+                    break
+        else:
         eventEntry = Event.get_or_create(eventName = newEventData['eventName'],
                                   term = newEventData['eventTerm'],
                                   description= newEventData['eventDescription'],

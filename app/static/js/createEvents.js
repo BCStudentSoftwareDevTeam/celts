@@ -4,11 +4,12 @@ $(document).ready(function(){
   $("#checkIsRecurring").click(function() {
     var recurringStatus = $("input[name='eventIsRecurring']:checked").val()
     if (recurringStatus == 'on'){
-      $("#endDateStyle").removeClass('d-none')
+      $("#endDateStyle, #recurringTableDiv").removeClass('d-none')
       $("#endDatePicker").prop('required', true);
 
+
     }else{
-      $("#endDateStyle").addClass('d-none')
+      $("#endDateStyle, #recurringTableDiv").addClass('d-none')
       $("#endDatePicker").prop('required', false);
     }
   });
@@ -31,7 +32,7 @@ $(document).ready(function(){
       $("#endDatePicker").datepicker().datepicker("show"); // Shows the start date datepicker when glyphicon is clicked
     });
 
-    $("#startDate, #endDate").click(function(){
+    $("#startDatePicker, #endDatePicker").change(function(){
       console.log("Learning js today")
 
       if ( $("#startDatePicker").val() && $("#endDatePicker").val()){
@@ -44,8 +45,18 @@ $(document).ready(function(){
           type:"POST",
           url: "/makeRecurringEvents",
           data: eventDatesAndName, //get the startDate, endDate and eventName as a dictionary
-          success: function(e){
+          success: function(jsonData){
+            var recurringEvents = JSON.parse(jsonData)
             console.log("something happened")
+            console.log(recurringEvents)
+            var recurringTable = $("#recurringEventsTable")
+            $("#recurringEventsTable tbody tr").remove();
+
+
+            for (var event of recurringEvents){
+              recurringTable.append("<tr><td>"+event.eventName+"</td><td><input name='week"+event.week+"' type='hidden' value='"+event.Date+"'>"+event.Date+"</td></tr>");
+              console.log(event)
+              }
           },
           error: function(error){
             console.log("something bad happened")

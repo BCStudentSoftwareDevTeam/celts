@@ -19,16 +19,22 @@ def createEvent():
         eventData = request.form.copy() # request.form returns a immutable dict so we need to copy to make changes
         newEventData= setValueForUncheckedBox(eventData)
 
-        #if an event is not recurring then it wil have same end and start date
+        #if an event is not recurring then it will have same end and start date
         if newEventData['eventEndDate'] == '':
             newEventData['eventEndDate'] = newEventData['eventStartDate']
 
-
         # convert date into datetime object (Y-m-d) for the backend
-        newEventData['eventStartDate'] = parser.parse(newEventData['eventStartDate'], dayfirst=True)
-        newEventData['eventEndDate'] = parser.parse(newEventData['eventEndDate'], dayfirst=True)
+        newEventData['eventStartDate'] = parser.parse(newEventData['eventStartDate'])
+        newEventData['eventEndDate'] = parser.parse(newEventData['eventEndDate'])
+
+        for entry in range(1,len(newEventData)):
+            if f"week{entry}" in newEventData:
+                newEventData[f"week{entry}"] = parser.parse(newEventData[f"week{entry}"])
+            else:
+                break
 
 
+        print(newEventData)
         # function to validate data
         dataIsValid, validationErrorMessage = validateNewEventData(newEventData)
 
