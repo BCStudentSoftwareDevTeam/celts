@@ -18,7 +18,7 @@ def validateNewEventData(newEventData):
     event = Event.select().where((Event.eventName == newEventData['eventName']) &
                              (Event.description == newEventData['eventDescription']) &
                              (Event.startDate == newEventData['eventStartDate']))
-    if event.exists():
-        return (False, "This event already exists")
+    # if event.exists():
+    #     return (False, "This event already exists")
 
     return (True, "All inputs are valid.")

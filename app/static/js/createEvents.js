@@ -25,11 +25,11 @@ $(document).ready(function(){
     dateFormat:'mm-dd-yy'
   });
 
-  $("#calendarIconStart").click(function() {
+  $("#startDate").click(function() {
     $("#startDatePicker").datepicker().datepicker("show"); // Shows the start date datepicker when glyphicon is clicked
   });
 
-  $("#calendarIconEnd").click(function() {
+  $("#endDate").click(function() {
       $("#endDatePicker").datepicker().datepicker("show"); // Shows the start date datepicker when glyphicon is clicked
     });
 
