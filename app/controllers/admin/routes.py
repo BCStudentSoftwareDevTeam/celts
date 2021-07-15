@@ -13,8 +13,12 @@ def testing():
 
 @admin_bp.route('/<program>/create_event', methods=['GET'])
 def createEventPage(program):
-    listOfTerms = Term.select()
+    currentTermid = Term.select().where(Term.isCurrentTerm).objects()[0]
+    listOfTerms = (Term.select().where(Term.id >= currentTermid)
+                                .where((Term.year <= (Term.get_by_id(currentTermid)).year + 2)))
+
     facilitators = getAllFacilitators()
+
     try:
         program = Program.get_by_id(program)
 
