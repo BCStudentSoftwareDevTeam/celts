@@ -12,13 +12,12 @@ def events(term):
 
     events = groupingEvents(term)
     programs = Program.select()
-    programCategoryVar = ProgramCategory.select()
+
 
 
     return render_template("/events/event_list.html",
             events=events,
             programs = programs,
-            programCategoryVar = programCategoryVar,
             user="ramsayb2"
             )
 

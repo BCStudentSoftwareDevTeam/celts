@@ -13,7 +13,5 @@ def getEvents(program_id=None):
 def groupingEvents(termID):
 
     groupEvents = (Event.select().join(Program).join(ProgramCategory).where(Event.term == termID).order_by(Event.program.programCategory,Event.program))
-    print(groupEvents)
-    for item in list(groupEvents.objects()):
-        print(item, item.program, item.program.programCategory)
+
     return groupEvents
