@@ -4,6 +4,8 @@ from flask import Flask, redirect, flash
 from app.controllers.events import events_bp
 from app.logic.events import getEvents
 from app.logic.getUpcomingEvents import getUpcomingEventsForUser
+from app.logic.updateTrackHours import updateTrackHours
+
 
 @events_bp.route('/events', methods=['GET'])
 def events():

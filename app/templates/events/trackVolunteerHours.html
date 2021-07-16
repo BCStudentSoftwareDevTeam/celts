@@ -1,4 +1,5 @@
 {% extends "base.html"%}
+
 {% block scripts %}
   {{super()}}
   <script src="/static/js/trackVolunteerHours.js"></script>
@@ -6,81 +7,71 @@
 
 {% block styles %}
   {{super()}}
-
-
 {% endblock %}
 
 {% block app_content %}
 
-<h1 align="center">{{eventParticipantsData[0].event.program.programName}}</h1><br>
-<h3 align="center">{{eventParticipantsData[0].event.eventName}}</h3><br>
+  <h1 align="center">{{eventParticipantsData[0].event.program.programName}}</h1><br>
+  <h3 align="center">{{eventParticipantsData[0].event.eventName}}</h3><br>
 
-<div class="btn-group">
-  <ul class="nav nav-tabs">
-    <li class="nav-item">
-      <a class="nav-link" href="https://google.com">Event Form</a> <!--FIXME: link to event page-->
-    </li>
-    <li class="nav-item">
-      <a class="nav-link active" aria-current="page" href="#">Track Hours</a>
-    </li>
-  </ul>
-</div>
-
-<form action = "/updateTrackHours" method="post"><br>
-  <div class="ui-widget input-group">
-    <input id="trackHoursInput" type="input" placeholder="Search">
-    <span class="input-group-text" style="padding:0 0 0 0rem;"><i class="bi bi-search" style="margin-left:-35px;"></i></span>
-    <div><button type="button" class="btn btn-secondary btn-sm">
-        <i class="bi bi-plus-circle"></i>
-    </button></div>
+  <div class="btn-group">
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link" href="https://google.com">Event Form</a> <!--FIXME: link to event page-->
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="#">Track Hours</a>
+      </li>
+    </ul>
   </div>
-<div>
-  <table class="table">
-    <thead>
+
+  <form action="#" method="post"><br>
+    <div class="ui-widget input-group">
+      <input id="trackHoursInput" type="input" placeholder="Search">
+      <span class="input-group-text" style="padding:0 0 0 0rem;"><i class="bi bi-search" style="margin-left:-35px;"></i></span>
+      <div><button type="button" class="btn btn-secondary btn-sm">
+          <i class="bi bi-plus-circle"></i>
+      </button></div>
+    </div>
+    <div>
+      <table class="table">
+
+        <thead>
+          <tr>
+            <th>Present</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone Number</th>
+            <th>RSVP</th>
+            <th>Total Hours</th>
+          </tr>
+        </thead>
+      <tbody id="myTable">
+      {% for participant in eventParticipantsData%}
       <tr>
-        <th>Present</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Phone Number</th>
-        <th>RSVP</th>
-        <th>Total Hours</th>
+        <td><input type="checkbox" id='checkbox_{{participant.user.username}}' name="checkbox_{{participant.user.username}}"
+                   onChange='toggleTrackHoursInputBox(this)' {% if participant.attended == 1 %} checked  {%endif%}></td>
+
+        <td><input class="form-control" type='hidden' name="username" id="{{participant.user.username}}"value="{{participant.user}}"> {{participant.user.firstName}} {{participant.user.lastName}}</td>
+        <td>{{participant.user.email}}</td>
+        <td>{{participant.user.phoneNumber}}</td>
+
+        <td>{% if participant.rsvp == 1 %} Yes {% else %} No {% endif %}</td>
+
+        <td><input class="form-control number-only form-control input-sm" id="inputHours_{{participant.user.username}}"
+                   name="{{participant.user.username}}Hours" style="max-width: 90px;" type ="number" min="0"
+                   {% if participant.attended == 1 %} value="{{participant.hoursEarned}}" {%else%} readonly {%endif%}></td>
       </tr>
-    </thead>
 
-  <tbody id="myTable">
-  {% for participant in eventParticipantsData%}
-  <tr>
-    {% if participant.attended == 1 %}
-      <td><input type="checkbox" name="{{participant.user.username}}Attended" checked></td>
-    {% else %}
-      <td><input type="checkbox" name="{{participant.user.username}}Attended"></td>
-    {% endif %}
+      {%endfor%}
+     </tbody>
+      </table>
+    </div>
 
-    <td>{{participant.user.firstName}} {{participant.user.lastName}}</td>
-    <td>{{participant.user.email}}</td>
-    <td>{{participant.user.phoneNumber}}</td>
-    {% if participant.rsvp == 1 %}
-      <td>Yes</td>
-    {% else %}
-      <td>No</td>
-    {% endif %}
+    <div>
+      <button type="submit" class="btn btn-primary float-end">Save</button>
+    </div>
 
-    <td><input class="form-control number-only form-control input-sm" name="{{participant.user.username}}Hours"style="max-width: 90px;" type ="number" min="0" value="{{participant.hoursEarned}}" ></td>
-  </tr>
-
-  {%endfor%}
- </tbody>
-
-  </table>
-
-
-
-</div>
-
-<div>
-  <button type="submit" class="btn btn-primary float-end">Save</button>
-</div>
-
-</form>
+  </form>
 
 {% endblock %}
