@@ -13,8 +13,6 @@ def events(term):
     events = groupingEvents(term)
     programs = Program.select()
 
-
-
     return render_template("/events/event_list.html",
             events=events,
             programs = programs,

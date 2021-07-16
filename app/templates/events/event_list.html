@@ -77,11 +77,18 @@
 {% endfor %}
 </div>
 </div> -->
-<div>
 
+<div>
   {% for event in events %}
-    {% set last_program_id = event.program %}
-    {% if last_program_id != event.program %}
+    {{ event , event.program }}
+  {% endfor %}
+
+  {% set last_program = namespace(id="") %}
+  {% for event in events %}
+  {{last_program.id}}
+  {{event.program}}
+    {% if last_program.id != event.program %}
+    {{event}}
       <div class="accordion" id="accordion_{{event.id}}">
         <div class="accordion-item">
           <h2 class="accordion-header" id="accordion__header_{{event.id}}">
@@ -94,7 +101,7 @@
                 {{event.program.programName}}
             </button>
             </h2>
-            {% else %}
+
             <div id="accordion__body_{{event.id}}"
                  class="accordion-collapse collapse hide"
                  aria-labelledby="accordion__header_{{event.id}}"
@@ -110,22 +117,29 @@
                            <th scope="col">Invitation</th>
                           </tr>
                         </thead>
-                        <tbody>
-                          <tr>
-                            <td> <a href="#" class="link-primary">{{event.eventName}}</a></td> {# FIXME:change href #}
-                            <td>{{event.startDate}}</td>
-                            <td>{{event.timeStart}}</td>
-                            <td>{{event.location}}</td>
-                            <td><button type="button" class="btn btn-warning">Email</button></td>
-                          </tr>
+                  {% endif %}
+                      <tbody>
+                  {% if last_program.id == event.program %}
+                  {{event}}
+                    <tr>
+                      <td> <a href="#" class="link-primary">{{event.eventName}}</a></td> {# FIXME:change href #}
+                      <td>{{event.startDate}}</td>
+                      <td>{{event.timeStart}}</td>
+                      <td>{{event.location}}</td>
+                      <td><button type="button" class="btn btn-warning">Email</button></td>
+                    </tr>
+                  {% endif %}
+
                     </tbody>
+
                   </table>
           </div>
         </div>
 
         </div>
       </div>
-      {% endif %}
+
+      {% set last_program.id = event.program %}
     {% endfor %}
 
 </div>
