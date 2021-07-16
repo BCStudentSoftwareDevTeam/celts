@@ -17,78 +17,61 @@
 
 {% block app_content %}
 <h1 class="text-center">Event List</h1>
+<div>
+  {% set last_program = namespace(id="") %}
+  {% for event in events %}
+    {% if last_program.id == "" %}
+    {# this is the start of accordion #}
+    <div class="accordion" id="accordion_{{event.id}}">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="accordion__header_{{event.id}}">
+          <button class="accordion-button"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#accordion__body_{{event.id}}"
+                  aria-expanded="true"
+                  aria-controls="accordion__body_{{event.id}}" >
+              {{event.program.programName}}
+          </button>
+          </h2>
 
+          <div id="accordion__body_{{event.id}}"
+               class="accordion-collapse collapse hide"
+               aria-labelledby="accordion__header_{{event.id}}"
+               data-bs-parent="#accordion_{{event.id}}">
+            <div class="accordion-body">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                         <th scope="col">Event Name</th>
+                         <th scope="col">Date</th>
+                         <th scope="col">Time</th>
+                         <th scope="col">Location</th>
+                         <th scope="col">Invitation</th>
+                        </tr>
+                      </thead>
 
-<!-- <p>
-  {% for prog in programCategoryVar %}
-  <button class="btn btn-primary" id="button_{{prog}}" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-    {{prog}}
-  </button>
-  {% endfor %}
-</p>
-  <div class="collapse" id="collapseExample" data-bs-parent="#button_{{prog}}">
-    <div class="card card-body">
-      {% for program in programs %}
-            <div class="accordion" id="accordion_{{program.id}}">
-              <div class="accordion-item">
-                <h2 class="accordion-header" id="accordion__header_{{program.id}}">
-                  <button class="accordion-button"
-                          type="button"
-                          data-bs-toggle="collapse"
-                          data-bs-target="#accordion__body_{{program.id}}"
-                          aria-expanded="true"
-                          aria-controls="accordion__body_{{program.id}}" >
-                      {{program.programName}}
-                  </button>
-                </h2>
-                <div id="accordion__body_{{program.id}}"
-                     class="accordion-collapse collapse hide"
-                     aria-labelledby="accordion__header_{{program.id}}"
-                     data-bs-parent="#accordion_{{program.id}}">
-                  <div class="accordion-body">
-                          <table class="table table-striped">
-                            <thead>
-                              <tr>
-                               <th scope="col">Event Name</th>
-                               <th scope="col">Date</th>
-                               <th scope="col">Time</th>
-                               <th scope="col">Location</th>
-                               <th scope="col">Invitation</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {% for event in events %}
-                                  {% if event.program.programName == program.programName %}
-                              <tr>
-                                <td> <a href="#" class="link-primary">{{event.eventName}}</a></td> {# FIXME:change href #}
-                                <td>{{event.startDate}}</td>
-                                <td>{{event.timeStart}}</td>
-                                <td>{{event.location}}</td>
-                                <td><button type="button" class="btn btn-warning">Email</button></td>
-                              </tr>
-                              {% endif %}
-                          {% endfor %}
-                        </tbody>
-                      </table>
-              </div>
+                    <tbody>
+  <tr>
+      <td> <a href="#" class="link-primary">{{event.description}}</a></td> {# FIXME:change href #}
+      <td>{{event.startDate}}</td>
+      <td>{{event.timeStart}}</td>
+      <td>{{event.location}}</td>
+      <td><button type="button" class="btn btn-warning">Email</button></td>
+    </tr>
+    {% set last_program.id = event.program %}
+
+    {% elif last_program.id != event.program %}     {# ends the previous accordion's table #}
+
+                </tbody>
+
+                </table>
+
             </div>
           </div>
         </div>
-{% endfor %}
-</div>
-</div> -->
-
-<div>
-  {% for event in events %}
-    {{ event , event.program }}
-  {% endfor %}
-
-  {% set last_program = namespace(id="") %}
-  {% for event in events %}
-  {{last_program.id}}
-  {{event.program}}
-    {% if last_program.id != event.program %}
-    {{event}}
+      </div>
+      {# this is the start of accordion #}
       <div class="accordion" id="accordion_{{event.id}}">
         <div class="accordion-item">
           <h2 class="accordion-header" id="accordion__header_{{event.id}}">
@@ -117,31 +100,28 @@
                            <th scope="col">Invitation</th>
                           </tr>
                         </thead>
-                  {% endif %}
+
                       <tbody>
-                  {% if last_program.id == event.program %}
-                  {{event}}
-                    <tr>
-                      <td> <a href="#" class="link-primary">{{event.eventName}}</a></td> {# FIXME:change href #}
-                      <td>{{event.startDate}}</td>
-                      <td>{{event.timeStart}}</td>
-                      <td>{{event.location}}</td>
-                      <td><button type="button" class="btn btn-warning">Email</button></td>
-                    </tr>
-                  {% endif %}
 
-                    </tbody>
+        {% elif last_program.id == event.program %}
+      <tr>
+        <td> <a href="#" class="link-primary">{{event.description}}</a></td> {# FIXME:change href #}
+        <td>{{event.startDate}}</td>
+        <td>{{event.timeStart}}</td>
+        <td>{{event.location}}</td>
+        <td><button type="button" class="btn btn-warning">Email</button></td>
+      </tr>
+      {% endif %}
 
-                  </table>
-          </div>
-        </div>
+    {% set last_program.id = event.program %}
+  </tbody>
 
-        </div>
-      </div>
-
-      {% set last_program.id = event.program %}
-    {% endfor %}
+  </table>
 
 </div>
+</div>
+</div>
+</div>
+  {% endfor %}
 
 {% endblock %}
