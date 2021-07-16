@@ -12,17 +12,14 @@
 
 {% block app_content %}
 <div>
-  <h1 align="center" class="mb-5">{{event.eventName}}</h1>
-  <h2 align="center">{{bNumberToUser}}</h2>
+  <h1 class="mb-5" align="center">{{event.eventName}}</h1>
+  <h2 class="m-5" align="center">{{bNumberToUser}}</h2>
 </div>
-<form action="/{{eventid}}/signintoKiosk">
-  <div>
-    <input type="hidden" value="{{bNumberToUser}}" name="bNumberToUser"/>
-    <input type="hidden" value={{eventid}} name="eventid"/>
+<form id="kioskForm" action="/{{eventid}}/signintoKiosk" method="post">
+  <div id="formData" class="mx-auto px-5">
+    <input type="text" id="submitScannerData" name="bNumber" class="input-lg form-control" style="font-size: 2rem;" placeholder="Scanner Kiosk Sign-in" aria-label="Enter scanner data" autofocus />
   </div>
-  <div class="mx-auto px-5">
-    <input style="font-size: 2rem;" class="input-lg form-control" type="text" placeholder="Scanner Kiosk Sign-in" aria-label="Enter scanner data" autofocus/>
-  </div>
-  <button type="submit" class="btn btn-success">Yeee</button>
+  <button type="button" id="fullscreenBtn" class="btn btn-primary justify-content-end" onclick="enterFullscreen()">Enter Full Screen</button>
+  <input type="submit" class="btn btn-secondary" id="submitDataBtn" value="Submit"/>
 </form>
 {% endblock %}
