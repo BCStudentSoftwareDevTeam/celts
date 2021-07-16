@@ -19,7 +19,7 @@
     <h2> New Event Form</h2>
   </div>
 
-  <form data-toggle="validator" role="form" {% if user.isCeltsAdmin or user.isCeltsStudentStaff%} action="/createEvent" method='post' {% elif user.isStudent %} action="/rsvpForEvent" method="post" {%endif%}>
+  <form data-toggle="validator" role="form" {% if user.isCeltsAdmin or user.isCeltsStudentStaff%} action="/createEvent" method='POST' {% elif user.isStudent %} action="/rsvpForEvent" method="POST" {%endif%}>
     <div class="row">
       <div class="col-md-6 col-sm-12 ">
         <div>
