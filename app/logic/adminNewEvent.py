@@ -46,11 +46,10 @@ def setValueForUncheckedBox(eventData):
 def createNewEvent(newEventData):
 
     try:
-
         if newEventData['eventIsRecurring'] == 'on':
             for entry in range(1,len(newEventData)):
                 if f"week{entry}" in newEventData:
-                    eventEntry = Event.get_or_create(eventName = (newEventData['eventName']+f" Week {entry}"),
+                    eventEntry = Event.create(eventName = (newEventData['eventName']+f" Week {entry}"),
                                               term = newEventData['eventTerm'],
                                               description= newEventData['eventDescription'],
                                               timeStart = newEventData['eventStartTime'],
@@ -65,20 +64,14 @@ def createNewEvent(newEventData):
                                               endDate =  newEventData[f"week{entry}"],
                                               program = newEventData['programId'])
 
-
-                    if len(eventEntry) == 2: # If the event already exists.
-                        facilitatorEntry = Facilitator.get_or_create(user = newEventData['eventFacilitator'],
-                                                              event = eventEntry[0] )
-                    else:
-                        facilitatorEntry = Facilitator.create(user = newEventData['eventFacilitator'],
+                    facilitatorEntry = Facilitator.create(user = newEventData['eventFacilitator'],
                                                               event = eventEntry)
-
                 else:
                     break
 
             return ("Recurring Events successfully created!")
         else:
-            eventEntry = Event.get_or_create(eventName = newEventData['eventName'],
+            eventEntry = Event.create(eventName = newEventData['eventName'],
                                       term = newEventData['eventTerm'],
                                       description= newEventData['eventDescription'],
                                       timeStart = newEventData['eventStartTime'],
@@ -93,12 +86,7 @@ def createNewEvent(newEventData):
                                       endDate =  newEventData['eventEndDate'],
                                       program = newEventData['programId'])
 
-
-            if len(eventEntry) == 2: # If the event already exists.
-                facilitatorEntry = Facilitator.get_or_create(user = newEventData['eventFacilitator'],
-                                                      event = eventEntry[0] )
-            else:
-                facilitatorEntry = Facilitator.create(user = newEventData['eventFacilitator'],
+            facilitatorEntry = Facilitator.create(user = newEventData['eventFacilitator'],
                                                       event = eventEntry)
 
             return ("Event successfully created!")
