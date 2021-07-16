@@ -40,7 +40,6 @@
       <tr>
         <th>Present</th>
         <th>Name</th>
-        <th>Role</th>
         <th>Email</th>
         <th>Phone Number</th>
         <th>RSVP</th>
@@ -58,7 +57,6 @@
     {% endif %}
 
     <td>{{participant.user.firstName}} {{participant.user.lastName}}</td>
-    <td>Volunteer</td>
     <td>{{participant.user.email}}</td>
     <td>{{participant.user.phoneNumber}}</td>
     {% if participant.rsvp == 1 %}
