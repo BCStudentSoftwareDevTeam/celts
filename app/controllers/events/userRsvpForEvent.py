@@ -1,5 +1,6 @@
 from app.models import*
 from app.models.event import Event
+from app.controllers.admin import admin_bp
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.controllers.events.programEligibility import isEligibleForProgram

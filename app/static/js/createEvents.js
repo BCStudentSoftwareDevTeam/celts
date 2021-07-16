@@ -15,6 +15,12 @@ $(document).ready(function(){
 
 )
 
+$(document).ready(function(){
+  if($(".datePicker").is("readonly")){
+    $( ".datePicker" ).datepicker( "option", "disabled", true );
+}
+
+}
 
   $(".readonly").on('keydown paste', function(e){ //makes the input fields act like readonly (readonly doesn't work with required)
         if(e.keyCode != 9) // ignore tab
