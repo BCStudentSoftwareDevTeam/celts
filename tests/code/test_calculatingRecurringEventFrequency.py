@@ -10,7 +10,6 @@ def test_calculateRecurringEventFrequency():
                  "eventFrequency":"weekly"}
 
     calculateRecurringEventFrequency(eventInfo)
-    print("======================================================")
 
     eventInfo = {'eventName':"testEvent",
                  'eventStartDate':"02/22/2023",
@@ -18,8 +17,6 @@ def test_calculateRecurringEventFrequency():
                  "eventFrequency":"daily"}
 
     calculateRecurringEventFrequency(eventInfo)
-
-    print("======================================================")
 
     eventInfo = {'eventName':"testEvent",
                  'eventStartDate':"02/22/2023",

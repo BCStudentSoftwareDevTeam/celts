@@ -39,7 +39,7 @@ def setValueForUncheckedBox(eventData):
 def createNewEvent(newEventData):
 
     try:
-        eventEntry = Event.get_or_create(eventName = newEventData['eventName'],
+        eventEntry = Event.create(eventName = newEventData['eventName'],
                                   term = newEventData['eventTerm'],
                                   description= newEventData['eventDescription'],
                                   timeStart = newEventData['eventStartTime'],
@@ -54,12 +54,7 @@ def createNewEvent(newEventData):
                                   endDate =  newEventData['eventEndDate'],
                                   program = newEventData['programId'])
 
-
-        if len(eventEntry) == 2: # If the event already exists.
-            facilitatorEntry = Facilitator.get_or_create(user = newEventData['eventFacilitator'],
-                                                  event = eventEntry[0] )
-        else:
-            facilitatorEntry = Facilitator.create(user = newEventData['eventFacilitator'],
+        facilitatorEntry = Facilitator.create(user = newEventData['eventFacilitator'],
                                                   event = eventEntry)
 
         return ("Event successfully created!")

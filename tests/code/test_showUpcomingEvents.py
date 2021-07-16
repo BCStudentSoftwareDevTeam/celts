@@ -11,12 +11,10 @@ def test_getsCorrectUpcomingEvent():
 
     user = "khatts"
     upcomingEvent = getUpcomingEventsForUser(user)
-    assert len(upcomingEvent) == 3
     assert "Empty Bowls Spring" == upcomingEvent[0].eventName
 
     user = "ramsayb2"
     upcomingEvent = getUpcomingEventsForUser(user)
-    assert len(upcomingEvent) == 4
     assert "Berea Buddies" == upcomingEvent[0].program.programName
 
 
