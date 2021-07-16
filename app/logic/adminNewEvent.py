@@ -6,11 +6,9 @@ from flask import request
 import json
 
 
-@admin_bp.route('/makeRecurringEvents', methods=['POST'])
-def calculateRecurringEventFrequency():
+def calculateRecurringEventFrequency(recurringEventInfo):
     """
     """
-    recurringEventInfo = request.form.copy()
 
     eventName = recurringEventInfo['eventName']
 
@@ -25,12 +23,12 @@ def calculateRecurringEventFrequency():
     counter = 0
     for i in range(0, ((endDate-startDate).days +1), 7):
         counter += 1
-        recurringEvents.append({'eventName': f"{eventName} week {counter}",
+        recurringEvents.append({'eventName': f"{eventName} Week {counter}",
                                 'Date':startDate.strftime('%m-%d-%Y'),
                                 "week":counter})
         startDate += timedelta(days=7)
-    jsonData = json.dumps(recurringEvents)
-    return jsonData
+
+    return json.dumps(recurringEvents)
 
 
 def setValueForUncheckedBox(eventData):

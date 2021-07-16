@@ -2,13 +2,18 @@ from dateutil import parser
 from app.models.event import Event
 from flask import request
 from app.controllers.admin import admin_bp
-from app.logic.adminNewEvent import createNewEvent, setValueForUncheckedBox
+from app.logic.adminNewEvent import createNewEvent, setValueForUncheckedBox, calculateRecurringEventFrequency
 from app.logic.validateNewEvent import validateNewEventData
 from flask import flash, redirect, url_for, g
 
-
+@admin_bp.route('/makeRecurringEvents', methods=['POST'])
 @admin_bp.route('/createEvent', methods=['POST'])
 def createEvent():
+
+    if 'makeRecurringEvents' in request.url_rule.rule:
+        recurringEventInfo = request.form.copy()
+        recurringEvents = calculateRecurringEventFrequency(recurringEventInfo)
+        return recurringEvents
 
     if not g.current_user.isCeltsAdmin:
 
@@ -33,8 +38,6 @@ def createEvent():
             else:
                 break
 
-
-        print(newEventData)
         # function to validate data
         dataIsValid, validationErrorMessage = validateNewEventData(newEventData)
 

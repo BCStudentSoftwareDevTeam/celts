@@ -1,6 +1,7 @@
 import pytest
 from app.logic.adminNewEvent import setValueForUncheckedBox, createNewEvent
 from peewee import OperationalError, IntegrityError
+import datetime
 
 
 @pytest.mark.integration
@@ -42,6 +43,13 @@ def test_createNewEvent():
                    'eventName':'Empty Bowls Spring','eventTerm':1,'eventFacilitator':"ramsayb2"}
     alertMessage = createNewEvent(eventInfo)
     assert alertMessage == "Event successfully created!"
+
+
+    eventInfo['eventIsRecurring'] = 'on'
+    eventInfo['week1'] = datetime.datetime.strptime('2025-02-15', '%Y-%m-%d')
+    alertMessage = createNewEvent(eventInfo)
+    assert alertMessage == "Recurring Events successfully created!"
+
 
 
     # FIXME: the test below don't work as expected ... is there a fix or should it be deleated?

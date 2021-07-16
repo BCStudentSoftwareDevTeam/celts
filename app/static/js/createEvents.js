@@ -33,10 +33,8 @@ $(document).ready(function(){
     });
 
     $("#startDatePicker, #endDatePicker").change(function(){
-      console.log("Learning js today")
 
       if ( $("#startDatePicker").val() && $("#endDatePicker").val()){
-        console.log("Learning jquery library today")
 
         var eventDatesAndName = {eventName:$("#inputEventName").val(),
                                  eventStartDate:$("#startDatePicker").val(),
@@ -47,11 +45,8 @@ $(document).ready(function(){
           data: eventDatesAndName, //get the startDate, endDate and eventName as a dictionary
           success: function(jsonData){
             var recurringEvents = JSON.parse(jsonData)
-            console.log("something happened")
-            console.log(recurringEvents)
             var recurringTable = $("#recurringEventsTable")
             $("#recurringEventsTable tbody tr").remove();
-
 
             for (var event of recurringEvents){
               recurringTable.append("<tr><td>"+event.eventName+"</td><td><input name='week"+event.week+"' type='hidden' value='"+event.Date+"'>"+event.Date+"</td></tr>");
@@ -59,7 +54,7 @@ $(document).ready(function(){
               }
           },
           error: function(error){
-            console.log("something bad happened")
+            console.log(error)
           }
         });
       }
