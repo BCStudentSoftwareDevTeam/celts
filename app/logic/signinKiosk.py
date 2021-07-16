@@ -1,19 +1,19 @@
 
-from flask import Flask, flash, redirect
-from app.models.event import Event
+from flask import Flask
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
-from app.controllers.events import events_bp
-from app.logic.events import getEvents
-
 
 def sendkioskData(bnumber, eventid):
-    # event = Event.get_by_id(eventid)
-    bNumberToUser = User.select().where(User.bnumber == bnumber)
-    bNumberToUsername = bNumberToUser.objects()[0]
-    bNumbertoParticipant = (EventParticipant.update({EventParticipant.attended: True})
-                                         .where(EventParticipant.user == bNumberToUsername)
-                                         .where(EventParticipant.event == eventid))
-    bNumbertoParticipant.execute()
-    print("Passed execute")
-    return bNumberToUsername
+    bNumberToUsername = User.select().where(User.bnumber == bnumber).objects()[0]
+    attendedParticipants = (EventParticipant.select(EventParticipant.user)
+                                            .where(EventParticipant.attended, EventParticipant.event == eventid))
+
+    attendedList = [participant.user for participant in attendedParticipants ]
+
+    if bNumberToUsername not in attendedList:
+        (EventParticipant.update({EventParticipant.attended: True})
+                         .where(EventParticipant.user == bNumberToUsername, EventParticipant.event == eventid)).execute()
+        alreadySignedIn = False
+    else:
+        alreadySignedIn = True
+    return bNumberToUsername, alreadySignedIn

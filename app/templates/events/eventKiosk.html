@@ -1,4 +1,4 @@
-{% extends "base.html"%}
+{% extends "kioskBase.html"%}
 {% block scripts %}
   {{super()}}
   <script src="/static/js/eventKiosk.js"></script>
@@ -11,15 +11,17 @@
 {% endblock %}
 
 {% block app_content %}
+<div class="form-check form-switch">
+  <input class="form-check-input" type="checkbox" id="fullscreenCheck" onclick="enterFullscreen()">
+  <label class="form-check-label" id="fullscreenLabel" for="fullscreenCheck">Toggle Full Screen</label>
+</div>
 <div>
   <h1 class="mb-5" align="center">{{event.eventName}}</h1>
   <h2 class="m-5" align="center">{{bNumberToUser}}</h2>
 </div>
 <form id="kioskForm" action="/{{eventid}}/signintoKiosk" method="post">
   <div id="formData" class="mx-auto px-5">
-    <input type="text" id="submitScannerData" name="bNumber" class="input-lg form-control" style="font-size: 2rem;" placeholder="Scanner Kiosk Sign-in" aria-label="Enter scanner data" autofocus />
+    <input type="text" id="submitScannerData" name="bNumber" class="input-lg form-control" oninput="submitData()" style="font-size: 2rem;" placeholder="Scanner Kiosk Sign-in" aria-label="Enter scanner data" autofocus/>
   </div>
-  <button type="button" id="fullscreenBtn" class="btn btn-primary justify-content-end" onclick="enterFullscreen()">Enter Full Screen</button>
-  <input type="submit" class="btn btn-secondary" id="submitDataBtn" value="Submit"/>
 </form>
 {% endblock %}

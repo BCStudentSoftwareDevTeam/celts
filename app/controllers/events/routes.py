@@ -1,5 +1,4 @@
-from flask import request, render_template, g
-from flask import Flask, redirect, flash, url_for
+from flask import Flask, redirect, flash, url_for, request, render_template, g
 from app.models.event import Event
 from app.controllers.events import events_bp
 from app.logic.events import getEvents
@@ -30,17 +29,18 @@ def loadKiosk(eventid):
                             event = event,
                             eventid = eventid)
 
-@events_bp.route('/<eventid>/signinKiosk', methods=['GET'])
 @events_bp.route('/<eventid>/signintoKiosk', methods=['POST'])
 def signinKiosk(eventid):
     requestFormData = request.form
     bnumber = "B"+ requestFormData["bNumber"][1:9]
     try:
-        kioskUser = sendkioskData(bnumber, eventid)
-        print(kioskUser)
-        flash(f"{kioskUser.firstName} {kioskUser.lastName} Successfully Signed In!")
+        kioskUser, alreadyIn = sendkioskData(bnumber, eventid)
+        if alreadyIn:
+            flash(f"{kioskUser.firstName} {kioskUser.lastName} Already Signed In!")
+        else:
+            flash(f"{kioskUser.firstName} {kioskUser.lastName} Successfully Signed In!")
 
     except:
-        flash("Unable to Sign In.")
+        flash("See Attendant; Unable to Sign In. ")
 
     return redirect(url_for("events.loadKiosk", eventid = eventid))

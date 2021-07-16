@@ -1,29 +1,33 @@
 function enterFullscreen() {
-  var el = document.documentElement
+  if($("#fullscreenCheck").prop("checked") == false){
+    document.cancelFullScreen
+    || document.webkitCancelFullScreen
+    || document.mozCancelFullScreen
+  }
+  else{
+    var el = document.documentElement
     , rfs = // for newer Webkit and Firefox
-           el.requestFullscreen
-        || el.webkitRequestFullScreen
-        || el.mozRequestFullScreen
-        || el.msRequestFullscreen
+    el.requestFullscreen
+    || el.webkitRequestFullScreen
+    || el.mozRequestFullScreen
+    || el.msRequestFullscreen
     ;
-  if(typeof rfs!="undefined" && rfs){
-    rfs.call(el);
-  } else if(typeof window.ActiveXObject!="undefined"){
-    // for Internet Explorer
-    var wscript = new ActiveXObject("WScript.Shell");
-    if (wscript!=null) {
-       wscript.SendKeys("{F11}");
+    if(typeof rfs!="undefined" && rfs){
+      rfs.call(el);
+    } else if(typeof window.ActiveXObject!="undefined"){
+      // for Internet Explorer
+      var wscript = new ActiveXObject("WScript.Shell");
+      if (wscript!=null) {
+        wscript.SendKeys("{F11}");
+      }
     }
   }
+  $('#submitScannerData').focus();
 };
 
-$('#submitScannerData').on('change', function() {
-  console.log("Worked");
-  $(this).closest('form').submit();
-});
-//
-// function submitData() {
-//   console.log("Created");
-//   $('#kioskForm').delay(200).submit();
-//   $('')
-// }
+function submitData() {
+  console.log($("#submitScannerData").val().length);
+  if ($("#submitScannerData").val().length > 20){
+    $("#kioskForm").submit()
+  }
+}
