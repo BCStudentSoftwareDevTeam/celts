@@ -15,7 +15,6 @@ from app.models.courseInstructor import CourseInstructor
 from app.models.courseParticipant import CourseParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
-from app.models.programCategory import ProgramCategory
 
 
 print("Inserting data for demo and testing purposes.")
@@ -155,52 +154,30 @@ terms = [
 ]
 Term.insert_many(terms).on_conflict_replace().execute()
 
-programCategories = [
-    {
-        "categoryName": "Student Led Service"
-    },
-    {
-        "categoryName": "Training and Education"
-    },
-    {
-        "categoryName": "Bonner Scholars"
-    },
-    {
-        "categoryName": "One-time Events"
-    }
-]
-ProgramCategory.insert_many(programCategories).on_conflict_replace().execute()
-
 programs = [
     {
         "id": 1,
         "programName": "Empty Bowls",
-        "programCategory": "One-time Events"
     },
     {
         "id": 2,
         "programName": "Berea Buddies",
-        "programCategory": "Student Led Service"
     },
     {
         "id": 3,
         "programName": "Adopt A Grandparent",
-        "programCategory": "Student Led Service"
     },
     {
         "id": 4,
         "programName": "No Required Events",
-        "programCategory": "One-time Events"
     },
     {
         "id": 5,
         "programName": "First Year Bonners",
-        "programCategory": "Bonner Scholars"
     },
     {
         "id": 6,
         "programName": "A Program for Training and Education",  #FIXME: Change this to a real CELTS Program
-        "programCategory": "Training and Education"
     },
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
