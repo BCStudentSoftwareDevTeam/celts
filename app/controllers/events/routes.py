@@ -1,4 +1,4 @@
-from flask import Flask, redirect, flash, url_for, request, render_template, g
+from flask import Flask, redirect, flash, url_for, request, render_template, g, json
 from app.models.event import Event
 from app.controllers.events import events_bp
 from app.logic.events import getEvents
@@ -31,18 +31,23 @@ def loadKiosk(eventid):
 
 @events_bp.route('/<eventid>/signintoKiosk', methods=['POST'])
 def signinKiosk(eventid):
-"""Renders kiosk and calls sign in function. If user already signed in will notify through flasher."""
+    """Renders kiosk and calls sign in function. If user already signed in will notify through flasher."""
 
-    requestFormData = request.form
-    bnumber = "B"+ requestFormData["bNumber"][1:9]
+    print(f"\n\n{request.data}\n\n")
+    bnumber = json.loads(request.data)
+    print(f"\n\n{bnumber}\n\n")
+    if len(bnumber) > 20:
+        bnumber = "B"+ requestFormData["bNumber"][1:9]
     try:
         kioskUser, alreadyIn = sendkioskData(bnumber, eventid)
         if alreadyIn:
-            flash(f"{kioskUser.firstName} {kioskUser.lastName} Already Signed In!")
+            flasherMessage = {"flasherMessage": f"{kioskUser.firstName} {kioskUser.lastName} Already Signed In!"}
+
         else:
-            flash(f"{kioskUser.firstName} {kioskUser.lastName} Successfully Signed In!")
+            flasherMessage = {"flasherMessage": f"{kioskUser.firstName} {kioskUser.lastName} Successfully Signed In!"}
 
-    except:
-        flash("See Attendant; Unable to Sign In. ")
+        return json.dumps(flasherMessage)
 
-    return redirect(url_for("events.loadKiosk", eventid = eventid))
+    except Exception as e:
+        flasherMessage = "See Attendant; Unable to Sign In. "
+        return flasherMessage
