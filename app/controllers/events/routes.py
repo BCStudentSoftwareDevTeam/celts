@@ -31,6 +31,8 @@ def loadKiosk(eventid):
 
 @events_bp.route('/<eventid>/signintoKiosk', methods=['POST'])
 def signinKiosk(eventid):
+"""Renders kiosk and calls sign in function. If user already signed in will notify through flasher."""
+
     requestFormData = request.form
     bnumber = "B"+ requestFormData["bNumber"][1:9]
     try:
