@@ -7,19 +7,21 @@ from flask import flash, redirect, url_for, g
 
 
 
-@admin_bp.route('/rsvpForEvent', methods=['POST'])
-def volunteerRegister():
+# @admin_bp.route('/rsvpForEvent', methods=['POST'])
+def volunteerRegister(eventData):
     """
     This function selects the user ID and event ID and registers the user
     for the event they have clicked register for.
     """
-    userId = User.get(User == g.current_user)
-    eventData = request.form.copy()
+    print(eventData)
+    userId = User.get(User.username == g.current_user)
+    print("hello")
+    # eventData = request.form.copy()
     eventId = eventData['eventId']
 
     if userRsvpForEvent(userId, eventId):
         flash("Successfully registered for event!")
-        return "It worked"
+        return redirect(url_for("admin.createEventPage", program=newEventData['programId']))
 
     else:
-        return "It didn't work"
+        return False

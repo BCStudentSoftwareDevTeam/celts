@@ -24,6 +24,8 @@
       <div class="col-md-6 col-sm-12 ">
         <div>
           <input type="hidden" value="{{program.id}}" name="programId">
+        
+          <input type="hidden" name="eventId" value="{{eventId.id}}" >
         </div>
         <div class="d-grid gap-1.5">
           <div class="form-group">
@@ -147,7 +149,7 @@
             {% endfor %}
           </select>
           {% elif user.isStudent %}
-          <input class="form-control"  id='inputEventName' value="{%for facilitator in facilitators.objects() %} {{facilitator.firstName}} {{facilitator.lastName}}  {% endfor %}" name="eventName" readonly>
+          <input class="form-control"  id='inputEventName' value="{%for facilitator in facilitators.objects() %} {{facilitator.firstName}} {{facilitator.lastName}}  {% endfor %}" name="facilitators" readonly>
           {% endif %}
 
       </div>

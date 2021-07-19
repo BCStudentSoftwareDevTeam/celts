@@ -2,6 +2,7 @@ from flask import request, render_template, g
 from app.models.program import Program
 from app.models.interest import Interest
 from app.controllers.main import main_bp
+from app.controllers.main.volunteerRegisterEvents import volunteerRegister
 
 @main_bp.route('/')
 def home():
@@ -24,3 +25,12 @@ def volunteerIndicateInterest():
                            programs = programs,
                            interests = interests,
                            interests_ids = interests_ids)
+
+
+@main_bp.route('/rsvpForEvent', methods = ['POST'])
+def RSVPCaller():
+    print("Hello")
+    eventData = request.form.copy()
+    volunteerRegister(eventData)
+
+    return ""

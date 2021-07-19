@@ -1,5 +1,6 @@
 from app.models import*
 from app.models.event import Event
+from app.models.program import Program
 from app.controllers.admin import admin_bp
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
@@ -13,7 +14,7 @@ def userRsvpForEvent(userid,  eventid):
     :param eventid: accepts an Event object or a valid eventid
     :return: eventParticipant entry for the given user and event; otherwise raise an exception
     """
-
+    print("forever")
     user = User.get(User.username == userid)
     event = Event.get(Event.id == eventid)
     program = Event.select(Event.program).where(Event.id == event)
