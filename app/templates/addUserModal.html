@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% set currentPage = "no" %}
+{% block aboveContainer %}
+{% endblock %}
+<!--Page Content -->
+{% block body %}
+
+<div class="modal fade" id="addUserModal" role="dialog" data-backdrop = "static">
+  <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+              <span class="modal-title">Add a volunteer</span>
+               <a type="button" class="close"  aria-label="Close" href = "/"><span aria-hidden="true">&times;</span></a>  <!-- Does this close button work/ look nice? -->
+            </div>
+            <div class="modal-body">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+
+</div>
+
+
+{% endblock %}
