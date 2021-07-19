@@ -26,6 +26,11 @@
   </div>
 
   <form action="#" method="post"><br>
+
+    <label class='d-none' id="eventLength">{{eventLength}}</label>
+    <input  class="form-control" name="event" value="{{eventParticipantsData[0].event}}" type='hidden'>
+
+
     <div class="ui-widget input-group">
       <input id="trackHoursInput" type="input" placeholder="Search">
       <span class="input-group-text" style="padding:0 0 0 0rem;"><i class="bi bi-search" style="margin-left:-35px;"></i></span>
@@ -47,19 +52,20 @@
           </tr>
         </thead>
       <tbody id="myTable">
+
       {% for participant in eventParticipantsData%}
       <tr>
         <td><input type="checkbox" id='checkbox_{{participant.user.username}}' name="checkbox_{{participant.user.username}}"
                    onChange='toggleTrackHoursInputBox(this)' {% if participant.attended == 1 %} checked  {%endif%}></td>
 
-        <td><input class="form-control" type='hidden' name="username" id="{{participant.user.username}}"value="{{participant.user}}"> {{participant.user.firstName}} {{participant.user.lastName}}</td>
+        <td><input class="form-control" type='hidden' name="username{{loop.index|string}}" id="{{participant.user.username}}"value="{{participant.user}}"> {{participant.user.firstName}} {{participant.user.lastName}}</td>
         <td>{{participant.user.email}}</td>
         <td>{{participant.user.phoneNumber}}</td>
 
         <td>{% if participant.rsvp == 1 %} Yes {% else %} No {% endif %}</td>
 
         <td><input class="form-control number-only form-control input-sm" id="inputHours_{{participant.user.username}}"
-                   name="{{participant.user.username}}Hours" style="max-width: 90px;" type ="number" min="0"
+                   name="inputHours_{{participant.user.username}}" style="max-width: 90px;" type ="number" min="0" step="0.01"
                    {% if participant.attended == 1 %} value="{{participant.hoursEarned}}" {%else%} readonly {%endif%}></td>
       </tr>
 

@@ -1,7 +1,5 @@
 $(document).ready(function(){
 
-
-
   $("#trackHoursInput").on("keyup", function() {
     var value = $(this).val().toLowerCase();
     $("#myTable tr").filter(function() {
@@ -11,6 +9,7 @@ $(document).ready(function(){
 
 });
 
+
 function toggleTrackHoursInputBox(checkbox){
   username =  checkbox.id.substring(9) //get
   console.log(username)
@@ -19,7 +18,9 @@ function toggleTrackHoursInputBox(checkbox){
   if (checkbox.checked){
     console.log($('#'+inputFieldID).val())
     $('#'+inputFieldID).prop('readonly', false)
-    console.log($('#startTime').val())
+
+    eventLength = $("#eventLength").text()
+    $('#'+inputFieldID).val(eventLength)
 
   }else{
     $('#'+inputFieldID).prop('readonly', true)
