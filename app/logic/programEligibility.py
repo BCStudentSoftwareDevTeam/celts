@@ -16,7 +16,6 @@ def isEligibleForProgram(program, user):
     :return: True if the user is not banned and meets the requirements, and False otherwise
     """
     user = User.get_by_id(user)
-    user = User.get_by_id(user)
     program = Program.get_by_id(program)
 
     if (ProgramBan.select().where(ProgramBan.user == user)) and (ProgramBan.select().where(ProgramBan.program == program)):
