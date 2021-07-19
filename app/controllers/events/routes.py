@@ -29,25 +29,26 @@ def loadKiosk(eventid):
                             event = event,
                             eventid = eventid)
 
-@events_bp.route('/<eventid>/signintoKiosk', methods=['POST'])
-def signinKiosk(eventid):
+@events_bp.route('/signintoKiosk', methods=['POST'])
+def signinKiosk():
     """Renders kiosk and calls sign in function. If user already signed in will notify through flasher."""
+    eventid = request.form["eventid"]
+    bnumber = request.form["bNumber"]
 
-    print(f"\n\n{request.data}\n\n")
-    bnumber = json.loads(request.data)
-    print(f"\n\n{bnumber}\n\n")
     if len(bnumber) > 20:
-        bnumber = "B"+ requestFormData["bNumber"][1:9]
+        bnumber = "B"+ bnumber[1:9]
     try:
         kioskUser, alreadyIn = sendkioskData(bnumber, eventid)
         if alreadyIn:
-            flasherMessage = {"flasherMessage": f"{kioskUser.firstName} {kioskUser.lastName} Already Signed In!"}
+            flasherMessage = f"{kioskUser.firstName} {kioskUser.lastName} Already Signed In!"
+            return flasherMessage
 
         else:
-            flasherMessage = {"flasherMessage": f"{kioskUser.firstName} {kioskUser.lastName} Successfully Signed In!"}
-
-        return json.dumps(flasherMessage)
+            flasherMessage = f"{kioskUser.firstName} {kioskUser.lastName} Successfully Signed In!"
+            return flasherMessage
 
     except Exception as e:
-        flasherMessage = "See Attendant; Unable to Sign In. "
+        print("Error in Main Page", e)
+        # return "", 500
+        flasherMessage = f"See Attendant; Unable to Sign In"
         return flasherMessage

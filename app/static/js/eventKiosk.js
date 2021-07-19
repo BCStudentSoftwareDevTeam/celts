@@ -1,6 +1,8 @@
+var hitEnter = false;
 $(document).on('keypress',function(e) {
     if(e.which == 13) {
-        $("#kioskForm").submit();
+        hitEnter = true;
+        submitData();
     }
 });
 
@@ -35,26 +37,33 @@ function toggleFullscreen() {
 };
 
 function submitData(){
-  var eventid = $("#eventid".val())
-  var bNumber = $("#submitScannerData").val()
-  console.log(eventid)
-  console.log($("#submitScannerData").val().length);
-  // if ($("#submitScannerData").val().length > 20){
-  $.ajax({
-    method: "POST",
-    url: '/'+ eventid + '/signintoKiosk',
-    data: bNumber,
-    success: function(response) {
-      msgFlash(flasherMessage, "success")
-      // console.log(flasherMessage)
-    },
-    error: function(request, status, error) {
-      console.log(status,error);
-      msgFlash(flasherMessage, "danger")
-      // console.log(flasherMessage)
-    }
-  })
-  // }
+  if($("#submitScannerData").val().length > 20 || hitEnter == true){
+    $("#flasher").remove()
+    $.ajax({
+      method: "POST",
+      url: '/signintoKiosk',
+      data: {
+        "eventid": $("#eventid").val(),
+        "bNumber": $("#submitScannerData").val()
+      },
+      success: function(flasherMessage) {
+        if (flasherMessage[0]=="S"){
+          reason = "danger"
+        } else {
+          reason = "success"
+        }
+        msgFlash(flasherMessage, reason);
+        $("#submitScannerData").val("").blur();
+        $('#submitScannerData').focus();
+      },
+      error: function(request, flasherMessage, status, error) {
+        console.log(status,error);
+        msgFlash("See Attendant; Unable to Sign In.", "danger");
+        $("#submitScannerData").val("").blur();
+        $('#submitScannerData').focus();
+      }
+    })
+  }
 }
 
 function hideElements(hide=true) {
