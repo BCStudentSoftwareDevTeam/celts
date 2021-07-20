@@ -6,17 +6,24 @@ from app.controllers.events import events_bp
 from app.logic.events import groupingEvents
 from app.logic.getUpcomingEvents import getUpcomingEventsForUser
 
-@events_bp.route('/events/<term>', methods=['GET'])
+@events_bp.route('/events/<term>/', methods=['GET'])
 def events(term):
 
-    events = groupingEvents(term)
+    studentLedEvents, trainingEvents, bonnerScholarsEvents, oneTimeEvents = groupingEvents(term)
     programs = Program.select()
 
+    if True:
+        events = studentLedEvents
+    elif False:
+        events = trainingEvents
+    elif False:
+        events = bonnerScholarsEvents
+    else:
+        events = oneTimeEvents
+
     return render_template("/events/event_list.html",
-            events=events,
-            programs = programs,
-            user="ramsayb2"
-            )
+            events = events,
+            user="ramsayb2")
 
 @events_bp.route('/events/upcoming_events', methods=['GET'])
 def showUpcomingEvent():

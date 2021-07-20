@@ -18,6 +18,20 @@
 {% block app_content %}
 <h1 class="text-center">Event List</h1>
 <div>
+  <ul class="nav navbar-expand-lg navbar-light bg-light">
+    <li class="nav-item">
+      <a class="nav-link active" aria-current="page" href="#">Student Led Services</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">Training and Education</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">Bonner Scholars</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">One-time Events</a>
+    </li>
+  </ul>
   {% set last_program = namespace(id="") %}
   {% for event in events %}
       {% if last_program.id != event.program %}     {# ends the previous accordion's table #}
@@ -31,6 +45,7 @@
           </div>
           </div>
         {% endif %}
+
         {# this is the start of accordion #}
         <div class="accordion" id="accordion_{{event.id}}">
           <div class="accordion-item">
@@ -72,7 +87,7 @@
         </tr>
 
 
-          {% set last_program.id = event.program %}
+        {% set last_program.id = event.program %}
   {% endfor %}
           </tbody>
 
@@ -82,4 +97,5 @@
     </div>
   </div>
 </div>
+
 {% endblock %}
