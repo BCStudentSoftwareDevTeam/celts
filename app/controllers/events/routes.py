@@ -11,12 +11,13 @@ def events(term):
 
     studentLedEvents, trainingEvents, bonnerScholarsEvents, oneTimeEvents = groupingEvents(term)
     programs = Program.select()
-
+    initialProgram = studentLedEvents[0].program
     return render_template("/events/event_list.html",
             studentLedEvents = studentLedEvents,
             trainingEvents = trainingEvents,
             bonnerScholarsEvents = bonnerScholarsEvents,
             oneTimeEvents = oneTimeEvents,
+            initialProgram = initialProgram,
             user="ramsayb2")
     # if True:
     #     events = studentLedEvents
