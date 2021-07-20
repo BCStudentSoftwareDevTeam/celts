@@ -17,7 +17,7 @@ def createEventPage(program):
     listOfTerms = Term.select()
     eventInfo = ""
     facilitators = getAllFacilitators()
-    
+
     try:
         program = Program.get_by_id(program)
 
@@ -37,8 +37,6 @@ def editEvent(program, eventId):
     listOfTerms = Term.select()
     eventInfo = Event.get_by_id(eventId)
 
-    isRecurring = "Checked" if eventInfo.isRecurring else ""
-    isPrerequisiteForProgram = "Checked" if eventInfo.isPrerequisiteForProgram else ""
     isTraining = "Checked" if eventInfo.isTraining else ""
     isRsvpRequired = "Checked" if eventInfo.isRsvpRequired else ""
     isService = "Checked" if eventInfo.isService else ""
@@ -55,8 +53,6 @@ def editEvent(program, eventId):
                             listOfTerms = listOfTerms,
                             eventInfo = eventInfo,
                             eventId = eventId,
-                            isRecurring = isRecurring,
-                            isPrerequisiteForProgram = isPrerequisiteForProgram,
                             isTraining = isTraining,
                             isRsvpRequired = isRsvpRequired,
                             isService = isService)
