@@ -10,14 +10,14 @@ def getEvents(program_id=None):
         return Event.select()
 
 def groupingEvents(termID):
-    studentLedPrograms = (Event.select()
+    studentLedEvents = (Event.select()
                                .join(Program)
                                .where(Program.isStudentLed))
 
     trainingEvents = (Event.select()
                            .where(Event.isTraining))
 
-    bonnerScholarsPrograms = (Event.select()
+    bonnerScholarsEvents = (Event.select()
                                    .join(Program)
                                    .where(Program.isBonnerScholars))
 
@@ -27,4 +27,4 @@ def groupingEvents(termID):
                                  Event.isTraining == False,
                                  Program.isBonnerScholars == False))
 
-    return studentLedPrograms, trainingEvents, bonnerScholarsPrograms, oneTimeEvents
+    return studentLedEvents, trainingEvents, bonnerScholarsEvents, oneTimeEvents

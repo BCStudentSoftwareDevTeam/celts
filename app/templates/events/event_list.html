@@ -16,86 +16,91 @@
 {% endblock %}
 
 {% block app_content %}
+
 <h1 class="text-center">Event List</h1>
 <div>
-  <ul class="nav navbar-expand-lg navbar-light bg-light">
-    <li class="nav-item">
-      <a class="nav-link active" aria-current="page" href="#">Student Led Services</a>
+  <ul class="nav nav-pills mb-3" id="pillsTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="studentLedServiceTab" data-bs-toggle="pill" data-bs-target="#studentLedService" type="button" role="tab" aria-controls="studentLedService" aria-selected="true">Student Led Service</button>
     </li>
-    <li class="nav-item">
-      <a class="nav-link" href="#">Training and Education</a>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="trainingAndEducationTab" data-bs-toggle="pill" data-bs-target="#trainingAndEducation" type="button" role="tab" aria-controls="trainingAndEducation" aria-selected="false">Training and Education</button>
     </li>
-    <li class="nav-item">
-      <a class="nav-link" href="#">Bonner Scholars</a>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="bonnerScholarsTab" data-bs-toggle="pill" data-bs-target="#bonnerScholars" type="button" role="tab" aria-controls="bonnerScholars" aria-selected="false">Bonner Scholars</button>
     </li>
-    <li class="nav-item">
-      <a class="nav-link" href="#">One-time Events</a>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="oneTimeEventsTab" data-bs-toggle="pill" data-bs-target="#oneTimeEvents" type="button" role="tab" aria-controls="oneTimeEvents" aria-selected="false">One-time Events</button>
     </li>
   </ul>
-  {% set last_program = namespace(id="") %}
-  {% for event in events %}
-      {% if last_program.id != event.program %}     {# ends the previous accordion's table #}
-        {% if last_program.id != "" %}
-          </tbody>
+  <div class="tab-content" id="pills-tabContent">
 
-          </table>
+    <div class="tab-pane fade show active" id="studentLedService" role="tabpanel" aria-labelledby="studentLedServiceTab">
+      <div class="accordion" id="studentLedServiceAccordion">
+        {% set last_program = namespace(id="") %}
+        {% for event in studentLedEvents %}
+        {% if last_program.id != event.program %}     {# ends the previous accordion's table #}
+          {% if last_program.id != "" %}
+            </tbody>
 
-          </div>
-          </div>
-          </div>
-          </div>
-        {% endif %}
+            </table>
 
-        {# this is the start of accordion #}
-        <div class="accordion" id="accordion_{{event.id}}">
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="accordion__header_{{event.id}}">
-              <button class="accordion-button"
-                      type="button"
-                      data-bs-toggle="collapse"
-                      data-bs-target="#accordion__body_{{event.id}}"
-                      aria-expanded="true"
-                      aria-controls="accordion__body_{{event.id}}" >
-                  {{event.program.programName}}
-              </button>
-            </h2>
+            </div>
+            </div>
+            </div>
 
-            <div id="accordion__body_{{event.id}}"
-                  class="accordion-collapse collapse hide"
-                  aria-labelledby="accordion__header_{{event.id}}"
-                  data-bs-parent="#accordion_{{event.id}}">
+          {% endif %}
+          <div class="accordion" id="accordion_{{event.id}}">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="accordion__header_{{event.id}}">
+                <button class="accordion-button"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#accordion__body_{{event.id}}"
+                        aria-expanded="true"
+                        aria-controls="accordion__body_{{event.id}}" >
+              {{event.program.programName}}
+            </button>
+          </h2>
+          <div id="accordion__body_{{event.id}}"
+                class="accordion-collapse collapse hide"
+                aria-labelledby="accordion__header_{{event.id}}"
+                data-bs-parent="#accordion_{{event.id}}">
               <div class="accordion-body">
-                      <table class="table table-striped">
-                        <thead>
-                          <tr>
-                            <th scope="col">Event Name</th>
-                            <th scope="col">Date</th>
-                            <th scope="col">Time</th>
-                            <th scope="col">Location</th>
-                            <th scope="col">Invitation</th>
-                          </tr>
-                        </thead>
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th scope="col">Event Name</th>
+                      <th scope="col">Date</th>
+                      <th scope="col">Time</th>
+                      <th scope="col">Location</th>
+                      <th scope="col">Invitation</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                {% endif %}
+            <tr>
+              <td> <a href="#" class="link-primary">{{event.description}}</a></td> {# FIXME:change href #}
+              <td>{{event.startDate}}</td>
+              <td>{{event.timeStart}}</td>
+              <td>{{event.location}}</td>
+              <td><button type="button" class="btn btn-warning">Email</button></td>
+            </tr>
+          {% set last_program.id = event.program %}
+        {% endfor %}
+                  </tbody>
+                </table>
+            </div>
+          </div>
+        </div>
 
-          <tbody>
-        {% endif %}
-        <tr>
-          <td> <a href="#" class="link-primary">{{event.description}}</a></td> {# FIXME:change href #}
-          <td>{{event.startDate}}</td>
-          <td>{{event.timeStart}}</td>
-          <td>{{event.location}}</td>
-          <td><button type="button" class="btn btn-warning">Email</button></td>
-        </tr>
-
-
-        {% set last_program.id = event.program %}
-  {% endfor %}
-          </tbody>
-
-        </table>
 
       </div>
-    </div>
+      </div>
+    <div class="tab-pane fade" id="trainingAndEducation" role="tabpanel" aria-labelledby="trainingAndEducationTab">{{trainingEvents.eventName}}</div>
+    <div class="tab-pane fade" id="bonnerScholars" role="tabpanel" aria-labelledby="bonnerScholarsTab">{{bonnerScholarsEvents.eventName}}</div>
+    <div class="tab-pane fade" id="oneTimeEvents" role="tabpanel" aria-labelledby="oneTimeEventsTab">{{oneTimeEvents.eventName}}</div>
   </div>
-</div>
+
 
 {% endblock %}

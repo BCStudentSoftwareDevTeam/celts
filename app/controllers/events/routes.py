@@ -12,19 +12,24 @@ def events(term):
     studentLedEvents, trainingEvents, bonnerScholarsEvents, oneTimeEvents = groupingEvents(term)
     programs = Program.select()
 
-    if True:
-        events = studentLedEvents
-    elif False:
-        events = trainingEvents
-    elif False:
-        events = bonnerScholarsEvents
-    else:
-        events = oneTimeEvents
-
     return render_template("/events/event_list.html",
-            events = events,
+            studentLedEvents = studentLedEvents,
+            trainingEvents = trainingEvents,
+            bonnerScholarsEvents = bonnerScholarsEvents,
+            oneTimeEvents = oneTimeEvents,
             user="ramsayb2")
-
+    # if True:
+    #     events = studentLedEvents
+    # elif False:
+    #     events = trainingEvents
+    # elif False:
+    #     events = bonnerScholarsEvents
+    # else:
+    #     events = oneTimeEvents
+    #
+    # return render_template("/events/event_list.html",
+    #         events = events,
+    #         user="ramsayb2")
 @events_bp.route('/events/upcoming_events', methods=['GET'])
 def showUpcomingEvent():
     upcomingEvents = getUpcomingEventsForUser(g.current_user)
