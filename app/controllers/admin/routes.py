@@ -7,6 +7,7 @@ from app.controllers.admin import admin_bp
 from app.models.eventParticipant import EventParticipant
 from app.logic.updateTrackHours import updateTrackHours
 from app.logic.trackVolunteerHours import eventLengthInHours
+from app.controllers.admin.searchTrackHoursVolunteer import searchTrackHoursVolunteers
 
 
 @admin_bp.route('/testing', methods=['GET'])
@@ -35,3 +36,10 @@ def trackVolunteerHoursPage(programID, eventID):
 def updateHours(programID, eventID):
     updateTrackHours(request.form)
     return redirect(url_for("admin.trackVolunteerHoursPage", programID=programID, eventID=eventID))
+
+
+
+@admin_bp.route('/searchTrackHoursVolunteers/<query>', methods = ['GET'])
+def searchForVolunteers():
+    searchResults = searchTrackHoursVolunteers(request.form)
+    return searchResults
