@@ -3,7 +3,7 @@
   {{super()}}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <script src="/static/js/viewAllEvents.js"></<script>
+  <script src="/static/js/addEventListData.js"></script>
   </script>
 {% endblock %}
 
@@ -32,35 +32,33 @@
     </li>
   </ul>
   <div class="tab-content" id="pills-tabContent">
-        {% for event in studentLedEvents %}
-          {% if not event.program.changed %}     {# ends the previous accordion's table #}
-              </tbody>
-              </table>
-              </div>
-              </div>
-              </div>
-              </div>
-            {% endif %}
-            <div class="tab-pane fade show active" id="studentLedService" role="tabpanel" aria-labelledby="studentLedServiceTab">
-              <div class="accordion" id="studentLedServiceAccordion">
-            <div class="accordion" id="accordion_{{event.id}}">
-              <div class="accordion-item">
-                <h2 class="accordion-header" id="accordion__header_{{event.id}}">
-                  <button class="accordion-button"
-                          type="button"
-                          data-bs-toggle="collapse"
-                          data-bs-target="#accordion__body_{{event.id}}"
-                          aria-expanded="true"
-                          aria-controls="accordion__body_{{event.id}}" >
-                          {{event.program.programName}}
-                  </button>
-                </h2>
-              <div id="accordion__body_{{event.id}}"
-                  class="accordion-collapse collapse hide"
-                  aria-labelledby="accordion__header_{{event.id}}"
-                  data-bs-parent="#accordion_{{event.id}}">
+    <div class="tab-pane fade show active" id="studentLedService" role="tabpanel" aria-labelledby="studentLedServiceTab">
+      <div class="accordion" id="studentLedServiceAccordion">
+
+      {% for event in studentLedEvents %}
+
+        {% set accordion %}
+          <tr>
+            <td> <a href="#" class="link-primary">{{event.description}}</a></td> {# FIXME:change href #}
+            <td>{{event.startDate}}</td>
+            <td>{{event.timeStart}}</td>
+            <td>{{event.location}}</td>
+            <td><button type="button" class="btn btn-warning">Email</button></td>
+          </tr>
+        {% endset %}
+        {% if loop.index == 1 or event.program != loop.previtem.program %}     {# ends the previous accordion's table #}
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="header_{{event.id}}">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#body_{{event.id}}"
+                  aria-expanded="true" aria-controls="body_{{event.id}}">
+                  {{event.program.programName}}
+                </button>
+              </h2>
+            <div id="body_{{event.id}}" class="accordion-collapse collapse hide"
+                aria-labelledby="header_{{event.id}}" data-bs-parent="#accordion_{{event.id}}">
                 <div class="accordion-body">
-                  <table class="table table-striped">
+                  <table id="accordionTable_{{event.program}}" class="table table-striped">
                     <thead>
                       <tr>
                         <th scope="col">Event Name</th>
@@ -70,31 +68,27 @@
                         <th scope="col">Invitation</th>
                       </tr>
                     </thead>
+                    <input type="hidden" val={{event}} id="event"/>
                     <tbody>
+                      <script> addTableData({{event.eventName|string}}, {{event.startDate|string}}, {{event.timeStart|string}}, {{event.location|string}}); </script>
+
+                      <!-- <script> addTableData(this) </script> -->
+                    </tbody>
+                  </table>
+                </div> <!--accordion body id div-->
+              </div>
+            </div> <!--accordion item-->
+          {% else %}
+            {#{{accordion}}#}
+            <script> addTableData({{event.eventName|string}}, {{event.startDate|string}}, {{event.timeStart|string}}, {{event.location|string}}); </script>
           {% endif %}
-          <tr>
-            <td> <a href="#" class="link-primary">{{event.description}}</a></td> {# FIXME:change href #}
-            <td>{{event.startDate}}</td>
-            <td>{{event.timeStart}}</td>
-            <td>{{event.location}}</td>
-            <td><button type="button" class="btn btn-warning">Email</button></td>
-          </tr>
-          {% set last_program = event.program %}
-          {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-  </div>
-</div>
-</div>
-</div>
-
+        {% endfor %}
+      </div> <!--accordion body class div-->
+    </div> <!--tab pane-->
+  </div> <!--tab content-->
 
     <div class="tab-pane fade" id="trainingAndEducation" role="tabpanel" aria-labelledby="trainingAndEducationTab">{{trainingEvents.eventName}}</div>
     <div class="tab-pane fade" id="bonnerScholars" role="tabpanel" aria-labelledby="bonnerScholarsTab">{{bonnerScholarsEvents.eventName}}</div>
     <div class="tab-pane fade" id="oneTimeEvents" role="tabpanel" aria-labelledby="oneTimeEventsTab">{{oneTimeEvents.eventName}}</div>
-
 
 {% endblock %}
