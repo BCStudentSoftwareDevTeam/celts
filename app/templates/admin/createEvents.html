@@ -3,11 +3,13 @@
   {{super()}}
 
   <script src="/static/js/createEvents.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
 
 {% endblock %}
 
 {% block styles %}
   {{super()}}
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
 
 {% endblock %}
 
@@ -26,12 +28,12 @@
         </div>
         <div class="d-grid gap-1.5">
           <div class="form-group">
-            <label for='eventName'> Event Name *</label> <br>
+            <label for='eventName'><strong> Event Name * </strong></label> <br>
             <input class="form-control" id='inputEventName'  value="{{eventInfo.eventName}}" name="eventName" required>
           </div>
         </div><br>
         <div class="form-group">
-          <label for='term'> Term *</label> <br>
+          <label for='term'><strong> Term * </strong></label> <br>
           <select class="form-control" name='eventTerm' id='inputEventTerm'>
             {%for term in listOfTerms %}
               {%if term.isCurrentTerm == 1%}
@@ -42,19 +44,37 @@
             {% endfor %}
           </select>
         </div><br>
+        <div class="form-group">
+          <label for='location'><strong>Location *</strong></label><br>
+          <input class="form-control" id='inputEventLocation' value="{{eventInfo.location}}" name="eventLocation" required>
+        </div> <br>
 
         <div class="form-check form-switch" style="padding-bottom: 1.5em">
-          <label class="custom-control-label" for='checkIsRecurring'>This event is a recurring event</label>
-          <input class="form-check-input" type="checkbox" id="checkIsRecurring" name="eventIsRecurring" {{isRecurring}}/>
+          <label class="custom-control-label" for='checkIsRecurring'><strong>This event is a recurring event</strong></label>
+          <input class="form-check-input" type="checkbox" id="checkIsRecurring" name="eventIsRecurring"/>
         </div>
 
+        <div class="flex-container"> <br>
+          <div class="form-inline d-flex">
+            <div  class="form-group" >
+              <div class="d-inline-flex">
+                <label for="startTime"><strong>Start Time: *</strong></label>
+                <input type='time' class="form-control timePicker" value="{{eventInfo.timeStart}}" id='pickStartTime' name="eventStartTime" required/>
+              </div>
+              <div class='form-group time d-inline-flex' style="padding: 0 0 0 2rem">
+                <label for="endTime"><strong>End Time: *</strong></label>
+                <input type='time' class="form-control timePicker" id='pickEndTime' value="{{eventInfo.timeEnd}}" name="eventEndTime" required/>
+              </div>
+            </div>
+          </div>
+        </div><br>
         <!-- datePickerS -->
         <div class="flex-container">
-          <div class="form-inline d-flex">
+          <div>
             <div  class="form-group" >
               <div class="d-inline-flex" style="width:48%;">
               <!--datePicker for start date-->
-              <label for="startDatePicker" id="startDatePickerLabel"><span>Start Date *</span></label>
+              <label for="startDatePicker" id="startDatePickerLabel" ><span><strong>Start Date *</strong></span></label>
                 <div class='input-group date' id="startDate">
                   <input type='text' class="form-control datePicker readonly" id='startDatePicker' value="{{eventInfo.startDate}}" name="eventStartDate" placeholder="Start Date" onchange="updateDate(this)"  required />
                   <div class="input-group-text" id="calendarIconStart">
@@ -63,11 +83,11 @@
                 </div>
               </div>
 
-              <div class="d-inline-flex" id ="endDateStyle" style="width:48%;">
+              <div class="d-inline-flex d-none" id ="endDateStyle" style="width:51%;">
                 <!--datePicker for End date-->
-                <label for="endDatePicker" id="endDatePickerLabel" class="ps-2"><span>End Date *</span></label>
+                <label for="endDatePicker" id="endDatePickerLabel" style="padding:0 0 0 2rem" ><span><strong>End Date *</strong></span></label>
                 <div class='input-group date'>
-                  <input type='text' class="form-control datePicker readonly" value="{{eventInfo.endDate}}" id='endDatePicker' name="eventEndDate" placeholder="End Date" onchange="updateDate(this)" required />
+                  <input type='text' class="form-control datePicker readonly" id='endDatePicker' value="{{eventInfo.endDate}}" name="eventEndDate" placeholder="End Date" onchange="updateDate(this)"/>
                   <div class="input-group-text" id="calendarIconEnd">
                     <span><i class="bi bi-calendar-plus-fill"></i></span>
                   </div>
@@ -76,56 +96,37 @@
             </div>
           </div>
         </div><br>
-
-        <div class="flex-container">
-          <div class="form-inline d-flex">
-            <div  class="form-group" >
-              <div class="d-inline-flex">
-                <label for="startTime">Start Time: *</label>
-                <input type='time' class="form-control timePicker" id='pickStartTime' name="eventStartTime" value="{{eventInfo.timeStart}}" required/>
-              </div>
-              <div class='form-group time d-inline-flex ps-2'>
-                <label for="endTime">End Time: *</label>
-                <input type='time' class="form-control timePicker" id='pickEndTime' name="eventEndTime" value="{{eventInfo.timeEnd}}" required/>
-              </div>
-            </div>
-          </div>
-        </div><br>
-        <div class="form-group">
-          <label for='location'>Location *</label><br>
-          <input class="form-control" id='inputEventLocation'  name="eventLocation" value="{{eventInfo.location}}" required>
-        </div>
       </div>
 
       <div class="col-md-6 col-sm-12 form-group">
         <div class="form-check form-switch">
-          <label class="custom-control-label" for="checkIsRequired">This event is required for the program</label>
-          <input class="form-check-input" type="checkbox" id="checkIsRequired" name="eventRequiredForProgram" {{isRequiredForProgram}}/>
+          <label class="custom-control-label" for="checkIsRequired"><strong>This event is required for the program</strong></label>
+          <input class="form-check-input" type="checkbox" id="checkIsRequired" name="eventRequiredForProgram" {{isTraining}}/>
         </div>
 
         <div class="form-check form-switch">
-          <label class="custom-control-label" for="checkIsTraining">This event is a training for the program</label>
-          <input class="form-check-input" type="checkbox" id="checkIsTraining" name="eventIsTraining" {{isTraining}}/>
+          <label class="custom-control-label" for="checkIsTraining"><strong>This event is a training for the program</strong></label>
+          <input class="form-check-input" type="checkbox" id="checkIsTraining"  name="eventIsTraining" {{isTraining}}/>
         </div>
 
         <div class="form-check form-switch">
-          <label class="custom-control-label" for='rsvp'>Requires RSVP</label>
-          <input class="form-check-input" type="checkbox" id="rsvp" name="eventRSVP" {{isRsvpRequired}}/>
+          <label class="custom-control-label" for='rsvp'><strong>Requires RSVP</strong></label>
+          <input class="form-check-input" type="checkbox" id="rsvp"  name="eventRSVP" {{isRsvpRequired}}/>
         </div>
 
         <div class="form-check form-switch">
-          <label class="custom-control-label" for='serviceHours'> This event earns service hours.</label>
-          <input class="form-check-input" type="checkbox" id="earnServiceHours" name="eventServiceHours" {{isService}}/>
+          <label class="custom-control-label"for='serviceHours'><strong> This event earns service hours.</strong></label>
+          <input class="form-check-input" type="checkbox" id="earnServiceHours"  name="eventServiceHours" {{isService}}/>
         </div><br>
 
         <div class="form-group">
-          <label for='description'> Description * </label> <br>
+          <label for='description'><strong> Description * </strong></label> <br>
           <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' name="eventDescription" required>{{eventInfo.description}}</textarea>
         </div><br>
 
         <div class='form-group'>
-          <label for='facilitators'> Facilitators *</label> <br>
-          <select class="dropdown form-control" id="inputEventFacilitators" name="eventFacilitator">
+          <label for='facilitators'><strong> Facilitators *</strong></label> <br>
+          <select class="dropdown form-control" id="inputEventFacilitators"  name="eventFacilitator">
             {%for facilitator in facilitators.objects() %}
               <option value={{facilitator.username}}> {{facilitator.firstName}} {{facilitator.lastName}}</option>
             {% endfor %}
