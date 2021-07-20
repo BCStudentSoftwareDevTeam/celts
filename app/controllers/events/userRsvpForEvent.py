@@ -16,6 +16,7 @@ def userRsvpForEvent(userid,  eventid):
     """
     print("forever")
     user = User.get(User.username == userid)
+    print(eventid,"line19")
     event = Event.get(Event.id == eventid)
     program = Event.select(Event.program).where(Event.id == event)
 
