@@ -22,6 +22,7 @@ def createEventPage(program):
     eventInfo = ""
     facilitators = getAllFacilitators()
     deleteButton = "hidden"
+    endDatePicker = "d-none"
     try:
         program = Program.get_by_id(program)
 
@@ -32,8 +33,9 @@ def createEventPage(program):
                             program = program,
                             listOfTerms = listOfTerms,
                             facilitators = facilitators,
-                            eventInfo = eventInfo,
-                            deleteButton = deleteButton)
+                            deleteButton = deleteButton,
+                            endDatePicker = endDatePicker,
+                            eventInfo = eventInfo)
 
 @admin_bp.route('/<program>/<eventId>/edit_event', methods=['GET'])
 def editEvent(program, eventId):
@@ -42,9 +44,7 @@ def editEvent(program, eventId):
     listOfTerms = Term.select()
     eventInfo = Event.get_by_id(eventId)
     deleteButton = "submit"
-
-    isRecurring = "Checked" if eventInfo.isRecurring else ""
-    isPrerequisiteForProgram = "Checked" if eventInfo.isPrerequisiteForProgram else ""
+    hideElement = "hidden"
     isTraining = "Checked" if eventInfo.isTraining else ""
     isRsvpRequired = "Checked" if eventInfo.isRsvpRequired else ""
     isService = "Checked" if eventInfo.isService else ""
@@ -61,9 +61,8 @@ def editEvent(program, eventId):
                             listOfTerms = listOfTerms,
                             eventInfo = eventInfo,
                             eventId = eventId,
-                            isRecurring = isRecurring,
-                            isPrerequisiteForProgram = isPrerequisiteForProgram,
                             isTraining = isTraining,
+                            hideElement = hideElement,
                             isRsvpRequired = isRsvpRequired,
                             isService = isService,
                             deleteButton = deleteButton)
