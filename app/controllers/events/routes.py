@@ -49,6 +49,4 @@ def signinKiosk():
 
     except Exception as e:
         print("Error in Main Page", e)
-        # return "", 500
-        flasherMessage = f"See Attendant; Unable to Sign In"
-        return flasherMessage
+        return "", 500

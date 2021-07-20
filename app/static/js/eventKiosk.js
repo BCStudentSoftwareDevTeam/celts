@@ -3,6 +3,8 @@ $(document).on('keypress',function(e) {
     if(e.which == 13) {
         hitEnter = true;
         submitData();
+        hitEnter = false;
+
     }
 });
 
@@ -36,6 +38,20 @@ function toggleFullscreen() {
   $('#submitScannerData').focus();
 };
 
+function kioskFlasher(flash_message, status){
+    if (status === "success") {
+        category = "success";
+        $("#signinData").append("<div class=\"alert alert-"+ category +"\" role=\"alert\" id=\"flasher\">"+flash_message+"</div>");
+        $("#flasher").delay(5000).fadeOut();
+    }
+    else {
+        category = "danger";
+        $("#signinData").append("<div class=\"alert alert-"+ category +"\" role=\"alert\" id=\"flasher\">"+flash_message+"</div>");
+        $("#flasher").delay(5000).fadeOut();
+    }
+
+}
+
 function submitData(){
   if($("#submitScannerData").val().length > 20 || hitEnter == true){
     $("#flasher").remove()
@@ -47,18 +63,13 @@ function submitData(){
         "bNumber": $("#submitScannerData").val()
       },
       success: function(flasherMessage) {
-        if (flasherMessage[0]=="S"){
-          reason = "danger"
-        } else {
-          reason = "success"
-        }
-        msgFlash(flasherMessage, reason);
+        kioskFlasher(flasherMessage, "success");
         $("#submitScannerData").val("").blur();
         $('#submitScannerData').focus();
       },
-      error: function(request, flasherMessage, status, error) {
-        console.log(status,error);
-        msgFlash("See Attendant; Unable to Sign In.", "danger");
+      error: function(request, status, error) {
+        console.log(status, error);
+        kioskFlasher("See Attendant; Unable to Sign In.", "danger");
         $("#submitScannerData").val("").blur();
         $('#submitScannerData').focus();
       }
