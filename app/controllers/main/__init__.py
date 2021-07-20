@@ -8,3 +8,4 @@ main_bp = Blueprint(
 )
 
 from app.controllers.main import routes
+from app.controllers.main import volunteerIndicateInterest
