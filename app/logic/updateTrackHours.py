@@ -5,13 +5,11 @@ from app.models.eventParticipant import EventParticipant
 
 def updateTrackHours(participantData):
 
-    print(participantData)
     for user in range(1, len(participantData)):
         if f'username{user}' in participantData:
             username = participantData[f'username{user}']
             try:
-                if participantData['checkbox_'+ username] == "on":
-                    print(participantData['inputHours_'+ username])
+                if participantData['checkbox_'+ username] == "on": #if the user is marked as present
                     (EventParticipant.update({EventParticipant.hoursEarned: float(participantData['inputHours_'+ username])}).where(EventParticipant.event == participantData['event'],
                                              EventParticipant.user == participantData[f'username{user}'])).execute()
 
