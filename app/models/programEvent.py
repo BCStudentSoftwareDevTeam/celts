@@ -2,9 +2,9 @@ from app.models import *
 from app.models.program import Program
 from app.models.event import Event
 
-class PreqForProgram(baseModel):
+class ProgramEvent(baseModel):
     program = ForeignKeyField(Program)
-    event = ForeignKeyField(Event)
+    event = ForeignKeyField(Event, backref="programEvents")
 
     class Meta:
         primary_key=CompositeKey('program', 'event')
