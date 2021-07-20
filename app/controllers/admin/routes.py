@@ -17,9 +17,9 @@ def trackVolunteerHoursPage(programID, eventID):
                                 .join(Event)
                                 .where((EventParticipant.event == eventID) & (Event.program == programID)))
 
-    prereqEvents = Event.select().where(Event.program == programID)
+    prereqEvents = ProgramEvent.select().where(ProgramEvent.program == programID, ProgramEvent.event == eventID)
 
-    prlist = [prereq.id for prereq in prereqEvents if prereq.isPrerequisiteForProgram]
+    prlist = [prereq.id for prereq in prereqEvents if prereq.isTraining]
     attendedPreq = prereqParticipants(programID, prlist)
 
     return render_template("/events/trackVolunteerHours.html",
