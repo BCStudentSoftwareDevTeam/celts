@@ -1,7 +1,7 @@
 from app.models.event import Event
 from app.models.user import User
 from app.controllers.admin import admin_bp
-from app.controllers.events.userRsvpForEvent import userRsvpForEvent
+from app.logic.events.userRsvpForEvent import userRsvpForEvent
 from flask import flash, redirect, url_for, g
 
 
