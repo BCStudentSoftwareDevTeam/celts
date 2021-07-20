@@ -1,6 +1,7 @@
 from app.models.course import Course
 from app.models.courseParticipant import CourseParticipant
 from app.models.program import Program
+from app.models.programEvent import ProgramEvent
 from app.models.courseInstructor import CourseInstructor
 from app.models.user import User
 from app.models.term import Term
@@ -43,21 +44,15 @@ def getProgramTranscript(username):
     :user: model object
     """
     user = User.get_by_id(username)
-    # Add up hours earned for each program they've participated in
-    programInformation = (EventParticipant
-        .select(EventParticipant.event , fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
-        .where(EventParticipant.user == user)
+
+    # Add up hours earned in a term for each program they've participated in
+    hoursQuery = (Program
+        .select(Program, Event.term, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
+        .join(ProgramEvent)
         .join(Event)
-        .join(Program)
-        .group_by(EventParticipant.event.program))
+        .join(EventParticipant)
+        .where(EventParticipant.user == user)
+        .group_by(Program, Event.term))
 
-    listOfProgramsTranscript = []
-    for program in programInformation:
-
-        programName = program.event.program.programName
-        term = program.event.term.description
-        totalHoursEarnedForProgram = program.hoursEarned
-
-        listOfProgramsTranscript.append([ programName , term , totalHoursEarnedForProgram ])
-
-    return listOfProgramsTranscript
+    return [[p.programName, Term.get_by_id(p.term).description, p.hoursEarned] 
+            for p in hoursQuery.objects() ] 
