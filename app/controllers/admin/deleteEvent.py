@@ -5,17 +5,15 @@ from app.controllers.admin import admin_bp
 from app.models.eventParticipant import EventParticipant
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.facilitator import Facilitator
+from app.models.programEvent import ProgramEvent
 
 def deleteEvent(program, eventId):
-    deleteallInstances = [EventParticipant, Facilitator, OutsideParticipant]
+    deleteallInstances = [EventParticipant, Facilitator, OutsideParticipant, ProgramEvent]
     try:
-        for instance in deleteallInstances:
-            if instance.get_or_none(instance.event_id == eventId):
-                instance.get(instance.event_id == eventId).delete_instance()
 
         if Event.get_or_none(Event.id == eventId):
             deleteEvent = Event.get_by_id(eventId)
-            deleteEvent.delete_instance()
+            deleteEvent.delete_instance(recursive = True, delete_nullable = True)
 
     except Exception as e:
         #TODO We have to return some sort of error page
