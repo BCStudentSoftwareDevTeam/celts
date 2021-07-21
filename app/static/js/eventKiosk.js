@@ -1,11 +1,17 @@
 var hitEnter = false;
-$(document).on('keypress',function(e) {
-    if(e.which == 13) {
-        hitEnter = true;
-        submitData();
-        hitEnter = false;
 
-    }
+$(document).keydown(function(e){
+  if (e.key === "Escape") {
+    console.log("get off")
+    $("#fullscreenCheck").prop("checked", false)
+    toggleFullscreen();
+  }
+  else if(e.key === "Enter") {
+      hitEnter = true;
+      submitData();
+      hitEnter = false;
+
+  }
 });
 
 function toggleFullscreen() {
