@@ -50,7 +50,7 @@
         <div class="modal-body">
           <div class="input-group">
             <div class="form-outline ui-widget">
-              <input type="input" id="addVolunteerInput" class="form-control" placeholder="Search"  oninput="searchTrackHoursVolunteers()" />
+              <input type="input" id="addVolunteerInput" class="form-control" placeholder="Search"  oninput="searchTrackHoursVolunteers()" autocomplete="off"/>
             </div>
             <button type="button" class="btn btn-primary btn-sm"><i class="bi bi-search" style="margin-left:0px;"></i>
             </button>
@@ -58,7 +58,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button id="selectVolunteerButton" type="button" class="btn btn-primary">Add participant</button>
+          <button id="selectVolunteerButton" type="button" class="btn btn-primary" disabled>Add participant</button>
         </div>
       </div>
     </div>
@@ -93,7 +93,9 @@
 
         <td><input class="form-control number-only form-control input-sm" id="inputHours_{{participant.user.username}}"
                    name="inputHours_{{participant.user.username}}" style="max-width: 90px;" type ="number" min="0" step="0.01"
-                   {% if participant.attended == 1 %} value="{{participant.hoursEarned}}" {%else%} readonly {%endif%}></td>
+                   {% if participant.attended == 1 and participant.hoursEarned == None %} value="{{eventLength}}"
+                   {% elif participant.attended == 1 %} value="{{participant.hoursEarned}}"
+                   {%else%} readonly {%endif%}></td>
       </tr>
 
       {%endfor%}

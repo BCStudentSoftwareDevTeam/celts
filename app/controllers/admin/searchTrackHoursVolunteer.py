@@ -11,16 +11,30 @@ from peewee import *
 def searchTrackHoursVolunteers(query):
     '''Accepts user input and queries the database returning results that matches user search'''
     try:
-
         query = query.strip()
-        search = query.upper() + "%"
-
-        results = User.select().where(User.isStudent & User.firstName ** search | User.lastName ** search)
+        search = query.upper()
+        splitSearch = search.split()
         resultsDict = {}
-        for participant in results:
-            resultsDict[f"{participant.firstName} {participant.lastName} ({participant.username})"] = f"{participant.firstName} {participant.lastName} ({participant.username})"
-            # resultsDict[participant.firstName + " " + participant.lastName+ "("+ participant.username +")"] = participant.firstName + " " + participant.lastName+" ("+participant.username+")"
+
+        firstName = splitSearch[0] + "%"
+        lastName = " ".join(splitSearch[1:]) +"%"
+
+        if len(splitSearch) == 1: #search for first or last name
+            results = User.select().where(User.isStudent & User.firstName ** firstName | User.lastName ** firstName)
+            for participant in results:
+                if participant not in resultsDict:
+                    resultsDict[f"{participant.firstName} {participant.lastName} ({participant.username})"] = f"{participant.firstName} {participant.lastName} ({participant.username})"
+        else:
+            for searchTerm in splitSearch: #searching for specified first and last name
+                if len(searchTerm) > 1:
+                    searchTerm += "%"
+                    results = User.select().where(User.isStudent & User.firstName ** firstName & User.lastName ** lastName)
+                    for participant in results:
+                        if participant not in resultsDict:
+                            resultsDict[f"{participant.firstName} {participant.lastName} ({participant.username})"] = f"{participant.firstName} {participant.lastName} ({participant.username})"
+
         dictToJSON = json.dumps(resultsDict)
         return dictToJSON
+
     except Exception as e:
         return "Error Searching Volunteers query", 500

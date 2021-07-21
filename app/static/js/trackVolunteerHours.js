@@ -30,32 +30,33 @@ $("#selectVolunteerButton").click(function(){
 
 // Search functionalities from the user table in the database
 function searchTrackHoursVolunteers(){
-var query = $("#addVolunteerInput").val()
-$("#addVolunteerInput").autocomplete({
-  appendTo: "#addVolunteerModal",
-  minLength: 2,
-  source: function(request, response){
-    $.ajax({
-      url: "/searchTrackHoursVolunteers/" + query,
-      type: "GET",
-      dataType: "json",
-      success: function(dictToJSON) {
-        response($.map( dictToJSON, function( item ) {
-          return {
+
+  $("#selectVolunteerButton").prop('disabled', true)
+  var query = $("#addVolunteerInput").val()
+
+  $("#addVolunteerInput").autocomplete({
+    appendTo: "#addVolunteerModal",
+    minLength: 2,
+    source: function(request, response){
+      $.ajax({
+        url: "/searchTrackHoursVolunteers/" + query,
+        type: "GET",
+        dataType: "json",
+        success: function(dictToJSON) {
+          response($.map( dictToJSON, function( item ) {
+            return {
             label: item,
             value: dictToJSON[item]
+            }
+          }))
+        },
+        error: function(request, status, error) {
+          console.log(status,error);
         }
-      }))
+      })
     },
-      error: function(request, status, error) {
-        console.log(status,error);
-      }
-    })
-  },
-  select: function( event, ui ) {
-    // var volunteerName = ui.item.value
-    // $("#Volunteertable").append('<tr><td>' + volunteerName + '</td><td><button id="removeButton" onclick="removeRow(this)" type="button">x</button></td></tr>')
-
+    select: function() {
+      $("#selectVolunteerButton").prop('disabled', false)
     }
   });
 };

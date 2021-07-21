@@ -4,7 +4,7 @@ from app.models.eventParticipant import EventParticipant
 
 
 def updateTrackHours(participantData):
-
+    print(participantData)
     for user in range(1, len(participantData)):
         if f'username{user}' in participantData:
             username = participantData[f'username{user}']
@@ -24,6 +24,7 @@ def updateTrackHours(participantData):
         else:
 
             break
+    flash("Volunteer table successfully updated!")
 
 
 
@@ -37,7 +38,7 @@ def addVolunteerToEvent(user, volunteerEventID):
             flash("Volunteer already exists.")
             return("Volunteer already exists.")
         else:
-            EventParticipant.get_or_create(user=userName, event = volunteerEventID)
+            EventParticipant.create(user=userName, event = volunteerEventID, attended = True)
             flash('Volunteer successfully added!')
             return "Volunteer successfully added!"
 
