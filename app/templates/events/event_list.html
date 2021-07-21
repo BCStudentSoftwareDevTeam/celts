@@ -12,44 +12,35 @@
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 {% endblock %}
 {% block app_content %}
+
+{% set categoryPrograms = studentLedPrograms %}
+{% set categoryEvents = studentLedEvents %}
+
 <h1 class="text-center">Event List</h1>
 <div>
   <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
   <li class="nav-item" role="presentation">
-    <button class="nav-link active" id="studentLedEvents" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Student Led Service</button>
+    <button class="nav-link active" id="studentLedEvents" onclick="{% set categoryPrograms = studentLedPrograms %} {% set categoryEvents = studentLedEvents %}"
+    data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Student Led Service</button>
   </li>
   <li class="nav-item" role="presentation">
-    <button class="nav-link" id="trainingEvents" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Training and Education</button>
+    <button class="nav-link" id="trainingEvents"
+    data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Training and Education</button>
   </li>
   <li class="nav-item" role="presentation">
-    <button class="nav-link" id="bonnerScholarsEvents" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Bonner Scholars</button>
+    <button class="nav-link" id="bonnerScholarsEvents" onclick="{% set categoryPrograms = bonnerScholarPrograms %} {% set categoryEvents = bonnerScholarsEvents %}"
+    data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Bonner Scholars</button>
   </li>
   <li class="nav-item" role="presentation">
     <button class="nav-link" id="oneTimeEvents" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">One-time Events</button>
   </li>
   </ul>
-<!--
-  nav-pills
-    nav-item
-  tab-content
-    tab-pane
-      accordion
-        accordion-item
-          accordion-header
-            accordion-button - programName
-          accordion-body
-            table - events within program
-              thead
-                tr
-                  th - Event Name... etc
-              tbody
-                tr
-                  td - event description ... etc
--->
+
+
 <div class="tab-content" id="pills-tabContent">
     <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-      <div class="accordion" id="accordion_1">
-        {% for program in studentLedPrograms %}
+      <div class="accordion">
+        {% for program in categoryPrograms %}
           <div class="accordion-item">
             <h2 class="accordion-header" id="accordion__header_{{program.id}}">
               <button class="accordion-button"
@@ -77,7 +68,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    {% for event in studentLedEvents %}
+                    {% for event in categoryEvents %}
                       {% if event.program == program %}
                         <tr>
                           <td> <a href="#" class="link-primary">{{event.description}}</a></td> {# FIXME:change href #}
@@ -98,5 +89,23 @@
     </div>
   </div>
 
+  <!--
+    nav-pills
+      nav-item
+    tab-content
+      tab-pane
+        accordion
+          accordion-item
+            accordion-header
+              accordion-button - programName
+            accordion-body
+              table - events within program
+                thead
+                  tr
+                    th - Event Name... etc
+                tbody
+                  tr
+                    td - event description ... etc
+  -->
 
 {% endblock %}
