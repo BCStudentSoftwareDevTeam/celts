@@ -16,11 +16,14 @@ $("#selectVolunteerButton").click(function(){
   $.ajax({
     url: "/addVolunteerToEvent/" + user+"/"+volunteerEventID,
     type: "POST",
-    success: function(s){
-      location.reload();
+    success: function(message){
+      // location.reload();
+      msgFlash(message, "success")
+
     },
     error: function(request, status, error){
       location.reload();
+      msgFlash(message, "danger")
       console.log(status,error);
     }
 

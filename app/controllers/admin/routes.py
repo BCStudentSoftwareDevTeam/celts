@@ -7,8 +7,7 @@ from app.controllers.admin import admin_bp
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.models.program import Program
-from app.logic.updateTrackHours import updateTrackHours
-from app.logic.trackVolunteerHours import eventLengthInHours
+from app.logic.updateTrackHours import updateTrackHours, eventLengthInHours
 from app.controllers.admin.searchTrackHoursVolunteer import searchTrackHoursVolunteers
 
 
