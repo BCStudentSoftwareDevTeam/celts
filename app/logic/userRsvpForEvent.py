@@ -19,8 +19,11 @@ def userRsvpForEvent(user,  event):
     user = User.get_by_id(user)
     event = Event.get_by_id(event)
     program = Program.select(Program).join(ProgramEvent).where(ProgramEvent.event == event).get()
+    EventParticipant.get_or_create(user = user, event = event, rsvp = True)[0]
 
     if isEligibleForProgram(program, user):
-        return EventParticipant.get_or_create(user = user, event = event, rsvp = True)[0]
+        return True
 
-    raise Exception("User is not eligible")
+    else:
+        return False
+    # raise Exception("User is not eligible")

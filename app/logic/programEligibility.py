@@ -31,5 +31,5 @@ def isEligibleForProgram(program, user):
             attendedRequiredEvents = (EventParticipant.select().where((EventParticipant.attended == True)
                                     & (EventParticipant.user == user) & (EventParticipant.event == event)))
             if not attendedRequiredEvents:
-                return False
+                return requiredEvents
     return True

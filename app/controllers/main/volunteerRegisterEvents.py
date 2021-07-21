@@ -5,25 +5,26 @@ from app.controllers.events import events_bp
 from app.logic.userRsvpForEvent import userRsvpForEvent
 from flask import flash, redirect, url_for, g
 
+# @admin_bp.route('/rsvpForEvent', methods=['GET'])
+# def elibibilityCheck(eventData):
+#     isEligibleForProgram(program,user)
+#
 
 
 
-@events_bp.route('/rsvpForEvent', methods=['POST'])
+
+@admin_bp.route('/rsvpForEvent', methods=['POST'])
 def volunteerRegister(eventData):
     """
     This function selects the user ID and event ID and registers the user
     for the event they have clicked register for.
     """
-    print(eventData)
     userId = User.get(User.username == g.current_user)
-    print("hello")
-    # eventData = request.form.copy()
     eventId = eventData['eventId']
 
     if userRsvpForEvent(userId, eventId):
         flash("Successfully registered for event!")
-        print(url_for('events.showUpcomingEvent'))
-        return redirect("https://www.google.com")
+        return redirect(url_for('events.showUpcomingEvent'))
 
     else:
-        return False
+        flash("Warning! User uneligible for event")
