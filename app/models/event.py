@@ -4,7 +4,6 @@ from app.models.program import Program
 
 class Event(baseModel):
     eventName = CharField()
-    program = ForeignKeyField(Program, null = True)
     term = ForeignKeyField(Term)
     description = CharField()
     timeStart = TimeField()
@@ -21,3 +20,14 @@ class Event(baseModel):
 
     def __str__(self):
         return f"{self.id}: {self.description}"
+
+    @property
+    def noProgram(self):
+        return not self.programEvents.exists()
+
+    @property
+    def singleProgram(self):
+        if self.programEvents.count() == 1:
+            return self.programEvents.get().program
+        else:
+            return None

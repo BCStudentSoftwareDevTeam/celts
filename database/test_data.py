@@ -7,6 +7,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.term import Term
 from app.models.program import Program
+from app.models.programEvent import ProgramEvent
 from app.models.event import Event
 from app.models.programBan import ProgramBan
 from app.models.course import Course
@@ -101,7 +102,6 @@ users = [
         "lastName": "Bryant",
         "isStudent": True,
         "phoneNumber": "85943311598"
-
     },
 
 ]
@@ -175,19 +175,24 @@ programs = [
         "id": 4,
         "programName": "No Required Events"
     },
+    {
+        "id": 5,
+        "programName": "Food Drive"
+    },
+    {
+        "id": 6,
+        "programName": "Cool Program"
+    },
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
-
 
 events = [
     {
         "id": 1,
-        "program": 1,
         "term": 1,
         "eventName": "Empty Bowls Spring",
         "description": "Empty Bowls Spring 2021",
         "isTraining": True,
-        "isPrerequisiteForProgram": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
@@ -196,12 +201,10 @@ events = [
     },
     {
         "id": 2,
-        "program": 1,
         "term": 1,
         "eventName": "Berea Buddies",
         "description": "Berea Buddies Training",
         "isTraining": True,
-        "isPrerequisiteForProgram": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
@@ -210,12 +213,10 @@ events = [
     },
     {
         "id": 3,
-        "program": 3,
         "term": 3,
         "eventName": "Adopt",
         "description": "Adopt A Grandparent",
         "isTraining": True,
-        "isPrerequisiteForProgram": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
@@ -224,12 +225,10 @@ events = [
     },
     {
         "id": 4,
-        "program": 2,
         "term": 3,
         "eventName": "First Meetup",
         "description": "Berea Buddies First Meetup",
-        "isTraining": True,
-        "isPrerequisiteForProgram": True,
+        "isTraining": False,
         "timeStart": datetime.strptime("6:00 am", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 am", "%I:%M %p"),
         "location": "a big room",
@@ -238,12 +237,10 @@ events = [
     },
     {
         "id": 5,
-        "program": 2,
         "term": 3,
         "eventName": "Tutoring",
         "description": "Tutoring Training",
-        "isTraining": True,
-        "isPrerequisiteForProgram": False,
+        "isTraining": False,
         "timeStart": datetime.strptime("3:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a bigish room",
@@ -252,26 +249,22 @@ events = [
     },
     {
         "id": 6,
-        "program": 3,
         "term": 3,
         "eventName": "Making Bowls",
         "description": "Making Bowls Training",
         "isTraining": True,
-        "isPrerequisiteForProgram": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
-        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
+        "startDate": datetime.strptime("2021 08 12","%Y %m %d"),
+        "endDate": datetime.strptime("2021 9 12","%Y %m %d")
     },
     {
         "id": 7,
-        "program": 1,
         "term": 3,
         "eventName": "How To Make Buddies",
         "description": "How To Make Buddies Training",
         "isTraining": True,
-        "isPrerequisiteForProgram": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Outisde",
@@ -279,14 +272,11 @@ events = [
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
-
         "id": 8,
-        "program": 2,
         "term": 3,
         "eventName": "Adoption",
         "description": "Adoption 101 Training",
         "isTraining": True,
-        "isPrerequisiteForProgram": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
@@ -295,12 +285,10 @@ events = [
     },
     {
         "id": 9,
-        "program": 2,
         "term": 3,
         "eventName": "Cleaning Bowls",
         "description": "Cleaning Bowls Training",
-        "isTraining": False,
-        "isPrerequisiteForProgram": False,
+        "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Dining Dishes Room",
@@ -310,12 +298,10 @@ events = [
     },
     {
         "id": 10,
-        "program": 3,
         "term": 3,
         "eventName": "Whole Celts Training",
         "description": "Whole Celts Training",
         "isTraining": True,
-        "isPrerequisiteForProgram": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Dining Dishes Room",
@@ -324,21 +310,115 @@ events = [
     },
     {
         "id": 11,
-        "program": 4,
         "term": 3,
         "eventName": "Dummy Event",
         "description": "Not a required event",
         "isTraining": False,
-        "isPrerequisiteForProgram": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Dining Dishes Room",
+        "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
+        "endDate": datetime.strptime("2021 7 12","%Y %m %d")
+    },
+    {
+        "id": 12,
+        "term": 3,
+        "eventName": "Dummy Event",
+        "description": "Not a required event",
+        "isTraining": False,
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+        "location": "Dining Dishes Room",
+        "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
+        "endDate": datetime.strptime("2021 7 12","%Y %m %d")
+    },
+    {
+        "id": 13,
+        "term": 2,
+        "eventName": "unaffiliated event",
+        "description": "Test event with no program",
+        "isTraining": False,
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+        "location": "Dining Dishes Room",
+        "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
+        "endDate": datetime.strptime("2021 7 12","%Y %m %d")
+    },
+    {
+        "id": 14,
+        "term": 2,
+        "eventName": "All Volunteer Training",
+        "description": "testing multiple programs",
+        "isTraining": True,
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+        "location": "A Big Room",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d")
     }
 
 ]
 Event.insert_many(events).on_conflict_replace().execute()
+
+program_events = [
+    {
+        "event_id": 1,
+        "program_id": 1
+    },
+    {
+        "event_id": 2,
+        "program_id": 1
+    },
+    {
+        "event_id": 3,
+        "program_id": 3
+    },
+    {
+        "event_id": 4,
+        "program_id": 2
+    },
+    {
+        "event_id": 5,
+        "program_id": 2
+    },
+    {
+        "event_id": 6,
+        "program_id": 3
+    },
+    {
+        "event_id": 7,
+        "program_id": 1
+    },
+    {
+        "event_id": 8,
+        "program_id": 2
+    },
+    {
+        "event_id": 9,
+        "program_id": 2
+    },
+    {
+        "event_id": 10,
+        "program_id": 3
+    },
+    {
+        "event_id": 11,
+        "program_id": 4
+    },
+    {
+        "event_id": 12,
+        "program_id": 3
+    },
+    {
+        "event_id": 14,
+        "program_id": 5
+    },
+    {
+        "event_id": 14,
+        "program_id": 6
+    },
+]
+ProgramEvent.insert_many(program_events).on_conflict_replace().execute()
 
 coursestatus = [
     {
@@ -388,13 +468,13 @@ courseInstructorRecords = [
     {
 
         "id": 1,
-        "course": Course.get_by_id(1),
-        "user": User.get_by_id("ramsayb2")
+        "course": 1,
+        "user": "ramsayb2"
     },
     {
         "id": 2,
-        "course": Course.get_by_id(2),
-        "user": User.get_by_id("ramsayb2")
+        "course": 2,
+        "user": "ramsayb2"
     },
 
 
@@ -404,97 +484,89 @@ CourseInstructor.insert_many(courseInstructorRecords).on_conflict_replace().exec
 
 courseHoursEarned = [
     {
-        "course": Course.get_by_id(1),
-        "user": User.get_by_id("neillz"),
+        "course": 1,
+        "user": "neillz",
         "hoursEarned": 2.0
     },
     {
-        "course": Course.get_by_id(2),
-        "user": User.get_by_id("neillz"),
+        "course": 2,
+        "user": "neillz",
         "hoursEarned": 3.0
     },
     {
-        "course": Course.get_by_id(2),
-        "user": User.get_by_id("khatts"),
+        "course": 2,
+        "user": "khatts",
         "hoursEarned": 4.0
     },
     {
-        "course": Course.get_by_id(2),
-        "user": User.get_by_id("khatts"),
+        "course": 2,
+        "user": "khatts",
         "hoursEarned": 4.0
     },
     {
-        "course": Course.get_by_id(1),
-        "user": User.get_by_id("khatts"),
+        "course": 1,
+        "user": "khatts",
         "hoursEarned": 1.0
     },
 ]
 CourseParticipant.insert_many(courseHoursEarned).on_conflict_replace().execute()
 
-programHoursEarned = [
+eventParticipants = [
     {
-        "user": User.get_by_id("neillz"),
+        "user": "neillz",
         "event": 2,
         "rsvp": True,
         "attended": True,
         "hoursEarned": 2
     },
     {
-        "user": User.get_by_id("neillz"),
+        "user": "neillz",
         "event": 3,
         "rsvp": True,
         "attended": True,
         "hoursEarned": 3
     },
     {
-        "user": User.get_by_id("neillz"),
+        "user": "neillz",
         "event": 4,
         "rsvp": True,
         "attended": True,
         "hoursEarned": 1
     },
     {
-        "user": User.get_by_id("neillz"),
+        "user": "neillz",
         "event": 5,
         "rsvp": True,
         "attended": True,
         "hoursEarned": 1
     },
     {
-        "user": User.get_by_id("neillz"),
+        "user": "neillz",
         "event": 1,
         "rsvp": True,
         "attended": True,
         "hoursEarned": 8,
     },
     {
-        "user": User.get_by_id("khatts"),
+        "user": "khatts",
         "event": 1,
         "rsvp": True,
         "attended": True,
         "hoursEarned": 3,
     },
     {
-        "user": User.get_by_id("khatts"),
+        "user": "khatts",
         "event": 2,
         "rsvp": True,
         "attended": True,
         "hoursEarned": 2,
         },
     {
-        "user": User.get_by_id("khatts"),
+        "user": "khatts",
         "event": 5,
         "rsvp": True,
         "attended": True,
         "hoursEarned": 8,
-    },
-    {
-        "user" : "lamichhanes2",
-        "event" : "1",
-        "rsvp" : True,
-        "attended" : True,
-        "hoursEarned" : None,
-
     },
     {
         "user" : "ayisie",
@@ -505,7 +577,7 @@ programHoursEarned = [
     },
     {
         "user" : "lamichhanes2",
-        "event" : "4",
+        "event" : "1",
         "rsvp" : True,
         "attended" : True,
         "hoursEarned" : None,
@@ -518,8 +590,51 @@ programHoursEarned = [
         "attended" : True,
         "hoursEarned" : None,
     },
+    {
+        "user" : "lamichhanes2",
+        "event" : "4",
+        "rsvp" : True,
+        "attended" : True,
+        "hoursEarned" : None,
+
+    },
+    {
+        "user" : "lamichhanes2",
+        "event" : "8",
+        "rsvp" : False,
+        "attended" : True,
+        "hoursEarned" : None,
+    },
+    {
+        "user" : "lamichhanes2",
+        "event" : "9",
+        "rsvp" : False,
+        "attended" :True,
+        "hoursEarned" : None,
+    },
+    {
+        "user": "agliullovak",
+        "event": 3,
+        "rsvp": True,
+        "attended": True,
+        "hoursEarned": 2
+    },
+    {
+        "user": "agliullovak",
+        "event": 6,
+        "rsvp": True,
+        "attended": True,
+        "hoursEarned": 1
+    },
+    {
+        "user": "agliullovak",
+        "event": 10,
+        "rsvp": False,
+        "attended": True,
+        "hoursEarned": 12
+    },
 ]
-EventParticipant.insert_many(programHoursEarned).on_conflict_replace().execute()
+EventParticipant.insert_many(eventParticipants).on_conflict_replace().execute()
 
 interest = [
 
