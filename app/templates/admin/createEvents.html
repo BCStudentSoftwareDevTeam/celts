@@ -90,7 +90,7 @@
                 </div>
               </div>
 
-              <div class="d-inline-flex d-none" id ="endDateStyle" style="width:51%;">
+              <div class="d-inline-flex" id ="endDateStyle" style="width:51%;">
                 <!--datePicker for End date-->
                 <label for="endDatePicker" id="endDatePickerLabel" style="padding:0 0 0 2rem" ><span><strong>End Date *</strong></span></label>
                 <div class='input-group date'>
@@ -153,13 +153,14 @@
           {% endif %}
 
       </div>
-
-      <div>
-        {% if user.isCeltsAdmin or user.isCeltsStudentStaff%}
-        <button type="submit" class="btn btn-primary float-end">Save</button>
-        {% elif user.isStudent %}
-        <button type="submit" class="btn btn-primary float-end">RSVP</button>
-        {% endif %}
+      <div class="flex-container">
+        <div class="d-flex flex-row">
+          {% if user.isCeltsAdmin or user.isCeltsStudentStaff%}
+          <button type="submit" style="margin-top: 1.5em" class="btn btn-primary float-end">Save</button>
+          {% elif user.isStudent %}
+          <button type="submit" style="margin-top: 1.5em" class="btn btn-primary float-end">RSVP</button>
+          {% endif %}
+        </div>
       </div>
 
 </form>
