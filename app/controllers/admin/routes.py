@@ -5,6 +5,8 @@ import json
 from datetime import *
 from app.controllers.admin import admin_bp
 from app.models.eventParticipant import EventParticipant
+from app.models.programEvent import ProgramEvent
+from app.models.program import Program
 from app.logic.updateTrackHours import updateTrackHours
 from app.logic.trackVolunteerHours import eventLengthInHours
 from app.controllers.admin.searchTrackHoursVolunteer import searchTrackHoursVolunteers
@@ -18,7 +20,8 @@ def testing():
 def trackVolunteerHoursPage(programID, eventID):
     eventParticipantsData = (EventParticipant.select(EventParticipant)
                                 .join(Event)
-                                .where((EventParticipant.event == eventID) & (Event.program == programID)))
+                                .where(EventParticipant.event == eventID))
+
     eventParticipantsData = eventParticipantsData.objects()
 
     try:
@@ -29,10 +32,12 @@ def trackVolunteerHoursPage(programID, eventID):
 
         eventLength = eventLengthInHours(startTime, endTime, eventDate)
 
+        program = Program.get_by_id(programID)
 
         return render_template("/events/trackVolunteerHours.html",
                                 eventParticipantsData = list(eventParticipantsData),
-                                eventLength = eventLength)
+                                eventLength = eventLength,
+                                program = program)
     except:
         abort(404)
 
