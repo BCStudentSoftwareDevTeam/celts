@@ -17,17 +17,17 @@ def events(term):
     studentLedPrograms = []
     [studentLedPrograms.append(event.program) for event in studentLedEvents if event.program not in studentLedPrograms]
 
-    print(studentLedPrograms)
-
     trainingEvents = (Event.select()
                            .where(Event.isTraining))
+
+    trainingProgram = [Program.get_by_id(6)]
 
     bonnerScholarsEvents = (Event.select()
                                    .join(Program)
                                    .where(Program.isBonnerScholars))
 
-    bonnerScholarPrograms = {event.program_id: event.program.programName for event in bonnerScholarsEvents}
-
+    bonnerScholarsPrograms = []
+    [bonnerScholarsPrograms.append(event.program) for event in bonnerScholarsEvents if event.program not in bonnerScholarsPrograms]
 
     oneTimeEvents = (Event.select()
                           .join(Program)
@@ -35,9 +35,7 @@ def events(term):
                                  Event.isTraining == False,
                                  Program.isBonnerScholars == False))
 
-    oneTimePrograms = {event.program_id: event.program.programName for event in oneTimeEvents}
-
-    print(groupEvents)
+    oneTimeProgram = [Program.get_by_id(4)]
     events = Event.select()
     programs = Program.select()
 
@@ -45,12 +43,13 @@ def events(term):
             programs = programs,
             events = events,
             studentLedEvents = studentLedEvents,
-            trainingEvents = trainingEvents,
-            bonnerScholarsEvents = bonnerScholarsEvents,
-            oneTimeEvents = oneTimeEvents,
-            oneTimePrograms = oneTimePrograms,
-            bonnerScholarPrograms = bonnerScholarPrograms,
             studentLedPrograms = studentLedPrograms,
+            trainingEvents = trainingEvents,
+            trainingProgram = trainingProgram,
+            bonnerScholarsEvents = bonnerScholarsEvents,
+            bonnerScholarsPrograms = bonnerScholarsPrograms,
+            oneTimeEvents = oneTimeEvents,
+            oneTimeProgram = oneTimeProgram,
             user="ramsayb2")
 
 
@@ -59,52 +58,3 @@ def showUpcomingEvent():
     upcomingEvents = getUpcomingEventsForUser(g.current_user)
     return render_template('/events/showUpcomingEvents.html',
                             upcomingEvents = upcomingEvents)
-
-#
-# {% set category = studentLedPrograms %}
-# {% for program in studentLedPrograms %}
-# {% set accordion %}
-# <div class="accordion" id="accordion_{{program.id}}">
-#   <div class="accordion-item">
-#     <h2 class="accordion-header" id="accordion__header_{{program.id}}">
-#       <button class="accordion-button"
-#               type="button"
-#               data-bs-toggle="collapse"
-#               data-bs-target="#accordion__body_{{program.id}}"
-#               aria-expanded="true"
-#               aria-controls="accordion__body_{{program.id}}" >
-#               {{studentLedPrograms.get(program)}}
-#       </button>
-#     </h2>
-#
-#     <div id="accordion__body_{{program.id}}"
-#           class="accordion-collapse collapse hide"
-#           aria-labelledby="accordion__header_{{program.id}}"
-#           data-bs-parent="#accordion_{{program.id}}">
-#       <div class="accordion-body">
-#         <table class="table table-striped">
-#           <thead>
-#             <tr>
-#               <th scope="col">Event Name</th>
-#               <th scope="col">Date</th>
-#               <th scope="col">Time</th>
-#               <th scope="col">Location</th>
-#               <th scope="col">Invitation</th>
-#             </tr>
-#           </thead>
-#           <tbody>
-#             <tr>
-#               <td> <a href="#" class="link-primary">{{events.description}}</a></td> {# FIXME:change href #}
-#               <td>{{events.startDate}}</td>
-#               <td>{{events.timeStart}}</td>
-#               <td>{{events.location}}</td>
-#               <td><button type="button" class="btn btn-warning">Email</button></td>
-#             </tr>
-#           </tbody>
-#         </table>
-#       </div>
-#     </div>
-#   </div>
-# </div>
-# {% endset %}
-# {% endfor %}
