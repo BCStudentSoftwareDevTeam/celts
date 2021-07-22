@@ -14,7 +14,7 @@
 {% block app_content %}
 
 
-<h1 class="text-center">Event List</h1>
+<h1 class="text-center">Event List for {{termName}}</h1>
 <div>
   <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
   <li class="nav-item" role="presentation">
@@ -30,14 +30,14 @@
     data-bs-toggle="pill" data-bs-target="#pills-bonner-scholars" type="button" role="tab" aria-controls="pills-bonner-scholars" aria-selected="false">Bonner Scholars</button>
   </li>
   <li class="nav-item" role="presentation">
-    <button class="nav-link" id="oneTimeEvents" data-bs-toggle="pill" data-bs-target="#pills-one-time" type="button" role="tab" aria-controls="pills-one-time" aria-selected="false">One-time Events</button>
+    <button class="nav-link" id="oneTimeEvents"
+    data-bs-toggle="pill" data-bs-target="#pills-one-time" type="button" role="tab" aria-controls="pills-one-time" aria-selected="false">One-time Events</button>
   </li>
   </ul>
 </div>
 {% macro createAccordion(categoryPrograms, categoryEvents) %}
   <div class="accordion" id="categoryAccordion">
     {% for program in categoryPrograms %}
-      <h1></h1>
       <div class="accordion-item">
         <h2 class="accordion-header" id="accordion__header_{{program}}">
           <button class="accordion-button"
@@ -89,33 +89,15 @@
   <div class="tab-pane fade show active" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
     {{createAccordion(studentLedPrograms, studentLedEvents)}}
   </div>
-  <div class="tab-pane fade show active" id="pills-training" role="tabpanel" aria-labelledby="pills-training-tab">
-    {{createAccordion(trainingProgram, trainingEvents)}}
+  <div class="tab-pane fade show" id="pills-training" role="tabpanel" aria-labelledby="pills-training-tab">
+    {{createAccordion(trainingPrograms, trainingEvents)}}
   </div>
-  <div class="tab-pane fade show active" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="pills-bonner-scholars-tab">
+  <div class="tab-pane fade show" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="pills-bonner-scholars-tab">
     {{createAccordion(bonnerScholarsPrograms, bonnerScholarsEvents)}}
   </div>
-  <div class="tab-pane fade show active" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
-    {{createAccordion(oneTimeProgram, oneTimeEvents)}}
+  <div class="tab-pane fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
+    {{createAccordion(oneTimePrograms, oneTimeEvents)}}
   </div>
 </div>
-  <!--
-    nav-pills
-      nav-item
-    tab-content
-      tab-pane
-        accordion
-          accordion-item
-            accordion-header
-              accordion-button - programName
-            accordion-body
-              table - events within program
-                thead
-                  tr
-                    th - Event Name... etc
-                tbody
-                  tr
-                    td - event description ... etc
-  -->
 
 {% endblock %}

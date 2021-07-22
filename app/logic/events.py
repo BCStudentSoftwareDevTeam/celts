@@ -1,5 +1,6 @@
 from app.models.event import Event
 from app.models.program import Program
+from app.models.term import Term
 from peewee import DoesNotExist
 
 def getEvents(program_id=None):
@@ -10,23 +11,44 @@ def getEvents(program_id=None):
     else:
         return Event.select()
 
-def groupingEvents(termID):
-    groupEvents = (Event.select().join(Program).where(Event.term == termID).order_by(Event.program))
+def groupingEvents(term):
     studentLedEvents = (Event.select()
-                               .join(Program)
-                               .where(Program.isStudentLed))
+                             .join(Program)
+                             .where(Program.isStudentLed,
+                                    Event.term == term))
+
+    studentLedPrograms = []
+    [studentLedPrograms.append(event.program) for event in studentLedEvents
+                        if event.program not in studentLedPrograms]
 
     trainingEvents = (Event.select()
-                           .where(Event.isTraining))
+                           .where(Event.isTraining,
+                                  Event.term == term))
+
+    trainingPrograms = []
+    [trainingPrograms.append(event.program) for event in trainingEvents
+                      if event.program not in trainingPrograms]
 
     bonnerScholarsEvents = (Event.select()
-                                   .join(Program)
-                                   .where(Program.isBonnerScholars))
+                                 .join(Program)
+                                 .where(Program.isBonnerScholars,
+                                        Event.term == term))
+
+    bonnerScholarsPrograms = []
+    [bonnerScholarsPrograms.append(event.program) for event in bonnerScholarsEvents
+                            if event.program not in bonnerScholarsPrograms]
 
     oneTimeEvents = (Event.select()
                           .join(Program)
                           .where(Program.isStudentLed == False,
                                  Event.isTraining == False,
-                                 Program.isBonnerScholars == False))
+                                 Program.isBonnerScholars == False,
+                                 Event.term == term))
+    oneTimePrograms = []
+    [oneTimePrograms.append(event.program) for event in oneTimeEvents
+                     if event.program not in oneTimePrograms]
 
-    return groupEvents, studentLedEvents, trainingEvents, bonnerScholarsEvents, oneTimeEvents
+    termName = Term.get_by_id(term).description
+
+    return (studentLedEvents, studentLedPrograms, trainingEvents, trainingPrograms,
+    bonnerScholarsEvents, bonnerScholarsPrograms, oneTimeEvents, oneTimePrograms, termName)
