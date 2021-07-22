@@ -25,3 +25,15 @@ def createEventPage(program):
                             program = program,
                             listOfTerms = listOfTerms,
                             facilitators = facilitators)
+
+@admin_bp.route('/program_select', methods=['GET'])
+def programSelect():
+
+    getPrograms = Program.select()
+
+    return render_template("admin/programSelect.html",
+                            getPrograms = getPrograms,)
+
+@admin_bp.route('/<program>/programelements', methods=['GET'])
+def programElements(program):
+    print(program)
