@@ -1,6 +1,7 @@
 import pytest
 from app.logic.adminNewEvent import setValueForUncheckedBox, createNewEvent
 from peewee import OperationalError, IntegrityError
+from app.models.event import Event
 
 
 @pytest.mark.integration
@@ -35,13 +36,15 @@ def test_setValueForUncheckedBox():
 @pytest.mark.integration
 def test_createNewEvent():
 
+    print("==================")
     eventInfo =  {'eventRequiredForProgram':True,'eventRSVP':False, 'eventServiceHours':False,
                   'eventIsTraining':True, 'eventIsRecurring':False, 'eventStartDate': '2021-12-12',
                    'eventEndDate':'2022-06-12', 'programId':1, 'eventLocation':"a big room",
                    'eventEndTime':'21:00', 'eventStartTime':'18:00', 'eventDescription':"Empty Bowls Spring 2021",
                    'eventName':'Empty Bowls Spring','eventTerm':1,'eventFacilitator':"ramsayb2"}
-    alertMessage = createNewEvent(eventInfo)
-    assert alertMessage == "Event successfully created!"
+    createdEvent = createNewEvent(eventInfo)
+    createdEventExists = (Event.select().where(Event.id == createdEvent.id)).exists()
+    assert createdEventExists
 
 
     # FIXME: the test below don't work as expected ... is there a fix or should it be deleated?
