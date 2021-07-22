@@ -21,10 +21,15 @@ def volunteerRegister(eventData):
     """
     userId = User.get(User.username == g.current_user)
     eventId = eventData['eventId']
-
-    if userRsvpForEvent(userId, eventId):
+    # print(userRsvpForEvent("ayisie", 3))
+    EventRSVPUser = userRsvpForEvent(userId, eventId)
+    print(type(EventRSVPUser))
+    if EventRSVPUser == True:
         flash("Successfully registered for event!")
         return redirect(url_for('events.showUpcomingEvent'))
-
     else:
-        flash("Warning! User uneligible for event")
+        print(EventRSVPUser)
+        flash(f"Warning! {userId.firstName} did not do the required training")
+
+    return EventRSVPUser
+        # return (requiredEvents)

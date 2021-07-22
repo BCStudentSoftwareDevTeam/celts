@@ -32,4 +32,3 @@ def isEligibleForProgram(program, user):
                                     & (EventParticipant.user == user) & (EventParticipant.event == event)))
             if not attendedRequiredEvents:
                 return requiredEvents
-    return True
