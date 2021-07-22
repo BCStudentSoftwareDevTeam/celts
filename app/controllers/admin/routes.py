@@ -4,7 +4,8 @@ from app.controllers.admin.createEvents import createEvent
 from app.models.program import Program
 from app.controllers.admin import admin_bp
 from flask import g, url_for
-from app.logic.programSelect import eventElements
+from app.logic.programSelect import eventElements, programTemplates
+
 
 @admin_bp.route('/testing_things', methods=['GET'])
 def testing():
@@ -18,11 +19,18 @@ def createEventPage():
     createEventsDict = {"program": programChoice}
     print(createEventsDict.get("program"))
     eventElementsDict = eventElements()
+    programsDict = programTemplates(programChoice, createEventsDict)
+
 
     return render_template("admin/createEvents.html",
-                            program = createEventsDict.get("program"),
+                            program = programsDict.get("program"),
+                            isRequired = programsDict.get("isRequired"),
+                            isService = programsDict.get("isService"),
+                            isRecurring = programsDict.get("isRecurring"),
                             listOfTerms = eventElementsDict.get("term"),
-                            facilitators = eventElementsDict.get("facilitators"))
+                            isTraining = programsDict.get("isTraining"),
+                            facilitators = eventElementsDict.get("facilitators"),
+                            )
 
 @admin_bp.route('/program_select', methods=['GET'])
 def programSelect():

@@ -18,12 +18,14 @@
     <input type="hidden" id="programChoice" value="programChoice" name="programChoice">
   </div>
   <div class="list-group">
+    <a href="#" class="list-group-item list-group-item-action" id="allVolunteerTraining" onclick="setCurrentOption(this)">All-Volunteers Training</a>
+    <a href="#" class="list-group-item list-group-item-action" id="studentLedProgramsTraining" onclick="setCurrentOption(this)">Student-Led Programs Training</a>
     {% for program in getPrograms %}
         <a href="#" class="list-group-item list-group-item-action" id="{{program.programName}}" onclick="setCurrentOption(this)">{{program.programName}}</a>
     {% endfor %}
   </div>
-  <div>
-    <button type="submit" class="btn btn-primary">Create Event</button>
+  <div class="float-end pt-2">
+    <button type="submit" id="programSubmit" class="btn btn-primary" disabled>Create Event</button>
   </div>
 </form>
 {% endblock %}
