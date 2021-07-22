@@ -1,5 +1,5 @@
 from flask import request, render_template, abort, flash
-from flask import Flask, redirect, flash, url_for
+from flask import Flask, redirect, url_for, g
 from app.models.event import Event
 import json
 from datetime import *
@@ -17,27 +17,30 @@ def testing():
 
 @admin_bp.route('/<programID>/<eventID>/track_hours', methods=['GET'])
 def trackVolunteerHoursPage(programID, eventID):
-    eventParticipantsData = (EventParticipant.select(EventParticipant)
-                                .join(Event)
-                                .where(EventParticipant.event == eventID))
+    if g.current_user.isCeltsAdmin:
+        eventParticipantsData = (EventParticipant.select(EventParticipant)
+                                    .join(Event)
+                                    .where(EventParticipant.event == eventID))
 
-    eventParticipantsData = eventParticipantsData.objects()
+        eventParticipantsData = eventParticipantsData.objects()
 
-    try:
+        try:
 
-        startTime = eventParticipantsData[0].event.timeStart
-        endTime = eventParticipantsData[0].event.timeEnd
-        eventDate = eventParticipantsData[0].event.startDate #start date and end date will be the same
+            startTime = eventParticipantsData[0].event.timeStart
+            endTime = eventParticipantsData[0].event.timeEnd
+            eventDate = eventParticipantsData[0].event.startDate #start date and end date will be the same
 
-        eventLengthInHours = getEventLengthInHours(startTime, endTime, eventDate)
+            eventLengthInHours = getEventLengthInHours(startTime, endTime, eventDate)
 
-        program = Program.get_by_id(programID)
+            program = Program.get_by_id(programID)
 
-        return render_template("/events/trackVolunteerHours.html",
-                                eventParticipantsData = list(eventParticipantsData),
-                                eventLength = eventLengthInHours,
-                                program = program)
-    except:
+            return render_template("/events/trackVolunteerHours.html",
+                                    eventParticipantsData = list(eventParticipantsData),
+                                    eventLength = eventLengthInHours,
+                                    program = program)
+        except:
+            abort(404)
+    else:
         abort(404)
 
 
