@@ -1,4 +1,4 @@
-from flask import request, render_template, abort
+from flask import request, render_template, abort, flash
 from flask import Flask, redirect, flash, url_for
 from app.models.event import Event
 import json
@@ -7,7 +7,7 @@ from app.controllers.admin import admin_bp
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.models.program import Program
-from app.logic.updateTrackHours import updateTrackHours, eventLengthInHours
+from app.logic.updateTrackHours import updateTrackHours, getEventLengthInHours, addVolunteerToEvent
 from app.controllers.admin.searchTrackHoursVolunteer import searchTrackHoursVolunteers
 
 
@@ -29,13 +29,13 @@ def trackVolunteerHoursPage(programID, eventID):
         endTime = eventParticipantsData[0].event.timeEnd
         eventDate = eventParticipantsData[0].event.startDate #start date and end date will be the same
 
-        eventLength = eventLengthInHours(startTime, endTime, eventDate)
+        eventLengthInHours = getEventLengthInHours(startTime, endTime, eventDate)
 
         program = Program.get_by_id(programID)
 
         return render_template("/events/trackVolunteerHours.html",
                                 eventParticipantsData = list(eventParticipantsData),
-                                eventLength = eventLength,
+                                eventLength = eventLengthInHours,
                                 program = program)
     except:
         abort(404)
@@ -43,5 +43,12 @@ def trackVolunteerHoursPage(programID, eventID):
 
 @admin_bp.route('/<programID>/<eventID>/track_hours', methods=['POST'])
 def updateHours(programID, eventID):
-    updateTrackHours(request.form)
+    updateTrackHoursMsg = updateTrackHours(request.form)
+    flash(updateTrackHoursMsg)
     return redirect(url_for("admin.trackVolunteerHoursPage", programID=programID, eventID=eventID))
+
+@admin_bp.route('/addVolunteerToEvent/<user>/<volunteerEventID>/<eventLengthInHours>', methods = ['POST'])
+def addVolunteerToTrackHours(user, volunteerEventID, eventLengthInHours):
+    trackHoursUpdate = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
+    flash(trackHoursUpdate)
+    return trackHoursUpdate

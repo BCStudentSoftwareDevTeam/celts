@@ -9,26 +9,25 @@ $(document).ready(function(){
   });
 
 // Adding the new volunteer to the user database table
-$("#selectVolunteerButton").click(function(){
-  user = $("#addVolunteerInput").val()
-  volunteerEventID = $("#eventID").val()
+  $("#selectVolunteerButton").click(function(){
+    user = $("#addVolunteerInput").val()
+    volunteerEventID = $("#eventID").val()
+    eventLengthInHours = $("#eventLength").text()
 
-  $.ajax({
-    url: "/addVolunteerToEvent/" + user+"/"+volunteerEventID,
-    type: "POST",
-    success: function(message){
-      // location.reload();
-      msgFlash(message, "success")
+    $.ajax({
+      url: "/addVolunteerToEvent/" + user+"/"+volunteerEventID+"/"+eventLengthInHours,
+      type: "POST",
+      success: function(s){
+        location.reload();
 
-    },
-    error: function(request, status, error){
-      location.reload();
-      msgFlash(message, "danger")
-      console.log(status,error);
-    }
+      },
+      error: function(request, status, error){
+        location.reload();
+        console.log(status,error);
+      }
 
+      })
     })
-  })
 });
 
 // Search functionalities from the user table in the database
@@ -64,11 +63,8 @@ function searchTrackHoursVolunteers(){
   });
 };
 
-
-
 function toggleTrackHoursInputBox(checkbox){
-  username =  checkbox.id.substring(9) //get
-  console.log(username)
+  username =  checkbox.id.substring(9) //get everything after the 9th character
   inputFieldID = 'inputHours_'+username
 
   if (checkbox.checked){
@@ -82,6 +78,5 @@ function toggleTrackHoursInputBox(checkbox){
     $('#'+inputFieldID).prop('readonly', true)
     $('#'+inputFieldID).val('')
   }
-
 
  }
