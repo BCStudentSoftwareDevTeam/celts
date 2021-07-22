@@ -8,7 +8,7 @@ from app.logic.getUpcomingEvents import getUpcomingEventsForUser
 def events(term):
     (studentLedEvents, studentLedPrograms, trainingEvents, trainingPrograms,
     bonnerScholarsEvents, bonnerScholarsPrograms, oneTimeEvents, oneTimePrograms, termName) = groupingEvents(term)
-
+    
     return render_template("/events/event_list.html",
         studentLedEvents = studentLedEvents,
         studentLedPrograms = studentLedPrograms,

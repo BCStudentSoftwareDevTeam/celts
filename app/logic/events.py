@@ -12,6 +12,7 @@ def getEvents(program_id=None):
         return Event.select()
 
 def groupingEvents(term):
+    
     studentLedEvents = (Event.select()
                              .join(Program)
                              .where(Program.isStudentLed,
