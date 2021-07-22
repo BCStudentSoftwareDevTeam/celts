@@ -9,6 +9,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.program import Program
 from app.logic.updateTrackHours import updateTrackHours, getEventLengthInHours, addVolunteerToEvent
 from app.controllers.admin.searchTrackHoursVolunteer import searchTrackHoursVolunteers
+from peewee import DoesNotExist
 
 
 @admin_bp.route('/testing', methods=['GET'])
@@ -38,10 +39,14 @@ def trackVolunteerHoursPage(programID, eventID):
                                     eventParticipantsData = list(eventParticipantsData),
                                     eventLength = eventLengthInHours,
                                     program = program)
+        except DoesNotExist:
+            raise DoesNotExist
+
         except:
             abort(404)
+
     else:
-        abort(404)
+        raise Exception("User must be admin to view this page.")
 
 
 @admin_bp.route('/<programID>/<eventID>/track_hours', methods=['POST'])

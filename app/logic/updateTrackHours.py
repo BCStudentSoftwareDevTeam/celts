@@ -30,6 +30,7 @@ def updateTrackHours(participantData):
         if f'username{user}' in participantData:
             username = participantData[f'username{user}']
             if (User.select().where(User.username == username)).exists():
+
                 try:
                     if participantData['checkbox_'+ username] == "on": #if the user is marked as present
                         (EventParticipant.update({EventParticipant.hoursEarned: float(participantData['inputHours_'+ username])}).where(EventParticipant.event == participantData['event'],
@@ -47,7 +48,8 @@ def updateTrackHours(participantData):
                 return "Volunteer does not exist."
         else:
             break
-        return "Volunteer table successfully updated!"
+
+    return "Volunteer table successfully updated!"
 
 
 
