@@ -22,7 +22,7 @@ class Event(baseModel):
     @property
     def noProgram(self):
         return not self.programEvents.exists()
-    
+
     @property
     def singleProgram(self):
         if self.programEvents.count() == 1:

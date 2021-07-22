@@ -16,6 +16,7 @@ from app.models.courseInstructor import CourseInstructor
 from app.models.courseParticipant import CourseParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
+from app.models.facilitator import Facilitator
 
 
 print("Inserting data for demo and testing purposes.")
@@ -42,7 +43,7 @@ users = [
         "lastName" : "Khatt",
         "isStudent": True,
         "isFaculty": False,
-        "isCeltsAdmin": False,
+        "isCeltsAdmin": True,
         "isCeltsStudentStaff": False
     },
     {
@@ -66,7 +67,7 @@ users = [
         "firstName": "Sandesh",
         "lastName":"Lamichhane",
         "isStudent": True,
-        "isFaculty": False,
+        "isFaculty": True,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False
     },
@@ -132,7 +133,8 @@ terms = [
         "year": 2021,
         "academicYear": "2020-2021",
         "isBreak": False,
-        "isSummer": True
+        "isSummer": True,
+        "isCurrentTerm": True,
     },
     {
         "id": 4,
@@ -150,7 +152,14 @@ terms = [
         "isBreak": True,
         "isSummer": False
     },
-
+    {
+        "id":6,
+        "description": "Winter Break 2022",
+        "year": 2022,
+        "academicYear": "2022-2023",
+        "isBreak": True,
+        "isSummer": False
+    },
 ]
 Term.insert_many(terms).on_conflict_replace().execute()
 
@@ -665,3 +674,12 @@ bannedUser = [
     }
 ]
 ProgramBan.insert_many(bannedUser).on_conflict_replace().execute()
+
+facilitators = [
+
+    {
+    'user': 'ramsayb2',
+    'event': 1
+    }
+]
+Facilitator.insert_many(facilitators).on_conflict_replace().execute()
