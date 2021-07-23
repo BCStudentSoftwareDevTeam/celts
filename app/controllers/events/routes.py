@@ -4,7 +4,7 @@ from app.controllers.events import events_bp
 from app.logic.events import getEvents
 from app.logic.getUpcomingEvents import getUpcomingEventsForUser
 from app.models.user import User
-from app.logic.signinKiosk import sendkioskData
+from app.logic.signinKiosk import sendUserData
 
 @events_bp.route('/events', methods=['GET'])
 def events():
@@ -29,8 +29,8 @@ def loadKiosk(eventid):
                             event = event,
                             eventid = eventid)
 
-@events_bp.route('/signintoKiosk', methods=['POST'])
-def signinKiosk():
+@events_bp.route('/signintoEvent', methods=['POST'])
+def signinEvent():
     """Renders kiosk and calls sign in function. If user already signed in will notify through flasher."""
     eventid = request.form["eventid"]
     bnumber = request.form["bNumber"]
@@ -38,7 +38,7 @@ def signinKiosk():
     if len(bnumber) > 20:
         bnumber = "B"+ bnumber[1:9]
     try:
-        kioskUser, alreadyIn = sendkioskData(bnumber, eventid)
+        kioskUser, alreadyIn = sendUserData(bnumber, eventid)
         if alreadyIn:
             flasherMessage = f"{kioskUser.firstName} {kioskUser.lastName} Already Signed In!"
             return flasherMessage

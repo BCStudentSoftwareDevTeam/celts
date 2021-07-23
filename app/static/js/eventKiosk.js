@@ -1,20 +1,14 @@
-var hitEnter = false;
-
 $(document).keydown(function(e){
   if (e.key === "Escape") {
-    console.log("get off")
     $("#fullscreenCheck").prop("checked", false)
     toggleFullscreen();
   }
   else if(e.key === "Enter") {
-      hitEnter = true;
-      submitData();
-      hitEnter = false;
-
+      submitData(true);
   }
 });
 
-function toggleFullscreen() {
+function toggleFullscreen() {                                     // Source: https://stackoverflow.com/questions/1125084/how-to-make-the-window-full-screen-with-javascript-stretching-all-over-the-scre
   if($("#fullscreenCheck").prop("checked") == false){
     hideElements(false);
     document.exitFullscreen()
@@ -44,7 +38,7 @@ function toggleFullscreen() {
   $('#submitScannerData').focus();
 };
 
-function kioskFlasher(flash_message, status){
+function eventFlasher(flash_message, status){
     if (status === "success") {
         category = "success";
         $("#signinData").append("<div class=\"alert alert-"+ category +"\" role=\"alert\" id=\"flasher\">"+flash_message+"</div>");
@@ -58,24 +52,24 @@ function kioskFlasher(flash_message, status){
 
 }
 
-function submitData(){
+function submitData(hitEnter = false){
   if($("#submitScannerData").val().length > 20 || hitEnter == true){
     $("#flasher").remove()
     $.ajax({
       method: "POST",
-      url: '/signintoKiosk',
+      url: '/signintoEvent',
       data: {
         "eventid": $("#eventid").val(),
         "bNumber": $("#submitScannerData").val()
       },
       success: function(flasherMessage) {
-        kioskFlasher(flasherMessage, "success");
+        eventFlasher(flasherMessage, "success");
         $("#submitScannerData").val("").blur();
         $('#submitScannerData').focus();
       },
       error: function(request, status, error) {
         console.log(status, error);
-        kioskFlasher("See Attendant; Unable to Sign In.", "danger");
+        eventFlasher("See Attendant; Unable to Sign In.", "danger");
         $("#submitScannerData").val("").blur();
         $('#submitScannerData').focus();
       }
@@ -83,7 +77,7 @@ function submitData(){
   }
 }
 
-function hideElements(hide=true) {
+function hideElements(hide) {
 
   if (hide == true) {
 
