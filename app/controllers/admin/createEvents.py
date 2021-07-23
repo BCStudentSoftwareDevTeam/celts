@@ -1,5 +1,6 @@
 from dateutil import parser
 from app.models.event import Event
+from app.models.term import Term
 from flask import request
 from app.controllers.admin import admin_bp
 from app.logic.adminNewEvent import createNewEvent, setValueForUncheckedBox
@@ -41,3 +42,13 @@ def createEvent():
         else:
             flash(validationErrorMessage)
             return redirect(url_for("admin.createEventPage", program=2)) #FIXME: have this redirect to main programs page (or some appropriate non admin page).
+
+
+
+def selectFutureTerms(currentTermid):
+    futureTerms = (Term.select().where(Term.id >= currentTermid)
+                                .where((Term.year <= (Term.get_by_id(currentTermid)).year + 2)))
+
+    listOfTerms = [future.description for future in futureTerms]
+
+    return listOfTerms

@@ -3,6 +3,7 @@ from flask import Flask, redirect, flash
 from app.controllers.admin.createEvents import createEvent
 from app.models.program import Program
 from app.models.term import Term
+from app.controllers.admin.createEvents import selectFutureTerms
 from app.controllers.admin import admin_bp
 from app.logic.getAllFacilitators import getAllFacilitators
 from flask import g
@@ -13,10 +14,8 @@ def testing():
 
 @admin_bp.route('/<program>/create_event', methods=['GET'])
 def createEventPage(program):
-    currentTermid = Term.select().where(Term.isCurrentTerm).objects()[0]
-    listOfTerms = (Term.select().where(Term.id >= currentTermid)
-                                .where((Term.year <= (Term.get_by_id(currentTermid)).year + 2)))
-
+    currentTermid = Term.select().where(Term.isCurrentTerm).get()
+    futureTerms = selectFutureTerms(currentTermid)
     facilitators = getAllFacilitators()
 
     try:
@@ -27,5 +26,5 @@ def createEventPage(program):
 
     return render_template("admin/createEvents.html",
                             program = program,
-                            listOfTerms = listOfTerms,
+                            futureTerms = futureTerms,
                             facilitators = facilitators)

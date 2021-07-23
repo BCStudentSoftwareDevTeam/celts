@@ -34,12 +34,8 @@
         <div class="form-group">
           <label for='term'><strong> Term * </strong></label> <br>
           <select class="form-control" name='eventTerm' id='inputEventTerm'>
-            {%for term in listOfTerms %}
-              {%if term.isCurrentTerm == 1%}
-                <option value='{{term}}' selected> {{term.description}} </option>
-              {%else%}
-                <option value='{{term}}'> {{term.description}} </option>
-              {%endif%}
+            {% for future in futureTerms %}
+                <option value='{{term}}'>{{future}}</option>
             {% endfor %}
           </select>
         </div><br>
