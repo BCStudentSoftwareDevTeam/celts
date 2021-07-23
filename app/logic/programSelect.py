@@ -36,7 +36,7 @@ def programTemplates(programChoice, createEventsDict):
         return studentLedProgramsTraining
 
 
-    if programChoice in programList: 
+    if programChoice in programList:
         generalCreateEventsDict = {     "isRequired": "",
                                         "isService": "",
                                         "isRecurring": "checkbox",
@@ -44,3 +44,6 @@ def programTemplates(programChoice, createEventsDict):
                                         "program": createEventsDict.get("program")
                                         }
         return generalCreateEventsDict
+
+    else:
+        flash("Server Error"), 500
