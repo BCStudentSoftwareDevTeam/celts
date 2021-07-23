@@ -2,6 +2,7 @@ import pytest
 from app.logic.adminNewEvent import setValueForUncheckedBox, createNewEvent
 from peewee import OperationalError, IntegrityError
 from app.models.event import Event
+from app.models.facilitator import Facilitator
 
 
 @pytest.mark.integration
@@ -42,26 +43,36 @@ def test_createNewEvent():
                    'eventEndDate':'2022-06-12', 'programId':1, 'eventLocation':"a big room",
                    'eventEndTime':'21:00', 'eventStartTime':'18:00', 'eventDescription':"Empty Bowls Spring 2021",
                    'eventName':'Empty Bowls Spring','eventTerm':1,'eventFacilitator':"ramsayb2"}
+
+    #test that the event and facilitators are added successfully
     createdEvent = createNewEvent(eventInfo)
     createdEventExists = (Event.select().where(Event.id == createdEvent.id)).exists()
     assert createdEventExists
 
+    createdEventFacilitator = Facilitator.select().where(Facilitator.user == eventInfo['eventFacilitator'], Facilitator.event == createdEvent.id)
+    eventFacilitatorExists = createdEventFacilitator.exists()
+    assert eventFacilitatorExists
 
-    # FIXME: the test below don't work as expected ... is there a fix or should it be deleated?
-    # #test Date field startDate
-    # # eventInfo["eventStartDate"] = "Hi, how are you?"
+    (Facilitator.delete().where(Facilitator.id == createdEventFacilitator[0].id)).execute()
+    (Event.delete().where(Event.id == createdEvent.id)).execute()
+
+    # test foregin key username for facilitator (user does not exist)
+    eventInfo["eventFacilitator"] = "jarjug"
+    with pytest.raises(IntegrityError):
+        alertMessage = createNewEvent(eventInfo)
+
+
+    # FIXME: the test below don't work as expected ... is there a fix or should it be deleted?
+    #test Date field startDate
+    # eventInfo["eventStartDate"] = "Hi, how are you?"
     # with pytest.raises(OperationalError):
     #     alertMessage = createNewEvent(eventInfo)
     #
-    # # test foregin key username
-    # # eventInfo["eventStartDate"] = '2021-12-12'
-    # # eventInfo["eventFacilitator"] = "jarjug"
-    # # with pytest.raises(IntegrityError):
-    # #     alertMessage = createNewEvent(eventInfo)
+    # eventInfo["eventStartDate"] = '2021-12-12'
     #
     #
-    # #tests boolean RSVP
-    # # eventInfo["eventFacilitator"] = "ramsayb2"
-    # # eventInfo["eventRSVP"] = [2,3,4]
-    # # with pytest.raises(OperationalError):
-    #     # alertMessage = createNewEvent(eventInfo)
+    #tests boolean RSVP
+    # eventInfo["eventFacilitator"] = "ramsayb2"
+    # eventInfo["eventRSVP"] = 'hello'
+    # with pytest.raises(OperationalError):
+        # alertMessage = createNewEvent(eventInfo)
