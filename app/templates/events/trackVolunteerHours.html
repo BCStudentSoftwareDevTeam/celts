@@ -12,7 +12,7 @@
 {% block app_content %}
 
   <h1 align="center">{{program.programName}}</h1><br>
-  <h3 align="center">{{eventParticipantsData[0].event.eventName}}</h3><br>
+  <h3 align="center">{{event.eventName}}</h3><br>
 
   <div class="btn-group">
     <ul class="nav nav-tabs">
@@ -28,7 +28,7 @@
   <form action="#" method="post"><br>
 
     <label class='d-none' id="eventLength">{{eventLength}}</label>
-    <input  class="form-control" id="eventID" name="event" value="{{eventParticipantsData[0].event}}" type='hidden'>
+    <input  class="form-control" id="eventID" name="event" value="{{event}}" type='hidden'>
 
 
     <div class="ui-widget input-group">
@@ -75,6 +75,7 @@
             <th>Phone Number</th>
             <th>RSVP</th>
             <th>Total Hours</th>
+            <th></th>
           </tr>
         </thead>
       <tbody id="volunteerTable">
@@ -94,6 +95,7 @@
                    {% if participant.attended == 1 and participant.hoursEarned == None %} value="{{eventLength}}"
                    {% elif participant.attended == 1 %} value="{{participant.hoursEarned}}"
                    {%else%} readonly {%endif%}></td>
+        <td><span onclick = 'removeVolunteerFromEvent(this)' id="deleteIcon_{{participant.user.username}}" ><i class="bi bi-trash" style="font-size:20px"></i></span></td>
       </tr>
       {%endfor%}
      </tbody>

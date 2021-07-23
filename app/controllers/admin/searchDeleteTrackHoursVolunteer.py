@@ -38,3 +38,10 @@ def searchTrackHoursVolunteers(query):
 
     except Exception as e:
         return "Error Searching Volunteers query", 500
+
+
+@admin_bp.route('/removeVolunteerFromEvent/<user>/<eventID>', methods = ['POST'])
+def removeVolunteerFromEvent(user, eventID):
+    (EventParticipant.delete().where(EventParticipant.user == user, EventParticipant.event == eventID)).execute()
+    flash("Volunteer successfully removed")
+    return "Volunteer successfully removed"

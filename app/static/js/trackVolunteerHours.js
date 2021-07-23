@@ -14,6 +14,7 @@ $(document).ready(function(){
     volunteerEventID = $("#eventID").val()
     eventLengthInHours = $("#eventLength").text()
 
+
     $.ajax({
       url: "/addVolunteerToEvent/" + user+"/"+volunteerEventID+"/"+eventLengthInHours,
       type: "POST",
@@ -28,7 +29,29 @@ $(document).ready(function(){
 
       })
     })
+
 });
+
+// Deleting a volunteer from the eventParticipant database table
+function removeVolunteerFromEvent (deleteIcon){
+  user =  deleteIcon.id.substring(11)
+  console.log(user)
+  eventID = $('#eventID').val()
+  $.ajax({
+    url: "/removeVolunteerFromEvent/"+ user +"/"+ eventID,
+    type: "POST",
+    success: function(s){
+      location.reload()
+
+    },
+    error: function(request, status, error) {
+        console.log(status,error);
+      }
+
+
+  })
+
+}
 
 // Search functionalities from the user table in the database
 function searchTrackHoursVolunteers(){

@@ -8,7 +8,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.models.program import Program
 from app.logic.updateTrackHours import updateTrackHours, getEventLengthInHours, addVolunteerToEvent
-from app.controllers.admin.searchTrackHoursVolunteer import searchTrackHoursVolunteers
+from app.controllers.admin.searchDeleteTrackHoursVolunteer import searchTrackHoursVolunteers
 from peewee import DoesNotExist
 
 
@@ -19,31 +19,30 @@ def testing():
 @admin_bp.route('/<programID>/<eventID>/track_hours', methods=['GET'])
 def trackVolunteerHoursPage(programID, eventID):
     if g.current_user.isCeltsAdmin:
-        eventParticipantsData = (EventParticipant.select(EventParticipant)
-                                    .join(Event)
-                                    .where(EventParticipant.event == eventID))
+        eventParticipantsData = EventParticipant.select().where(EventParticipant.event == eventID)
 
         eventParticipantsData = eventParticipantsData.objects()
 
-        try:
+        event = Event.get_by_id(eventID)
 
-            startTime = eventParticipantsData[0].event.timeStart
-            endTime = eventParticipantsData[0].event.timeEnd
-            eventDate = eventParticipantsData[0].event.startDate #start date and end date will be the same
+        startTime = event.timeStart
+        endTime = event.timeEnd
+        eventDate = event.startDate #start date and end date will be the same
 
-            eventLengthInHours = getEventLengthInHours(startTime, endTime, eventDate)
+        eventLengthInHours = getEventLengthInHours(startTime, endTime, eventDate)
 
-            program = Program.get_by_id(programID)
+        program = Program.get_by_id(programID)
 
-            return render_template("/events/trackVolunteerHours.html",
-                                    eventParticipantsData = list(eventParticipantsData),
-                                    eventLength = eventLengthInHours,
-                                    program = program)
-        except DoesNotExist:
-            raise DoesNotExist
-
-        except:
-            abort(404)
+        return render_template("/events/trackVolunteerHours.html",
+                                eventParticipantsData = list(eventParticipantsData),
+                                eventLength = eventLengthInHours,
+                                program = program,
+                                event = event)
+        # except DoesNotExist:
+        #     raise DoesNotExist
+        #
+        # except:
+        #     abort(404)
 
     else:
         raise Exception("User must be admin to view this page.")
