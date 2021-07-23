@@ -1,10 +1,12 @@
 import pytest
 from app.models.eventParticipant import EventParticipant
 from peewee import DoesNotExist
+
+from app.models.program import Program
 from app.models.user import User
 from app.models.event import Event
-from app.controllers.events.programEligibility import isEligibleForProgram
-from app.models.program import Program
+from app.logic.programEligibility import isEligibleForProgram
+
 @pytest.mark.integration
 def test_doesNotExistIsEligibleForProgram():
 
