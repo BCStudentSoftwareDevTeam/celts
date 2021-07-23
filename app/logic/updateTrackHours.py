@@ -13,9 +13,7 @@ def getEventLengthInHours(startTime, endTime, eventDate):
     """
     #can only subtract datetime objects, not time objects. So convert time into datetime
     eventLength = datetime.combine(eventDate, endTime) - datetime.combine(eventDate, startTime)
-    (h, m, s) = str(eventLength).split(':')
-    eventLengthInHours = int(h) + round(int(m) / 60, 2)
-
+    eventLengthInHours = round(eventLength.seconds/3600, 2)
     return eventLengthInHours
 
 
@@ -29,7 +27,7 @@ def updateTrackHours(participantData):
     for user in range(1, len(participantData)):
         if f'username{user}' in participantData:
             username = participantData[f'username{user}']
-            if (User.select().where(User.username == username)).exists():
+            if (User.get_or_none(User.username == username)):
 
                 try:
                     if participantData['checkbox_'+ username] == "on": #if the user is marked as present

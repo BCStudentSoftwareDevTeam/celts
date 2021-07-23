@@ -1,6 +1,7 @@
 from flask import request, render_template, abort, flash
 from flask import Flask, redirect, url_for, g
 from app.models.event import Event
+from app.models.programEvent import ProgramEvent
 import json
 from datetime import *
 from app.controllers.admin import admin_bp
@@ -19,34 +20,30 @@ def testing():
 @admin_bp.route('/<programID>/<eventID>/track_hours', methods=['GET'])
 def trackVolunteerHoursPage(programID, eventID):
     if g.current_user.isCeltsAdmin:
-        eventParticipantsData = EventParticipant.select().where(EventParticipant.event == eventID)
+        if ProgramEvent.get_or_none(ProgramEvent.event == eventID, ProgramEvent.program == programID):
+            eventParticipantsData = EventParticipant.select().where(EventParticipant.event == eventID)
 
-        eventParticipantsData = eventParticipantsData.objects()
+            eventParticipantsData = eventParticipantsData.objects()
 
-        event = Event.get_by_id(eventID)
+            event = Event.get_by_id(eventID)
+            program = Program.get_by_id(programID)
+            startTime = event.timeStart
+            endTime = event.timeEnd
+            eventDate = event.startDate #start date and end date will be the same
 
-        startTime = event.timeStart
-        endTime = event.timeEnd
-        eventDate = event.startDate #start date and end date will be the same
+            eventLengthInHours = getEventLengthInHours(startTime, endTime, eventDate)
 
-        eventLengthInHours = getEventLengthInHours(startTime, endTime, eventDate)
 
-        program = Program.get_by_id(programID)
-
-        return render_template("/events/trackVolunteerHours.html",
-                                eventParticipantsData = list(eventParticipantsData),
-                                eventLength = eventLengthInHours,
-                                program = program,
-                                event = event)
-        # except DoesNotExist:
-        #     raise DoesNotExist
-        #
-        # except:
-        #     abort(404)
+            return render_template("/events/trackVolunteerHours.html",
+                                    eventParticipantsData = list(eventParticipantsData),
+                                    eventLength = eventLengthInHours,
+                                    program = program,
+                                    event = event)
+        else:
+            raise Exception("Event ID and Program ID mismatched")
 
     else:
-        raise Exception("User must be admin to view this page.")
-
+        abort(403)
 
 @admin_bp.route('/<programID>/<eventID>/track_hours', methods=['POST'])
 def updateHours(programID, eventID):

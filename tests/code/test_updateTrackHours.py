@@ -17,7 +17,7 @@ def test_getEventLengthInHours():
     #input type is datetime object and only minutes and hours
     endTime = datetime.strptime("18:40", "%H:%M").time()
     eventLength = getEventLengthInHours(startTime, endTime, eventDate)
-    assert eventLength == 3.65
+    assert eventLength == 3.66
 
     startTime = datetime.strptime("16:05", "%H:%M").time()
     endTime = datetime.strptime("18:40", "%H:%M").time()

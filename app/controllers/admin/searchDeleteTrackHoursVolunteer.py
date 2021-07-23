@@ -37,7 +37,7 @@ def searchTrackHoursVolunteers(query):
         return dictToJSON
 
     except Exception as e:
-        return "Error Searching Volunteers query", 500
+        return e, 500
 
 
 @admin_bp.route('/removeVolunteerFromEvent/<user>/<eventID>', methods = ['POST'])
