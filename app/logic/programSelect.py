@@ -1,4 +1,5 @@
 from app.models.term import Term
+from app.models.program import Program
 from app.controllers.admin import admin_bp
 from app.logic.getAllFacilitators import getAllFacilitators
 from flask import flash, redirect, url_for, g
@@ -11,6 +12,11 @@ def eventElements():
     return eventElementsDict
 
 def programTemplates(programChoice, createEventsDict):
+
+    programs = Program.select()
+    programList = []
+    for p in programs:
+        programList.append(p.programName)
 
     if programChoice == "allVolunteerTraining":
         allVolunteerTraining = {   "isRequired": "checked",
@@ -30,7 +36,7 @@ def programTemplates(programChoice, createEventsDict):
         return studentLedProgramsTraining
 
 
-    else:
+    if programChoice in programList: 
         generalCreateEventsDict = {     "isRequired": "",
                                         "isService": "",
                                         "isRecurring": "checkbox",

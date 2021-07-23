@@ -17,7 +17,6 @@ def createEventPage():
     programChoice = programSelect.get("programChoice")
     createEventsDict = {}
     createEventsDict = {"program": programChoice}
-    print(createEventsDict.get("program"))
     eventElementsDict = eventElements()
     programsDict = programTemplates(programChoice, createEventsDict)
 

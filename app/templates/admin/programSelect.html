@@ -13,19 +13,21 @@
 {% endblock %}
 
 {% block app_content %}
-<form role="form" action="/create_event" method="post">
-  <div id="programName">
-    <input type="hidden" id="programChoice" value="programChoice" name="programChoice">
-  </div>
-  <div class="list-group">
-    <a href="#" class="list-group-item list-group-item-action" id="allVolunteerTraining" onclick="setCurrentOption(this)">All-Volunteers Training</a>
-    <a href="#" class="list-group-item list-group-item-action" id="studentLedProgramsTraining" onclick="setCurrentOption(this)">Student-Led Programs Training</a>
-    {% for program in getPrograms %}
-        <a href="#" class="list-group-item list-group-item-action" id="{{program.programName}}" onclick="setCurrentOption(this)">{{program.programName}}</a>
-    {% endfor %}
-  </div>
-  <div class="float-end pt-2">
-    <button type="submit" id="programSubmit" class="btn btn-primary" disabled>Create Event</button>
-  </div>
-</form>
+<div class="d-flex justify-content-center">
+  <form role="form" action="/create_event" method="post" class="col-sm-3 align-center">
+    <div id="programName">
+      <input type="hidden" id="programChoice" value="programChoice" name="programChoice">
+    </div>
+    <div class="list-group">
+      <a href="#" class="list-group-item list-group-item-action" id="allVolunteerTraining" onclick="setCurrentOption(this)">All-Volunteers Training</a>
+      <a href="#" class="list-group-item list-group-item-action" id="studentLedProgramsTraining" onclick="setCurrentOption(this)">Student-Led Programs Training</a>
+      {% for program in getPrograms %}
+          <a href="#" class="list-group-item list-group-item-action" id="{{program.programName}}" onclick="setCurrentOption(this)">{{program.programName}}</a>
+      {% endfor %}
+    </div>
+    <div class="float-end pt-2">
+      <button type="submit" id="programSubmit" class="btn btn-primary" disabled>Create Event</button>
+    </div>
+  </form>
+</div>
 {% endblock %}
