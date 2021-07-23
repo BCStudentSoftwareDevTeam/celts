@@ -8,9 +8,9 @@ def sendUserData(bnumber, eventid):
     signed in will return flasher"""
     bNumberToUser = User.get(User.bnumber == bnumber)
     if ((EventParticipant.select(EventParticipant.user)
-                                            .join(User)
-                                            .where(EventParticipant.attended, User.bnumber == bnumber, EventParticipant.event == eventid))
-                                            .exists()):
+                         .join(User)
+                         .where(EventParticipant.attended, User.bnumber == bnumber, EventParticipant.event == eventid))
+                         .exists()):
         alreadySignedIn = True
     else:
         (EventParticipant.update({EventParticipant.attended: True})
