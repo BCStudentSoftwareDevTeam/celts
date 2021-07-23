@@ -18,17 +18,22 @@ def isEligibleForProgram(program, user):
     user = User.get_by_id(user)
     program = Program.get_by_id(program)
 
-    if (ProgramBan.select().where(ProgramBan.user == user)) and (ProgramBan.select().where(ProgramBan.program == program)):
-        return False
-
     # Check for events that are prerequisite for program
     requiredEvents = (Event.select(Event)
                            .join(ProgramEvent)
                            .where((Event.isTraining == True) & (ProgramEvent.program == program)))
 
-    if requiredEvents:
+    if (ProgramBan.select().where(ProgramBan.user == user)) and (ProgramBan.select().where(ProgramBan.program == program)):
+        return False, []
+
+    elif requiredEvents:
+        attendedRequiredEventsList = []
         for event in requiredEvents:
-            attendedRequiredEvents = (EventParticipant.select().where((EventParticipant.attended == True)
+            attendedRequirement = (EventParticipant.select().where((EventParticipant.attended == True)
                                     & (EventParticipant.user == user) & (EventParticipant.event == event)))
-            if not attendedRequiredEvents:
-                return requiredEvents
+            if not attendedRequirement:
+                attendedRequiredEventsList.append(event.eventName)
+        if attendedRequiredEventsList is not None:
+            return True, attendedRequiredEventsList
+    else:
+        return True, []
