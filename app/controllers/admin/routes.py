@@ -6,7 +6,6 @@ from app.controllers.admin import admin_bp
 from flask import g, url_for
 from app.models.term import Term
 from app.logic.getAllFacilitators import getAllFacilitators
-from app.logic.programSelect import eventElements
 
 
 @admin_bp.route('/testing_things', methods=['GET'])
@@ -32,7 +31,6 @@ def createEventPage():
 
 @admin_bp.route('/program_select', methods=['GET'])
 def programSelect():
-
     getPrograms = Program.select()
 
     return render_template("admin/programSelect.html",
