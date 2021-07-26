@@ -4,9 +4,7 @@ from app.models.eventParticipant import EventParticipant
 
 @pytest.mark.integration
 def test_sendKioskDataKiosk():
-    bnumber = "B00751864"
-    eventid = 1
-    signin = sendUserData(bnumber, eventid)
+    signin = sendUserData("B00751864", 1)
     usersAttended = EventParticipant.select().where(EventParticipant.attended, EventParticipant.event == eventid)
     listOfAttended = [users.user.username for users in usersAttended]
 
@@ -15,11 +13,7 @@ def test_sendKioskDataKiosk():
 
 @pytest.mark.integration
 def test_correctAlreadySignedIn():
-    bnumber = "B00751864"  # user neillz
-    eventid = 2
-    user, signedin = sendUserData(bnumber, eventid)
+    user, signedin = sendUserData("B00751864", 2)
     assert signedin
-    bnumber = "B00739736" # user ayisie
-    eventid = 1
-    user, signedin = sendUserData(bnumber, eventid)
+    user, signedin = sendUserData("B00739736", 1)
     assert not signedin
