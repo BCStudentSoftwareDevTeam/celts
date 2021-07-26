@@ -1,6 +1,6 @@
 from flask import request, render_template
 from flask import Flask, redirect, flash
-
+from app.models.user import User
 from app.controllers.admin import admin_bp
 
 @admin_bp.route('/testing', methods=['GET'])
@@ -9,4 +9,5 @@ def testing():
 
 @admin_bp.route('/search_student', methods=['GET'])
 def studentSearchPage():
-    return render_template("/searchStudentPage.html")
+    students = User.select()
+    return render_template("/searchStudentPage.html", students = students)
