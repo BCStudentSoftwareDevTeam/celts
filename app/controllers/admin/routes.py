@@ -20,9 +20,10 @@ def testing():
 @admin_bp.route('/<programID>/<eventID>/track_hours', methods=['GET'])
 def trackVolunteerHoursPage(programID, eventID):
 
-    trainingEvents = ProgramEvent.select().where(ProgramEvent.program == programID, ProgramEvent.event == eventID)
-    trlist = [training.id for training in trainingEvents if training.isTraining]
-    attendedTrained = trainedParticipants(programID, trlist)
+    trainingEvents = ProgramEvent.select().where(ProgramEvent.program == programID)
+    trlist = [training.event for training in trainingEvents if training.event.isTraining]
+    attendedTraining = trainedParticipants(programID, trlist)
+
     if g.current_user.isCeltsAdmin:
         if ProgramEvent.get_or_none(ProgramEvent.event == eventID, ProgramEvent.program == programID):
             eventParticipantsData = EventParticipant.select().where(EventParticipant.event == eventID)
