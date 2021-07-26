@@ -1,7 +1,7 @@
 from app.models import*
 from app.models.event import Event
 from app.models.program import Program
-# from app.models.programEvent import ProgramEvent
+from app.models.programEvent import ProgramEvent
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.logic.programEligibility import isEligibleForProgram
@@ -16,8 +16,8 @@ def userRsvpForEvent(user,  event):
     :return: eventParticipant entry for the given user and event; otherwise raise an exception
     """
 
-    user = User.get_by_id(user)
-    event = Event.get_by_id(event)
+    rsvpUser = User.get_by_id(user)
+    rsvpEvent = Event.get_by_id(event)
     # program = Program.select(Program).where(Event.program_id == event.program_id).get()
     program = Program.select(Program).join(ProgramEvent).where(ProgramEvent.event == event).get()
     print(user)
@@ -25,5 +25,7 @@ def userRsvpForEvent(user,  event):
     isEligible, requirementList = isEligibleForProgram(program, user)
     if isEligible:
         print("ELIGIBLE")
-        EventParticipant.get_or_create(user = user, event = event, rsvp = True)[0]
+        print('HELLO')
+        newParticipant = EventParticipant.get_or_create(user = rsvpUser, event = rsvpEvent, rsvp = True)[0]
+        print(newParticipant)
     return isEligible, requirementList

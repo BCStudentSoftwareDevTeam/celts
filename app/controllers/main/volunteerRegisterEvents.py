@@ -4,13 +4,15 @@ from app.controllers.admin import admin_bp
 from app.controllers.events import events_bp
 from app.logic.userRsvpForEvent import userRsvpForEvent
 from flask import flash, request, redirect, url_for, g
+# from flask import Fl
 
 @admin_bp.route('/rsvpForEvent', methods=['POST'])
-def volunteerRegister(eventData):
+def volunteerRegister():
     """
     This function selects the user ID and event ID and registers the user
     for the event they have clicked register for.
     """
+    eventData = request.form
     userId = User.get(User.username == 'khatts')
     eventId = eventData['eventId']
     isEligible, listOfRequirements = userRsvpForEvent(userId, eventId)
@@ -29,4 +31,4 @@ def volunteerRegister(eventData):
     else:
         flash("Successfully registered for event!")
         #FIXME: This is likely where you actually update the database
-    return redirect(url_for('events.showUpcomingEvent')) #FIXME: Have this redirect to the right page
+    return redirect(url_for("events.showUpcomingEvent")) #FIXME: Have this redirect to the right page

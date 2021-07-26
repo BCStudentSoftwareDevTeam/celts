@@ -6,7 +6,8 @@ from app.models.event import Event
 from app.models.term import Term
 from app.controllers.admin import admin_bp
 from app.logic.getAllFacilitators import getAllFacilitators
-from flask import g
+from app.controllers.main.volunteerRegisterEvents import volunteerRegister
+from flask import g, url_for
 
 @admin_bp.route('/testing_things', methods=['GET'])
 def testing():
@@ -61,3 +62,11 @@ def editEvent(program, eventId):
                             isTraining = isTraining,
                             isRsvpRequired = isRsvpRequired,
                             isService = isService)
+
+
+# @admin_bp.route('/rsvpForEvent', methods=['POST'])
+# def rsvpForEvent():
+#     eventData = request.form
+#     print(eventData)
+#     volunteerRegister(eventData)
+#     return redirect(url_for("events.showUpcomingEvent")) #FIXME: Have this redirect to the right page
