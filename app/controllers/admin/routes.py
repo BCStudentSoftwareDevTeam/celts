@@ -8,8 +8,8 @@ from app.controllers.admin import admin_bp
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.models.program import Program
-from app.logic.updateTrackHours import updateTrackHours, getEventLengthInHours, addVolunteerToEvent
-from app.controllers.admin.searchDeleteTrackHoursVolunteer import searchTrackHoursVolunteers
+from app.logic.updateTrackHours import getEventLengthInHours
+from app.controllers.admin.changeTrackHoursVolunteer import searchTrackHoursVolunteers
 from peewee import DoesNotExist
 
 
@@ -44,15 +44,3 @@ def trackVolunteerHoursPage(programID, eventID):
 
     else:
         abort(403)
-
-@admin_bp.route('/<programID>/<eventID>/track_hours', methods=['POST'])
-def updateHours(programID, eventID):
-    updateTrackHoursMsg = updateTrackHours(request.form)
-    flash(updateTrackHoursMsg)
-    return redirect(url_for("admin.trackVolunteerHoursPage", programID=programID, eventID=eventID))
-
-@admin_bp.route('/addVolunteerToEvent/<user>/<volunteerEventID>/<eventLengthInHours>', methods = ['POST'])
-def addVolunteerToTrackHours(user, volunteerEventID, eventLengthInHours):
-    trackHoursUpdate = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
-    flash(trackHoursUpdate)
-    return trackHoursUpdate
