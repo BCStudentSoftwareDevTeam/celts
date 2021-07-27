@@ -14,44 +14,62 @@ def getEvents(program_id=None):
         return Event.select()
 
 def groupingEvents(term):
-    
-    studentLedEvents = (Event.select()
+
+    studentLedEvents = (Event.select(Event,Program)
+                             .join(ProgramEvent)
                              .join(Program)
                              .where(Program.isStudentLed,
-                                    Event.term == term))
+                                    Event.term == term)
+                             .distinct())
 
-    studentLedPrograms = []
-    [studentLedPrograms.append(event.program) for event in studentLedEvents
-                        if event.program not in studentLedPrograms]
+    print(list(studentLedEvents))
+    programName = []
+    eventDescription = []
+    for e in studentLedEvents.objects():
+        programName.append(e.programName)
+        eventDescription.append(e.description)
+    print(programName)
+    print(eventDescription)
+    # studentLedPrograms = []
+    # [studentLedPrograms.append(event.programName) for event in studentLedEvents.objects()
+    #                     if event.programName not in studentLedPrograms]
+    # print(studentLedPrograms)
+    studentLedEventsDict = { program:event for (program,event) in zip(programName, eventDescription)}
+    #[studentLedEventsDict[event.programName].append(event.description) for event in studentLedEvents.objects()]
+    print("studentLedEventsDict", studentLedEventsDict)
 
-    trainingEvents = (Event.select()
-                           .where(Event.isTraining,
-                                  Event.term == term))
 
-    trainingPrograms = []
-    [trainingPrograms.append(event.program) for event in trainingEvents
-                      if event.program not in trainingPrograms]
+    # trainingEvents = (Event.select()
+    #                        .where(Event.isTraining,
+    #                               Event.term == term))
 
-    bonnerScholarsEvents = (Event.select()
-                                 .join(Program)
-                                 .where(Program.isBonnerScholars,
-                                        Event.term == term))
+    # trainingPrograms = []
+    # [trainingPrograms.append(event.program) for event in trainingEvents
+    #                   if event.program not in trainingPrograms]
+    #
+    # bonnerScholarsEvents = (Event.select()
+    #                              .join(Program)
+    #                              .where(Program.isBonnerScholars,
+    #                                     Event.term == term))
 
-    bonnerScholarsPrograms = []
-    [bonnerScholarsPrograms.append(event.program) for event in bonnerScholarsEvents
-                            if event.program not in bonnerScholarsPrograms]
-
-    oneTimeEvents = (Event.select()
-                          .join(Program)
-                          .where(Program.isStudentLed == False,
-                                 Event.isTraining == False,
-                                 Program.isBonnerScholars == False,
-                                 Event.term == term))
-    oneTimePrograms = []
-    [oneTimePrograms.append(event.program) for event in oneTimeEvents
-                     if event.program not in oneTimePrograms]
-
-    termName = Term.get_by_id(term).description
-
-    return (studentLedEvents, studentLedPrograms, trainingEvents, trainingPrograms,
-    bonnerScholarsEvents, bonnerScholarsPrograms, oneTimeEvents, oneTimePrograms, termName)
+    # bonnerScholarsPrograms = []
+    # [bonnerScholarsPrograms.append(event.program) for event in bonnerScholarsEvents
+    #                         if event.program not in bonnerScholarsPrograms]
+    #
+    # oneTimeEvents = (Event.select()
+    #                       .join(Program)
+    #                       .where(Program.isStudentLed == False,
+    #                              Event.isTraining == False,
+    #                              Program.isBonnerScholars == False,
+    #                              Event.term == term))
+    # oneTimePrograms = []
+    # [oneTimePrograms.append(event.program) for event in oneTimeEvents
+    #                  if event.program not in oneTimePrograms]
+    #
+    # termName = Term.get_by_id(term).description
+    #
+    # return (studentLedEvents, studentLedPrograms, trainingEvents, trainingPrograms,
+    # bonnerScholarsEvents, bonnerScholarsPrograms, oneTimeEvents, oneTimePrograms, termName)
+    categorizedEvents = {"studentLed": studentLedEventsDict}
+    print(categorizedEvents)
+    return categorizedEvents
