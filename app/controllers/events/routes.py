@@ -1,20 +1,18 @@
 from flask import Flask, redirect, flash, url_for, request, render_template, g, json
-from app.models.event import Event
 from app.controllers.events import events_bp
-from app.logic.events import getEvents
-from app.logic.getUpcomingEvents import getUpcomingEventsForUser
+from app.models.event import Event
 from app.models.user import User
 from app.models.programEvent import ProgramEvent
+from app.logic.events import getEvents
+from app.logic.getUpcomingEvents import getUpcomingEventsForUser
 from app.logic.signinKiosk import sendUserData
 
 @events_bp.route('/events', methods=['GET'])
 def events():
     events = getEvents()
-
     return render_template("/events/event_list.html",
-            events=events,
-            user="ramsayb2"
-            )
+                            events=events,
+                            user="ramsayb2")
 
 @events_bp.route('/events/upcoming_events', methods=['GET'])
 def showUpcomingEvent():
@@ -25,6 +23,7 @@ def showUpcomingEvent():
 
 @events_bp.route('/<eventid>/kiosk', methods=['GET'])
 def loadKiosk(eventid):
+    """Renders kiosk for specified event."""
     event = Event.get_by_id(eventid)
     return render_template("/events/eventKiosk.html",
                             event = event,
@@ -32,7 +31,7 @@ def loadKiosk(eventid):
 
 @events_bp.route('/signintoEvent', methods=['POST'])
 def signinEvent():
-    """Renders kiosk and calls sign in function. If user already signed in will notify through flasher."""
+    """Utilizes form data and sign in function. Returns correct flasher message."""
     eventid = request.form["eventid"]
     bnumber = request.form["bNumber"]
     programid = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event == eventid)
