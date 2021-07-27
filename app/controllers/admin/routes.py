@@ -67,6 +67,7 @@ def editEvent(program, eventId):
                             isRsvpRequired = isRsvpRequired,
                             isService = isService,
                             hasRSVPed = hasRSVPed)
+                            # hastoRemove =hastoRemove)
 
 
 # @admin_bp.route('/rsvpForEvent', methods=['POST'])

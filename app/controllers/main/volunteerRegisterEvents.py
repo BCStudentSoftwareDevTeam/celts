@@ -27,16 +27,16 @@ def volunteerRegister():
         if len(listOfRequirements) >= 3:
             reqListToString = ', '.join(listOfRequirements[:-1])
             reqListToString += ' or ' + listOfRequirements[-1]
-            flash(f"Warning: {userId.firstName} has not done the following required trainings: {reqListToString}")
+            flash(f"{userId.firstName} Registered. Warning! has not done the following required trainings: {reqListToString}")
 
         elif len(listOfRequirements) == 2:
             reqListToString = ' or '.join(listOfRequirements)
-            flash(f"Warning: {userId.firstName} has not done the following required trainings: {reqListToString}")
+            flash(f"{userId.firstName} Registered. Warning! has not done the following required trainings: {reqListToString}")
 
         else:
             reqListToString = str(listOfRequirements[0])
             reqListToString = 'Berea Buddies'
-            flash(f"Warning: {userId.firstName} has not done the following required trainings: {reqListToString}")
+            flash(f"{userId.firstName} Registered. Warning! has not done the following required trainings: {reqListToString}")
 
     else:
         # flash("Successfully registered for event!")
@@ -46,3 +46,7 @@ def volunteerRegister():
         RSVPupdate.execute()
         flash("Successfully registered for event!","success")
     return redirect(url_for("admin.editEvent", eventId=eventId, program=program))
+
+    #new route
+    #new function
+    #this is where the function has to be hastoRemove = Model.delete_instance(hasRSVPed)
