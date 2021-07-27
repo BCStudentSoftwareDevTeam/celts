@@ -33,7 +33,6 @@ function toggleFullscreen() {                                     // Source: htt
         wscript.SendKeys("{F11}");
       }
     }
-    hideElements();
   }
   $('#submitScannerData').focus();
 };
