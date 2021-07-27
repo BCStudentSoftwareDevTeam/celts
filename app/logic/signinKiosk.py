@@ -11,13 +11,24 @@ def sendUserData(bnumber, eventid, programid):
     bNumberToUser = User.get(User.bnumber == bnumber)
     if not isEligibleForProgram(programid, bNumberToUser):
         userStatus = "banned"
+
     elif ((EventParticipant.select(EventParticipant.user)
                          .join(User)
                          .where(EventParticipant.attended, User.bnumber == bnumber, EventParticipant.event == eventid))
                          .exists()):
         userStatus = "already in"
+
     else:
-        (EventParticipant.update({EventParticipant.attended: True})
-                         .where(EventParticipant.user == bNumberToUser, EventParticipant.event == eventid)).execute()
         userStatus = "success"
+        if EventParticipant.get_or_none(EventParticipant.user == bNumberToUser, EventParticipant.event == eventid):
+            (EventParticipant.update({EventParticipant.attended: True})
+                             .where(EventParticipant.user == bNumberToUser, EventParticipant.event == eventid)).execute()
+
+        else:
+            EventParticipant.insert([{EventParticipant.user: bNumberToUser,
+                                      EventParticipant.event: eventid,
+                                      EventParticipant.rsvp: False,
+                                      EventParticipant.attended: True,
+                                      EventParticipant.hoursEarned: 0}]).execute()
+
     return bNumberToUser, userStatus
