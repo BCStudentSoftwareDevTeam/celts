@@ -560,6 +560,13 @@ eventParticipants = [
     },
     {
         "user": "khatts",
+        "event": 3,
+        "rsvp": True,
+        "attended": False,
+        "hoursEarned": 3,
+    },
+    {
+        "user": "khatts",
         "event": 2,
         "rsvp": True,
         "attended": True,
