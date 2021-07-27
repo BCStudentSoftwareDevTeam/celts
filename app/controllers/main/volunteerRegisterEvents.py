@@ -16,8 +16,9 @@ def volunteerRegister():
     eventData = request.form
     userId = User.get(User.username == g.current_user)
     eventId = eventData['eventId']
+    program = eventData['programId']
     isEligible, listOfRequirements = userRsvpForEvent(userId, eventId)
-    print(listOfRequirements)
+
     if not isEligible: # if they are banned
         flash(f"Cannot RSVP: {userId.firstName} is banned")
 
@@ -39,12 +40,9 @@ def volunteerRegister():
 
     else:
         # flash("Successfully registered for event!")
-        print("nice")
         RSVPupdate =(EventParticipant.update({EventParticipant.rsvp: True})
                          .where(EventParticipant.user == userId, EventParticipant.event == eventId))
         print(RSVPupdate)
         RSVPupdate.execute()
         flash("Successfully registered for event!","success")
-        print('nice')
-    # return ''
-    return redirect(url_for("admin.addParticipants")) #FIXME: Have this redirect to the right page
+    return redirect(url_for("admin.editEvent", eventId=eventId, program=program))

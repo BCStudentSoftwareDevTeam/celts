@@ -3,6 +3,7 @@ from flask import Flask, redirect, flash
 from app.controllers.admin.createEvents import createEvent
 from app.models.program import Program
 from app.models.event import Event
+from app.models.eventParticipant import EventParticipant
 from app.models.term import Term
 from app.controllers.admin import admin_bp
 from app.logic.getAllFacilitators import getAllFacilitators
@@ -43,6 +44,9 @@ def editEvent(program, eventId):
     isTraining = "Checked" if eventInfo.isTraining else ""
     isRsvpRequired = "Checked" if eventInfo.isRsvpRequired else ""
     isService = "Checked" if eventInfo.isService else ""
+    hasRSVPed = EventParticipant.get_or_none(EventParticipant.user == g.current_user, EventParticipant.event == eventInfo)
+    # hastoRemove = Model.delete_instance(hasRSVPed)
+
 
     try:
         program = Program.get_by_id(program)
@@ -61,7 +65,8 @@ def editEvent(program, eventId):
                             isPrerequisiteForProgram = isPrerequisiteForProgram,
                             isTraining = isTraining,
                             isRsvpRequired = isRsvpRequired,
-                            isService = isService)
+                            isService = isService,
+                            hasRSVPed = hasRSVPed)
 
 
 # @admin_bp.route('/rsvpForEvent', methods=['POST'])

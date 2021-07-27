@@ -166,8 +166,12 @@
           <button type="submit" class="btn btn-primary">save</button>
           <!-- <button type="submit" style="margin-top: 1.5em" class="btn btn-primary float-end " >Save</button> -->
           {% elif user.isStudent %}
-          <button type="submit" class="btn btn-primary">RSVP</button>
-          <!-- <button type="submit" style="margin-top: 1.5em" class="btn btn-primary float-end ">RSVP</button> -->
+            {% if hasRSVPed %}
+              <button type="submit" class="btn btn-primary">Remove RSVP</button>
+            {% else %}
+              <button type="submit" class="btn btn-primary" >RSVP</button>
+            <!-- <button type="submit" style="margin-top: 1.5em" class="btn btn-primary float-end ">RSVP</button> -->
+            {% endif %}
           {% endif %}
         </div>
       </div>
