@@ -2,6 +2,8 @@ import pytest
 from app.logic.adminNewEvent import setValueForUncheckedBox, createNewEvent
 from peewee import OperationalError, IntegrityError
 from app.models.event import Event
+from app.models.program import Program
+from app.models.programEvent import ProgramEvent
 from app.models.facilitator import Facilitator
 
 
@@ -45,28 +47,27 @@ def test_createNewEvent():
 
     # if valid is not added to the dict
     with pytest.raises(KeyError):
-        createdEvent = createNewEvent(eventInfo)
+        createNewEvent(eventInfo)
 
     # if 'valid' is not True
     eventInfo['valid'] = False
     with pytest.raises(Exception):
-        createdEvent = createNewEvent(eventInfo)
-
+        createNewEvent(eventInfo)
 
     #test that the event and facilitators are added successfully
     eventInfo['valid'] = True
     createdEvent = createNewEvent(eventInfo)
-    createdEventExists = (Event.select().where(Event.id == createdEvent.id)).exists()
-    assert createdEventExists
+    assert createdEvent.singleProgram.id == 1
 
-    createdEventFacilitator = Facilitator.select().where(Facilitator.user == eventInfo['eventFacilitator'], Facilitator.event == createdEvent.id)
-    eventFacilitatorExists = createdEventFacilitator.exists()
-    assert eventFacilitatorExists
+    createdEventFacilitator = Facilitator.get(user=eventInfo['eventFacilitator'], event=createdEvent)
+    assert createdEventFacilitator # kind of redundant, as the previous line will throw an exception
 
-    (Facilitator.delete().where(Facilitator.id == createdEventFacilitator[0].id)).execute()
-    (Event.delete().where(Event.id == createdEvent.id)).execute()
+    createdEventFacilitator.delete_instance()
+    ProgramEvent.delete().where(ProgramEvent.event_id == createdEvent.id).execute()
+    Event.delete().where(Event.id == createdEvent.id).execute()
 
-    # test foregin key username for facilitator (user does not exist)
+    # test bad username for facilitator (user does not exist)
     eventInfo["eventFacilitator"] = "jarjug"
     with pytest.raises(IntegrityError):
-        alertMessage = createNewEvent(eventInfo)
+        createNewEvent(eventInfo)
+

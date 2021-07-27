@@ -1,4 +1,7 @@
 from app.models.event import Event
+from app.models.program import Program
+from app.models.programEvent import ProgramEvent
+from app.models import mainDB
 from datetime import *
 from app.models.facilitator import Facilitator
 
@@ -24,7 +27,11 @@ def createNewEvent(newEventData):
 
 
     if newEventData['valid'] == True:
-        eventEntry = Event.create(eventName = newEventData['eventName'],
+        # get the program first so if there's an exception we don't create the other stuff
+        program = Program.get_by_id(newEventData['programId'])
+
+        with mainDB.atomic():
+            newEvent = Event.create(eventName = newEventData['eventName'],
                                   term = newEventData['eventTerm'],
                                   description= newEventData['eventDescription'],
                                   timeStart = newEventData['eventStartTime'],
@@ -36,12 +43,14 @@ def createNewEvent(newEventData):
                                   isTraining = newEventData['eventIsTraining'],
                                   isService = newEventData['eventServiceHours'],
                                   startDate =  newEventData['eventStartDate'],
-                                  endDate =  newEventData['eventEndDate'],
-                                  program = newEventData['programId'])
+                                  endDate =  newEventData['eventEndDate'])
 
-        facilitatorEntry = Facilitator.create(user = newEventData['eventFacilitator'],
-                                                  event = eventEntry)
+
+            programEvent = ProgramEvent.create(program=program, event=newEvent)
+
+            facilitatorEntry = Facilitator.create(user = newEventData['eventFacilitator'],
+                                                      event = newEvent)
     else:
-        raise Exception("InvalidData")
+        raise Exception("Invalid Data")
 
-    return (eventEntry)
+    return newEvent
