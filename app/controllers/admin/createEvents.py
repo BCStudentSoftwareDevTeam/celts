@@ -30,7 +30,7 @@ def createEvent():
 
 
         # function to validate data
-        dataIsValid, validationErrorMessage = validateNewEventData(newEventData)
+        dataIsValid, validationErrorMessage, newEventData = validateNewEventData(newEventData)
 
         if dataIsValid:
             createNewEvent(newEventData)
