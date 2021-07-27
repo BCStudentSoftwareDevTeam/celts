@@ -3,7 +3,7 @@
 
 {% block scripts %}
   {{super()}}
-
+<script src="/static/js/searchStudent.js"></script>
 {% endblock %}
 
 {% block styles %}
@@ -14,13 +14,17 @@
 
 {% block app_content %}
 
-<h1 >Student Search Page </h1>
-  <div class="input-group h-100 row align-items-center">
-    <div class="form-group input-group-x form-outline ui-widget" style="width:50%; ">
-      <input type="input" id="addVolunteerInput" class="form-control" placeholder="Search" oninput="searchTrackHoursVolunteers()" autocomplete="off"/>
+<h1 align="center">Student Search Page</h1><br>
+<div class="container">
+  <div class="input-group justify-content-center row">
+    <div class="row mr-auto ml-auto d-inline-flex">
+      <div class="p-0 col-5 form-group input-group-x form-outline ui-widget">
+        <input type="input" id="searchStudentsInput" class="form-control" placeholder="Search" oninput="searchStudents()" autocomplete="off"/>
+      </div>
+      <button type="button" class="p-0 row-1 btn btn-secondary btn-sm m-0" style="width: 1rem;">
+        <i class="bi bi-search"></i>
+      </button>
     </div>
-    <button type="button" class="btn btn-primary btn-sm">
-      <i class="bi bi-search" style="margin-left:0px;"></i>
-    </button>
   </div>
+</div>
 {% endblock %}

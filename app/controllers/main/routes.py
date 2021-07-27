@@ -24,3 +24,8 @@ def volunteerIndicateInterest():
                            programs = programs,
                            interests = interests,
                            interests_ids = interests_ids)
+
+
+@main_bp.route('/profile/<username>', methods = ['GET'])
+def profilePage(username):
+    return f'<h1>Profile page for {username}</h1>'
