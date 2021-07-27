@@ -11,7 +11,7 @@ def createEvent():
 
     if not g.current_user.isCeltsAdmin:
 
-        flash("Only celts admins can create an event!")
+        flash("Only celts admins can create an event!", 'warning')
         return redirect(url_for("admin.createEventPage", program=2)) #FIXME: have this redirect to main programs page (or some appropriate non admin page).
 
     else:
@@ -29,19 +29,19 @@ def createEvent():
 
 
         # function to validate data
-        dataIsValid, validationErrorMessage = validateNewEventData(newEventData)
+        dataIsValid, validationErrorMessage, newEventData = validateNewEventData(newEventData)
 
         if dataIsValid:
             if not eventId:
 
                 createNewEvent(newEventData)
-                flash("Event successfully created!")
+                flash("Event successfully created!", 'success')
                 return redirect(url_for("admin.createEventPage", program=newEventData['programId']))
-
             else:
+                
                 eventEdit(newEventData)
                 flash("Event successfully updated!")
                 return redirect(url_for("admin.createEventPage", program=newEventData['programId']))
         else:
-            flash(validationErrorMessage)
+            flash(validationErrorMessage, 'warning')
             return redirect(url_for("admin.createEventPage", program=2)) #FIXME: have this redirect to main programs page (or some appropriate non admin page).
