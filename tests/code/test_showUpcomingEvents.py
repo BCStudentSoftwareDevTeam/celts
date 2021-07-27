@@ -14,12 +14,14 @@ def test_getsCorrectUpcomingEvent():
     testDate = datetime.strptime("2021-08-01 5:00","%Y-%m-%d %H:%M")
 
     user = "khatts"
-    upcomingEvent = getUpcomingEventsForUser(user)
-    assert "Empty Bowls Spring" == upcomingEvent[0].eventName
+    events = getUpcomingEventsForUser(user, asOf=testDate)
+    assert len(events) == 3
+    assert "Empty Bowls Spring" == events[0].eventName
 
     user = "ramsayb2"
-    upcomingEvent = getUpcomingEventsForUser(user)
-    assert "Berea Buddies" == upcomingEvent[0].program.programName
+    events = getUpcomingEventsForUser(user, asOf=testDate)
+    assert len(events) == 4
+    assert "Making Bowls" == events[0].eventName
 
 @pytest.mark.integration
 def test_userWithNoInterestedEvent():
