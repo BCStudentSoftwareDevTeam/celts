@@ -84,7 +84,7 @@
                    onChange='toggleTrackHoursInputBox(this)' {% if participant.attended == 1 %} checked  {%endif%}></td>
         <td>
           {% if participant.user.username not in attendedTraining and trlist%}
-            <span data-bs-toggle="tooltip" title="Did Not Complete All Prerequesites">
+            <span data-bs-toggle="tooltip" title="Did Not Complete All Trainings">
             <span style="color:red" class="bi bi-exclamation-triangle"></span></span>
           {% endif %}
         </td>

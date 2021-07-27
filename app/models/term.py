@@ -6,3 +6,4 @@ class Term(baseModel):
     academicYear = CharField()
     isBreak = BooleanField(default=False)
     isSummer = BooleanField(default=False)
+    isCurrentTerm = BooleanField(default=False)
