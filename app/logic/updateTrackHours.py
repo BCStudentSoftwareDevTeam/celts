@@ -41,3 +41,23 @@ def updateTrackHours(participantData):
                 raise Exception("Volunteer does not exist")
         else:
             break
+
+
+
+def addVolunteerToEvent(user, volunteerEventID, eventLengthInHours):
+    '''
+    Adds a volunteer to the eventparticipant table database after a search and click to 'Add participant' button
+    param: user- string containing first name, last name, and username (format: "<firstName> <lastName> (<username>)")
+           volunteerEventID - id of the event the volunteer is being registered for
+           eventLengthInHours - how long the event lasts (how may hours to give the student) (type: float)
+    '''
+    try:
+        user = user.strip("()")
+        userName=user.split('(')[-1]
+
+        if not EventParticipant.get_or_none(user=userName, event = volunteerEventID):
+            EventParticipant.create(user=userName, event = volunteerEventID, attended = True, hoursEarned = eventLengthInHours)
+        return True
+
+    except Exception as e:
+        return False

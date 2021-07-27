@@ -51,24 +51,24 @@ def test_addVolunteerToEvent():
     eventLengthInHours = 67
     #test that volunteer is already registered for the event
     volunteerToEvent = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
-    assert volunteerToEvent == "Volunteer already exists."
+    assert volunteerToEvent == True
 
     #test for adding user as a participant to the event
     user = "agliullovak"
     volunteerToEvent = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
-    assert volunteerToEvent == "Volunteer successfully added!"
+    assert volunteerToEvent == True
     (EventParticipant.delete().where(EventParticipant.user == user, EventParticipant.event == volunteerEventID)).execute()
 
     # test for username that is not in the database
     user = "jarjug"
     volunteerToEvent = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
-    assert volunteerToEvent == ("Error when adding volunteer", 500)
+    assert volunteerToEvent == False
 
     # test for event that does not exsit
     user = "agliullovak"
     volunteerEventID = 5006
     volunteerToEvent = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
-    assert volunteerToEvent == ("Error when adding volunteer", 500)
+    assert volunteerToEvent == False
 
 
 @pytest.mark.integration

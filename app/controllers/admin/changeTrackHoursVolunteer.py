@@ -4,7 +4,7 @@ from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchVolunteers import searchVolunteers
-from app.logic.updateTrackHours import updateTrackHours
+from app.logic.updateTrackHours import updateTrackHours, addVolunteerToEvent
 from app.models.user import User
 from peewee import *
 
@@ -33,30 +33,15 @@ def updateHours(programID, eventID):
 
 
 @admin_bp.route('/addVolunteerToEvent/<user>/<volunteerEventID>/<eventLengthInHours>', methods = ['POST'])
-def addVolunteerToEvent(user, volunteerEventID, eventLengthInHours):
-    '''
-    Adds a volunteer to the eventparticipant table database after a search and click to 'Add participant' button
-    param: user- string containing first name, last name, and username (format: "<firstName> <lastName> (<username>)")
-           volunteerEventID - id of the event the volunteer is being registered for
-           eventLengthInHours - how long the event lasts (how may hours to give the student) (type: float)
-    '''
-    try:
-        user = user.strip("()")
-        userName=user.split('(')[-1]
-
-        alreadyVolunteered = (EventParticipant.select().where(EventParticipant.user==userName, EventParticipant.event==volunteerEventID)).exists()
-        if alreadyVolunteered:
-            flash("Volunteer already exists.", "warning")
-            return "Volunteer already exists."
-
-        else:
-            EventParticipant.create(user=userName, event = volunteerEventID, attended = True, hoursEarned = eventLengthInHours)
-            flash("Volunteer successfully added!", "success")
-            return "Volunteer successfully added!"
-
-    except Exception as e:
+def addVolunteer(user, volunteerEventID, eventLengthInHours):
+    succesfullyAddedVolunteer = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
+    if succesfullyAddedVolunteer:
+        flash("Volunteer successfully added!", "success")
+    else:
         flash("Error when adding volunteer", "danger")
-        return "Error when adding volunteer", 500
+    return ""
+
+
 
 
 @admin_bp.route('/removeVolunteerFromEvent/<user>/<eventID>', methods = ['POST'])
