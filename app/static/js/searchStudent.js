@@ -28,10 +28,8 @@ function searchStudents(){
        var user = ui.item.value
        username = user.split(" ")
        console.log(username[2].slice(1, -1))
-       $.ajax({
-         url: "/volunteerProfile/" + username[2].slice(1, -1),
-         type: "POST",
-       })
+       $("#searchStudentsInput").val(ui.item.value)
+       $('#searchStudent').submit()
 
      }
   });
