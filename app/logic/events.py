@@ -17,7 +17,7 @@ def groupEventsByProgram(eventQuery):
     programs = {}
 
     for event in eventQuery.objects():
-        programs.setdefault(event.programName, []).append(event.description)
+        programs.setdefault(Program.get_by_id(event.program_id), []).append(event)
 
     return programs
 
@@ -25,26 +25,26 @@ def groupEventsByCategory(term):
 
     term = Term.get_by_id(term)
 
-    studentLedEvents = (Event.select(Event, Program)
+    studentLedEvents = (Event.select(Event, Program.id.alias("program_id"))
                              .join(ProgramEvent)
                              .join(Program)
                              .where(Program.isStudentLed,
                                     Event.term == term))
 
-    trainingEvents = (Event.select(Event, Program)
+    trainingEvents = (Event.select(Event, Program.id.alias("program_id"))
                            .join(ProgramEvent)
                            .join(Program)
                            .where(Event.isTraining,
                                   Event.term == term))
 
 
-    bonnerScholarsEvents = (Event.select(Event, Program)
+    bonnerScholarsEvents = (Event.select(Event, Program.id.alias("program_id"))
                                  .join(ProgramEvent)
                                  .join(Program)
                                  .where(Program.isBonnerScholars,
                                         Event.term == term))
 
-    oneTimeEvents = (Event.select(Event, Program)
+    oneTimeEvents = (Event.select(Event, Program.id.alias("program_id"))
                           .join(ProgramEvent)
                           .join(Program)
                           .where(Program.isStudentLed == False,

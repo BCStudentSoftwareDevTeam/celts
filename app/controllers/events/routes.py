@@ -13,17 +13,17 @@ def events(term):
     eventsDict = groupEventsByCategory(term)
     print(eventsDict)
     termName = Term.get_by_id(term).description
-    # print(eventsDict.get("Trainings").keys())
-    # (key for key, vals in eventsDict.items() if item in vals)
+
     return render_template("/events/event_list.html",
-        studentLedEvents = eventsDict.get("Student Led Event"),
-        studentLedPrograms = eventsDict.get("Student Led Event").keys(),
-        trainingEvents = eventsDict.get("Trainings"),
-        trainingPrograms = eventsDict.get("Trainings").keys(),
-        bonnerScholarsEvents = eventsDict.get("Bonner Scholars"),
-        bonnerScholarsPrograms = eventsDict.get("Bonner Scholars").keys(),
-        oneTimeEvents = eventsDict.get("One Time Events"),
-        oneTimePrograms = eventsDict.get("One Time Events").keys(),
+        # studentLedEvents = eventsDict.get("Student Led Events").values(),
+        # studentLedPrograms = eventsDict.get("Student Led Events").keys(),
+        # trainingEvents = eventsDict.get("Trainings").values(),
+        # trainingPrograms = eventsDict.get("Trainings").keys(),
+        # bonnerScholarsEvents = eventsDict.get("Bonner Scholars").values(),
+        # bonnerScholarsPrograms = eventsDict.get("Bonner Scholars").keys(),
+        # oneTimeEvents = eventsDict.get("One Time Events").values(),
+        # oneTimePrograms = eventsDict.get("One Time Events").keys(),
+        eventDict = eventsDict,
         termName = termName,
         user="ramsayb2")
 

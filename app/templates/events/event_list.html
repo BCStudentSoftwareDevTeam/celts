@@ -34,9 +34,9 @@
   </li>
   </ul>
 </div>
-{% macro createAccordion(categoryPrograms, categoryEvents) %}
+{% macro createAccordion(categoryPrograms) %}
   <div class="accordion" id="categoryAccordion">
-    {% for program in categoryPrograms %}
+    {% for program,events in categoryPrograms.items() %}
       <div class="accordion-item">
         <h2 class="accordion-header" id="accordion__header_{{program}}">
           <button class="accordion-button"
@@ -64,8 +64,7 @@
                 </tr>
               </thead>
               <tbody>
-                {% for event in categoryEvents %}
-                  {% if event.program == program %}
+                  {% for event in events%}
                     <tr>
                       <td> <a href="#" class="link-primary">{{event.description}}</a></td> {# FIXME:change href #}
                       <td>{{event.startDate}}</td>
@@ -73,8 +72,7 @@
                       <td>{{event.location}}</td>
                       <td><button type="button" class="btn btn-warning">Email</button></td>
                     </tr>
-                    {% endif %}
-                {% endfor %}
+                  {% endfor %}
               </tbody>
             </table>
           </div>
@@ -86,16 +84,20 @@
 
 <div class="tab-content" id="pills-tabContent">
   <div class="tab-pane fade show active" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
-    {{createAccordion(studentLedPrograms, studentLedEvents)}}
+    {{createAccordion(eventDict["Student Led Events"])}}
+    {# {createAccordion(studentLedPrograms, studentLedEvents)} #}
   </div>
   <div class="tab-pane fade show" id="pills-training" role="tabpanel" aria-labelledby="pills-training-tab">
-    {{createAccordion(trainingPrograms, trainingEvents)}}
+    {{createAccordion(eventDict["Trainings"])}}
+    {# {createAccordion(trainingPrograms, trainingEvents)} #}
   </div>
   <div class="tab-pane fade show" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="pills-bonner-scholars-tab">
-    {{createAccordion(bonnerScholarsPrograms, bonnerScholarsEvents)}}
+    {{createAccordion(eventDict["Bonner Scholars"])}}
+    {# {createAccordion(bonnerScholarsPrograms, bonnerScholarsEvents)} #}
   </div>
   <div class="tab-pane fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
-    {{createAccordion(oneTimePrograms, oneTimeEvents)}}
+    {{createAccordion(eventDict["One Time Events"])}}
+    {# {createAccordion(oneTimePrograms, oneTimeEvents)} #}
   </div>
 </div>
 
