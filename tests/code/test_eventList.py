@@ -14,15 +14,21 @@ def test_termDoesNotExist():
 
 @pytest.mark.integration
 def test_groupEventsByProgram():
-    studentLedEvents = (Event.select(Event, Program)
+    studentLedEvents = (Event.select(Event, Program.id.alias("program_id"))
                              .join(ProgramEvent)
                              .join(Program)
                              .where(Program.isStudentLed,
                                     Event.term == 1))
     groupedEvents = groupEventsByProgram(studentLedEvents)
-    assert groupedEvents == {'Empty Bowls': ['Empty Bowls Spring 2021', 'Berea Buddies Training']}
+    assert groupedEvents == {Program.get_by_id(1): [Event.get_by_id(1), Event.get_by_id(2)]}
 
 @pytest.mark.integration
-def test_correctQuerying():
+def test_groupEventsByCategory():
+    studentLedEvents = (Event.select(Event, Program.id.alias("program_id"))
+                             .join(ProgramEvent)
+                             .join(Program)
+                             .where(Program.isStudentLed,
+                                    Event.term == 1))
+    groupedeventsByCategory = groupEventsByCategory(1)
 
-    assert groupEventsByCategory(3)
+    assert groupedeventsByCategory

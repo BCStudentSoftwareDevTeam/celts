@@ -15,7 +15,7 @@
 
 <h1 class="text-center">Event List for {{termName}}</h1>
 <div>
-  <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+  <ul class="nav nav-pills nav-fill mb-3" id="pills-tab" role="tablist">
   <li class="nav-item" role="presentation">
     <button class="nav-link active" id="studentLedEvents"
     data-bs-toggle="pill" data-bs-target="#pills-student-led" type="button" role="tab" aria-controls="pills-student-led" aria-selected="true">Student Led Service</button>
@@ -42,13 +42,13 @@
           <button class="accordion-button"
                   type="button"
                   data-bs-toggle="collapse"
-                  data-bs-target="#accordion__body_{{program}}"
+                  data-bs-target="#accordion__body_{{program}}_{{ loop.index }}"
                   aria-expanded="true"
                   aria-controls="accordion__body_{{program}}" >
                   {{program.programName}}
           </button>
         </h2>
-        <div id="accordion__body_{{program}}"
+        <div id="accordion__body_{{program}}_{{ loop.index }}"
               class="accordion-collapse collapse"
               aria-labelledby="accordion__header_{{program}}"
               data-bs-parent="#categoryAccordion">
@@ -64,7 +64,7 @@
                 </tr>
               </thead>
               <tbody>
-                  {% for event in events%}
+                  {% for event in events %}
                     <tr>
                       <td> <a href="#" class="link-primary">{{event.description}}</a></td> {# FIXME:change href #}
                       <td>{{event.startDate}}</td>
@@ -85,19 +85,15 @@
 <div class="tab-content" id="pills-tabContent">
   <div class="tab-pane fade show active" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
     {{createAccordion(eventDict["Student Led Events"])}}
-    {# {createAccordion(studentLedPrograms, studentLedEvents)} #}
   </div>
   <div class="tab-pane fade show" id="pills-training" role="tabpanel" aria-labelledby="pills-training-tab">
     {{createAccordion(eventDict["Trainings"])}}
-    {# {createAccordion(trainingPrograms, trainingEvents)} #}
   </div>
   <div class="tab-pane fade show" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="pills-bonner-scholars-tab">
     {{createAccordion(eventDict["Bonner Scholars"])}}
-    {# {createAccordion(bonnerScholarsPrograms, bonnerScholarsEvents)} #}
   </div>
   <div class="tab-pane fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
     {{createAccordion(eventDict["One Time Events"])}}
-    {# {createAccordion(oneTimePrograms, oneTimeEvents)} #}
   </div>
 </div>
 
