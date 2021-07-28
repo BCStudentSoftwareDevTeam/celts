@@ -17,7 +17,7 @@ def getEventLengthInHours(startTime, endTime, eventDate):
     return eventLengthInHours
 
 
-def updateTrackVolunteers(participantData):
+def updateVolunteers(participantData):
     """
     updates the events participant table with data from the track Volunteer webpage
 
@@ -34,29 +34,30 @@ def updateTrackVolunteers(participantData):
                         (EventParticipant.update({EventParticipant.hoursEarned: float(participantData['inputHours_'+ username]),EventParticipant.attended: True}).where(EventParticipant.event == participantData['event'],
                                                  EventParticipant.user == participantData[f'username{user}'])).execute()
 
-                except:   #if there is no checkbox for user then they are not present for the event.
+                except (KeyError):   #if there is no checkbox for user then they are not present for the event.
                     (EventParticipant.update({EventParticipant.attended: False, EventParticipant.hoursEarned: 0}).where(EventParticipant.event == participantData['event'],
                         EventParticipant.user == participantData[f'username{user}'])).execute()
+                except Exception as e:
+                    print(e)
+                    return False
             else:
-                raise Exception("Volunteer does not exist")
+                return False
         else:
             break
-
+    return True
 
 
 def addVolunteerToEvent(user, volunteerEventID, eventLengthInHours):
     '''
+    Adds a volunteer to eventparticipant table if they don't already exist in that table.
     Adds a volunteer to the eventparticipant table database after a search and click to 'Add participant' button
-    param: user- string containing first name, last name, and username (format: "<firstName> <lastName> (<username>)")
+    param: user- string containing username)
            volunteerEventID - id of the event the volunteer is being registered for
            eventLengthInHours - how long the event lasts (how may hours to give the student) (type: float)
     '''
     try:
-        user = user.strip("()")
-        userName=user.split('(')[-1]
-
-        if not EventParticipant.get_or_none(user=userName, event = volunteerEventID):
-            EventParticipant.create(user=userName, event = volunteerEventID, attended = True, hoursEarned = eventLengthInHours)
+        if not EventParticipant.get_or_none(user=user, event = volunteerEventID):
+            EventParticipant.create(user=user, event = volunteerEventID, attended = True, hoursEarned = eventLengthInHours)
         return True
 
     except Exception as e:

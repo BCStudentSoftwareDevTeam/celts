@@ -4,27 +4,26 @@ from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchVolunteers import searchVolunteers
-from app.logic.updateTrackVolunteers import updateTrackVolunteers, addVolunteerToEvent
+from app.logic.updateVolunteers import updateVolunteers, addVolunteerToEvent
 from app.models.user import User
 from peewee import *
 
 @admin_bp.route('/searchVolunteers/<query>', methods = ['GET'])
-def searchTrackVolunteers(query):
+def getVolunteers(query):
     '''Accepts user input and queries the database returning results that matches user search'''
     query = query.strip()
     search = query.upper()
     splitSearch = search.split()
-    try:
-        return searchVolunteers(query)
 
-    except Exception as e:
-        return e, 500
+    return searchVolunteers(query)
+
 
 
 @admin_bp.route('/<programID>/<eventID>/track_volunteers', methods=['POST'])
 def updateVolunteerTable(programID, eventID):
-    updateTrackVolunteersMsg = updateTrackVolunteers(request.form)
-    if updateTrackVolunteersMsg == None:
+
+    volunteerUpdated = updateVolunteers(request.form)
+    if volunteerUpdated:
         flash("Volunteer table succesfully updated")
     else:
         flash("Error adding volunteer")
@@ -34,7 +33,9 @@ def updateVolunteerTable(programID, eventID):
 
 @admin_bp.route('/addVolunteerToEvent/<user>/<volunteerEventID>/<eventLengthInHours>', methods = ['POST'])
 def addVolunteer(user, volunteerEventID, eventLengthInHours):
-    succesfullyAddedVolunteer = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
+    user = user.strip("()")
+    userName=user.split('(')[-1]
+    succesfullyAddedVolunteer = addVolunteerToEvent(userName, volunteerEventID, eventLengthInHours)
     if succesfullyAddedVolunteer:
         flash("Volunteer successfully added!", "success")
     else:

@@ -1,7 +1,7 @@
 import pytest
-from app.logic.updateTrackVolunteers import getEventLengthInHours, updateTrackVolunteers
+from app.logic.updateVolunteers import getEventLengthInHours, updateVolunteers
 from app.models.eventParticipant import EventParticipant
-from app.controllers.admin.changeTrackVolunteer import addVolunteerToEvent
+from app.controllers.admin.changeVolunteer import addVolunteerToEvent
 from datetime import datetime
 
 
@@ -72,21 +72,21 @@ def test_addVolunteerToEvent():
 
 
 @pytest.mark.integration
-def test_updateTrackVolunteers():
+def test_updateVolunteers():
     # tests if the volunteer table gets succesfully updated
     participantData = {'inputHours_agliullovak':100, 'checkbox_agliullovak':"on", 'event':3, 'username1': 'agliullovak'}
-    volunteerTableUpdate = updateTrackVolunteers(participantData)
-    assert volunteerTableUpdate == None
+    volunteerTableUpdate = updateVolunteers(participantData)
+    assert volunteerTableUpdate == True
 
     # tests if user does not exist in the database
     participantData = {'inputHours_jarjug':100, 'checkbox_jarjug':"on", 'event':3, 'username1': 'jarjug'}
-    with pytest.raises(Exception):
-        volunteerTableUpdate = updateTrackVolunteers(participantData)
+    volunteerTableUpdate = updateVolunteers(participantData)
+    assert volunteerTableUpdate == False
 
     # tests for the case when the checkbox is not checked (user is not present)
     participantData = {'inputHours_agliullovak':100, 'event':3, 'username1': 'agliullovak'}
-    volunteerTableUpdate = updateTrackVolunteers(participantData)
-    assert volunteerTableUpdate == None
+    volunteerTableUpdate = updateVolunteers(participantData)
+    assert volunteerTableUpdate == True
 
     #Undo the above test changes
     participantData = {'inputHours_agliullovak':2, 'checkbox_agliullovak':"on", 'event':3, 'username1': 'agliullovak'}

@@ -9,8 +9,8 @@ from app.models.program import Program
 from app.models.term import Term
 from app.logic.getAllFacilitators import getAllFacilitators
 from app.controllers.admin.createEvents import createEvent
-from app.logic.updateTrackVolunteers import getEventLengthInHours
-from app.controllers.admin.changeTrackVolunteer import searchTrackVolunteers
+from app.logic.updateVolunteers import getEventLengthInHours
+from app.controllers.admin.changeVolunteer import getVolunteers
 
 
 @admin_bp.route('/testing_things', methods=['GET'])
@@ -27,11 +27,8 @@ def trackVolunteersPage(programID, eventID):
 
             event = Event.get_by_id(eventID)
             program = Program.get_by_id(programID)
-            startTime = event.timeStart
-            endTime = event.timeEnd
-            eventDate = event.startDate #start date and end date will be the same
 
-            eventLengthInHours = getEventLengthInHours(startTime, endTime, eventDate)
+            eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
 
 
             return render_template("/events/trackVolunteers.html",
