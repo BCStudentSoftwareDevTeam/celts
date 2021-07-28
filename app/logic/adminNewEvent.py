@@ -31,7 +31,7 @@ def calculateRecurringEventFrequency(recurringEventInfo):
                                 "week":counter})
         startDate += timedelta(days=7)
 
-    return json.dumps(recurringEvents)
+    return recurringEvents
 
 
 def setValueForUncheckedBox(eventData):
@@ -72,8 +72,7 @@ def createNewEvent(newEventData):
                                                   isTraining = newEventData['eventIsTraining'],
                                                   isService = newEventData['eventServiceHours'],
                                                   startDate =  newEventData[f"week{entry}"],
-                                                  endDate =  newEventData[f"week{entry}"],
-                                                  program = newEventData['programId'])
+                                                  endDate =  newEventData[f"week{entry}"])
 
                         programEvent = ProgramEvent.create(program=program, event=newEvent)
 
@@ -96,8 +95,7 @@ def createNewEvent(newEventData):
                                           isTraining = newEventData['eventIsTraining'],
                                           isService = newEventData['eventServiceHours'],
                                           startDate =  newEventData['eventStartDate'],
-                                          endDate =  newEventData['eventEndDate'],
-                                          program = newEventData['programId'])
+                                          endDate =  newEventData['eventEndDate'])
 
                 programEvent = ProgramEvent.create(program=program, event=newEvent)
 

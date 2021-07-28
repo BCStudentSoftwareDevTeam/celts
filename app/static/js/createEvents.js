@@ -50,7 +50,6 @@ $(document).ready(function(){
 
             for (var event of recurringEvents){
               recurringTable.append("<tr><td>"+event.eventName+"</td><td><input name='week"+event.week+"' type='hidden' value='"+event.Date+"'>"+event.Date+"</td></tr>");
-              console.log(event)
               }
           },
           error: function(error){
