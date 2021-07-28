@@ -7,14 +7,15 @@ from app.logic.validateNewEvent import validateNewEventData
 from flask import flash, redirect, url_for, g
 import json
 
+
 @admin_bp.route('/makeRecurringEvents', methods=['POST'])
+def addRecurringEvents():
+    recurringEventInfo = request.form.copy()
+    recurringEvents = calculateRecurringEventFrequency(recurringEventInfo)
+    return json.dumps(recurringEvents)
+
 @admin_bp.route('/createEvent', methods=['POST'])
 def createEvent():
-
-    if 'makeRecurringEvents' in request.url_rule.rule:
-        recurringEventInfo = request.form.copy()
-        recurringEvents = calculateRecurringEventFrequency(recurringEventInfo)
-        return json.dumps(recurringEvents)
 
     if not g.current_user.isCeltsAdmin:
 
@@ -29,15 +30,6 @@ def createEvent():
         if newEventData['eventEndDate'] == '':
             newEventData['eventEndDate'] = newEventData['eventStartDate']
 
-        # convert date into datetime object (Y-m-d) for the backend
-        newEventData['eventStartDate'] = parser.parse(newEventData['eventStartDate'])
-        newEventData['eventEndDate'] = parser.parse(newEventData['eventEndDate'])
-
-        for entry in range(1,len(newEventData)):
-            if f"week{entry}" in newEventData:
-                newEventData[f"week{entry}"] = parser.parse(newEventData[f"week{entry}"])
-            else:
-                break
 
         # function to validate data
         dataIsValid, validationErrorMessage, newEventData = validateNewEventData(newEventData)

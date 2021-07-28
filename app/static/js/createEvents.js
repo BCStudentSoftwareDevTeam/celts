@@ -49,7 +49,7 @@ $(document).ready(function(){
             $("#recurringEventsTable tbody tr").remove();
 
             for (var event of recurringEvents){
-              recurringTable.append("<tr><td>"+event.eventName+"</td><td><input name='week"+event.week+"' type='hidden' value='"+event.Date+"'>"+event.Date+"</td></tr>");
+              recurringTable.append("<tr><td>"+event.eventName+"</td><td><input name='week"+event.week+"' type='hidden' value='"+event.date+"'>"+event.date+"</td></tr>");
               }
           },
           error: function(error){
