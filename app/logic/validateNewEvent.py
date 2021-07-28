@@ -1,6 +1,6 @@
 from app.models.event import Event
 from datetime import *
-
+from dateutil import parser
 def validateNewEventData(newEventData, checkExists=True):
 
     if  newEventData['eventEndDate'] <  newEventData['eventStartDate']:
@@ -17,12 +17,6 @@ def validateNewEventData(newEventData, checkExists=True):
     if not newEventData['eventRSVP'] == 'on':
         if not isinstance(newEventData['eventRSVP'], bool):
             return (False, "Event RSVP must be a boolean", newEventData)
-
-    if not isinstance(newEventData['eventStartDate'], datetime):
-        return (False, "Start date must be a datetime", newEventData)
-
-    if not isinstance(newEventData['eventEndDate'], datetime):
-        return (False, "End date must be a datetime", newEventData)
 
     if not newEventData['eventRequiredForProgram'] == 'on':
         if not isinstance(newEventData['eventRequiredForProgram'], bool):
@@ -42,7 +36,7 @@ def validateNewEventData(newEventData, checkExists=True):
     # Event name, Description and Event Start date
     event = Event.select().where((Event.eventName == newEventData['eventName']) &
                              (Event.description == newEventData['eventDescription']) &
-                             (Event.startDate == newEventData['eventStartDate']))
+                             (Event.startDate == parser.parse(newEventData['eventStartDate'])))
 
     if checkExists and event.exists():
         return (False, "This event already exists", newEventData)
