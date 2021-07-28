@@ -1,7 +1,7 @@
 import pytest
-from app.logic.updateTrackHours import getEventLengthInHours, updateTrackHours
+from app.logic.updateTrackVolunteers import getEventLengthInHours, updateTrackVolunteers
 from app.models.eventParticipant import EventParticipant
-from app.controllers.admin.changeTrackHoursVolunteer import addVolunteerToEvent
+from app.controllers.admin.changeTrackVolunteer import addVolunteerToEvent
 from datetime import datetime
 
 
@@ -72,20 +72,20 @@ def test_addVolunteerToEvent():
 
 
 @pytest.mark.integration
-def test_updateTrackHours():
+def test_updateTrackVolunteers():
     # tests if the volunteer table gets succesfully updated
     participantData = {'inputHours_agliullovak':100, 'checkbox_agliullovak':"on", 'event':3, 'username1': 'agliullovak'}
-    volunteerTableUpdate = updateTrackHours(participantData)
+    volunteerTableUpdate = updateTrackVolunteers(participantData)
     assert volunteerTableUpdate == None
 
     # tests if user does not exist in the database
     participantData = {'inputHours_jarjug':100, 'checkbox_jarjug':"on", 'event':3, 'username1': 'jarjug'}
     with pytest.raises(Exception):
-        volunteerTableUpdate = updateTrackHours(participantData)
+        volunteerTableUpdate = updateTrackVolunteers(participantData)
 
     # tests for the case when the checkbox is not checked (user is not present)
     participantData = {'inputHours_agliullovak':100, 'event':3, 'username1': 'agliullovak'}
-    volunteerTableUpdate = updateTrackHours(participantData)
+    volunteerTableUpdate = updateTrackVolunteers(participantData)
     assert volunteerTableUpdate == None
 
     #Undo the above test changes
