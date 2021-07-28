@@ -1,4 +1,7 @@
 from app.models.event import Event
+from app.models.program import Program
+from app.models.programEvent import ProgramEvent
+from app.models import mainDB
 from datetime import *
 from app.models.facilitator import Facilitator
 from app.controllers.admin import admin_bp
@@ -42,52 +45,39 @@ def setValueForUncheckedBox(eventData):
     return eventData
 
 def createNewEvent(newEventData):
+    """
+    Creates a new event and facilitator for that event
+    The newEventData must have gone through the validateNewEventData function
+    for 'valid' to be True.
 
-    try:
-        if newEventData['eventIsRecurring'] == 'on':
-            for entry in range(1,len(newEventData)):
-                if f"week{entry}" in newEventData:
-                    eventEntry = Event.create(eventName = (newEventData['eventName']+f" Week {entry}"),
-                                              term = newEventData['eventTerm'],
-                                              description= newEventData['eventDescription'],
-                                              timeStart = newEventData['eventStartTime'],
-                                              timeEnd = newEventData['eventEndTime'],
-                                              location = newEventData['eventLocation'],
-                                              isRecurring = newEventData['eventIsRecurring'],
-                                              isRsvpRequired = newEventData['eventRSVP'],
-                                              isPrerequisiteForProgram = newEventData['eventRequiredForProgram'],
-                                              isTraining = newEventData['eventIsTraining'],
-                                              isService = newEventData['eventServiceHours'],
-                                              startDate =  newEventData[f"week{entry}"],
-                                              endDate =  newEventData[f"week{entry}"],
-                                              program = newEventData['programId'])
+    param: newEventData - dict with the event information
+    """
 
-                    facilitatorEntry = Facilitator.create(user = newEventData['eventFacilitator'],
-                                                              event = eventEntry)
-                else:
-                    break
+    if newEventData['valid'] == True:
+        # get the program first so if there's an exception we don't create the other stuff
+        program = Program.get_by_id(newEventData['programId'])
 
-            return ("Recurring Events successfully created!")
-        else:
-            eventEntry = Event.create(eventName = newEventData['eventName'],
-                                      term = newEventData['eventTerm'],
-                                      description= newEventData['eventDescription'],
-                                      timeStart = newEventData['eventStartTime'],
-                                      timeEnd = newEventData['eventEndTime'],
-                                      location = newEventData['eventLocation'],
-                                      isRecurring = newEventData['eventIsRecurring'],
-                                      isRsvpRequired = newEventData['eventRSVP'],
-                                      isPrerequisiteForProgram = newEventData['eventRequiredForProgram'],
-                                      isTraining = newEventData['eventIsTraining'],
-                                      isService = newEventData['eventServiceHours'],
-                                      startDate =  newEventData['eventStartDate'],
-                                      endDate =  newEventData['eventEndDate'],
-                                      program = newEventData['programId'])
+        with mainDB.atomic():
+            newEvent = Event.create(eventName = newEventData['eventName'],
+                                  term = newEventData['eventTerm'],
+                                  description= newEventData['eventDescription'],
+                                  timeStart = newEventData['eventStartTime'],
+                                  timeEnd = newEventData['eventEndTime'],
+                                  location = newEventData['eventLocation'],
+                                  isRecurring = newEventData['eventIsRecurring'],
+                                  isRsvpRequired = newEventData['eventRSVP'],
+                                  isPrerequisiteForProgram = newEventData['eventRequiredForProgram'],
+                                  isTraining = newEventData['eventIsTraining'],
+                                  isService = newEventData['eventServiceHours'],
+                                  startDate =  newEventData['eventStartDate'],
+                                  endDate =  newEventData['eventEndDate'])
+
+
+            programEvent = ProgramEvent.create(program=program, event=newEvent)
 
             facilitatorEntry = Facilitator.create(user = newEventData['eventFacilitator'],
-                                                      event = eventEntry)
+                                                      event = newEvent)
+    else:
+        raise Exception("Invalid Data")
 
-            return ("Event successfully created!")
-
-    except:
-        raise
+    return newEvent
