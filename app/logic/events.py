@@ -21,7 +21,10 @@ def groupEventsByProgram(eventQuery):
 
     return programs
 
-def groupingEvents(term):
+def groupEventsByCategory(term):
+
+    term = Term.get_by_id(term)
+
     studentLedEvents = (Event.select(Event, Program)
                              .join(ProgramEvent)
                              .join(Program)
@@ -49,12 +52,8 @@ def groupingEvents(term):
                                  Program.isBonnerScholars == False,
                                  Event.term == term))
 
-    # termName = Term.get_by_id(term).description
-
     categorizedEvents = {"Student Led Events" : groupEventsByProgram(studentLedEvents),
                          "Trainings" : groupEventsByProgram(trainingEvents),
                          "Bonner Scholars" : groupEventsByProgram(bonnerScholarsEvents),
                          "One Time Events" : groupEventsByProgram(oneTimeEvents)}
-
-    print(categorizedEvents)
     return categorizedEvents
