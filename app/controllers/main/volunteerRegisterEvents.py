@@ -5,7 +5,8 @@ from app.controllers.admin import admin_bp
 from app.controllers.events import events_bp
 from app.logic.userRsvpForEvent import userRsvpForEvent
 from flask import flash, request, redirect, url_for, g
-# from flask import Fl
+
+
 
 @admin_bp.route('/rsvpForEvent', methods=['POST'])
 def volunteerRegister():
@@ -23,7 +24,6 @@ def volunteerRegister():
         flash(f"Cannot RSVP: {userId.firstName} is banned")
 
     elif len(listOfRequirements) > 0:
-        print(listOfRequirements)
         if len(listOfRequirements) >= 3:
             reqListToString = ', '.join(listOfRequirements[:-1])
             reqListToString += ' or ' + listOfRequirements[-1]
@@ -37,16 +37,27 @@ def volunteerRegister():
             reqListToString = str(listOfRequirements[0])
             reqListToString = 'Berea Buddies'
             flash(f"{userId.firstName} Registered. Warning! has not done the following required trainings: {reqListToString}")
-
+    #if they are eligible
     else:
-        # flash("Successfully registered for event!")
         RSVPupdate =(EventParticipant.update({EventParticipant.rsvp: True})
                          .where(EventParticipant.user == userId, EventParticipant.event == eventId))
-        print(RSVPupdate)
         RSVPupdate.execute()
         flash("Successfully registered for event!","success")
     return redirect(url_for("admin.editEvent", eventId=eventId, program=program))
 
-    #new route
-    #new function
-    #this is where the function has to be hastoRemove = Model.delete_instance(hasRSVPed)
+@admin_bp.route('/rsvpRemove', methods=['POST'])
+def RemoveRSVP():
+    """
+    This function deletes the user ID and event ID from database when RemoveRSVP  is clicked
+    """
+
+    eventData = request.form
+    userId = User.get(User.username == g.current_user)
+    eventId = eventData['eventId']
+    program = eventData['programId']
+
+    currentEventParticipant = EventParticipant.get(EventParticipant.user == userId, EventParticipant.event == eventId)
+
+    currentEventParticipant.delete_instance()
+    flash("Successfully unregistered for event!","danger")
+    return redirect(url_for("admin.editEvent", eventId=eventId, program=program))

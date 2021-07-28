@@ -45,7 +45,7 @@ def editEvent(program, eventId):
     isRsvpRequired = "Checked" if eventInfo.isRsvpRequired else ""
     isService = "Checked" if eventInfo.isService else ""
     hasRSVPed = EventParticipant.get_or_none(EventParticipant.user == g.current_user, EventParticipant.event == eventInfo)
-    # hastoRemove = Model.delete_instance(hasRSVPed)
+    
 
 
     try:
@@ -67,7 +67,6 @@ def editEvent(program, eventId):
                             isRsvpRequired = isRsvpRequired,
                             isService = isService,
                             hasRSVPed = hasRSVPed)
-                            # hastoRemove =hastoRemove)
 
 
 # @admin_bp.route('/rsvpForEvent', methods=['POST'])

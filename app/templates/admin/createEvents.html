@@ -21,7 +21,7 @@
     {% endif %}
   </div>
 
-  <form data-toggle="validator" role="form" {% if user.isCeltsAdmin or user.isCeltsStudentStaff%} action="/createEvent" method='POST' {% elif user.isStudent %} action="/rsvpForEvent" method="POST" {%endif%}>
+  <form data-toggle="validator" role="form" {% if user.isCeltsAdmin or user.isCeltsStudentStaff%} action="/createEvent" method='POST' {% elif user.isStudent %} {% if hasRSVPed %} action="/rsvpRemove" method="POST" {% else %} action="/rsvpForEvent" method="POST" {%endif%}{%endif%}>
     <div class="row">
       <div class="col-md-6 col-sm-12 ">
         <div>
