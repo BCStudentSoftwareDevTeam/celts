@@ -10,7 +10,6 @@ class Event(baseModel):
     timeEnd = TimeField()
     location = CharField()
     isRecurring = BooleanField(default=False)
-    isPrerequisiteForProgram = BooleanField(default=False)
     isTraining = BooleanField(default=False)
     isRsvpRequired = BooleanField(default=False)
     isService = BooleanField(default=False)
