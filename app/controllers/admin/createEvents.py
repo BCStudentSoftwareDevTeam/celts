@@ -29,7 +29,7 @@ def createEvent():
 
         # function to validate data
         if eventId:
-            dataIsValid, validationErrorMessage, newEventData = validateNewEventData(newEventData, True)
+            dataIsValid, validationErrorMessage, newEventData = validateNewEventData(newEventData, checkExists=False)
         else:
             dataIsValid, validationErrorMessage, newEventData = validateNewEventData(newEventData)
 

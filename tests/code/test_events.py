@@ -33,7 +33,7 @@ def test_getAllEvents():
 
 
     assert events[0].description == "Empty Bowls Spring 2021"
-    assert events[1].description == "This is a Test"
+    assert events[1].description == "Berea Buddies Training"
     assert events[2].description == "Adopt A Grandparent"
 
 @pytest.mark.integration

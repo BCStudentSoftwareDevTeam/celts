@@ -1,7 +1,7 @@
 from app.models.event import Event
 from datetime import *
 
-def validateNewEventData(newEventData, ignoreExist = False):
+def validateNewEventData(newEventData, checkExists=True):
 
     if  newEventData['eventEndDate'] <  newEventData['eventStartDate']:
         return (False, "Event start date is after event end date", newEventData)
@@ -44,10 +44,7 @@ def validateNewEventData(newEventData, ignoreExist = False):
                              (Event.description == newEventData['eventDescription']) &
                              (Event.startDate == newEventData['eventStartDate']))
 
-    if event.exists():
-        if ignoreExist == True:
-            pass
-
+    if checkExists and event.exists():
         return (False, "This event already exists", newEventData)
 
     newEventData['valid'] = True

@@ -43,7 +43,7 @@ def editEvent(program, eventId):
     facilitators = getAllFacilitators()
     listOfTerms = Term.select()
     eventInfo = Event.get_by_id(eventId)
-    currentFacilitator = Facilitator.get(Facilitator.event == eventId)
+    currentFacilitator = Facilitator.get_or_none(Facilitator.event == eventId)
     deleteButton = "submit"
     hideElement = "hidden"
     isTraining = "Checked" if eventInfo.isTraining else ""
