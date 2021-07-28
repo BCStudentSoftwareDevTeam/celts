@@ -2,11 +2,7 @@ from dateutil import parser
 from app.models.event import Event
 from flask import request
 from app.controllers.admin import admin_bp
-<<<<<<< HEAD
-from app.logic.adminNewEvent import createNewEvent, setValueForUncheckedBox, eventEdit
-=======
 from app.logic.adminNewEvent import createNewEvent, setValueForUncheckedBox, calculateRecurringEventFrequency
->>>>>>> 3d4cb829cfb08ce3125125f28235f717f1d0495d
 from app.logic.validateNewEvent import validateNewEventData
 from flask import flash, redirect, url_for, g
 import json
