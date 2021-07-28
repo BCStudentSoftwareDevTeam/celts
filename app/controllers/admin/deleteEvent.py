@@ -8,11 +8,12 @@ from app.models.facilitator import Facilitator
 from app.models.programEvent import ProgramEvent
 
 def deleteEvent(program, eventId):
-    deleteallInstances = [EventParticipant, Facilitator, OutsideParticipant, ProgramEvent]
+
+    eventStatus = Event.get_or_none(Event.id == eventId)
     try:
 
-        if Event.get_or_none(Event.id == eventId):
-            deleteEvent = Event.get_by_id(eventId)
+        if eventStatus:
+            deleteEvent = eventStatus
             deleteEvent.delete_instance(recursive = True, delete_nullable = True)
 
     except Exception as e:

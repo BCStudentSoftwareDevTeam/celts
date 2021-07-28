@@ -56,25 +56,35 @@ def createNewEvent(newEventData):
 
 def eventEdit(newEventData):
 
-    eventId = newEventData['eventId']
-    eventData = {
-            "id": eventId,
-            "program": newEventData['programId'],
-            "term": newEventData['eventTerm'],
-            "eventName": newEventData['eventName'],
-            "description": newEventData['eventDescription'],
-            "timeStart": newEventData['eventStartTime'],
-            "timeEnd": newEventData['eventEndTime'],
-            "location": newEventData['eventLocation'],
-            "isRecurring": newEventData['eventIsRecurring'],
-            "isPrerequisiteForProgram": newEventData['eventRequiredForProgram'],
-            "isTraining": newEventData['eventIsTraining'],
-            "isRsvpRequired": newEventData['eventRSVP'],
-            "isService": newEventData['eventServiceHours'],
-            "startDate": newEventData['eventStartDate'],
-            "endDate": newEventData['eventEndDate']
-        }
-    eventEntry = Event.update(**eventData).where(Event.id == eventId).execute()
+    if newEventData['valid'] == True:
 
-    facilitatorEntry = Facilitator.create(user = newEventData['eventFacilitator'],
-                                          event = eventEntry )
+        eventId = newEventData['eventId']
+        eventData = {
+                "id": eventId,
+                "term": newEventData['eventTerm'],
+                "eventName": newEventData['eventName'],
+                "description": newEventData['eventDescription'],
+                "timeStart": newEventData['eventStartTime'],
+                "timeEnd": newEventData['eventEndTime'],
+                "location": newEventData['eventLocation'],
+                "isRecurring": newEventData['eventIsRecurring'],
+                "isTraining": newEventData['eventIsTraining'],
+                "isRsvpRequired": newEventData['eventRSVP'],
+                "isService": newEventData['eventServiceHours'],
+                "startDate": newEventData['eventStartDate'],
+                "endDate": newEventData['eventEndDate']
+
+            }
+        eventEntry = Event.update(**eventData).where(Event.id == eventId).execute()
+
+        if Facilitator.get_or_none(Facilitator.event == eventId):
+            updateFacilitator = (Facilitator.update(user = newEventData['eventFacilitator'])
+                                            .where(Facilitator.event == eventId)).execute()
+
+        else:
+            facilitatorEntry = Facilitator.create(user = newEventData['eventFacilitator'],
+                                                      event = eventId)
+
+
+    else:
+        raise Exception("Invalid Data")

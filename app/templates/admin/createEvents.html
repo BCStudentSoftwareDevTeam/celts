@@ -136,8 +136,12 @@
         <div class='form-group'>
           <label for='facilitators'><strong> Facilitators *</strong></label> <br>
           <select class="dropdown form-control" id="inputEventFacilitators"  name="eventFacilitator">
-            {%for facilitator in facilitators.objects() %}
-              <option value={{facilitator.username}}> {{facilitator.firstName}} {{facilitator.lastName}}</option>
+            {%for facilitator in facilitators %}
+              {% if facilitator.username == currentFacilitator.user|string %}
+                <option value={{currentFacilitator.user}} selected>{{currentFacilitator.user.firstName}} {{currentFacilitator.user.lastName}}</option>
+              {% else %}
+                <option value={{facilitator.username}}> {{facilitator.firstName}} {{facilitator.lastName}}</option>
+              {% endif %}
             {% endfor %}
           </select>
         </div><br>

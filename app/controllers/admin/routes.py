@@ -43,12 +43,12 @@ def editEvent(program, eventId):
     facilitators = getAllFacilitators()
     listOfTerms = Term.select()
     eventInfo = Event.get_by_id(eventId)
+    currentFacilitator = Facilitator.get(Facilitator.event == eventId)
     deleteButton = "submit"
     hideElement = "hidden"
     isTraining = "Checked" if eventInfo.isTraining else ""
     isRsvpRequired = "Checked" if eventInfo.isRsvpRequired else ""
     isService = "Checked" if eventInfo.isService else ""
-
     try:
         program = Program.get_by_id(program)
 
@@ -57,6 +57,7 @@ def editEvent(program, eventId):
 
     return render_template("admin/createEvents.html",
                             program = program,
+                            currentFacilitator = currentFacilitator,
                             facilitators = facilitators,
                             listOfTerms = listOfTerms,
                             eventInfo = eventInfo,
@@ -75,6 +76,6 @@ def deleteRoute(program, eventId):
         flash("Event canceled")
         return redirect(url_for("admin.createEventPage", program=program)) #FIXME: Redirect to events page, not create page
 
-    except Excepttion as e:
+    except Exception as e:
         print('Error while canceling event:', e)
         return "", 500

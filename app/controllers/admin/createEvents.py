@@ -27,9 +27,11 @@ def createEvent():
         newEventData['eventStartDate'] = parser.parse(newEventData['eventStartDate'], dayfirst=True)
         newEventData['eventEndDate'] = parser.parse(newEventData['eventEndDate'], dayfirst=True)
 
-
         # function to validate data
-        dataIsValid, validationErrorMessage, newEventData = validateNewEventData(newEventData)
+        if eventId:
+            dataIsValid, validationErrorMessage, newEventData = validateNewEventData(newEventData, True)
+        else:
+            dataIsValid, validationErrorMessage, newEventData = validateNewEventData(newEventData)
 
         if dataIsValid:
             if not eventId:
@@ -37,7 +39,7 @@ def createEvent():
                 createNewEvent(newEventData)
                 flash("Event successfully created!", 'success')
                 return redirect(url_for("admin.createEventPage", program=newEventData['programId']))
-                
+
             else:
                 eventEdit(newEventData)
                 flash("Event successfully updated!")
