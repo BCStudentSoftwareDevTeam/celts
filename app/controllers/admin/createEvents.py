@@ -2,10 +2,17 @@ from dateutil import parser
 from app.models.event import Event
 from flask import request
 from app.controllers.admin import admin_bp
-from app.logic.adminNewEvent import createNewEvent, setValueForUncheckedBox
+from app.logic.adminNewEvent import createNewEvent, setValueForUncheckedBox, calculateRecurringEventFrequency
 from app.logic.validateNewEvent import validateNewEventData
 from flask import flash, redirect, url_for, g
+import json
 
+
+@admin_bp.route('/makeRecurringEvents', methods=['POST'])
+def addRecurringEvents():
+    recurringEventInfo = request.form.copy()
+    recurringEvents = calculateRecurringEventFrequency(recurringEventInfo)
+    return json.dumps(recurringEvents)
 
 @admin_bp.route('/createEvent', methods=['POST'])
 def createEvent():
@@ -19,14 +26,9 @@ def createEvent():
         eventData = request.form.copy() # request.form returns a immutable dict so we need to copy to make changes
         newEventData= setValueForUncheckedBox(eventData)
 
-        #if an event is not recurring then it wil have same end and start date
+        #if an event is not recurring then it will have same end and start date
         if newEventData['eventEndDate'] == '':
             newEventData['eventEndDate'] = newEventData['eventStartDate']
-
-
-        # convert date into datetime object (Y-m-d) for the backend
-        newEventData['eventStartDate'] = parser.parse(newEventData['eventStartDate'], dayfirst=True)
-        newEventData['eventEndDate'] = parser.parse(newEventData['eventEndDate'], dayfirst=True)
 
 
         # function to validate data
