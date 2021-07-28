@@ -17,9 +17,9 @@ def getEventLengthInHours(startTime, endTime, eventDate):
     return eventLengthInHours
 
 
-def updateTrackHours(participantData):
+def updateTrackVolunteers(participantData):
     """
-    updates the events participant table with data from the track hours webpage
+    updates the events participant table with data from the track Volunteer webpage
 
     param: participantData- a dictionary that contains data from every row of the page along with the associated username.
     """

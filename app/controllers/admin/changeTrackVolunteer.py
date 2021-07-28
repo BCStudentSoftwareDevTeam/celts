@@ -4,12 +4,12 @@ from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchVolunteers import searchVolunteers
-from app.logic.updateTrackHours import updateTrackHours, addVolunteerToEvent
+from app.logic.updateTrackVolunteers import updateTrackVolunteers, addVolunteerToEvent
 from app.models.user import User
 from peewee import *
 
-@admin_bp.route('/searchTrackHoursVolunteers/<query>', methods = ['GET'])
-def searchTrackHoursVolunteers(query):
+@admin_bp.route('/searchVolunteers/<query>', methods = ['GET'])
+def searchTrackVolunteers(query):
     '''Accepts user input and queries the database returning results that matches user search'''
     query = query.strip()
     search = query.upper()
@@ -21,15 +21,15 @@ def searchTrackHoursVolunteers(query):
         return e, 500
 
 
-@admin_bp.route('/<programID>/<eventID>/track_hours', methods=['POST'])
-def updateHours(programID, eventID):
-    updateTrackHoursMsg = updateTrackHours(request.form)
-    if updateTrackHoursMsg == None:
+@admin_bp.route('/<programID>/<eventID>/track_volunteers', methods=['POST'])
+def updateVolunteerTable(programID, eventID):
+    updateTrackVolunteersMsg = updateTrackVolunteers(request.form)
+    if updateTrackVolunteersMsg == None:
         flash("Volunteer table succesfully updated")
-        return redirect(url_for("admin.trackVolunteerHoursPage", programID=programID, eventID=eventID))
     else:
         flash("Error adding volunteer")
-        return redirect(url_for("admin.trackVolunteerHoursPage", programID=programID, eventID=eventID))
+
+    return redirect(url_for("admin.trackVolunteersPage", programID=programID, eventID=eventID))
 
 
 @admin_bp.route('/addVolunteerToEvent/<user>/<volunteerEventID>/<eventLengthInHours>', methods = ['POST'])
@@ -39,8 +39,7 @@ def addVolunteer(user, volunteerEventID, eventLengthInHours):
         flash("Volunteer successfully added!", "success")
     else:
         flash("Error when adding volunteer", "danger")
-    return ""
-
+    return "" #must return something for ajax
 
 
 

@@ -8,8 +8,8 @@ from app.controllers.admin import admin_bp
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.models.program import Program
-from app.logic.updateTrackHours import getEventLengthInHours
-from app.controllers.admin.changeTrackHoursVolunteer import searchTrackHoursVolunteers
+from app.logic.updateTrackVolunteers import getEventLengthInHours
+from app.controllers.admin.changeTrackVolunteer import searchTrackVolunteers
 from peewee import DoesNotExist
 
 
@@ -17,8 +17,8 @@ from peewee import DoesNotExist
 def testing():
     return "<h1>Hello</h1>"
 
-@admin_bp.route('/<programID>/<eventID>/track_hours', methods=['GET'])
-def trackVolunteerHoursPage(programID, eventID):
+@admin_bp.route('/<programID>/<eventID>/track_volunteers', methods=['GET'])
+def trackVolunteersPage(programID, eventID):
     if g.current_user.isCeltsAdmin:
         if ProgramEvent.get_or_none(ProgramEvent.event == eventID, ProgramEvent.program == programID):
             eventParticipantsData = EventParticipant.select().where(EventParticipant.event == eventID)
@@ -34,7 +34,7 @@ def trackVolunteerHoursPage(programID, eventID):
             eventLengthInHours = getEventLengthInHours(startTime, endTime, eventDate)
 
 
-            return render_template("/events/trackVolunteerHours.html",
+            return render_template("/events/trackVolunteers.html",
                                     eventParticipantsData = list(eventParticipantsData),
                                     eventLength = eventLengthInHours,
                                     program = program,
