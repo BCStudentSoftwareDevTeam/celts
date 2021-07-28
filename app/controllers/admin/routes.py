@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from flask import request, render_template, abort, flash
 from flask import Flask, redirect, url_for, g
 from app.models.event import Event
