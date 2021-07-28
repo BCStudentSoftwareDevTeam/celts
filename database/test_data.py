@@ -199,15 +199,7 @@ programs = [
         "programName": "A Program for Training and Education",  #FIXME: Change this to a real CELTS Program
         "isStudentLed": False,
         "isBonnerScholars": False,
-    },
-    {
-        "id": 5,
-        "programName": "Food Drive"
-    },
-    {
-        "id": 6,
-        "programName": "Cool Program"
-    },
+    }
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
 
@@ -349,7 +341,7 @@ events = [
     {
         "id": 12,
         "term": 3,
-        "eventName": "Dummy Event",
+        "eventName": "Random Event",
         "description": "Not a required event",
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -447,7 +439,7 @@ program_events = [
         "program_id": 3
     },
     {
-        "event_id": 14,
+        "event_id": 13,
         "program_id": 5
     },
     {
