@@ -40,12 +40,12 @@ def editEvent(program, eventId):
     eventInfo = Event.get_by_id(eventId)
 
     isRecurring = "Checked" if eventInfo.isRecurring else ""
-    isPrerequisiteForProgram = "Checked" if eventInfo.isPrerequisiteForProgram else ""
+    # isPrerequisiteForProgram = "Checked" if eventInfo.isPrerequisiteForProgram else ""
     isTraining = "Checked" if eventInfo.isTraining else ""
     isRsvpRequired = "Checked" if eventInfo.isRsvpRequired else ""
     isService = "Checked" if eventInfo.isService else ""
     hasRSVPed = EventParticipant.get_or_none(EventParticipant.user == g.current_user, EventParticipant.event == eventInfo)
-    
+
 
 
     try:
@@ -62,7 +62,7 @@ def editEvent(program, eventId):
                             eventInfo = eventInfo,
                             eventId = eventId,
                             isRecurring = isRecurring,
-                            isPrerequisiteForProgram = isPrerequisiteForProgram,
+                            # isPrerequisiteForProgram = isPrerequisiteForProgram,
                             isTraining = isTraining,
                             isRsvpRequired = isRsvpRequired,
                             isService = isService,
