@@ -4,16 +4,15 @@ $(document).ready(function(){
   $("#checkIsRecurring").click(function() {
     var recurringStatus = $("input[name='eventIsRecurring']:checked").val()
     if (recurringStatus == 'on'){
-      $("#endDateStyle").removeClass('d-none')
+      $("#endDateStyle, #recurringTableDiv").removeClass('d-none')
       $("#endDatePicker").prop('required', true);
 
+
     }else{
-      $("#endDateStyle").addClass('d-none')
+      $("#endDateStyle, #recurringTableDiv").addClass('d-none')
       $("#endDatePicker").prop('required', false);
     }
-  }
-
-)
+  });
 
 
   $(".readonly").on('keydown paste', function(e){ //makes the input fields act like readonly (readonly doesn't work with required)
@@ -25,12 +24,39 @@ $(document).ready(function(){
     dateFormat:'mm-dd-yy'
   });
 
-  $("#calendarIconStart").click(function() {
+  $("#startDate").click(function() {
     $("#startDatePicker").datepicker().datepicker("show"); // Shows the start date datepicker when glyphicon is clicked
   });
 
-  $("#calendarIconEnd").click(function() {
+  $("#endDate").click(function() {
       $("#endDatePicker").datepicker().datepicker("show"); // Shows the start date datepicker when glyphicon is clicked
+    });
+
+    $("#startDatePicker, #endDatePicker").change(function(){
+
+      if ( $("#startDatePicker").val() && $("#endDatePicker").val()){
+
+        var eventDatesAndName = {eventName:$("#inputEventName").val(),
+                                 eventStartDate:$("#startDatePicker").val(),
+                                 eventEndDate:$("#endDatePicker").val()}
+        $.ajax({
+          type:"POST",
+          url: "/makeRecurringEvents",
+          data: eventDatesAndName, //get the startDate, endDate and eventName as a dictionary
+          success: function(jsonData){
+            var recurringEvents = JSON.parse(jsonData)
+            var recurringTable = $("#recurringEventsTable")
+            $("#recurringEventsTable tbody tr").remove();
+
+            for (var event of recurringEvents){
+              recurringTable.append("<tr><td>"+event.eventName+"</td><td><input name='week"+event.week+"' type='hidden' value='"+event.date+"'>"+event.date+"</td></tr>");
+              }
+          },
+          error: function(error){
+            console.log(error)
+          }
+        });
+      }
     });
 
   $("#checkIsTraining").click(function(){

@@ -18,7 +18,6 @@ from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
 from app.models.facilitator import Facilitator
 
-
 print("Inserting data for demo and testing purposes.")
 users = [
     {
@@ -34,7 +33,6 @@ users = [
         "isCeltsStudentStaff": False
     },
     {
-
         "username" : "khatts",
         "bnumber" : "B00759107",
         "email": "khatts@berea.edu",
@@ -117,7 +115,8 @@ terms = [
         "year": 2021,
         "academicYear": "2020-2021",
         "isBreak": False,
-        "isSummer": False
+        "isSummer": False,
+        "isCurrentTerm": False
     },
     {
         "id": 2,
@@ -125,7 +124,8 @@ terms = [
         "year": 2021,
         "academicYear": "2020-2021",
         "isBreak": False,
-        "isSummer": False
+        "isSummer": False,
+        "isCurrentTerm": False
     },
     {
         "id": 3,
@@ -134,7 +134,7 @@ terms = [
         "academicYear": "2020-2021",
         "isBreak": False,
         "isSummer": True,
-        "isCurrentTerm": True,
+        "isCurrentTerm": True
     },
     {
         "id": 4,
@@ -142,7 +142,8 @@ terms = [
         "year": 2021,
         "academicYear": "2021-2022",
         "isBreak": False,
-        "isSummer": False
+        "isSummer": False,
+        "isCurrentTerm": False
     },
     {
         "id": 5,
@@ -150,16 +151,10 @@ terms = [
         "year": 2021,
         "academicYear": "2021-2022",
         "isBreak": True,
-        "isSummer": False
+        "isSummer": False,
+        "isCurrentTerm": False
     },
-    {
-        "id":6,
-        "description": "Winter Break 2022",
-        "year": 2022,
-        "academicYear": "2022-2023",
-        "isBreak": True,
-        "isSummer": False
-    },
+
 ]
 Term.insert_many(terms).on_conflict_replace().execute()
 

@@ -1,6 +1,7 @@
 import pytest
 from app.logic.adminNewEvent import setValueForUncheckedBox, createNewEvent
 from peewee import OperationalError, IntegrityError
+import datetime
 from app.models.event import Event
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
@@ -70,4 +71,3 @@ def test_createNewEvent():
     eventInfo["eventFacilitator"] = "jarjug"
     with pytest.raises(IntegrityError):
         createNewEvent(eventInfo)
-
