@@ -14,6 +14,18 @@
 
 
 <h1 class="text-center">Event List for {{termName}}</h1>
+<div class="form-group">
+  <label for='term'><strong> Term * </strong></label> <br>
+  <select class="form-control" name='eventTerm' id='inputEventTerm'>
+    {% for term in listOfTerms %}
+      {% if term.isCurrentTerm == 1 %}
+        <option value='{{term}}' selected> {{term.description}} </option>
+      {% else %}
+        <option value='{{term}}'> {{term.description}} </option>
+      {% endif %}
+    {% endfor %}
+  </select>
+</div>
 <div>
   <ul class="nav nav-pills nav-fill mb-3" id="pills-tab" role="tablist">
   <li class="nav-item" role="presentation">
@@ -39,7 +51,7 @@
     {% for program,events in categoryPrograms.items() %}
       <div class="accordion-item">
         <h2 class="accordion-header" id="accordion__header_{{program}}">
-          <button class="accordion-button"
+          <button class="accordion-button collapsed"
                   type="button"
                   data-bs-toggle="collapse"
                   data-bs-target="#accordion__body_{{program}}_{{ loop.index }}"
@@ -67,10 +79,15 @@
                   {% for event in events %}
                     <tr>
                       <td> <a href="#" class="link-primary">{{event.description}}</a></td> {# FIXME:change href #}
-                      <td>{{event.startDate}}</td>
-                      <td>{{event.timeStart}}</td>
+                      <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
+                      <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
                       <td>{{event.location}}</td>
-                      <td><button type="button" class="btn btn-warning">Email</button></td>
+                      {% if (user.isCeltsAdmin) or (user.isFaculty) %}
+                        <td><i class="bi bi-envelope-fill"> Email</i></td>
+                        {# FIXME: the Email icon should be clickable and lead to email template #}
+                      {% else %}
+                        <td><button type="button" class="btn btn-danger">RSVP</button></td>
+                      {% endif %}
                     </tr>
                   {% endfor %}
               </tbody>
