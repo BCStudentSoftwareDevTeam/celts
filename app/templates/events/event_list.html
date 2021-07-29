@@ -14,18 +14,6 @@
 
 
 <h1 class="text-center">Event List for {{termName}}</h1>
-<div class="form-group">
-  <label for='term'><strong> Term * </strong></label> <br>
-  <select class="form-control" name='eventTerm' id='inputEventTerm'>
-    {% for term in listOfTerms %}
-      {% if term.isCurrentTerm == 1 %}
-        <option value='{{term}}' selected> {{term.description}} </option>
-      {% else %}
-        <option value='{{term}}'> {{term.description}} </option>
-      {% endif %}
-    {% endfor %}
-  </select>
-</div>
 <div>
   <ul class="nav nav-pills nav-fill mb-3" id="pills-tab" role="tablist">
   <li class="nav-item" role="presentation">
@@ -87,6 +75,7 @@
                         {# FIXME: the Email icon should be clickable and lead to email template #}
                       {% else %}
                         <td><button type="button" class="btn btn-danger">RSVP</button></td>
+                        {# FIXME: this button lead to RSVP page #}
                       {% endif %}
                     </tr>
                   {% endfor %}
