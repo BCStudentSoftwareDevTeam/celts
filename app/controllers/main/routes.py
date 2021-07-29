@@ -1,4 +1,4 @@
-from flask import request, render_template, g
+from flask import request, render_template, g, abort
 from app.models.program import Program
 from app.models.interest import Interest
 from app.controllers.main import main_bp
@@ -28,4 +28,8 @@ def volunteerIndicateInterest():
 
 @main_bp.route('/profile/<username>', methods = ['GET'])
 def profilePage(username):
-    return f'<h1>Profile page for {username}</h1>'
+
+    if username == g.current_user.username or g.current_user.isCeltsAdmin:
+        return f'<h1>Profile page for {username}</h1>'
+
+    abort(403)

@@ -1,5 +1,5 @@
 from flask import request, render_template
-from flask import Flask, redirect, flash, url_for
+from flask import Flask, redirect, flash, url_for, g, abort
 from app.models.user import User
 from app.controllers.admin import admin_bp, getStudent
 
@@ -10,4 +10,6 @@ def testing():
 @admin_bp.route('/search_student', methods=['GET'])
 def studentSearchPage():
     students = User.select()
-    return render_template("/searchStudentPage.html", students = students)
+    if g.current_user.isCeltsAdmin:
+        return render_template("/searchStudentPage.html", students = students)
+    abort(403)

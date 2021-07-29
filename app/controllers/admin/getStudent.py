@@ -1,6 +1,6 @@
 from app.logic.searchStudents import searchVolunteers
 from app.controllers.admin import admin_bp
-from flask import flash,redirect, url_for, request
+from flask import flash,redirect, url_for, request, abort
 from app.controllers.main import main_bp
 from peewee import *
 
@@ -24,6 +24,4 @@ def volunteerProfile():
     volunteerName= request.form.copy()
     username = volunteerName['searchStudentsInput'].strip("()")
     user=username.split('(')[-1]
-    # print(userName)
-    # print(volunteerName)
     return redirect(url_for('main.profilePage', username=user))
