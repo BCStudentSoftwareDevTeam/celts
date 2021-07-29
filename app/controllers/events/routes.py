@@ -9,13 +9,11 @@ from app.logic.getUpcomingEvents import getUpcomingEventsForUser
 def events(term):
 
     eventsDict = groupEventsByCategory(term)
-    print(eventsDict)
     listOfTerms = Term.select()
-    termName = Term.get_by_id(term).description
 
     return render_template("/events/event_list.html",
+        selectedTerm = Term.get_by_id(term),
         eventDict = eventsDict,
-        termName = termName,
         listOfTerms = listOfTerms,
         user = g.current_user)
 
