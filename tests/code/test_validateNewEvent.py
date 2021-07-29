@@ -7,8 +7,8 @@ from datetime import datetime
 def test_correctValidateNewEventData():
 
     validateEventData =  {'eventRequiredForProgram':True,'eventRSVP':False, 'eventServiceHours':False,
-                          'eventIsTraining':True, 'eventIsRecurring':False, 'eventStartDate': datetime.strptime('1999-12-12', '%Y-%m-%d'),
-                          'eventEndDate':datetime.strptime('2022-06-12', '%Y-%m-%d'), 'programId':1, 'eventLocation':"a big room",
+                          'eventIsTraining':True, 'eventIsRecurring':False, 'eventStartDate': '1999-12-12',
+                          'eventEndDate':'2022-06-12', 'programId':1, 'eventLocation':"a big room",
                           'eventEndTime':'21:00', 'eventStartTime':'18:00', 'eventDescription':"Empty Bowls Spring 2021",
                           'eventName':'Empty Bowls Spring','eventTerm':1,'eventFacilitator':"ramsayb2"}
 
@@ -22,8 +22,8 @@ def test_correctValidateNewEventData():
 def test_wrongValidateNewEventData():
 
     validateEventData =  {'eventRequiredForProgram':True,'eventRSVP':False, 'eventServiceHours':False,
-                          'eventIsTraining':True, 'eventIsRecurring':False, 'eventStartDate': datetime.strptime('2021-12-12', '%Y-%m-%d'),
-                          'eventEndDate':datetime.strptime('2021-06-12', '%Y-%m-%d'), 'programId':1, 'eventLocation':"a big room",
+                          'eventIsTraining':True, 'eventIsRecurring':False, 'eventStartDate': '2021-12-12',
+                          'eventEndDate': '2021-06-12', 'programId':1, 'eventLocation':"a big room",
                           'eventEndTime':'21:00', 'eventStartTime':'18:00', 'eventDescription':"Empty Bowls Spring 2021",
                           'eventName':'Empty Bowls Spring','eventTerm':1,'eventFacilitator':"ramsayb2"}
 
@@ -33,7 +33,7 @@ def test_wrongValidateNewEventData():
     assert eventErrorMessage == "Event start date is after event end date"
 
     # testing event starts after it ends.
-    validateEventData["eventStartDate"] = datetime.strptime('2021-06-12', '%Y-%m-%d')
+    validateEventData["eventStartDate"] = '2021-06-12'
     validateEventData["eventStartTime"] =  '21:39'
 
     validateNewEvent, eventErrorMessage, eventData = validateNewEventData(validateEventData)
@@ -44,8 +44,8 @@ def test_wrongValidateNewEventData():
 
     # testing same event already exists
     validateEventData["eventRequiredForProgram"] = True
-    validateEventData["eventStartDate"] = datetime.strptime("2021-12-12", '%Y-%m-%d')
-    validateEventData['eventEndDate'] = datetime.strptime('2022-06-12', '%Y-%m-%d')
+    validateEventData["eventStartDate"] = '2021-12-12'
+    validateEventData['eventEndDate'] = '2022-06-12'
 
     validNewEvent, eventErrorMessage, eventData = validateNewEventData(validateEventData)
     assert validNewEvent == False
