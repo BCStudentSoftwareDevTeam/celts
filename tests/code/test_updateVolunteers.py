@@ -1,6 +1,7 @@
 import pytest
-from app.logic.updateTrackHours import getEventLengthInHours, addVolunteerToEvent, updateTrackHours
+from app.logic.updateVolunteers import getEventLengthInHours, updateVolunteers
 from app.models.eventParticipant import EventParticipant
+from app.controllers.admin.changeVolunteer import addVolunteerToEvent
 from datetime import datetime
 
 
@@ -50,39 +51,42 @@ def test_addVolunteerToEvent():
     eventLengthInHours = 67
     #test that volunteer is already registered for the event
     volunteerToEvent = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
-    assert volunteerToEvent == "Volunteer already exists."
+    assert volunteerToEvent == True
 
     #test for adding user as a participant to the event
     user = "agliullovak"
     volunteerToEvent = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
-    assert volunteerToEvent == "Volunteer successfully added!"
+    assert volunteerToEvent == True
     (EventParticipant.delete().where(EventParticipant.user == user, EventParticipant.event == volunteerEventID)).execute()
 
     # test for username that is not in the database
     user = "jarjug"
     volunteerToEvent = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
-    assert volunteerToEvent == ("Error when adding volunteer", 500)
+    assert volunteerToEvent == False
 
     # test for event that does not exsit
     user = "agliullovak"
     volunteerEventID = 5006
     volunteerToEvent = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
-    assert volunteerToEvent == ("Error when adding volunteer", 500)
+    assert volunteerToEvent == False
 
 
 @pytest.mark.integration
-def test_updateTrackHours():
+def test_updateVolunteers():
     # tests if the volunteer table gets succesfully updated
     participantData = {'inputHours_agliullovak':100, 'checkbox_agliullovak':"on", 'event':3, 'username1': 'agliullovak'}
-    volunteerTableUpdate = updateTrackHours(participantData)
-    assert volunteerTableUpdate == "Volunteer table successfully updated!"
+    volunteerTableUpdate = updateVolunteers(participantData)
+    assert volunteerTableUpdate == True
 
     # tests if user does not exist in the database
     participantData = {'inputHours_jarjug':100, 'checkbox_jarjug':"on", 'event':3, 'username1': 'jarjug'}
-    volunteerTableUpdate = updateTrackHours(participantData)
-    assert volunteerTableUpdate ==  "Volunteer does not exist."
+    volunteerTableUpdate = updateVolunteers(participantData)
+    assert volunteerTableUpdate == False
 
     # tests for the case when the checkbox is not checked (user is not present)
-    participantData = {'inputHours_ramsayb2':100, 'event':3, 'username1': 'ramsayb2'}
-    volunteerTableUpdate = updateTrackHours(participantData)
-    assert volunteerTableUpdate == "Volunteer table successfully updated!"
+    participantData = {'inputHours_agliullovak':100, 'event':3, 'username1': 'agliullovak'}
+    volunteerTableUpdate = updateVolunteers(participantData)
+    assert volunteerTableUpdate == True
+
+    #Undo the above test changes
+    participantData = {'inputHours_agliullovak':2, 'checkbox_agliullovak':"on", 'event':3, 'username1': 'agliullovak'}

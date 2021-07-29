@@ -3,12 +3,11 @@ from app.models.event import Event
 from app.models.programEvent import ProgramEvent
 from app.models.eventParticipant import EventParticipant
 from app.models.program import Program
-from app.models.event import Event
 from app.models.term import Term
 from app.logic.trackAttendees import trainedParticipants
-from app.logic.updateTrackHours import updateTrackHours, getEventLengthInHours, addVolunteerToEvent
+from app.logic.updateVolunteers import updateVolunteers, getEventLengthInHours, addVolunteerToEvent
 from app.logic.getAllFacilitators import getAllFacilitators
-from app.controllers.admin.searchDeleteTrackHoursVolunteer import searchTrackHoursVolunteers
+from app.controllers.admin.changeVolunteer import getVolunteers
 from app.controllers.admin.createEvents import createEvent
 from app.controllers.admin import admin_bp
 import json
@@ -16,19 +15,18 @@ from datetime import *
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.facilitator import Facilitator
 from app.controllers.admin.deleteEvent import deleteEvent
+from app.controllers.admin.changeVolunteer import getVolunteers
 
 @admin_bp.route('/testing_things', methods=['GET'])
 def testing():
     return "<h1>Hello</h1>"
 
-
-@admin_bp.route('/<programID>/<eventID>/track_hours', methods=['GET'])
-def trackVolunteerHoursPage(programID, eventID):
+@admin_bp.route('/<programID>/<eventID>/track_volunteers', methods=['GET'])
+def trackVolunteersPage(programID, eventID):
 
     trainingEvents = ProgramEvent.select().where(ProgramEvent.program == programID)
     trlist = [training.event for training in trainingEvents if training.event.isTraining]
     attendedTraining = trainedParticipants(programID, trlist)
-
     if g.current_user.isCeltsAdmin:
         if ProgramEvent.get_or_none(ProgramEvent.event == eventID, ProgramEvent.program == programID):
             eventParticipantsData = EventParticipant.select().where(EventParticipant.event == eventID)
@@ -36,12 +34,10 @@ def trackVolunteerHoursPage(programID, eventID):
 
             event = Event.get_by_id(eventID)
             program = Program.get_by_id(programID)
-            startTime = event.timeStart
-            endTime = event.timeEnd
-            eventDate = event.startDate #start date and end date will be the same
-            eventLengthInHours = getEventLengthInHours(startTime, endTime, eventDate)
+            eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
 
-            return render_template("/events/trackVolunteerHours.html",
+
+            return render_template("/events/trackVolunteers.html",
                                     eventParticipantsData = list(eventParticipantsData),
                                     eventLength = eventLengthInHours,
                                     program = program,
@@ -53,18 +49,6 @@ def trackVolunteerHoursPage(programID, eventID):
 
     else:
         abort(403)
-
-@admin_bp.route('/<programID>/<eventID>/track_hours', methods=['POST'])
-def updateHours(programID, eventID):
-    updateTrackHoursMsg = updateTrackHours(request.form)
-    flash(updateTrackHoursMsg)
-    return redirect(url_for("admin.trackVolunteerHoursPage", programID=programID, eventID=eventID))
-
-@admin_bp.route('/addVolunteerToEvent/<user>/<volunteerEventID>/<eventLengthInHours>', methods = ['POST'])
-def addVolunteerToTrackHours(user, volunteerEventID, eventLengthInHours):
-    trackHoursUpdate = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
-    flash(trackHoursUpdate)
-    return trackHoursUpdate
 
 @admin_bp.route('/<program>/create_event', methods=['GET'])
 def createEventPage(program):

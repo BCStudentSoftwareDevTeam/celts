@@ -2,7 +2,7 @@
 
 {% block scripts %}
   {{super()}}
-  <script src="/static/js/trackVolunteerHours.js"></script>
+  <script src="/static/js/trackVolunteers.js"></script>
 {% endblock %}
 
 {% block styles %}
@@ -20,7 +20,7 @@
         <a class="nav-link" href="https://google.com">Event Form</a> <!--FIXME: link to event page-->
       </li>
       <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="#">Track Hours</a>
+        <a class="nav-link active" aria-current="page" href="#">Track Volunteers</a>
       </li>
     </ul>
   </div>
@@ -32,7 +32,7 @@
 
 
     <div class="ui-widget input-group">
-      <input id="trackHoursInput" type="input" placeholder="Search">
+      <input id="trackVolunteersInput" type="input" placeholder="Search">
       <span class="input-group-text" style="padding:0 0 0 0rem;"><i class="bi bi-search" style="margin-left:-35px;"></i></span>
       <div><button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#addVolunteerModal">
           <i class="bi bi-plus-circle"></i>
@@ -50,7 +50,7 @@
         <div class="modal-body">
           <div class="input-group">
             <div class="form-group input-group-x form-outline ui-widget" style="width:80%;">
-              <input type="input" id="addVolunteerInput" class="form-control" placeholder="Search" oninput="searchTrackHoursVolunteers()" autocomplete="off"/>
+              <input type="input" id="addVolunteerInput" class="form-control" placeholder="Search" oninput="searchVolunteers()" autocomplete="off"/>
             </div>
             <button type="button" class="btn btn-primary btn-sm"><i class="bi bi-search" style="margin-left:0px;"></i>
             </button>
@@ -80,8 +80,7 @@
       <tbody id="volunteerTable">
       {% for participant in eventParticipantsData%}
       <tr>
-        <td><input type="checkbox" id='checkbox_{{participant.user.username}}' name="checkbox_{{participant.user.username}}"
-                   onChange='toggleTrackHoursInputBox(this)' {% if participant.attended == 1 %} checked  {%endif%}></td>
+        <td><input type="checkbox" id='checkbox_{{participant.user.username}}' name="checkbox_{{participant.user.username}}" onChange='toggleTrackHoursInputBox(this)' {% if participant.attended == 1 %} checked  {%endif%}></td>
         <td>
           {% if participant.user.username not in attendedTraining and trlist%}
             <span data-bs-toggle="tooltip" title="Did Not Complete All Trainings">

@@ -1,6 +1,10 @@
 $(document).ready(function(){
   $('[data-bs-toggle="tooltip"]').tooltip();
   $("#trackHoursInput").on("keyup", function() {
+
+// Search functionalities from the volunteer table in the UI
+  $("#trackVolunteersInput").on("keyup", function() {
+>>>>>>> track_volunteer_hours_issue42:app/static/js/trackVolunteers.js
     var value = $(this).val().toLowerCase();
     $("#volunteerTable tr").filter(function() {
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
@@ -47,7 +51,7 @@ function removeVolunteerFromEvent (deleteIcon){
 }
 
 // Search functionalities from the user table in the database
-function searchTrackHoursVolunteers(){
+function searchVolunteers(){
 
   $("#selectVolunteerButton").prop('disabled', true)
   var query = $("#addVolunteerInput").val()
@@ -57,7 +61,7 @@ function searchTrackHoursVolunteers(){
     minLength: 2,
     source: function(request, response){
       $.ajax({
-        url: "/searchTrackHoursVolunteers/" + query,
+        url: "/searchVolunteers/" + query,
         type: "GET",
         dataType: "json",
         success: function(dictToJSON) {
@@ -79,7 +83,7 @@ function searchTrackHoursVolunteers(){
   });
 };
 
-function toggleTrackHoursInputBox(checkbox){
+function toggleVolunteersInputBox(checkbox){
   username =  checkbox.id.substring(9) //get everything after the 9th character
   inputFieldID = 'inputHours_'+username
 
