@@ -18,13 +18,8 @@ from app.controllers.admin.deleteEvent import deleteEvent
 def testing():
     return "<h1>Hello</h1>"
 
-@admin_bp.route('/create_event', methods=['POST'])
-def createEventPage():
-    programSelect = request.form.copy()
-    programChoice = programSelect.get("programChoice")
-    createEventsDict = {}
-    createEventsDict = {"program": programChoice}
-    eventElementsDict = eventElements()
+@admin_bp.route('/<program>/create_event', methods=['POST'])
+def createEventPage(program):
     listOfTerms = Term.select()
     eventInfo = ""
     facilitators = getAllFacilitators()
@@ -33,9 +28,11 @@ def createEventPage():
     try:
         program = Program.get_by_id(program)
 
+    except:
+        return render_template(404)
 
     return render_template("admin/createEvents.html",
-                            program = programChoice,
+                            program = program,
                             listOfTerms = listOfTerms,
                             facilitators = facilitators,
                             deleteButton = deleteButton,
@@ -48,7 +45,7 @@ def programSelect():
 
     return render_template("admin/programSelect.html",
                             getPrograms = getPrograms)
-                            
+
 @admin_bp.route('/<program>/<eventId>/edit_event', methods=['GET'])
 def editEvent(program, eventId):
 
