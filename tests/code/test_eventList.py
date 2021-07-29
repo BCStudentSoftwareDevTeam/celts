@@ -20,7 +20,7 @@ def test_groupEventsByProgram():
                              .where(Program.isStudentLed,
                                     Event.term == 1))
     groupedEvents = groupEventsByProgram(studentLedEvents)
-    assert groupedEvents == {Program.get_by_id(1): [Event.get_by_id(1), Event.get_by_id(2)]}
+    assert groupedEvents == {Program.get_by_id(1): [Event.get_by_id(1), Event.get_by_id(2)] , Program.get_by_id(2): [Event.get_by_id(4)]}
 
 @pytest.mark.integration
 def test_groupEventsByCategory():
