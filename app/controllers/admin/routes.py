@@ -10,6 +10,6 @@ def testing():
 @admin_bp.route('/search_student', methods=['GET'])
 def studentSearchPage():
     students = User.select()
-    if g.current_user.isCeltsAdmin:
+    if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
         return render_template("/searchStudentPage.html", students = students)
     abort(403)
