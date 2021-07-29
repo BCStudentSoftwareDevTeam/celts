@@ -7,22 +7,13 @@ from app.logic.getUpcomingEvents import getUpcomingEventsForUser
 
 @events_bp.route('/events/<term>/', methods=['GET'])
 def events(term):
-    # (studentLedEvents, studentLedPrograms, trainingEvents, trainingPrograms,
-    # bonnerScholarsEvents, bonnerScholarsPrograms, oneTimeEvents, oneTimePrograms, termName) = groupingEvents(term)
-
+    
     eventsDict = groupEventsByCategory(term)
     print(eventsDict)
     termName = Term.get_by_id(term).description
 
     return render_template("/events/event_list.html",
-        # studentLedEvents = eventsDict.get("Student Led Events").values(),
-        # studentLedPrograms = eventsDict.get("Student Led Events").keys(),
-        # trainingEvents = eventsDict.get("Trainings").values(),
-        # trainingPrograms = eventsDict.get("Trainings").keys(),
-        # bonnerScholarsEvents = eventsDict.get("Bonner Scholars").values(),
-        # bonnerScholarsPrograms = eventsDict.get("Bonner Scholars").keys(),
-        # oneTimeEvents = eventsDict.get("One Time Events").values(),
-        # oneTimePrograms = eventsDict.get("One Time Events").keys(),
+        mePrograms = eventsDict.get("One Time Events").keys(),
         eventDict = eventsDict,
         termName = termName,
         user="ramsayb2")
