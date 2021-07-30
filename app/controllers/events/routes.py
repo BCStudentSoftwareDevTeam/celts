@@ -7,6 +7,7 @@ from app.logic.events import getEvents
 from app.logic.getUpcomingEvents import getUpcomingEventsForUser
 from app.logic.signinKiosk import sendUserData
 
+
 @events_bp.route('/events', methods=['GET'])
 def events():
     events = getEvents()

@@ -2,6 +2,7 @@ import pytest
 from app.models.user import User
 from app.logic.userRsvpForEvent import userRsvpForEvent
 from app.models.event import Event
+from app.models.eventParticipant import EventParticipant
 from peewee import DoesNotExist
 from app.logic.programEligibility import isEligibleForProgram
 
@@ -33,15 +34,17 @@ def test_noEventUserRsvpForEvent():
 @pytest.mark.integration
 def test_userRsvpForEvent():
 
-    volunteer = userRsvpForEvent("agliullovak", 12)
+    volunteer = userRsvpForEvent("agliullovak", 11)
     assert volunteer.user.username == "agliullovak"
-    assert volunteer.event.id == 12
+    assert volunteer.event.id == 11
     assert volunteer.rsvp == True
 
     # the user has already registered for the event
-    volunteer = userRsvpForEvent("agliullovak", 12)
-    assert volunteer.event.id == 12
+    volunteer = userRsvpForEvent("agliullovak", 11)
+    assert volunteer.event.id == 11
     assert volunteer
+
+    (EventParticipant.delete().where(EventParticipant.user == 'agliullovak', EventParticipant.event == 11)).execute()
 
     # the user is not eligible to register (reason: hasn't attended all prerequisite events)
     with pytest.raises(Exception):
