@@ -3,6 +3,8 @@ from app.controllers.admin import admin_bp
 from flask import flash,redirect, url_for, request, abort
 from app.controllers.main import main_bp
 from peewee import *
+from flask import json
+
 
 
 @admin_bp.route('/searchStudents/<query>', methods = ['GET'])
@@ -11,11 +13,8 @@ def searchStudents(query):
     query = query.strip()
     search = query.upper()
     splitSearch = search.split()
-    try:
-        return searchVolunteers(query)
-
-    except Exception as e:
-        return e, 500
+    searchResults = searchVolunteers(query)
+    return json.dumps(searchResults)
 
 
 
