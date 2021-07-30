@@ -96,7 +96,7 @@ users = [
     },
     {
         "username": "bryanta",
-        "bnumber": "B00715348",
+        "bnumber": "B00708826",
         "email": "bryanta@berea.edu",
         "firstName": "Alex",
         "lastName": "Bryant",
@@ -545,6 +545,13 @@ eventParticipants = [
         "hoursEarned": 2
     },
     {
+        "user": "bryanta",
+        "event": 1,
+        "rsvp": False,
+        "attended": False,
+        "hoursEarned": 0
+    },
+    {
         "user": "neillz",
         "event": 3,
         "rsvp": True,
@@ -577,6 +584,13 @@ eventParticipants = [
         "event": 1,
         "rsvp": True,
         "attended": True,
+        "hoursEarned": 3,
+    },
+    {
+        "user": "khatts",
+        "event": 3,
+        "rsvp": True,
+        "attended": False,
         "hoursEarned": 3,
     },
     {
@@ -666,6 +680,10 @@ interest = [
     {
         "program": 1,
         "user": "khatts"
+    },
+    {
+        "program": 1,
+        "user": "bryanta"
     },
     {
         "program": 2,

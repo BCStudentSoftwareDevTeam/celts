@@ -15,21 +15,8 @@ def isEligibleForProgram(program, user):
     :param user: accepts a User object or userid
     :return: True if the user is not banned and meets the requirements, and False otherwise
     """
-    user = User.get_by_id(user)
     program = Program.get_by_id(program)
-
     if (ProgramBan.select().where(ProgramBan.user == user)) and (ProgramBan.select().where(ProgramBan.program == program)):
         return False
-
-    # Check for events that are prerequisite for program
-    requiredEvents = (Event.select(Event)
-                           .join(ProgramEvent)
-                           .where((Event.isTraining == True) & (ProgramEvent.program == program)))
-
-    if requiredEvents:
-        for event in requiredEvents:
-            attendedRequiredEvents = (EventParticipant.select().where((EventParticipant.attended == True)
-                                    & (EventParticipant.user == user) & (EventParticipant.event == event)))
-            if not attendedRequiredEvents:
-                return False
+        
     return True
