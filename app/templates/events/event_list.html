@@ -50,7 +50,7 @@
   </li>
   </ul>
 </div>
-{% macro createAccordion(categoryPrograms) %}
+{% macro createAccordion(categoryPrograms, num) %}
   <div class="accordion" id="categoryAccordion">
     {% for program,events in categoryPrograms.items() %}
       <div class="accordion-item">
@@ -58,13 +58,13 @@
           <button class="accordion-button collapsed"
                   type="button"
                   data-bs-toggle="collapse"
-                  data-bs-target="#accordion__body_{{program}}_{{ loop.index }}"
+                  data-bs-target="#accordion__body_{{program}}_num_{{ loop.index }}"
                   aria-expanded="true"
                   aria-controls="accordion__body_{{program}}" >
                   {{program.programName}}
           </button>
         </h2>
-        <div id="accordion__body_{{program}}_{{ loop.index }}"
+        <div id="accordion__body_{{program}}_num_{{ loop.index }}"
               class="accordion-collapse collapse"
               aria-labelledby="accordion__header_{{program}}"
               data-bs-parent="#categoryAccordion">
@@ -106,16 +106,16 @@
 
 <div class="tab-content" id="pills-tabContent">
   <div class="tab-pane fade show active" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
-    {{createAccordion(eventDict["Student Led Events"])}}
+    {{createAccordion(eventDict["Student Led Events"], 1)}}
   </div>
   <div class="tab-pane fade show" id="pills-training" role="tabpanel" aria-labelledby="pills-training-tab">
-    {{createAccordion(eventDict["Trainings"])}}
+    {{createAccordion(eventDict["Trainings"], 2)}}
   </div>
   <div class="tab-pane fade show" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="pills-bonner-scholars-tab">
-    {{createAccordion(eventDict["Bonner Scholars"])}}
+    {{createAccordion(eventDict["Bonner Scholars"], 3)}}
   </div>
   <div class="tab-pane fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
-    {{createAccordion(eventDict["One Time Events"])}}
+    {{createAccordion(eventDict["One Time Events"], 4)}}
   </div>
 </div>
 
