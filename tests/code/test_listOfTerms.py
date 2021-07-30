@@ -1,14 +1,10 @@
 import pytest
-from app.controllers.admin.routes import createEventPage
+from app.controllers.admin.createEvents import selectFutureTerms
 from app.models.term import Term
 
 @pytest.mark.integration
 def test_validateListOfTerms():
     currentTermid = 3
-    termQuery = (Term.select()
-                      .where((Term.year <= 2023))
-                      .where(Term.id >= currentTermid))
+    listOfTerms = selectFutureTerms(currentTermid)
 
-    listTerms = [term.year for term in termQuery]
-
-    assert 2023 in listTerms and 2024 not in listTerms
+    assert 'Fall Break 2021' in listOfTerms and "2024" not in listOfTerms
