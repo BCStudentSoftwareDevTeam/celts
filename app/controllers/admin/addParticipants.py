@@ -13,6 +13,7 @@ def addParticipants():
     return render_template('addParticipants.html',
                             title="Add Participants")
 
+
 @admin_bp.route('/searchVolunteers/<query>', methods = ['GET'])
 def searchVolunteers(query):
     '''Accepts user input and queries the database returning results that matches user search'''

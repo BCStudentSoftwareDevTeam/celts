@@ -11,9 +11,6 @@ from peewee import *
 @admin_bp.route('/searchVolunteers/<query>', methods = ['GET'])
 def getVolunteers(query):
     '''Accepts user input and queries the database returning results that matches user search'''
-    query = query.strip()
-    search = query.upper()
-    splitSearch = search.split()
 
     return searchVolunteers(query)
 
@@ -31,11 +28,12 @@ def updateVolunteerTable(programID, eventID):
     return redirect(url_for("admin.trackVolunteersPage", programID=programID, eventID=eventID))
 
 
-@admin_bp.route('/addVolunteerToEvent/<user>/<volunteerEventID>/<eventLengthInHours>', methods = ['POST'])
-def addVolunteer(user, volunteerEventID, eventLengthInHours):
-    user = user.strip("()")
-    userName=user.split('(')[-1]
-    succesfullyAddedVolunteer = addVolunteerToEvent(userName, volunteerEventID, eventLengthInHours)
+@admin_bp.route('/addVolunteerToEvent/<volunteer>/<volunteerEventID>/<eventLengthInHours>', methods = ['POST'])
+def addVolunteer(volunteer, volunteerEventID, eventLengthInHours):
+    volunteer = volunteer.strip("()")
+    username = volunteer.split('(')[-1]
+    user = User.get(User.username == username)
+    succesfullyAddedVolunteer = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
     if succesfullyAddedVolunteer:
         flash("Volunteer successfully added!", "success")
     else:

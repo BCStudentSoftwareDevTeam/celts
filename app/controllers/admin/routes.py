@@ -15,11 +15,22 @@ from datetime import *
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.facilitator import Facilitator
 from app.controllers.admin.deleteEvent import deleteEvent
+from app.models.user import User
+from app.models.outsideParticipant import OutsideParticipant
+from app.models.facilitator import Facilitator
+from app.controllers.admin import getStudent
+from app.controllers.admin.deleteEvent import deleteEvent
 from app.controllers.admin.changeVolunteer import getVolunteers
 
 @admin_bp.route('/testing_things', methods=['GET'])
 def testing():
     return "<h1>Hello</h1>"
+
+@admin_bp.route('/search_student', methods=['GET'])
+def studentSearchPage():
+    if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
+        return render_template("/searchStudentPage.html")
+    abort(403)
 
 @admin_bp.route('/<programID>/<eventID>/track_volunteers', methods=['GET'])
 def trackVolunteersPage(programID, eventID):
