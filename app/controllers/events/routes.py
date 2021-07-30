@@ -4,16 +4,22 @@ from app.models.event import Event
 from app.models.user import User
 from app.models.programEvent import ProgramEvent
 from app.logic.events import getEvents
+from app.models.term import Term
+from app.logic.events import groupEventsByCategory
 from app.logic.getUpcomingEvents import getUpcomingEventsForUser
 from app.logic.signinKiosk import sendUserData
 
+@events_bp.route('/events/<term>/', methods=['GET'])
+def events(term):
+    eventsDict = groupEventsByCategory(term)
+    listOfTerms = Term.select()
+    termName = Term.get_by_id(term).description
 
-@events_bp.route('/events', methods=['GET'])
-def events():
-    events = getEvents()
     return render_template("/events/event_list.html",
-                            events=events,
-                            user="ramsayb2")
+        eventDict = eventsDict,
+        termName = termName,
+        listOfTerms = listOfTerms,
+        user = g.current_user)
 
 @events_bp.route('/events/upcoming_events', methods=['GET'])
 def showUpcomingEvent():
