@@ -7,8 +7,8 @@ $(document).keydown(function(e){
       submitData(true);
   }
 });
-
-function toggleFullscreen() {                                     // Source: https://stackoverflow.com/questions/1125084/how-to-make-the-window-full-screen-with-javascript-stretching-all-over-the-scre
+// Source: https://stackoverflow.com/questions/1125084/how-to-make-the-window-full-screen-with-javascript-stretching-all-over-the-screen
+function toggleFullscreen() {
   if($("#fullscreenCheck").prop("checked") == false){
     hideElements(false);
     document.exitFullscreen()
