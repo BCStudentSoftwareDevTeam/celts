@@ -6,6 +6,7 @@ from app.models.term import Term
 from app.models.eventParticipant import EventParticipant
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.event import Event
+from app.controllers.admin.createEvents import selectFutureTerms
 from app.models.programEvent import ProgramEvent
 from app.models.facilitator import Facilitator
 from app.logic.getAllFacilitators import getAllFacilitators
@@ -53,6 +54,9 @@ def trackVolunteersPage(programID, eventID):
 
 @admin_bp.route('/<program>/create_event', methods=['GET'])
 def createEventPage(program):
+
+    currentTermid = Term.select().where(Term.isCurrentTerm).get()
+    futureTerms = selectFutureTerms(currentTermid)
     listOfTerms = Term.select()
     eventInfo = ""
     facilitators = getAllFacilitators()
@@ -66,6 +70,7 @@ def createEventPage(program):
 
     return render_template("admin/createEvents.html",
                             program = program,
+                            futureTerms = futureTerms,
                             listOfTerms = listOfTerms,
                             facilitators = facilitators,
                             deleteButton = deleteButton,
