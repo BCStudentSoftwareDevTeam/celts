@@ -5,6 +5,7 @@ from app.controllers.events import events_bp
 from app.logic.events import getEvents
 from app.logic.getUpcomingEvents import getUpcomingEventsForUser
 
+
 @events_bp.route('/events', methods=['GET'])
 def events():
     events = getEvents()
