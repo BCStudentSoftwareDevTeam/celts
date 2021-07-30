@@ -22,9 +22,8 @@ def testing():
 
 @admin_bp.route('/search_student', methods=['GET'])
 def studentSearchPage():
-    students = User.select()
     if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
-        return render_template("/searchStudentPage.html", students = students)
+        return render_template("/searchStudentPage.html")
     abort(403)
 
 @admin_bp.route('/<programID>/<eventID>/track_volunteers', methods=['GET'])
