@@ -10,7 +10,12 @@ from app.models.term import Term
 def test_termDoesNotExist():
     with pytest.raises(DoesNotExist):
         groupedEvents = groupEventsByCategory(7)
+
+    with pytest.raises(DoesNotExist):
         groupedEvents2 = groupEventsByCategory("khatts")
+
+    with pytest.raises(DoesNotExist):
+        groupedEvents3 = groupedEventsByCategory("")
 
 @pytest.mark.integration
 def test_groupEventsByProgram():
