@@ -11,6 +11,7 @@ def test_termDoesNotExist():
     with pytest.raises(DoesNotExist):
         groupedEvents = groupEventsByCategory(7)
         groupedEvents2 = groupEventsByCategory("khatts")
+        groupedEvents3 = groupedEventsByCategory("")
 
 @pytest.mark.integration
 def test_groupEventsByProgram():
