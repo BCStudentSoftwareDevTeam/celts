@@ -86,7 +86,7 @@
                       <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
                       <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
                       <td>{{event.location}}</td>
-                      {% if (user.isCeltsAdmin) or (user.isFaculty) %}
+                      {% if (user.isCeltsAdmin) or (user.isCeltsStudentStaff) %}
                         <td><i class="bi bi-envelope-fill"> Email</i></td>
                         {# FIXME: the Email icon should be clickable and lead to email template #}
                       {% else %}
