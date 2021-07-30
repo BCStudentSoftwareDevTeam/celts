@@ -32,7 +32,6 @@ def test_searchStudents():
 
     #test with multiple users matching query
     User.get_or_create(username = 'sawconc', firstName = 'Candace', lastName = 'Sawcon', bnumber = '021556782')
-
     query = 'sa'
     searchResults = searchVolunteers(query)
     print(searchResults)
