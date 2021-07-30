@@ -4,7 +4,6 @@ $(document).ready(function(){
 
 // Search functionalities from the volunteer table in the UI
   $("#trackVolunteersInput").on("keyup", function() {
->>>>>>> track_volunteer_hours_issue42:app/static/js/trackVolunteers.js
     var value = $(this).val().toLowerCase();
     $("#volunteerTable tr").filter(function() {
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)

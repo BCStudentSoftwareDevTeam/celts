@@ -13,10 +13,8 @@ from app.controllers.admin import admin_bp
 import json
 from datetime import *
 from app.models.outsideParticipant import OutsideParticipant
-from app.models.facilitator import Facilitator
 from app.controllers.admin.deleteEvent import deleteEvent
 from app.models.user import User
-from app.models.outsideParticipant import OutsideParticipant
 from app.models.facilitator import Facilitator
 from app.controllers.admin import getStudent
 from app.controllers.admin.deleteEvent import deleteEvent
@@ -35,9 +33,7 @@ def studentSearchPage():
 @admin_bp.route('/<programID>/<eventID>/track_volunteers', methods=['GET'])
 def trackVolunteersPage(programID, eventID):
 
-    trainingEvents = ProgramEvent.select().where(ProgramEvent.program == programID)
-    trlist = [training.event for training in trainingEvents if training.event.isTraining]
-    attendedTraining = trainedParticipants(programID, trlist)
+    attendedTraining = trainedParticipants(programID)
     if g.current_user.isCeltsAdmin:
         if ProgramEvent.get_or_none(ProgramEvent.event == eventID, ProgramEvent.program == programID):
             eventParticipantsData = EventParticipant.select().where(EventParticipant.event == eventID)
@@ -53,8 +49,7 @@ def trackVolunteersPage(programID, eventID):
                                     eventLength = eventLengthInHours,
                                     program = program,
                                     event = event,
-                                    attendedTraining=attendedTraining,
-                                    trlist = trlist )
+                                    attendedTraining=attendedTraining)
         else:
             raise Exception("Event ID and Program ID mismatched")
 
