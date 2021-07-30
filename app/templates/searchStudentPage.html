@@ -1,0 +1,34 @@
+{% extends "base.html"%}
+
+
+{% block scripts %}
+  {{super()}}
+<script src="/static/js/searchStudent.js"></script>
+{% endblock %}
+
+{% block styles %}
+  {{super()}}
+
+{% endblock %}
+
+
+{% block app_content %}
+
+<form id= "searchStudent" action="volunteerProfile" method="post">
+
+  <h1 align="center">Student Search Page</h1><br>
+  <div class="col-sm-6 col-sm-offset-3 m-auto">
+    <div class="row">
+      <div class="form-group ui-widget">
+        <div class="input-group">
+          <input type="input" id="searchStudentsInput" name="searchStudentsInput" class="form-control" placeholder="Search" oninput="searchStudents()" autocomplete="off"/>
+          <button type="button" class="btn btn-secondary btn-sm" disabled>
+            <span class="bi bi-search"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+{% endblock %}
