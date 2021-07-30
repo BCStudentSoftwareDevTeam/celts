@@ -155,6 +155,7 @@ terms = [
         "isCurrentTerm": False
     },
 
+
 ]
 Term.insert_many(terms).on_conflict_replace().execute()
 
