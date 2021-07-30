@@ -1,26 +1,31 @@
-from flask import request, render_template, abort, flash
-from flask import Flask, redirect, url_for, g
-from app.controllers.admin import admin_bp
-from app.models.event import Event
-from app.models.programEvent import ProgramEvent
-from app.models.facilitator import Facilitator
+from flask import Flask, redirect, flash, g, url_for, abort
+from flask import request, render_template
+from app.models.program import Program
+from app.models.user import User
+from app.models.term import Term
 from app.models.eventParticipant import EventParticipant
 from app.models.outsideParticipant import OutsideParticipant
-from app.models.programEvent import ProgramEvent
-from app.models.program import Program
 from app.models.event import Event
-from app.models.term import Term
 from app.controllers.admin.createEvents import selectFutureTerms
+from app.models.programEvent import ProgramEvent
+from app.models.facilitator import Facilitator
 from app.logic.getAllFacilitators import getAllFacilitators
+from app.logic.updateVolunteers import getEventLengthInHours
+from app.controllers.admin import admin_bp, getStudent
 from app.controllers.admin.deleteEvent import deleteEvent
 from app.controllers.admin.createEvents import createEvent
-from app.logic.updateVolunteers import getEventLengthInHours
 from app.controllers.admin.changeVolunteer import getVolunteers
 
 
 @admin_bp.route('/testing_things', methods=['GET'])
 def testing():
     return "<h1>Hello</h1>"
+
+@admin_bp.route('/search_student', methods=['GET'])
+def studentSearchPage():
+    if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
+        return render_template("/searchStudentPage.html")
+    abort(403)
 
 @admin_bp.route('/<programID>/<eventID>/track_volunteers', methods=['GET'])
 def trackVolunteersPage(programID, eventID):
