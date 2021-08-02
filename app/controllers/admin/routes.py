@@ -3,6 +3,7 @@ from flask import Flask, redirect, flash
 from app.controllers.admin.createEvents import createEvent
 from app.models.program import Program
 from app.models.event import Event
+from app.models.facilitator import Facilitator
 from app.models.eventParticipant import EventParticipant
 from app.models.term import Term
 from app.controllers.admin import admin_bp
@@ -19,6 +20,8 @@ def createEventPage(program):
     listOfTerms = Term.select()
     eventInfo = ""
     facilitators = getAllFacilitators()
+    user = g.current_user
+
 
     try:
         program = Program.get_by_id(program)
@@ -30,7 +33,8 @@ def createEventPage(program):
                             program = program,
                             listOfTerms = listOfTerms,
                             facilitators = facilitators,
-                            eventInfo = eventInfo)
+                            eventInfo = eventInfo,
+                            user = user)
 
 @admin_bp.route('/<program>/<eventId>/edit_event', methods=['GET'])
 def editEvent(program, eventId):
@@ -38,14 +42,14 @@ def editEvent(program, eventId):
     facilitators = getAllFacilitators()
     listOfTerms = Term.select()
     eventInfo = Event.get_by_id(eventId)
+    eventFacilitators = Facilitator.select().where(Facilitator.event == eventInfo)
 
     isRecurring = "Checked" if eventInfo.isRecurring else ""
     # isPrerequisiteForProgram = "Checked" if eventInfo.isPrerequisiteForProgram else ""
     isTraining = "Checked" if eventInfo.isTraining else ""
     isRsvpRequired = "Checked" if eventInfo.isRsvpRequired else ""
     isService = "Checked" if eventInfo.isService else ""
-    hasRSVPed = EventParticipant.get_or_none(EventParticipant.user == g.current_user, EventParticipant.event == eventInfo)
-
+    userHasRSVPed = EventParticipant.get_or_none(EventParticipant.user == g.current_user, EventParticipant.event == eventInfo)
 
 
     try:
@@ -66,12 +70,5 @@ def editEvent(program, eventId):
                             isTraining = isTraining,
                             isRsvpRequired = isRsvpRequired,
                             isService = isService,
-                            hasRSVPed = hasRSVPed)
-
-
-# @admin_bp.route('/rsvpForEvent', methods=['POST'])
-# def rsvpForEvent():
-#     eventData = request.form
-#     print(eventData)
-#     volunteerRegister(eventData)
-#     return redirect(url_for("events.showUpcomingEvent")) #FIXME: Have this redirect to the right page
+                            eventFacilitators = eventFacilitators,
+                            userHasRSVPed = userHasRSVPed)

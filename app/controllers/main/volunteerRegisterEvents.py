@@ -27,16 +27,18 @@ def volunteerRegister():
         if len(listOfRequirements) >= 3:
             reqListToString = ', '.join(listOfRequirements[:-1])
             reqListToString += ' or ' + listOfRequirements[-1]
-            flash(f"{userId.firstName} Registered. Warning! has not done the following required trainings: {reqListToString}")
+            flash(f"{userId.firstName} {userId.lastName} successfully registered. Warning! You have not attended the following required trainings: {reqListToString}")
 
         elif len(listOfRequirements) == 2:
             reqListToString = ' or '.join(listOfRequirements)
-            flash(f"{userId.firstName} Registered. Warning! has not done the following required trainings: {reqListToString}")
+            flash(f"{userId.firstName} {userId.lastName} successfully registered. Warning! You have not attended the following required trainings: {reqListToString}")
+
 
         else:
             reqListToString = str(listOfRequirements[0])
             reqListToString = 'Berea Buddies'
-            flash(f"{userId.firstName} Registered. Warning! has not done the following required trainings: {reqListToString}")
+            flash(f"{userId.firstName} {userId.lastName} successfully registered. Warning! You have not attended the following required trainings: {reqListToString}")
+
     #if they are eligible
     else:
         RSVPupdate =(EventParticipant.update({EventParticipant.rsvp: True})
@@ -59,5 +61,5 @@ def RemoveRSVP():
     currentEventParticipant = EventParticipant.get(EventParticipant.user == userId, EventParticipant.event == eventId)
 
     currentEventParticipant.delete_instance()
-    flash("Successfully unregistered for event!","danger")
+    flash("Successfully unregistered for event!","success")
     return redirect(url_for("admin.editEvent", eventId=eventId, program=program))

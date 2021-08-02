@@ -21,7 +21,14 @@
     {% endif %}
   </div>
 
-  <form data-toggle="validator" role="form" {% if user.isCeltsAdmin or user.isCeltsStudentStaff%} action="/createEvent" method='POST' {% elif user.isStudent %} {% if hasRSVPed %} action="/rsvpRemove" method="POST" {% else %} action="/rsvpForEvent" method="POST" {%endif%}{%endif%}>
+  <form data-toggle="validator" role="form"  method="POST"
+        {% if user.isCeltsAdmin or user.isCeltsStudentStaff%} action="/createEvent"
+        {% else %}
+          {% if userHasRSVPed %} action="/rsvpRemove"
+          {% else %} action="/rsvpForEvent"
+          {%endif%}
+        {%endif%}>
+
     <div class="row">
       <div class="col-md-6 col-sm-12 ">
         <div>
@@ -32,26 +39,32 @@
         <div class="d-grid gap-1.5">
           <div class="form-group">
             <label for='eventName'> <strong> Event Name * </strong></label> <br>
-            <input class="form-control"  id='inputEventName' value="{{eventInfo.eventName}}" name="eventName" {% if user.isCeltsAdmin or user.isCeltsStudentStaff%} required {% elif user.isStudent %} readonly {%endif%}>
+            <input class="form-control"  id='inputEventName' value="{{eventInfo.eventName}}" name="eventName"
+                   {{'required' if user.isCeltsAdmin or user.isCeltsStudentStaff else 'readonly'}}>
           </div>
         </div><br>
 
         <div class="form-group">
           <label for='term'><strong> Term * </strong></label> <br>
-          <select class="form-control" name='eventTerm' id='inputEventTerm' {% if user.isCeltsAdmin or user.isCeltsStudentStaff%} required {% elif user.isStudent %} readonly {%endif%}>
-            {%for term in listOfTerms %}
-              {%if term.isCurrentTerm == 1%}
-                <option value='{{term}}' selected> {{term.description}} </option>
-              {%else%}
-                <option value='{{term}}'> {{term.description}} </option>
-              {%endif%}
-            {% endfor %}
-          </select>
+          {% if user.isCeltsAdmin or user.isCeltsStudentStaff %}
+            <select class="form-control" name='eventTerm' id='inputEventTerm' required>
+              {%for term in listOfTerms %}
+                {%if term.isCurrentTerm == 1%}
+                  <option value='{{term}}' selected> {{term.description}} </option>
+                {%else%}
+                  <option value='{{term}}'> {{term.description}} </option>
+                {%endif%}
+              {% endfor %}
+            </select>
+          {% else %}
+            <input class="form-control" id='term' name='eventTerm' value="{{eventInfo.term.description}}" readonly>
+          {% endif %}
         </div><br>
 
         <div class="form-group">
           <label for='location'><strong>Location *</strong></label><br>
-          <input class="form-control" id='inputEventLocation' value="{{eventInfo.location}}" name="eventLocation" {% if user.isCeltsAdmin or user.isCeltsStudentStaff%} required {% elif user.isStudent %} readonly  {%endif%}>
+          <input class="form-control" id='inputEventLocation' value="{{eventInfo.location}}" name="eventLocation"
+                 {{'required' if user.isCeltsAdmin or user.isCeltsStudentStaff else 'readonly'}}>
 
         </div> <br>
         {% if user.isCeltsAdmin or user.isCeltsStudentStaff%}
@@ -66,12 +79,13 @@
             <div  class="form-group" >
               <div class="d-inline-flex">
                 <label for="startTime"><strong>Start Time: *</strong></label>
-                <input type='time' class="form-control timePicker" id='pickStartTime'value="{{eventInfo.timeStart}}"  name="eventStartTime" {% if user.isCeltsAdmin or user.isCeltsStudentStaff%} required {% elif user.isStudent %}  readonly {%endif%}/>
-
+                <input type='time' class="form-control timePicker" id='pickStartTime'value="{{eventInfo.timeStart}}"  name="eventStartTime"
+                       {{'required' if user.isCeltsAdmin or user.isCeltsStudentStaff else 'readonly'}}>
               </div>
               <div class='form-group time d-inline-flex' style="padding: 0 0 0 2rem">
                 <label for="endTime"><strong>End Time: *</strong></label>
-                <input type='time' class="form-control timePicker" id='pickEndTime' value="{{eventInfo.timeEnd}}" name="eventEndTime" {% if user.isCeltsAdmin or user.isCeltsStudentStaff%} required {% elif user.isStudent %}  readonly {%endif%}/>
+                <input type='time' class="form-control timePicker" id='pickEndTime' value="{{eventInfo.timeEnd}}" name="eventEndTime"
+                       {{'required' if user.isCeltsAdmin or user.isCeltsStudentStaff else 'readonly'}}>
               </div>
             </div>
           </div>
@@ -84,8 +98,9 @@
               <div class="d-inline-flex" style="width:48%;">
               <!--datePicker for start date-->
               <label for="startDatePicker" id="startDatePickerLabel" ><span><strong>Start Date *</strong></span></label>
-                <div class='input-group date' id="startDate">
-                  <input type='text' class="form-control datePicker readonly" id='startDatePicker' value="{{eventInfo.startDate}}" name="eventStartDate" placeholder="Start Date" onchange="updateDate(this)"  {% if user.isCeltsAdmin or user.isCeltsStudentStaff%} required {% elif user.isStudent %}  readonly {%endif%} />
+                <div class='input-group date' {{ 'id=startDate' if user.isCeltsAdmin or user.isCeltsStudentStaff }}>
+                  <input type='text' class="form-control datePicker readonly" value="{{eventInfo.startDate}}" name="eventStartDate" placeholder="Start Date" onchange=updateDate(this) id=startDatePicker
+                         {{'required' if user.isCeltsAdmin or user.isCeltsStudentStaff else 'readonly'}}>
                   <div class="input-group-text" id="calendarIconStart">
                     <span><i class="bi bi-calendar-plus-fill"></i></span>
                   </div>
@@ -95,8 +110,9 @@
               <div class="d-inline-flex" id ="endDateStyle" style="width:51%;">
                 <!--datePicker for End date-->
                 <label for="endDatePicker" id="endDatePickerLabel" style="padding:0 0 0 2rem" ><span><strong>End Date *</strong></span></label>
-                <div class='input-group date'>
-                  <input type='text' class="form-control datePicker readonly" id='endDatePicker' name="eventEndDate" placeholder="End Date" onchange="updateDate(this)"{% if user.isCeltsAdmin or user.isCeltsStudentStaff%} required {% elif user.isStudent %}  readonly {%endif%}/>
+                <div class='input-group date' {{'id=endDate' if user.isCeltsAdmin or user.isCeltsStudentStaff }}>
+                  <input type='text' class="form-control datePicker readonly" id='endDatePicker' name="eventEndDate" placeholder="End Date" onchange="updateDate(this)"
+                        {{'required' if user.isCeltsAdmin or user.isCeltsStudentStaff else 'readonly'}}>
 
                   <div class="input-group-text" id="calendarIconEnd">
                     <span><i class="bi bi-calendar-plus-fill"></i></span>
@@ -116,17 +132,9 @@
             </thead>
             <tbody>
             </tbody>
-
           </table>
-          <!-- <label for="recurringEvents" id="recurringEvents"> </label> -->
-
-
-
 
         </div>
-
-
-
       </div>
 
       <div class="col-md-6 col-sm-12 form-group">
@@ -150,16 +158,25 @@
           <label class="custom-control-label"for='serviceHours'><strong> This event earns service hours.</strong></label>
           <input class="form-check-input" type="checkbox" id="earnServiceHours"  name="eventServiceHours" />
         </div><br>
-        {% elif user.isStudent %}
-        <div class="form-check form-switch">
-          <label class="custom-control-label"for='serviceHours'><strong> This event earns service hours.</strong></label>
-          <!-- <input class="form-check-input" type="checkbox" id="earnServiceHours"  name="eventServiceHours" /> -->
+        {% else %}
+        <div>
+          {%if eventInfo.isTraining%}
+            <label> <strong> This event is a training for the program </strong> </label><br>
+          {% endif %}
+          {% if eventInfo.isRsvpRequired %}
+            <label> <strong> Requires RSVP </strong> </label><br>
+          {% endif %}
+          {% if eventInfo.isService %}
+            <label> <strong> This event earns service hours </strong> </label><br>
+          {% endif %}
+
         </div><br>
         {% endif %}
 
         <div class="form-group">
           <label for='description'><strong> Description * </strong></label> <br>
-          <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' value="{{eventInfo.description}}" name="eventDescription" {% if user.isCeltsAdmin or user.isCeltsStudentStaff%} required {% elif user.isStudent %}  readonly {%endif%}></textarea>
+          <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' name="eventDescription"
+                     {{'required' if user.isCeltsAdmin or user.isCeltsStudentStaff else 'readonly'}}>{{eventInfo.description if not user.isCeltsAdmin or user.isCeltsStudentStaff}}</textarea>
         </div><br>
 
         <div class='form-group'>
@@ -171,8 +188,8 @@
               <option value={{facilitator.username}}> {{facilitator.firstName}} {{facilitator.lastName}}</option>
             {% endfor %}
           </select>
-          {% elif user.isStudent %}
-          <input class="form-control"  id='inputEventName' value="{%for facilitator in facilitators.objects() %} {{facilitator.firstName}} {{facilitator.lastName}}  {% endfor %}" name="facilitators" readonly>
+          {% else %}
+          <input class="form-control"  id='inputEventName' value="{%for facilitator in eventFacilitators.objects() %} {{facilitator.user.firstName}} {{facilitator.user.lastName}}  {% endfor %}" name="facilitators" readonly>
           {% endif %}
 
       </div>
@@ -181,23 +198,17 @@
       <div class="row justify-content-left" style="margin-top: 1.5em">
       <div class="col-md-6 offset-md-3">
         <div class="text-center">
-
-        <!-- <div class="d-flex flex-row text-center"> -->
           {% if user.isCeltsAdmin or user.isCeltsStudentStaff%}
           <button type="submit" class="btn btn-primary">save</button>
-          <!-- <button type="submit" style="margin-top: 1.5em" class="btn btn-primary float-end " >Save</button> -->
           {% elif user.isStudent %}
-            {% if hasRSVPed %}
+            {% if userHasRSVPed %}
               <button type="submit" class="btn btn-danger" >Remove RSVP</button>
             {% else %}
               <button type="submit" class="btn btn-primary" >RSVP</button>
-            <!-- <button type="submit" style="margin-top: 1.5em" class="btn btn-primary float-end ">RSVP</button> -->
             {% endif %}
           {% endif %}
         </div>
       </div>
       </div>
-
 </form>
-
 {% endblock %}
