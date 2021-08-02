@@ -15,25 +15,31 @@ def isEligibleForProgram(program, user):
     :param user: accepts a User object or userid
     :return: True if the user is not banned and meets the requirements, and False otherwise
     """
-    user = User.get_by_id(user)
     program = Program.get_by_id(program)
-
-    # Check for events that are prerequisite for program
-    requiredEvents = (Event.select(Event)
-                           .join(ProgramEvent)
-                           .where((Event.isTraining == True) & (ProgramEvent.program == program)))
-
+# <<<<<<< HEAD
+#
+#     # Check for events that are prerequisite for program
+#     requiredEvents = (Event.select(Event)
+#                            .join(ProgramEvent)
+#                            .where((Event.isTraining == True) & (ProgramEvent.program == program)))
+#
+#     if (ProgramBan.select().where(ProgramBan.user == user)) and (ProgramBan.select().where(ProgramBan.program == program)):
+#         return False, []
+#
+#     elif requiredEvents:
+#         attendedRequiredEventsList = []
+#         for event in requiredEvents:
+#             attendedRequirement = (EventParticipant.select().where((EventParticipant.attended == True)
+#                                     & (EventParticipant.user == user) & (EventParticipant.event == event)))
+#             if not attendedRequirement:
+#                 attendedRequiredEventsList.append(event.eventName)
+#         if attendedRequiredEventsList is not None:
+#             return True, attendedRequiredEventsList
+#     else:
+#         return True, []
+# =======
     if (ProgramBan.select().where(ProgramBan.user == user)) and (ProgramBan.select().where(ProgramBan.program == program)):
-        return False, []
+        return False
 
-    elif requiredEvents:
-        attendedRequiredEventsList = []
-        for event in requiredEvents:
-            attendedRequirement = (EventParticipant.select().where((EventParticipant.attended == True)
-                                    & (EventParticipant.user == user) & (EventParticipant.event == event)))
-            if not attendedRequirement:
-                attendedRequiredEventsList.append(event.eventName)
-        if attendedRequiredEventsList is not None:
-            return True, attendedRequiredEventsList
-    else:
-        return True, []
+    return True
+# >>>>>>> cca9202d4a9e884b0bebc9ba2f86f24f3a763bb6

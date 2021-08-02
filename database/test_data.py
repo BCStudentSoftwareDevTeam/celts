@@ -96,7 +96,7 @@ users = [
     },
     {
         "username": "bryanta",
-        "bnumber": "B00715348",
+        "bnumber": "B00708826",
         "email": "bryanta@berea.edu",
         "firstName": "Alex",
         "lastName": "Bryant",
@@ -155,6 +155,7 @@ terms = [
         "isCurrentTerm": False
     },
 
+
 ]
 Term.insert_many(terms).on_conflict_replace().execute()
 
@@ -162,27 +163,39 @@ programs = [
     {
         "id": 1,
         "programName": "Empty Bowls",
+        "isStudentLed": True,
+        "isBonnerScholars": False,
     },
     {
         "id": 2,
         "programName": "Berea Buddies",
+        "isStudentLed": True,
+        "isBonnerScholars": False,
     },
     {
         "id": 3,
         "programName": "Adopt A Grandparent",
+        "isStudentLed": True,
+        "isBonnerScholars": False,
     },
     {
         "id": 4,
-        "programName": "No Required Events"
+        "programName": "No Required Events",
+        "isStudentLed": False,
+        "isBonnerScholars": False,
     },
     {
         "id": 5,
-        "programName": "Food Drive"
+        "programName": "First Year Bonners",
+        "isStudentLed": False,
+        "isBonnerScholars": True,
     },
     {
         "id": 6,
-        "programName": "Cool Program"
-    },
+        "programName": "A Program for Training and Education",  #FIXME: Change this to a real CELTS Program
+        "isStudentLed": False,
+        "isBonnerScholars": False,
+    }
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
 
@@ -323,7 +336,7 @@ events = [
     {
         "id": 12,
         "term": 3,
-        "eventName": "Dummy Event",
+        "eventName": "Random Event",
         "description": "Not a required event",
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -355,8 +368,19 @@ events = [
         "location": "A Big Room",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d")
-    }
-
+    },
+    {
+        "id": 15,
+        "term": 3,
+        "eventName": "Event 1",
+        "description": "Test for training",
+        "isTraining": True,
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+        "location": "Somewhere",
+        "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
+        "endDate": datetime.strptime("2021 7 12","%Y %m %d")
+    },
 ]
 Event.insert_many(events).on_conflict_replace().execute()
 
@@ -410,7 +434,7 @@ program_events = [
         "program_id": 3
     },
     {
-        "event_id": 14,
+        "event_id": 13,
         "program_id": 5
     },
     {
@@ -520,6 +544,13 @@ eventParticipants = [
         "hoursEarned": 2
     },
     {
+        "user": "bryanta",
+        "event": 1,
+        "rsvp": False,
+        "attended": False,
+        "hoursEarned": 0
+    },
+    {
         "user": "neillz",
         "event": 3,
         "rsvp": True,
@@ -552,6 +583,13 @@ eventParticipants = [
         "event": 1,
         "rsvp": True,
         "attended": True,
+        "hoursEarned": 3,
+    },
+    {
+        "user": "khatts",
+        "event": 3,
+        "rsvp": True,
+        "attended": False,
         "hoursEarned": 3,
     },
     {
@@ -648,6 +686,10 @@ interest = [
     {
         "program": 1,
         "user": "khatts"
+    },
+    {
+        "program": 1,
+        "user": "bryanta"
     },
     {
         "program": 2,

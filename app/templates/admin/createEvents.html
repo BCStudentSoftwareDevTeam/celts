@@ -21,6 +21,13 @@
     {% endif %}
   </div>
 
+  <form action="/{{program.id}}/{{eventId}}/deleteEvent" method='post'>
+    <input type="{{deleteButton}}" class="btn btn-danger float-end" value="Cancel Event"/>
+    <div>
+      <input type="hidden" value="{{program.id}}" name="programId">
+      <input type="hidden" value="{{eventId}}" name="eventId">
+    </div>
+  </form>
   <form data-toggle="validator" role="form"  method="POST"
         {% if user.isCeltsAdmin or user.isCeltsStudentStaff%} action="/createEvent"
         {% else %}
@@ -29,7 +36,7 @@
           {%endif%}
         {%endif%}>
 
-    <div class="row">
+    <div class="row p-2">
       <div class="col-md-6 col-sm-12 ">
         <div>
           <input type="hidden" value="{{program.id}}" name="programId">
@@ -46,6 +53,7 @@
 
         <div class="form-group">
           <label for='term'><strong> Term * </strong></label> <br>
+<!-- <<<<<<< HEAD -->
           {% if user.isCeltsAdmin or user.isCeltsStudentStaff %}
             <select class="form-control" name='eventTerm' id='inputEventTerm' required>
               {%for term in listOfTerms %}
@@ -68,8 +76,20 @@
 
         </div> <br>
         {% if user.isCeltsAdmin or user.isCeltsStudentStaff%}
-        <div class="form-check form-switch" style="padding-bottom: 1.5em">
+        <div>
+        <!-- <div class="form-check form-switch" style="padding-bottom: 1.5em">
           <label class="custom-control-label" for='checkIsRecurring'><strong>This event occurs every week</strong></label>
+======= -->
+          <select class="form-control" name='eventTerm' id='inputEventTerm'>
+            {% for future in futureTerms %}
+                <option value='{{term}}'>{{future}}</option>
+            {% endfor %}
+          </select>
+        </div><br>
+
+        <div class="form-check form-switch" style="padding-bottom: 1.5em" {{hideElement}}>
+          <label class="custom-control-label" for='checkIsRecurring'><strong>This event is a recurring event</strong></label>
+<!-- >>>>>>> cca9202d4a9e884b0bebc9ba2f86f24f3a763bb6 -->
           <input class="form-check-input" type="checkbox" id="checkIsRecurring" name="eventIsRecurring"/>
         </div>
         {% endif %}
@@ -86,11 +106,17 @@
                 <label for="endTime"><strong>End Time: *</strong></label>
                 <input type='time' class="form-control timePicker" id='pickEndTime' value="{{eventInfo.timeEnd}}" name="eventEndTime"
                        {{'required' if user.isCeltsAdmin or user.isCeltsStudentStaff else 'readonly'}}>
+<!-- =======
+                <input type='time' class="form-control timePicker" value="{{eventInfo.timeStart}}" id='pickStartTime' name="eventStartTime" required/>
+              </div>
+              <div class='form-group time d-inline-flex' style="padding: 0 0 0 2rem">
+                <label for="endTime"><strong>End Time: *</strong></label>
+                <input type='time' class="form-control timePicker" id='pickEndTime' value="{{eventInfo.timeEnd}}" name="eventEndTime" required/>
+>>>>>>> cca9202d4a9e884b0bebc9ba2f86f24f3a763bb6 -->
               </div>
             </div>
           </div>
         </div><br>
-
         <!-- datePickerS -->
         <div class="flex-container">
           <div>
@@ -114,6 +140,13 @@
                   <input type='text' class="form-control datePicker readonly" id='endDatePicker' name="eventEndDate" placeholder="End Date" onchange="updateDate(this)"
                         {{'required' if user.isCeltsAdmin or user.isCeltsStudentStaff else 'readonly'}}>
 
+<!-- =======
+              <div class="d-inline-flex {{endDatePicker}}" id ="endDateStyle" style="width:51%;">
+                datePicker for End date LEAVE THIS COMMENT-->
+                <!-- <label for="endDatePicker" id="endDatePickerLabel" style="padding:0 0 0 2rem" ><span><strong>End Date *</strong></span></label>
+                <div class='input-group date'>
+                  <input type='text' class="form-control datePicker readonly" id='endDatePicker' value="{{eventInfo.endDate}}" name="eventEndDate" placeholder="End Date" onchange="updateDate(this)"/>
+>>>>>>> cca9202d4a9e884b0bebc9ba2f86f24f3a763bb6 -->
                   <div class="input-group-text" id="calendarIconEnd">
                     <span><i class="bi bi-calendar-plus-fill"></i></span>
                   </div>
@@ -133,7 +166,6 @@
             <tbody>
             </tbody>
           </table>
-
         </div>
       </div>
 
@@ -141,22 +173,22 @@
         {% if user.isCeltsAdmin or user.isCeltsStudentStaff%}
         <div class="form-check form-switch">
           <label class="custom-control-label" for="checkIsRequired"><strong>This event is required for the program</strong></label>
-          <input class="form-check-input" type="checkbox" id="checkIsRequired" name="eventRequiredForProgram"/>
+          <input class="form-check-input" type="checkbox" id="checkIsRequired" name="eventRequiredForProgram" {{isTraining}}/>
         </div>
 
         <div class="form-check form-switch">
           <label class="custom-control-label" for="checkIsTraining"><strong>This event is a training for the program</strong></label>
-          <input class="form-check-input" type="checkbox" id="checkIsTraining"  name="eventIsTraining"/>
+          <input class="form-check-input" type="checkbox" id="checkIsTraining"  name="eventIsTraining" {{isTraining}}/>
         </div>
 
         <div class="form-check form-switch">
           <label class="custom-control-label" for='rsvp'><strong>Requires RSVP</strong></label>
-          <input class="form-check-input" type="checkbox" id="rsvp"  name="eventRSVP"/>
+          <input class="form-check-input" type="checkbox" id="rsvp"  name="eventRSVP" {{isRsvpRequired}}/>
         </div>
 
         <div class="form-check form-switch">
           <label class="custom-control-label"for='serviceHours'><strong> This event earns service hours.</strong></label>
-          <input class="form-check-input" type="checkbox" id="earnServiceHours"  name="eventServiceHours" />
+          <input class="form-check-input" type="checkbox" id="earnServiceHours"  name="eventServiceHours" {{isService}}/>
         </div><br>
         {% else %}
         <div>
@@ -177,15 +209,30 @@
           <label for='description'><strong> Description * </strong></label> <br>
           <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' name="eventDescription"
                      {{'required' if user.isCeltsAdmin or user.isCeltsStudentStaff else 'readonly'}}>{{eventInfo.description if not user.isCeltsAdmin or user.isCeltsStudentStaff}}</textarea>
+<!-- =======
+          <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' name="eventDescription" required>{{eventInfo.description}}</textarea>
+>>>>>>> cca9202d4a9e884b0bebc9ba2f86f24f3a763bb6 -->
         </div><br>
 
         <div class='form-group'>
           <label for='facilitators'><strong> Facilitators *</strong></label> <br>
 
           {% if user.isCeltsAdmin or user.isCeltsStudentStaff%}
-          <select class="dropdown form-control" id="inputEventFacilitators"  name="eventFacilitator">
-            {%for facilitator in facilitators.objects() %}
-              <option value={{facilitator.username}}> {{facilitator.firstName}} {{facilitator.lastName}}</option>
+            <select class="dropdown form-control" id="inputEventFacilitators"  name="eventFacilitator">
+            {#{%for facilitator in facilitators.objects() %}
+              <option value={{facilitator.username}}> {{facilitator.firstName}} {{facilitator.lastName}}</option> #}
+<!-- ======= -->
+            {%for facilitator in facilitators %}
+              {% if currentFacilitator %}
+                {% if facilitator.username == currentFacilitator.user|string %}
+                  <option value={{currentFacilitator.user}} selected>{{currentFacilitator.user.firstName}} {{currentFacilitator.user.lastName}}</option>
+                {% else %}
+                  <option value={{facilitator.username}}> {{facilitator.firstName}} {{facilitator.lastName}}</option>
+                  {% endif %}
+              {% else %}
+                <option value={{facilitator.username}}> {{facilitator.firstName}} {{facilitator.lastName}}</option>
+              {% endif %}
+<!-- >>>>>>> cca9202d4a9e884b0bebc9ba2f86f24f3a763bb6 -->
             {% endfor %}
           </select>
           {% else %}
@@ -194,13 +241,12 @@
 
       </div>
       </div>
-      </div>
       <div class="row justify-content-left" style="margin-top: 1.5em">
       <div class="col-md-6 offset-md-3">
         <div class="text-center">
           {% if user.isCeltsAdmin or user.isCeltsStudentStaff%}
           <button type="submit" class="btn btn-primary">save</button>
-          {% elif user.isStudent %}
+          {% else %}
             {% if userHasRSVPed %}
               <button type="submit" class="btn btn-danger" >Remove RSVP</button>
             {% else %}
