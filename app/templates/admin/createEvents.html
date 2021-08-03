@@ -20,7 +20,7 @@
     <h2> New Event Form</h2>
   </div>
 
-  {% if 'edit_event' in request.path %}
+  {% if 'edit_event' in request.path and g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
   <div class="btn-group">
     <ul class="nav nav-pills nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
       <li class="nav-item" role="presentation">
