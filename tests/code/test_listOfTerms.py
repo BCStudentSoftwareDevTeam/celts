@@ -7,4 +7,4 @@ def test_validateListOfTerms():
     currentTermid = 3
     listOfTerms = selectFutureTerms(currentTermid)
 
-    assert 'Fall Break 2021' in listOfTerms and "2024" not in listOfTerms
+    assert Term.get_by_id(3) in listOfTerms and "2024" not in listOfTerms
