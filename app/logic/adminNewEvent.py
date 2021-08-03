@@ -92,6 +92,8 @@ def eventEdit(newEventData):
     if newEventData['valid'] == True:
 
         eventId = newEventData['eventId']
+        print(newEventData['eventTerm'])
+        print(type(newEventData['eventTerm']))
         eventData = {
                 "id": eventId,
                 "term": newEventData['eventTerm'],

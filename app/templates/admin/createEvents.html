@@ -52,12 +52,11 @@
           <label for='term'><strong> Term * </strong></label> <br>
           {% if user.isCeltsAdmin or user.isCeltsStudentStaff %}
             <select class="form-control" name='eventTerm' id='inputEventTerm' required>
-              {%for term in listOfTerms %}
-                {%if term.isCurrentTerm == 1%}
-                  <option value='{{term}}' selected> {{term.description}} </option>
-                {%else%}
-                  <option value='{{term}}'> {{term.description}} </option>
-                {%endif%}
+              {%if 'edit_event' in request.path%}
+                <option value='{{eventInfo.term}}' selected>{{eventInfo.term.description}}</option>
+              {% endif %}
+              {% for future in futureTerms %}
+                  <option value='{{future}}'>{{future.description}}</option>
               {% endfor %}
             </select>
           {% else %}
@@ -72,16 +71,6 @@
 
         </div> <br>
         {% if user.isCeltsAdmin or user.isCeltsStudentStaff%}
-        <div>
-        <!-- <div class="form-check form-switch" style="padding-bottom: 1.5em">
-          <label class="custom-control-label" for='checkIsRecurring'><strong>This event occurs every week</strong></label>
-======= -->
-          <select class="form-control" name='eventTerm' id='inputEventTerm'>
-            {% for future in futureTerms %}
-                <option value='{{term}}'>{{future}}</option>
-            {% endfor %}
-          </select>
-        </div><br>
 
         <div class="form-check form-switch" style="padding-bottom: 1.5em" {{hideElement}}>
           <label class="custom-control-label" for='checkIsRecurring'><strong>This event is a recurring event</strong></label>
@@ -113,7 +102,7 @@
               <!--datePicker for start date-->
               <label for="startDatePicker" id="startDatePickerLabel" ><span><strong>Start Date *</strong></span></label>
                 <div class='input-group date' {{ 'id=startDate' if user.isCeltsAdmin or user.isCeltsStudentStaff }}>
-                  <input type='text' class="form-control datePicker readonly" value="{{eventInfo.startDate}}" name="eventStartDate" placeholder="Start Date" onchange=updateDate(this) id=startDatePicker
+                  <input type='text' class="form-control datePicker readonly" value="{{eventInfo.startDate.strftime('%m-%d-%Y') if 'edit_event' in request.path}}" name="eventStartDate" placeholder="Start Date" onchange=updateDate(this) id=startDatePicker
                          {{'required' if user.isCeltsAdmin or user.isCeltsStudentStaff else 'readonly'}}>
                   <div class="input-group-text" id="calendarIconStart">
                     <span><i class="bi bi-calendar-plus-fill"></i></span>
@@ -125,7 +114,7 @@
                 <!--datePicker for End date-->
                 <label for="endDatePicker" id="endDatePickerLabel" style="padding:0 0 0 2rem" ><span><strong>End Date *</strong></span></label>
                 <div class='input-group date' {{'id=endDate' if user.isCeltsAdmin or user.isCeltsStudentStaff }}>
-                  <input type='text' class="form-control datePicker readonly" id='endDatePicker' value="{{eventInfo.endDate}}" name="eventEndDate" placeholder="End Date" onchange="updateDate(this)"
+                  <input type='text' class="form-control datePicker readonly" id='endDatePicker' value="{{eventInfo.endDate.strftime('%m-%d-%Y') if 'edit_event' in request.path}}" name="eventEndDate" placeholder="End Date" onchange="updateDate(this)"
                         {{'required' if user.isCeltsAdmin or user.isCeltsStudentStaff else 'readonly'}}>
                   <div class="input-group-text" id="calendarIconEnd">
                     <span><i class="bi bi-calendar-plus-fill"></i></span>

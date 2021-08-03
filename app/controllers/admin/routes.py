@@ -57,10 +57,9 @@ def trackVolunteersPage(programID, eventID):
 def createEventPage(program):
     if not g.current_user.isCeltsAdmin:
         abort(403)
-    else:    
+    else:
         currentTermid = Term.select().where(Term.isCurrentTerm).get()
         futureTerms = selectFutureTerms(currentTermid)
-        listOfTerms = Term.select()
         eventInfo = ""
         facilitators = getAllFacilitators()
         deleteButton = "hidden"
@@ -70,7 +69,6 @@ def createEventPage(program):
         return render_template("admin/createEvents.html",
                                 program = program,
                                 futureTerms = futureTerms,
-                                listOfTerms = listOfTerms,
                                 facilitators = facilitators,
                                 user = g.current_user,
                                 deleteButton = deleteButton,
@@ -79,10 +77,11 @@ def createEventPage(program):
 
 @admin_bp.route('/<program>/<eventId>/edit_event', methods=['GET'])
 def editEvent(program, eventId):
-
     facilitators = getAllFacilitators()
-    listOfTerms = Term.select()
     eventInfo = Event.get_by_id(eventId)
+    currentTermid = Term.select().where(Term.isCurrentTerm).get()
+    futureTerms = selectFutureTerms(currentTermid)
+
     # FIXME: One of the below two should be replaced which one?
     eventFacilitators = Facilitator.select().where(Facilitator.event == eventInfo)
     currentFacilitator = Facilitator.get_or_none(Facilitator.event == eventId)
@@ -102,7 +101,7 @@ def editEvent(program, eventId):
                             program = program,
                             currentFacilitator = currentFacilitator,
                             facilitators = facilitators,
-                            listOfTerms = listOfTerms,
+                            futureTerms = futureTerms,
                             eventInfo = eventInfo,
                             eventId = eventId,
                             isRecurring = isRecurring,

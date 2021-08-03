@@ -3,11 +3,11 @@ from datetime import *
 from dateutil import parser
 def validateNewEventData(newEventData, checkExists=True):
 
-    if  newEventData['eventEndDate'] <  newEventData['eventStartDate']:
+    if parser.parse(newEventData['eventEndDate'])  <  parser.parse(newEventData['eventStartDate']):
         return (False, "Event start date is after event end date", newEventData)
 
 
-    if newEventData['eventEndDate'] ==  newEventData['eventStartDate'] and newEventData['eventEndTime'] <=  newEventData['eventStartTime']:
+    if parser.parse(newEventData['eventEndDate']) ==   parser.parse(newEventData['eventStartDate']) and newEventData['eventEndTime'] <=  newEventData['eventStartTime']:
         return (False, "Event start time is after event end time", newEventData)
 
 

@@ -54,6 +54,6 @@ def createEvent():
 def selectFutureTerms(currentTermid):
     futureTerms = (Term.select().where(Term.id >= currentTermid)
                                 .where((Term.year <= (Term.get_by_id(currentTermid)).year + 2)))
-    listOfTerms = [future.description for future in futureTerms]
+    listOfTerms = [future for future in futureTerms]
 
     return listOfTerms
