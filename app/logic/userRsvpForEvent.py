@@ -20,7 +20,29 @@ def userRsvpForEvent(user,  event):
     rsvpEvent = Event.get_by_id(event)
     program = Program.select(Program).join(ProgramEvent).where(ProgramEvent.event == event).get()
 
-    isEligible, requirementList = isEligibleForProgram(program, user)
+    isEligible = isEligibleForProgram(program, user)
     if isEligible:
         newParticipant = EventParticipant.get_or_create(user = rsvpUser, event = rsvpEvent, rsvp = True)[0]
-    return isEligible, requirementList
+        return newParticipant
+    return isEligible
+
+
+
+def unattendedRequiredEvents(program, user):
+
+    # Check for events that are prerequisite for program
+    requiredEvents = (Event.select(Event)
+                           .join(ProgramEvent)
+                           .where((Event.isTraining == True) & (ProgramEvent.program == program)))
+
+    if requiredEvents:
+        attendedRequiredEventsList = []
+        for event in requiredEvents:
+            attendedRequirement = (EventParticipant.select().where((EventParticipant.attended == True)
+                                    & (EventParticipant.user == user) & (EventParticipant.event == event)))
+            if not attendedRequirement:
+                attendedRequiredEventsList.append(event.eventName)
+        if attendedRequiredEventsList is not None:
+            return attendedRequiredEventsList
+    else:
+        return []

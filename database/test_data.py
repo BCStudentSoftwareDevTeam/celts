@@ -433,8 +433,9 @@ program_events = [
         "event_id": 12,
         "program_id": 3
     },
+
     {
-        "event_id": 13,
+        "event_id": 14,
         "program_id": 5
     },
     {
@@ -714,8 +715,14 @@ bannedUser = [
     {
         "user": "khatts",
         "program": 3,
+    },
+
+    {
+        "user": "ayisie",
+        "program": 1,
     }
 ]
+
 ProgramBan.insert_many(bannedUser).on_conflict_replace().execute()
 
 facilitators = [

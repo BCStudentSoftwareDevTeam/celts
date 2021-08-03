@@ -55,25 +55,27 @@ def trackVolunteersPage(programID, eventID):
 
 @admin_bp.route('/<program>/create_event', methods=['GET'])
 def createEventPage(program):
+    if not g.current_user.isCeltsAdmin:
+        abort(403)
+    else:    
+        currentTermid = Term.select().where(Term.isCurrentTerm).get()
+        futureTerms = selectFutureTerms(currentTermid)
+        listOfTerms = Term.select()
+        eventInfo = ""
+        facilitators = getAllFacilitators()
+        deleteButton = "hidden"
+        endDatePicker = "d-none"
+        program = Program.get_by_id(program)
 
-    currentTermid = Term.select().where(Term.isCurrentTerm).get()
-    futureTerms = selectFutureTerms(currentTermid)
-    listOfTerms = Term.select()
-    eventInfo = ""
-    facilitators = getAllFacilitators()
-    deleteButton = "hidden"
-    endDatePicker = "d-none"
-    program = Program.get_by_id(program)
-
-    return render_template("admin/createEvents.html",
-                            program = program,
-                            futureTerms = futureTerms,
-                            listOfTerms = listOfTerms,
-                            facilitators = facilitators,
-                            user = g.current_user,
-                            deleteButton = deleteButton,
-                            endDatePicker = endDatePicker,
-                            eventInfo = eventInfo)
+        return render_template("admin/createEvents.html",
+                                program = program,
+                                futureTerms = futureTerms,
+                                listOfTerms = listOfTerms,
+                                facilitators = facilitators,
+                                user = g.current_user,
+                                deleteButton = deleteButton,
+                                endDatePicker = endDatePicker,
+                                eventInfo = eventInfo)
 
 @admin_bp.route('/<program>/<eventId>/edit_event', methods=['GET'])
 def editEvent(program, eventId):

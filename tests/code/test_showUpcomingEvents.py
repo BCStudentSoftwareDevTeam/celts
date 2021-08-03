@@ -31,6 +31,6 @@ def test_userWithNoInterestedEvent():
     events = getUpcomingEventsForUser(user)
     assert len(events) == 0
 
-    user = "bryanta" #no interest selected
+    user = "ayisie" #no interest selected
     events = getUpcomingEventsForUser(user)
     assert len(events) == 0

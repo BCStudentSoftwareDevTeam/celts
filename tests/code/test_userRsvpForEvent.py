@@ -46,6 +46,15 @@ def test_userRsvpForEvent():
 
     (EventParticipant.delete().where(EventParticipant.user == 'agliullovak', EventParticipant.event == 11)).execute()
 
-    # the user is not eligible to register (reason: hasn't attended all prerequisite events)
-    with pytest.raises(Exception):
-        volunteer = userRsvpForEvent("ayisie", 7)
+    # the user is not eligible to register (reason: user is banned)
+    # with pytest.raises(Exception):
+    volunteer = userRsvpForEvent("ayisie", 1)
+    assert volunteer == False
+
+    # User does not exist
+    with pytest.raises(DoesNotExist):
+        volunteer = userRsvpForEvent("jarjug", 2)
+
+    #program does not exist
+    with pytest.raises(DoesNotExist):
+        volunteer = userRsvpForEvent("agliullovak", 500)

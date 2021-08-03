@@ -3,7 +3,7 @@ from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.controllers.admin import admin_bp
 from app.controllers.events import events_bp
-from app.logic.userRsvpForEvent import userRsvpForEvent
+from app.logic.userRsvpForEvent import userRsvpForEvent, unattendedRequiredEvents
 from flask import flash, request, redirect, url_for, g
 
 
@@ -18,7 +18,9 @@ def volunteerRegister():
     userId = User.get(User.username == g.current_user)
     eventId = eventData['eventId']
     program = eventData['programId']
-    isEligible, listOfRequirements = userRsvpForEvent(userId, eventId)
+    isEligible = userRsvpForEvent(userId, eventId)
+    listOfRequirements = unattendedRequiredEvents(program, userId)
+
 
     if not isEligible: # if they are banned
         flash(f"Cannot RSVP: {userId.firstName} is banned")

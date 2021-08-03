@@ -28,8 +28,8 @@ def test_afterEdit():
                     'eventIsTraining': True,
                     'eventRSVP': False,
                     'eventServiceHours': 5,
-                    "eventStartDate": datetime.strptime("2021 12 12","%Y %m %d"),
-                    "eventEndDate": datetime.strptime("2022 6 12","%Y %m %d")
+                    "eventStartDate": "2021 12 12",
+                    "eventEndDate": "2022 6 12"
                 }
     newEventData.update(valid=True, eventFacilitator=User.get(User.username == 'ramsayb2'))
     eventFunction = eventEdit(newEventData)
@@ -48,8 +48,8 @@ def test_afterEdit():
                     'eventIsTraining': True,
                     'eventRSVP': False,
                     'eventServiceHours': 5,
-                    "eventStartDate": datetime.strptime("2021 12 12","%Y %m %d"),
-                    "eventEndDate": datetime.strptime("2022 6 12","%Y %m %d")
+                    "eventStartDate": "2021 12 12",
+                    "eventEndDate": "2022 6 12"
                 }
     newEventData.update(valid=True, eventFacilitator=User.get(User.username == 'ramsayb2'))
     eventFunction = eventEdit(newEventData)
