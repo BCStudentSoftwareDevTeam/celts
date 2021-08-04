@@ -1,5 +1,6 @@
 import pytest
-from app.logic.getAllFacilitators import getAllFacilitators
+from app.logic.getFacilitatorsAndTerms import getAllFacilitators
+
 
 
 @pytest.mark.integration

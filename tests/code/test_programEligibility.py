@@ -8,20 +8,6 @@ from app.models.event import Event
 from app.logic.programEligibility import isEligibleForProgram
 
 @pytest.mark.integration
-def test_doesNotExistIsEligibleForProgram():
-
-    with pytest.raises(DoesNotExist):
-        eligible = isEligibleForProgram(2, "asdlkfje") #user doesn't exist
-
-    with pytest.raises(DoesNotExist):
-        eligible = isEligibleForProgram(2, 135156)
-
-    with pytest.raises(DoesNotExist):
-        eligible = isEligibleForProgram(9, "lamichhanes2") #Program doesn't exist
-
-
-
-@pytest.mark.integration
 def test_isEligibleForProgram():
 
     # user has attended all required events
