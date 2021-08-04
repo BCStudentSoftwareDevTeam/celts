@@ -104,8 +104,8 @@ def eventEdit(newEventData):
                 "isTraining": newEventData['eventIsTraining'],
                 "isRsvpRequired": newEventData['eventRSVP'],
                 "isService": newEventData['eventServiceHours'],
-                "startDate": newEventData['eventStartDate'],
-                "endDate": newEventData['eventEndDate']
+                "startDate": parser.parse(newEventData['eventStartDate']),
+                "endDate": parser.parse(newEventData['eventEndDate'])
 
             }
         eventEntry = Event.update(**eventData).where(Event.id == eventId).execute()

@@ -1,20 +1,21 @@
 from flask import Flask, redirect, flash, g, url_for, abort
 from flask import request, render_template
 from app.models.program import Program
+from app.models.event import Event
+from app.models.facilitator import Facilitator
+from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.term import Term
-from app.models.eventParticipant import EventParticipant
 from app.models.outsideParticipant import OutsideParticipant
-from app.models.event import Event
-from app.controllers.admin.createEvents import selectFutureTerms
 from app.models.programEvent import ProgramEvent
-from app.models.facilitator import Facilitator
-from app.logic.getAllFacilitators import getAllFacilitators
+from app.logic.getFacilitatorsAndTerms import getAllFacilitators, selectFutureTerms
 from app.logic.updateVolunteers import getEventLengthInHours
+from app.controllers.main.volunteerRegisterEvents import volunteerRegister
 from app.controllers.admin import admin_bp, getStudent
 from app.controllers.admin.deleteEvent import deleteEvent
 from app.controllers.admin.createEvents import createEvent
 from app.controllers.admin.changeVolunteer import getVolunteers
+from datetime import datetime
 
 
 @admin_bp.route('/testing_things', methods=['GET'])
@@ -54,58 +55,70 @@ def trackVolunteersPage(programID, eventID):
 
 @admin_bp.route('/<program>/create_event', methods=['GET'])
 def createEventPage(program):
-
-    currentTermid = Term.select().where(Term.isCurrentTerm).get()
-    futureTerms = selectFutureTerms(currentTermid)
-    listOfTerms = Term.select()
-    eventInfo = ""
-    facilitators = getAllFacilitators()
-    deleteButton = "hidden"
-    endDatePicker = "d-none"
-    try:
+    if not g.current_user.isCeltsAdmin:
+        abort(403)
+    else:
+        currentTermid = Term.select().where(Term.isCurrentTerm).get()
+        futureTerms = selectFutureTerms(currentTermid)
+        eventInfo = ""
+        facilitators = getAllFacilitators()
+        deleteButton = "hidden"
+        endDatePicker = "d-none"
         program = Program.get_by_id(program)
 
-    except:
-        return render_template(404)
-
-    return render_template("admin/createEvents.html",
-                            program = program,
-                            futureTerms = futureTerms,
-                            listOfTerms = listOfTerms,
-                            facilitators = facilitators,
-                            deleteButton = deleteButton,
-                            endDatePicker = endDatePicker,
-                            eventInfo = eventInfo)
+        return render_template("admin/createEvents.html",
+                                program = program,
+                                futureTerms = futureTerms,
+                                facilitators = facilitators,
+                                user = g.current_user,
+                                deleteButton = deleteButton,
+                                endDatePicker = endDatePicker,
+                                eventInfo = eventInfo)
 
 @admin_bp.route('/<program>/<eventId>/edit_event', methods=['GET'])
 def editEvent(program, eventId):
-
     facilitators = getAllFacilitators()
-    listOfTerms = Term.select()
     eventInfo = Event.get_by_id(eventId)
+    currentTermid = Term.select().where(Term.isCurrentTerm).get()
+    futureTerms = selectFutureTerms(currentTermid)
+
+    # FIXME: One of the below two should be replaced which one?
+    eventFacilitators = Facilitator.select().where(Facilitator.event == eventInfo)
     currentFacilitator = Facilitator.get_or_none(Facilitator.event == eventId)
-    deleteButton = "submit"
-    hideElement = "hidden"
+
+    isRecurring = "Checked" if eventInfo.isRecurring else ""
+    # isPrerequisiteForProgram = "Checked" if eventInfo.isPrerequisiteForProgram else ""
     isTraining = "Checked" if eventInfo.isTraining else ""
     isRsvpRequired = "Checked" if eventInfo.isRsvpRequired else ""
     isService = "Checked" if eventInfo.isService else ""
-    try:
-        program = Program.get_by_id(program)
+    userHasRSVPed = EventParticipant.get_or_none(EventParticipant.user == g.current_user, EventParticipant.event == eventInfo)
+    deleteButton = "submit"
+    hideElement = "hidden"
+    program = Program.get_by_id(program)
 
-    except:
-        return render_template(404)
+    currentDate = datetime.now()
+    eventDate = datetime.combine(eventInfo.startDate, eventInfo.timeStart)
+    isPastEvent = False
+    if currentDate >= eventDate:
+        isPastEvent = True
+
 
     return render_template("admin/createEvents.html",
+                            user = g.current_user,
+                            isPastEvent = isPastEvent,
                             program = program,
                             currentFacilitator = currentFacilitator,
                             facilitators = facilitators,
-                            listOfTerms = listOfTerms,
+                            futureTerms = futureTerms,
                             eventInfo = eventInfo,
                             eventId = eventId,
+                            isRecurring = isRecurring,
                             isTraining = isTraining,
                             hideElement = hideElement,
                             isRsvpRequired = isRsvpRequired,
                             isService = isService,
+                            eventFacilitators = eventFacilitators,
+                            userHasRSVPed = userHasRSVPed,
                             deleteButton = deleteButton)
 
 @admin_bp.route('/<program>/<eventId>/deleteEvent', methods=['POST'])

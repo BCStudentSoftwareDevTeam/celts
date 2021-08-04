@@ -2,6 +2,7 @@ from flask import request, render_template, g, abort
 from app.models.program import Program
 from app.models.interest import Interest
 from app.controllers.main import main_bp
+from app.controllers.main.volunteerRegisterEvents import volunteerRegister
 
 @main_bp.route('/')
 def home():

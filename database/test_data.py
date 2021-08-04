@@ -285,7 +285,6 @@ events = [
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
-
         "id": 8,
         "term": 3,
         "eventName": "Adoption",
@@ -434,8 +433,9 @@ program_events = [
         "event_id": 12,
         "program_id": 3
     },
+
     {
-        "event_id": 13,
+        "event_id": 14,
         "program_id": 5
     },
     {
@@ -602,8 +602,15 @@ eventParticipants = [
     },
     {
         "user": "khatts",
-        "event": 5,
+        "event": 7,
         "rsvp": True,
+        "attended": True,
+        "hoursEarned": 3,
+    },
+    {
+        "user": "khatts",
+        "event": 5,
+        "rsvp": False,
         "attended": True,
         "hoursEarned": 8,
     },
@@ -708,8 +715,14 @@ bannedUser = [
     {
         "user": "khatts",
         "program": 3,
+    },
+
+    {
+        "user": "ayisie",
+        "program": 1,
     }
 ]
+
 ProgramBan.insert_many(bannedUser).on_conflict_replace().execute()
 
 facilitators = [
