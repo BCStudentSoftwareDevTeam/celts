@@ -15,6 +15,7 @@ from app.controllers.admin import admin_bp, getStudent
 from app.controllers.admin.deleteEvent import deleteEvent
 from app.controllers.admin.createEvents import createEvent
 from app.controllers.admin.changeVolunteer import getVolunteers
+from datetime import datetime
 
 
 @admin_bp.route('/testing_things', methods=['GET'])
@@ -95,8 +96,16 @@ def editEvent(program, eventId):
     hideElement = "hidden"
     program = Program.get_by_id(program)
 
+    currentDate = datetime.now()
+    eventDate = datetime.combine(eventInfo.startDate, eventInfo.timeStart)
+    isPastEvent = False
+    if currentDate >= eventDate:
+        isPastEvent = True
+
+
     return render_template("admin/createEvents.html",
                             user = g.current_user,
+                            isPastEvent = isPastEvent,
                             program = program,
                             currentFacilitator = currentFacilitator,
                             facilitators = facilitators,

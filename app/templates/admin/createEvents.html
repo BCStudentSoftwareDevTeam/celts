@@ -16,9 +16,15 @@
 
   <div align="center" style="margin-bottom: 50px;">
     <h1 id ="title">{{program.programName}}</h1>
-    {% if user.isCeltsAdmin or user.isCeltsStudentStaff%}
+    {% if 'create_event' in request.path %}
     <h2> New Event Form</h2>
     {% endif %}
+    {% if 'edit_event' in request.path and isPastEvent%}
+      <div class="alert alert-danger" role="alert">
+    This event has already passed.
+      </div>
+    {% endif %}
+
   </div>
 
   {% if user.isCeltsAdmin or user.isCeltsStudentStaff %}
@@ -212,7 +218,7 @@
             {% if userHasRSVPed %}
               <button type="submit" class="btn btn-danger"  formaction="/rsvpRemove">Remove RSVP</button>&nbsp&nbsp&nbsp&nbsp&nbsp
             {% else %}
-              <button type="submit" id="rsvpEvent" class="btn btn-primary"  formaction="/rsvpForEvent">RSVP</button>&nbsp&nbsp&nbsp&nbsp&nbsp
+              <button type="submit" id="rsvpEvent" class="btn btn-primary" formaction="/rsvpForEvent" {{'disabled' if isPastEvent}}>RSVP</button>&nbsp&nbsp&nbsp&nbsp&nbsp
             {% endif %}
           {% endif %}
 
