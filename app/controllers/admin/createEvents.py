@@ -50,10 +50,3 @@ def createEvent():
         else:
             flash(validationErrorMessage, 'warning')
             return redirect(url_for("admin.createEventPage", program=2)) #FIXME: have this redirect to main programs page (or some appropriate non admin page).
-
-def selectFutureTerms(currentTermid):
-    futureTerms = (Term.select().where(Term.id >= currentTermid)
-                                .where((Term.year <= (Term.get_by_id(currentTermid)).year + 2)))
-    listOfTerms = [future for future in futureTerms]
-
-    return listOfTerms

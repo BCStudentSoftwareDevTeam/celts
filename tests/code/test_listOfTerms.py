@@ -1,5 +1,5 @@
 import pytest
-from app.controllers.admin.createEvents import selectFutureTerms
+from app.logic.getFacilitatorsAndTerms import selectFutureTerms
 from app.models.term import Term
 
 @pytest.mark.integration

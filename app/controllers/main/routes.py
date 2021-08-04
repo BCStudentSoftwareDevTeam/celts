@@ -27,14 +27,6 @@ def volunteerIndicateInterest():
                            interests_ids = interests_ids)
 
 
-@main_bp.route('/rsvpForEvent', methods = ['POST'])
-def RSVPCaller():
-    print("Hello")
-    eventData = request.form.copy()
-    volunteerRegister(eventData)
-
-    return ""
-
 @main_bp.route('/profile/<username>', methods = ['GET'])
 def profilePage(username):
 

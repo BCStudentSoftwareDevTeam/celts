@@ -33,13 +33,12 @@ def unattendedRequiredEvents(program, user):
     # Check for events that are prerequisite for program
     requiredEvents = (Event.select(Event)
                            .join(ProgramEvent)
-                           .where((Event.isTraining == True) & (ProgramEvent.program == program)))
+                           .where(Event.isTraining == True, ProgramEvent.program == program))
 
     if requiredEvents:
         attendedRequiredEventsList = []
         for event in requiredEvents:
-            attendedRequirement = (EventParticipant.select().where((EventParticipant.attended == True)
-                                    & (EventParticipant.user == user) & (EventParticipant.event == event)))
+            attendedRequirement = (EventParticipant.select().where(EventParticipant.attended == True, EventParticipant.user == user, EventParticipant.event == event))
             if not attendedRequirement:
                 attendedRequiredEventsList.append(event.eventName)
         if attendedRequiredEventsList is not None:

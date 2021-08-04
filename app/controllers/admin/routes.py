@@ -8,9 +8,8 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.programEvent import ProgramEvent
-from app.logic.getAllFacilitators import getAllFacilitators
+from app.logic.getFacilitatorsAndTerms import getAllFacilitators, selectFutureTerms
 from app.logic.updateVolunteers import getEventLengthInHours
-from app.controllers.admin.createEvents import selectFutureTerms
 from app.controllers.main.volunteerRegisterEvents import volunteerRegister
 from app.controllers.admin import admin_bp, getStudent
 from app.controllers.admin.deleteEvent import deleteEvent

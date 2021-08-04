@@ -1,55 +1,40 @@
 from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
-from app.controllers.admin import admin_bp
+from app.controllers.main import main_bp
 from app.controllers.events import events_bp
 from app.logic.userRsvpForEvent import userRsvpForEvent, unattendedRequiredEvents
 from flask import flash, request, redirect, url_for, g
+from app import app
 
 
 
-@admin_bp.route('/rsvpForEvent', methods=['POST'])
+@main_bp.route('/rsvpForEvent', methods = ['POST'])
 def volunteerRegister():
     """
     This function selects the user ID and event ID and registers the user
     for the event they have clicked register for.
     """
     eventData = request.form
-    userId = User.get(User.username == g.current_user)
-    eventId = eventData['eventId']
-    program = eventData['programId']
-    isEligible = userRsvpForEvent(userId, eventId)
-    listOfRequirements = unattendedRequiredEvents(program, userId)
+    userId = g.current_user
+    isEligible = userRsvpForEvent(userId, eventData['eventId'])
+    listOfRequirements = unattendedRequiredEvents(eventData['programId'], userId)
 
 
     if not isEligible: # if they are banned
-        flash(f"Cannot RSVP: {userId.firstName} is banned")
+        flash(f"Cannot RSVP. Contact CELTS administrators: {app.config['celts_admin_contact']}.", "danger")
 
-    elif len(listOfRequirements) > 0:
-        if len(listOfRequirements) >= 3:
-            reqListToString = ', '.join(listOfRequirements[:-1])
-            reqListToString += ' or ' + listOfRequirements[-1]
-            flash(f"{userId.firstName} {userId.lastName} successfully registered. Warning! You have not attended the following required trainings: {reqListToString}")
-
-        elif len(listOfRequirements) == 2:
-            reqListToString = ' or '.join(listOfRequirements)
-            flash(f"{userId.firstName} {userId.lastName} successfully registered. Warning! You have not attended the following required trainings: {reqListToString}")
-
-
-        else:
-            reqListToString = str(listOfRequirements[0])
-            reqListToString = 'Berea Buddies'
-            flash(f"{userId.firstName} {userId.lastName} successfully registered. Warning! You have not attended the following required trainings: {reqListToString}")
+    elif listOfRequirements:
+        reqListToString = ', '.join(listOfRequirements)
+        flash(f"{userId.firstName} {userId.lastName} successfully registered. However, the following training may be required: {reqListToString}.", 'success')
 
     #if they are eligible
     else:
-        RSVPupdate =(EventParticipant.update({EventParticipant.rsvp: True})
-                         .where(EventParticipant.user == userId, EventParticipant.event == eventId))
-        RSVPupdate.execute()
         flash("Successfully registered for event!","success")
-    return redirect(url_for("admin.editEvent", eventId=eventId, program=program))
+    return redirect(url_for("admin.editEvent", eventId=eventData['eventId'], program=eventData['programId']))
 
-@admin_bp.route('/rsvpRemove', methods=['POST'])
+
+@main_bp.route('/rsvpRemove', methods = ['POST'])
 def RemoveRSVP():
     """
     This function deletes the user ID and event ID from database when RemoveRSVP  is clicked
