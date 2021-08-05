@@ -9,13 +9,13 @@
     <hr>
     <ul class="nav nav-pills flex-column mb-auto">
       <li class="nav-item">
-        <a href="#" class="nav-link active" aria-current="page">
+        <a href="#" class="nav-link text-white {{ 'active' if request.path =='/event_management' }}" aria-current="page">
           <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
           Event Management
         </a>
       </li>
       <li>
-        <a href="#" class="nav-link text-white">
+        <a href="/search_student" class="nav-link text-white {{ 'active' if request.path =='/search_student' }}">
           <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
           Volunteer Search
         </a>

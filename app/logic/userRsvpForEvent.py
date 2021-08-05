@@ -16,11 +16,32 @@ def userRsvpForEvent(user,  event):
     :return: eventParticipant entry for the given user and event; otherwise raise an exception
     """
 
-    user = User.get_by_id(user)
-    event = Event.get_by_id(event)
+    rsvpUser = User.get_by_id(user)
+    rsvpEvent = Event.get_by_id(event)
     program = Program.select(Program).join(ProgramEvent).where(ProgramEvent.event == event).get()
 
-    if isEligibleForProgram(program, user):
-        return EventParticipant.get_or_create(user = user, event = event, rsvp = True)[0]
+    isEligible = isEligibleForProgram(program, user)
+    if isEligible:
+        newParticipant = EventParticipant.get_or_create(user = rsvpUser, event = rsvpEvent, rsvp = True)[0]
+        return newParticipant
+    return isEligible
 
-    raise Exception("User is not eligible")
+
+
+def unattendedRequiredEvents(program, user):
+
+    # Check for events that are prerequisite for program
+    requiredEvents = (Event.select(Event)
+                           .join(ProgramEvent)
+                           .where(Event.isTraining == True, ProgramEvent.program == program))
+
+    if requiredEvents:
+        attendedRequiredEventsList = []
+        for event in requiredEvents:
+            attendedRequirement = (EventParticipant.select().where(EventParticipant.attended == True, EventParticipant.user == user, EventParticipant.event == event))
+            if not attendedRequirement:
+                attendedRequiredEventsList.append(event.eventName)
+        if attendedRequiredEventsList is not None:
+            return attendedRequiredEventsList
+    else:
+        return []

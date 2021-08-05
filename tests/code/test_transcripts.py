@@ -56,8 +56,9 @@ def test_getProgramTranscripts():
     user2 = "khatts"
     transcript2 = getProgramTranscript(user2)
     assert transcript2[0] == ['Empty Bowls', 'Spring A 2021', 5.0]
-    assert transcript2[1] == ['Berea Buddies', 'Summer 2021', 8.0] #Program that has events from different term.
 
-    user3 = "bryanta" #user who's not involved in any program
+    assert transcript2[3] == ['Berea Buddies', 'Summer 2021', 8.0] #Program that has events from different term.
+
+    user3 = "ramsayb2" #user who's not involved in any program
     transcript3 = getProgramTranscript(user3)
     assert transcript3 == []

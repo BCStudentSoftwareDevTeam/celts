@@ -1,7 +1,6 @@
 $(document).ready(function(){
-  $('[data-bs-toggle="tooltip"]').tooltip();
-  $("#trackHoursInput").on("keyup", function() {
 
+  $('[data-bs-toggle="tooltip"]').tooltip();
 // Search functionalities from the volunteer table in the UI
   $("#trackVolunteersInput").on("keyup", function() {
     var value = $(this).val().toLowerCase();
@@ -9,27 +8,28 @@ $(document).ready(function(){
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
   });
-});
+
 // Adding the new volunteer to the user database table
-$("#selectVolunteerButton").click(function(){
-  user = $("#addVolunteerInput").val()
-  volunteerEventID = $("#eventID").val()
-  eventLengthInHours = $("#eventLength").text()
+  $("#selectVolunteerButton").click(function(){
+    user = $("#addVolunteerInput").val()
+    volunteerEventID = $("#eventID").val()
+    eventLengthInHours = $("#eventLength").text()
 
-  $.ajax({
-    url: "/addVolunteerToEvent/" + user+"/"+volunteerEventID+"/"+eventLengthInHours,
-    type: "POST",
-    success: function(s){
-      location.reload();
+    $.ajax({
+      url: "/addVolunteerToEvent/" + user+"/"+volunteerEventID+"/"+eventLengthInHours,
+      type: "POST",
+      success: function(s){
+        location.reload();
 
-    },
-    error: function(request, status, error){
-      location.reload();
-      console.log(status,error);
-    }
+      },
+      error: function(request, status, error){
+        location.reload();
+        console.log(status,error);
+      }
+      })
+    })
 
-  })
-})
+});
 
 // Deleting a volunteer from the eventParticipant database table
 function removeVolunteerFromEvent (deleteIcon){
@@ -45,8 +45,9 @@ function removeVolunteerFromEvent (deleteIcon){
     },
     error: function(request, status, error) {
         console.log(status,error);
-    }
+      }
   })
+
 }
 
 // Search functionalities from the user table in the database

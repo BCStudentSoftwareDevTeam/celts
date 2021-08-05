@@ -104,9 +104,8 @@ def eventEdit(newEventData):
                 "isTraining": newEventData['eventIsTraining'],
                 "isRsvpRequired": newEventData['eventRSVP'],
                 "isService": newEventData['eventServiceHours'],
-                "startDate": newEventData['eventStartDate'],
-                "endDate": newEventData['eventEndDate']
-
+                "startDate": parser.parse(newEventData['eventStartDate']),
+                "endDate": parser.parse(newEventData['eventEndDate'])
             }
         eventEntry = Event.update(**eventData).where(Event.id == eventId).execute()
 
@@ -117,7 +116,6 @@ def eventEdit(newEventData):
         else:
             facilitatorEntry = Facilitator.create(user = newEventData['eventFacilitator'],
                                                       event = eventId)
-
 
     else:
         raise Exception("Invalid Data")

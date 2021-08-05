@@ -11,13 +11,13 @@
 
 {% block app_content %}
 
-<h1 align="center">{{program.programName}}</h1><br>
-<h3 align="center">{{event.eventName}}</h3><br>
+  <h1 align="center">{{program.programName}}</h1><br>
+  <h3 align="center">{{event.eventName}}</h3><br>
 
   <div class="btn-group">
-    <ul class="nav nav-tabs">
-      <li class="nav-item">
-        <a class="nav-link" href="https://google.com">Event Form</a> <!--FIXME: link to event page-->
+    <ul class="nav nav-pills nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" href="/{{program.id}}/{{event.id}}/edit_event">Edit Event</a>
       </li>
       <li class="nav-item">
         <a class="nav-link active" aria-current="page" href="#">Track Volunteers</a>
@@ -80,7 +80,8 @@
       <tbody id="volunteerTable">
       {% for participant in eventParticipantsData%}
       <tr>
-        <td><input type="checkbox" id='checkbox_{{participant.user.username}}' name="checkbox_{{participant.user.username}}" onChange='toggleTrackHoursInputBox(this)' {% if participant.attended == 1 %} checked  {%endif%}></td>
+        <td><input type="checkbox" id='checkbox_{{participant.user.username}}' name="checkbox_{{participant.user.username}}"
+                   onChange='toggleVolunteersInputBox(this)' {% if participant.attended == 1 %} checked  {%endif%}></td>
         <td>
           {% if participant.user.username not in attendedTraining %}
             <span data-bs-toggle="tooltip" title="Did Not Complete All Trainings">

@@ -13,7 +13,12 @@ $(document).ready(function(){
       $("#endDatePicker").prop('required', false);
     }
   });
+$(document).ready(function(){
+  if($(".datePicker").is("readonly")){
+    $( ".datePicker" ).datepicker( "option", "disabled", true );
+}
 
+});
 
   $(".readonly").on('keydown paste', function(e){ //makes the input fields act like readonly (readonly doesn't work with required)
         if(e.keyCode != 9) // ignore tab
@@ -21,6 +26,7 @@ $(document).ready(function(){
     });
 
   $.datepicker.setDefaults({
+    minDate:  new Date($.now()),
     dateFormat:'mm-dd-yy'
   });
 
