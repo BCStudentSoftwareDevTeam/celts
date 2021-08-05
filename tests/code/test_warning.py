@@ -4,8 +4,6 @@ from app.logic.trackAttendees import trainedParticipants
 
 @pytest.mark.integration
 def test_prereqParticipants():
-
-    prlist = [1, 2]
-    attendedPreq = prereqParticipant = trainedParticipants(1, prlist)
+    attendedPreq = prereqParticipant = trainedParticipants(1)
 
     assert "neillz" and "khatts" in attendedPreq
