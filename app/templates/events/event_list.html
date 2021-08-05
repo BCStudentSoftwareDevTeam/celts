@@ -82,7 +82,7 @@
               <tbody>
                   {% for event in events %}
                     <tr>
-                      <td> <a href="#" class="link-primary">{{event.description}}</a></td> {# FIXME:change href #}
+                      <td> <a href="/{{program.id}}/{{event.id}}/edit_event" class="link-primary">{{event.eventName}}</a></td> {# FIXME:change href #}
                       <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
                       <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
                       <td>{{event.location}}</td>
