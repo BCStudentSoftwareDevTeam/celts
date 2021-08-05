@@ -16,10 +16,10 @@ def volunteerRegister():
     for the event they have clicked register for.
     """
     eventData = request.form
+    print("I AM HERE")
     userId = g.current_user
     isEligible = userRsvpForEvent(userId, eventData['eventId'])
     listOfRequirements = unattendedRequiredEvents(eventData['programId'], userId)
-
 
     if not isEligible: # if they are banned
         flash(f"Cannot RSVP. Contact CELTS administrators: {app.config['celts_admin_contact']}.", "danger")
@@ -31,6 +31,11 @@ def volunteerRegister():
     #if they are eligible
     else:
         flash("Successfully registered for event!","success")
+    print(eventData['eventId'], eventData['programId'])
+    print('rsvp??', (EventParticipant.select().where((EventParticipant.user == userId) &(EventParticipant.event == eventData['eventId'])& (EventParticipant.rsvp == True))).exists())
+    # if 'from' in eventData:
+    #     if eventData['from'] == 'ajax':
+    #         return ''
     return redirect(url_for("admin.editEvent", eventId=eventData['eventId'], program=eventData['programId']))
 
 
