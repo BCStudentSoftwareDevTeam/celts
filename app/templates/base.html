@@ -29,7 +29,7 @@
 
 </head>
 
-<body>
+<body class="mb-n4">
 
 {% block content %}
 
@@ -50,7 +50,8 @@
                 </div>
             </div>
         </nav>
-        <div class="col-12 col-md scroll-container overflow-auto">
+        <div class='col-12 col-md scroll-container overflow-auto'>
+        <div>
             <div class="main-content container">
                 <div id="flash_container">
                     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -73,14 +74,16 @@
                 {% endblock %}
                 <div class="spacer my-0"></div>
             </div>
-            {% block footer %}
-            <footer class="footer mt-auto bg-light" style="line-height:normal;">
-              <div class="container" ><br>
-                <span><strong>Issues? Contact: </strong><a href="mailto:support@bereacollege.onmicrosoft.com" class="footerlink">Systems Support </a><br class="d-lg-none">
-                <strong>Created & Designed by the </strong><a href="/contributors" id = "contribLink" class="footerlink">Student Software Development Team<br><br></a></span>
-              </div>
-            </footer>
-            {% endblock %}
+        </div>
+
+        {% block footer %}
+        <footer class="footer mt-auto bg-light" style="font-size:small; vertical-align: middle;">
+          <div class="container" style="margin-bottom: 0; line-height:normal;"><br>
+            <span><strong>Issues? Contact: </strong><a href="mailto:support@bereacollege.onmicrosoft.com" class="footerlink">Systems Support </a><br class="d-lg-none">
+              <strong>Created & Designed by the </strong><a href="/contributors" id = "contribLink" class="footerlink">Student Software Development Team</a></span>
+            </div>
+          </footer>
+          {% endblock %}
         </div>
     </div>
 </div>
