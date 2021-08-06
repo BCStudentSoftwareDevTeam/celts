@@ -92,11 +92,12 @@
                         <td><i class="bi bi-envelope-fill"> Email</i></td>
                         {# FIXME: the Email icon should be clickable and lead to email template #}
                       {% else %}
-                        {% if event.id in rsvpedEventsID %}
-                          <td><button type="button" class="btn btn-danger" onclick="rsvpForEvent({{program.id}}, {{event.id}})">Remove RSVP</button></td>
+                        {% if (event.startDate < currentTime.date()) or (event.timeStart < currentTime.time() and event.startDate == currentTime.date())%}
+                          <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
+                        {% elif event.id in rsvpedEventsID %}
+                          <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{program.id}}, {{event.id}})">Remove RSVP</button></td>
                         {% else %}
                           <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{program.id}}, {{event.id}})">RSVP</button></td>
-                        {# FIXME: this button lead to RSVP page #}
                         {% endif %}
                       {% endif %}
                     </tr>

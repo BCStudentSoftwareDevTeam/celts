@@ -19,7 +19,7 @@ function rsvpForEvent(programID, eventID){
   })
 }
 
-function rsvpForEvent(programID, eventID){
+function removeRsvpForEvent(programID, eventID){
   removeRsvpInfo = {eventId: eventID,
               programId: programID,
               from: 'ajax'}

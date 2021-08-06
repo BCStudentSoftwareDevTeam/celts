@@ -9,9 +9,11 @@ from app.logic.events import getEvents
 from app.logic.events import groupEventsByCategory
 from app.logic.getUpcomingEvents import getUpcomingEventsForUser
 from app.logic.signinKiosk import sendUserData
+from datetime import datetime
 
 @events_bp.route('/events/<term>/', methods=['GET'])
 def events(term):
+    currentTime = datetime.now()
     eventsDict = groupEventsByCategory(term)
     listOfTerms = Term.select()
     participantRSVP = EventParticipant.select().where(EventParticipant.user == g.current_user, EventParticipant.rsvp == True)
@@ -22,6 +24,7 @@ def events(term):
         eventDict = eventsDict,
         listOfTerms = listOfTerms,
         rsvpedEventsID = rsvpedEventsID,
+        currentTime = currentTime,
         user = g.current_user)
 
 @events_bp.route('/events/upcoming_events', methods=['GET'])
