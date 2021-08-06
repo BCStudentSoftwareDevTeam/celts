@@ -16,7 +16,6 @@ def volunteerRegister():
     for the event they have clicked register for.
     """
     eventData = request.form
-    print("I AM HERE")
     userId = g.current_user
     isEligible = userRsvpForEvent(userId, eventData['eventId'])
     listOfRequirements = unattendedRequiredEvents(eventData['programId'], userId)
@@ -33,9 +32,9 @@ def volunteerRegister():
         flash("Successfully registered for event!","success")
     print(eventData['eventId'], eventData['programId'])
     print('rsvp??', (EventParticipant.select().where((EventParticipant.user == userId) &(EventParticipant.event == eventData['eventId'])& (EventParticipant.rsvp == True))).exists())
-    # if 'from' in eventData:
-    #     if eventData['from'] == 'ajax':
-    #         return ''
+    if 'from' in eventData:
+        if eventData['from'] == 'ajax':
+            return ''
     return redirect(url_for("admin.editEvent", eventId=eventData['eventId'], program=eventData['programId']))
 
 
@@ -54,4 +53,7 @@ def RemoveRSVP():
 
     currentEventParticipant.delete_instance()
     flash("Successfully unregistered for event!","success")
+    if 'from' in eventData:
+        if eventData['from'] == 'ajax':
+            return ''
     return redirect(url_for("admin.editEvent", eventId=eventId, program=program))
