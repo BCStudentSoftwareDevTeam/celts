@@ -103,6 +103,15 @@ users = [
         "isStudent": True,
         "phoneNumber": "85943311598"
     },
+    {
+        "username": "partont",
+        "bnumber": "B00751360",
+        "email": "partont@berea.edu",
+        "firstName": "Tyler",
+        "lastName": "Parton",
+        "isStudent": True,
+        "phoneNumber": "9119119111"
+    },
 
 ]
 
@@ -678,6 +687,27 @@ eventParticipants = [
         "rsvp": False,
         "attended": True,
         "hoursEarned": 12
+    },
+    {
+        "user": "partont",
+        "event": 1,
+        "rsvp": False,
+        "attended": True,
+        "hoursEarned": 1
+    },
+    {
+        "user": "partont",
+        "event": 2,
+        "rsvp": False,
+        "attended": True,
+        "hoursEarned": 5
+    },
+    {
+        "user": "partont",
+        "event": 7,
+        "rsvp": False,
+        "attended": True,
+        "hoursEarned": 8
     },
 ]
 EventParticipant.insert_many(eventParticipants).on_conflict_replace().execute()

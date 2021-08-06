@@ -1,6 +1,5 @@
 from dateutil import parser
 from app.models.event import Event
-from app.models.term import Term
 from flask import request
 from app.controllers.admin import admin_bp
 from app.logic.adminNewEvent import eventEdit
@@ -19,7 +18,6 @@ def addRecurringEvents():
 def createEvent():
 
     if not (g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff):
-
         flash("Only celts admins can create an event!", 'warning')
         return redirect(url_for("admin.createEventPage", program=2)) #FIXME: have this redirect to main programs page (or some appropriate non admin page).
 

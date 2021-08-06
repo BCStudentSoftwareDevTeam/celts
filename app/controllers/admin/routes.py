@@ -1,5 +1,4 @@
-from flask import Flask, redirect, flash, g, url_for, abort
-from flask import request, render_template
+from flask import request, render_template, url_for, g, Flask, redirect, flash, abort
 from app.models.program import Program
 from app.models.event import Event
 from app.models.facilitator import Facilitator
@@ -8,15 +7,15 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.programEvent import ProgramEvent
-from app.logic.getFacilitatorsAndTerms import getAllFacilitators, selectFutureTerms
+from app.logic.trackAttendees import trainedParticipants
 from app.logic.updateVolunteers import getEventLengthInHours
+from app.logic.getFacilitatorsAndTerms import getAllFacilitators, selectFutureTerms
 from app.controllers.main.volunteerRegisterEvents import volunteerRegister
 from app.controllers.admin import admin_bp, getStudent
 from app.controllers.admin.deleteEvent import deleteEvent
-from app.controllers.admin.createEvents import createEvent
 from app.controllers.admin.changeVolunteer import getVolunteers
+from app.controllers.admin.createEvents import createEvent, addRecurringEvents
 from datetime import datetime
-
 
 @admin_bp.route('/testing_things', methods=['GET'])
 def testing():
@@ -30,15 +29,15 @@ def studentSearchPage():
 
 @admin_bp.route('/<programID>/<eventID>/track_volunteers', methods=['GET'])
 def trackVolunteersPage(programID, eventID):
+
+    attendedTraining = trainedParticipants(programID)
     if g.current_user.isCeltsAdmin:
         if ProgramEvent.get_or_none(ProgramEvent.event == eventID, ProgramEvent.program == programID):
             eventParticipantsData = EventParticipant.select().where(EventParticipant.event == eventID)
-
             eventParticipantsData = eventParticipantsData.objects()
 
             event = Event.get_by_id(eventID)
             program = Program.get_by_id(programID)
-
             eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
 
 
@@ -46,7 +45,8 @@ def trackVolunteersPage(programID, eventID):
                                     eventParticipantsData = list(eventParticipantsData),
                                     eventLength = eventLengthInHours,
                                     program = program,
-                                    event = event)
+                                    event = event,
+                                    attendedTraining=attendedTraining)
         else:
             raise Exception("Event ID and Program ID mismatched")
 

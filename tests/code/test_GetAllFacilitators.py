@@ -1,8 +1,6 @@
 import pytest
 from app.logic.getFacilitatorsAndTerms import getAllFacilitators
 
-
-
 @pytest.mark.integration
 def test_getAllFacilitators():
     userFacilitator = getAllFacilitators()
