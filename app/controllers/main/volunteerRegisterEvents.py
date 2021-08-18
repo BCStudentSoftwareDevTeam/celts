@@ -30,8 +30,6 @@ def volunteerRegister():
     #if they are eligible
     else:
         flash("Successfully registered for event!","success")
-    print(eventData['eventId'], eventData['programId'])
-    print('rsvp??', (EventParticipant.select().where((EventParticipant.user == userId) &(EventParticipant.event == eventData['eventId'])& (EventParticipant.rsvp == True))).exists())
     if 'from' in eventData:
         if eventData['from'] == 'ajax':
             return ''
