@@ -20,7 +20,6 @@ def volunteerRegister():
     isEligible = userRsvpForEvent(userId, eventData['eventId'])
     listOfRequirements = unattendedRequiredEvents(eventData['programId'], userId)
 
-
     if not isEligible: # if they are banned
         flash(f"Cannot RSVP. Contact CELTS administrators: {app.config['celts_admin_contact']}.", "danger")
 
@@ -31,6 +30,9 @@ def volunteerRegister():
     #if they are eligible
     else:
         flash("Successfully registered for event!","success")
+    if 'from' in eventData:
+        if eventData['from'] == 'ajax':
+            return ''
     return redirect(url_for("admin.editEvent", eventId=eventData['eventId'], program=eventData['programId']))
 
 
@@ -49,4 +51,7 @@ def RemoveRSVP():
 
     currentEventParticipant.delete_instance()
     flash("Successfully unregistered for event!","success")
+    if 'from' in eventData:
+        if eventData['from'] == 'ajax':
+            return ''
     return redirect(url_for("admin.editEvent", eventId=eventId, program=program))

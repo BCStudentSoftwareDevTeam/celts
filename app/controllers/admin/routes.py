@@ -125,9 +125,10 @@ def editEvent(program, eventId):
 def deleteRoute(program, eventId):
 
     try:
+        event = Event.get(Event.id == eventId)
         deleteEvent(program, eventId)
         flash("Event canceled")
-        return redirect(url_for("admin.createEventPage", program=program)) #FIXME: Redirect to events page, not create page
+        return redirect(url_for("events.events", term = eventTerm.term))
 
     except Exception as e:
         print('Error while canceling event:', e)

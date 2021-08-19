@@ -19,7 +19,7 @@ def createEvent():
 
     if not (g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff):
         flash("Only celts admins can create an event!", 'warning')
-        return redirect(url_for("admin.createEventPage", program=2)) #FIXME: have this redirect to main programs page (or some appropriate non admin page).
+        return redirect(url_for("main.profilePage", username = g.current_user.username))
 
     else:
         eventData = request.form.copy() # request.form returns a immutable dict so we need to copy to make changes
@@ -40,11 +40,11 @@ def createEvent():
             if not eventId:
                 createNewEvent(newEventData)
                 flash("Event successfully created!", 'success')
-                return redirect(url_for("admin.createEventPage", program=newEventData['programId']))
+                return redirect(url_for("events.events", term = newEventData['eventTerm']))
             else:
                 eventEdit(newEventData)
                 flash("Event successfully updated!")
-                return redirect(url_for("admin.createEventPage", program=newEventData['programId']))
+                return redirect(url_for("events.events", term = newEventData['eventTerm']))
         else:
             flash(validationErrorMessage, 'warning')
-            return redirect(url_for("admin.createEventPage", program=2)) #FIXME: have this redirect to main programs page (or some appropriate non admin page).
+            return redirect(url_for("admin.createEventPage", program = newEventData['programId']))
