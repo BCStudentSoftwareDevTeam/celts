@@ -11,14 +11,28 @@ from app.logic.signinKiosk import sendUserData
 
 @events_bp.route('/events/<term>/', methods=['GET'])
 def events(term):
+
+    print("This is the term", term)
+    if not term.isdigit():
+        listOfTerms = Term.select()
+        for term_id in listOfTerms.objects():
+            if term_id.isCurrentTerm == True:
+                term = term_id
+                print(term, "new term")
+
+
     eventsDict = groupEventsByCategory(term)
     listOfTerms = Term.select()
-
+    print(list(listOfTerms), "LISTOFTERM")
+    for term in listOfTerms.objects():
+        print(term.id)
+        print(term.isCurrentTerm)
     return render_template("/events/event_list.html",
         selectedTerm = Term.get_by_id(term),
         eventDict = eventsDict,
         listOfTerms = listOfTerms,
         user = g.current_user)
+
 
 @events_bp.route('/events/upcoming_events', methods=['GET'])
 def showUpcomingEvent():
