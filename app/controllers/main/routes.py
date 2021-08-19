@@ -2,6 +2,7 @@ from flask import request, render_template, g, abort
 from app.models.program import Program
 from app.models.interest import Interest
 from app.controllers.main import main_bp
+from app.logic.getUpcomingEvents import getUpcomingEventsForUser
 
 @main_bp.route('/')
 def home():
@@ -13,23 +14,19 @@ def home():
         print('Error in main page:', e)
         return "",500
 
-@main_bp.route('/volunteerIndicateInterest', methods = ['GET'])
-def volunteerIndicateInterest():
+@main_bp.route('/profile/<username>', methods = ['GET'])
+def profilePage(username):
+    upcomingEvents = getUpcomingEventsForUser(g.current_user)
     programs = Program.select()
     interests = Interest.select().where(Interest.user == g.current_user)
     interests_ids = [interest.program for interest in interests]
-    return render_template('volunteerIndicateInterest.html',
-                           title="Volunteer Interest",
-                           user = g.current_user,
-                           programs = programs,
-                           interests = interests,
-                           interests_ids = interests_ids)
-
-
-@main_bp.route('/profile/<username>', methods = ['GET'])
-def profilePage(username):
-
     if username == g.current_user.username or g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
-        return f'<h1>Profile page for {username}</h1>'
-
-    abort(403)
+        return render_template('/volunteer/volunteerIndicateInterest.html',
+                               title="Volunteer Interest",
+                               user = g.current_user,
+                               programs = programs,
+                               interests = interests,
+                               interests_ids = interests_ids,
+                               upcomingEvents = upcomingEvents)
+    else:
+        return "", 500
