@@ -8,4 +8,3 @@ admin_bp = Blueprint(
 )
 
 from app.controllers.admin import routes
-from app.controllers.admin import addParticipants

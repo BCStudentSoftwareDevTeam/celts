@@ -5,6 +5,7 @@ fi
 BASE_URL=http://localhost:8080
 SENSITIVE_URL=http://celts.berea.edu
 VERBOSE="--verbose "
+VERBOSE=""
 FLASK_ENV="testing"
 
 FLAGS="${VERBOSE}--capture=no --disable-pytest-warnings --strict-markers --tb=line -rs --ignore=database/test_data.py --ignore=tests/mail_test.py --ignore=db_test.py"
