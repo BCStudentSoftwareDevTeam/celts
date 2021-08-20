@@ -26,7 +26,14 @@
             <td>{{courseDict[course]['faculty']}}</td>
             <td>{{courseDict[course]['term']}}</td>
             <td>{{courseDict[course]['status']}}</td>
-            <td>Action</td>
+            <td>
+              <select class="form-select">
+                <option value="Renew" selected="selected">Renew</option>
+                <option value="View">View</option>
+                <option value="Edit">Edit</option>
+                <option value="Overlap">Overlap</option>
+              </select>
+            </td>
           </tr>
         {% endfor %}
     </tbody>

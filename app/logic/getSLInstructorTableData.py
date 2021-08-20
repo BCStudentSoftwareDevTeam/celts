@@ -10,9 +10,11 @@ def getProposalData():
                      .join(CourseInstructor))
     courseDict = {}
     for course in courses:
+        otherInstructors = (CourseInstructor.select().where(CourseInstructor.course==course))
+        faculty = [f"{instructor.user.firstName} {instructor.user.lastName}" for instructor in otherInstructors]
         courseDict[course.courseName] = {
         "name":course.courseName,
-        "faculty":0,
+        "faculty": ', '.join(faculty),
         "term":course.term.description,
         "status":course.status.status}
     return courseDict
