@@ -1,0 +1,36 @@
+{% extends "base.html"%}
+{% block scripts %}
+  {{super()}}
+  </script>
+{% endblock %}
+{% block styles %}
+  {{super()}}
+{% endblock %}
+{% block app_content %}
+<h1 class="text-center">{{g.current_user.firstName}} {{g.current_user.lastName}}</h1>
+<div>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">Courses</th>
+        <th scope="col">Faculty</th>
+        <th scope="col">Term</th>
+        <th scope="col">Status</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for course in courseDict %}
+          <tr>
+            <td>{{courseDict[course]['name']}}</td>
+            <td>{{courseDict[course]['faculty']}}</td>
+            <td>{{courseDict[course]['term']}}</td>
+            <td>{{courseDict[course]['status']}}</td>
+            <td>Action</td>
+          </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}
