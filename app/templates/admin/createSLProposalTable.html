@@ -1,7 +1,8 @@
 {% extends "base.html"%}
+
 {% block scripts %}
   {{super()}}
-  </script>
+  <script src="/static/js/changeProposalAction.js"></script>
 {% endblock %}
 {% block styles %}
   {{super()}}
@@ -27,11 +28,11 @@
             <td>{{courseDict[course]['term']}}</td>
             <td>{{courseDict[course]['status']}}</td>
             <td>
-              <select class="form-select">
+              <select class="form-select" onchange="changeAction(this)">
                 <option value="Renew" selected="selected">Renew</option>
                 <option value="View">View</option>
+                <option value="Withdraw">Withdraw</option>
                 <option value="Edit">Edit</option>
-                <option value="Overlap">Overlap</option>
               </select>
             </td>
           </tr>
