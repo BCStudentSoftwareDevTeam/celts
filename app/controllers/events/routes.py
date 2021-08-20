@@ -11,22 +11,16 @@ from app.logic.signinKiosk import sendUserData
 
 @events_bp.route('/events/<term>/', methods=['GET'])
 def events(term):
-
-    print("This is the term", term)
+    #set term to current term when events page is accessed from the navbar
     if not term.isdigit():
         listOfTerms = Term.select()
         for term_id in listOfTerms.objects():
             if term_id.isCurrentTerm == True:
                 term = term_id
-                print(term, "new term")
-
 
     eventsDict = groupEventsByCategory(term)
     listOfTerms = Term.select()
-    print(list(listOfTerms), "LISTOFTERM")
-    for term in listOfTerms.objects():
-        print(term.id)
-        print(term.isCurrentTerm)
+
     return render_template("/events/event_list.html",
         selectedTerm = Term.get_by_id(term),
         eventDict = eventsDict,
