@@ -5,7 +5,8 @@ fi
 BUILD="$@"
 if [ -z "$BUILD" ]
 then
-	BUILD="all";
+	BUILD="no-ui";
+	#BUILD="all";
 fi
 
 ptw --verbose -c --runner "bash tests/run_tests.sh $BUILD" --ext=".py,.sh,.html"

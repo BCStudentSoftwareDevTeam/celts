@@ -7,8 +7,8 @@ from app.models.eventParticipant import EventParticipant
 from app.controllers.events import events_bp
 from app.logic.events import getEvents
 from app.logic.events import groupEventsByCategory
-from app.logic.getUpcomingEvents import getUpcomingEventsForUser
-from app.logic.signinKiosk import sendUserData
+from app.logic.events import getUpcomingEventsForUser
+from app.logic.participants import sendUserData
 from datetime import datetime
 
 @events_bp.route('/events/<term>/', methods=['GET'])

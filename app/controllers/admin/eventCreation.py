@@ -2,9 +2,9 @@ from dateutil import parser
 from app.models.event import Event
 from flask import request
 from app.controllers.admin import admin_bp
-from app.logic.adminNewEvent import eventEdit
-from app.logic.adminNewEvent import createNewEvent, setValueForUncheckedBox, calculateRecurringEventFrequency
-from app.logic.validateNewEvent import validateNewEventData
+from app.logic.events import eventEdit
+from app.logic.eventCreation import createNewEvent, setValueForUncheckedBox, calculateRecurringEventFrequency
+from app.logic.eventCreation import validateNewEventData
 from flask import flash, redirect, url_for, g
 import json
 
@@ -13,6 +13,28 @@ def addRecurringEvents():
     recurringEventInfo = request.form.copy()
     recurringEvents = calculateRecurringEventFrequency(recurringEventInfo)
     return json.dumps(recurringEvents)
+
+@admin_bp.route('/<program>/create_event', methods=['GET'])
+def createEventPage(program):
+    if not g.current_user.isCeltsAdmin:
+        abort(403)
+    else:
+        currentTermid = Term.select().where(Term.isCurrentTerm).get()
+        futureTerms = selectFutureTerms(currentTermid)
+        eventInfo = ""
+        facilitators = getAllFacilitators()
+        deleteButton = "hidden"
+        endDatePicker = "d-none"
+        program = Program.get_by_id(program)
+
+        return render_template("admin/createEvents.html",
+                                program = program,
+                                futureTerms = futureTerms,
+                                facilitators = facilitators,
+                                user = g.current_user,
+                                deleteButton = deleteButton,
+                                endDatePicker = endDatePicker,
+                                eventInfo = eventInfo)
 
 @admin_bp.route('/createEvent', methods=['POST'])
 def createEvent():
