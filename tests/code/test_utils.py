@@ -1,8 +1,7 @@
 import pytest
 
 from app.models.term import Term
-from app.logic.utils import deep_update
-from app.logic.getFacilitatorsAndTerms import selectFutureTerms
+from app.logic.utils import deep_update, selectFutureTerms
 
 @pytest.mark.integration
 def test_validateListOfTerms():

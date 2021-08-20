@@ -3,8 +3,8 @@ from peewee import IntegrityError, DoesNotExist
 
 from app.models.program import Program
 from app.models.user import User
-from app.logic.addRemoveInterest import addRemoveInterest
-from app.logic.programEligibility import isEligibleForProgram
+from app.logic.users import addRemoveInterest
+from app.logic.users import isEligibleForProgram
 
 @pytest.mark.integration
 def test_isEligibleForProgram():

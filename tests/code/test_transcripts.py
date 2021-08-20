@@ -1,8 +1,7 @@
 import pytest
 from peewee import DoesNotExist
 
-from app.logic.view_transcript import getSlCourseTranscript
-from app.logic.view_transcript import getProgramTranscript
+from app.logic.transcript import getSlCourseTranscript, getProgramTranscript
 from app.models.term import Term
 from app.models.course import Course
 from app.models.courseParticipant import CourseParticipant

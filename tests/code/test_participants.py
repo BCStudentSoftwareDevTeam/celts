@@ -5,11 +5,11 @@ from peewee import IntegrityError, DoesNotExist
 from app.models.user import User
 from app.models.event import Event
 from app.models.eventParticipant import EventParticipant
-from app.logic.updateVolunteers import addVolunteerToEvent
-from app.logic.trackAttendees import trainedParticipants
-from app.logic.updateVolunteers import getEventLengthInHours, updateVolunteers
-from app.logic.userRsvpForEvent import userRsvpForEvent, unattendedRequiredEvents
-from app.logic.signinKiosk import sendUserData
+from app.logic.volunteers import addVolunteerToEvent
+from app.logic.participants import trainedParticipants
+from app.logic.volunteers import getEventLengthInHours, updateVolunteers
+from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
+from app.logic.participants import sendUserData
 
 @pytest.mark.integration
 def test_getEventLengthInHours():

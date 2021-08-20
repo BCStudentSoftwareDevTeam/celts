@@ -4,7 +4,7 @@ from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchVolunteers import searchVolunteers
-from app.logic.updateVolunteers import updateVolunteers, addVolunteerToEvent
+from app.logic.volunteers import updateVolunteers, addVolunteerToEvent
 from app.models.user import User
 from peewee import *
 

@@ -8,13 +8,13 @@ from app.models.term import Term
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
-from app.logic.trackAttendees import trainedParticipants
-from app.logic.updateVolunteers import getEventLengthInHours
-from app.logic.getFacilitatorsAndTerms import getAllFacilitators, selectFutureTerms
+from app.logic.participants import trainedParticipants
+from app.logic.volunteers import getEventLengthInHours
+from app.logic.utils import selectFutureTerms
 from app.logic.searchStudents import searchVolunteers
-from app.logic.events import deleteEvent
+from app.logic.events import deleteEvent, getAllFacilitators
 from app.controllers.admin import admin_bp
-from app.controllers.admin.changeVolunteer import getVolunteers
+from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.eventCreation import createEvent, addRecurringEvents
 from datetime import datetime
 

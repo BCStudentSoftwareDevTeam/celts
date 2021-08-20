@@ -9,8 +9,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.interest import Interest
 from app.logic.events import eventEdit, getEvents, deleteEvent, groupEventsByCategory, groupEventsByProgram
-from app.logic.getFacilitatorsAndTerms import getAllFacilitators
-from app.logic.getUpcomingEvents import getUpcomingEventsForUser
+from app.logic.events import getAllFacilitators, getUpcomingEventsForUser
 
 @pytest.mark.integration
 def test_event_model():

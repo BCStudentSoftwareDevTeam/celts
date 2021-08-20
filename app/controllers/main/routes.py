@@ -4,8 +4,8 @@ from app.models.program import Program
 from app.models.interest import Interest
 
 from app.controllers.main import main_bp
-from app.logic.addRemoveInterest import addRemoveInterest
-from app.logic.userRsvpForEvent import userRsvpForEvent, unattendedRequiredEvents
+from app.logic.users import addRemoveInterest
+from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 
 @main_bp.route('/')
 def home():
