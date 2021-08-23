@@ -201,7 +201,7 @@ programs = [
     },
     {
         "id": 6,
-        "programName": "A Program for Training and Education",  #FIXME: Change this to a real CELTS Program
+        "programName": "Habitat For Humanity",  
         "isStudentLed": False,
         "isBonnerScholars": False,
     }

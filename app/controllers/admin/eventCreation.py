@@ -2,9 +2,9 @@ from dateutil import parser
 from app.models.event import Event
 from flask import request
 from app.controllers.admin import admin_bp
-from app.logic.adminNewEvent import eventEdit
-from app.logic.adminNewEvent import createNewEvent, setValueForUncheckedBox, calculateRecurringEventFrequency
-from app.logic.validateNewEvent import validateNewEventData
+from app.logic.events import eventEdit
+from app.logic.eventCreation import createNewEvent, setValueForUncheckedBox, calculateRecurringEventFrequency
+from app.logic.eventCreation import validateNewEventData
 from flask import flash, redirect, url_for, g
 import json
 
@@ -14,12 +14,34 @@ def addRecurringEvents():
     recurringEvents = calculateRecurringEventFrequency(recurringEventInfo)
     return json.dumps(recurringEvents)
 
+@admin_bp.route('/<program>/create_event', methods=['GET'])
+def createEventPage(program):
+    if not g.current_user.isCeltsAdmin:
+        abort(403)
+    else:
+        currentTermid = Term.select().where(Term.isCurrentTerm).get()
+        futureTerms = selectFutureTerms(currentTermid)
+        eventInfo = ""
+        facilitators = getAllFacilitators()
+        deleteButton = "hidden"
+        endDatePicker = "d-none"
+        program = Program.get_by_id(program)
+
+        return render_template("admin/createEvents.html",
+                                program = program,
+                                futureTerms = futureTerms,
+                                facilitators = facilitators,
+                                user = g.current_user,
+                                deleteButton = deleteButton,
+                                endDatePicker = endDatePicker,
+                                eventInfo = eventInfo)
+
 @admin_bp.route('/createEvent', methods=['POST'])
 def createEvent():
 
     if not (g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff):
         flash("Only celts admins can create an event!", 'warning')
-        return redirect(url_for("admin.createEventPage", program=2)) #FIXME: have this redirect to main programs page (or some appropriate non admin page).
+        return redirect(url_for("main.profilePage", username = g.current_user.username))
 
     else:
         eventData = request.form.copy() # request.form returns a immutable dict so we need to copy to make changes
@@ -40,11 +62,11 @@ def createEvent():
             if not eventId:
                 createNewEvent(newEventData)
                 flash("Event successfully created!", 'success')
-                return redirect(url_for("admin.createEventPage", program=newEventData['programId']))
+                return redirect(url_for("events.events", term = newEventData['eventTerm']))
             else:
                 eventEdit(newEventData)
                 flash("Event successfully updated!")
-                return redirect(url_for("admin.createEventPage", program=newEventData['programId']))
+                return redirect(url_for("events.events", term = newEventData['eventTerm']))
         else:
             flash(validationErrorMessage, 'warning')
-            return redirect(url_for("admin.createEventPage", program=2)) #FIXME: have this redirect to main programs page (or some appropriate non admin page).
+            return redirect(url_for("admin.createEventPage", program = newEventData['programId']))
