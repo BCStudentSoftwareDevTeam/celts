@@ -133,3 +133,11 @@ def deleteRoute(program, eventId):
     except Exception as e:
         print('Error while canceling event:', e)
         return "", 500
+
+
+
+@admin_bp.route('/view_volunteers', methods=['GET'])
+def viewVolunteersProfile():
+    if g.current_user.isCeltsAdmin:
+        return render_template ("/volunteerProfileView.html")
+    abort(403)
