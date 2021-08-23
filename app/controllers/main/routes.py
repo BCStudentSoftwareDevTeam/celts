@@ -93,3 +93,9 @@ def RemoveRSVP():
     currentEventParticipant.delete_instance()
     flash("Successfully unregistered for event!","success")
     return redirect(url_for("admin.editEvent", eventId=eventId, program=program))
+
+@main_bp.route('/serviceCourseManagement', methods = ['GET'])
+def serviceCourseManagement():
+
+    return render_template("serviceCourseManagement.html",
+                            title="Service Course Management")
