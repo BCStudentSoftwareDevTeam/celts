@@ -3,6 +3,8 @@
   {{super()}}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="/static/js/event_list.js"></script>
+
   </script>
 {% endblock %}
 {% block styles %}
@@ -81,7 +83,7 @@
               <tbody>
                   {% for event in events %}
                     <tr>
-                      <td> <a href="#" class="link-primary">{{event.description}}</a></td> {# FIXME:change href #}
+                      <td> <a href="/{{program.id}}/{{event.id}}/edit_event" class="link-primary">{{event.eventName}}</a></td>
                       <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
                       <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
                       <td>{{event.location}}</td>
@@ -89,8 +91,13 @@
                         <td><i class="bi bi-envelope-fill"> Email</i></td>
                         {# FIXME: the Email icon should be clickable and lead to email template #}
                       {% else %}
-                        <td><button type="button" class="btn btn-danger">RSVP</button></td>
-                        {# FIXME: this button lead to RSVP page #}
+                        {% if (event.startDate < currentTime.date()) or (event.timeStart < currentTime.time() and event.startDate == currentTime.date())%}
+                          <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
+                        {% elif event.id in rsvpedEventsID %}
+                          <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{program.id}}, {{event.id}})">Remove RSVP</button></td>
+                        {% else %}
+                          <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{program.id}}, {{event.id}})">RSVP</button></td>
+                        {% endif %}
                       {% endif %}
                     </tr>
                   {% endfor %}
