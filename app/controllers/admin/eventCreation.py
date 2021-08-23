@@ -2,10 +2,13 @@ from dateutil import parser
 from app.models.event import Event
 from flask import request
 from app.controllers.admin import admin_bp
-from app.logic.events import eventEdit
-from app.logic.eventCreation import createNewEvent, setValueForUncheckedBox, calculateRecurringEventFrequency
-from app.logic.eventCreation import validateNewEventData
-from flask import flash, redirect, url_for, g
+from app.logic.events import eventEdit, getAllFacilitators
+from app.logic.eventCreation import createNewEvent, setValueForUncheckedBox, calculateRecurringEventFrequency, validateNewEventData
+from flask import flash, redirect, url_for, g, render_template
+from app.models.term import Term
+from app.models.program import Program
+from app.logic.utils import selectFutureTerms
+
 import json
 
 @admin_bp.route('/makeRecurringEvents', methods=['POST'])
