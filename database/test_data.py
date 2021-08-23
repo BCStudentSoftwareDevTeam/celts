@@ -107,11 +107,11 @@ users = [
         "username": "partont",
         "bnumber": "B00751360",
         "email": "partont@berea.edu",
-        "phoneNumber": "9119119111",
         "firstName": "Tyler",
         "lastName": "Parton",
         "isStudent": True,
-    }
+        "phoneNumber": "9119119111"
+    },
 ]
 
 User.insert_many(users).on_conflict_replace().execute()
@@ -200,7 +200,7 @@ programs = [
     },
     {
         "id": 6,
-        "programName": "A Program for Training and Education",  #FIXME: Change this to a real CELTS Program
+        "programName": "Habitat For Humanity",
         "isStudentLed": False,
         "isBonnerScholars": False,
     }

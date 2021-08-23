@@ -14,6 +14,12 @@ $(document).ready(function(){
     }
   });
 
+$(document).ready(function(){
+  if($(".datePicker").is("readonly")){
+    $( ".datePicker" ).datepicker( "option", "disabled", true );
+}
+
+});
 
   $(".readonly").on('keydown paste', function(e){ //makes the input fields act like readonly (readonly doesn't work with required)
         if(e.keyCode != 9) // ignore tab
@@ -21,6 +27,7 @@ $(document).ready(function(){
     });
 
   $.datepicker.setDefaults({
+    minDate:  new Date($.now()),
     dateFormat:'mm-dd-yy'
   });
 
@@ -79,6 +86,7 @@ function updateDate(obj) { // updates max and min dates of the datepickers as th
   if(obj.id == "endDatePicker"){
     var newDay = dateToChange.getDate();
     $("#startDatePicker").datepicker({maxDate: new Date(  newYear, newMonth, newDay)});
+
     $("#startDatePicker").datepicker("option", "maxDate", new Date(  newYear, newMonth, newDay));
   }
   if(obj.id == "startDatePicker"){

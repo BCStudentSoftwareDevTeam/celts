@@ -1,5 +1,6 @@
 $(document).ready(function(){
 
+  $('[data-bs-toggle="tooltip"]').tooltip();
 // Search functionalities from the volunteer table in the UI
   $("#trackVolunteersInput").on("keyup", function() {
     var value = $(this).val().toLowerCase();
@@ -14,7 +15,6 @@ $(document).ready(function(){
     volunteerEventID = $("#eventID").val()
     eventLengthInHours = $("#eventLength").text()
 
-
     $.ajax({
       url: "/addVolunteerToEvent/" + user+"/"+volunteerEventID+"/"+eventLengthInHours,
       type: "POST",
@@ -26,7 +26,6 @@ $(document).ready(function(){
         location.reload();
         console.log(status,error);
       }
-
       })
     })
 
@@ -47,8 +46,6 @@ function removeVolunteerFromEvent (deleteIcon){
     error: function(request, status, error) {
         console.log(status,error);
       }
-
-
   })
 
 }
