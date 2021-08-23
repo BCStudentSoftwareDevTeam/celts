@@ -139,5 +139,6 @@ def deleteRoute(program, eventId):
 @admin_bp.route('/view_volunteers', methods=['GET'])
 def viewVolunteersProfile():
     if g.current_user.isCeltsAdmin:
-        return render_template ("/volunteerProfileView.html")
+        return render_template ("/admin/volunteerProfileView.html",
+            user = g.current_user)
     abort(403)
