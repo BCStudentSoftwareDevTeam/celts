@@ -2,7 +2,7 @@ from flask import request, render_template, g, abort
 from app.models.program import Program
 from app.models.interest import Interest
 from app.controllers.main import main_bp
-from app.logic.getUpcomingEvents import getUpcomingEventsForUser
+from app.logic.events import getUpcomingEventsForUser
 from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 
