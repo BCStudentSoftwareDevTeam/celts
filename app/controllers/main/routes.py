@@ -96,6 +96,7 @@ def RemoveRSVP():
 
 @main_bp.route('/serviceCourseManagement', methods = ['GET'])
 def serviceCourseManagement():
+    """This is a Temporary Page for the Service Course Managment Screen."""
+    print("Landed!!")
 
-    return render_template("serviceCourseManagement.html",
-                            title="Service Course Management")
+    return render_template('main/serviceCourseManagment.html', title="Welcome to CELTS!")
