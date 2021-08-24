@@ -1,7 +1,26 @@
 import pytest
 from app.logic.searchStudents import searchVolunteers
+#from app.controllers.admin.routes import searchVolunteers
 from app.models.user import User
 
+# FIXME There are two nearly identical student search functions
+
+#@pytest.mark.integration
+#def test_searchVolunteers():
+#    search = searchVolunteers("Sa")
+#    assert "Sandesh Lamichhane" in search
+#
+#@pytest.mark.integration
+#def test_searchAdmins(): # admins aren't students & shouldn't show in search
+#    search = searchVolunteers("Br")
+#    assert "Brian Ramsay" not in search
+#
+#@pytest.mark.integration
+#def test_noResults():
+#
+#    search = searchVolunteers("XXZ")
+#    assert search == '{}'
+#
 @pytest.mark.integration
 def test_searchStudents():
 

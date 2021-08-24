@@ -1,12 +1,51 @@
+from dateutil import parser
+from datetime import *
+
+from app.models import mainDB
 from app.models.event import Event
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
-from app.models import mainDB
-from datetime import *
 from app.models.facilitator import Facilitator
-from app.controllers.admin import admin_bp
-from flask import request
-from dateutil import parser
+
+def validateNewEventData(newEventData, checkExists=True):
+
+    if parser.parse(newEventData['eventEndDate'])  <  parser.parse(newEventData['eventStartDate']):
+        return (False, "Event start date is after event end date", newEventData)
+
+    if parser.parse(newEventData['eventEndDate']) ==   parser.parse(newEventData['eventStartDate']) and newEventData['eventEndTime'] <=  newEventData['eventStartTime']:
+        return (False, "Event start time is after event end time", newEventData)
+
+    if newEventData['eventIsTraining'] == 'on' and newEventData['eventRequiredForProgram'] == False: #default value for checked button is on
+        return (False, "A training event must be required for the program.", newEventData)
+
+    if not newEventData['eventRSVP'] == 'on':
+        if not isinstance(newEventData['eventRSVP'], bool):
+            return (False, "Event RSVP must be a boolean", newEventData)
+
+    if not newEventData['eventRequiredForProgram'] == 'on':
+        if not isinstance(newEventData['eventRequiredForProgram'], bool):
+            return (False, "Event Required must be a boolean", newEventData)
+
+    if not newEventData['eventIsTraining'] == 'on':
+        if not isinstance(newEventData['eventIsTraining'], bool):
+            return (False, "Event Training must be a boolean", newEventData)
+
+
+    if not newEventData['eventServiceHours'] == 'on':
+        if not isinstance(newEventData['eventServiceHours'], bool):
+            return (False, "Event Service Hours must be a boolean", newEventData)
+
+
+    # Event name, Description and Event Start date
+    event = Event.select().where((Event.eventName == newEventData['eventName']) &
+                             (Event.description == newEventData['eventDescription']) &
+                             (Event.startDate == parser.parse(newEventData['eventStartDate'])))
+
+    if checkExists and event.exists():
+        return (False, "This event already exists", newEventData)
+
+    newEventData['valid'] = True
+    return (True, "All inputs are valid.", newEventData)
 
 def calculateRecurringEventFrequency(recurringEventInfo):
     """
@@ -87,35 +126,3 @@ def createNewEvent(newEventData):
 
     return newEvent
 
-def eventEdit(newEventData):
-
-    if newEventData['valid'] == True:
-
-        eventId = newEventData['eventId']
-        eventData = {
-                "id": eventId,
-                "term": newEventData['eventTerm'],
-                "eventName": newEventData['eventName'],
-                "description": newEventData['eventDescription'],
-                "timeStart": newEventData['eventStartTime'],
-                "timeEnd": newEventData['eventEndTime'],
-                "location": newEventData['eventLocation'],
-                "isRecurring": newEventData['eventIsRecurring'],
-                "isTraining": newEventData['eventIsTraining'],
-                "isRsvpRequired": newEventData['eventRSVP'],
-                "isService": newEventData['eventServiceHours'],
-                "startDate": parser.parse(newEventData['eventStartDate']),
-                "endDate": parser.parse(newEventData['eventEndDate'])
-            }
-        eventEntry = Event.update(**eventData).where(Event.id == eventId).execute()
-
-        if Facilitator.get_or_none(Facilitator.event == eventId):
-            updateFacilitator = (Facilitator.update(user = newEventData['eventFacilitator'])
-                                            .where(Facilitator.event == eventId)).execute()
-
-        else:
-            facilitatorEntry = Facilitator.create(user = newEventData['eventFacilitator'],
-                                                      event = eventId)
-
-    else:
-        raise Exception("Invalid Data")
