@@ -28,7 +28,8 @@
             <td>{{courseDict[course]['term']}}</td>
             <td>{{courseDict[course]['status']}}</td>
             <td>
-              <select class="form-select" onchange=changeAction(this,"{{courseDict[course]['name']}}")> 
+
+              <select class="form-select" id="{{courseDict[course]['name']}}" onchange=changeAction(this)>
                 <option value="Renew" selected="selected">Renew</option>
                 <option value="View">View</option>
                 <option value="Withdraw">Withdraw</option>

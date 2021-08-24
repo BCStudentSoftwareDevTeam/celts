@@ -11,5 +11,5 @@ def withdrawCourse(course):
     (CourseInstructor.delete().where(CourseInstructor.course == course)).execute()  #need to delete all ForeignKeyFields first
     (CourseParticipant.delete().where(CourseParticipant.course == course)).execute()
     course.delete_instance()
-    flash("Course successfully withdrawn", success)
+    flash("Course successfully withdrawn", 'success')
     return "Course successfully withdrawn"
