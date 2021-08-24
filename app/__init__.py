@@ -50,6 +50,9 @@ app.register_blueprint(events_bp)
 
 from app.controllers.main import main_bp as main_bp
 app.register_blueprint(main_bp)
+
+from app.controllers.serviceLearning import serviceLearning_bp as serviceLearning_bp
+app.register_blueprint(serviceLearning_bp)
 ##################################
 
 # Make 'ENV' a variable everywhere

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block scripts %}
+
+  {{super()}}
+  <style media="screen"></style>
+
+{% endblock %}
+
+{% block app_content %}
+<h1 class="text-center pb-2 fs-2"> New Proposal For Service Learning Course Designation </h1>
+
+<p class="text-center "> Please review the <a href="/slcGuidelines">Service Learning course guidelines</a> before completing this form </p>
+
+<di>
+  <label for="">Course Instructor(s)</label>
+  <select class="dropdown form-control" id="inputCourseInstructor"  name="courseInstructor">
+  </select>
+</di>
+
+{% endblock %}
