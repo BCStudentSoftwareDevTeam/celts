@@ -3,6 +3,8 @@ from peewee import DoesNotExist
 
 from app import app
 from app.models.user import User
+from app.models.term import Term
+
 
 def logout():
     """
@@ -53,3 +55,9 @@ def getLoginUser():
         session['username'] = user.username
 
     return user
+
+def getCurrentTerm():
+
+    term = Term.get_or_none(isCurrentTerm = True)
+
+    return term

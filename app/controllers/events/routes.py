@@ -15,10 +15,7 @@ from datetime import datetime
 def events(term):
     #set term to current term when events page is accessed from the navbar
     if not term.isdigit():
-        listOfTerms = Term.select()
-        for term_id in listOfTerms.objects():
-            if term_id.isCurrentTerm == True:
-                term = term_id
+        term = g.current_term
 
     currentTime = datetime.now()
     eventsDict = groupEventsByCategory(term)
@@ -32,7 +29,8 @@ def events(term):
         listOfTerms = listOfTerms,
         rsvpedEventsID = rsvpedEventsID,
         currentTime = currentTime,
-        user = g.current_user)
+        user = g.current_user,
+        testing_currentTerm = g.current_term)
 
 
 @events_bp.route('/events/upcoming_events', methods=['GET'])
