@@ -24,7 +24,7 @@
       <div class="form-group">
         <select class="form-control" name='eventTerm' id='inputTerm' onchange="location = this.value;">
           {% for term in listOfTerms %}
-            <option value='/events/{{term}}/' {{ "selected" if selectedTerm.id == term.id }}>{{term.description}} </option>
+            <option value='/{{term}}' {{ "selected" if selectedTerm.id == term.id }}>{{term.description}} </option>
           {% endfor %}
         </select>
       </div>

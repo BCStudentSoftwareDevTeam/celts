@@ -12,15 +12,19 @@ from app.logic.participants import sendUserData
 from datetime import datetime
 
 @events_bp.route('/', methods=['GET'])
-def events():
+@events_bp.route('/<selectedTerm>', methods=['GET'])
+def events(selectedTerm=None):
+    currentTerm = Term.select().where(Term.isCurrentTerm == 1)
+    if selectedTerm:
+        currentTerm = selectedTerm
     currentTime = datetime.now()
-    eventsDict = groupEventsByCategory(1)
+    eventsDict = groupEventsByCategory(currentTerm)
     listOfTerms = Term.select()
     participantRSVP = EventParticipant.select().where(EventParticipant.user == g.current_user, EventParticipant.rsvp == True)
     rsvpedEventsID = [event.event.id for event in list(participantRSVP)]
 
     return render_template("/events/event_list.html",
-        selectedTerm = Term.get_by_id(1),
+        selectedTerm = Term.get_by_id(currentTerm),
         eventDict = eventsDict,
         listOfTerms = listOfTerms,
         rsvpedEventsID = rsvpedEventsID,
