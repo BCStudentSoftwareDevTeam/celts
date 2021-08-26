@@ -11,7 +11,7 @@ from app.logic.events import getUpcomingEventsForUser
 from app.logic.participants import sendUserData
 from datetime import datetime
 
-@events_bp.route('/events', methods=['GET'])
+@events_bp.route('/', methods=['GET'])
 def events():
     currentTime = datetime.now()
     eventsDict = groupEventsByCategory(1)

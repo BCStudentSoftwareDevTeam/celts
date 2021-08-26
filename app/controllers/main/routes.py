@@ -28,7 +28,7 @@ def volunteerIndicateInterest():
 @main_bp.route('/profile/<username>', methods = ['GET'])
 def profilePage(username):
 
-    if username == g.current_user.username or g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
+    if username == g.current_user.username or g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff or g.current_user.isStudent:
         return f'<h1>Profile page for {username}</h1>'
 
     abort(403)
