@@ -11,16 +11,16 @@ from app.logic.events import getUpcomingEventsForUser
 from app.logic.participants import sendUserData
 from datetime import datetime
 
-@events_bp.route('/events/<term>/', methods=['GET'])
-def events(term):
+@events_bp.route('/events', methods=['GET'])
+def events():
     currentTime = datetime.now()
-    eventsDict = groupEventsByCategory(term)
+    eventsDict = groupEventsByCategory(1)
     listOfTerms = Term.select()
     participantRSVP = EventParticipant.select().where(EventParticipant.user == g.current_user, EventParticipant.rsvp == True)
     rsvpedEventsID = [event.event.id for event in list(participantRSVP)]
 
     return render_template("/events/event_list.html",
-        selectedTerm = Term.get_by_id(term),
+        selectedTerm = Term.get_by_id(1),
         eventDict = eventsDict,
         listOfTerms = listOfTerms,
         rsvpedEventsID = rsvpedEventsID,
