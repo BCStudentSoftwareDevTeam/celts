@@ -29,7 +29,7 @@
             <td>{{courseDict[course]['status']}}</td>
             <td>
 
-              <select class="form-select" id="{{courseDict[course]['name']}}" onchange=changeAction(this)>
+              <select class="form-select" id="{{courseDict[course]['name']}}" onchange='changeAction(this)'>
                 <option value="Renew" selected="selected">Renew</option>
                 <option value="View">View</option>
                 <option value="Withdraw">Withdraw</option>
@@ -40,6 +40,24 @@
         {% endfor %}
     </tbody>
   </table>
+<!-- Modal -->
+<div class="modal fade" id="withdrawModal" tabindex="-1" aria-labelledby="withdrawModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="withdrawModalLabel">Withdraw</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to withdraw from this course?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="withdraw()">Withdraw</button>
+      </div>
+    </div>
+  </div>
+</div>
 </div>
 
 {% endblock %}

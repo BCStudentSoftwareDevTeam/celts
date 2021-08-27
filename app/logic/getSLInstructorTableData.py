@@ -9,6 +9,7 @@ def getProposalData():
                      .where(CourseInstructor.user==g.current_user)
                      .join(CourseInstructor))
     courseDict = {} #any reason why this is a dictionary of dictionaries, wouldn't a list of dictionaries be easier to work with?
+    #I just thought it would be easier to read. But a list is a-ok too.
     for course in courses:
         otherInstructors = (CourseInstructor.select().where(CourseInstructor.course==course))
         faculty = [f"{instructor.user.firstName} {instructor.user.lastName}" for instructor in otherInstructors]
