@@ -107,7 +107,7 @@ def deleteRoute(program, eventId):
 
 @admin_bp.route('/courseProposals', methods=['GET'])
 def createTable():
-    courseDict = getProposalData()
+    courseDict = getProposalData(g.current_user)
     try:
         return render_template("/admin/createSLProposalTable.html",
                                 instructor = g.current_user,

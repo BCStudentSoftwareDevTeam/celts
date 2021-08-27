@@ -1,12 +1,11 @@
-from flask import Flask, g
 from app.models.course import Course
 from app.models.user import User
 from app.models.courseInstructor import CourseInstructor
 
-def getProposalData():
+def getProposalData(user):
     """Returns dictionary with data used to populate SL proposal table"""
     courses = (Course.select()
-                     .where(CourseInstructor.user==g.current_user)
+                     .where(CourseInstructor.user==user)
                      .join(CourseInstructor))
     courseDict = {} #any reason why this is a dictionary of dictionaries, wouldn't a list of dictionaries be easier to work with?
     #I just thought it would be easier to read. But a list is a-ok too.
