@@ -30,7 +30,8 @@
             <td>
 
               <select class="form-select" id="{{courseDict[course]['name']}}" onchange='changeAction(this)'>
-                <option value="Renew" selected="selected">Renew</option>
+                <option value="---" disabled selected>Select Action</option>
+                <option value="Renew">Renew</option>
                 <option value="View">View</option>
                 <option value="Withdraw">Withdraw</option>
                 <option value="Edit">Edit</option>
@@ -45,11 +46,12 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="withdrawModalLabel">Withdraw</h5>
+        <h5 class="modal-title" id="withdrawModalLabel">Remove Course</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        Are you sure you want to withdraw from this course?
+        Are you sure you want to withdraw this SL Course? <br>
+        You will have to create or renew this proposal again.
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

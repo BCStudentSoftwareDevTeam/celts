@@ -2,10 +2,18 @@
 // withdrawing a course
 course = null
 function changeAction(action){
-  if(action.value=="Withdraw"){
+  if (action.value=="Renew"){
+    // Renew
+
+  } else if (action.value=="View"){
+    // View
+
+  } else if (action.value=="Withdraw"){
     course=action.id
     $('#withdrawModal').modal('show');
-    console.log($('#withdrawModal'));
+
+  } else if(action.value=="Edit"){
+    // Edit
   }
 }
 
