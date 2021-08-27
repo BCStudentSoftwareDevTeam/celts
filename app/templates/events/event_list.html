@@ -52,9 +52,10 @@
   </li>
   </ul>
 </div>
+
 {% macro createAccordion(categoryPrograms, num) %}
   <div class="accordion" id="categoryAccordion">
-    {% for program,events in categoryPrograms.items() %}
+    {% for program, events in categoryPrograms.items() %}
       <div class="accordion-item">
         <h2 class="accordion-header" id="accordion__header_{{program}}">
           <button class="accordion-button collapsed"
@@ -89,8 +90,7 @@
                       <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
                       <td>{{event.location}}</td>
                       {% if (user.isCeltsAdmin) or (user.isCeltsStudentStaff) %}
-                        <td><i class="bi bi-envelope-fill"> Email</i></td>
-                        {# FIXME: the Email icon should be clickable and lead to email template #}
+                        <td><a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#emailModal"><span class="bi bi-envelope-fill"> Email</span></a></td>
                       {% else %}
                         {% if (event.startDate < currentTime.date()) or (event.timeStart < currentTime.time() and event.startDate == currentTime.date())%}
                           <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
@@ -107,9 +107,57 @@
           </div>
         </div>
       </div>
+      {{emailModal}}
     {% endfor %}
   </div>
 {% endmacro %}
+
+{% set emailModal %}
+  <div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="emailModalLabel">'Event/Program' Email Template</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <h6 class="text-center">Last Email was sent to ____ on 10/20/20</h6>
+          <form role="form" method="post" id="modal-form">
+            <h3 class="my-4">Templates</h3>
+            <select class="form-select my-4" aria-label="Default select example">
+              <option value="1" selected>'Event/Program' Email Template</option>
+              <option value="2">Two</option>
+              <option value="3">Three</option>
+            </select>
+            <div class="row my-4">
+              <div class="col-sm-6 form-group">
+                <h3>To</h3>
+                <input type="text" class="form-control" id="email-to" name="email-to" required>
+              </div>
+              <div class="col-sm-6 form-group">
+                <h3>From</h3>
+                <input type="email" class="form-control" id="email-from" name="email-from" required>
+              </div>
+            </div>
+            <div class="my-4">
+              <h3>Subject</h3>
+              <input type="text" class="form-control" id="subject" name="subject" required>
+            </div>
+            <div class="my-4">
+              <h3>Email Body</h3>
+              <textarea class="form-control" type="textarea" name="message" id="message" maxlength="6000" rows="7"></textarea>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Send Email</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endset %}
 
 <div class="tab-content" id="pills-tabContent">
   <div class="tab-pane fade show active" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
