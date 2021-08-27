@@ -29,4 +29,5 @@ def searchVolunteers(query):
                         resultsDict[f"{participant.firstName} {participant.lastName} ({participant.username})"] = f"{participant.firstName} {participant.lastName} ({participant.username})"
 
     dictToJSON = json.dumps(resultsDict)
+    print("dictToJSON.........",dictToJSON)
     return dictToJSON
