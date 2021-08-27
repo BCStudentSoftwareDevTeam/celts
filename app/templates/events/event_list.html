@@ -121,9 +121,15 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
+
           <h6 class="text-center">Last Email was sent to ____ on 10/20/20</h6>
-          <form role="form" method="post" id="modal-form">
-            <h3 class="my-4">Templates</h3>
+          <form role="form" method="post" id="modal-form" action="/email">
+            <div>
+                <!-- 2 lines below are temporary until we have a way to get the program ID or at least he event ID -->
+              <input id="programID" name="programID" class="form-control" required>
+              <input id="eventID" name="eventID" class="form-control" required>
+            </div>
+            <h5 class="my-4">Templates</h5>
             <select class="form-select my-4" aria-label="Default select example">
               <option value="1" selected>'Event/Program' Email Template</option>
               <option value="2">Two</option>
@@ -131,28 +137,31 @@
             </select>
             <div class="row my-4">
               <div class="col-sm-6 form-group">
-                <h3>To</h3>
-                <input type="text" class="form-control" id="email-to" name="email-to" required>
+                <h5>To</h5>
+                <select class='form-select' id="emailRecipients" name="emailRecipients" aria-label="email recipients">
+                  <option value="interested" selected> Interested Students </option>
+                  <option value="RSVPed"> RSVPed Students </option>
+                </select>
+                <!-- <input type="text" class="form-control" id="email-to" name="email-to" required> -->
               </div>
               <div class="col-sm-6 form-group">
-                <h3>From</h3>
+                <h5>From</h5>
                 <input type="email" class="form-control" id="email-from" name="email-from" required>
               </div>
             </div>
             <div class="my-4">
-              <h3>Subject</h3>
+              <h5>Subject</h5>
               <input type="text" class="form-control" id="subject" name="subject" required>
             </div>
             <div class="my-4">
-              <h3>Email Body</h3>
+              <h5>Email Body</h5>
               <textarea class="form-control" type="textarea" name="message" id="message" maxlength="6000" rows="7"></textarea>
             </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-primary">Send Email</button>
+            </div>
           </form>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Send Email</button>
         </div>
       </div>
     </div>

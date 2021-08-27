@@ -5,6 +5,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventParticipant import EventParticipant
 from app.controllers.events import events_bp
+from app.controllers.events import email
 from app.logic.events import getEvents
 from app.logic.events import groupEventsByCategory
 from app.logic.events import getUpcomingEventsForUser
@@ -27,6 +28,7 @@ def events(term):
         currentTime = currentTime,
         user = g.current_user)
 
+
 @events_bp.route('/events/upcoming_events', methods=['GET'])
 def showUpcomingEvent():
     upcomingEvents = getUpcomingEventsForUser(g.current_user)
@@ -41,6 +43,7 @@ def loadKiosk(eventid):
     return render_template("/events/eventKiosk.html",
                             event = event,
                             eventid = eventid)
+
 
 @events_bp.route('/signintoEvent', methods=['POST'])
 def signinEvent():
