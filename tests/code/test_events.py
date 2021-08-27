@@ -207,7 +207,7 @@ def test_getsCorrectUpcomingEvent():
     user = "khatts"
     events = getUpcomingEventsForUser(user, asOf=testDate)
     assert len(events) == 3
-    assert "Berea Buddies" == events[0].eventName
+    assert "Empty Bowls Spring" == events[0].eventName
 
     user = "ramsayb2"
     events = getUpcomingEventsForUser(user, asOf=testDate)

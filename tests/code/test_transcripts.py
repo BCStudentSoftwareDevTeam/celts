@@ -48,9 +48,6 @@ def test_getProgramTranscripts():
 
     user = "neillz"
     transcript = getProgramTranscript(user)
-    print(transcript[0])
-    print(transcript[1])
-    print(transcript[2])
     assert transcript[0] == ['Empty Bowls', 'Spring A 2021', 10.0]
     assert transcript[1] == ['Berea Buddies', 'Spring A 2021', 1.0]
     assert transcript[2] == ['Berea Buddies', 'Summer 2021', 1.0]
