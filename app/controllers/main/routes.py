@@ -23,7 +23,7 @@ def profilePage(username):
     programs = Program.select()
     interests = Interest.select().where(Interest.user == g.current_user)
     interests_ids = [interest.program for interest in interests]
-    # rsvpstatus =
+    # rsvpstatus = [if rsvpEvent == True:return Yes else:return No]
     if username == g.current_user.username or g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
         return render_template('/volunteer/volunteerProfile.html',
                                title="Volunteer Interest",

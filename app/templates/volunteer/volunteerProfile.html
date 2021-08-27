@@ -17,12 +17,12 @@
           <th scope="col"><h4><strong>Event Name</strong></h4>
           <th scope="col"><h4><strong>Start Date</strong></h4>
           <th scope="col"><h4><strong>End Date</strong></h4>
-          <th scope="col"><h4><strong>RSVP</strong></h4>
+          <th scope="col"><h4><strong>RSVP Status</strong></h4>
         </thead>
         {% for event in upcomingEvents %}
         <tr>
           <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
-          <td>{{event.eventName}}</td>
+          <td><a href= '/{{event.singleProgram.programId}}/{{event.id}}/edit_event' class="link-primary">{{event.eventName}}</a></td>
           <td>{{event.startDate}}</td>
           <td>{{event.endDate}}</td>
           <!-- <td> {{event.rsvpstatus}} <td> -->
