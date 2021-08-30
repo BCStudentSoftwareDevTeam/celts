@@ -48,16 +48,16 @@ def test_getProgramTranscripts():
 
     user = "neillz"
     transcript = getProgramTranscript(user)
-    assert transcript[0] == ['Empty Bowls', 'Spring A 2021', 10.0]
+    assert transcript[0] == ['Adopt A Grandparent', 'Summer 2021', 3.0]
     assert transcript[1] == ['Berea Buddies', 'Spring A 2021', 1.0]
     assert transcript[2] == ['Berea Buddies', 'Summer 2021', 1.0]
+    assert transcript[3] == ['Empty Bowls', 'Spring A 2021', 10.0]
 
-    user2 = "khatts"
-    transcript2 = getProgramTranscript(user2)
-    assert transcript2[0] == ['Empty Bowls', 'Spring A 2021', 5.0]
+    user = "khatts"
+    transcript = getProgramTranscript(user)
+    assert transcript[0] == ['Adopt A Grandparent', 'Summer 2021', 3.0] #Program that has events from different term.
+    assert transcript[2] == ['Empty Bowls', 'Spring A 2021', 5.0]
 
-    assert transcript2[3] == ['Adopt A Grandparent', 'Summer 2021', 3.0] #Program that has events from different term.
-
-    user3 = "ramsayb2" #user who's not involved in any program
-    transcript3 = getProgramTranscript(user3)
-    assert transcript3 == []
+    user = "ramsayb2" #user who's not involved in any program
+    transcript = getProgramTranscript(user)
+    assert transcript == []
