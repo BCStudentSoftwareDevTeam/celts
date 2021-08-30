@@ -4,7 +4,7 @@ from flask import json, jsonify
 
 
 
-def searchVolunteers(query):
+def searchVolunteersAndStudents(query):
     '''Accepts user input and queries the database returning results that matches user search'''
     query = query.strip()
     search = query.upper()

@@ -11,7 +11,7 @@ from app.models.programEvent import ProgramEvent
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectFutureTerms
-from app.logic.searchStudents import searchVolunteers
+from app.logic.searchVolunteersAndStudents import searchVolunteersAndStudents
 from app.logic.events import deleteEvent, getAllFacilitators
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
@@ -124,7 +124,7 @@ def searchStudents(query):
     search = query.upper()
     splitSearch = search.split()
     searchResults = searchVolunteers(query)
-    return json.dumps(searchResults)
+    return searchResult
 
 
 @admin_bp.route('/searchVolunteers/<query>', methods = ['GET'])
