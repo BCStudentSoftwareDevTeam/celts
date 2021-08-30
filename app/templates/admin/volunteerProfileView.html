@@ -35,66 +35,33 @@
 
  <div>
        <table class="table">
-         <thead>
+
+         {% if upcomingEvents|length > 0 %}
+           <thead>
+             <tr>
+               <th>Name</th>
+               <th>Program</th>
+               <th>Start Date</th>
+               <th>End Date</th>
+               <th>Status</th>
+             </tr>
+           </thead>
+           {% for event in upcomingEvents %}
+         <tbody id="volunteerTable">
            <tr>
-             <th>Name</th>
-             <th>Program</th>
-             <th>Next Occurence</th>
-             <th>Status</th>
+             <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
+             <td>{{event.eventName}}</td>
+             <td>{{event.startDate}}</td>
+             <td>{{event.endDate}}</td>
+             <td></td>
            </tr>
-         </thead>
-       <tbody id="volunteerTable">
-       {% for participant in eventParticipantsData%}
-       <tr>
-         <td><input type="checkbox" id='checkbox_{{participant.user.username}}' name="checkbox_{{participant.user.username}}"
-                    onChange='toggleVolunteersInputBox(this)' {% if participant.attended == 1 %} checked  {%endif%}></td>
-         <td>
-           {% if participant.user.username not in attendedTraining %}
-             <span data-bs-toggle="tooltip" title="Did Not Complete All Trainings">
-             <span style="color:red" class="bi bi-exclamation-triangle"></span></span>
-           {% endif %}
-         </td>
-         <td><input class="form-control" type='hidden' name="username{{loop.index|string}}" id="{{participant.user.username}}"value="{{participant.user}}"> {{participant.user.firstName}} {{participant.user.lastName}}</td>
-         <td>{{participant.user.email}}</td>
-         <td>{{participant.user.phoneNumber}}</td>
-
-         <td>{% if participant.rsvp == 1 %} Yes {% else %} No {% endif %}</td>
-
-         <td><input class="form-control number-only form-control input-sm" id="inputHours_{{participant.user.username}}"
-                    name="inputHours_{{participant.user.username}}" style="max-width: 90px;" type ="number" min="0" step="0.01"
-                    {% if participant.attended == 1 and participant.hoursEarned == None %} value="{{eventLength}}"
-                    {% elif participant.attended == 1 %} value="{{participant.hoursEarned}}"
-                    {%else%} readonly {%endif%}></td>
-         <td><span onclick = 'removeVolunteerFromEvent(this)' id="deleteIcon_{{participant.user.username}}" ><i class="bi bi-trash" style="font-size:20px"></i></span></td>
-       </tr>
-       {%endfor%}
+          {% endfor %}
+        {% else %}
+          <h2> Please be more interesting <h2>
+           <!-- FIXME: There should be a link here to where they can select interests to programs -->
+        {% endif %}
       </tbody>
        </table>
      </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 {% endblock %}

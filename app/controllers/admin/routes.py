@@ -1,6 +1,8 @@
 from flask import request, render_template, url_for, g, Flask, redirect, flash, abort
 from app.models.program import Program
 from app.models.event import Event
+from app.models.interest import Interest
+from app.logic.events import getUpcomingEventsForUser
 from app.models.facilitator import Facilitator
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
@@ -139,7 +141,15 @@ def deleteRoute(program, eventId):
 @admin_bp.route('/profile/<username>', methods=['GET'])
 def viewVolunteersProfile(username):
     if g.current_user.isCeltsAdmin:
-        return render_template ("/admin/volunteerProfileView.html",
-            userProfile = g.current_user,
+         upcomingEvents = getUpcomingEventsForUser(g.current_user)
+         programs = Program.select()
+         interests = Interest.select().where(Interest.user == g.current_user)
+         interests_ids = [interest.program for interest in interests]
+         return render_template ("/admin/volunteerProfileView.html",
+            programs = programs,
+            interests = interests,
+            interests_ids = interests_ids,
+            upcomingEvents = upcomingEvents,
+            # userProfile = g.current_user,
             user = User.get(User.username == username))
     abort(403)
