@@ -145,11 +145,13 @@ def viewVolunteersProfile(username):
          programs = Program.select()
          interests = Interest.select().where(Interest.user == g.current_user)
          interests_ids = [interest.program for interest in interests]
+         eventParticipant = EventParticipant.select()
          return render_template ("/admin/volunteerProfileView.html",
             programs = programs,
+            eventParticipant = eventParticipant,
             interests = interests,
             interests_ids = interests_ids,
             upcomingEvents = upcomingEvents,
-            # userProfile = g.current_user,
+            userProfile = g.current_user,
             user = User.get(User.username == username))
     abort(403)

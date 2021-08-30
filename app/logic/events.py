@@ -1,9 +1,10 @@
 from app.models.event import Event
 from app.models.program import Program
 from app.models.term import Term
+from app.models.interest import Interest
 from app.models.programEvent import ProgramEvent
 from peewee import DoesNotExist
-
+from datetime import *
 def getEvents(program_id=None):
 
     if program_id:
