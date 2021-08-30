@@ -3,6 +3,7 @@
 
   {{super()}}
   <style media="screen"></style>
+  <script type="text/javascript" src="{{url_for('static', filename='js/slcProposal.js') }}?u={{lastStaticUpdate}}"></script>
 
 {% endblock %}
 
@@ -14,8 +15,19 @@
 <div class="container-fluid">
   <div class="row">
     <div class="p-2 col-md-4">
-      <label for="">Course Instructor(s)</label>
-      <select class="dropdown form-control" id="inputCourseInstructor"  name="courseInstructor"></select>
+      <div class= "form-check-inline">
+        <p>Course Instructor(s)</p>
+        <div class="ui-widget pb-3">
+          <input id="instructorInput" type="input" placeholder="Search.." oninput="searchInstructor()">
+        </div>
+          <table class="table table-striped" id="instructorTable">
+            <tr>
+              <th scope="col">Instructor</th>
+              <th scope="col">Remove</th>
+            </tr>
+        </table>
+      </div>
+      <br></br>
       <label for="">Course Name</label>
       <input class="form-control" type="text" placeholder="Default input"/>
       <label for="">Course Abbreviation</label>

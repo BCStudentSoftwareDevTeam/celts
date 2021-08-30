@@ -1,5 +1,5 @@
 
-function searchVolunteer(){
+function searchInstructor(){
 var query = $("#volunteerInput").val()
 $("#volunteerInput").autocomplete({
   minLength: 2,
