@@ -15,14 +15,16 @@ def home():
 
 @main_bp.route('/profile/<username>', methods = ['GET'])
 def profilePage(username):
-    upcomingEvents = getUpcomingEventsForUser(g.current_user)
+    if username != g.current_user.username or g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
+        return "", 500 #TODO: Link to an error page
+    upcomingEvents = getUpcomingEventsForUser(username)
     programs = Program.select()
     interests = Interest.select().where(Interest.user == g.current_user)
     interests_ids = [interest.program for interest in interests]
     if username == g.current_user.username or g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
         return render_template('/volunteer/volunteerProfile.html',
                                title="Volunteer Interest",
-                               user = g.current_user,
+                               user = username,
                                programs = programs,
                                interests = interests,
                                interests_ids = interests_ids,
