@@ -123,7 +123,7 @@ def searchStudents(query):
     query = query.strip()
     search = query.upper()
     splitSearch = search.split()
-    searchResults = searchVolunteers(query)
+    searchResults = searchVolunteersAndStudents(query)
     return searchResult
 
 

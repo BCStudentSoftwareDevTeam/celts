@@ -3,7 +3,6 @@ from app.controllers.main import main_bp
 from flask import json, jsonify
 
 
-
 def searchVolunteersAndStudents(query):
     '''Accepts user input and queries the database returning results that matches user search'''
     query = query.strip()
@@ -29,5 +28,4 @@ def searchVolunteersAndStudents(query):
                         resultsDict[f"{participant.firstName} {participant.lastName} ({participant.username})"] = f"{participant.firstName} {participant.lastName} ({participant.username})"
 
     dictToJSON = json.dumps(resultsDict)
-    print("dictToJSON.........",dictToJSON)
     return dictToJSON
