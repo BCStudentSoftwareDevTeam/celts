@@ -29,11 +29,11 @@
       </div>
       <br></br>
       <label class="pt-3">Course Name</label>
-      <input class="form-control" type="text" placeholder="Default input"/>
+      <input class="form-control" id="slcp-courseName" type="text" placeholder="Default input"/>
       <label for="">Course Abbreviation</label>
-      <input class="form-control" type="text" placeholder="Default input"/>
+      <input class="form-control" id="slcp-courseAbbreviation" type="text" placeholder="Default input"/>
       <label for="">Credit</label>
-      <input class="form-control" type="number" placeholder="1"/>
+      <input class="form-control" id="slcp-credit" type="number" placeholder="1"/>
       <label for="">Course Instructor Phone</label>
       <input class="form-control mb-3" type="text"/>
       <label>Regularly-occurring?</label>
@@ -62,7 +62,7 @@
   </div>
   <div class="col" align="right">
     <label for="Continue">(2/3)</label>
-    <a href="/slcQuestionnaire" id="Continue" type="button" class="btn btn-success col">Continue</a>
+    <a href="/slcQuestionnaire" id="Continue" type="button" class="btn btn-success col" onclick="saveSLCdata()">Continue</a>
   </div>
 
 </div>

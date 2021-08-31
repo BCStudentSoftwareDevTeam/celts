@@ -25,3 +25,8 @@ def searchInstructor(query):
     except Exception as e:
         print(e)
         return "Error Searching Instructor query", 500
+
+@serviceLearning_bp.route('/slcSubmit', methods = ['POST'])
+def slcSubmit():
+    ''''''
+    print("something")
