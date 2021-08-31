@@ -57,7 +57,4 @@ def getLoginUser():
     return user
 
 def getCurrentTerm():
-
-    term = Term.get_or_none(isCurrentTerm = True)
-
-    return term
+    return Term.get_or_none(isCurrentTerm = True)

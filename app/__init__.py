@@ -66,5 +66,4 @@ def load_user():
 from app.logic.loginManager import getCurrentTerm
 @app.before_request
 def load_currentTerm():
-
     g.current_term = getCurrentTerm()

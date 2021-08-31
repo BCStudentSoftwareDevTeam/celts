@@ -29,8 +29,7 @@ def events(term):
         listOfTerms = listOfTerms,
         rsvpedEventsID = rsvpedEventsID,
         currentTime = currentTime,
-        user = g.current_user,
-        testing_currentTerm = g.current_term)
+        user = g.current_user)
 
 
 @events_bp.route('/events/upcoming_events', methods=['GET'])
