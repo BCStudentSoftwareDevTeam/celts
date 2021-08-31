@@ -26,7 +26,7 @@
        <a class="nav-link active" href="#">Upcoming Events</a>
      </li>
      <li class="nav-item">
-       <a class="nav-link " aria-current="page" href="#">Service Transcript</a>
+       <a class="nav-link" aria-current="page" href="/search_student">Service Transcript</a>
      </li>
    </ul>
  </div>
@@ -47,6 +47,9 @@
            </thead>
            {% for event in upcomingEvents %}
          <tbody id="volunteerTable">
+           <!-- <tr>
+             <td>{{event.id}}</td>
+           </tr> -->
            <tr>
              <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
              <td>{{event.eventName}}</td>
@@ -71,8 +74,6 @@
                 <thead>
                   <tr>
                     <th>Program</th>
-                    <th>Training</th>
-                    <th>Eligibility</th>
                     <th>Banned</th>
 
                   </tr>
@@ -80,12 +81,10 @@
                 {% for event in upcomingEvents %}
               <tbody id="volunteerTable">
                 <tr>
-                  <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
-                  <td><input type="checkbox" checked></td>
-                  <td><input type="checkbox" ></td>
-                  <td><input type="checkbox" ></td>
-
+                  <td>{{event.eventName}}</td>
+                  <td><input type="checkbox" {%if event.program in programban %} checked {%endif%}></td>
                 </tr>
+
                {% endfor %}
              {% else %}
                <h2> Something <h2>

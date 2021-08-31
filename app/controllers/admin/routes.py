@@ -1,6 +1,7 @@
 from flask import request, render_template, url_for, g, Flask, redirect, flash, abort
 from app.models.program import Program
 from app.models.event import Event
+from app.models.programBan import ProgramBan
 from app.models.interest import Interest
 from app.logic.events import getUpcomingEventsForUser
 from app.models.facilitator import Facilitator
@@ -141,17 +142,24 @@ def deleteRoute(program, eventId):
 @admin_bp.route('/profile/<username>', methods=['GET'])
 def viewVolunteersProfile(username):
     if g.current_user.isCeltsAdmin:
-         upcomingEvents = getUpcomingEventsForUser(g.current_user)
+         upcomingEvents = getUpcomingEventsForUser(username)
          programs = Program.select()
-         interests = Interest.select().where(Interest.user == g.current_user)
+         interests = Interest.select().where(Interest.user == username)
+         programban = ProgramBan.select().where(ProgramBan.user == username)
          interests_ids = [interest.program for interest in interests]
-         eventParticipant = EventParticipant.select()
+         eventParticipant = EventParticipant.select().where(EventParticipant.user == username)
+         print("-------------------------------------------------------")
+                 # for i in upcomingEvents:
+                 #     for j in i.length:
+                 #         print(j)
+         print(type(eventParticipant))
          return render_template ("/admin/volunteerProfileView.html",
             programs = programs,
             eventParticipant = eventParticipant,
             interests = interests,
+            programban = programban,
             interests_ids = interests_ids,
             upcomingEvents = upcomingEvents,
-            userProfile = g.current_user,
+            # userProfile = g.current_user,
             user = User.get(User.username == username))
     abort(403)
