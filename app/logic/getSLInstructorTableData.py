@@ -6,15 +6,16 @@ def getProposalData(user):
     """Returns dictionary with data used to populate SL proposal table"""
     courses = (Course.select()
                      .where(CourseInstructor.user==user)
-                     .join(CourseInstructor))
-    courseDict = {} #any reason why this is a dictionary of dictionaries, wouldn't a list of dictionaries be easier to work with?
-    #I just thought it would be easier to read. But a list is a-ok too.
+                     .join(CourseInstructor)
+                     .order_by(Course.id))
+    courseDict = {} #a dictionary of dictionaries for better readability
     for course in courses:
         otherInstructors = (CourseInstructor.select().where(CourseInstructor.course==course))
         faculty = [f"{instructor.user.firstName} {instructor.user.lastName}" for instructor in otherInstructors]
         courseDict[course.courseName] = {
+        "id":course.id,
         "name":course.courseName,
-        "faculty": ', '.join(faculty),
-        "term":course.term.description,
+        "faculty": faculty,
+        "term":course.term,
         "status":course.status.status}
     return courseDict
