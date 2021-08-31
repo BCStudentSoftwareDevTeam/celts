@@ -11,12 +11,11 @@ from app.controllers.events import events_bp
 def emailVolunteers():
 
     emailInfo = request.form
-    print("HELLO"*5)
     if emailInfo['emailRecipients'] == 'interested':    #email all students interested in the program
         volunteersToEmail = Interest.select().where(Interest.program == emailInfo['programID'])
 
-    elif emailInfo['emailRecipients'] == 'RSVPed':  #email only people who rsvped
-        volunteersToEmail = EventParticipant.select().where(EventParticipant.event == emailInfo['eventID'], EventParticipant.rsvp == True)
+    elif emailInfo['emailRecipients'] == 'eventParticipant':  #email only people who rsvped
+        volunteersToEmail = EventParticipant.select().where(EventParticipant.event == emailInfo['eventID'])
 
     else:
         print("ITS IMPRESSIVE HOW YOU MANAGED TO BREAK THIS")

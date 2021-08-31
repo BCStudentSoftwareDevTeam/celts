@@ -89,7 +89,11 @@
                       <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
                       <td>{{event.location}}</td>
                       {% if (user.isCeltsAdmin) or (user.isCeltsStudentStaff) %}
-                        <td><a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#emailModal"><span class="bi bi-envelope-fill"> Email</span></a></td>
+                        <td>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#emailModal" onclick="passEventInfo({{event.id}}, {{program.id}})">
+                              <span class="bi bi-envelope-fill"> Email</span>
+                            </button>
+                        </td>
                       {% else %}
                         {% if (event.startDate < currentTime.date()) or (event.timeStart < currentTime.time() and event.startDate == currentTime.date())%}
                           <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
@@ -124,9 +128,8 @@
           <h6 class="text-center">Last Email was sent to ____ on 10/20/20</h6>
           <form role="form" method="post" id="modal-form" action="/email">
             <div>
-                <!-- 2 lines below are temporary until we have a way to get the program ID or at least he event ID -->
-              <input id="programID" name="programID" class="form-control" required>
-              <input id="eventID" name="eventID" class="form-control" required>
+              <input id="programID" name="programID" class="form-control" value="" type="hidden">
+              <input id="eventID" name="eventID" class="form-control" value="" type="hidden">
             </div>
             <h5 class="my-4">Templates</h5>
             <select class="form-select my-4" aria-label="Default select example">
@@ -139,7 +142,7 @@
                 <h5>To</h5>
                 <select class='form-select' id="emailRecipients" name="emailRecipients" aria-label="email recipients">
                   <option value="interested" selected> Interested Students </option>
-                  <option value="RSVPed"> RSVPed Students </option>
+                  <option value="eventParticipant"> Prospective Participants </option>
                 </select>
                 <!-- <input type="text" class="form-control" id="email-to" name="email-to" required> -->
               </div>
