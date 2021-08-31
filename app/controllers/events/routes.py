@@ -14,6 +14,10 @@ from datetime import datetime
 
 @events_bp.route('/events/<term>/', methods=['GET'])
 def events(term):
+    #set term to current term when events page is accessed from the navbar
+    if not term.isdigit():
+        term = g.current_term
+
     currentTime = datetime.now()
     eventsDict = groupEventsByCategory(term)
     listOfTerms = Term.select()
