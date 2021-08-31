@@ -1,5 +1,6 @@
-from flask import request, render_template, g, abort
+from flask import request, render_template, g, abort, json
 from app.controllers.serviceLearning import serviceLearning_bp
+from app.models.user import User
 
 
 @serviceLearning_bp.route('/slcProposal')
