@@ -15,8 +15,10 @@ def trainedParticipants(programID):
     """
     trainingEvents = ProgramEvent.select().where(ProgramEvent.program == programID)
     trlist = [training.event for training in trainingEvents if training.event.isTraining]
+    print(trlist)
     eventTrainingDataList = [participant.user.username for participant in (EventParticipant.select().where(EventParticipant.event.in_(trlist)))]
     attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(trlist), eventTrainingDataList)))
+    print(attendedTraining)
     return attendedTraining
 
 def sendUserData(bnumber, eventid, programid):

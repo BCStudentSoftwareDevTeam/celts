@@ -117,7 +117,7 @@ def viewVolunteersProfile(username):
          programBan = ProgramBan.select().where(ProgramBan.user == username)
          interests_ids = [interest.program for interest in interests]
          eventParticipant = EventParticipant.select().where(EventParticipant.user == username)
-         volunteertTraining = trainedParticipants(programID)
+         # volunteertTraining = trainedParticipants()
          print("-------------------------------------------------------")
          if programBan != None:
              print("User is banned from at least one thing")
@@ -132,7 +132,7 @@ def viewVolunteersProfile(username):
             programBan = programBan,
             interests_ids = interests_ids,
             upcomingEvents = upcomingEvents,
-            volunteertTraining = volunteertTraining,
+            # volunteertTraining = volunteertTraining,
             # userProfile = g.current_user,
             user = User.get(User.username == username))
     abort(403)
