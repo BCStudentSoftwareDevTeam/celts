@@ -12,6 +12,7 @@ from app.models.outsideParticipant import OutsideParticipant
 from app.models.programEvent import ProgramEvent
 from app.logic.trackAttendees import trainedParticipants
 from app.logic.updateVolunteers import getEventLengthInHours
+from app.logic.participants import trainedParticipants
 from app.logic.getFacilitatorsAndTerms import getAllFacilitators, selectFutureTerms
 from app.controllers.main.volunteerRegisterEvents import volunteerRegister
 from app.controllers.admin import admin_bp, getStudent
@@ -145,21 +146,25 @@ def viewVolunteersProfile(username):
          upcomingEvents = getUpcomingEventsForUser(username)
          programs = Program.select()
          interests = Interest.select().where(Interest.user == username)
-         programban = ProgramBan.select().where(ProgramBan.user == username)
+         programBan = ProgramBan.select().where(ProgramBan.user == username)
          interests_ids = [interest.program for interest in interests]
          eventParticipant = EventParticipant.select().where(EventParticipant.user == username)
+         volunteertTraining = trainedParticipants(programID)
          print("-------------------------------------------------------")
-                 # for i in upcomingEvents:
-                 #     for j in i.length:
-                 #         print(j)
-         print(type(eventParticipant))
+         if programBan != None:
+             print("User is banned from at least one thing")
+
+
+
+
          return render_template ("/admin/volunteerProfileView.html",
             programs = programs,
             eventParticipant = eventParticipant,
             interests = interests,
-            programban = programban,
+            programBan = programBan,
             interests_ids = interests_ids,
             upcomingEvents = upcomingEvents,
+            volunteertTraining = volunteertTraining,
             # userProfile = g.current_user,
             user = User.get(User.username == username))
     abort(403)

@@ -51,8 +51,8 @@
              <td>{{event.id}}</td>
            </tr> -->
            <tr>
-             <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
              <td>{{event.eventName}}</td>
+             <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
              <td>{{event.startDate}}</td>
              <td>{{event.endDate}}</td>
              <td>{% if eventParticipant.rsvp == 1 %} Registered {% else %} Not Registered {% endif %}</td>
@@ -70,19 +70,23 @@
       <div>
             <table class="table">
 
-              {% if upcomingEvents|length > 0 %}
+              {% if programs|length > 0 %}
                 <thead>
                   <tr>
                     <th>Program</th>
+                    <th>Training</th>
                     <th>Banned</th>
+
 
                   </tr>
                 </thead>
-                {% for event in upcomingEvents %}
+                {% for program in programs %}
               <tbody id="volunteerTable">
                 <tr>
-                  <td>{{event.eventName}}</td>
-                  <td><input type="checkbox" {%if event.program in programban %} checked {%endif%}></td>
+                  <td>{{program.programName}}</td>
+                  <td><input type="checkbox"></td>
+                  <td><input type="checkbox"></td>
+
                 </tr>
 
                {% endfor %}
