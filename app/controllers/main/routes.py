@@ -15,23 +15,22 @@ def home():
 
 @main_bp.route('/profile/<username>', methods = ['GET'])
 def profilePage(username):
-    if username != g.current_user.username or g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
-        return "", 500 #TODO: Link to an error page
-    upcomingEvents = getUpcomingEventsForUser(username)
-    programs = Program.select()
-    interests = Interest.select().where(Interest.user == g.current_user)
-    interests_ids = [interest.program for interest in interests]
-    if username == g.current_user.username or g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
+    if not g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff or g.current_user.username == username:
+        print(g.current_user.username)
+        return "Access Denied", 403
+    else:
+        profileUser = User.select().where(User.username == username)
+        upcomingEvents = getUpcomingEventsForUser(username)
+        programs = Program.select()
+        interests = Interest.select().where(Interest.user == g.current_user)
+        interests_ids = [interest.program for interest in interests]
         return render_template('/volunteer/volunteerProfile.html',
                                title="Volunteer Interest",
-                               user = username,
+                               user = profileUser,
                                programs = programs,
                                interests = interests,
                                interests_ids = interests_ids,
                                upcomingEvents = upcomingEvents)
-    else:
-        return "", 500
-        abort(403)
 
 @main_bp.route('/deleteInterest/<program_id>', methods = ['POST'])
 @main_bp.route('/addInterest/<program_id>', methods = ['POST'])
