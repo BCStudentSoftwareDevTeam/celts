@@ -1,0 +1,63 @@
+{% extends "base.html"%}
+
+
+{% block scripts %}
+  {{super()}}
+
+
+{% endblock %}
+
+{% block styles %}
+  {{super()}}
+
+{% endblock %}
+
+
+{% block app_content %}
+<h1 class="text-center pb-5">Alex Bryant</h1>
+<button type="button" class="btn btn-primary float-end" onClick="window.print()"><i class="bi bi-printer"></i> Print</button>
+<h2>Programs</h2>
+<table class="table table-bordered table-striped">
+  <tr>
+    <th>Program</th>
+    <th>Term</th>
+    <th>Accrued Hours</th>
+  </tr>
+</table>
+<h2>Bonner Scholar Events</h2>
+<table class="table table-bordered table-striped">
+  <tr>
+    <th>Course Name</th>
+    <th>Term</th>
+    <th>Accrued Hours</th>
+  </tr>
+</table>
+<h2>Service Learning Courses</h2>
+<table class="table table-bordered table-striped">
+  <tr>
+    <th>Course Name</th>
+    <th>Semester</th>
+    <th>Instructor</th>
+    <th>Accrued Hours</th>
+  </tr>
+</table>
+<h2>Trainings</h2>
+<table class="table table-bordered table-striped">
+  <tr>
+    <th>Training Name</th>
+    <th>Term</th>
+    <th>Accrued Hours</th>
+  </tr>
+</table>
+  <div class="pt-4">
+    <p>*Volunteering since</p>
+  </div>
+  <div class="float-end">
+    <label class="fw-bold pb-3">Total Hours:</label>
+    <input class="bg-light border-top-0 border-start-0 border-end-0 col-auto" id="hourTotal" type="int" readonly/>
+  </div>
+  <div class="pt-5">
+    <p>If there are any conrrections that need to be made, contact<a href="#"> Ashley Cochrane</a></p>
+  </div>
+
+{% endblock %}
