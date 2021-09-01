@@ -1,7 +1,7 @@
 import pytest
-from app.logic.updateVolunteers import getEventLengthInHours, updateVolunteers
+from app.logic.volunteers import getEventLengthInHours, updateVolunteers
 from app.models.eventParticipant import EventParticipant
-from app.controllers.admin.changeVolunteer import addVolunteerToEvent
+from app.controllers.admin.volunteers import addVolunteerToEvent
 from datetime import datetime
 
 
