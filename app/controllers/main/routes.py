@@ -7,6 +7,8 @@ from app.controllers.main import main_bp
 from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 
+from app.logic.transcript import *
+
 @main_bp.route('/')
 def home():
     print(f"{g.current_user.username}: {g.current_user.firstName} {g.current_user.lastName}")
@@ -97,5 +99,9 @@ def RemoveRSVP():
 
 @main_bp.route('/serviceTranscript', methods = ['GET'])
 def serviceTranscript():
-
-    return render_template('main/serviceTranscript.html')
+    user = g.current_user
+    program = getProgramTranscript('neillz')
+    SLCourses = getSlCourseTranscript('neillz')
+    return render_template('main/serviceTranscript.html',
+                            program = program,
+                            SLCourses = SLCourses)

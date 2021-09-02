@@ -16,24 +16,39 @@ def getSlCourseTranscript(username):
     :user: model object
     """
     user = User.get_by_id(username)
-    slCourseInformation = (CourseParticipant
-        .select(CourseParticipant.course, CourseParticipant.user, fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned"))
-        .group_by(CourseParticipant.course, CourseParticipant.user)
+
+    SLCourses = (CourseInstructor
+        .select(Course, CourseParticipant, CourseInstructor.user, fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned"))
+        .join(Course)
+        .join(CourseParticipant, on=(Course.id == CourseParticipant.course))
         .where(CourseParticipant.user == user))
 
-    allCoursesList = []
-    for course in slCourseInformation:
-        user_full_name = f"{course.user.firstName} {course.user.lastName}"
-        course_name = course.course.courseName
-        description = course.course.term.description
-        hours = course.hoursEarned
-        instructorQuery = CourseInstructor.select().where(CourseInstructor.course == course.course)
-        instructorList = [f"{i.user.firstName} {i.user.lastName}" for i in instructorQuery]
+
+    # (Course.select()
+    #     .join(CourseInstructor, attr="instructor")
+    #     .join(User, attr="user")
+    #     .join(CourseParticipant, on=(Course.id == CourseParticipant.course))
+    #     .where(CourseParticipant.user == user))
+    # SLCourses = (CourseParticipant
+    #     .select(CourseParticipant.course, CourseInstructor, fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned"))
+    #     .join(Course)
+    #     .join(CourseInstructor)
+    #     .group_by(CourseParticipant.course, CourseParticipant.user)
+    #     .where(CourseParticipant.user == user))
+
+    # allCoursesList = []
+    # for course in slCourseInformation:
+    #     user_full_name = f"{course.user.firstName} {course.user.lastName}"
+    #     course_name = course.course.courseName
+    #     description = course.course.term.description
+    #     hours = course.hoursEarned
+    #     instructorQuery = CourseInstructor.select().where(CourseInstructor.course == course.course)
+    #     instructorList = [f"{i.user.firstName} {i.user.lastName}" for i in instructorQuery]
 
         #creates a list for all information of a course that a courseParticipant is involved in
-        allCoursesList.append([ user_full_name , course_name , description , hours , instructorList ])
+        # allCoursesList.append([ user_full_name , course_name , description , hours , instructorList ])
 
-    return allCoursesList
+    return SLCourses
 
 
 #FIXME: Needs to break hours down by program and term, not just program
@@ -51,8 +66,7 @@ def getProgramTranscript(username):
         .join(ProgramEvent)
         .join(Event)
         .join(EventParticipant)
-        .where(EventParticipant.user == user)
+        .where(EventParticipant.user == user, Event.isTraining == False, Program.isBonnerScholars == False)
         .group_by(Program, Event.term))
-
-    return [[p.programName, Term.get_by_id(p.term).description, p.hoursEarned] 
-            for p in hoursQuery.objects() ] 
+    return [[p.programName, Term.get_by_id(p.term).description, p.hoursEarned]
+            for p in hoursQuery.objects() ]

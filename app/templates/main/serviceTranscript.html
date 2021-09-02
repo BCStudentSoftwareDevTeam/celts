@@ -14,7 +14,7 @@
 
 
 {% block app_content %}
-<h1 class="text-center pb-5">Alex Bryant</h1>
+<h1 class="text-center pb-5">{{g.current_user.firstName}} {{g.current_user.lastName}}</h1>
 <button type="button" class="btn btn-primary float-end" onClick="window.print()"><i class="bi bi-printer"></i> Print</button>
 <h2>Programs</h2>
 <table class="table table-bordered table-striped">
@@ -23,6 +23,13 @@
     <th>Term</th>
     <th>Accrued Hours</th>
   </tr>
+  {% for i in range(program | length)%}
+  <tr>
+    <td> {{program[i][0]}}</td>
+    <td> {{program[i][1]}}</td>
+    <td> {{program[i][2]}}</td>
+  </tr>
+  {% endfor %}
 </table>
 <h2>Bonner Scholar Events</h2>
 <table class="table table-bordered table-striped">
@@ -40,6 +47,14 @@
     <th>Instructor</th>
     <th>Accrued Hours</th>
   </tr>
+  {% for slcourse in SLCourses %}
+  <tr>
+    <td> {{slcourse.course.courseName}}</td>
+    <td> {{slcourse.course.term.description}}</td>
+    <td> {{slcourse.user.firstName}}</td>
+    <td> {{slcourse.hoursEarned}}</td>
+  </tr>
+  {% endfor %}
 </table>
 <h2>Trainings</h2>
 <table class="table table-bordered table-striped">
