@@ -16,13 +16,12 @@ def home():
 @main_bp.route('/profile/<username>', methods = ['GET'])
 def profilePage(username):
     if not g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff or g.current_user.username == username:
-        print(g.current_user.username)
         return "Access Denied", 403
     else:
         profileUser = User.select().where(User.username == username)
         upcomingEvents = getUpcomingEventsForUser(username)
         programs = Program.select()
-        interests = Interest.select().where(Interest.user == g.current_user)
+        interests = Interest.select().where(Interest.user == profileUser)
         interests_ids = [interest.program for interest in interests]
         return render_template('/volunteer/volunteerProfile.html',
                                title="Volunteer Interest",
