@@ -15,25 +15,24 @@ def home():
 
 @main_bp.route('/profile/<username>', methods = ['GET'])
 def profilePage(username):
-    if not g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff or g.current_user.username == username:
+    if not g.current_user.isCeltsAdmin and not g.current_user.isCeltsStudentStaff and g.current_user.username != username:
         return "Access Denied", 403
-    else:
-        try:
-            profileUser = User.get(User.username == username)
-            upcomingEvents = getUpcomingEventsForUser(username)
-            programs = Program.select()
-            interests = Interest.select().where(Interest.user == profileUser)
-            interests_ids = [interest.program for interest in interests]
-            return render_template('/volunteer/volunteerProfile.html',
-                                   title="Volunteer Interest",
-                                   user = profileUser,
-                                   programs = programs,
-                                   interests = interests,
-                                   interests_ids = interests_ids,
-                                   upcomingEvents = upcomingEvents)
-        except Exception as e:
-            print(e)
-            return "Error retrieving user profile", 500
+    try:
+        profileUser = User.get(User.username == username)
+        upcomingEvents = getUpcomingEventsForUser(username)
+        programs = Program.select()
+        interests = Interest.select().where(Interest.user == profileUser)
+        interests_ids = [interest.program for interest in interests]
+        return render_template('/volunteer/volunteerProfile.html',
+                               title="Volunteer Interest",
+                               user = profileUser,
+                               programs = programs,
+                               interests = interests,
+                               interests_ids = interests_ids,
+                               upcomingEvents = upcomingEvents)
+    except Exception as e:
+        print(e)
+        return "Error retrieving user profile", 500
 
 
 @main_bp.route('/deleteInterest/<program_id>', methods = ['POST'])
