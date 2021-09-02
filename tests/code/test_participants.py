@@ -216,10 +216,10 @@ def test_sendKioskDataKiosk():
 
 
     signin = sendUserData("B00708826", 2, 1)
-    usersAttended2 = EventParticipant.select().where(EventParticipant.attended, EventParticipant.event == 2)
-    listOfAttended2 = [users.user.username for users in usersAttended2]
+    usersAttended = EventParticipant.select().where(EventParticipant.attended, EventParticipant.event == 2)
+    listOfAttended = [users.user.username for users in usersAttended]
 
-    assert "bryanta" in listOfAttended2
+    assert "bryanta" in listOfAttended
 
     deleteInstance = EventParticipant.get(EventParticipant.user == "bryanta")
     deleteInstance.delete_instance()

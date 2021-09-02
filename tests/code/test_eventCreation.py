@@ -3,10 +3,40 @@ from datetime import datetime
 from peewee import OperationalError, IntegrityError
 
 from app.models.event import Event
+from app.models.eventTemplate import EventTemplate
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.models.facilitator import Facilitator
 from app.logic.eventCreation import validateNewEventData, setValueForUncheckedBox, createNewEvent, calculateRecurringEventFrequency
+
+@pytest.mark.integration
+def test_eventTemplate_model():
+
+    template = EventTemplate(name="test", templateJSON='{"first entry":["number one", "number two"]}')
+    assert template.templateData == {"first entry": ["number one", "number two"]}
+
+    template.templateData = ["just", "an", "array"]
+    template.save()
+
+    template.delete_instance()
+
+@pytest.mark.integration
+def test_eventTemplate_fetch():
+
+    template = EventTemplate(name="test2")
+    template.templateData = {
+                "first entry": "number one",
+                "second entry": "number two",
+                "fourth entry": "number four"
+            }
+    assert "number one" == template.fetch("first entry")
+    assert "number one" == template.fetch("first entry", "1")
+
+    assert None == template.fetch("third entry")
+    assert "3" == template.fetch("third entry", "3")
+
+    template.save()
+    template.delete_instance()
 
 @pytest.mark.integration
 def test_correctValidateNewEventData():

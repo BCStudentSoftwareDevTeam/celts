@@ -1,5 +1,10 @@
 from flask import Flask, redirect, flash, url_for, request, render_template, g, json
+from datetime import datetime
+from peewee import DoesNotExist
+
+from app.models.program import Program
 from app.models.event import Event
+from app.models.eventTemplate import EventTemplate
 from app.models.user import User
 from app.models.programEvent import ProgramEvent
 from app.models.term import Term
@@ -9,7 +14,31 @@ from app.logic.events import getEvents
 from app.logic.events import groupEventsByCategory
 from app.logic.events import getUpcomingEventsForUser
 from app.logic.participants import sendUserData
-from datetime import datetime
+
+@events_bp.route('/create_event')
+def program_picker():
+    allprograms = Program.select().order_by(Program.programName)
+    visibleTemplates = EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
+
+    return render_template("/events/template_selector.html",
+                programs=allprograms,
+                templates=visibleTemplates
+            )
+
+@events_bp.route('/create_event/<templateid>')
+@events_bp.route('/create_event/<templateid>/<programid>')
+def template_select(templateid, programid=None):
+    try:
+        template = EventTemplate.get_by_id(templateid)
+        if(programid):
+            program = Program.get_by_id(programid)
+
+    except DoesNotExist as e:
+        print("Invalid template or program id:", e)
+        flash("There was an error with your selection. Please try again or contact Systems Support.", "danger")
+        return redirect(url_for("events.program_picker"))
+
+    return redirect(url_for("events.program_picker"))
 
 @events_bp.route('/events/<term>/', methods=['GET'])
 def events(term):
