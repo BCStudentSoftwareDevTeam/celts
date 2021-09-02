@@ -3,7 +3,6 @@ from app.models.program import Program
 from app.models.event import Event
 from app.models.programBan import ProgramBan
 from app.models.interest import Interest
-from app.logic.events import getUpcomingEventsForUser
 from app.models.facilitator import Facilitator
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
@@ -11,15 +10,19 @@ from app.models.term import Term
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
+from app.logic.events import getUpcomingEventsForUser
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectFutureTerms
 from app.logic.searchStudents import searchVolunteers
 from app.logic.events import deleteEvent, getAllFacilitators
+from app.logic.users import isEligibleForProgram
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.eventCreation import createEvent, addRecurringEvents
 from datetime import datetime
+
+
 
 @admin_bp.route('/<programID>/<eventID>/track_volunteers', methods=['GET'])
 def trackVolunteersPage(programID, eventID):
@@ -119,12 +122,13 @@ def viewVolunteersProfile(username):
          eventParticipant = EventParticipant.select().where(EventParticipant.user == username)
          # volunteertTraining = trainedParticipants()
          print("-------------------------------------------------------")
-         if programBan != None:
-             print("User is banned from at least one thing")
-
-
-
-
+         eligibilityTable = []
+         for i in programs:
+             # print(i.programName, " ", (username in trainedParticipants(i)), " ", isEligibleForProgram(i, username))
+             eligibilityTable.append({"program" : i,
+                                      "completedTraining" : (username in trainedParticipants(i)),
+                                      "isNotBanned" : isEligibleForProgram(i, username)})
+         print(eligibilityTable)
          return render_template ("/admin/volunteerProfileView.html",
             programs = programs,
             eventParticipant = eventParticipant,
@@ -132,6 +136,7 @@ def viewVolunteersProfile(username):
             programBan = programBan,
             interests_ids = interests_ids,
             upcomingEvents = upcomingEvents,
+            eligibilityTable = eligibilityTable,
             # volunteertTraining = volunteertTraining,
             # userProfile = g.current_user,
             user = User.get(User.username == username))

@@ -74,18 +74,18 @@
                 <thead>
                   <tr>
                     <th>Program</th>
-                    <th>Training</th>
+                    <th>Training Completed</th>
                     <th>Banned</th>
 
 
                   </tr>
                 </thead>
-                {% for program in programs %}
+                {% for program in eligibilityTable %}
               <tbody id="volunteerTable">
                 <tr>
-                  <td>{{program.programName}}</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
+                  <td>{{program.program.programName}}</td>
+                  <td>{{program.completedTraining}}<input type="checkbox"></td>
+                  <td>{{program.isNotBanned}}<input type="checkbox"></td>
 
                 </tr>
 
