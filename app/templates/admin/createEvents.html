@@ -113,7 +113,7 @@
                 <input type='time' class="form-control timePicker" id='pickStartTime'value="{{eventInfo.timeStart}}"  name="eventStartTime">
                 {%else%}
                 <label for="startTime"><strong>Start Time: </strong></label>
-                <p> {{eventInfo.timeStart}}</p>
+                <p> {{eventInfo.timeStart.strftime("%I: %M %p")}}</p>
                 {%endif%}
               </div>
               <div class='form-group time d-inline-flex' style="padding: 0 0 0 2rem">
@@ -122,7 +122,7 @@
                 <input type='time' class="form-control timePicker" id='pickEndTime' value="{{eventInfo.timeEnd}}" name="eventEndTime">
                 {%else%}
                 <label for="endTime"><strong>End Time: </strong></label>
-                <p> {{eventInfo.timeEnd}}</p>
+                <p> {{eventInfo.timeEnd.strftime("%I: %M %p")}}</p>
                 {%endif%}
               </div>
             </div>
@@ -134,16 +134,23 @@
             <div  class="form-group" >
               <div class="d-inline-flex" style="width:48%;">
               <!--datePicker for start date-->
-
-              <label for="startDatePicker" id="startDatePickerLabel" ><span><strong>Start Date *</strong></span></label>
+               {% if  user.isCeltsAdmin or user.isCeltsStudentStaff %}
+              <label for="startDatePicker" id="startDatePickerLabel" ><span><strong>Start Date *</strong></span></label><br>
                 <div class='input-group date' {{ 'id=startDate' if user.isCeltsAdmin or user.isCeltsStudentStaff }}>
-                  <input type='text' class="form-control datePicker readonly" value="{{eventInfo.startDate.strftime('%m-%d-%Y') if 'edit_event' in request.path}}" name="eventStartDate" placeholder="Start Date" onchange=updateDate(this) id=startDatePicker
-                         {{'required' if user.isCeltsAdmin or user.isCeltsStudentStaff else 'readonly'}}>
+                  <input type='text' class="form-control datePicker readonly" value="{{eventInfo.startDate.strftime('%m-%d-%Y') if 'edit_event' in request.path}}" name="eventStartDate" placeholder="Start Date" onchange=updateDate(this) id=startDatePicker>
 
                   <div class="input-group-text" id="calendarIconStart">
                     <span><i class="bi bi-calendar-plus-fill"></i></span>
                   </div>
                 </div>
+
+                {%else%}
+                    <label for="startDatePicker" id="startDatePickerLabel" ><span><strong>Start Date:</strong></span></label><br>
+
+                    <p>{{eventInfo.startDate.strftime('%m-%d-%Y') if 'edit_event' in request.path}} </p>
+                {%endif%}
+
+
               </div>
               <div class="d-inline-flex d-none" id ="endDateStyle" style="width:51%;">
                 <!--datePicker for End date-->
