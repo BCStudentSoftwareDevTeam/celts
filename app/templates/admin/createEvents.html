@@ -94,10 +94,8 @@
           <label for='location'><strong>Location:</strong></label><br>
           <p>{{eventInfo.location}}</p>
           {%endif%}
-
         </div> <br>
         {% if user.isCeltsAdmin or user.isCeltsStudentStaff%}
-
         <div class="form-check form-switch" style="padding-bottom: 1.5em" {{hideElement}}>
           <label class="custom-control-label" for='checkIsRecurring'><strong>This event is a recurring event</strong></label>
           <input class="form-check-input" type="checkbox" id="checkIsRecurring" name="eventIsRecurring"/>
@@ -143,14 +141,11 @@
                     <span><i class="bi bi-calendar-plus-fill"></i></span>
                   </div>
                 </div>
-
                 {%else%}
                     <label for="startDatePicker" id="startDatePickerLabel" ><span><strong>Start Date:</strong></span></label><br>
 
                     <p>{{eventInfo.startDate.strftime('%m-%d-%Y') if 'edit_event' in request.path}} </p>
                 {%endif%}
-
-
               </div>
               <div class="d-inline-flex d-none" id ="endDateStyle" style="width:51%;">
                 <!--datePicker for End date-->
@@ -191,12 +186,10 @@
             <label class="custom-control-label" for="checkIsTraining"><strong>This event is a training for the program</strong></label>
             <input class="form-check-input" type="checkbox" id="checkIsTraining"  name="eventIsTraining" {{isTraining}}/>
           </div>
-
           <div class="form-check form-switch">
             <label class="custom-control-label" for='rsvp'><strong>Requires RSVP</strong></label>
             <input class="form-check-input" type="checkbox" id="rsvp"  name="eventRSVP" {{isRsvpRequired}}/>
           </div>
-
           <div class="form-check form-switch">
             <label class="custom-control-label"for='serviceHours'><strong> This event earns service hours.</strong></label>
             <input class="form-check-input" type="checkbox" id="earnServiceHours"  name="eventServiceHours" {{isService}}/>
@@ -212,7 +205,6 @@
             {% if eventInfo.isService %}
               <label> <strong> This event earns service hours </strong> </label><br>
             {% endif %}
-
           </div><br>
         {% endif %}
 
