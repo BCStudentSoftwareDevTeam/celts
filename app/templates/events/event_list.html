@@ -113,17 +113,17 @@
 
 {% set emailModal %}
   <div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title" id="emailModalLabel">'Event/Program' Email Template</h4>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h4 class="modal-title m-auto" id="emailModalLabel">'Event/Program' Email Template</h4>
+          <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <h6 class="text-center">Last Email was sent to ____ on 10/20/20</h6>
           <form role="form" method="post" id="modal-form">
             <h3 class="my-4">Templates</h3>
-            <select class="form-select my-4" aria-label="Default select example">
+            <select class="form-select my-4" aria-label="template-select">
               <option value="1" selected>'Event/Program' Email Template</option>
               <option value="2">Two</option>
               <option value="3">Three</option>
@@ -131,20 +131,28 @@
             <div class="row my-4">
               <div class="col-sm-6 form-group">
                 <h3>To</h3>
-                <input type="text" class="form-control" id="email-to" name="email-to" required>
+                <input type="text" class="form-control" id="email-to" name="email-to" placeholder="Recipients" required>
               </div>
               <div class="col-sm-6 form-group">
                 <h3>From</h3>
-                <input type="email" class="form-control" id="email-from" name="email-from" required>
+                <select class="form-select" aria-label="from-select">
+                  <option {{ 'selected' if user.isCeltsStudentStaff }}>CELTS Student Staff</option>
+                  <option {{ 'selected' if user.isCeltsAdmin else 'disabled' }}>CELTS Admins</option>
+                  <option value="{{g.current_user.email}}">
+                    {{g.current_user.firstName}} {{g.current_user.lastName}} (Currently Logged In)
+                  </option>
+                </select>
               </div>
             </div>
             <div class="my-4">
               <h3>Subject</h3>
-              <input type="text" class="form-control" id="subject" name="subject" required>
+              <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject" required>
             </div>
             <div class="my-4">
               <h3>Email Body</h3>
-              <textarea class="form-control" type="textarea" name="message" id="message" maxlength="6000" rows="7"></textarea>
+              <textarea class="form-control" type="textarea" name="message" id="message" maxlength="6000" rows="5"
+                placeholder="Type your email message here (Max 6000 characters)"
+              ></textarea>
             </div>
           </form>
         </div>
