@@ -3,7 +3,7 @@ from app.controllers.admin import admin_bp
 from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
-from app.logic.searchVolunteersAndStudents import searchVolunteersAndStudents
+from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateVolunteers, addVolunteerToEvent
 from app.models.user import User
 from peewee import *
@@ -12,7 +12,7 @@ from peewee import *
 def getVolunteers(query):
     '''Accepts user input and queries the database returning results that matches user search'''
 
-    return searchVolunteersAndStudents(query)
+    return searchUsers(query)
 
 
 

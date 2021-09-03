@@ -12,7 +12,7 @@ from app.logic.getSLInstructorTableData import getProposalData
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectFutureTerms
-from app.logic.searchVolunteersAndStudents import searchVolunteersAndStudents
+from app.logic.searchUsers import searchUsers
 from app.logic.events import deleteEvent, getAllFacilitators
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
@@ -136,7 +136,7 @@ def searchStudents(query):
     query = query.strip()
     search = query.upper()
     splitSearch = search.split()
-    searchResults = searchVolunteersAndStudents(query)
+    searchResults = searchUsers(query)
     return searchResult
 
 

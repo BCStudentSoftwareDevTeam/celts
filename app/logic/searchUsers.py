@@ -3,7 +3,7 @@ from app.controllers.main import main_bp
 from flask import json, jsonify
 
 
-def searchVolunteersAndStudents(query):
+def searchUsers(query):
     '''Accepts user input and queries the database returning results that matches user search'''
     query = query.strip()
     search = query.upper()
