@@ -27,5 +27,5 @@ def searchUsers(query):
                     if participant not in resultsDict:
                         resultsDict[f"{participant.firstName} {participant.lastName} ({participant.username})"] = f"{participant.firstName} {participant.lastName} ({participant.username})"
 
-    dictToJSON = json.dumps(resultsDict)
-    return dictToJSON
+    # dictToJSON = json.dumps(resultsDict)
+    return resultsDict

@@ -137,7 +137,7 @@ def searchStudents(query):
     search = query.upper()
     splitSearch = search.split()
     searchResults = searchUsers(query)
-    return searchResult
+    return searchResults
 
 
 @admin_bp.route('/searchVolunteers/<query>', methods = ['GET'])
