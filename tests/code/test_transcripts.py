@@ -30,14 +30,14 @@ def test_getSlTranscripts():
     user = "neillz"
     transcript = getSlCourseTranscript(user)
     assert transcript[0] == ["Zach Neill", "Databases", "Spring B 2021", 2.0, ["Brian Ramsay"]]
-    assert transcript[1] == ["Zach Neill", "Spanish Help", "Spring A 2021", 3.0, ["Brian Ramsay"]]
+    assert transcript[1] == ["Zach Neill", "Spanish Help", "Spring A 2021", 3.0, ["Brian Ramsay", "Zach Neill"]]
 
     # We still need to decide whether we want to create multiple entries for the same course or just update the hoursEarned.
 
     user2 = "khatts"  # User who attends a course multiple times
     transcript2 = getSlCourseTranscript(user2)
     assert transcript2[0] == ["Sreynit Khatt", "Databases", "Spring B 2021", 1.0, ["Brian Ramsay"]]
-    assert transcript2[1] == ["Sreynit Khatt", "Spanish Help", "Spring A 2021", 8.0, ["Brian Ramsay"]]
+    assert transcript2[1] == ["Sreynit Khatt", "Spanish Help", "Spring A 2021", 8.0, ["Brian Ramsay", "Zach Neill"]]
 
     user3 = "agliullovak" #user with no course
     transcript3 = getSlCourseTranscript(user3)
