@@ -18,8 +18,10 @@ def home():
 
 @main_bp.route('/profile/<username>', methods = ['GET'])
 def profilePage(username):
+
     upcomingEvents = getUpcomingEventsForUser(g.current_user)
-    print(upcomingEvents)
+    for i in upcomingEvents:
+        print(i.singleProgram)
     programs = Program.select()
     interests = Interest.select().where(Interest.user == g.current_user)
     interests_ids = [interest.program for interest in interests]

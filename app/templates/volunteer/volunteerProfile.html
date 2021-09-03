@@ -22,7 +22,7 @@
         {% for event in upcomingEvents %}
         <tr>
           <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
-          <td><a href= '/{{event.singleProgram.programId}}/{{event.id}}/edit_event' class="link-primary">{{event.eventName}}</a></td>
+          <td><a href= '/{{event.singleProgram}}/{{event.id}}/edit_event' class="link-primary">{{event.eventName}}</a></td>
           <td>{{event.startDate}}</td>
           <td>{{event.endDate}}</td>
           <!-- <td> {{event.rsvpstatus}} <td> -->
