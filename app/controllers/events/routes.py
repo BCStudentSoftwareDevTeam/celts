@@ -42,6 +42,10 @@ def template_select(templateid, programid=None):
 
 @events_bp.route('/events/<term>/', methods=['GET'])
 def events(term):
+    #set term to current term when events page is accessed from the navbar
+    if not term.isdigit():
+        term = g.current_term
+
     currentTime = datetime.now()
     eventsDict = groupEventsByCategory(term)
     listOfTerms = Term.select()
@@ -55,6 +59,7 @@ def events(term):
         rsvpedEventsID = rsvpedEventsID,
         currentTime = currentTime,
         user = g.current_user)
+
 
 @events_bp.route('/events/upcoming_events', methods=['GET'])
 def showUpcomingEvent():
