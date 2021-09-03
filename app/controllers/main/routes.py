@@ -20,8 +20,6 @@ def home():
 def profilePage(username):
 
     upcomingEvents = getUpcomingEventsForUser(g.current_user)
-    for i in upcomingEvents:
-        print(i.singleProgram)
     programs = Program.select()
     interests = Interest.select().where(Interest.user == g.current_user)
     interests_ids = [interest.program for interest in interests]
