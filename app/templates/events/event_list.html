@@ -130,20 +130,26 @@
               <input id="programID" name="programID" class="form-control" value="" type="hidden">
               <input id="eventID" name="eventID" class="form-control" value="" type="hidden">
             </div>
-            <h5 class="my-4">Templates</h5>
-            <select class="form-select my-4" aria-label="template-select">
+            <h5 class="my-1">Templates</h5>
+            <select class="form-select" aria-label="template-select">
               <option value="1" selected>'Event/Program' Email Template</option>
               <option value="2">Two</option>
               <option value="3">Three</option>
             </select>
-            <div class="row my-4">
+            <div class="row my-3">
               <div class="col-sm-6 form-group">
                 <h5>To</h5>
-                <input type="text" class="form-control" id="email-to" name="email-to" placeholder="Recipients" required>
+                <select class='form-select' id="emailRecipients" name="emailRecipients" aria-label="email recipients">
+                  <option value="interested">Interested</option>
+                  <option value="eventParticipant">Event Participants</option>
+                  <option value="{{g.current_user.email}}">
+                    {{g.current_user.firstName}} {{g.current_user.lastName}} (Currently Logged In)
+                  </option>
+                </select>
               </div>
               <div class="col-sm-6 form-group">
                 <h5>From</h5>
-                <select class='form-select' id="emailRecipients" name="emailRecipients" aria-label="email recipients">
+                <select class='form-select' id="emailSender" name="emailSender" aria-label="email sender">
                   <option {{ 'selected' if user.isCeltsStudentStaff }}>CELTS Student Staff</option>
                   <option {{ 'selected' if user.isCeltsAdmin else 'disabled' }}>CELTS Admins</option>
                   <option value="{{g.current_user.email}}">
@@ -152,12 +158,12 @@
                 </select>
               </div>
             </div>
-            <div class="my-4">
-              <h3>Subject</h3>
+            <div class="my-3">
+              <h5>Subject</h5>
               <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject" required>
             </div>
-            <div class="my-4">
-              <h3>Email Body</h3>
+            <div class="mt-3">
+              <h5>Email Body</h5>
               <textarea class="form-control" type="textarea" name="message" id="message" maxlength="6000" rows="5"
                 placeholder="Type your email message here (Max 6000 characters)"
               ></textarea>

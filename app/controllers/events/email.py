@@ -3,10 +3,6 @@ from app.models.interest import Interest
 from app.models.eventParticipant import EventParticipant
 from app.controllers.events import events_bp
 
-
-
-
-
 @events_bp.route('/email', methods=['POST'])
 def emailVolunteers():
 
@@ -19,8 +15,7 @@ def emailVolunteers():
 
     else:
         print("ITS IMPRESSIVE HOW YOU MANAGED TO BREAK THIS")
-
-    print(list(volunteersToEmail))
+    print(f'Volunteers to email: {list(volunteersToEmail)}')
     emails = [volunteer.user.email for volunteer in volunteersToEmail]
-    print(emails)
+    print(f'Whatever this is that Sandesh coded {emails}')
     return redirect(url_for("events.events", term = 1))
