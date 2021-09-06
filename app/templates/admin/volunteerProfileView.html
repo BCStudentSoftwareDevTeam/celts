@@ -47,9 +47,6 @@
            </thead>
            {% for event in upcomingEvents %}
          <tbody id="volunteerTable">
-           <!-- <tr>
-             <td>{{event.id}}</td>
-           </tr> -->
            <tr>
              <td>{{event.eventName}}</td>
              <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
@@ -76,23 +73,24 @@
                     <th>Program</th>
                     <th>Training Completed</th>
                     <th>Banned</th>
-
-
                   </tr>
                 </thead>
                 {% for program in eligibilityTable %}
               <tbody id="volunteerTable">
                 <tr>
                   <td>{{program.program.programName}}</td>
-                  <td>{{program.completedTraining}}<input type="checkbox"></td>
-                  <td>{{program.isNotBanned}}<input type="checkbox"></td>
-
+                  <td>{% if program.completedTraining %}Training Completed <input type="checkbox" checked>
+                      {% else %} Training Incomplete <input type="checkbox">
+                      {% endif %}</td>
+                  <td>{% if program.isNotBanned %}Volunteer not Banned <input type="checkbox">
+                      {% else %} <strong>Volunteer Banned</strong> <input type="checkbox" checked>
+                      {% endif %}</td>
                 </tr>
 
                {% endfor %}
              {% else %}
                <h2> Something <h2>
-                <!-- FIXME: There should be a link here to where they can select interests to programs -->
+                <!-- FIXME: -->
              {% endif %}
            </tbody>
             </table>
