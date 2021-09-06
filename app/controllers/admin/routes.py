@@ -111,7 +111,6 @@ def deleteRoute(program, eventId):
         print('Error while canceling event:', e)
         return "", 500
 
-<<<<<<< HEAD
 
 
 @admin_bp.route('/profile/<username>', methods=['GET'])
@@ -144,7 +143,8 @@ def viewVolunteersProfile(username):
             # userProfile = g.current_user,
             user = User.get(User.username == username))
     abort(403)
-=======
+
+
 @admin_bp.route('/courseProposals', methods=['GET'])
 def createTable():
     courseDict = getProposalData(g.current_user)
@@ -155,7 +155,6 @@ def createTable():
     except Exception as e:
         print('Error while creating table:', e)
         return "", 500
->>>>>>> development
 
 @admin_bp.route('/volunteerProfile', methods=['POST'])
 def volunteerProfile():
