@@ -11,6 +11,7 @@ from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.logic.events import getUpcomingEventsForUser
+from app.logic.getSLInstructorTableData import getProposalData
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectFutureTerms
@@ -20,6 +21,7 @@ from app.logic.users import isEligibleForProgram
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.eventCreation import createEvent, addRecurringEvents
+from app.controllers.admin import changeSLAction
 from datetime import datetime
 
 
@@ -109,6 +111,7 @@ def deleteRoute(program, eventId):
         print('Error while canceling event:', e)
         return "", 500
 
+<<<<<<< HEAD
 
 
 @admin_bp.route('/profile/<username>', methods=['GET'])
@@ -141,6 +144,18 @@ def viewVolunteersProfile(username):
             # userProfile = g.current_user,
             user = User.get(User.username == username))
     abort(403)
+=======
+@admin_bp.route('/courseProposals', methods=['GET'])
+def createTable():
+    courseDict = getProposalData(g.current_user)
+    try:
+        return render_template("/admin/createSLProposalTable.html",
+                                instructor = g.current_user,
+                                courseDict = courseDict)
+    except Exception as e:
+        print('Error while creating table:', e)
+        return "", 500
+>>>>>>> development
 
 @admin_bp.route('/volunteerProfile', methods=['POST'])
 def volunteerProfile():
