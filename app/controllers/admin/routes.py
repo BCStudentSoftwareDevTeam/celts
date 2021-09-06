@@ -129,7 +129,6 @@ def studentSearchPage():
         return render_template("/searchStudentPage.html")
     abort(403)
 
-# FIXME The following two methods need to be consolidated
 @admin_bp.route('/searchStudents/<query>', methods = ['GET'])
 def searchStudents(query):
     '''Accepts user input and queries the database returning results that matches user search'''
@@ -147,10 +146,7 @@ def searchVolunteers(query):
     try:
         query = query.strip()
         search = query.upper() + "%"
-        results = User.select().where(User.isStudent & User.firstName ** search | User.lastName ** search)
-        resultsDict = {}
-        for participant in results:
-            resultsDict[participant.firstName + " " + participant.lastName] = participant.firstName + " " + participant.lastName
+        resultsDict = searchUsers(query)
         dictToJSON = json.dumps(resultsDict)
         return dictToJSON
     except Exception as e:
