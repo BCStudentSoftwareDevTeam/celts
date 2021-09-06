@@ -1,8 +1,6 @@
 from flask import request, render_template, url_for, g, Flask, redirect, flash, abort, json, jsonify
 from app.models.program import Program
 from app.models.event import Event
-from app.models.programBan import ProgramBan
-from app.models.interest import Interest
 from app.models.facilitator import Facilitator
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
@@ -16,15 +14,12 @@ from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectFutureTerms
 from app.logic.searchStudents import searchVolunteers
-from app.logic.events import deleteEvent, getAllFacilitators
-from app.logic.users import isEligibleForProgram
+from app.logic.events import deleteEvent, getAllFacilitators, getUpcomingEventsForUser
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.eventCreation import createEvent, addRecurringEvents
 from app.controllers.admin import changeSLAction
 from datetime import datetime
-
-
 
 @admin_bp.route('/<programID>/<eventID>/track_volunteers', methods=['GET'])
 def trackVolunteersPage(programID, eventID):
@@ -111,38 +106,16 @@ def deleteRoute(program, eventId):
         print('Error while canceling event:', e)
         return "", 500
 
-
-
-@admin_bp.route('/profile/<username>', methods=['GET'])
-def viewVolunteersProfile(username):
-    if g.current_user.isCeltsAdmin:
-         upcomingEvents = getUpcomingEventsForUser(username)
-         programs = Program.select()
-         interests = Interest.select().where(Interest.user == username)
-         programBan = ProgramBan.select().where(ProgramBan.user == username)
-         interests_ids = [interest.program for interest in interests]
-         eventParticipant = EventParticipant.select().where(EventParticipant.user == username)
-         # volunteertTraining = trainedParticipants()
-         print("-------------------------------------------------------")
-         eligibilityTable = []
-         for i in programs:
-             # print(i.programName, " ", (username in trainedParticipants(i)), " ", isEligibleForProgram(i, username))
-             eligibilityTable.append({"program" : i,
-                                      "completedTraining" : (username in trainedParticipants(i)),
-                                      "isNotBanned" : isEligibleForProgram(i, username)})
-         print(eligibilityTable)
-         return render_template ("/admin/volunteerProfileView.html",
-            programs = programs,
-            eventParticipant = eventParticipant,
-            interests = interests,
-            programBan = programBan,
-            interests_ids = interests_ids,
-            upcomingEvents = upcomingEvents,
-            eligibilityTable = eligibilityTable,
-            # volunteertTraining = volunteertTraining,
-            # userProfile = g.current_user,
-            user = User.get(User.username == username))
-    abort(403)
+@admin_bp.route('/courseProposals', methods=['GET'])
+def createTable():
+    courseDict = getProposalData(g.current_user)
+    try:
+        return render_template("/admin/createSLProposalTable.html",
+                                instructor = g.current_user,
+                                courseDict = courseDict)
+    except Exception as e:
+        print('Error while creating table:', e)
+        return "", 500
 
 
 @admin_bp.route('/courseProposals', methods=['GET'])
@@ -203,3 +176,18 @@ def addParticipants():
 
     return render_template('addParticipants.html',
                             title="Add Participants")
+
+
+@admin_bp.route('/admin_view_profile/<username>', methods=['GET'])
+def viewVolunteersProfile(username):
+    if g.current_user.isCeltsAdmin:
+         upcomingEvents = getUpcomingEventsForUser(username)
+         programs = Program.select()
+         eventParticipant = EventParticipant.select().where(EventParticipant.user == username)
+
+         # print(eligibilityTable)
+         return render_template ("/admin/serviceTranscript.html",
+            programs = programs,
+            eventParticipant = eventParticipant,
+            username = User.get(User.username == username))
+    abort(403)
