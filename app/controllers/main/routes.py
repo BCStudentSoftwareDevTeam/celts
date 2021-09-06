@@ -1,11 +1,14 @@
-from flask import request, render_template, g, abort
+from flask import request, render_template, g, abort,flash,url_for,redirect
 
 from app.models.program import Program
+from app.models.user import User
+from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
 
 from app.controllers.main import main_bp
 from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
+
 
 @main_bp.route('/')
 def home():
@@ -77,19 +80,18 @@ def volunteerRegister():
     return redirect(url_for("admin.editEvent", eventId=eventData['eventId'], program=eventData['programId']))
 
 
-@main_bp.route('/rsvpRemove', methods = ['POST'])
+@main_bp.route('/rsvpRemove', methods = ['POST','PUT'])
 def RemoveRSVP():
     """
     This function deletes the user ID and event ID from database when RemoveRSVP  is clicked
     """
-
     eventData = request.form
     userId = User.get(User.username == g.current_user)
     eventId = eventData['eventId']
     program = eventData['programId']
-
     currentEventParticipant = EventParticipant.get(EventParticipant.user == userId, EventParticipant.event == eventId)
-
-    currentEventParticipant.delete_instance()
-    flash("Successfully unregistered for event!","success")
+    print("Instance",currentEventParticipant.rsvp)
+    currentEventParticipant.rsvp = False
+    currentEventParticipant.save()
+    flash("Successfully unregistered for event!",'success')
     return redirect(url_for("admin.editEvent", eventId=eventId, program=program))
