@@ -102,14 +102,23 @@ def serviceTranscript():
     user = g.current_user
     programs = getProgramTranscript('neillz')
     SLCourses = getSlCourseTranscript('neillz')
+    trainingData = getTrainingTranscript('neillz')
+
+    for data in trainingData:
+        print(data)
+
     totalHours = 0
     for program in programs:
         totalHours = totalHours + program.hoursEarned
 
     for SLC in SLCourses:
         totalHours = totalHours + SLC.hoursEarned
-        
+
+    for data in trainingData:
+        totalHours = totalHours + data.hoursEarned
+
     return render_template('main/serviceTranscript.html',
                             programs = programs,
                             SLCourses = SLCourses,
-                            totalHours = totalHours)
+                            totalHours = totalHours,
+                            trainingData = trainingData)

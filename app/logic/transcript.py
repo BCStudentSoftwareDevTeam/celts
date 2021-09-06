@@ -11,9 +11,8 @@ from peewee import DoesNotExist, fn
 
 def getSlCourseTranscript(username):
     """
-    Returns a service-learning course list that contains a name of the course, term,
-    list of instructors who teach the course, and hours earned for each course that the user took.
-    :user: model object
+    Returns a SLCourse query object containing all the training events for
+    current user.
     """
     user = User.get_by_id(username)
 
@@ -23,40 +22,25 @@ def getSlCourseTranscript(username):
         .join(CourseParticipant, on=(Course.id == CourseParticipant.course))
         .where(CourseParticipant.user == user))
 
-
-    # (Course.select()
-    #     .join(CourseInstructor, attr="instructor")
-    #     .join(User, attr="user")
-    #     .join(CourseParticipant, on=(Course.id == CourseParticipant.course))
-    #     .where(CourseParticipant.user == user))
-    # SLCourses = (CourseParticipant
-    #     .select(CourseParticipant.course, CourseInstructor, fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned"))
-    #     .join(Course)
-    #     .join(CourseInstructor)
-    #     .group_by(CourseParticipant.course, CourseParticipant.user)
-    #     .where(CourseParticipant.user == user))
-
-    # allCoursesList = []
-    # for course in slCourseInformation:
-    #     user_full_name = f"{course.user.firstName} {course.user.lastName}"
-    #     course_name = course.course.courseName
-    #     description = course.course.term.description
-    #     hours = course.hoursEarned
-    #     instructorQuery = CourseInstructor.select().where(CourseInstructor.course == course.course)
-    #     instructorList = [f"{i.user.firstName} {i.user.lastName}" for i in instructorQuery]
-
-        #creates a list for all information of a course that a courseParticipant is involved in
-        # allCoursesList.append([ user_full_name , course_name , description , hours , instructorList ])
-
     return SLCourses
 
+def getTrainingTranscript(username):
+    """
+    Returns a Training query object containing all the training event information for
+    current user.
+    """
+
+    trainingData = (EventParticipant.select(EventParticipant.event, EventParticipant.hoursEarned)
+                                    .join(Event)
+                                    .where(EventParticipant.user == username, Event.isTraining))
+
+    return trainingData
 
 #FIXME: Needs to break hours down by program and term, not just program
 def getProgramTranscript(username):
     """
-    Returns a list of programs that the user participated in. The list includes a program name,
-    term, and hours earned for each program that the user attended.
-    :user: model object
+    Returns a Program query object containing all the training events for
+    current user.
     """
     user = User.get_by_id(username)
 
@@ -67,6 +51,6 @@ def getProgramTranscript(username):
         .switch(ProgramEvent)
         .join(Event)
         .join(EventParticipant)
-        .where(EventParticipant.user == user, Event.isTraining == False, Program.isBonnerScholars == False))    
+        .where(EventParticipant.user == user, Event.isTraining == False, Program.isBonnerScholars == False))
 
     return hoursQuery

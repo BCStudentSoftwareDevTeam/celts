@@ -63,6 +63,13 @@
     <th>Term</th>
     <th>Accrued Hours</th>
   </tr>
+  {% for data in trainingData %}
+  <tr>
+    <td> {{data.event.eventName}}</td>
+    <td> {{data.event.term.description}}</td>
+    <td> {{data.hoursEarned}}</td>
+  </tr>
+  {% endfor %}
 </table>
   <div class="pt-4">
     <p>*Volunteering since</p>
