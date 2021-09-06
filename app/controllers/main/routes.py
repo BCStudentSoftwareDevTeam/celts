@@ -80,7 +80,7 @@ def volunteerRegister():
     return redirect(url_for("admin.editEvent", eventId=eventData['eventId'], program=eventData['programId']))
 
 
-@main_bp.route('/rsvpRemove', methods = ['POST','PUT'])
+@main_bp.route('/rsvpRemove', methods = ['POST'])
 def RemoveRSVP():
     """
     This function deletes the user ID and event ID from database when RemoveRSVP  is clicked
@@ -90,7 +90,6 @@ def RemoveRSVP():
     eventId = eventData['eventId']
     program = eventData['programId']
     currentEventParticipant = EventParticipant.get(EventParticipant.user == userId, EventParticipant.event == eventId)
-    print("Instance",currentEventParticipant.rsvp)
     currentEventParticipant.rsvp = False
     currentEventParticipant.save()
     flash("Successfully unregistered for event!",'success')
