@@ -15,7 +15,7 @@
 
 {% block app_content %}
 <h1 class="text-center pb-5">{{g.current_user.firstName}} {{g.current_user.lastName}}</h1>
-<button type="button" class="btn btn-primary float-end" onClick="window.print()"><i class="bi bi-printer"></i> Print</button>
+<button type="button" class="btn btn-primary float-end d-print-none" onClick="window.print()"><i class="bi bi-printer d-print-none"></i> Print</button>
 <h2>Programs</h2>
 <table class="table table-bordered table-striped">
   <tr>
@@ -23,11 +23,11 @@
     <th>Term</th>
     <th>Accrued Hours</th>
   </tr>
-  {% for i in range(program | length)%}
+  {% for program in programs %}
   <tr>
-    <td> {{program[i][0]}}</td>
-    <td> {{program[i][1]}}</td>
-    <td> {{program[i][2]}}</td>
+    <td> {{program.program.programName}}</td>
+    <td> {{program.event.term.description}}</td>
+    <td> {{program.hoursEarned}}</td>
   </tr>
   {% endfor %}
 </table>
@@ -69,10 +69,10 @@
   </div>
   <div class="float-end">
     <label class="fw-bold pb-3">Total Hours:</label>
-    <input class="bg-light border-top-0 border-start-0 border-end-0 col-auto" id="hourTotal" type="int" readonly/>
+    <input class="bg-light border-top-0 border-start-0 border-end-0 col-auto" value="{{totalHours}}" id="hourTotal" type="int" readonly/>
   </div>
   <div class="pt-5">
-    <p>If there are any conrrections that need to be made, contact<a href="#"> Ashley Cochrane</a></p>
+    <p>If there are any corrections that need to be made, contact <a href="#">Ashley Cochrane</a></p>
   </div>
 
 {% endblock %}

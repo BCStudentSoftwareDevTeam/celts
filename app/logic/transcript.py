@@ -61,12 +61,12 @@ def getProgramTranscript(username):
     user = User.get_by_id(username)
 
     # Add up hours earned in a term for each program they've participated in
-    hoursQuery = (Program
-        .select(Program, Event.term, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
-        .join(ProgramEvent)
+    hoursQuery = (ProgramEvent
+        .select(Program, Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
+        .join(Program)
+        .switch(ProgramEvent)
         .join(Event)
         .join(EventParticipant)
-        .where(EventParticipant.user == user, Event.isTraining == False, Program.isBonnerScholars == False)
-        .group_by(Program, Event.term))
-    return [[p.programName, Term.get_by_id(p.term).description, p.hoursEarned]
-            for p in hoursQuery.objects() ]
+        .where(EventParticipant.user == user, Event.isTraining == False, Program.isBonnerScholars == False))    
+
+    return hoursQuery
