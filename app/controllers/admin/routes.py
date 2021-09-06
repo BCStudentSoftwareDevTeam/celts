@@ -178,16 +178,33 @@ def addParticipants():
                             title="Add Participants")
 
 
-@admin_bp.route('/admin_view_profile/<username>', methods=['GET'])
+@admin_bp.route('/profile/<username>', methods=['GET'])
 def viewVolunteersProfile(username):
     if g.current_user.isCeltsAdmin:
          upcomingEvents = getUpcomingEventsForUser(username)
          programs = Program.select()
+         interests = Interest.select().where(Interest.user == username)
+         programBan = ProgramBan.select().where(ProgramBan.user == username)
+         interests_ids = [interest.program for interest in interests]
          eventParticipant = EventParticipant.select().where(EventParticipant.user == username)
-
-         # print(eligibilityTable)
-         return render_template ("/admin/serviceTranscript.html",
+         # volunteertTraining = trainedParticipants()
+         print("-------------------------------------------------------")
+         eligibilityTable = []
+         for i in programs:
+             # print(i.programName, " ", (username in trainedParticipants(i)), " ", isEligibleForProgram(i, username))
+             eligibilityTable.append({"program" : i,
+                                      "completedTraining" : (username in trainedParticipants(i)),
+                                      "isNotBanned" : isEligibleForProgram(i, username)})
+         print(eligibilityTable)
+         return render_template ("/admin/volunteerProfileView.html",
             programs = programs,
             eventParticipant = eventParticipant,
-            username = User.get(User.username == username))
+            interests = interests,
+            programBan = programBan,
+            interests_ids = interests_ids,
+            upcomingEvents = upcomingEvents,
+            eligibilityTable = eligibilityTable,
+            # volunteertTraining = volunteertTraining,
+            # userProfile = g.current_user,
+            user = User.get(User.username == username))
     abort(403)

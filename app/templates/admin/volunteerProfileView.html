@@ -22,37 +22,34 @@
 
 <div class="btn-group">
    <ul class="nav nav-pills nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
-     <li class="nav-item"  role="presentation">
-       <a class="nav-link active" aria-current="page" href="#">Upcoming Events</a>
+     <li class="nav-item" role="presentation">
+       <a class="nav-link" href="/search_student">Upcoming Events</a>
      </li>
      <li class="nav-item">
-       <a class="nav-link" href="/admin_view_profile/{{username}}">Service Transcript</a>
+       <a class="nav-link active" aria-current="page" href="#">Service Transcript</a>
      </li>
    </ul>
- </div>
+ </div><br>
 
 
  <div>
        <table class="table">
+         <h1>Programs</h1>
 
          {% if upcomingEvents|length > 0 %}
            <thead>
              <tr>
-               <th>Name</th>
                <th>Program</th>
-               <th>Start Date</th>
-               <th>End Date</th>
-               <th>Status</th>
+               <th>Term</th>
+               <th>Accrued Hours</th>
              </tr>
            </thead>
            {% for event in upcomingEvents %}
          <tbody id="volunteerTable">
            <tr>
-             <td>{{event.eventName}}</td>
              <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
              <td>{{event.startDate}}</td>
              <td>{{event.endDate}}</td>
-             <td>{% if eventParticipant.rsvp == 1 %} Registered {% else %} Not Registered {% endif %}</td>
            </tr>
           {% endfor %}
         {% else %}
@@ -61,38 +58,93 @@
         {% endif %}
       </tbody>
        </table>
-     </div><br><br><br><br><br><br>
+     </div><br><br>
+
+     <div>
+           <table class="table">
+             <h1>Booner Scholar Events</h1>
 
 
-      <div>
-            <table class="table">
+             {% if upcomingEvents|length > 0 %}
+               <thead>
+                 <tr>
+                   <th>Course Name</th>
+                   <th>Term</th>
+                   <th>Accrued Hours</th>
+                 </tr>
+               </thead>
+               {% for event in upcomingEvents %}
+             <tbody id="volunteerTable">
+               <tr>
+                 <td>{{event.eventName}}</td>
+                 <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
+                 <td>{{event.startDate}}</td>
+               </tr>
+              {% endfor %}
+            {% else %}
+              <h2> Something <h2>
+               <!-- FIXME: There should be a link here to where they can select interests to programs -->
+            {% endif %}
+          </tbody>
+           </table>
+         </div><br><br>
 
-              {% if programs|length > 0 %}
-                <thead>
-                  <tr>
-                    <th>Program</th>
-                    <th>Training Completed</th>
-                    <th>Banned</th>
-                  </tr>
-                </thead>
-                {% for program in eligibilityTable %}
-              <tbody id="volunteerTable">
-                <tr>
-                  <td>{{program.program.programName}}</td>
-                  <td>{% if program.completedTraining %}Training Completed <input type="checkbox" checked>
-                      {% else %} Training Incomplete <input type="checkbox">
-                      {% endif %}</td>
-                  <td>{% if program.isNotBanned %}Volunteer not Banned <input type="checkbox">
-                      {% else %} <strong>Volunteer Banned</strong> <input type="checkbox" checked>
-                      {% endif %}</td>
-                </tr>
+         <div>
+               <table class="table">
+                 <h1>Service Learning Courses</h1>
 
-               {% endfor %}
-             {% else %}
-               <h2> Something <h2>
-                <!-- FIXME: -->
-             {% endif %}
-           </tbody>
-            </table>
+                 {% if upcomingEvents|length > 0 %}
+                   <thead>
+                     <tr>
+                       <th>Course Name</th>
+                       <th>Semester</th>
+                       <th>Instructor</th>
+                       <th>Accrued Hours</th>
+                     </tr>
+                   </thead>
+                   {% for event in upcomingEvents %}
+                 <tbody id="volunteerTable">
+                   <tr>
+                     <td>{{event.eventName}}</td>
+                     <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
+                     <td>{{event.startDate}}</td>
+                     <td>{{event.endDate}}</td>
+                   </tr>
+                  {% endfor %}
+                {% else %}
+                  <h2> Something <h2>
+                   <!-- FIXME: There should be a link here to where they can select interests to programs -->
+                {% endif %}
+              </tbody>
+               </table>
+             </div><br><br>
+
+
+             <div>
+                   <table class="table">
+                     <h1>One-Time Events & Trainings</h1>
+
+                     {% if upcomingEvents|length > 0 %}
+                       <thead>
+                         <tr>
+                           <th>Training Name</th>
+                           <th>Term</th>
+                           <th>Accrued Hours</th>>
+                         </tr>
+                       </thead>
+                       {% for event in upcomingEvents %}
+                     <tbody id="volunteerTable">
+                       <tr>
+                         <td>{{event.eventName}}</td>
+                         <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
+                         <td>{{event.startDate}}</td>
+                       </tr>
+                      {% endfor %}
+                    {% else %}
+                      <h2> Something <h2>
+                       <!-- FIXME: There should be a link here to where they can select interests to programs -->
+                    {% endif %}
+                  </tbody>
+                   </table>
 
 {% endblock %}
