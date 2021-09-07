@@ -1,10 +1,11 @@
 from flask import Flask, redirect, flash, url_for, request, g
-from flask_mail import Message
+from flask_mail import Mail, Message
 from app.models.interest import Interest
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.emailHandler import *
 from app.controllers.events import events_bp
+from app import app
 
 @events_bp.route('/email', methods=['POST'])
 def emailVolunteers():
@@ -29,9 +30,12 @@ def emailVolunteers():
     #testing the things in emailHandler file
     default_cfg = load_config('app/config/default.yml') #this works yay
     print(default_cfg['mail'])
-    mail = emailHandler(emailInfo)
-
+    #mail = emailHandler(emailInfo)
+    mail = Mail(app)
     #check mail_test.py in lsf to see what the following is trying to do
-    msg = Message(emailInfo['message'], recipients=['lamichhanes2@berea.edu'], html="<h3>Test</h3>Whooo",sender="support@bereacollege.onmicrosoft.com")
+    msg = Message(emailInfo['message'], recipients=['j5u6j9w6v1h0p3g1@bereacs.slack.com'], sender="support@bereacollege.onmicrosoft.com")
+
+    mail.send(msg)
+    
 
     return redirect(url_for("events.events", term = 1))

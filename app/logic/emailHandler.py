@@ -33,26 +33,23 @@ class emailHandler():
             #ALWAYS_SEND_MAIL=default['ALWAYS_SEND_MAIL']
         )
 
-        self.mail = Mail(app)
+        self.mail = Mail(app)  
 
     def send(self, message: Message):
-        if app.config['ENV'] == 'production' or app.config['ALWAYS_SEND_MAIL']:
 
-            # If we have set an override address
-            # if app.config['mail']['override_addr']:
-            #     message.html = "<b>Original message intended for {}.</b><br>".format(", ".join(message.recipients)) + message.html
-            #     message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
+        #message.html = "<b>Original message intended for {}.</b><br>".format(", ".join(message.recipients)) + message.html
+        message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
+    
+        message.reply_to = app.config["REPLY_TO_ADDRESS"]
+        self.mail.send(message)
 
-            message.reply_to = app.config["REPLY_TO_ADDRESS"]
-            self.mail.send(message)
-
-        elif app.config['ENV'] == 'testing':
-            # TODO: we really should have a way to check that we're sending emails that doesn't spam the logs
-            message.reply_to = app.config["REPLY_TO_ADDRESS"]
-            self.mail.send(message)
-            print("I did a thing in testing")##############################################################################################
-            pass
-        else:
-            print("ENV: {}. Email not sent to {}, subject '{}'.".format(app.config['ENV'], message.recipients, message.subject))
+        #elif app.config['ENV'] == 'testing':
+         #   # TODO: we really should have a way to check that we're sending emails that doesn't spam the logs
+          #  message.reply_to = app.config["REPLY_TO_ADDRESS"]
+           # self.mail.send(message)
+           # print("I did a thing in testing")##############################################################################################
+            #pass
+        #else:
+         #   print("ENV: {}. Email not sent to {}, subject '{}'.".format(app.config['ENV'], message.recipients, message.subject))
 
         print("emails are being something'ed")#######################################################################################
