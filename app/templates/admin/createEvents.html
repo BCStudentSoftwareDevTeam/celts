@@ -61,7 +61,7 @@
           <div class="form-group">
             {%if user.isCeltsAdmin or user.isCeltsStudentStaff%}
             <label for='eventName'> <strong> Event Name *</strong></label> <br>
-            <input class="form-control"  id='inputEventName' value="{{eventInfo.eventName}}" name="eventName">
+            <input class="form-control"  id='inputEventName' value="{{eventInfo.eventName}}" name="eventName" required>
             {%else%}
             <label for='eventName'> <strong> Event Name: </strong></label> <br>
               <p>{{eventInfo.eventName}}</p>
@@ -89,7 +89,7 @@
         <div class="form-group">
           {% if user.isCeltsAdmin or user.isCeltsStudentStaff%}
           <label for='location'><strong>Location *</strong></label><br>
-          <input class="form-control" id='inputEventLocation' value="{{eventInfo.location}}" name="eventLocation">
+          <input class="form-control" id='inputEventLocation' value="{{eventInfo.location}}" name="eventLocation" required>
           {%else%}
           <label for='location'><strong>Location:</strong></label><br>
           <p>{{eventInfo.location}}</p>
@@ -108,7 +108,7 @@
               <div class="d-inline-flex">
                 {% if user.isCeltsAdmin or user.isCeltsStudentStaff%}
                 <label for="startTime"><strong>Start Time: *</strong></label>
-                <input type='time' class="form-control timePicker" id='pickStartTime'value="{{eventInfo.timeStart}}"  name="eventStartTime">
+                <input type='time' class="form-control timePicker" id='pickStartTime'value="{{eventInfo.timeStart}}"  name="eventStartTime" required>
                 {%else%}
                 <label for="startTime"><strong>Start Time: </strong></label>
                 <p> {{eventInfo.timeStart.strftime("%I: %M %p")}}</p>
@@ -117,7 +117,7 @@
               <div class='form-group time d-inline-flex' style="padding: 0 0 0 2rem">
                 {% if user.isCeltsAdmin or user.isCeltsStudentStaff%}
                 <label for="endTime"><strong>End Time: *</strong></label>
-                <input type='time' class="form-control timePicker" id='pickEndTime' value="{{eventInfo.timeEnd}}" name="eventEndTime">
+                <input type='time' class="form-control timePicker" id='pickEndTime' value="{{eventInfo.timeEnd}}" name="eventEndTime" required>
                 {%else%}
                 <label for="endTime"><strong>End Time: </strong></label>
                 <p> {{eventInfo.timeEnd.strftime("%I: %M %p")}}</p>
@@ -135,7 +135,7 @@
                {% if  user.isCeltsAdmin or user.isCeltsStudentStaff %}
               <label for="startDatePicker" id="startDatePickerLabel" ><span><strong>Start Date *</strong></span></label><br>
                 <div class='input-group date' {{ 'id=startDate' if user.isCeltsAdmin or user.isCeltsStudentStaff }}>
-                  <input type='text' class="form-control datePicker readonly" value="{{eventInfo.startDate.strftime('%m-%d-%Y') if 'edit_event' in request.path}}" name="eventStartDate" placeholder="Start Date" onchange=updateDate(this) id=startDatePicker>
+                  <input type='text' class="form-control datePicker readonly" value="{{eventInfo.startDate.strftime('%m-%d-%Y') if 'edit_event' in request.path}}" name="eventStartDate" placeholder="Start Date" onchange=updateDate(this) id=startDatePicker required>
 
                   <div class="input-group-text" id="calendarIconStart">
                     <span><i class="bi bi-calendar-plus-fill"></i></span>
@@ -211,7 +211,7 @@
         <div class="form-group">
           {%if user.isCeltsAdmin or user.isCeltsStudentStaff%}
           <label for='description'><strong> Description * </strong></label> <br>
-          <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' name="eventDescription"></textarea>
+          <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' name="eventDescription" required></textarea>
           {%else%}
           <label for='description'><strong> Description: </strong></label> <br>
           <p>{{eventInfo.description}}</p>
