@@ -25,9 +25,12 @@
           <td><a href= '/{{event.singleProgram}}/{{event.id}}/edit_event' class="link-primary">{{event.eventName}}</a></td>
           <td>{{event.startDate}}</td>
           <td>{{event.endDate}}</td>
-          <!-- <td> {{event.rsvpstatus}} <td> -->
+          {% endfor %}
+          {% for status in rsvpStatuses %}
+          <td> {{status}} <td>
+          {% endfor %}
         </tr>
-        {% endfor %}
+
       {% else %}
         <h2> Please be more interesting <h2>
           <!-- FIXME: There should be a link here to where they can select interests to programs -->

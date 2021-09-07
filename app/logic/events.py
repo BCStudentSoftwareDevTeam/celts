@@ -123,10 +123,12 @@ def getUpcomingEventsForUser(user,asOf=datetime.now()):
                             .where(Event.startDate >= asOf)
                             .where(Event.timeStart > asOf.time())
                             .distinct() # necessary because of multiple programs
-                            .order_by(Event.startDate)
+                            .order_by(Event.eventName)
                             )
     # print(list(events[0].eventparticipant.rsvp))
-    return list(events)
+    for event in list(events):
+        print(type(event))
+    return events
 
 def getAllFacilitators():
 

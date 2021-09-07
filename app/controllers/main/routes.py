@@ -19,19 +19,19 @@ def home():
 
 @main_bp.route('/profile/<username>', methods = ['GET'])
 def profilePage(username):
-    rsvpStatuses = []
+    # rsvpStatuses = []
     upcomingEvents = getUpcomingEventsForUser(g.current_user)
     print(upcomingEvents)
-    for event in upcomingEvents:
-        status = EventParticipant.get(event.id == event)
-        print(status.hoursEarned)
-        # if not EventParticipant.get(event == event):
-        #     rsvpStatuses.append("No")
-        if status.rsvp == 1:
-            rsvpStatuses.append("Yes ")
-        else :
-            rsvpStatuses.append("No")
-    print(rsvpStatuses)
+    # for programEvent in upcomingEvents:
+    #     # print(EventParticipant.select().where(event == programEvent.id).rsvp)
+    #     if EventParticipant.get(EventParticipant.event == programEvent.id):
+    #         if EventParticipant.get(EventParticipant.event == programEvent.id).rsvp == 1:
+    #             rsvpStatuses.append("Yes")
+    #         else:
+    #             rsvpStatuses.append("No")
+    #     else:
+    #         rsvpStatuses.append("No")
+    # print(rsvpStatuses)
     programs = Program.select()
     interests = Interest.select().where(Interest.user == g.current_user)
     interests_ids = [interest.program for interest in interests]
@@ -44,7 +44,7 @@ def profilePage(username):
                                interests = interests,
                                interests_ids = interests_ids,
                                upcomingEvents = upcomingEvents)
-                               # rsvpstatus = rsvpstatus,)
+                               # rsvpStatuses = rsvpStatuses)
     else:
         return "", 500
         abort(403)
