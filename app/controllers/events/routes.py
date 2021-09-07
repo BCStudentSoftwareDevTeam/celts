@@ -14,9 +14,10 @@ from datetime import datetime
 @events_bp.route('/', methods=['GET'])
 @events_bp.route('/<selectedTerm>', methods=['GET'])
 def events(selectedTerm=None):
-    currentTerm = Term.select().where(Term.isCurrentTerm == 1)
+    currentTerm = g.current_term
     if selectedTerm:
         currentTerm = selectedTerm
+
     currentTime = datetime.now()
     eventsDict = groupEventsByCategory(currentTerm)
     listOfTerms = Term.select()
@@ -30,6 +31,7 @@ def events(selectedTerm=None):
         rsvpedEventsID = rsvpedEventsID,
         currentTime = currentTime,
         user = g.current_user)
+
 
 @events_bp.route('/events/upcoming_events', methods=['GET'])
 def showUpcomingEvent():

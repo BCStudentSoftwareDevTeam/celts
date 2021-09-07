@@ -10,11 +10,11 @@ import yaml
 app = Flask(__name__, template_folder="templates")
 
 ######### Set up Application Configuration #############
-# Uses config2 - https://pypi.org/project/config2/ - with the addition of an uncommitted 
+# Uses config2 - https://pypi.org/project/config2/ - with the addition of an uncommitted
 # override yml to set instance parameters. By default, 'local-override.yml'
 #
 # Precedence of configuration values is as follows:
-# 
+#
 # local-override.yml
 #     ↓
 # environment file (e.g., development.yml, production.yml)
@@ -62,3 +62,8 @@ from flask import g
 @app.before_request
 def load_user():
     g.current_user = getLoginUser()
+
+from app.logic.loginManager import getCurrentTerm
+@app.before_request
+def load_currentTerm():
+    g.current_term = getCurrentTerm()

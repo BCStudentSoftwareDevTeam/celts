@@ -221,5 +221,5 @@ def test_sendKioskDataKiosk():
 
     assert "bryanta" in listOfAttended2
 
-    deleteInstance = EventParticipant.get(EventParticipant.user == "bryanta")
+    deleteInstance = EventParticipant.get(EventParticipant.user == "bryanta", EventParticipant.event_id == 2)
     deleteInstance.delete_instance()
