@@ -117,18 +117,6 @@ def createTable():
         print('Error while creating table:', e)
         return "", 500
 
-
-@admin_bp.route('/courseProposals', methods=['GET'])
-def createTable():
-    courseDict = getProposalData(g.current_user)
-    try:
-        return render_template("/admin/createSLProposalTable.html",
-                                instructor = g.current_user,
-                                courseDict = courseDict)
-    except Exception as e:
-        print('Error while creating table:', e)
-        return "", 500
-
 @admin_bp.route('/volunteerProfile', methods=['POST'])
 def volunteerProfile():
     volunteerName= request.form.copy()
