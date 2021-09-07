@@ -1,6 +1,7 @@
 from flask import request, render_template, g, abort
 from app.models.program import Program
 from app.models.interest import Interest
+from app.models.eventParticipant import EventParticipant
 from app.controllers.main import main_bp
 from app.logic.events import getUpcomingEventsForUser
 from app.logic.users import addRemoveInterest
@@ -18,12 +19,23 @@ def home():
 
 @main_bp.route('/profile/<username>', methods = ['GET'])
 def profilePage(username):
-
+    rsvpStatuses = []
     upcomingEvents = getUpcomingEventsForUser(g.current_user)
+    print(upcomingEvents)
+    for event in upcomingEvents:
+        status = EventParticipant.get(event.id == event)
+        print(status.hoursEarned)
+        # if not EventParticipant.get(event == event):
+        #     rsvpStatuses.append("No")
+        if status.rsvp == 1:
+            rsvpStatuses.append("Yes ")
+        else :
+            rsvpStatuses.append("No")
+    print(rsvpStatuses)
     programs = Program.select()
     interests = Interest.select().where(Interest.user == g.current_user)
     interests_ids = [interest.program for interest in interests]
-    # rsvpstatus = [if rsvpEvent == True:return Yes else:return No]
+    # rsvpstatus = EventParticipant.select().where(event)
     if username == g.current_user.username or g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
         return render_template('/volunteer/volunteerProfile.html',
                                title="Volunteer Interest",
