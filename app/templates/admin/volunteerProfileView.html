@@ -62,7 +62,7 @@
                 <thead>
                   <tr>
                     <th>Program</th>
-                    <th>Training Completed</th>
+                    <th>Training</th>
                     <th>Banned</th>
 
 
@@ -72,14 +72,11 @@
               <tbody id="volunteerTable">
                 <tr>
                   <td>{{program.program.programName}}</td>
-                  <td>{{program.completedTraining}}<input type="checkbox"></td>
-                  <td>{{program.isNotBanned}}<input type="checkbox"></td>
-
-                  <td>{% if program.completedTraining %}Training Completed <input type="checkbox" checked>
-                      {% else %} Training Incomplete <input type="checkbox">
+                  <td>{% if program.completedTraining %}<button type="button" name="button">Complete</button>
+                      {% else %} <button type="button" name="button">Incomplete</button>
                       {% endif %}</td>
-                  <td>{% if program.isNotBanned %}Volunteer not Banned <input type="checkbox">
-                      {% else %} <strong>Volunteer Banned</strong> <input type="checkbox" checked>
+                  <td>{% if program.isNotBanned %}<button type="button" name="button">Ban</button>
+                      {% else %} <button type="button" name="button">Unban</button>
                       {% endif %}</td>
                 </tr>
 

@@ -8,6 +8,8 @@ from app.models.term import Term
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
+from app.models.interest import Interest
+from app.models.programBan import ProgramBan
 from app.logic.events import getUpcomingEventsForUser
 from app.logic.getSLInstructorTableData import getProposalData
 from app.logic.participants import trainedParticipants
@@ -15,6 +17,7 @@ from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectFutureTerms
 from app.logic.searchStudents import searchVolunteers
 from app.logic.events import deleteEvent, getAllFacilitators, getUpcomingEventsForUser
+from app.logic.users import isEligibleForProgram
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.eventCreation import createEvent, addRecurringEvents
