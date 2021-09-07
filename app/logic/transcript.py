@@ -9,6 +9,38 @@ from app.models.eventParticipant import EventParticipant
 from app.models.event import Event
 from peewee import DoesNotExist, fn
 
+
+#FIXME: Needs to break hours down by program and term, not just program
+def getProgramTranscript(username):
+    """
+    Returns a Program query object containing all the training events for
+    current user.
+    """
+
+    # Add up hours earned in a term for each program they've participated in
+    programData = (ProgramEvent
+        .select(Program, Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
+        .join(Program)
+        .switch(ProgramEvent)
+        .join(Event)
+        .join(EventParticipant)
+        .where(EventParticipant.user == username, Event.isTraining == False, Program.isBonnerScholars == False))
+
+    return programData
+
+def getBonnerScholarEvents(username):
+    """
+    """
+    bonnerData = (ProgramEvent
+        .select(Program, Event)
+        .join(Program)
+        .switch(ProgramEvent)
+        .join(Event)
+        .join(EventParticipant)
+        .where(EventParticipant.user == username, Event.isTraining == False, Program.isBonnerScholars == True))
+
+    return bonnerData
+
 def getSlCourseTranscript(username):
     """
     Returns a SLCourse query object containing all the training events for
@@ -36,21 +68,25 @@ def getTrainingTranscript(username):
 
     return trainingData
 
-#FIXME: Needs to break hours down by program and term, not just program
-def getProgramTranscript(username):
+def getTotalHour(username):
     """
-    Returns a Program query object containing all the training events for
-    current user.
     """
-    user = User.get_by_id(username)
 
-    # Add up hours earned in a term for each program they've participated in
-    hoursQuery = (ProgramEvent
-        .select(Program, Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
-        .join(Program)
-        .switch(ProgramEvent)
-        .join(Event)
-        .join(EventParticipant)
-        .where(EventParticipant.user == user, Event.isTraining == False, Program.isBonnerScholars == False))
+    eventHours = (EventParticipant
+        .select(fn.SUM(EventParticipant.hoursEarned).alias("eventHours"), fn.SUM(CourseParticipant.hoursEarned).alias("courseHours"))
+        .join(CourseParticipant, on=(EventParticipant.user == CourseParticipant.user))
+        .where(EventParticipant.user == username and CourseParticipant.user == username))
+    courseHours = (CourseParticipant
+        .select(fn.SUM(CourseParticipant.hoursEarned).alias("hours"))
+        .where(CourseParticipant.user == username))
 
-    return hoursQuery
+
+    for h in eventHours:
+        print("hours", h.eventHours)
+        # print("hours", h.courseHours)
+        # print("hours", h.eventHours+h.courseHours)
+
+
+    for h in courseHours:
+        print("Course hours", h.hours)
+    return

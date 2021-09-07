@@ -16,61 +16,81 @@
 {% block app_content %}
 <h1 class="text-center pb-5">{{g.current_user.firstName}} {{g.current_user.lastName}}</h1>
 <button type="button" class="btn btn-primary float-end d-print-none" onClick="window.print()"><i class="bi bi-printer d-print-none"></i> Print</button>
-<h2>Programs</h2>
-<table class="table table-bordered table-striped">
-  <tr>
-    <th>Program</th>
-    <th>Term</th>
-    <th>Accrued Hours</th>
-  </tr>
-  {% for program in programs %}
-  <tr>
-    <td> {{program.program.programName}}</td>
-    <td> {{program.event.term.description}}</td>
-    <td> {{program.hoursEarned}}</td>
-  </tr>
-  {% endfor %}
-</table>
-<h2>Bonner Scholar Events</h2>
-<table class="table table-bordered table-striped">
-  <tr>
-    <th>Course Name</th>
-    <th>Term</th>
-    <th>Accrued Hours</th>
-  </tr>
-</table>
-<h2>Service Learning Courses</h2>
-<table class="table table-bordered table-striped">
-  <tr>
-    <th>Course Name</th>
-    <th>Semester</th>
-    <th>Instructor</th>
-    <th>Accrued Hours</th>
-  </tr>
-  {% for slcourse in SLCourses %}
-  <tr>
-    <td> {{slcourse.course.courseName}}</td>
-    <td> {{slcourse.course.term.description}}</td>
-    <td> {{slcourse.user.firstName}}</td>
-    <td> {{slcourse.hoursEarned}}</td>
-  </tr>
-  {% endfor %}
-</table>
-<h2>Trainings</h2>
-<table class="table table-bordered table-striped">
-  <tr>
-    <th>Training Name</th>
-    <th>Term</th>
-    <th>Accrued Hours</th>
-  </tr>
-  {% for data in trainingData %}
-  <tr>
-    <td> {{data.event.eventName}}</td>
-    <td> {{data.event.term.description}}</td>
-    <td> {{data.hoursEarned}}</td>
-  </tr>
-  {% endfor %}
-</table>
+{% if bonnerData %}
+  <h2>Programs</h2>
+  <table class="table table-bordered table-striped">
+    <tr>
+      <th>Program</th>
+      <th>Term</th>
+      <th>Accrued Hours</th>
+    </tr>
+    {% for program in programs %}
+    <tr>
+      <td> {{program.program.programName}}</td>
+      <td> {{program.event.term.description}}</td>
+      <td> {{program.hoursEarned}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endif %}
+
+{% if bonnerData %}
+  <h2>Bonner Scholar Events</h2>
+  <table class="table table-bordered table-striped">
+    <tr>
+      <th>Course Name</th>
+      <th>Term</th>
+      <th>Accrued Hours</th>
+    </tr>
+
+    {% for programEvent in bonnerData %}
+    <tr>
+      <td> {{programEvent.event.eventName}}</td>
+      <td> {{programEvent.event.term.description}}</td>
+      <td> {{programEvent}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endif %}
+
+{% if bonnerData %}
+  <h2>Service Learning Courses</h2>
+  <table class="table table-bordered table-striped">
+    <tr>
+      <th>Course Name</th>
+      <th>Semester</th>
+      <th>Instructor</th>
+      <th>Accrued Hours</th>
+    </tr>
+    {% for slcourse in SLCourses %}
+    <tr>
+      <td> {{slcourse.course.courseName}}</td>
+      <td> {{slcourse.course.term.description}}</td>
+      <td> {{slcourse.user.firstName}}</td>
+      <td> {{slcourse.hoursEarned}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endif %}
+
+{% if bonnerData %}
+  <h2>Trainings</h2>
+  <table class="table table-bordered table-striped">
+    <tr>
+      <th>Training Name</th>
+      <th>Term</th>
+      <th>Accrued Hours</th>
+    </tr>
+    {% for data in trainingData %}
+    <tr>
+      <td> {{data.event.eventName}}</td>
+      <td> {{data.event.term.description}}</td>
+      <td> {{data.hoursEarned}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endif %}
+
   <div class="pt-4">
     <p>*Volunteering since</p>
   </div>
