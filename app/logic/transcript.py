@@ -46,13 +46,12 @@ def getSlCourseTranscript(username):
     Returns a SLCourse query object containing all the training events for
     current user.
     """
-    user = User.get_by_id(username)
 
     SLCourses = (CourseInstructor
         .select(Course, CourseParticipant, CourseInstructor.user, fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned"))
         .join(Course)
         .join(CourseParticipant, on=(Course.id == CourseParticipant.course))
-        .where(CourseParticipant.user == user))
+        .where(CourseParticipant.user == username))
 
     return SLCourses
 
@@ -81,12 +80,12 @@ def getTotalHour(username):
         .where(CourseParticipant.user == username))
 
 
-    for h in eventHours:
-        print("hours", h.eventHours)
-        # print("hours", h.courseHours)
-        # print("hours", h.eventHours+h.courseHours)
+    totalHours = (EventParticipant.select(fn.SUM(EventParticipant.hoursEarned).alias("eventHours")).where(EventParticipant.user == username)
+                        + CourseParticipant.select(fn.SUM(CourseParticipant.hoursEarned).alias("courseHours")).where(CourseParticipant.user == username))
 
+    print(totalHours)
+    dummylist = []
+    for h in totalHours:
+        dummylist.append(h)
 
-    for h in courseHours:
-        print("Course hours", h.hours)
-    return
+    print(dummylist)

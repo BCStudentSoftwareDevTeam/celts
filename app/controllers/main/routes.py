@@ -105,25 +105,10 @@ def serviceTranscript():
     trainingData = getTrainingTranscript('neillz')
     bonnerData = getBonnerScholarEvents('neillz')
     totalHour = getTotalHour('neillz')
-    for data in trainingData:
-        print(data.event.eventName)
 
-    for i in bonnerData:
-        print( "-"*25, i)
-    totalHours = 0
-    for program in programs:
-        totalHours = totalHours + program.hoursEarned
-
-    for SLC in SLCourses:
-        totalHours = totalHours + SLC.hoursEarned
-
-    for data in trainingData:
-        totalHours = totalHours + data.hoursEarned
-    print("th:", totalHours)
     return render_template('main/serviceTranscript.html',
                             programs = programs,
                             SLCourses = SLCourses,
-                            totalHours = totalHours,
                             trainingData = trainingData,
                             bonnerData = bonnerData
                             )
