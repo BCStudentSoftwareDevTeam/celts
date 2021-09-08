@@ -3,6 +3,8 @@
   {{super()}}
   <!-- <script src="/static/js/createEvents.js"></script> -->
   <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+  <script src="/static/js/volunteerProfile.js"></script>
+
 {% endblock %}
 {% block styles %}
   {{super()}}
@@ -72,11 +74,11 @@
               <tbody id="volunteerTable">
                 <tr>
                   <td>{{program.program.programName}}</td>
-                  <td>{% if program.completedTraining %}<button type="button" name="button">Complete</button>
-                      {% else %} <button type="button" name="button">Incomplete</button>
+                  <td>{% if program.completedTraining %}<button type="button" name="button" class="btn btn-success rounded-pill">Complete</button>
+                      {% else %} <button type="button" name="button" class="btn btn-danger rounded-pill">Incomplete</button>
                       {% endif %}</td>
-                  <td>{% if program.isNotBanned %}<button type="button" name="button">Ban</button>
-                      {% else %} <button type="button" name="button">Unban</button>
+                  <td>{% if program.isNotBanned %}<button type="button" name="button" class="btn btn-danger rounded-pill" id= "#banButton">Ban</button>
+                      {% else %} <button type="button" name="button" class="btn btn-success rounded-pill" id= "#unbanButton">Unban</button>
                       {% endif %}</td>
                 </tr>
 
