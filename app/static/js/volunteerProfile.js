@@ -1,5 +1,12 @@
 $(document).ready(function(){
-  console.log("Gaston you gat this!");
+  $(".ban").click(function() {
+    $("#banVolunteerButton").text($(this).val() + " Volunteer");
+    $("#modalProgName").text("Program: " + $(this).closest("tr").children("td.programName").text());
+    $('#banVolunteerModal').modal('toggle');
+  });
+
+
+
 
 
 

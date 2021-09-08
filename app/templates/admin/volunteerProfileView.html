@@ -66,28 +66,50 @@
                     <th>Program</th>
                     <th>Training</th>
                     <th>Banned</th>
-
-
                   </tr>
                 </thead>
                 {% for program in eligibilityTable %}
               <tbody id="volunteerTable">
                 <tr>
-                  <td>{{program.program.programName}}</td>
-                  <td>{% if program.completedTraining %}<button type="button" name="button" class="btn btn-success rounded-pill">Complete</button>
+                  <td class="programName">{{program.program.programName}}</td>
+                  <td class="programTraining">{% if program.completedTraining %}<button type="button" name="button" class="btn btn-success rounded-pill">Complete</button>
                       {% else %} <button type="button" name="button" class="btn btn-danger rounded-pill">Incomplete</button>
                       {% endif %}</td>
-                  <td>{% if program.isNotBanned %}<button type="button" name="button" class="btn btn-danger rounded-pill" id= "#banButton">Ban</button>
-                      {% else %} <button type="button" name="button" class="btn btn-success rounded-pill" id= "#unbanButton">Unban</button>
+                  <td class="programBan">{% if program.isNotBanned %}<button type="button" name="button" class="ban btn btn-danger rounded-pill" value="Ban">Ban</button>
+                      {% else %} <button type="button" name="button" class="ban btn btn-success rounded-pill" value="Unban">Unban</button>
                       {% endif %}</td>
                 </tr>
-
                {% endfor %}
              {% else %}
-               <h2> Something <h2>
-                <!-- FIXME: There should be a link here to where they can select interests to programs -->
-                <!-- FIXME: -->
              {% endif %}
            </tbody>
-            </table>
+          </table>
+
+          <!-- Modal -->
+          <div class="modal fade" id="banVolunteerModal" tabindex="-1" aria-labelledby="banVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Ban Volunteer</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="align=center">
+                  <h6 align="left">{{user.firstName}} {{user.lastName}}</h6>
+                  <h6 align="left">{{user.email}}</h6>
+                  <h6 align="left">{{user.phoneNumber}}</h6>
+                  <h6 class="d-inline-flex" >End Date: &nbsp</h6><input type="date"><br>
+                  <h6 id="modalProgName">Program Name</h6>
+                  <div class="input-group">
+                    <div class="form-group input-group-x form-outline ui-widget" style="width:80%;">
+                      <textarea name="name" rows="8" cols="80" type="input" id="banVolunteerNote" class="form-control" placeholder="Reason"></textarea>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button id="banVolunteerButton" type="button" class="btn btn-primary"></button>
+                </div>
+              </div>
+            </div>
+          </div>
 {% endblock %}
