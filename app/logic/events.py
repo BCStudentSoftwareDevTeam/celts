@@ -1,4 +1,5 @@
 from peewee import DoesNotExist
+from peewee import JOIN
 from datetime import date, datetime, time
 from dateutil import parser
 
@@ -117,17 +118,19 @@ def getUpcomingEventsForUser(user,asOf=datetime.now()):
 
     events = (Event.select(Event)
                             .join(ProgramEvent)
-                            # .join(EventParticipant, on=(ProgramEvent.event== EventParticipant.event))
                             .join(Interest, on=(ProgramEvent.program == Interest.program))
                             .where(Interest.user == user)
                             .where(Event.startDate >= asOf)
                             .where(Event.timeStart > asOf.time())
-                            .distinct() # necessary because of multiple programs
+                            .distinct()
+                            .switch(Event)
+                            .join(EventParticipant, join_type=JOIN.LEFT_OUTER)
+                            .where(EventParticipant.user == user)
                             .order_by(Event.eventName)
                             )
-    # print(list(events[0].eventparticipant.rsvp))
+    print(events)
     for event in list(events):
-        print(type(event))
+        print(event)
     return events
 
 def getAllFacilitators():
