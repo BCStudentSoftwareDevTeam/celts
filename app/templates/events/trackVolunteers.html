@@ -23,22 +23,30 @@
         <a class="nav-link active" aria-current="page" href="#">Track Volunteers</a>
       </li>
     </ul>
-  </div> <br>
-  <div align = "center">
-    <a href= "/{{event.id}}/kiosk">Kiosk Scanner</a>
   </div>
+
   <form action="#" method="post"><br>
 
     <label class='d-none' id="eventLength">{{eventLength}}</label>
     <input  class="form-control" id="eventID" name="event" value="{{event}}" type='hidden'>
 
-
-    <div class="ui-widget input-group">
-      <input id="trackVolunteersInput" type="input" placeholder="Search">
-      <span class="input-group-text" style="padding:0 0 0 0rem;"><i class="bi bi-search" style="margin-left:-35px;"></i></span>
-      <div><button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#addVolunteerModal">
-          <i class="bi bi-plus-circle"></i>
-      </button></div>
+    <div class="flex-container">
+      <div class="form-inline d-flex">
+        <div class="form-group">
+          <div class="d-inline-flex">
+            <div class="ui-widget input-group">
+              <input id="trackVolunteersInput" type="input" placeholder="Search">
+              <span class="input-group-text" style="padding:0 0 0 0rem;"><i class="bi bi-search" style="margin-left:-35px;"></i></span>
+              <div><button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#addVolunteerModal">
+                <i class="bi bi-plus-circle"></i>
+              </button></div>
+            </div>
+          </div>
+          <div class='form-group d-inline-flex' style="padding: 0 0 0 2rem">
+            <a class="btn btn-info" href= "/{{event.id}}/kiosk" role="button">Kiosk Scanner</a>
+          </div>
+        </div>
+      </div>
     </div>
 
   <!-- Modal -->
