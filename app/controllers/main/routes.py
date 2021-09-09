@@ -90,6 +90,6 @@ def RemoveRSVP():
     eventId = eventData['eventId']
     program = eventData['programId']
     currentEventParticipant = EventParticipant.get(EventParticipant.user == userId, EventParticipant.event == eventId)
-    currentEventParticipant.delete_instance(recursive=True)
+    currentEventParticipant.delete_instance()
     flash("Successfully unregistered for event!",'success')
     return redirect(url_for("admin.editEvent", eventId=eventId, program=program))
