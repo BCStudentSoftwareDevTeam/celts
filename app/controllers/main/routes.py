@@ -18,7 +18,7 @@ def home():
 def volunteerIndicateInterest():
     programs = Program.select()
     interests = Interest.select().where(Interest.user == g.current_user)
-    interests_ids = [interest.program for interest in interests]
+    interests_ids = [interest.program.id for interest in interests]
     return render_template('volunteerIndicateInterest.html',
                            title="Volunteer Interest",
                            user = g.current_user,
