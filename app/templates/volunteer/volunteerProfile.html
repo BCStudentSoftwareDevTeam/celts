@@ -25,9 +25,11 @@
           <td><a href= '/{{event.singleProgram}}/{{event.id}}/edit_event' class="link-primary">{{event.eventName}}</a></td>
           <td>{{event.startDate}}</td>
           <td>{{event.endDate}}</td>
-          {% endfor %}
-          {% for status in rsvpStatuses %}
-          <td> {{status}} <td>
+          {% if event.eventparticipant.rsvp == True %}
+          <td> RSVP'd <td>
+          {% else %}
+          <td> Not RSVP'd <td>
+          {% endif %}
           {% endfor %}
         </tr>
 
