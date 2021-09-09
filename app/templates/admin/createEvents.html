@@ -61,7 +61,7 @@
           <div class="form-group">
             {%if user.isCeltsAdmin or user.isCeltsStudentStaff%}
             <label for='eventName'> <strong> Event Name *</strong></label> <br>
-            <input class="form-control"  id='inputEventName' value="{{eventInfo.eventName}}" name="eventName">
+            <input class="form-control"  id='inputEventName' value="{{eventInfo.eventName}}" name="eventName" required>
             {%else%}
             <label for='eventName'> <strong> Event Name: </strong></label> <br>
               <p>{{eventInfo.eventName}}</p>
@@ -89,15 +89,13 @@
         <div class="form-group">
           {% if user.isCeltsAdmin or user.isCeltsStudentStaff%}
           <label for='location'><strong>Location *</strong></label><br>
-          <input class="form-control" id='inputEventLocation' value="{{eventInfo.location}}" name="eventLocation">
+          <input class="form-control" id='inputEventLocation' value="{{eventInfo.location}}" name="eventLocation" required>
           {%else%}
           <label for='location'><strong>Location:</strong></label><br>
           <p>{{eventInfo.location}}</p>
           {%endif%}
-
         </div> <br>
         {% if user.isCeltsAdmin or user.isCeltsStudentStaff%}
-
         <div class="form-check form-switch" style="padding-bottom: 1.5em" {{hideElement}}>
           <label class="custom-control-label" for='checkIsRecurring'><strong>This event is a recurring event</strong></label>
           <input class="form-check-input" type="checkbox" id="checkIsRecurring" name="eventIsRecurring"/>
@@ -110,19 +108,19 @@
               <div class="d-inline-flex">
                 {% if user.isCeltsAdmin or user.isCeltsStudentStaff%}
                 <label for="startTime"><strong>Start Time: *</strong></label>
-                <input type='time' class="form-control timePicker" id='pickStartTime'value="{{eventInfo.timeStart}}"  name="eventStartTime">
+                <input type='time' class="form-control timePicker" id='pickStartTime'value="{{eventInfo.timeStart}}"  name="eventStartTime" required>
                 {%else%}
                 <label for="startTime"><strong>Start Time: </strong></label>
-                <p> {{eventInfo.timeStart}}</p>
+                <p> {{eventInfo.timeStart.strftime("%I: %M %p")}}</p>
                 {%endif%}
               </div>
               <div class='form-group time d-inline-flex' style="padding: 0 0 0 2rem">
                 {% if user.isCeltsAdmin or user.isCeltsStudentStaff%}
                 <label for="endTime"><strong>End Time: *</strong></label>
-                <input type='time' class="form-control timePicker" id='pickEndTime' value="{{eventInfo.timeEnd}}" name="eventEndTime">
+                <input type='time' class="form-control timePicker" id='pickEndTime' value="{{eventInfo.timeEnd}}" name="eventEndTime" required>
                 {%else%}
                 <label for="endTime"><strong>End Time: </strong></label>
-                <p> {{eventInfo.timeEnd}}</p>
+                <p> {{eventInfo.timeEnd.strftime("%I: %M %p")}}</p>
                 {%endif%}
               </div>
             </div>
@@ -134,16 +132,20 @@
             <div  class="form-group" >
               <div class="d-inline-flex" style="width:48%;">
               <!--datePicker for start date-->
-
-              <label for="startDatePicker" id="startDatePickerLabel" ><span><strong>Start Date *</strong></span></label>
+               {% if  user.isCeltsAdmin or user.isCeltsStudentStaff %}
+              <label for="startDatePicker" id="startDatePickerLabel" ><span><strong>Start Date *</strong></span></label><br>
                 <div class='input-group date' {{ 'id=startDate' if user.isCeltsAdmin or user.isCeltsStudentStaff }}>
-                  <input type='text' class="form-control datePicker readonly" value="{{eventInfo.startDate.strftime('%m-%d-%Y') if 'edit_event' in request.path}}" name="eventStartDate" placeholder="Start Date" onchange=updateDate(this) id=startDatePicker
-                         {{'required' if user.isCeltsAdmin or user.isCeltsStudentStaff else 'readonly'}}>
+                  <input type='text' class="form-control datePicker readonly" value="{{eventInfo.startDate.strftime('%m-%d-%Y') if 'edit_event' in request.path}}" name="eventStartDate" placeholder="Start Date" onchange=updateDate(this) id=startDatePicker required>
 
                   <div class="input-group-text" id="calendarIconStart">
                     <span><i class="bi bi-calendar-plus-fill"></i></span>
                   </div>
                 </div>
+                {%else%}
+                    <label for="startDatePicker" id="startDatePickerLabel" ><span><strong>Start Date:</strong></span></label><br>
+
+                    <p>{{eventInfo.startDate.strftime('%m-%d-%Y') if 'edit_event' in request.path}} </p>
+                {%endif%}
               </div>
               <div class="d-inline-flex d-none" id ="endDateStyle" style="width:51%;">
                 <!--datePicker for End date-->
@@ -184,12 +186,10 @@
             <label class="custom-control-label" for="checkIsTraining"><strong>This event is a training for the program</strong></label>
             <input class="form-check-input" type="checkbox" id="checkIsTraining"  name="eventIsTraining" {{isTraining}}/>
           </div>
-
           <div class="form-check form-switch">
             <label class="custom-control-label" for='rsvp'><strong>Requires RSVP</strong></label>
             <input class="form-check-input" type="checkbox" id="rsvp"  name="eventRSVP" {{isRsvpRequired}}/>
           </div>
-
           <div class="form-check form-switch">
             <label class="custom-control-label"for='serviceHours'><strong> This event earns service hours.</strong></label>
             <input class="form-check-input" type="checkbox" id="earnServiceHours"  name="eventServiceHours" {{isService}}/>
@@ -205,14 +205,13 @@
             {% if eventInfo.isService %}
               <label> <strong> This event earns service hours </strong> </label><br>
             {% endif %}
-
           </div><br>
         {% endif %}
 
         <div class="form-group">
           {%if user.isCeltsAdmin or user.isCeltsStudentStaff%}
           <label for='description'><strong> Description * </strong></label> <br>
-          <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' name="eventDescription"></textarea>
+          <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' name="eventDescription" required></textarea>
           {%else%}
           <label for='description'><strong> Description: </strong></label> <br>
           <p>{{eventInfo.description}}</p>
