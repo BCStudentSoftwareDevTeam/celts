@@ -1,7 +1,9 @@
-from flask import request, render_template, g, abort
+from flask import request, render_template, g, abort, flash, redirect, url_for
 
 from app.models.program import Program
 from app.models.interest import Interest
+from app.models.user import User
+from app.models.eventParticipant import EventParticipant
 
 from app.controllers.main import main_bp
 from app.logic.users import addRemoveInterest
@@ -66,7 +68,7 @@ def volunteerRegister():
 
     elif listOfRequirements:
         reqListToString = ', '.join(listOfRequirements)
-        flash(f"{userId.firstName} {userId.lastName} successfully registered. However, the following training may be required: {reqListToString}.", 'success')
+        flash(f"{userId.firstName} {userId.lastName} successfully registered. However, the following training may be required: {reqListToString}.", "success")
 
     #if they are eligible
     else:
@@ -91,5 +93,5 @@ def RemoveRSVP():
     currentEventParticipant = EventParticipant.get(EventParticipant.user == userId, EventParticipant.event == eventId)
 
     currentEventParticipant.delete_instance()
-    flash("Successfully unregistered for event!","success")
+    flash("Successfully unregistered for event!", "success")
     return redirect(url_for("admin.editEvent", eventId=eventId, program=program))

@@ -96,7 +96,7 @@ def deleteRoute(program, eventId):
     try:
         event = Event.get(Event.id == eventId)
         deleteEvent(program, eventId)
-        flash("Event canceled")
+        flash("Event canceled", "success")
         return redirect(url_for("events.events", term = eventTerm.term))
 
     except Exception as e:
