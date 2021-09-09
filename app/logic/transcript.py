@@ -30,14 +30,16 @@ def getProgramTranscript(username):
 
 def getBonnerScholarEvents(username):
     """
+    Returns a bonnerData query object containing all the Bonner events for
+    current user.
     """
     bonnerData = (ProgramEvent
-        .select(Program, Event)
+        .select(Program, Event, EventParticipant.hoursEarned)
         .join(Program)
         .switch(ProgramEvent)
         .join(Event)
         .join(EventParticipant)
-        .where(EventParticipant.user == username, Event.isTraining == False, Program.isBonnerScholars == True))
+        .where(EventParticipant.user == username, Program.isBonnerScholars == True))
 
     return bonnerData
 
@@ -69,23 +71,12 @@ def getTrainingTranscript(username):
 
 def getTotalHour(username):
     """
+    Get the toal hours from events and courses combined.
     """
 
-    eventHours = (EventParticipant
-        .select(fn.SUM(EventParticipant.hoursEarned).alias("eventHours"), fn.SUM(CourseParticipant.hoursEarned).alias("courseHours"))
-        .join(CourseParticipant, on=(EventParticipant.user == CourseParticipant.user))
-        .where(EventParticipant.user == username and CourseParticipant.user == username))
-    courseHours = (CourseParticipant
-        .select(fn.SUM(CourseParticipant.hoursEarned).alias("hours"))
-        .where(CourseParticipant.user == username))
+    eachHours = (EventParticipant.select(fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned")).where(EventParticipant.user == username)
+    + CourseParticipant.select(fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned")).where(CourseParticipant.user == username))
 
+    totalHours = (eachHours.select_from(fn.SUM(eachHours.c.hoursEarned).alias("hoursEarned")))
 
-    totalHours = (EventParticipant.select(fn.SUM(EventParticipant.hoursEarned).alias("eventHours")).where(EventParticipant.user == username)
-                        + CourseParticipant.select(fn.SUM(CourseParticipant.hoursEarned).alias("courseHours")).where(CourseParticipant.user == username))
-
-    print(totalHours)
-    dummylist = []
-    for h in totalHours:
-        dummylist.append(h)
-
-    print(dummylist)
+    return totalHours

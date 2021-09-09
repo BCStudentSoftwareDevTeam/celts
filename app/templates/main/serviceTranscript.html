@@ -28,7 +28,7 @@
     <tr>
       <td> {{program.program.programName}}</td>
       <td> {{program.event.term.description}}</td>
-      <td> {{program.hoursEarned}}</td>
+      <td class= "w-25"> {{program.hoursEarned}}</td>
     </tr>
     {% endfor %}
   </table>
@@ -47,7 +47,7 @@
     <tr>
       <td> {{programEvent.event.eventName}}</td>
       <td> {{programEvent.event.term.description}}</td>
-      <td> {{programEvent}}</td>
+      <td class= "w-25"> {{programEvent}}</td>
     </tr>
     {% endfor %}
   </table>
@@ -60,14 +60,14 @@
       <th>Course Name</th>
       <th>Semester</th>
       <th>Instructor</th>
-      <th>Accrued Hours</th>
+      <th class= "w-25">Accrued Hours</th>
     </tr>
     {% for slcourse in SLCourses %}
     <tr>
       <td> {{slcourse.course.courseName}}</td>
       <td> {{slcourse.course.term.description}}</td>
       <td> {{slcourse.user.firstName}}</td>
-      <td> {{slcourse.hoursEarned}}</td>
+      <td class= "w-25"> {{slcourse.hoursEarned}}</td>
     </tr>
     {% endfor %}
   </table>
@@ -85,7 +85,7 @@
     <tr>
       <td> {{data.event.eventName}}</td>
       <td> {{data.event.term.description}}</td>
-      <td> {{data.hoursEarned}}</td>
+      <td class= "w-25"> {{data.hoursEarned}}</td>
     </tr>
     {% endfor %}
   </table>
@@ -94,9 +94,11 @@
   <div class="pt-4">
     <p>*Volunteering since</p>
   </div>
-  <div class="float-end">
-    <label class="fw-bold pb-3">Total Hours:</label>
-    <input class="bg-light border-top-0 border-start-0 border-end-0 col-auto" value="{{totalHours}}" id="hourTotal" type="int" readonly/>
+  <div class="float-end "  >
+    {% for hour in totalHour %}
+    <p class="fw-bold pb-3 d-inline">Total Hours:</p>
+    <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal" > {{hour.hoursEarned}} </p>
+    {% endfor %}
   </div>
   <div class="pt-5">
     <p>If there are any corrections that need to be made, contact <a href="#">Ashley Cochrane</a></p>

@@ -105,10 +105,10 @@ def serviceTranscript():
     trainingData = getTrainingTranscript('neillz')
     bonnerData = getBonnerScholarEvents('neillz')
     totalHour = getTotalHour('neillz')
-
     return render_template('main/serviceTranscript.html',
                             programs = programs,
                             SLCourses = SLCourses,
                             trainingData = trainingData,
-                            bonnerData = bonnerData
+                            bonnerData = bonnerData,
+                            totalHour = totalHour
                             )
