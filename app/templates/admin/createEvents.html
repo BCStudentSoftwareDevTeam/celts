@@ -221,7 +221,7 @@
         <div class='form-group'>
           {% if user.isCeltsAdmin or user.isCeltsStudentStaff%}
           <label for='facilitators'><strong> Facilitators *</strong></label> <br>
-            <select class="dropdown form-control" id="inputEventFacilitators"  name="eventFacilitator">
+            <select class="dropdown form-control" id="inputEventFacilitators"  name="eventFacilitator" >
             {#{%for facilitator in facilitators.objects() %}
               <option value={{facilitator.username}}> {{facilitator.firstName}} {{facilitator.lastName}}</option> #}
             {%for facilitator in facilitators %}
@@ -239,6 +239,9 @@
         {% else %}
          <label for='facilitators'><strong> Facilitators: </strong></label> <br>
           <p>{%for facilitator in eventFacilitators.objects() %} {{facilitator.user.firstName}} {{facilitator.user.lastName}}  {% endfor %}</p>
+          {%if numFacilitators == 0 %}
+            <p>None</p>
+          {%endif%}
         {% endif %}
 
       </div>
@@ -248,9 +251,9 @@
         <div class="text-center">
           {% if 'edit_event' in request.path %}
             {% if userHasRSVPed %}
-              <button type="submit" class="btn btn-danger"  formaction="/rsvpRemove">Remove RSVP</button>&nbsp&nbsp&nbsp&nbsp&nbsp
+              <button type="submit" class="btn btn-danger"  formaction="/rsvpRemove">Remove RSVP</button>
             {% else %}
-              <button type="submit" id="rsvpEvent" class="btn btn-primary" formaction="/rsvpForEvent" {{'disabled' if isPastEvent}}>RSVP</button>&nbsp&nbsp&nbsp&nbsp&nbsp
+              <button type="submit" id="rsvpEvent" class="btn btn-primary" formaction="/rsvpForEvent" {{'disabled' if isPastEvent}}>RSVP</button>
             {% endif %}
           {% endif %}
 
