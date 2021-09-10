@@ -38,9 +38,9 @@ class emailHandler():
     def send(self, message: Message):
 
         #message.html = "<b>Original message intended for {}.</b><br>".format(", ".join(message.recipients)) + message.html
-        # message.recipients = [app.config['MAIL_RECIPIENTS']]
-
         message.reply_to = app.config["REPLY_TO_ADDRESS"]
+        self.mail.send(message)
+        message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
         self.mail.send(message)
 
         #elif app.config['ENV'] == 'testing':

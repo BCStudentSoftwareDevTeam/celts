@@ -21,5 +21,6 @@ mail:
     tls: False
     ssl: True
     default_sender: 'bramsayr@gmail.com' #FIXME: Add sender email address
-    override_addr: "bramsayr@gmail.com"
-    reply_to_address: "bramsayr@gmail.com"
+    override_addr: "j5u6j9w6v1h0p3g1@bereacs.slack.com"
+    reply_to_address: "j5u6j9w6v1h0p3g1@bereacs.slack.com"
+    

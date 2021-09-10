@@ -25,11 +25,12 @@ def emailVolunteers():
         print("ITS IMPRESSIVE HOW YOU MANAGED TO BREAK THIS")
 
     mail = emailHandler(emailInfo)
-    # default_cfg = load_config('app/config/default.yml') #this works yay
     with mail.mail.connect() as conn:
         for user in volunteersToEmail:
             print(user)
             conn.send(Message(emailInfo['subject'], [user.email], emailInfo['message']))
+
+            # conn.send(Message(emailInfo['subject'], [user.email , "j5u6j9w6v1h0p3g1@bereacs.slack.com"], emailInfo['message']))
             # password for bramsayr@gmail.com is celtsTest
 
     return redirect(url_for("events.events", term = 1))
