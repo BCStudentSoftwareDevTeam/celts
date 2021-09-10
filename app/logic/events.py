@@ -123,14 +123,15 @@ def getUpcomingEventsForUser(user,asOf=datetime.now()):
                             .where(Event.startDate >= asOf)
                             .where(Event.timeStart > asOf.time())
                             .switch(Event)
-                            .join(EventParticipant, on=(EventParticipant.user == user), join_type=JOIN.LEFT_OUTER)
-                            #.where(EventParticipant.user == user)
+                            .join(EventParticipant, join_type=JOIN.LEFT_OUTER)
+                            .where((EventParticipant.user == user) | (EventParticipant == None))
                             .distinct()
                             .order_by(Event.eventName)
                             )
     print(events)
     for event in list(events):
-        print(event.eventparticipant.rsvp)
+        print(event)
+        print(event.rsvp)
     return events
 
 def getAllFacilitators():
