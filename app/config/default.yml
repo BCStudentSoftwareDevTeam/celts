@@ -4,7 +4,7 @@ use_tracy: False
 use_banner: False
 override_file: "local-override.yml"
 default_user: "ramsayb2"
-celts_admin_contact: "celts@berea.edu"
+celts_admin_contact: "bramsayr@gmail.com"
 
 db:
     name: "celts"
@@ -16,10 +16,10 @@ mail:
     enabled: True
     server: "smtp.gmail.com" # use smtp.gmail.com for gmail, mail.berea.edu for Berea
     port: 465                # use port 465 for gmail, use 25 for Berea
-    username: 'sandesh.lamichhane1@gmail.com'             # add the email of the sender (for gmail)
-    password: ''             # Add the password of the sender (for gmail)
+    username: 'bramsayr@gmail.com'             # add the email of the sender (for gmail)
+    password: 'celtsTest'             # Add the password of the sender (for gmail)
     tls: False
     ssl: True
-    default_sender: 'sandesh.lamichhane1@gmail.com' #FIXME: Add sender email address
-    override_addr: "j5u6j9w6v1h0p3g1@bereacs.slack.com"
-    reply_to_address: "j5u6j9w6v1h0p3g1@bereacs.slack.com"
+    default_sender: 'bramsayr@gmail.com' #FIXME: Add sender email address
+    override_addr: "bramsayr@gmail.com"
+    reply_to_address: "bramsayr@gmail.com"

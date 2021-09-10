@@ -33,13 +33,13 @@ class emailHandler():
             #ALWAYS_SEND_MAIL=default['ALWAYS_SEND_MAIL']
         )
 
-        self.mail = Mail(app)  
+        self.mail = Mail(app)
 
     def send(self, message: Message):
 
         #message.html = "<b>Original message intended for {}.</b><br>".format(", ".join(message.recipients)) + message.html
-        message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
-    
+        # message.recipients = [app.config['MAIL_RECIPIENTS']]
+
         message.reply_to = app.config["REPLY_TO_ADDRESS"]
         self.mail.send(message)
 
