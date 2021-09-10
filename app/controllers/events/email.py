@@ -25,12 +25,17 @@ def emailVolunteers():
         print("ITS IMPRESSIVE HOW YOU MANAGED TO BREAK THIS")
 
     mail = emailHandler(emailInfo)
-    with mail.mail.connect() as conn:
-        for user in volunteersToEmail:
-            print(user)
-            conn.send(Message(emailInfo['subject'], [user.email], emailInfo['message']))
 
-            # conn.send(Message(emailInfo['subject'], [user.email , "j5u6j9w6v1h0p3g1@bereacs.slack.com"], emailInfo['message']))
-            # password for bramsayr@gmail.com is celtsTest
+
+    with mail.mail.connect() as conn:
+        if 'sendIndividually' in emailInfo:
+            for user in volunteersToEmail:
+                print(user)
+                conn.send(Message(emailInfo['subject'], [user.email], emailInfo['message']))
+        else:
+            emails = [user.email for user in volunteersToEmail]
+            conn.send(Message(emailInfo['subject'], emails, emailInfo['message']))
+        # conn.send(Message(emailInfo['subject'], [user.email , "j5u6j9w6v1h0p3g1@bereacs.slack.com"], emailInfo['message']))
+        # password for bramsayr@gmail.com is celtsTest
 
     return redirect(url_for("events.events", term = 1))

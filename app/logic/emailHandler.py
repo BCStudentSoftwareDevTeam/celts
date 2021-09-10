@@ -40,8 +40,8 @@ class emailHandler():
         #message.html = "<b>Original message intended for {}.</b><br>".format(", ".join(message.recipients)) + message.html
         message.reply_to = app.config["REPLY_TO_ADDRESS"]
         self.mail.send(message)
-        message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
-        self.mail.send(message)
+        # message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
+        # self.mail.send(message)
 
         #elif app.config['ENV'] == 'testing':
          #   # TODO: we really should have a way to check that we're sending emails that doesn't spam the logs
