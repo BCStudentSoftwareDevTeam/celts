@@ -35,11 +35,20 @@ class emailHandler():
 
         self.mail = Mail(app)
 
-    def send(self, message: Message):
-
-        #message.html = "<b>Original message intended for {}.</b><br>".format(", ".join(message.recipients)) + message.html
-        message.reply_to = app.config["REPLY_TO_ADDRESS"]
-        self.mail.send(message)
+    def sendEmail(self, message: Message, emails):
+        print(emails)
+        if 'sendIndividually' in emailInfo:    #<-----------------------need to test this some more.
+            with mail.mail.connect() as conn:
+                for email in emails:
+                    message.recipients = email
+                    conn.send(message)
+        else:
+            if app.config['MAIL_OVERRIDE_ALL']:
+                message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
+            else:
+                message.recipients = emails
+            message.reply_to = app.config["REPLY_TO_ADDRESS"]
+            self.mail.send(message)
         # message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
         # self.mail.send(message)
 
@@ -52,4 +61,4 @@ class emailHandler():
         #else:
          #   print("ENV: {}. Email not sent to {}, subject '{}'.".format(app.config['ENV'], message.recipients, message.subject))
 
-        print("emails are being something'ed")#######################################################################################
+        # print("emails are being something'ed")#######################################################################################

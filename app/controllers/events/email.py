@@ -25,17 +25,17 @@ def emailVolunteers():
         print("ITS IMPRESSIVE HOW YOU MANAGED TO BREAK THIS")
 
     mail = emailHandler(emailInfo)
-
-
-    with mail.mail.connect() as conn:
-        if 'sendIndividually' in emailInfo:
-            for user in volunteersToEmail:
-                print(user)
-                conn.send(Message(emailInfo['subject'], [user.email], emailInfo['message']))
-        else:
-            emails = [user.email for user in volunteersToEmail]
-            conn.send(Message(emailInfo['subject'], emails, emailInfo['message']))
+    emails = [user.email for user in volunteersToEmail]
+    mail.sendEmail(Message(emailInfo['subject'], emails, emailInfo['message']), emails)
+    # with mail.mail.connect() as conn:    <--- this doesn't actually use the class
+    #     if 'sendIndividually' in emailInfo:
+    #         for user in volunteersToEmail:
+    #             # print(user)
+    #             conn.sendEmail(Message(emailInfo['subject'], [user.email], emailInfo['message']))
+    #     else:
+    #         emails = [user.email for user in volunteersToEmail]
+    #         conn.sendEmail(Message(emailInfo['subject'], emails, emailInfo['message']))
         # conn.send(Message(emailInfo['subject'], [user.email , "j5u6j9w6v1h0p3g1@bereacs.slack.com"], emailInfo['message']))
         # password for bramsayr@gmail.com is celtsTest
-
+    flash("Email successfully sent!", "success")
     return redirect(url_for("events.events", term = 1))
