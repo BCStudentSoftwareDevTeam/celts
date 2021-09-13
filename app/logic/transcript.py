@@ -33,13 +33,13 @@ def getBonnerScholarEvents(username):
     Returns a bonnerData query object containing all the Bonner events for
     current user.
     """
-    bonnerData = (ProgramEvent
-        .select(Program, Event, EventParticipant.hoursEarned)
+    bonnerData = (EventParticipant
+        .select(Program, ProgramEvent)
+        .join(ProgramEvent, on=(EventParticipant.event == ProgramEvent.event))
         .join(Program)
-        .switch(ProgramEvent)
-        .join(Event)
-        .join(EventParticipant)
         .where(EventParticipant.user == username, Program.isBonnerScholars == True))
+
+    print(bonnerData)
 
     return bonnerData
 
