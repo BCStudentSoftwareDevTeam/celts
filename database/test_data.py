@@ -204,6 +204,24 @@ programs = [
         "programName": "Habitat For Humanity",
         "isStudentLed": False,
         "isBonnerScholars": False,
+    },
+    {
+        "id": 7,
+        "programName": "Berea Teen Mentoring",
+        "isStudentLed": True,
+        "isBonnerScholars": False,
+    },
+    {
+        "id": 8,
+        "programName": "Hispanic Outreach Program",
+        "isStudentLed": True,
+        "isBonnerScholars": False,
+    },
+    {
+        "id": 9,
+        "programName": "People Who Care",
+        "isStudentLed": True,
+        "isBonnerScholars": False,
     }
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
@@ -212,7 +230,7 @@ events = [
     {
         "id": 1,
         "term": 1,
-        "eventName": "Empty Bowls Spring",
+        "eventName": "Empty Bowls Spring Event 1",
         "description": "Empty Bowls Spring 2021",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -224,8 +242,8 @@ events = [
     {
         "id": 2,
         "term": 1,
-        "eventName": "Berea Buddies",
-        "description": "Berea Buddies Training",
+        "eventName": "Berea Buddies Training",
+        "description": "Training for Berea Buddies",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
