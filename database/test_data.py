@@ -172,7 +172,7 @@ programs = [
     {
         "id": 1,
         "programName": "Empty Bowls",
-        "isStudentLed": True,
+        "isStudentLed": False,
         "isBonnerScholars": False,
     },
     {
@@ -195,7 +195,7 @@ programs = [
     },
     {
         "id": 5,
-        "programName": "First Year Bonners",
+        "programName": "Bonners Scholars",
         "isStudentLed": False,
         "isBonnerScholars": True,
     },
@@ -221,6 +221,18 @@ programs = [
         "id": 9,
         "programName": "People Who Care",
         "isStudentLed": True,
+        "isBonnerScholars": False,
+    },
+    {
+        "id": 10,
+        "programName": "Food Drive",
+        "isStudentLed": False,
+        "isBonnerScholars": False,
+    },
+    {
+        "id": 11,
+        "programName": "Other Events",
+        "isStudentLed": False,
         "isBonnerScholars": False,
     }
 ]
@@ -339,8 +351,8 @@ events = [
     {
         "id": 10,
         "term": 3,
-        "eventName": "Whole Celts Training",
-        "description": "Whole Celts Training",
+        "eventName": "All Celts Training",
+        "description": "Training event for all CELTS programs",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
