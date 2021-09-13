@@ -60,30 +60,48 @@
      </div><br><br><br><br><br><br>
       <div>
             <table class="table">
-              {% if programs|length > 0 %}
-                <thead>
-                  <tr>
-                    <th>Program</th>
-                    <th>Training</th>
-                    <th>Banned</th>
-                  </tr>
-                </thead>
                 {% for program in eligibilityTable %}
-              <tbody id="volunteerTable">
-                <tr>
-                  <td class="programName">{{program.program.programName}}</td>
-                  <td class="programTraining">{% if program.completedTraining %}<button type="button" name="button" class="btn btn-success rounded-pill">Complete</button>
-                      {% else %} <button type="button" name="button" class="btn btn-danger rounded-pill">Incomplete</button>
-                      {% endif %}</td>
-                  <td class="programBan">{% if program.isNotBanned %}<button type="button" name="button" class="ban btn btn-danger rounded-pill" value="Ban">Ban</button>
-                      {% else %} <button type="button" name="button" class="ban btn btn-success rounded-pill" value="Unban">Unban</button>
-                      {% endif %}</td>
+                  <div>
+                    <tr>
+                    <div class="accordion" id="accordionExample">
+                      <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            {{program.program.programName}}
+                          </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                          {% if programs|length > 0 %}
+                          <thead>
+                            <tr>
+                              <th>Program</th>
+                              <th>Training</th>
+                              <th>Banned</th>
+                            </tr>
+                          </thead>
+                          <div class="accordion-body">
+                            <tbody id="volunteerTable">
+                            <tr>
+
+                            <td class="programName">{{program.program.programName}}</td>
+                            <td class="programTraining">{% if program.completedTraining %}<button type="button" name="button" class="btn btn-success rounded-pill">Complete</button>
+                              {% else %} <button type="button" name="button" class="btn btn-danger rounded-pill">Incomplete</button>
+                              {% endif %}</td>
+                              <td class="programBan">{% if program.isNotBanned %}<button type="button" name="button" class="ban btn btn-danger rounded-pill" value="Ban">Ban</button>
+                                {% else %} <button type="button" name="button" class="ban btn btn-success rounded-pill" value="Unban">Unban</button>
+                                {% endif %}</td>
+                            </tr>
+
+                            {% endif %}
+                          </div>
+                        </div>
+                      </div>
+                  <div>
                 </tr>
                {% endfor %}
-             {% else %}
-             {% endif %}
            </tbody>
           </table>
+
 
           <!-- Modal -->
           <div class="modal fade" id="banVolunteerModal" tabindex="-1" aria-labelledby="banVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
