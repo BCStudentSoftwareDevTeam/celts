@@ -116,22 +116,16 @@ def getUpcomingEventsForUser(user,asOf=datetime.now()):
         :return: A list of Event objects
     """
 
-    events = (Event.select(Event, EventParticipant)
+    events = (Event.select(Event)
                             .join(ProgramEvent)
                             .join(Interest, on=(ProgramEvent.program == Interest.program))
                             .where(Interest.user == user)
                             .where(Event.startDate >= asOf)
                             .where(Event.timeStart > asOf.time())
-                            .switch(Event)
-                            .join(EventParticipant, join_type=JOIN.LEFT_OUTER)
-                            .where((EventParticipant.user == user) | (EventParticipant == None))
                             .distinct()
                             .order_by(Event.eventName)
                             )
-    print(events)
-    for event in list(events):
-        print(event)
-        print(event.rsvp)
+
     return events
 
 def getAllFacilitators():

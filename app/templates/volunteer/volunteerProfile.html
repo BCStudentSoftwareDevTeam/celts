@@ -17,7 +17,6 @@
           <th scope="col"><h4><strong>Event Name</strong></h4>
           <th scope="col"><h4><strong>Start Date</strong></h4>
           <th scope="col"><h4><strong>End Date</strong></h4>
-          <th scope="col"><h4><strong>RSVP Status</strong></h4>
         </thead>
         {% for event in upcomingEvents %}
         <tr>
@@ -25,12 +24,7 @@
           <td><a href= '/{{event.singleProgram}}/{{event.id}}/edit_event' class="link-primary">{{event.eventName}}</a></td>
           <td>{{event.startDate}}</td>
           <td>{{event.endDate}}</td>
-          {% if event.eventparticipant.rsvp == True %}
-          <td> RSVP'd <td>
-          {% else %}
-          <td> Not RSVP'd <td>
-          {% endif %}
-          {% endfor %}
+        {% endfor %}
         </tr>
 
       {% else %}
