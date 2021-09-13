@@ -19,23 +19,10 @@ def home():
 
 @main_bp.route('/profile/<username>', methods = ['GET'])
 def profilePage(username):
-    # rsvpStatuses = []
     upcomingEvents = getUpcomingEventsForUser(g.current_user)
-    print(upcomingEvents)
-    # for programEvent in upcomingEvents:
-    #     # print(EventParticipant.select().where(event == programEvent.id).rsvp)
-    #     if EventParticipant.get(EventParticipant.event == programEvent.id):
-    #         if EventParticipant.get(EventParticipant.event == programEvent.id).rsvp == 1:
-    #             rsvpStatuses.append("Yes")
-    #         else:
-    #             rsvpStatuses.append("No")
-    #     else:
-    #         rsvpStatuses.append("No")
-    # print(rsvpStatuses)
     programs = Program.select()
     interests = Interest.select().where(Interest.user == g.current_user)
     interests_ids = [interest.program for interest in interests]
-    # rsvpstatus = EventParticipant.select().where(event)
     if username == g.current_user.username or g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
         return render_template('/volunteer/volunteerProfile.html',
                                title="Volunteer Interest",
@@ -44,7 +31,6 @@ def profilePage(username):
                                interests = interests,
                                interests_ids = interests_ids,
                                upcomingEvents = upcomingEvents)
-                               # rsvpStatuses = rsvpStatuses)
     else:
         return "", 500
         abort(403)
