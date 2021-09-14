@@ -8,7 +8,6 @@ from app.models.term import Term
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
-from app.logic.getSLInstructorTableData import getProposalData
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectFutureTerms
@@ -17,7 +16,6 @@ from app.logic.events import deleteEvent, getAllFacilitators
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.eventCreation import createEvent, addRecurringEvents
-from app.controllers.admin import changeSLAction
 from datetime import datetime
 
 @admin_bp.route('/<programID>/<eventID>/track_volunteers', methods=['GET'])
@@ -46,7 +44,7 @@ def trackVolunteersPage(programID, eventID):
     else:
         abort(403)
 
-@admin_bp.route('/<program>/<eventId>/edit_event', methods=['GET'])
+@admin_bp.route('/event/<eventId>/edit', methods=['GET'])
 def editEvent(program, eventId):
     facilitators = getAllFacilitators()
     eventInfo = Event.get_by_id(eventId)
@@ -103,17 +101,6 @@ def deleteRoute(program, eventId):
 
     except Exception as e:
         print('Error while canceling event:', e)
-        return "", 500
-
-@admin_bp.route('/courseProposals', methods=['GET'])
-def createTable():
-    courseDict = getProposalData(g.current_user)
-    try:
-        return render_template("/admin/createSLProposalTable.html",
-                                instructor = g.current_user,
-                                courseDict = courseDict)
-    except Exception as e:
-        print('Error while creating table:', e)
         return "", 500
 
 @admin_bp.route('/volunteerProfile', methods=['POST'])

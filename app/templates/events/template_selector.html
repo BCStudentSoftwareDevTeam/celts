@@ -23,12 +23,12 @@
 <div class="list-group">
     <a href="#" class="list-group-item disabled" tabindex="-1" aria-disabled="true">Templated Events</a>
     {% for template in templates %}
-    <a href="/create_event/{{template.id}}" class="list-group-item list-group-item-action list-group-indent">{{ template.name }}</a>
+    <a href="/event/{{template.id}}/create" class="list-group-item list-group-item-action list-group-indent">{{ template.name }}</a>
     {% endfor %}
 
     <a href="#" class="list-group-item disabled" tabindex="-1" aria-disabled="true">Single Program Events</a>
     {% for program in programs %}
-    <a href="/create_event/1/{{program.id}}" class="list-group-item list-group-item-action list-group-indent">{{ program.programName }}</a>
+    <a href="/event/1/{{program.id}}/create" class="list-group-item list-group-item-action list-group-indent">{{ program.programName }}</a>
     {% endfor %}
 </div>
 {% endblock %}
