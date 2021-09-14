@@ -55,6 +55,7 @@ def editEvent(program, eventId):
 
     # FIXME: One of the below two should be replaced which one?
     eventFacilitators = Facilitator.select().where(Facilitator.event == eventInfo)
+    numFacilitators = len(list(eventFacilitators))
     currentFacilitator = Facilitator.get_or_none(Facilitator.event == eventId)
 
     isRecurring = "Checked" if eventInfo.isRecurring else ""
@@ -89,6 +90,7 @@ def editEvent(program, eventId):
                             isRsvpRequired = isRsvpRequired,
                             isService = isService,
                             eventFacilitators = eventFacilitators,
+                            numFacilitators = numFacilitators,
                             userHasRSVPed = userHasRSVPed,
                             deleteButton = deleteButton)
 
