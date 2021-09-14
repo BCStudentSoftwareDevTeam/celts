@@ -1,12 +1,10 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for
-
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.program import Program
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
-from app.models.eventParticipant import EventParticipant
 from app.controllers.main import main_bp
 from app.logic.events import getUpcomingEventsForUser
 from app.logic.users import addRemoveInterest
