@@ -3,6 +3,9 @@ import yaml, os
 from flask_mail import Mail, Message
 # from app.config
 # from app.config.production import *
+from app.models.interest import Interest
+from app.models.user import User
+from app.models.eventParticipant import EventParticipant
 from app.models.emailTemplate import EmailTemplate
 from app import app
 import sys
@@ -17,6 +20,27 @@ def load_config(file):
         cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
     return cfg
 
+
+def getVolunteerEmails(programID = None, eventID = None, emailRecipients = "interested"):
+    """
+    gets the emails of all the students who are interested in a program or are participating in an event.
+    """
+    if emailRecipients == 'interested':    #email all students interested in the program
+        volunteersToEmail = User.select().join(Interest).where(Interest.program == programID)
+
+    elif emailRecipients == 'eventParticipant':  #email only people who rsvped
+        volunteersToEmail = User.select().join(EventParticipant).where(EventParticipant.event == eventID)
+
+    # elif emailRecipients == 'yourself':  #email yourself; test purposes maybe
+    #     volunteersToEmail = User.select().where(User.username == g.current_user.username)  #<----- this won't work in the logic file (cuz the logic file has to be tested)...
+    #     volunteersToEmail = User.select().where(User.username == 'neillz')
+    #     # THIS WORKS
+    else:
+        print("ITS IMPRESSIVE HOW YOU MANAGED TO BREAK THIS")
+
+    return [user.email for user in volunteersToEmail]
+
+
 class emailHandler():
     def __init__(self, emailInfo):
         default = load_config('app/config/default.yml')
@@ -29,36 +53,28 @@ class emailHandler():
             MAIL_USE_TLS=default['mail']['tls'],
             MAIL_USE_SSL=default['mail']['ssl'],
             MAIL_DEFAULT_SENDER=default['mail']['default_sender'],
-            MAIL_OVERRIDE_ALL=default['mail']['override_addr'],
-            #ALWAYS_SEND_MAIL=default['ALWAYS_SEND_MAIL']
+            MAIL_OVERRIDE_ALL=default['mail']['override_addr']
         )
-
+        self.emailInfo = emailInfo
         self.mail = Mail(app)
 
     def sendEmail(self, message: Message, emails):
-        print(emails)
-        if 'sendIndividually' in emailInfo:    #<-----------------------need to test this some more.
-            with mail.mail.connect() as conn:
-                for email in emails:
-                    message.recipients = email
-                    conn.send(message)
-        else:
-            if app.config['MAIL_OVERRIDE_ALL']:
-                message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
+        try:
+            if 'sendIndividually' in self.emailInfo:    #<-----------------------need to test this some more.
+                if app.config['MAIL_OVERRIDE_ALL']:
+                    message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
+                with self.mail.connect() as conn:
+                    for email in emails:
+                        message.recipients = [email]
+                        conn.send(message)
             else:
-                message.recipients = emails
-            message.reply_to = app.config["REPLY_TO_ADDRESS"]
-            self.mail.send(message)
-        # message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
-        # self.mail.send(message)
+                if app.config['MAIL_OVERRIDE_ALL']:
+                    message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
 
-        #elif app.config['ENV'] == 'testing':
-         #   # TODO: we really should have a way to check that we're sending emails that doesn't spam the logs
-          #  message.reply_to = app.config["REPLY_TO_ADDRESS"]
-           # self.mail.send(message)
-           # print("I did a thing in testing")##############################################################################################
-            #pass
-        #else:
-         #   print("ENV: {}. Email not sent to {}, subject '{}'.".format(app.config['ENV'], message.recipients, message.subject))
+                message.reply_to = app.config["REPLY_TO_ADDRESS"]
+                self.mail.send(message)
 
-        # print("emails are being something'ed")#######################################################################################
+            return 1
+
+        except:
+            return 0
