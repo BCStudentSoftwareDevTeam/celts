@@ -217,7 +217,7 @@ events = [
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
-        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "startDate": datetime.strptime("2021 10 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
@@ -229,7 +229,7 @@ events = [
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
-        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "startDate": datetime.strptime("2021 11 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {

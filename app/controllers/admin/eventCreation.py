@@ -68,7 +68,7 @@ def createEvent():
                 return redirect(url_for("events.events", term = newEventData['eventTerm']))
             else:
                 eventEdit(newEventData)
-                flash("Event successfully updated!")
+                flash("Event successfully updated!", "success")
                 return redirect(url_for("events.events", term = newEventData['eventTerm']))
         else:
             flash(validationErrorMessage, 'warning')

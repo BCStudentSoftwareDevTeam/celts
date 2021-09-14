@@ -19,7 +19,8 @@ def getSlCourseTranscript(username):
     slCourseInformation = (CourseParticipant
         .select(CourseParticipant.course, CourseParticipant.user, fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned"))
         .group_by(CourseParticipant.course, CourseParticipant.user)
-        .where(CourseParticipant.user == user))
+        .where(CourseParticipant.user == user)
+        .order_by(CourseParticipant.course))
 
     allCoursesList = []
     for course in slCourseInformation:
@@ -52,7 +53,8 @@ def getProgramTranscript(username):
         .join(Event)
         .join(EventParticipant)
         .where(EventParticipant.user == user)
-        .group_by(Program, Event.term))
+        .group_by(Program, Event.term)
+        .order_by(Program.programName))
 
     return [[p.programName, Term.get_by_id(p.term).description, p.hoursEarned] 
             for p in hoursQuery.objects() ] 

@@ -1,11 +1,17 @@
-from flask import request, render_template, g, abort
+from flask import request, render_template, g, abort, flash, redirect, url_for
+
+from app.models.user import User
+from app.models.eventParticipant import EventParticipant
 from app.models.program import Program
+from app.models.user import User
+from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
 from app.models.eventParticipant import EventParticipant
 from app.controllers.main import main_bp
 from app.logic.events import getUpcomingEventsForUser
 from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
+
 
 @main_bp.route('/')
 def home():
@@ -14,21 +20,25 @@ def home():
 
 @main_bp.route('/profile/<username>', methods = ['GET'])
 def profilePage(username):
-    upcomingEvents = getUpcomingEventsForUser(g.current_user)
-    programs = Program.select()
-    interests = Interest.select().where(Interest.user == g.current_user)
-    interests_ids = [interest.program for interest in interests]
-    if username == g.current_user.username or g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
+    if not g.current_user.isCeltsAdmin and not g.current_user.isCeltsStudentStaff and g.current_user.username != username:
+        return "Access Denied", 403
+    try:
+        profileUser = User.get(User.username == username)
+        upcomingEvents = getUpcomingEventsForUser(username)
+        programs = Program.select()
+        interests = Interest.select().where(Interest.user == profileUser)
+        interests_ids = [interest.program for interest in interests]
         return render_template('/volunteer/volunteerProfile.html',
                                title="Volunteer Interest",
-                               user = g.current_user,
+                               user = profileUser,
                                programs = programs,
                                interests = interests,
                                interests_ids = interests_ids,
                                upcomingEvents = upcomingEvents)
-    else:
-        return "", 500
-        abort(403)
+    except Exception as e:
+        print(e)
+        return "Error retrieving user profile", 500
+
 
 @main_bp.route('/deleteInterest/<program_id>', methods = ['POST'])
 @main_bp.route('/addInterest/<program_id>', methods = ['POST'])
@@ -62,7 +72,7 @@ def volunteerRegister():
 
     elif listOfRequirements:
         reqListToString = ', '.join(listOfRequirements)
-        flash(f"{userId.firstName} {userId.lastName} successfully registered. However, the following training may be required: {reqListToString}.", 'success')
+        flash(f"{userId.firstName} {userId.lastName} successfully registered. However, the following training may be required: {reqListToString}.", "success")
 
     #if they are eligible
     else:
@@ -78,14 +88,12 @@ def RemoveRSVP():
     """
     This function deletes the user ID and event ID from database when RemoveRSVP  is clicked
     """
-
     eventData = request.form
     userId = User.get(User.username == g.current_user)
     eventId = eventData['eventId']
     program = eventData['programId']
-
     currentEventParticipant = EventParticipant.get(EventParticipant.user == userId, EventParticipant.event == eventId)
-
     currentEventParticipant.delete_instance()
-    flash("Successfully unregistered for event!","success")
+
+    flash("Successfully unregistered for event!", "success")
     return redirect(url_for("admin.editEvent", eventId=eventId, program=program))
