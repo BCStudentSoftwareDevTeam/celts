@@ -98,10 +98,10 @@ users = [
         "username": "bryanta",
         "bnumber": "B00708826",
         "email": "bryanta@berea.edu",
+        "phoneNumber": "85943311598",
         "firstName": "Alex",
         "lastName": "Bryant",
         "isStudent": True,
-        "phoneNumber": "85943311598"
     },
     {
         "username": "partont",
@@ -112,7 +112,6 @@ users = [
         "isStudent": True,
         "phoneNumber": "9119119111"
     },
-
 ]
 
 User.insert_many(users).on_conflict_replace().execute()
@@ -218,7 +217,7 @@ events = [
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
-        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "startDate": datetime.strptime("2021 10 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
@@ -230,7 +229,7 @@ events = [
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
-        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "startDate": datetime.strptime("2021 11 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
@@ -526,7 +525,6 @@ Course.insert_many(courses).on_conflict_replace().execute()
 
 courseInstructorRecords = [
     {
-
         "id": 1,
         "course": 1,
         "user": "ramsayb2"

@@ -31,14 +31,6 @@ def events(term):
         currentTime = currentTime,
         user = g.current_user)
 
-
-@events_bp.route('/events/upcoming_events', methods=['GET'])
-def showUpcomingEvent():
-    upcomingEvents = getUpcomingEventsForUser(g.current_user)
-    return render_template('/events/showUpcomingEvents.html',
-                            upcomingEvents = upcomingEvents)
-
-
 @events_bp.route('/<eventid>/kiosk', methods=['GET'])
 def loadKiosk(eventid):
     """Renders kiosk for specified event."""
