@@ -5,6 +5,5 @@ from app.models.event import Event
 class EventParticipant(baseModel):
     user = ForeignKeyField(User)
     event = ForeignKeyField(Event)
-    rsvp = BooleanField(default=False)
     attended = BooleanField(default=False)
     hoursEarned = FloatField(null=True)

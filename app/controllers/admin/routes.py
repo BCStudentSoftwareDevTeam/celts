@@ -1,6 +1,7 @@
 from flask import request, render_template, url_for, g, Flask, redirect, flash, abort, json, jsonify
 from app.models.program import Program
 from app.models.event import Event
+from app.models.eventRsvp import EventRsvp
 from app.models.facilitator import Facilitator
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
@@ -26,9 +27,12 @@ def trackVolunteersPage(programID, eventID):
     attendedTraining = trainedParticipants(programID)
     if g.current_user.isCeltsAdmin:
         if ProgramEvent.get_or_none(ProgramEvent.event == eventID, ProgramEvent.program == programID):
-            eventParticipantsData = EventParticipant.select().where(EventParticipant.event == eventID)
+            #eventParticipantsData = EventParticipant.select().where(EventParticipant.event == eventID)
+            eventParticipantsData = EventParticipant.select().join(EventRsvp,on=(EventParticipant.event == EventRsvp.event)).where(EventParticipant.event == eventID)
             eventParticipantsData = eventParticipantsData.objects()
-
+            print("HEREEeeeeeeeeeeeee", list(eventParticipantsData))
+            for item in eventParticipantsData.objects():
+                print("This is the item",item.event)
             event = Event.get_by_id(eventID)
             program = Program.get_by_id(programID)
             eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)

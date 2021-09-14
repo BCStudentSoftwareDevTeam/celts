@@ -4,6 +4,7 @@ This file will need to be changed if the format of models changes (new fields, d
 
 from datetime import *
 from app.models.eventParticipant import EventParticipant
+from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.term import Term
 from app.models.program import Program
@@ -579,91 +580,78 @@ eventParticipants = [
     {
         "user": "neillz",
         "event": 2,
-        "rsvp": True,
         "attended": True,
         "hoursEarned": 2
     },
     {
         "user": "bryanta",
         "event": 1,
-        "rsvp": False,
         "attended": False,
         "hoursEarned": 0
     },
     {
         "user": "neillz",
         "event": 3,
-        "rsvp": True,
         "attended": True,
         "hoursEarned": 3
     },
     {
         "user": "neillz",
         "event": 4,
-        "rsvp": True,
         "attended": True,
         "hoursEarned": 1
     },
     {
         "user": "neillz",
         "event": 5,
-        "rsvp": True,
         "attended": True,
         "hoursEarned": 1
     },
     {
         "user": "neillz",
         "event": 1,
-        "rsvp": True,
         "attended": True,
         "hoursEarned": 8,
     },
     {
         "user": "khatts",
         "event": 1,
-        "rsvp": True,
         "attended": True,
         "hoursEarned": 3,
     },
     {
         "user": "khatts",
         "event": 3,
-        "rsvp": True,
         "attended": False,
         "hoursEarned": 3,
     },
     {
         "user": "khatts",
         "event": 2,
-        "rsvp": True,
         "attended": True,
         "hoursEarned": 2,
     },
     {
         "user": "khatts",
         "event": 7,
-        "rsvp": True,
         "attended": True,
         "hoursEarned": 3,
     },
     {
         "user": "khatts",
         "event": 5,
-        "rsvp": False,
         "attended": True,
         "hoursEarned": 8,
     },
     {
         "user" : "ayisie",
         "event" : "1",
-        "rsvp" : True,
         "attended" : False,
         "hoursEarned" : None,
     },
     {
         "user" : "lamichhanes2",
         "event" : "1",
-        "rsvp" : True,
         "attended" : True,
         "hoursEarned" : None,
 
@@ -671,14 +659,12 @@ eventParticipants = [
     {
         "user" : "lamichhanes2",
         "event" : "3",
-        "rsvp" : True,
         "attended" : True,
         "hoursEarned" : None,
     },
     {
         "user" : "lamichhanes2",
         "event" : "4",
-        "rsvp" : True,
         "attended" : True,
         "hoursEarned" : None,
 
@@ -686,62 +672,68 @@ eventParticipants = [
     {
         "user" : "lamichhanes2",
         "event" : "8",
-        "rsvp" : False,
         "attended" : True,
         "hoursEarned" : None,
     },
     {
         "user" : "lamichhanes2",
         "event" : "9",
-        "rsvp" : False,
         "attended" :True,
         "hoursEarned" : None,
     },
     {
         "user": "agliullovak",
         "event": 3,
-        "rsvp": True,
         "attended": True,
         "hoursEarned": 2
     },
     {
         "user": "agliullovak",
         "event": 6,
-        "rsvp": True,
         "attended": True,
         "hoursEarned": 1
     },
     {
         "user": "agliullovak",
         "event": 10,
-        "rsvp": False,
         "attended": True,
         "hoursEarned": 12
     },
     {
         "user": "partont",
         "event": 1,
-        "rsvp": False,
         "attended": True,
         "hoursEarned": 1
     },
     {
         "user": "partont",
         "event": 2,
-        "rsvp": False,
         "attended": True,
-        "hoursEarned": 5 
+        "hoursEarned": 5
     },
     {
         "user": "partont",
         "event": 7,
-        "rsvp": False,
+        "attended": True,
+        "hoursEarned": 8
+    },
+    #needs to be deleted 
+    {
+        "user": "ramsayb2",
+        "event": 7,
         "attended": True,
         "hoursEarned": 8
     },
 ]
 EventParticipant.insert_many(eventParticipants).on_conflict_replace().execute()
 
+eventRsvp =  [
+    {
+        "user":"ramsayb2",
+        "event": 7,
+    }
+]
+EventRsvp.insert_many(eventRsvp).on_conflict_replace().execute()
 interest = [
 
     {

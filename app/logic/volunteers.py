@@ -57,7 +57,7 @@ def addVolunteerToEvent(user, volunteerEventID, eventLengthInHours):
     '''
     try:
         if not EventParticipant.get_or_none(user=user, event = volunteerEventID):
-            EventParticipant.create(user=user, event = volunteerEventID, attended = True, hoursEarned = eventLengthInHours, rsvp = True)
+            EventParticipant.create(user=user, event = volunteerEventID, attended = True, hoursEarned = eventLengthInHours)
         return True
 
     except Exception as e:
