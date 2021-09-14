@@ -71,7 +71,7 @@ def volunteerRegister():
 
     elif listOfRequirements:
         reqListToString = ', '.join(listOfRequirements)
-        flash(f"{userId.firstName} {userId.lastName} successfully registered. However, the following training may be required: {reqListToString}.", 'success')
+        flash(f"{userId.firstName} {userId.lastName} successfully registered. However, the following training may be required: {reqListToString}.", "success")
 
     #if they are eligible
     else:
@@ -93,5 +93,6 @@ def RemoveRSVP():
     program = eventData['programId']
     currentEventParticipant = EventParticipant.get(EventParticipant.user == userId, EventParticipant.event == eventId)
     currentEventParticipant.delete_instance()
-    flash("Successfully unregistered for event!",'success')
+    
+    flash("Successfully unregistered for event!", "success")
     return redirect(url_for("admin.editEvent", eventId=eventId, program=program))

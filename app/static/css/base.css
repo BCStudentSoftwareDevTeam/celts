@@ -11,17 +11,6 @@
     max-height: 100vh;
 }
 
-#flash_container {
-    min-height: 55px;
-}
-
-#flasher {
-    margin-bottom: 5px;
-    position: fixed;
-    width: 80%;
-    z-index: 3;
-}
-
 .bi-list {
     font-size: 2rem;
 }
