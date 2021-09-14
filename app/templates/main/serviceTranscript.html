@@ -14,6 +14,7 @@
 
 
 {% block app_content %}
+
 <h1 class="text-center pb-5">{{g.current_user.firstName}} {{g.current_user.lastName}}</h1>
 <button type="button" class="btn btn-primary float-end d-print-none" onClick="window.print()"><i class="bi bi-printer d-print-none"></i> Print</button>
 {% if programs %}
@@ -94,14 +95,16 @@
   <div class="pt-4">
     <p>*Volunteering since</p>
   </div>
+{% if totalHour %}
   <div class="float-end "  >
     {% for hour in totalHour %}
     <p class="fw-bold pb-3 d-inline">Total Hours:</p>
     <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal" > {{hour.hoursEarned}} </p>
     {% endfor %}
   </div>
+{% endif %}
   <div class="pt-5">
-    <p>If there are any corrections that need to be made, contact <a href="#">Ashley Cochrane</a></p>
+    <p>If there are any corrections that need to be made, contact <a href="mailto:cochranea@berea.edu">Ashley Cochrane</a></p>
   </div>
 
 {% endblock %}

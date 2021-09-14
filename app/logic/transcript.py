@@ -26,6 +26,10 @@ def getProgramTranscript(username):
         .join(EventParticipant)
         .where(EventParticipant.user == username, Event.isTraining == False, Program.isBonnerScholars == False))
 
+    for i in programData:
+        print("-"*24,i.hoursEarned)
+    if programData:
+        print("program")
     return programData
 
 def getBonnerScholarEvents(username):
@@ -34,7 +38,7 @@ def getBonnerScholarEvents(username):
     current user.
     """
     bonnerData = (EventParticipant
-        .select(Program, ProgramEvent)
+        .select(Program, ProgramEvent, EventParticipant.event,  EventParticipant.hoursEarned)
         .join(ProgramEvent, on=(EventParticipant.event == ProgramEvent.event))
         .join(Program)
         .where(EventParticipant.user == username, Program.isBonnerScholars == True))

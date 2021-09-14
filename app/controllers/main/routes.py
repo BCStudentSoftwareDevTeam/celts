@@ -100,12 +100,12 @@ def RemoveRSVP():
 @main_bp.route('/serviceTranscript', methods = ['GET'])
 def serviceTranscript():
     user = g.current_user
-    programs = getProgramTranscript('neillz')
-    SLCourses = getSlCourseTranscript('neillz')
-    trainingData = getTrainingTranscript('neillz')
-    bonnerData = getBonnerScholarEvents('neillz')
-    totalHour = getTotalHour('neillz')
-    
+    programs = getProgramTranscript(user)
+    SLCourses = getSlCourseTranscript(user)
+    trainingData = getTrainingTranscript(user)
+    bonnerData = getBonnerScholarEvents(user)
+    totalHour = getTotalHour(user)
+
     return render_template('main/serviceTranscript.html',
                             programs = programs,
                             SLCourses = SLCourses,
