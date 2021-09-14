@@ -730,7 +730,7 @@ eventParticipants = [
         "event": 2,
         "rsvp": False,
         "attended": True,
-        "hoursEarned": 5
+        "hoursEarned": 5 
     },
     {
         "user": "partont",

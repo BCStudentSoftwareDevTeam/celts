@@ -2,6 +2,7 @@ from peewee import fn
 
 from app.models.user import User
 from app.models.event import Event
+from app.models.eventRsvp import EventRsvp
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.models.eventParticipant import EventParticipant
@@ -59,7 +60,7 @@ def userRsvpForEvent(user,  event):
 
     isEligible = isEligibleForProgram(program, user)
     if isEligible:
-        newParticipant = EventParticipant.get_or_create(user = rsvpUser, event = rsvpEvent, rsvp = True)[0]
+        newParticipant = EventRsvp.get_or_create(user = rsvpUser, event = rsvpEvent)[0]
         return newParticipant
     return isEligible
 

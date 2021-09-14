@@ -63,6 +63,7 @@ def editEvent(program, eventId):
     isRsvpRequired = "Checked" if eventInfo.isRsvpRequired else ""
     isService = "Checked" if eventInfo.isService else ""
     userHasRSVPed = EventParticipant.get_or_none(EventParticipant.user == g.current_user, EventParticipant.event == eventInfo)
+    print("User has RSVP'ed ........................",type(userHasRSVPed))
     deleteButton = "submit"
     hideElement = "hidden"
     program = Program.get_by_id(program)
