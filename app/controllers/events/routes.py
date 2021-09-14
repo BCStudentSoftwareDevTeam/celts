@@ -2,43 +2,9 @@ from flask import Flask, redirect, flash, url_for, request, render_template, g, 
 from app.models.event import Event
 from app.models.user import User
 from app.models.programEvent import ProgramEvent
-from app.models.term import Term
-from app.models.eventParticipant import EventParticipant
 from app.controllers.events import events_bp
 from app.logic.events import getEvents
-from app.logic.events import groupEventsByCategory
-from app.logic.events import getUpcomingEventsForUser
 from app.logic.participants import sendUserData
-from datetime import datetime
-
-@events_bp.route('/', methods=['GET'])
-@events_bp.route('/<selectedTerm>', methods=['GET'])
-def events(selectedTerm=None):
-    currentTerm = g.current_term
-    if selectedTerm:
-        currentTerm = selectedTerm
-
-    currentTime = datetime.now()
-    eventsDict = groupEventsByCategory(currentTerm)
-    listOfTerms = Term.select()
-    participantRSVP = EventParticipant.select().where(EventParticipant.user == g.current_user, EventParticipant.rsvp == True)
-    rsvpedEventsID = [event.event.id for event in list(participantRSVP)]
-
-    return render_template("/events/event_list.html",
-        selectedTerm = Term.get_by_id(currentTerm),
-        eventDict = eventsDict,
-        listOfTerms = listOfTerms,
-        rsvpedEventsID = rsvpedEventsID,
-        currentTime = currentTime,
-        user = g.current_user)
-
-
-@events_bp.route('/events/upcoming_events', methods=['GET'])
-def showUpcomingEvent():
-    upcomingEvents = getUpcomingEventsForUser(g.current_user)
-    return render_template('/events/showUpcomingEvents.html',
-                            upcomingEvents = upcomingEvents)
-
 
 @events_bp.route('/<eventid>/kiosk', methods=['GET'])
 def loadKiosk(eventid):
