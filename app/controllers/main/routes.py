@@ -1,5 +1,4 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for
-
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.program import Program
@@ -19,10 +18,10 @@ from app.controllers.main import main_bp
 def home():
     print(f"{g.current_user.username}: {g.current_user.firstName} {g.current_user.lastName}")
     return render_template('main/home.html', title="Welcome to CELTS!")
-    
+
 @main_bp.route('/profile/<username>', methods=['GET'])
 def viewVolunteersProfile(username):
-    if g.current_user.isCeltsAdmin:
+    if not g.current_user.isFaculty or  g.current_user.isCeltsAdmin:
          upcomingEvents = getUpcomingEventsForUser(username)
          programs = Program.select()
          interests = Interest.select().where(Interest.user == username)
@@ -46,8 +45,6 @@ def viewVolunteersProfile(username):
             interests_ids = interests_ids,
             upcomingEvents = upcomingEvents,
             eligibilityTable = eligibilityTable,
-            # volunteertTraining = volunteertTraining,
-            # userProfile = g.current_user,
             user = User.get(User.username == username))
     abort(403)
 
