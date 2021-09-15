@@ -17,7 +17,7 @@
 
 <h1 class="text-center pb-5">{{g.current_user.firstName}} {{g.current_user.lastName}}</h1>
 <button type="button" class="btn btn-primary float-end d-print-none" onClick="window.print()"><i class="bi bi-printer d-print-none"></i> Print</button>
-{% if programs %}
+{% if programs.exists() %}
   <h2>Programs</h2>
   <table class="table table-bordered table-striped">
     <tr>
@@ -35,7 +35,7 @@
   </table>
 {% endif %}
 
-{% if bonnerData %}
+{% if bonnerData.exists() %}
   <h2>Bonner Scholar Events</h2>
   <table class="table table-bordered table-striped">
     <tr>
@@ -54,7 +54,7 @@
   </table>
 {% endif %}
 
-{% if SLCourses %}
+{% if SLCourses.exists() %}
   <h2>Service Learning Courses</h2>
   <table class="table table-bordered table-striped">
     <tr>
@@ -74,7 +74,7 @@
   </table>
 {% endif %}
 
-{% if trainingData %}
+{% if trainingData.exists() %}
   <h2>Trainings</h2>
   <table class="table table-bordered table-striped">
     <tr>
@@ -95,7 +95,7 @@
   <div class="pt-4">
     <p>*Volunteering since</p>
   </div>
-{% if totalHour %}
+{% if totalHour.exists() %}
   <div class="float-end "  >
     {% for hour in totalHour %}
     <p class="fw-bold pb-3 d-inline">Total Hours:</p>

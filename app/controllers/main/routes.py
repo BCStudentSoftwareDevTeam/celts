@@ -99,7 +99,7 @@ def RemoveRSVP():
 
 @main_bp.route('/serviceTranscript', methods = ['GET'])
 def serviceTranscript():
-    user = g.current_user
+    user = "neillz"
     programs = getProgramTranscript(user)
     SLCourses = getSlCourseTranscript(user)
     trainingData = getTrainingTranscript(user)
