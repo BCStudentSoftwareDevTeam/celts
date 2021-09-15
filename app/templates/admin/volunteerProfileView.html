@@ -58,34 +58,6 @@
       </tbody>
        </table>
      </div><br><br><br><br><br><br>
-      <div>
-            <table class="table">
-              {% if programs|length > 0 %}
-                <thead>
-                  <tr>
-                    <th>Program</th>
-                    <th>Training</th>
-                    <th>Banned</th>
-                  </tr>
-                </thead>
-                {% for program in eligibilityTable %}
-              <tbody id="volunteerTable">
-                <tr>
-                  <td class="programName">{{program.program.programName}}</td>
-                  <td class="programTraining">{% if program.completedTraining %}<button type="button" name="button" class="btn btn-success rounded-pill">Complete</button>
-                      {% else %} <button type="button" name="button" class="btn btn-danger rounded-pill">Incomplete</button>
-                      {% endif %}</td>
-                  <td class="programBan">{% if program.isNotBanned %}<button type="button" name="button" class="ban btn btn-danger rounded-pill" value="Ban">Ban</button>
-                      {% else %} <button type="button" name="button" class="ban btn btn-success rounded-pill" value="Unban">Unban</button>
-                      {% endif %}</td>
-                </tr>
-               {% endfor %}
-             {% else %}
-             {% endif %}
-           </tbody>
-          </table>
-
-
           <!-- Start Accordion -->
           <div class="accordion accordion-flush" id="accordionFlushExample">
             {% for program in eligibilityTable %}
@@ -122,27 +94,6 @@
             {% endfor %}
           </div>
           <!-- End Accordion -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
           <!-- Modal -->
