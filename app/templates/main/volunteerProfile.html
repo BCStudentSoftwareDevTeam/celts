@@ -4,6 +4,8 @@
   <!-- <script src="/static/js/createEvents.js"></script> -->
   <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
   <script src="/static/js/volunteerProfile.js"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/volunteerIndicateInterest.js') }}?u={{lastStaticUpdate}}"></script>
+
 
 {% endblock %}
 {% block styles %}
@@ -26,38 +28,51 @@
      </li>
    </ul>
  </div>
- <div>
-       <table class="table">
-         {% if upcomingEvents|length > 0 %}
-           <thead>
-             <tr>
-               <th>Name</th>
-               <th>Program</th>
-               <th>Start Date</th>
-               <th>End Date</th>
-               <th>Status</th>
-             </tr>
-           </thead>
-           {% for event in upcomingEvents %}
-         <tbody id="volunteerTable">
-           <!-- <tr>
-             <td>{{event.id}}</td>
-           </tr> -->
-           <tr>
-             <td>{{event.eventName}}</td>
-             <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
-             <td>{{event.startDate}}</td>
-             <td>{{event.endDate}}</td>
-             <td>{% if eventParticipant.rsvp == 1 %} Registered {% else %} Not Registered {% endif %}</td>
-           </tr>
-          {% endfor %}
-        {% else %}
-          <h2> Something <h2>
-           <!-- FIXME: There should be a link here to where they can select interests to programs -->
-        {% endif %}
-      </tbody>
-       </table>
-     </div><br><br><br><br><br><br>
+ <div class="row">
+   <table class="table">
+
+     {% if upcomingEvents|length > 0 %}
+       <thead class="tableHeader">
+         <th scope="col"><h4><strong>Program</strong></h4>
+         <th scope="col"><h4><strong>Event Name</strong></h4>
+         <th scope="col"><h4><strong>Start Date</strong></h4>
+         <th scope="col"><h4><strong>End Date</strong></h4>
+       </thead>
+       {% for event in upcomingEvents %}
+       <tr>
+         <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
+         <td>{{event.eventName}}</td>
+         <td>{{event.startDate}}</td>
+         <td>{{event.endDate}}</td>
+       </tr>
+       {% endfor %}
+     {% else %}
+       <h2> Choose interests below to be notified about upcoming events. <h2>
+     {% endif %}
+
+   </table>
+ </div><br><br><br>
+ <div class="row">
+   <h2>Which programs do you want to receive information about?</h2>
+   <input id="{{ user.username }}" hidden>
+     <div class="form-check-inline form-switch">
+     {% for program in programs %}
+       {% set status = '' %}
+         {% if program.id in interests_ids %}
+           {% set status = 'checked' %}
+         {% else %}
+         {% endif %}
+             <input class="form-check-input" type="checkbox" id="{{ program.id }}" {{ status }}>
+             <label class="form-check-label" style="padding-right:50px;" for="{{ program.id }}">{{program.programName}}</label>
+     {% endfor %}
+     </div>
+     <div>
+       <small>
+         <a href="https://www.berea.edu/celts/community-service-programs/volunteer-opportunities/">For more information click here.</a>
+       </small>
+     </div>
+ </div><br><br>
+
           <!-- Start Accordion -->
           <div class="accordion accordion-flush" id="accordionFlushExample">
             {% for program in eligibilityTable %}

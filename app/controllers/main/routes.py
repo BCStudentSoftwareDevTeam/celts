@@ -6,37 +6,50 @@ from app.models.program import Program
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
-from app.controllers.main import main_bp
+from app.models.programBan import ProgramBan
+from app.logic.participants import trainedParticipants
 from app.logic.events import getUpcomingEventsForUser
+from app.logic.users import isEligibleForProgram
 from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
+from app.controllers.main import main_bp
 
 
 @main_bp.route('/')
 def home():
     print(f"{g.current_user.username}: {g.current_user.firstName} {g.current_user.lastName}")
     return render_template('main/home.html', title="Welcome to CELTS!")
-
-@main_bp.route('/profile/<username>', methods = ['GET'])
-def profilePage(username):
-    if not g.current_user.isCeltsAdmin and not g.current_user.isCeltsStudentStaff and g.current_user.username != username:
-        return "Access Denied", 403
-    try:
-        profileUser = User.get(User.username == username)
-        upcomingEvents = getUpcomingEventsForUser(username)
-        programs = Program.select()
-        interests = Interest.select().where(Interest.user == profileUser)
-        interests_ids = [interest.program for interest in interests]
-        return render_template('/volunteer/volunteerProfile.html',
-                               title="Volunteer Interest",
-                               user = profileUser,
-                               programs = programs,
-                               interests = interests,
-                               interests_ids = interests_ids,
-                               upcomingEvents = upcomingEvents)
-    except Exception as e:
-        print(e)
-        return "Error retrieving user profile", 500
+    
+@main_bp.route('/profile/<username>', methods=['GET'])
+def viewVolunteersProfile(username):
+    if g.current_user.isCeltsAdmin:
+         upcomingEvents = getUpcomingEventsForUser(username)
+         programs = Program.select()
+         interests = Interest.select().where(Interest.user == username)
+         programBan = ProgramBan.select().where(ProgramBan.user == username)
+         interests_ids = [interest.program for interest in interests]
+         eventParticipant = EventParticipant.select().where(EventParticipant.user == username)
+         # volunteertTraining = trainedParticipants()
+         print("-------------------------------------------------------")
+         eligibilityTable = []
+         for i in programs:
+             # print(i.programName, " ", (username in trainedParticipants(i)), " ", isEligibleForProgram(i, username))
+             eligibilityTable.append({"program" : i,
+                                      "completedTraining" : (username in trainedParticipants(i)),
+                                      "isNotBanned" : isEligibleForProgram(i, username)})
+         print(eligibilityTable)
+         return render_template ("/main/volunteerProfile.html",
+            programs = programs,
+            eventParticipant = eventParticipant,
+            interests = interests,
+            programBan = programBan,
+            interests_ids = interests_ids,
+            upcomingEvents = upcomingEvents,
+            eligibilityTable = eligibilityTable,
+            # volunteertTraining = volunteertTraining,
+            # userProfile = g.current_user,
+            user = User.get(User.username == username))
+    abort(403)
 
 
 @main_bp.route('/deleteInterest/<program_id>', methods = ['POST'])
@@ -93,6 +106,6 @@ def RemoveRSVP():
     program = eventData['programId']
     currentEventParticipant = EventParticipant.get(EventParticipant.user == userId, EventParticipant.event == eventId)
     currentEventParticipant.delete_instance()
-    
+
     flash("Successfully unregistered for event!", "success")
     return redirect(url_for("admin.editEvent", eventId=eventId, program=program))
