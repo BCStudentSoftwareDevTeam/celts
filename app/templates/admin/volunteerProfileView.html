@@ -85,6 +85,66 @@
            </tbody>
           </table>
 
+
+          <!-- Start Accordion -->
+          <div class="accordion accordion-flush" id="accordionFlushExample">
+            {% for program in eligibilityTable %}
+          <div class="accordion-item">
+          <h2 class="accordion-header" id="flush-headingOne">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+            {{program.program.programName}}
+          </button>
+          </h2>
+          <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+          <div class="accordion-body">
+          <tbody id="volunteerTable">
+            <thead>
+              <tr>
+                <th>Program</th>
+                <th>Training</th>
+                <th>Banned</th>
+              </tr>
+            </thead>
+            <tr>
+
+            <td class="programTraining">{% if program.completedTraining %}<button type="button" name="button" class="btn btn-success rounded-pill">Complete</button>
+                  {% else %} <button type="button" name="button" class="btn btn-danger rounded-pill">Incomplete</button>
+                  {% endif %}</td>
+              <td class="programBan">
+                {% if program.isNotBanned %}<button type="button" name="button" class="ban btn btn-danger rounded-pill" value="Ban">Ban</button>
+                  {% else %} <button type="button" name="button" class="ban btn btn-success rounded-pill" value="Unban">Unban</button>
+                  {% endif %}</td>
+                  </tr>
+             </tbody>
+          </div>
+          </div>
+          </div>
+            {% endfor %}
+          </div>
+          <!-- End Accordion -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
           <!-- Modal -->
           <div class="modal fade" id="banVolunteerModal" tabindex="-1" aria-labelledby="banVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
             <div class="modal-dialog">
