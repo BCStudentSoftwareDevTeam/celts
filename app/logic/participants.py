@@ -60,6 +60,7 @@ def userRsvpForEvent(user,  event):
     isEligible = isEligibleForProgram(program, user)
     if isEligible:
         newParticipant = EventRsvp.get_or_create(user = rsvpUser, event = rsvpEvent)[0]
+        EventParticipant.get_or_create(user = rsvpUser, event = rsvpEvent)[0]
         return newParticipant
     return isEligible
 
