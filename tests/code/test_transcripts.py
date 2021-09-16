@@ -2,6 +2,8 @@ import pytest
 from peewee import DoesNotExist
 
 from app.logic.transcript import *
+from app.models.user import User
+from app.models.courseParticipant import CourseParticipant
 from app.models.event import Event
 from app.models.programEvent import ProgramEvent
 from app.models.facilitator import Facilitator
@@ -11,8 +13,20 @@ from app.logic.events import deleteEvent
 
 @pytest.mark.integration
 def testingTrainings():
+    user = User.create(
+    username = "namet",
+    bnumber = "B001234567",
+    email = "namet@berea.edu",
+    phoneNumber = "555-123-1234",
+    firstName = "Test",
+    lastName  = "Name",
+    isStudent = 1,
+    isFaculty = 0,
+    isCeltsAdmin = 0,
+    isCeltsStudentStaff = 0,
+    )
 
-    newEvent = Event.create(eventName = "Test Event",
+    newEvent = Event.create(eventName = "Test Training Event",
                               term = 1,
                               description= "Event for testing",
                               timeStart = "18:00:00",
@@ -30,11 +44,11 @@ def testingTrainings():
 
     facilitatorEntry = Facilitator.create(user = 'ramsayb2',event = newEvent)
 
-    testingEvent = Event.get(Event.eventName == "Test Event")
+    testingTrainingEvent = Event.get(Event.eventName == "Test Training Event")
 
-    addVolunteerToEvent('neillz', testingEvent.id, 2)
+    addVolunteerToEvent('namet', testingTrainingEvent.id, 2)
 
-    username = "neillz"
+    username = "namet"
     adminName = "ramsayb2"
 
     testingTrainingsExist = getTrainingTranscript(username)
@@ -44,13 +58,12 @@ def testingTrainings():
     assert testingTrainingNotExist.exists() == False
     assert testingTrainingsExist.exists()
 
-    deleteEvent(2, testingEvent)
-    assert Event.get_or_none(Event.id == testingEvent) is None
+
 
 @pytest.mark.integration
 def testingBonner():
 
-    newEvent = Event.create(eventName = "Test Event",
+    newEvent = Event.create(eventName = "Test Bonner Event",
                               term = 1,
                               description= "Event for testing",
                               timeStart = "18:00:00",
@@ -68,11 +81,11 @@ def testingBonner():
 
     facilitatorEntry = Facilitator.create(user = 'ramsayb2',event = newEvent)
 
-    testingEvent = Event.get(Event.eventName == "Test Event")
+    testingBonnerEvent = Event.get(Event.eventName == "Test Bonner Event")
 
-    addVolunteerToEvent('neillz', testingEvent.id, 2)
+    addVolunteerToEvent('namet', testingBonnerEvent.id, 2)
 
-    username = "neillz"
+    username = "namet"
     adminName = "ramsayb2"
 
     testingBonnerExist = getBonnerScholarEvents(username)
@@ -82,20 +95,19 @@ def testingBonner():
     assert testingBonnerNotExist.exists() == False
     assert testingBonnerExist.exists()
 
-    deleteEvent(2, testingEvent)
-    assert Event.get_or_none(Event.id == testingEvent) is None
+
 
 @pytest.mark.integration
 def testingSLCourses():
 
-    username = "neillz"
+    username = "namet"
     adminName = "ramsayb2"
 
     newCourse = Course.create(courseName = "Test Course",
                                 term = 1,
                                 status = 1,
                                 courseCredit = "45",
-                                createdBy = "totoro",
+                                createdBy = "ramsayb2",
                                 isAllSectionsServiceLearning = 0,
                                 isPermanentlyDesignated = 0,
                                 sectionBQuestion1 = "CharField()",
@@ -106,16 +118,78 @@ def testingSLCourses():
                                 sectionBQuestion6 = "CharField()")
 
     testingCourse = Course.get(Course.courseName == "Test Course")
-
+    instructor = CourseInstructor.create(course = testingCourse.id, user = adminName)
     courseParticipant = CourseParticipant.create(course = testingCourse.id,
                                                     user = username,
                                                     hoursEarned = 3.0)
 
     testingSLCExist = getSlCourseTranscript(username)
     testingSLCNotExist = getSlCourseTranscript(adminName)
-
     assert testingSLCExist.exists()
     assert testingSLCNotExist.exists() == False
 
-    removeCourse = testingCourse.delete_instance(recursive = True, delete_nullable = True)
-    assert Course.get_or_none(Course.id == testingCourse) is None
+
+
+
+@pytest.mark.integration
+def testingProgram():
+
+
+    username = "namet"
+    adminName = "ramsayb2"
+
+    newEvent = Event.create(eventName = "Test Program Event",
+                              term = 1,
+                              description= "Event for testing",
+                              timeStart = "18:00:00",
+                              timeEnd = "21:00:00",
+                              location = "The testing lab",
+                              isRecurring = 0,
+                              isRsvpRequired = 0,
+                              isPrerequisiteForProgram = 0,
+                              isTraining = 0,
+                              isService = 0,
+                              startDate =  2021-12-12,
+                              endDate =  2021-12-13)
+
+    programEvent = ProgramEvent.create(program=1, event=newEvent)
+
+    testingProgramEvent = Event.get(Event.eventName == "Test program Event")
+
+    addVolunteerToEvent('namet', testingProgramEvent.id, 2)
+
+    testingProgramExist = getProgramTranscript(username)
+    testingProgramNotExist = getProgramTranscript(adminName)
+
+    assert testingProgramNotExist.exists() == False
+    assert testingProgramExist.exists()
+
+
+
+@pytest.mark.integration
+def testingTotalHours():
+
+    totalHours = getTotalHour("namet")
+
+    assert totalHours == 9
+
+    # delete training
+    testingTrainingEvent = Event.get(Event.eventName == "Test Training Event")
+    deleteEvent(2, testingTrainingEvent)
+    assert Event.get_or_none(Event.id == testingTrainingEvent) is None
+    # delete bonner
+    testingBonnerEvent = Event.get(Event.eventName == "Test Bonner Event")
+    deleteEvent(2, testingBonnerEvent)
+    assert Event.get_or_none(Event.id == testingBonnerEvent) is None
+    # delete courses
+    testingCourse = Course.get(Course.courseName == "Test Course")
+    testingCourse.delete_instance(recursive = True, delete_nullable = True)
+    assert Course.get_or_none(Course.id == testingCourse.id) is None
+    # delete program
+    testingProgramEvent = Event.get(Event.eventName == "Test program Event")
+    deleteEvent(2, testingProgramEvent)
+    assert Event.get_or_none(Event.id == testingProgramEvent) is None
+    # delete user
+    user = User.get(User.username == "namet")
+    user.delete_instance(recursive = True, delete_nullable = True)
+    assert User.get_or_none(User.username == "namet") is None
