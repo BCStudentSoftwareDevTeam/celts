@@ -21,7 +21,11 @@ def home():
 
 @main_bp.route('/profile/<username>', methods=['GET'])
 def viewVolunteersProfile(username):
-    if not g.current_user.isFaculty or  g.current_user.isCeltsAdmin:
+    """
+    This function displays the information of a volunteer to the user
+    """
+    print(g.current_user)
+    if not g.current_user.isFaculty or g.current_user.isCeltsAdmin:
          upcomingEvents = getUpcomingEventsForUser(username)
          programs = Program.select()
          interests = Interest.select().where(Interest.user == username)
@@ -45,7 +49,8 @@ def viewVolunteersProfile(username):
             interests_ids = interests_ids,
             upcomingEvents = upcomingEvents,
             eligibilityTable = eligibilityTable,
-            user = User.get(User.username == username))
+            volunteer = User.get(User.username == username),
+            user = g.current_user)
     abort(403)
 
 
@@ -56,6 +61,7 @@ def updateInterest(program_id):
     This function updates the interest table by adding a new row when a user
     shows interest in a program
     """
+    print("inside delete/add interest")
     rule = request.url_rule
     user = g.current_user
     try:
