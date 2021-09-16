@@ -8,6 +8,3 @@ serviceLearning_bp = Blueprint(
 )
 
 from app.controllers.serviceLearning import routes
-from app.controllers.serviceLearning import slcProposal
-from app.controllers.serviceLearning import slcGuidelines
-from app.controllers.serviceLearning import slcQuestionnaire
