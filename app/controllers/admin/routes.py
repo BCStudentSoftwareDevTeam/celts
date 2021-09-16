@@ -27,19 +27,20 @@ def trackVolunteersPage(programID, eventID):
     attendedTraining = trainedParticipants(programID)
     if g.current_user.isCeltsAdmin:
         if ProgramEvent.get_or_none(ProgramEvent.event == eventID, ProgramEvent.program == programID):
-            #eventParticipantsData = EventParticipant.select().where(EventParticipant.event == eventID)
-            eventParticipantsData = EventParticipant.select().join(EventRsvp,on=(EventParticipant.event == EventRsvp.event)).where(EventParticipant.event == eventID)
+            eventParticipantsData = EventParticipant.select().where(EventParticipant.event == eventID)
+            # eventParticipantsData = EventParticipant.select().join(EventRsvp,on=(EventParticipant.event == EventRsvp.event)).where(EventParticipant.event == eventID)
+            eventRsvpData = EventRsvp.select().where(EventRsvp.event == eventID)
+            eventRsvpUsers = []
             eventParticipantsData = eventParticipantsData.objects()
-            print("HEREEeeeeeeeeeeeee", list(eventParticipantsData))
-            for item in eventParticipantsData.objects():
-                print("This is the item",item.event)
+            for data in eventRsvpData:
+                eventRsvpUsers.append(data.user)
             event = Event.get_by_id(eventID)
             program = Program.get_by_id(programID)
             eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
 
-
             return render_template("/events/trackVolunteers.html",
                                     eventParticipantsData = list(eventParticipantsData),
+                                    eventRsvpUsers = eventRsvpUsers,
                                     eventLength = eventLengthInHours,
                                     program = program,
                                     event = event,

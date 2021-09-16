@@ -10,6 +10,7 @@ from app.logic.events import groupEventsByCategory
 from app.logic.events import getUpcomingEventsForUser
 from app.logic.participants import sendUserData
 from datetime import datetime
+from app.models.eventRsvp import EventRsvp
 
 @events_bp.route('/events/<term>/', methods=['GET'])
 def events(term):
@@ -20,7 +21,8 @@ def events(term):
     currentTime = datetime.now()
     eventsDict = groupEventsByCategory(term)
     listOfTerms = Term.select()
-    participantRSVP = EventParticipant.select().where(EventParticipant.user == g.current_user, EventParticipant.rsvp == True)
+    # participantRSVP = EventParticipant.select().where(EventParticipant.user == g.current_user)
+    participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in list(participantRSVP)]
 
     return render_template("/events/event_list.html",

@@ -92,7 +92,7 @@
         <td>{{participant.user.email}}</td>
         <td>{{participant.user.phoneNumber}}</td>
 
-        <td>{% if participant.rsvp == 1 %} Yes {% else %} No {% endif %}</td>
+        <td>{% if participant.user in eventRsvpUsers  %} Yes {% else %} No {% endif %}</td>
 
         <td><input class="form-control number-only form-control input-sm" id="inputHours_{{participant.user.username}}"
                    name="inputHours_{{participant.user.username}}" style="max-width: 90px;" type ="number" min="0" step="0.01"

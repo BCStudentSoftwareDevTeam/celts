@@ -40,7 +40,6 @@ def sendUserData(bnumber, eventid, programid):
             totalHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
             EventParticipant.insert([{EventParticipant.user: signInUser,
                                       EventParticipant.event: eventid,
-                                      EventParticipant.rsvp: False,
                                       EventParticipant.attended: True,
                                       EventParticipant.hoursEarned: totalHours}]).execute()
     return signInUser, userStatus
