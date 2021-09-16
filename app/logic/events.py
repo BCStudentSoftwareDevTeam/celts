@@ -109,7 +109,7 @@ def getUpcomingEventsForUser(user,asOf=datetime.now()):
         Get the list of upcoming events that the user is interested in.
 
         :param user: a username or User object
-        :param asOf: The date to use when determining future and past events. 
+        :param asOf: The date to use when determining future and past events.
                       Used in testing, defaults to the current timestamp.
         :return: A list of Event objects
     """
@@ -129,4 +129,3 @@ def getAllFacilitators():
 
     facilitators = User.select(User).where((User.isFaculty == 1) | (User.isCeltsAdmin == 1) | (User.isCeltsStudentStaff == 1))
     return facilitators
-
