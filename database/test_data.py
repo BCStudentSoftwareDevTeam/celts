@@ -730,14 +730,7 @@ eventRsvp =  [
         "user":"ramsayb2",
         "event": 7,
     },
-    {
-        "user":"khatts",
-        "event": 7,
-    },
-    {
-        "user":"khatts",
-        "event":3
-    }
+    
 ]
 EventRsvp.insert_many(eventRsvp).on_conflict_replace().execute()
 interest = [
