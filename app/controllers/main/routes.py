@@ -10,6 +10,7 @@ from app.controllers.main import main_bp
 from app.logic.events import getUpcomingEventsForUser
 from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
+from app.models.eventRsvp import EventRsvp
 
 
 @main_bp.route('/')
@@ -92,7 +93,9 @@ def RemoveRSVP():
     eventId = eventData['eventId']
     program = eventData['programId']
     currentEventParticipant = EventParticipant.get(EventParticipant.user == userId, EventParticipant.event == eventId)
+    currentRsvpParticipant = EventRsvp.get(EventRsvp.user == userId, EventRsvp.event == eventId)
     currentEventParticipant.delete_instance()
-    
+    currentRsvpParticipant.delete_instance()
+
     flash("Successfully unregistered for event!", "success")
     return redirect(url_for("admin.editEvent", eventId=eventId, program=program))

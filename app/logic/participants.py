@@ -80,7 +80,6 @@ def unattendedRequiredEvents(program, user):
             if not attendedRequirement:
                 attendedRequiredEventsList.append(event.eventName)
         if attendedRequiredEventsList is not None:
-            print("........................................",attendedRequiredEventsList)
             return attendedRequiredEventsList
     else:
         return []
