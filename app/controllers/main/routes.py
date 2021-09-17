@@ -6,16 +6,35 @@ from app.models.program import Program
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
+from app.models.term import Term
+from app.models.eventParticipant import EventParticipant
 from app.controllers.main import main_bp
 from app.logic.events import getUpcomingEventsForUser
 from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
+from app.logic.events import groupEventsByCategory
+from datetime import datetime
 
+@main_bp.route('/', methods=['GET'])
+@main_bp.route('/<selectedTerm>', methods=['GET'])
+def events(selectedTerm=None):
+    currentTerm = g.current_term
+    if selectedTerm:
+        currentTerm = selectedTerm
 
-@main_bp.route('/')
-def home():
-    print(f"{g.current_user.username}: {g.current_user.firstName} {g.current_user.lastName}")
-    return render_template('main/home.html', title="Welcome to CELTS!")
+    currentTime = datetime.now()
+    eventsDict = groupEventsByCategory(currentTerm)
+    listOfTerms = Term.select()
+    participantRSVP = EventParticipant.select().where(EventParticipant.user == g.current_user, EventParticipant.rsvp == True)
+    rsvpedEventsID = [event.event.id for event in list(participantRSVP)]
+
+    return render_template("/events/event_list.html",
+        selectedTerm = Term.get_by_id(currentTerm),
+        eventDict = eventsDict,
+        listOfTerms = listOfTerms,
+        rsvpedEventsID = rsvpedEventsID,
+        currentTime = currentTime,
+        user = g.current_user)
 
 @main_bp.route('/profile/<username>', methods = ['GET'])
 def profilePage(username):
@@ -37,7 +56,6 @@ def profilePage(username):
     except Exception as e:
         print(e)
         return "Error retrieving user profile", 500
-
 
 @main_bp.route('/deleteInterest/<program_id>', methods = ['POST'])
 @main_bp.route('/addInterest/<program_id>', methods = ['POST'])
@@ -93,6 +111,6 @@ def RemoveRSVP():
     program = eventData['programId']
     currentEventParticipant = EventParticipant.get(EventParticipant.user == userId, EventParticipant.event == eventId)
     currentEventParticipant.delete_instance()
-    
+
     flash("Successfully unregistered for event!", "success")
     return redirect(url_for("admin.editEvent", eventId=eventId, program=program))
