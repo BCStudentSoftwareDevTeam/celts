@@ -1,5 +1,4 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for
-
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.program import Program
