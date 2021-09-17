@@ -79,7 +79,7 @@ def test_wrongValidateNewEventData():
 
     # testing same event already exists
     validateEventData["eventRequiredForProgram"] = True
-    validateEventData["eventStartDate"] = '2021-12-12'
+    validateEventData["eventStartDate"] = '2021-10-12'
     validateEventData['eventEndDate'] = '2022-06-12'
 
     validNewEvent, eventErrorMessage, eventData = validateNewEventData(validateEventData)

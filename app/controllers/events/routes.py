@@ -6,12 +6,8 @@ from app.models.program import Program
 from app.models.event import Event
 from app.models.user import User
 from app.models.programEvent import ProgramEvent
-from app.models.term import Term
-from app.models.eventParticipant import EventParticipant
 from app.controllers.events import events_bp
 from app.logic.events import getEvents
-from app.logic.events import groupEventsByCategory
-from app.logic.events import getUpcomingEventsForUser
 from app.logic.participants import sendUserData
 
 @events_bp.route('/events/<term>/', methods=['GET'])
