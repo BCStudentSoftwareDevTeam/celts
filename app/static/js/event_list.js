@@ -1,4 +1,11 @@
 
+$( document ).ready(function() {
+  //force-hide all modals when user clicks outisde the modal or clicks the x
+  $('.modal').on('hidden.bs.modal', function () {
+    $('.modal').modal('hide')
+  });
+});
+
 function passEventInfo(eventID, programID){
   // when the email button for an event is clicked, this passes the eventID and programID to the modal
   $('.modal').modal('show')

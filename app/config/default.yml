@@ -14,13 +14,12 @@ db:
 
 mail:
     enabled: True
-    server: "smtp.gmail.com" # use smtp.gmail.com for gmail, mail.berea.edu for Berea
-    port: 465                # use port 465 for gmail, use 25 for Berea
-    username: 'bramsayr@gmail.com'             # add the email of the sender (for gmail)
-    password: 'celtsTest'             # Add the password of the sender (for gmail)
+    server: "mail.berea.edu" # use smtp.gmail.com for gmail, mail.berea.edu for Berea
+    port: 25                # use port 465 for gmail, use 25 for Berea
+    username: 'neillz@berea.edu'             # add the email of the sender (for gmail)
+    password: 'nhsD241$$$##!!!'             # Add the password of the sender (for gmail)
     tls: False
     ssl: True
-    default_sender: 'bramsayr@gmail.com' #FIXME: Add sender email address
+    default_sender: 'neillz@berea.edu' #FIXME: Add sender email address
     override_addr: "j5u6j9w6v1h0p3g1@bereacs.slack.com"
     reply_to_address: "j5u6j9w6v1h0p3g1@bereacs.slack.com"
-    

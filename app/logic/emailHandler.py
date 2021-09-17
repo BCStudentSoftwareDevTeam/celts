@@ -28,7 +28,6 @@ def getVolunteerEmails(programID = None, eventID = None, emailRecipients = "inte
 
     else:
         print("ITS IMPRESSIVE HOW YOU MANAGED TO BREAK THIS")
-
     return [user.email for user in volunteersToEmail]
 
 
