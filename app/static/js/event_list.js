@@ -11,7 +11,6 @@ function passEventInfo(eventID, programID){
   $('.modal').modal('show')
   $(".modal-body #eventID").val(eventID)
   $(".modal-body #programID").val(programID)
-
 }
 
 function rsvpForEvent(programID, eventID){

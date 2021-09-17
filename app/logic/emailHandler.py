@@ -49,22 +49,22 @@ class emailHandler():
         self.mail = Mail(app)
 
     def sendEmail(self, message: Message, emails):
-        try:
-            if 'sendIndividually' in self.emailInfo:    #<-----------------------need to test this some more.
-                if app.config['MAIL_OVERRIDE_ALL']:
-                    message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
-                with self.mail.connect() as conn:
-                    for email in emails:
-                        message.recipients = [email]
-                        conn.send(message)
-            else:
-                if app.config['MAIL_OVERRIDE_ALL']:
-                    message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
+        # try:
+        if 'sendIndividually' in self.emailInfo:    #<-----------------------need to test this some more.
+            if app.config['MAIL_OVERRIDE_ALL']:
+                message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
+            with self.mail.connect() as conn:
+                for email in emails:
+                    message.recipients = [email]
+                    conn.send(message)
+        else:
+            if app.config['MAIL_OVERRIDE_ALL']:
+                message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
 
-                message.reply_to = app.config["REPLY_TO_ADDRESS"]
-                self.mail.send(message)
+            message.reply_to = app.config["REPLY_TO_ADDRESS"]
+            self.mail.send(message)
 
-            return 1
+        return 1
 
-        except:
-            return 0
+        # except:
+        #     return 0
