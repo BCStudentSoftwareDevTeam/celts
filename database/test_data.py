@@ -235,6 +235,13 @@ programs = [
         "isStudentLed": False,
         "isBonnerScholars": False,
     }
+    ,
+    {
+        "id": 12,
+        "programName": "Berea Tutoring",
+        "isStudentLed": False,
+        "isBonnerScholars": False,
+    }
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
 
