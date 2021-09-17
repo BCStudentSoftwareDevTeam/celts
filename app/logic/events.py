@@ -123,7 +123,7 @@ def getUpcomingEventsForUser(user,asOf=datetime.now()):
                             .where(Event.startDate >= asOf)
                             .where(Event.timeStart > asOf.time())
                             .distinct()
-                            .order_by(Event.eventName)
+                            .order_by(Event.startDate, Event.eventName)
                             )
 
     return events
