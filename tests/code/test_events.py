@@ -208,13 +208,11 @@ def test_getsCorrectUpcomingEvent():
     events = getUpcomingEventsForUser(user, asOf=testDate)
     assert len(events) == 3
     assert "Empty Bowls Spring" == events[0].eventName
-    assert events[0].eventparticipant.rsvp == True
 
     user = "ramsayb2"
     events = getUpcomingEventsForUser(user, asOf=testDate)
     assert len(events) == 5
     assert "Making Bowls" == events[0].eventName
-    assert events[0].eventparticipant.rsvp == True
 
 
 @pytest.mark.integration

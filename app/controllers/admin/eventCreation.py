@@ -1,10 +1,13 @@
 from dateutil import parser
 from app.models.event import Event
-from flask import request
+from flask import request, render_template
+from app.models.program import Program
+from app.models.term import Term
 from app.controllers.admin import admin_bp
-from app.logic.events import eventEdit
+from app.logic.events import eventEdit, getAllFacilitators
 from app.logic.eventCreation import createNewEvent, setValueForUncheckedBox, calculateRecurringEventFrequency
 from app.logic.eventCreation import validateNewEventData
+from app.logic.utils import selectFutureTerms
 from flask import flash, redirect, url_for, g
 import json
 
@@ -65,7 +68,7 @@ def createEvent():
                 return redirect(url_for("events.events", term = newEventData['eventTerm']))
             else:
                 eventEdit(newEventData)
-                flash("Event successfully updated!")
+                flash("Event successfully updated!", "success")
                 return redirect(url_for("events.events", term = newEventData['eventTerm']))
         else:
             flash(validationErrorMessage, 'warning')

@@ -30,14 +30,14 @@ def test_getSlTranscripts():
     user = "neillz"
     transcript = getSlCourseTranscript(user)
     assert transcript[0] == ["Zach Neill", "Databases", "Spring B 2021", 2.0, ["Brian Ramsay"]]
-    assert transcript[1] == ["Zach Neill", "Spanish Help", "Spring A 2021", 3.0, ["Brian Ramsay"]]
+    assert transcript[1] == ["Zach Neill", "Spanish Help", "Spring A 2021", 3.0, ["Brian Ramsay", "Zach Neill"]]
 
     # We still need to decide whether we want to create multiple entries for the same course or just update the hoursEarned.
 
     user2 = "khatts"  # User who attends a course multiple times
     transcript2 = getSlCourseTranscript(user2)
-    assert transcript2[0] == ["Sreynit Khatt", "Spanish Help", "Spring A 2021", 8.0, ["Brian Ramsay"]]
-    assert transcript2[1] == ["Sreynit Khatt", "Databases", "Spring B 2021", 1.0, ["Brian Ramsay"]]
+    assert transcript2[0] == ["Sreynit Khatt", "Databases", "Spring B 2021", 1.0, ["Brian Ramsay"]]
+    assert transcript2[1] == ["Sreynit Khatt", "Spanish Help", "Spring A 2021", 8.0, ["Brian Ramsay", "Zach Neill"]]
 
     user3 = "agliullovak" #user with no course
     transcript3 = getSlCourseTranscript(user3)
@@ -48,16 +48,16 @@ def test_getProgramTranscripts():
 
     user = "neillz"
     transcript = getProgramTranscript(user)
-    assert transcript[0] == ['Empty Bowls', 'Spring A 2021', 10.0]
-    assert transcript[1] == ['Adopt A Grandparent', 'Summer 2021', 3.0]
-    assert transcript[2] == ['Berea Buddies', 'Spring A 2021', 1.0]
+    assert transcript[0] == ['Adopt A Grandparent', 'Summer 2021', 3.0]
+    assert transcript[1] == ['Berea Buddies', 'Spring A 2021', 1.0]
+    assert transcript[2] == ['Berea Buddies', 'Summer 2021', 1.0]
+    assert transcript[3] == ['Empty Bowls', 'Spring A 2021', 10.0]
 
-    user2 = "khatts"
-    transcript2 = getProgramTranscript(user2)
-    assert transcript2[0] == ['Empty Bowls', 'Spring A 2021', 5.0]
+    user = "khatts"
+    transcript = getProgramTranscript(user)
+    assert transcript[0] == ['Adopt A Grandparent', 'Summer 2021', 3.0] #Program that has events from different term.
+    assert transcript[2] == ['Empty Bowls', 'Spring A 2021', 5.0]
 
-    assert transcript2[3] == ['Berea Buddies', 'Summer 2021', 8.0] #Program that has events from different term.
-
-    user3 = "ramsayb2" #user who's not involved in any program
-    transcript3 = getProgramTranscript(user3)
-    assert transcript3 == []
+    user = "ramsayb2" #user who's not involved in any program
+    transcript = getProgramTranscript(user)
+    assert transcript == []

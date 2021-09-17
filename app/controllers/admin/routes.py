@@ -8,6 +8,7 @@ from app.models.term import Term
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
+from app.logic.getSLInstructorTableData import getProposalData
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectFutureTerms
@@ -16,6 +17,7 @@ from app.logic.events import deleteEvent, getAllFacilitators
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.eventCreation import createEvent, addRecurringEvents
+from app.controllers.admin import changeSLAction
 from datetime import datetime
 
 @admin_bp.route('/<programID>/<eventID>/track_volunteers', methods=['GET'])
@@ -53,6 +55,7 @@ def editEvent(program, eventId):
 
     # FIXME: One of the below two should be replaced which one?
     eventFacilitators = Facilitator.select().where(Facilitator.event == eventInfo)
+    numFacilitators = len(list(eventFacilitators))
     currentFacilitator = Facilitator.get_or_none(Facilitator.event == eventId)
 
     isRecurring = "Checked" if eventInfo.isRecurring else ""
@@ -87,6 +90,7 @@ def editEvent(program, eventId):
                             isRsvpRequired = isRsvpRequired,
                             isService = isService,
                             eventFacilitators = eventFacilitators,
+                            numFacilitators = numFacilitators,
                             userHasRSVPed = userHasRSVPed,
                             deleteButton = deleteButton)
 
@@ -94,13 +98,24 @@ def editEvent(program, eventId):
 def deleteRoute(program, eventId):
 
     try:
-        event = Event.get(Event.id == eventId)
+        eventTerm = Event.get(Event.id == eventId).term
         deleteEvent(program, eventId)
-        flash("Event canceled")
-        return redirect(url_for("events.events", term = eventTerm.term))
+        flash("Event canceled", "success")
+        return redirect(url_for("events.events", term=eventTerm))
 
     except Exception as e:
         print('Error while canceling event:', e)
+        return "", 500
+
+@admin_bp.route('/courseProposals', methods=['GET'])
+def createTable():
+    courseDict = getProposalData(g.current_user)
+    try:
+        return render_template("/admin/createSLProposalTable.html",
+                                instructor = g.current_user,
+                                courseDict = courseDict)
+    except Exception as e:
+        print('Error while creating table:', e)
         return "", 500
 
 @admin_bp.route('/volunteerProfile', methods=['POST'])

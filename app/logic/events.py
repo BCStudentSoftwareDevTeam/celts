@@ -1,8 +1,6 @@
 from peewee import DoesNotExist
-from peewee import JOIN
 from datetime import date, datetime, time
 from dateutil import parser
-
 from app.models.user import User
 from app.models.event import Event
 from app.models.interest import Interest
@@ -10,7 +8,6 @@ from app.models.facilitator import Facilitator
 from app.models.program import Program
 from app.models.term import Term
 from app.models.programEvent import ProgramEvent
-from app.models.eventParticipant import EventParticipant
 
 def getEvents(program_id=None):
 
@@ -122,11 +119,10 @@ def getUpcomingEventsForUser(user,asOf=datetime.now()):
                             .where(Interest.user == user)
                             .where(Event.startDate >= asOf)
                             .where(Event.timeStart > asOf.time())
-                            .distinct()
-                            .order_by(Event.startDate, Event.eventName)
+                            .distinct() # necessary because of multiple programs
+                            .order_by(Event.startDate, Event.eventName) # keeps the order of events the same when the dates are the same
                             )
-
-    return events
+    return list(events)
 
 def getAllFacilitators():
 
