@@ -134,23 +134,12 @@ def studentSearchPage():
 @admin_bp.route('/searchStudents/<query>', methods = ['GET'])
 def searchStudents(query):
     '''Accepts user input and queries the database returning results that matches user search'''
-    query = query.strip()
-    search = query.upper()
-    splitSearch = search.split()
-    searchResults = searchUsers(query)
-    return searchResults
-
-
-@admin_bp.route('/searchVolunteers/<query>', methods = ['GET'])
-def searchVolunteers(query):
-    '''Accepts user input and queries the database returning results that matches user search'''
-
     try:
         query = query.strip()
-        search = query.upper() + "%"
-        resultsDict = searchUsers(query)
-        dictToJSON = json.dumps(resultsDict)
-        return dictToJSON
+        search = query.upper()
+        splitSearch = search.split()
+        searchResults = searchUsers(query)
+        return searchResults
     except Exception as e:
         print(e)
         return "Error Searching Volunteers query", 500
