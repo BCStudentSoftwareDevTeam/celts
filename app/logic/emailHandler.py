@@ -1,8 +1,6 @@
 from flask import Flask, request, render_template
 import yaml, os
 from flask_mail import Mail, Message
-# from app.config
-# from app.config.production import *
 from app.models.interest import Interest
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
@@ -10,9 +8,6 @@ from app.models.emailTemplate import EmailTemplate
 from app import app
 import sys
 from pathlib import Path
-
-
-#borrowed from emailHandler file (and other places) in lsf
 
 def load_config(file):
     """ This should be in a seperate file. prob in the config dir"""
@@ -31,10 +26,6 @@ def getVolunteerEmails(programID = None, eventID = None, emailRecipients = "inte
     elif emailRecipients == 'eventParticipant':  #email only people who rsvped
         volunteersToEmail = User.select().join(EventParticipant).where(EventParticipant.event == eventID)
 
-    # elif emailRecipients == 'yourself':  #email yourself; test purposes maybe
-    #     volunteersToEmail = User.select().where(User.username == g.current_user.username)  #<----- this won't work in the logic file (cuz the logic file has to be tested)...
-    #     volunteersToEmail = User.select().where(User.username == 'neillz')
-    #     # THIS WORKS
     else:
         print("ITS IMPRESSIVE HOW YOU MANAGED TO BREAK THIS")
 

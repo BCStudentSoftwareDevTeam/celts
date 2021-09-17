@@ -1,6 +1,7 @@
 
 function passEventInfo(eventID, programID){
   // when the email button for an event is clicked, this passes the eventID and programID to the modal
+  $('.modal').modal('show')
   $(".modal-body #eventID").val(eventID)
   $(".modal-body #programID").val(programID)
 
