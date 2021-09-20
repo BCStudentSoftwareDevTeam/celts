@@ -99,18 +99,20 @@
      <div id="flush-collapseOne"
           class="accordion-collapse collapse"
           aria-labelledby="flush-headingOne"
-          data-bs-parent="#accordionFlushExample"
-          >
+          data-bs-parent="#accordionFlushExample">
+
           <div class="accordion-body">
+            <table class="table table-striped">
             <tbody id="volunteerTable">
               <thead>
                 <tr>
-                  <th>Program</th>
-                  <th>Training</th>
-                  <th>Banned</th>
+                  <th scope="col">Training Events</th>
+                  <th scope="col">Checklist</th>
+                  <th scope="col">Banned</th>
                 </tr>
               </thead>
               <tr>
+                <td class="programTraining"> {{program.program.programName}}</td>
                 <td class="programTraining">{% if program.completedTraining %}<button type="button" name="button" class="btn btn-success rounded-pill">Complete</button>
                   {% else %} <button type="button" name="button" class="btn btn-danger rounded-pill">Incomplete</button>
                   {% endif %}
@@ -122,6 +124,7 @@
                 </td>
               </tr>
             </tbody>
+            </table>
           </div>
         </div>
       </div>
