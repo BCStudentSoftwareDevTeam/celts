@@ -1,4 +1,4 @@
-from flask import request, render_template, g, abort, flash, redirect, url_for
+from flask import request, render_template, g, abort, flash, redirect, url_for,load_config
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.program import Program
@@ -113,3 +113,9 @@ def RemoveRSVP():
 
     flash("Successfully unregistered for event!", "success")
     return redirect(url_for("admin.editEvent", eventId=eventId, program=program))
+@main_bp.route('/contributors',methods = ['GET'])
+def contributors():
+    contribs = load_config("app/config/Contributors.yml")
+    return render_template("app/templates/Contributors.html",
+           cfg = contribs
+           )
