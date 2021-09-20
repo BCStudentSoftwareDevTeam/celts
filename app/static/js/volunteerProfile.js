@@ -9,11 +9,9 @@ $(document).ready(function(){
 
   $(".form-check-input").click(function updateInterest(el){
     var programID = $(this).attr('id');
-    var interest = $(this).is(':checked');
-    var volunteer = $()
-    console.log("+", programID,"-", interest,"=",volunteer);
-
-
+    var interest = $(this).is(':checked').prop('checked', true);
+    // var volunteer = $()
+    // console.log("+", programID,"-", interest,"=",volunteer);
 
     if (interest) {
       var routeUrl = "/addInterest/";
@@ -27,7 +25,7 @@ $(document).ready(function(){
     $.ajax({
       method: "POST",
       url: routeUrl + programID,
-      data: {volunteer: volunteer, programID: programID, rule:rule},
+      // data: {volunteer: volunteer, programID: programID, rule:rule},
       success: function(response) {
           msgFlash("Your interest has been updated", "success");
       },

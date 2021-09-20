@@ -107,16 +107,14 @@
               <thead>
                 <tr>
                   <th scope="col">Training Events</th>
-                  <th scope="col">Checklist</th>
+                  <th scope="col">Training Checklist</th>
                   <th scope="col">Banned</th>
                 </tr>
               </thead>
               <tr>
-                <td class="programTraining"> {{program.program.programName}}</td>
-                <td class="programTraining">{% if program.completedTraining %}<button type="button" name="button" class="btn btn-success rounded-pill">Complete</button>
-                  {% else %} <button type="button" name="button" class="btn btn-danger rounded-pill">Incomplete</button>
-                  {% endif %}
-                </td>
+                <td class="programTraining"> {{event.eventName}}</td>
+                <td><input type="checkbox" onChange='toggleVolunteersInputBox(this)' {% if event.isTraining == Yes %} checked  {%endif%}></td>
+
                 <td class="programBan">
                   {% if program.isNotBanned %}<button type="button" name="button" class="ban btn btn-danger rounded-pill" value="Ban">Ban</button>
                   {% else %} <button type="button" name="button" class="ban btn btn-success rounded-pill" value="Unban">Unban</button>
