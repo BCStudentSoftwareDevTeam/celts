@@ -2,12 +2,8 @@ from flask import Flask, redirect, flash, url_for, request, render_template, g, 
 from app.models.event import Event
 from app.models.user import User
 from app.models.programEvent import ProgramEvent
-from app.models.term import Term
-from app.models.eventParticipant import EventParticipant
 from app.controllers.events import events_bp
 from app.logic.events import getEvents
-from app.logic.events import groupEventsByCategory
-from app.logic.events import getUpcomingEventsForUser
 from app.logic.participants import sendUserData
 from datetime import datetime
 from app.models.eventRsvp import EventRsvp
