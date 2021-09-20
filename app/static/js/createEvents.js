@@ -1,4 +1,25 @@
+//
+// updates max and min dates of the datepickers as the other datepicker changes
+function updateDate(obj) { 
+  var dateToChange = new Date($(obj).val());
+  var newMonth = dateToChange.getMonth();
+  var newYear = dateToChange.getFullYear();
+  var newDay = dateToChange.getDate();
 
+  if(obj.id == "startDatePicker") {
+    $("#endDatePicker").datepicker({minDate: new Date(  newYear, newMonth, newDay)});
+    $("#endDatePicker").datepicker( "option", "minDate", new Date(  newYear, newMonth, newDay));
+  }
+
+  if (obj.id == "endDatePicker") {
+    $("#startDatePicker").datepicker({maxDate: new Date(  newYear, newMonth, newDay)});
+    $("#startDatePicker").datepicker("option", "maxDate", new Date(  newYear, newMonth, newDay));
+  }
+}
+
+/*
+ * Run when the webpage is ready for javascript
+ */
 $(document).ready(function(){
 
   $("#checkIsRecurring").click(function() {
@@ -78,20 +99,3 @@ $(document).ready(function(){
 
   });
 });
-
-function updateDate(obj) { // updates max and min dates of the datepickers as the other datepicker changes
-  var dateToChange = new Date($(obj).val());
-  var newMonth = dateToChange.getMonth();
-  var newYear = dateToChange.getFullYear();
-  if(obj.id == "endDatePicker"){
-    var newDay = dateToChange.getDate();
-    $("#startDatePicker").datepicker({maxDate: new Date(  newYear, newMonth, newDay)});
-
-    $("#startDatePicker").datepicker("option", "maxDate", new Date(  newYear, newMonth, newDay));
-  }
-  if(obj.id == "startDatePicker"){
-    var newDay = dateToChange.getDate();
-    $("#endDatePicker").datepicker({minDate: new Date(  newYear, newMonth, newDay)});
-    $("#endDatePicker").datepicker( "option", "minDate", new Date(  newYear, newMonth, newDay));
-  }
-}

@@ -18,31 +18,6 @@ from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.eventCreation import createEvent, addRecurringEvents
 from datetime import datetime
 
-@admin_bp.route('/<programID>/<eventID>/track_volunteers', methods=['GET'])
-def trackVolunteersPage(programID, eventID):
-
-    attendedTraining = trainedParticipants(programID)
-    if g.current_user.isCeltsAdmin:
-        if ProgramEvent.get_or_none(ProgramEvent.event == eventID, ProgramEvent.program == programID):
-            eventParticipantsData = EventParticipant.select().where(EventParticipant.event == eventID)
-            eventParticipantsData = eventParticipantsData.objects()
-
-            event = Event.get_by_id(eventID)
-            program = Program.get_by_id(programID)
-            eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
-
-
-            return render_template("/events/trackVolunteers.html",
-                                    eventParticipantsData = list(eventParticipantsData),
-                                    eventLength = eventLengthInHours,
-                                    program = program,
-                                    event = event,
-                                    attendedTraining=attendedTraining)
-        else:
-            raise Exception("Event ID and Program ID mismatched")
-
-    else:
-        abort(403)
 
 @admin_bp.route('/event/<eventId>/edit', methods=['GET'])
 def editEvent(program, eventId):

@@ -4,7 +4,9 @@ from app.models import *
 
 class EventTemplate(baseModel):
     name = CharField()
+    tag = CharField()
     templateJSON = CharField()
+    templateFile = CharField()
     isVisible = BooleanField(default=True)
 
     def fetch(self, key, default=None):

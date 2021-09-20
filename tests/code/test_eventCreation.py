@@ -18,6 +18,9 @@ def test_eventTemplate_model():
     template.templateData = ["just", "an", "array"]
     template.save()
 
+    template = EventTemplate.get(name="test")
+    assert template.templateData == ["just", "an", "array"]
+
     template.delete_instance()
 
 @pytest.mark.integration

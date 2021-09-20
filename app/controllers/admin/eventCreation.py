@@ -25,39 +25,48 @@ def program_picker():
 @admin_bp.route('/event/<templateid>/create')
 @admin_bp.route('/event/<templateid>/<programid>/create')
 def template_select(templateid, programid=None):
-    if not g.current_user.isCeltsAdmin:
+    if not (g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff):
         abort(403)
-    else:
-        try:
-            template = EventTemplate.get_by_id(templateid)
-            if programid:
-                program = Program.get_by_id(programid)
 
-        except DoesNotExist as e:
-            print("Invalid template or program id:", e)
-            flash("There was an error with your selection. Please try again or contact Systems Support.", "danger")
-            return redirect(url_for("admin.program_picker"))
+    program = None
+    try:
+        template = EventTemplate.get_by_id(templateid)
+        if programid:
+            program = Program.get_by_id(programid)
 
-        futureTerms = selectFutureTerms(g.current_term)
-        eventInfo = ""
-        facilitators = getAllFacilitators()
-        deleteButton = "hidden"
-        endDatePicker = "d-none"
-        program = Program.get_by_id(program)
+    except DoesNotExist as e:
+        print("Invalid template or program id:", e)
+        flash("There was an error with your selection. Please try again or contact Systems Support.", "danger")
+        return redirect(url_for("admin.program_picker"))
 
-        eventData = template.templateData
-        if program:
-            eventData["program"] = program
+    futureTerms = selectFutureTerms(g.current_term)
 
-        return render_template("/admin/createEvents.html",
-                    template = template,
-                    eventData = eventData,
-                    futureTerms = futureTerms,
-                    facilitators = facilitators,
-                    user = g.current_user,
-                    deleteButton = deleteButton,
-                    endDatePicker = endDatePicker,
-                    eventInfo = eventInfo)
+    eventData = template.templateData
+    if program:
+        eventData["program"] = program
+
+    return render_template(f"/admin/{template.templateFile}", 
+            template = template,
+            eventData = eventData,
+            futureTerms = futureTerms)
+
+
+
+
+    eventInfo = ""
+    facilitators = getAllFacilitators()
+    deleteButton = "hidden"
+    endDatePicker = "d-none"
+
+    return render_template("/admin/createEvents.html",
+                template = template,
+                eventData = eventData,
+                futureTerms = futureTerms,
+                facilitators = facilitators,
+                user = g.current_user,
+                deleteButton = deleteButton,
+                endDatePicker = endDatePicker,
+                eventInfo = eventInfo)
 
 @admin_bp.route('/makeRecurringEvents', methods=['POST'])
 def addRecurringEvents():
