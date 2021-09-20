@@ -13,7 +13,7 @@ from peewee import DoesNotExist, fn
 #FIXME: Needs to break hours down by program and term, not just program
 def getProgramTranscript(username):
     """
-    Returns a Program query object containing all the training events for
+    Returns a Program query object containing all the programs for
     current user.
     """
 
@@ -80,3 +80,22 @@ def getTotalHour(username):
     totalHours = (eachHours.select_from(fn.SUM(eachHours.c.hoursEarned).alias("hoursEarned")))
 
     return totalHours
+
+def getStartDate(username):
+    """
+    Returns the users start term for participation in the CELTS organization
+    """
+    startYears = []
+    startDate = (EventParticipant.select(Term.year)
+                    .join(Event)
+                    .join(Term).where(EventParticipant.user == username)
+                + CourseParticipant.select(Term.year)
+                    .join(Course)
+                    .join(Term).where(CourseParticipant.user == username)).order_by(Event.term.year)
+
+    for date in startDate:
+        startYears.append(date.event.term.year)
+
+
+
+    return startYears

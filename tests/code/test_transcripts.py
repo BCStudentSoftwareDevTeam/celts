@@ -56,6 +56,7 @@ def testingTrainings():
 
 
     assert testingTrainingNotExist.exists() == False
+    assert [event.event.eventName == "Test Training Event" for event in testingTrainingsExist]
     assert testingTrainingsExist.exists()
 
 
@@ -93,6 +94,7 @@ def testingBonner():
 
 
     assert testingBonnerNotExist.exists() == False
+    assert [bonner.event.eventName == "Test Bonner Event" for bonner in testingBonnerExist]
     assert testingBonnerExist.exists()
 
 
@@ -125,7 +127,9 @@ def testingSLCourses():
 
     testingSLCExist = getSlCourseTranscript(username)
     testingSLCNotExist = getSlCourseTranscript(adminName)
+
     assert testingSLCExist.exists()
+    assert [slc.course.courseName == "Test Course" for slc in testingSLCExist]
     assert testingSLCNotExist.exists() == False
 
 
@@ -162,6 +166,7 @@ def testingProgram():
     testingProgramNotExist = getProgramTranscript(adminName)
 
     assert testingProgramNotExist.exists() == False
+    assert [program.program.programName == "Test Program Event" for program in testingProgramExist]
     assert testingProgramExist.exists()
 
 
