@@ -18,54 +18,110 @@
       <div class= "form-check-inline">
         <p>Course Instructor(s)</p>
         <div class="ui-widget pb-3">
-          <input id="instructorInput" type="input" placeholder="Search.." oninput="searchInstructor()">
+          <input 
+            id="instructorInput" 
+            type="input" 
+            placeholder="Search.." 
+            oninput="searchInstructor()" />
         </div>
-          <table class="table" id="instructorTable">
-            <tr>
-              <th scope="col">Instructor</th>
-              <th scope="col">Remove</th>
-            </tr>
+        <table 
+          class="table" 
+          id="instructorTable">
+          <tr>
+            <th scope="col">Instructor</th>
+            <th scope="col">Remove</th>
+          </tr>
         </table>
       </div>
       <br></br>
       <label class="pt-3">Course Name</label>
-      <input class="form-control" id="slcp-courseName" type="text" placeholder="Default input"/>
+      <input 
+        class="form-control" 
+        id="slcp-courseName" 
+        type="text" 
+        placeholder="Default input" />
       <label for="">Course Abbreviation</label>
-      <input class="form-control" id="slcp-courseAbbreviation" type="text" placeholder="Default input"/>
+      <input 
+        class="form-control" 
+        id="slcp-courseAbbreviation" 
+        type="text" 
+        placeholder="Default input"/>
       <label for="">Credit</label>
-      <input class="form-control" id="slcp-credit" type="number" placeholder="1"/>
+      <input 
+        class="form-control" 
+        id="slcp-credit" 
+        type="number" 
+        placeholder="1"/>
       <label for="">Course Instructor Phone</label>
-      <input class="form-control mb-3" type="text"/>
+      <input 
+        class="form-control mb-3" 
+        type="text"/>
       <label>Regularly-occurring?</label>
-      <div class="form-check form-switch pb-4" id="slResponseToggle">
-        <input class="form-check-input" type="checkbox" id="sectionsResponse"/>
+      <div 
+        class="form-check form-switch pb-4" 
+        id="slResponseToggle">
+        <input 
+          class="form-check-input"
+          type="checkbox" 
+          id="sectionsResponse"/>
       </div>
     </div>
     <div class="p-2 col-md-4 me-auto">
       <label for="">When will this course be offered?</label>
-      <select class="dropdown form-control mb-3" id="inputCourseInstructor"  name="termSelect"></select>
+      <select 
+        class="dropdown form-control mb-3" 
+        id="inputCourseInstructor"  
+        name="termSelect">
+        {% for term in terms %}
+          <option value="{{ term.id }}"> {{ term.description }}</option>
+        {% endfor %}
+      </select>
       <span>Are all sections SL?</span>
-      <div class="form-check form-switch pb-4" id="slResponseToggle">
-        <input class="form-check-input" type="checkbox" id="sectionsResponse"/>
+      <div 
+        class="form-check form-switch pb-4" 
+        id="slResponseToggle">
+        <input 
+          class="form-check-input" 
+          type="checkbox"
+          id="sectionsResponse"/>
       </div>
       <label class="pt-2" for="slDesignation">Sections with SL Designation</label>
-      <textarea class="form-control" id="slDesignation" rows="3"></textarea>
+      <textarea 
+        class="form-control" 
+        id="slDesignation" 
+        rows="3">
+      </textarea>
       <span class="pt-5">Will this course be a permanently designated service learning course?</span>
-      <div class="form-check form-switch" id="permanentDesignation">
-        <input class="form-check-input" type="checkbox" id="permanentResponse"/>
+      <div 
+        class="form-check form-switch" 
+        id="permanentDesignation">
+        <input 
+          class="form-check-input" 
+          type="checkbox" 
+          id="permanentResponse"/>
       </div>
     </div>
   </div>
-<div class="row align-items-end pt-5">
-  <div class="col">
-    <a href="#" type="button" class="btn btn-danger col">Cancel</a>
+  <div class="row align-items-end pt-5">
+    <div class="col">
+      <a 
+        href="#" 
+        type="button" 
+        class="btn btn-danger col">
+        Cancel
+      </a>
+    </div>
+    <div class="col" align="right">
+      <label for="Continue">(2/3)</label>
+      <a 
+        href="/slcQuestionnaire" 
+        id="Continue" 
+        type="button" 
+        class="btn btn-success col" 
+        onclick="saveSLCdata()">
+        Continue
+      </a>
+    </div>
   </div>
-  <div class="col" align="right">
-    <label for="Continue">(2/3)</label>
-    <a href="/slcQuestionnaire" id="Continue" type="button" class="btn btn-success col" onclick="saveSLCdata()">Continue</a>
-  </div>
-
 </div>
-</div>
-
 {% endblock %}
