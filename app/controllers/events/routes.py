@@ -17,7 +17,6 @@ def events(term):
     currentTime = datetime.now()
     eventsDict = groupEventsByCategory(term)
     listOfTerms = Term.select()
-    # participantRSVP = EventParticipant.select().where(EventParticipant.user == g.current_user)
     participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in list(participantRSVP)]
 

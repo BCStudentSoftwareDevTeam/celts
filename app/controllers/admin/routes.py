@@ -28,7 +28,6 @@ def trackVolunteersPage(programID, eventID):
     if g.current_user.isCeltsAdmin:
         if ProgramEvent.get_or_none(ProgramEvent.event == eventID, ProgramEvent.program == programID):
             eventParticipantsData = EventParticipant.select().where(EventParticipant.event == eventID)
-            # eventParticipantsData = EventParticipant.select().join(EventRsvp,on=(EventParticipant.event == EventRsvp.event)).where(EventParticipant.event == eventID)
             eventRsvpData = EventRsvp.select().where(EventRsvp.event == eventID)
             eventRsvpUsers = []
             eventParticipantsData = eventParticipantsData.objects()
