@@ -30,13 +30,19 @@
     <label class='d-none' id="eventLength">{{eventLength}}</label>
     <input  class="form-control" id="eventID" name="event" value="{{event}}" type='hidden'>
 
-
-    <div class="ui-widget input-group">
-      <input id="trackVolunteersInput" type="input" placeholder="Search">
-      <span class="input-group-text" style="padding:0 0 0 0rem;"><i class="bi bi-search" style="margin-left:-35px;"></i></span>
-      <div><button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#addVolunteerModal">
-          <i class="bi bi-plus-circle"></i>
-      </button></div>
+    <div class="flex-container">
+          <div class="form-group d-inline-flex">
+            <div class="ui-widget input-group">
+              <input id="trackVolunteersInput" type="input" placeholder="Search">
+              <span class="input-group-text" style="padding:0 0 0 0rem;"><i class="bi bi-search" style="margin-left:-35px;"></i></span>
+              <div><button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#addVolunteerModal">
+                <i class="bi bi-plus-circle"></i>
+              </button></div>
+            </div>
+          </div>
+          <div class='form-group d-inline-flex' style="padding: 0 0 0 2rem">
+            <a class="btn btn-info" href= "/{{event.id}}/kiosk" role="button">Kiosk Entry</a>
+          </div>
     </div>
 
   <!-- Modal -->

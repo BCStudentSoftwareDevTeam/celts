@@ -5,7 +5,7 @@ $("#volunteerInput").autocomplete({
   minLength: 2,
   source: function(request, response){
     $.ajax({
-      url: "/searchVolunteers/" + query,
+      url: "/searchStudents/" + query,
       type: "GET",
       contentType: "application/json",
       data: query,
