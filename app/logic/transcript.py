@@ -85,7 +85,7 @@ def getStartDate(username):
     """
     Returns the users start term for participation in the CELTS organization
     """
-    startYears = []
+
     startDate = (EventParticipant.select(Term.year)
                     .join(Event)
                     .join(Term).where(EventParticipant.user == username)
@@ -93,9 +93,6 @@ def getStartDate(username):
                     .join(Course)
                     .join(Term).where(CourseParticipant.user == username)).order_by(Event.term.year)
 
-    for date in startDate:
-        startYears.append(date.event.term.year)
+    startDate = startDate.first()
 
-
-
-    return startYears
+    return startDate.event.term.year
