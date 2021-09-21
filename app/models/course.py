@@ -1,6 +1,7 @@
 from app.models import *
 from app.models.term import Term
 from app.models.courseStatus import CourseStatus
+from app.models.note import Note
 
 class Course(baseModel):
     courseName = CharField()
@@ -16,3 +17,9 @@ class Course(baseModel):
     sectionBQuestion4 = CharField()
     sectionBQuestion5 = CharField()
     sectionBQuestion6 = CharField()
+    sectionBQuestion1Note = ForeignKeyField(Note)
+    # sectionBQuestion2Note = ForeignKeyField(Note)
+    # sectionBQuestion3Note = ForeignKeyField(Note)
+    # sectionBQuestion4Note = ForeignKeyField(Note)
+    # sectionBQuestion5Note = ForeignKeyField(Note)
+    # sectionBQuestion6Note = ForeignKeyField(Note)

@@ -17,6 +17,7 @@ from app.models.courseParticipant import CourseParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
 from app.models.facilitator import Facilitator
+from app.models.note import Note
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -469,6 +470,16 @@ coursestatus = [
 ]
 CourseStatus.insert_many(coursestatus).on_conflict_replace().execute()
 
+notes = [
+    {
+    "createdBy": "ramsayb2",
+    "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
+    "noteContent": "This is the content: test",
+    "isPrivate":False
+    }
+]
+
+Note.insert_many(notes).on_conflict_replace().execute()
 courses = [
     {
         "id": 1,
@@ -484,7 +495,9 @@ courses = [
         "sectionBQuestion3": "",
         "sectionBQuestion4": "",
         "sectionBQuestion5": "",
-        "sectionBQuestion6": ""
+        "sectionBQuestion6": "",
+        "sectionBQuestion1Note":1
+
     },
     {
         "id": 2,
@@ -500,7 +513,8 @@ courses = [
         "sectionBQuestion3": "",
         "sectionBQuestion4": "",
         "sectionBQuestion5": "",
-        "sectionBQuestion6": ""
+        "sectionBQuestion6": "",
+        "sectionBQuestion1Note":1
 
     },
     {
@@ -517,7 +531,8 @@ courses = [
         "sectionBQuestion3": "",
         "sectionBQuestion4": "",
         "sectionBQuestion5": "",
-        "sectionBQuestion6": ""
+        "sectionBQuestion6": "",
+        "sectionBQuestion1Note":1
 
     },
 ]
