@@ -20,27 +20,40 @@ def slcGuidelines():
     """ This page renders slc guidelines """
     return render_template('serviceLearning/slcGuidelines.html')
 
-@serviceLearning_bp.route('/slcProposal')
+@serviceLearning_bp.route('/slcProposal', methods=['GET', 'POST'])
 def slcProposal():
     """This page allows faculties to create service learning proposal"""
+    if request.method == "POST":
+        # store the data
+        courseName = request.form.get("slcp-courseName")
+        print("courseName: ", courseName)
+
     terms = Term.select()
     return render_template('serviceLearning/slcProposal.html', terms=terms)
 
-@serviceLearning_bp.route('/slcQuestionnaire')
+@serviceLearning_bp.route('/slcQuestionnaire', methods=['GET', 'POST'])
 def slcQuestionnaire():
     """ This page renders slc questionnare """
+    if request.method == "POST":
+        # store the data
+        print("")
+
     return render_template('serviceLearning/slcQuestionnaire.html')
+
+
+
+@serviceLearning_bp.route('/slcSubmit', methods = ['POST'])
+def slcSubmit():
+    ''''''
+    print("something")
+
+# JUNK
 
 @serviceLearning_bp.route('/searchInstructor/<query>', methods = ['GET'])
 def searchInstructor(query):
     '''Accepts user input and queries the database returning results that matches user search'''
 
     # TODO:
-    # 1. Populate the course instructor using searchUser in logic. See if you can do it using html <form> instead of ajax. 
+    # 1. Populate the course instructor using searchUser in logic. See if you can do it using html <form> instead of ajax.
 
     return json.dumps(searchUsers(query))
-
-@serviceLearning_bp.route('/slcSubmit', methods = ['POST'])
-def slcSubmit():
-    ''''''
-    print("something")

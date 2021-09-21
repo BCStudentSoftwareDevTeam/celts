@@ -37,6 +37,8 @@ function saveSLCdata(){
   console.log(proposalData, "data");
 
   document.cookie =  JSON.stringify(proposalData) + ";max-age=28800;";
+
+  window.location.replace("/slcQuestionnaire");
 }
 function searchInstructor(){
 var query = $("#instructorInput").val()
