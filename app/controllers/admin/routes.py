@@ -28,7 +28,6 @@ def trackVolunteersPage(programID, eventID):
     if g.current_user.isCeltsAdmin:
         if ProgramEvent.get_or_none(ProgramEvent.event == eventID, ProgramEvent.program == programID):
             eventParticipantsData = EventParticipant.select().where(EventParticipant.event == eventID)
-            # eventParticipantsData = EventParticipant.select().join(EventRsvp,on=(EventParticipant.event == EventRsvp.event)).where(EventParticipant.event == eventID)
             eventRsvpData = EventRsvp.select().where(EventRsvp.event == eventID)
             eventRsvpUsers = []
             eventParticipantsData = eventParticipantsData.objects()
@@ -69,7 +68,6 @@ def editEvent(program, eventId):
     isRsvpRequired = "Checked" if eventInfo.isRsvpRequired else ""
     isService = "Checked" if eventInfo.isService else ""
     userHasRSVPed = EventParticipant.get_or_none(EventParticipant.user == g.current_user, EventParticipant.event == eventInfo)
-    print("User has RSVP'ed ........................",type(userHasRSVPed))
     deleteButton = "submit"
     hideElement = "hidden"
     program = Program.get_by_id(program)

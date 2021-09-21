@@ -11,6 +11,7 @@ from app.controllers.main import main_bp
 from app.logic.events import getUpcomingEventsForUser
 from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
+from app.models.eventRsvp import EventRsvp
 from app.logic.events import groupEventsByCategory
 from datetime import datetime
 
@@ -20,12 +21,10 @@ def events(selectedTerm=None):
     currentTerm = g.current_term
     if selectedTerm:
         currentTerm = selectedTerm
-
     currentTime = datetime.now()
     eventsDict = groupEventsByCategory(currentTerm)
     listOfTerms = Term.select()
-    participantRSVP = EventParticipant.select().where(EventParticipant.user == g.current_user)
-    rsvpedEventsID = [event.event.id for event in list(participantRSVP)]
+    rsvpedEventsID = EventRsvp.select().where(EventRsvp.user == g.current_user)
 
     return render_template("/events/event_list.html",
         selectedTerm = Term.get_by_id(currentTerm),
@@ -108,8 +107,8 @@ def RemoveRSVP():
     userId = User.get(User.username == g.current_user)
     eventId = eventData['eventId']
     program = eventData['programId']
-    currentEventParticipant = EventParticipant.get(EventParticipant.user == userId, EventParticipant.event == eventId)
-    currentEventParticipant.delete_instance()
+    currentRsvpParticipant = EventRsvp.get(EventRsvp.user == userId, EventRsvp.event == eventId)
+    currentRsvpParticipant.delete_instance()
 
     flash("Successfully unregistered for event!", "success")
     return redirect(url_for("admin.editEvent", eventId=eventId, program=program))
