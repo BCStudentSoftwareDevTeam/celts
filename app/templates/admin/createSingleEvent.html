@@ -59,23 +59,19 @@
     </div>
   {% endif %}
 
-{#
   <form data-toggle="validator" role="form"  method="POST">
     <div class="row p-2">
       <div class="col-md-6 col-sm-12 ">
-        <div>
-          <input type="hidden" value="{{program.id}}" name="programId">
-
-          <input type="hidden" name="eventId" value="{{eventId}}" >
-        </div>
+        {% if eventData.id %}
+          <input type="hidden" name="eventId" value="{{eventData.id}}" >
+        {% endif %}
         <div class="d-grid gap-1.5">
           <div class="form-group">
+            <label for='eventName'> <strong>Event Name: </strong></label> <br>
             {% if isAdmin %}
-            <label for='eventName'> <strong> Event Name *</strong></label> <br>
-            <input class="form-control"  id='inputEventName' value="{{eventData.eventName}}" name="eventName" required>
+              <input class="form-control"  id='inputEventName' value="{{eventData.name}}" name="eventName" required>
             {%else%}
-            <label for='eventName'> <strong> Event Name: </strong></label> <br>
-              <p>{{eventData.eventName}}</p>
+              <p>{{eventData.name}}</p>
             {%endif%}
           </div>
         </div><br>
@@ -273,5 +269,5 @@
       </div>
       </div>
 </form>
-#}
+
 {% endblock %}

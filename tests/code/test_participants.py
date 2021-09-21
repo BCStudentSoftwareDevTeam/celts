@@ -174,7 +174,7 @@ def test_unattendedRequiredEvents():
     assert len(unattendedEvents) == 3
 
     # test after user has attended an event
-    event = Event.get(Event.eventName == unattendedEvents[0])
+    event = Event.get(Event.name == unattendedEvents[0])
     EventParticipant.create(user = user, event = event, attended = True)
     unattendedEvents = unattendedRequiredEvents(program, user)
     assert len(unattendedEvents) == 2

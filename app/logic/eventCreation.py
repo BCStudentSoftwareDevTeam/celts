@@ -37,7 +37,7 @@ def validateNewEventData(newEventData, checkExists=True):
 
 
     # Event name, Description and Event Start date
-    event = Event.select().where((Event.eventName == newEventData['eventName']) &
+    event = Event.select().where((Event.name == newEventData['eventName']) &
                              (Event.description == newEventData['eventDescription']) &
                              (Event.startDate == parser.parse(newEventData['eventStartDate'])))
 
@@ -64,7 +64,7 @@ def calculateRecurringEventFrequency(recurringEventInfo):
     counter = 0
     for i in range(0, ((endDate-startDate).days +1), 7):
         counter += 1
-        recurringEvents.append({'eventName': f"{eventName} Week {counter}",
+        recurringEvents.append({'name': f"{eventName} Week {counter}",
                                 'date':startDate.strftime('%m-%d-%Y'),
                                 "week":counter})
         startDate += timedelta(days=7)
@@ -97,13 +97,13 @@ def createNewEvent(newEventData):
         if newEventData['eventIsRecurring'] == 'on':
             eventsToCreate = calculateRecurringEventFrequency(newEventData)
         else:
-            eventsToCreate.append({'eventName': f"{newEventData['eventName']}",
+            eventsToCreate.append({'name': f"{newEventData['eventName']}",
                                     'date':newEventData['eventStartDate'],
                                     "week":1})
 
         for eventInstance in eventsToCreate:
             with mainDB.atomic():
-                newEvent = Event.create(eventName = eventInstance['eventName'],
+                newEvent = Event.create(name = eventInstance['name'],
                                           term = newEventData['eventTerm'],
                                           description= newEventData['eventDescription'],
                                           timeStart = newEventData['eventStartTime'],

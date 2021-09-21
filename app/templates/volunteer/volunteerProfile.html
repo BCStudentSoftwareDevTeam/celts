@@ -21,7 +21,7 @@
         {% for event in upcomingEvents %}
         <tr>
           <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
-          <td>{{event.eventName}}</td>
+          <td>{{event.name}}</td>
           <td>{{event.startDate}}</td>
           <td>{{event.endDate}}</td>
         </tr>

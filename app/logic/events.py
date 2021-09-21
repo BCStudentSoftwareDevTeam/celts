@@ -79,7 +79,7 @@ def eventEdit(newEventData):
         eventData = {
                 "id": eventId,
                 "term": newEventData['eventTerm'],
-                "eventName": newEventData['eventName'],
+                "name": newEventData['eventName'],
                 "description": newEventData['eventDescription'],
                 "timeStart": newEventData['eventStartTime'],
                 "timeEnd": newEventData['eventEndTime'],

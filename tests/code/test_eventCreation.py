@@ -162,9 +162,9 @@ def test_calculateRecurringEventFrequency():
 
     returnedEvents = calculateRecurringEventFrequency(eventInfo)
     #test correct response
-    assert returnedEvents[0] == {'eventName': 'testEvent Week 1', 'date': '02-22-2023', 'week': 1}
-    assert returnedEvents[1] == {'eventName': 'testEvent Week 2', 'date': '03-01-2023', 'week': 2}
-    assert returnedEvents[2] == {'eventName': 'testEvent Week 3', 'date': '03-08-2023', 'week': 3}
+    assert returnedEvents[0] == {'name': 'testEvent Week 1', 'date': '02-22-2023', 'week': 1}
+    assert returnedEvents[1] == {'name': 'testEvent Week 2', 'date': '03-01-2023', 'week': 2}
+    assert returnedEvents[2] == {'name': 'testEvent Week 3', 'date': '03-08-2023', 'week': 3}
 
     #test incorrect value
     eventInfo["eventStartDate"] = "hello"

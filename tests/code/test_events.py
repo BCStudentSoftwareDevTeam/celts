@@ -61,7 +61,7 @@ def test_getEventsInvalidProgram():
 @pytest.mark.integration
 def test_deleteEvent():
 
-    testingEvent = Event.create(eventName = "Testing delete event",
+    testingEvent = Event.create(name = "Testing delete event",
                                   term = 2,
                                   description= "This Event is Created to be Deleted.",
                                   timeStart= "6:00 pm",
@@ -74,7 +74,7 @@ def test_deleteEvent():
                                   startDate= "2021 12 12",
                                   endDate= "2022 6 12")
 
-    testingEvent = Event.get(Event.eventName == "Testing delete event")
+    testingEvent = Event.get(Event.name == "Testing delete event")
 
     eventId = testingEvent.id
     deletingEvent = deleteEvent(eventId)
@@ -88,7 +88,7 @@ def test_beforeEdit():
     eventId = 4
     beforeEdit = Event.get_by_id(eventId)
 
-    assert beforeEdit.eventName == "First Meetup"
+    assert beforeEdit.name == "First Meetup"
 
 @pytest.mark.integration
 def test_afterEdit():
@@ -206,12 +206,12 @@ def test_getsCorrectUpcomingEvent():
     user = "khatts"
     events = getUpcomingEventsForUser(user, asOf=testDate)
     assert len(events) == 3
-    assert "Empty Bowls Spring" == events[0].eventName
+    assert "Empty Bowls Spring" == events[0].name
 
     user = "ramsayb2"
     events = getUpcomingEventsForUser(user, asOf=testDate)
     assert len(events) == 5
-    assert "Making Bowls" == events[0].eventName
+    assert "Making Bowls" == events[0].name
 
 
 @pytest.mark.integration
