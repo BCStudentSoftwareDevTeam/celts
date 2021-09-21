@@ -3,7 +3,7 @@ from app.controllers.main import main_bp
 from flask import json, jsonify
 
 
-def searchVolunteers(query):
+def searchUsers(query):
     '''Accepts user input and queries the database returning results that matches user search'''
     query = query.strip()
     search = query.upper()
@@ -26,6 +26,4 @@ def searchVolunteers(query):
                 for participant in results:
                     if participant not in resultsDict:
                         resultsDict[f"{participant.firstName} {participant.lastName} ({participant.username})"] = f"{participant.firstName} {participant.lastName} ({participant.username})"
-
-
     return resultsDict
