@@ -19,4 +19,4 @@ def emailVolunteers():
     else:
         flash("Error sending email", "danger")
 
-    return redirect(url_for("events.events", term = 1))
+    return redirect(url_for("main.events", selectedTerm = emailInfo['selectedTerm']))

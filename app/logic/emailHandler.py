@@ -33,23 +33,52 @@ def getVolunteerEmails(programID = None, eventID = None, emailRecipients = "inte
 
 class emailHandler():
     def __init__(self, emailInfo):
-        default = load_config('app/config/default.yml')
+        self.default = load_config('app/config/default.yml')
         app.config.update(
-            MAIL_SERVER=default['mail']['server'],
-            MAIL_PORT=default['mail']['port'],
-            MAIL_USERNAME= default['mail']['username'],
-            MAIL_PASSWORD= default['mail']['password'],
-            REPLY_TO_ADDRESS= default['mail']['reply_to_address'],
-            MAIL_USE_TLS=default['mail']['tls'],
-            MAIL_USE_SSL=default['mail']['ssl'],
-            MAIL_DEFAULT_SENDER=default['mail']['default_sender'],
-            MAIL_OVERRIDE_ALL=default['mail']['override_addr']
+            MAIL_SERVER=self.default['mail']['server'],
+            MAIL_PORT=self.default['mail']['port'],
+            # MAIL_USERNAME= default['mail']['username'],
+            # MAIL_PASSWORD= default['mail']['password'],
+            REPLY_TO_ADDRESS= self.default['mail']['reply_to_address'],
+            MAIL_USE_TLS=self.default['mail']['tls'],
+            MAIL_USE_SSL=self.default['mail']['ssl'],
+            MAIL_DEFAULT_SENDER=self.default['mail']['default_sender'],
+            MAIL_OVERRIDE_ALL=self.default['mail']['override_addr']
         )
+
         self.emailInfo = emailInfo
         self.mail = Mail(app)
 
+    def updateSenderEmail(self):
+
+        """Who is sending the emails"""
+
+        if app.config['MAIL_DEFAULT_SENDER']:
+            app.config.update(
+            MAIL_PASSWORD = self.default['mail']['admin_password']
+            )
+        else:
+            if '@' in self.emailInfo['emailSender']: #if the current user is sending the email
+                pass
+                # app.config.update(
+                # MAIL_USERNAME= self.emailInfo['emailSender'],
+                # # MAIL_PASSWORD= ??????       # how do you get the password???
+                #)
+            elif self.emailInfo['emailSender'] == 'CELTS Admins':
+                app.config.update(
+                MAIL_USERNAME= self.default['mail']['admin_username'],
+                MAIL_PASSWORD = self.default['mail']['admin_password']
+                )
+            elif self.emailInfo['emailSender'] == 'CELTS Student Staff':
+                app.config.update(
+                MAIL_USERNAME= self.default['mail']['staff_username'],
+                MAIL_PASSWORD= self.default['mail']['staff_']
+                )
+
+
     def sendEmail(self, message: Message, emails):
         # try:
+        self.updateSenderEmail()
         if 'sendIndividually' in self.emailInfo:    #<-----------------------need to test this some more.
             if app.config['MAIL_OVERRIDE_ALL']:
                 message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
