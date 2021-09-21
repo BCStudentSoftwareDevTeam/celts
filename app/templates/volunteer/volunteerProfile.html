@@ -21,11 +21,12 @@
         {% for event in upcomingEvents %}
         <tr>
           <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
-          <td>{{event.eventName}}</td>
+          <td><a href= '/{{event.singleProgram}}/{{event.id}}/edit_event' class="link-primary">{{event.eventName}}</a></td>
           <td>{{event.startDate}}</td>
           <td>{{event.endDate}}</td>
-        </tr>
         {% endfor %}
+        </tr>
+
       {% else %}
         <h2> Choose interests below to be notified about upcoming events. <h2>
       {% endif %}

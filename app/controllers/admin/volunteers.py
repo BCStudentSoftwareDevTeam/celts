@@ -3,16 +3,17 @@ from app.controllers.admin import admin_bp
 from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
-from app.logic.searchVolunteers import searchVolunteers
+from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateVolunteers, addVolunteerToEvent
 from app.models.user import User
+from flask import json, jsonify
 from peewee import *
 
 @admin_bp.route('/searchVolunteers/<query>', methods = ['GET'])
 def getVolunteers(query):
     '''Accepts user input and queries the database returning results that matches user search'''
 
-    return searchVolunteers(query)
+    return json.dumps(searchUsers(query))
 
 
 
