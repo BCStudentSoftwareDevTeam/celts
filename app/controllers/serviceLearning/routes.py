@@ -24,9 +24,15 @@ def slcGuidelines():
 def slcProposal():
     """This page allows faculties to create service learning proposal"""
     if request.method == "POST":
-        # store the data
-        courseName = request.form.get("slcp-courseName")
-        print("courseName: ", courseName)
+        courseName = request.form.get("courseName")
+        courseAbbreviation = request.form.get("courseAbbreviation")
+        credit = request.form.get("credit")
+        courseInstructorPhone = request.form.get("courseInstructorPhone")
+        regularOccurenceToggle = request.form.get("regularOccurenceToggle")
+        inputCourseInstructor = request.form.get("termSelect")
+        slSectionsToggle = request.form.get("slSectionsToggle")
+        slDesignation = request.form.get("slDesignation")
+        permanentDesignation = request.form.get("permanentDesignation")
 
     terms = Term.select()
     return render_template('serviceLearning/slcProposal.html', terms=terms)
@@ -35,12 +41,14 @@ def slcProposal():
 def slcQuestionnaire():
     """ This page renders slc questionnare """
     if request.method == "POST":
-        # store the data
-        print("")
+        questionOne = request.form.get("questionOne")
+        questionTwo = request.form.get("questionTwo")
+        questionThree = request.form.get("questionThree")
+        questionFour = request.form.get("questionFour")
+        questionFive = request.form.get("questionFive")
+        questionSix = request.form.get("questionSix")
 
     return render_template('serviceLearning/slcQuestionnaire.html')
-
-
 
 @serviceLearning_bp.route('/slcSubmit', methods = ['POST'])
 def slcSubmit():

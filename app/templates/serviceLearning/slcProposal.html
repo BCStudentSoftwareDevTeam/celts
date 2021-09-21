@@ -38,33 +38,32 @@
         <label class="pt-3">Course Name</label>
         <input
           class="form-control"
-          name="slcp-courseName"
+          name="courseName"
           type="text"
           placeholder="Default input" />
         <label for="">Course Abbreviation</label>
         <input
           class="form-control"
-          name="slcp-courseAbbreviation"
+          name="courseAbbreviation"
           type="text"
           placeholder="Default input"/>
         <label for="">Credit</label>
         <input
           class="form-control"
-          name="slcp-credit"
+          name="credit"
           type="number"
           placeholder="1"/>
         <label for="">Course Instructor Phone</label>
         <input
           class="form-control mb-3"
-          type="text"/>
+          type="text"
+          name="courseInstructorPhone"/>
         <label>Regularly-occurring?</label>
-        <div
-          class="form-check form-switch pb-4"
-          id="slResponseToggle">
+        <div class="form-check form-switch pb-4">
           <input
             class="form-check-input"
             type="checkbox"
-            name="sectionsResponse"/>
+            name="regularOccurenceToggle"/>
         </div>
       </div>
       <div class="p-2 col-md-4 me-auto">
@@ -78,28 +77,24 @@
           {% endfor %}
         </select>
         <span>Are all sections SL?</span>
-        <div
-          class="form-check form-switch pb-4"
-          id="slResponseToggle">
+        <div class="form-check form-switch pb-4">
           <input
             class="form-check-input"
             type="checkbox"
-            name="sectionsResponse"/>
+            name="slSectionsToggle"/>
         </div>
         <label class="pt-2" for="slDesignation">Sections with SL Designation</label>
         <textarea
           class="form-control"
-          id="slDesignation"
+          name="slDesignation"
           rows="3">
         </textarea>
         <span class="pt-5">Will this course be a permanently designated service learning course?</span>
-        <div
-          class="form-check form-switch"
-          id="permanentDesignation">
+        <div class="form-check form-switch">
           <input
             class="form-check-input"
             type="checkbox"
-            name="permanentResponse"/>
+            name="permanentDesignation"/>
         </div>
       </div>
     </div>
@@ -117,8 +112,7 @@
         <button
           id="Continue"
           type="submit"
-          class="btn btn-success col"
-          onclick="saveSLCdata()">
+          class="btn btn-success col">
           Continue
         </button>
       </div>
@@ -126,3 +120,5 @@
   </div>
 </form>
 {% endblock %}
+
+{# onclick="saveSLCdata()" #}
