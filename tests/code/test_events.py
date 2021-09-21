@@ -76,12 +76,11 @@ def test_deleteEvent():
 
     testingEvent = Event.get(Event.eventName == "Testing delete event")
 
-    program = 1
     eventId = testingEvent.id
-    deletingEvent = deleteEvent(program, eventId)
+    deletingEvent = deleteEvent(eventId)
     assert Event.get_or_none(Event.id == eventId) is None
 
-    deletingEvent = deleteEvent(program, eventId)
+    deletingEvent = deleteEvent(eventId)
     assert Event.get_or_none(Event.id == eventId) is None
 
 @pytest.mark.integration

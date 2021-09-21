@@ -8,6 +8,7 @@ from app.models.interest import Interest
 from app.models.facilitator import Facilitator
 from app.models.program import Program
 from app.models.term import Term
+from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
 
 def getEvents(program_id=None):
@@ -19,12 +20,11 @@ def getEvents(program_id=None):
     else:
         return Event.select()
 
-def deleteEvent(program, eventId):
+def deleteEvent(eventId):
 
     event = Event.get_or_none(Event.id == eventId)
     if event:
-        deleteEvent = event
-        deleteEvent.delete_instance(recursive = True, delete_nullable = True)
+        event.delete_instance(recursive = True, delete_nullable = True)
 
 def groupEventsByProgram(eventQuery):
     programs = {}

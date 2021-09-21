@@ -38,31 +38,29 @@
     {% endif %}
 
   </div>
+
   {% if 'edit_event' in request.path and isAdmin %}
+    <form action="/event/{{eventId}}/deleteEvent" method='post'>
+      <input type="submit" class="btn btn-danger float-end" value="Cancel Event"/>
+      <div>
+        <input type="hidden" value="{{eventId}}" name="eventId">
+      </div>
+    </form>
+
     <div class="btn-group">
       <ul class="nav nav-pills nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
         <li class="nav-item" role="presentation">
           <a class="nav-link active" href="#">Edit Event</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="/event/{{eventInfo.id}}/track_volunteers">Track Volunteers</a>
+          <a class="nav-link" aria-current="page" href="/event/{{eventData.id}}/track_volunteers">Track Volunteers</a>
         </li>
       </ul>
     </div>
   {% endif %}
 
 {#
-  {% if isAdmin %}
-    <form action="/{{program.id}}/{{eventId}}/deleteEvent" method='post'>
-      <input type="{{deleteButton}}" class="btn btn-danger float-end" value="Cancel Event"/>
-      <div>
-        <input type="hidden" value="{{program.id}}" name="programId">
-        <input type="hidden" value="{{eventId}}" name="eventId">
-      </div>
-    </form>
-  {% endif %}
   <form data-toggle="validator" role="form"  method="POST">
-
     <div class="row p-2">
       <div class="col-md-6 col-sm-12 ">
         <div>
@@ -74,10 +72,10 @@
           <div class="form-group">
             {% if isAdmin %}
             <label for='eventName'> <strong> Event Name *</strong></label> <br>
-            <input class="form-control"  id='inputEventName' value="{{eventInfo.eventName}}" name="eventName" required>
+            <input class="form-control"  id='inputEventName' value="{{eventData.eventName}}" name="eventName" required>
             {%else%}
             <label for='eventName'> <strong> Event Name: </strong></label> <br>
-              <p>{{eventInfo.eventName}}</p>
+              <p>{{eventData.eventName}}</p>
             {%endif%}
           </div>
         </div><br>
@@ -87,7 +85,7 @@
           <label for='term'><strong> Term * </strong></label> <br>
             <select class="form-control" name='eventTerm' id='inputEventTerm' required>
               {%if 'edit_event' in request.path%}
-                <option value='{{eventInfo.term}}' selected>{{eventInfo.term.description}}</option>
+                <option value='{{eventData.term}}' selected>{{eventData.term.description}}</option>
               {% endif %}
               {% for future in futureTerms %}
                   <option value='{{future}}'>{{future.description}}</option>
@@ -95,17 +93,17 @@
             </select>
           {% else %}
             <label for='term'><strong> Term: </strong></label> <br>
-            <p>{{eventInfo.term.description}}</p>
+            <p>{{eventData.term.description}}</p>
           {% endif %}
         </div><br>
 
         <div class="form-group">
           {% if isAdmin %}
           <label for='location'><strong>Location *</strong></label><br>
-          <input class="form-control" id='inputEventLocation' value="{{eventInfo.location}}" name="eventLocation" required>
+          <input class="form-control" id='inputEventLocation' value="{{eventData.location}}" name="eventLocation" required>
           {%else%}
           <label for='location'><strong>Location:</strong></label><br>
-          <p>{{eventInfo.location}}</p>
+          <p>{{eventData.location}}</p>
           {%endif%}
         </div> <br>
         {% if isAdmin %}
@@ -121,19 +119,19 @@
               <div class="d-inline-flex">
                 {% if isAdmin %}
                 <label for="startTime"><strong>Start Time: *</strong></label>
-                <input type='time' class="form-control timePicker" id='pickStartTime'value="{{eventInfo.timeStart}}"  name="eventStartTime" required>
+                <input type='time' class="form-control timePicker" id='pickStartTime'value="{{eventData.timeStart}}"  name="eventStartTime" required>
                 {%else%}
                 <label for="startTime"><strong>Start Time: </strong></label>
-                <p> {{eventInfo.timeStart.strftime("%I: %M %p")}}</p>
+                <p> {{eventData.timeStart.strftime("%I: %M %p")}}</p>
                 {%endif%}
               </div>
               <div class='form-group time d-inline-flex' style="padding: 0 0 0 2rem">
                 {% if isAdmin %}
                 <label for="endTime"><strong>End Time: *</strong></label>
-                <input type='time' class="form-control timePicker" id='pickEndTime' value="{{eventInfo.timeEnd}}" name="eventEndTime" required>
+                <input type='time' class="form-control timePicker" id='pickEndTime' value="{{eventData.timeEnd}}" name="eventEndTime" required>
                 {%else%}
                 <label for="endTime"><strong>End Time: </strong></label>
-                <p> {{eventInfo.timeEnd.strftime("%I: %M %p")}}</p>
+                <p> {{eventData.timeEnd.strftime("%I: %M %p")}}</p>
                 {%endif%}
               </div>
             </div>
@@ -148,7 +146,7 @@
                {% if  isAdmin  %}
               <label for="startDatePicker" id="startDatePickerLabel" ><span><strong>Start Date *</strong></span></label><br>
                 <div class='input-group date' {{ 'id=startDate' if isAdmin  }}>
-                  <input type='text' class="form-control datePicker readonly" value="{{eventInfo.startDate.strftime('%m-%d-%Y') if 'edit_event' in request.path}}" name="eventStartDate" placeholder="Start Date" onchange=updateDate(this) id=startDatePicker required>
+                  <input type='text' class="form-control datePicker readonly" value="{{eventData.startDate.strftime('%m-%d-%Y') if 'edit_event' in request.path}}" name="eventStartDate" placeholder="Start Date" onchange=updateDate(this) id=startDatePicker required>
 
                   <div class="input-group-text" id="calendarIconStart">
                     <span><i class="bi bi-calendar-plus-fill"></i></span>
@@ -157,14 +155,14 @@
                 {%else%}
                     <label for="startDatePicker" id="startDatePickerLabel" ><span><strong>Start Date:</strong></span></label><br>
 
-                    <p>{{eventInfo.startDate.strftime('%m-%d-%Y') if 'edit_event' in request.path}} </p>
+                    <p>{{eventData.startDate.strftime('%m-%d-%Y') if 'edit_event' in request.path}} </p>
                 {%endif%}
               </div>
               <div class="d-inline-flex d-none" id ="endDateStyle" style="width:51%;">
                 <!--datePicker for End date-->
                 <label for="endDatePicker" id="endDatePickerLabel" style="padding:0 0 0 2rem" ><span><strong>End Date *</strong></span></label>
                 <div class='input-group date' {{'id=endDate' if isAdmin  }}>
-                  <input type='text' class="form-control datePicker readonly" id='endDatePicker' value="{{eventInfo.endDate.strftime('%m-%d-%Y') if 'edit_event' in request.path}}" name="eventEndDate" placeholder="End Date" onchange="updateDate(this)"
+                  <input type='text' class="form-control datePicker readonly" id='endDatePicker' value="{{eventData.endDate.strftime('%m-%d-%Y') if 'edit_event' in request.path}}" name="eventEndDate" placeholder="End Date" onchange="updateDate(this)"
                         {{'required' if isAdmin  else 'readonly'}}>
                   <div class="input-group-text" id="calendarIconEnd">
                     <span><i class="bi bi-calendar-plus-fill"></i></span>
@@ -209,13 +207,13 @@
           </div><br>
         {% else %}
           <div>
-            {%if eventInfo.isTraining%}
+            {%if eventData.isTraining%}
               <label> <strong> This event is a training for the program </strong> </label><br>
             {% endif %}
-            {% if eventInfo.isRsvpRequired %}
+            {% if eventData.isRsvpRequired %}
               <label> <strong> Requires RSVP </strong> </label><br>
             {% endif %}
-            {% if eventInfo.isService %}
+            {% if eventData.isService %}
               <label> <strong> This event earns service hours </strong> </label><br>
             {% endif %}
           </div><br>
@@ -227,7 +225,7 @@
           <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' name="eventDescription" required></textarea>
           {%else%}
           <label for='description'><strong> Description: </strong></label> <br>
-          <p>{{eventInfo.description}}</p>
+          <p>{{eventData.description}}</p>
           {%endif%}
         </div><br>
 
