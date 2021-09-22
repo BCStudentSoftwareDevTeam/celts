@@ -7,6 +7,8 @@ from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
 from app.models.event import Event
 from app.models.programBan import ProgramBan
+from app.models.programEvent import ProgramEvent
+from app.models.term import Term
 from app.logic.participants import trainedParticipants
 from app.logic.events import getUpcomingEventsForUser
 from app.logic.users import isEligibleForProgram
@@ -33,8 +35,9 @@ def viewVolunteersProfile(username):
          programBan = ProgramBan.select().where(ProgramBan.user == username)
          interests_ids = [interest.program for interest in interests]
          eventParticipant = EventParticipant.select().where(EventParticipant.user == username)
-         event = Event.select().where(Event.isTraining == 1)
-         for event in event:
+         trainingEvents = Event.select()
+          # trainingEvents = ProgramEvent.select().where(ProgramEvent.event.term.isBreak == 1)
+         for event in trainingEvents:
              print(event.eventName)
          # volunteertTraining = trainedParticipants()
          print("-------------------------------------------------------")
@@ -49,7 +52,7 @@ def viewVolunteersProfile(username):
             programs = programs,
             eventParticipant = eventParticipant,
             interests = interests,
-            event = event,
+            trainingEvents = trainingEvents,
             programBan = programBan,
             interests_ids = interests_ids,
             upcomingEvents = upcomingEvents,
