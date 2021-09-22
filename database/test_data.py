@@ -98,10 +98,10 @@ users = [
         "username": "bryanta",
         "bnumber": "B00708826",
         "email": "bryanta@berea.edu",
+        "phoneNumber": "85943311598",
         "firstName": "Alex",
         "lastName": "Bryant",
         "isStudent": True,
-        "phoneNumber": "85943311598"
     },
     {
         "username": "partont",
@@ -112,7 +112,6 @@ users = [
         "isStudent": True,
         "phoneNumber": "9119119111"
     },
-
 ]
 
 User.insert_many(users).on_conflict_replace().execute()
@@ -201,7 +200,7 @@ programs = [
     },
     {
         "id": 6,
-        "programName": "Habitat For Humanity",  
+        "programName": "Habitat For Humanity",
         "isStudentLed": False,
         "isBonnerScholars": False,
     }
@@ -218,7 +217,7 @@ events = [
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
-        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "startDate": datetime.strptime("2021 10 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
@@ -230,7 +229,7 @@ events = [
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
-        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "startDate": datetime.strptime("2021 11 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
@@ -456,7 +455,16 @@ ProgramEvent.insert_many(program_events).on_conflict_replace().execute()
 
 coursestatus = [
     {
-        "status": "Approve"
+        "status": "Completed"
+    },
+    {
+        "status": "Approved"
+    },
+    {
+        "status": "Pending"
+    },
+    {
+        "status": "Requires Edit"
     }
 ]
 CourseStatus.insert_many(coursestatus).on_conflict_replace().execute()
@@ -482,7 +490,24 @@ courses = [
         "id": 2,
         "courseName": "Spanish Help",
         "term": 1,
-        "status": 1,
+        "status": 2,
+        "courseCredit": "",
+        "createdBy": "",
+        "isAllSectionsServiceLearning": True,
+        "isPermanentlyDesignated": False,
+        "sectionBQuestion1": "",
+        "sectionBQuestion2": "",
+        "sectionBQuestion3": "",
+        "sectionBQuestion4": "",
+        "sectionBQuestion5": "",
+        "sectionBQuestion6": ""
+
+    },
+    {
+        "id": 3,
+        "courseName": "French Help",
+        "term": 3,
+        "status": 3,
         "courseCredit": "",
         "createdBy": "",
         "isAllSectionsServiceLearning": True,
@@ -500,7 +525,6 @@ Course.insert_many(courses).on_conflict_replace().execute()
 
 courseInstructorRecords = [
     {
-
         "id": 1,
         "course": 1,
         "user": "ramsayb2"
@@ -510,7 +534,11 @@ courseInstructorRecords = [
         "course": 2,
         "user": "ramsayb2"
     },
-
+    {
+        "id": 3,
+        "course": 2,
+        "user": "neillz"
+    },
 
 ]
 CourseInstructor.insert_many(courseInstructorRecords).on_conflict_replace().execute()

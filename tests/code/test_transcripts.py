@@ -132,9 +132,6 @@ def testingSLCourses():
     assert [slc.course.courseName == "Test Course" for slc in testingSLCExist]
     assert testingSLCNotExist.exists() == False
 
-
-
-
 @pytest.mark.integration
 def testingProgram():
 

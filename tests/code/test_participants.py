@@ -209,7 +209,7 @@ def test_sendKioskDataKiosk():
     listOfAttended = [users.user.username for users in usersAttended]
 
     assert "neillz" in listOfAttended
-    assert "bryanta" not in listOfAttended
+    assert "lamichhanes2" not in listOfAttended
 
     (EventParticipant.update({EventParticipant.attended: False})
                      .where(EventParticipant.user == "neillz", EventParticipant.event == 1)).execute()
@@ -221,5 +221,5 @@ def test_sendKioskDataKiosk():
 
     assert "bryanta" in listOfAttended2
 
-    deleteInstance = EventParticipant.get(EventParticipant.user == "bryanta")
+    deleteInstance = EventParticipant.get(EventParticipant.user == "bryanta", EventParticipant.event_id == 2)
     deleteInstance.delete_instance()

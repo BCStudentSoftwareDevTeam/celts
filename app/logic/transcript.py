@@ -72,6 +72,7 @@ def getTrainingTranscript(username):
 def getTotalHour(username):
     """
     Get the toal hours from events and courses combined.
+
     """
 
     eachHours = (EventParticipant.select(fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned")).where(EventParticipant.user == username)

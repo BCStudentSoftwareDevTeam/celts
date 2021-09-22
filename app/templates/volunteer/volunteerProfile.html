@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+{{super()}}
+  <script type="text/javascript" src="{{url_for('static', filename='js/volunteerIndicateInterest.js') }}?u={{lastStaticUpdate}}"></script>
+
+{% endblock %}
+
+{% block app_content %}
+<div class="container">
+  <div class="row">
+    <table class="table">
+
+      {% if upcomingEvents|length > 0 %}
+        <thead class="tableHeader">
+          <th scope="col"><h4><strong>Program</strong></h4>
+          <th scope="col"><h4><strong>Event Name</strong></h4>
+          <th scope="col"><h4><strong>Start Date</strong></h4>
+          <th scope="col"><h4><strong>End Date</strong></h4>
+        </thead>
+        {% for event in upcomingEvents %}
+        <tr>
+          <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
+          <td><a href= '/{{event.singleProgram}}/{{event.id}}/edit_event' class="link-primary">{{event.eventName}}</a></td>
+          <td>{{event.startDate}}</td>
+          <td>{{event.endDate}}</td>
+        {% endfor %}
+        </tr>
+
+      {% else %}
+        <h2> Choose interests below to be notified about upcoming events. <h2>
+      {% endif %}
+
+    </table>
+  </div>
+  <div class="row">
+    <h2>Which programs do you want to receive information about?</h2>
+    <input id="{{ user.username }}" hidden>
+      <div class="form-check-inline form-switch">
+      {% for program in programs %}
+        {% set status = '' %}
+          {% if program.id in interests_ids %}
+            {% set status = 'checked' %}
+          {% else %}
+          {% endif %}
+              <input class="form-check-input" type="checkbox" id="{{ program.id }}" {{ status }}>
+              <label class="form-check-label" style="padding-right:50px;" for="{{ program.id }}">{{program.programName}}</label>
+      {% endfor %}
+      </div>
+      <div>
+        <small>
+          <a href="https://www.berea.edu/celts/community-service-programs/volunteer-opportunities/">For more information click here.</a>
+        </small>
+      </div>
+  </div>
+</div>
+
+  {% endblock %}
