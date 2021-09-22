@@ -12,26 +12,32 @@
 
 {% block app_content %}
   {% set isAdmin = (g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff) %}
+  {% set isEditing = ('edit' in request.path) %}
 
   <div align="center" style="margin-bottom: 50px;">
-    {% if template.tag == 'single-program' %}
-      {% set page_title = 'Create Event for ' + eventData["program"].programName %}
-    {% elif template.tag == 'all-volunteer' %}
-      {% set page_title = 'Create All Volunteer Training' %}
-    {% elif template.tag == 'no-program' %}
-      {% set page_title = 'Create One-off Event' %}
-    {% elif template.tag == 'student-led-trainings' %}
-      {% set page_title = 'Create Student-Led Trainings' %}
-    {% else %}
-      {% set page_title = 'Create ' + template.name + ' Event' %}
-    {% endif %}
+      {% if isEditing %}
+        {% set page_title = eventData.name %}
+      {% else %}
+        {% if template.tag == 'single-program' %}
+          {% set page_title = 'Create Event for ' + eventData["program"].programName %}
+        {% elif template.tag == 'all-volunteer' %}
+          {% set page_title = 'Create All Volunteer Training' %}
+        {% elif template.tag == 'no-program' %}
+          {% set page_title = 'Create One-off Event' %}
+        {% elif template.tag == 'student-led-trainings' %}
+          {% set page_title = 'Create Student-Led Trainings' %}
+        {% else %}
+          {% set page_title = 'Create ' + template.name + ' Event' %}
+        {% endif %}
+      {% endif %}
 
     <h1 id="title">{{page_title}}</h1>
 
-    {% if 'create_event' in request.path %}
-    <h2> New Event Form</h2>
+    {% if not isEditing %}
+      <h2> New Event Form</h2>
     {% endif %}
-    {% if 'edit_event' in request.path and isPastEvent%}
+
+    {% if isEditing and isPastEvent%}
       <div class="alert alert-danger" role="alert">
     This event has already passed.
       </div>
@@ -39,7 +45,7 @@
 
   </div>
 
-  {% if 'edit_event' in request.path and isAdmin %}
+  {% if isEditing and isAdmin %}
     <form action="/event/{{eventId}}/deleteEvent" method='post'>
       <input type="submit" class="btn btn-danger float-end" value="Cancel Event"/>
       <div>
@@ -65,119 +71,110 @@
         {% if eventData.id %}
           <input type="hidden" name="eventId" value="{{eventData.id}}" >
         {% endif %}
+        
         <div class="d-grid gap-1.5">
           <div class="form-group">
-            <label for='eventName'> <strong>Event Name: </strong></label> <br>
+            <label for='eventName'> <strong>Event Name</strong></label> <br>
             {% if isAdmin %}
               <input class="form-control"  id='inputEventName' value="{{eventData.name}}" name="eventName" required>
-            {%else%}
+            {% else %}
               <p>{{eventData.name}}</p>
-            {%endif%}
+            {% endif %}
           </div>
         </div><br>
 
         <div class="form-group">
+          <label for='term'><strong>Term</strong></label> <br>
           {% if isAdmin  %}
-          <label for='term'><strong> Term * </strong></label> <br>
-            <select class="form-control" name='eventTerm' id='inputEventTerm' required>
-              {%if 'edit_event' in request.path%}
+            <select class="form-select" name='eventTerm' id='inputEventTerm' required>
+              {% if term in eventData and eventData.term not in futureTerms %}
                 <option value='{{eventData.term}}' selected>{{eventData.term.description}}</option>
               {% endif %}
               {% for future in futureTerms %}
-                  <option value='{{future}}'>{{future.description}}</option>
+                <option value='{{future}}' {{"selected" if future == eventData.term}}>{{future.description}}</option>
               {% endfor %}
             </select>
           {% else %}
-            <label for='term'><strong> Term: </strong></label> <br>
             <p>{{eventData.term.description}}</p>
           {% endif %}
         </div><br>
 
         <div class="form-group">
+          <label for='location'><strong>Location</strong></label><br>
           {% if isAdmin %}
-          <label for='location'><strong>Location *</strong></label><br>
-          <input class="form-control" id='inputEventLocation' value="{{eventData.location}}" name="eventLocation" required>
+            <input class="form-control" id='inputEventLocation' value="{{eventData.location}}" name="eventLocation" required>
           {%else%}
-          <label for='location'><strong>Location:</strong></label><br>
-          <p>{{eventData.location}}</p>
+            <p>{{eventData.location}}</p>
           {%endif%}
         </div> <br>
-        {% if isAdmin %}
-        <div class="form-check form-switch" style="padding-bottom: 1.5em" {{hideElement}}>
+
+        {% if isAdmin and not isEditing %}
+        <div class="form-check form-switch" style="padding-bottom: 1.5em" >
           <label class="custom-control-label" for='checkIsRecurring'><strong>This event is a recurring event</strong></label>
           <input class="form-check-input" type="checkbox" id="checkIsRecurring" name="eventIsRecurring"/>
         </div>
         {% endif %}
 
+        <!-- Start and End Time -->
         <div class="flex-container"> <br>
           <div class="form-inline d-flex">
             <div  class="form-group" >
               <div class="d-inline-flex">
+                <label for="startTime"><strong>Start Time:</strong></label>
                 {% if isAdmin %}
-                <label for="startTime"><strong>Start Time: *</strong></label>
-                <input type='time' class="form-control timePicker" id='pickStartTime'value="{{eventData.timeStart}}"  name="eventStartTime" required>
-                {%else%}
-                <label for="startTime"><strong>Start Time: </strong></label>
-                <p> {{eventData.timeStart.strftime("%I: %M %p")}}</p>
-                {%endif%}
+                  <input type='time' class="form-control timePicker" id='pickStartTime'value="{{eventData.timeStart}}"  name="eventStartTime" required>
+                {% else %}
+                  <p> {{ eventData.timeStart.strftime("%I: %M %p") if eventData.timeStart }}</p>
+                {% endif %}
               </div>
               <div class='form-group time d-inline-flex' style="padding: 0 0 0 2rem">
+                <label for="endTime"><strong>End Time:</strong></label>
                 {% if isAdmin %}
-                <label for="endTime"><strong>End Time: *</strong></label>
-                <input type='time' class="form-control timePicker" id='pickEndTime' value="{{eventData.timeEnd}}" name="eventEndTime" required>
-                {%else%}
-                <label for="endTime"><strong>End Time: </strong></label>
-                <p> {{eventData.timeEnd.strftime("%I: %M %p")}}</p>
-                {%endif%}
+                  <input type='time' class="form-control timePicker" id='pickEndTime' value="{{eventData.timeEnd}}" name="eventEndTime" required>
+                {% else %}
+                  <p> {{ eventData.timeEnd.strftime("%I: %M %p") if eventData.timeEnd }}</p>
+                {% endif %}
               </div>
             </div>
           </div>
         </div><br>
-        <!-- datePickerS -->
+        
+        <!-- Start and End Datepickers -->
         <div class="flex-container">
           <div>
             <div  class="form-group" >
               <div class="d-inline-flex" style="width:48%;">
-              <!--datePicker for start date-->
-               {% if  isAdmin  %}
-              <label for="startDatePicker" id="startDatePickerLabel" ><span><strong>Start Date *</strong></span></label><br>
-                <div class='input-group date' {{ 'id=startDate' if isAdmin  }}>
-                  <input type='text' class="form-control datePicker readonly" value="{{eventData.startDate.strftime('%m-%d-%Y') if 'edit_event' in request.path}}" name="eventStartDate" placeholder="Start Date" onchange=updateDate(this) id=startDatePicker required>
+                <label for="startDatePicker" id="startDatePickerLabel" ><span><strong>Start Date</strong></span></label><br>
+              {% if  isAdmin  %}
+                <div class='input-group date' id="startDate">
+                  <input type='text' class="form-control datePicker readonly" value="{{ eventData.startDate.strftime('%m-%d-%Y') if isEditing and eventData.startDate }}" name="eventStartDate" placeholder="Start Date" onchange=updateDate(this) id=startDatePicker required>
 
                   <div class="input-group-text" id="calendarIconStart">
                     <span><i class="bi bi-calendar-plus-fill"></i></span>
                   </div>
                 </div>
-                {%else%}
-                    <label for="startDatePicker" id="startDatePickerLabel" ><span><strong>Start Date:</strong></span></label><br>
-
-                    <p>{{eventData.startDate.strftime('%m-%d-%Y') if 'edit_event' in request.path}} </p>
-                {%endif%}
+                {% else %}
+                    <p>{{ eventData.startDate.strftime('%m-%d-%Y') if isEditing and eventData.startDate }} </p>
+                {% endif %}
               </div>
               <div class="d-inline-flex d-none" id ="endDateStyle" style="width:51%;">
                 <!--datePicker for End date-->
-                <label for="endDatePicker" id="endDatePickerLabel" style="padding:0 0 0 2rem" ><span><strong>End Date *</strong></span></label>
-                <div class='input-group date' {{'id=endDate' if isAdmin  }}>
-                  <input type='text' class="form-control datePicker readonly" id='endDatePicker' value="{{eventData.endDate.strftime('%m-%d-%Y') if 'edit_event' in request.path}}" name="eventEndDate" placeholder="End Date" onchange="updateDate(this)"
-                        {{'required' if isAdmin  else 'readonly'}}>
+                <label for="endDatePicker" id="endDatePickerLabel" style="padding:0 0 0 2rem" ><span><strong>End Date</strong></span></label>
+                <div class='input-group date' id="endDate">
+                  <input type='text' class="form-control datePicker readonly" id='endDatePicker' value="{{eventData.endDate.strftime('%m-%d-%Y') if isEditing and eventData.endDate }}" name="eventEndDate" placeholder="End Date" onchange="updateDate(this)" {{"required" if isAdmin else "readonly"}}>
                   <div class="input-group-text" id="calendarIconEnd">
                     <span><i class="bi bi-calendar-plus-fill"></i></span>
                   </div>
                 </div>
-              </div>​
+              </div>
             </div>
           </div>
         </div><br>
+
         <div class = "d-none" id ="recurringTableDiv">
           <table class="table" id="recurringEventsTable" name="recurringEventsTable">
-            <thead>
-            <tr>
-            <th>Event Name</th>
-            <th>Date</th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
+            <thead><tr><th>Event Name</th><th>Date</th></tr></thead>
+            <tbody></tbody>
           </table>
         </div>
       </div>
@@ -185,16 +182,16 @@
       <div class="col-md-6 col-sm-12 form-group">
         {% if isAdmin %}
           <div class="form-check form-switch">
-            <label class="custom-control-label" for="checkIsRequired"><strong>This event is required for the program</strong></label>
+            <label class="custom-control-label" for="checkIsRequired"><strong>This event is required for the program.</strong></label>
             <input class="form-check-input" type="checkbox" id="checkIsRequired" name="eventRequiredForProgram" {{isTraining}}/>
           </div>
 
           <div class="form-check form-switch">
-            <label class="custom-control-label" for="checkIsTraining"><strong>This event is a training for the program</strong></label>
+            <label class="custom-control-label" for="checkIsTraining"><strong>This event is a training for the program.</strong></label>
             <input class="form-check-input" type="checkbox" id="checkIsTraining"  name="eventIsTraining" {{isTraining}}/>
           </div>
           <div class="form-check form-switch">
-            <label class="custom-control-label" for='rsvp'><strong>Requires RSVP</strong></label>
+            <label class="custom-control-label" for='rsvp'><strong>This event requires RSVP.</strong></label>
             <input class="form-check-input" type="checkbox" id="rsvp"  name="eventRSVP" {{isRsvpRequired}}/>
           </div>
           <div class="form-check form-switch">
@@ -216,45 +213,45 @@
         {% endif %}
 
         <div class="form-group">
-          {%if isAdmin %}
-          <label for='description'><strong> Description * </strong></label> <br>
-          <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' name="eventDescription" required></textarea>
-          {%else%}
-          <label for='description'><strong> Description: </strong></label> <br>
-          <p>{{eventData.description}}</p>
-          {%endif%}
+          <label for='description'><strong>Description</strong></label> <br>
+          {% if isAdmin %}
+            <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' name="eventDescription" required></textarea>
+          {% else %}
+            <p>{{eventData.description}}</p>
+          {% endif %}
         </div><br>
 
         <div class='form-group'>
+          <label for='facilitators'><strong>Facilitators</strong></label> <br>
           {% if isAdmin %}
-          <label for='facilitators'><strong> Facilitators *</strong></label> <br>
-            <select class="dropdown form-control" id="inputEventFacilitators"  name="eventFacilitator" >
-            {%for facilitator in facilitators %}
-              {% if currentFacilitator %}
-                {% if facilitator.username == currentFacilitator.user|string %}
-                  <option value={{currentFacilitator.user}} selected>{{currentFacilitator.user.firstName}} {{currentFacilitator.user.lastName}}</option>
-                {% else %}
-                  <option value={{facilitator.username}}> {{facilitator.firstName}} {{facilitator.lastName}}</option>
-                  {% endif %}
-              {% else %}
-                <option value={{facilitator.username}}> {{facilitator.firstName}} {{facilitator.lastName}}</option>
+            <select class="dropdown form-select" multiple id="inputEventFacilitators"  name="eventFacilitator" >
+            <!-- make sure we show existing facilitators in case they aren't in the facilitators list anymore -->
+            {% for ef in eventFacilitators %}
+              {% if ef not in facilitators %}
+                <option value="{{ef.user.username}}" selected>{{ef.user.firstName}} {{ef.user.lastName}}</option>
               {% endif %}
+            {% endfor %}
+
+            {% for f in facilitators %}
+              <option value="{{f.username}}" {{ "selected" if f in eventFacilitators }}> {{f.firstName}} {{f.lastName}}</option>
             {% endfor %}
           </select>
         {% else %}
-         <label for='facilitators'><strong> Facilitators: </strong></label> <br>
-          <p>{%for facilitator in eventFacilitators.objects() %} {{facilitator.user.firstName}} {{facilitator.user.lastName}}  {% endfor %}</p>
-          {%if numFacilitators == 0 %}
-            <p>None</p>
-          {%endif%}
-        {% endif %}
+            {% if not eventFacilitators|count %}
+              <p>None</p>
+            {%endif%}
 
+            {% for f in eventFacilitators %} 
+              <p>{{f.user.firstName}} {{f.user.lastName}}</p>
+            {% endfor %}
+        {% endif %}
       </div>
+
       </div>
       <div class="row justify-content-left" style="margin-top: 1.5em">
       <div class="col-md-6 offset-md-3">
         <div class="text-center">
-          {% if 'edit_event' in request.path %}
+          {% if isEditing  %}
             {% if userHasRSVPed %}
               <button type="submit" class="btn btn-danger"  formaction="/rsvpRemove">Remove RSVP</button>
             {% else %}

@@ -1,5 +1,7 @@
 from flask import request, render_template, url_for, g, Flask, redirect, flash, abort, json, jsonify
+from playhouse.shortcuts import model_to_dict
 import json
+
 from datetime import datetime
 from dateutil import parser
 
@@ -61,53 +63,30 @@ def template_select(templateid, programid=None):
             template = template,
             eventData = eventData,
             futureTerms = futureTerms,
-            facilitators = getAllFacilitators())
+            facilitators = getAllFacilitators(),
+            eventFacilitators = [])
 
 
 @admin_bp.route('/event/<eventId>/edit', methods=['GET'])
-def editEvent(program, eventId):
+def editEvent(eventId):
+    try:
+        event = Event.get_by_id(eventId)
+    except DoesNotExist as e:
+        print(f"Unknown event: {eventId}")
+        abort(404)
+
     facilitators = getAllFacilitators()
-    eventInfo = Event.get_by_id(eventId)
-    currentTermid = Term.select().where(Term.isCurrentTerm).get()
-    futureTerms = selectFutureTerms(currentTermid)
+    eventFacilitators = Facilitator.select().where(Facilitator.event == event)
+    futureTerms = selectFutureTerms(g.current_term)
+    userHasRSVPed = EventParticipant.get_or_none(EventParticipant.user == g.current_user, EventParticipant.event == event)
+    isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
 
-    # FIXME: One of the below two should be replaced which one?
-    eventFacilitators = Facilitator.select().where(Facilitator.event == eventInfo)
-    numFacilitators = len(list(eventFacilitators))
-    currentFacilitator = Facilitator.get_or_none(Facilitator.event == eventId)
-
-    isRecurring = "Checked" if eventInfo.isRecurring else ""
-    # isPrerequisiteForProgram = "Checked" if eventInfo.isPrerequisiteForProgram else ""
-    isTraining = "Checked" if eventInfo.isTraining else ""
-    isRsvpRequired = "Checked" if eventInfo.isRsvpRequired else ""
-    isService = "Checked" if eventInfo.isService else ""
-    userHasRSVPed = EventParticipant.get_or_none(EventParticipant.user == g.current_user, EventParticipant.event == eventInfo)
-    hideElement = "hidden"
-    program = Program.get_by_id(program)
-
-    currentDate = datetime.now()
-    eventDate = datetime.combine(eventInfo.startDate, eventInfo.timeStart)
-    isPastEvent = False
-    if currentDate >= eventDate:
-        isPastEvent = True
-
-
-    return render_template("admin/createEvents.html",
-                            user = g.current_user,
-                            isPastEvent = isPastEvent,
-                            program = program,
-                            currentFacilitator = currentFacilitator,
+    return render_template("admin/createSingleEvent.html",
+                            eventData = model_to_dict(event),
                             facilitators = facilitators,
-                            futureTerms = futureTerms,
-                            eventInfo = eventInfo,
-                            eventId = eventId,
-                            isRecurring = isRecurring,
-                            isTraining = isTraining,
-                            hideElement = hideElement,
-                            isRsvpRequired = isRsvpRequired,
-                            isService = isService,
                             eventFacilitators = eventFacilitators,
-                            numFacilitators = numFacilitators,
+                            futureTerms = futureTerms,
+                            isPastEvent = isPastEvent,
                             userHasRSVPed = userHasRSVPed)
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
