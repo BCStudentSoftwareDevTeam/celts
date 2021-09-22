@@ -1,4 +1,4 @@
-from flask import request, render_template, g, abort, flash, redirect, url_for,load_config
+from flask import request, render_template, g, abort, flash, redirect, url_for
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.program import Program
@@ -13,6 +13,7 @@ from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 from app.logic.events import groupEventsByCategory
 from datetime import datetime
+from app import app
 
 @main_bp.route('/', methods=['GET'])
 @main_bp.route('/<selectedTerm>', methods=['GET'])
@@ -115,7 +116,7 @@ def RemoveRSVP():
     return redirect(url_for("admin.editEvent", eventId=eventId, program=program))
 @main_bp.route('/contributors',methods = ['GET'])
 def contributors():
-    contribs = load_config("app/config/Contributors.yml")
-    return render_template("app/templates/Contributors.html",
+    contribs = app.config['contributors']
+    return render_template("/Contributors.html",
            cfg = contribs
            )
