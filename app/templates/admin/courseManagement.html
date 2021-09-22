@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+
+<div>
+  <h1 class="text-center pt-1 pb-4">Service Learning Course Proposal Management</h1>
+  <select class="form-control form-control-sm mx-auto w-25">
+    <option>Small select</option>
+  </select>
+  <div class="pt-4">
+    <div class="container">
+  <div class="row">
+    <div class="col">
+      <h2> Pending </h2>
+    </div>
+    <div class="col">
+      <div class="float-end">
+        <button type="button" class="btn btn-primary btn-sm">Send To Faculty Fellow</button>
+        <button type="button" class="btn btn-success btn-sm">Add Course</button>
+      </div>
+    </div>
+  </div>
+</div>
+    <table class="table table-striped border">
+    <thead>
+      <tr>
+        <th scope="col">Courses</th>
+        <th scope="col">Faculty</th>
+        <th scope="col">Term</th>
+        <th scope="col">Status</th>
+        <th scope="col">Review</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        {% for data in courses %}
+          {% if data.status != "Approve" %}
+            <td>{{data.course.courseName}}</td>
+            <td>{{data.user.firstName}} {{data.user.lastName}}</td>
+            <td>{{data.course.term.description}}</td>
+            <td>{{data.status}}</td>
+            <td>Review</td>
+          {% endif %}
+        {% endfor %}
+      </tr>
+    </tbody>
+    </table>
+  </div>
+  <div class="pb-5">
+    <h2>Approved</h2>
+    <table class="table table-striped border">
+    <thead>
+      <tr>
+        <th scope="col">Courses</th>
+        <th scope="col">Faculty</th>
+        <th scope="col">Term</th>
+        <th scope="col">Status</th>
+        <th scope="col">Sent</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th></th>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    </tbody>
+    </table>
+  </div>
+  <div class="float-end">
+    <button class="btn btn-primary"> Send to Registrar</button>
+  </div>
+</div>
+
+{% endblock %}
