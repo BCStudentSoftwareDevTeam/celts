@@ -152,12 +152,23 @@ def addParticipants():
     return render_template('addParticipants.html',
                             title="Add Participants")
 
-@admin_bp.route('/courseManagement', methods = ['GET'])
+@admin_bp.route('/courseManagement', methods = ['GET', 'POST'])
 def courseManagement():
     '''
     Renders the page for admins to manage Course Proposals
     '''
-    courses = courseData(3)
+    currentTerm = Term.get(Term.isCurrentTerm)
+    requestTerm = request.json
+    termId = currentTerm
+    if requestTerm:
+        termId = requestTerm
+    pending = pendingCourses(termId)
+    approve = approveCourses(termId)
+    print(termId, "================")
+
+    terms = selectFutureTerms(currentTerm)
 
     return render_template('/admin/courseManagement.html',
-                            courses = courses)
+                            pendingCourses = pending,
+                            approveCourses = approve,
+                            terms = terms)

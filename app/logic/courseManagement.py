@@ -4,17 +4,31 @@ from app.models.course import Course
 from app.models.term import Term
 
 
-def courseData(termId):
+def pendingCourses(termId):
     '''
     Queries the database to get all the neccessary information for
     pending courses.
     '''
 
-    courseData = (CourseInstructor.select(Course.courseName, Term.description, CourseInstructor.user)
+    pendingCourses = (CourseInstructor.select(Course.courseName, Term.description, CourseInstructor.user, Course.status)
                     .join(Course)
                     .join(CourseStatus)
                     .switch(Course)
-                    .join(Term)).where(CourseInstructor.course.term.id == termId)
+                    .join(Term)).where(CourseInstructor.course.term.id == termId, Course.status.status != "Approve")
 
 
-    return courseData
+    return pendingCourses
+def approveCourses(termId):
+    '''
+    Queries the database to get all the neccessary information for
+    pending courses.
+    '''
+
+    approveCourses = (CourseInstructor.select(Course.courseName, Term.description, CourseInstructor.user, Course.status)
+                    .join(Course)
+                    .join(CourseStatus)
+                    .switch(Course)
+                    .join(Term)).where(CourseInstructor.course.term.id == termId, Course.status.status == "Approve")
+
+
+    return approveCourses

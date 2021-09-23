@@ -1,12 +1,20 @@
 {% extends "base.html" %}
+{% block scripts %}
+  {{super()}}
+    <script src="/static/js/courseManagement.js"></script>
+{% endblock %}
 
 {% block app_content %}
 
 <div>
   <h1 class="text-center pt-1 pb-4">Service Learning Course Proposal Management</h1>
-  <select class="form-control form-control-sm mx-auto w-25">
-    <option>Small select</option>
-  </select>
+  <div class="text-center">
+    <select class="w-25" id="selectTerm" onchange="changeTerm(this)" >
+      {% for term in terms %}
+        <option value="{{term.id}}">{{term.description}}</option>
+      {% endfor %}
+    </select>
+  </div>
   <div class="pt-4">
     <div class="container">
   <div class="row">
@@ -33,14 +41,12 @@
     </thead>
     <tbody>
       <tr>
-        {% for data in courses %}
-          {% if data.status != "Approve" %}
-            <td>{{data.course.courseName}}</td>
-            <td>{{data.user.firstName}} {{data.user.lastName}}</td>
-            <td>{{data.course.term.description}}</td>
-            <td>{{data.status}}</td>
-            <td>Review</td>
-          {% endif %}
+        {% for data in pendingCourses %}
+          <td>{{data.course.courseName}}</td>
+          <td>{{data.user.firstName}} {{data.user.lastName}}</td>
+          <td>{{data.course.term.description}}</td>
+          <td>{{data.course.status.status}}</td>
+          <td>Review</td>
         {% endfor %}
       </tr>
     </tbody>
@@ -60,11 +66,13 @@
     </thead>
     <tbody>
       <tr>
-        <th></th>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        {% for data in approveCourses %}
+          <td>{{data.course.courseName}}</td>
+          <td>{{data.user.firstName}} {{data.user.lastName}}</td>
+          <td>{{data.course.term.description}}</td>
+          <td>{{data.course.status.status}}</td>
+          <td>Review</td>
+        {% endfor %}
       </tr>
     </tbody>
     </table>
