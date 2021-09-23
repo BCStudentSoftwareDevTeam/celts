@@ -14,7 +14,7 @@ templates = [
         "id": 2,
         "name": "All Volunteer Training",
         "tag": "all-volunteer",
-        "templateJSON": "{'name': 'All Volunteer Training'}",
+        "templateJSON": '{"name": "All Volunteer Training","description": "Training for all CELTS programs", "isTraining": true, "isService": false}',
         "templateFile": "createSingleEvent.html",
         "isVisible": True
     },
