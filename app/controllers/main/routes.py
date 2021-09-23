@@ -25,7 +25,7 @@ def events(selectedTerm=None):
     eventsDict = groupEventsByCategory(currentTerm)
     listOfTerms = Term.select()
     participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
-    rsvpedEventsID = [event.event.id for event in list(participantRSVP)]
+    rsvpedEventsID = [event.event.id for event in participantRSVP]
 
     return render_template("/events/event_list.html",
         selectedTerm = Term.get_by_id(currentTerm),

@@ -1,32 +1,10 @@
 from flask import Flask, redirect, flash, url_for, request, render_template, g, json
 from app.models.event import Event
 from app.models.user import User
-from app.models.programEvent import ProgramEvent
 from app.controllers.events import events_bp
-from app.logic.events import getEvents
 from app.logic.participants import sendUserData
 from datetime import datetime
 from app.models.eventRsvp import EventRsvp
-
-@events_bp.route('/events/<term>/', methods=['GET'])
-def events(term):
-    #set term to current term when events page is accessed from the navbar
-    if not term.isdigit():
-        term = g.current_term
-
-    currentTime = datetime.now()
-    eventsDict = groupEventsByCategory(term)
-    listOfTerms = Term.select()
-    participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
-    rsvpedEventsID = [event.event.id for event in list(participantRSVP)]
-
-    return render_template("/events/event_list.html",
-        selectedTerm = Term.get_by_id(term),
-        eventDict = eventsDict,
-        listOfTerms = listOfTerms,
-        rsvpedEventsID = rsvpedEventsID,
-        currentTime = currentTime,
-        user = g.current_user)
 
 @events_bp.route('/<eventid>/kiosk', methods=['GET'])
 def loadKiosk(eventid):
