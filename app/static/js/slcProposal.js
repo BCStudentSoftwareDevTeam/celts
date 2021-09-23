@@ -1,3 +1,5 @@
+import { searchUser } from '/app/static/js/searchStudent.js'
+
 $(document).ready ( function() {
   var cookies = document.cookie;
   console.log("is there cookie?", document.cookie);
@@ -7,22 +9,23 @@ $(document).ready ( function() {
     document.cookie = parsedCookies + ";max-age=28800;";
     console.log("par", parsedCookies.sectionsResponse);
 
-    $("#slcp-courseName").val(parsedCookies.courseName);
-    $("#slcp-courseAbbreviation").val(parsedCookies.courseAbbreviation);
-    $("#slcp-credit").val(parsedCookies.credit);
-    $("#sectionsResponse").val(parsedCookies.sectionsResponse);
+    $("#courseName").val(parsedCookies.courseName);
+    $("#courseAbbreviation").val(parsedCookies.courseAbbreviation);
+    $("#credit").val(parsedCookies.credit);
+    $("#slSectionsToggle").val(parsedCookies.sectionsResponse);
     $("#inputCourseInstructor").val(parsedCookies.inputCourseInstructor);
     $("#slDesignation").val(parsedCookies.slDesignation);
   }
 
+  searchUser();
 
 });
 function saveSLCdata(){
   // courseInstructor = $()
-  var courseName = $('#slcp-courseName').val();
-  var courseAbbreviation = $('#slcp-courseAbbreviation').val()
-  var credit = $("#slcp-credit").val()
-  var sectionsResponse = $("#sectionsResponse").val()
+  var courseName = $('#courseName').val();
+  var courseAbbreviation = $('#courseAbbreviation').val()
+  var credit = $("#credit").val()
+  var slSectionsToggle = $("#slSectionsToggle").val()
   var inputCourseInstructor = $("#inputCourseInstructor").find("option:selected").val();
   var slDesignation = $("#slDesignation").text()
 
@@ -30,15 +33,13 @@ function saveSLCdata(){
     courseName: courseName,
     courseAbbreviation: courseAbbreviation,
     credit: credit,
-    sectionsResponse: sectionsResponse,
+    slSectionsToggle: slSectionsToggle,
     inputCourseInstructor: inputCourseInstructor,
     slDesignation: slDesignation
   }
   console.log(proposalData, "data");
 
   document.cookie =  JSON.stringify(proposalData) + ";max-age=28800;";
-
-  window.location.replace("/slcQuestionnaire");
 }
 function searchInstructor(){
 var query = $("#instructorInput").val()

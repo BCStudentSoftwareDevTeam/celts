@@ -4,11 +4,14 @@ from app.models.courseStatus import CourseStatus
 
 class Course(baseModel):
     courseName = CharField()
+    courseAbbreviation = CharField()
+    courseCredit = FloatField()
+    isRegularlyOccuring = BooleanField(default=False)
     term = ForeignKeyField(Term)
     status = ForeignKeyField(CourseStatus)
-    courseCredit = CharField()
     createdBy = CharField()
     isAllSectionsServiceLearning = BooleanField(default=False)
+    serviceLearningDesignatedSections = CharField()
     isPermanentlyDesignated = BooleanField(default=False)
     sectionBQuestion1 = CharField()
     sectionBQuestion2 = CharField()

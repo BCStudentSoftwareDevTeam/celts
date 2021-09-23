@@ -1,10 +1,14 @@
-from flask import request, render_template, g, abort, json
+from flask import request, render_template, g, abort, json, redirect
 
 from app.models.user import User
 from app.models.term import Term
+from app.models.course import Course
+from app.models.courseStatus import CourseStatus
 
 from app.controllers.serviceLearning import serviceLearning_bp
 from app.logic.searchUsers import searchUsers
+
+courseData = {}
 
 @serviceLearning_bp.route('/serviceCourseManagement', methods = ['GET'])
 def serviceCourseManagement():
@@ -24,15 +28,16 @@ def slcGuidelines():
 def slcProposal():
     """This page allows faculties to create service learning proposal"""
     if request.method == "POST":
-        courseName = request.form.get("courseName")
-        courseAbbreviation = request.form.get("courseAbbreviation")
-        credit = request.form.get("credit")
-        courseInstructorPhone = request.form.get("courseInstructorPhone")
-        regularOccurenceToggle = request.form.get("regularOccurenceToggle")
-        inputCourseInstructor = request.form.get("termSelect")
-        slSectionsToggle = request.form.get("slSectionsToggle")
-        slDesignation = request.form.get("slDesignation")
-        permanentDesignation = request.form.get("permanentDesignation")
+        courseData["courseName"] = request.form.get("courseName")
+        courseData["courseAbbreviation"] = request.form.get("courseAbbreviation")
+        courseData["courseCredit"] = request.form.get("credit")
+        courseData["courseInstructorPhone"] = request.form.get("courseInstructorPhone")
+        courseData["regularOccurenceToggle"] = request.form.get("regularOccurenceToggle")
+        courseData["termId"] = request.form.get("term")
+        courseData["slSectionsToggle"] = request.form.get("slSectionsToggle")
+        courseData["slDesignation"] = request.form.get("slDesignation")
+        courseData["permanentDesignation"] = request.form.get("permanentDesignation")
+        return redirect("/slcQuestionnaire")
 
     terms = Term.select()
     return render_template('serviceLearning/slcProposal.html', terms=terms)
@@ -41,27 +46,26 @@ def slcProposal():
 def slcQuestionnaire():
     """ This page renders slc questionnare """
     if request.method == "POST":
-        questionOne = request.form.get("questionOne")
-        questionTwo = request.form.get("questionTwo")
-        questionThree = request.form.get("questionThree")
-        questionFour = request.form.get("questionFour")
-        questionFive = request.form.get("questionFive")
-        questionSix = request.form.get("questionSix")
+        term = Term.get(Term.id == courseData["termId"])
+        status = CourseStatus.get(CourseStatus.stauts == "Pending")
+        Course.create(
+            courseName=courseData["courseName"],
+            courseAbbreviation=courseData["courseAbbreviation"],
+            courseCredit=courseData["courseCredit"],
+            isRegularlyOccuring=courseData["regularOccurenceToggle"],
+            term=term,
+            status=status,
+            createdBy=g.current_user,
+            isAllSectionsServiceLearning=1 if courseData["slSectionsToggle"] else 0,
+            serviceLearningDesignatedSections=courseData["slDesignation"],
+            isPermanentlyDesignated=1 if courseData["slDesignation"] else 0,
+            sectionBQuestion1=request.form.get("questionOne"),
+            sectionBQuestion2=request.form.get("questionTwo"),
+            sectionBQuestion3=request.form.get("questionThree"),
+            sectionBQuestion4=request.form.get("questionFour"),
+            sectionBQuestion5=request.form.get("questionFive"),
+            sectionBQuestion6=request.form.get("questionSix"),
+        )
+        return redirect('/serviceCourseManagement')
 
     return render_template('serviceLearning/slcQuestionnaire.html')
-
-@serviceLearning_bp.route('/slcSubmit', methods = ['POST'])
-def slcSubmit():
-    ''''''
-    print("something")
-
-# JUNK
-
-@serviceLearning_bp.route('/searchInstructor/<query>', methods = ['GET'])
-def searchInstructor(query):
-    '''Accepts user input and queries the database returning results that matches user search'''
-
-    # TODO:
-    # 1. Populate the course instructor using searchUser in logic. See if you can do it using html <form> instead of ajax.
-
-    return json.dumps(searchUsers(query))

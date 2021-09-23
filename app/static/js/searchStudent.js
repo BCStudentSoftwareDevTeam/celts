@@ -34,3 +34,7 @@ function searchStudents(){
      }
   });
 };
+
+export function searchUser() {
+  searchStudents();
+}

@@ -12,7 +12,7 @@
 <h1 class="text-center pb-2 fs-2"> New Proposal For Service Learning Course Designation </h1>
 
 <p class="text-center fw-bold"> Please review the <a href="/slcGuidelines">Service Learning course guidelines</a> before completing this form </p>
-<form action="/slcProposal" method="post">
+<form method="post">
   <div class="container-fluid">
     <div class="row">
       <div class="p-2 col-md-4">
@@ -38,18 +38,21 @@
         <label class="pt-3">Course Name</label>
         <input
           class="form-control"
+          id="coursName"
           name="courseName"
           type="text"
           placeholder="Default input" />
         <label for="">Course Abbreviation</label>
         <input
           class="form-control"
+          id="courseAbbreviation"
           name="courseAbbreviation"
           type="text"
           placeholder="Default input"/>
         <label for="">Credit</label>
         <input
           class="form-control"
+          id="credit"
           name="credit"
           type="number"
           placeholder="1"/>
@@ -71,7 +74,7 @@
         <select
           class="dropdown form-control mb-3"
           id="inputCourseInstructor"
-          name="termSelect">
+          name="term">
           {% for term in terms %}
             <option value="{{ term.id }}"> {{ term.description }}</option>
           {% endfor %}
@@ -86,6 +89,7 @@
         <label class="pt-2" for="slDesignation">Sections with SL Designation</label>
         <textarea
           class="form-control"
+          id="slDesignation"
           name="slDesignation"
           rows="3">
         </textarea>
@@ -101,10 +105,10 @@
     <div class="row align-items-end pt-5">
       <div class="col">
         <a
-          href="#"
+          href="/slcGuidelines"
           type="button"
-          class="btn btn-danger col">
-          Cancel
+          class="btn btn-primary col">
+          Previous
         </a>
       </div>
       <div class="col" align="right">
@@ -112,7 +116,7 @@
         <button
           id="Continue"
           type="submit"
-          class="btn btn-success col">
+          class="btn btn-primary col">
           Continue
         </button>
       </div>
