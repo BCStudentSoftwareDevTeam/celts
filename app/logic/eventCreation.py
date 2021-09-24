@@ -1,13 +1,12 @@
 from dateutil import parser
 from datetime import *
 
-from app.models import mainDB
 from app.models.event import Event
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.models.facilitator import Facilitator
 
-def validateNewEventData(newEventData, checkExists=True):
+def validateNewEventData(newEventData):
 
     if parser.parse(newEventData['eventEndDate'])  <  parser.parse(newEventData['eventStartDate']):
         return (False, "Event start date is after event end date", newEventData)
@@ -36,12 +35,12 @@ def validateNewEventData(newEventData, checkExists=True):
             return (False, "Event Service Hours must be a boolean", newEventData)
 
 
-    # Event name, Description and Event Start date
+    # Check for a pre-existing event with Event name, Description and Event Start date
     event = Event.select().where((Event.name == newEventData['eventName']) &
                              (Event.description == newEventData['eventDescription']) &
                              (Event.startDate == parser.parse(newEventData['eventStartDate'])))
 
-    if checkExists and event.exists():
+    if 'eventId' not in newEventData and event.exists():
         return (False, "This event already exists", newEventData)
 
     newEventData['valid'] = True
@@ -81,48 +80,4 @@ def setValueForUncheckedBox(eventData):
             eventData[checkBox] = False
 
     return eventData
-
-def createNewEvent(newEventData):
-    """
-    Creates a new event and facilitator for that event
-    The newEventData must have gone through the validateNewEventData function
-    for 'valid' to be True.
-    param: newEventData - dict with the event information
-    """
-    if newEventData['valid'] == True:
-        # get the program first so if there's an exception we don't create the other stuff
-        program = Program.get_by_id(newEventData['programId'])
-
-        eventsToCreate = []
-        if newEventData['eventIsRecurring'] == 'on':
-            eventsToCreate = calculateRecurringEventFrequency(newEventData)
-        else:
-            eventsToCreate.append({'name': f"{newEventData['eventName']}",
-                                    'date':newEventData['eventStartDate'],
-                                    "week":1})
-
-        for eventInstance in eventsToCreate:
-            with mainDB.atomic():
-                newEvent = Event.create(name = eventInstance['name'],
-                                          term = newEventData['eventTerm'],
-                                          description= newEventData['eventDescription'],
-                                          timeStart = newEventData['eventStartTime'],
-                                          timeEnd = newEventData['eventEndTime'],
-                                          location = newEventData['eventLocation'],
-                                          isRecurring = newEventData['eventIsRecurring'],
-                                          isRsvpRequired = newEventData['eventRSVP'],
-                                          isPrerequisiteForProgram = newEventData['eventRequiredForProgram'],
-                                          isTraining = newEventData['eventIsTraining'],
-                                          isService = newEventData['eventServiceHours'],
-                                          startDate =  parser.parse(eventInstance['date']),
-                                          endDate =  parser.parse(eventInstance['date']))
-
-                programEvent = ProgramEvent.create(program=program, event=newEvent)
-
-                facilitatorEntry = Facilitator.create(user = newEventData['eventFacilitator'],event = newEvent)
-
-    else:
-        raise Exception("Invalid Data")
-
-    return newEvent
 

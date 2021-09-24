@@ -24,12 +24,10 @@ $(document).ready(function(){
 
   $("#checkIsRecurring").click(function() {
     var recurringStatus = $("input[name='eventIsRecurring']:checked").val()
-    if (recurringStatus == 'on'){
+    if (recurringStatus == 'on') {
       $("#endDateStyle, #recurringTableDiv").removeClass('d-none')
       $("#endDatePicker").prop('required', true);
-
-
-    }else{
+    } else {
       $("#endDateStyle, #recurringTableDiv").addClass('d-none')
       $("#endDatePicker").prop('required', false);
     }
@@ -41,8 +39,8 @@ $(document).ready(function(){
 }
 
 });
-
-  $(".readonly").on('keydown paste', function(e){ //makes the input fields act like readonly (readonly doesn't work with required)
+  //makes the input fields act like readonly (readonly doesn't work with required)
+  $(".readonly").on('keydown paste', function(e){ 
         if(e.keyCode != 9) // ignore tab
             e.preventDefault();
     });
@@ -53,12 +51,12 @@ $(document).ready(function(){
   });
 
   $("#startDate").click(function() {
-    $("#startDatePicker").datepicker().datepicker("show"); // Shows the start date datepicker when glyphicon is clicked
+    $("#startDatePicker").datepicker().datepicker("show"); 
   });
 
   $("#endDate").click(function() {
-      $("#endDatePicker").datepicker().datepicker("show"); // Shows the start date datepicker when glyphicon is clicked
-    });
+    $("#endDatePicker").datepicker().datepicker("show"); 
+  });
 
     $("#startDatePicker, #endDatePicker").change(function(){
 

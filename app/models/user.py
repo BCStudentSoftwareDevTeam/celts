@@ -11,3 +11,7 @@ class User(baseModel):
     isFaculty = BooleanField(default=False)
     isCeltsAdmin = BooleanField(default=False)
     isCeltsStudentStaff = BooleanField(default=False)
+
+    @property
+    def isAdmin(self):
+        return (self.isCeltsAdmin or self.isCeltsStudentStaff)
