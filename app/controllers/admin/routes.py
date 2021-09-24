@@ -27,23 +27,19 @@ def trackVolunteersPage(programID, eventID):
     attendedTraining = trainedParticipants(programID)
     if g.current_user.isCeltsAdmin:
         if ProgramEvent.get_or_none(ProgramEvent.event == eventID, ProgramEvent.program == programID):
-            eventParticipantsData = EventParticipant.select().where(EventParticipant.event == eventID)
-            eventRsvpData = EventRsvp.select().where(EventRsvp.event == eventID)
-            eventRsvpUsers = []
-            eventParticipantsData = eventParticipantsData.objects()
-            for data in eventRsvpData:
-                eventRsvpUsers.append(data.user)
+            eventParticipantsData = User.select().join(EventParticipant).where(EventParticipant.event == eventID)
+            eventRsvpData = User.select().join(EventRsvp).where(EventRsvp.event == eventID)
             event = Event.get_by_id(eventID)
             program = Program.get_by_id(programID)
             eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
-
+            print("eventRsvpData", list(eventRsvpData))
             return render_template("/events/trackVolunteers.html",
-                                    eventParticipantsData = list(eventParticipantsData),
-                                    eventRsvpUsers = eventRsvpUsers,
+                                    eventParticipantsData = eventParticipantsData,
+                                    eventRsvpUsers = eventRsvpData,
                                     eventLength = eventLengthInHours,
                                     program = program,
                                     event = event,
-                                    attendedTraining=attendedTraining)
+                                    attendedTraining = attendedTraining)
         else:
             raise Exception("Event ID and Program ID mismatched")
 
