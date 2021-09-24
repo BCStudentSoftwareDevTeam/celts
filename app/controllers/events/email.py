@@ -9,12 +9,10 @@ from app import app
 
 @events_bp.route('/email', methods=['POST'])
 def emailVolunteers():
-
+    """ Uses emailHandler to send an email with the form in event_list. """
     emailInfo = request.form
     emails = getVolunteerEmails(emailInfo['programID'], emailInfo['eventID'], emailInfo['emailRecipients'])
     mail = emailHandler(emailInfo)
-    print(emailInfo)
-
     emailSent = mail.sendEmail(Message(emailInfo['subject'],
                                        emails, # recipients
                                        emailInfo['message']),

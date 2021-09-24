@@ -10,16 +10,14 @@ import sys
 from pathlib import Path
 
 def load_config(file):
-    """ This should be in a seperate file. prob in the config dir"""
+    """ Loads the 'default' file in the config directory. """
     with open(file, 'r') as ymlfile:
         cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
     return cfg
 
 
 def getVolunteerEmails(programID = None, eventID = None, emailRecipients = "interested"):
-    """
-    gets the emails of all the students who are interested in a program or are participating in an event.
-    """
+    """ Gets emails of students interested in a program or participating in an event. """
     if emailRecipients == 'interested':    #email all students interested in the program
         volunteersToEmail = User.select().join(Interest).where(Interest.program == programID)
 
@@ -27,11 +25,12 @@ def getVolunteerEmails(programID = None, eventID = None, emailRecipients = "inte
         volunteersToEmail = User.select().join(EventParticipant).where(EventParticipant.event == eventID)
 
     else:
-        print("ITS IMPRESSIVE HOW YOU MANAGED TO BREAK THIS")
+        print("Error getting email recipients")
     return [user.email for user in volunteersToEmail]
 
 
 class emailHandler():
+    """ A class for email setup and configuring the correct data to send. """
     def __init__(self, emailInfo):
         self.default = load_config('app/config/default.yml')
         app.config.update(
@@ -48,9 +47,10 @@ class emailHandler():
 
         self.emailInfo = emailInfo
         self.mail = Mail(app)
+        self.mail.connect()
 
     def updateSenderEmail(self):
-        """Who is sending the emails"""
+        """ Updates who is sending the emails based on the event_list form. """
         try:
             if '@' in self.emailInfo['emailSender']: #if the current user is sending the email
                 pass
@@ -72,10 +72,11 @@ class emailHandler():
                 )
         except Exception as e:
             print("\n Error Updating Sender Email\n")
+
     def sendEmail(self, message: Message, emails):
-        # try:
+        """ Updates the sender and sends the email. """
         self.updateSenderEmail()
-        if 'sendIndividually' in self.emailInfo:    #<-----------------------need to test this some more.
+        if 'sendIndividually' in self.emailInfo:
             if app.config['MAIL_OVERRIDE_ALL']:
                 message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
             with self.mail.connect() as conn:
@@ -88,8 +89,4 @@ class emailHandler():
 
             message.reply_to = app.config["REPLY_TO_ADDRESS"]
             self.mail.send(message)
-
         return 1
-
-        # except:
-        #     return 0
