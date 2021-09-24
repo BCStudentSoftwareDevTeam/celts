@@ -3,7 +3,7 @@
 
   {{super()}}
   <style media="screen"></style>
-  <script type="text/javascript" src="{{url_for('static', filename='js/slcProposal.js') }}?u={{lastStaticUpdate}}"></script>
+  <script type="module" src="{{url_for('static', filename='js/slcProposal.js') }}?u={{lastStaticUpdate}}"></script>
 
 {% endblock %}
 
@@ -12,19 +12,24 @@
 <h1 class="text-center pb-2 fs-2"> New Proposal For Service Learning Course Designation </h1>
 
 <p class="text-center fw-bold"> Please review the <a href="/slcGuidelines">Service Learning course guidelines</a> before completing this form </p>
+
+<form method="post" id="searchInstructor">
+  <div class="p-2 col-md-4">
+    <p>Course Instructor(s)</p>
+    <div class="ui-widget pb-3">
+      <input
+        id="courseInstructor"
+        type="input"
+        placeholder="Search.."/>
+    </div>
+  </div>
+</form>
+
 <form method="post">
   <div class="container-fluid">
     <div class="row">
       <div class="p-2 col-md-4">
         <div class= "form-check-inline">
-          <p>Course Instructor(s)</p>
-          <div class="ui-widget pb-3">
-            <input
-              id="instructorInput"
-              type="input"
-              placeholder="Search.."
-              oninput="searchInstructor()" />
-          </div>
           <table
             class="table"
             id="instructorTable">

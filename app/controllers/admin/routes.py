@@ -131,8 +131,8 @@ def studentSearchPage():
         return render_template("/searchStudentPage.html")
     abort(403)
 
-@admin_bp.route('/searchStudents/<query>', methods = ['GET'])
-def searchStudents(query):
+@admin_bp.route('/searchUser/<query>', methods = ['GET'])
+def searchUser(query):
     '''Accepts user input and queries the database returning results that matches user search'''
     try:
         query = query.strip()
@@ -142,7 +142,7 @@ def searchStudents(query):
         return searchResults
     except Exception as e:
         print(e)
-        return "Error Searching Volunteers query", 500
+        return "Error on searching for a user", 500
 
 @admin_bp.route('/addParticipants', methods = ['GET'])
 def addParticipants():
