@@ -27,7 +27,6 @@ def viewVolunteersProfile(username):
     """
     This function displays the information of a volunteer to the user
     """
-    print(g.current_user)
     if not g.current_user.isFaculty or g.current_user.isCeltsAdmin:
          upcomingEvents = getUpcomingEventsForUser(username)
          programs = Program.select()
@@ -35,15 +34,13 @@ def viewVolunteersProfile(username):
          programBan = ProgramBan.select().where(ProgramBan.user == username)
          interests_ids = [interest.program for interest in interests]
          eventParticipant = EventParticipant.select().where(EventParticipant.user == username)
-         trainingEvents = Event.select()
-          # trainingEvents = ProgramEvent.select().where(ProgramEvent.event.term.isBreak == 1)
-         for event in trainingEvents:
-             print(event.eventName)
-         # volunteertTraining = trainedParticipants()
+         currentTerm = Term.select().where(Term.isCurrentTerm == 1)
+         trainingEvents = (ProgramEvent.select().join(Event).where((Event.term == currentTerm) & (Event.isTraining == 1)))
+         # for event in trainingEvents:
+         #     print(event)
          print("-------------------------------------------------------")
          eligibilityTable = []
          for i in programs:
-             # print(i.programName, " ", (username in trainedParticipants(i)), " ", isEligibleForProgram(i, username))
              eligibilityTable.append({"program" : i,
                                       "completedTraining" : (username in trainedParticipants(i)),
                                       "isNotBanned" : isEligibleForProgram(i, username)})
