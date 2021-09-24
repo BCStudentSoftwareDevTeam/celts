@@ -490,13 +490,12 @@ courses = [
         "createdBy": "",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
-        "sectionBQuestion1": "",
-        "sectionBQuestion2": "",
-        "sectionBQuestion3": "",
-        "sectionBQuestion4": "",
-        "sectionBQuestion5": "",
-        "sectionBQuestion6": "",
-        "sectionBQuestion1Note":1
+        # "sectionBQuestion1": "",
+        # "sectionBQuestion2": "",
+        # "sectionBQuestion3": "",
+        # "sectionBQuestion4": "",
+        # "sectionBQuestion5": "",
+        # "sectionBQuestion6": "",
 
     },
     {
@@ -508,13 +507,12 @@ courses = [
         "createdBy": "",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
-        "sectionBQuestion1": "",
-        "sectionBQuestion2": "",
-        "sectionBQuestion3": "",
-        "sectionBQuestion4": "",
-        "sectionBQuestion5": "",
-        "sectionBQuestion6": "",
-        "sectionBQuestion1Note":1
+        # "sectionBQuestion1": "",
+        # "sectionBQuestion2": "",
+        # "sectionBQuestion3": "",
+        # "sectionBQuestion4": "",
+        # "sectionBQuestion5": "",
+        # "sectionBQuestion6": "",
 
     },
     {
@@ -526,13 +524,12 @@ courses = [
         "createdBy": "",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
-        "sectionBQuestion1": "",
-        "sectionBQuestion2": "",
-        "sectionBQuestion3": "",
-        "sectionBQuestion4": "",
-        "sectionBQuestion5": "",
-        "sectionBQuestion6": "",
-        "sectionBQuestion1Note":1
+        # "sectionBQuestion1": "",
+        # "sectionBQuestion2": "",
+        # "sectionBQuestion3": "",
+        # "sectionBQuestion4": "",
+        # "sectionBQuestion5": "",
+        # "sectionBQuestion6": "",
 
     },
 ]

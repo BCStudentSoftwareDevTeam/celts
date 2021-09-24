@@ -18,6 +18,8 @@ pem add app.models.programEvent.ProgramEvent
 pem add app.models.user.User
 pem add app.models.programBan.ProgramBan
 pem add app.models.courseInstructor.CourseInstructor
+pem add app.models.courseQuestion.CourseQuestion
+pem add app.models.questionNote.QuestionNote
 
 pem watch
 pem migrate
