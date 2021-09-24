@@ -50,14 +50,8 @@ class emailHandler():
         self.mail = Mail(app)
 
     def updateSenderEmail(self):
-
         """Who is sending the emails"""
-
-        if app.config['MAIL_DEFAULT_SENDER']:
-            app.config.update(
-            MAIL_PASSWORD = self.default['mail']['admin_password']
-            )
-        else:
+        try:
             if '@' in self.emailInfo['emailSender']: #if the current user is sending the email
                 pass
                 # app.config.update(
@@ -66,16 +60,18 @@ class emailHandler():
                 #)
             elif self.emailInfo['emailSender'] == 'CELTS Admins':
                 app.config.update(
-                MAIL_USERNAME= self.default['mail']['admin_username'],
-                MAIL_PASSWORD = self.default['mail']['admin_password']
+                    MAIL_USERNAME= self.default['mail']['admin_username'],
+                    MAIL_PASSWORD = self.default['mail']['admin_password']
                 )
+                print("\n\n"+app.config["MAIL_USERNAME"])
+
             elif self.emailInfo['emailSender'] == 'CELTS Student Staff':
                 app.config.update(
-                MAIL_USERNAME= self.default['mail']['staff_username'],
-                MAIL_PASSWORD= self.default['mail']['staff_']
+                    MAIL_USERNAME= self.default['mail']['staff_username'],
+                    MAIL_PASSWORD= self.default['mail']['staff_password']
                 )
-
-
+        except Exception as e:
+            print("\n Error Updating Sender Email\n")
     def sendEmail(self, message: Message, emails):
         # try:
         self.updateSenderEmail()

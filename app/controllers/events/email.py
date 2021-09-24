@@ -13,7 +13,12 @@ def emailVolunteers():
     emailInfo = request.form
     emails = getVolunteerEmails(emailInfo['programID'], emailInfo['eventID'], emailInfo['emailRecipients'])
     mail = emailHandler(emailInfo)
-    emailSent = mail.sendEmail(Message(emailInfo['subject'], emails, emailInfo['message']), emails)
+    print(emailInfo)
+
+    emailSent = mail.sendEmail(Message(emailInfo['subject'],
+                                       emails, # recipients
+                                       emailInfo['message']),
+                                       emails) # passed for sending individually
     if emailSent == 1:
         flash("Email successfully sent!", "success")
     else:

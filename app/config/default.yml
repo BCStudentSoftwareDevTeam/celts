@@ -14,12 +14,12 @@ db:
 
 mail:
     enabled: True
-    server: "mail.berea.edu" # use smtp.gmail.com for gmail, mail.berea.edu for Berea
+    server: "smtp.gmail.com" # use smtp.gmail.com for gmail, mail.berea.edu for Berea
     port: 465                # use port 465 for gmail, use 25 for Berea
     admin_username: 'bramsayr@gmail.com'      # add the email of the sender (Admin) (for gmail)
     admin_password: 'celtsTest'             # Add the password of the sender (for gmail)
-    staff_username: 'otheremail@hotmal.com'   # the email of the sender (celtsStudentStaff)
-    staff_password: 'password'
+    staff_username: 'sceggenh@gmail.com'   # the email of the sender (celtsStudentStaff)
+    staff_password: 'celtsTest2'
     tls: False
     ssl: True
     default_sender: 'bramsayr@gmail.com' #FIXME: Add sender email address
