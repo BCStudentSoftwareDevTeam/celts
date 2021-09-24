@@ -17,6 +17,7 @@ class Course(baseModel):
     sectionBQuestion4 = CharField()
     sectionBQuestion5 = CharField()
     sectionBQuestion6 = CharField()
+
     sectionBQuestion1Note = ForeignKeyField(Note)
     # sectionBQuestion2Note = ForeignKeyField(Note)
     # sectionBQuestion3Note = ForeignKeyField(Note)
