@@ -1,10 +1,10 @@
 from flask import Flask, redirect, flash, url_for, request, render_template, g, json
 from app.models.event import Event
 from app.models.user import User
+from app.models.programEvent import ProgramEvent
 from app.controllers.events import events_bp
 from app.logic.participants import sendUserData
 from datetime import datetime
-from app.models.eventRsvp import EventRsvp
 
 @events_bp.route('/<eventid>/kiosk', methods=['GET'])
 def loadKiosk(eventid):
