@@ -2,12 +2,14 @@ from flask import Flask, redirect, flash, url_for, request, render_template, g, 
 from datetime import datetime
 from peewee import DoesNotExist
 
+from app.models.term import Term
 from app.models.program import Program
 from app.models.event import Event
+from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.programEvent import ProgramEvent
 from app.controllers.events import events_bp
-from app.logic.events import getEvents
+from app.logic.events import getEvents, groupEventsByCategory, getUpcomingEventsForUser
 from app.logic.participants import sendUserData
 
 @events_bp.route('/events/<term>/', methods=['GET'])

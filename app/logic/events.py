@@ -160,7 +160,7 @@ def getUpcomingEventsForUser(user,asOf=datetime.now()):
                             .where(Event.startDate >= asOf)
                             .where(Event.timeStart > asOf.time())
                             .distinct() # necessary because of multiple programs
-                            .order_by(Event.startDate)
+                            .order_by(Event.startDate, Event.name) # keeps the order of events the same when the dates are the same
                             )
     return list(events)
 
