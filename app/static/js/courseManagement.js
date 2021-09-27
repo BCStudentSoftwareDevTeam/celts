@@ -3,7 +3,12 @@ function changeTerm() {
   console.log("lalalalalalal", termId);
   currentRequest = $.ajax({
     type: "POST",
-    url: "/courseManagement",
+    url: "/courseManagement" + "/" ,
     data: JSON.stringify(termId),
-    contentType: "application/json"})
-}
+    contentType: "application/json",
+    success: function(response){
+
+      }
+    })
+    $('form').submit();
+};

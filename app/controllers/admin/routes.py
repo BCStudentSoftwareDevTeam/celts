@@ -158,7 +158,8 @@ def courseManagement():
     Renders the page for admins to manage Course Proposals
     '''
     currentTerm = Term.get(Term.isCurrentTerm)
-    requestTerm = request.json
+    requestTerm = request.form.get('termId')
+    print(requestTerm)
     termId = currentTerm
     if requestTerm:
         termId = requestTerm
@@ -171,4 +172,5 @@ def courseManagement():
     return render_template('/admin/courseManagement.html',
                             pendingCourses = pending,
                             approveCourses = approve,
-                            terms = terms)
+                            terms = terms,
+                            termId = termId)
