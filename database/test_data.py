@@ -15,6 +15,8 @@ from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseParticipant import CourseParticipant
 from app.models.eventParticipant import EventParticipant
+from app.models.courseQuestion import CourseQuestion
+from app.models.questionNote import QuestionNote
 from app.models.interest import Interest
 from app.models.facilitator import Facilitator
 from app.models.note import Note
@@ -112,6 +114,15 @@ users = [
         "lastName": "Parton",
         "isStudent": True,
         "phoneNumber": "9119119111"
+    },
+    {
+        "username": "mupotsal",
+        "bnumber": "B00741640",
+        "email": "mupotsal@berea.edu",
+        "firstName": "Liberty",
+        "lastName": "Mupotsa",
+        "isStudent": True,
+        "phoneNumber": "8599858594"
     },
 ]
 
@@ -476,6 +487,12 @@ notes = [
     "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
     "noteContent": "This is the content: test",
     "isPrivate":False
+    },
+    {
+    "createdBy": "mupotsal",
+    "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
+    "noteContent": " I am not sure aboutr what you mean here: test",
+    "isPrivate":False
     }
 ]
 
@@ -582,8 +599,32 @@ courseHoursEarned = [
         "user": "khatts",
         "hoursEarned": 1.0
     },
+
 ]
 CourseParticipant.insert_many(courseHoursEarned).on_conflict_replace().execute()
+
+
+# course = ForeignKeyField(Course)
+# questionContents = CharField() # Check this one
+# questionNumber = IntegerField()
+
+courseQuestions = [
+    {
+    "course":1,
+    "questionContents":" Why are you interested in teaching this course?",
+    "questionNumber":1,
+    }
+]
+
+CourseQuestion.insert_many(courseQuestions).on_conflict_replace().execute()
+
+questionNote = [
+    {
+    "question":1,
+    "note":2
+    }
+]
+QuestionNote.insert_many(questionNote).on_conflict_replace().execute()
 
 eventParticipants = [
     {
