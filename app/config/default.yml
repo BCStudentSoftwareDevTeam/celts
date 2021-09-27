@@ -27,65 +27,44 @@ mail:
 
 contributors:
   - name: "Scott Heggen"
-    username: ""
-    year: Team Lead
+    role: Team Lead
   - name: "Brian Ramsay"
-    username: ""
-    year: Software Engineer
+    role: "Team Lead"
   - name: "Alex Bryant"
-    username: ""
-    year: Software Engineer
+    role: "Team Lead"
   - name: "Hailey Bevins"
-    username: ""
-    year: 2020
+    role: "Software Engineer"
   - name: "Guillermo Cruz"
-    username: ""
-    year: 2021
+    role: "Software Engineer"
   - name: "Ela Jamali"
-    username: ""
-    year: 2021
+    role: "Software Engineer"
   - name: "Will Romano"
-    username: ""
-    year: 2021
+    role: "Software Engineer"
   - name: "May Jue"
-    username: ""
-    year: 2021
+    role: "Software Engineer"
   - name: "Shageldi Ovezov"
-    username: ""
-    year: 2022
+    role: "Software Engineer"
   - name: "Sandesh Lamichhane "
-    username: ""
-    year: 2022
+    role: "Software Engineer"
   - name: "Hila Manalai"
-    username: ""
-    year: 2022
+    role: "Software Engineer"
   - name: "Luis Riera"
-    username: ""
-    year: 2022
+    role: "Software Engineer"
   - name: "Lisandro Padron"
-    username: ""
-    year: 2022
+    role: "Software Engineer"
   - name: "Audrey Craft"
-    username: ""
-    year: 2022
+    role: "Software Engineer"
   - name: "Liberty Muposta"
-    username: ""
-    year: 2022
+    role: "Software Engineer"
   - name: "Ebenezer Ayisi"
-    username: ""
-    year: 2023
+    role: "Software Engineer"
   - name: "Gaston Jarju"
-    username: ""
-    year: 2023
+    role: "Software Engineer"
   - name: "Karina Agliullova"
-    username: ""
-    year: 2023
+    role: "Software Engineer"
   - name: "Zach Neill"
-    username: ""
-    year: 2023
+    role: "Software Engineer"
   - name: "Tyler Parton"
-    username: ""
-    year: 2023
+    role: "Software Engineer"
   - name: "Sreynit  Khatt"
-    username: ""
-    year: 2023
+    role: "Software Engineer"

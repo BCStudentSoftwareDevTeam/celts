@@ -10,12 +10,12 @@
       <table class="table table-bordered" align="center">
         <tr class="info">
           <th>Name</th>
-          <th>Graduating Year</th>
+          <th>Role</th>
         </tr>
       {% for contrib in config['contributors'] %}
         <tr>
           <td>{{contrib.name}}</td>
-          <td>{{contrib.year}}</td>
+          <td>{{contrib.role}}</td>
         </tr>
       {% endfor %}
       </table>
