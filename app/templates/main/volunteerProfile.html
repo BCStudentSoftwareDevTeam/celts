@@ -27,7 +27,7 @@
        <a class="nav-link" aria-current="page" href="/search_student">Service Transcript</a>
      </li>
    </ul>
- </div>
+ </div><br>
  <div class="row">
    <table class="table">
      {% if upcomingEvents|length > 0 %}
@@ -46,14 +46,13 @@
        </tr>
        {% endfor %}
      {% else %}
-       <h2> Choose interests below to be notified about upcoming events. <h2>
+       <h2><p class="text-info">Choose interests below to be notified about upcoming events.</p><h2>
      {% endif %}
    </table>
  </div>
  <br>
  <br>
  <br>
- {% if user.isStudent %}
  <div class="row">
    <h2>Which programs do you want to receive information about?</h2>
    <input id="{{volunteer.username}}" hidden>
@@ -76,63 +75,45 @@
  </div>
  <br>
  <br>
- {% endif %}
+ <br>
+ <br>
 
 
 
- <!-- Start Accordion -->
- {% if user.isCeltsAdmin %}
- <div class="accordion">
-   {% for program in eligibilityTable %}
-   <div class="accordion-item">
-     <h2 class="accordion-header">
-       <button class="accordion-button collapsed"
-               type="button"
-               data-bs-toggle="collapse"
-               data-bs-target="#flush-collapseOne"
-               aria-expanded="true"
-               aria-controls="flush-collapseOne"
-               >
-               {{program.program.programName}}
-       </button>
-     </h2>
-     <div id="flush-collapseOne"
-          class="accordion-collapse collapse"
-          aria-labelledby="flush-headingOne"
-          data-bs-parent="#accordionFlushExample">
 
-          <div class="accordion-body">
-            <table class="table table-striped">
+
+ <!-- Start Program Table -->
+ <div class="row">
+   <table class="table">
+ {% if user.isCeltsAdmin or user.isStudent%}
             <tbody id="volunteerTable">
               <thead>
                 <tr>
-                  <th scope="col">Training Events</th>
+                  <th scope="col">All Programs</th>
                   <th scope="col">Training Checklist</th>
+                  {% if user.isCeltsAdmin %}
                   <th scope="col">Banned</th>
+                  {% endif %}
                 </tr>
               </thead>
-              {% for event in trainingEvents %}
-              {% if event.program == program.program %}
+              {% for program in eligibilityTable %}
               <tr>
-                <td class="programTraining"> {{event.event.eventName}}</td>
-                <td><input type="checkbox" onChange='toggleVolunteersInputBox(this)' {% if event.isTraining == Yes %} checked  {%endif%}></td>
+                <td>{{program.program.programName}}</td>
+                <td><input type="checkbox" onChange='toggleVolunteersInputBox(this)' checked></td>
+                {% if user.isCeltsAdmin %}
                 <td class="programBan">
                   {% if program.isNotBanned %}<button type="button" name="button" class="ban btn btn-danger rounded-pill" value="Ban">Ban</button>
                   {% else %} <button type="button" name="button" class="ban btn btn-success rounded-pill" value="Unban">Unban</button>
                   {% endif %}
                 </td>
+                {% endif %}
               </tr>
-              {% endif %}
-              {% endfor %}
             </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
       {% endfor %}
-    </div>
   {% endif %}
-<!-- End Accordion -->
+</table>
+  </div>
+<!-- End Program Table -->
 
 
 <!-- Modal -->
