@@ -26,12 +26,33 @@ mail:
 
 
 contributors:
+  - name: "Scott Heggen"
+    username: ""
+    year: 2005
+  - name: "Brian Ramsay"
+    username: ""
+    year: 2005
   - name: "Alex Bryant"
     username: ""
     year: 2020
+  - name: "Hailey Bevins"
+    username: ""
+    year: 2020
+  - name: "Guillermo Cruz"
+    username: ""
+    year: 2021
+  - name: "Ela Jamali"
+    username: ""
+    year: 2021
+  - name: "Will Romano"
+    username: ""
+    year: 2021
   - name: "May Jue"
     username: ""
     year: 2021
+  - name: "Shageldi Ovezov"
+    username: ""
+    year: 2022
   - name: "Sandesh Lamichhane "
     username: ""
     year: 2022
@@ -39,6 +60,12 @@ contributors:
     username: ""
     year: 2022
   - name: "Luis Riera"
+    username: ""
+    year: 2022
+  - name: "Lisandro Padron"
+    username: ""
+    year: 2022
+  - name: "Audrey Craft"
     username: ""
     year: 2022
   - name: "Liberty Muposta"

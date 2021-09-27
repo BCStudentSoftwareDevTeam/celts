@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% set currentPage = "contributors" %}
 {% block app_content %}
 
 <div id="wrapper">
@@ -7,13 +6,13 @@
     <a class="skipContent" href="#backButton" tabindex="1" style="top:8%">Click to Skip</a>
     <div class="contributors" align="center">
       <h2> Contributors </h2>
-      <p> These are the students who helped to create this system and continue to maintain it.</p>
+      <p> This is the student software developers team who helped to create this system and continue to maintain it.</p>
       <table class="table table-bordered" align="center">
         <tr class="info">
           <th>Name</th>
           <th>Graduating Year</th>
         </tr>
-      {% for contrib in cfg %}
+      {% for contrib in config['contributors'] %}
         <tr>
           <td>{{contrib.name}}</td>
           <td>{{contrib.year}}</td>

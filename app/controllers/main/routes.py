@@ -116,7 +116,7 @@ def RemoveRSVP():
     return redirect(url_for("admin.editEvent", eventId=eventId, program=program))
 @main_bp.route('/contributors',methods = ['GET'])
 def contributors():
-    contribs = app.config['contributors']
-    return render_template("/Contributors.html",
-           cfg = contribs
+    # contribs = app.config['contributors']
+    return render_template("/contributors.html"
+           # cfg = contribs
            )
