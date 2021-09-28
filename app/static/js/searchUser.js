@@ -12,8 +12,8 @@ export default function searchUser(inputId, ajaxUrl, formId){
         success: function(dictToJSON) {
           response($.map( dictToJSON, function( item ) {
             return {
-            label: item,
-            value: dictToJSON[item]
+              label: item,
+              value: dictToJSON[item]
             }
           }))
         },

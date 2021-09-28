@@ -12,7 +12,6 @@ from app.logic.getSLInstructorTableData import getProposalData
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectFutureTerms
-from app.logic.searchUsers import searchUsers
 from app.logic.events import deleteEvent, getAllFacilitators
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
@@ -130,19 +129,6 @@ def studentSearchPage():
     if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
         return render_template("/searchStudentPage.html")
     abort(403)
-
-@admin_bp.route('/searchUser/<query>', methods = ['GET'])
-def searchUser(query):
-    '''Accepts user input and queries the database returning results that matches user search'''
-    try:
-        query = query.strip()
-        search = query.upper()
-        splitSearch = search.split()
-        searchResults = searchUsers(query)
-        return searchResults
-    except Exception as e:
-        print(e)
-        return "Error Searching Volunteers query", 500
 
 @admin_bp.route('/addParticipants', methods = ['GET'])
 def addParticipants():

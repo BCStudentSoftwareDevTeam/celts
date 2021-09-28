@@ -12,6 +12,7 @@ from app.logic.events import getUpcomingEventsForUser
 from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 from app.logic.events import groupEventsByCategory
+from app.logic.searchUsers import searchUsers
 from datetime import datetime
 
 @main_bp.route('/', methods=['GET'])
@@ -113,3 +114,16 @@ def RemoveRSVP():
 
     flash("Successfully unregistered for event!", "success")
     return redirect(url_for("admin.editEvent", eventId=eventId, program=program))
+
+@main_bp.route('/searchUser/<query>', methods = ['GET'])
+def searchUser(query):
+    '''Accepts user input and queries the database returning results that matches user search'''
+    try:
+        query = query.strip()
+        search = query.upper()
+        splitSearch = search.split()
+        searchResults = searchUsers(query)
+        return searchResults
+    except Exception as e:
+        print(e)
+        return "Error Searching Volunteers query", 500
