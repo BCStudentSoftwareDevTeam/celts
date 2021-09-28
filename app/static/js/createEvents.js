@@ -23,7 +23,7 @@ function updateDate(obj) {
 $(document).ready(function(){
 
   $("#checkIsRecurring").click(function() {
-    var recurringStatus = $("input[name='eventIsRecurring']:checked").val()
+    var recurringStatus = $("input[name='isRecurring']:checked").val()
     if (recurringStatus == 'on') {
       $("#endDateStyle, #recurringTableDiv").removeClass('d-none')
       $("#endDatePicker").prop('required', true);
@@ -62,13 +62,13 @@ $(document).ready(function(){
 
       if ( $("#startDatePicker").val() && $("#endDatePicker").val()){
 
-        var eventDatesAndName = {eventName:$("#inputEventName").val(),
-                                 eventStartDate:$("#startDatePicker").val(),
-                                 eventEndDate:$("#endDatePicker").val()}
+        var eventDatesAndName = {name:$("#inputEventName").val(),
+                                 startDate:$("#startDatePicker").val(),
+                                 endDate:$("#endDatePicker").val()}
         $.ajax({
           type:"POST",
           url: "/makeRecurringEvents",
-          data: eventDatesAndName, //get the startDate, endDate and eventName as a dictionary
+          data: eventDatesAndName, //get the startDate, endDate and name as a dictionary
           success: function(jsonData){
             var recurringEvents = JSON.parse(jsonData)
             var recurringTable = $("#recurringEventsTable")
@@ -87,7 +87,7 @@ $(document).ready(function(){
 
   $("#checkIsTraining").click(function(){
 
-    if ($("input[name='eventIsTraining']:checked").val() == 'on'){
+    if ($("input[name='isTraining']:checked").val() == 'on'){
       $("#checkIsRequired").prop('checked', true);
 
     }else{

@@ -15,7 +15,7 @@ from app.logic.events import groupEventsByCategory
 from datetime import datetime
 
 @main_bp.route('/', methods=['GET'])
-@main_bp.route('/<selectedTerm>', methods=['GET'])
+@main_bp.route('/events/<selectedTerm>', methods=['GET'])
 def events(selectedTerm=None):
     currentTerm = g.current_term
     if selectedTerm:

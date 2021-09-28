@@ -12,27 +12,6 @@ from app.controllers.events import events_bp
 from app.logic.events import getEvents, groupEventsByCategory, getUpcomingEventsForUser
 from app.logic.participants import sendUserData
 
-@events_bp.route('/events/<term>/', methods=['GET'])
-def events(term):
-    #set term to current term when events page is accessed from the navbar
-    if not term.isdigit():
-        term = g.current_term
-
-    currentTime = datetime.now()
-    eventsDict = groupEventsByCategory(term)
-    listOfTerms = Term.select()
-    participantRSVP = EventParticipant.select().where(EventParticipant.user == g.current_user, EventParticipant.rsvp == True)
-    rsvpedEventsID = [event.event.id for event in list(participantRSVP)]
-
-    return render_template("/events/event_list.html",
-        selectedTerm = Term.get_by_id(term),
-        eventDict = eventsDict,
-        listOfTerms = listOfTerms,
-        rsvpedEventsID = rsvpedEventsID,
-        currentTime = currentTime,
-        user = g.current_user)
-
-
 @events_bp.route('/events/upcoming_events', methods=['GET'])
 def showUpcomingEvent():
     upcomingEvents = getUpcomingEventsForUser(g.current_user)
@@ -40,7 +19,7 @@ def showUpcomingEvent():
                             upcomingEvents = upcomingEvents)
 
 
-@events_bp.route('/<eventid>/kiosk', methods=['GET'])
+@events_bp.route('/event/<eventid>/kiosk', methods=['GET'])
 def loadKiosk(eventid):
     """Renders kiosk for specified event."""
     event = Event.get_by_id(eventid)

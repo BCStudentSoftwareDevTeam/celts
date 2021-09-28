@@ -1,4 +1,5 @@
 from flask import request, render_template, url_for, g, Flask, redirect, flash, abort, json, jsonify
+from peewee import DoesNotExist
 from playhouse.shortcuts import model_to_dict
 import json
 
@@ -51,26 +52,35 @@ def createEvent(templateid, programid=None):
         flash("There was an error with your selection. Please try again or contact Systems Support.", "danger")
         return redirect(url_for("admin.program_picker"))
 
-    # Save form 
+    # Get the data for the form, from the template or the form submission
+    eventData = template.templateData
     if request.method == "POST":
-        newEventData = request.form.copy()
-        if program:
-            newEventData["program"] = program
+        eventData = request.form.copy()
+
+    if program:
         # TODO need to handle the multiple programs case
+        eventData["program"] = program
+    
         
-        saveSuccess, validationErrorMessage = attemptSaveEvent(newEventData)
+    # Try to save the form 
+    if request.method == "POST":
+        try:
+            saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
+        except Exception as e:
+            print("Error saving event:", e)
+            saveSuccess = False
+            validationErrorMessage = "Unknown Error Saving Event. Please try again"
+
         if saveSuccess:
-            flash("Event successfully created!", 'success')
-            return redirect(url_for("events.events", term = newEventData['eventTerm']))
+            noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
+            flash(f"{noun} successfully created!", 'success')
+            return redirect(url_for("main.events", term = eventData['term']))
         else:
             flash(validationErrorMessage, 'warning')
 
-    # Get the pre-fill data out of the template
-    # TODO do we need to add in any invalid post data?
-    eventData = template.templateData
-    if program:
-        eventData["program"] = program
-
+    # make sure our data is the same regardless of GET or POST
+    if 'term' in eventData:
+        eventData['term']  = Term.get_by_id(eventData['term'])
     futureTerms = selectFutureTerms(g.current_term)
 
     return render_template(f"/admin/{template.templateFile}", 
@@ -93,22 +103,23 @@ def editEvent(eventId):
         print(f"Unknown event: {eventId}")
         abort(404)
 
-    # Save form 
-    if request.method == "POST":
-        saveSuccess, validationErrorMessage = attemptSaveEvent(newEventData)
+    eventData = model_to_dict(event)
+    if request.method == "POST": # Attempt to save form
+        eventData = request.form.copy()
+        saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
         if saveSuccess:
             flash("Event successfully updated!", "success")
             return redirect(url_for("admin.editEvent", eventId = eventId))
         else:
             flash(validationErrorMessage, 'warning')
 
-    eventFacilitators = Facilitator.select().where(Facilitator.event == event)
+    eventFacilitators = User.select().join(Facilitator).where(Facilitator.event == event)
     futureTerms = selectFutureTerms(g.current_term)
     userHasRSVPed = EventParticipant.get_or_none(EventParticipant.user == g.current_user, EventParticipant.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
 
     return render_template("admin/createSingleEvent.html",
-                            eventData = model_to_dict(event),
+                            eventData = eventData,
                             facilitators = getAllFacilitators(),
                             eventFacilitators = eventFacilitators,
                             futureTerms = futureTerms,
@@ -119,10 +130,10 @@ def editEvent(eventId):
 def deleteRoute(eventId):
 
     try:
-        eventTerm = Event.get(Event.id == eventId).term
+        term = Event.get(Event.id == eventId).term
         deleteEvent(eventId)
         flash("Event removed", "success")
-        return redirect(url_for("events.events", term=eventTerm))
+        return redirect(url_for("main.events", term=term))
 
     except Exception as e:
         print('Error while canceling event:', e)

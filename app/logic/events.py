@@ -33,8 +33,8 @@ def attemptSaveEvent(eventData):
     newEventData = setValueForUncheckedBox(eventData)
 
     #if an event is not recurring then it will have same end and start date
-    if newEventData['eventEndDate'] == '':
-        newEventData['eventEndDate'] = newEventData['eventStartDate']
+    if newEventData['endDate'] == '':
+        newEventData['endDate'] = newEventData['startDate']
 
     dataIsValid, validationErrorMessage, newEventData = validateNewEventData(newEventData)
 
@@ -55,27 +55,27 @@ def saveEventToDb(newEventData):
     isNewEvent = ('eventId' not in newEventData)
 
     eventsToCreate = []
-    if isNewEvent and newEventData['eventIsRecurring'] == 'on':
+    if isNewEvent and newEventData['isRecurring'] == 'on':
         eventsToCreate = calculateRecurringEventFrequency(newEventData)
     else:
-        eventsToCreate.append({'name': f"{newEventData['eventName']}",
-                                'date':newEventData['eventStartDate'],
+        eventsToCreate.append({'name': f"{newEventData['name']}",
+                                'date':newEventData['startDate'],
                                 "week":1})
 
     eventRecords = []
     for eventInstance in eventsToCreate:
         with mainDB.atomic():
             eventData = {
-                    "term": newEventData['eventTerm'],
+                    "term": newEventData['term'],
                     "name": eventInstance['name'],
-                    "description": newEventData['eventDescription'],
-                    "timeStart": newEventData['eventStartTime'],
-                    "timeEnd": newEventData['eventEndTime'],
-                    "location": newEventData['eventLocation'],
-                    "isRecurring": newEventData['eventIsRecurring'],
-                    "isTraining": newEventData['eventIsTraining'],
-                    "isRsvpRequired": newEventData['eventRSVP'],
-                    "isService": newEventData['eventServiceHours'],
+                    "description": newEventData['description'],
+                    "timeStart": newEventData['timeStart'],
+                    "timeEnd": newEventData['timeEnd'],
+                    "location": newEventData['location'],
+                    "isRecurring": newEventData['isRecurring'],
+                    "isTraining": newEventData['isTraining'],
+                    "isRsvpRequired": newEventData['isRsvpRequired'],
+                    "isService": newEventData['isService'],
                     "startDate": parser.parse(eventInstance['date']),
                     "endDate": parser.parse(eventInstance['date'])
             }

@@ -1,4 +1,5 @@
-from flask import request, render_template, redirect, url_for, request, flash
+from flask import request, render_template, redirect, url_for, request, flash, abort, g
+from datetime import datetime
 from peewee import DoesNotExist
 
 from app.controllers.admin import admin_bp
@@ -6,7 +7,8 @@ from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
-from app.logic.volunteers import updateVolunteers, addVolunteerToEvent
+from app.logic.volunteers import updateVolunteers, addVolunteerToEvent, getEventLengthInHours
+from app.logic.participants import trainedParticipants
 from app.models.user import User
 from flask import json, jsonify
 
@@ -32,19 +34,21 @@ def trackVolunteersPage(eventID):
         return "TODO: What do we do for no programs or multiple programs?"
 
     attendedTraining = trainedParticipants(program)
-    if g.current_user.isCeltsAdmin:
-        eventParticipantsData = EventParticipant.select().where(EventParticipant.event == event)
-        eventParticipantsData = eventParticipantsData.objects()
-        eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
-
-        return render_template("/events/trackVolunteers.html",
-                                eventParticipantsData = list(eventParticipantsData),
-                                eventLength = eventLengthInHours,
-                                program = program,
-                                event = event,
-                                attendedTraining=attendedTraining)
-    else:
+    if not g.current_user.isCeltsAdmin:
         abort(403)
+
+    eventParticipantsData = EventParticipant.select().where(EventParticipant.event == event)
+    eventParticipantsData = eventParticipantsData.objects()
+    eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
+    isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
+
+    return render_template("/events/trackVolunteers.html",
+                            eventParticipantsData = list(eventParticipantsData),
+                            eventLength = eventLengthInHours,
+                            program = program,
+                            event = event,
+                            isPastEvent = isPastEvent,
+                            attendedTraining=attendedTraining)
 
 
 @admin_bp.route('/event/<eventID>/track_volunteers', methods=['POST'])
