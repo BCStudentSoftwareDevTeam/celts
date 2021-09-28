@@ -153,16 +153,14 @@ def addParticipants():
                             title="Add Participants")
 
 @admin_bp.route('/courseManagement', methods = ['GET', 'POST'])
-def courseManagement():
+@admin_bp.route('/<termId>/courseManagement', methods = ['GET', 'POST'])
+def courseManagement(termId = None):
     '''
     Renders the page for admins to manage Course Proposals
     '''
     currentTerm = Term.get(Term.isCurrentTerm)
-    requestTerm = request.form.get('termId')
-    print(requestTerm)
-    termId = currentTerm
-    if requestTerm:
-        termId = requestTerm
+    if termId == None:
+        termId = currentTerm
     pending = pendingCourses(termId)
     approve = approveCourses(termId)
     print(termId, "================")
