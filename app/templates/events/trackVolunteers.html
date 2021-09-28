@@ -2,7 +2,7 @@
 
 {% block scripts %}
   {{super()}}
-  <script src="/static/js/trackVolunteers.js"></script>
+  <script type="module" src="/static/js/trackVolunteers.js"></script>
 {% endblock %}
 
 {% block styles %}
@@ -56,7 +56,7 @@
         <div class="modal-body">
           <div class="input-group">
             <div class="form-group input-group-x form-outline ui-widget" style="width:80%;">
-              <input type="input" id="addVolunteerInput" class="form-control" placeholder="Search" oninput="searchVolunteers()" autocomplete="off"/>
+              <input type="input" id="addVolunteerInput" class="form-control" placeholder="Search" autocomplete="off"/>
             </div>
             <button type="button" class="btn btn-primary btn-sm"><i class="bi bi-search" style="margin-left:0px;"></i>
             </button>
