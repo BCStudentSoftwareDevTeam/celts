@@ -15,7 +15,7 @@ def test_correctValidateNewEventData():
                           'eventIsTraining':True, 'eventIsRecurring':False, 'eventStartDate': '1999-12-12',
                           'eventEndDate':'2022-06-12', 'programId':1, 'eventLocation':"a big room",
                           'eventEndTime':'21:00', 'eventStartTime':'18:00', 'eventDescription':"Empty Bowls Spring 2021",
-                          'eventName':'Empty Bowls Spring','eventTerm':1,'eventFacilitator':"ramsayb2"}
+                          'eventName':'Empty Bowls Spring Event 1','eventTerm':1,'eventFacilitator':"ramsayb2"}
 
     validNewEvent, eventErrorMessage, eventData = validateNewEventData(validateEventData)
 

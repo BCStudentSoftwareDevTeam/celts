@@ -38,7 +38,7 @@ def test_getAllEvents():
 
 
     assert events[0].description == "Empty Bowls Spring 2021"
-    assert events[1].description == "Berea Buddies Training"
+    assert events[1].description == "Training for Berea Buddies"
     assert events[2].description == "Adopt A Grandparent"
 
 @pytest.mark.integration
@@ -153,7 +153,7 @@ def test_groupEventsByProgram():
                              .join(Program)
                              .where(Program.isStudentLed,
                                     Event.term == 1))
-    assert groupEventsByProgram(studentLedEvents) == {Program.get_by_id(1): [Event.get_by_id(1), Event.get_by_id(2)] , Program.get_by_id(2): [Event.get_by_id(4)]}
+    assert groupEventsByProgram(studentLedEvents) == {Program.get_by_id(1): [Event.get_by_id(1), Event.get_by_id(2)] , Program.get_by_id(2): [Event.get_by_id(8),Event.get_by_id(9)]}
 
     trainingEvents = (Event.select(Event, Program.id.alias("program_id"))
                            .join(ProgramEvent)

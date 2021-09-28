@@ -188,12 +188,6 @@ programs = [
         "isBonnerScholars": False,
     },
     {
-        "id": 4,
-        "programName": "No Required Events",
-        "isStudentLed": False,
-        "isBonnerScholars": False,
-    },
-    {
         "id": 5,
         "programName": "Bonners Scholars",
         "isStudentLed": False,
@@ -229,13 +223,6 @@ programs = [
         "isStudentLed": False,
         "isBonnerScholars": False,
     },
-    {
-        "id": 11,
-        "programName": "Other Events",
-        "isStudentLed": False,
-        "isBonnerScholars": False,
-    }
-    ,
     {
         "id": 12,
         "programName": "Berea Tutoring",
@@ -332,7 +319,7 @@ events = [
     },
     {
         "id": 8,
-        "term": 3,
+        "term": 1,
         "eventName": "Adoption",
         "description": "Adoption 101 Training",
         "isTraining": True,
@@ -344,7 +331,7 @@ events = [
     },
     {
         "id": 9,
-        "term": 3,
+        "term": 1,
         "eventName": "Cleaning Bowls",
         "description": "Cleaning Bowls Training",
         "isTraining": True,
@@ -470,10 +457,6 @@ program_events = [
     {
         "event_id": 10,
         "program_id": 3
-    },
-    {
-        "event_id": 11,
-        "program_id": 4
     },
     {
         "event_id": 12,
