@@ -161,6 +161,10 @@ def courseManagement(termId = None):
     currentTerm = Term.get(Term.isCurrentTerm)
     if termId == None:
         termId = currentTerm
+    else:
+        termId = (int(termId))
+
+    print(type(termId))
     pending = pendingCourses(termId)
     approve = approveCourses(termId)
     print(termId, "================")

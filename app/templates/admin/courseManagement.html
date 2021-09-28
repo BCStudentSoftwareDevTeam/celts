@@ -9,11 +9,13 @@
 <div id="content">
   <h1 class="text-center pt-1 pb-4">Service Learning Course Proposal Management</h1>
   <div class="text-center">
-    <select class="w-25" id="selectTerm" onchange="location = this.value'/courseManagement';">
-        {% for term in terms %}
-          <option value="/{{term.id}}" {{ "selected" if termId == term.id }}>{{term.description}}</option>
-        {% endfor %}
-    </select>
+    <form id="termSelector" action="" method="post">
+      <select class="w-25" id="selectTerm" onchange="formSubmit(this.value)">
+          {% for term in terms %}
+            <option value="{{term.id}}" {{ "selected" if term.id == termId }}> {{ term.description }}</option>
+          {% endfor %}
+      </select>
+    </form>
   </div>
   <div class="pt-4">
     <div class="container">
