@@ -1,6 +1,7 @@
 import pytest
 from peewee import DoesNotExist, OperationalError, IntegrityError
 from datetime import datetime
+from dateutil import parser
 
 from app.models.event import Event
 from app.models.user import User
@@ -130,6 +131,12 @@ def test_preprocessEventData_dates():
     assert newData['startDate'] == datetime.strptime("2021-09-07","%Y-%m-%d")
     assert newData['endDate'] == datetime.strptime("2021-08-08","%Y-%m-%d")
 
+    # test different date formats
+    eventData = {'startDate':parser.parse('09/07/21'), 'endDate': 75, 'isRecurring': 'on'}
+    newData = preprocessEventData(eventData)
+    assert newData['startDate'] == datetime.strptime("2021-09-07","%Y-%m-%d")
+    assert newData['endDate'] == ''
+
     # endDate should match startDate for non-recurring events
     eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08'}
     newData = preprocessEventData(eventData)
@@ -149,7 +156,7 @@ def test_correctValidateNewEventData():
                           'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
                           'name':'Empty Bowls Spring','term':1,'eventFacilitator':"ramsayb2"}
 
-    validNewEvent, eventErrorMessage, eventData = validateNewEventData(validateEventData)
+    validNewEvent, eventErrorMessage, eventData = validateNewEventData(preprocessEventData(validateEventData))
 
     # assert validNewEvent == True
     assert eventErrorMessage == "All inputs are valid."
@@ -157,39 +164,57 @@ def test_correctValidateNewEventData():
 @pytest.mark.integration
 def test_wrongValidateNewEventData():
 
-    validateEventData =  {'isRsvpRequired':False, 'isService':False,
-                          'isTraining':True, 'isRecurring':False, 'startDate': '2021-12-12',
+    eventData =  {'isRsvpRequired':False, 'isService':False,
+                          'isTraining':True, 'isRecurring':True, 'startDate': '2021-12-12',
                           'endDate': '2021-06-12', 'programId':1, 'location':"a big room",
                           'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
                           'name':'Empty Bowls Spring','term':1,'eventFacilitator':"ramsayb2"}
 
-    validNewEvent, eventErrorMessage, eventData = validateNewEventData(validateEventData)
+    validNewEvent, eventErrorMessage, eventData = validateNewEventData(preprocessEventData(eventData))
 
     assert validNewEvent == False
     assert eventErrorMessage == "Event start date is after event end date"
 
     # testing event starts after it ends.
-    validateEventData["startDate"] = '2021-06-12'
-    validateEventData["timeStart"] =  '21:39'
+    eventData["startDate"] = '2021-06-12'
+    eventData["timeStart"] =  '21:39'
 
-    validateNewEvent, eventErrorMessage, eventData = validateNewEventData(validateEventData)
+    validateNewEvent, eventErrorMessage, eventData = validateNewEventData(preprocessEventData(eventData))
 
     assert validNewEvent == False
     assert eventErrorMessage == "Event start time is after event end time"
 
 
     # testing same event already exists if no event id
-    validateEventData["startDate"] = '2021-10-12'
-    validateEventData['endDate'] = '2022-06-12'
+    eventData["startDate"] = '2021-10-12'
+    eventData['endDate'] = '2022-06-12'
 
-    validNewEvent, eventErrorMessage, eventData = validateNewEventData(validateEventData)
+    validNewEvent, eventErrorMessage, eventData = validateNewEventData(preprocessEventData(eventData))
     assert validNewEvent == False
     assert eventErrorMessage == "This event already exists"
 
     # If we provide an event id, don't check for existence
-    validateEventData['eventId'] = 5
-    validNewEvent, eventErrorMessage, eventData = validateNewEventData(validateEventData)
+    eventData['eventId'] = 5
+    validNewEvent, eventErrorMessage, eventData = validateNewEventData(preprocessEventData(eventData))
     assert validNewEvent == True
+
+@pytest.mark.integration
+def test_calculateRecurringEventFrequency():
+
+    eventInfo = {'name':"testEvent",
+                 'startDate':parser.parse("02-22-2023"),
+                 'endDate': parser.parse("03-9-2023")}
+
+    returnedEvents = calculateRecurringEventFrequency(eventInfo)
+    #test correct response
+    assert returnedEvents[0] == {'name': 'testEvent Week 1', 'date': parser.parse('02-22-2023'), 'week': 1}
+    assert returnedEvents[1] == {'name': 'testEvent Week 2', 'date': parser.parse('03-01-2023'), 'week': 2}
+    assert returnedEvents[2] == {'name': 'testEvent Week 3', 'date': parser.parse('03-08-2023'), 'week': 3}
+
+    #test incorrect value
+    eventInfo["startDate"] = "hello"
+    with pytest.raises(Exception):
+        returnedEvents = calculateRecurringEventFrequency(eventInfo)
 
 @pytest.mark.integration
 def test_attemptSaveEvent():
@@ -216,7 +241,7 @@ def test_saveEventToDb_create():
 
     #test that the event and facilitators are added successfully
     eventInfo['valid'] = True
-    createdEvents = saveEventToDb(eventInfo)
+    createdEvents = saveEventToDb(preprocessEventData(eventInfo))
     assert len(createdEvents) == 1
     assert createdEvents[0].singleProgram.id == 1
 
@@ -230,7 +255,7 @@ def test_saveEventToDb_create():
     # test bad username for facilitator (user does not exist)
     eventInfo["eventFacilitator"] = "jarjug"
     with pytest.raises(IntegrityError):
-        saveEventToDb(eventInfo)
+        saveEventToDb(preprocessEventData(eventInfo))
 
 @pytest.mark.integration
 def test_saveEventToDb_recurring():
@@ -241,7 +266,7 @@ def test_saveEventToDb_recurring():
                    'name':'Empty Bowls Spring','term':1,'eventFacilitator':"ramsayb2"}
     eventInfo['valid'] = True
     eventInfo['program'] = Program.get_by_id(1)
-    createdEvents = saveEventToDb(eventInfo)
+    createdEvents = saveEventToDb(preprocessEventData(eventInfo))
     assert len(createdEvents) == 6
 
     for event in Event.select().where(Event.location == "this is only a test"):
@@ -272,7 +297,7 @@ def test_saveEventToDb_update():
                     "eventFacilitator": User.get(User.username == 'ramsayb2'),
                     "valid": True
                 }
-    eventFunction = saveEventToDb(newEventData)
+    eventFunction = saveEventToDb(preprocessEventData(newEventData))
     afterUpdate = Event.get_by_id(newEventData['eventId'])
     assert afterUpdate.description == "This is a Test"
 
@@ -289,43 +314,16 @@ def test_saveEventToDb_update():
                     'isTraining': True,
                     'isRsvpRequired': False,
                     'isService': 5,
-                    "startDate": "2021 12 12",
-                    "endDate": "2022 6 12",
+                    "startDate": "2021-12-12",
+                    "endDate": "2022-6-12",
                     "eventFacilitator": User.get(User.username == 'ramsayb2'),
                     "valid": True
                 }
-    eventFunction = saveEventToDb(newEventData)
+    eventFunction = saveEventToDb(preprocessEventData(newEventData))
     afterUpdate = Event.get_by_id(newEventData['eventId'])
 
     assert afterUpdate.description == "Berea Buddies First Meetup"
 
-@pytest.mark.integration
-def test_calculateRecurringEventFrequency():
-
-    eventInfo = {'name':"testEvent",
-                 'startDate':"02-22-2023",
-                 'endDate': "03-9-2023"}
-
-    returnedEvents = calculateRecurringEventFrequency(eventInfo)
-    #test correct response
-    assert returnedEvents[0] == {'name': 'testEvent Week 1', 'date': '02-22-2023', 'week': 1}
-    assert returnedEvents[1] == {'name': 'testEvent Week 2', 'date': '03-01-2023', 'week': 2}
-    assert returnedEvents[2] == {'name': 'testEvent Week 3', 'date': '03-08-2023', 'week': 3}
-
-    #test incorrect value
-    eventInfo["startDate"] = "hello"
-    with pytest.raises(ValueError):
-        returnedEvents = calculateRecurringEventFrequency(eventInfo)
-
-    #test incorect date format
-    eventInfo["startDate"] = "02/22/2023"
-    with pytest.raises(ValueError):
-        returnedEvents = calculateRecurringEventFrequency(eventInfo)
-
-    #test incorrect date
-    eventInfo["startDate"] = "02-29-2023"
-    with pytest.raises(ValueError):
-        returnedEvents = calculateRecurringEventFrequency(eventInfo)
 @pytest.mark.integration
 def test_deleteEvent():
 

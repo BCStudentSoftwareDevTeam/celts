@@ -51,7 +51,7 @@ def saveEventToDb(newEventData):
     isNewEvent = ('eventId' not in newEventData)
 
     eventsToCreate = []
-    if isNewEvent and newEventData['isRecurring'] == 'on':
+    if isNewEvent and newEventData['isRecurring']:
         eventsToCreate = calculateRecurringEventFrequency(newEventData)
     else:
         eventsToCreate.append({'name': f"{newEventData['name']}",
@@ -72,8 +72,8 @@ def saveEventToDb(newEventData):
                     "isTraining": newEventData['isTraining'],
                     "isRsvpRequired": newEventData['isRsvpRequired'],
                     "isService": newEventData['isService'],
-                    "startDate": parser.parse(eventInstance['date']),
-                    "endDate": parser.parse(eventInstance['date'])
+                    "startDate": eventInstance['date'],
+                    "endDate": eventInstance['date']
             }
 
             # Create or update the event
