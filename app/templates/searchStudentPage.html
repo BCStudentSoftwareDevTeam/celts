@@ -3,7 +3,7 @@
 
 {% block scripts %}
   {{super()}}
-<script src="/static/js/searchStudent.js"></script>
+<script type="module" src="/static/js/searchStudent.js"></script>
 {% endblock %}
 
 {% block styles %}
@@ -21,7 +21,7 @@
     <div class="row">
       <div class="form-group ui-widget">
         <div class="input-group">
-          <input type="input" id="searchStudentsInput" name="searchStudentsInput" class="form-control" placeholder="Search" oninput="searchStudents()" autocomplete="off"/>
+          <input type="input" id="searchStudentsInput" name="searchStudentsInput" class="form-control" placeholder="Search" autocomplete="off"/>
           <button type="button" class="btn btn-secondary btn-sm" disabled>
             <span class="bi bi-search"></span>
           </button>
