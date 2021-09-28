@@ -3,5 +3,5 @@ from app.models.course import Course
 
 class CourseQuestion(baseModel):
     course = ForeignKeyField(Course)
-    questionContents = CharField() # Check this one
+    questionContent = CharField()
     questionNumber = IntegerField()

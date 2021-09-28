@@ -611,8 +611,28 @@ CourseParticipant.insert_many(courseHoursEarned).on_conflict_replace().execute()
 courseQuestions = [
     {
     "course":1,
-    "questionContents":" Why are you interested in teaching this course?",
+    "questionContent":" Why are you interested in teaching this course?",
     "questionNumber":1,
+    },
+    {
+    "course":1,
+    "questionContent":"Is there anything confusing?",
+    "questionNumber":2,
+    },
+    {
+    "course":1,
+    "questionContent":"How many students willl betaking this course?",
+    "questionNumber":3,
+    },
+    {
+    "course":1,
+    "questionContent":" This is another random question",
+    "questionNumber":4,
+    },
+    {
+    "course":1,
+    "questionContent":" Why are you interested in teaching this course?",
+    "questionNumber":5,
     }
 ]
 
