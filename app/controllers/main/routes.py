@@ -127,7 +127,7 @@ def searchUser(query):
         return searchResults
     except Exception as e:
         print(e)
-        return "Error Searching Volunteers query", 500
+        return "Error in searching for user", 500
 
 @main_bp.route('/contributors',methods = ['GET'])
 def contributors():
