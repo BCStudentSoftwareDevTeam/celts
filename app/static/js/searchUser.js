@@ -1,4 +1,4 @@
-export default function searchUser(inputId, ajaxUrl, formId){
+export default function searchUser(inputId, formId){
   var query = $(`#${inputId}`).val()
 
   $(`#${inputId}`).autocomplete({
