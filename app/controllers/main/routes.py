@@ -13,6 +13,7 @@ from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 from app.logic.events import groupEventsByCategory
 from datetime import datetime
+from app import app
 
 @main_bp.route('/', methods=['GET'])
 @main_bp.route('/<selectedTerm>', methods=['GET'])
@@ -113,3 +114,6 @@ def RemoveRSVP():
 
     flash("Successfully unregistered for event!", "success")
     return redirect(url_for("admin.editEvent", eventId=eventId, program=program))
+@main_bp.route('/contributors',methods = ['GET'])
+def contributors():
+    return render_template("/contributors.html")
