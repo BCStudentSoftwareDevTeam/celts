@@ -12,7 +12,7 @@ from app.models.facilitator import Facilitator
 from app.models.interest import Interest
 from app.logic.events import attemptSaveEvent, saveEventToDb, getEvents, deleteEvent, groupEventsByCategory, groupEventsByProgram
 from app.logic.events import getAllFacilitators, getUpcomingEventsForUser
-from app.logic.eventCreation import validateNewEventData, setValueForUncheckedBox, calculateRecurringEventFrequency, preprocessEventData
+from app.logic.eventCreation import validateNewEventData, calculateRecurringEventFrequency, preprocessEventData
 
 
 @pytest.mark.integration
@@ -95,34 +95,50 @@ def test_eventTemplate_fetch():
     template.delete_instance()
 
 @pytest.mark.integration
-def test_preprocessEventData():
-    pass
-
-@pytest.mark.integration
-def test_setValueForUncheckedBox():
+def test_preprocessEventData_checkboxes():
 
     # test that there is a return
-    assert setValueForUncheckedBox({})
+    assert preprocessEventData({})
 
     # tets for return type
-    assert type(setValueForUncheckedBox({}))== type({})
+    assert type(preprocessEventData({}))== type({})
 
     # test for no keys
     eventData = {}
-    newData = setValueForUncheckedBox(eventData)
+    newData = preprocessEventData(eventData)
     assert newData['isRsvpRequired'] == False
     assert newData['isService'] == False
     assert newData['isTraining'] == False
 
-    #test for one missing key
-    eventData = {'isRsvpRequired':'', 'isService':True }
-    newData = setValueForUncheckedBox(eventData)
-
-    assert newData['isTraining'] == False  #the value of newData['isTraining'] is false
-
-    # check that the setValueForUncheckedBox does not change existing keys
-    assert newData['isRsvpRequired'] == ''
+    eventData = {'isRsvpRequired':'', 'isRecurring': 'on', 'isService':True }
+    newData = preprocessEventData(eventData)
+    assert newData['isTraining'] == False
+    assert newData['isRsvpRequired'] == False
     assert newData['isService'] == True
+    assert newData['isRecurring'] == True
+
+@pytest.mark.integration
+def test_preprocessEventData_dates():
+
+    eventData = {'startDate':''}
+    newData = preprocessEventData(eventData)
+    assert newData['startDate'] == '' 
+    assert newData['endDate'] == '' 
+
+    eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08', 'isRecurring': 'on'}
+    newData = preprocessEventData(eventData)
+    assert newData['startDate'] == datetime.strptime("2021-09-07","%Y-%m-%d")
+    assert newData['endDate'] == datetime.strptime("2021-08-08","%Y-%m-%d")
+
+    # endDate should match startDate for non-recurring events
+    eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08'}
+    newData = preprocessEventData(eventData)
+    assert newData['startDate'] == newData['endDate']
+
+    eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08', 'isRecurring': 'on'}
+    newData = preprocessEventData(eventData)
+    assert newData['startDate'] != newData['endDate']
+
 
 @pytest.mark.integration
 def test_correctValidateNewEventData():

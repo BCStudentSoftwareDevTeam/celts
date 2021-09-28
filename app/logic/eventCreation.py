@@ -63,25 +63,36 @@ def calculateRecurringEventFrequency(recurringEventInfo):
 
     return recurringEvents
 
+def preprocessEventData(eventData):
+    """
+        Ensures that the event data dictionary is consistent before it reaches the template or event logic.
 
-def setValueForUncheckedBox(eventData):
+        - dates should exist and be date objects if there is a value
+        - checkbaxes should be True or False
+        - facilitators should be a list of dictionaries (or objects?)
+    """
 
+    ## Process checkboxes
     eventCheckBoxes = ['isRsvpRequired', 'isService', 'isTraining', 'isRecurring']
 
     for checkBox in eventCheckBoxes:
         if checkBox not in eventData:
             eventData[checkBox] = False
-        if checkBox not in eventData:
-            eventData[checkBox] = False
+        else:
+            eventData[checkBox] = bool(eventData[checkBox])
+
+    ## Process dates
+    eventDates = ['startDate', 'endDate']
+    for date in eventDates:
+        if date not in eventData:
+            eventData[date] = ''
+        elif eventData[date]:
+            eventData[date] = parser.parse(eventData[date])
+
+    # If we aren't recurring, all of our events are single-day
+    if not eventData['isRecurring']:
+        eventData['endDate'] = eventData['startDate']
+
+    ## Process facilitators
 
     return eventData
-
-def preprocessEventData(incomingEventData):
-    """
-        Ensures that the event data dictionary is consistent before it reaches the template or event logic.
-
-        - dates should be date objects
-        - checkbaxes should be True or False
-        - facilitators should be dictionaries (or objects?)
-    """
-    return {}

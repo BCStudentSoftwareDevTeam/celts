@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block app_content %}
-  {% set isAdmin = (g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff) %}
+  {% set isAdmin = g.current_user.isAdmin %}
   {% set isEditable = isAdmin %}
   {% set isNewEvent = 'create' in request.path %}
 

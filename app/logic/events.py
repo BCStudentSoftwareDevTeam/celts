@@ -11,7 +11,7 @@ from app.models.program import Program
 from app.models.term import Term
 from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
-from app.logic.eventCreation import setValueForUncheckedBox, calculateRecurringEventFrequency, validateNewEventData
+from app.logic.eventCreation import preprocessEventData, calculateRecurringEventFrequency, validateNewEventData
 
 def getEvents(program_id=None):
 
@@ -30,15 +30,11 @@ def deleteEvent(eventId):
 
 def attemptSaveEvent(eventData):
 
-    newEventData = setValueForUncheckedBox(eventData)
+    newEventData = preprocessEventData(eventData)
 
-    #if an event is not recurring then it will have same end and start date
-    if newEventData['endDate'] == '':
-        newEventData['endDate'] = newEventData['startDate']
+    isValid, validationErrorMessage, newEventData = validateNewEventData(newEventData)
 
-    dataIsValid, validationErrorMessage, newEventData = validateNewEventData(newEventData)
-
-    if not dataIsValid:
+    if not isValid:
         return False, validationErrorMessage
 
     try:
