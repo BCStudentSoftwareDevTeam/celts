@@ -14,6 +14,7 @@ from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 from app.logic.events import groupEventsByCategory
 from app.logic.searchUsers import searchUsers
 from datetime import datetime
+from app import app
 
 @main_bp.route('/', methods=['GET'])
 @main_bp.route('/<selectedTerm>', methods=['GET'])
@@ -127,3 +128,7 @@ def searchUser(query):
     except Exception as e:
         print(e)
         return "Error Searching Volunteers query", 500
+
+@main_bp.route('/contributors',methods = ['GET'])
+def contributors():
+    return render_template("/contributors.html")
