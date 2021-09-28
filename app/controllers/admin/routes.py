@@ -10,7 +10,6 @@ from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.models.interest import Interest
 from app.models.programBan import ProgramBan
-from app.logic.events import getUpcomingEventsForUser
 from app.logic.getSLInstructorTableData import getProposalData
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
@@ -18,6 +17,7 @@ from app.logic.utils import selectFutureTerms
 from app.logic.searchStudents import searchVolunteers
 from app.logic.events import deleteEvent, getAllFacilitators, getUpcomingEventsForUser
 from app.logic.users import isEligibleForProgram
+from app.logic.searchUsers import searchUsers
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.eventCreation import createEvent, addRecurringEvents
@@ -135,30 +135,15 @@ def studentSearchPage():
         return render_template("/searchStudentPage.html")
     abort(403)
 
-# FIXME The following two methods need to be consolidated
 @admin_bp.route('/searchStudents/<query>', methods = ['GET'])
 def searchStudents(query):
     '''Accepts user input and queries the database returning results that matches user search'''
-    query = query.strip()
-    search = query.upper()
-    splitSearch = search.split()
-    searchResults = searchVolunteers(query)
-    return json.dumps(searchResults)
-
-
-@admin_bp.route('/searchVolunteers/<query>', methods = ['GET'])
-def searchVolunteers(query):
-    '''Accepts user input and queries the database returning results that matches user search'''
-
     try:
         query = query.strip()
-        search = query.upper() + "%"
-        results = User.select().where(User.isStudent & User.firstName ** search | User.lastName ** search)
-        resultsDict = {}
-        for participant in results:
-            resultsDict[participant.firstName + " " + participant.lastName] = participant.firstName + " " + participant.lastName
-        dictToJSON = json.dumps(resultsDict)
-        return dictToJSON
+        search = query.upper()
+        splitSearch = search.split()
+        searchResults = searchUsers(query)
+        return searchResults
     except Exception as e:
         print(e)
         return "Error Searching Volunteers query", 500
