@@ -14,7 +14,6 @@ from app.logic.getSLInstructorTableData import getProposalData
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectFutureTerms
-from app.logic.searchStudents import searchVolunteers
 from app.logic.events import deleteEvent, getAllFacilitators, getUpcomingEventsForUser
 from app.logic.users import isEligibleForProgram
 from app.logic.searchUsers import searchUsers

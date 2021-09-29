@@ -7,9 +7,9 @@ $(document).ready(function(){
   });
 
 
-  $(".form-check-input").click(function updateInterest(el){
+  $(".form-check-input").click(function updateInterest(){
     var programID = $(this).attr('id');
-    var interest = $(this).is(':checked').prop('checked', true);
+    var interest = $(this).is(':checked'); //.prop('checked', true);
     // var volunteer = $()
     // console.log("+", programID,"-", interest,"=",volunteer);
 
