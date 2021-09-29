@@ -11,10 +11,9 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.facilitator import Facilitator
 from app.models.interest import Interest
-from app.logic.events import attemptSaveEvent, saveEventToDb, getEvents, deleteEvent, groupEventsByCategory, groupEventsByProgram
-from app.logic.events import getAllFacilitators, getUpcomingEventsForUser
-from app.logic.eventCreation import validateNewEventData, calculateRecurringEventFrequency, preprocessEventData
-
+from app.logic.events import attemptSaveEvent, saveEventToDb, getEvents, deleteEvent, preprocessEventData
+from app.logic.events  import groupEventsByCategory, groupEventsByProgram, validateNewEventData
+from app.logic.events import getAllFacilitators, getUpcomingEventsForUser, calculateRecurringEventFrequency
 
 @pytest.mark.integration
 def test_event_model():
