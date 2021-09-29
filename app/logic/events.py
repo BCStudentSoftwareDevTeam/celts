@@ -1,6 +1,7 @@
 from peewee import DoesNotExist
 from dateutil import parser
 import datetime
+from werkzeug.datastructures import MultiDict
 
 from app.models import mainDB
 from app.models.user import User
@@ -48,7 +49,7 @@ def saveEventToDb(newEventData):
     if not newEventData.get('valid', False):
         raise Exception("Unvalidated data passed to saveEventToDb")
 
-    isNewEvent = ('eventId' not in newEventData)
+    isNewEvent = ('id' not in newEventData)
 
     eventsToCreate = []
     if isNewEvent and newEventData['isRecurring']:
@@ -83,8 +84,8 @@ def saveEventToDb(newEventData):
                 if 'program' in newEventData:
                     ProgramEvent.create(program=newEventData['program'], event=eventRecord)
             else:
-                eventData['id'] = newEventData['eventId']
-                eventRecord = Event.update(**eventData).where(Event.id == eventData['id']).execute()
+                eventRecord = Event.get_by_id(newEventData['id'])
+                Event.update(**eventData).where(Event.id == eventRecord).execute()
 
             Facilitator.delete().where(Facilitator.event == eventRecord).execute()
             for f in newEventData['facilitators']:
@@ -184,7 +185,7 @@ def validateNewEventData(data):
         return (False, "Event start time is after event end time")
 
     # Validation if we are inserting a new event
-    if 'eventId' not in data:
+    if 'id' not in data:
         # Check for a pre-existing event with Event name, Description and Event Start date
         event = Event.select().where((Event.name == data['name']) &
                                  (Event.description == data['description']) &
@@ -195,7 +196,6 @@ def validateNewEventData(data):
         except DoesNotExist as e:
             return (False, f"Not a valid term: {data['term']}")
         
-
         if event.exists():
             return (False, "This event already exists")
 
@@ -230,12 +230,10 @@ def preprocessEventData(eventData):
         - dates should exist and be date objects if there is a value
         - checkbaxes should be True or False
         - if term is given, convert it to a model object
-        - facilitators should be a list of objects. Use the given list of usernames if possible, or else
-          get it from the existing event (or empty list if no event)
+        - facilitators should be a list of objects. Use the given list of usernames if possible 
+          (and check for a MultiDict with getlist), or else get it from the existing event 
+          (or use an empty list if no event)
     """
-
-    if 'id' in eventData:
-        eventData['eventId'] = eventData['id']
 
     ## Process checkboxes
     eventCheckBoxes = ['isRsvpRequired', 'isService', 'isTraining', 'isRecurring']
@@ -269,9 +267,11 @@ def preprocessEventData(eventData):
 
     ## Get the facilitator objects from the list or from the event if there is a problem
     try:
+        if type(eventData) == MultiDict:
+            eventData['facilitators'] = eventData.getlist('facilitators')
         eventData['facilitators'] = [User.get_by_id(f) for f in eventData['facilitators']]
     except Exception:
-        event = eventData.get('eventId', -1)
+        event = eventData.get('id', -1)
         eventData['facilitators'] = list(User.select().join(Facilitator).where(Facilitator.event == event))
 
     return eventData

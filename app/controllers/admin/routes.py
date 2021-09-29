@@ -102,9 +102,9 @@ def editEvent(eventId):
         abort(404)
 
     eventData = model_to_dict(event, recurse=False)
-    print(eventData)
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
+        print(eventData)
         saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
         if saveSuccess:
             flash("Event successfully updated!", "success")
@@ -113,7 +113,6 @@ def editEvent(eventId):
             flash(validationErrorMessage, 'warning')
 
     preprocessEventData(eventData)
-    print(eventData)
     futureTerms = selectFutureTerms(g.current_term)
     userHasRSVPed = EventParticipant.get_or_none(EventParticipant.user == g.current_user, EventParticipant.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))

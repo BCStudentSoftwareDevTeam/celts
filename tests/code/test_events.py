@@ -2,6 +2,7 @@ import pytest
 from peewee import DoesNotExist, OperationalError, IntegrityError
 from datetime import datetime
 from dateutil import parser
+from werkzeug.datastructures import MultiDict
 
 from app.models import mainDB
 from app.models.event import Event
@@ -40,7 +41,6 @@ def test_getAllEvents():
 
 
     assert len(events) > 0
-
 
     assert events[0].description == "Empty Bowls Spring 2021"
     assert events[1].description == "Berea Buddies Training"
@@ -187,22 +187,27 @@ def test_preprocessEventData_facilitators():
     preprocessEventData(eventData)
     assert eventData['facilitators'] == []
 
+    # form data comes back as a MultiDict. Make sure we handle that case
+    eventData = MultiDict([('facilitators', 'ramsayb2'),('facilitators','khatts')])
+    preprocessEventData(eventData)
+    assert eventData['facilitators'] == [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]
+
     #####
     # Testing with an existing event
     #####
-    eventData = {'eventId': 1, 'facilitators': []}
+    eventData = {'id': 1, 'facilitators': []}
     preprocessEventData(eventData)
     assert eventData['facilitators'] == []
 
-    eventData = {'eventId': 1, 'facilitators': ['khatts']}
+    eventData = {'id': 1, 'facilitators': ['khatts']}
     preprocessEventData(eventData)
     assert eventData['facilitators'] == [User.get_by_id('khatts')]
 
-    eventData = {'eventId': 1}
+    eventData = {'id': 1}
     preprocessEventData(eventData)
     assert eventData['facilitators'] == [User.get_by_id('ramsayb2')] # defaults to existing facilitators
 
-    eventData = {'eventId': 1, 'facilitators':'khatts'}
+    eventData = {'id': 1, 'facilitators':'khatts'}
     preprocessEventData(eventData)
     assert eventData['facilitators'] == [User.get_by_id('ramsayb2')] # defaults to existing facilitators
 
@@ -262,7 +267,7 @@ def test_wrongValidateNewEventData():
     assert eventErrorMessage == "This event already exists"
 
     # If we provide an event id, don't check for existence
-    eventData['eventId'] = 5
+    eventData['id'] = 5
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid
 
@@ -385,7 +390,7 @@ def test_saveEventToDb_update():
     assert beforeUpdate.name == "First Meetup"
 
     newEventData = {
-                    "eventId": 4,
+                    "id": 4,
                     "program": 1,
                     "term": 1,
                     "name": "First Meetup",
@@ -403,11 +408,11 @@ def test_saveEventToDb_update():
                     "valid": True
                 }
     eventFunction = saveEventToDb(newEventData)
-    afterUpdate = Event.get_by_id(newEventData['eventId'])
+    afterUpdate = Event.get_by_id(newEventData['id'])
     assert afterUpdate.description == "This is a Test"
 
     newEventData = {
-                    "eventId": 4,
+                    "id": 4,
                     "program": 1,
                     "term": 1,
                     "name": "First Meetup",
@@ -425,7 +430,7 @@ def test_saveEventToDb_update():
                     "valid": True
                 }
     eventFunction = saveEventToDb(newEventData)
-    afterUpdate = Event.get_by_id(newEventData['eventId'])
+    afterUpdate = Event.get_by_id(newEventData['id'])
 
     assert afterUpdate.description == "Berea Buddies First Meetup"
 

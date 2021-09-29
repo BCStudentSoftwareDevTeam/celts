@@ -45,7 +45,7 @@
     <form action="/event/{{eventData.id}}/deleteEvent" method='post'>
       <input type="submit" class="btn btn-danger float-end" value="Cancel Event"/>
       <div>
-        <input type="hidden" value="{{eventData.id}}" name="eventId">
+        <input type="hidden" value="{{eventData.id}}" name="id">
       </div>
     </form>
 
@@ -65,7 +65,7 @@
     <div class="row p-2">
       <div class="col-md-6 col-sm-12 ">
         {% if eventData.id %}
-          <input type="hidden" name="eventId" value="{{eventData.id}}" >
+          <input type="hidden" name="id" value="{{eventData.id}}" >
         {% endif %}
         
         <div class="d-grid gap-1.5">
@@ -216,9 +216,6 @@
         <div class='form-group'>
           <label for='facilitators'><strong>Facilitators</strong></label> <br>
           {% if isEditable %}
-          <pre>
-          {{eventData.facilitators}}
-          </pre>
             <select class="form-select" multiple id="inputEventFacilitators"  name="facilitators" >
             <!-- make sure we show existing facilitators in case they aren't in the facilitators list anymore -->
             {% for ef in eventData.facilitators %}
