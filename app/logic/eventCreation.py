@@ -6,7 +6,7 @@ from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.models.facilitator import Facilitator
 
-def validateNewEventData(newEventData):
+def validateNewEventData(data):
     """
         Confirm that the provided data is valid for an event.
 
@@ -15,37 +15,27 @@ def validateNewEventData(newEventData):
         Returns 3 values: (boolean success, the validation error message, the data object)
     """
 
-    if newEventData['isRecurring'] and newEventData['endDate']  <  newEventData['startDate']:
-        return (False, "Event start date is after event end date", newEventData)
+    if 'on' in [data['isRsvpRequired'], data['isTraining'], data['isService'], data['isRecurring']]:
+        return (False, "Raw form data passed to validate method. Preprocess first.")
 
-    if newEventData['endDate'] ==  newEventData['startDate'] and newEventData['timeEnd'] <=  newEventData['timeStart']:
-        return (False, "Event start time is after event end time", newEventData)
+    if data['isRecurring'] and data['endDate']  <  data['startDate']:
+        return (False, "Event start date is after event end date")
 
-    if not newEventData['isRsvpRequired'] == 'on':
-        if not isinstance(newEventData['isRsvpRequired'], bool):
-            return (False, "Event RSVP must be a boolean", newEventData)
+    if data['endDate'] ==  data['startDate'] and data['timeEnd'] <=  data['timeStart']:
+        return (False, "Event start time is after event end time")
 
-    if not newEventData['isTraining'] == 'on':
-        if not isinstance(newEventData['isTraining'], bool):
-            return (False, "Event Training must be a boolean", newEventData)
-
-
-    if not newEventData['isService'] == 'on':
-        if not isinstance(newEventData['isService'], bool):
-            return (False, "Event Service Hours must be a boolean", newEventData)
-
-
-    if 'eventId' not in newEventData:
+    if 'eventId' not in data:
         # Check for a pre-existing event with Event name, Description and Event Start date
-        event = Event.select().where((Event.name == newEventData['name']) &
-                                 (Event.description == newEventData['description']) &
-                                 (Event.startDate == newEventData['startDate']))
+        event = Event.select().where((Event.name == data['name']) &
+                                 (Event.description == data['description']) &
+                                 (Event.startDate == data['startDate']))
 
         if event.exists():
-            return (False, "This event already exists", newEventData)
+            return (False, "This event already exists")
 
-    newEventData['valid'] = True
-    return (True, "All inputs are valid.", newEventData)
+    data['valid'] = True
+
+    return (True, "All inputs are valid.")
 
 def calculateRecurringEventFrequency(event):
     """
@@ -56,22 +46,16 @@ def calculateRecurringEventFrequency(event):
 
         Return a list of events to create from the event data.
     """
-    recurringEvents = []
-    if event['endDate'] == event['startDate']:
-        raise Exception("This event is not a recurring event")
-
     if not isinstance(event['endDate'], datetime.date) or not isinstance(event['startDate'], datetime.date):
         raise Exception("startDate and endDate must be datetime.date objects.")
 
-    counter = 0
-    for i in range(0, ((event['endDate']-event['startDate']).days +1), 7):
-        counter += 1
-        recurringEvents.append({'name': f"{event['name']} Week {counter}",
-                                'date':event['startDate'],
-                                "week":counter})
-        event['startDate'] += datetime.timedelta(days=7)
+    if event['endDate'] == event['startDate']:
+        raise Exception("This event is not a recurring event")
 
-    return recurringEvents
+    return [ {'name': f"{event['name']} Week {counter+1}",
+              'date': event['startDate'] + datetime.timedelta(days=7*counter),
+              "week": counter+1} 
+            for counter in range(0, ((event['endDate']-event['startDate']).days//7)+1)]
 
 def preprocessEventData(eventData):
     """
