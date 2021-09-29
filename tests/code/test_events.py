@@ -3,6 +3,7 @@ from peewee import DoesNotExist, OperationalError, IntegrityError
 from datetime import datetime
 from dateutil import parser
 
+from app.models import mainDB
 from app.models.event import Event
 from app.models.user import User
 from app.models.eventTemplate import EventTemplate
@@ -150,12 +151,12 @@ def test_preprocessEventData_dates():
 def test_correctValidateNewEventData():
 
     eventData =  {'isRsvpRequired':False, 'isService':False,
-                  'isTraining':True, 'isRecurring':False, 'startDate': '1999-12-12',
-                  'endDate':'2022-06-12', 'programId':1, 'location':"a big room",
+                  'isTraining':True, 'isRecurring':False, 'startDate': parser.parse('1999-12-12'),
+                  'endDate':parser.parse('2022-06-12'), 'programId':1, 'location':"a big room",
                   'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring','term':1,'eventFacilitator':"ramsayb2"}
 
-    validNewEvent, eventErrorMessage = validateNewEventData(preprocessEventData(eventData))
+    validNewEvent, eventErrorMessage = validateNewEventData(eventData)
 
     # assert validNewEvent == True
     assert eventErrorMessage == "All inputs are valid."
@@ -242,13 +243,37 @@ def test_attemptSaveEvent():
                   'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring','term':1,'eventFacilitator':"ramsayb2"}
     pass
+    eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'startDate': '2021-12-12',
+                   'endDate':'2022-06-12', 'location':"a big room", 
+                   'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
+                   'name':'Attempt Save Test','term':1,'eventFacilitator':"ramsayb2"}
+    eventInfo['program'] = Program.get_by_id(1)
+
+    with mainDB.atomic() as transaction:
+        success, errorMessage = attemptSaveEvent(eventInfo)
+        assert success
+
+        try:
+            event = Event.get(name="Attempt Save Test")
+            facilitator = Facilitator.get(user=eventInfo['eventFacilitator'], event=event)
+            
+            # Redundant, as the previous lines will throw exceptions, but I like asserting something
+            assert facilitator 
+
+        except Exception as e:
+            pytest.fail(str(e))
+
+        finally:
+            transaction.rollback() # undo our database changes
+
+
 
 @pytest.mark.integration
 def test_saveEventToDb_create():
 
     eventInfo =  {'isRsvpRequired':False, 'isService':False,
-                  'isTraining':True, 'isRecurring':False, 'startDate': '2021-12-12',
-                   'endDate':'2022-06-12', 'location':"a big room", 
+                  'isTraining':True, 'isRecurring':False, 'startDate': parser.parse('2021-12-12'),
+                   'endDate':parser.parse('2022-06-12'), 'location':"a big room", 
                    'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
                    'name':'Empty Bowls Spring','term':1,'eventFacilitator':"ramsayb2"}
     eventInfo['program'] = Program.get_by_id(1)
@@ -264,7 +289,7 @@ def test_saveEventToDb_create():
 
     #test that the event and facilitators are added successfully
     eventInfo['valid'] = True
-    createdEvents = saveEventToDb(preprocessEventData(eventInfo))
+    createdEvents = saveEventToDb(eventInfo)
     assert len(createdEvents) == 1
     assert createdEvents[0].singleProgram.id == 1
 
@@ -278,23 +303,18 @@ def test_saveEventToDb_create():
     # test bad username for facilitator (user does not exist)
     eventInfo["eventFacilitator"] = "jarjug"
     with pytest.raises(IntegrityError):
-        saveEventToDb(preprocessEventData(eventInfo))
-
-##################### ##################### ##################### #####################
-## TODO  remove some of the preprocess calls and provide better event data
-## TODO  put the raw data in for the attemptSaveEvent test
-##################### ##################### ##################### #####################
+        saveEventToDb(eventInfo)
 
 @pytest.mark.integration
 def test_saveEventToDb_recurring():
     eventInfo =  {'isRsvpRequired':False, 'isService':False,
-                  'isTraining':True, 'isRecurring': 'on', 'startDate': '12-12-2021',
-                   'endDate':'01-18-2022', 'location':"this is only a test",
+                  'isTraining':True, 'isRecurring': True, 'startDate': parser.parse('12-12-2021'),
+                   'endDate':parser.parse('01-18-2022'), 'location':"this is only a test",
                    'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
                    'name':'Empty Bowls Spring','term':1,'eventFacilitator':"ramsayb2"}
     eventInfo['valid'] = True
     eventInfo['program'] = Program.get_by_id(1)
-    createdEvents = saveEventToDb(preprocessEventData(eventInfo))
+    createdEvents = saveEventToDb(eventInfo)
     assert len(createdEvents) == 6
 
     for event in Event.select().where(Event.location == "this is only a test"):
@@ -319,13 +339,13 @@ def test_saveEventToDb_update():
                     'isRecurring': True,
                     'isTraining': True,
                     'isRsvpRequired': False,
-                    'isService': 5,
-                    "startDate": "2021 12 12",
-                    "endDate": "2022 6 12",
+                    'isService': False,
+                    "startDate": "2021-12-12",
+                    "endDate": "2022-6-12",
                     "eventFacilitator": User.get(User.username == 'ramsayb2'),
                     "valid": True
                 }
-    eventFunction = saveEventToDb(preprocessEventData(newEventData))
+    eventFunction = saveEventToDb(newEventData)
     afterUpdate = Event.get_by_id(newEventData['eventId'])
     assert afterUpdate.description == "This is a Test"
 
@@ -347,7 +367,7 @@ def test_saveEventToDb_update():
                     "eventFacilitator": User.get(User.username == 'ramsayb2'),
                     "valid": True
                 }
-    eventFunction = saveEventToDb(preprocessEventData(newEventData))
+    eventFunction = saveEventToDb(newEventData)
     afterUpdate = Event.get_by_id(newEventData['eventId'])
 
     assert afterUpdate.description == "Berea Buddies First Meetup"

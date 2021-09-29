@@ -32,7 +32,7 @@ def attemptSaveEvent(eventData):
 
     newEventData = preprocessEventData(eventData)
 
-    isValid, validationErrorMessage, newEventData = validateNewEventData(newEventData)
+    isValid, validationErrorMessage = validateNewEventData(newEventData)
 
     if not isValid:
         return False, validationErrorMessage

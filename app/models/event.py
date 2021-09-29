@@ -13,7 +13,7 @@ class Event(baseModel):
     isTraining = BooleanField(default=False)
     isRsvpRequired = BooleanField(default=False)
     isService = BooleanField(default=False)
-    startDate = DateField(null=True)
+    startDate = DateField()
     endDate = DateField(null=True)
 
     def __str__(self):
