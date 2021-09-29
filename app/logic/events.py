@@ -60,6 +60,7 @@ def saveEventToDb(newEventData):
 
     eventRecords = []
     for eventInstance in eventsToCreate:
+        print("-------------------")
         with mainDB.atomic():
             eventData = {
                     "term": newEventData['term'],
@@ -88,9 +89,10 @@ def saveEventToDb(newEventData):
 
             Facilitator.delete().where(Facilitator.event == eventRecord).execute()
             #TODO handle multiple facilitators
-            Facilitator.create(user=newEventData['eventFacilitator'], event=eventRecord)
+            #Facilitator.create(user=newEventData['eventFacilitator'], event=eventRecord)
 
             eventRecords.append(eventRecord)
+        print("-------------------")
 
     return eventRecords
 
@@ -183,11 +185,18 @@ def validateNewEventData(data):
     if data['endDate'] ==  data['startDate'] and data['timeEnd'] <=  data['timeStart']:
         return (False, "Event start time is after event end time")
 
+    # Validation if we are inserting a new event
     if 'eventId' not in data:
         # Check for a pre-existing event with Event name, Description and Event Start date
         event = Event.select().where((Event.name == data['name']) &
                                  (Event.description == data['description']) &
                                  (Event.startDate == data['startDate']))
+
+        try:
+            Term.get_by_id(data['term'])
+        except DoesNotExist as e:
+            return (False, f"Not a valid term: {data['term']}")
+        
 
         if event.exists():
             return (False, "This event already exists")
@@ -222,6 +231,7 @@ def preprocessEventData(eventData):
 
         - dates should exist and be date objects if there is a value
         - checkbaxes should be True or False
+        - if term is given, convert it to a model object
         - facilitators should be a list of dictionaries (or objects?)
     """
 
@@ -247,6 +257,13 @@ def preprocessEventData(eventData):
     # If we aren't recurring, all of our events are single-day
     if not eventData['isRecurring']:
         eventData['endDate'] = eventData['startDate']
+
+    # Process terms
+    if 'term' in eventData:
+        try:
+            eventData['term'] = Term.get_by_id(eventData['term'])
+        except DoesNotExist:
+            eventData['term'] = ''
 
     ## Process facilitators
 

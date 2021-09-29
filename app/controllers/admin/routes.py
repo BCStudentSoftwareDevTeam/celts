@@ -21,7 +21,7 @@ from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectFutureTerms
 from app.logic.searchUsers import searchUsers
-from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent
+from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 
@@ -79,8 +79,7 @@ def createEvent(templateid, programid=None):
             flash(validationErrorMessage, 'warning')
 
     # make sure our data is the same regardless of GET or POST
-    if 'term' in eventData:
-        eventData['term']  = Term.get_by_id(eventData['term'])
+    preprocessEventData(eventData)
     futureTerms = selectFutureTerms(g.current_term)
 
     return render_template(f"/admin/{template.templateFile}", 
@@ -103,7 +102,8 @@ def editEvent(eventId):
         print(f"Unknown event: {eventId}")
         abort(404)
 
-    eventData = model_to_dict(event)
+    eventData = model_to_dict(event, recurse=False)
+    print(eventData)
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
         saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
@@ -113,6 +113,7 @@ def editEvent(eventId):
         else:
             flash(validationErrorMessage, 'warning')
 
+    preprocessEventData(eventData)
     eventFacilitators = User.select().join(Facilitator).where(Facilitator.event == event)
     futureTerms = selectFutureTerms(g.current_term)
     userHasRSVPed = EventParticipant.get_or_none(EventParticipant.user == g.current_user, EventParticipant.event == event)

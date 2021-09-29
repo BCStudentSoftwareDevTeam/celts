@@ -146,6 +146,19 @@ def test_preprocessEventData_dates():
     newData = preprocessEventData(eventData)
     assert newData['startDate'] != newData['endDate']
 
+@pytest.mark.integration
+def test_preprocessEventData_term():
+    eventData = {}
+    preprocessEventData(eventData)
+    assert 'term' not in eventData
+
+    eventData = {'term': 5}
+    preprocessEventData(eventData)
+    assert eventData['term'] == Term.get_by_id(5)
+
+    eventData = {'term': 'asdf'}
+    preprocessEventData(eventData)
+    assert eventData['term'] == ''
 
 @pytest.mark.integration
 def test_correctValidateNewEventData():
@@ -156,9 +169,8 @@ def test_correctValidateNewEventData():
                   'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring','term':1,'eventFacilitator':"ramsayb2"}
 
-    validNewEvent, eventErrorMessage = validateNewEventData(eventData)
-
-    # assert validNewEvent == True
+    isValid, eventErrorMessage = validateNewEventData(eventData)
+    assert isValid == True
     assert eventErrorMessage == "All inputs are valid."
 
 @pytest.mark.integration

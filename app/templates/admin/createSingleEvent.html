@@ -42,10 +42,10 @@
   </div>
 
   {% if isEditable and not isNewEvent %}
-    <form action="/event/{{eventId}}/deleteEvent" method='post'>
+    <form action="/event/{{eventData.id}}/deleteEvent" method='post'>
       <input type="submit" class="btn btn-danger float-end" value="Cancel Event"/>
       <div>
-        <input type="hidden" value="{{eventId}}" name="eventId">
+        <input type="hidden" value="{{eventData.id}}" name="eventId">
       </div>
     </form>
 
@@ -84,7 +84,7 @@
           {% if isEditable  %}
             <select class="form-select" name='term' id='inputEventTerm' required>
               {% if eventData.term and eventData.term not in futureTerms %}
-                <option value='{{eventData.term}}' selected>{{eventData.term.description}}</option>
+                <option value='{{eventData.term.id}}' selected>{{eventData.term.description}}</option>
               {% endif %}
               {% for future in futureTerms %}
                 <option value='{{future}}' {{"selected" if future == eventData.term}}>{{future.description}}</option>
