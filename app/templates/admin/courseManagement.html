@@ -48,7 +48,7 @@
           <td>{{data.user.firstName}} {{data.user.lastName}}</td>
           <td>{{data.course.term.description}}</td>
           <td>{{data.course.status.status}}</td>
-          <td>Review</td>
+          <td><button type="button" class="btn {{'btn-primary' if data.course.status.status == 'Pending' else 'btn-warning'}} btn-sm">{{ "Review" if data.course.status.status == "Pending" else "In Progress" }}</button></td>
         </tr>
         {% endfor %}
     </tbody>
@@ -73,7 +73,7 @@
           <td>{{data.user.firstName}} {{data.user.lastName}}</td>
           <td>{{data.course.term.description}}</td>
           <td>{{data.course.status.status}}</td>
-          <td>Review</td>
+          <td><i class="bi bi-check2"></i></td>
         </tr>
         {% endfor %}
     </tbody>
