@@ -74,18 +74,19 @@ def viewVolunteersProfile(username):
             user = g.current_user)
     abort(403)
 
-@main_bp.route('/deleteInterest/<program_id>', methods = ['POST'])
-@main_bp.route('/addInterest/<program_id>', methods = ['POST'])
-def updateInterest(program_id):
+@main_bp.route('/deleteInterest/<program_id>/<username>', methods = ['POST'])
+@main_bp.route('/addInterest/<program_id>/<username>', methods = ['POST'])
+def updateInterest(program_id, username):
     """
     This function updates the interest table by adding a new row when a user
     shows interest in a program
     """
     print("inside delete/add interest")
     rule = request.url_rule
-    user = g.current_user
+    username = username
+    # print(rule)
     try:
-        return addRemoveInterest(rule, program_id, user)
+        return addRemoveInterest(rule, program_id, username)
 
     except Exception as e:
         print(e)

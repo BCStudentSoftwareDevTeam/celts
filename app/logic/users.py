@@ -16,22 +16,22 @@ def isEligibleForProgram(program, user):
 
     return True
 
-def addRemoveInterest(rule, program_id, currentUser):
+def addRemoveInterest(rule, program_id, username):
     """
     This function is used to add or remove interest from the interest table.
     Parameters:
     rule: Gets the url from the ajax call, specifies to add or remove interest
     program_id: id of the program the user is interested in
     """
-    print("+",rule,"+",program_id,"+",currentUser)
+    print("+",rule,"+",program_id,"+",username)
 
     if 'addInterest' in str(rule):
-        Interest.get_or_create(program = program_id, user = currentUser)
+        Interest.get_or_create(program = program_id, user = username)
         return "Successfully added interest"
 
     elif 'deleteInterest' in str(rule):
         try:
-            deleted_interest = Interest.get(Interest.program == program_id, Interest.user == currentUser)
+            deleted_interest = Interest.get(Interest.program == program_id, Interest.user == username)
             deleted_interest.delete_instance()
             return "Successfully removed interest"
         except:

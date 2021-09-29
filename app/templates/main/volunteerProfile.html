@@ -35,8 +35,8 @@
          <th scope="col"><h4><strong>Program</strong></h4>
          <th scope="col"><h4><strong>Event Name</strong></h4>
          <th scope="col"><h4><strong>Event Date</strong></h4>
-         <th>Time</th>
-         <th>Location</th>
+         <th scope="col"><h4><strong>Time</strong></h4>
+        <th scope="col"><h4><strong>Location</strong></h4>
        </thead>
        {% for event in upcomingEvents %}
        <tr>
@@ -55,16 +55,11 @@
  <br>
  <br>
  <br>
- <div class="row">
+ <!-- <div class="row">
    <h2>Which programs do you want to receive information about?</h2>
    <input id="{{volunteer.username}}" hidden>
    <div class="form-check-inline form-switch">
      {% for program in programs %}
-     <!-- {% set status = '' %}
-     {% if program.id in interests_ids %}
-     {% set status = 'checked' %}
-     {% else %}
-     {% endif %} -->
      <input class="form-check-input" type="checkbox" id="{{program.id}}" {{status}}>
      <label class="form-check-label" style="padding-right:50px;" for="{{ program.id }}">{{program.programName}}</label>
      {% endfor %}
@@ -78,7 +73,7 @@
  <br>
  <br>
  <br>
- <br>
+ <br> -->
 
 
 
@@ -92,8 +87,8 @@
               <thead>
                 <tr>
                   <th scope="col">All Programs</th>
-                  <th scope="col">Training Checklist</th>
                   <th scope="col">Show Interest</th>
+                  <th scope="col">Training Checklist</th>
                   {% if user.isCeltsAdmin %}
                   <th scope="col">Banned</th>
                   {% endif %}
@@ -102,8 +97,8 @@
               {% for program in eligibilityTable %}
               <tr>
                 <td>{{program.program.programName}}</td>
+                <td><input class="form-check-input" type="checkbox" id="{{program.program.id}}" name="{{volunteer.username}}" {% if program.program in interests_ids %} checked {% endif %}></td>
                 <td align><span>&#10003;</span></td>
-                <td><input class="form-check-input" type="checkbox" id="{{program.id}}" {{status}}></td>
                 {% if user.isCeltsAdmin %}
                 <td class="programBan">
                   {% if program.isNotBanned %}<button type="button" name="button" class="ban btn btn-danger rounded-pill" value="Ban">Ban</button>
@@ -118,7 +113,6 @@
 </table>
   </div>
 <!-- End Program Table -->
-
 
 <!-- Modal -->
 <div class="modal fade" id="banVolunteerModal" tabindex="-1" aria-labelledby="banVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
