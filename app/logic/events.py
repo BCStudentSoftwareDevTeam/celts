@@ -60,7 +60,6 @@ def saveEventToDb(newEventData):
 
     eventRecords = []
     for eventInstance in eventsToCreate:
-        print("-------------------")
         with mainDB.atomic():
             eventData = {
                     "term": newEventData['term'],
@@ -88,11 +87,10 @@ def saveEventToDb(newEventData):
                 eventRecord = Event.update(**eventData).where(Event.id == eventData['id']).execute()
 
             Facilitator.delete().where(Facilitator.event == eventRecord).execute()
-            #TODO handle multiple facilitators
-            #Facilitator.create(user=newEventData['eventFacilitator'], event=eventRecord)
+            for f in newEventData['facilitators']:
+                Facilitator.create(user=f, event=eventRecord)
 
             eventRecords.append(eventRecord)
-        print("-------------------")
 
     return eventRecords
 
@@ -232,8 +230,12 @@ def preprocessEventData(eventData):
         - dates should exist and be date objects if there is a value
         - checkbaxes should be True or False
         - if term is given, convert it to a model object
-        - facilitators should be a list of dictionaries (or objects?)
+        - facilitators should be a list of objects. Use the given list of usernames if possible, or else
+          get it from the existing event (or empty list if no event)
     """
+
+    if 'id' in eventData:
+        eventData['eventId'] = eventData['id']
 
     ## Process checkboxes
     eventCheckBoxes = ['isRsvpRequired', 'isService', 'isTraining', 'isRecurring']
@@ -265,6 +267,11 @@ def preprocessEventData(eventData):
         except DoesNotExist:
             eventData['term'] = ''
 
-    ## Process facilitators
+    ## Get the facilitator objects from the list or from the event if there is a problem
+    try:
+        eventData['facilitators'] = [User.get_by_id(f) for f in eventData['facilitators']]
+    except Exception:
+        event = eventData.get('eventId', -1)
+        eventData['facilitators'] = list(User.select().join(Facilitator).where(Facilitator.event == event))
 
     return eventData

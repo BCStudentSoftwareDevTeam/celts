@@ -86,8 +86,7 @@ def createEvent(templateid, programid=None):
             template = template,
             eventData = eventData,
             futureTerms = futureTerms,
-            facilitators = getAllFacilitators(),
-            eventFacilitators = [])
+            allFacilitators = getAllFacilitators())
 
 
 @admin_bp.route('/event/<eventId>/edit', methods=['GET','POST'])
@@ -114,15 +113,14 @@ def editEvent(eventId):
             flash(validationErrorMessage, 'warning')
 
     preprocessEventData(eventData)
-    eventFacilitators = User.select().join(Facilitator).where(Facilitator.event == event)
+    print(eventData)
     futureTerms = selectFutureTerms(g.current_term)
     userHasRSVPed = EventParticipant.get_or_none(EventParticipant.user == g.current_user, EventParticipant.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
 
     return render_template("admin/createSingleEvent.html",
                             eventData = eventData,
-                            facilitators = getAllFacilitators(),
-                            eventFacilitators = eventFacilitators,
+                            allFacilitators = getAllFacilitators(),
                             futureTerms = futureTerms,
                             isPastEvent = isPastEvent,
                             userHasRSVPed = userHasRSVPed)

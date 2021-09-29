@@ -216,24 +216,27 @@
         <div class='form-group'>
           <label for='facilitators'><strong>Facilitators</strong></label> <br>
           {% if isEditable %}
-            <select class="form-select" multiple id="inputEventFacilitators"  name="eventFacilitators" >
+          <pre>
+          {{eventData.facilitators}}
+          </pre>
+            <select class="form-select" multiple id="inputEventFacilitators"  name="facilitators" >
             <!-- make sure we show existing facilitators in case they aren't in the facilitators list anymore -->
-            {% for ef in eventFacilitators %}
-              {% if ef not in facilitators %}
+            {% for ef in eventData.facilitators %}
+              {% if ef not in allFacilitators %}
                 <option value="{{ef.username}}" selected>{{ef.firstName}} {{ef.lastName}}</option>
               {% endif %}
             {% endfor %}
 
-            {% for f in facilitators %}
-              <option value="{{f.username}}" {{ "selected" if f in eventFacilitators }}> {{f.firstName}} {{f.lastName}}</option>
+            {% for f in allFacilitators %}
+              <option value="{{f.username}}" {{ "selected" if f in eventData.facilitators }}> {{f.firstName}} {{f.lastName}}</option>
             {% endfor %}
           </select>
         {% else %}
-            {% if not eventFacilitators|count %}
+            {% if not eventData.facilitators|count %}
               <p>None</p>
             {%endif%}
 
-            {% for f in eventFacilitators %} 
+            {% for f in eventData.facilitators %} 
               <p>{{f.firstName}} {{f.lastName}}</p>
             {% endfor %}
         {% endif %}

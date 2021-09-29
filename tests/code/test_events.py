@@ -161,13 +161,59 @@ def test_preprocessEventData_term():
     assert eventData['term'] == ''
 
 @pytest.mark.integration
+def test_preprocessEventData_facilitators():
+    eventData = {}
+    preprocessEventData(eventData)
+    assert 'facilitators' in eventData
+    assert eventData['facilitators'] == []
+
+    eventData = {'facilitators':'ramsayb2'}
+    preprocessEventData(eventData)
+    assert eventData['facilitators'] == []
+
+    eventData = {'facilitators': []}
+    preprocessEventData(eventData)
+    assert eventData['facilitators'] == []
+
+    eventData = {'facilitators': ['ramsayb2']}
+    preprocessEventData(eventData)
+    assert eventData['facilitators'] == [User.get_by_id('ramsayb2')]
+
+    eventData = {'facilitators': ['ramsayb2','khatts']}
+    preprocessEventData(eventData)
+    assert eventData['facilitators'] == [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]
+
+    eventData = {'facilitators': ['ramsayb2','not an id', 'khatts']}
+    preprocessEventData(eventData)
+    assert eventData['facilitators'] == []
+
+    #####
+    # Testing with an existing event
+    #####
+    eventData = {'eventId': 1, 'facilitators': []}
+    preprocessEventData(eventData)
+    assert eventData['facilitators'] == []
+
+    eventData = {'eventId': 1, 'facilitators': ['khatts']}
+    preprocessEventData(eventData)
+    assert eventData['facilitators'] == [User.get_by_id('khatts')]
+
+    eventData = {'eventId': 1}
+    preprocessEventData(eventData)
+    assert eventData['facilitators'] == [User.get_by_id('ramsayb2')] # defaults to existing facilitators
+
+    eventData = {'eventId': 1, 'facilitators':'khatts'}
+    preprocessEventData(eventData)
+    assert eventData['facilitators'] == [User.get_by_id('ramsayb2')] # defaults to existing facilitators
+
+@pytest.mark.integration
 def test_correctValidateNewEventData():
 
     eventData =  {'isRsvpRequired':False, 'isService':False,
                   'isTraining':True, 'isRecurring':False, 'startDate': parser.parse('1999-12-12'),
                   'endDate':parser.parse('2022-06-12'), 'programId':1, 'location':"a big room",
                   'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
-                  'name':'Empty Bowls Spring','term':1,'eventFacilitator':"ramsayb2"}
+                  'name':'Empty Bowls Spring','term':1,'facilitators':"ramsayb2"}
 
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid == True
@@ -179,7 +225,7 @@ def test_wrongValidateNewEventData():
     eventData =  {'isRsvpRequired':False, 'isService':False,
                   'isTraining':False, 'isRecurring':False, 'programId':1, 'location':"a big room",
                   'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
-                  'name':'Empty Bowls Spring','term':1,'eventFacilitator':"ramsayb2"}
+                  'name':'Empty Bowls Spring','term':1,'facilitators':"ramsayb2"}
     
     eventData['isRecurring'] = True
     eventData['startDate'] = parser.parse('2021-12-12')
@@ -253,21 +299,22 @@ def test_attemptSaveEvent():
                   'isTraining':True, 'isRecurring':True, 'startDate': '2021-12-12',
                   'endDate': '2021-06-12', 'programId':1, 'location':"a big room",
                   'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
-                  'name':'Empty Bowls Spring','term':1,'eventFacilitator':"ramsayb2"}
+                  'name':'Empty Bowls Spring','term':1,'facilitators':["ramsayb2"]}
     pass
     eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'startDate': '2021-12-12',
                    'endDate':'2022-06-12', 'location':"a big room", 
                    'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
-                   'name':'Attempt Save Test','term':1,'eventFacilitator':"ramsayb2"}
+                   'name':'Attempt Save Test','term':1,'facilitators':["ramsayb2"]}
     eventInfo['program'] = Program.get_by_id(1)
 
     with mainDB.atomic() as transaction:
         success, errorMessage = attemptSaveEvent(eventInfo)
-        assert success
+        if not success:
+            pytest.fail(f"Save failed: {errorMessage}")
 
         try:
             event = Event.get(name="Attempt Save Test")
-            facilitator = Facilitator.get(user=eventInfo['eventFacilitator'], event=event)
+            facilitator = Facilitator.get(event=event)
             
             # Redundant, as the previous lines will throw exceptions, but I like asserting something
             assert facilitator 
@@ -287,7 +334,7 @@ def test_saveEventToDb_create():
                   'isTraining':True, 'isRecurring':False, 'startDate': parser.parse('2021-12-12'),
                    'endDate':parser.parse('2022-06-12'), 'location':"a big room", 
                    'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
-                   'name':'Empty Bowls Spring','term':1,'eventFacilitator':"ramsayb2"}
+                   'name':'Empty Bowls Spring','term':1,'facilitators':[User.get_by_id("ramsayb2")]}
     eventInfo['program'] = Program.get_by_id(1)
 
     # if valid is not added to the dict
@@ -300,20 +347,19 @@ def test_saveEventToDb_create():
         saveEventToDb(eventInfo)
 
     #test that the event and facilitators are added successfully
-    eventInfo['valid'] = True
-    createdEvents = saveEventToDb(eventInfo)
-    assert len(createdEvents) == 1
-    assert createdEvents[0].singleProgram.id == 1
+    with mainDB.atomic() as transaction:
+        eventInfo['valid'] = True
+        createdEvents = saveEventToDb(eventInfo)
+        assert len(createdEvents) == 1
+        assert createdEvents[0].singleProgram.id == 1
 
-    createdEventFacilitator = Facilitator.get(user=eventInfo['eventFacilitator'], event=createdEvents[0])
-    assert createdEventFacilitator # kind of redundant, as the previous line will throw an exception
+        createdEventFacilitator = Facilitator.get(event=createdEvents[0])
+        assert createdEventFacilitator # kind of redundant, as the previous line will throw an exception
 
-    createdEventFacilitator.delete_instance()
-    ProgramEvent.delete().where(ProgramEvent.event_id == createdEvents[0].id).execute()
-    Event.delete().where(Event.id == createdEvents[0].id).execute()
+        transaction.rollback()
 
     # test bad username for facilitator (user does not exist)
-    eventInfo["eventFacilitator"] = "jarjug"
+    eventInfo["facilitators"] = "jarjug"
     with pytest.raises(IntegrityError):
         saveEventToDb(eventInfo)
 
@@ -323,15 +369,14 @@ def test_saveEventToDb_recurring():
                   'isTraining':True, 'isRecurring': True, 'startDate': parser.parse('12-12-2021'),
                    'endDate':parser.parse('01-18-2022'), 'location':"this is only a test",
                    'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
-                   'name':'Empty Bowls Spring','term':1,'eventFacilitator':"ramsayb2"}
+                   'name':'Empty Bowls Spring','term':1,'facilitators':[User.get_by_id("ramsayb2")]}
     eventInfo['valid'] = True
     eventInfo['program'] = Program.get_by_id(1)
-    createdEvents = saveEventToDb(eventInfo)
-    assert len(createdEvents) == 6
+    with mainDB as transaction:
+        createdEvents = saveEventToDb(eventInfo)
+        assert len(createdEvents) == 6
 
-    for event in Event.select().where(Event.location == "this is only a test"):
-        event.delete_instance(recursive = True)
-
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_saveEventToDb_update():
@@ -354,7 +399,7 @@ def test_saveEventToDb_update():
                     'isService': False,
                     "startDate": "2021-12-12",
                     "endDate": "2022-6-12",
-                    "eventFacilitator": User.get(User.username == 'ramsayb2'),
+                    "facilitators": [User.get_by_id('ramsayb2')],
                     "valid": True
                 }
     eventFunction = saveEventToDb(newEventData)
@@ -376,7 +421,7 @@ def test_saveEventToDb_update():
                     'isService': 5,
                     "startDate": "2021-12-12",
                     "endDate": "2022-6-12",
-                    "eventFacilitator": User.get(User.username == 'ramsayb2'),
+                    "facilitators": [User.get_by_id('ramsayb2')],
                     "valid": True
                 }
     eventFunction = saveEventToDb(newEventData)
