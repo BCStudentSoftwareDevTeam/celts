@@ -25,7 +25,7 @@ def getVolunteerEmails(programID = None, eventID = None, emailRecipients = "inte
         volunteersToEmail = User.select().join(EventParticipant).where(EventParticipant.event == eventID)
 
     else:
-        print("Error getting email recipients")
+        return None
     return [user.email for user in volunteersToEmail]
 
 
@@ -51,27 +51,24 @@ class emailHandler():
 
     def updateSenderEmail(self):
         """ Updates who is sending the emails based on the event_list form. """
-        try:
-            if '@' in self.emailInfo['emailSender']: #if the current user is sending the email
-                pass
-                # app.config.update(
-                # MAIL_USERNAME= self.emailInfo['emailSender'],
-                # # MAIL_PASSWORD= ??????       # how do you get the password???
-                #)
-            elif self.emailInfo['emailSender'] == 'CELTS Admins':
-                app.config.update(
-                    MAIL_USERNAME= self.default['mail']['admin_username'],
-                    MAIL_PASSWORD = self.default['mail']['admin_password']
-                )
-                print("\n\n"+app.config["MAIL_USERNAME"])
+        if '@' in self.emailInfo['emailSender']: #if the current user is sending the email
+            pass
+            # app.config.update(
+            # MAIL_USERNAME= self.emailInfo['emailSender'],
+            # # MAIL_PASSWORD= ??????       # how do you get the password???
+            #)
+        elif self.emailInfo['emailSender'] == 'CELTS Admins':
+            app.config.update(
+                MAIL_USERNAME= self.default['mail']['admin_username'],
+                MAIL_PASSWORD = self.default['mail']['admin_password']
+            )
+            print("\n\n"+app.config["MAIL_USERNAME"])
 
-            elif self.emailInfo['emailSender'] == 'CELTS Student Staff':
-                app.config.update(
-                    MAIL_USERNAME= self.default['mail']['staff_username'],
-                    MAIL_PASSWORD= self.default['mail']['staff_password']
-                )
-        except Exception as e:
-            print("\n Error Updating Sender Email\n")
+        elif self.emailInfo['emailSender'] == 'CELTS Student Staff':
+            app.config.update(
+                MAIL_USERNAME= self.default['mail']['staff_username'],
+                MAIL_PASSWORD= self.default['mail']['staff_password']
+            )
 
     def sendEmail(self, message: Message, emails):
         """ Updates the sender and sends the email. """
