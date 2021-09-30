@@ -98,10 +98,10 @@ users = [
         "username": "bryanta",
         "bnumber": "B00708826",
         "email": "bryanta@berea.edu",
+        "phoneNumber": "85943311598",
         "firstName": "Alex",
         "lastName": "Bryant",
         "isStudent": True,
-        "phoneNumber": "85943311598"
     },
     {
         "username": "partont",
@@ -112,7 +112,6 @@ users = [
         "isStudent": True,
         "phoneNumber": "9119119111"
     },
-
 ]
 
 User.insert_many(users).on_conflict_replace().execute()
@@ -236,31 +235,31 @@ events = [
     {
         "id": 1,
         "term": 1,
-        "eventName": "Empty Bowls Spring Event 1",
+        "name": "Empty Bowls Spring Event 1",
         "description": "Empty Bowls Spring 2021",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
-        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "startDate": datetime.strptime("2021 10 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 2,
         "term": 1,
-        "eventName": "Berea Buddies Training",
+        "name": "Berea Buddies Training",
         "description": "Training for Berea Buddies",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
-        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "startDate": datetime.strptime("2021 11 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 3,
         "term": 3,
-        "eventName": "Adopt",
+        "name": "Adopt",
         "description": "Adopt A Grandparent",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -272,7 +271,7 @@ events = [
     {
         "id": 4,
         "term": 3,
-        "eventName": "First Meetup",
+        "name": "First Meetup",
         "description": "Berea Buddies First Meetup",
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 am", "%I:%M %p"),
@@ -284,7 +283,7 @@ events = [
     {
         "id": 5,
         "term": 3,
-        "eventName": "Tutoring",
+        "name": "Tutoring",
         "description": "Tutoring Training",
         "isTraining": False,
         "timeStart": datetime.strptime("3:00 pm", "%I:%M %p"),
@@ -296,7 +295,7 @@ events = [
     {
         "id": 6,
         "term": 3,
-        "eventName": "Making Bowls",
+        "name": "Making Bowls",
         "description": "Making Bowls Training",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -308,7 +307,7 @@ events = [
     {
         "id": 7,
         "term": 3,
-        "eventName": "How To Make Buddies",
+        "name": "How To Make Buddies",
         "description": "How To Make Buddies Training",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -320,7 +319,7 @@ events = [
     {
         "id": 8,
         "term": 1,
-        "eventName": "Adoption",
+        "name": "Adoption",
         "description": "Adoption 101 Training",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -332,7 +331,7 @@ events = [
     {
         "id": 9,
         "term": 1,
-        "eventName": "Cleaning Bowls",
+        "name": "Cleaning Bowls",
         "description": "Cleaning Bowls Training",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -345,7 +344,7 @@ events = [
     {
         "id": 10,
         "term": 3,
-        "eventName": "All Celts Training",
+        "name": "All Celts Training",
         "description": "Training event for all CELTS programs",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -357,7 +356,7 @@ events = [
     {
         "id": 11,
         "term": 3,
-        "eventName": "Dummy Event",
+        "name": "Dummy Event",
         "description": "Not a required event",
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -369,7 +368,7 @@ events = [
     {
         "id": 12,
         "term": 3,
-        "eventName": "Random Event",
+        "name": "Random Event",
         "description": "Not a required event",
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -381,7 +380,7 @@ events = [
     {
         "id": 13,
         "term": 2,
-        "eventName": "unaffiliated event",
+        "name": "unaffiliated event",
         "description": "Test event with no program",
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -393,7 +392,7 @@ events = [
     {
         "id": 14,
         "term": 2,
-        "eventName": "All Volunteer Training",
+        "name": "All Volunteer Training",
         "description": "testing multiple programs",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -405,7 +404,7 @@ events = [
     {
         "id": 15,
         "term": 3,
-        "eventName": "Event 1",
+        "name": "Event 1",
         "description": "Test for training",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -546,7 +545,6 @@ Course.insert_many(courses).on_conflict_replace().execute()
 
 courseInstructorRecords = [
     {
-
         "id": 1,
         "course": 1,
         "user": "ramsayb2"

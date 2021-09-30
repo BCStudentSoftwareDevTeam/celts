@@ -174,7 +174,7 @@ def test_unattendedRequiredEvents():
     assert len(unattendedEvents) == 3
 
     # test after user has attended an event
-    event = Event.get(Event.eventName == unattendedEvents[0])
+    event = Event.get(Event.name == unattendedEvents[0])
     EventParticipant.create(user = user, event = event, attended = True)
     unattendedEvents = unattendedRequiredEvents(program, user)
     assert len(unattendedEvents) == 2
@@ -209,17 +209,17 @@ def test_sendKioskDataKiosk():
     listOfAttended = [users.user.username for users in usersAttended]
 
     assert "neillz" in listOfAttended
-    assert "bryanta" not in listOfAttended
+    assert "lamichhanes2" not in listOfAttended
 
     (EventParticipant.update({EventParticipant.attended: False})
                      .where(EventParticipant.user == "neillz", EventParticipant.event == 1)).execute()
 
 
     signin = sendUserData("B00708826", 2, 1)
-    usersAttended2 = EventParticipant.select().where(EventParticipant.attended, EventParticipant.event == 2)
-    listOfAttended2 = [users.user.username for users in usersAttended2]
+    usersAttended = EventParticipant.select().where(EventParticipant.attended, EventParticipant.event == 2)
+    listOfAttended = [users.user.username for users in usersAttended]
 
-    assert "bryanta" in listOfAttended2
+    assert "bryanta" in listOfAttended
 
     deleteInstance = EventParticipant.get(EventParticipant.user == "bryanta", EventParticipant.event_id == 2)
     deleteInstance.delete_instance()
