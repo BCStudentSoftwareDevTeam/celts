@@ -12,11 +12,14 @@
           Events List
         </a>
       </li>
+      {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff%}
       <li>
         <a href="/search_student" class="nav-link text-white {{ 'active' if request.path =='/search_student' }}">
           Volunteer Search
         </a>
       </li>
+      {%endif%}
+      
       {%if g.current_user.isStudent or g.current_user.isCeltsStudentStaff%}
       <li>
         <a href="/profile/{{g.current_user.username}}" class="nav-link text-white {{ 'active' if request.path =='/profile/{g.current_user.username}' }}">
