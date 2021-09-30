@@ -28,6 +28,7 @@ def slcGuidelines():
 def slcProposal():
     """This page allows faculties to create service learning proposal"""
     if request.method == "POST":
+        print("instructorTable: ", request.form.get("instructorTable"))
         courseData["courseName"] = request.form.get("courseName")
         courseData["courseAbbreviation"] = request.form.get("courseAbbreviation")
         courseData["courseCredit"] = request.form.get("credit")
@@ -47,12 +48,12 @@ def slcQuestionnaire():
     """ This page renders slc questionnare """
     if request.method == "POST":
         term = Term.get(Term.id == courseData["termId"])
-        status = CourseStatus.get(CourseStatus.stauts == "Pending")
+        status = CourseStatus.get(CourseStatus.status == "Pending")
         Course.create(
             courseName=courseData["courseName"],
             courseAbbreviation=courseData["courseAbbreviation"],
             courseCredit=courseData["courseCredit"],
-            isRegularlyOccuring=courseData["regularOccurenceToggle"],
+            isRegularlyOccuring=1 if courseData["regularOccurenceToggle"] else 0,
             term=term,
             status=status,
             createdBy=g.current_user,

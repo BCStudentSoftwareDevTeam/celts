@@ -1,7 +1,22 @@
 import searchUser from './searchUser.js'
 
+function callback() {
+  let instructor = $("#courseInstructor").val();
+  let tableBody = $("#instructorTable").find("tbody");
+  let lastRow = tableBody.find("tr:last");
+  let newRow = lastRow.clone();
+  newRow.find("td:eq(0)").text(instructor);
+  newRow.prop("hidden", false);
+  lastRow.after(newRow);
+}
+
 $("#courseInstructor").on('input', function() {
   searchUser("courseInstructor", "searchInstructor");
+  callback();
+});
+
+$("#instructorTable").on("click", "#remove", function() {
+   $(this).closest("tr").remove();
 });
 
 $(document).ready ( function() {
@@ -42,8 +57,4 @@ function saveSLCdata(){
   console.log(proposalData, "data");
 
   document.cookie =  JSON.stringify(proposalData) + ";max-age=28800;";
-}
-
-function removeRow(e) {
-  $(e).parent().parent().remove();
 }

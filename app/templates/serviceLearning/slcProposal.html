@@ -32,11 +32,22 @@
         <div class= "form-check-inline">
           <table
             class="table"
-            id="instructorTable">
-            <tr>
-              <th scope="col">Instructor</th>
-              <th scope="col">Remove</th>
-            </tr>
+            id="instructorTable"
+            name="instructorTable">
+            <thead>
+              <tr>
+                <th scope="col">Instructor</th>
+                <th scope="col">Remove</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr hidden>
+                <td></td>
+                <td>
+                  <button id="remove" type="button" class="btn btn-danger">Remove</button>
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
         <br></br>
