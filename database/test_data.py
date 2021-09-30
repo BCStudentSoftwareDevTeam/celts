@@ -507,12 +507,6 @@ courses = [
         "createdBy": "",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
-        # "sectionBQuestion1": "",
-        # "sectionBQuestion2": "",
-        # "sectionBQuestion3": "",
-        # "sectionBQuestion4": "",
-        # "sectionBQuestion5": "",
-        # "sectionBQuestion6": "",
 
     },
     {
@@ -524,12 +518,6 @@ courses = [
         "createdBy": "",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
-        # "sectionBQuestion1": "",
-        # "sectionBQuestion2": "",
-        # "sectionBQuestion3": "",
-        # "sectionBQuestion4": "",
-        # "sectionBQuestion5": "",
-        # "sectionBQuestion6": "",
 
     },
     {
@@ -541,12 +529,6 @@ courses = [
         "createdBy": "",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
-        # "sectionBQuestion1": "",
-        # "sectionBQuestion2": "",
-        # "sectionBQuestion3": "",
-        # "sectionBQuestion4": "",
-        # "sectionBQuestion5": "",
-        # "sectionBQuestion6": "",
 
     },
 ]
@@ -602,11 +584,6 @@ courseHoursEarned = [
 
 ]
 CourseParticipant.insert_many(courseHoursEarned).on_conflict_replace().execute()
-
-
-# course = ForeignKeyField(Course)
-# questionContents = CharField() # Check this one
-# questionNumber = IntegerField()
 
 courseQuestions = [
     {
