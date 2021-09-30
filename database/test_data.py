@@ -211,7 +211,7 @@ events = [
     {
         "id": 1,
         "term": 1,
-        "eventName": "Empty Bowls Spring",
+        "name": "Empty Bowls Spring",
         "description": "Empty Bowls Spring 2021",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -223,7 +223,7 @@ events = [
     {
         "id": 2,
         "term": 1,
-        "eventName": "Berea Buddies",
+        "name": "Berea Buddies",
         "description": "Berea Buddies Training",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -235,7 +235,7 @@ events = [
     {
         "id": 3,
         "term": 3,
-        "eventName": "Adopt",
+        "name": "Adopt",
         "description": "Adopt A Grandparent",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -247,7 +247,7 @@ events = [
     {
         "id": 4,
         "term": 3,
-        "eventName": "First Meetup",
+        "name": "First Meetup",
         "description": "Berea Buddies First Meetup",
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 am", "%I:%M %p"),
@@ -259,7 +259,7 @@ events = [
     {
         "id": 5,
         "term": 3,
-        "eventName": "Tutoring",
+        "name": "Tutoring",
         "description": "Tutoring Training",
         "isTraining": False,
         "timeStart": datetime.strptime("3:00 pm", "%I:%M %p"),
@@ -271,7 +271,7 @@ events = [
     {
         "id": 6,
         "term": 3,
-        "eventName": "Making Bowls",
+        "name": "Making Bowls",
         "description": "Making Bowls Training",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -283,7 +283,7 @@ events = [
     {
         "id": 7,
         "term": 3,
-        "eventName": "How To Make Buddies",
+        "name": "How To Make Buddies",
         "description": "How To Make Buddies Training",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -295,7 +295,7 @@ events = [
     {
         "id": 8,
         "term": 3,
-        "eventName": "Adoption",
+        "name": "Adoption",
         "description": "Adoption 101 Training",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -307,7 +307,7 @@ events = [
     {
         "id": 9,
         "term": 3,
-        "eventName": "Cleaning Bowls",
+        "name": "Cleaning Bowls",
         "description": "Cleaning Bowls Training",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -320,7 +320,7 @@ events = [
     {
         "id": 10,
         "term": 3,
-        "eventName": "Whole Celts Training",
+        "name": "Whole Celts Training",
         "description": "Whole Celts Training",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -332,7 +332,7 @@ events = [
     {
         "id": 11,
         "term": 3,
-        "eventName": "Dummy Event",
+        "name": "Dummy Event",
         "description": "Not a required event",
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -344,7 +344,7 @@ events = [
     {
         "id": 12,
         "term": 3,
-        "eventName": "Random Event",
+        "name": "Random Event",
         "description": "Not a required event",
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -356,7 +356,7 @@ events = [
     {
         "id": 13,
         "term": 2,
-        "eventName": "unaffiliated event",
+        "name": "unaffiliated event",
         "description": "Test event with no program",
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -368,7 +368,7 @@ events = [
     {
         "id": 14,
         "term": 2,
-        "eventName": "All Volunteer Training",
+        "name": "All Volunteer Training",
         "description": "testing multiple programs",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -380,7 +380,7 @@ events = [
     {
         "id": 15,
         "term": 3,
-        "eventName": "Event 1",
+        "name": "Event 1",
         "description": "Test for training",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),

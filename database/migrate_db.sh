@@ -7,6 +7,7 @@ pem add app.models.courseStatus.CourseStatus
 pem add app.models.courseParticipant.CourseParticipant
 pem add app.models.emailTemplate.EmailTemplate
 pem add app.models.event.Event
+pem add app.models.eventTemplate.EventTemplate
 pem add app.models.eventParticipant.EventParticipant
 pem add app.models.facilitator.Facilitator
 pem add app.models.interest.Interest
