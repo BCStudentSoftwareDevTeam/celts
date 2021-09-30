@@ -28,7 +28,6 @@ def slcGuidelines():
 def slcProposal():
     """This page allows faculties to create service learning proposal"""
     if request.method == "POST":
-        print("instructorTable: ", request.form.get("instructorTable"))
         courseData["courseName"] = request.form.get("courseName")
         courseData["courseAbbreviation"] = request.form.get("courseAbbreviation")
         courseData["courseCredit"] = request.form.get("credit")
