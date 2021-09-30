@@ -63,6 +63,7 @@ $(document).ready(function(){
       if ( $("#startDatePicker").val() && $("#endDatePicker").val()){
 
         var eventDatesAndName = {name:$("#inputEventName").val(),
+                                 isRecurring: true,
                                  startDate:$("#startDatePicker").val(),
                                  endDate:$("#endDatePicker").val()}
         $.ajax({

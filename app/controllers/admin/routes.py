@@ -21,7 +21,7 @@ from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectFutureTerms
 from app.logic.searchUsers import searchUsers
-from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData
+from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 
@@ -138,9 +138,8 @@ def deleteRoute(eventId):
 
 @admin_bp.route('/makeRecurringEvents', methods=['POST'])
 def addRecurringEvents():
-    recurringEventInfo = request.form.copy()
-    recurringEvents = calculateRecurringEventFrequency(recurringEventInfo)
-    return json.dumps(recurringEvents)
+    recurringEvents = calculateRecurringEventFrequency(preprocessEventData(request.form.copy()))
+    return json.dumps(recurringEvents, default=str)
 
 @admin_bp.route('/volunteerProfile', methods=['POST'])
 def volunteerProfile():
