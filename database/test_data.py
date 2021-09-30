@@ -15,8 +15,11 @@ from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseParticipant import CourseParticipant
 from app.models.eventParticipant import EventParticipant
+from app.models.courseQuestion import CourseQuestion
+from app.models.questionNote import QuestionNote
 from app.models.interest import Interest
 from app.models.facilitator import Facilitator
+from app.models.note import Note
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -111,6 +114,15 @@ users = [
         "lastName": "Parton",
         "isStudent": True,
         "phoneNumber": "9119119111"
+    },
+    {
+        "username": "mupotsal",
+        "bnumber": "B00741640",
+        "email": "mupotsal@berea.edu",
+        "firstName": "Liberty",
+        "lastName": "Mupotsa",
+        "isStudent": True,
+        "phoneNumber": "8599858594"
     },
 ]
 
@@ -469,6 +481,22 @@ coursestatus = [
 ]
 CourseStatus.insert_many(coursestatus).on_conflict_replace().execute()
 
+notes = [
+    {
+    "createdBy": "ramsayb2",
+    "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
+    "noteContent": "This is the content: test",
+    "isPrivate":False
+    },
+    {
+    "createdBy": "mupotsal",
+    "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
+    "noteContent": " I am not sure aboutr what you mean here: test",
+    "isPrivate":False
+    }
+]
+
+Note.insert_many(notes).on_conflict_replace().execute()
 courses = [
     {
         "id": 1,
@@ -479,12 +507,7 @@ courses = [
         "createdBy": "",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
-        "sectionBQuestion1": "",
-        "sectionBQuestion2": "",
-        "sectionBQuestion3": "",
-        "sectionBQuestion4": "",
-        "sectionBQuestion5": "",
-        "sectionBQuestion6": ""
+
     },
     {
         "id": 2,
@@ -495,12 +518,6 @@ courses = [
         "createdBy": "",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
-        "sectionBQuestion1": "",
-        "sectionBQuestion2": "",
-        "sectionBQuestion3": "",
-        "sectionBQuestion4": "",
-        "sectionBQuestion5": "",
-        "sectionBQuestion6": ""
 
     },
     {
@@ -512,12 +529,6 @@ courses = [
         "createdBy": "",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
-        "sectionBQuestion1": "",
-        "sectionBQuestion2": "",
-        "sectionBQuestion3": "",
-        "sectionBQuestion4": "",
-        "sectionBQuestion5": "",
-        "sectionBQuestion6": ""
 
     },
 ]
@@ -570,8 +581,47 @@ courseHoursEarned = [
         "user": "khatts",
         "hoursEarned": 1.0
     },
+
 ]
 CourseParticipant.insert_many(courseHoursEarned).on_conflict_replace().execute()
+
+courseQuestions = [
+    {
+    "course":1,
+    "questionContent":" Why are you interested in teaching this course?",
+    "questionNumber":1,
+    },
+    {
+    "course":1,
+    "questionContent":"Is there anything confusing?",
+    "questionNumber":2,
+    },
+    {
+    "course":1,
+    "questionContent":"How many students willl betaking this course?",
+    "questionNumber":3,
+    },
+    {
+    "course":1,
+    "questionContent":" This is another random question",
+    "questionNumber":4,
+    },
+    {
+    "course":1,
+    "questionContent":" Why are you interested in teaching this course?",
+    "questionNumber":5,
+    }
+]
+
+CourseQuestion.insert_many(courseQuestions).on_conflict_replace().execute()
+
+questionNote = [
+    {
+    "question":1,
+    "note":2
+    }
+]
+QuestionNote.insert_many(questionNote).on_conflict_replace().execute()
 
 eventParticipants = [
     {
