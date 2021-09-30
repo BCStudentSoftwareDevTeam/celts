@@ -11,6 +11,7 @@ from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 from app.logic.transcript import *
 from app.logic.events import groupEventsByCategory
 from datetime import datetime
+from app import app
 
 @main_bp.route('/')
 def home():
@@ -129,7 +130,6 @@ def RemoveRSVP():
     flash("Successfully unregistered for event!", "success")
     return redirect(url_for("admin.editEvent", eventId=eventId, program=program))
 
-
 @main_bp.route('/serviceTranscript', methods = ['GET'])
 def serviceTranscript():
     username = "neillz"
@@ -147,3 +147,7 @@ def serviceTranscript():
                             bonnerData = bonnerData,
                             totalHour = totalHour,
                             startDate = startDate)
+
+@main_bp.route('/contributors',methods = ['GET'])
+def contributors():
+    return render_template("/contributors.html")
