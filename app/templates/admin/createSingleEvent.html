@@ -42,7 +42,7 @@
   </div>
 
   {% if isEditable and not isNewEvent %}
-    <form action="/event/{{eventData.id}}/deleteEvent" method='post'>
+    <form action="/event/{{eventData.id}}/delete" method='post'>
       <input type="submit" class="btn btn-danger float-end" value="Cancel Event"/>
       <div>
         <input type="hidden" value="{{eventData.id}}" name="id">
