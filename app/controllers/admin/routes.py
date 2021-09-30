@@ -91,7 +91,7 @@ def createEvent(templateid, programid=None):
 
 @admin_bp.route('/event/<eventId>/edit', methods=['GET','POST'])
 def editEvent(eventId):
-    if not g.current_user.isAdmin:
+    if request.method == "POST" and not g.current_user.isAdmin:
         abort(403)
 
     # Validate given URL

@@ -30,7 +30,7 @@ templates = [
         "id": 4,
         "name": "Student-Led Program Training",
         "tag": "student-led-trainings",
-        "templateJSON": "{}",
+        "templateJSON": '{}',
         "templateFile": "createStudentLedTrainingEvents.html",
         "isVisible": True
     },
