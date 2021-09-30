@@ -1,7 +1,6 @@
 import searchUser from './searchUser.js'
 
-$(document).ready(function(){
-
+$(document).ready(function() {
   $('[data-bs-toggle="tooltip"]').tooltip();
 // Search functionalities from the volunteer table in the UI
   $("#trackVolunteersInput").on("keyup", function() {
@@ -11,27 +10,25 @@ $(document).ready(function(){
     });
   });
 
-// TODO: Fix me.
 // Adding the new volunteer to the user database table
-  $("#selectVolunteerButton").click(function(){
-    let user = $("#addVolunteerInput").val()
-    let volunteerEventID = $("#eventID").val()
-    let eventLengthInHours = $("#eventLength").text()
+$("#selectVolunteerButton").click(function(){
+  let user = $("#addVolunteerInput").val()
+  let volunteerEventID = $("#eventID").val()
+  let eventLengthInHours = $("#eventLength").text()
 
-    $.ajax({
-      url: "/addVolunteerToEvent/" + user+"/"+volunteerEventID+"/"+eventLengthInHours,
-      type: "POST",
-      success: function(s){
-        location.reload();
+  $.ajax({
+    url: "/addVolunteerToEvent/" + user+"/"+volunteerEventID+"/"+eventLengthInHours,
+    type: "POST",
+    success: function(s){
+      location.reload();
 
-      },
-      error: function(request, status, error){
-        location.reload();
-        console.log(status,error);
-      }
-      })
+    },
+    error: function(request, status, error){
+      location.reload();
+      console.log(status,error);
+    }
     })
-
+  })
 });
 
 // Deleting a volunteer from the eventParticipant database table
@@ -50,12 +47,10 @@ function removeVolunteerFromEvent (deleteIcon){
         console.log(status,error);
       }
   })
-
 }
 
 function callback() {
-  $("#selectVolunteerButton").prop('disabled', false)
-  console.log("Right here");
+  $("#selectVolunteerButton").prop('disabled', false);
 }
 
 $("#selectVolunteerButton").prop('disabled', true)
@@ -78,5 +73,4 @@ function toggleVolunteersInputBox(checkbox) {
     $('#'+inputFieldID).prop('readonly', true)
     $('#'+inputFieldID).val('')
   }
-
  }

@@ -4,8 +4,7 @@ export default function searchUser(inputId, callback, parentElementId=null){
   $(`#${inputId}`).autocomplete({
     appendTo: (parentElementId === null) ? null : `#${parentElementId}`,
     minLength: 2,
-    source: function(request, response){
-
+    source: function(request, response) {
       $.ajax({
         url: `/searchUser/${query}`,
         type: "GET",
@@ -24,7 +23,6 @@ export default function searchUser(inputId, callback, parentElementId=null){
       })
     },
      select: function(event , ui) {
-       // TODO: figure out what lines 28-29 do
        var user = ui.item.value
        $(`#${inputId}`).val(ui.item.value)
        callback();
