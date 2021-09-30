@@ -52,7 +52,7 @@ def trackVolunteersPage(eventID):
 
 
 @admin_bp.route('/event/<eventID>/track_volunteers', methods=['POST'])
-def updateVolunteerTable(programID, eventID):
+def updateVolunteerTable(eventID):
 
     try:
         event = Event.get_by_id(eventID)

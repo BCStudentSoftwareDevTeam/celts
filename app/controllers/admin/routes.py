@@ -104,7 +104,6 @@ def editEvent(eventId):
     eventData = model_to_dict(event, recurse=False)
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
-        print(eventData)
         saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
         if saveSuccess:
             flash("Event successfully updated!", "success")

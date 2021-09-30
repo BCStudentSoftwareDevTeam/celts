@@ -267,10 +267,10 @@ def preprocessEventData(eventData):
 
     ## Get the facilitator objects from the list or from the event if there is a problem
     try:
-        if type(eventData) == MultiDict:
+        if type(eventData) == MultiDict and type(eventData['facilitators']) is not list:
             eventData['facilitators'] = eventData.getlist('facilitators')
         eventData['facilitators'] = [User.get_by_id(f) for f in eventData['facilitators']]
-    except Exception:
+    except Exception as e:
         event = eventData.get('id', -1)
         eventData['facilitators'] = list(User.select().join(Facilitator).where(Facilitator.event == event))
 

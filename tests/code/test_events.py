@@ -33,6 +33,11 @@ def test_event_model():
     assert event.singleProgram == None
     assert not event.noProgram
 
+######################################################################
+## TODO event list doesn't show events without a program
+## TODO facilitators didn't stay selected when there was a validation error
+## 
+######################################################################
 
 @pytest.mark.integration
 def test_getAllEvents():
@@ -202,6 +207,10 @@ def test_preprocessEventData_facilitators():
     eventData = {'id': 1, 'facilitators': ['khatts']}
     preprocessEventData(eventData)
     assert eventData['facilitators'] == [User.get_by_id('khatts')]
+
+    eventData = {'id': 1, 'facilitators': [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]}
+    preprocessEventData(eventData)
+    assert eventData['facilitators'] == [User.get_by_id('ramsayb2'), User.get_by_id('khatts')] 
 
     eventData = {'id': 1}
     preprocessEventData(eventData)
