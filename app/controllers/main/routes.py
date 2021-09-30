@@ -1,6 +1,7 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for
 from datetime import datetime
 
+from app import app
 from app.models.program import Program
 from app.models.event import Event
 from app.models.user import User
@@ -13,11 +14,6 @@ from app.logic.events import getUpcomingEventsForUser
 from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 from app.logic.events import groupEventsByCategory
-<<<<<<< HEAD
-=======
-from datetime import datetime
-from app import app
->>>>>>> aaf5f67ea9d7887a9f2f68a864a1e8fff97fce43
 
 @main_bp.route('/', methods=['GET'])
 @main_bp.route('/events/<selectedTerm>', methods=['GET'])
