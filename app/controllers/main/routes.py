@@ -23,14 +23,15 @@ def events(selectedTerm=None):
         currentTerm = selectedTerm
 
     currentTime = datetime.now()
-    eventsDict = groupEventsByCategory(currentTerm)
+    term = Term.get_by_id(currentTerm)
+    studentLeadProgram = getStudentLeadProgram(term)
     listOfTerms = Term.select()
     participantRSVP = EventParticipant.select().where(EventParticipant.user == g.current_user, EventParticipant.rsvp == True)
     rsvpedEventsID = [event.event.id for event in list(participantRSVP)]
 
     return render_template("/events/event_list.html",
         selectedTerm = Term.get_by_id(currentTerm),
-        eventDict = eventsDict,
+        # eventDict = eventsDict,
         listOfTerms = listOfTerms,
         rsvpedEventsID = rsvpedEventsID,
         currentTime = currentTime,

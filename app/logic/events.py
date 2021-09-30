@@ -25,44 +25,50 @@ def deleteEvent(program, eventId):
         deleteEvent = event
         deleteEvent.delete_instance(recursive = True, delete_nullable = True)
 
-def groupEventsByProgram(eventQuery):
-    programs = {}
-
-    for event in eventQuery.objects():
-        programs.setdefault(Program.get_by_id(event.program_id), []).append(event)
-
-    return programs
-
-def groupEventsByCategory(term):
-
-    term = Term.get_by_id(term)
+def getStudentLeadProgram(term):
 
     studentLedEvents = (Event.select(Event, Program.id.alias("program_id"))
                              .join(ProgramEvent)
                              .join(Program)
                              .where(Program.isStudentLed,
                                     Event.term == term))
+    programs = {}
 
-    trainingEvents = (Event.select(Event, Program.id.alias("program_id"))
+    for event in studentLedEvents.objects():
+        programs.setdefault(Program.get_by_id(event.program_id), []).append(event)
+
+    return programs
+
+def getTrainingProgram(term):
+
+    trainingEvents = (Event.select()
                            .join(ProgramEvent)
-                           .join(Program)
                            .where(Event.isTraining,
                                   Event.term == term))
 
+def getBonnerProgram(term):
 
-    bonnerScholarsEvents = (Event.select(Event, Program.id.alias("program_id"))
+    bonnerScholarsEvents = (Event.select()
                                  .join(ProgramEvent)
                                  .join(Program)
                                  .where(Program.isBonnerScholars,
                                         Event.term == term))
-
-    oneTimeEvents = (Event.select(Event, Program.id.alias("program_id"))
+def oneTimeEvents(term):
+    oneTimeEvents = (Event.select(Event)
                           .join(ProgramEvent)
                           .join(Program)
                           .where(Program.isStudentLed == False,
                                  Event.isTraining == False,
                                  Program.isBonnerScholars == False,
                                  Event.term == term))
+def groupEventsByCategory(term):
+
+    term = Term.get_by_id(term)
+
+
+
+
+
 
     categorizedEvents = {"Student Led Events" : groupEventsByProgram(studentLedEvents),
                          "Trainings" : groupEventsByProgram(trainingEvents),

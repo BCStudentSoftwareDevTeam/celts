@@ -51,9 +51,10 @@
   </li>
   </ul>
 </div>
-{% macro createAccordion(categoryPrograms, num) %}
+<!-- {% macro createAccordion(categoryPrograms, num) %}
   <div class="accordion" id="categoryAccordion">
     {% for program,events in categoryPrograms.items() %}
+
       <div class="accordion-item">
         <h2 class="accordion-header" id="accordion__header_{{program}}">
           <button class="accordion-button collapsed"
@@ -81,6 +82,7 @@
                 </tr>
               </thead>
               <tbody>
+
                   {% for event in events %}
                     <tr>
                       <td> <a href="/{{program.id}}/{{event.id}}/edit_event" class="link-primary">{{event.eventName}}</a></td>
@@ -108,7 +110,7 @@
       </div>
     {% endfor %}
   </div>
-{% endmacro %}
+{% endmacro %} -->
 
 <div class="tab-content" id="pills-tabContent">
   <div class="tab-pane fade show active" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
