@@ -765,9 +765,9 @@ eventParticipants = [
         "attended": True,
         "hoursEarned": 8
     },
-    #needs to be deleted
+
     {
-        "user": "ramsayb2",
+        "user": "mupotsal",
         "event": 7,
         "attended": True,
         "hoursEarned": 8
@@ -777,10 +777,10 @@ EventParticipant.insert_many(eventParticipants).on_conflict_replace().execute()
 
 eventRsvp =  [
     {
-        "user":"ramsayb2",
+        "user":"mupotsal",
         "event": 7,
     },
-    
+
 ]
 EventRsvp.insert_many(eventRsvp).on_conflict_replace().execute()
 interest = [

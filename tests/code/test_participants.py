@@ -172,13 +172,13 @@ def test_unattendedRequiredEvents():
     user = 'ramsayb2'
 
     unattendedEvents = unattendedRequiredEvents(program, user)
-    assert len(unattendedEvents) == 2
+    assert len(unattendedEvents) == 3
 
     # test after user has attended an event
     event = Event.get(Event.name == unattendedEvents[0])
     EventParticipant.create(user = user, event = event, attended = True)
     unattendedEvents = unattendedRequiredEvents(program, user)
-    assert len(unattendedEvents) == 1
+    assert len(unattendedEvents) == 2
     (EventParticipant.delete().where(EventParticipant.user == user, EventParticipant.event == event)).execute()
 
     # test where all required events are attended
