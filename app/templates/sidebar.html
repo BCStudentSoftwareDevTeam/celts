@@ -23,6 +23,12 @@
       </li>
       {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff%}
       <li>
+        <a href="/template_select" class="nav-link text-white {{ 'active' if request.path =='/create_event' }}">
+          <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
+          Create Event
+        </a>
+      </li>
+      <li>
         <a href="/search_student" class="nav-link text-white {{ 'active' if request.path =='/search_student' }}">
           Volunteer Search
         </a>
