@@ -9,7 +9,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.programEvent import ProgramEvent
 from app.controllers.events import events_bp
-from app.logic.events import getEvents, groupEventsByCategory, getUpcomingEventsForUser
+from app.logic.events import getUpcomingEventsForUser
 from app.logic.participants import sendUserData
 
 @events_bp.route('/events/upcoming_events', methods=['GET'])

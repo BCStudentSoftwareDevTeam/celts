@@ -60,9 +60,9 @@ def createEvent(templateid, programid=None):
     if program:
         # TODO need to handle the multiple programs case
         eventData["program"] = program
-    
-        
-    # Try to save the form 
+
+
+    # Try to save the form
     if request.method == "POST":
         try:
             saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
@@ -82,7 +82,7 @@ def createEvent(templateid, programid=None):
     preprocessEventData(eventData)
     futureTerms = selectFutureTerms(g.current_term)
 
-    return render_template(f"/admin/{template.templateFile}", 
+    return render_template(f"/admin/{template.templateFile}",
             template = template,
             eventData = eventData,
             futureTerms = futureTerms,
