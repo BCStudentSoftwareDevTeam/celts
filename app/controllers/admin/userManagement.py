@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from app.models.user import User
 from app.controllers.admin import admin_bp
 from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff
@@ -21,9 +21,7 @@ def manageUsers(user,method):
         return {
         "There is an error":"error"
         }
-
-    print("user........",user)
-    return {
-    "method":method,
-    "user":user.username
-    }
+        
+@admin_bp.route('/userManagement', methods = ['GET'])
+def userManagement():
+    return render_template('admin/userManagement.html')
