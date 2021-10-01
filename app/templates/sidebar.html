@@ -8,23 +8,22 @@
     <hr>
     <ul class="nav nav-pills flex-column mb-auto">
 
-      {%if g.current_user.isStudent or g.current_user.isCeltsStudentStaff%}
+    {% if g.current_user.isStudent or g.current_user.isCeltsStudentStaff %}
       <li>
         <a href="/profile/{{g.current_user.username}}" class="nav-link text-white {{ 'active' if request.path =='/profile/{g.current_user.username}' }}">
           My Profile
         </a>
       </li>
-      {%endif%}
+    {% endif %}
 
       <li class="nav-item">
         <a href="/" class="nav-link text-white {{ 'active' if request.path =='/' }}" aria-current="page">
           Events List
         </a>
       </li>
-      {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff%}
+    {% if g.current_user.isAdmin %}
       <li>
-        <a href="/template_select" class="nav-link text-white {{ 'active' if request.path =='/create_event' }}">
-          <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
+        <a href="/template_select" class="nav-link text-white {{ 'active' if request.path =='/template_select' }}">
           Create Event
         </a>
       </li>
@@ -33,7 +32,7 @@
           Volunteer Search
         </a>
       </li>
-      {%endif%}
+    {% endif %}
 
     </ul>
     <hr>
