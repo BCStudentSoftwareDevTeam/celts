@@ -1,12 +1,25 @@
 from flask import Flask, redirect, flash, url_for, request, render_template, g, json
+from datetime import datetime
+from peewee import DoesNotExist
+
+from app.models.term import Term
+from app.models.program import Program
 from app.models.event import Event
+from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.programEvent import ProgramEvent
 from app.controllers.events import events_bp
+from app.logic.events import getUpcomingEventsForUser
 from app.logic.participants import sendUserData
-from datetime import datetime
 
-@events_bp.route('/<eventid>/kiosk', methods=['GET'])
+@events_bp.route('/events/upcoming_events', methods=['GET'])
+def showUpcomingEvent():
+    upcomingEvents = getUpcomingEventsForUser(g.current_user)
+    return render_template('/events/showUpcomingEvents.html',
+                            upcomingEvents = upcomingEvents)
+
+
+@events_bp.route('/event/<eventid>/kiosk', methods=['GET'])
 def loadKiosk(eventid):
     """Renders kiosk for specified event."""
     event = Event.get_by_id(eventid)

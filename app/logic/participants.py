@@ -77,7 +77,7 @@ def unattendedRequiredEvents(program, user):
         for event in requiredEvents:
             attendedRequirement = (EventParticipant.select().where(EventParticipant.attended == True, EventParticipant.user == user, EventParticipant.event == event))
             if not attendedRequirement:
-                attendedRequiredEventsList.append(event.eventName)
+                attendedRequiredEventsList.append(event.name)
         if attendedRequiredEventsList is not None:
             return attendedRequiredEventsList
     else:
