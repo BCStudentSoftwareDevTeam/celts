@@ -25,6 +25,8 @@ from app.logic.searchUsers import searchUsers
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
+from app.controllers.admin.userManagement import manageUsers
+
 
 @admin_bp.route('/template_select')
 def template_select():
