@@ -8,12 +8,12 @@ from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
 from app.models.term import Term
+from app.models.eventRsvp import EventRsvp
 
 from app.controllers.main import main_bp
 from app.logic.events import getUpcomingEventsForUser
 from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
-from app.models.eventRsvp import EventRsvp
 from app.logic.events import groupEventsByCategory
 
 @main_bp.route('/', methods=['GET'])
