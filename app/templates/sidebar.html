@@ -7,6 +7,15 @@
     </a>
     <hr>
     <ul class="nav nav-pills flex-column mb-auto">
+
+      {%if g.current_user.isStudent or g.current_user.isCeltsStudentStaff%}
+      <li>
+        <a href="/profile/{{g.current_user.username}}" class="nav-link text-white {{ 'active' if request.path =='/profile/{g.current_user.username}' }}">
+          My Profile
+        </a>
+      </li>
+      {%endif%}
+
       <li class="nav-item">
         <a href="/" class="nav-link text-white {{ 'active' if request.path =='/' }}" aria-current="page">
           Events List
@@ -16,14 +25,6 @@
       <li>
         <a href="/search_student" class="nav-link text-white {{ 'active' if request.path =='/search_student' }}">
           Volunteer Search
-        </a>
-      </li>
-      {%endif%}
-      
-      {%if g.current_user.isStudent or g.current_user.isCeltsStudentStaff%}
-      <li>
-        <a href="/profile/{{g.current_user.username}}" class="nav-link text-white {{ 'active' if request.path =='/profile/{g.current_user.username}' }}">
-          Volunteer Profile
         </a>
       </li>
       {%endif%}
