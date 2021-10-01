@@ -10,6 +10,7 @@ from app.models.program import Program
 from app.models.event import Event
 from app.models.facilitator import Facilitator
 from app.models.eventParticipant import EventParticipant
+from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.term import Term
 from app.models.eventTemplate import EventTemplate
@@ -113,7 +114,7 @@ def editEvent(eventId):
 
     preprocessEventData(eventData)
     futureTerms = selectFutureTerms(g.current_term)
-    userHasRSVPed = EventParticipant.get_or_none(EventParticipant.user == g.current_user, EventParticipant.event == event)
+    userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
 
     return render_template("admin/createSingleEvent.html",
