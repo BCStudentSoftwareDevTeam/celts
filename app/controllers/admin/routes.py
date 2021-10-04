@@ -24,7 +24,7 @@ from app.logic.utils import selectFutureTerms
 from app.logic.searchUsers import searchUsers
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.logic.courseManagement import pendingCourses, approveCourses
-from app.controllers.admin import admin_bp 
+from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 
 @admin_bp.route('/template_select')
@@ -182,16 +182,14 @@ def courseManagement(termId = None):
     '''
     Renders the page for admins to manage Course Proposals
     '''
-    currentTerm = Term.get(Term.isCurrentTerm)
+    currentTerm = g.current_term
     if termId == None:
         termId = currentTerm
     else:
-        termId = (int(termId))
+        termId = Term.get(Term.id == termId)
 
-    print(type(termId))
     pending = pendingCourses(termId)
     approve = approveCourses(termId)
-    print(termId, "================")
 
     terms = selectFutureTerms(currentTerm)
 
