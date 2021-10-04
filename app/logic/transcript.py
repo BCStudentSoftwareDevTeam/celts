@@ -82,7 +82,7 @@ def getTotalHour(username):
 
     return totalHours
 
-def getStartDate(username):
+def getStartYear(username):
     """
     Returns the users start term for participation in the CELTS organization
     """

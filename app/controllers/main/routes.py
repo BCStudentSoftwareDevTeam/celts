@@ -133,13 +133,13 @@ def RemoveRSVP():
 
 @main_bp.route('/serviceTranscript', methods = ['GET'])
 def serviceTranscript():
-    username = "neillz"
+    username = g.current_user
     programs = getProgramTranscript(username)
     SLCourses = getSlCourseTranscript(username)
     trainingData = getTrainingTranscript(username)
     bonnerData = getBonnerScholarEvents(username)
     totalHour = getTotalHour(username)
-    startDate = getStartDate(username)
+    startDate = getStartYear(username)
 
     return render_template('main/serviceTranscript.html',
                             programs = programs,
