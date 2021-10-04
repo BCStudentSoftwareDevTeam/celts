@@ -10,6 +10,7 @@ from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours, updateVolunteers
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 from app.logic.participants import sendUserData
+from app.models.eventRsvp import EventRsvp
 
 @pytest.mark.integration
 def test_getEventLengthInHours():
@@ -141,7 +142,7 @@ def test_userRsvpForEvent():
     volunteer = userRsvpForEvent("agliullovak", 11)
     assert volunteer.user.username == "agliullovak"
     assert volunteer.event.id == 11
-    assert volunteer.rsvp == True
+
 
     # the user has already registered for the event
     volunteer = userRsvpForEvent("agliullovak", 11)
@@ -174,7 +175,7 @@ def test_unattendedRequiredEvents():
     assert len(unattendedEvents) == 3
 
     # test after user has attended an event
-    event = Event.get(Event.eventName == unattendedEvents[0])
+    event = Event.get(Event.name == unattendedEvents[0])
     EventParticipant.create(user = user, event = event, attended = True)
     unattendedEvents = unattendedRequiredEvents(program, user)
     assert len(unattendedEvents) == 2
@@ -216,10 +217,10 @@ def test_sendKioskDataKiosk():
 
 
     signin = sendUserData("B00708826", 2, 1)
-    usersAttended2 = EventParticipant.select().where(EventParticipant.attended, EventParticipant.event == 2)
-    listOfAttended2 = [users.user.username for users in usersAttended2]
+    usersAttended = EventParticipant.select().where(EventParticipant.attended, EventParticipant.event == 2)
+    listOfAttended = [users.user.username for users in usersAttended]
 
-    assert "bryanta" in listOfAttended2
+    assert "bryanta" in listOfAttended
 
     deleteInstance = EventParticipant.get(EventParticipant.user == "bryanta", EventParticipant.event_id == 2)
     deleteInstance.delete_instance()

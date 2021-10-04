@@ -1,18 +1,5 @@
 {% extends "base.html"%}
 
-
-{% block scripts %}
-  {{super()}}
-
-
-{% endblock %}
-
-{% block styles %}
-  {{super()}}
-
-{% endblock %}
-
-
 {% block app_content %}
 
 <h1 class="text-center pb-5">{{g.current_user.firstName}} {{g.current_user.lastName}}</h1>

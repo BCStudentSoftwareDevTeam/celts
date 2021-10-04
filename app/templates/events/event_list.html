@@ -21,7 +21,7 @@
     </div>
     <div class="col-md-3 me-auto">
       <div class="form-group">
-        <select class="form-control" name='eventTerm' id='inputTerm' onchange="location = this.value;">
+        <select class="form-select" name='eventTerm' id='inputTerm' onchange="location = '/events/' + this.value;">
           {% for term in listOfTerms %}
             <option value='/{{term}}' {{ "selected" if selectedTerm.id == term.id }}>{{term.description}} </option>
           {% endfor %}
@@ -83,7 +83,7 @@
               <tbody>
                   {% for event in events %}
                     <tr>
-                      <td> <a href="/{{program.id}}/{{event.id}}/edit_event" class="link-primary">{{event.eventName}}</a></td>
+                      <td> <a href="/event/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
                       <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
                       <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
                       <td>{{event.location}}</td>
