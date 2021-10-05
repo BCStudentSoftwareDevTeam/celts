@@ -19,19 +19,24 @@ $("#instructorTable").on("click", "#remove", function() {
    $(this).closest("tr").remove();
 });
 
-let courseInstructor = []
-$('#submit').on("click", function() {
+let courseInstructors = []
+$('#continue').on("click", function() {
 
-  $("#instructorTable tr").each(function() {
-    courseInstructor.push($(this).val());
+  $("#instructorTable tr").each(function(a, b) {
+    courseInstructors.push($('.instructorName', b).text());
   });
 
+  console.log(courseInstructors);
   $.ajax({
-    url:"/courseInstructor",
-    data: JSON.stringify(courseInstructor),
-    type: "json",
+    url: "/courseInstructors",
+    data: JSON.stringify(courseInstructors),
+    type: "POST",
+    contentType: "application/json",
     success: function() {
       console.log("Here");
+    },
+    error: function(e) {
+      console.log("error: ", e);
     }
   })
 });

@@ -1,4 +1,4 @@
-from flask import request, render_template, g, abort, json, redirect
+from flask import request, render_template, g, abort, json, redirect, jsonify
 
 from app.models.user import User
 from app.models.term import Term
@@ -48,7 +48,7 @@ def slcQuestionnaire():
     if request.method == "POST":
         term = Term.get(Term.id == courseData["termId"])
         status = CourseStatus.get(CourseStatus.status == "Pending")
-        Course.create(
+        course = Course.create(
             courseName=courseData["courseName"],
             courseAbbreviation=courseData["courseAbbreviation"],
             courseCredit=courseData["courseCredit"],
@@ -66,6 +66,21 @@ def slcQuestionnaire():
             sectionBQuestion5=request.form.get("questionFive"),
             sectionBQuestion6=request.form.get("questionSix"),
         )
+        # for instructor in courseData["instructors"]:
+            # courseInstructo.create(course=course, instructor=instructor)
         return redirect('/serviceCourseManagement')
 
     return render_template('serviceLearning/slcQuestionnaire.html')
+
+@serviceLearning_bp.route('/courseInstructors', methods=['POST'])
+def getInstructors():
+    # create new list
+    # for instructor in instructorsList:
+    #   # volunteer = volunteer.strip("()")
+        # username = volunteer.split('(')[-1]
+        # instructor = User.get(..)
+        # new_list.append(instructor)
+    # courseData[...] = new_list
+    instructorsList = request.data.decode("utf-8")
+    courseData["instructors"] = instructorsList
+    return jsonify({"Success": True}), 200
