@@ -2,6 +2,7 @@ from peewee import fn
 
 from app.models.user import User
 from app.models.event import Event
+from app.models.eventRsvp import EventRsvp
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.models.eventParticipant import EventParticipant
@@ -39,7 +40,6 @@ def sendUserData(bnumber, eventid, programid):
             totalHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
             EventParticipant.insert([{EventParticipant.user: signInUser,
                                       EventParticipant.event: eventid,
-                                      EventParticipant.rsvp: False,
                                       EventParticipant.attended: True,
                                       EventParticipant.hoursEarned: totalHours}]).execute()
     return signInUser, userStatus
@@ -59,7 +59,7 @@ def userRsvpForEvent(user,  event):
 
     isEligible = isEligibleForProgram(program, user)
     if isEligible:
-        newParticipant = EventParticipant.get_or_create(user = rsvpUser, event = rsvpEvent, rsvp = True)[0]
+        newParticipant = EventRsvp.get_or_create(user = rsvpUser, event = rsvpEvent)[0]
         return newParticipant
     return isEligible
 
@@ -77,7 +77,7 @@ def unattendedRequiredEvents(program, user):
         for event in requiredEvents:
             attendedRequirement = (EventParticipant.select().where(EventParticipant.attended == True, EventParticipant.user == user, EventParticipant.event == event))
             if not attendedRequirement:
-                attendedRequiredEventsList.append(event.eventName)
+                attendedRequiredEventsList.append(event.name)
         if attendedRequiredEventsList is not None:
             return attendedRequiredEventsList
     else:
