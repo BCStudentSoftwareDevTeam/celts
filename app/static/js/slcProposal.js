@@ -1,5 +1,6 @@
 import searchUser from './searchUser.js'
 
+// TODO: empty the courseInstructor input after an instructor has been added to the table.
 function callback() {
   let instructor = $("#courseInstructor").val();
   let tableBody = $("#instructorTable").find("tbody");
@@ -11,14 +12,32 @@ function callback() {
 }
 
 $("#courseInstructor").on('input', function() {
-  searchUser("courseInstructor", "searchInstructor");
-  callback();
+  searchUser("courseInstructor", callback);
 });
 
 $("#instructorTable").on("click", "#remove", function() {
    $(this).closest("tr").remove();
 });
 
+let courseInstructor = []
+$('#submit').on("click", function() {
+
+  $("#instructorTable tr").each(function() {
+    courseInstructor.push($(this).val());
+  });
+
+  $.ajax({
+    url:"/courseInstructor",
+    data: JSON.stringify(courseInstructor),
+    type: "json",
+    success: function() {
+      console.log("Here");
+    }
+  })
+});
+
+
+// -----------------TODO: Needs To be Rewritten.
 $(document).ready ( function() {
   var cookies = document.cookie;
   console.log("is there cookie?", document.cookie);
