@@ -66,21 +66,21 @@ def slcQuestionnaire():
             sectionBQuestion5=request.form.get("questionFive"),
             sectionBQuestion6=request.form.get("questionSix"),
         )
-        # for instructor in courseData["instructors"]:
-            # courseInstructo.create(course=course, instructor=instructor)
+        for instructor in courseData["instructors"]:
+            courseInstructors.create(course = course, instructor = instructor)
         return redirect('/serviceCourseManagement')
 
     return render_template('serviceLearning/slcQuestionnaire.html')
 
 @serviceLearning_bp.route('/courseInstructors', methods=['POST'])
 def getInstructors():
-    # create new list
-    # for instructor in instructorsList:
-    #   # volunteer = volunteer.strip("()")
-        # username = volunteer.split('(')[-1]
-        # instructor = User.get(..)
-        # new_list.append(instructor)
-    # courseData[...] = new_list
-    instructorsList = request.data.decode("utf-8")
-    courseData["instructors"] = instructorsList
+    newInstructorList = []
+    for instructor in newInstructorList:
+        volunteer = volunteer.strip("()")
+        username = volunteer.split('(')[-1]
+        instructor = User.get(user = user)
+        newInstructorList.append(instructor)
+    newInstructorList = request.data.decode("utf-8")
+    courseData["instructors"] = newInstructorList
+    # courseData["instructors"] = instructorsList
     return jsonify({"Success": True}), 200
