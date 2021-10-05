@@ -41,26 +41,29 @@ def getStudentLeadProgram(term):
 
 def getTrainingProgram(term):
 
-    trainingEvents = (Event.select()
+    trainingEvents = (Event.select(Event, Program.id.alias("program_id"))
                            .join(ProgramEvent)
+                           .join(Program)
                            .where(Event.isTraining,
                                   Event.term == term))
-
+    return trainingEvents
 def getBonnerProgram(term):
 
-    bonnerScholarsEvents = (Event.select()
+    bonnerScholarsEvents = (Event.select(Event, Program.id.alias("program_id"))
                                  .join(ProgramEvent)
                                  .join(Program)
                                  .where(Program.isBonnerScholars,
                                         Event.term == term))
-def oneTimeEvents(term):
-    oneTimeEvents = (Event.select(Event)
+    return bonnerScholarsEvents
+def getOneTimeEvents(term):
+    oneTimeEvents = (Event.select(Event, Program.id.alias("program_id"))
                           .join(ProgramEvent)
                           .join(Program)
                           .where(Program.isStudentLed == False,
                                  Event.isTraining == False,
                                  Program.isBonnerScholars == False,
                                  Event.term == term))
+    return oneTimeEvents
 def groupEventsByCategory(term):
 
     term = Term.get_by_id(term)
