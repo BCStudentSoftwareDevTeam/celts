@@ -17,7 +17,8 @@ from app.logic.events import getUpcomingEventsForUser
 from app.logic.events import groupEventsByCategory
 from app.logic.users import isEligibleForProgram
 from app.logic.users import addRemoveInterest
-from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
+from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
+
 
 @main_bp.route('/', methods=['GET'])
 @main_bp.route('/events/<selectedTerm>', methods=['GET'])
@@ -53,6 +54,11 @@ def viewVolunteersProfile(username):
          eventParticipant = EventParticipant.select().where(EventParticipant.user == username)
          currentTerm = Term.select().where(Term.isCurrentTerm == 1)
          trainingEvents = (ProgramEvent.select().join(Event).where((Event.term == currentTerm) & (Event.isTraining == 1)))
+         trainingChecklist = {}
+         for program in programs:
+             trainingChecklist[program.id] = trainedParticipants(program.id)
+         print(trainingChecklist)
+
          # for event in trainingEvents:
          #     print(event)
          print("-------------------------------------------------------")
@@ -69,6 +75,7 @@ def viewVolunteersProfile(username):
             trainingEvents = trainingEvents,
             programBan = programBan,
             interests_ids = interests_ids,
+            trainingChecklist = trainingChecklist,
             upcomingEvents = upcomingEvents,
             eligibilityTable = eligibilityTable,
             volunteer = User.get(User.username == username),
