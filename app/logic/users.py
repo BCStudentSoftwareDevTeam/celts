@@ -23,8 +23,6 @@ def addRemoveInterest(rule, program_id, username):
     rule: Gets the url from the ajax call, specifies to add or remove interest
     program_id: id of the program the user is interested in
     """
-    print("+",rule,"+",program_id,"+",username)
-
     if 'addInterest' in str(rule):
         Interest.get_or_create(program = program_id, user = username)
         return "Successfully added interest"

@@ -2,32 +2,26 @@ $(document).ready(function(){
 
   $(".ban").click(function() {
     $("#banVolunteerButton").text($(this).val() + " Volunteer");
-    $("#modalProgName").text("Program: " + $(this).closest("tr").children("td.programName").text());
+    $("#modalProgramName").text("Program: " + $(this).attr("name"));
     $('#banVolunteerModal').modal('toggle');
   });
 
 
   $(".form-check-input").click(function updateInterest(){
     var programID = $(this).attr('id');
-    var interest = $(this).is(':checked'); //.prop('checked', true);
+    var interest = $(this).is(':checked');
     var username = $(this).attr('name');
-    console.log(username);
-    // var volunteer = $()
-    // console.log("+", programID,"-", interest,"=",volunteer);
 
     if (interest) {
       var routeUrl = "addInterest";
-      // rule = true;
     }
     else {
       var routeUrl = "deleteInterest";
-      // rule = false;
     }
-
+    interestUrl = "/" + routeUrl + "/" + programID + "/" + username;
     $.ajax({
       method: "POST",
-      url: "/" + routeUrl + "/" + programID + "/" + username,
-      // data: {volunteer: volunteer, programID: programID, rule:rule},
+      url: interestUrl,
       success: function(response) {
           msgFlash("Your interest has been updated", "success");
       },

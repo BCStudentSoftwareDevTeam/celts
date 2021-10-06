@@ -60,7 +60,7 @@ def viewVolunteersProfile(username):
              eligibilityTable.append({"program" : i,
                                       "completedTraining" : (username in trainedParticipants(i)),
                                       "isNotBanned" : isEligibleForProgram(i, username)})
-         print(eligibilityTable)
+         # print(eligibilityTable)
          return render_template ("/main/volunteerProfile.html",
             programs = programs,
             eventParticipant = eventParticipant,
@@ -84,7 +84,6 @@ def updateInterest(program_id, username):
     print("inside delete/add interest")
     rule = request.url_rule
     username = username
-    # print(rule)
     try:
         return addRemoveInterest(rule, program_id, username)
 
