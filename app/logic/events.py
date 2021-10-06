@@ -141,7 +141,6 @@ def groupEventsByCategory(term):
                          "One Time Events" : groupEventsByProgram(oneTimeEvents)}
     return categorizedEvents
 
-<<<<<<< HEAD
 def eventEdit(newEventData):
 
     if newEventData['valid'] == True:
