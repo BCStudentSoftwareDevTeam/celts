@@ -26,7 +26,7 @@ def testingTrainings():
     isCeltsStudentStaff = 0,
     )
 
-    newEvent = Event.create(eventName = "Test Training Event",
+    newEvent = Event.create(name = "Test Training Event",
                               term = 1,
                               description= "Event for testing",
                               timeStart = "18:00:00",
@@ -44,7 +44,7 @@ def testingTrainings():
 
     facilitatorEntry = Facilitator.create(user = 'ramsayb2',event = newEvent)
 
-    testingTrainingEvent = Event.get(Event.eventName == "Test Training Event")
+    testingTrainingEvent = Event.get(Event.name == "Test Training Event")
 
     addVolunteerToEvent('namet', testingTrainingEvent.id, 2)
 
@@ -56,7 +56,7 @@ def testingTrainings():
 
 
     assert testingTrainingNotExist.exists() == False
-    assert [event.event.eventName == "Test Training Event" for event in testingTrainingsExist]
+    assert [event.event.name == "Test Training Event" for event in testingTrainingsExist]
     assert testingTrainingsExist.exists()
 
 
@@ -64,7 +64,7 @@ def testingTrainings():
 @pytest.mark.integration
 def testingBonner():
 
-    newEvent = Event.create(eventName = "Test Bonner Event",
+    newEvent = Event.create(name = "Test Bonner Event",
                               term = 1,
                               description= "Event for testing",
                               timeStart = "18:00:00",
@@ -82,7 +82,7 @@ def testingBonner():
 
     facilitatorEntry = Facilitator.create(user = 'ramsayb2',event = newEvent)
 
-    testingBonnerEvent = Event.get(Event.eventName == "Test Bonner Event")
+    testingBonnerEvent = Event.get(Event.name == "Test Bonner Event")
 
     addVolunteerToEvent('namet', testingBonnerEvent.id, 2)
 
@@ -94,7 +94,7 @@ def testingBonner():
 
 
     assert testingBonnerNotExist.exists() == False
-    assert [bonner.event.eventName == "Test Bonner Event" for bonner in testingBonnerExist]
+    assert [bonner.event.name == "Test Bonner Event" for bonner in testingBonnerExist]
     assert testingBonnerExist.exists()
 
 
@@ -139,7 +139,7 @@ def testingProgram():
     username = "namet"
     adminName = "ramsayb2"
 
-    newEvent = Event.create(eventName = "Test Program Event",
+    newEvent = Event.create(name = "Test Program Event",
                               term = 1,
                               description= "Event for testing",
                               timeStart = "18:00:00",
@@ -155,7 +155,7 @@ def testingProgram():
 
     programEvent = ProgramEvent.create(program=1, event=newEvent)
 
-    testingProgramEvent = Event.get(Event.eventName == "Test program Event")
+    testingProgramEvent = Event.get(Event.name == "Test program Event")
 
     addVolunteerToEvent('namet', testingProgramEvent.id, 2)
 
@@ -176,20 +176,20 @@ def testingTotalHours():
     assert totalHours == 9
 
     # delete training
-    testingTrainingEvent = Event.get(Event.eventName == "Test Training Event")
-    deleteEvent(2, testingTrainingEvent)
+    testingTrainingEvent = Event.get(Event.name == "Test Training Event")
+    deleteEvent(testingTrainingEvent)
     assert Event.get_or_none(Event.id == testingTrainingEvent) is None
     # delete bonner
-    testingBonnerEvent = Event.get(Event.eventName == "Test Bonner Event")
-    deleteEvent(2, testingBonnerEvent)
+    testingBonnerEvent = Event.get(Event.name == "Test Bonner Event")
+    deleteEvent(testingBonnerEvent)
     assert Event.get_or_none(Event.id == testingBonnerEvent) is None
     # delete courses
     testingCourse = Course.get(Course.courseName == "Test Course")
     testingCourse.delete_instance(recursive = True, delete_nullable = True)
     assert Course.get_or_none(Course.id == testingCourse.id) is None
     # delete program
-    testingProgramEvent = Event.get(Event.eventName == "Test program Event")
-    deleteEvent(2, testingProgramEvent)
+    testingProgramEvent = Event.get(Event.name == "Test program Event")
+    deleteEvent(testingProgramEvent)
     assert Event.get_or_none(Event.id == testingProgramEvent) is None
     # delete user
     user = User.get(User.username == "namet")

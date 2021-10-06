@@ -11,24 +11,11 @@ from app.models.interest import Interest
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.controllers.main import main_bp
-from app.logic.events import getUpcomingEventsForUser
+from app.logic.events import getUpcomingEventsForUser, groupEventsByCategory
 from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 from app.logic.transcript import *
-from app.logic.events import groupEventsByCategory
 
-
-@main_bp.route('/volunteerIndicateInterest', methods = ['GET'])
-def volunteerIndicateInterest():
-    programs = Program.select()
-    interests = Interest.select().where(Interest.user == g.current_user)
-    interests_ids = [interest.program for interest in interests]
-    return render_template('volunteerIndicateInterest.html',
-                           title="Volunteer Interest",
-                           user = g.current_user,
-                           programs = programs,
-                           interests = interests,
-                           interests_ids = interests_ids)
 
 @main_bp.route('/', methods=['GET'])
 @main_bp.route('/events/<selectedTerm>', methods=['GET'])
@@ -131,23 +118,26 @@ def RemoveRSVP():
     flash("Successfully unregistered for event!", "success")
     return redirect(url_for("admin.editEvent", eventId=eventId, program=program))
 
-@main_bp.route('/serviceTranscript', methods = ['GET'])
-def serviceTranscript():
-    username = g.current_user
-    programs = getProgramTranscript(username)
-    SLCourses = getSlCourseTranscript(username)
-    trainingData = getTrainingTranscript(username)
-    bonnerData = getBonnerScholarEvents(username)
-    totalHour = getTotalHour(username)
-    startDate = getStartYear(username)
+@main_bp.route('/<username>/serviceTranscript', methods = ['GET'])
+def serviceTranscript(username):
+    if (username == g.current_user or isAdmin()):
+        username = g.current_user
+        programs = getProgramTranscript(username)
+        SLCourses = getSlCourseTranscript(username)
+        trainingData = getTrainingTranscript(username)
+        bonnerData = getBonnerScholarEvents(username)
+        totalHour = getTotalHour(username)
+        startDate = getStartYear(username)
 
-    return render_template('main/serviceTranscript.html',
-                            programs = programs,
-                            SLCourses = SLCourses,
-                            trainingData = trainingData,
-                            bonnerData = bonnerData,
-                            totalHour = totalHour,
-                            startDate = startDate)
+        return render_template('main/serviceTranscript.html',
+                                programs = programs,
+                                SLCourses = SLCourses,
+                                trainingData = trainingData,
+                                bonnerData = bonnerData,
+                                totalHour = totalHour,
+                                startDate = startDate)
+    else:
+        return(403)
 
 @main_bp.route('/contributors',methods = ['GET'])
 def contributors():

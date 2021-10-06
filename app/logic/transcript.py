@@ -75,10 +75,12 @@ def getTotalHour(username):
 
     """
 
-    eachHours = (EventParticipant.select(fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned")).where(EventParticipant.user == username)
-    + CourseParticipant.select(fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned")).where(CourseParticipant.user == username))
-
-    totalHours = (eachHours.select_from(fn.SUM(eachHours.c.hoursEarned).alias("hoursEarned")))
+    eventHours = EventParticipant.select(fn.SUM(EventParticipant.hoursEarned)).where(EventParticipant.user == username).scalar()
+    courseHours =  CourseParticipant.select(fn.SUM(CourseParticipant.hoursEarned)).where(CourseParticipant.user == username).scalar()
+    print("=================", eventHours)
+    print(courseHours)
+    
+    totalHours = eventHours + courseHours
 
     return totalHours
 
