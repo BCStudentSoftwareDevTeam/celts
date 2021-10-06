@@ -32,6 +32,20 @@ $(document).ready(function(){
       }
     });
   });
+$(".ban").click(function banUnbanUser(){
+  $.ajax({
+    method: "POST",
+    url: "/ban/<program_id>/<username>",
+    success: function(response) {
+      msgFlash("The ban table has been updated", "success");
 
+    }
+
+
+  });
+
+
+
+});
 
 });

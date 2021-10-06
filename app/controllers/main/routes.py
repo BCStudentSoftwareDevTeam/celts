@@ -16,7 +16,7 @@ from app.logic.participants import trainedParticipants
 from app.logic.events import getUpcomingEventsForUser
 from app.logic.events import groupEventsByCategory
 from app.logic.users import isEligibleForProgram
-from app.logic.users import addRemoveInterest
+from app.logic.users import addRemoveInterest, banUnbanUser
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
 
 
@@ -81,6 +81,21 @@ def viewVolunteersProfile(username):
             volunteer = User.get(User.username == username),
             user = g.current_user)
     abort(403)
+
+
+@main_bp.route('/ban/<program_id>/<username>', methods=['POST'])
+def banUser(program_id, username):
+    """
+    This function updates the ban status of a username either when they are banned or unbanned from a program.
+    """
+    rule = request.url_rule
+    username = username
+    try:
+        return banUnbanUser(rule, program_id, username)
+    except Exception as e:
+        print(e)
+        return "Error Updating Ban", 500
+
 
 @main_bp.route('/deleteInterest/<program_id>/<username>', methods = ['POST'])
 @main_bp.route('/addInterest/<program_id>/<username>', methods = ['POST'])

@@ -34,3 +34,19 @@ def addRemoveInterest(rule, program_id, username):
             return "Successfully removed interest"
         except:
             return "This interest does not exist"
+
+
+def banUnbanUser(rule, program_id, username):
+    """
+    This function is ued to add the reasons for being ban and the end date of the ban to the programban table.
+    Parameters:
+    program_id: id of the program the user has been banned or unbanned.
+    """
+    if 'banUser' in str(rule):
+        ProgramBan.get_or_create(program = program_id, user = username)
+        return "Successfully banned the user"
+
+    else:
+        deleted_unbanUser = ProgramBan.get(program = program_id, user = username)
+        deleted_unBanUser.delete_instance()
+        return "Successfully unbanned user"
