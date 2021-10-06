@@ -11,13 +11,18 @@
 
 {% block app_content %}
 
-  <h1 align="center">{{program.programName}}</h1><br>
-  <h3 align="center">{{event.eventName}}</h3><br>
+  <div align="center" style="margin-bottom: 50px;">
+      <h1 align="center">{{event.name}}</h1>
+      {% if isPastEvent %}
+        <div class="alert alert-danger" role="alert">This event is in the past.</div>
+      {% endif %}
+  </div>
+
 
   <div class="btn-group">
     <ul class="nav nav-pills nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
       <li class="nav-item" role="presentation">
-        <a class="nav-link" href="/{{program.id}}/{{event.id}}/edit_event">Edit Event</a>
+        <a class="nav-link" href="/event/{{event.id}}/edit">Edit Event</a>
       </li>
       <li class="nav-item">
         <a class="nav-link active" aria-current="page" href="#">Track Volunteers</a>
@@ -41,7 +46,7 @@
             </div>
           </div>
           <div class='form-group d-inline-flex' style="padding: 0 0 0 2rem">
-            <a class="btn btn-info" href= "/{{event.id}}/kiosk" role="button">Kiosk Entry</a>
+            <a class="btn btn-info" href= "/event/{{event.id}}/kiosk" role="button">Kiosk Entry</a>
           </div>
     </div>
 
@@ -86,26 +91,26 @@
       <tbody id="volunteerTable">
       {% for participant in eventParticipantsData%}
       <tr>
-        <td><input type="checkbox" id='checkbox_{{participant.user.username}}' name="checkbox_{{participant.user.username}}"
+        <td><input type="checkbox" id='checkbox_{{participant.username}}' name="checkbox_{{participant.username}}"
                    onChange='toggleVolunteersInputBox(this)' {% if participant.attended == 1 %} checked  {%endif%}></td>
         <td>
-          {% if participant.user.username not in attendedTraining %}
+          {% if participant.username not in attendedTraining %}
             <span data-bs-toggle="tooltip" title="Did Not Complete All Trainings">
             <span style="color:red" class="bi bi-exclamation-triangle"></span></span>
           {% endif %}
         </td>
-        <td><input class="form-control" type='hidden' name="username{{loop.index|string}}" id="{{participant.user.username}}"value="{{participant.user}}"> {{participant.user.firstName}} {{participant.user.lastName}}</td>
-        <td>{{participant.user.email}}</td>
-        <td>{{participant.user.phoneNumber}}</td>
+        <td><input class="form-control" type='hidden' name="username{{loop.index|string}}" id="{{participant.username}}"value="{{participant}}"> {{participant.firstName}} {{participant.lastName}}</td>
+        <td>{{participant.email}}</td>
+        <td>{{participant.phoneNumber}}</td>
 
-        <td>{% if participant.rsvp == 1 %} Yes {% else %} No {% endif %}</td>
+        <td>{% if participant in eventRsvpUsers  %} Yes {% else %} No {% endif %}</td>
 
-        <td><input class="form-control number-only form-control input-sm" id="inputHours_{{participant.user.username}}"
-                   name="inputHours_{{participant.user.username}}" style="max-width: 90px;" type ="number" min="0" step="0.01"
+        <td><input class="form-control number-only form-control input-sm" id="inputHours_{{participant.username}}"
+                   name="inputHours_{{participant.username}}" style="max-width: 90px;" type ="number" min="0" step="0.01"
                    {% if participant.attended == 1 and participant.hoursEarned == None %} value="{{eventLength}}"
                    {% elif participant.attended == 1 %} value="{{participant.hoursEarned}}"
                    {%else%} readonly {%endif%}></td>
-        <td><span onclick = 'removeVolunteerFromEvent(this)' id="deleteIcon_{{participant.user.username}}" ><i class="bi bi-trash" style="font-size:20px"></i></span></td>
+        <td><span onclick = 'removeVolunteerFromEvent(this)' id="deleteIcon_{{participant.username}}" ><i class="bi bi-trash" style="font-size:20px"></i></span></td>
       </tr>
       {%endfor%}
      </tbody>

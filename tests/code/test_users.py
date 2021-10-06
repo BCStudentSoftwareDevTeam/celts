@@ -7,6 +7,18 @@ from app.logic.users import addRemoveInterest
 from app.logic.users import isEligibleForProgram
 
 @pytest.mark.integration
+def test_user_model():
+    user = User.get_by_id("ramsayb2")
+    assert user.isCeltsAdmin
+    assert not user.isCeltsStudentStaff
+    assert user.isAdmin
+
+    user = User.get_by_id("partont")
+    assert not user.isCeltsAdmin
+    assert not user.isCeltsStudentStaff
+    assert not user.isAdmin
+
+@pytest.mark.integration
 def test_isEligibleForProgram():
 
     # user has attended all required events
