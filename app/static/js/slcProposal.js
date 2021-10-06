@@ -21,28 +21,23 @@ $("#instructorTable").on("click", "#remove", function() {
 
 let courseInstructors = []
 $('#continue').on("click", function() {
-
   $("#instructorTable tr").each(function(a, b) {
     courseInstructors.push($('.instructorName', b).text());
   });
 
-  console.log(courseInstructors);
   $.ajax({
     url: "/courseInstructors",
     data: JSON.stringify(courseInstructors),
     type: "POST",
     contentType: "application/json",
-    success: function() {
-      console.log("Here");
-    },
-    error: function(e) {
-      console.log("error: ", e);
+    success: function () {
+      $("#slcProposalForm").submit();
     }
-  })
+  });
 });
 
 
-// -----------------TODO: Needs To be Rewritten.
+// -----------------TODO: Rewrite this functionality to make it more general.
 $(document).ready ( function() {
   var cookies = document.cookie;
   console.log("is there cookie?", document.cookie);

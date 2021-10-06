@@ -4,6 +4,8 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.course import Course
 from app.models.courseStatus import CourseStatus
+from app.models.courseInstructor import CourseInstructor
+from app.models.courseQuestion import CourseQuestion
 
 from app.controllers.serviceLearning import serviceLearning_bp
 from app.logic.searchUsers import searchUsers
@@ -59,28 +61,28 @@ def slcQuestionnaire():
             isAllSectionsServiceLearning=1 if courseData["slSectionsToggle"] else 0,
             serviceLearningDesignatedSections=courseData["slDesignation"],
             isPermanentlyDesignated=1 if courseData["slDesignation"] else 0,
-            sectionBQuestion1=request.form.get("questionOne"),
-            sectionBQuestion2=request.form.get("questionTwo"),
-            sectionBQuestion3=request.form.get("questionThree"),
-            sectionBQuestion4=request.form.get("questionFour"),
-            sectionBQuestion5=request.form.get("questionFive"),
-            sectionBQuestion6=request.form.get("questionSix"),
         )
+        for i in range(1, 7):
+            CourseQuestion.create(
+                course=course,
+                questionContent=request.form.get(f"{i}"),
+                questionNumber=i
+            )
         for instructor in courseData["instructors"]:
-            courseInstructors.create(course = course, instructor = instructor)
+            CourseInstructor.create(course=course, user=instructor.username)
         return redirect('/serviceCourseManagement')
 
     return render_template('serviceLearning/slcQuestionnaire.html')
 
 @serviceLearning_bp.route('/courseInstructors', methods=['POST'])
 def getInstructors():
-    newInstructorList = []
-    for instructor in newInstructorList:
-        volunteer = volunteer.strip("()")
-        username = volunteer.split('(')[-1]
-        instructor = User.get(user = user)
-        newInstructorList.append(instructor)
-    newInstructorList = request.data.decode("utf-8")
-    courseData["instructors"] = newInstructorList
-    # courseData["instructors"] = instructorsList
+    instructorObjectList = []
+    instructorsList = request.get_json()
+    for instructor in instructorsList:
+        if instructor != "":
+            instructor = instructor.strip("()")
+            username = instructor.split('(')[-1]
+            instructor = User.get(User.username==username)
+            instructorObjectList.append(instructor)
+    courseData["instructors"] = instructorObjectList
     return jsonify({"Success": True}), 200
