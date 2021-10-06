@@ -19,6 +19,14 @@ $("#instructorTable").on("click", "#remove", function() {
    $(this).closest("tr").remove();
 });
 
+$('td').click( function() {
+     var $this = $(this);
+     if ($this.text() == 'X')
+     {
+         $this.siblings().find('input').val('');
+     }
+   });
+
 let courseInstructors = []
 $('#continue').on("click", function() {
   $("#instructorTable tr").each(function(a, b) {
