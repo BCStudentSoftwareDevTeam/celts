@@ -36,14 +36,6 @@ $('#continue').on("click", function() {
   });
 });
 
-$('td').click( function() {
-     var $this = $(this);
-     if ($this.text() == 'X')
-     {
-         $this.siblings().find('input').val('');
-     }
-   });
-
 // -----------------TODO: Rewrite this functionality to make it more general.
 $(document).ready ( function() {
   var cookies = document.cookie;

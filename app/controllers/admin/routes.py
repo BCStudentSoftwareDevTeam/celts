@@ -154,19 +154,6 @@ def studentSearchPage():
         return render_template("/searchStudentPage.html")
     abort(403)
 
-@admin_bp.route('/searchUser/<query>', methods = ['GET'])
-def searchUser(query):
-    '''Accepts user input and queries the database returning results that matches user search'''
-    try:
-        query = query.strip()
-        search = query.upper()
-        splitSearch = search.split()
-        searchResults = searchUsers(query)
-        return searchResults
-    except Exception as e:
-        print(e)
-        return "Error on searching for a user", 500
-
 @admin_bp.route('/addParticipants', methods = ['GET'])
 def addParticipants():
     '''Renders the page, will be removed once merged with full page'''
