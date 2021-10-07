@@ -36,15 +36,14 @@ $('#continue').on("click", function() {
   });
 });
 
-// -----------------TODO: Rewrite this functionality to make it more general.
+// -----------------TODO: Rewrite this functionality
+// TODO: we need to create a new JS file that is only for saving data in cookies
+// and it can be imported elsewhere.
 $(document).ready ( function() {
   var cookies = document.cookie;
-  console.log("is there cookie?", document.cookie);
   if (cookies){
-    console.log("cookie");
     parsedCookies = JSON.parse(cookies);
     document.cookie = parsedCookies + ";max-age=28800;";
-    console.log("par", parsedCookies.sectionsResponse);
 
     $("#courseName").val(parsedCookies.courseName);
     $("#courseAbbreviation").val(parsedCookies.courseAbbreviation);
@@ -72,7 +71,6 @@ function saveSLCdata(){
     inputCourseInstructor: inputCourseInstructor,
     slDesignation: slDesignation
   }
-  console.log(proposalData, "data");
 
   document.cookie =  JSON.stringify(proposalData) + ";max-age=28800;";
 }
