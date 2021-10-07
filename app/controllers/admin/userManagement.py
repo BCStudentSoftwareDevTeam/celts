@@ -7,6 +7,7 @@ from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCe
 def manageUsers(user,method):
     # we will give each method a number
     # method1 = addCeltsAdmin, 2 = addCeltsStudentStaff, 3= removeCeltsAdmin, 4 = removeCeltsStudentStaff
+    print("The user is",user,"and the mrthod is",method)
     user = User.get_by_id(user)
     method = int(method)
     if method == 1:
@@ -21,7 +22,7 @@ def manageUsers(user,method):
         return {
         "There is an error":"error"
         }
-        
+
 @admin_bp.route('/userManagement', methods = ['GET'])
 def userManagement():
     return render_template('admin/userManagement.html')
