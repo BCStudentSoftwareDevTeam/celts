@@ -5,5 +5,6 @@ function callback() {
 }
 
 $("#searchStudentsInput").on("input", function() {
+  console.log("The function is called");
   searchUser("searchStudentsInput", callback);
 });
