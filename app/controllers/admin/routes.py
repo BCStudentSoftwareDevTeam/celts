@@ -21,7 +21,6 @@ from app.models.programEvent import ProgramEvent
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectFutureTerms
-from app.logic.searchUsers import searchUsers
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers

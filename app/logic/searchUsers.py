@@ -1,7 +1,4 @@
 from app.models.user import User
-from app.controllers.main import main_bp
-from flask import json, jsonify
-
 
 def searchUsers(query):
     '''Accepts user input and queries the database returning results that matches user search'''
