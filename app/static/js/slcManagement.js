@@ -1,14 +1,9 @@
-
-// withdrawing a course
-
 $( document ).ready(function() {
   //if they decide not to withdraw, change selection back to "select action"
   $('#withdrawModal').on('hidden.bs.modal', function () {
     $('.form-select').val('---')
-
   });
 });
-
 
 function changeAction(action){
   if (action.value=="Renew"){

@@ -17,34 +17,31 @@
   <div class="container-fluid">
     <div class="row">
       <div class="p-2 col-md-4">
-        <p>Course Instructor(s)</p>
-        <div class="ui-widget pb-3">
-          <input
-            id="courseInstructor"
-            type="input"
-            placeholder="Search.."/>
-        </div>
-        <div class= "form-check-inline">
-          <table
-            class="table"
-            id="instructorTable"
-            name="instructorTable">
-            <thead>
-              <tr>
-                <th scope="col">Instructor</th>
-                <th scope="col">Remove</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr hidden>
-                <td class="instructorName"></td>
-                <td>
-                  <button id="remove" type="button" class="btn btn-danger">Remove</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <label for="courseInstructor">Course Instructor(s)</label>
+        <input
+          id="courseInstructor"
+          class="form-control"
+          type="input"
+          placeholder="Search.."/>
+        <table
+          class="table"
+          id="instructorTable"
+          name="instructorTable">
+          <thead>
+            <tr>
+              <th scope="col">Instructor</th>
+              <th scope="col">Remove</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr hidden>
+              <td class="instructorName"></td>
+              <td>
+                <button id="remove" type="button" class="btn btn-danger">Remove</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
         <br></br>
         <label class="pt-3">Course Name</label>
         <input
@@ -135,5 +132,3 @@
   </div>
 </form>
 {% endblock %}
-
-{# onclick="saveSLCdata()" #}

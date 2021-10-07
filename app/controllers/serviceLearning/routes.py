@@ -1,4 +1,4 @@
-from flask import request, render_template, g, abort, json, redirect, jsonify
+from flask import request, render_template, g, abort, json, redirect, jsonify, flash
 
 from app.models.user import User
 from app.models.term import Term
@@ -6,21 +6,22 @@ from app.models.course import Course
 from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseQuestion import CourseQuestion
+from app.models.courseParticipant import CourseParticipant
 
 from app.controllers.serviceLearning import serviceLearning_bp
 from app.logic.searchUsers import searchUsers
+from app.logic.getServiceLearningCoursesData import getServiceLearningCoursesData
 
 courseData = {}
 
 @serviceLearning_bp.route('/serviceCourseManagement', methods = ['GET'])
 def serviceCourseManagement():
     """This is a Temporary Page for the Service Course Managment Screen."""
-    print("Landed!!")
+    courseDict = getServiceLearningCoursesData(g.current_user)
+    return render_template('serviceLearning/slcManagment.html',
+        instructor=g.current_user,
+        courseDict=courseDict)
 
-    # TODO: Consolidate this with the controller that populates /courseProposal
-    return render_template('serviceLearning/serviceCourseManagment.html', title="Welcome to CELTS!")
-
-# TODO: Check if these three can be combined into one function?
 @serviceLearning_bp.route('/slcGuidelines')
 def slcGuidelines():
     """ This page renders slc guidelines """
@@ -86,3 +87,13 @@ def getInstructors():
             instructorObjectList.append(instructor)
     courseData["instructors"] = instructorObjectList
     return jsonify({"Success": True}), 200
+
+# TODO: doesnt work
+@serviceLearning_bp.route('/withdrawCourse/<courseID>', methods = ['POST'])
+def withdrawCourse(courseID):
+    course = Course.get(Course.id == courseID)
+    (CourseInstructor.delete().where(CourseInstructor.course == course)).execute()  #need to delete all ForeignKeyFields first
+    (CourseParticipant.delete().where(CourseParticipant.course == course)).execute()
+    course.delete_instance()
+    flash("Course successfully withdrawn", 'success')
+    return "Course successfully withdrawn"
