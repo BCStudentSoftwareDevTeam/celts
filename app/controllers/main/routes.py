@@ -120,8 +120,10 @@ def RemoveRSVP():
 
 @main_bp.route('/<username>/serviceTranscript', methods = ['GET'])
 def serviceTranscript(username):
-    if (username == g.current_user or isAdmin()):
-        username = g.current_user
+    if username != g.current_user and not g.current_user.isAdmin:
+        abort(403)
+    else:
+        
         programs = getProgramTranscript(username)
         SLCourses = getSlCourseTranscript(username)
         trainingData = getTrainingTranscript(username)
@@ -136,8 +138,6 @@ def serviceTranscript(username):
                                 bonnerData = bonnerData,
                                 totalHour = totalHour,
                                 startDate = startDate)
-    else:
-        return(403)
 
 @main_bp.route('/contributors',methods = ['GET'])
 def contributors():

@@ -49,10 +49,24 @@ def getSlCourseTranscript(username):
     current user.
     """
 
-    SLCourses = (CourseInstructor
-        .select(Course, CourseParticipant, CourseInstructor.user, fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned"))
+    SLCourses = (Course
+        .select(Course, CourseParticipant)
+        .join(CourseParticipant)
+        .where(CourseParticipant.user == username))
+
+    # SLCourses = (CourseParticipant
+    #     .select(Course, CourseParticipant, (CourseInstructor.user.firstName).alias("instructor"))
+    #     .join(Course)
+    #     .join(CourseInstructor)
+    #     .join(User)
+    #     .where(CourseParticipant.user == username))
+
+    instructor = (CourseInstructor
+        .select(CourseInstructor)
         .join(Course)
         .join(CourseParticipant, on=(Course.id == CourseParticipant.course))
+        .switch(CourseInstructor)
+        .join(User)
         .where(CourseParticipant.user == username))
 
     return SLCourses
@@ -77,9 +91,7 @@ def getTotalHour(username):
 
     eventHours = EventParticipant.select(fn.SUM(EventParticipant.hoursEarned)).where(EventParticipant.user == username).scalar()
     courseHours =  CourseParticipant.select(fn.SUM(CourseParticipant.hoursEarned)).where(CourseParticipant.user == username).scalar()
-    print("=================", eventHours)
-    print(courseHours)
-    
+
     totalHours = eventHours + courseHours
 
     return totalHours
