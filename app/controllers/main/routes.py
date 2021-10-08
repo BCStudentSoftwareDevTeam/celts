@@ -8,12 +8,14 @@ from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
 from app.models.term import Term
+from app.models.eventRsvp import EventRsvp
 
 from app.controllers.main import main_bp
 from app.logic.events import getUpcomingEventsForUser
 from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 from app.logic.events import groupEventsByCategory
+from app.logic.searchUsers import searchUsers
 
 @main_bp.route('/', methods=['GET'])
 @main_bp.route('/events/<selectedTerm>', methods=['GET'])
@@ -21,12 +23,11 @@ def events(selectedTerm=None):
     currentTerm = g.current_term
     if selectedTerm:
         currentTerm = selectedTerm
-
     currentTime = datetime.now()
     eventsDict = groupEventsByCategory(currentTerm)
     listOfTerms = Term.select()
-    participantRSVP = EventParticipant.select().where(EventParticipant.user == g.current_user, EventParticipant.rsvp == True)
-    rsvpedEventsID = [event.event.id for event in list(participantRSVP)]
+    participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
+    rsvpedEventsID = [event.event.id for event in participantRSVP]
 
     return render_template("/events/event_list.html",
         selectedTerm = Term.get_by_id(currentTerm),
@@ -108,13 +109,27 @@ def RemoveRSVP():
     This function deletes the user ID and event ID from database when RemoveRSVP  is clicked
     """
     eventData = request.form
+
     event = Event.get_by_id(eventData['id'])
 
-    currentEventParticipant = EventParticipant.get(EventParticipant.user == g.current_user, EventParticipant.event == event)
-    currentEventParticipant.delete_instance()
+    currentRsvpParticipant = EventRsvp.get(EventRsvp.user == g.current_user, EventRsvp.event == event)
+    currentRsvpParticipant.delete_instance()
 
     flash("Successfully unregistered for event!", "success")
     return redirect(url_for("admin.editEvent", eventId=event.id))
+
+@main_bp.route('/searchUser/<query>', methods = ['GET'])
+def searchUser(query):
+    '''Accepts user input and queries the database returning results that matches user search'''
+    try:
+        query = query.strip()
+        search = query.upper()
+        splitSearch = search.split()
+        searchResults = searchUsers(query)
+        return searchResults
+    except Exception as e:
+        print(e)
+        return "Error in searching for user", 500
 
 @main_bp.route('/contributors',methods = ['GET'])
 def contributors():

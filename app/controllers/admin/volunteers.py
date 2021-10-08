@@ -1,4 +1,4 @@
-from flask import request, render_template, redirect, url_for, request, flash, abort, g
+from flask import request, render_template, redirect, url_for, request, flash, abort, g, json, jsonify
 from datetime import datetime
 from peewee import DoesNotExist
 
@@ -10,7 +10,8 @@ from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateVolunteers, addVolunteerToEvent, getEventLengthInHours
 from app.logic.participants import trainedParticipants
 from app.models.user import User
-from flask import json, jsonify
+from app.models.eventRsvp import EventRsvp
+
 
 @admin_bp.route('/searchVolunteers/<query>', methods = ['GET'])
 def getVolunteers(query):
@@ -28,7 +29,7 @@ def trackVolunteersPage(eventID):
         abort(404)
 
     program = event.singleProgram
-    
+
     # TODO: What do we do for no programs or multiple programs?
     if not program:
         return "TODO: What do we do for no programs or multiple programs?"
@@ -37,13 +38,14 @@ def trackVolunteersPage(eventID):
     if not g.current_user.isCeltsAdmin:
         abort(403)
 
-    eventParticipantsData = EventParticipant.select().where(EventParticipant.event == event)
-    eventParticipantsData = eventParticipantsData.objects()
+    eventParticipantsData = User.select().join(EventParticipant).where(EventParticipant.event == event)
+    eventRsvpData = User.select().join(EventRsvp).where(EventRsvp.event == event)
     eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
 
     return render_template("/events/trackVolunteers.html",
                             eventParticipantsData = list(eventParticipantsData),
+                            eventRsvpUsers = eventRsvpData,
                             eventLength = eventLengthInHours,
                             program = program,
                             event = event,

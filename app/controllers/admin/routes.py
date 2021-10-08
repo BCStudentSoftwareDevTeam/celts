@@ -10,6 +10,7 @@ from app.models.program import Program
 from app.models.event import Event
 from app.models.facilitator import Facilitator
 from app.models.eventParticipant import EventParticipant
+from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.term import Term
 from app.models.eventTemplate import EventTemplate
@@ -20,7 +21,6 @@ from app.models.programEvent import ProgramEvent
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectFutureTerms
-from app.logic.searchUsers import searchUsers
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
@@ -60,9 +60,9 @@ def createEvent(templateid, programid=None):
     if program:
         # TODO need to handle the multiple programs case
         eventData["program"] = program
-    
-        
-    # Try to save the form 
+
+
+    # Try to save the form
     if request.method == "POST":
         try:
             saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
@@ -82,7 +82,7 @@ def createEvent(templateid, programid=None):
     preprocessEventData(eventData)
     futureTerms = selectFutureTerms(g.current_term)
 
-    return render_template(f"/admin/{template.templateFile}", 
+    return render_template(f"/admin/{template.templateFile}",
             template = template,
             eventData = eventData,
             futureTerms = futureTerms,
@@ -113,7 +113,7 @@ def editEvent(eventId):
 
     preprocessEventData(eventData)
     futureTerms = selectFutureTerms(g.current_term)
-    userHasRSVPed = EventParticipant.get_or_none(EventParticipant.user == g.current_user, EventParticipant.event == event)
+    userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
 
     return render_template("admin/createSingleEvent.html",
@@ -153,19 +153,6 @@ def studentSearchPage():
     if g.current_user.isAdmin:
         return render_template("/searchStudentPage.html")
     abort(403)
-
-@admin_bp.route('/searchStudents/<query>', methods = ['GET'])
-def searchStudents(query):
-    '''Accepts user input and queries the database returning results that matches user search'''
-    try:
-        query = query.strip()
-        search = query.upper()
-        splitSearch = search.split()
-        searchResults = searchUsers(query)
-        return searchResults
-    except Exception as e:
-        print(e)
-        return "Error Searching Volunteers query", 500
 
 @admin_bp.route('/addParticipants', methods = ['GET'])
 def addParticipants():
