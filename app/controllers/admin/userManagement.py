@@ -2,19 +2,27 @@ from flask import Flask, render_template,request
 from app.models.user import User
 from app.controllers.admin import admin_bp
 from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff
+import re
 
 @admin_bp.route('/manageUsers', methods = ['POST'])
 def manageUsers():
     eventData = request.form
     print("event Data.......................",eventData)
-    user = eventData.user
-    method = eventData.method
+    user = eventData['user']
+    method = eventData['method']
+    # parse user so that it is only have usernmaer
+    print(".................................", user.split())
+    split = user.split()
+    username = split[-1]
+    print(username)
+    # print("USER", type(user))
+    print("EVENTDATA", method)
     # we will give each method a number
     # method1 = addCeltsAdmin, 2 = addCeltsStudentStaff, 3= removeCeltsAdmin, 4 = removeCeltsStudentStaff
-    print("..............................................The user is",user,"and the mrthod is",method)
-    user = User.get_by_id(user)
-    method = int(method)
-    if method == 1:
+    # print("..............................................The user is",user,"and the mrthod is",method)
+    # user = User.get_by_id(user)
+    # method = int(method)
+    if method == "addCeltsAdmin":
         addCeltsAdmin(user)
     elif method == 2:
         addCeltsStudentStaff(user)
@@ -26,7 +34,7 @@ def manageUsers():
         return {
         "There is an error":"error"
         }
-    return {"data":"1"}
+    return {"data": "1"}
 
 @admin_bp.route('/userManagement', methods = ['GET'])
 def userManagement():

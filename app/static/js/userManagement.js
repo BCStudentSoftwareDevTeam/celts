@@ -15,17 +15,18 @@ $(document).ready(function() {
   });
 
   $("#addCeltsAdmin").on("click", function() {
-    submitAdmin()
+    submitAdmin("addCeltsAdmin")
   });
 });
 
-function submitAdmin(){
+function submitAdmin(method){
   console.log("Yes the submit functin  is called");
   let data = {
-      method : 1,
+      method : method,
       user : $("#searchCeltsAdminInput").val(),
       from: "ajax"
   }
+  console.log(data);
   $.ajax({
     url: "/manageUsers",
     type: "POST",
