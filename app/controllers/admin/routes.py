@@ -20,6 +20,7 @@ from app.models.programEvent import ProgramEvent
 
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
+from app.logic.changeCurrentTerm import changeTerm
 from app.logic.utils import selectFutureTerms
 from app.logic.searchUsers import searchUsers
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
@@ -179,7 +180,6 @@ def addParticipants():
 def manageTerms():
     terms = Term.select()
     totalTerms = len([term.id for term in terms])
-    print(totalTerms)
     return render_template("/admin/termManagement.html",
                             terms=terms,
                             selectedTerm = Term.get_by_id(g.current_term),
@@ -187,6 +187,9 @@ def manageTerms():
 
 @admin_bp.route('/changeCurrentTerm', methods=['POST'])
 def changeCurrentTerm():
-    termData = request.data
-    g.currentTerm = termData["id"]
+    termData = request.form
+    term = int(termData["id"])
+    Term.get_by_id(g.current_term).isCurrentTerm = False
+    Term.get_by_id(term).isCurrentTerm = True
+    print(Term.get_by_id(4).isCurrentTerm)
     return redirect(url_for('admin.manageTerms'))

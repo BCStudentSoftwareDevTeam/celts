@@ -1,10 +1,15 @@
 function selectTerm(totalTerms, term){
-  $("#submitScannerData").val() = term;
-  // $("#currentTermList").
+  $("#termInput").val(term);
+  for (i=1; i<=totalTerms; i++){
+    if ($('#termFormID_' + i).hasClass('active')){
+     $('#termFormID_' + i).removeClass('active');
+    }
+  }
+  $('#termFormID_' + term).addClass('active');
 };
 
 function submitTerm(){
-  termInfo = {id: term}
+  termInfo = {id: $("#termInput").val()}
   $.ajax({
     url: "/changeCurrentTerm",
     type: "POST",
