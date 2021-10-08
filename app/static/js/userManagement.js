@@ -1,26 +1,6 @@
 import searchUser from './searchUser.js'
 
-function submitAdmin(){
-  console.log("Yes the submit functin  is called");
-  data = {
-      method : 1,
-      user : "khatts",
-      from: "ajax"
-  }
-  $.ajax({
-    url: "/manageUsers/<method>/<user>",
-    type: "POST",
-    data: data,
-    success: function(s){
-        location.reload()
-    },
-    error: function(error, status){
-        console.log(error, status)
-    }
 
-  })
-
-}
 
 
 function callback() {
@@ -38,3 +18,25 @@ $(document).ready(function() {
     submitAdmin()
   });
 });
+
+function submitAdmin(){
+  console.log("Yes the submit functin  is called");
+  let data = {
+      method : 1,
+      user : $("#searchCeltsAdminInput").val(),
+      from: "ajax"
+  }
+  $.ajax({
+    url: "/manageUsers",
+    type: "POST",
+    data: data,
+    success: function(s){
+        location.reload()
+    },
+    error: function(error, status){
+        console.log(error, status)
+    }
+
+  })
+
+}

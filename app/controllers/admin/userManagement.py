@@ -1,13 +1,17 @@
-from flask import Flask, render_template
+from flask import Flask, render_template,request
 from app.models.user import User
 from app.controllers.admin import admin_bp
 from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff
 
-@admin_bp.route('/manageUsers/<method>/<user>', methods = ['GET'])
-def manageUsers(user,method):
+@admin_bp.route('/manageUsers', methods = ['POST'])
+def manageUsers():
+    eventData = request.form
+    print("event Data.......................",eventData)
+    user = eventData.user
+    method = eventData.method
     # we will give each method a number
     # method1 = addCeltsAdmin, 2 = addCeltsStudentStaff, 3= removeCeltsAdmin, 4 = removeCeltsStudentStaff
-    print("The user is",user,"and the mrthod is",method)
+    print("..............................................The user is",user,"and the mrthod is",method)
     user = User.get_by_id(user)
     method = int(method)
     if method == 1:
@@ -22,6 +26,7 @@ def manageUsers(user,method):
         return {
         "There is an error":"error"
         }
+    return {"data":"1"}
 
 @admin_bp.route('/userManagement', methods = ['GET'])
 def userManagement():
