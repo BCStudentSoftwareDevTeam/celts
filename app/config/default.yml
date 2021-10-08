@@ -4,7 +4,7 @@ use_tracy: False
 use_banner: False
 override_file: "local-override.yml"
 default_user: "ramsayb2"
-celts_admin_contact: "bramsayr@gmail.com"
+celts_admin_contact: "celts@berea.edu"
 
 db:
     name: "celts"

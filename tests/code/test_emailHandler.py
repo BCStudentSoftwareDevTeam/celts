@@ -6,15 +6,13 @@ from app.logic.emailHandler import *
 def test_getVolunteerEmails():
 
     programID = 1
-    eventID = 1
-    emailRecipients = "interested"
 
-    volunteerEmails = getVolunteerEmails(programID, eventID, emailRecipients)
+    volunteerEmails = getInterestedEmails(programID)
     assert "bryanta@berea.edu" in volunteerEmails
 
     # check for non existing programId
     programID = 40
-    volunteerEmails = getVolunteerEmails(programID, eventID, emailRecipients)
+    volunteerEmails = getInterestedEmails(programID)
 
     assert volunteerEmails == []
 
@@ -23,10 +21,10 @@ def test_getVolunteerEmails():
     eventID = -1
     emailRecipients = "eventParticipant"
 
-    volunteerEmails = getVolunteerEmails(programID, eventID, emailRecipients)
+    volunteerEmails = getParticipantEmails(eventID)
     assert volunteerEmails == []
 
     # invalid recipients
     emailRecipients = 2
-    volunteerEmails = getVolunteerEmails(programID, eventID, emailRecipients)
-    assert volunteerEmails == None
+    volunteerEmails = getParticipantEmails(eventID)
+    assert volunteerEmails == []

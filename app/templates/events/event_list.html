@@ -95,7 +95,7 @@
                             </button>
                         </td>
                       {% else %}
-                        {% if (event.startDate < currentTime.date()) or (event.timeStart < currentTime.time() and event.startDate == currentTime.date())%}
+                        {% if (event.isPast %}
                           <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
                         {% elif event.id in rsvpedEventsID %}
                           <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{program.id}}, {{event.id}})">Remove RSVP</button></td>

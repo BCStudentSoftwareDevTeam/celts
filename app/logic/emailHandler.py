@@ -8,42 +8,38 @@ from app.models.emailTemplate import EmailTemplate
 from app import app
 import sys
 from pathlib import Path
+#
+# def load_config(file):
+#     """ Loads the 'default' file in the config directory. """
+#     with open(file, 'r') as ymlfile:
+#         cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
+#     return cfg
 
-def load_config(file):
-    """ Loads the 'default' file in the config directory. """
-    with open(file, 'r') as ymlfile:
-        cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
-    return cfg
-
-
-def getVolunteerEmails(programID = None, eventID = None, emailRecipients = "interested"):
-    """ Gets emails of students interested in a program or participating in an event. """
-    if emailRecipients == 'interested':    #email all students interested in the program
-        volunteersToEmail = User.select().join(Interest).where(Interest.program == programID)
-
-    elif emailRecipients == 'eventParticipant':  #email only people who rsvped
-        volunteersToEmail = User.select().join(EventParticipant).where(EventParticipant.event == eventID)
-
-    else:
-        return None
+def getInterestedEmails(programID = None):
+    """ Gets emails of students interested in a program. """
+    volunteersToEmail = User.select().join(Interest).where(Interest.program == programID)
     return [user.email for user in volunteersToEmail]
 
+def getParticipantEmails(eventID = None):
+    """ Gets emails of students participating in an event. """
+    volunteersToEmail = User.select().join(EventParticipant).where(EventParticipant.event == eventID)
+    return [user.email for user in volunteersToEmail]
 
 class emailHandler():
     """ A class for email setup and configuring the correct data to send. """
     def __init__(self, emailInfo):
-        self.default = load_config('app/config/default.yml')
-        app.config.update(
-            MAIL_SERVER=self.default['mail']['server'],
-            MAIL_PORT=self.default['mail']['port'],
-            # MAIL_USERNAME= default['mail']['username'],
-            # MAIL_PASSWORD= default['mail']['password'],
-            REPLY_TO_ADDRESS= self.default['mail']['reply_to_address'],
-            MAIL_USE_TLS=self.default['mail']['tls'],
-            MAIL_USE_SSL=self.default['mail']['ssl'],
-            MAIL_DEFAULT_SENDER=self.default['mail']['default_sender'],
-            MAIL_OVERRIDE_ALL=self.default['mail']['override_addr']
-        )
+        # self.default = load_config('app/config/default.yml')
+        # app.config.update(
+        #     MAIL_SERVER=self.default['mail']['server'],
+        #     MAIL_PORT=self.default['mail']['port'],
+        #     # MAIL_USERNAME= default['mail']['username'],
+        #     # MAIL_PASSWORD= default['mail']['password'],
+        #     REPLY_TO_ADDRESS= self.default['mail']['reply_to_address'],
+        #     MAIL_USE_TLS=self.default['mail']['tls'],
+        #     MAIL_USE_SSL=self.default['mail']['ssl'],
+        #     MAIL_DEFAULT_SENDER=self.default['mail']['default_sender'],
+        #     MAIL_OVERRIDE_ALL=self.default['mail']['override_addr']
+        # )
 
         self.emailInfo = emailInfo
         self.mail = Mail(app)
