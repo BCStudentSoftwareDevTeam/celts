@@ -9,6 +9,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.programEvent import ProgramEvent
 from app.controllers.events import events_bp
+from app.controllers.events import email
 from app.logic.events import getUpcomingEventsForUser
 from app.logic.participants import sendUserData
 

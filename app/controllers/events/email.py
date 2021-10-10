@@ -3,7 +3,7 @@ from flask_mail import Mail, Message
 from app.models.interest import Interest
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
-from app.logic.emailHandler import getVolunteerEmails, emailHandler
+from app.logic.emailHandler import getInterestedEmails, getParticipantEmails, emailHandler
 from app.controllers.events import events_bp
 from app import app
 
@@ -21,7 +21,7 @@ def emailVolunteers():
         flash("Error getting email recipients")
         return redirect(url_for("main.events", selectedTerm = emailInfo['selectedTerm']))
 
-    mail = emailHandler(emailInfo)
+    mail = emailHandler(Mail(app), emailInfo)
     emailSent = mail.sendEmail(Message(emailInfo['subject'],
                                        emails, # recipients
                                        emailInfo['message']),
