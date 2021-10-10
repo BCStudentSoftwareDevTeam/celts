@@ -16,13 +16,13 @@
 <form id="slcProposalForm" method="post">
   <div class="container-fluid">
     <div class="row">
-      <div class="p-2 col-md-4">
+      <div class="p-2 col-md-6">
         <label for="courseInstructor">Course Instructor(s)</label>
         <input
           id="courseInstructor"
           class="form-control"
           type="search"
-          placeholder="Search instructor">
+          placeholder="Search instructor" />
         <table
           class="table"
           id="instructorTable"
@@ -42,33 +42,34 @@
             </tr>
           </tbody>
         </table>
-        <label class="pt-3">Course Name</label>
+        <label for="courseName" class="pt-3">Course Name</label>
         <input
           class="form-control"
           id="coursName"
           name="courseName"
           type="text"
-          placeholder="Default input"/>
-        <label for="">Course Abbreviation</label>
+          placeholder="Default input"
+          required/>
+        <label for="courseAbbreviation">Course Abbreviation</label>
         <input
           class="form-control"
           id="courseAbbreviation"
           name="courseAbbreviation"
           type="text"
           placeholder="Default input"/>
-        <label for="">Credit</label>
+        <label for="credit">Credit</label>
         <input
           class="form-control"
           id="credit"
           name="credit"
           type="number"
           placeholder="1"/>
-        <label for="">Course Instructor Phone</label>
+        <label for="courseInstructorPhone">Course Instructor Phone</label>
         <input
           class="form-control mb-3"
           type="text"
           name="courseInstructorPhone"/>
-        <label>Regularly-occurring?</label>
+        <label for="regularOccurenceToggle">Regularly-occurring?</label>
         <div class="form-check form-switch pb-4">
           <input
             class="form-check-input"
@@ -76,8 +77,8 @@
             name="regularOccurenceToggle"/>
         </div>
       </div>
-      <div class="p-2 col-md-4 me-auto">
-        <label for="">When will this course be offered?</label>
+      <div class="p-2 col-md-6">
+        <label for="inputCourseInstructor">When will this course be offered?</label>
         <select
           class="dropdown form-control mb-3"
           id="inputCourseInstructor"
