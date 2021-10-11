@@ -1,6 +1,7 @@
 .main-content {
     min-height: 100vh;
     margin-bottom: -80px;
+    width:95%;
 }
 
 .spacer {
@@ -9,17 +10,6 @@
 
 .scroll-container {
     max-height: 100vh;
-}
-
-#flash_container {
-    min-height: 55px;
-}
-
-#flasher {
-    margin-bottom: 5px;
-    position: fixed;
-    width: 80%;
-    z-index: 3;
 }
 
 .bi-list {

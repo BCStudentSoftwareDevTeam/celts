@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block app_content %}
+
+<div id="wrapper">
+  <div class ="container">
+    <a class="skipContent" href="#backButton" tabindex="1" style="top:8%">Click to Skip</a>
+    <div class="contributors" align="center">
+      <h2> Contributors </h2>
+      <p> This is the Student Software Development Team who helped to create this system and continue to maintain it.</p>
+      <table class="table table-bordered" align="center">
+        <tr class="info">
+          <th>Name</th>
+          <th>Role</th>
+        </tr>
+      {% for contrib in config['contributors'] %}
+        <tr>
+          <td>{{contrib.name}}</td>
+          <td>{{contrib.role}}</td>
+        </tr>
+      {% endfor %}
+      </table>
+      <div class= "btn-holder pull-left col-lg-6">
+        <button type='button' class='btn btn-lg btn-newcolor' id='backButton' onclick ="history.back()">Back</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+<br>

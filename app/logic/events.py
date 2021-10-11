@@ -1,13 +1,17 @@
 from peewee import DoesNotExist
-from datetime import date, datetime, time
 from dateutil import parser
+import datetime
+from werkzeug.datastructures import MultiDict
 
+from app.models import mainDB
 from app.models.user import User
 from app.models.event import Event
 from app.models.interest import Interest
 from app.models.facilitator import Facilitator
 from app.models.program import Program
+from app.models.programEvent import ProgramEvent
 from app.models.term import Term
+from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
 
 def getEvents(program_id=None):
@@ -19,12 +23,77 @@ def getEvents(program_id=None):
     else:
         return Event.select()
 
-def deleteEvent(program, eventId):
+def deleteEvent(eventId):
 
     event = Event.get_or_none(Event.id == eventId)
     if event:
-        deleteEvent = event
-        deleteEvent.delete_instance(recursive = True, delete_nullable = True)
+        event.delete_instance(recursive = True, delete_nullable = True)
+
+def attemptSaveEvent(eventData):
+
+    newEventData = preprocessEventData(eventData)
+
+    isValid, validationErrorMessage = validateNewEventData(newEventData)
+
+    if not isValid:
+        return False, validationErrorMessage
+
+    try:
+        events = saveEventToDb(newEventData)
+        return True, ""
+    except Exception as e:
+        print(e)
+        return False, e
+
+def saveEventToDb(newEventData):
+    if not newEventData.get('valid', False):
+        raise Exception("Unvalidated data passed to saveEventToDb")
+
+    isNewEvent = ('id' not in newEventData)
+
+    eventsToCreate = []
+    if isNewEvent and newEventData['isRecurring']:
+        eventsToCreate = calculateRecurringEventFrequency(newEventData)
+    else:
+        eventsToCreate.append({'name': f"{newEventData['name']}",
+                                'date':newEventData['startDate'],
+                                "week":1})
+
+    eventRecords = []
+    for eventInstance in eventsToCreate:
+        with mainDB.atomic():
+            eventData = {
+                    "term": newEventData['term'],
+                    "name": eventInstance['name'],
+                    "description": newEventData['description'],
+                    "timeStart": newEventData['timeStart'],
+                    "timeEnd": newEventData['timeEnd'],
+                    "location": newEventData['location'],
+                    "isRecurring": newEventData['isRecurring'],
+                    "isTraining": newEventData['isTraining'],
+                    "isRsvpRequired": newEventData['isRsvpRequired'],
+                    "isService": newEventData['isService'],
+                    "startDate": eventInstance['date'],
+                    "endDate": eventInstance['date']
+            }
+
+            # Create or update the event
+            if isNewEvent:
+                eventRecord = Event.create(**eventData)
+                # TODO handle multiple programs
+                if 'program' in newEventData:
+                    ProgramEvent.create(program=newEventData['program'], event=eventRecord)
+            else:
+                eventRecord = Event.get_by_id(newEventData['id'])
+                Event.update(**eventData).where(Event.id == eventRecord).execute()
+
+            Facilitator.delete().where(Facilitator.event == eventRecord).execute()
+            for f in newEventData['facilitators']:
+                Facilitator.create(user=f, event=eventRecord)
+
+            eventRecords.append(eventRecord)
+
+    return eventRecords
 
 def groupEventsByProgram(eventQuery):
     programs = {}
@@ -71,40 +140,7 @@ def groupEventsByCategory(term):
                          "One Time Events" : groupEventsByProgram(oneTimeEvents)}
     return categorizedEvents
 
-def eventEdit(newEventData):
-
-    if newEventData['valid'] == True:
-
-        eventId = newEventData['eventId']
-        eventData = {
-                "id": eventId,
-                "term": newEventData['eventTerm'],
-                "eventName": newEventData['eventName'],
-                "description": newEventData['eventDescription'],
-                "timeStart": newEventData['eventStartTime'],
-                "timeEnd": newEventData['eventEndTime'],
-                "location": newEventData['eventLocation'],
-                "isRecurring": newEventData['eventIsRecurring'],
-                "isTraining": newEventData['eventIsTraining'],
-                "isRsvpRequired": newEventData['eventRSVP'],
-                "isService": newEventData['eventServiceHours'],
-                "startDate": parser.parse(newEventData['eventStartDate']),
-                "endDate": parser.parse(newEventData['eventEndDate'])
-            }
-        eventEntry = Event.update(**eventData).where(Event.id == eventId).execute()
-
-        if Facilitator.get_or_none(Facilitator.event == eventId):
-            updateFacilitator = (Facilitator.update(user = newEventData['eventFacilitator'])
-                                            .where(Facilitator.event == eventId)).execute()
-
-        else:
-            facilitatorEntry = Facilitator.create(user = newEventData['eventFacilitator'],
-                                                      event = eventId)
-
-    else:
-        raise Exception("Invalid Data")
-
-def getUpcomingEventsForUser(user,asOf=datetime.now()):
+def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
     """
         Get the list of upcoming events that the user is interested in.
 
@@ -121,7 +157,7 @@ def getUpcomingEventsForUser(user,asOf=datetime.now()):
                             .where(Event.startDate >= asOf)
                             .where(Event.timeStart > asOf.time())
                             .distinct() # necessary because of multiple programs
-                            .order_by(Event.startDate)
+                            .order_by(Event.startDate, Event.name) # keeps the order of events the same when the dates are the same
                             )
     return list(events)
 
@@ -129,3 +165,113 @@ def getAllFacilitators():
 
     facilitators = User.select(User).where((User.isFaculty == 1) | (User.isCeltsAdmin == 1) | (User.isCeltsStudentStaff == 1))
     return facilitators
+
+def validateNewEventData(data):
+    """
+        Confirm that the provided data is valid for an event.
+
+        Assumes the event data has been processed with `preprocessEventData`. NOT raw form data
+
+        Returns 3 values: (boolean success, the validation error message, the data object)
+    """
+
+    if 'on' in [data['isRsvpRequired'], data['isTraining'], data['isService'], data['isRecurring']]:
+        return (False, "Raw form data passed to validate method. Preprocess first.")
+
+    if data['isRecurring'] and data['endDate']  <  data['startDate']:
+        return (False, "Event start date is after event end date")
+
+    if data['endDate'] ==  data['startDate'] and data['timeEnd'] <=  data['timeStart']:
+        return (False, "Event start time is after event end time")
+
+    # Validation if we are inserting a new event
+    if 'id' not in data:
+        # Check for a pre-existing event with Event name, Description and Event Start date
+        event = Event.select().where((Event.name == data['name']) &
+                                 (Event.description == data['description']) &
+                                 (Event.startDate == data['startDate']))
+
+        try:
+            Term.get_by_id(data['term'])
+        except DoesNotExist as e:
+            return (False, f"Not a valid term: {data['term']}")
+        
+        if event.exists():
+            return (False, "This event already exists")
+
+    data['valid'] = True
+
+    return (True, "All inputs are valid.")
+
+def calculateRecurringEventFrequency(event):
+    """
+        Calculate the events to create based on a recurring event start and end date. Takes a 
+        dictionary of event data.
+
+        Assumes that the data has been processed with `preprocessEventData`. NOT raw form data.
+
+        Return a list of events to create from the event data.
+    """
+    if not isinstance(event['endDate'], datetime.date) or not isinstance(event['startDate'], datetime.date):
+        raise Exception("startDate and endDate must be datetime.date objects.")
+
+    if event['endDate'] == event['startDate']:
+        raise Exception("This event is not a recurring event")
+
+    return [ {'name': f"{event['name']} Week {counter+1}",
+              'date': event['startDate'] + datetime.timedelta(days=7*counter),
+              "week": counter+1} 
+            for counter in range(0, ((event['endDate']-event['startDate']).days//7)+1)]
+
+def preprocessEventData(eventData):
+    """
+        Ensures that the event data dictionary is consistent before it reaches the template or event logic.
+
+        - dates should exist and be date objects if there is a value
+        - checkbaxes should be True or False
+        - if term is given, convert it to a model object
+        - facilitators should be a list of objects. Use the given list of usernames if possible 
+          (and check for a MultiDict with getlist), or else get it from the existing event 
+          (or use an empty list if no event)
+    """
+
+    ## Process checkboxes
+    eventCheckBoxes = ['isRsvpRequired', 'isService', 'isTraining', 'isRecurring']
+
+    for checkBox in eventCheckBoxes:
+        if checkBox not in eventData:
+            eventData[checkBox] = False
+        else:
+            eventData[checkBox] = bool(eventData[checkBox])
+
+    ## Process dates
+    eventDates = ['startDate', 'endDate']
+    for date in eventDates:
+        if date not in eventData:
+            eventData[date] = ''
+        elif type(eventData[date]) is str and eventData[date]:
+            eventData[date] = parser.parse(eventData[date])
+        elif not isinstance(eventData[date], datetime.date):
+            eventData[date] = ''
+
+    # If we aren't recurring, all of our events are single-day
+    if not eventData['isRecurring']:
+        eventData['endDate'] = eventData['startDate']
+
+    # Process terms
+    if 'term' in eventData:
+        try:
+            eventData['term'] = Term.get_by_id(eventData['term'])
+        except DoesNotExist:
+            eventData['term'] = ''
+
+    ## Get the facilitator objects from the list or from the event if there is a problem
+    try:
+        if type(eventData) == MultiDict and type(eventData['facilitators']) is not list:
+            eventData['facilitators'] = eventData.getlist('facilitators')
+        eventData['facilitators'] = [User.get_by_id(f) for f in eventData['facilitators']]
+    except Exception as e:
+        event = eventData.get('id', -1)
+        eventData['facilitators'] = list(User.select().join(Facilitator).where(Facilitator.event == event))
+
+    return eventData

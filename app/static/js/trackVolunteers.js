@@ -1,5 +1,6 @@
-$(document).ready(function(){
+import searchUser from './searchUser.js'
 
+$(document).ready(function() {
   $('[data-bs-toggle="tooltip"]').tooltip();
 // Search functionalities from the volunteer table in the UI
   $("#trackVolunteersInput").on("keyup", function() {
@@ -10,32 +11,31 @@ $(document).ready(function(){
   });
 
 // Adding the new volunteer to the user database table
-  $("#selectVolunteerButton").click(function(){
-    user = $("#addVolunteerInput").val()
-    volunteerEventID = $("#eventID").val()
-    eventLengthInHours = $("#eventLength").text()
+$("#selectVolunteerButton").click(function(){
+  let user = $("#addVolunteerInput").val()
+  let volunteerEventID = $("#eventID").val()
+  let eventLengthInHours = $("#eventLength").text()
 
-    $.ajax({
-      url: "/addVolunteerToEvent/" + user+"/"+volunteerEventID+"/"+eventLengthInHours,
-      type: "POST",
-      success: function(s){
-        location.reload();
+  $.ajax({
+    url: "/addVolunteerToEvent/" + user+"/"+volunteerEventID+"/"+eventLengthInHours,
+    type: "POST",
+    success: function(s){
+      location.reload();
 
-      },
-      error: function(request, status, error){
-        location.reload();
-        console.log(status,error);
-      }
-      })
+    },
+    error: function(request, status, error){
+      location.reload();
+      console.log(status,error);
+    }
     })
-
+  })
 });
 
 // Deleting a volunteer from the eventParticipant database table
 function removeVolunteerFromEvent (deleteIcon){
-  user =  deleteIcon.id.substring(11)
+  let user =  deleteIcon.id.substring(11)
   console.log(user)
-  eventID = $('#eventID').val()
+  let eventID = $('#eventID').val()
   $.ajax({
     url: "/removeVolunteerFromEvent/"+ user +"/"+ eventID,
     type: "POST",
@@ -47,56 +47,30 @@ function removeVolunteerFromEvent (deleteIcon){
         console.log(status,error);
       }
   })
-
 }
 
-// Search functionalities from the user table in the database
-function searchVolunteers(){
+function callback() {
+  $("#selectVolunteerButton").prop('disabled', false);
+}
 
-  $("#selectVolunteerButton").prop('disabled', true)
-  var query = $("#addVolunteerInput").val()
+$("#selectVolunteerButton").prop('disabled', true)
+$("#addVolunteerInput").on("input", function() {
+  searchUser("addVolunteerInput", callback, "addVolunteerModal");
+});
 
-  $("#addVolunteerInput").autocomplete({
-    appendTo: "#addVolunteerModal",
-    minLength: 2,
-    source: function(request, response){
-      $.ajax({
-        url: "/searchVolunteers/" + query,
-        type: "GET",
-        dataType: "json",
-        success: function(dictToJSON) {
-          response($.map( dictToJSON, function( item ) {
-            return {
-            label: item,
-            value: dictToJSON[item]
-            }
-          }))
-        },
-        error: function(request, status, error) {
-          console.log(status,error);
-        }
-      })
-    },
-    select: function() {
-      $("#selectVolunteerButton").prop('disabled', false)
-    }
-  });
-};
+function toggleVolunteersInputBox(checkbox) {
+  let username =  checkbox.id.substring(9) //get everything after the 9th character
+  let inputFieldID = 'inputHours_'+username
 
-function toggleVolunteersInputBox(checkbox){
-  username =  checkbox.id.substring(9) //get everything after the 9th character
-  inputFieldID = 'inputHours_'+username
-
-  if (checkbox.checked){
+  if (checkbox.checked) {
     console.log($('#'+inputFieldID).val())
     $('#'+inputFieldID).prop('readonly', false)
 
-    eventLength = $("#eventLength").text()
+    let eventLength = $("#eventLength").text()
     $('#'+inputFieldID).val(eventLength)
 
-  }else{
+  } else {
     $('#'+inputFieldID).prop('readonly', true)
     $('#'+inputFieldID).val('')
   }
-
  }

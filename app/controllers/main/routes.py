@@ -1,41 +1,65 @@
-from flask import request, render_template, g, abort
+from flask import request, render_template, g, abort, flash, redirect, url_for
+from datetime import datetime
 
+from app import app
 from app.models.program import Program
+from app.models.event import Event
+from app.models.user import User
+from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
+from app.models.term import Term
+from app.models.eventRsvp import EventRsvp
 
 from app.controllers.main import main_bp
+from app.logic.events import getUpcomingEventsForUser
 from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
+from app.logic.events import groupEventsByCategory
+from app.logic.searchUsers import searchUsers
 
-@main_bp.route('/')
-def home():
-    print(f"{g.current_user.username}: {g.current_user.firstName} {g.current_user.lastName}")
-    return render_template('main/home.html', title="Welcome to CELTS!")
+@main_bp.route('/', methods=['GET'])
+@main_bp.route('/events/<selectedTerm>', methods=['GET'])
+def events(selectedTerm=None):
+    currentTerm = g.current_term
+    if selectedTerm:
+        currentTerm = selectedTerm
+    currentTime = datetime.now()
+    eventsDict = groupEventsByCategory(currentTerm)
+    listOfTerms = Term.select()
+    participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
+    rsvpedEventsID = [event.event.id for event in participantRSVP]
 
-@main_bp.route('/volunteerIndicateInterest', methods = ['GET'])
-def volunteerIndicateInterest():
-    programs = Program.select()
-    interests = Interest.select().where(Interest.user == g.current_user)
-    interests_ids = [interest.program.id for interest in interests]
-    return render_template('volunteerIndicateInterest.html',
-                           title="Volunteer Interest",
-                           user = g.current_user,
-                           programs = programs,
-                           interests = interests,
-                           interests_ids = interests_ids)
-
+    return render_template("/events/event_list.html",
+        selectedTerm = Term.get_by_id(currentTerm),
+        eventDict = eventsDict,
+        listOfTerms = listOfTerms,
+        rsvpedEventsID = rsvpedEventsID,
+        currentTime = currentTime,
+        user = g.current_user)
 
 @main_bp.route('/profile/<username>', methods = ['GET'])
 def profilePage(username):
-
-    if username == g.current_user.username or g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
-        return f'<h1>Profile page for {username}</h1>'
-
-    abort(403)
+    if not g.current_user.isCeltsAdmin and not g.current_user.isCeltsStudentStaff and g.current_user.username != username:
+        return "Access Denied", 403
+    try:
+        profileUser = User.get(User.username == username)
+        upcomingEvents = getUpcomingEventsForUser(username)
+        programs = Program.select()
+        interests = Interest.select().where(Interest.user == profileUser)
+        interests_ids = [interest.program for interest in interests]
+        return render_template('/volunteer/volunteerProfile.html',
+                               title="Volunteer Interest",
+                               user = profileUser,
+                               programs = programs,
+                               interests = interests,
+                               interests_ids = interests_ids,
+                               upcomingEvents = upcomingEvents)
+    except Exception as e:
+        print(e)
+        return "Error retrieving user profile", 500
 
 @main_bp.route('/deleteInterest/<program_id>', methods = ['POST'])
 @main_bp.route('/addInterest/<program_id>', methods = ['POST'])
-
 def updateInterest(program_id):
     """
     This function updates the interest table by adding a new row when a user
@@ -57,16 +81,18 @@ def volunteerRegister():
     for the event they have clicked register for.
     """
     eventData = request.form
-    userId = g.current_user
-    isEligible = userRsvpForEvent(userId, eventData['eventId'])
-    listOfRequirements = unattendedRequiredEvents(eventData['programId'], userId)
+    event = Event.get_by_id(eventData['id'])
+
+    user = g.current_user
+    isEligible = userRsvpForEvent(user, event.id)
+    listOfRequirements = unattendedRequiredEvents(event.singleProgram, user)
 
     if not isEligible: # if they are banned
         flash(f"Cannot RSVP. Contact CELTS administrators: {app.config['celts_admin_contact']}.", "danger")
 
     elif listOfRequirements:
         reqListToString = ', '.join(listOfRequirements)
-        flash(f"{userId.firstName} {userId.lastName} successfully registered. However, the following training may be required: {reqListToString}.", 'success')
+        flash(f"{user.firstName} {user.lastName} successfully registered. However, the following training may be required: {reqListToString}.", "success")
 
     #if they are eligible
     else:
@@ -74,7 +100,7 @@ def volunteerRegister():
     if 'from' in eventData:
         if eventData['from'] == 'ajax':
             return ''
-    return redirect(url_for("admin.editEvent", eventId=eventData['eventId'], program=eventData['programId']))
+    return redirect(url_for("admin.editEvent", eventId=event.id))
 
 
 @main_bp.route('/rsvpRemove', methods = ['POST'])
@@ -82,14 +108,29 @@ def RemoveRSVP():
     """
     This function deletes the user ID and event ID from database when RemoveRSVP  is clicked
     """
-
     eventData = request.form
-    userId = User.get(User.username == g.current_user)
-    eventId = eventData['eventId']
-    program = eventData['programId']
 
-    currentEventParticipant = EventParticipant.get(EventParticipant.user == userId, EventParticipant.event == eventId)
+    event = Event.get_by_id(eventData['id'])
 
-    currentEventParticipant.delete_instance()
-    flash("Successfully unregistered for event!","success")
-    return redirect(url_for("admin.editEvent", eventId=eventId, program=program))
+    currentRsvpParticipant = EventRsvp.get(EventRsvp.user == g.current_user, EventRsvp.event == event)
+    currentRsvpParticipant.delete_instance()
+
+    flash("Successfully unregistered for event!", "success")
+    return redirect(url_for("admin.editEvent", eventId=event.id))
+
+@main_bp.route('/searchUser/<query>', methods = ['GET'])
+def searchUser(query):
+    '''Accepts user input and queries the database returning results that matches user search'''
+    try:
+        query = query.strip()
+        search = query.upper()
+        splitSearch = search.split()
+        searchResults = searchUsers(query)
+        return searchResults
+    except Exception as e:
+        print(e)
+        return "Error in searching for user", 500
+
+@main_bp.route('/contributors',methods = ['GET'])
+def contributors():
+    return render_template("/contributors.html")

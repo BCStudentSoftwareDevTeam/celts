@@ -4,6 +4,7 @@ This file will need to be changed if the format of models changes (new fields, d
 
 from datetime import *
 from app.models.eventParticipant import EventParticipant
+from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.term import Term
 from app.models.program import Program
@@ -15,8 +16,11 @@ from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseParticipant import CourseParticipant
 from app.models.eventParticipant import EventParticipant
+from app.models.courseQuestion import CourseQuestion
+from app.models.questionNote import QuestionNote
 from app.models.interest import Interest
 from app.models.facilitator import Facilitator
+from app.models.note import Note
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -98,10 +102,10 @@ users = [
         "username": "bryanta",
         "bnumber": "B00708826",
         "email": "bryanta@berea.edu",
+        "phoneNumber": "85943311598",
         "firstName": "Alex",
         "lastName": "Bryant",
         "isStudent": True,
-        "phoneNumber": "85943311598"
     },
     {
         "username": "partont",
@@ -112,7 +116,15 @@ users = [
         "isStudent": True,
         "phoneNumber": "9119119111"
     },
-
+    {
+        "username": "mupotsal",
+        "bnumber": "B00741640",
+        "email": "mupotsal@berea.edu",
+        "firstName": "Liberty",
+        "lastName": "Mupotsa",
+        "isStudent": True,
+        "phoneNumber": "8599858594"
+    },
 ]
 
 User.insert_many(users).on_conflict_replace().execute()
@@ -242,7 +254,7 @@ events = [
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
-        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "startDate": datetime.strptime("2021 10 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
@@ -254,13 +266,13 @@ events = [
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "a big room",
-        "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
+        "startDate": datetime.strptime("2021 11 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 3,
         "term": 3,
-        "eventName": "Adopt",
+        "name": "Adopt",
         "description": "Adopt A Grandparent",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -272,7 +284,7 @@ events = [
     {
         "id": 4,
         "term": 3,
-        "eventName": "First Meetup",
+        "name": "First Meetup",
         "description": "Berea Buddies First Meetup",
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 am", "%I:%M %p"),
@@ -284,7 +296,7 @@ events = [
     {
         "id": 5,
         "term": 3,
-        "eventName": "Tutoring",
+        "name": "Tutoring",
         "description": "Tutoring Training",
         "isTraining": False,
         "timeStart": datetime.strptime("3:00 pm", "%I:%M %p"),
@@ -296,7 +308,7 @@ events = [
     {
         "id": 6,
         "term": 3,
-        "eventName": "Making Bowls",
+        "name": "Making Bowls",
         "description": "Making Bowls Training",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -308,7 +320,7 @@ events = [
     {
         "id": 7,
         "term": 3,
-        "eventName": "How To Make Buddies",
+        "name": "How To Make Buddies",
         "description": "How To Make Buddies Training",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -357,7 +369,7 @@ events = [
     {
         "id": 11,
         "term": 3,
-        "eventName": "Dummy Event",
+        "name": "Dummy Event",
         "description": "Not a required event",
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -369,7 +381,7 @@ events = [
     {
         "id": 12,
         "term": 3,
-        "eventName": "Random Event",
+        "name": "Random Event",
         "description": "Not a required event",
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -381,7 +393,7 @@ events = [
     {
         "id": 13,
         "term": 2,
-        "eventName": "unaffiliated event",
+        "name": "unaffiliated event",
         "description": "Test event with no program",
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -393,7 +405,7 @@ events = [
     {
         "id": 14,
         "term": 2,
-        "eventName": "All Volunteer Training",
+        "name": "All Volunteer Training",
         "description": "testing multiple programs",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -405,7 +417,7 @@ events = [
     {
         "id": 15,
         "term": 3,
-        "eventName": "Event 1",
+        "name": "Event 1",
         "description": "Test for training",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -490,6 +502,22 @@ coursestatus = [
 ]
 CourseStatus.insert_many(coursestatus).on_conflict_replace().execute()
 
+notes = [
+    {
+    "createdBy": "ramsayb2",
+    "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
+    "noteContent": "This is the content: test",
+    "isPrivate":False
+    },
+    {
+    "createdBy": "mupotsal",
+    "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
+    "noteContent": " I am not sure aboutr what you mean here: test",
+    "isPrivate":False
+    }
+]
+
+Note.insert_many(notes).on_conflict_replace().execute()
 courses = [
     {
         "id": 1,
@@ -500,12 +528,7 @@ courses = [
         "createdBy": "",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
-        "sectionBQuestion1": "",
-        "sectionBQuestion2": "",
-        "sectionBQuestion3": "",
-        "sectionBQuestion4": "",
-        "sectionBQuestion5": "",
-        "sectionBQuestion6": ""
+
     },
     {
         "id": 2,
@@ -516,12 +539,6 @@ courses = [
         "createdBy": "",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
-        "sectionBQuestion1": "",
-        "sectionBQuestion2": "",
-        "sectionBQuestion3": "",
-        "sectionBQuestion4": "",
-        "sectionBQuestion5": "",
-        "sectionBQuestion6": ""
 
     },
     {
@@ -533,12 +550,6 @@ courses = [
         "createdBy": "",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
-        "sectionBQuestion1": "",
-        "sectionBQuestion2": "",
-        "sectionBQuestion3": "",
-        "sectionBQuestion4": "",
-        "sectionBQuestion5": "",
-        "sectionBQuestion6": ""
 
     },
 ]
@@ -546,7 +557,6 @@ Course.insert_many(courses).on_conflict_replace().execute()
 
 courseInstructorRecords = [
     {
-
         "id": 1,
         "course": 1,
         "user": "ramsayb2"
@@ -592,98 +602,124 @@ courseHoursEarned = [
         "user": "khatts",
         "hoursEarned": 1.0
     },
+
 ]
 CourseParticipant.insert_many(courseHoursEarned).on_conflict_replace().execute()
+
+courseQuestions = [
+    {
+    "course":1,
+    "questionContent":" Why are you interested in teaching this course?",
+    "questionNumber":1,
+    },
+    {
+    "course":1,
+    "questionContent":"Is there anything confusing?",
+    "questionNumber":2,
+    },
+    {
+    "course":1,
+    "questionContent":"How many students willl betaking this course?",
+    "questionNumber":3,
+    },
+    {
+    "course":1,
+    "questionContent":" This is another random question",
+    "questionNumber":4,
+    },
+    {
+    "course":1,
+    "questionContent":" Why are you interested in teaching this course?",
+    "questionNumber":5,
+    }
+]
+
+CourseQuestion.insert_many(courseQuestions).on_conflict_replace().execute()
+
+questionNote = [
+    {
+    "question":1,
+    "note":2
+    }
+]
+QuestionNote.insert_many(questionNote).on_conflict_replace().execute()
 
 eventParticipants = [
     {
         "user": "neillz",
         "event": 2,
-        "rsvp": True,
         "attended": True,
         "hoursEarned": 2
     },
     {
         "user": "bryanta",
         "event": 1,
-        "rsvp": False,
         "attended": False,
         "hoursEarned": 0
     },
     {
         "user": "neillz",
         "event": 3,
-        "rsvp": True,
         "attended": True,
         "hoursEarned": 3
     },
     {
         "user": "neillz",
         "event": 4,
-        "rsvp": True,
         "attended": True,
         "hoursEarned": 1
     },
     {
         "user": "neillz",
         "event": 5,
-        "rsvp": True,
         "attended": True,
         "hoursEarned": 1
     },
     {
         "user": "neillz",
         "event": 1,
-        "rsvp": True,
         "attended": True,
         "hoursEarned": 8,
     },
     {
         "user": "khatts",
         "event": 1,
-        "rsvp": True,
         "attended": True,
         "hoursEarned": 3,
     },
     {
         "user": "khatts",
         "event": 3,
-        "rsvp": True,
         "attended": False,
         "hoursEarned": 3,
     },
     {
         "user": "khatts",
         "event": 2,
-        "rsvp": True,
         "attended": True,
         "hoursEarned": 2,
     },
     {
         "user": "khatts",
         "event": 7,
-        "rsvp": True,
         "attended": True,
         "hoursEarned": 3,
     },
     {
         "user": "khatts",
         "event": 5,
-        "rsvp": False,
         "attended": True,
         "hoursEarned": 8,
     },
     {
         "user" : "ayisie",
         "event" : "1",
-        "rsvp" : True,
         "attended" : False,
         "hoursEarned" : None,
     },
     {
         "user" : "lamichhanes2",
         "event" : "1",
-        "rsvp" : True,
         "attended" : True,
         "hoursEarned" : None,
 
@@ -691,14 +727,12 @@ eventParticipants = [
     {
         "user" : "lamichhanes2",
         "event" : "3",
-        "rsvp" : True,
         "attended" : True,
         "hoursEarned" : None,
     },
     {
         "user" : "lamichhanes2",
         "event" : "4",
-        "rsvp" : True,
         "attended" : True,
         "hoursEarned" : None,
 
@@ -706,62 +740,69 @@ eventParticipants = [
     {
         "user" : "lamichhanes2",
         "event" : "8",
-        "rsvp" : False,
         "attended" : True,
         "hoursEarned" : None,
     },
     {
         "user" : "lamichhanes2",
         "event" : "9",
-        "rsvp" : False,
         "attended" :True,
         "hoursEarned" : None,
     },
     {
         "user": "agliullovak",
         "event": 3,
-        "rsvp": True,
         "attended": True,
         "hoursEarned": 2
     },
     {
         "user": "agliullovak",
         "event": 6,
-        "rsvp": True,
         "attended": True,
         "hoursEarned": 1
     },
     {
         "user": "agliullovak",
         "event": 10,
-        "rsvp": False,
         "attended": True,
         "hoursEarned": 12
     },
     {
         "user": "partont",
         "event": 1,
-        "rsvp": False,
         "attended": True,
         "hoursEarned": 1
     },
     {
         "user": "partont",
         "event": 2,
-        "rsvp": False,
         "attended": True,
         "hoursEarned": 5
     },
     {
         "user": "partont",
         "event": 7,
-        "rsvp": False,
+        "attended": True,
+        "hoursEarned": 8
+    },
+
+    {
+        "user": "mupotsal",
+        "event": 7,
         "attended": True,
         "hoursEarned": 8
     },
 ]
 EventParticipant.insert_many(eventParticipants).on_conflict_replace().execute()
 
+eventRsvp =  [
+    {
+        "user":"mupotsal",
+        "event": 7,
+    },
+
+]
+EventRsvp.insert_many(eventRsvp).on_conflict_replace().execute()
 interest = [
 
     {
