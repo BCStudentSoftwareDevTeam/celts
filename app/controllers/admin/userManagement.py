@@ -7,34 +7,24 @@ import re
 @admin_bp.route('/manageUsers', methods = ['POST'])
 def manageUsers():
     eventData = request.form
-    print("event Data.......................",eventData)
     user = eventData['user']
     method = eventData['method']
-    # parse user so that it is only have usernmaer
-    print(".................................", user.split())
-    split = user.split()
-    username = split[-1]
-    print(username)
-    # print("USER", type(user))
-    print("EVENTDATA", method)
-    # we will give each method a number
-    # method1 = addCeltsAdmin, 2 = addCeltsStudentStaff, 3= removeCeltsAdmin, 4 = removeCeltsStudentStaff
-    # print("..............................................The user is",user,"and the mrthod is",method)
-    # user = User.get_by_id(user)
-    # method = int(method)
+    username = re.sub("[()]","", (user.split())[-1])
+    user = User.get_by_id(username)
+
     if method == "addCeltsAdmin":
         addCeltsAdmin(user)
-    elif method == 2:
+    elif method == "addCeltsStudentStaff":
         addCeltsStudentStaff(user)
-    elif method == 3:
+    elif method == "removeCeltsAdmin":
         removeCeltsAdmin(user)
-    elif method == 4:
+    elif method == "removeCeltsStudentStaff":
         removeCeltsStudentStaff(user)
     else:
         return {
         "There is an error":"error"
         }
-    return {"data": "1"}
+    return ("success")
 
 @admin_bp.route('/userManagement', methods = ['GET'])
 def userManagement():
