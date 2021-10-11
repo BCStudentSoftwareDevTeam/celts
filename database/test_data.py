@@ -248,7 +248,7 @@ events = [
     {
         "id": 1,
         "term": 1,
-        "eventName": "Empty Bowls Spring Event 1",
+        "name": "Empty Bowls Spring Event 1",
         "description": "Empty Bowls Spring 2021",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -260,7 +260,7 @@ events = [
     {
         "id": 2,
         "term": 1,
-        "eventName": "Berea Buddies Training",
+        "name": "Berea Buddies Training",
         "description": "Training for Berea Buddies",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -332,7 +332,7 @@ events = [
     {
         "id": 8,
         "term": 1,
-        "eventName": "Adoption",
+        "name": "Adoption",
         "description": "Adoption 101 Training",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -344,7 +344,7 @@ events = [
     {
         "id": 9,
         "term": 1,
-        "eventName": "Cleaning Bowls",
+        "name": "Cleaning Bowls",
         "description": "Cleaning Bowls Training",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -357,7 +357,7 @@ events = [
     {
         "id": 10,
         "term": 3,
-        "eventName": "All Celts Training",
+        "name": "All Celts Training",
         "description": "Training event for all CELTS programs",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),

@@ -227,7 +227,7 @@ def test_correctValidateNewEventData():
                   'isTraining':True, 'isRecurring':False, 'startDate': parser.parse('1999-12-12'),
                   'endDate':parser.parse('2022-06-12'), 'programId':1, 'location':"a big room",
                   'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
-                  'name':'Empty Bowls Spring','term':1,'facilitators':"ramsayb2"}
+                  'name':'Empty Bowls Spring Event 1','term':1,'facilitators':"ramsayb2"}
 
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid == True
