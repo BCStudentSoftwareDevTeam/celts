@@ -52,7 +52,7 @@ def getSlCourseTranscript(username):
     SLCourses = (Course
         .select(Course, CourseParticipant)
         .join(CourseParticipant)
-        .where(CourseParticipant.user == username))
+        .where(CourseParticipant.user == username)).distinct()
 
     # SLCourses = (CourseParticipant
     #     .select(Course, CourseParticipant, (CourseInstructor.user.firstName).alias("instructor"))
@@ -61,15 +61,23 @@ def getSlCourseTranscript(username):
     #     .join(User)
     #     .where(CourseParticipant.user == username))
 
-    instructor = (CourseInstructor
-        .select(CourseInstructor)
+    SLCourseInstructor = (CourseInstructor
+        .select(CourseInstructor, Course.id.alias("courseId"), CourseInstructor.user)
         .join(Course)
         .join(CourseParticipant, on=(Course.id == CourseParticipant.course))
         .switch(CourseInstructor)
         .join(User)
         .where(CourseParticipant.user == username))
 
-    return SLCourses
+    instructorDict = {}
+    for i in SLCourseInstructor:
+        instructorDict.setdefault(i.courseId, []).append(i.user.firstName + " " + i.user.lastName)
+        print(type(i.courseId), i.courseId)
+
+    print(instructorDict)
+
+
+    return SLCourses, instructorDict
 
 def getTrainingTranscript(username):
     """

@@ -54,7 +54,7 @@
     <tr>
       <td> {{slcourse.courseName}}</td>
       <td> {{slcourse.term.description}}</td>
-      <td> {{slcourse}}</td>
+      <td> {{instructorDict.get(slcourse.id)}}</td>
       <td class= "w-25"> {{slcourse.hoursEarned}}</td>
     </tr>
     {% endfor %}

@@ -123,9 +123,9 @@ def serviceTranscript(username):
     if username != g.current_user and not g.current_user.isAdmin:
         abort(403)
     else:
-        
+
         programs = getProgramTranscript(username)
-        SLCourses = getSlCourseTranscript(username)
+        SLCourses, instructorDict = getSlCourseTranscript(username)
         trainingData = getTrainingTranscript(username)
         bonnerData = getBonnerScholarEvents(username)
         totalHour = getTotalHour(username)
@@ -137,7 +137,8 @@ def serviceTranscript(username):
                                 trainingData = trainingData,
                                 bonnerData = bonnerData,
                                 totalHour = totalHour,
-                                startDate = startDate)
+                                startDate = startDate,
+                                instructorDict = instructorDict)
 
 @main_bp.route('/contributors',methods = ['GET'])
 def contributors():
