@@ -18,7 +18,7 @@ from app.logic.events import groupEventsByCategory
 from app.logic.users import isEligibleForProgram
 from app.logic.users import addRemoveInterest, banUnbanUser
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
-
+from app.logic.searchUsers import searchUsers
 
 @main_bp.route('/', methods=['GET'])
 @main_bp.route('/events/<selectedTerm>', methods=['GET'])
@@ -157,6 +157,19 @@ def RemoveRSVP():
 
     flash("Successfully unregistered for event!", "success")
     return redirect(url_for("admin.editEvent", eventId=event.id))
+
+@main_bp.route('/searchUser/<query>', methods = ['GET'])
+def searchUser(query):
+    '''Accepts user input and queries the database returning results that matches user search'''
+    try:
+        query = query.strip()
+        search = query.upper()
+        splitSearch = search.split()
+        searchResults = searchUsers(query)
+        return searchResults
+    except Exception as e:
+        print(e)
+        return "Error in searching for user", 500
 
 @main_bp.route('/contributors',methods = ['GET'])
 def contributors():
