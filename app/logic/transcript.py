@@ -54,7 +54,7 @@ def getProgramTranscript(username):
         .join(EventParticipant)
         .where(EventParticipant.user == user)
         .group_by(Program, Event.term)
-        .order_by(Program.programName))
+        .order_by(Program.programName, Event.term))
 
-    return [[p.programName, Term.get_by_id(p.term).description, p.hoursEarned] 
-            for p in hoursQuery.objects() ] 
+    return [[p.programName, Term.get_by_id(p.term).description, p.hoursEarned]
+            for p in hoursQuery.objects() ]

@@ -486,9 +486,7 @@ def test_groupEventsByProgram():
                              .join(Program)
                              .where(Program.isStudentLed,
                                     Event.term == 1))
-    for i in studentLedEvents:
-        print(i)
-    assert groupEventsByProgram(studentLedEvents) == {Program.get_by_id(1): [Event.get_by_id(1), Event.get_by_id(2)] , Program.get_by_id(2): [Event.get_by_id(8),Event.get_by_id(9)]}
+    assert groupEventsByProgram(studentLedEvents) == {Program.get_by_id(4): Event.get_by_id(4), Program.get_by_id(8): Event.get_by_id(8), Program.get_by_id(9): Even.get_by_id(9)}
 
 
     trainingEvents = (Event.select(Event, Program.id.alias("program_id"))
@@ -518,8 +516,8 @@ def test_groupEventsByProgram():
 @pytest.mark.integration
 def test_groupEventsByCategory():
     groupedEventsByCategory = groupEventsByCategory(1)
-    assert groupedEventsByCategory == {"Student Led Events" : {Program.get_by_id(1): [Event.get_by_id(1), Event.get_by_id(2)] , Program.get_by_id(2): [Event.get_by_id(4)]},
-                         "Trainings" : {Program.get_by_id(1): [Event.get_by_id(1) , Event.get_by_id(2)] , Program.get_by_id(2): [Event.get_by_id(4)]} ,
+    assert groupedEventsByCategory == {"Student Led Events" : {Program.get_by_id(2): [Event.get_by_id(4), Event.get_by_id(8), Event.get_by_id(9)]},
+                         "Trainings" : {Program.get_by_id(1): [Event.get_by_id(1) , Event.get_by_id(2)] , Program.get_by_id(2): [Event.get_by_id(4), Event.get_by_id(8), Event.get_by_id(9)]} ,
                          "Bonner Scholars" : {} ,
                          "One Time Events" : {} }
 
@@ -543,7 +541,7 @@ def test_getsCorrectUpcomingEvent():
     user = "khatts"
     events = getUpcomingEventsForUser(user, asOf=testDate)
     assert len(events) == 3
-    assert "Empty Bowls Spring" == events[0].name
+    assert "Empty Bowls Spring Event 1" == events[0].name
 
     user = "ramsayb2"
     events = getUpcomingEventsForUser(user, asOf=testDate)
