@@ -55,7 +55,7 @@ $(".removeVolunteer").on("click", function() {
 });
 
 $(".attendanceCheck").on("change", function() {
-  let username =  $(this)[0].value;
+  let username =  $(this)[0].name.substring(9) //get everything after the 9th character;
   let inputFieldID = `inputHours_${username}`
 
   if ($(this)[0].checked) {
@@ -65,6 +65,6 @@ $(".attendanceCheck").on("change", function() {
 
   } else {
     $(`#${inputFieldID}`).prop('readonly', true);
-    $(`#${inputFieldID}`).val('');
+    $(`#${inputFieldID}`).val(null);
   }
 });

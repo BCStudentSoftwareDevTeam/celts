@@ -37,9 +37,9 @@ def updateVolunteers(participantData):
                 except (KeyError):   #if there is no checkbox for user then they are not present for the event.
                     (EventParticipant.update({EventParticipant.attended: False, EventParticipant.hoursEarned: 0}).where(EventParticipant.event == participantData['event'],
                         EventParticipant.user == participantData[f'username{user}'])).execute()
-                except Exception as e:
-                    print(e)
-                    return False
+                # except Exception as e:
+                #     print(e)
+                #     return False
             else:
                 return False
         else:
