@@ -1,5 +1,9 @@
 import searchUser from './searchUser.js'
 
+$(document).ready( function () {
+    $('#trackVolunteerstable').DataTable();
+} );
+
 $(document).ready(function() {
   $('[data-bs-toggle="tooltip"]').tooltip();
 // Search functionalities from the volunteer table in the UI
