@@ -163,21 +163,3 @@ def addParticipants():
 
     return render_template('addParticipants.html',
                             title="Add Participants")
-
-@admin_bp.route('/termManagement')
-def manageTerms():
-    terms = Term.select()
-    totalTerms = len([term.id for term in terms])
-    return render_template("/admin/termManagement.html",
-                            terms=terms,
-                            selectedTerm = Term.get_by_id(g.current_term),
-                            totalTerms = totalTerms)
-
-@admin_bp.route('/changeCurrentTerm', methods=['POST'])
-def changeCurrentTerm():
-    termData = request.form
-    term = int(termData["id"])
-    Term.get_by_id(g.current_term).isCurrentTerm = False
-    Term.get_by_id(term).isCurrentTerm = True
-    print(Term.get_by_id(4).isCurrentTerm)
-    return redirect(url_for('admin.manageTerms'))

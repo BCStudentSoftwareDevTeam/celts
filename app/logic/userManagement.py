@@ -23,3 +23,12 @@ def removeCeltsStudentStaff(user):
     userSelect = User.get(User.username == user.username)
     userSelect.isCeltsStudentStaff = False
     userSelect.save()
+
+def changeCurrentTerm(term):
+    termQuery = Term.select()
+    oldCurrentTerm = Term.get_by_id(g.current_term)
+    oldCurrentTerm.isCurrentTerm = False
+    newCurrentTerm = Term.get_by_id(term)
+    newCurrentTerm.isCurrentTerm = True
+    print(Term.get_by_id(1).isCurrentTerm)
+    termQuery.save()
