@@ -11,8 +11,8 @@
   <div class="text-center">
     <form id="termSelector" action="" method="post">
       <select class="w-25" id="selectTerm" onchange="formSubmit(this.value)">
-          {% for term in terms %}
-            <option value="{{term.id}}" {{ "selected" if term.id == termId }}> {{ term.description }}</option>
+          {% for t in terms %}
+            <option value="{{t.id}}" {{ "selected" if t.id == term.id }}> {{ t.description }}</option>
           {% endfor %}
       </select>
     </form>
@@ -67,7 +67,7 @@
       </tr>
     </thead>
     <tbody>
-        {% for data in approveCourses %}
+        {% for data in approvedCourses %}
         <tr>
           <td>{{data.course.courseName}}</td>
           <td>{{data.user.firstName}} {{data.user.lastName}}</td>

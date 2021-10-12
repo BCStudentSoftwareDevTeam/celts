@@ -14,21 +14,24 @@ def pendingCourses(termId):
                     .join(Course)
                     .join(CourseStatus)
                     .switch(Course)
-                    .join(Term)).where(CourseInstructor.course.term.id == termId, Course.status.status != "Approve")
+                    .join(Term)).where(CourseInstructor.course.term.id == termId, Course.status.status != "Approved", Course.status.status != "Completed")
 
 
     return pendingCourses
-def approveCourses(termId):
+def approvedCourses(termId):
     '''
     Queries the database to get all the neccessary information for
     pending courses.
     '''
 
-    approveCourses = (CourseInstructor.select(Course.courseName, Term.description, CourseInstructor.user, Course.status)
+    approvedCourses = (CourseInstructor.select(Course.courseName, Term.description, CourseInstructor.user, Course.status)
                     .join(Course)
                     .join(CourseStatus)
                     .switch(Course)
-                    .join(Term)).where(CourseInstructor.course.term.id == termId, Course.status.status == "Approve")
+                    .join(Term)).where(CourseInstructor.course.term.id == termId, Course.status.status == "Approved")
+
+    for a in approvedCourses:
+        print(a.user)
 
 
-    return approveCourses
+    return approvedCourses

@@ -2,10 +2,8 @@ from flask import request, render_template, url_for, g, Flask, redirect, flash, 
 from peewee import DoesNotExist
 from playhouse.shortcuts import model_to_dict
 import json
-
 from datetime import datetime
 from dateutil import parser
-
 from app.models.program import Program
 from app.models.event import Event
 from app.models.facilitator import Facilitator
@@ -17,12 +15,11 @@ from app.models.eventTemplate import EventTemplate
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
-
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectFutureTerms
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
-from app.logic.courseManagement import pendingCourses, approveCourses
+from app.logic.courseManagement import pendingCourses, approvedCourses
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 
@@ -163,24 +160,30 @@ def addParticipants():
                             title="Add Participants")
 
 @admin_bp.route('/courseManagement', methods = ['GET', 'POST'])
-@admin_bp.route('/<termId>/courseManagement', methods = ['GET', 'POST'])
-def courseManagement(termId = None):
+@admin_bp.route('/<term>/courseManagement', methods = ['GET', 'POST'])
+def courseManagement(term = None):
     '''
     Renders the page for admins to manage Course Proposals
     '''
-    currentTerm = g.current_term
-    if termId == None:
-        termId = currentTerm
-    else:
-        termId = Term.get(Term.id == termId)
 
-    pending = pendingCourses(termId)
-    approve = approveCourses(termId)
+    term = Term.get_or_none(Term.id == term)
+    if not term:
+        term = g.current_term
 
-    terms = selectFutureTerms(currentTerm)
+
+    pending = pendingCourses(term)
+    approved = approvedCourses(term)
+
+    for a in approved:
+        print("hhhhhhhhhhhhhhhhhhhhhhh", a.user)
+
+    for p in pending:
+        print(p.user)
+
+    terms = selectFutureTerms(g.current_term)
 
     return render_template('/admin/courseManagement.html',
                             pendingCourses = pending,
-                            approveCourses = approve,
+                            approvedCourses = approved,
                             terms = terms,
-                            termId = termId)
+                            term = term)
