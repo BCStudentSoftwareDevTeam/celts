@@ -101,7 +101,7 @@
               value="{{eventLength}}"
             {% elif participant.attended == 1 %}
               value="{{participant.hoursEarned}}"
-            {%else%} readonly {%endif%}>
+            {% else %} readonly {% endif %}>
         </td>
         <td>
           <span

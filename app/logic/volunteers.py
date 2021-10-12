@@ -33,7 +33,6 @@ def updateVolunteers(participantData):
                     if participantData['checkbox_'+ username] == "on": #if the user is marked as present
                         (EventParticipant.update({EventParticipant.hoursEarned: float(participantData['inputHours_'+ username]),EventParticipant.attended: True}).where(EventParticipant.event == participantData['event'],
                                                  EventParticipant.user == participantData[f'username{user}'])).execute()
-
                 except (KeyError):   #if there is no checkbox for user then they are not present for the event.
                     (EventParticipant.update({EventParticipant.attended: False, EventParticipant.hoursEarned: 0}).where(EventParticipant.event == participantData['event'],
                         EventParticipant.user == participantData[f'username{user}'])).execute()
