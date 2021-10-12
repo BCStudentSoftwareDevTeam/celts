@@ -55,7 +55,6 @@ def trackVolunteersPage(eventID):
 
 @admin_bp.route('/event/<eventID>/track_volunteers', methods=['POST'])
 def updateVolunteerTable(eventID):
-
     try:
         event = Event.get_by_id(eventID)
     except DoesNotExist as e:
@@ -67,15 +66,12 @@ def updateVolunteerTable(eventID):
     if not program:
         return "TODO: What do we do for no programs or multiple programs?"
 
-
     volunteerUpdated = updateVolunteers(request.form)
     if volunteerUpdated:
-        flash("Volunteer table succesfully updated")
+        flash("Volunteer table succesfully updated", "success")
     else:
-        flash("Error adding volunteer")
-
+        flash("Error adding volunteer", "danger")
     return redirect(url_for("admin.trackVolunteersPage", eventID=eventID))
-
 
 @admin_bp.route('/addVolunteerToEvent/<volunteer>/<volunteerEventID>/<eventLengthInHours>', methods = ['POST'])
 def addVolunteer(volunteer, volunteerEventID, eventLengthInHours):
@@ -87,12 +83,10 @@ def addVolunteer(volunteer, volunteerEventID, eventLengthInHours):
         flash("Volunteer successfully added!", "success")
     else:
         flash("Error when adding volunteer", "danger")
-    return "" #must return something for ajax
-
-
+    return jsonify({"Success": True}), 200
 
 @admin_bp.route('/removeVolunteerFromEvent/<user>/<eventID>', methods = ['POST'])
 def removeVolunteerFromEvent(user, eventID):
     (EventParticipant.delete().where(EventParticipant.user == user, EventParticipant.event == eventID)).execute()
-    flash("Volunteer successfully removed")
-    return "Volunteer successfully removed"
+    flash("Volunteer successfully removed", "success")
+    return jsonify({"Success": True}), 200

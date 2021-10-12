@@ -10,44 +10,25 @@ $(document).ready(function() {
     });
   });
 
-// Adding the new volunteer to the user database table
-$("#selectVolunteerButton").click(function(){
-  let user = $("#addVolunteerInput").val()
-  let volunteerEventID = $("#eventID").val()
-  let eventLengthInHours = $("#eventLength").text()
+  // Adding the new volunteer to the user database table
+  $("#selectVolunteerButton").click(function(){
+    let user = $("#addVolunteerInput").val()
+    let volunteerEventID = $("#eventID").val()
+    let eventLengthInHours = $("#eventLength").text()
 
-  $.ajax({
-    url: "/addVolunteerToEvent/" + user+"/"+volunteerEventID+"/"+eventLengthInHours,
-    type: "POST",
-    success: function(s){
-      location.reload();
-
-    },
-    error: function(request, status, error){
-      location.reload();
-      console.log(status,error);
-    }
-    })
-  })
-});
-
-// Deleting a volunteer from the eventParticipant database table
-function removeVolunteerFromEvent (deleteIcon){
-  let user =  deleteIcon.id.substring(11)
-  console.log(user)
-  let eventID = $('#eventID').val()
-  $.ajax({
-    url: "/removeVolunteerFromEvent/"+ user +"/"+ eventID,
-    type: "POST",
-    success: function(s){
-      location.reload()
-
-    },
-    error: function(request, status, error) {
+    $.ajax({
+      url: `/addVolunteerToEvent/${user}/${volunteerEventID}/${eventLengthInHours}`,
+      type: "POST",
+      success: function(s){
+        location.reload();
+      },
+      error: function(request, status, error){
+        location.reload();
         console.log(status,error);
       }
-  })
-}
+    });
+  });
+});
 
 function callback() {
   $("#selectVolunteerButton").prop('disabled', false);
@@ -58,19 +39,32 @@ $("#addVolunteerInput").on("input", function() {
   searchUser("addVolunteerInput", callback, "addVolunteerModal");
 });
 
-function toggleVolunteersInputBox(checkbox) {
-  let username =  checkbox.id.substring(9) //get everything after the 9th character
-  let inputFieldID = 'inputHours_'+username
+$(".removeVolunteer").on("click", function() {
+  let username =  $(this)[0].id;
+  let eventID = $('#eventID').val()
+  $.ajax({
+    url: `/removeVolunteerFromEvent/${username}/${eventID}`,
+    type: "POST",
+    success: function(s) {
+      location.reload();
+    },
+    error: function(request, status, error) {
+      console.log(status, error);
+    }
+  });
+});
 
-  if (checkbox.checked) {
-    console.log($('#'+inputFieldID).val())
-    $('#'+inputFieldID).prop('readonly', false)
+$(".attendanceCheck").on("change", function() {
+  let username =  $(this)[0].value;
+  let inputFieldID = `inputHours_${username}`
 
-    let eventLength = $("#eventLength").text()
-    $('#'+inputFieldID).val(eventLength)
+  if ($(this)[0].checked) {
+    $(`#${inputFieldID}`).prop('readonly', false);
+    let eventLength = $("#eventLength").text();
+    $(`#${inputFieldID}`).val(eventLength);
 
   } else {
-    $('#'+inputFieldID).prop('readonly', true)
-    $('#'+inputFieldID).val('')
+    $(`#${inputFieldID}`).prop('readonly', true);
+    $(`#${inputFieldID}`).val('');
   }
- }
+});
