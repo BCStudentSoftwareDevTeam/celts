@@ -1,4 +1,4 @@
-from flask import Flask, render_template,request
+from flask import Flask, render_template,request, flash, g, abort
 from app.models.user import User
 from app.controllers.admin import admin_bp
 from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff
@@ -14,18 +14,21 @@ def manageUsers():
 
     if method == "addCeltsAdmin":
         addCeltsAdmin(user)
+        flash(username+ " has been added as a Celts Admin", 'success')
     elif method == "addCeltsStudentStaff":
         addCeltsStudentStaff(user)
+        flash(username+ " has been added as a Celts Student Staff", 'success')
     elif method == "removeCeltsAdmin":
         removeCeltsAdmin(user)
+        flash(username+ " is no longer a Celts Admin ", 'success')
     elif method == "removeCeltsStudentStaff":
         removeCeltsStudentStaff(user)
-    else:
-        return {
-        "There is an error":"error"
-        }
-    return ("success")
+        flash(username+ " is no longer a Celts Student Staff", 'success')
+
+    return ("sucess")
 
 @admin_bp.route('/userManagement', methods = ['GET'])
 def userManagement():
-    return render_template('admin/userManagement.html')
+    if g.current_user.isAdmin:
+        return render_template('admin/userManagement.html')
+    abort(403)
