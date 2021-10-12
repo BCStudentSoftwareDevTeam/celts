@@ -49,20 +49,13 @@ def getSlCourseTranscript(username):
     current user.
     """
 
-    SLCourses = (Course
-        .select(Course, CourseParticipant)
-        .join(CourseParticipant)
-        .where(CourseParticipant.user == username)).distinct()
-
-    # SLCourses = (CourseParticipant
-    #     .select(Course, CourseParticipant, (CourseInstructor.user.firstName).alias("instructor"))
-    #     .join(Course)
-    #     .join(CourseInstructor)
-    #     .join(User)
-    #     .where(CourseParticipant.user == username))
+    SLCourses = (CourseParticipant
+        .select(CourseParticipant, CourseParticipant.course)
+        .join(Course)
+        .where(CourseParticipant.user == username))
 
     SLCourseInstructor = (CourseInstructor
-        .select(CourseInstructor, Course.id.alias("courseId"), CourseInstructor.user)
+        .select(CourseInstructor, CourseInstructor.course.alias("courseId"), CourseInstructor.user)
         .join(Course)
         .join(CourseParticipant, on=(Course.id == CourseParticipant.course))
         .switch(CourseInstructor)
@@ -72,9 +65,6 @@ def getSlCourseTranscript(username):
     instructorDict = {}
     for i in SLCourseInstructor:
         instructorDict.setdefault(i.courseId, []).append(i.user.firstName + " " + i.user.lastName)
-        print(type(i.courseId), i.courseId)
-
-    print(instructorDict)
 
 
     return SLCourses, instructorDict
@@ -99,10 +89,14 @@ def getTotalHour(username):
 
     eventHours = EventParticipant.select(fn.SUM(EventParticipant.hoursEarned)).where(EventParticipant.user == username).scalar()
     courseHours =  CourseParticipant.select(fn.SUM(CourseParticipant.hoursEarned)).where(CourseParticipant.user == username).scalar()
-
-    totalHours = eventHours + courseHours
-
-    return totalHours
+    if eventHours and courseHours:
+        totalHours = eventHours + courseHours
+        return totalHours
+    elif eventHours:
+        return eventHours
+    elif courseHours:
+        return courseHours
+    return 0
 
 def getStartYear(username):
     """
@@ -117,5 +111,6 @@ def getStartYear(username):
                     .join(Term).where(CourseParticipant.user == username)).order_by(Event.term.year)
 
     startDate = startDate.first()
-
-    return startDate.event.term.year
+    if startDate:
+        return startDate.event.term.year
+    return "N/A"

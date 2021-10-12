@@ -26,14 +26,14 @@
   <h2>Bonner Scholar Events</h2>
   <table class="table table-bordered table-striped">
     <tr>
-      <th>Course Name</th>
+      <th>Event Name</th>
       <th>Term</th>
       <th>Accrued Hours</th>
     </tr>
 
     {% for programEvent in bonnerData %}
     <tr>
-      <td> {{programEvent.event.eventName}}</td>
+      <td> {{programEvent.event.name}}</td>
       <td> {{programEvent.event.term.description}}</td>
       <td class= "w-25"> {{programEvent.hoursEarned}}</td>
     </tr>
@@ -52,9 +52,14 @@
     </tr>
     {% for slcourse in SLCourses %}
     <tr>
-      <td> {{slcourse.courseName}}</td>
-      <td> {{slcourse.term.description}}</td>
-      <td> {{instructorDict.get(slcourse.id)}}</td>
+      <td> {{slcourse.course.courseName}}</td>
+      <td> {{slcourse.course.term.description}}</td>
+
+      <td>
+        {% for name in instructorDict[slcourse.course.id] %}
+        {{name}} <br>
+        {% endfor %}
+      </td>
       <td class= "w-25"> {{slcourse.hoursEarned}}</td>
     </tr>
     {% endfor %}
@@ -80,7 +85,11 @@
 {% endif %}
 
   <div class="pt-4">
-    <p>*Volunteering since {{startDate}}</p>
+    {% if startDate == "N/A" %}
+      <p>No Volunteer Record</p>
+    {% else %}
+      <p>*Volunteering since {{startDate}}</p>
+    {% endif %}
   </div>
   <div class="float-end "  >
     <p class="fw-bold pb-3 d-inline">Total Hours:</p>
