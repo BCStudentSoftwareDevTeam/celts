@@ -130,6 +130,7 @@ def serviceTranscript(username):
         bonnerData = getBonnerScholarEvents(username)
         totalHour = getTotalHour(username)
         startDate = getStartYear(username)
+        userData = getUserdata(username)
 
         return render_template('main/serviceTranscript.html',
                                 programs = programs,
@@ -137,7 +138,9 @@ def serviceTranscript(username):
                                 trainingData = trainingData,
                                 bonnerData = bonnerData,
                                 totalHour = totalHour,
+                                username = username,
                                 startDate = startDate,
+                                userData = userData,
                                 instructorDict = instructorDict)
 
 @main_bp.route('/searchUser/<query>', methods = ['GET'])

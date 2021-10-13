@@ -125,8 +125,8 @@ def testingSLCourses():
                                                     user = username,
                                                     hoursEarned = 3.0)
 
-    testingSLCExist = getSlCourseTranscript(username)
-    testingSLCNotExist = getSlCourseTranscript(adminName)
+    testingSLCExist, instructorDict = getSlCourseTranscript(username)
+    testingSLCNotExist, instructorDict = getSlCourseTranscript(adminName)
 
     assert testingSLCExist.exists()
     assert [slc.course.courseName == "Test Course" for slc in testingSLCExist]
