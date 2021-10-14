@@ -38,20 +38,26 @@ def trackVolunteersPage(eventID):
     if not g.current_user.isCeltsAdmin:
         abort(403)
 
-    eventParticipantsData = User.select().join(EventParticipant).where(EventParticipant.event == event)
-    eventRsvpData = User.select().join(EventRsvp).where(EventRsvp.event == event)
+    eventParticipantsData = (EventParticipant
+        .select()
+        .where(EventParticipant.event==event))
+
+    eventRsvpUsers = (User
+        .select(User, EventRsvp)
+        .join(EventRsvp)
+        .where(EventRsvp.event==event))
+
     eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
 
     return render_template("/events/trackVolunteers.html",
-                            eventParticipantsData = list(eventParticipantsData),
-                            eventRsvpUsers = eventRsvpData,
-                            eventLength = eventLengthInHours,
-                            program = program,
-                            event = event,
-                            isPastEvent = isPastEvent,
+                            eventParticipantsData=list(eventParticipantsData),
+                            eventRsvpUsers=eventRsvpUsers,
+                            eventLength=eventLengthInHours,
+                            program=program,
+                            event=event,
+                            isPastEvent=isPastEvent,
                             attendedTraining=attendedTraining)
-
 
 @admin_bp.route('/event/<eventID>/track_volunteers', methods=['POST'])
 def updateVolunteerTable(eventID):
