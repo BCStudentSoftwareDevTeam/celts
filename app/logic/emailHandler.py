@@ -27,8 +27,7 @@ class emailHandler():
         self.emailInfo = emailInfo
         self.mail = mail
         self.mail.connect()
-        print(self.emailInfo)
-        print(app.config['mail'])
+
     def updateSenderEmail(self):
         """ Updates who is sending the emails based on the event_list form. """
 
@@ -55,7 +54,8 @@ class emailHandler():
                 recipients = app.config['mail']['override_addr']
             else:
                 recipients = emails
-            webbrowser.open_new(f'mailto:?to{recipients}&subject={subject}&body={msg}')
+            webbrowser.open_new(f'mailto:?to={recipients}&subject={subject}&body={msg}')
+
         elif 'sendIndividually' in self.emailInfo:
             if app.config['mail']['override_addr']:
                 message.recipients = [app.config['mail']['override_addr']]

@@ -11,14 +11,16 @@ from app import app
 def emailVolunteers():
     """ Uses emailHandler to send an email with the form in event_list. """
     emailInfo = request.form
+
     if emailInfo['emailRecipients'] == "interested":
         emails = getInterestedEmails(emailInfo['programID'])
     elif emailInfo['emailRecipients'] == "eventParticipant":
         emails = getParticipantEmails(emailInfo['eventID'])
     else:
         flash("Unable to determine email recipients", "danger")
+
     if emails == None:
-        flash("Error getting email recipients")
+        flash("Error getting email recipients", "danger")
         return redirect(url_for("main.events", selectedTerm = emailInfo['selectedTerm']))
 
     mail = emailHandler(Mail(app), emailInfo)
@@ -30,5 +32,5 @@ def emailVolunteers():
         flash("Email successfully sent!", "success")
     else:
         flash("Error sending email", "danger")
-
-    return redirect(url_for("main.events", selectedTerm = emailInfo['selectedTerm']))
+    return(1)
+    # return redirect(url_for("main.events", selectedTerm = emailInfo['selectedTerm']))
