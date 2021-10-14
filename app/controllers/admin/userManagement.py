@@ -1,8 +1,8 @@
 from flask import Flask, render_template,request, flash, g, abort
-from app.models.user import User
-from app.controllers.admin import admin_bp
-from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff
 import re
+from app.controllers.admin import admin_bp
+from app.models.user import User
+from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff
 
 @admin_bp.route('/manageUsers', methods = ['POST'])
 def manageUsers():
@@ -25,7 +25,7 @@ def manageUsers():
         removeCeltsStudentStaff(user)
         flash(username+ " is no longer a Celts Student Staff", 'success')
 
-    return ("sucess")
+    return ("success")
 
 @admin_bp.route('/userManagement', methods = ['GET'])
 def userManagement():

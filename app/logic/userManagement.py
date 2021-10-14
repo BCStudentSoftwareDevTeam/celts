@@ -2,24 +2,20 @@ from app.models.user import User
 
 def addCeltsAdmin(user):
     user = User.get_by_id(user)
-    userSelect = User.get(User.username == user.username)
-    userSelect.isCeltsAdmin = True
-    userSelect.save()
+    user.isCeltsAdmin = True
+    user.save()
 
 def addCeltsStudentStaff(user):
     user = User.get_by_id(user)
-    userSelect = User.get(User.username == user.username)
-    userSelect.isCeltsStudentStaff = True
-    userSelect.save()
+    user.isCeltsStudentStaff = True
+    user.save()
 
 def removeCeltsAdmin(user):
     user = User.get_by_id(user)
-    userSelect = User.get(User.username == user.username)
-    userSelect.isCeltsAdmin = False
-    userSelect.save()
+    user.isCeltsAdmin = False
+    user.save()
 
 def removeCeltsStudentStaff(user):
     user = User.get_by_id(user)
-    userSelect = User.get(User.username == user.username)
-    userSelect.isCeltsStudentStaff = False
-    userSelect.save()
+    user.isCeltsStudentStaff = False
+    user.save()
