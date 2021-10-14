@@ -486,7 +486,7 @@ def test_groupEventsByProgram():
                              .join(Program)
                              .where(Program.isStudentLed,
                                     Event.term == 1))
-    assert groupEventsByProgram(studentLedEvents) == {Program.get_by_id(4): Event.get_by_id(4), Program.get_by_id(8): Event.get_by_id(8), Program.get_by_id(9): Even.get_by_id(9)}
+    assert groupEventsByProgram(studentLedEvents) == {Program.get_by_id(2): [Event.get_by_id(4), Event.get_by_id(8), Event.get_by_id(9)]}
 
 
     trainingEvents = (Event.select(Event, Program.id.alias("program_id"))
@@ -494,7 +494,7 @@ def test_groupEventsByProgram():
                            .join(Program)
                            .where(Event.isTraining,
                                   Event.term == 1))
-    assert groupEventsByProgram(trainingEvents) == {Program.get_by_id(1): [Event.get_by_id(1) , Event.get_by_id(2)] , Program.get_by_id(2): [Event.get_by_id(4)]}
+    assert groupEventsByProgram(trainingEvents) == {Program.get_by_id(1): [Event.get_by_id(1) , Event.get_by_id(2)] , Program.get_by_id(2): [Event.get_by_id(4), Event.get_by_id(8), Event.get_by_id(9)]}
 
     bonnerScholarsEvents = (Event.select(Event, Program.id.alias("program_id"))
                                  .join(ProgramEvent)

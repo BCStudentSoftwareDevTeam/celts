@@ -139,14 +139,14 @@ def test_noEventUserRsvpForEvent():
 @pytest.mark.integration
 def test_userRsvpForEvent():
 
-    volunteer = userRsvpForEvent("agliullovak", 11)
+    volunteer = userRsvpForEvent("agliullovak", 10)
     assert volunteer.user.username == "agliullovak"
-    assert volunteer.event.id == 11
+    assert volunteer.event.id == 10
 
 
     # the user has already registered for the event
-    volunteer = userRsvpForEvent("agliullovak", 11)
-    assert volunteer.event.id == 11
+    volunteer = userRsvpForEvent("agliullovak", 10)
+    assert volunteer.event.id == 10
     assert volunteer
 
     (EventParticipant.delete().where(EventParticipant.user == 'agliullovak', EventParticipant.event == 11)).execute()
