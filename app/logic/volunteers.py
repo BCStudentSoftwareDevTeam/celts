@@ -1,7 +1,9 @@
 # from app.controllers.admin import admin_bp
 from app.models.eventParticipant import EventParticipant
-from datetime import datetime
+from app.models.eventRsvp import EventRsvp
 from app.models.user import User
+
+from datetime import datetime
 
 
 def getEventLengthInHours(startTime, endTime, eventDate):
@@ -23,12 +25,10 @@ def updateVolunteers(participantData):
 
     param: participantData- a dictionary that contains data from every row of the page along with the associated username.
     """
-
     for user in range(1, len(participantData)):
         if f'username{user}' in participantData:
             username = participantData[f'username{user}']
             if (User.get_or_none(User.username == username)):
-
                 try:
                     if participantData['checkbox_'+ username] == "on": #if the user is marked as present
                         ((EventParticipant
@@ -67,8 +67,11 @@ def addVolunteerToEvent(user, volunteerEventID, eventLengthInHours):
            eventLengthInHours - how long the event lasts (how may hours to give the student) (type: float)
     '''
     try:
-        if not EventParticipant.get_or_none(user=user, event = volunteerEventID):
-            EventParticipant.create(user=user, event = volunteerEventID, attended = True, hoursEarned = eventLengthInHours)
+        if not EventRsvp.get_or_none(user=user, event=volunteerEventID):
+            EventRsvp.create(user=user, event=volunteerEventID)
+
+        if not EventParticipant.get_or_none(user=user, event=volunteerEventID):
+            EventParticipant.create(user=user, event=volunteerEventID, attended=True, hoursEarned=eventLengthInHours)
         return True
 
     except Exception as e:
