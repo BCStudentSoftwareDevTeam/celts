@@ -54,23 +54,24 @@
         <th>Name</th>
         <th>Email</th>
         <th>Phone Number</th>
-        <th>RSVP</th>
         <th>Total Hours</th>
         <th></th>
       </tr>
     </thead>
     <tbody id="volunteerTable">
-      {% for participant in eventParticipantsData%}
+      {% for participant in eventRsvpData%}
       <tr>
         <td>
           <input
             type="checkbox"
             class='attendanceCheck'
             name="checkbox_{{participant.user.username}}"
-            {% if participant.attended == 1 %} checked {% endif %} />
+            {% if participant.user.username in presentParticipants %}
+              checked
+            {% endif %} />
         </td>
         <td>
-          {% if participant.user.username not in attendedTraining %}
+          {% if participant.user.username not in trainedParticipantsList %}
             <span data-bs-toggle="tooltip" title="Did Not Complete All Trainings">
               <span style="color:red" class="bi bi-exclamation-triangle"></span>
             </span>
@@ -87,7 +88,6 @@
         </td>
         <td>{{participant.user.email}}</td>
         <td>{{participant.user.phoneNumber}}</td>
-        <td>{% if participant.user in eventRsvpUsers %} Yes {% else %} No {% endif %}</td>
         <td>
           <input
             class="form-control number-only form-control input-sm"
@@ -97,10 +97,10 @@
             type ="number"
             min="0"
             step="0.01"
-            {% if participant.attended == 1 and participant.hoursEarned == None %}
+            {% if participant.user.username in presentParticipants and presentParticipants[participant.user.username] == None %}
               value="{{eventLength}}"
-            {% elif participant.attended == 1 %}
-              value="{{participant.hoursEarned}}"
+            {% elif participant.user.username in presentParticipants %}
+              value="{{presentParticipants[participant.user.username]}}"
             {% else %} readonly {% endif %}>
         </td>
         <td>

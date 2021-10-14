@@ -8,7 +8,7 @@ from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateVolunteers, addVolunteerToEvent, getEventLengthInHours
-from app.logic.participants import trainedParticipants
+from app.logic.participants import trainedParticipants, getPresentParticipants
 from app.models.user import User
 from app.models.eventRsvp import EventRsvp
 
@@ -21,7 +21,6 @@ def getVolunteers(query):
 
 @admin_bp.route('/event/<eventID>/track_volunteers', methods=['GET'])
 def trackVolunteersPage(eventID):
-
     try:
         event = Event.get_by_id(eventID)
     except DoesNotExist as e:
@@ -34,30 +33,31 @@ def trackVolunteersPage(eventID):
     if not program:
         return "TODO: What do we do for no programs or multiple programs?"
 
-    attendedTraining = trainedParticipants(program)
+    trainedParticipantsList = trainedParticipants(program)
+    presentParticipants = getPresentParticipants(event)
+
     if not g.current_user.isCeltsAdmin:
         abort(403)
 
-    eventParticipantsData = (EventParticipant
+    eventRsvpData = (EventRsvp
         .select()
-        .where(EventParticipant.event==event))
-
-    eventRsvpUsers = (User
-        .select(User, EventRsvp)
-        .join(EventRsvp)
         .where(EventRsvp.event==event))
 
-    eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
+    eventLengthInHours = getEventLengthInHours(
+        event.timeStart,
+        event.timeEnd,
+        event.startDate)
+
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
 
     return render_template("/events/trackVolunteers.html",
-                            eventParticipantsData=list(eventParticipantsData),
-                            eventRsvpUsers=eventRsvpUsers,
-                            eventLength=eventLengthInHours,
-                            program=program,
-                            event=event,
-                            isPastEvent=isPastEvent,
-                            attendedTraining=attendedTraining)
+        eventRsvpData=list(eventRsvpData),
+        presentParticipants=presentParticipants,
+        eventLength=eventLengthInHours,
+        program=program,
+        event=event,
+        isPastEvent=isPastEvent,
+        trainedParticipantsList=trainedParticipantsList)
 
 @admin_bp.route('/event/<eventID>/track_volunteers', methods=['POST'])
 def updateVolunteerTable(eventID):
