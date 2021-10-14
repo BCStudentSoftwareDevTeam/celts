@@ -44,11 +44,15 @@
     <tbody>
         {% for data in pendingCourses %}
         <tr>
-          <td>{{data.course.courseName}}</td>
-          <td>{{data.user.firstName}} {{data.user.lastName}}</td>
-          <td>{{data.course.term.description}}</td>
-          <td>{{data.course.status.status}}</td>
-          <td><button type="button" class="btn {{'btn-primary' if data.course.status.status == 'Pending' else 'btn-warning'}} btn-sm">{{ "Review" if data.course.status.status == "Pending" else "In Progress" }}</button></td>
+          <td>{{data.courseName}}</td>
+          <td>
+            {% for name in pendingCourseInstructor[data.id] %}
+              {{name}} <br>
+            {% endfor %}
+          </td>
+          <td>{{data.term.description}}</td>
+          <td>{{data.status.status}}</td>
+          <td><button type="button" class="btn {{'btn-primary' if data.status.status == 'Pending' else 'btn-warning'}} btn-sm">{{ "Review" if data.status.status == "Pending" else "In Progress" }}</button></td>
         </tr>
         {% endfor %}
     </tbody>
@@ -69,10 +73,14 @@
     <tbody>
         {% for data in approvedCourses %}
         <tr>
-          <td>{{data.course.courseName}}</td>
-          <td>{{data.user.firstName}} {{data.user.lastName}}</td>
-          <td>{{data.course.term.description}}</td>
-          <td>{{data.course.status.status}}</td>
+          <td>{{data.courseName}}</td>
+          <td>
+            {% for name in approvedCourseInstructor[data.id] %}
+              {{name}} <br>
+            {% endfor %}
+          </td>
+          <td>{{data.term.description}}</td>
+          <td>{{data.status.status}}</td>
           <td><i class="bi bi-check2"></i></td>
         </tr>
         {% endfor %}

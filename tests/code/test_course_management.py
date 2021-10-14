@@ -10,7 +10,7 @@ def test_course_management():
     with mainDB.atomic() as transaction:
         testingCourse = Course.create(courseName = "Testing Approved",
                                         term = 3,
-                                        status = 1,
+                                        status = 2,
                                         courseCredit = "7",
                                         createdBy = "Mayjue",
                                         isAllSectionsServiceLearning = 0,
@@ -18,7 +18,7 @@ def test_course_management():
 
         testingCourse = Course.create(courseName = "Testing Pending",
                                         term = 3,
-                                        status = 2,
+                                        status = 3,
                                         courseCredit = "12",
                                         createdBy = "Tyler Parton",
                                         isAllSectionsServiceLearning = 0,
@@ -33,14 +33,14 @@ def test_course_management():
                                                     user = 'ramsayb2')
 
         termId = 3
-        pending = pendingCourses(termId)
-        approved = approveCourses(termId)
+        pending, pendingInstructor = pendingCourses(termId)
+        approved, approveInstructor = approvedCourses(termId)
         pendingCourse = []
         approvedCourse = []
         for courses in pending:
-            pendingCourse.append(courses.course.courseName)
+            pendingCourse.append(courses.courseName)
         for courses in approved:
-            approvedCourse.append(courses.course.courseName)
+            approvedCourse.append(courses.courseName)
 
 
         assert "Testing Approved" in approvedCourse

@@ -10,15 +10,19 @@ def pendingCourses(termId):
     non approved and non completed courses.
     '''
 
-    pendingCourses = (CourseInstructor.select(Course.courseName, Term.description, CourseInstructor.user, Course.status)
-                    .join(Course)
+    pendingCourses = (Course.select(Course, Term)
                     .join(CourseStatus)
                     .switch(Course)
-                    .join(Term)).where(CourseInstructor.course.term.id == termId, Course.status.status != "Approved", Course.status.status != "Completed")
+                    .join(Term)).where(Term.id == termId, Course.status.status != "Approved", Course.status.status != "Completed").distinct()
+
+    courseIds = []
+    for course in pendingCourses:
+        courseIds.append(course.id)
+
+    pendingCourseInstructor = getinstructorData(courseIds)
 
 
-
-    return pendingCourses
+    return pendingCourses, pendingCourseInstructor
 
 
 def approvedCourses(termId):
@@ -27,24 +31,26 @@ def approvedCourses(termId):
     approved courses.
     '''
 
-    approvedCourses = (CourseInstructor.select(Course.courseName, Course.id, Term.description, CourseInstructor.user, Course.status)
-                    .join(Course)
+    approvedCourses = (Course.select(Course, Term)
                     .join(CourseStatus)
                     .switch(Course)
-                    .join(Term)).where(CourseInstructor.course.term.id == termId, Course.status.status == "Approved")
+                    .join(Term)).where(Term.id == termId, Course.status.status == "Approved").distinct()
 
     courseIds = []
     for course in approvedCourses:
-        courseIds.append(course.course.id)
+        courseIds.append(course.id)
 
     approvedCourseInstructor = getinstructorData(courseIds)
-    return approvedCourses
+    return approvedCourses, approvedCourseInstructor
 
 def getinstructorData(courseIds):
     """
     Gets and instructor object for the course id's given.
     """
-
     instructorDict = {}
-    for i in SLCourseInstructor:
-        instructorDict.setdefault(i.courseId, []).append(i.user.firstName + " " + i.user.lastName)
+    instructor = CourseInstructor.select().where(CourseInstructor.course << courseIds)
+
+    for i in instructor:
+        instructorDict.setdefault(i.course.id, []).append(i.user.firstName + " " + i.user.lastName)
+
+    return instructorDict

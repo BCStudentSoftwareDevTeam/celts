@@ -171,19 +171,14 @@ def courseManagement(term = None):
         term = g.current_term
 
 
-    pending = pendingCourses(term)
-    approved = approvedCourses(term)
-
-    for a in approved:
-        print("hhhhhhhhhhhhhhhhhhhhhhh", a.user)
-
-    for p in pending:
-        print(p.user)
-
+    pending, pendingCourseInstructor = pendingCourses(term)
+    approved, approvedCourseInstructor = approvedCourses(term)
     terms = selectFutureTerms(g.current_term)
 
     return render_template('/admin/courseManagement.html',
                             pendingCourses = pending,
                             approvedCourses = approved,
+                            approvedCourseInstructor = approvedCourseInstructor,
+                            pendingCourseInstructor = pendingCourseInstructor,
                             terms = terms,
                             term = term)
