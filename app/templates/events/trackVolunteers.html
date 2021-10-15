@@ -21,7 +21,7 @@
     {% endif %}
 </div>
 <div class="btn-group">
-  <ul class="nav nav-pills nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
+  <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
     <li class="nav-item" role="presentation">
       <a class="nav-link" href="/event/{{event.id}}/edit">Edit Event</a>
     </li>
@@ -33,13 +33,10 @@
 <form action="#" method="post"><br>
   <label class='d-none' id="eventLength">{{eventLength}}</label>
   <input  class="form-control" id="eventID" name="event" value="{{event}}" type='hidden'>
-  <div class="flex-container">
-    <div class="form-group d-inline-flex">
-    </div>
-    <div class='form-group d-inline-flex'  >
-      <a class="btn btn-info" href= "/event/{{event.id}}/kiosk" role="button">Kiosk Entry</a>
-      <a class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#addVolunteerModal">Add volunteer
-        </a>
+  <div class="flex-container" style="padding: 5px;">
+    <div class='form-group d-inline-flex'>
+      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add volunteer</button>
+      <button class="btn btn-info" href= "/event/{{event.id}}/kiosk" role="button" style="margin:5px;">Kiosk Entry</button>
   </div>
   <!-- Modal -->
   <div class="modal fade" id="addVolunteerModal" tabindex="-1" aria-labelledby="addVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
