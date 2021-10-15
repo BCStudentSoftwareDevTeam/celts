@@ -1,10 +1,10 @@
 from flask import Flask, render_template,request, flash, g, abort
-from app.models.user import User
-from app.models.term import Term
-from app.controllers.admin import admin_bp
-from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin, removeCeltsStudentStaff
-from app.logic.userManagement import changeCurrentTerm
 import re
+from app.controllers.admin import admin_bp
+from app.models.user import User
+from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff
+from app.logic.userManagement import changeCurrentTerm
+from app.models.term import Term
 
 @admin_bp.route('/manageUsers', methods = ['POST'])
 def manageUsers():

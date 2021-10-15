@@ -8,116 +8,54 @@ function callback() {
 $(document).ready(function() {
   // add celts admin
   $("#searchCeltsAdminInput").on("input", function() {
-    console.log("This is reached.");
     searchUser("searchCeltsAdminInput", callback);
   });
 
   $("#addCeltsAdmin").on("click", function() {
-    submitAdmin("addCeltsAdmin")
+    submitRequest("addCeltsAdmin","#searchCeltsAdminInput")
   });
 
   // add celts student staff
   $("#searchCeltsStudentStaffInput").on("input", function() {
-    console.log("This is reached.");
     searchUser("searchCeltsStudentStaffInput", callback);
   });
 
   $("#addCeltsStudentStaff").on("click", function() {
-    submitCeltsStudentStaff("addCeltsStudentStaff")
+    submitRequest("addCeltsStudentStaff","#searchCeltsStudentStaffInput")
   });
 
   // remove celts admin
   $("#removeCeltsAdminInput").on("input", function() {
-    console.log("This is reached.");
     searchUser("removeCeltsAdminInput", callback);
   });
 
   $("#removeCeltsAdmin").on("click", function() {
-    submitRemoveCeltsAdmin("removeCeltsAdmin")
+    submitRequest("removeCeltsAdmin","#removeCeltsAdminInput")
   });
 
   // remove celts student staff
   $("#removeCeltsStudentStaffInput").on("input", function() {
-    console.log("This is reached.");
     searchUser("removeCeltsStudentStaffInput", callback);
   });
 
   $("#removeCeltsStudentStaff").on("click", function() {
-    submitRemoveCeltsStudentStaff("removeCeltsStudentStaff")
+    submitRequest("removeCeltsStudentStaff", "#removeCeltsStudentStaffInput")
   });
-  for
-    $("#removeCeltsStudentStaff").on("click", function() {
-      submitRemoveCeltsStudentStaff("removeCeltsStudentStaff")
+
+  for (i=1; i<=parseInt($('#totalTerms').val()); i++){
+    $("#termFormID_"+i).on("click", function() {
+      console.log($(this).val())
+      clickTerm($('#totalTerms').val(), $(this).val())
     });
+  }
+
 });
 
-function submitAdmin(method){
+
+function submitRequest(method,identifier){
   let data = {
       method : method,
-      user : $("#searchCeltsAdminInput").val(),
-      from: "ajax"
-  }
-  console.log(data);
-  $.ajax({
-    url: "/manageUsers",
-    type: "POST",
-    data: data,
-    success: function(s){
-        location.reload()
-    },
-    error: function(error, status){
-        console.log(error, status)
-    }
-
-  })
-}
-
-function submitCeltsStudentStaff(method){
-  let data = {
-      method : method,
-      user : $("#searchCeltsStudentStaffInput").val(),
-      from: "ajax"
-  }
-  console.log(data);
-  $.ajax({
-    url: "/manageUsers",
-    type: "POST",
-    data: data,
-    success: function(s){
-        location.reload()
-    },
-    error: function(error, status){
-        console.log(error, status)
-    }
-
-  })
-}
-
-function submitRemoveCeltsAdmin(method){
-  let data = {
-      method : method,
-      user : $("#removeCeltsAdminInput").val(),
-      from: "ajax"
-  }
-  console.log(data);
-  $.ajax({
-    url: "/manageUsers",
-    type: "POST",
-    data: data,
-    success: function(s){
-        location.reload()
-    },
-    error: function(error, status){
-        console.log(error, status)
-    }
-
-  })
-}
-
-function submitRemoveCeltsStudentStaff(method){
-  let data = {
-      method : method,
-      user : $("#removeCeltsStudentStaffInput").val(),
+      user : $(identifier).val(),
       from: "ajax"
   }
   console.log(data);

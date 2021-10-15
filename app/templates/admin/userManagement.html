@@ -9,53 +9,35 @@
 
 <h1 class="text-center">Admin Management</h1>
 
+{% macro createInputsButtons(inputId, buttonId, buttonName, buttonClass) %}
+<div class="input-group">
+  <input type="input" id="{{inputId}}" name="{{inputId}}" class="form-control" placeholder="Search" autocomplete="off"/>
+  <button type="button" class="btn btn-secondary btn-sm" disabled>
+    <span class="bi bi-search"></span>
+  </button>
+</div>
+<div class="col-md-4"><button type="button" class="btn btn-{{buttonClass}} btn-sm" id="{{buttonId}}">{{buttonName}}</button></div>
+{% endmacro %}
 <div class="container">
 <div class="row g-3">
-    <div class="col-sm-4">
+    <div class="col-md-4">
       <div class="col-md-12">Add Celts Admin</div>
-        <div class="input-group">
-          <input type="input" id="searchCeltsAdminInput" name="searchCeltsAdminInput" class="form-control" placeholder="Search" autocomplete="off"/>
-          <button type="button" class="btn btn-secondary btn-sm" disabled>
-            <span class="bi bi-search"></span>
-          </button>
-        </div>
-        <div class="col-md-4"><button type="button" class="btn btn-success btn-sm" id="addCeltsAdmin">Add</button></div>
+        {{createInputsButtons("searchCeltsAdminInput","addCeltsAdmin","Add","success")}}
     </div>
-
-  <div class="col-sm-4 offset-md-4">
+  <div class="col-md-4 offset-md-4">
     <div class="col-md-12">Add Celts Student Staff</div>
-      <div class="input-group">
-        <input type="input" id="searchCeltsStudentStaffInput" name="searchCeltsStudentStaffInput" class="form-control" placeholder="Search" oninput="" autocomplete="off"/>
-        <button type="button" class="btn btn-secondary btn-sm" disabled>
-          <span class="bi bi-search"></span>
-        </button>
-      </div>
-      <div class="col-md-4"><button type="button" class="btn btn-success btn-sm" id="addCeltsStudentStaff">Add</button></div>
+    {{createInputsButtons("searchCeltsStudentStaffInput","addCeltsStudentStaff","Add","success")}}
   </div>
 </div>
-
  <br>
-
   <div class="row g-3">
-  <div class="col-sm-4">
+  <div class="col-md-4">
     <div class="col-md-12">Remove Celts Admin</div>
-      <div class="input-group">
-        <input type="input" id="removeCeltsAdminInput" name="removeCeltsAdminInput" class="form-control" placeholder="Search" oninput="" autocomplete="off"/>
-        <button type="button" class="btn btn-secondary btn-sm" disabled>
-          <span class="bi bi-search"></span>
-        </button>
-      </div>
-      <div class="col-md-4"><button type="button" class="btn btn-danger btn-sm" id="removeCeltsAdmin">Remove</button></div>
+    {{createInputsButtons("removeCeltsAdminInput","removeCeltsAdmin","Remove","danger")}}
   </div>
-  <div class="col-sm-4 offset-md-4">
+  <div class="col-md-4 offset-md-4">
     <div class="col-md-12">Remove Celts Student Staff</div>
-      <div class="input-group">
-        <input type="input" id="removeCeltsStudentStaffInput" name="removeCeltsStudentStaffInput" class="form-control" placeholder="Search" oninput="" autocomplete="off"/>
-        <button type="button" class="btn btn-secondary btn-sm" disabled>
-          <span class="bi bi-search"></span>
-        </button>
-      </div>
-      <div class="col-sd-3"><button type="button" class="btn btn-danger btn-sm" id="removeCeltsStudentStaff">Remove</button></div>
+    {{createInputsButtons("removeCeltsStudentStaffInput","removeCeltsStudentStaff","Remove","danger")}}
   </div>
 </div>
 </div>
@@ -66,12 +48,13 @@
     <div class="list-group text-center">
       <div class="form-group" name="currentTermList" id="currentTermList">
         {% for term in terms %}
-          <a href="#" onclick="clickTerm({{totalTerms}}, {{term}})" class="list-group-item list-group-item-action text-start
+          <a href="#currentTermList" class="list-group-item list-group-item-action text-start termFormBtn
           {{ 'active' if selectedTerm.id == term.id }}" id="termFormID_{{term.id}}" value='{{term}}'>{{term.description}}</a>
         {% endfor %}
     </div>
   </div>
   <input type="hidden" value="{{selectedTerm}}" id="termInput">
+  <input type="hidden" value="{{totalTerms}}" id="totalTerms">
   <a class="btn btn-primary float-right mt-3 text-center float-end" onclick="submitTerm()" role="button" value="Spring 2022">Make Current Term</a>
 </div>
 </div>
