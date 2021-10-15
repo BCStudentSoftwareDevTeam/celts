@@ -42,7 +42,11 @@ def userManagement():
 
 @admin_bp.route('/changeCurrentTerm', methods=['POST'])
 def changeTerm():
-    termData = request.form
-    term = int(termData["id"])
-    changeCurrentTerm(term)
-    return redirect(url_for('admin.userManagement'))
+    try:
+        termData = request.form
+        term = int(termData["id"])
+        changeCurrentTerm(term)
+        flash('Current term changed successfully', 'success')
+    except:
+        flash('Error. Current term request unsuccessful', 'warning')
+    return ('success')
