@@ -81,7 +81,12 @@ def volunteerRegister():
     for the event they have clicked register for.
     """
     eventData = request.form
-    event = Event.get_by_id(eventData['id'])
+    try:
+        event = Event.get_by_id(eventData['eventId'])
+    except:
+        event = Event.get_by_id(eventData['id'])
+
+
 
     user = g.current_user
     isEligible = userRsvpForEvent(user, event.id)
@@ -110,7 +115,11 @@ def RemoveRSVP():
     """
     eventData = request.form
 
-    event = Event.get_by_id(eventData['id'])
+    try:
+        event = Event.get_by_id(eventData['eventId'])
+    except:
+        event = Event.get_by_id(eventData['id'])
+
 
     currentRsvpParticipant = EventRsvp.get(EventRsvp.user == g.current_user, EventRsvp.event == event)
     currentRsvpParticipant.delete_instance()
