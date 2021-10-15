@@ -1,7 +1,11 @@
 import searchUser from './searchUser.js'
 
 $(document).ready( function () {
-    $('#trackVolunteerstable').DataTable();
+    $('#trackVolunteerstable').DataTable(
+    {"lengthChange": false
+
+    }
+    );
 } );
 
 $(document).ready(function() {
