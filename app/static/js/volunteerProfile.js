@@ -1,12 +1,5 @@
 $(document).ready(function(){
 
-  $(".ban").click(function() {
-    $("#banVolunteerButton").text($(this).val() + " Volunteer");
-    $("#modalProgramName").text("Program: " + $(this).attr("name"));
-    $('#banVolunteerModal').modal('toggle');
-  });
-
-
   $(".form-check-input").click(function updateInterest(){
     var programID = $(this).attr('id');
     var interest = $(this).is(':checked');
@@ -32,20 +25,43 @@ $(document).ready(function(){
       }
     });
   });
-$(".ban").click(function banUnbanUser(){
-  $.ajax({
-    method: "POST",
-    url: "/ban/<program_id>/<username>",
-    success: function(response) {
-      msgFlash("The ban table has been updated", "success");
 
-    }
-
+  $(".ban").click(function() {
+    $("#banVolunteerButton").text($(this).val() + " Volunteer");
+    $("#modalProgramName").text("Program: " + $(this).attr("name"));
+    $("#banVolunteerModal").modal("toggle");
+    $("#banVolunteerButton").attr("programID", $(this).attr("id"))
+    $("#banVolunteerButton").attr("username", $(".form-check-input").attr("name"))
+    $("#banVolunteerButton").attr("banOrUnban", $(this).val());
 
   });
 
+  $("#banVolunteerNote, #banVolunteerEndDate").change(function () {
+    if( ($("#banVolunteerNote").val()) && ($("#banVolunteerEndDate")).val()) {
+            $("#banVolunteerButton").prop("disabled", false);
+      }
+      else {
+        $("#banVolunteerButton").prop("disabled", true);
+      }
 
+  });
 
-});
+  $("#banVolunteerButton").click(function (){
+    console.log("Nothing to see here");
 
+    $.ajax({
+      method: "POST",
+      url: "/banUnbanUser/" + $(this).attr("programID") + "/" + $(this).attr("username"),
+      data: {"note": $("#banVolunteerNote").val(),
+             "banOrUnban": $(this).attr("banOrUnban"),
+             "endDate":$("#banVolunteerEndDate").val(),
+             "username": $(this).attr("username"),
+             "programID": $(this).attr("programID")
+            },
+      success: function(response) {
+        console.log("The ban table has been updated", "success");
+        location.reload();
+      }
+    });
+  });
 });

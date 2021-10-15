@@ -1,5 +1,7 @@
 from app.models.programBan import ProgramBan
 from app.models.interest import Interest
+from app.models.note import Note
+import datetime
 
 def isEligibleForProgram(program, user):
     """
@@ -10,8 +12,8 @@ def isEligibleForProgram(program, user):
     :param user: accepts a User object or userid
     :return: True if the user is not banned and meets the requirements, and False otherwise
     """
-
-    if (ProgramBan.select().where(ProgramBan.user == user, ProgramBan.program == program).exists()):
+    now = datetime.datetime.now()
+    if (ProgramBan.select().where(ProgramBan.user == user, ProgramBan.program == program, ProgramBan.endDate > now).exists()):
         return False
 
     return True
@@ -36,17 +38,22 @@ def addRemoveInterest(rule, program_id, username):
             return "This interest does not exist"
 
 
-def banUnbanUser(rule, program_id, username):
+def banUnbanUser(banOrUnban, program_id, username, banNote, banEndDate, creator):
     """
     This function is ued to add the reasons for being ban and the end date of the ban to the programban table.
     Parameters:
     program_id: id of the program the user has been banned or unbanned.
     """
-    if 'banUser' in str(rule):
-        ProgramBan.get_or_create(program = program_id, user = username)
+    if banOrUnban == "Ban":
+        print("---Banned")
+        noteForNote = Note.create(createdBy = creator, createdOn = datetime.datetime.now(), noteContent = banNote, isPrivate = 0)
+        ProgramBan.create(program = program_id, user = username, endDate = banEndDate, note = noteForNote.id)
         return "Successfully banned the user"
 
     else:
-        deleted_unbanUser = ProgramBan.get(program = program_id, user = username)
-        deleted_unBanUser.delete_instance()
+        print("---Unbanned")
+        now = datetime.datetime.now()
+        ProgramBan.update(endDate = now).where(ProgramBan.program == program_id,
+                                               ProgramBan.user == username,
+                                               ProgramBan.endDate > now).execute()
         return "Successfully unbanned user"

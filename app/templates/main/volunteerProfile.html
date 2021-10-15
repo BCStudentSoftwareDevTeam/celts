@@ -99,17 +99,17 @@
         <h6 align="left">{{volunteer.firstName}} {{volunteer.lastName}}</h6>
         <h6 align="left">{{volunteer.email}}</h6>
         <h6 align="left">{{volunteer.phoneNumber}}</h6>
-        <h6 align="left" class="d-inline-flex">End Date: &nbsp</h6><input type="date"><br>
+        <h6 align="left" class="d-inline-flex">End Date: &nbsp</h6><input id="banVolunteerEndDate" type="date"><br>
         <h6 align="left" id="modalProgramName"></h6>
         <div class="input-group">
           <div class="form-group input-group-x form-outline ui-widget" style="width:80%;">
-            <textarea name="name" rows="8" cols="80" type="input" id="banVolunteerNote" class="form-control" placeholder="Reason"></textarea>
+            <textarea name="name" rows="8" cols="80" type="input" id="banVolunteerNote" class="form-control" placeholder="Please add a note for this change"></textarea>
           </div>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button id="banVolunteerButton" type="button" class="btn btn-primary">Ban/Unban Volunteer</button>
+        <button id="banVolunteerButton" type="button" class="btn btn-primary" banOrUnban="" disabled>Ban/Unban Volunteer</button>
       </div>
     </div>
   </div>

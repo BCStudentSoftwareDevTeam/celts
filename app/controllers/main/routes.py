@@ -57,17 +57,12 @@ def viewVolunteersProfile(username):
          trainingChecklist = {}
          for program in programs:
              trainingChecklist[program.id] = trainedParticipants(program.id)
-         print(trainingChecklist)
-
-         # for event in trainingEvents:
-         #     print(event)
          print("-------------------------------------------------------")
          eligibilityTable = []
          for i in programs:
              eligibilityTable.append({"program" : i,
                                       "completedTraining" : (username in trainedParticipants(i)),
                                       "isNotBanned" : isEligibleForProgram(i, username)})
-         # print(eligibilityTable)
          return render_template ("/main/volunteerProfile.html",
             programs = programs,
             eventParticipant = eventParticipant,
@@ -83,15 +78,24 @@ def viewVolunteersProfile(username):
     abort(403)
 
 
-@main_bp.route('/ban/<program_id>/<username>', methods=['POST'])
+@main_bp.route('/banUnbanUser/<program_id>/<username>', methods=['POST'])
 def banUser(program_id, username):
     """
     This function updates the ban status of a username either when they are banned or unbanned from a program.
     """
+    print("inside pythong")
+    postData = request.form
+    print(postData)
+    banNote = postData["note"]
+    banOrUnban = postData["banOrUnban"]
+    username = postData["username"]
+    banEndDate = postData["endDate"]
+    programID = postData["programID"]
+
     rule = request.url_rule
     username = username
     try:
-        return banUnbanUser(rule, program_id, username)
+        return banUnbanUser(banOrUnban, program_id, username, banNote, banEndDate, g.current_user)
     except Exception as e:
         print(e)
         return "Error Updating Ban", 500
