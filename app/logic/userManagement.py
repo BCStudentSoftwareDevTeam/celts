@@ -1,4 +1,6 @@
 from app.models.user import User
+from app.models.term import Term
+from flask import g
 
 def addCeltsAdmin(user):
     user = User.get_by_id(user)
@@ -21,9 +23,9 @@ def removeCeltsStudentStaff(user):
     user.save()
 
 def changeCurrentTerm(term):
-    termQuery = Term.select()
     oldCurrentTerm = Term.get_by_id(g.current_term)
     oldCurrentTerm.isCurrentTerm = False
+    oldCurrentTerm.save()
     newCurrentTerm = Term.get_by_id(term)
     newCurrentTerm.isCurrentTerm = True
-    termQuery.save()
+    newCurrentTerm.save()
