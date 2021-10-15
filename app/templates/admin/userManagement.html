@@ -42,20 +42,22 @@
 </div>
 </div>
 
-<div class="container-fluid mt-5 col-6">
-  <div class="text-center m-auto">
+<div class="container-fluid mt-5 col col-6">
+  <div class="text-center">
     <h5 class="text-center my-3">Select the Current Term</h5>
-    <div class="list-group text-center">
-      <div class="form-group" name="currentTermList" id="currentTermList">
+      <div class="form-group col col-6" name="currentTermList" id="currentTermList">
         {% for term in terms %}
-          <button href="#currentTermList" class="list-group-item list-group-item-action text-start
-          {{ 'active' if selectedTerm.id == term.id }}" id="termFormID_{{term.id}}" value='{{ term.id }}'>{{term.description}}</button>
+        <div class="row mx-auto">
+          <button class="btn btn-outline-secondary text-start
+          {{ 'active' if selectedTerm.id == term.id }}" id="termFormID_{{term.id}}"
+          value='{{ term.id }}'>{{term.description}}</button>
+        </div>
         {% endfor %}
-    </div>
+        <button class="btn btn-primary mb-2 float-end"
+        id="submitButton" role="button">Make Current Term</button>
+      </div>
   </div>
-  <input type="hidden" value="{{selectedTerm}}" id="termInput">
-  <input type="hidden" value="{{totalTerms}}" id="totalTerms">
-  <button class="btn btn-primary float-right mt-3 text-center float-end" id="submitButton" role="button">Make Current Term</button>
 </div>
-</div>
+<input type="hidden" value="{{selectedTerm}}" id="termInput">
+<input type="hidden" value="{{totalTerms}}" id="totalTerms">
 {% endblock %}
