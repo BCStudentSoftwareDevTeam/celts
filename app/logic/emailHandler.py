@@ -23,40 +23,52 @@ def getParticipantEmails(eventID = None):
 class emailHandler():
     """ A class for email setup and configuring the correct data to send. """
     def __init__(self, mail, emailInfo):
-
+        app.config.update(
+            MAIL_SERVER=app.config['mail']['server'],
+            MAIL_PORT=app.config['mail']['port'],
+            MAIL_USERNAME= app.config['mail']['admin_username'],
+            MAIL_PASSWORD= app.config['mail']['admin_password'],
+            REPLY_TO_ADDRESS= app.config['mail']['reply_to_address'],
+            MAIL_USE_TLS=app.config['mail']['tls'],
+            MAIL_USE_SSL=app.config['mail']['ssl'],
+            MAIL_DEFAULT_SENDER=app.config['mail']['default_sender'],
+            #ALWAYS_SEND_MAIL=default['ALWAYS_SEND_MAIL']
+            MAIL_OVERRIDE_ALL=app.config['mail']['override_addr']
+        )
         self.emailInfo = emailInfo
         self.mail = mail
         self.mail.connect()
-
-    def updateSenderEmail(self):
+        # print(app.config['MA'])
+    def updateSenderEmail(self, message):
         """ Updates who is sending the emails based on the event_list form. """
 
         if self.emailInfo['emailSender'] == 'CELTS Admins':
-            app.config.update(
-                mail_username= app.config['mail']['admin_username'],
-                mail_password = app.config['mail']['admin_password']
-            )
-            print("\n\n"+app.config["mail_username"])
+            message.sender = app.config['mail']['admin_username']
+            # app.config.update(
+            #     mail_username= app.config['mail']['admin_username'],
+            #     mail_password = app.config['mail']['admin_password']
+            # )
+            # print("\n\n"+app.config["mail_username"])
 
         elif self.emailInfo['emailSender'] == 'CELTS Student Staff':
             app.config.update(
-                mail_username= app.config['mail']['staff_username'],
-                mail_password= app.config['mail']['staff_password']
+                mail_username = app.config['mail']['staff_username'],
+                mail_password = app.config['mail']['staff_password']
             )
 
     def sendEmail(self, message: Message, emails):
         """ Updates the sender and sends the email. """
-        self.updateSenderEmail()
-        if '@' in self.emailInfo['emailSender']: #if the current user is sending the email
-            msg = self.emailInfo['message'].replace(" ",'%20')
-            subject = self.emailInfo['subject'].replace(" ",'%20')
-            if app.config['mail']['override_addr']:
-                recipients = app.config['mail']['override_addr']
-            else:
-                recipients = emails
-            webbrowser.open_new(f'mailto:?to={recipients}&subject={subject}&body={msg}')
-
-        elif 'sendIndividually' in self.emailInfo:
+        # self.updateSenderEmail(message)
+        # print(f'\n{message.sender},\n{message.subject}')
+        # if '@' in self.emailInfo['emailSender']: #if the current user is sending the email
+        #     msg = self.emailInfo['message'].replace(" ",'%20')
+        #     subject = self.emailInfo['subject'].replace(" ",'%20')
+        #     if app.config['mail']['override_addr']:
+        #         recipients = app.config['mail']['override_addr']
+        #     else:
+        #         recipients = emails
+        #     webbrowser.open_new(f'mailto:?to={recipients}&subject={subject}&body={msg}')
+        if 'sendIndividually' in self.emailInfo:
             if app.config['mail']['override_addr']:
                 message.recipients = [app.config['mail']['override_addr']]
             with self.mail.connect() as conn:
