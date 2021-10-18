@@ -134,6 +134,12 @@ def groupEventsByCategory(term):
                                  Program.isBonnerScholars == False,
                                  Event.term == term))
 
+    allEvents = Event.select()
+    allPrograms = list(ProgramEvent.select(ProgramEvent.event))
+
+    print("allPrograms",allPrograms)
+
+
     categorizedEvents = {"Student Led Events" : groupEventsByProgram(studentLedEvents),
                          "Trainings" : groupEventsByProgram(trainingEvents),
                          "Bonner Scholars" : groupEventsByProgram(bonnerScholarsEvents),
@@ -195,7 +201,7 @@ def validateNewEventData(data):
             Term.get_by_id(data['term'])
         except DoesNotExist as e:
             return (False, f"Not a valid term: {data['term']}")
-        
+
         if event.exists():
             return (False, "This event already exists")
 
@@ -205,7 +211,7 @@ def validateNewEventData(data):
 
 def calculateRecurringEventFrequency(event):
     """
-        Calculate the events to create based on a recurring event start and end date. Takes a 
+        Calculate the events to create based on a recurring event start and end date. Takes a
         dictionary of event data.
 
         Assumes that the data has been processed with `preprocessEventData`. NOT raw form data.
@@ -220,7 +226,7 @@ def calculateRecurringEventFrequency(event):
 
     return [ {'name': f"{event['name']} Week {counter+1}",
               'date': event['startDate'] + datetime.timedelta(days=7*counter),
-              "week": counter+1} 
+              "week": counter+1}
             for counter in range(0, ((event['endDate']-event['startDate']).days//7)+1)]
 
 def preprocessEventData(eventData):
@@ -230,8 +236,8 @@ def preprocessEventData(eventData):
         - dates should exist and be date objects if there is a value
         - checkbaxes should be True or False
         - if term is given, convert it to a model object
-        - facilitators should be a list of objects. Use the given list of usernames if possible 
-          (and check for a MultiDict with getlist), or else get it from the existing event 
+        - facilitators should be a list of objects. Use the given list of usernames if possible
+          (and check for a MultiDict with getlist), or else get it from the existing event
           (or use an empty list if no event)
     """
 
