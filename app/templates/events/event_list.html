@@ -51,7 +51,8 @@
   </li>
   </ul>
 </div>
-{% macro createAccordion(events) %}
+{% macro createTable(events) %}
+{% if events.exists() %}
   <table class="table table-striped">
     <thead>
       <tr>
@@ -86,11 +87,14 @@
         {% endfor %}
     </tbody>
   </table>
+{% else %}
+  <p>No upcoming events for this term</p>
+{% endif %}
 {% endmacro %}
 
 <div class="tab-content" id="pills-tabContent">
   <div class="tab-pane fade show active" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
-
+    {% if studentLeadProgram %}
     <div class="accordion" id="categoryAccordion">
       {% for program,events in studentLeadProgram.items() %}
 
@@ -149,16 +153,20 @@
         </div>
       {% endfor %}
     </div>
+    {% else %}
+      <p>No upcoming events for this term</p>
+    {% endif %}
   </div>
+
   <div class="tab-pane fade show" id="pills-training" role="tabpanel" aria-labelledby="pills-training-tab">
-    {{createAccordion(trainingProgram)}}
+    {{createTable(trainingProgram)}}
 
   </div>
   <div class="tab-pane fade show" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="pills-bonner-scholars-tab">
-    {{createAccordion(bonnerProgram)}}
+    {{createTable(bonnerProgram)}}
   </div>
   <div class="tab-pane fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
-    {{createAccordion(oneTimeEvents)}}
+    {{createTable(oneTimeEvents)}}
   </div>
 </div>
 

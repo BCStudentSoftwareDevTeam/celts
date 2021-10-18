@@ -64,20 +64,6 @@ def getOneTimeEvents(term):
                                  Program.isBonnerScholars == False,
                                  Event.term == term))
     return oneTimeEvents
-def groupEventsByCategory(term):
-
-    term = Term.get_by_id(term)
-
-
-
-
-
-
-    categorizedEvents = {"Student Led Events" : groupEventsByProgram(studentLedEvents),
-                         "Trainings" : groupEventsByProgram(trainingEvents),
-                         "Bonner Scholars" : groupEventsByProgram(bonnerScholarsEvents),
-                         "One Time Events" : groupEventsByProgram(oneTimeEvents)}
-    return categorizedEvents
 
 def eventEdit(newEventData):
 

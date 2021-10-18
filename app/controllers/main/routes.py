@@ -11,7 +11,6 @@ from app.controllers.main import main_bp
 from app.logic.events import *
 from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
-from app.logic.events import groupEventsByCategory
 from datetime import datetime
 from app import app
 
