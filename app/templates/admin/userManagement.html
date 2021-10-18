@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+  {{super()}}
+  <script type="module" src="/static/js/userManagement.js"></script>
+
+{% endblock %}
+{% block app_content %}
+
+<h1 class="text-center">Admin Management</h1>
+
+{% macro createInputsButtons(inputId, buttonId, buttonName, buttonClass) %}
+<div class="input-group">
+  <input type="input" id="{{inputId}}" name="{{inputId}}" class="form-control" placeholder="Search" autocomplete="off"/>
+  <button type="button" class="btn btn-secondary btn-sm" disabled>
+    <span class="bi bi-search"></span>
+  </button>
+</div>
+<div class="col-md-4"><button type="button" class="btn btn-{{buttonClass}} btn-sm" id="{{buttonId}}">{{buttonName}}</button></div>
+{% endmacro %}
+<div class="container">
+<div class="row g-3">
+    <div class="col-md-4">
+      <div class="col-md-12">Add Celts Admin</div>
+        {{createInputsButtons("searchCeltsAdminInput","addCeltsAdmin","Add","success")}}
+    </div>
+  <div class="col-md-4 offset-md-4">
+    <div class="col-md-12">Add Celts Student Staff</div>
+    {{createInputsButtons("searchCeltsStudentStaffInput","addCeltsStudentStaff","Add","success")}}
+  </div>
+</div>
+ <br>
+  <div class="row g-3">
+  <div class="col-md-4">
+    <div class="col-md-12">Remove Celts Admin</div>
+    {{createInputsButtons("removeCeltsAdminInput","removeCeltsAdmin","Remove","danger")}}
+  </div>
+  <div class="col-md-4 offset-md-4">
+    <div class="col-md-12">Remove Celts Student Staff</div>
+    {{createInputsButtons("removeCeltsStudentStaffInput","removeCeltsStudentStaff","Remove","danger")}}
+  </div>
+</div>
+</div>
+
+{% endblock %}

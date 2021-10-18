@@ -28,6 +28,8 @@ from app.controllers.admin import admin_bp
 from app.logic.users import isEligibleForProgram
 from app.logic.searchUsers import searchUsers
 from app.controllers.admin.volunteers import getVolunteers
+from app.controllers.admin.userManagement import manageUsers
+
 
 @admin_bp.route('/template_select')
 def template_select():
