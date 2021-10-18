@@ -134,12 +134,6 @@ def groupEventsByCategory(term):
                                  Program.isBonnerScholars == False,
                                  Event.term == term))
 
-    allEvents = Event.select()
-    allPrograms = list(ProgramEvent.select(ProgramEvent.event))
-
-    print("allPrograms",allPrograms)
-
-
     categorizedEvents = {"Student Led Events" : groupEventsByProgram(studentLedEvents),
                          "Trainings" : groupEventsByProgram(trainingEvents),
                          "Bonner Scholars" : groupEventsByProgram(bonnerScholarsEvents),
