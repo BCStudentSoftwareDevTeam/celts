@@ -83,14 +83,12 @@ def banUser(program_id, username):
     """
     This function updates the ban status of a username either when they are banned or unbanned from a program.
     """
-    print("inside pythong")
     postData = request.form
-    print(postData)
     banNote = postData["note"]
     banOrUnban = postData["banOrUnban"]
-    username = postData["username"]
+    # username = postData["username"]
     banEndDate = postData["endDate"]
-    programID = postData["programID"]
+    # programID = postData["programID"]
 
     rule = request.url_rule
     username = username
@@ -108,7 +106,6 @@ def updateInterest(program_id, username):
     This function updates the interest table by adding a new row when a user
     shows interest in a program
     """
-    print("inside delete/add interest")
     rule = request.url_rule
     username = username
     try:

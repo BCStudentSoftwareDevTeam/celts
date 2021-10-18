@@ -1,6 +1,7 @@
 from app.models.programBan import ProgramBan
 from app.models.interest import Interest
 from app.models.note import Note
+from app.models.programBanNotes import ProgramBanNotes
 import datetime
 
 def isEligibleForProgram(program, user):
@@ -40,20 +41,20 @@ def addRemoveInterest(rule, program_id, username):
 
 def banUnbanUser(banOrUnban, program_id, username, banNote, banEndDate, creator):
     """
-    This function is ued to add the reasons for being ban and the end date of the ban to the programban table.
+    This function is used to add the reasons for being ban and the end date of the ban to the programban table.
     Parameters:
     program_id: id of the program the user has been banned or unbanned.
     """
+    noteForDb = Note.create(createdBy = creator, createdOn = datetime.datetime.now(), noteContent = banNote, isPrivate = 0)
     if banOrUnban == "Ban":
-        print("---Banned")
-        noteForNote = Note.create(createdBy = creator, createdOn = datetime.datetime.now(), noteContent = banNote, isPrivate = 0)
-        ProgramBan.create(program = program_id, user = username, endDate = banEndDate, note = noteForNote.id)
+        bannedUser = ProgramBan.create(program = program_id, user = username, endDate = banEndDate, note = noteForDb.id)
+        ProgramBanNotes.create(programBan = bannedUser.id, note = noteForDb.id)
         return "Successfully banned the user"
 
     else:
-        print("---Unbanned")
-        now = datetime.datetime.now()
-        ProgramBan.update(endDate = now).where(ProgramBan.program == program_id,
+        bannedUser = ProgramBan.get(ProgramBan.program == program_id,
                                                ProgramBan.user == username,
-                                               ProgramBan.endDate > now).execute()
+                                               ProgramBan.endDate >  datetime.datetime.now())
+        bannedUser.update(endDate = datetime.datetime.now()).execute()
+        ProgramBanNotes.create(programBan = bannedUser.id, note = noteForDb.id)
         return "Successfully unbanned user"

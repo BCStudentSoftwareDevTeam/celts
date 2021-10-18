@@ -27,12 +27,22 @@ $(document).ready(function(){
   });
 
   $(".ban").click(function() {
+
     $("#banVolunteerButton").text($(this).val() + " Volunteer");
+    $(".modal-title").text($(this).val() + " Volunteer");
     $("#modalProgramName").text("Program: " + $(this).attr("name"));
     $("#banVolunteerModal").modal("toggle");
     $("#banVolunteerButton").attr("programID", $(this).attr("id"))
     $("#banVolunteerButton").attr("username", $(".form-check-input").attr("name"))
     $("#banVolunteerButton").attr("banOrUnban", $(this).val());
+    $("#ubanEndDate").show()
+    $("#banVolunteerEndDate").val("")
+    $("#banVolunteerNote").val("")
+
+    if( $(this).val()=="Unban"){
+      $("#ubanEndDate").hide()
+      $("#banVolunteerEndDate").val("1999-12-31") //This is a placeholder value for the if statement in line 49 to work properly
+    }
 
   });
 
