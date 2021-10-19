@@ -184,7 +184,7 @@ programs = [
     {
         "id": 1,
         "programName": "Empty Bowls",
-        "isStudentLed": True,
+        "isStudentLed": False,
         "isBonnerScholars": False,
     },
     {
@@ -200,20 +200,44 @@ programs = [
         "isBonnerScholars": False,
     },
     {
-        "id": 4,
-        "programName": "No Required Events",
-        "isStudentLed": False,
-        "isBonnerScholars": False,
-    },
-    {
         "id": 5,
-        "programName": "First Year Bonners",
+        "programName": "Bonners Scholars",
         "isStudentLed": False,
         "isBonnerScholars": True,
     },
     {
         "id": 6,
         "programName": "Habitat For Humanity",
+        "isStudentLed": False,
+        "isBonnerScholars": False,
+    },
+    {
+        "id": 7,
+        "programName": "Berea Teen Mentoring",
+        "isStudentLed": True,
+        "isBonnerScholars": False,
+    },
+    {
+        "id": 8,
+        "programName": "Hispanic Outreach Program",
+        "isStudentLed": True,
+        "isBonnerScholars": False,
+    },
+    {
+        "id": 9,
+        "programName": "People Who Care",
+        "isStudentLed": True,
+        "isBonnerScholars": False,
+    },
+    {
+        "id": 10,
+        "programName": "Food Drive",
+        "isStudentLed": False,
+        "isBonnerScholars": False,
+    },
+    {
+        "id": 12,
+        "programName": "Berea Tutoring",
         "isStudentLed": False,
         "isBonnerScholars": False,
     }
@@ -224,7 +248,7 @@ events = [
     {
         "id": 1,
         "term": 1,
-        "name": "Empty Bowls Spring",
+        "name": "Empty Bowls Spring Event 1",
         "description": "Empty Bowls Spring 2021",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
@@ -236,8 +260,8 @@ events = [
     {
         "id": 2,
         "term": 1,
-        "name": "Berea Buddies",
-        "description": "Berea Buddies Training",
+        "name": "Berea Buddies Training",
+        "description": "Training for Berea Buddies",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
@@ -307,7 +331,7 @@ events = [
     },
     {
         "id": 8,
-        "term": 3,
+        "term": 1,
         "name": "Adoption",
         "description": "Adoption 101 Training",
         "isTraining": True,
@@ -319,7 +343,7 @@ events = [
     },
     {
         "id": 9,
-        "term": 3,
+        "term": 1,
         "name": "Cleaning Bowls",
         "description": "Cleaning Bowls Training",
         "isTraining": True,
@@ -333,8 +357,8 @@ events = [
     {
         "id": 10,
         "term": 3,
-        "name": "Whole Celts Training",
-        "description": "Whole Celts Training",
+        "name": "All Celts Training",
+        "description": "Training event for all CELTS programs",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
@@ -445,10 +469,6 @@ program_events = [
     {
         "event_id": 10,
         "program_id": 3
-    },
-    {
-        "event_id": 11,
-        "program_id": 4
     },
     {
         "event_id": 12,
