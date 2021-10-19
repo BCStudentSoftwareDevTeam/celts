@@ -37,7 +37,6 @@ class emailHandler():
         )
         self.emailInfo = emailInfo
         self.mail = mail
-        self.mail.connect()
     def updateSenderEmail(self, message):
         """ Updates who is sending the emails based on the event_list form. """
 
@@ -73,5 +72,6 @@ class emailHandler():
                 message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
 
             message.reply_to = app.config['mail']["reply_to_address"]
+            print(f"\n {message} \n")
             self.mail.send(message)
         return 1
