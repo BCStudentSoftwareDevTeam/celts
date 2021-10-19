@@ -31,6 +31,7 @@ def getStudentLeadProgram(term):
                              .join(ProgramEvent)
                              .join(Program)
                              .where(Program.isStudentLed,
+                                    Event.isTraining == False,
                                     Event.term == term))
     programs = {}
 
@@ -53,6 +54,7 @@ def getBonnerProgram(term):
                                  .join(ProgramEvent)
                                  .join(Program)
                                  .where(Program.isBonnerScholars,
+                                        Event.isTraining == False,
                                         Event.term == term))
     return bonnerScholarsEvents
 def getOneTimeEvents(term):
