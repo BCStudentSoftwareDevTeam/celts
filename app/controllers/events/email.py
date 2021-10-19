@@ -32,5 +32,4 @@ def emailVolunteers():
         flash("Email successfully sent!", "success")
     else:
         flash("Error sending email", "danger")
-    return(1)
-    # return redirect(url_for("main.events", selectedTerm = emailInfo['selectedTerm']))
+    return redirect(url_for("main.events", selectedTerm = emailInfo['selectedTerm']))
