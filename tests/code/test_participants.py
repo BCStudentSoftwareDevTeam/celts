@@ -10,6 +10,7 @@ from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours, updateVolunteers
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 from app.logic.participants import sendUserData
+from app.logic.participants import getPresentParticipants
 from app.models.eventRsvp import EventRsvp
 
 @pytest.mark.integration
@@ -224,3 +225,16 @@ def test_sendKioskDataKiosk():
 
     deleteInstance = EventParticipant.get(EventParticipant.user == "bryanta", EventParticipant.event_id == 2)
     deleteInstance.delete_instance()
+
+@pytest.mark.integration
+def test_getPresentParticipants():
+    event = Event.get_by_id(1)
+    presentParticipantsDict = getPresentParticipants(event)
+    assert "partont" in presentParticipantsDict
+    assert presentParticipantsDict["partont"] == 1
+
+@pytest.mark.integration
+def test_getPresentParticipantsWithWrongParticipant():
+    event = Event.get_by_id(1)
+    presentParticipantsDict = getPresentParticipants(event)
+    assert "agliullovak" not in presentParticipantsDict

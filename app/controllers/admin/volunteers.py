@@ -89,10 +89,10 @@ def addVolunteer(volunteer, volunteerEventID, eventLengthInHours):
         flash("Volunteer successfully added!", "success")
     else:
         flash("Error when adding volunteer", "danger")
-    return jsonify({"Success": True}), 200
+    return ""
 
 @admin_bp.route('/removeVolunteerFromEvent/<user>/<eventID>', methods = ['POST'])
 def removeVolunteerFromEvent(user, eventID):
     (EventParticipant.delete().where(EventParticipant.user == user, EventParticipant.event == eventID)).execute()
     flash("Volunteer successfully removed", "success")
-    return jsonify({"Success": True}), 200
+    return "Volunteer successfully removed"

@@ -85,13 +85,9 @@ def unattendedRequiredEvents(program, user):
 
 
 def getPresentParticipants(event):
-        presentParticipantsDict = {}
-        presentParticipants = (EventParticipant
-            .select()
-            .where(EventParticipant.event==event)
-            .filter(EventParticipant.attended==1))
+    presentParticipants = (EventParticipant
+        .select()
+        .where(EventParticipant.event==event)
+        .filter(EventParticipant.attended==1))
 
-        for participant in presentParticipants:
-            presentParticipantsDict[participant.user.username] = participant.hoursEarned
-
-        return presentParticipantsDict
+    return {p.user.username: p.hoursEarned for p in presentParticipants}
