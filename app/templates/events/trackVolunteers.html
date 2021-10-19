@@ -35,8 +35,8 @@
   <input  class="form-control" id="eventID" name="event" value="{{event}}" type='hidden'>
   <div class="flex-container" style="padding: 5px;">
     <div class='form-group d-inline-flex'>
-      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add volunteer</button>
-      <button class="btn btn-info" href= "/event/{{event.id}}/kiosk" role="button" style="margin:5px;">Kiosk Entry</button>
+      <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add volunteer</a>
+      <a class="btn btn-info" href= "/event/{{event.id}}/kiosk" role="button" style="margin:5px;">Kiosk Entry</a>
   </div>
   <!-- Modal -->
   <div class="modal fade" id="addVolunteerModal" tabindex="-1" aria-labelledby="addVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
