@@ -52,7 +52,7 @@ def test_getAllEvents():
     assert len(events) > 0
 
     assert events[0].description == "Empty Bowls Spring 2021"
-    assert events[1].description == "Berea Buddies Training"
+    assert events[1].description == "Training for Berea Buddies"
     assert events[2].description == "Adopt A Grandparent"
 
 @pytest.mark.integration
@@ -231,7 +231,7 @@ def test_correctValidateNewEventData():
                   'isTraining':True, 'isRecurring':False, 'startDate': parser.parse('1999-12-12'),
                   'endDate':parser.parse('2022-06-12'), 'programId':1, 'location':"a big room",
                   'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
-                  'name':'Empty Bowls Spring','term':1,'facilitators':"ramsayb2"}
+                  'name':'Empty Bowls Spring Event 1','term':1,'facilitators':"ramsayb2"}
 
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid == True
@@ -241,9 +241,9 @@ def test_correctValidateNewEventData():
 def test_wrongValidateNewEventData():
 
     eventData =  {'isRsvpRequired':False, 'isService':False,
-                  'isTraining':False, 'isRecurring':False, 'programId':1, 'location':"a big room",
+                  'isTraining':True, 'isRecurring':False, 'programId':1, 'location':"a big room",
                   'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
-                  'name':'Empty Bowls Spring','term':1,'facilitators':"ramsayb2"}
+                  'name':'Empty Bowls Spring Event 1','term':1,'facilitators':"ramsayb2"}
 
     eventData['isRecurring'] = True
     eventData['startDate'] = parser.parse('2021-12-12')
@@ -490,14 +490,15 @@ def test_groupEventsByProgram():
                              .join(Program)
                              .where(Program.isStudentLed,
                                     Event.term == 1))
-    assert groupEventsByProgram(studentLedEvents) == {Program.get_by_id(1): [Event.get_by_id(1), Event.get_by_id(2)] , Program.get_by_id(2): [Event.get_by_id(4)]}
+    assert groupEventsByProgram(studentLedEvents) == {Program.get_by_id(2): [Event.get_by_id(4), Event.get_by_id(8), Event.get_by_id(9)]}
+
 
     trainingEvents = (Event.select(Event, Program.id.alias("program_id"))
                            .join(ProgramEvent)
                            .join(Program)
                            .where(Event.isTraining,
                                   Event.term == 1))
-    assert groupEventsByProgram(trainingEvents) == {Program.get_by_id(1): [Event.get_by_id(1) , Event.get_by_id(2)] , Program.get_by_id(2): [Event.get_by_id(4)]}
+    assert groupEventsByProgram(trainingEvents) == {Program.get_by_id(1): [Event.get_by_id(1) , Event.get_by_id(2)] , Program.get_by_id(2): [Event.get_by_id(4), Event.get_by_id(8), Event.get_by_id(9)]}
 
     bonnerScholarsEvents = (Event.select(Event, Program.id.alias("program_id"))
                                  .join(ProgramEvent)
@@ -519,8 +520,8 @@ def test_groupEventsByProgram():
 @pytest.mark.integration
 def test_groupEventsByCategory():
     groupedEventsByCategory = groupEventsByCategory(1)
-    assert groupedEventsByCategory == {"Student Led Events" : {Program.get_by_id(1): [Event.get_by_id(1), Event.get_by_id(2)] , Program.get_by_id(2): [Event.get_by_id(4)]},
-                         "Trainings" : {Program.get_by_id(1): [Event.get_by_id(1) , Event.get_by_id(2)] , Program.get_by_id(2): [Event.get_by_id(4)]} ,
+    assert groupedEventsByCategory == {"Student Led Events" : {Program.get_by_id(2): [Event.get_by_id(4), Event.get_by_id(8), Event.get_by_id(9)]},
+                         "Trainings" : {Program.get_by_id(1): [Event.get_by_id(1) , Event.get_by_id(2)] , Program.get_by_id(2): [Event.get_by_id(4), Event.get_by_id(8), Event.get_by_id(9)]} ,
                          "Bonner Scholars" : {} ,
                          "One Time Events" : {} }
 
@@ -544,7 +545,7 @@ def test_getsCorrectUpcomingEvent():
     user = "khatts"
     events = getUpcomingEventsForUser(user, asOf=testDate)
     assert len(events) == 3
-    assert "Empty Bowls Spring" == events[0].name
+    assert "Empty Bowls Spring Event 1" == events[0].name
 
     user = "ramsayb2"
     events = getUpcomingEventsForUser(user, asOf=testDate)
