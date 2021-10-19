@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect, url_for
 import yaml, os
 from flask_mail import Mail, Message
 from app.models.interest import Interest
@@ -69,16 +69,18 @@ class emailHandler():
         #         recipients = emails
         #     webbrowser.open_new(f'mailto:?to={recipients}&subject={subject}&body={msg}')
         if 'sendIndividually' in self.emailInfo:
-            if app.config['mail']['override_addr']:
-                message.recipients = [app.config['mail']['override_addr']]
+            if app.config['MAIL_OVERRIDE_ALL']:
+                # message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
+                pass
             with self.mail.connect() as conn:
                 for email in emails:
                     message.recipients = [email]
                     conn.send(message)
         else:
-            if app.config['mail']['override_addr']:
-                message.recipients = [app.config['mail']['override_addr']]
+            if app.config['MAIL_OVERRIDE_ALL']:
+                pass
+                # message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
 
             message.reply_to = app.config['mail']["reply_to_address"]
             self.mail.send(message)
-        return 1
+        return redirect(url_for("main.events", selectedTerm = self.emailInfo['selectedTerm']))
