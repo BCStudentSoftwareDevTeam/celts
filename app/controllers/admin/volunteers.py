@@ -8,7 +8,7 @@ from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateVolunteers, addVolunteerToEvent, getEventLengthInHours
-from app.logic.participants import trainedParticipants, getPresentParticipants
+from app.logic.participants import trainedParticipants, getEventParticipants
 from app.models.user import User
 from app.models.eventRsvp import EventRsvp
 
@@ -34,7 +34,7 @@ def trackVolunteersPage(eventID):
         return "TODO: What do we do for no programs or multiple programs?"
 
     trainedParticipantsList = trainedParticipants(program)
-    presentParticipants = getPresentParticipants(event)
+    eventParticipants = getEventParticipants(event)
 
     if not g.current_user.isCeltsAdmin:
         abort(403)
@@ -52,7 +52,7 @@ def trackVolunteersPage(eventID):
 
     return render_template("/events/trackVolunteers.html",
         eventRsvpData=list(eventRsvpData),
-        presentParticipants=presentParticipants,
+        eventParticipants=eventParticipants,
         eventLength=eventLengthInHours,
         program=program,
         event=event,
@@ -79,12 +79,11 @@ def updateVolunteerTable(eventID):
         flash("Error adding volunteer", "danger")
     return redirect(url_for("admin.trackVolunteersPage", eventID=eventID))
 
-@admin_bp.route('/addVolunteerToEvent/<volunteer>/<volunteerEventID>/<eventLengthInHours>', methods = ['POST'])
-def addVolunteer(volunteer, volunteerEventID, eventLengthInHours):
-    volunteer = volunteer.strip("()")
-    username = volunteer.split('(')[-1]
-    user = User.get(User.username == username)
-    succesfullyAddedVolunteer = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
+@admin_bp.route('/addVolunteerToEvent/<volunteer>/<eventId>', methods = ['POST'])
+def addVolunteer(volunteer, eventId):
+    username = volunteer.strip("()").split('(')[-1]
+    user = User.get(User.username==username)
+    succesfullyAddedVolunteer = addVolunteerToEvent(user, eventId)
     if succesfullyAddedVolunteer:
         flash("Volunteer successfully added!", "success")
     else:
@@ -93,6 +92,7 @@ def addVolunteer(volunteer, volunteerEventID, eventLengthInHours):
 
 @admin_bp.route('/removeVolunteerFromEvent/<user>/<eventID>', methods = ['POST'])
 def removeVolunteerFromEvent(user, eventID):
-    (EventParticipant.delete().where(EventParticipant.user == user, EventParticipant.event == eventID)).execute()
+    (EventParticipant.delete().where(EventParticipant.user==user, EventParticipant.event==eventID)).execute()
+    (EventRsvp.delete().where(EventRsvp.user==user)).execute()
     flash("Volunteer successfully removed", "success")
-    return "Volunteer successfully removed"
+    return ""

@@ -66,7 +66,7 @@
             type="checkbox"
             class='attendanceCheck'
             name="checkbox_{{participant.user.username}}"
-            {% if participant.user.username in presentParticipants %}
+            {% if participant.user.username in eventParticipants %}
               checked
             {% endif %} />
         </td>
@@ -97,10 +97,10 @@
             type ="number"
             min="0"
             step="0.01"
-            {% if participant.user.username in presentParticipants and presentParticipants[participant.user.username] == None %}
+            {% if participant.user.username in eventParticipants and eventParticipants[participant.user.username] == None %}
               value="{{eventLength}}"
-            {% elif participant.user.username in presentParticipants %}
-              value="{{presentParticipants[participant.user.username]}}"
+            {% elif participant.user.username in eventParticipants %}
+              value="{{eventParticipants[participant.user.username]}}"
             {% else %} readonly {% endif %}>
         </td>
         <td>

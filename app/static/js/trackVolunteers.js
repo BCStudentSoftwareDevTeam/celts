@@ -14,17 +14,16 @@ $(document).ready(function() {
   $("#selectVolunteerButton").click(function(){
     let user = $("#addVolunteerInput").val()
     let volunteerEventID = $("#eventID").val()
-    let eventLengthInHours = $("#eventLength").text()
 
     $.ajax({
-      url: `/addVolunteerToEvent/${user}/${volunteerEventID}/${eventLengthInHours}`,
+      url: `/addVolunteerToEvent/${user}/${eventId}`,
       type: "POST",
       success: function(s){
         location.reload();
       },
       error: function(request, status, error){
         location.reload();
-        console.log(status,error);
+        console.log(status, error);
       }
     });
   });
@@ -43,7 +42,7 @@ $(".removeVolunteer").on("click", function() {
   let username =  $(this)[0].id;
   let eventID = $('#eventID').val()
   $.ajax({
-    url: `/removeVolunteerFromEvent/${username}/${eventID}`,
+    url: `/removeVolunteerFromEvent/${username}/${eventId}`,
     type: "POST",
     success: function(s) {
       location.reload();
