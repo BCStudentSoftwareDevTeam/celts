@@ -1,5 +1,6 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for
-from datetime import datetime
+import datetime
+
 from app import app
 from app.models.program import Program
 from app.models.event import Event
@@ -8,6 +9,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
+
 from app.controllers.main import main_bp
 from app.logic.events import *
 from app.logic.users import addRemoveInterest
@@ -20,7 +22,7 @@ def events(selectedTerm=None):
     currentTerm = g.current_term
     if selectedTerm:
         currentTerm = selectedTerm
-    currentTime = datetime.now()
+    currentTime = datetime.datetime.now()
     term = Term.get_by_id(currentTerm)
     studentLeadProgram = getStudentLeadProgram(term)
     trainingProgram = getTrainingProgram(term)

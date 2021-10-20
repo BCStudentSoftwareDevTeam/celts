@@ -131,13 +131,13 @@ def test_preprocessEventData_dates():
 
     eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08', 'isRecurring': 'on'}
     newData = preprocessEventData(eventData)
-    assert newData['startDate'] == datetime.strptime("2021-09-07","%Y-%m-%d")
-    assert newData['endDate'] == datetime.strptime("2021-08-08","%Y-%m-%d")
+    assert newData['startDate'] == datetime.datetime.strptime("2021-09-07","%Y-%m-%d")
+    assert newData['endDate'] == datetime.datetime.strptime("2021-08-08","%Y-%m-%d")
 
     # test different date formats
     eventData = {'startDate':parser.parse('09/07/21'), 'endDate': 75, 'isRecurring': 'on'}
     newData = preprocessEventData(eventData)
-    assert newData['startDate'] == datetime.strptime("2021-09-07","%Y-%m-%d")
+    assert newData['startDate'] == datetime.datetime.strptime("2021-09-07","%Y-%m-%d")
     assert newData['endDate'] == ''
 
     # endDate should match startDate for non-recurring events
@@ -402,8 +402,8 @@ def test_saveEventToDb_update():
                     "term": 1,
                     "name": "First Meetup",
                     "description": "This is a Test",
-                    "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
-                    "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+                    "timeStart": datetime.datetime.strptime("6:00 pm", "%I:%M %p"),
+                    "timeEnd": datetime.datetime.strptime("9:00 pm", "%I:%M %p"),
                     "location": "House",
                     'isRecurring': True,
                     'isTraining': True,
@@ -424,8 +424,8 @@ def test_saveEventToDb_update():
                     "term": 1,
                     "name": "First Meetup",
                     "description": "Berea Buddies First Meetup",
-                    "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
-                    "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+                    "timeStart": datetime.datetime.strptime("6:00 pm", "%I:%M %p"),
+                    "timeEnd": datetime.datetime.strptime("9:00 pm", "%I:%M %p"),
                     "location": "House",
                     'isRecurring': True,
                     'isTraining': True,
@@ -479,7 +479,7 @@ def test_getAllFacilitators():
 @pytest.mark.integration
 def test_getsCorrectUpcomingEvent():
 
-    testDate = datetime.strptime("2021-08-01 5:00","%Y-%m-%d %H:%M")
+    testDate = datetime.datetime.strptime("2021-08-01 5:00","%Y-%m-%d %H:%M")
 
     user = "khatts"
     events = getUpcomingEventsForUser(user, asOf=testDate)
