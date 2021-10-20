@@ -10,6 +10,7 @@ from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours, updateVolunteers
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 from app.logic.participants import sendUserData
+from app.models.eventRsvp import EventRsvp
 
 @pytest.mark.integration
 def test_getEventLengthInHours():
@@ -138,14 +139,14 @@ def test_noEventUserRsvpForEvent():
 @pytest.mark.integration
 def test_userRsvpForEvent():
 
-    volunteer = userRsvpForEvent("agliullovak", 11)
+    volunteer = userRsvpForEvent("agliullovak", 10)
     assert volunteer.user.username == "agliullovak"
-    assert volunteer.event.id == 11
-    assert volunteer.rsvp == True
+    assert volunteer.event.id == 10
+
 
     # the user has already registered for the event
-    volunteer = userRsvpForEvent("agliullovak", 11)
-    assert volunteer.event.id == 11
+    volunteer = userRsvpForEvent("agliullovak", 10)
+    assert volunteer.event.id == 10
     assert volunteer
 
     (EventParticipant.delete().where(EventParticipant.user == 'agliullovak', EventParticipant.event == 11)).execute()
@@ -174,7 +175,7 @@ def test_unattendedRequiredEvents():
     assert len(unattendedEvents) == 3
 
     # test after user has attended an event
-    event = Event.get(Event.eventName == unattendedEvents[0])
+    event = Event.get(Event.name == unattendedEvents[0])
     EventParticipant.create(user = user, event = event, attended = True)
     unattendedEvents = unattendedRequiredEvents(program, user)
     assert len(unattendedEvents) == 2
@@ -200,7 +201,7 @@ def test_unattendedRequiredEvents():
     program = 1
     user = "asdfasdf56"
     unattendedEvents = unattendedRequiredEvents(program, user)
-    assert unattendedEvents == ['Empty Bowls Spring', 'Berea Buddies', 'How To Make Buddies']
+    assert unattendedEvents == ['Empty Bowls Spring Event 1', 'Berea Buddies Training', 'How To Make Buddies']
 
 @pytest.mark.integration
 def test_sendKioskDataKiosk():
@@ -216,10 +217,10 @@ def test_sendKioskDataKiosk():
 
 
     signin = sendUserData("B00708826", 2, 1)
-    usersAttended2 = EventParticipant.select().where(EventParticipant.attended, EventParticipant.event == 2)
-    listOfAttended2 = [users.user.username for users in usersAttended2]
+    usersAttended = EventParticipant.select().where(EventParticipant.attended, EventParticipant.event == 2)
+    listOfAttended = [users.user.username for users in usersAttended]
 
-    assert "bryanta" in listOfAttended2
+    assert "bryanta" in listOfAttended
 
     deleteInstance = EventParticipant.get(EventParticipant.user == "bryanta", EventParticipant.event_id == 2)
     deleteInstance.delete_instance()

@@ -1,122 +1,147 @@
 from flask import request, render_template, url_for, g, Flask, redirect, flash, abort, json, jsonify
+from peewee import DoesNotExist
+from playhouse.shortcuts import model_to_dict
+import json
+
+from datetime import datetime
+from dateutil import parser
+
 from app.models.program import Program
 from app.models.event import Event
 from app.models.facilitator import Facilitator
 from app.models.eventParticipant import EventParticipant
+from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.term import Term
+from app.models.eventTemplate import EventTemplate
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
-from app.logic.getSLInstructorTableData import getProposalData
+
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectFutureTerms
-from app.logic.searchUsers import searchUsers
-from app.logic.events import deleteEvent, getAllFacilitators
+from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
-from app.controllers.admin.eventCreation import createEvent, addRecurringEvents
-from app.controllers.admin import changeSLAction
-from datetime import datetime
-
-@admin_bp.route('/<programID>/<eventID>/track_volunteers', methods=['GET'])
-def trackVolunteersPage(programID, eventID):
-
-    attendedTraining = trainedParticipants(programID)
-    if g.current_user.isCeltsAdmin:
-        if ProgramEvent.get_or_none(ProgramEvent.event == eventID, ProgramEvent.program == programID):
-            eventParticipantsData = EventParticipant.select().where(EventParticipant.event == eventID)
-            eventParticipantsData = eventParticipantsData.objects()
-
-            event = Event.get_by_id(eventID)
-            program = Program.get_by_id(programID)
-            eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
+from app.controllers.admin.userManagement import manageUsers
 
 
-            return render_template("/events/trackVolunteers.html",
-                                    eventParticipantsData = list(eventParticipantsData),
-                                    eventLength = eventLengthInHours,
-                                    program = program,
-                                    event = event,
-                                    attendedTraining=attendedTraining)
-        else:
-            raise Exception("Event ID and Program ID mismatched")
+@admin_bp.route('/template_select')
+def template_select():
+    allprograms = Program.select().order_by(Program.programName)
+    visibleTemplates = EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
 
-    else:
+    return render_template("/events/template_selector.html",
+                programs=allprograms,
+                templates=visibleTemplates
+            )
+
+@admin_bp.route('/event/<templateid>/create', methods=['GET','POST'])
+@admin_bp.route('/event/<templateid>/<programid>/create', methods=['GET','POST'])
+def createEvent(templateid, programid=None):
+    if not g.current_user.isAdmin:
         abort(403)
 
-@admin_bp.route('/<program>/<eventId>/edit_event', methods=['GET'])
-def editEvent(program, eventId):
-    facilitators = getAllFacilitators()
-    eventInfo = Event.get_by_id(eventId)
-    currentTermid = Term.select().where(Term.isCurrentTerm).get()
-    futureTerms = selectFutureTerms(currentTermid)
+    # Validate given URL
+    program = None
+    try:
+        template = EventTemplate.get_by_id(templateid)
+        if programid:
+            program = Program.get_by_id(programid)
+    except DoesNotExist as e:
+        print("Invalid template or program id:", e)
+        flash("There was an error with your selection. Please try again or contact Systems Support.", "danger")
+        return redirect(url_for("admin.program_picker"))
 
-    # FIXME: One of the below two should be replaced which one?
-    eventFacilitators = Facilitator.select().where(Facilitator.event == eventInfo)
-    numFacilitators = len(list(eventFacilitators))
-    currentFacilitator = Facilitator.get_or_none(Facilitator.event == eventId)
+    # Get the data for the form, from the template or the form submission
+    eventData = template.templateData
+    if request.method == "POST":
+        eventData = request.form.copy()
 
-    isRecurring = "Checked" if eventInfo.isRecurring else ""
-    # isPrerequisiteForProgram = "Checked" if eventInfo.isPrerequisiteForProgram else ""
-    isTraining = "Checked" if eventInfo.isTraining else ""
-    isRsvpRequired = "Checked" if eventInfo.isRsvpRequired else ""
-    isService = "Checked" if eventInfo.isService else ""
-    userHasRSVPed = EventParticipant.get_or_none(EventParticipant.user == g.current_user, EventParticipant.event == eventInfo)
-    deleteButton = "submit"
-    hideElement = "hidden"
-    program = Program.get_by_id(program)
-
-    currentDate = datetime.now()
-    eventDate = datetime.combine(eventInfo.startDate, eventInfo.timeStart)
-    isPastEvent = False
-    if currentDate >= eventDate:
-        isPastEvent = True
+    if program:
+        # TODO need to handle the multiple programs case
+        eventData["program"] = program
 
 
-    return render_template("admin/createEvents.html",
-                            user = g.current_user,
-                            isPastEvent = isPastEvent,
-                            program = program,
-                            currentFacilitator = currentFacilitator,
-                            facilitators = facilitators,
+    # Try to save the form
+    if request.method == "POST":
+        try:
+            saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
+        except Exception as e:
+            print("Error saving event:", e)
+            saveSuccess = False
+            validationErrorMessage = "Unknown Error Saving Event. Please try again"
+
+        if saveSuccess:
+            noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
+            flash(f"{noun} successfully created!", 'success')
+            return redirect(url_for("main.events", term = eventData['term']))
+        else:
+            flash(validationErrorMessage, 'warning')
+
+    # make sure our data is the same regardless of GET or POST
+    preprocessEventData(eventData)
+    futureTerms = selectFutureTerms(g.current_term)
+
+    return render_template(f"/admin/{template.templateFile}",
+            template = template,
+            eventData = eventData,
+            futureTerms = futureTerms,
+            allFacilitators = getAllFacilitators())
+
+
+@admin_bp.route('/event/<eventId>/edit', methods=['GET','POST'])
+def editEvent(eventId):
+    if request.method == "POST" and not g.current_user.isAdmin:
+        abort(403)
+
+    # Validate given URL
+    try:
+        event = Event.get_by_id(eventId)
+    except DoesNotExist as e:
+        print(f"Unknown event: {eventId}")
+        abort(404)
+
+    eventData = model_to_dict(event, recurse=False)
+    if request.method == "POST": # Attempt to save form
+        eventData = request.form.copy()
+        saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
+        if saveSuccess:
+            flash("Event successfully updated!", "success")
+            return redirect(url_for("admin.editEvent", eventId = eventId))
+        else:
+            flash(validationErrorMessage, 'warning')
+
+    preprocessEventData(eventData)
+    futureTerms = selectFutureTerms(g.current_term)
+    userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
+    isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
+
+    return render_template("admin/createSingleEvent.html",
+                            eventData = eventData,
+                            allFacilitators = getAllFacilitators(),
                             futureTerms = futureTerms,
-                            eventInfo = eventInfo,
-                            eventId = eventId,
-                            isRecurring = isRecurring,
-                            isTraining = isTraining,
-                            hideElement = hideElement,
-                            isRsvpRequired = isRsvpRequired,
-                            isService = isService,
-                            eventFacilitators = eventFacilitators,
-                            numFacilitators = numFacilitators,
-                            userHasRSVPed = userHasRSVPed,
-                            deleteButton = deleteButton)
+                            isPastEvent = isPastEvent,
+                            userHasRSVPed = userHasRSVPed)
 
-@admin_bp.route('/<program>/<eventId>/deleteEvent', methods=['POST'])
-def deleteRoute(program, eventId):
+@admin_bp.route('/event/<eventId>/delete', methods=['POST'])
+def deleteRoute(eventId):
 
     try:
-        eventTerm = Event.get(Event.id == eventId).term
-        deleteEvent(program, eventId)
-        flash("Event canceled", "success")
-        return redirect(url_for("events.events", term=eventTerm))
+        term = Event.get(Event.id == eventId).term
+        deleteEvent(eventId)
+        flash("Event removed", "success")
+        return redirect(url_for("main.events"))
 
     except Exception as e:
         print('Error while canceling event:', e)
         return "", 500
 
-@admin_bp.route('/courseProposals', methods=['GET'])
-def createTable():
-    courseDict = getProposalData(g.current_user)
-    try:
-        return render_template("/admin/createSLProposalTable.html",
-                                instructor = g.current_user,
-                                courseDict = courseDict)
-    except Exception as e:
-        print('Error while creating table:', e)
-        return "", 500
+@admin_bp.route('/makeRecurringEvents', methods=['POST'])
+def addRecurringEvents():
+    recurringEvents = calculateRecurringEventFrequency(preprocessEventData(request.form.copy()))
+    return json.dumps(recurringEvents, default=str)
 
 @admin_bp.route('/volunteerProfile', methods=['POST'])
 def volunteerProfile():
@@ -127,22 +152,9 @@ def volunteerProfile():
 
 @admin_bp.route('/search_student', methods=['GET'])
 def studentSearchPage():
-    if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
+    if g.current_user.isAdmin:
         return render_template("/searchStudentPage.html")
     abort(403)
-
-@admin_bp.route('/searchStudents/<query>', methods = ['GET'])
-def searchStudents(query):
-    '''Accepts user input and queries the database returning results that matches user search'''
-    try:
-        query = query.strip()
-        search = query.upper()
-        splitSearch = search.split()
-        searchResults = searchUsers(query)
-        return searchResults
-    except Exception as e:
-        print(e)
-        return "Error Searching Volunteers query", 500
 
 @admin_bp.route('/addParticipants', methods = ['GET'])
 def addParticipants():
