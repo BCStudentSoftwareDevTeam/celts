@@ -1,7 +1,6 @@
 from app.models.programBan import ProgramBan
 from app.models.interest import Interest
 from app.models.note import Note
-from app.models.programBanNotes import ProgramBanNotes
 import datetime
 
 def isEligibleForProgram(program, user):
@@ -39,22 +38,32 @@ def addRemoveInterest(rule, program_id, username):
             return "This interest does not exist"
 
 
-def banUnbanUser(banOrUnban, program_id, username, banNote, banEndDate, creator):
+def banUnbanUser(banOrUnban, program_id, username, note, banEndDate, creator):
     """
-    This function is used to add the reasons for being ban and the end date of the ban to the programban table.
+    This function creates an entry in the note table and programBan table in order
+    to ban the selected user.
     Parameters:
-    program_id: id of the program the user has been banned or unbanned.
+    banOrUnban: contains "Ban" or "Unban" to determine which action must be taken
+    program_id: primary id of the program the user has been banned or unbanned.
+    username: username of the user to be banned or unbanned
+    note: note left about the ban or unban, expected to be a reason why the action is needed
+    banEndDate: date when the ban will end
+    creator: who banned or unbanned the user
     """
-    noteForDb = Note.create(createdBy = creator, createdOn = datetime.datetime.now(), noteContent = banNote, isPrivate = 0)
+    noteForDb  = Note.create(createdBy = creator,
+                            createdOn = datetime.datetime.now(),
+                            noteContent = note,
+                            isPrivate = 0)
     if banOrUnban == "Ban":
-        bannedUser = ProgramBan.create(program = program_id, user = username, endDate = banEndDate, note = noteForDb.id)
-        ProgramBanNotes.create(programBan = bannedUser.id, note = noteForDb.id)
+        ProgramBan.create(program = program_id,
+                          user = username,
+                          endDate = banEndDate,
+                          banNote = noteForDb.id)
         return "Successfully banned the user"
 
     else:
-        bannedUser = ProgramBan.get(ProgramBan.program == program_id,
-                                               ProgramBan.user == username,
-                                               ProgramBan.endDate >  datetime.datetime.now())
-        bannedUser.update(endDate = datetime.datetime.now()).execute()
-        ProgramBanNotes.create(programBan = bannedUser.id, note = noteForDb.id)
-        return "Successfully unbanned user"
+        ProgramBan.update(endDate = datetime.datetime.now(),
+                                    unbanNote = noteForDb.id).where(ProgramBan.program == program_id,
+                                                                    ProgramBan.user == username,
+                                                                    ProgramBan.endDate >  datetime.datetime.now()).execute()
+        return "Successfully unbanned the user"

@@ -16,7 +16,7 @@
 <h6 align="center">{{volunteer.phoneNumber}}</h6>
 </div>
 <div class="btn-group">
-   <ul class="nav nav-pills nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
+   <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="tabs-tab" role="tablist">
      <li class="nav-item" role="presentation">
        <a class="nav-link active" href="#">Upcoming Events</a>
      </li>
@@ -39,8 +39,8 @@
        <tr>
          <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
          <td>{{event.name}}</td>
-         <td>{{event.startDate}}</td>
-         <td>{{event.timeStart}}</td>
+         <td>{{event.startDate.strftime('%m/%d/%Y')}}</td>
+         <td>{{event.timeStart.strftime('%-I:%M %p')}}</td>
          <td>{{event.location}}</td>
        </tr>
        {% endfor %}
@@ -55,15 +55,14 @@
  <!-- Start Program Elegibility Table -->
  <div class="row">
    <table class="table">
- {% if user.isCeltsAdmin or user.isStudent%}
             <tbody id="volunteerTable">
               <thead>
                 <tr>
-                  <th scope="col">All Programs</th>
-                  <th scope="col">Show Interest</th>
-                  <th scope="col">Training Checklist</th>
+                  <th scope="col">Program</th>
+                  <th scope="col">Interested?</th>
+                  <th scope="col">Completed Training</th>
                   {% if user.isCeltsAdmin %}
-                  <th scope="col">Banned</th>
+                  <th scope="col">Elegibility</th>
                   {% endif %}
                 </tr>
               </thead>
@@ -74,15 +73,14 @@
                 <td>{% if volunteer.username in trainingChecklist[program.program.id] %}<i class="bi bi-check-lg"></i> {% else %} <i class="bi bi-x-lg"></i>{% endif %}</td>
                 {% if user.isCeltsAdmin %}
                 <td class="programBan">
-                  {% if program.isNotBanned %}<button type="button" class="ban btn btn-danger rounded-pill" id="{{program.program}}" name="{{program.program.programName}}" value="Ban">Ban</button>
-                  {% else %} <button type="button" class="ban btn btn-success rounded-pill" id="{{program.program}}" name="{{program.program.programName}}" value="Unban">Unban</button>
+                  {% if program.isNotBanned %}<i class="bi bi-check-lg"></i><button type="button" class="ban btn btn-link" id="{{program.program}}" name="{{program.program.programName}}" value="Ban">Edit</button>
+                  {% else %} <i class="bi bi-x-lg"></i><button type="button" class="ban btn btn-link" id="{{program.program}}" name="{{program.program.programName}}" value="Unban">Edit</button>
                   {% endif %}
                 </td>
                 {% endif %}
               </tr>
             </tbody>
       {% endfor %}
-  {% endif %}
 </table>
   </div>
 <!-- End Program Elegibility Table -->
@@ -98,18 +96,20 @@
       <div class="modal-body" style="align=center">
         <h6 align="left">{{volunteer.firstName}} {{volunteer.lastName}}</h6>
         <h6 align="left">{{volunteer.email}}</h6>
-        <h6 align="left">{{volunteer.phoneNumber}}</h6>
+        <h6 align="left"><a href="tel:{{volunteer.phoneNumber}}">{{volunteer.phoneNumber}}</a></h6>
         <h6 align="left" id="modalProgramName"></h6>
+        <h6 align="left" id="modalProgramName"></h6>
+
         <div id="ubanEndDate">
           <h6 align="left" class="d-inline-flex" id="unbanVolunteerEndDate">End Date: &nbsp<input id="banVolunteerEndDate" type="date"></h6>
         </div>
         <div class="input-group">
-          <div class="form-group input-group-x form-outline ui-widget" style="width:80%;">
+          <div class="form-group input-group-x form-outline ui-widget col-xs-10">
             <textarea name="name" rows="8" cols="80" type="input" id="banVolunteerNote" class="form-control" placeholder="Please add a note for this change"></textarea>
           </div>
         </div>
       </div>
-      <div class="modal-footer">
+      <div class="modal-footer justify-content-between">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <button id="banVolunteerButton" type="button" class="btn btn-primary" banOrUnban="" disabled>Ban/Unban Volunteer</button>
       </div>

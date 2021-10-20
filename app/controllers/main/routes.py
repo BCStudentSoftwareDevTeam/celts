@@ -45,7 +45,7 @@ def viewVolunteersProfile(username):
     """
     This function displays the information of a volunteer to the user
     """
-    if not g.current_user.isFaculty or g.current_user.isCeltsAdmin:
+    if (g.current_user.username == username) or g.current_user.isAdmin:
          upcomingEvents = getUpcomingEventsForUser(username)
          programs = Program.select()
          interests = Interest.select().where(Interest.user == username)
@@ -57,7 +57,6 @@ def viewVolunteersProfile(username):
          trainingChecklist = {}
          for program in programs:
              trainingChecklist[program.id] = trainedParticipants(program.id)
-         print("-------------------------------------------------------")
          eligibilityTable = []
          for i in programs:
              eligibilityTable.append({"program" : i,
@@ -82,16 +81,13 @@ def viewVolunteersProfile(username):
 def banUser(program_id, username):
     """
     This function updates the ban status of a username either when they are banned or unbanned from a program.
+    program_id: the primary id of the program the student is being banned or unbanned from
+    username: unique value of a user to correctly identify them
     """
     postData = request.form
-    banNote = postData["note"]
-    banOrUnban = postData["banOrUnban"]
-    # username = postData["username"]
-    banEndDate = postData["endDate"]
-    # programID = postData["programID"]
-
-    rule = request.url_rule
-    username = username
+    banNote = postData["note"] # This contains the note left about the change
+    banOrUnban = postData["banOrUnban"] # Contains "Ban" or "Unban" to determine whether to ban or unban the user
+    banEndDate = postData["endDate"] # Contains the date the ban will no longer be effective
     try:
         return banUnbanUser(banOrUnban, program_id, username, banNote, banEndDate, g.current_user)
     except Exception as e:

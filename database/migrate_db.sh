@@ -22,7 +22,6 @@ pem add app.models.courseInstructor.CourseInstructor
 pem add app.models.courseQuestion.CourseQuestion
 pem add app.models.questionNote.QuestionNote
 pem add app.models.eventRsvp.EventRsvp
-pem add app.models.programBanNotes.ProgramBanNotes
 
 
 pem watch

@@ -41,7 +41,7 @@ $(document).ready(function(){
 
     if( $(this).val()=="Unban"){
       $("#ubanEndDate").hide()
-      $("#banVolunteerEndDate").val("1999-12-31") //This is a placeholder value for the if statement in line 49 to work properly
+      $("#banVolunteerEndDate").val("0001-01-01") //This is a placeholder value for the if statement in line 49 to work properly
     }
 
   });
@@ -57,19 +57,14 @@ $(document).ready(function(){
   });
 
   $("#banVolunteerButton").click(function (){
-    console.log("Nothing to see here");
-
     $.ajax({
       method: "POST",
       url: "/banUnbanUser/" + $(this).attr("programID") + "/" + $(this).attr("username"),
       data: {"note": $("#banVolunteerNote").val(),
              "banOrUnban": $(this).attr("banOrUnban"),
              "endDate":$("#banVolunteerEndDate").val(),
-             "username": $(this).attr("username"),
-             "programID": $(this).attr("programID")
             },
       success: function(response) {
-        console.log("The ban table has been updated", "success");
         location.reload();
       }
     });
