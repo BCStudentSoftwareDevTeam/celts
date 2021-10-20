@@ -8,7 +8,7 @@ from app.logic.events import getStudentLeadProgram,  getTrainingProgram, getBonn
 @pytest.mark.integration
 def test_event_list():
     with mainDB.atomic() as transaction:
-        studentLead = Event.create(eventName = "Test Student Lead",
+        studentLead = Event.create(name = "Test Student Lead",
                                 term = 3,
                                 description = "event for testing",
                                 timeStart = "18:00:00",
@@ -20,9 +20,9 @@ def test_event_list():
                                 isService = 0,
                                 startDate = 2021-12-12,
                                 endDate = 2021-12-13)
-        studentProgramEvent = ProgramEvent.create(program = 1, event = studentLead)
+        studentProgramEvent = ProgramEvent.create(program = 2, event = studentLead)
 
-        training = Event.create(eventName = "Test Training Program",
+        training = Event.create(name = "Test Training Program",
                                 term = 3,
                                 description = "event for testing",
                                 timeStart = "18:00:00",
@@ -36,7 +36,7 @@ def test_event_list():
                                 endDate = 2021-12-13)
         trainingProgramEvent = ProgramEvent.create(program = 2, event = training)
 
-        bonner = Event.create(eventName = "Test Bonner Program",
+        bonner = Event.create(name = "Test Bonner Program",
                                 term = 3,
                                 description = "event for testing",
                                 timeStart = "18:00:00",
@@ -51,7 +51,7 @@ def test_event_list():
         bonnerProgramEvent = ProgramEvent.create(program = 5, event = bonner)
 
 
-        oneTime = Event.create(eventName = "Test One Time",
+        oneTime = Event.create(name = "Test One Time",
                                 term = 3,
                                 description = "event for testing",
                                 timeStart = "18:00:00",
@@ -66,28 +66,29 @@ def test_event_list():
         oneTimeProgramEvent = ProgramEvent.create(program = 6, event = oneTime)
 
         studentLeadProgram = getStudentLeadProgram(3)
-        studentLeadProgram2 = getStudentLeadProgram(2)
         trainingProgram = getTrainingProgram(3)
         trainingProgram2 = getTrainingProgram(2)
         bonnerProgram = getBonnerProgram(3)
         oneTimeEvents = getOneTimeEvents(3)
 
         assert studentLeadProgram
-        assert True in [program.programName == "Empty Bowls" for program,events in studentLeadProgram.items()]
-        assert [True] in [[event.eventName == "Test Student Lead" for event in events] for program, events in studentLeadProgram.items()]
-        assert [True] not in [[event.eventName == "Test Training Program" for event in events] for program, events in studentLeadProgram.items()]
+        studentLeadRes = []
+        for program, events in studentLeadProgram.items():
+            for event in events:
+                studentLeadRes.append(event.name)
+        assert "Test Student Lead" in studentLeadRes
 
         assert trainingProgram
-        assert True in [event.eventName == "Test Training Program" for event in trainingProgram]
-        assert True not in [event.eventName == "Test Student Lead" for event in trainingProgram]
-        assert True not in [event.eventName == "Test Training Program" for event in trainingProgram2]
+        assert True in [event.name == "Test Training Program" for event in trainingProgram]
+        assert True not in [event.name == "Test Student Lead" for event in trainingProgram]
+        assert True not in [event.name == "Test Training Program" for event in trainingProgram2]
 
         assert bonnerProgram
-        assert True in [event.eventName == "Test Bonner Program" for event in bonnerProgram]
-        assert True not in [event.eventName == "Test Training Program" for event in bonnerProgram]
+        assert True in [event.name == "Test Bonner Program" for event in bonnerProgram]
+        assert True not in [event.name == "Test Training Program" for event in bonnerProgram]
 
         assert oneTimeEvents
-        assert True in [event.eventName == "Test One Time" for event in oneTimeEvents]
-        assert True not in [event.eventName == "Test Training Program" for event in oneTimeEvents]
+        assert True in [event.name == "Test One Time" for event in oneTimeEvents]
+        assert True not in [event.name == "Test Training Program" for event in oneTimeEvents]
 
         transaction.rollback()
