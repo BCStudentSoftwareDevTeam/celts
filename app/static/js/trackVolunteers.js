@@ -1,8 +1,15 @@
 import searchUser from './searchUser.js'
 
 $(document).ready( function () {
+  console.log(data['column'])
     $('#trackVolunteerstable').DataTable(
-    {"lengthChange": false
+    {"lengthChange": false,
+    if (data['column'] <= 10) {
+        "searching": false,;
+    }
+
+
+    // responsive: true
 
     }
     );
