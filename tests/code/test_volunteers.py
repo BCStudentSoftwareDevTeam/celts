@@ -1,8 +1,9 @@
 import pytest
-from app.logic.volunteers import getEventLengthInHours, updateVolunteers
+from app.logic.volunteers import getEventLengthInHours, updateEventParticipants
 from app.models.eventParticipant import EventParticipant
-from app.controllers.admin.volunteers import addVolunteerToEvent
+from app.controllers.admin.volunteers import addVolunteerToEventRsvp
 from datetime import datetime
+from peewee import DoesNotExist
 
 
 @pytest.mark.integration
@@ -45,48 +46,49 @@ def test_getEventLengthInHours():
 
 
 @pytest.mark.integration
-def test_addVolunteerToEvent():
+def test_addVolunteerToEventRsvp():
     user = "khatts"
     volunteerEventID = 5
     eventLengthInHours = 67
     #test that volunteer is already registered for the event
-    volunteerToEvent = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
+    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID, eventLengthInHours)
     assert volunteerToEvent == True
 
     #test for adding user as a participant to the event
     user = "agliullovak"
-    volunteerToEvent = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
+    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID, eventLengthInHours)
     assert volunteerToEvent == True
     (EventParticipant.delete().where(EventParticipant.user == user, EventParticipant.event == volunteerEventID)).execute()
 
     # test for username that is not in the database
     user = "jarjug"
-    volunteerToEvent = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
+    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID, eventLengthInHours)
     assert volunteerToEvent == False
 
     # test for event that does not exsit
     user = "agliullovak"
     volunteerEventID = 5006
-    volunteerToEvent = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
+    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID, eventLengthInHours)
     assert volunteerToEvent == False
 
 
 @pytest.mark.integration
-def test_updateVolunteers():
+def test_updateEventParticipants():
     # TODO: test update, create, delete
-    # tests if the volunteer table gets succesfully updated
+    # tests the checkbox is checked and user exdists in EventParticipant, then updates the record
     participantData = {'inputHours_agliullovak':100, 'checkbox_agliullovak':"on", 'event':3, 'username1': 'agliullovak'}
-    volunteerTableUpdate = updateVolunteers(participantData)
+    volunteerTableUpdate = updateEventParticipants(participantData)
     assert volunteerTableUpdate == True
 
-    # tests if user does not exist in the database
-    participantData = {'inputHours_jarjug':100, 'checkbox_jarjug':"on", 'event':3, 'username1': 'jarjug'}
-    volunteerTableUpdate = updateVolunteers(participantData)
-    assert volunteerTableUpdate == False
+    # tests if the checkbox is not checked and user is not in EventParticipant, then delete a record
+    with pytest.raises(DoesNotExist):
+        updateEventParticipants(participantData)
+
+    # tests if the checkbox is checked and user is not in EventParticipant, then create a new entry
 
     # tests for the case when the checkbox is not checked (user is not present)
     participantData = {'inputHours_agliullovak':100, 'event':3, 'username1': 'agliullovak'}
-    volunteerTableUpdate = updateVolunteers(participantData)
+    volunteerTableUpdate = updateEventParticipants(participantData)
     assert volunteerTableUpdate == True
 
     #Undo the above test changes

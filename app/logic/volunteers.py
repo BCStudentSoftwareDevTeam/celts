@@ -19,7 +19,7 @@ def getEventLengthInHours(startTime, endTime, eventDate):
     return eventLengthInHours
 
 
-def updateVolunteers(participantData):
+def updateEventParticipants(participantData):
     """
     Create new entry in event participant table if user does not exist. Otherwise, updates the record.
 
@@ -63,7 +63,7 @@ def updateVolunteers(participantData):
     return True
 
 
-def addVolunteerToEvent(user, volunteerEventID):
+def addVolunteerToEventRsvp(user, volunteerEventID):
     '''
     Adds a volunteer to event rsvp table when a user rsvps and when they are
     added through the track volunteer page by an admin.

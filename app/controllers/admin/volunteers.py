@@ -7,7 +7,7 @@ from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
-from app.logic.volunteers import updateVolunteers, addVolunteerToEvent, getEventLengthInHours
+from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours
 from app.logic.participants import trainedParticipants, getEventParticipants
 from app.models.user import User
 from app.models.eventRsvp import EventRsvp
@@ -83,8 +83,8 @@ def updateVolunteerTable(eventID):
 def addVolunteer(volunteer, eventId):
     username = volunteer.strip("()").split('(')[-1]
     user = User.get(User.username==username)
-    succesfullyAddedVolunteer = addVolunteerToEvent(user, eventId)
-    if succesfullyAddedVolunteer:
+    successfullyAddedVolunteer = addVolunteerToEventRsvp(user, eventId)
+    if successfullyAddedVolunteer:
         flash("Volunteer successfully added!", "success")
     else:
         flash("Error when adding volunteer", "danger")
