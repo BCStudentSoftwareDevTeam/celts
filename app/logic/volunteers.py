@@ -25,11 +25,12 @@ def updateVolunteers(participantData):
 
     param: participantData- a dictionary that contains data from every row of the page along with the associated username.
     """
+    event = Event.get_or_none(Event.id==participantData['event'])
+    eventId = participantData['event']
     for user in range(1, len(participantData)):
         if f'username{user}' in participantData:
             username = participantData[f'username{user}']
             userObject = User.get_or_none(User.username==username)
-            event = Event.get_or_none(Event.id==participantData['event'])
             eventParticipant = EventParticipant.get_or_none(user=userObject, event=participantData['event'])
             if userObject:
                 try:
@@ -37,33 +38,24 @@ def updateVolunteers(participantData):
                         hoursEarned = float(participantData['inputHours_'+ username])
                         if eventParticipant:
                             ((EventParticipant
-                                .update({
-                                    EventParticipant.hoursEarned: hoursEarned})
+                                .update({EventParticipant.hoursEarned: hoursEarned})
                                 .where(
-                                    EventParticipant.event==participantData['event'],
+                                    EventParticipant.event==eventId,
                                     EventParticipant.user==participantData[f'username{user}']))
                                 .execute())
                         else:
                             (EventParticipant
                                 .create(
-                                    user=user,
+                                    user=userObject,
                                     event=event,
                                     hoursEarned=hoursEarned))
-                except (KeyError):   #if there is no checkbox for user then they are not present for the event.
+                except (KeyError):
                     if eventParticipant:
-                        ((EventParticipant
-                            .update({
-                                EventParticipant.hoursEarned: 0})
+                        ((EventParticipant.delete()
                             .where(
-                                EventParticipant.event==participantData['event'],
-                                EventParticipant.user==participantData[f'username{user}']))
+                                EventParticipant.user==participantData[f'username{user}'],
+                                EventParticipant.event==eventId))
                             .execute())
-                    else:
-                        (EventParticipant
-                            .create(
-                                user=user,
-                                event=event,
-                                hoursEarned=0))
             else:
                 return False
         else:

@@ -13,7 +13,7 @@ $(document).ready(function() {
   // Adding the new volunteer to the user database table
   $("#selectVolunteerButton").click(function(){
     let user = $("#addVolunteerInput").val()
-    let volunteerEventID = $("#eventID").val()
+    let eventId = $("#eventID").val()
 
     $.ajax({
       url: `/addVolunteerToEvent/${user}/${eventId}`,
@@ -40,7 +40,7 @@ $("#addVolunteerInput").on("input", function() {
 
 $(".removeVolunteer").on("click", function() {
   let username =  $(this)[0].id;
-  let eventID = $('#eventID').val()
+  let eventId = $('#eventID').val()
   $.ajax({
     url: `/removeVolunteerFromEvent/${username}/${eventId}`,
     type: "POST",

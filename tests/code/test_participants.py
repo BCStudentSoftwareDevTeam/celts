@@ -227,14 +227,14 @@ def test_sendKioskDataKiosk():
     deleteInstance.delete_instance()
 
 @pytest.mark.integration
-def test_getPresentParticipants():
+def test_getEventParticipants():
     event = Event.get_by_id(1)
     presentParticipantsDict = getPresentParticipants(event)
     assert "partont" in presentParticipantsDict
     assert presentParticipantsDict["partont"] == 1
 
 @pytest.mark.integration
-def test_getPresentParticipantsWithWrongParticipant():
+def test_getEventParticipantsWithWrongParticipant():
     event = Event.get_by_id(1)
     presentParticipantsDict = getPresentParticipants(event)
     assert "agliullovak" not in presentParticipantsDict

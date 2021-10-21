@@ -73,6 +73,7 @@ def test_addVolunteerToEvent():
 
 @pytest.mark.integration
 def test_updateVolunteers():
+    # TODO: test update, create, delete
     # tests if the volunteer table gets succesfully updated
     participantData = {'inputHours_agliullovak':100, 'checkbox_agliullovak':"on", 'event':3, 'username1': 'agliullovak'}
     volunteerTableUpdate = updateVolunteers(participantData)
