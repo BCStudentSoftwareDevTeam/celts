@@ -125,8 +125,8 @@ def testingSLCourses():
                                                     user = username,
                                                     hoursEarned = 3.0)
 
-    testingSLCExist = getSlCourseTranscript(username)
-    testingSLCNotExist = getSlCourseTranscript(adminName)
+    testingSLCExist, instructorDict = getSlCourseTranscript(username)
+    testingSLCNotExist, adminDict = getSlCourseTranscript(adminName)
 
     assert testingSLCExist.exists()
     assert [slc.course.courseName == "Test Course" for slc in testingSLCExist]
@@ -171,9 +171,9 @@ def testingProgram():
 @pytest.mark.integration
 def testingTotalHours():
 
-    totalHours = getTotalHour("namet")
+    totalHours = getTotalHours("namet")
 
-    assert totalHours == 9
+    assert totalHours == 9 
 
     # delete training
     testingTrainingEvent = Event.get(Event.name == "Test Training Event")
