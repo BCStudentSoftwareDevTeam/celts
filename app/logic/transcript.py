@@ -74,7 +74,6 @@ def getTrainingTranscript(username):
     Returns a Training query object containing all the training event information for
     current user.
     """
-
     trainingData = (EventParticipant.select(EventParticipant.event, EventParticipant.hoursEarned)
                                     .join(Event)
                                     .where(EventParticipant.user == username, Event.isTraining))
