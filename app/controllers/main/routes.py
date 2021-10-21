@@ -24,7 +24,7 @@ def events(selectedTerm=None):
         currentTerm = selectedTerm
     currentTime = datetime.datetime.now()
     term = Term.get_by_id(currentTerm)
-    studentLeadProgram = getStudentLeadProgram(term)
+    studentLedProgram = getStudentLedProgram(term)
     trainingProgram = getTrainingProgram(term)
     bonnerProgram = getBonnerProgram(term)
     oneTimeEvents = getOneTimeEvents(term)
@@ -34,7 +34,7 @@ def events(selectedTerm=None):
 
     return render_template("/events/event_list.html",
         selectedTerm = Term.get_by_id(currentTerm),
-        studentLeadProgram = studentLeadProgram,
+        studentLedProgram = studentLedProgram,
         trainingProgram = trainingProgram,
         bonnerProgram = bonnerProgram,
         oneTimeEvents = oneTimeEvents,

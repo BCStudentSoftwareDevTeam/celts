@@ -67,15 +67,15 @@
 
         {% for event in events %}
           <tr>
-            <td> <a href="/{{event.program_id}}/{{event.id}}/edit_event" class="link-primary">{{event.name}}</a></td>
+            <td> <a href="/{{event.id}}/edit_event" class="link-primary">{{event.name}}</a></td>
             <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
             <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
             <td>{{event.location}}</td>
-            {% if (user.isCeltsAdmin) or (user.isCeltsStudentStaff) %}
+            {% if user.isAdmin %}
               <td><i class="bi bi-envelope-fill"> Email</i></td>
               {# FIXME: the Email icon should be clickable and lead to email template #}
             {% else %}
-              {% if (event.event.startDate < currentTime.date()) or (event.event.timeStart < currentTime.time() and event.event.startDate == currentTime.date())%}
+              {% if (event.startDate < currentTime.date()) or (event.timeStart < currentTime.time() and event.startDate == currentTime.date())%}
                 <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
               {% elif event.id in rsvpedEventsID %}
                 <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.program_id}}, {{event.id}})">Remove RSVP</button></td>
@@ -94,9 +94,9 @@
 
 <div class="tab-content" id="pills-tabContent">
   <div class="tab-pane fade show active" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
-    {% if studentLeadProgram %}
+    {% if studentLedProgram %}
     <div class="accordion" id="categoryAccordion">
-      {% for program,events in studentLeadProgram.items() %}
+      {% for program,events in studentLedProgram.items() %}
 
         <div class="accordion-item">
           <h2 class="accordion-header" id="accordion__header_{{program}}">
@@ -128,7 +128,7 @@
 
                     {% for event in events %}
                       <tr>
-                        <td> <a href="/{{program.id}}/{{event.id}}/edit_event" class="link-primary">{{event.name}}</a></td>
+                        <td> <a href="/{{event.id}}/edit_event" class="link-primary">{{event.name}}</a></td>
                         <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
                         <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
                         <td>{{event.location}}</td>

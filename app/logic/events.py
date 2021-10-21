@@ -95,13 +95,12 @@ def saveEventToDb(newEventData):
 
     return eventRecords
 
-def getStudentLeadProgram(term):
+def getStudentLedProgram(term):
 
     studentLedEvents = (Event.select(Event, Program.id.alias("program_id"))
                              .join(ProgramEvent)
                              .join(Program)
                              .where(Program.isStudentLed,
-                                    Event.isTraining == False,
                                     Event.term == term))
     programs = {}
 
@@ -124,7 +123,6 @@ def getBonnerProgram(term):
                                  .join(ProgramEvent)
                                  .join(Program)
                                  .where(Program.isBonnerScholars,
-                                        Event.isTraining == False,
                                         Event.term == term))
     return bonnerScholarsEvents
 def getOneTimeEvents(term):
@@ -132,7 +130,6 @@ def getOneTimeEvents(term):
                           .join(ProgramEvent)
                           .join(Program)
                           .where(Program.isStudentLed == False,
-                                 Event.isTraining == False,
                                  Program.isBonnerScholars == False,
                                  Event.term == term))
     return oneTimeEvents
