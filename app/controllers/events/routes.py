@@ -33,7 +33,7 @@ def signinEvent():
     eventid = request.form["eventid"]
     bnumber = request.form["bNumber"]
     programid = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event == eventid)
-    if len(bnumber) > 20:
+    if len(bnumber) == 23:
         bnumber = "B"+ bnumber[1:9]
     try:
         kioskUser, userStatus = sendUserData(bnumber, eventid, programid)
