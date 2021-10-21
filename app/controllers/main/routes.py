@@ -140,7 +140,8 @@ def serviceTranscript(username):
                             bonnerData = bonnerData,
                             totalHours = totalHours,
                             startDate = startDate,
-                            instructorDict = instructorDict)
+                            instructorDict = instructorDict,
+                            userData = user)
 
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
 def searchUser(query):

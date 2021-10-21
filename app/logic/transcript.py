@@ -107,3 +107,12 @@ def getStartYear(username):
     if startDate:
         return startDate.event.term.year
     return "N/A"
+
+def getUserdata(username):
+    """
+    Returns the user object the page belongs too.
+    """
+
+    userdata = User.get(User.username == username)
+
+    return userdata
