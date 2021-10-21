@@ -116,29 +116,31 @@ def RemoveRSVP():
     currentRsvpParticipant.delete_instance()
 
     flash("Successfully unregistered for event!", "success")
-    return redirect(url_for("admin.editEvent", eventId=eventId, program=program))
+    return redirect(url_for("admin.editEvent", eventId=event.id))
 
 @main_bp.route('/<username>/serviceTranscript', methods = ['GET'])
 def serviceTranscript(username):
-    if username != g.current_user and not g.current_user.isAdmin:
+    user = User.get_or_none(User.username == username)
+    if user is None:
+        abort(404)
+    if user != g.current_user and not g.current_user.isAdmin:
         abort(403)
-    else:
 
-        programs = getProgramTranscript(username)
-        SLCourses, instructorDict = getSlCourseTranscript(username)
-        trainingData = getTrainingTranscript(username)
-        bonnerData = getBonnerScholarEvents(username)
-        totalHour = getTotalHour(username)
-        startDate = getStartYear(username)
+    programs = getProgramTranscript(username)
+    slCourses, instructorDict = getSlCourseTranscript(username)
+    trainingData = getTrainingTranscript(username)
+    bonnerData = getBonnerScholarEvents(username)
+    totalHours = getTotalHours(username)
+    startDate = getStartYear(username)
 
-        return render_template('main/serviceTranscript.html',
-                                programs = programs,
-                                SLCourses = SLCourses,
-                                trainingData = trainingData,
-                                bonnerData = bonnerData,
-                                totalHour = totalHour,
-                                startDate = startDate,
-                                instructorDict = instructorDict)
+    return render_template('main/serviceTranscript.html',
+                            programs = programs,
+                            slCourses = slCourses,
+                            trainingData = trainingData,
+                            bonnerData = bonnerData,
+                            totalHours = totalHours,
+                            startDate = startDate,
+                            instructorDict = instructorDict)
 
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
 def searchUser(query):

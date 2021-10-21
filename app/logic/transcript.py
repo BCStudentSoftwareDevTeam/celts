@@ -81,7 +81,7 @@ def getTrainingTranscript(username):
 
     return trainingData
 
-def getTotalHour(username):
+def getTotalHours(username):
     """
     Get the toal hours from events and courses combined.
 
@@ -89,14 +89,8 @@ def getTotalHour(username):
 
     eventHours = EventParticipant.select(fn.SUM(EventParticipant.hoursEarned)).where(EventParticipant.user == username).scalar()
     courseHours =  CourseParticipant.select(fn.SUM(CourseParticipant.hoursEarned)).where(CourseParticipant.user == username).scalar()
-    if eventHours and courseHours:
-        totalHours = eventHours + courseHours
-        return totalHours
-    elif eventHours:
-        return eventHours
-    elif courseHours:
-        return courseHours
-    return 0
+
+    return (eventHours or 0) + (courseHours or 0)
 
 def getStartYear(username):
     """
