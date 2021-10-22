@@ -11,8 +11,8 @@
 
 {% block app_content %}
 
-<div align="center" style="margin-bottom: 50px;">
-    <h1 align="center">{{event.name}}</h1>
+<div class="text-center mt-5">
+    <h1 class="text-center">{{event.name}}</h1>
     {% if isPastEvent %}
       <div class="alert alert-danger" role="alert">This event is in the past.</div>
     {% endif %}
@@ -34,18 +34,18 @@
     <div class="form-group d-inline-flex">
       <div class="ui-widget input-group">
         <input id="trackVolunteersInput" type="input" placeholder="Search">
-        <span class="input-group-text" style="padding:0 0 0 0rem;"><i class="bi bi-search" style="margin-left:-35px;"></i></span>
+        <span class="input-group-text p-0 border-0 bg-transparent"><i class="bi bi-search" style="margin-left:-1.5rem;"></i></span>
         <div><button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#addVolunteerModal">
           <i class="bi bi-plus-circle"></i>
         </button></div>
       </div>
     </div>
-    <div class='form-group d-inline-flex' style="padding: 0 0 0 2rem">
+    <div class='form-group d-inline-flex ps-2'>
       <a class="btn btn-info" href= "/event/{{event.id}}/kiosk" role="button">Kiosk Entry</a>
     </div>
   </div>
   <!-- Modal -->
-  <div class="modal fade" id="addVolunteerModal" tabindex="-1" aria-labelledby="addVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
+  <div class="modal fade float-start" id="addVolunteerModal" tabindex="-1" aria-labelledby="addVolunteerModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -57,7 +57,7 @@
             <div class="form-group input-group-x form-outline ui-widget" style="width:80%;">
               <input type="input" id="addVolunteerInput" class="form-control" placeholder="Search" autocomplete="off"/>
             </div>
-            <button type="button" class="btn btn-primary btn-sm"><i class="bi bi-search" style="margin-left:0px;"></i>
+            <button type="button" class="btn btn-primary btn-sm"><i class="bi bi-search ms-0"></i>
             </button>
           </div>
         </div>
@@ -90,7 +90,7 @@
           <td>
             {% if participant.username not in attendedTraining %}
               <span data-bs-toggle="tooltip" title="Did Not Complete All Trainings">
-              <span style="color:red" class="bi bi-exclamation-triangle"></span></span>
+              <span class="text-danger bi bi-exclamation-triangle-fill"></span></span>
             {% endif %}
           </td>
           <td><input class="form-control" type='hidden' name="username{{loop.index|string}}" id="{{participant.username}}"value="{{participant}}"> {{participant.firstName}} {{participant.lastName}}</td>
@@ -104,7 +104,7 @@
                      {% if participant.attended == 1 and participant.hoursEarned == None %} value="{{eventLength}}"
                      {% elif participant.attended == 1 %} value="{{participant.hoursEarned}}"
                      {%else%} readonly {%endif%}></td>
-          <td><span onclick = 'removeVolunteerFromEvent(this)' id="deleteIcon_{{participant.username}}" ><i class="bi bi-trash" style="font-size:20px"></i></span></td>
+          <td><span onclick = 'removeVolunteerFromEvent(this)' id="deleteIcon_{{participant.username}}"><i class="bi bi-trash h5 align-middle"></i></span></td>
         </tr>
         {%endfor%}
        </tbody>
