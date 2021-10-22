@@ -41,9 +41,10 @@ $(document).ready(function() {
   $("#removeCeltsStudentStaff").on("click", function() {
     submitRequest("removeCeltsStudentStaff", "#removeCeltsStudentStaffInput")
   });
-  for (var i=1; i<=$('#totalTerms').val(); i++){
+  for (var i=1; i<=$('#currentTermList .term-btn').length; i++){
+    console.log("clicked")
     $("#termFormID_"+i).on("click", function() {
-      clickTerm($('#totalTerms').val(), $(this).val())
+      clickTerm($(this))
     });
   };
   $("#submitButton").on("click", function() {
@@ -72,19 +73,13 @@ function submitRequest(method,identifier){
 
   })
 }
-
-function clickTerm(totalTerms, term){
-  $("#termInput").val(term);
-  for (var i=1; i<=totalTerms; i++){
-    if ($('#termFormID_' + i).hasClass('active')){
-     $('#termFormID_' + i).removeClass('active');
-    }
-  }
-  $('#termFormID_' + term).addClass('active');
+function clickTerm(term){
+  $(".term-btn").removeClass("active");
+  term.addClass('active');
 };
 
 function submitTerm(){
-  var termInfo = {id: $("#termInput").val()};
+  var termInfo = {id: $("#currentTermList .active").val()};
   $.ajax({
     url: "/changeCurrentTerm",
     type: "POST",

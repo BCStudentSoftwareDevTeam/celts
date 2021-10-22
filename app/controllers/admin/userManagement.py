@@ -4,6 +4,7 @@ from app.controllers.admin import admin_bp
 from app.models.user import User
 from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff
 from app.logic.userManagement import changeCurrentTerm
+from app.logic.utils import selectSurroundingTerms
 from app.models.term import Term
 
 @admin_bp.route('/manageUsers', methods = ['POST'])
@@ -31,12 +32,10 @@ def manageUsers():
 
 @admin_bp.route('/userManagement', methods = ['GET'])
 def userManagement():
-    terms = Term.select()
-    totalTerms = len([term.id for term in terms])
+    terms = selectSurroundingTerms(g.current_term.id)
     if g.current_user.isAdmin:
         return render_template('admin/userManagement.html',
-                                terms=terms,
-                                totalTerms = totalTerms)
+                                terms=terms)
     abort(403)
 
 @admin_bp.route('/changeCurrentTerm', methods=['POST'])
