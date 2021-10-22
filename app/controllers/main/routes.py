@@ -82,7 +82,7 @@ def volunteerRegister():
     """
     eventData = request.form
 
-    event = Event.get_by_id(eventData['eventId'])
+    event = Event.get_by_id(eventData['id'])
 
     user = g.current_user
     isEligible = userRsvpForEvent(user, event.id)
@@ -110,9 +110,8 @@ def RemoveRSVP():
     This function deletes the user ID and event ID from database when RemoveRSVP  is clicked
     """
     eventData = request.form
+    event = Event.get_by_id(eventData['id'])
 
-    event = Event.get_by_id(eventData['eventId'])
-    
     currentRsvpParticipant = EventRsvp.get(EventRsvp.user == g.current_user, EventRsvp.event == event)
     currentRsvpParticipant.delete_instance()
 

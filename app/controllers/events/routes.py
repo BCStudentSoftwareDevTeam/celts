@@ -33,8 +33,11 @@ def signinEvent():
     eventid = request.form["eventid"]
     bnumber = request.form["bNumber"]
     programid = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event == eventid)
-    if len(bnumber) == 23:
+    if len(bnumber) >= 9:
         bnumber = "B"+ bnumber[1:9]
+    else:
+        bnumber = "B"+ bnumber[0:]
+
     try:
         kioskUser, userStatus = sendUserData(bnumber, eventid, programid)
         if userStatus == "banned":
