@@ -36,7 +36,6 @@ def userManagement():
     if g.current_user.isAdmin:
         return render_template('admin/userManagement.html',
                                 terms=terms,
-                                selectedTerm = Term.get_by_id(g.current_term),
                                 totalTerms = totalTerms)
     abort(403)
 
