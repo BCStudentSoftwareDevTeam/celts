@@ -38,11 +38,20 @@ def test_modifyCeltsStudentStaff():
 
 def test_changeCurrentTerm():
     # test via g.current_term
+    oldTerm = g.current_term
     changeCurrentTerm(2)
     assert g.current_term == 2
+    assert not oldTerm
+
     # test via isCurrentTerm
+    oldTerm2 = g.current_term
     newTerm = changeCurrentTerm(1)
     assert newTerm.isCurrentTerm
+    assert not oldTerm2 == g.current_term
+    assert not oldTerm2.isCurrentTerm
+
+    # reset data back to before test
+    changeCurrentTerm(oldTerm)
 
 def test_invalidTermInputs():
     with pytest.raises(DoesNotExist):

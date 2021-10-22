@@ -2,18 +2,17 @@ import collections
 from app.models.term import Term
 
 def selectFutureTerms(currentTermid):
-    selectSurroundingTerms(currentTermid)
     futureTerms = (Term.select().where(Term.id >= currentTermid)
                                 .where((Term.year <= (Term.get_by_id(currentTermid)).year + 2)))
 
     return futureTerms
 
 def selectSurroundingTerms(currentTermid, prevTerms=2):
-    startTerm = currentTermid-prevTerms
-    futureTerms = (Term.select().where(Term.id >= prevTerms)
+    startTerm = max(1,currentTermid-prevTerms)
+    surroundingTerms = (Term.select().where(Term.id >= startTerm)
                                 .where((Term.year <= (Term.get_by_id(currentTermid)).year + 2)))
 
-    return futureTerms
+    return surroundingTerms
 
 def deep_update(d, u):
     """
