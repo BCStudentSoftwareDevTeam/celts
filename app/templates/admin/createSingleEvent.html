@@ -16,7 +16,7 @@
   {% set isEditable = isAdmin %}
   {% set isNewEvent = 'create' in request.path %}
 
-  <div align="center" style="margin-bottom: 50px;">
+  <div class="text-center mt-5 mb-3">
       {% if isNewEvent %}
         {% if template.tag == 'single-program' %}
           {% set page_title = 'Create Event for ' + eventData["program"].programName %}
@@ -67,7 +67,7 @@
         {% if eventData.id %}
           <input type="hidden" name="id" value="{{eventData.id}}" >
         {% endif %}
-        
+
         <div class="d-grid gap-1.5">
           <div class="form-group">
             <label for='name'> <strong>Event Name</strong></label> <br>
@@ -134,7 +134,7 @@
             </div>
           </div>
         </div><br>
-        
+
         <!-- Start and End Datepickers -->
         <div class="flex-container">
           <div>
@@ -233,7 +233,7 @@
               <p>None</p>
             {%endif%}
 
-            {% for f in eventData.facilitators %} 
+            {% for f in eventData.facilitators %}
               <p>{{f.firstName}} {{f.lastName}}</p>
             {% endfor %}
         {% endif %}
