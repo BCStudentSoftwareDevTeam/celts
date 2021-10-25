@@ -64,16 +64,16 @@ def test_event_list():
         assert "Test Student Lead" in studentledRes
 
         assert trainingProgram
-        assert True in [event.name == "Test Training Program" for event in trainingProgram]
-        assert True not in [event.name == "Test Student Lead" for event in trainingProgram]
-        assert True not in [event.name == "Test Training Program" for event in trainingProgram2]
+        assert training in trainingProgram
+        assert Studentled not in studentledProgram
+        assert training not in trainingProgram2
 
         assert bonnerProgram
-        assert True in [event.name == "Test Bonner Program" for event in bonnerProgram]
-        assert True not in [event.name == "Test Student Lead" for event in bonnerProgram]
+        assert bonner in bonnerProgram
+        assert Studentled not in bonnerProgram
 
         assert oneTimeEvents
-        assert True in [event.name == "Test One Time" for event in oneTimeEvents]
-        assert True not in [event.name == "Test Student Lead" for event in oneTimeEvents]
+        assert oneTime in oneTimeEvents
+        assert Studentled not in oneTimeEvents
 
         transaction.rollback()

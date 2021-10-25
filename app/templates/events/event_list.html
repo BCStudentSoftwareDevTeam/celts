@@ -67,7 +67,7 @@
 
         {% for event in events %}
           <tr>
-            <td> <a href="/{{event.id}}/edit_event" class="link-primary">{{event.name}}</a></td>
+            <td> <a href="/event/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
             <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
             <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
             <td>{{event.location}}</td>
@@ -128,7 +128,7 @@
 
                     {% for event in events %}
                       <tr>
-                        <td> <a href="/{{event.id}}/edit_event" class="link-primary">{{event.name}}</a></td>
+                        <td> <a href="/event/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
                         <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
                         <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
                         <td>{{event.location}}</td>
