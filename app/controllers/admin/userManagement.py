@@ -7,7 +7,7 @@ from app.logic.userManagement import changeCurrentTerm
 from app.logic.utils import selectSurroundingTerms
 from app.models.term import Term
 
-@admin_bp.route('/manageUsers', methods = ['POST'])
+@admin_bp.route('/admin/manageUsers', methods = ['POST'])
 def manageUsers():
     eventData = request.form
     user = eventData['user']
@@ -30,7 +30,7 @@ def manageUsers():
 
     return ("success")
 
-@admin_bp.route('/userManagement', methods = ['GET'])
+@admin_bp.route('/admin', methods = ['GET'])
 def userManagement():
     terms = selectSurroundingTerms(g.current_term.id)
     if g.current_user.isAdmin:
@@ -38,7 +38,7 @@ def userManagement():
                                 terms=terms)
     abort(403)
 
-@admin_bp.route('/changeCurrentTerm', methods=['POST'])
+@admin_bp.route('/admin/changeTerm', methods=['POST'])
 def changeTerm():
     try:
         termData = request.form
@@ -47,4 +47,5 @@ def changeTerm():
         flash('Current term changed successfully', 'success')
     except:
         flash('Error. Current term request unsuccessful', 'warning')
-    return ('success')
+
+    return ""

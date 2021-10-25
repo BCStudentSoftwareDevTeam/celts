@@ -42,7 +42,6 @@ $(document).ready(function() {
     submitRequest("removeCeltsStudentStaff", "#removeCeltsStudentStaffInput")
   });
   for (var i=1; i<=$('#currentTermList .term-btn').length; i++){
-    console.log("clicked")
     $("#termFormID_"+i).on("click", function() {
       clickTerm($(this))
     });
@@ -59,9 +58,9 @@ function submitRequest(method,identifier){
       user : $(identifier).val(),
       from: "ajax"
   }
-  console.log(data);
+
   $.ajax({
-    url: "/manageUsers",
+    url: "/admin/manageUsers",
     type: "POST",
     data: data,
     success: function(s){
@@ -81,11 +80,11 @@ function clickTerm(term){
 function submitTerm(){
   var termInfo = {id: $("#currentTermList .active").val()};
   $.ajax({
-    url: "/changeCurrentTerm",
+    url: "/admin/changeTerm",
     type: "POST",
     data: termInfo,
     success: function(s){
-        location.reload()
+      location.reload()
     },
     error: function(error, status){
         console.log(error, status)
