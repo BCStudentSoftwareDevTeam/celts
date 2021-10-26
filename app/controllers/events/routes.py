@@ -37,11 +37,10 @@ def signinEvent():
     if bnumber[0]==";" and bnumber[-1]=="?": # scanned bNumber starts with ";" and ends with "?"
         bnumber = "B"+ bnumber[1:9]
     else:
-        if not bnumber[0].isalpha():
-            bnumber = "B"+ bnumber[0:]
-        else:
-            if not bnumber[0].upper() == "B":
-                return "", 500
+        if bnumber[0].isdigit():
+            bnumber = "B"+ bnumber[0:8]
+        elif bnumber[0].upper() != "B":
+            return "", 500
     try:
         kioskUser, userStatus = sendUserData(bnumber, eventid, programid)
         if userStatus == "banned":
