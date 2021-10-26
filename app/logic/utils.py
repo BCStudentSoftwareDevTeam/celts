@@ -1,10 +1,10 @@
 import collections
 from app.models.term import Term
 
-def selectSurroundingTerms(currentTermid, prevTerms=2):
-    startTerm = max(1,currentTermid-prevTerms)
+def selectSurroundingTerms(currentTerm, prevTerms=2):
+    startTerm = max(1, currentTerm.id - prevTerms)
     surroundingTerms = (Term.select().where(Term.id >= startTerm)
-                                .where((Term.year <= (Term.get_by_id(currentTermid)).year + 2)))
+                                .where((Term.year <= currentTerm.year + 2)))
 
     return surroundingTerms
 
