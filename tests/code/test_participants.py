@@ -5,12 +5,12 @@ from peewee import IntegrityError, DoesNotExist
 from app.models.user import User
 from app.models.event import Event
 from app.models.eventParticipant import EventParticipant
-from app.logic.volunteers import addVolunteerToEvent
+from app.logic.volunteers import addVolunteerToEventRsvp
 from app.logic.participants import trainedParticipants
-from app.logic.volunteers import getEventLengthInHours, updateVolunteers
+from app.logic.volunteers import getEventLengthInHours, updateEventParticipants
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 from app.logic.participants import sendUserData
-from app.logic.participants import getPresentParticipants
+from app.logic.participants import getEventParticipants
 from app.models.eventRsvp import EventRsvp
 
 @pytest.mark.integration
@@ -53,47 +53,47 @@ def test_getEventLengthInHours():
 
 
 @pytest.mark.integration
-def test_addVolunteerToEvent():
+def test_addVolunteerToEventRsvp():
     user = "khatts"
     volunteerEventID = 5
     eventLengthInHours = 67
     #test that volunteer is already registered for the event
-    volunteerToEvent = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
+    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID)
     assert volunteerToEvent == True
 
     #test for adding user as a participant to the event
     user = "agliullovak"
-    volunteerToEvent = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
+    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID)
     assert volunteerToEvent == True
     (EventParticipant.delete().where(EventParticipant.user == user, EventParticipant.event == volunteerEventID)).execute()
 
     # test for username that is not in the database
     user = "jarjug"
-    volunteerToEvent = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
+    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID)
     assert volunteerToEvent == False
 
     # test for event that does not exsit
     user = "agliullovak"
     volunteerEventID = 5006
-    volunteerToEvent = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
+    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID)
     assert volunteerToEvent == False
 
 
 @pytest.mark.integration
-def test_updateVolunteers():
+def test_updateEventParticipants():
     # tests if the volunteer table gets succesfully updated
     participantData = {'inputHours_agliullovak':100, 'checkbox_agliullovak':"on", 'event':3, 'username1': 'agliullovak'}
-    volunteerTableUpdate = updateVolunteers(participantData)
+    volunteerTableUpdate = updateEventParticipants(participantData)
     assert volunteerTableUpdate == True
 
     # tests if user does not exist in the database
     participantData = {'inputHours_jarjug':100, 'checkbox_jarjug':"on", 'event':3, 'username1': 'jarjug'}
-    volunteerTableUpdate = updateVolunteers(participantData)
+    volunteerTableUpdate = updateEventParticipants(participantData)
     assert volunteerTableUpdate == False
 
     # tests for the case when the checkbox is not checked (user is not present)
     participantData = {'inputHours_agliullovak':100, 'event':3, 'username1': 'agliullovak'}
-    volunteerTableUpdate = updateVolunteers(participantData)
+    volunteerTableUpdate = updateEventParticipants(participantData)
     assert volunteerTableUpdate == True
 
     #Undo the above test changes
@@ -229,12 +229,12 @@ def test_sendKioskDataKiosk():
 @pytest.mark.integration
 def test_getEventParticipants():
     event = Event.get_by_id(1)
-    presentParticipantsDict = getPresentParticipants(event)
-    assert "partont" in presentParticipantsDict
-    assert presentParticipantsDict["partont"] == 1
+    eventParticipantsDict = getEventParticipants(event)
+    assert "partont" in eventParticipantsDict
+    assert eventParticipantsDict["partont"] == 1
 
 @pytest.mark.integration
 def test_getEventParticipantsWithWrongParticipant():
     event = Event.get_by_id(1)
-    presentParticipantsDict = getPresentParticipants(event)
-    assert "agliullovak" not in presentParticipantsDict
+    eventParticipantsDict = getEventParticipants(event)
+    assert "agliullovak" not in eventParticipantsDict

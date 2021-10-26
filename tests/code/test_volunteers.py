@@ -49,47 +49,53 @@ def test_getEventLengthInHours():
 def test_addVolunteerToEventRsvp():
     user = "khatts"
     volunteerEventID = 5
-    eventLengthInHours = 67
     #test that volunteer is already registered for the event
-    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID, eventLengthInHours)
+    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID)
     assert volunteerToEvent == True
 
     #test for adding user as a participant to the event
     user = "agliullovak"
-    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID, eventLengthInHours)
+    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID)
     assert volunteerToEvent == True
-    (EventParticipant.delete().where(EventParticipant.user == user, EventParticipant.event == volunteerEventID)).execute()
+    (EventParticipant.delete().where(EventParticipant.user==user, EventParticipant.event==volunteerEventID)).execute()
 
     # test for username that is not in the database
     user = "jarjug"
-    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID, eventLengthInHours)
+    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID)
     assert volunteerToEvent == False
 
     # test for event that does not exsit
     user = "agliullovak"
     volunteerEventID = 5006
-    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID, eventLengthInHours)
+    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID)
     assert volunteerToEvent == False
 
 
 @pytest.mark.integration
 def test_updateEventParticipants():
-    # TODO: test update, create, delete
-    # tests the checkbox is checked and user exdists in EventParticipant, then updates the record
+    # update record if user is marked as present and user record exists in event participant table
     participantData = {'inputHours_agliullovak':100, 'checkbox_agliullovak':"on", 'event':3, 'username1': 'agliullovak'}
     volunteerTableUpdate = updateEventParticipants(participantData)
     assert volunteerTableUpdate == True
 
-    # tests if the checkbox is not checked and user is not in EventParticipant, then delete a record
+    eventParticipant = EventParticipant.get(EventParticipant.user=="agliullovak", EventParticipant.event==3)
+    assert eventParticipant.hoursEarned == 100
+
+    # create new record if user is marked present but doesn't have a record in event participant table
     with pytest.raises(DoesNotExist):
-        updateEventParticipants(participantData)
+        EventParticipant.get(EventParticipant.user=="partont", EventParticipant.event==3)
 
-    # tests if the checkbox is checked and user is not in EventParticipant, then create a new entry
-
-    # tests for the case when the checkbox is not checked (user is not present)
-    participantData = {'inputHours_agliullovak':100, 'event':3, 'username1': 'agliullovak'}
+    participantData = {'inputHours_partont':100, 'checkbox_partont':"on", 'event':3, 'username1': 'partont'}
     volunteerTableUpdate = updateEventParticipants(participantData)
     assert volunteerTableUpdate == True
 
-    #Undo the above test changes
-    participantData = {'inputHours_agliullovak':2, 'checkbox_agliullovak':"on", 'event':3, 'username1': 'agliullovak'}
+    eventParticipant = EventParticipant.get(EventParticipant.user=="partont", EventParticipant.event==3)
+    assert eventParticipant.hoursEarned == 100
+
+    # delete user from event participant table if user is marked absent and they have a record in the table
+    participantData = {'event':3, 'username1': 'agliullovak'}
+    volunteerTableUpdate = updateEventParticipants(participantData)
+    assert volunteerTableUpdate == True
+
+    with pytest.raises(DoesNotExist):
+        EventParticipant.get(EventParticipant.user=="agliullovak", EventParticipant.event==3)
