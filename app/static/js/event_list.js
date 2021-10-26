@@ -30,7 +30,7 @@ function passEventInfo(eventID, programID, selectedTerm){
 
 
 function rsvpForEvent(programID, eventID){
-  rsvpInfo = {eventId: eventID,
+  rsvpInfo = {id: eventID,
               programId: programID,
               from: 'ajax'}
 
@@ -49,7 +49,7 @@ function rsvpForEvent(programID, eventID){
 }
 
 function removeRsvpForEvent(programID, eventID){
-  removeRsvpInfo = {eventId: eventID,
+  removeRsvpInfo = {id: eventID,
               programId: programID,
               from: 'ajax'}
 

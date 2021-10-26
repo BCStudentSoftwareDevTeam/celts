@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 {% endblock %}
 {% block app_content %}
-<h1 class="text-center">Events List for {{selectedTerm.description}}</h1>
+<h1 class="text-center mt-5">Events List for {{selectedTerm.description}}</h1>
 <div class="container-fluid px-1 py-3">
   <div class="row d-flex align-items-baseline p-3">
     <div class="col-md-1 ps-1 ms-auto">
@@ -32,7 +32,7 @@
 </div>
 
 <div>
-  <ul class="nav nav-pills nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
+  <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
   <li class="nav-item" role="presentation">
     <button class="nav-link active" id="studentLedEvents"
     data-bs-toggle="pill" data-bs-target="#pills-student-led" type="button" role="tab" aria-controls="pills-student-led" aria-selected="true">Student Led Service</button>
@@ -51,6 +51,7 @@
   </li>
   </ul>
 </div>
+<<<<<<< HEAD
 
 {% macro createAccordion(categoryPrograms, num) %}
   <div class="accordion" id="categoryAccordion">
@@ -99,34 +100,131 @@
                           <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
                         {% elif event.id in rsvpedEventsID %}
                           <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{program.id}}, {{event.id}})">Remove RSVP</button></td>
-                        {% else %}
-                          <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{program.id}}, {{event.id}})">RSVP</button></td>
-                        {% endif %}
-                      {% endif %}
-                    </tr>
-                  {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      {% include 'emailModal.html' %}
-    {% endfor %}
-  </div>
+<!-- =======
+{% macro createTable(events) %}
+{% if events.exists() %}
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">Event Name</th>
+        <th scope="col">Date</th>
+        <th scope="col">Time</th>
+        <th scope="col">Location</th>
+        <th scope="col">Invitation</th>
+      </tr>
+    </thead>
+    <tbody>
+
+        {% for event in events %}
+          <tr>
+            <td> <a href="/event/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+            <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
+            <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
+            <td>{{event.location}}</td>
+            {% if user.isAdmin %}
+              <td><i class="bi bi-envelope-fill"> Email</i></td>
+              {# FIXME: the Email icon should be clickable and lead to email template #}
+            {% else %}
+              {% if (event.startDate < currentTime.date()) or (event.timeStart < currentTime.time() and event.startDate == currentTime.date())%}
+                <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
+              {% elif event.id in rsvpedEventsID %}
+                <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.program_id}}, {{event.id}})">Remove RSVP</button></td>
+              {% else %}
+                <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.program_id}}, {{event.id}})">RSVP</button></td>
+              {% endif %}
+            {% endif %}
+          </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>No upcoming events for this term</p>
+{% endif %}
 {% endmacro %}
 
 <div class="tab-content" id="pills-tabContent">
   <div class="tab-pane fade show active" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
-    {{createAccordion(eventDict["Student Led Events"], 1)}}
+    {% if studentLedProgram %}
+    <div class="accordion" id="categoryAccordion">
+      {% for program,events in studentLedProgram.items() %}
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="accordion__header_{{program}}">
+            <button class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#accordion__body_{{program}}_num_{{ loop.index }}"
+                    aria-expanded="true"
+                    aria-controls="accordion__body_{{program}}" >
+                    {{program.programName}}
+            </button>
+          </h2>
+          <div id="accordion__body_{{program}}_num_{{ loop.index }}"
+                class="accordion-collapse collapse"
+                aria-labelledby="accordion__header_{{program}}"
+                data-bs-parent="#categoryAccordion">
+            <div class="accordion-body">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">Event Name</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">Invitation</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                    {% for event in events %}
+                      <tr>
+                        <td> <a href="/event/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+                        <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
+                        <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
+                        <td>{{event.location}}</td>
+                        {% if user.isAdmin %}
+                          <td><i class="bi bi-envelope-fill"> Email</i></td>
+                          {# FIXME: the Email icon should be clickable and lead to email template #}
+
+>>>>>>> ffad94672f5d7d32ade1496ded98dca985bb6b83 -->
+                        {% else %}
+                          {% if (event.startDate < currentTime.date()) or (event.timeStart < currentTime.time() and event.startDate == currentTime.date())%}
+                            <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
+                          {% elif event.id in rsvpedEventsID %}
+                            <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{program.id}}, {{event.id}})">Remove RSVP</button></td>
+                          {% else %}
+                            <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{program.id}}, {{event.id}})">RSVP</button></td>
+                          {% endif %}
+                        {% endif %}
+                      </tr>
+                    {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+<!-- <<<<<<< HEAD -->
+      <!-- </div> -->
+      {% include 'emailModal.html' %}
+    <!-- {% endfor %} -->
+<!-- ======= -->
+      {% endfor %}
+    <!-- </div> -->
+    {% else %}
+      <p>No upcoming events for this term</p>
+    {% endif %}
+<!-- >>>>>>> ffad94672f5d7d32ade1496ded98dca985bb6b83 -->
   </div>
+
   <div class="tab-pane fade show" id="pills-training" role="tabpanel" aria-labelledby="pills-training-tab">
-    {{createAccordion(eventDict["Trainings"], 2)}}
+    {{createTable(trainingProgram)}}
+
   </div>
   <div class="tab-pane fade show" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="pills-bonner-scholars-tab">
-    {{createAccordion(eventDict["Bonner Scholars"], 3)}}
+    {{createTable(bonnerProgram)}}
   </div>
   <div class="tab-pane fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
-    {{createAccordion(eventDict["One Time Events"], 4)}}
+    {{createTable(oneTimeEvents)}}
   </div>
 </div>
 
