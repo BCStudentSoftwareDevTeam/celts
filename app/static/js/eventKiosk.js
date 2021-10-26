@@ -52,7 +52,7 @@ function eventFlasher(flash_message, status){
 }
 
 function submitData(hitEnter = false){
-  if(hitEnter == true){
+  if(hitEnter){
     $("#flasher").remove()
     $.ajax({
       method: "POST",

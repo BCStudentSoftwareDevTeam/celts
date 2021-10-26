@@ -33,11 +33,15 @@ def signinEvent():
     eventid = request.form["eventid"]
     bnumber = request.form["bNumber"]
     programid = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event == eventid)
-    if len(bnumber) >= 9:
+
+    if bnumber[0]==";" and bnumber[-1]=="?": # scanned bNumber starts with ";" and ends with "?"
         bnumber = "B"+ bnumber[1:9]
     else:
-        bnumber = "B"+ bnumber[0:]
-
+        if not bnumber[0].isalpha():
+            bnumber = "B"+ bnumber[0:]
+        else:
+            if not bnumber[0].upper() == "B":
+                return "", 500
     try:
         kioskUser, userStatus = sendUserData(bnumber, eventid, programid)
         if userStatus == "banned":
