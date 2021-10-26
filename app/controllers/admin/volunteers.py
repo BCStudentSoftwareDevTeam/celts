@@ -72,7 +72,7 @@ def updateVolunteerTable(eventID):
     if not program:
         return "TODO: What do we do for no programs or multiple programs?"
 
-    volunteerUpdated = updateVolunteers(request.form)
+    volunteerUpdated = updateEventParticipants(request.form)
     if volunteerUpdated:
         flash("Volunteer table succesfully updated", "success")
     else:

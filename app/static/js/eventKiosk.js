@@ -52,7 +52,7 @@ function eventFlasher(flash_message, status){
 }
 
 function submitData(hitEnter = false){
-  if($("#submitScannerData").val().length > 20 || hitEnter == true){
+  if(hitEnter){
     $("#flasher").remove()
     $.ajax({
       method: "POST",
