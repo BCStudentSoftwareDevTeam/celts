@@ -205,22 +205,26 @@ def test_unattendedRequiredEvents():
 
 @pytest.mark.integration
 def test_sendKioskDataKiosk():
-    signin = sendUserData("B00751864", 2, 1)
-    usersAttended = EventParticipant.select().where(EventParticipant.attended, EventParticipant.event == 2)
+    # user is banned
+    signedInUser, userStatus = sendUserData("B00739736", 2, 1)
+    assert userStatus == "banned"
+
+    with pytest.raises(DoesNotExist):
+        EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
+
+    # user is already signed in
+    signedInUser, userStatus = sendUserData("B00751360", 2, 1)
+    assert userStatus == "already in"
+
+    # user is eligible but the user is not in EventParticipant
+    signedInUser = User.get(User.bnumber=="B00759117")
+    with pytest.raises(DoesNotExist):
+        EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
+
+    signedInUser, userStatus = sendUserData("B00759117", 2, 1)
+    assert userStatus == "success"
+
+    usersAttended = EventParticipant.select().where(EventParticipant.event == 2)
     listOfAttended = [users.user.username for users in usersAttended]
 
-    assert "neillz" in listOfAttended
-    assert "lamichhanes2" not in listOfAttended
-
-    (EventParticipant.update({EventParticipant.attended: False})
-                     .where(EventParticipant.user == "neillz", EventParticipant.event == 1)).execute()
-
-
-    signin = sendUserData("B00708826", 2, 1)
-    usersAttended = EventParticipant.select().where(EventParticipant.attended, EventParticipant.event == 2)
-    listOfAttended = [users.user.username for users in usersAttended]
-
-    assert "bryanta" in listOfAttended
-
-    deleteInstance = EventParticipant.get(EventParticipant.user == "bryanta", EventParticipant.event_id == 2)
-    deleteInstance.delete_instance()
+    assert "agliullovak" in listOfAttended
