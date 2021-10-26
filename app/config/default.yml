@@ -12,19 +12,19 @@ db:
     username: "celts_user"
     password: "password"
 
-mail:
-    enabled: True
-    server: "smtp.gmail.com" # use smtp.gmail.com for gmail, mail.berea.edu for Berea
-    port: 465                # use port 465 for gmail, use 25 for Berea
-    admin_username: 'bramsayr@gmail.com'      # add the email of the sender (Admin) (for gmail)
-    admin_password: 'celtsTest'             # Add the password of the sender (for gmail)
-    staff_username: 'sceggenh@gmail.com'   # the email of the sender (celtsStudentStaff)
-    staff_password: 'celtsTest2'
-    tls: False
-    ssl: True
-    default_sender: 'bramsayr@gmail.com' #FIXME: Add sender email address
-    override_addr: "j5u6j9w6v1h0p3g1@bereacs.slack.com"
-    reply_to_address: "j5u6j9w6v1h0p3g1@bereacs.slack.com"
+
+enabled: True
+MAIL_SERVER: "smtp.gmail.com" # use smtp.gmail.com for gmail, mail.berea.edu for Berea
+MAIL_PORT: 465                # use port 465 for gmail, use 25 for Berea
+MAIL_USERNAME: 'bramsayr@gmail.com'      # add the email of the sender (Admin) (for gmail)
+MAIL_PASSWORD: 'celtsTest'             # Add the password of the sender (for gmail)
+# staff_username: 'sceggenh@gmail.com'   # the email of the sender (celtsStudentStaff)
+# staff_password: 'celtsTest2'
+MAIL_USE_TLS: False
+MAIL_USE_SSL: True
+MAIL_DEFAULT_SENDER: 'bramsayr@gmail.com' #FIXME: Add sender email address
+MAIL_OVERRIDE_ALL: "j5u6j9w6v1h0p3g1@bereacs.slack.com"
+REPLY_TO_ADDRESS: "j5u6j9w6v1h0p3g1@bereacs.slack.com"
 
 
 contributors:

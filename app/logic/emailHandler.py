@@ -23,23 +23,13 @@ def getParticipantEmails(eventID = None):
 class emailHandler():
     """ A class for email setup and configuring the correct data to send. """
     def __init__(self, mail, emailInfo):
-        app.config.update(
-            MAIL_SERVER=app.config['mail']['server'],
-            MAIL_PORT=app.config['mail']['port'],
-            MAIL_USERNAME= app.config['mail']['admin_username'],
-            MAIL_PASSWORD= app.config['mail']['admin_password'],
-            REPLY_TO_ADDRESS= app.config['mail']['reply_to_address'],
-            MAIL_USE_TLS=app.config['mail']['tls'],
-            MAIL_USE_SSL=app.config['mail']['ssl'],
-            #MAIL_DEFAULT_SENDER=app.config['mail']['default_sender'],
-            #ALWAYS_SEND_MAIL=default['ALWAYS_SEND_MAIL']
-            MAIL_OVERRIDE_ALL=app.config['mail']['override_addr']
-        )
         self.emailInfo = emailInfo
         self.mail = mail
+        self.mail.connect()
+
     def updateSenderEmail(self, message):
         """ Updates who is sending the emails based on the event_list form. """
-
+        # print(f"\n {self.mail['MAIL_USERNAME']} \n")
         if self.emailInfo['emailSender'] == 'CELTS Admins':
             message.sender = app.config['mail']['admin_username']
 
@@ -61,7 +51,7 @@ class emailHandler():
         #         recipients = emails
         #     webbrowser.open_new(f'mailto:?to={recipients}&subject={subject}&body={msg}')
         if 'sendIndividually' in self.emailInfo:
-            if app.config['MAIL_OVERRIDE_ALL']:
+            if app.config.mail['MAIL_OVERRIDE_ALL']:
                 message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
             with self.mail.connect() as conn:
                 for email in emails:
@@ -71,7 +61,7 @@ class emailHandler():
             if app.config['MAIL_OVERRIDE_ALL']:
                 message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
 
-            message.reply_to = app.config['mail']["reply_to_address"]
-            print(f"\n {message} \n")
+            message.reply_to = app.config["REPLY_TO_ADDRESS"]
+            # print(f"\n {message} \n")
             self.mail.send(message)
         return 1
