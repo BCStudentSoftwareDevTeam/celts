@@ -175,6 +175,15 @@ terms = [
         "isSummer": False,
         "isCurrentTerm": False
     },
+    {
+        "id": 6,
+        "description": "Spring 2024",
+        "year": 2024,
+        "academicYear": "2023-2024",
+        "isBreak": False,
+        "isSummer": False,
+        "isCurrentTerm": False
+    },
 
 
 ]
