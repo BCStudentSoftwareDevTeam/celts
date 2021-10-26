@@ -1,11 +1,13 @@
 import collections
 from app.models.term import Term
 
-def selectFutureTerms(currentTermid):
-    futureTerms = (Term.select().where(Term.id >= currentTermid)
+def selectSurroundingTerms(currentTermid, prevTerms=2):
+    startTerm = max(1,currentTermid-prevTerms)
+    surroundingTerms = (Term.select().where(Term.id >= startTerm)
                                 .where((Term.year <= (Term.get_by_id(currentTermid)).year + 2)))
 
-    return futureTerms
+    return surroundingTerms
+
 def deep_update(d, u):
     """
     Update old_dict in place with the values from new_dict, respecting nested dictionaries.
