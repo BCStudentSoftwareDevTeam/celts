@@ -20,7 +20,7 @@ from app.models.programEvent import ProgramEvent
 
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
-from app.logic.utils import selectFutureTerms
+from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
@@ -82,7 +82,7 @@ def createEvent(templateid, programid=None):
 
     # make sure our data is the same regardless of GET or POST
     preprocessEventData(eventData)
-    futureTerms = selectFutureTerms(g.current_term)
+    futureTerms = selectSurroundingTerms(g.current_term)
 
     return render_template(f"/admin/{template.templateFile}",
             template = template,
@@ -114,7 +114,7 @@ def editEvent(eventId):
             flash(validationErrorMessage, 'warning')
 
     preprocessEventData(eventData)
-    futureTerms = selectFutureTerms(g.current_term)
+    futureTerms = selectSurroundingTerms(g.current_term)
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
 

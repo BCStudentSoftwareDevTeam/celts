@@ -52,7 +52,7 @@ def profilePage(username):
         upcomingEvents = getUpcomingEventsForUser(username)
         programs = Program.select()
         interests = Interest.select().where(Interest.user == profileUser)
-        interests_ids = [interest.program for interest in interests]
+        interests_ids = [interest.program.id for interest in interests]
         return render_template('/volunteer/volunteerProfile.html',
                                title="Volunteer Interest",
                                user = profileUser,
@@ -87,6 +87,7 @@ def volunteerRegister():
     for the event they have clicked register for.
     """
     eventData = request.form
+
     event = Event.get_by_id(eventData['id'])
 
     user = g.current_user
@@ -115,7 +116,6 @@ def RemoveRSVP():
     This function deletes the user ID and event ID from database when RemoveRSVP  is clicked
     """
     eventData = request.form
-
     event = Event.get_by_id(eventData['id'])
 
     currentRsvpParticipant = EventRsvp.get(EventRsvp.user == g.current_user, EventRsvp.event == event)
