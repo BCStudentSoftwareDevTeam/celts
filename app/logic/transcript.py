@@ -48,34 +48,13 @@ def getSlCourseTranscript(username):
     Returns a SLCourse query object containing all the training events for
     current user.
     """
-    testlol = (Course
+    SLCourses = (Course
         .select()
         .join(CourseParticipant)
         .where(CourseParticipant.user == username).distinct())
-    for i in testlol:
-        for j in i.courseInstructors:
-
-            print(j.user.firstName)
-
-    SLCourses = (CourseParticipant
-        .select(CourseParticipant, CourseParticipant.course, )
-        .join(Course)
-        .where(CourseParticipant.user == username))
-
-    SLCourseInstructor = (CourseInstructor
-        .select(CourseInstructor, CourseInstructor.course.alias("courseId"), CourseInstructor.user)
-        .join(Course)
-        .join(CourseParticipant, on=(Course.id == CourseParticipant.course))
-        .switch(CourseInstructor)
-        .join(User)
-        .where(CourseParticipant.user == username))
-
-    instructorDict = {}
-    for i in SLCourseInstructor:
-        instructorDict.setdefault(i.courseId, []).append(i.user.firstName + " " + i.user.lastName)
 
 
-    return SLCourses, instructorDict
+    return SLCourses
 
 def getTrainingTranscript(username):
     """

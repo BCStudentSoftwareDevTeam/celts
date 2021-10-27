@@ -123,8 +123,8 @@ def testingSLCourses():
                                                     user = username,
                                                     hoursEarned = 3.0)
 
-    testingSLCExist, instructorDict = getSlCourseTranscript(username)
-    testingSLCNotExist, instructorDict = getSlCourseTranscript(adminName)
+    testingSLCExist= getSlCourseTranscript(username)
+    testingSLCNotExist = getSlCourseTranscript(adminName)
 
     assert not testingSLCNotExist.exists()
     assert testingSLCExist.exists()

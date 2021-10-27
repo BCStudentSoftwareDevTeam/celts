@@ -134,7 +134,7 @@ def serviceTranscript(username):
         abort(403)
 
     programs = getProgramTranscript(username)
-    slCourses, instructorDict = getSlCourseTranscript(username)
+    slCourses = getSlCourseTranscript(username)
     trainingData = getTrainingTranscript(username)
     bonnerData = getBonnerScholarEvents(username)
     totalHours = getTotalHours(username)
@@ -147,7 +147,6 @@ def serviceTranscript(username):
                             bonnerData = bonnerData,
                             totalHours = totalHours,
                             startDate = startDate,
-                            instructorDict = instructorDict,
                             userData = user)
 
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
