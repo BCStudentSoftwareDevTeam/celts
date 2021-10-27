@@ -1,7 +1,7 @@
 
 
 function rsvpForEvent(programID, eventID){
-  rsvpInfo = {eventId: eventID,
+  rsvpInfo = {id: eventID,
               programId: programID,
               from: 'ajax'}
 
@@ -20,7 +20,7 @@ function rsvpForEvent(programID, eventID){
 }
 
 function removeRsvpForEvent(programID, eventID){
-  removeRsvpInfo = {eventId: eventID,
+  removeRsvpInfo = {id: eventID,
               programId: programID,
               from: 'ajax'}
 
@@ -29,7 +29,7 @@ function removeRsvpForEvent(programID, eventID){
     type: "POST",
     data: removeRsvpInfo,
     success: function(s){
-        location.reload() 
+        location.reload()
     },
     error: function(error, status){
         console.log(error, status)

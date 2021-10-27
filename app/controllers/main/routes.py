@@ -1,20 +1,19 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for
-from datetime import datetime
+import datetime
+
 from app import app
 from app.models.program import Program
-from app.models.interest import Interest
-from app.models.term import Term
 from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
+
 from app.controllers.main import main_bp
-from app.logic.events import getUpcomingEventsForUser, groupEventsByCategory
+from app.logic.events import *
 from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
-from app.logic.transcript import *
 from app.logic.searchUsers import searchUsers
 
 @main_bp.route('/', methods=['GET'])
@@ -23,15 +22,22 @@ def events(selectedTerm=None):
     currentTerm = g.current_term
     if selectedTerm:
         currentTerm = selectedTerm
-    currentTime = datetime.now()
-    eventsDict = groupEventsByCategory(currentTerm)
+    currentTime = datetime.datetime.now()
+    term = Term.get_by_id(currentTerm)
+    studentLedProgram = getStudentLedProgram(term)
+    trainingProgram = getTrainingProgram(term)
+    bonnerProgram = getBonnerProgram(term)
+    oneTimeEvents = getOneTimeEvents(term)
     listOfTerms = Term.select()
     participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
     return render_template("/events/event_list.html",
         selectedTerm = Term.get_by_id(currentTerm),
-        eventDict = eventsDict,
+        studentLedProgram = studentLedProgram,
+        trainingProgram = trainingProgram,
+        bonnerProgram = bonnerProgram,
+        oneTimeEvents = oneTimeEvents,
         listOfTerms = listOfTerms,
         rsvpedEventsID = rsvpedEventsID,
         currentTime = currentTime,
@@ -46,7 +52,7 @@ def profilePage(username):
         upcomingEvents = getUpcomingEventsForUser(username)
         programs = Program.select()
         interests = Interest.select().where(Interest.user == profileUser)
-        interests_ids = [interest.program for interest in interests]
+        interests_ids = [interest.program.id for interest in interests]
         return render_template('/volunteer/volunteerProfile.html',
                                title="Volunteer Interest",
                                user = profileUser,
@@ -81,6 +87,7 @@ def volunteerRegister():
     for the event they have clicked register for.
     """
     eventData = request.form
+
     event = Event.get_by_id(eventData['id'])
 
     user = g.current_user
@@ -109,7 +116,6 @@ def RemoveRSVP():
     This function deletes the user ID and event ID from database when RemoveRSVP  is clicked
     """
     eventData = request.form
-
     event = Event.get_by_id(eventData['id'])
 
     currentRsvpParticipant = EventRsvp.get(EventRsvp.user == g.current_user, EventRsvp.event == event)
