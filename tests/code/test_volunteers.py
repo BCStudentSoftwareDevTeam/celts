@@ -73,6 +73,12 @@ def test_addVolunteerToEventRsvp():
 
 @pytest.mark.integration
 def test_updateEventParticipants():
+    # event does not exist
+    participantData = {'inputHours_agliullovak':100, 'checkbox_agliullovak':"on", 'event':100, 'username1': 'agliullovak'}
+    with pytest.raises(Exception, match="Event does not exist."):
+        volunteerTableUpdate = updateEventParticipants(participantData)
+        assert volunteerTableUpdate == False
+
     # update record if user is marked as present and user record exists in event participant table
     participantData = {'inputHours_agliullovak':100, 'checkbox_agliullovak':"on", 'event':3, 'username1': 'agliullovak'}
     volunteerTableUpdate = updateEventParticipants(participantData)
@@ -91,6 +97,10 @@ def test_updateEventParticipants():
 
     eventParticipant = EventParticipant.get(EventParticipant.user=="partont", EventParticipant.event==3)
     assert eventParticipant.hoursEarned == 100
+
+    ((EventParticipant.delete()
+        .where(EventParticipant.user=="partont", EventParticipant.event==3))
+        .execute())
 
     # delete user from event participant table if user is marked absent and they have a record in the table
     participantData = {'event':3, 'username1': 'agliullovak'}

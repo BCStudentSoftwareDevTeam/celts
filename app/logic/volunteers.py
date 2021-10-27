@@ -26,7 +26,10 @@ def updateEventParticipants(participantData):
     param: participantData- a dictionary that contains data from every row of the page along with the associated username.
     """
     event = Event.get_or_none(Event.id==participantData['event'])
-    eventId = participantData['event']
+    if not event:
+        raise Exception("Event does not exist.") # ???
+        return False
+
     for user in range(1, len(participantData)):
         if f'username{user}' in participantData:
             username = participantData[f'username{user}']
@@ -40,8 +43,8 @@ def updateEventParticipants(participantData):
                             ((EventParticipant
                                 .update({EventParticipant.hoursEarned: hoursEarned})
                                 .where(
-                                    EventParticipant.event==eventId,
-                                    EventParticipant.user==participantData[f'username{user}']))
+                                    EventParticipant.event==event.id,
+                                    EventParticipant.user==userObject.username))
                                 .execute())
                         else:
                             (EventParticipant
@@ -53,8 +56,8 @@ def updateEventParticipants(participantData):
                     if eventParticipant:
                         ((EventParticipant.delete()
                             .where(
-                                EventParticipant.user==participantData[f'username{user}'],
-                                EventParticipant.event==eventId))
+                                EventParticipant.user==userObject.username,
+                                EventParticipant.event==event.id))
                             .execute())
             else:
                 return False
