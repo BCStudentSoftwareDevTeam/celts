@@ -55,10 +55,9 @@ def testingTrainings():
     testingTrainingNotExist = getTrainingTranscript(adminName)
 
 
-    assert testingTrainingNotExist.exists() == False
-    assert [event.event.name == "Test Training Event" for event in testingTrainingsExist]
+    assert not testingTrainingNotExist.exists()
     assert testingTrainingsExist.exists()
-
+    assert newEvent in testingTrainingsExist
 
 
 @pytest.mark.integration
@@ -93,10 +92,9 @@ def testingBonner():
     testingBonnerNotExist = getBonnerScholarEvents(adminName)
 
 
-    assert testingBonnerNotExist.exists() == False
-    assert [bonner.event.name == "Test Bonner Event" for bonner in testingBonnerExist]
+    assert not testingBonnerNotExist.exists()
     assert testingBonnerExist.exists()
-
+    assert newEvent in testingBonnerExist
 
 
 @pytest.mark.integration
@@ -128,16 +126,13 @@ def testingSLCourses():
     testingSLCExist, instructorDict = getSlCourseTranscript(username)
     testingSLCNotExist, instructorDict = getSlCourseTranscript(adminName)
 
+    assert not testingSLCNotExist.exists()
     assert testingSLCExist.exists()
-    assert [slc.course.courseName == "Test Course" for slc in testingSLCExist]
-    assert testingSLCNotExist.exists() == False
+    assert newCourse in testingSLCExist
+
 
 @pytest.mark.integration
 def testingProgram():
-
-
-    username = "namet"
-    adminName = "ramsayb2"
 
     newEvent = Event.create(name = "Test Program Event",
                               term = 1,
@@ -159,13 +154,14 @@ def testingProgram():
 
     addVolunteerToEvent('namet', testingProgramEvent.id, 2)
 
+    username = "namet"
+    adminName = "ramsayb2"
     testingProgramExist = getProgramTranscript(username)
     testingProgramNotExist = getProgramTranscript(adminName)
 
-    assert testingProgramNotExist.exists() == False
-    assert [program.program.programName == "Test Program Event" for program in testingProgramExist]
+    assert not testingProgramNotExist.exists()
     assert testingProgramExist.exists()
-
+    assert newEvent in testingProgramExist
 
 
 @pytest.mark.integration

@@ -15,6 +15,7 @@ from app.logic.events import *
 from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 from app.logic.searchUsers import searchUsers
+from app.logic.transcript import *
 
 @main_bp.route('/', methods=['GET'])
 @main_bp.route('/events/<selectedTerm>', methods=['GET'])

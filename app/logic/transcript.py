@@ -48,9 +48,17 @@ def getSlCourseTranscript(username):
     Returns a SLCourse query object containing all the training events for
     current user.
     """
+    testlol = (Course
+        .select()
+        .join(CourseParticipant)
+        .where(CourseParticipant.user == username).distinct())
+    for i in testlol:
+        for j in i.courseInstructors:
+
+            print(j.user.firstName)
 
     SLCourses = (CourseParticipant
-        .select(CourseParticipant, CourseParticipant.course)
+        .select(CourseParticipant, CourseParticipant.course, )
         .join(Course)
         .where(CourseParticipant.user == username))
 
@@ -107,12 +115,3 @@ def getStartYear(username):
     if startDate:
         return startDate.event.term.year
     return "N/A"
-
-def getUserdata(username):
-    """
-    Returns the user object the page belongs too.
-    """
-
-    userdata = User.get(User.username == username)
-
-    return userdata
