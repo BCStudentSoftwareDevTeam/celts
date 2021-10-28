@@ -49,8 +49,8 @@ def getSlCourseTranscript(username):
     current user.
     """
     slCourses = (Course
-        .select(CourseParticipant, Course)
-        .join(CourseParticipant)
+        .select(CourseParticipant.hoursEarned, Course)
+        .join(CourseParticipant, on=(Course.id == CourseParticipant.course))
         .where(CourseParticipant.user == username).distinct())
 
     return slCourses

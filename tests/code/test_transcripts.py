@@ -10,23 +10,22 @@ from app.models.facilitator import Facilitator
 from app.logic.volunteers import addVolunteerToEvent
 from app.logic.events import deleteEvent
 
-
 @pytest.mark.integration
-def testingTrainings():
+def setup_module():
     user = User.create(
-    username = "namet",
-    bnumber = "B001234567",
-    email = "namet@berea.edu",
-    phoneNumber = "555-123-1234",
-    firstName = "Test",
-    lastName  = "Name",
-    isStudent = 1,
-    isFaculty = 0,
-    isCeltsAdmin = 0,
-    isCeltsStudentStaff = 0,
-    )
+                        username = "namet",
+                        bnumber = "B001234567",
+                        email = "namet@berea.edu",
+                        phoneNumber = "555-123-1234",
+                        firstName = "Test",
+                        lastName  = "Name",
+                        isStudent = 1,
+                        isFaculty = 0,
+                        isCeltsAdmin = 0,
+                        isCeltsStudentStaff = 0,
+                        )
 
-    newEvent = Event.create(name = "Test Training Event",
+    newTrainingEvent = Event.create(name = "Test Training Event",
                               term = 1,
                               description= "Event for testing",
                               timeStart = "18:00:00",
@@ -40,30 +39,11 @@ def testingTrainings():
                               startDate =  2021-12-12,
                               endDate =  2021-12-13)
 
-    programEvent = ProgramEvent.create(program=2, event=newEvent)
+    programEvent = ProgramEvent.create(program=2, event=newTrainingEvent)
 
-    facilitatorEntry = Facilitator.create(user = 'ramsayb2',event = newEvent)
+    facilitatorEntry = Facilitator.create(user = 'ramsayb2',event = newTrainingEvent)
 
-    testingTrainingEvent = Event.get(Event.name == "Test Training Event")
-
-    addVolunteerToEvent('namet', testingTrainingEvent.id, 2)
-
-    username = "namet"
-    adminName = "ramsayb2"
-
-    testingTrainingsExist = getTrainingTranscript(username)
-    testingTrainingNotExist = getTrainingTranscript(adminName)
-
-
-    assert not testingTrainingNotExist.exists()
-    assert testingTrainingsExist.exists()
-    assert newEvent in testingTrainingsExist
-
-
-@pytest.mark.integration
-def testingBonner():
-
-    newEvent = Event.create(name = "Test Bonner Event",
+    newBonnerEvent = Event.create(name = "Test Bonner Event",
                               term = 1,
                               description= "Event for testing",
                               timeStart = "18:00:00",
@@ -77,28 +57,9 @@ def testingBonner():
                               startDate =  2021-12-12,
                               endDate =  2021-12-13)
 
-    programEvent = ProgramEvent.create(program=5, event=newEvent)
+    programEvent = ProgramEvent.create(program=5, event=newBonnerEvent)
 
-    facilitatorEntry = Facilitator.create(user = 'ramsayb2',event = newEvent)
-
-    testingBonnerEvent = Event.get(Event.name == "Test Bonner Event")
-
-    addVolunteerToEvent('namet', testingBonnerEvent.id, 2)
-
-    username = "namet"
-    adminName = "ramsayb2"
-
-    testingBonnerExist = getBonnerScholarEvents(username)
-    testingBonnerNotExist = getBonnerScholarEvents(adminName)
-
-
-    assert not testingBonnerNotExist.exists()
-    assert testingBonnerExist.exists()
-    assert newEvent in testingBonnerExist
-
-
-@pytest.mark.integration
-def testingSLCourses():
+    facilitatorEntry = Facilitator.create(user = 'ramsayb2',event = newBonnerEvent)
 
     username = "namet"
     adminName = "ramsayb2"
@@ -123,18 +84,7 @@ def testingSLCourses():
                                                     user = username,
                                                     hoursEarned = 3.0)
 
-    testingSLCExist= getSlCourseTranscript(username)
-    testingSLCNotExist = getSlCourseTranscript(adminName)
-
-    assert not testingSLCNotExist.exists()
-    assert testingSLCExist.exists()
-    assert newCourse in testingSLCExist
-
-
-@pytest.mark.integration
-def testingProgram():
-
-    newEvent = Event.create(name = "Test Program Event",
+    newProgramEvent = Event.create(name = "Test Program Event",
                               term = 1,
                               description= "Event for testing",
                               timeStart = "18:00:00",
@@ -148,9 +98,62 @@ def testingProgram():
                               startDate =  2021-12-12,
                               endDate =  2021-12-13)
 
-    programEvent = ProgramEvent.create(program=1, event=newEvent)
+    programEvent = ProgramEvent.create(program=1, event=newProgramEvent)
 
-    testingProgramEvent = Event.get(Event.name == "Test program Event")
+@pytest.mark.integration
+def testingTrainings():
+
+    testingTrainingEvent = Event.get(Event.name == "Test Training Event")
+    addVolunteerToEvent('namet', testingTrainingEvent.id, 2)
+
+    username = "namet"
+    adminName = "ramsayb2"
+
+    testingTrainingsExist = getTrainingTranscript(username)
+    testingTrainingNotExist = getTrainingTranscript(adminName)
+
+
+    assert not testingTrainingNotExist.exists()
+    assert testingTrainingsExist.exists()
+    assert newTrainingEvent in testingTrainingsExist
+
+
+@pytest.mark.integration
+def testingBonner():
+
+    testingBonnerEvent = Event.get(Event.name == "Test Bonner Event")
+
+    addVolunteerToEvent('namet', testingBonnerEvent.id, 2)
+
+    username = "namet"
+    adminName = "ramsayb2"
+
+    testingBonnerExist = getBonnerScholarEvents(username)
+    testingBonnerNotExist = getBonnerScholarEvents(adminName)
+
+
+    assert not testingBonnerNotExist.exists()
+    assert testingBonnerExist.exists()
+    assert newBonnerEvent in testingBonnerExist
+
+
+@pytest.mark.integration
+def testingSLCourses():
+
+    testingSLCExist= getSlCourseTranscript(username)
+    testingSLCNotExist = getSlCourseTranscript(adminName)
+
+    assert not testingSLCNotExist.exists()
+    assert testingSLCExist.exists()
+    assert newCourse in testingSLCExist
+
+
+@pytest.mark.integration
+def testingProgram():
+
+    testingProgramEvent = Event.select().where(Event.name == "Test program Event")
+
+    print(testingProgramEvent.id)
 
     addVolunteerToEvent('namet', testingProgramEvent.id, 2)
 
@@ -159,9 +162,12 @@ def testingProgram():
     testingProgramExist = getProgramTranscript(username)
     testingProgramNotExist = getProgramTranscript(adminName)
 
+    for program in testingProgramExist:
+        print(program)
+
     assert not testingProgramNotExist.exists()
     assert testingProgramExist.exists()
-    assert newEvent in testingProgramExist
+    assert testingProgramEvent in testingProgramExist
 
 
 @pytest.mark.integration
@@ -171,7 +177,9 @@ def testingTotalHours():
 
     assert totalHours == 9
 
-    # delete training
+@pytest.mark.integration
+def teardown_module():
+
     testingTrainingEvent = Event.get(Event.name == "Test Training Event")
     deleteEvent(testingTrainingEvent)
     assert Event.get_or_none(Event.id == testingTrainingEvent) is None

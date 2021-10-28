@@ -142,7 +142,7 @@ def serviceTranscript(username):
 
     return render_template('main/serviceTranscript.html',
                             programs = programs,
-                            slCourses = slCourses,
+                            slCourses = slCourses.objects(),
                             trainingData = trainingData,
                             bonnerData = bonnerData,
                             totalHours = totalHours,
