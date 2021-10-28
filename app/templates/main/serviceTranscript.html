@@ -52,12 +52,12 @@
     </tr>
     {% for slcourse in slCourses %}
     <tr>
-      <td> {{slcourse.course.courseName}}</td>
-      <td> {{slcourse.course.term.description}}</td>
+      <td> {{slcourse.courseName}}</td>
+      <td> {{slcourse.term.description}}</td>
 
       <td>
-        {% for name in instructorDict[slcourse.course.id] %}
-        {{name}} <br>
+        {% for instructor in slcourse.courseInstructors %}
+          {{instructor.user.firstName}} {{instructor.user.lastName}} <br>
         {% endfor %}
       </td>
       <td class= "w-25"> {{slcourse.hoursEarned}}</td>
