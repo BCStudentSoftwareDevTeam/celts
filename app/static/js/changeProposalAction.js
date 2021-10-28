@@ -1,14 +1,20 @@
 
 // withdrawing a course
 
-$( document ).ready(function() {
+$(document).ready(function() {
   //if they decide not to withdraw, change selection back to "select action"
   $('#withdrawModal').on('hidden.bs.modal', function () {
-    $('.form-select').val('---')
-
+    $('.form-select').val('---');
   });
+  $("#withdrawBtn").on("click", function() {
+    withdraw();
+  });
+  for (var i=1; i<=$('#proposalTable .form-select').length; i++){
+    $("#course_"+i).on("change", function() {
+      changeAction($(this));
+    });
+  }
 });
-
 
 function changeAction(action){
   if (action.value=="Renew"){
@@ -18,8 +24,9 @@ function changeAction(action){
     // View
 
   } else if (action.value=="Withdraw"){
-    courseID = action.id
-    $('.modal-body #courseToRemove').val(courseID)
+    courseID = action.id;
+    console.log("hello");
+    $('#courseToRemove').val(courseID);
     $('#withdrawModal').modal('show');
 
   } else if(action.value=="Edit"){
@@ -39,4 +46,4 @@ function withdraw(){
         console.log(status,error);
       }
   })
-}
+};

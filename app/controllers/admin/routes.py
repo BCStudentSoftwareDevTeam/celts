@@ -17,7 +17,7 @@ from app.models.eventTemplate import EventTemplate
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
-
+from app.logic.getSLInstructorTableData import getProposalData
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
@@ -25,7 +25,7 @@ from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, 
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
-
+from app.controllers.admin.changeSLAction import withdrawCourse
 
 @admin_bp.route('/template_select')
 def template_select():
@@ -142,6 +142,17 @@ def deleteRoute(eventId):
 def addRecurringEvents():
     recurringEvents = calculateRecurringEventFrequency(preprocessEventData(request.form.copy()))
     return json.dumps(recurringEvents, default=str)
+
+@admin_bp.route('/courseProposals', methods=['GET'])
+def createTable():
+    courseDict = getProposalData(g.current_user)
+    try:
+        return render_template("/admin/createSLProposalTable.html",
+                                instructor = g.current_user,
+                                courseDict = courseDict)
+    except Exception as e:
+        print('Error while creating table:', e)
+        return "", 500
 
 @admin_bp.route('/volunteerProfile', methods=['POST'])
 def volunteerProfile():
