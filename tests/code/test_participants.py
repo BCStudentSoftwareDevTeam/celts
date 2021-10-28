@@ -176,7 +176,7 @@ def test_unattendedRequiredEvents():
 
     # test after user has attended an event
     event = Event.get(Event.name == unattendedEvents[0])
-    EventParticipant.create(user = user, event = event, attended = True)
+    EventParticipant.create(user = user, event = event)
     unattendedEvents = unattendedRequiredEvents(program, user)
     assert len(unattendedEvents) == 2
     (EventParticipant.delete().where(EventParticipant.user == user, EventParticipant.event == event)).execute()
@@ -206,10 +206,11 @@ def test_unattendedRequiredEvents():
 @pytest.mark.integration
 def test_sendKioskDataKiosk():
     # user is banned
-    signedInUser, userStatus = sendUserData("B00739736", 2, 1)
-    assert userStatus == "banned"
+    try:
+        signedInUser, userStatus = sendUserData("B00739736", 2, 1)
+        assert userStatus == "banned"
 
-    with pytest.raises(DoesNotExist):
+    except peewee.DoesNotExist:
         EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
 
     # user is already signed in
@@ -217,14 +218,14 @@ def test_sendKioskDataKiosk():
     assert userStatus == "already in"
 
     # user is eligible but the user is not in EventParticipant
-    signedInUser = User.get(User.bnumber=="B00759117")
-    with pytest.raises(DoesNotExist):
+    try:
+        signedInUser = User.get(User.bnumber=="B00759117")
+    except peewee.DoesNotExist:
         EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
+        signedInUser, userStatus = sendUserData("B00759117", 2, 1)
+        assert userStatus == "success"
 
-    signedInUser, userStatus = sendUserData("B00759117", 2, 1)
-    assert userStatus == "success"
+        usersAttended = EventParticipant.select().where(EventParticipant.event == 2)
+        listOfAttended = [users.user.username for users in usersAttended]
 
-    usersAttended = EventParticipant.select().where(EventParticipant.event == 2)
-    listOfAttended = [users.user.username for users in usersAttended]
-
-    assert "agliullovak" in listOfAttended
+        assert "agliullovak" in listOfAttended
