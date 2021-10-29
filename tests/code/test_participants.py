@@ -207,7 +207,7 @@ def test_unattendedRequiredEvents():
 @pytest.mark.integration
 def test_sendKioskDataKiosk():
     signin = sendUserData("B00751864", 2, 1)
-    usersAttended = EventParticipant.select().where(EventParticipant.attended, EventParticipant.event == 2)
+    usersAttended = EventParticipant.select().where(EventParticipant.attended, EventParticipant.event == 3)
     listOfAttended = [users.user.username for users in usersAttended]
 
     assert "neillz" in listOfAttended
