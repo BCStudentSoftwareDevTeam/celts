@@ -32,6 +32,7 @@ def events(selectedTerm=None):
     participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
+
     return render_template("/events/event_list.html",
         selectedTerm = Term.get_by_id(currentTerm),
         studentLedProgram = studentLedProgram,
@@ -53,13 +54,17 @@ def profilePage(username):
         programs = Program.select()
         interests = Interest.select().where(Interest.user == profileUser)
         interests_ids = [interest.program.id for interest in interests]
+        rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == profileUser)
+        rsvpedEvents = [event.event.id for event in rsvpedEventsList]
+
         return render_template('/volunteer/volunteerProfile.html',
                                title="Volunteer Interest",
                                user = profileUser,
                                programs = programs,
                                interests = interests,
                                interests_ids = interests_ids,
-                               upcomingEvents = upcomingEvents)
+                               upcomingEvents = upcomingEvents,
+                               rsvpedEvents = rsvpedEvents)
     except Exception as e:
         print(e)
         return "Error retrieving user profile", 500

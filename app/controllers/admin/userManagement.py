@@ -32,7 +32,7 @@ def manageUsers():
 
 @admin_bp.route('/admin', methods = ['GET'])
 def userManagement():
-    terms = selectSurroundingTerms(g.current_term.id)
+    terms = selectSurroundingTerms(g.current_term)
     if g.current_user.isAdmin:
         return render_template('admin/userManagement.html',
                                 terms=terms)
