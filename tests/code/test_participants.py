@@ -201,7 +201,7 @@ def test_unattendedRequiredEvents():
     program = 1
     user = "asdfasdf56"
     unattendedEvents = unattendedRequiredEvents(program, user)
-    assert unattendedEvents == ['Empty Bowls Spring Event 1', 'Berea Buddies Training', 'How To Make Buddies']
+    assert unattendedEvents == ['Empty Bowls Spring Event 1', 'Hunger Hurts', 'Food Drive']
 
 @pytest.mark.integration
 def test_sendKioskDataKiosk():
