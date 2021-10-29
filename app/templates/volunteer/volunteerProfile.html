@@ -17,6 +17,7 @@
           <th scope="col"><h4><strong>Event Name</strong></h4>
           <th scope="col"><h4><strong>Start Date</strong></h4>
           <th scope="col"><h4><strong>End Date</strong></h4>
+          <th scope="col"><h4><strong>RSVP Status</strong></h4>
         </thead>
         {% for event in upcomingEvents %}
         <tr>
@@ -24,6 +25,7 @@
           <td><a href= '/event/{{event.id}}/edit' class="link-primary">{{event.name}}</a></td>
           <td>{{event.startDate}}</td>
           <td>{{event.endDate}}</td>
+          <td>{{"RSVP'ed" if event.id in rsvpedEvents else "Not RSVP'ed"}}</td>
         {% endfor %}
         </tr>
 
