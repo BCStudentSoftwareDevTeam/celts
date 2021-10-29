@@ -262,7 +262,7 @@ events = [
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "a big room",
+        "location": "Seabury Center",
         "startDate": datetime.strptime("2021 10 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
@@ -274,7 +274,7 @@ events = [
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "a big room",
+        "location": "Berea Community School",
         "startDate": datetime.strptime("2021 11 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
@@ -286,7 +286,7 @@ events = [
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "a big room",
+        "location": "Alumni Patio",
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
@@ -298,7 +298,7 @@ events = [
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 am", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 am", "%I:%M %p"),
-        "location": "a big room",
+        "location": "Stephenson Building",
         "startDate": datetime.strptime("2021 6 25","%Y %m %d"),
         "endDate": datetime.strptime("2021 6 25","%Y %m %d")
     },
@@ -310,7 +310,7 @@ events = [
         "isTraining": False,
         "timeStart": datetime.strptime("3:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "a bigish room",
+        "location": "Woodspen",
         "startDate": datetime.strptime("2021 6 18","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
@@ -322,19 +322,19 @@ events = [
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "a big room",
+        "location": "Woodspen",
         "startDate": datetime.strptime("2021 08 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 9 12","%Y %m %d")
     },
     {
         "id": 7,
         "term": 3,
-        "name": "Food Drive",
-        "description": "Second event of food donation",
+        "name": "Empty Bowl with Community",
+        "description": "Open to Berea community",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "Outisde",
+        "location": "Berea Community Park",
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
@@ -346,7 +346,7 @@ events = [
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "a big room",
+        "location": "Stephenson Building",
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
@@ -358,7 +358,7 @@ events = [
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "Dining Dishes Room",
+        "location": "Berea Farm",
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
 
@@ -371,19 +371,19 @@ events = [
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "Dining Dishes Room",
+        "location": "Stephenson Building",
         "startDate": datetime.strptime("2021 1 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 6 12","%Y %m %d")
     },
     {
         "id": 11,
         "term": 3,
-        "name": "Dummy Event",
+        "name": "Celts Admin Meeting",
         "description": "Not a required event",
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "Dining Dishes Room",
+        "location": "Stephenson Building",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d")
     },
@@ -395,19 +395,19 @@ events = [
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "Dining Dishes Room",
+        "location": "Boone Tavern",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d")
     },
     {
         "id": 13,
         "term": 2,
-        "name": "unaffiliated event",
-        "description": "Test event with no program",
+        "name": "Community Clean Up",
+        "description": "This event doesn't belong to any program",
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "Dining Dishes Room",
+        "location": "Berea Community Park",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d")
     },
@@ -419,19 +419,19 @@ events = [
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "A Big Room",
+        "location": "Woodspen",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d")
     },
     {
         "id": 15,
         "term": 3,
-        "name": "Event 1",
+        "name": "Traing Event",
         "description": "Test for training",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "Somewhere",
+        "location": "Alumni Building",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d")
     },
