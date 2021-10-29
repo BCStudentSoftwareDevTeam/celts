@@ -1,19 +1,36 @@
 import searchUser from './searchUser.js'
 
 $(document).ready( function () {
-  console.log(data['column'])
-    $('#trackVolunteerstable').DataTable(
-    {"lengthChange": false,
-    if (data['column'] <= 10) {
-        "searching": false,;
-    }
+  // console.log(data['column'])
+    $('#trackVolunteerstable').DataTable({
+      "fnDrawCallback": function(oSettings) {
+       if ($('#example tr').length < 11) {
+
+           $('.dataTables_paginate').hide();
+           
+       }
+   }
+
+      // "lengthChange": false,
+      // if (data ['row'] <= 10) {
+      //     "searching": false,;
+      // },
+      // responsive: true
+       // columnDefs: [
+       //  { responsivePriority: 6 ,targets: 6},
+       //  { responsivePriority: 5 ,targets: 5},
+       //  { responsivePriority: 4 ,targets: 4},
+       //  { responsivePriority: 3 ,targets: 3},
+       //  { responsivePriority: 2 ,targets: 2},
+       //  { responsivePriority: 1 ,targets: 1}
 
 
-    // responsive: true
 
-    }
-    );
-} );
+    // ]
+
+    });
+}
+);
 
 $(document).ready(function() {
   $('[data-bs-toggle="tooltip"]').tooltip();
