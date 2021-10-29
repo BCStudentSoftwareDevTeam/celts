@@ -158,8 +158,6 @@
             </div>
           </div>
         </div>
-
-      {% include 'emailModal.html' %}
     {% endfor %}
     </div>
     {% else %}
@@ -178,5 +176,8 @@
     {{createTable(oneTimeEvents)}}
   </div>
 </div>
+
+
+{% include 'emailModal.html' %}
 
 {% endblock %}

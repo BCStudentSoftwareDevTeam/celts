@@ -8,6 +8,7 @@ from app.models.emailTemplate import EmailTemplate
 from app import app
 import sys
 import webbrowser
+import time
 from pathlib import Path
 
 def getInterestedEmails(programID = None):
@@ -25,7 +26,6 @@ class emailHandler():
     def __init__(self, mail, emailInfo):
         self.emailInfo = emailInfo
         self.mail = mail
-        self.mail.connect()
 
     def updateSenderEmail(self, message):
         """ Updates who is sending the emails based on the event_list form. """
@@ -42,12 +42,12 @@ class emailHandler():
                 MAIL_PASSWORD = app.config['staff_password']
             )
             message.sender = app.config['staff_username']
-
+        self.mail.connect()
         return message
 
-    def sendEmail(self, message: Message, emails):
+    def sendEmail(self, msg: Message, emails):
         """ Updates the sender and sends the email. """
-        message = self.updateSenderEmail(message)
+        message = self.updateSenderEmail(msg)
         print(f"\n {self.emailInfo} \n")
         print(f"\n {message.sender} \n")
 
@@ -73,5 +73,7 @@ class emailHandler():
 
             message.reply_to = app.config["REPLY_TO_ADDRESS"]
             # print(f"\n {message} \n")
+            # message.sender =
+            # print(f"\n {app.config['admin_username']} \n")
             self.mail.send(message)
         return 1
