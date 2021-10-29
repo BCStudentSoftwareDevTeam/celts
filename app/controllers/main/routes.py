@@ -15,6 +15,7 @@ from app.logic.events import *
 from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 from app.logic.searchUsers import searchUsers
+from app.logic.transcript import *
 
 @main_bp.route('/', methods=['GET'])
 @main_bp.route('/events/<selectedTerm>', methods=['GET'])
@@ -128,6 +129,30 @@ def RemoveRSVP():
 
     flash("Successfully unregistered for event!", "success")
     return redirect(url_for("admin.editEvent", eventId=event.id))
+
+@main_bp.route('/<username>/serviceTranscript', methods = ['GET'])
+def serviceTranscript(username):
+    user = User.get_or_none(User.username == username)
+    if user is None:
+        abort(404)
+    if user != g.current_user and not g.current_user.isAdmin:
+        abort(403)
+
+    programs = getProgramTranscript(username)
+    slCourses = getSlCourseTranscript(username)
+    trainingData = getTrainingTranscript(username)
+    bonnerData = getBonnerScholarEvents(username)
+    totalHours = getTotalHours(username)
+    startDate = getStartYear(username)
+
+    return render_template('main/serviceTranscript.html',
+                            programs = programs,
+                            slCourses = slCourses.objects(),
+                            trainingData = trainingData,
+                            bonnerData = bonnerData,
+                            totalHours = totalHours,
+                            startDate = startDate,
+                            userData = user)
 
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
 def searchUser(query):
