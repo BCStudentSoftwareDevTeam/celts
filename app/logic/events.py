@@ -153,6 +153,7 @@ def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
                             .distinct() # necessary because of multiple programs
                             .order_by(Event.startDate, Event.name) # keeps the order of events the same when the dates are the same
                             )
+
     return list(events)
 
 def getAllFacilitators():
