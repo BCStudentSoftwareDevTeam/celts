@@ -31,8 +31,9 @@ def deleteProposal(courseID):
     notes = (QuestionNote.select()
                          .where(CourseQuestion.course == course)
                          .join(CourseQuestion))
-    for note in notes:
-        q.delete_instance()
+    if notes:
+        for note in notes:
+            note.delete_instance()
     (CourseQuestion.delete().where(CourseQuestion.course == course)).execute()
     (CourseParticipant.delete().where(CourseParticipant.course == course)).execute()
     (CourseInstructor.delete().where(CourseInstructor.course == course)).execute()
