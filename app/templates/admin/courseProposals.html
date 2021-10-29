@@ -2,7 +2,7 @@
 
 {% block scripts %}
   {{super()}}
-  <script type="module" src="/static/js/changeProposalAction.js"></script>
+  <script src="/static/js/courseProposals.js"></script>
 {% endblock %}
 {% block styles %}
   {{super()}}
@@ -28,8 +28,8 @@
             <td>{{courseDict[course]['term'].description}}</td>
             <td>{{courseDict[course]['status']}}</td>
             <td>
-              <select class="form-select" id="course_{{ loop.index }}">
-                <option value="{{ courseDict[course]['id'] }}" disabled selected>Select Action</option>
+              <select class="form-select" id="{{ courseDict[course]['id'] }}" onclick="changeAction(this)">
+                <option value="---" disabled selected>Select Action</option>
                 <option value="Renew">Renew</option>
                 <option value="View">View</option>
                 <option value="Withdraw">Withdraw</option>

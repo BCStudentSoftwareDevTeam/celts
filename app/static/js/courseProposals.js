@@ -9,11 +9,6 @@ $(document).ready(function() {
   $("#withdrawBtn").on("click", function() {
     withdraw();
   });
-  for (var i=1; i<=$('#proposalTable .form-select').length; i++){
-    $("#course_"+i).on("change", function() {
-      changeAction($(this));
-    });
-  }
 });
 
 function changeAction(action){
@@ -25,7 +20,6 @@ function changeAction(action){
 
   } else if (action.value=="Withdraw"){
     courseID = action.id;
-    console.log("hello");
     $('#courseToRemove').val(courseID);
     $('#withdrawModal').modal('show');
 
@@ -37,7 +31,7 @@ function changeAction(action){
 function withdraw(){
   courseID = $("#courseToRemove").val()
   $.ajax({
-    url: "/withdrawCourse/"+ courseID,
+    url: "/courseProposals/"+courseID+"/withdraw/",
     type: "POST",
     success: function(s){
       location.reload()

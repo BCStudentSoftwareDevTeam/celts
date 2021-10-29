@@ -17,7 +17,7 @@ from app.models.eventTemplate import EventTemplate
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
-from app.logic.getSLInstructorTableData import getProposalData
+from app.logic.courseProposals import getProposalData, deleteProposal
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
@@ -25,7 +25,6 @@ from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, 
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
-from app.controllers.admin.changeSLAction import withdrawCourse
 
 @admin_bp.route('/template_select')
 def template_select():
@@ -147,12 +146,21 @@ def addRecurringEvents():
 def createTable():
     courseDict = getProposalData(g.current_user)
     try:
-        return render_template("/admin/createSLProposalTable.html",
+        return render_template("/admin/courseProposals.html",
                                 instructor = g.current_user,
                                 courseDict = courseDict)
     except Exception as e:
-        print('Error while creating table:', e)
+        print('Error while creating table: ', e)
         return "", 500
+
+@admin_bp.route('/courseProposals/<courseID>/withdraw/', methods = ['POST'])
+def withdrawCourse(courseID):
+    try:
+        deleteProposal(courseID)
+        flash("Course successfully withdrawn", 'success')
+    except:
+        flash("Withdrawal Unsuccessful", 'warning')
+    return ""
 
 @admin_bp.route('/volunteerProfile', methods=['POST'])
 def volunteerProfile():
