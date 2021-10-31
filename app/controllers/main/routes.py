@@ -170,3 +170,11 @@ def searchUser(query):
 @main_bp.route('/contributors',methods = ['GET'])
 def contributors():
     return render_template("/contributors.html")
+
+
+
+@main_bp.route('/manageservicelearning/', methods = ['GET'])
+def managePage():
+
+
+    return render_template('/main/manageServiceLearningFaculty.html')

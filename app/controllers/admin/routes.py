@@ -25,6 +25,7 @@ from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, 
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
+from app.controllers.main.routes import managePage
 
 
 @admin_bp.route('/template_select')
