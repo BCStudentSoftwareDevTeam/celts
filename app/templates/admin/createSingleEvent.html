@@ -247,7 +247,7 @@
                   {% if userHasRSVPed %}
                     <button type="submit" class="btn btn-danger"  formaction="/rsvpRemove">Remove RSVP</button>
                   {% else %}
-                     {% if request.path[-6:] != "create"%}
+                     {% if not isNewEvent %}
                      <button type="submit" id="rsvpEvent" class="btn btn-primary" formaction="/rsvpForEvent" {{'disabled' if isPastEvent}}>RSVP</button>
                      {% endif %}
                  {% endif %}
