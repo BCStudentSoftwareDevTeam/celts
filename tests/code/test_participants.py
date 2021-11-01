@@ -211,7 +211,7 @@ def test_sendKioskDataKiosk():
     listOfAttended = [users.user.username for users in usersAttended]
 
     assert "neillz" in listOfAttended
-    assert "lamichhanes2" not in listOfAttended
+    assert "partont" not in listOfAttended
 
     (EventParticipant.update({EventParticipant.attended: False})
                      .where(EventParticipant.user == "neillz", EventParticipant.event == 1)).execute()
