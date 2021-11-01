@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block app_content %}
+<div id="wrapper">
+  <div class ="container">
+    <a class="skipContent" href="#backButton" tabindex="1" style="top:8%">Click to Skip</a>
+    <div class="contributors" align="center">
+      <h2> Manage Service Learning Faculty </h2>
+  <table class="table table-bordered" align="center">
+   <tr class="info">
+    <th>Name</th>
+    <th>Prev Classes</th>
+    <th>Remove</th>
+    <th>Select</th>
+  </tr>
+  <tr>
+    <td>Alfreds Futterkiste</td>
+    <td>Maria Anders</td>
+    <td><button class="editbtn">remove</button></td>
+  </tr>
+  <tr>
+    <td>Centro comercial Moctezuma</td>
+    <td>Francisco Chang</td>
+    <td><button class="editbtn">remove</button>
+  </tr>
+</table>
+
+<!-- <div class="wrap">
+<form id="form" >
+  <input type="search" id="query" name="q" placeholder="Search...">
+  <button>Search</button>
+</form>
+</div> -->
+<div class="input-group">
+  <input type="input" id="{{inputId}}" name="{{inputId}}" class="form-control" placeholder="Search" autocomplete="off"/>
+  <button type="button" class="btn btn-secondary btn-sm" disabled>
+    <span class="bi bi-search"></span>
+  </button></div>
+  <div class="col-md-4">
+  <button type="button" >Add Faculty</button>
+  <button type="button" > send Email</button>
+</div>
+
+{% endblock %}
