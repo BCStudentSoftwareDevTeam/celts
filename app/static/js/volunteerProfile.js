@@ -55,6 +55,14 @@ $(document).ready(function(){
       }
 
   });
+  // Reloading page after user clicks on the show interest checkbox
+  $(document).ready(function() {
+    $(".form-check-input").click(function(){
+      location.reload(true);
+      console.log("Help me God")
+    });
+  });
+
 
   $("#banVolunteerButton").click(function (){
     $.ajax({
