@@ -50,7 +50,7 @@
                 </div>
             </div>
         </nav>
-        <div class='col-12 col-md scroll-container overflow-auto'>
+        <div class='col-12 col-md scroll-container overflow-visible'>
         <div>
             <div class="main-content container">
                 <div class="flash_container">
@@ -65,7 +65,7 @@
                     {% endwith %}
                 </div>
 
-                <div class="d-lg-none position-fixed top-0 start-0">
+                <div class="d-lg-none position-fixed top-0 start-0 d-print-none">
                     <button class="btn btn-dark rounded-0 rounded-end" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="sidebar">
                         <i class="bi bi-list" role="button" aria-label="Sidebar"></i>
                     </button>
@@ -79,7 +79,7 @@
         </div>
 
         {% block footer %}
-        <footer class="footer mt-auto bg-light" style="font-size:small; vertical-align: middle;">
+        <footer class="footer mt-auto bg-light d-print-none" style="font-size:small; vertical-align: middle;">
           <div class="container" style="margin-bottom: 0; line-height:normal;"><br>
             <span><strong>Issues? Contact: </strong><a href="mailto:support@bereacollege.onmicrosoft.com" class="footerlink">Systems Support </a><br class="d-lg-none">
               <strong>Created & Designed by the </strong><a href="/contributors" id = "contribLink" class="footerlink">Student Software Development Team</a></span>
