@@ -123,7 +123,7 @@ def testingTrainings():
     username = "namet"
     adminName = "ramsayb2"
 
-    checkingTrainingEvent = Event.select().where(Event.name == "Test Training Event")
+    checkingTrainingEvent = Event.get(name="Test Training Event")
 
     testingTrainingsExist = getTrainingTranscript(username)
     testingTrainingNotExist = getTrainingTranscript(adminName)
@@ -131,7 +131,7 @@ def testingTrainings():
 
     assert not testingTrainingNotExist.exists()
     assert testingTrainingsExist.exists()
-    assert checkingTrainingEvent in testingTrainingsExist
+    assert checkingTrainingEvent in [t.event for t in testingTrainingsExist]
 
 
 @pytest.mark.integration
@@ -143,11 +143,11 @@ def testingBonner():
     testingBonnerExist = getBonnerScholarEvents(username)
     testingBonnerNotExist = getBonnerScholarEvents(adminName)
 
-    checkingBonnerEvent = Event.select().where(Event.name == "Test Bonner Event")
+    checkingBonnerEvent = Event.get(name="Test Bonner Event")
 
     assert not testingBonnerNotExist.exists()
     assert testingBonnerExist.exists()
-    assert checkingBonnerEvent in testingBonnerExist
+    assert checkingBonnerEvent in [t.event for t in testingBonnerExist]
 
 
 @pytest.mark.integration
@@ -159,7 +159,7 @@ def testingSLCourses():
     testingSLCExist= getSlCourseTranscript(username)
     testingSLCNotExist = getSlCourseTranscript(adminName)
 
-    checkingNewCourse = Course.select().where(Course.courseName == "Test Course")
+    checkingNewCourse = Course.get(courseName = "Test Course")
 
     assert not testingSLCNotExist.exists()
     assert testingSLCExist.exists()
@@ -174,11 +174,11 @@ def testingProgram():
     testingProgramExist = getProgramTranscript(username)
     testingProgramNotExist = getProgramTranscript(adminName)
 
-    checkingProgramEvent = Event.select().where(Event.name == "Test Program Event")
+    checkingProgramEvent = Event.get(name="Test Program Event")
 
     assert not testingProgramNotExist.exists()
     assert testingProgramExist.exists()
-    assert checkingProgramEvent in testingProgramExist
+    assert checkingProgramEvent in [t.event for t in testingProgramExist]
 
 
 @pytest.mark.integration
