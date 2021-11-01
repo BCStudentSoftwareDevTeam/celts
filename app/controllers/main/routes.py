@@ -49,25 +49,26 @@ def viewVolunteersProfile(username):
          upcomingEvents = getUpcomingEventsForUser(username)
          programs = Program.select()
          interests = Interest.select().where(Interest.user == username)
-         programBan = ProgramBan.select().where(ProgramBan.user == username)
          interests_ids = [interest.program for interest in interests]
-         eventParticipant = EventParticipant.select().where(EventParticipant.user == username)
          currentTerm = Term.select().where(Term.isCurrentTerm == 1)
-         trainingEvents = (ProgramEvent.select().join(Event).where((Event.term == currentTerm) & (Event.isTraining == 1)))
          trainingChecklist = {}
          for program in programs:
              trainingChecklist[program.id] = trainedParticipants(program.id)
          eligibilityTable = []
-         for i in programs:
-             eligibilityTable.append({"program" : i,
-                                      "completedTraining" : (username in trainedParticipants(i)),
-                                      "isNotBanned" : isEligibleForProgram(i, username)})
+         for program in programs:
+              notes = ProgramBan.select().where(ProgramBan.user == username,
+                                                ProgramBan.program == program,
+                                                ProgramBan.endDate > datetime.now())
+              noteForDict = "None"
+              for j in notes:
+                  noteForDict = j.banNote.noteContent
+              eligibilityTable.append({"program" : program,
+                                       "completedTraining" : (username in trainedParticipants(program)),
+                                       "isNotBanned" : isEligibleForProgram(program, username),
+                                       "banNote": noteForDict})
          return render_template ("/main/volunteerProfile.html",
             programs = programs,
-            eventParticipant = eventParticipant,
             interests = interests,
-            trainingEvents = trainingEvents,
-            programBan = programBan,
             interests_ids = interests_ids,
             trainingChecklist = trainingChecklist,
             upcomingEvents = upcomingEvents,

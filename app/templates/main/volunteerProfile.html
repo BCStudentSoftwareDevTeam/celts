@@ -74,7 +74,7 @@
                 {% if user.isCeltsAdmin %}
                 <td class="programBan">
                   {% if program.isNotBanned %}<i class="bi bi-check-lg"></i><button type="button" class="ban btn btn-link" id="{{program.program}}" name="{{program.program.programName}}" value="Ban">Edit</button>
-                  {% else %} <i class="bi bi-x-lg"></i><button type="button" class="ban btn btn-link" id="{{program.program}}" name="{{program.program.programName}}" value="Unban">Edit</button>
+                  {% else %} <i class="bi bi-x-lg"></i><button type="button" class="ban btn btn-link" id="{{program.program}}" name="{{program.program.programName}}" note="{{program.banNote}}" value="Unban">Edit</button>
                   {% endif %}
                 </td>
                 {% endif %}
@@ -97,6 +97,11 @@
         <h6 align="left">{{volunteer.firstName}} {{volunteer.lastName}}</h6>
         <h6 align="left">{{volunteer.email}}</h6>
         <h6 align="left"><a href="tel:{{volunteer.phoneNumber}}">{{volunteer.phoneNumber}}</a></h6>
+        <div id="banNoteDiv">
+          <h6 align="left">Reason for ban:</h6>
+          <p align="left" id="banNote">Reason for ban:</p>
+        </div>
+
         <div id="ubanEndDate">
           <h6 align="left" class="d-inline-flex" id="unbanVolunteerEndDate">End Date: &nbsp<input id="banVolunteerEndDate" type="date"></h6>
         </div>
@@ -108,7 +113,7 @@
       </div>
       <div class="modal-footer justify-content-between">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button id="banVolunteerButton" type="button" class="btn btn-primary" banOrUnban="" disabled>Ban/Unban Volunteer</button>
+        <button id="banVolunteerButton" type="button" class="btn btn-danger" banOrUnban="" disabled>Ban/Unban Volunteer</button>
       </div>
     </div>
   </div>

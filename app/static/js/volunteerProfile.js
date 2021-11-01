@@ -17,11 +17,12 @@ $(document).ready(function(){
       url: interestUrl,
       success: function(response) {
           msgFlash("Your interest has been updated", "success");
+          location.reload(true);  //  Reloading page after user clicks on the show interest checkbox
       },
       error: function(request, status, error) {
         console.log(status,error);
         msgFlash("Error Updating Interest", "danger");
-        window.location.reload(true);
+        location.reload(true);
       }
     });
   });
@@ -36,12 +37,15 @@ $(document).ready(function(){
     $("#banVolunteerButton").attr("username", $(".form-check-input").attr("name"))
     $("#banVolunteerButton").attr("banOrUnban", $(this).val());
     $("#ubanEndDate").show()
+    $("#banNoteDiv").hide()
     $("#banVolunteerEndDate").val("")
     $("#banVolunteerNote").val("")
 
     if( $(this).val()=="Unban"){
       $("#ubanEndDate").hide()
       $("#banVolunteerEndDate").val("0001-01-01") //This is a placeholder value for the if statement in line 49 to work properly
+      $("#banNoteDiv").show()
+      $("#banNote").text($(this).attr("note"))
     }
 
   });
@@ -55,14 +59,6 @@ $(document).ready(function(){
       }
 
   });
-  // Reloading page after user clicks on the show interest checkbox
-  $(document).ready(function() {
-    $(".form-check-input").click(function(){
-      location.reload(true);
-      console.log("Help me God")
-    });
-  });
-
 
   $("#banVolunteerButton").click(function (){
     $.ajax({
