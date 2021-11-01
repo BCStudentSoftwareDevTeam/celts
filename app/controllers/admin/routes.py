@@ -150,9 +150,10 @@ def volunteerProfile():
     user=username.split('(')[-1]
     return redirect(url_for('main.profilePage', username=user))
 
-@admin_bp.route('/search_student', methods=['GET'])
+@admin_bp.route('/search_student', methods=['GET','POST'])
 def studentSearchPage():
     if g.current_user.isAdmin:
+        print('This is working')
         return render_template("/searchStudentPage.html")
     abort(403)
 
