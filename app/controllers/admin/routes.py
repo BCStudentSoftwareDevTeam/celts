@@ -25,8 +25,6 @@ from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectFutureTerms
 from app.logic.events import deleteEvent, getAllFacilitators, getUpcomingEventsForUser , attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.controllers.admin import admin_bp
-from app.logic.users import isEligibleForProgram
-from app.logic.searchUsers import searchUsers
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
 

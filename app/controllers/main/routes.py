@@ -45,12 +45,16 @@ def viewVolunteersProfile(username):
     """
     This function displays the information of a volunteer to the user
     """
+    try:
+        User.get(User.username == username)
+    except Exception as e:
+        print(e)
+        return "User does not exist", 404
     if (g.current_user.username == username) or g.current_user.isAdmin:
          upcomingEvents = getUpcomingEventsForUser(username)
          programs = Program.select()
          interests = Interest.select().where(Interest.user == username)
          interests_ids = [interest.program for interest in interests]
-         currentTerm = Term.select().where(Term.isCurrentTerm == 1)
          trainingChecklist = {}
          for program in programs:
              trainingChecklist[program.id] = trainedParticipants(program.id)
