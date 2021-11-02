@@ -3,7 +3,6 @@ Chech phpmyadmin to see if your changes are reflected
 This file will need to be changed if the format of models changes (new fields, dropping fields, renaming...)'''
 
 from datetime import *
-from app.models.eventParticipant import EventParticipant
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.term import Term
