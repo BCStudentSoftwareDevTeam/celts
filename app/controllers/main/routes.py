@@ -55,9 +55,9 @@ def viewVolunteersProfile(username):
          programs = Program.select()
          interests = Interest.select().where(Interest.user == username)
          programsInterested = [interest.program for interest in interests]
-         trainingChecklist = {}
-         for program in programs:
-             trainingChecklist[program.id] = trainedParticipants(program.id)
+         # trainingChecklist = {}
+         # for program in programs:
+         #     trainingChecklist[program.id] = trainedParticipants(program.id)
          eligibilityTable = []
          for program in programs:
               notes = ProgramBan.select().where(ProgramBan.user == username,
@@ -74,7 +74,7 @@ def viewVolunteersProfile(username):
             programs = programs,
             interests = interests,
             programsInterested = programsInterested,
-            trainingChecklist = trainingChecklist,
+            # trainingChecklist = trainingChecklist,
             upcomingEvents = upcomingEvents,
             eligibilityTable = eligibilityTable,
             volunteer = User.get(User.username == username),

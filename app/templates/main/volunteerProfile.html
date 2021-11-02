@@ -70,7 +70,7 @@
               <tr>
                 <td id="programNameTable">{{program.program.programName}}</td>
                 <td><input class="form-check-input" type="checkbox" id="{{program.program.id}}" name="{{volunteer.username}}" {% if program.program in programsInterested %} checked {% endif %}></td>
-                <td>{% if volunteer.username in trainingChecklist[program.program.id] %}<i class="bi bi-check-lg"></i> {% else %} <i class="bi bi-x-lg"></i>{% endif %}</td>
+                <td>{% if program.completedTraining == True %}<i class="bi bi-check-lg"></i> {% else %} <i class="bi bi-x-lg"></i>{% endif %}</td>
                 {% if user.isCeltsAdmin %}
                 <td class="programBan">
                   {% if program.isNotBanned %}<i class="bi bi-check-lg"></i><button type="button" class="ban btn btn-link" id="{{program.program}}" name="{{program.program.programName}}" value="Ban">Edit</button>
