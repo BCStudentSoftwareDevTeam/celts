@@ -657,148 +657,124 @@ eventParticipants = [
     {
         "user": "neillz",
         "event": 2,
-        "attended": True,
         "hoursEarned": 2
     },
     {
         "user": "bryanta",
         "event": 1,
-        "attended": False,
         "hoursEarned": 0
     },
     {
         "user": "neillz",
         "event": 3,
-        "attended": True,
         "hoursEarned": 3
     },
     {
         "user": "neillz",
         "event": 4,
-        "attended": True,
         "hoursEarned": 1
     },
     {
         "user": "neillz",
         "event": 5,
-        "attended": True,
         "hoursEarned": 1
     },
     {
         "user": "neillz",
         "event": 1,
-        "attended": True,
         "hoursEarned": 8,
     },
     {
         "user": "khatts",
         "event": 1,
-        "attended": True,
         "hoursEarned": 3,
     },
     {
         "user": "khatts",
         "event": 3,
-        "attended": False,
         "hoursEarned": 3,
     },
     {
         "user": "khatts",
         "event": 2,
-        "attended": True,
         "hoursEarned": 2,
     },
     {
         "user": "khatts",
         "event": 7,
-        "attended": True,
         "hoursEarned": 3,
     },
     {
         "user": "khatts",
         "event": 5,
-        "attended": True,
         "hoursEarned": 8,
     },
     {
         "user" : "ayisie",
         "event" : "1",
-        "attended" : False,
         "hoursEarned" : None,
     },
     {
         "user" : "lamichhanes2",
         "event" : "1",
-        "attended" : True,
         "hoursEarned" : None,
 
     },
     {
         "user" : "lamichhanes2",
         "event" : "3",
-        "attended" : True,
         "hoursEarned" : None,
     },
     {
         "user" : "lamichhanes2",
         "event" : "4",
-        "attended" : True,
         "hoursEarned" : None,
 
     },
     {
         "user" : "lamichhanes2",
         "event" : "8",
-        "attended" : True,
         "hoursEarned" : None,
     },
     {
         "user" : "lamichhanes2",
         "event" : "9",
-        "attended" :True,
         "hoursEarned" : None,
     },
     {
         "user": "agliullovak",
         "event": 3,
-        "attended": True,
         "hoursEarned": 2
     },
     {
         "user": "agliullovak",
         "event": 6,
-        "attended": True,
         "hoursEarned": 1
     },
     {
         "user": "agliullovak",
         "event": 10,
-        "attended": True,
         "hoursEarned": 12
     },
     {
         "user": "partont",
         "event": 1,
-        "attended": True,
         "hoursEarned": 1
     },
     {
         "user": "partont",
         "event": 2,
-        "attended": True,
         "hoursEarned": 5
     },
     {
         "user": "partont",
         "event": 7,
-        "attended": True,
         "hoursEarned": 8
     },
 
     {
         "user": "mupotsal",
         "event": 7,
-        "attended": True,
         "hoursEarned": 8
     },
 ]
