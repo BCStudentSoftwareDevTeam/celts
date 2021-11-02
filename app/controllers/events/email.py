@@ -23,8 +23,8 @@ def emailVolunteers():
         flash("Error getting email recipients", "danger")
         return redirect(url_for("main.events", selectedTerm = emailInfo['selectedTerm']))
 
-    mail = emailHandler(Mail(app), emailInfo)
-    emailSent = mail.sendEmail(Message(emailInfo['subject'],
+    email = emailHandler(emailInfo)
+    emailSent = email.sendEmail(Message(emailInfo['subject'],
                                        emails, # recipients
                                        emailInfo['message']),
                                        emails) # passed for sending individually

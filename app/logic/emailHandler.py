@@ -23,9 +23,10 @@ def getParticipantEmails(eventID = None):
 
 class emailHandler():
     """ A class for email setup and configuring the correct data to send. """
-    def __init__(self, mail, emailInfo):
+    def __init__(self, emailInfo):
         self.emailInfo = emailInfo
-        self.mail = mail
+        self.mail = Mail(app)
+
 
     def updateSenderEmail(self, message):
         """ Updates who is sending the emails based on the event_list form. """
@@ -42,24 +43,12 @@ class emailHandler():
                 MAIL_PASSWORD = app.config['staff_password']
             )
             message.sender = app.config['staff_username']
-        self.mail.connect()
         return message
 
     def sendEmail(self, msg: Message, emails):
         """ Updates the sender and sends the email. """
         message = self.updateSenderEmail(msg)
-        print(f"\n {self.emailInfo} \n")
-        print(f"\n {message.sender} \n")
 
-        # print(f'\n{message.sender},\n{message.subject}')
-        # if '@' in self.emailInfo['emailSender']: #if the current user is sending the email
-        #     msg = self.emailInfo['message'].replace(" ",'%20')
-        #     subject = self.emailInfo['subject'].replace(" ",'%20')
-        #     if app.config['mail']['override_addr']:
-        #         recipients = app.config['mail']['override_addr']
-        #     else:
-        #         recipients = emails
-        #     webbrowser.open_new(f'mailto:?to={recipients}&subject={subject}&body={msg}')
         if 'sendIndividually' in self.emailInfo:
             if app.config.mail['MAIL_OVERRIDE_ALL']:
                 message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
@@ -72,8 +61,9 @@ class emailHandler():
                 message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
 
             message.reply_to = app.config["REPLY_TO_ADDRESS"]
-            # print(f"\n {message} \n")
-            # message.sender =
-            # print(f"\n {app.config['admin_username']} \n")
+
+            self.mail = Mail(app)
+            self.mail.connect()
             self.mail.send(message)
+
         return 1
