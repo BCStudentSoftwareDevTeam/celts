@@ -59,7 +59,6 @@ class emailHandler():
         else:
             if app.config['MAIL_OVERRIDE_ALL']:
                 message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
-
             message.reply_to = app.config["REPLY_TO_ADDRESS"]
 
             self.mail = Mail(app)

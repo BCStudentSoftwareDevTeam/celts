@@ -32,9 +32,9 @@
               <select class='form-select' id="emailSender" name="emailSender" aria-label="email sender">
                 <option {{ 'selected' if user.isCeltsStudentStaff }}>CELTS Student Staff</option>
                 <option {{ 'selected' if user.isCeltsAdmin else 'disabled' }}>CELTS Admins</option>
-                <option value="{{g.current_user.email}}">
+                <!-- <option value="{{g.current_user.email}}">
                   {{g.current_user.firstName}} {{g.current_user.lastName}} (Currently Logged In)
-                </option>
+                </option> --> <!-- Commented out for demo purposes FIXME: add this option back and get it to work-->
               </select>
             </div>
           </div>
@@ -48,12 +48,12 @@
               placeholder="Type your email message here (Max 8000 characters)"
             ></textarea>
           </div>
-          <div class="text-wrap">
+          <!-- <div class="text-wrap">
             <input class="form-check-input me-1" type="checkbox" value="True" id="sendIndividually" name="sendIndividually">
-            <label class="form-check-label" white-space="normal" for="sendIndividually">
+            <!-- <label class="form-check-label" white-space="normal" for="sendIndividually">
               Send Email Individually
             </label>
-          </div>
+          </div> --> <!-- Commented out for demo purposes FIXME: add this option back and get it to work-->
           <br>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="$('.modal').modal('hide')">Cancel</button>
