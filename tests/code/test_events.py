@@ -50,8 +50,8 @@ def test_getAllEvents():
     assert len(events) > 0
 
     assert events[0].description == "Empty Bowls Spring 2021"
-    assert events[1].description == "Training for Berea Buddies"
-    assert events[2].description == "Adopt A Grandparent"
+    assert events[1].description == "Will donate Food to Community"
+    assert events[2].description == "Lecture on adoption"
 
 @pytest.mark.integration
 def test_getEventsWithProgram():
@@ -493,7 +493,7 @@ def test_getsCorrectUpcomingEvent():
     user = "ramsayb2"
     events = getUpcomingEventsForUser(user, asOf=testDate)
     assert len(events) == 5
-    assert "Making Bowls" == events[0].name
+    assert "Meet & Greet with Grandparent" == events[0].name
 
 
 @pytest.mark.integration
