@@ -202,7 +202,7 @@ def test_unattendedRequiredEvents():
     program = 1
     user = "asdfasdf56"
     unattendedEvents = unattendedRequiredEvents(program, user)
-    assert unattendedEvents == ['Empty Bowls Spring Event 1', 'Berea Buddies Training', 'How To Make Buddies']
+    assert unattendedEvents == ['Empty Bowls Spring Event 1', 'Hunger Hurts', 'Empty Bowl with Community']
 
 @pytest.mark.integration
 def test_sendKioskDataKiosk():
@@ -211,7 +211,7 @@ def test_sendKioskDataKiosk():
     listOfAttended = [users.user.username for users in usersAttended]
 
     assert "neillz" in listOfAttended
-    assert "lamichhanes2" not in listOfAttended
+    assert "partont" not in listOfAttended
 
     (EventParticipant.update({EventParticipant.attended: False})
                      .where(EventParticipant.user == "neillz", EventParticipant.event == 1)).execute()
