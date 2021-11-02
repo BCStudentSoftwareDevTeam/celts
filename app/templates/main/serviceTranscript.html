@@ -1,0 +1,102 @@
+{% extends "base.html"%}
+
+{% block app_content %}
+
+<h1 class="text-center pb-5">{{userData.firstName}} {{userData.lastName}}</h1>
+<button type="button" class="btn btn-primary float-end d-print-none" onClick="window.print()"><i class="bi bi-printer d-print-none"></i> Print</button>
+{% if programs.exists() %}
+  <h2>Programs</h2>
+  <table class="table table-bordered table-striped">
+    <tr>
+      <th>Program</th>
+      <th>Term</th>
+      <th>Accrued Hours</th>
+    </tr>
+    {% for program in programs %}
+    <tr>
+      <td> {{program.program.programName}}</td>
+      <td> {{program.event.term.description}}</td>
+      <td class= "w-25"> {{program.hoursEarned}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endif %}
+
+{% if bonnerData.exists() %}
+  <h2>Bonner Scholar Events</h2>
+  <table class="table table-bordered table-striped">
+    <tr>
+      <th>Event Name</th>
+      <th>Term</th>
+      <th>Accrued Hours</th>
+    </tr>
+
+    {% for programEvent in bonnerData %}
+    <tr>
+      <td> {{programEvent.event.name}}</td>
+      <td> {{programEvent.event.term.description}}</td>
+      <td class= "w-25"> {{programEvent.hoursEarned}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endif %}
+
+{% if slCourses.exists() %}
+  <h2>Service Learning Courses</h2>
+  <table class="table table-bordered table-striped">
+    <tr>
+      <th>Course Name</th>
+      <th>Semester</th>
+      <th>Instructor</th>
+      <th class= "w-25">Accrued Hours</th>
+    </tr>
+    {% for slcourse in slCourses %}
+    <tr>
+      <td> {{slcourse.courseName}}</td>
+      <td> {{slcourse.term.description}}</td>
+
+      <td>
+        {% for instructor in slcourse.courseInstructors %}
+          {{instructor.user.firstName}} {{instructor.user.lastName}} <br>
+        {% endfor %}
+      </td>
+      <td class= "w-25"> {{slcourse.hoursEarned}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endif %}
+
+{% if trainingData.exists() %}
+  <h2>Trainings</h2>
+  <table class="table table-bordered table-striped">
+    <tr>
+      <th>Training Name</th>
+      <th>Term</th>
+      <th>Accrued Hours</th>
+    </tr>
+    {% for data in trainingData %}
+    <tr>
+      <td> {{data.event.name}}</td>
+      <td> {{data.event.term.description}}</td>
+      <td class= "w-25"> {{data.hoursEarned}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endif %}
+
+  <div class="pt-4">
+    {% if startDate == "N/A" %}
+      <p>No Volunteer Record</p>
+    {% else %}
+      <p>*Volunteering since {{startDate}}</p>
+    {% endif %}
+  </div>
+  <div class="float-end "  >
+    <p class="fw-bold pb-3 d-inline">Total Hours:</p>
+    <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal" > {{totalHours}} </p>
+  </div>
+  <div class="pt-5">
+    <p>If there are any corrections that need to be made, contact <a href="mailto:cochranea@berea.edu">Ashley Cochrane</a></p>
+  </div>
+
+{% endblock %}

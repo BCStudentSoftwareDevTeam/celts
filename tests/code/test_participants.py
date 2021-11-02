@@ -5,11 +5,12 @@ from peewee import IntegrityError, DoesNotExist
 from app.models.user import User
 from app.models.event import Event
 from app.models.eventParticipant import EventParticipant
-from app.logic.volunteers import addVolunteerToEvent
+from app.logic.volunteers import addVolunteerToEventRsvp
 from app.logic.participants import trainedParticipants
-from app.logic.volunteers import getEventLengthInHours, updateVolunteers
+from app.logic.volunteers import getEventLengthInHours, updateEventParticipants
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 from app.logic.participants import sendUserData
+from app.logic.participants import getEventParticipants
 from app.models.eventRsvp import EventRsvp
 
 @pytest.mark.integration
@@ -52,47 +53,47 @@ def test_getEventLengthInHours():
 
 
 @pytest.mark.integration
-def test_addVolunteerToEvent():
+def test_addVolunteerToEventRsvp():
     user = "khatts"
     volunteerEventID = 5
     eventLengthInHours = 67
     #test that volunteer is already registered for the event
-    volunteerToEvent = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
+    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID)
     assert volunteerToEvent == True
 
     #test for adding user as a participant to the event
     user = "agliullovak"
-    volunteerToEvent = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
+    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID)
     assert volunteerToEvent == True
     (EventParticipant.delete().where(EventParticipant.user == user, EventParticipant.event == volunteerEventID)).execute()
 
     # test for username that is not in the database
     user = "jarjug"
-    volunteerToEvent = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
+    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID)
     assert volunteerToEvent == False
 
     # test for event that does not exsit
     user = "agliullovak"
     volunteerEventID = 5006
-    volunteerToEvent = addVolunteerToEvent(user, volunteerEventID, eventLengthInHours)
+    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID)
     assert volunteerToEvent == False
 
 
 @pytest.mark.integration
-def test_updateVolunteers():
+def test_updateEventParticipants():
     # tests if the volunteer table gets succesfully updated
     participantData = {'inputHours_agliullovak':100, 'checkbox_agliullovak':"on", 'event':3, 'username1': 'agliullovak'}
-    volunteerTableUpdate = updateVolunteers(participantData)
+    volunteerTableUpdate = updateEventParticipants(participantData)
     assert volunteerTableUpdate == True
 
     # tests if user does not exist in the database
     participantData = {'inputHours_jarjug':100, 'checkbox_jarjug':"on", 'event':3, 'username1': 'jarjug'}
-    volunteerTableUpdate = updateVolunteers(participantData)
+    volunteerTableUpdate = updateEventParticipants(participantData)
     assert volunteerTableUpdate == False
 
     # tests for the case when the checkbox is not checked (user is not present)
     participantData = {'inputHours_agliullovak':100, 'event':3, 'username1': 'agliullovak'}
-    volunteerTableUpdate = updateVolunteers(participantData)
+    volunteerTableUpdate = updateEventParticipants(participantData)
     assert volunteerTableUpdate == True
 
     #Undo the above test changes
@@ -139,14 +140,14 @@ def test_noEventUserRsvpForEvent():
 @pytest.mark.integration
 def test_userRsvpForEvent():
 
-    volunteer = userRsvpForEvent("agliullovak", 11)
+    volunteer = userRsvpForEvent("agliullovak", 10)
     assert volunteer.user.username == "agliullovak"
-    assert volunteer.event.id == 11
+    assert volunteer.event.id == 10
 
 
     # the user has already registered for the event
-    volunteer = userRsvpForEvent("agliullovak", 11)
-    assert volunteer.event.id == 11
+    volunteer = userRsvpForEvent("agliullovak", 10)
+    assert volunteer.event.id == 10
     assert volunteer
 
     (EventParticipant.delete().where(EventParticipant.user == 'agliullovak', EventParticipant.event == 11)).execute()
@@ -201,16 +202,16 @@ def test_unattendedRequiredEvents():
     program = 1
     user = "asdfasdf56"
     unattendedEvents = unattendedRequiredEvents(program, user)
-    assert unattendedEvents == ['Empty Bowls Spring', 'Berea Buddies', 'How To Make Buddies']
+    assert unattendedEvents == ['Empty Bowls Spring Event 1', 'Hunger Hurts', 'Empty Bowl with Community']
 
 @pytest.mark.integration
 def test_sendKioskDataKiosk():
     signin = sendUserData("B00751864", 2, 1)
-    usersAttended = EventParticipant.select().where(EventParticipant.attended, EventParticipant.event == 2)
+    usersAttended = EventParticipant.select().where(EventParticipant.attended, EventParticipant.event == 3)
     listOfAttended = [users.user.username for users in usersAttended]
 
     assert "neillz" in listOfAttended
-    assert "lamichhanes2" not in listOfAttended
+    assert "partont" not in listOfAttended
 
     (EventParticipant.update({EventParticipant.attended: False})
                      .where(EventParticipant.user == "neillz", EventParticipant.event == 1)).execute()
@@ -224,3 +225,16 @@ def test_sendKioskDataKiosk():
 
     deleteInstance = EventParticipant.get(EventParticipant.user == "bryanta", EventParticipant.event_id == 2)
     deleteInstance.delete_instance()
+
+@pytest.mark.integration
+def test_getEventParticipants():
+    event = Event.get_by_id(1)
+    eventParticipantsDict = getEventParticipants(event)
+    assert "partont" in eventParticipantsDict
+    assert eventParticipantsDict["partont"] == 1
+
+@pytest.mark.integration
+def test_getEventParticipantsWithWrongParticipant():
+    event = Event.get_by_id(1)
+    eventParticipantsDict = getEventParticipants(event)
+    assert "agliullovak" not in eventParticipantsDict

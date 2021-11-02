@@ -175,6 +175,15 @@ terms = [
         "isSummer": False,
         "isCurrentTerm": False
     },
+    {
+        "id": 6,
+        "description": "Spring 2024",
+        "year": 2024,
+        "academicYear": "2023-2024",
+        "isBreak": False,
+        "isSummer": False,
+        "isCurrentTerm": False
+    },
 
 
 ]
@@ -184,7 +193,7 @@ programs = [
     {
         "id": 1,
         "programName": "Empty Bowls",
-        "isStudentLed": True,
+        "isStudentLed": False,
         "isBonnerScholars": False,
     },
     {
@@ -200,20 +209,44 @@ programs = [
         "isBonnerScholars": False,
     },
     {
-        "id": 4,
-        "programName": "No Required Events",
-        "isStudentLed": False,
-        "isBonnerScholars": False,
-    },
-    {
         "id": 5,
-        "programName": "First Year Bonners",
+        "programName": "Bonners Scholars",
         "isStudentLed": False,
         "isBonnerScholars": True,
     },
     {
         "id": 6,
         "programName": "Habitat For Humanity",
+        "isStudentLed": False,
+        "isBonnerScholars": False,
+    },
+    {
+        "id": 7,
+        "programName": "Berea Teen Mentoring",
+        "isStudentLed": True,
+        "isBonnerScholars": False,
+    },
+    {
+        "id": 8,
+        "programName": "Hispanic Outreach Program",
+        "isStudentLed": True,
+        "isBonnerScholars": False,
+    },
+    {
+        "id": 9,
+        "programName": "People Who Care",
+        "isStudentLed": True,
+        "isBonnerScholars": False,
+    },
+    {
+        "id": 10,
+        "programName": "Food Drive",
+        "isStudentLed": False,
+        "isBonnerScholars": False,
+    },
+    {
+        "id": 12,
+        "programName": "Berea Tutoring",
         "isStudentLed": False,
         "isBonnerScholars": False,
     }
@@ -224,36 +257,36 @@ events = [
     {
         "id": 1,
         "term": 1,
-        "name": "Empty Bowls Spring",
+        "name": "Empty Bowls Spring Event 1",
         "description": "Empty Bowls Spring 2021",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "a big room",
+        "location": "Seabury Center",
         "startDate": datetime.strptime("2021 10 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 2,
         "term": 1,
-        "name": "Berea Buddies",
-        "description": "Berea Buddies Training",
+        "name": "Hunger Hurts",
+        "description": "Will donate Food to Community",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "a big room",
+        "location": "Berea Community School",
         "startDate": datetime.strptime("2021 11 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 3,
         "term": 3,
-        "name": "Adopt",
-        "description": "Adopt A Grandparent",
+        "name": "Adoption 101",
+        "description": "Lecture on adoption",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "a big room",
+        "location": "Alumni Patio",
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
@@ -265,7 +298,7 @@ events = [
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 am", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 am", "%I:%M %p"),
-        "location": "a big room",
+        "location": "Stephenson Building",
         "startDate": datetime.strptime("2021 6 25","%Y %m %d"),
         "endDate": datetime.strptime("2021 6 25","%Y %m %d")
     },
@@ -277,55 +310,55 @@ events = [
         "isTraining": False,
         "timeStart": datetime.strptime("3:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "a bigish room",
+        "location": "Woodspen",
         "startDate": datetime.strptime("2021 6 18","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 6,
         "term": 3,
-        "name": "Making Bowls",
-        "description": "Making Bowls Training",
+        "name": "Meet & Greet with Grandparent",
+        "description": "Students meet with grandparent for the first time",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "a big room",
+        "location": "Woods-Penniman",
         "startDate": datetime.strptime("2021 08 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 9 12","%Y %m %d")
     },
     {
         "id": 7,
         "term": 3,
-        "name": "How To Make Buddies",
-        "description": "How To Make Buddies Training",
+        "name": "Empty Bowl with Community",
+        "description": "Open to Berea community",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "Outisde",
+        "location": "Berea Community Park",
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 8,
-        "term": 3,
-        "name": "Adoption",
-        "description": "Adoption 101 Training",
+        "term": 1,
+        "name": "Berea Buddies Second Meeting",
+        "description": "Play game to bond with buddy",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "a big room",
+        "location": "Stephenson Building",
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 9,
-        "term": 3,
-        "name": "Cleaning Bowls",
-        "description": "Cleaning Bowls Training",
+        "term": 1,
+        "name": "Field Trip with Buddies",
+        "description": "A small trip to Berea Farm",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "Dining Dishes Room",
+        "location": "Berea Farm",
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
 
@@ -333,48 +366,48 @@ events = [
     {
         "id": 10,
         "term": 3,
-        "name": "Whole Celts Training",
-        "description": "Whole Celts Training",
+        "name": "All Celts Training",
+        "description": "Training event for all CELTS programs",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "Dining Dishes Room",
+        "location": "Stephenson Building",
         "startDate": datetime.strptime("2021 1 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 6 12","%Y %m %d")
     },
     {
         "id": 11,
         "term": 3,
-        "name": "Dummy Event",
+        "name": "Celts Admin Meeting",
         "description": "Not a required event",
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "Dining Dishes Room",
+        "location": "Stephenson Building",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d")
     },
     {
         "id": 12,
         "term": 3,
-        "name": "Random Event",
-        "description": "Not a required event",
+        "name": "Dinner with Grandparent",
+        "description": "Second event with grandparent",
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "Dining Dishes Room",
+        "location": "Boone Tavern",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d")
     },
     {
         "id": 13,
         "term": 2,
-        "name": "unaffiliated event",
-        "description": "Test event with no program",
+        "name": "Community Clean Up",
+        "description": "This event doesn't belong to any program",
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "Dining Dishes Room",
+        "location": "Berea Community Park",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d")
     },
@@ -386,19 +419,19 @@ events = [
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "A Big Room",
+        "location": "Woods-Penniman",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d")
     },
     {
         "id": 15,
         "term": 3,
-        "name": "Event 1",
+        "name": "Training Event",
         "description": "Test for training",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
-        "location": "Somewhere",
+        "location": "Alumni Building",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d")
     },
@@ -445,10 +478,6 @@ program_events = [
     {
         "event_id": 10,
         "program_id": 3
-    },
-    {
-        "event_id": 11,
-        "program_id": 4
     },
     {
         "event_id": 12,

@@ -82,3 +82,11 @@ def unattendedRequiredEvents(program, user):
             return attendedRequiredEventsList
     else:
         return []
+
+
+def getEventParticipants(event):
+    eventParticipants = (EventParticipant
+        .select()
+        .where(EventParticipant.event==event))
+
+    return {p.user.username: p.hoursEarned for p in eventParticipants}
