@@ -208,11 +208,9 @@ def test_unattendedRequiredEvents():
 def test_sendUserData():
     # Tests the Kiosk
     # user is banned
-    try:
-        signedInUser, userStatus = sendUserData("B00739736", 2, 1)
-        assert userStatus == "banned"
-
-    except peewee.DoesNotExist:
+    signedInUser, userStatus = sendUserData("B00739736", 2, 1)
+    assert userStatus == "banned"
+    with pytest.raises(DoesNotExist):
         EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
 
     # user is already signed in
@@ -220,9 +218,9 @@ def test_sendUserData():
     assert userStatus == "already in"
 
     # user is eligible but the user is not in EventParticipant
-    try:
-        signedInUser = User.get(User.bnumber=="B00759117")
-    except peewee.DoesNotExist:
+
+    signedInUser = User.get(User.bnumber=="B00759117")
+    with pytest.raises(DoesNotExist):
         EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
         signedInUser, userStatus = sendUserData("B00759117", 2, 1)
         assert userStatus == "success"
