@@ -243,22 +243,18 @@
       <div class="row justify-content-left" style="margin-top: 1.5em">
           <div class="col-md-6 offset-md-3">
             <div class="text-center">
-              {% if not isPastEvent  %}
+              {% if (not isPastEvent) and (not isNewEvent)%}
                   {% if userHasRSVPed %}
                     <button type="submit" class="btn btn-danger"  formaction="/rsvpRemove">Remove RSVP</button>
+                  {%else%}
+                    <button type="submit" class="btn btn-primary"  formaction="/rsvpForEvent">RSVP</button>
                  {% endif %}
               {% endif %}
-
-              {% if not isNewEvent %}
-                <button type="submit" id="rsvpEvent" class="btn btn-primary" formaction="/rsvpForEvent" {{'disabled' if isPastEvent}}>RSVP</button>
-              {% endif %}
-              
               {% if isEditable %}
-              <button type="submit" id="saveEvent" class="btn btn-primary" >Save</button>
+              <button type="submit" id="saveEvent" class="btn btn-primary">Save</button>
               {% endif %}
             </div>
           </div>
-
       </div>
 </form>
 
