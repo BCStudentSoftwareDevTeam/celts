@@ -54,7 +54,7 @@ def viewVolunteersProfile(username):
          upcomingEvents = getUpcomingEventsForUser(username)
          programs = Program.select()
          interests = Interest.select().where(Interest.user == username)
-         interests_ids = [interest.program for interest in interests]
+         programsInterested = [interest.program for interest in interests]
          trainingChecklist = {}
          for program in programs:
              trainingChecklist[program.id] = trainedParticipants(program.id)
@@ -73,7 +73,7 @@ def viewVolunteersProfile(username):
          return render_template ("/main/volunteerProfile.html",
             programs = programs,
             interests = interests,
-            interests_ids = interests_ids,
+            programsInterested = programsInterested,
             trainingChecklist = trainingChecklist,
             upcomingEvents = upcomingEvents,
             eligibilityTable = eligibilityTable,
