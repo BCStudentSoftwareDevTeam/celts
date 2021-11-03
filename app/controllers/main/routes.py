@@ -114,7 +114,6 @@ def updateInterest(program_id, username):
     shows interest in a program
     """
     rule = request.url_rule
-    username = username
     try:
         return addRemoveInterest(rule, program_id, username)
 
