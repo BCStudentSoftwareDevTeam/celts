@@ -660,122 +660,24 @@ eventParticipants = [
     },
     {
         "user": "bryanta",
-        "event": 1,
+        "event": 5,
         "hoursEarned": 0
     },
     {
-        "user": "neillz",
-        "event": 3,
-        "hoursEarned": 3
-    },
-    {
-        "user": "neillz",
-        "event": 4,
-        "hoursEarned": 1
-    },
-    {
-        "user": "neillz",
-        "event": 5,
-        "hoursEarned": 1
-    },
-    {
-        "user": "neillz",
-        "event": 1,
-        "hoursEarned": 8,
-    },
-    {
-        "user": "khatts",
-        "event": 1,
-        "hoursEarned": 3,
-    },
-    {
         "user": "khatts",
         "event": 3,
         "hoursEarned": 3,
-    },
-    {
-        "user": "khatts",
-        "event": 2,
-        "hoursEarned": 2,
-    },
-    {
-        "user": "khatts",
-        "event": 7,
-        "hoursEarned": 3,
-    },
-    {
-        "user": "khatts",
-        "event": 5,
-        "hoursEarned": 8,
     },
     {
         "user" : "ayisie",
-        "event" : "1",
+        "event" : 1,
         "hoursEarned" : None,
-    },
-    {
-        "user" : "lamichhanes2",
-        "event" : "1",
-        "hoursEarned" : None,
-
-    },
-    {
-        "user" : "lamichhanes2",
-        "event" : "3",
-        "hoursEarned" : None,
-    },
-    {
-        "user" : "lamichhanes2",
-        "event" : "4",
-        "hoursEarned" : None,
-
-    },
-    {
-        "user" : "lamichhanes2",
-        "event" : "8",
-        "hoursEarned" : None,
-    },
-    {
-        "user" : "lamichhanes2",
-        "event" : "9",
-        "hoursEarned" : None,
-    },
-    {
-        "user": "agliullovak",
-        "event": 3,
-        "hoursEarned": 2
-    },
-    {
-        "user": "agliullovak",
-        "event": 6,
-        "hoursEarned": 1
-    },
-    {
-        "user": "agliullovak",
-        "event": 10,
-        "hoursEarned": 12
-    },
-    {
-        "user": "partont",
-        "event": 1,
-        "hoursEarned": 1
     },
     {
         "user": "partont",
         "event": 2,
         "hoursEarned": 5
-    },
-    {
-        "user": "partont",
-        "event": 7,
-        "hoursEarned": 8
-    },
-
-    {
-        "user": "mupotsal",
-        "event": 7,
-        "hoursEarned": 8
-    },
+    }
 ]
 EventParticipant.insert_many(eventParticipants).on_conflict_replace().execute()
 
@@ -784,9 +686,37 @@ eventRsvp =  [
         "user":"mupotsal",
         "event": 7,
     },
-
+    {
+        "user":"khatts",
+        "event": 3,
+    },
+    {
+        "user":"agliullovak",
+        "event": 6,
+    },
+    {
+        "user":"ayisie",
+        "event": 1,
+    },
+    {
+        "user":"bryanta",
+        "event": 5,
+    },
+    {
+        "user":"neillz",
+        "event": 2,
+    },
+    {
+        "user":"partont",
+        "event": 2,
+    },
+    {
+        "user":"lamichhanes2",
+        "event": 9,
+    }
 ]
 EventRsvp.insert_many(eventRsvp).on_conflict_replace().execute()
+
 interest = [
 
     {
