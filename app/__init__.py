@@ -2,6 +2,7 @@ import os
 
 from flask import Flask
 from flask.helpers import get_env
+from playhouse.shortcuts import model_to_dict, dict_to_model
 
 from config2.config import config
 import yaml
@@ -40,6 +41,21 @@ with open("app/config/" + config.override_file, 'r') as ymlfile:
 # set the secret key after configuration is set up
 app.secret_key = app.config['secret_key']
 
+# These imports must happen after configuration
+from app.models.term import Term
+from app.models.user import User
+
+from peewee import BaseQuery
+if app.config['show_queries']:
+    old_execute = BaseQuery.execute
+    def new_execute(*args, **kwargs):
+        if session:
+            session['querycount'] += 1
+            print("**Running query {}**".format(session['querycount']))
+            print(args[0])
+        return old_execute(*args, **kwargs)
+    BaseQuery.execute = new_execute
+
 
 ######### Blueprints #############
 from app.controllers.admin import admin_bp as admin_bp
@@ -57,13 +73,25 @@ app.register_blueprint(main_bp)
 def inject_environment():
     return dict( env=get_env() )
 
+from flask import session
+@app.before_request
+def queryCount():
+    if session:
+        session['querycount'] = 0
+
 from app.logic.loginManager import getLoginUser
 from flask import g
 @app.before_request
 def load_user():
-    g.current_user = getLoginUser()
+    if 'current_user' not in session:
+        session['current_user'] = model_to_dict(getLoginUser())
+
+    g.current_user = dict_to_model(User,session['current_user'])
 
 from app.logic.loginManager import getCurrentTerm
 @app.before_request
 def load_currentTerm():
-    g.current_term = getCurrentTerm()
+    if 'current_term' not in session:
+        session['current_term'] = model_to_dict(getCurrentTerm())
+
+    g.current_term = dict_to_model(Term,session['current_term'])
