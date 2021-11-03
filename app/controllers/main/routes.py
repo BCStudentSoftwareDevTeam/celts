@@ -52,7 +52,6 @@ def viewVolunteersProfile(username):
     This function displays the information of a volunteer to the user
     """
     try:
-        # User.get(User.username == username)
         volunteer = User.get(User.username == username)
     except Exception as e:
         print(e)
@@ -84,8 +83,7 @@ def viewVolunteersProfile(username):
             # trainingChecklist = trainingChecklist,
             upcomingEvents = upcomingEvents,
             eligibilityTable = eligibilityTable,
-            volunteer = volunteer,
-            user = g.current_user)
+            volunteer = volunteer)
     abort(403)
 
 
