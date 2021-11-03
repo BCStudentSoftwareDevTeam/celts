@@ -96,50 +96,44 @@ def saveEventToDb(newEventData):
 
     return eventRecords
 
-def groupEventsByProgram(eventQuery):
-    programs = {}
-
-    for event in eventQuery.objects():
-        programs.setdefault(Program.get_by_id(event.program_id), []).append(event)
-
-    return programs
-
-def groupEventsByCategory(term):
-
-    term = Term.get_by_id(term)
+def getStudentLedProgram(term):
 
     studentLedEvents = (Event.select(Event, Program.id.alias("program_id"))
                              .join(ProgramEvent)
                              .join(Program)
                              .where(Program.isStudentLed,
                                     Event.term == term))
+    programs = {}
+
+    for event in studentLedEvents.objects():
+        programs.setdefault(Program.get_by_id(event.program_id), []).append(event)
+
+    return programs
+
+def getTrainingProgram(term):
 
     trainingEvents = (Event.select(Event, Program.id.alias("program_id"))
                            .join(ProgramEvent)
                            .join(Program)
                            .where(Event.isTraining,
                                   Event.term == term))
-
+    return trainingEvents
+def getBonnerProgram(term):
 
     bonnerScholarsEvents = (Event.select(Event, Program.id.alias("program_id"))
                                  .join(ProgramEvent)
                                  .join(Program)
                                  .where(Program.isBonnerScholars,
                                         Event.term == term))
-
+    return bonnerScholarsEvents
+def getOneTimeEvents(term):
     oneTimeEvents = (Event.select(Event, Program.id.alias("program_id"))
                           .join(ProgramEvent)
                           .join(Program)
                           .where(Program.isStudentLed == False,
-                                 Event.isTraining == False,
                                  Program.isBonnerScholars == False,
                                  Event.term == term))
-
-    categorizedEvents = {"Student Led Events" : groupEventsByProgram(studentLedEvents),
-                         "Trainings" : groupEventsByProgram(trainingEvents),
-                         "Bonner Scholars" : groupEventsByProgram(bonnerScholarsEvents),
-                         "One Time Events" : groupEventsByProgram(oneTimeEvents)}
-    return categorizedEvents
+    return oneTimeEvents
 
 def eventEdit(newEventData):
 
@@ -196,6 +190,7 @@ def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
                             .distinct() # necessary because of multiple programs
                             .order_by(Event.startDate, Event.name) # keeps the order of events the same when the dates are the same
                             )
+
     return list(events)
 
 

@@ -2,10 +2,8 @@ from flask import request, render_template, url_for, g, Flask, redirect, flash, 
 from peewee import DoesNotExist
 from playhouse.shortcuts import model_to_dict
 import json
-
 from datetime import datetime
 from dateutil import parser
-
 from app.models.program import Program
 from app.models.event import Event
 from app.models.facilitator import Facilitator
@@ -22,8 +20,8 @@ from app.models.programBan import ProgramBan
 from app.logic.getSLInstructorTableData import getProposalData
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
-from app.logic.utils import selectFutureTerms
-from app.logic.events import deleteEvent, getAllFacilitators, getUpcomingEventsForUser , attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
+from app.logic.utils import selectSurroundingTerms
+from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
@@ -84,7 +82,7 @@ def createEvent(templateid, programid=None):
 
     # make sure our data is the same regardless of GET or POST
     preprocessEventData(eventData)
-    futureTerms = selectFutureTerms(g.current_term)
+    futureTerms = selectSurroundingTerms(g.current_term)
 
     return render_template(f"/admin/{template.templateFile}",
             template = template,
@@ -116,7 +114,7 @@ def editEvent(eventId):
             flash(validationErrorMessage, 'warning')
 
     preprocessEventData(eventData)
-    futureTerms = selectFutureTerms(g.current_term)
+    futureTerms = selectSurroundingTerms(g.current_term)
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
 
@@ -152,7 +150,7 @@ def volunteerProfile():
     user=username.split('(')[-1]
     return redirect(url_for('main.profilePage', username=user))
 
-@admin_bp.route('/search_student', methods=['GET'])
+@admin_bp.route('/search_student', methods=['GET','POST'])
 def studentSearchPage():
     if g.current_user.isAdmin:
         return render_template("/searchStudentPage.html")

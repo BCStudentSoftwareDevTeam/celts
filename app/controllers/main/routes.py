@@ -12,13 +12,11 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.controllers.main import main_bp
-from app.logic.participants import trainedParticipants
-from app.logic.events import getUpcomingEventsForUser
-from app.logic.events import groupEventsByCategory
-from app.logic.users import isEligibleForProgram
-from app.logic.users import addRemoveInterest, banUnbanUser
+from app.logic.users import addRemoveInterest, banUnbanUser, isEligibleForProgram
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
+from app.logic.events import *
 from app.logic.searchUsers import searchUsers
+from app.logic.transcript import *
 
 @main_bp.route('/', methods=['GET'])
 @main_bp.route('/events/<selectedTerm>', methods=['GET'])
@@ -26,15 +24,23 @@ def events(selectedTerm=None):
     currentTerm = g.current_term
     if selectedTerm:
         currentTerm = selectedTerm
-    currentTime = datetime.now()
-    eventsDict = groupEventsByCategory(currentTerm)
+    currentTime = datetime.datetime.now()
+    term = Term.get_by_id(currentTerm)
+    studentLedProgram = getStudentLedProgram(term)
+    trainingProgram = getTrainingProgram(term)
+    bonnerProgram = getBonnerProgram(term)
+    oneTimeEvents = getOneTimeEvents(term)
     listOfTerms = Term.select()
     participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
+
     return render_template("/events/event_list.html",
         selectedTerm = Term.get_by_id(currentTerm),
-        eventDict = eventsDict,
+        studentLedProgram = studentLedProgram,
+        trainingProgram = trainingProgram,
+        bonnerProgram = bonnerProgram,
+        oneTimeEvents = oneTimeEvents,
         listOfTerms = listOfTerms,
         rsvpedEventsID = rsvpedEventsID,
         currentTime = currentTime,
@@ -62,7 +68,7 @@ def viewVolunteersProfile(username):
          for program in programs:
               notes = ProgramBan.select().where(ProgramBan.user == username,
                                                 ProgramBan.program == program,
-                                                ProgramBan.endDate > datetime.now())
+                                                ProgramBan.endDate > datetime.datetime.now())
               noteForDict = "None"
               for j in notes:
                   noteForDict = j.banNote.noteContent
@@ -123,6 +129,7 @@ def volunteerRegister():
     for the event they have clicked register for.
     """
     eventData = request.form
+
     event = Event.get_by_id(eventData['id'])
 
     user = g.current_user
@@ -151,7 +158,6 @@ def RemoveRSVP():
     This function deletes the user ID and event ID from database when RemoveRSVP  is clicked
     """
     eventData = request.form
-
     event = Event.get_by_id(eventData['id'])
 
     currentRsvpParticipant = EventRsvp.get(EventRsvp.user == g.current_user, EventRsvp.event == event)
@@ -159,6 +165,30 @@ def RemoveRSVP():
 
     flash("Successfully unregistered for event!", "success")
     return redirect(url_for("admin.editEvent", eventId=event.id))
+
+@main_bp.route('/<username>/serviceTranscript', methods = ['GET'])
+def serviceTranscript(username):
+    user = User.get_or_none(User.username == username)
+    if user is None:
+        abort(404)
+    if user != g.current_user and not g.current_user.isAdmin:
+        abort(403)
+
+    programs = getProgramTranscript(username)
+    slCourses = getSlCourseTranscript(username)
+    trainingData = getTrainingTranscript(username)
+    bonnerData = getBonnerScholarEvents(username)
+    totalHours = getTotalHours(username)
+    startDate = getStartYear(username)
+
+    return render_template('main/serviceTranscript.html',
+                            programs = programs,
+                            slCourses = slCourses.objects(),
+                            trainingData = trainingData,
+                            bonnerData = bonnerData,
+                            totalHours = totalHours,
+                            startDate = startDate,
+                            userData = user)
 
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
 def searchUser(query):
