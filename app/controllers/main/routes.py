@@ -175,6 +175,9 @@ def contributors():
 
 @main_bp.route('/manageservicelearning/', methods = ['GET'])
 def managePage():
+    users = user.select().where(isFaculty.user == 1)
 
 
-    return render_template('/main/manageServiceLearningFaculty.html')
+
+    return render_template('/main/manageServiceLearningFaculty.html',
+    users = users)
