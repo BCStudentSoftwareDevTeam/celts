@@ -514,13 +514,13 @@ notes = [
     {
     "createdBy": "ramsayb2",
     "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
-    "noteContent": "This is the content: test",
+    "noteContent": "I think the training is put in wrong",
     "isPrivate":False
     },
     {
     "createdBy": "mupotsal",
     "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
-    "noteContent": " I am not sure aboutr what you mean here: test",
+    "noteContent": "I agree with your comment on training",
     "isPrivate":False
     }
 ]
