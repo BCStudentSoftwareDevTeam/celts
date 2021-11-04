@@ -19,6 +19,8 @@ def emailVolunteers():
     else:
         flash("Unable to determine email recipients", "danger")
 
+    print(emailInfo)
+
     if emails == None:
         flash("Error getting email recipients", "danger")
         return redirect(url_for("main.events", selectedTerm = emailInfo['selectedTerm']))

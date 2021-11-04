@@ -74,12 +74,13 @@
             <td>{{event.location}}</td>
             {% if user.isAdmin %}
               <td>
-                  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#emailModal" onclick="passEventInfo({{event.id}}, {{event.program_id}}, {{selectedTerm}})">
+
+                  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#emailModal" onclick="passEventInfo({{event.id}}, 'NONE', {{selectedTerm}})" {{ 'disabled' if event.isPast }}>
                     <span class="bi bi-envelope-fill"> Email</span>
                   </button>
               </td>
             {% else %}
-              {% if (event.startDate < currentTime.date()) or (event.timeStart < currentTime.time() and event.startDate == currentTime.date())%}
+              {% if (event.isPast) %}
                 <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
               {% elif event.id in rsvpedEventsID %}
                 <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.program_id}}, {{event.id}})">Remove RSVP</button></td>
@@ -137,6 +138,7 @@
                         <td>{{event.location}}</td>
                         {% if user.isAdmin %}
                           <td>
+
                               <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#emailModal"
                               onclick="passEventInfo({{event.id}}, {{program.id}}, {{selectedTerm}})" {{ 'disabled' if event.isPast }}>
                                 <span class="bi bi-envelope-fill"> Email</span>
