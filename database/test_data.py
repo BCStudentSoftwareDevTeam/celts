@@ -168,7 +168,7 @@ terms = [
     },
     {
         "id": 5,
-        "description": "Fall Break 2021",
+        "description": "Spring 2022",
         "year": 2021,
         "academicYear": "2021-2022",
         "isBreak": True,
