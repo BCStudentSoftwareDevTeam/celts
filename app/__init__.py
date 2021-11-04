@@ -50,6 +50,9 @@ if app.config['show_queries']:
     old_execute = BaseQuery.execute
     def new_execute(*args, **kwargs):
         if session:
+            if 'querycount' not in session:
+                session['querycount'] = 0
+
             session['querycount'] += 1
             print("**Running query {}**".format(session['querycount']))
             print(args[0])
