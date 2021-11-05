@@ -26,7 +26,7 @@
     <tr>
       <td> {{program.program.programName}}</td>
       <td> {{program.event.term.description}}</td>
-      <td class= "w-25"> {{program.hoursEarned}}</td>
+      <td class="w-25"> {{program.hoursEarned}}</td>
     </tr>
     {% endfor %}
   </table>
@@ -43,9 +43,9 @@
 
     {% for programEvent in bonnerData %}
     <tr>
-      <td> {{programEvent.event.name}}</td>
-      <td> {{programEvent.event.term.description}}</td>
-      <td class= "w-25"> {{programEvent.hoursEarned}}</td>
+      <td>{{ programEvent.event.name }}</td>
+      <td>{{ programEvent.event.term.description}} </td>
+      <td class="w-25"> {{programEvent.hoursEarned}} </td>
     </tr>
     {% endfor %}
   </table>
@@ -58,19 +58,19 @@
       <th>Course Name</th>
       <th>Semester</th>
       <th>Instructor</th>
-      <th class= "w-25">Accrued Hours</th>
+      <th class="w-25">Accrued Hours</th>
     </tr>
     {% for slcourse in slCourses %}
     <tr>
-      <td> {{slcourse.courseName}}</td>
-      <td> {{slcourse.term.description}}</td>
+      <td> {{ slcourse.courseName }}</td>
+      <td> {{ slcourse.term.description }}</td>
 
       <td>
         {% for instructor in slcourse.courseInstructors %}
-          {{instructor.user.firstName}} {{instructor.user.lastName}} <br>
+          {{ instructor.user.firstName }} {{ instructor.user.lastName }} <br>
         {% endfor %}
       </td>
-      <td class= "w-25"> {{slcourse.hoursEarned}}</td>
+      <td class="w-25">{{ slcourse.hoursEarned }}</td>
     </tr>
     {% endfor %}
   </table>
@@ -86,9 +86,9 @@
     </tr>
     {% for data in trainingData %}
     <tr>
-      <td> {{data.event.name}}</td>
-      <td> {{data.event.term.description}}</td>
-      <td class= "w-25"> {{data.hoursEarned}}</td>
+      <td>{{ data.event.name }}</td>
+      <td>{{ data.event.term.description }}</td>
+      <td class= "w-25"> {{ data.hoursEarned }}</td>
     </tr>
     {% endfor %}
   </table>
@@ -98,12 +98,12 @@
     {% if startDate == "N/A" %}
       <p>No Volunteer Record</p>
     {% else %}
-      <p>*Volunteering since {{startDate}}</p>
+      <p>*Volunteering since {{ startDate }}</p>
     {% endif %}
   </div>
-  <div class="float-end "  >
+  <div class="float-end">
     <p class="fw-bold pb-3 d-inline">Total Hours:</p>
-    <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal" > {{totalHours}} </p>
+    <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours }}</p>
   </div>
   <div class="pt-5">
     <p>If there are any corrections that need to be made, contact <a href="mailto:cochranea@berea.edu">Ashley Cochrane</a></p>
