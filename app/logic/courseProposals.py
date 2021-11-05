@@ -1,10 +1,10 @@
+from flask import g
 from app.models.course import Course
 from app.models.user import User
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseParticipant import CourseParticipant
 from app.models.courseQuestion import CourseQuestion
 from app.models.questionNote import QuestionNote
-from flask import g
 
 def getProposalData(user):
     """Returns dictionary with data used to populate SL proposal table"""
@@ -41,9 +41,10 @@ def deleteProposal(courseID):
     course.delete_instance()
 
 def authorized(username):
+    """Returns true if both the user is admin/faculty and the username in
+    the POST link also is an admin/faculty."""
     if g.current_user.isAdmin or g.current_user.isFaculty:
         user = User.get(User.username == username)
-        print(user)
         if user.isAdmin or user.isFaculty:
             return True
         else:
