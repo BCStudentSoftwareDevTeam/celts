@@ -1,10 +1,11 @@
-from flask import request, render_template, url_for, g, Flask, redirect, flash, abort, json, jsonify
+from flask import request, render_template, url_for, g, Flask, redirect, flash, abort, json, jsonify, session
 from peewee import DoesNotExist
-from playhouse.shortcuts import model_to_dict
+from playhouse.shortcuts import model_to_dict, dict_to_model
 import json
 
 from datetime import datetime
 from dateutil import parser
+from app import app
 
 from app.models.program import Program
 from app.models.event import Event
@@ -26,9 +27,20 @@ from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
 
+@admin_bp.route('/switch_user', methods=['POST'])
+def switchUser():
+    if app.env == "production":
+        print(f"An attempt was made to switch to another user by {g.current_user.username}!")
+        abort(403)
+
+    print(f"Switching user from {g.current_user} to",request.form['newuser'])
+    session['current_user'] = model_to_dict(User.get_by_id(request.form['newuser']))
+
+    return redirect(request.referrer)
+
 
 @admin_bp.route('/template_select')
-def template_select():
+def templateSelect():
     allprograms = Program.select().order_by(Program.programName)
     visibleTemplates = EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
 
