@@ -175,7 +175,9 @@ def contributors():
 
 @main_bp.route('/manageservicelearning/', methods = ['GET'])
 def managePage():
-    users = user.select().where(isFaculty.user == 1)
+    users = User.select().where(User.isFaculty == 1)
+    for user in users:
+        print(user.username)
 
 
 

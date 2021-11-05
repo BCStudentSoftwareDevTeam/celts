@@ -19,12 +19,15 @@
   </tr>
   </thead>
   <tbody>
+  {% for user in users%}
   <tr>
-    <td>Alfreds Futterkiste</td>
+    <td>{{user.username}}</td>
     <td>Maria Anders</td>
     <td><button class="close-button danger">x </button></td>
     <td><button input type="checkbox"> [] </td>
   </tr>
+  {% endfor %}
+
 
   </tbody>
 </table>
