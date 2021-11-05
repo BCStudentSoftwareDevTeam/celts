@@ -1,6 +1,15 @@
-//
+
+$(function(){
+  if (!Modernizr.inputtypes.date) {
+    $('input[type=date]').datepicker({
+        dateFormat : 'yy-mm-dd'
+      }
+  );
+}
+});
+
 // updates max and min dates of the datepickers as the other datepicker changes
-function updateDate(obj) { 
+function updateDate(obj) {
   var dateToChange = new Date($(obj).val());
   var newMonth = dateToChange.getMonth();
   var newYear = dateToChange.getFullYear();
@@ -40,7 +49,7 @@ $(document).ready(function(){
 
 });
   //makes the input fields act like readonly (readonly doesn't work with required)
-  $(".readonly").on('keydown paste', function(e){ 
+  $(".readonly").on('keydown paste', function(e){
         if(e.keyCode != 9) // ignore tab
             e.preventDefault();
     });
@@ -51,11 +60,11 @@ $(document).ready(function(){
   });
 
   $("#startDate").click(function() {
-    $("#startDatePicker").datepicker().datepicker("show"); 
+    $("#startDatePicker").datepicker().datepicker("show");
   });
 
   $("#endDate").click(function() {
-    $("#endDatePicker").datepicker().datepicker("show"); 
+    $("#endDatePicker").datepicker().datepicker("show");
   });
 
     $("#startDatePicker, #endDatePicker").change(function(){
