@@ -8,6 +8,7 @@
   {{super()}}
 {% endblock %}
 {% block app_content %}
+<input id="username" type="hidden" value='{{ username }}'>
 <h1 class="text-center mt-5 mb-2">{{g.current_user.firstName}} {{g.current_user.lastName}}</h1>
 <div id="proposalTable">
   <table class="table table-striped">
@@ -23,12 +24,12 @@
     <tbody>
         {% for course in courseDict %}
           <tr>
-            <td>{{courseDict[course]['name']}}</td>
-            <td>{{courseDict[course]['faculty']|join(", ")}}</td>
-            <td>{{courseDict[course]['term'].description}}</td>
-            <td>{{courseDict[course]['status']}}</td>
+            <td>{{ courseDict[course]['name'] }}</td>
+            <td>{{ courseDict[course]['faculty']|join(", ") }}</td>
+            <td>{{ courseDict[course]['term'].description }}</td>
+            <td>{{ courseDict[course]['status'] }}</td>
             <td>
-              <select class="form-select" id="{{ courseDict[course]['id'] }}" onclick="changeAction(this)">
+                <select class="form-select" id="{{ courseDict[course]['id'] }}" onchange='changeAction(this)'>
                 <option value="---" disabled selected>Select Action</option>
                 <option value="Renew">Renew</option>
                 <option value="View">View</option>
@@ -51,7 +52,7 @@
       <div class="modal-body">
         Are you sure you want to withdraw this SL Course? <br>
         You will have to create or renew this proposal again.
-        <input id="courseToRemove" type="hidden" value="">
+        <input id="courseID" type="hidden" value="">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
