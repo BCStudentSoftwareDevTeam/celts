@@ -9,7 +9,7 @@
 {% endblock %}
 {% block app_content %}
 <input id="username" type="hidden" value='{{ username }}'>
-<h1 class="text-center mt-5 mb-2">{{g.current_user.firstName}} {{g.current_user.lastName}}</h1>
+<h1 class="text-center mt-5 mb-2">{{ g.current_user.firstName }} {{ g.current_user.lastName }}</h1>
 <div id="proposalTable">
   <table class="table table-striped">
     <thead>
