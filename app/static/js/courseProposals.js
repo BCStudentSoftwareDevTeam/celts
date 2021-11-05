@@ -19,7 +19,7 @@ function changeAction(action){
 
   } else if (action.value=="Withdraw"){
     courseID = action.id;
-    $('#courseToRemove').val(courseID);
+    $('#courseID').val(courseID);
     $('#withdrawModal').modal('show');
 
   } else if(action.value=="Edit"){
@@ -29,9 +29,10 @@ function changeAction(action){
 
 function withdraw(){
   // uses hidden label to withdraw course
-  courseID = $("#courseToRemove").val()
+  courseID = $("#courseID").val()
+  username = $("#username").val()
   $.ajax({
-    url: "/courseProposals/"+courseID+"/withdraw/",
+    url: "/"+username+"/courseProposals/"+courseID+"/withdraw/",
     type: "POST",
     success: function(s){
       location.reload()

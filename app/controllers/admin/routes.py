@@ -184,7 +184,8 @@ def createTable(username, unauthorized=False):
             courseDict = getProposalData(g.current_user)
             return render_template("/admin/courseProposals.html",
                                     instructor = g.current_user,
-                                    courseDict = courseDict)
+                                    courseDict = courseDict,
+                                    username = username)
         else:
             flash("Unauthorized to view page", 'warning')
             return redirect(url_for('main.events'))
@@ -192,10 +193,10 @@ def createTable(username, unauthorized=False):
         print('Error while creating table: ', e)
         return "", 500
 
-@admin_bp.route('/courseProposals/<courseID>/withdraw/', methods = ['POST'])
-def withdrawCourse(courseID):
+@admin_bp.route('/<username>/courseProposals/<courseID>/withdraw/', methods = ['POST'])
+def withdrawCourse(courseID, username):
     try:
-        if g.current_user.isAdmin or g.current_user.isFaculty:
+        if authorized(username):
             deleteProposal(courseID)
             flash("Course successfully withdrawn", 'success')
         else:
