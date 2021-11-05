@@ -1,6 +1,8 @@
 from app.models.user import User
 from app.models.term import Term
-from flask import g
+from flask import g, session
+
+from playhouse.shortcuts import model_to_dict
 
 def addCeltsAdmin(user):
     user = User.get_by_id(user)
@@ -29,3 +31,5 @@ def changeCurrentTerm(term):
     newCurrentTerm = Term.get_by_id(term)
     newCurrentTerm.isCurrentTerm = True
     newCurrentTerm.save()
+
+    session["current_term"] = model_to_dict(newCurrentTerm)

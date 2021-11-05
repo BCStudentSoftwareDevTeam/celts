@@ -7,7 +7,6 @@ from app.models.courseParticipant import CourseParticipant
 from app.models.event import Event
 from app.models.programEvent import ProgramEvent
 from app.models.facilitator import Facilitator
-from app.logic.volunteers import addVolunteerToEvent
 from app.logic.events import deleteEvent
 
 @pytest.mark.integration
@@ -100,14 +99,31 @@ def setup_module():
 
     programEvent = ProgramEvent.create(program=1, event=newProgramEvent)
 
+    testingTrainingEvent = Event.get(Event.name == "Test Training Event")
+    trainingpart = EventParticipant.create(user = "namet",
+                                            event = testingTrainingEvent.id,
+                                            attended = True,
+                                            hoursEarned = 2)
+
+    testingBonnerEvent = Event.get(Event.name == "Test Bonner Event")
+    trainingpart = EventParticipant.create(user = "namet",
+                                            event = testingBonnerEvent.id,
+                                            attended = True,
+                                            hoursEarned = 2)
+
+    testingProgramEvent = Event.get(Event.name == "Test Program Event")
+    trainingpart = EventParticipant.create(user = "namet",
+                                            event = testingProgramEvent.id,
+                                            attended = True,
+                                            hoursEarned = 2)
+
 @pytest.mark.integration
 def testingTrainings():
 
-    testingTrainingEvent = Event.get(Event.name == "Test Training Event")
-    addVolunteerToEvent('namet', testingTrainingEvent.id, 2)
-
     username = "namet"
     adminName = "ramsayb2"
+
+    checkingTrainingEvent = Event.get(name="Test Training Event")
 
     testingTrainingsExist = getTrainingTranscript(username)
     testingTrainingNotExist = getTrainingTranscript(adminName)
@@ -115,15 +131,11 @@ def testingTrainings():
 
     assert not testingTrainingNotExist.exists()
     assert testingTrainingsExist.exists()
-    assert newTrainingEvent in testingTrainingsExist
+    assert checkingTrainingEvent in [t.event for t in testingTrainingsExist]
 
 
 @pytest.mark.integration
 def testingBonner():
-
-    testingBonnerEvent = Event.get(Event.name == "Test Bonner Event")
-
-    addVolunteerToEvent('namet', testingBonnerEvent.id, 2)
 
     username = "namet"
     adminName = "ramsayb2"
@@ -131,43 +143,42 @@ def testingBonner():
     testingBonnerExist = getBonnerScholarEvents(username)
     testingBonnerNotExist = getBonnerScholarEvents(adminName)
 
+    checkingBonnerEvent = Event.get(name="Test Bonner Event")
 
     assert not testingBonnerNotExist.exists()
     assert testingBonnerExist.exists()
-    assert newBonnerEvent in testingBonnerExist
+    assert checkingBonnerEvent in [t.event for t in testingBonnerExist]
 
 
 @pytest.mark.integration
 def testingSLCourses():
 
+    username = "namet"
+    adminName = "ramsayb2"
+
     testingSLCExist= getSlCourseTranscript(username)
     testingSLCNotExist = getSlCourseTranscript(adminName)
 
+    checkingNewCourse = Course.get(courseName = "Test Course")
+
     assert not testingSLCNotExist.exists()
     assert testingSLCExist.exists()
-    assert newCourse in testingSLCExist
+    assert checkingNewCourse in testingSLCExist
 
 
 @pytest.mark.integration
 def testingProgram():
-
-    testingProgramEvent = Event.select().where(Event.name == "Test program Event")
-
-    print(testingProgramEvent.id)
-
-    addVolunteerToEvent('namet', testingProgramEvent.id, 2)
 
     username = "namet"
     adminName = "ramsayb2"
     testingProgramExist = getProgramTranscript(username)
     testingProgramNotExist = getProgramTranscript(adminName)
 
-    for program in testingProgramExist:
-        print(program)
+    checkingProgramEvent = Event.get(name="Test Program Event")
 
     assert not testingProgramNotExist.exists()
     assert testingProgramExist.exists()
-    assert testingProgramEvent in testingProgramExist
+    assert checkingProgramEvent in [t.event for t in testingProgramExist]
 
 
 @pytest.mark.integration
