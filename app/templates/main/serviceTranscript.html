@@ -2,8 +2,16 @@
 
 {% block app_content %}
 
-<h1 class="text-center pb-5">{{userData.firstName}} {{userData.lastName}}</h1>
-<button type="button" class="btn btn-primary float-end d-print-none" onClick="window.print()"><i class="bi bi-printer d-print-none"></i> Print</button>
+<h1 class="text-center mt-5 mb-3">{{userData.firstName}} {{userData.lastName}}</h1>
+<ul class="nav nav-tabs mb-2">
+  <li class="nav-item">
+    <a class="nav-link" href="/profile/{{userData.username}}">Upcoming Events</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link active" aria-current="page" href="#">Service Transcript</a>
+  </li>
+</ul>
+<button type="button" class="btn btn-primary float-end d-print-none" onclick="window.print()"><span class="bi bi-printer d-print-none"></span> Print</button>
 {% if programs.exists() %}
   <h2>Programs</h2>
   <table class="table table-bordered table-striped">

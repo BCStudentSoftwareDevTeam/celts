@@ -8,9 +8,17 @@
 
 {% block app_content %}
 <div class="container">
+  <h1 class="mt-5 mb-3 text-center">{{ user.firstName }} {{ user.lastName }}</h1>
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link active" aria-current="page" href="#">Upcoming Events</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/{{user.username}}/serviceTranscript">Service Transcript</a>
+    </li>
+  </ul>
   <div class="row">
     <table class="table">
-
       {% if upcomingEvents|length > 0 %}
         <thead class="tableHeader">
           <th scope="col"><h4><strong>Program</strong></h4>
