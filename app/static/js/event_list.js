@@ -2,19 +2,23 @@
 
 $(document).ready(function(){
 
-  // $("#sendEmail").click(function(){
-  //   console.log($("#emailSender").val())
-  //   console.log($("#message").val())
-  //   // msg = $("#message").val().replace(" ",'%20')
-  //   //
-  //   // console.log($("#subject").val())
-  //   // subject = self.emailInfo['subject'].replace(" ",'%20')
-  //
-  //   // window.location.href = "mainto:"+$("#emailSender").val()+"?Subject="+$("#subject").val()
-  //   window.location.href = "mailto:"+$("#emailSender").val()
-  //   // window.location.href = `mailto:${encodeURIComponent(("#emailSender").val())}?subject=+${("#subject").val()}`
-  //   // `{encodeURIComponent($("#subject").val())}&body=${encodeURIComponent($("#message").val())}`;
-  // })
+  $("#sendEmail").click(function(){
+    console.log($("#emailSender").val())
+    console.log($("#message").val())
+    // msg = $("#message").val().replace(" ",'%20')
+    //
+    // console.log($("#subject").val())
+    // subject = self.emailInfo['subject'].replace(" ",'%20')
+    sender = $("#emailSender").val()
+    subject = encodeURIComponent($("#subject").va())
+    body = encodeURIComponent($("#message").val())
+    alert(subject, body)
+    window.location.href = `mailto:?bcc=${sender}&subject=${subject}&body=${body}`  
+    // window.location.href = "mainto:"+$("#emailSender").val()+"?Subject="+$("#subject").val()
+    // window.location.href = "mailto:"+$("#emailSender").val()
+    // window.location.href = `mailto:${encodeURIComponent(("#emailSender").val())}?subject=+${("#subject").val()}`
+    // `{encodeURIComponent($("#subject").val())}&body=${encodeURIComponent($("#message").val())}`;
+  })
 
 });
 
