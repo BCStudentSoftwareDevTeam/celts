@@ -18,7 +18,7 @@ from app.models.eventTemplate import EventTemplate
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
-
+from app.logic.courseProposals import getProposalData, deleteProposal, authorized
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
@@ -174,3 +174,33 @@ def addParticipants():
 
     return render_template('addParticipants.html',
                             title="Add Participants")
+
+@admin_bp.route('/<username>/courseProposals', methods=['GET'])
+def createTable(username, unauthorized=False):
+    if unauthorized:
+        flash("Unauthorized to perform this action", 'warning')
+    try:
+        if authorized(username):
+            courseDict = getProposalData(g.current_user)
+            return render_template("/admin/courseProposals.html",
+                                    instructor = g.current_user,
+                                    courseDict = courseDict,
+                                    username = username)
+        else:
+            flash("Unauthorized to view page", 'warning')
+            return redirect(url_for('main.events'))
+    except Exception as e:
+        print('Error while creating table: ', e)
+        return "", 500
+
+@admin_bp.route('/<username>/courseProposals/<courseID>/withdraw/', methods = ['POST'])
+def withdrawCourse(courseID, username):
+    try:
+        if authorized(username):
+            deleteProposal(courseID)
+            flash("Course successfully withdrawn", 'success')
+        else:
+            return redirect(url_for('admin.createTable'), unauthorized = True)
+    except:
+        flash("Withdrawal Unsuccessful", 'warning')
+    return ""
