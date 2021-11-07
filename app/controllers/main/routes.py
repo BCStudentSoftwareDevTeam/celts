@@ -177,9 +177,6 @@ def contributors():
 def managePage():
     users = User.select().where(User.isFaculty == 1)
     for user in users:
-        print(user.username)
 
-
-
-    return render_template('/main/manageServiceLearningFaculty.html',
+        return render_template('/main/manageServiceLearningFaculty.html',
     users = users)

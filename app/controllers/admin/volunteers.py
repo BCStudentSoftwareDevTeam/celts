@@ -84,6 +84,7 @@ def addVolunteer(volunteer, eventId):
     username = volunteer.strip("()").split('(')[-1]
     user = User.get(User.username==username)
     successfullyAddedVolunteer = addVolunteerToEventRsvp(user, eventId)
+    EventParticipant.create(user=user, event=eventId) # user is present
     if successfullyAddedVolunteer:
         flash("Volunteer successfully added!", "success")
     else:

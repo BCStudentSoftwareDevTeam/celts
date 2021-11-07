@@ -177,7 +177,7 @@ def test_unattendedRequiredEvents():
 
     # test after user has attended an event
     event = Event.get(Event.name == unattendedEvents[0])
-    EventParticipant.create(user = user, event = event, attended = True)
+    EventParticipant.create(user = user, event = event)
     unattendedEvents = unattendedRequiredEvents(program, user)
     assert len(unattendedEvents) == 2
     (EventParticipant.delete().where(EventParticipant.user == user, EventParticipant.event == event)).execute()
@@ -202,29 +202,38 @@ def test_unattendedRequiredEvents():
     program = 1
     user = "asdfasdf56"
     unattendedEvents = unattendedRequiredEvents(program, user)
-    assert unattendedEvents == ['Empty Bowls Spring Event 1', 'Berea Buddies Training', 'How To Make Buddies']
+    assert unattendedEvents == ['Empty Bowls Spring Event 1', 'Hunger Hurts', 'Empty Bowl with Community']
 
 @pytest.mark.integration
-def test_sendKioskDataKiosk():
-    signin = sendUserData("B00751864", 2, 1)
-    usersAttended = EventParticipant.select().where(EventParticipant.attended, EventParticipant.event == 3)
-    listOfAttended = [users.user.username for users in usersAttended]
+def test_sendUserData():
+    # Tests the Kiosk
+    # user is banned
+    signedInUser, userStatus = sendUserData("B00739736", 2, 1)
+    assert userStatus == "banned"
+    with pytest.raises(DoesNotExist):
+        EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
 
-    assert "neillz" in listOfAttended
-    assert "lamichhanes2" not in listOfAttended
+    # user is already signed in
+    signedInUser, userStatus = sendUserData("B00751360", 2, 1)
+    assert userStatus == "already in"
 
-    (EventParticipant.update({EventParticipant.attended: False})
-                     .where(EventParticipant.user == "neillz", EventParticipant.event == 1)).execute()
+    # user is eligible but the user is not in EventParticipant and EventRsvp
+    signedInUser = User.get(User.bnumber=="B00759117")
+    with pytest.raises(DoesNotExist):
+        EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
+        EventRsvp.get(EventRsvp.user==signedInUser, EventRsvp.event==2)
 
+        signedInUser, userStatus = sendUserData("B00759117", 2, 1)
+        assert userStatus == "success"
 
-    signin = sendUserData("B00708826", 2, 1)
-    usersAttended = EventParticipant.select().where(EventParticipant.attended, EventParticipant.event == 2)
-    listOfAttended = [users.user.username for users in usersAttended]
+        participant = EventParticipant.select().where(EventParticipant.event==2, EventParticipant.user==signedInUser)
+        assert "agliullovak" in participant
 
-    assert "bryanta" in listOfAttended
+        userRsvp = EventRsvp.select().where(EventRsvp.event==2, EventRsvp.user==signedInUser)
+        assert "agliullovak" in userRsvp
 
-    deleteInstance = EventParticipant.get(EventParticipant.user == "bryanta", EventParticipant.event_id == 2)
-    deleteInstance.delete_instance()
+        EventParticipant.delete(EventParticipant.user==signedInUser, EventParticipant.event==2).execute()
+        EventRsvp.delete(EventRsvp.user==signedInUser, EventRsvp.event==2).execute()
 
 @pytest.mark.integration
 def test_getEventParticipants():
