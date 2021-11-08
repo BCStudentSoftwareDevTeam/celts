@@ -1,14 +1,5 @@
 
 $(function(){
-  if (!Modernizr.inputtypes.date) {
-    $('input[type=date]').datepicker({
-        dateFormat : 'yy-mm-dd'
-      }
-  );
-}
-});
-
-$(function(){
   //Browser detection was implemented using a solution found  here https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
   var isFirefox = typeof InstallTrigger !== 'undefined';
   var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && window['safari'].pushNotification));
