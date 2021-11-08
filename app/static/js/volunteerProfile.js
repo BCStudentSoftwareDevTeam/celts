@@ -5,12 +5,7 @@ $(document).ready(function(){
     var interest = $(this).is(':checked');
     var username = $(this).attr('name');
 
-    if (interest) {
-      var routeUrl = "addInterest";
-    }
-    else {
-      var routeUrl = "deleteInterest";
-    }
+    var routeUrl = interest ? "addInterest" : "deleteInterest;
     interestUrl = "/" + routeUrl + "/" + programID + "/" + username;
     $.ajax({
       method: "POST",
