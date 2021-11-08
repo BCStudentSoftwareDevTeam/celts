@@ -15,16 +15,19 @@
     <th scope = "col">Name</th>
     <th scope = "col">Prev Classes</th>
     <th scope= "col">Remove</th>
-    <th scope= "col">Select</th>
+    <th scope= "col" <input name="select_all" value="1" type="checkbox"> Select</th>
   </tr>
   </thead>
   <tbody>
   {% for user in users%}
+
   <tr>
-    <td>{{user.username}}</td>
-    <td>Maria Anders</td>
-    <td><button class="close-button danger">x </button></td>
-    <td><button input type="checkbox"> [] </td>
+    <td>{{user.firstName}} {{user.lastName}}</td>
+    <td>{{courseInstructors[user.username]}}</td>
+    <td><button  aria-label="Close alert" type="button" data-close>
+    <span aria-hidden="true">&times;</span>
+  </button></td>
+    <td><input type="checkbox">     </td>
   </tr>
   {% endfor %}
 
@@ -36,10 +39,11 @@
   <input type="input" id="{{inputId}}" name="{{inputId}}" class="form-control" placeholder="Search" autocomplete="off"/>
   <button type="button" class="btn btn-secondary btn-sm" disabled>
     <span class="bi bi-search"></span>
-  </button></div>
-  <div class="col-md-4">
-  <button type="button" >Add Faculty</button>
-  <button type="button" > send Email</button>
+  </button>
+  <!-- <div class="col-md-4"> -->
+  <button type="button" class="btn btn-primary" disabled>Add Faculty</button>
+  <button type="button" class="btn btn-primary" disabled>Send Email</button>
 </div>
+
 
 {% endblock %}

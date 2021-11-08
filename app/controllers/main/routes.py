@@ -173,10 +173,18 @@ def contributors():
 
 
 
-@main_bp.route('/manageservicelearning/', methods = ['GET'])
+@main_bp.route('/manageservicelearning', methods = ['GET'])
 def managePage():
     users = User.select().where(User.isFaculty == 1)
-    for user in users:
-
-        return render_template('/main/manageServiceLearningFaculty.html',
-    users = users)
+    courseInstructors = CourseInstructor.select()
+    course_dict = {}
+    for instructor in courseInstructors:
+        if  instructor.user not in course_dict:
+            course_dict[instructor.user.username] = [instructor.course.courseName]
+        else:
+            course_dict[instructor.user.username].append(instructor.course.courseName)
+    # for i in course_dict.values():
+    #     word = i.strip([''])
+    #     print(word)
+    # print(course_dict)
+    return render_template('/main/manageServiceLearningFaculty.html', users = users,courseInstructors = course_dict)
