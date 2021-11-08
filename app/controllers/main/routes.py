@@ -52,29 +52,29 @@ def viewVolunteersProfile(username):
     This function displays the information of a volunteer to the user
     """
     try:
-        volunteer = User.get(User.username == username)
+        User.get(User.username == username)
     except Exception as e:
         print(e)
         return "User does not exist", 404
     if (g.current_user.username == username) or g.current_user.isAdmin:
-         upcomingEvents = getUpcomingEventsForUser(volunteer)
+         upcomingEvents = getUpcomingEventsForUser(username)
          programs = Program.select()
-         interests = Interest.select().where(Interest.user == volunteer)
+         interests = Interest.select().where(Interest.user == username)
          programsInterested = [interest.program for interest in interests]
          # trainingChecklist = {}
          # for program in programs:
          #     trainingChecklist[program.id] = trainedParticipants(program.id)
          eligibilityTable = []
          for program in programs:
-              notes = ProgramBan.select().where(ProgramBan.user == volunteer,
+              notes = ProgramBan.select().where(ProgramBan.user == username,
                                                 ProgramBan.program == program,
                                                 ProgramBan.endDate > datetime.datetime.now())
               noteForDict = "None"
               for j in notes:
                   noteForDict = j.banNote.noteContent
               eligibilityTable.append({"program" : program,
-                                       "completedTraining" : (volunteer in trainedParticipants(program)),
-                                       "isNotBanned" : isEligibleForProgram(program, volunteer),
+                                       "completedTraining" : (username in trainedParticipants(program)),
+                                       "isNotBanned" : isEligibleForProgram(program, username),
                                        "banNote": noteForDict})
          return render_template ("/main/volunteerProfile.html",
             programs = programs,
@@ -83,7 +83,8 @@ def viewVolunteersProfile(username):
             # trainingChecklist = trainingChecklist,
             upcomingEvents = upcomingEvents,
             eligibilityTable = eligibilityTable,
-            volunteer = volunteer)
+            volunteer = User.get(User.username == username),
+            user = g.current_user)
     abort(403)
 
 

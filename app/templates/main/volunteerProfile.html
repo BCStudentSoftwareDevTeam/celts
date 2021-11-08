@@ -71,8 +71,8 @@
                 <td>{% if program.completedTraining == True %}<i class="bi bi-check-lg"></i> {% else %} <i class="bi bi-x-lg"></i>{% endif %}</td>
                 {% if user.isCeltsAdmin %}
                 <td class="programBan">
-                  {% if program.isNotBanned %}<i class="bi bi-check-lg"></i><button type="button" class="ban btn btn-link" id="{{program.program}}" name="{{program.program.programName}}" value="Ban">Edit</button>
-                  {% else %} <i class="bi bi-x-lg"></i><button type="button" class="ban btn btn-link" id="{{program.program}}" name="{{program.program.programName}}" note="{{program.banNote}}" value="Unban">Edit</button>
+                  {% if program.isNotBanned %}<i class="bi bi-check-lg"></i><button type="button" class="ban btn btn-link" id="{{program.program.id}}" name="{{program.program.programName}}" value="Ban">Edit</button>
+                  {% else %} <i class="bi bi-x-lg"></i><button type="button" class="ban btn btn-link" id="{{program.program.id}}" name="{{program.program.programName}}" note="{{program.banNote}}" value="Unban">Edit</button>
                   {% endif %}
                 </td>
                 {% endif %}
