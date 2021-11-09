@@ -11,6 +11,7 @@ from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsv
 from app.logic.participants import trainedParticipants, getEventParticipants
 from app.models.user import User
 from app.models.eventRsvp import EventRsvp
+from app.models.backgroundCheck import BackgroundCheck
 
 
 @admin_bp.route('/searchVolunteers/<query>', methods = ['GET'])
@@ -97,3 +98,10 @@ def removeVolunteerFromEvent(user, eventID):
     (EventRsvp.delete().where(EventRsvp.user==user)).execute()
     flash("Volunteer successfully removed", "success")
     return ""
+
+@admin_bp.route('/', methods = ['POST'])
+def updateBackgroundCheck(user, setTo):
+
+    updateBackgroundStatus = BackgroundCheck.select().where(user == user)
+    updateBackgroundStatus.passBackgroundCheck = setTo
+    updateBackgroundCheck.save()

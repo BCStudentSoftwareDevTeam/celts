@@ -2,7 +2,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.event import Event
-
+from app.models.backgroundCheck import BackgroundCheck
 from datetime import datetime
 
 
@@ -81,3 +81,13 @@ def addVolunteerToEventRsvp(user, volunteerEventID):
 
     except Exception as e:
         return False
+
+def updateOrCreateVolunteerBackground(user, setTo):
+    user = User.get_by_id(user)
+    getAllUsers = list(BackgroundCheck.select())
+    allUsers = [user.user for user in getAllUsers]
+    if user not in allUsers:
+        BackgroundCheck.create(user = user, passBackgroundCheck = setTo)
+    else:
+        update = BackgroundCheck.update(passBackgroundCheck = setTo).where(BackgroundCheck.user == user)
+        update.execute()

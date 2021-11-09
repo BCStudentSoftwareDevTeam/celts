@@ -20,6 +20,7 @@ from app.models.questionNote import QuestionNote
 from app.models.interest import Interest
 from app.models.facilitator import Facilitator
 from app.models.note import Note
+from app.models.backgroundCheck import BackgroundCheck
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -127,6 +128,20 @@ users = [
 ]
 
 User.insert_many(users).on_conflict_replace().execute()
+
+background = [
+
+    {
+
+    "user": "khatts",
+    "passBackgroundCheck": False,
+    },
+    {
+    "user":"neillz",
+    "passBackgroundCheck":True,
+    },
+]
+BackgroundCheck.insert_many(background).on_conflict_replace().execute()
 
 terms = [
     {

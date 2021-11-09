@@ -1,7 +1,8 @@
 import pytest
-from app.logic.volunteers import getEventLengthInHours, updateEventParticipants
+from app.logic.volunteers import getEventLengthInHours, updateEventParticipants, updateOrCreateVolunteerBackground
 from app.models.eventParticipant import EventParticipant
 from app.controllers.admin.volunteers import addVolunteerToEventRsvp
+from app.models.backgroundCheck import BackgroundCheck
 from datetime import datetime
 from peewee import DoesNotExist
 
@@ -109,3 +110,18 @@ def test_updateEventParticipants():
 
     with pytest.raises(DoesNotExist):
         EventParticipant.get(EventParticipant.user=="agliullovak", EventParticipant.event==3)
+
+@pytest.mark.integration
+def test_backgroundCheck():
+
+    updatebackground = updateOrCreateVolunteerBackground("khatts", True)
+    updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "khatts"))
+    assert updatedModel[0].passBackgroundCheck == True
+
+    updatebackground = updateOrCreateVolunteerBackground("neillz", False)
+    updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "neillz"))
+    assert updatedModel[0].passBackgroundCheck == False
+
+    updatebackground = updateOrCreateVolunteerBackground("mupotsal", False)
+    updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "mupotsal"))
+    assert updatedModel[0].passBackgroundCheck == False
