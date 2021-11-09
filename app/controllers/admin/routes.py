@@ -185,15 +185,12 @@ def courseManagement(term = None):
     if not term:
         term = g.current_term
 
-
-    pending, pendingCourseInstructor = pendingCourses(term)
-    approved, approvedCourseInstructor = approvedCourses(term)
-    terms = selectFutureTerms(g.current_term)
+    pending = pendingCourses(term)
+    approved = approvedCourses(term)
+    terms = selectSurroundingTerms(g.current_term)
 
     return render_template('/admin/courseManagement.html',
                             pendingCourses = pending,
                             approvedCourses = approved,
-                            approvedCourseInstructor = approvedCourseInstructor,
-                            pendingCourseInstructor = pendingCourseInstructor,
                             terms = terms,
                             term = term)

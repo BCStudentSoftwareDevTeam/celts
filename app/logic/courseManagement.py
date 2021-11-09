@@ -13,17 +13,9 @@ def pendingCourses(termId):
     pendingCourses = (Course.select(Course, Term)
                     .join(CourseStatus)
                     .switch(Course)
-                    .join(Term)).where(Term.id == termId, Course.status.status != "Approved", Course.status.status != "Completed").distinct()
+                    .join(Term).where(Term.id == termId, Course.status.status != "Approved", Course.status.status != "Completed").distinct())
 
-    courseIds = []
-    for course in pendingCourses:
-        courseIds.append(course.id)
-
-    pendingCourseInstructor = getinstructorData(courseIds)
-
-
-    return pendingCourses, pendingCourseInstructor
-
+    return pendingCourses
 
 def approvedCourses(termId):
     '''
@@ -32,16 +24,11 @@ def approvedCourses(termId):
     '''
 
     approvedCourses = (Course.select(Course, Term)
-                    .join(CourseStatus)
-                    .switch(Course)
-                    .join(Term)).where(Term.id == termId, Course.status.status == "Approved").distinct()
+                        .join(CourseStatus)
+                        .switch(Course)
+                        .join(Term).where(Term.id == termId, Course.status.status == "Approved").distinct())
 
-    courseIds = []
-    for course in approvedCourses:
-        courseIds.append(course.id)
-
-    approvedCourseInstructor = getinstructorData(courseIds)
-    return approvedCourses, approvedCourseInstructor
+    return approvedCourses
 
 def getinstructorData(courseIds):
     """

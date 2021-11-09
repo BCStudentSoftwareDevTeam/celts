@@ -46,8 +46,8 @@
         <tr>
           <td>{{data.courseName}}</td>
           <td>
-            {% for name in pendingCourseInstructor[data.id] %}
-              {{name}} <br>
+            {% for instructor in data.courseInstructors %}
+              {{ instructor.user.firstName }} {{ instructor.user.lastName }} <br>
             {% endfor %}
           </td>
           <td>{{data.term.description}}</td>
@@ -75,8 +75,8 @@
         <tr>
           <td>{{data.courseName}}</td>
           <td>
-            {% for name in approvedCourseInstructor[data.id] %}
-              {{name}} <br>
+            {% for instructor in data.courseInstructors %}
+              {{ instructor.user.firstName }} {{ instructor.user.lastName }} <br>
             {% endfor %}
           </td>
           <td>{{data.term.description}}</td>
