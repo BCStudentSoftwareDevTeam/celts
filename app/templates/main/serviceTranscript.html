@@ -3,7 +3,7 @@
 {% block app_content %}
 
 <h1 class="text-center mt-5 mb-3">{{userData.firstName}} {{userData.lastName}}</h1>
-<div class="btn-group">
+<div class="btn-group d-print-none">
   <ul class="nav nav-tabs" role="tab-list">
     <li class="nav-item" role="presentation">
       <a class="nav-link" href="/profile/{{userData.username}}">Upcoming Events</a>
@@ -15,7 +15,7 @@
 </div>
 <button type="button" class="btn btn-primary float-end d-print-none" onclick="window.print()"><span class="bi bi-printer d-print-none"></span> Print</button>
 {% if programs.exists() %}
-  <h2>Programs</h2>
+  <h2 class="m-1">Programs</h2>
   <table class="table table-bordered table-striped">
     <tr>
       <th>Program</th>
@@ -33,7 +33,7 @@
 {% endif %}
 
 {% if bonnerData.exists() %}
-  <h2>Bonner Scholar Events</h2>
+  <h2 class="m-1">Bonner Scholar Events</h2>
   <table class="table table-bordered table-striped">
     <tr>
       <th>Event Name</th>
@@ -52,7 +52,7 @@
 {% endif %}
 
 {% if slCourses.exists() %}
-  <h2>Service Learning Courses</h2>
+  <h2 class="m-1">Service Learning Courses</h2>
   <table class="table table-bordered table-striped">
     <tr>
       <th>Course Name</th>
@@ -77,7 +77,7 @@
 {% endif %}
 
 {% if trainingData.exists() %}
-  <h2>Trainings</h2>
+  <h2 class="m-1">Trainings</h2>
   <table class="table table-bordered table-striped">
     <tr>
       <th>Training Name</th>
@@ -94,19 +94,19 @@
   </table>
 {% endif %}
 
-  <div class="pt-4">
-    {% if startDate == "N/A" %}
-      <p>No Volunteer Record</p>
-    {% else %}
-      <p>*Volunteering since {{ startDate }}</p>
-    {% endif %}
-  </div>
-  <div class="float-end">
-    <p class="fw-bold pb-3 d-inline">Total Hours:</p>
-    <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours }}</p>
-  </div>
-  <div class="pt-5">
-    <p>If there are any corrections that need to be made, contact <a href="mailto:cochranea@berea.edu">Ashley Cochrane</a></p>
-  </div>
+<div class="pt-4">
+  {% if startDate == "N/A" %}
+    <p>No Volunteer Record</p>
+  {% else %}
+    <p>*Volunteering since {{ startDate }}</p>
+  {% endif %}
+</div>
+<div class="float-end">
+  <p class="fw-bold pb-3 d-inline">Total Hours:</p>
+  <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours }}</p>
+</div>
+<div class="d-print-none pt-5">
+  <p>If there are any corrections that need to be made, contact <a href="mailto:cochranea@berea.edu">Ashley Cochrane</a></p>
+</div>
 
 {% endblock %}
