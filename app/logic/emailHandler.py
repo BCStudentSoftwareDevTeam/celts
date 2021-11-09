@@ -49,20 +49,12 @@ class emailHandler():
         """ Updates the sender and sends the email. """
         message = self.updateSenderEmail(msg)
 
-        if 'sendIndividually' in self.emailInfo:
-            if app.config.mail['MAIL_OVERRIDE_ALL']:
-                message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
-            with self.mail.connect() as conn:
-                for email in emails:
-                    message.recipients = [email]
-                    conn.send(message)
-        else:
-            if app.config['MAIL_OVERRIDE_ALL']:
-                message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
-            message.reply_to = app.config["REPLY_TO_ADDRESS"]
+        if app.config['MAIL_OVERRIDE_ALL']:
+            message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
+        message.reply_to = app.config["REPLY_TO_ADDRESS"]
 
-            self.mail = Mail(app)
-            self.mail.connect()
-            self.mail.send(message)
+        self.mail = Mail(app)
+        self.mail.connect()
+        self.mail.send(message)
 
         return 1

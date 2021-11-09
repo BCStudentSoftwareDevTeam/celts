@@ -17,7 +17,7 @@ def emailVolunteers():
     if '@' in emailInfo['emailSender']: # if they are using mailto instead
         return redirect(url_for("main.events", selectedTerm = emailInfo['selectedTerm']))
     else:
-        if emailInfo['programID'] == 'None':
+        if emailInfo['programID'] == 'Unknown':
             program = ProgramEvent.get(ProgramEvent.event == emailInfo['eventID'])
             emailInfo['programID'] = program.id
 
