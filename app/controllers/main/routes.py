@@ -1,5 +1,5 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for
-from datetime import datetime
+import datetime
 
 from app import app
 from app.models.program import Program
@@ -11,11 +11,11 @@ from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 
 from app.controllers.main import main_bp
-from app.logic.events import getUpcomingEventsForUser
+from app.logic.events import *
 from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
-from app.logic.events import groupEventsByCategory
 from app.logic.searchUsers import searchUsers
+from app.logic.transcript import *
 
 @main_bp.route('/', methods=['GET'])
 @main_bp.route('/events/<selectedTerm>', methods=['GET'])
@@ -23,15 +23,23 @@ def events(selectedTerm=None):
     currentTerm = g.current_term
     if selectedTerm:
         currentTerm = selectedTerm
-    currentTime = datetime.now()
-    eventsDict = groupEventsByCategory(currentTerm)
+    currentTime = datetime.datetime.now()
+    term = Term.get_by_id(currentTerm)
+    studentLedProgram = getStudentLedProgram(term)
+    trainingProgram = getTrainingProgram(term)
+    bonnerProgram = getBonnerProgram(term)
+    oneTimeEvents = getOneTimeEvents(term)
     listOfTerms = Term.select()
     participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
+
     return render_template("/events/event_list.html",
         selectedTerm = Term.get_by_id(currentTerm),
-        eventDict = eventsDict,
+        studentLedProgram = studentLedProgram,
+        trainingProgram = trainingProgram,
+        bonnerProgram = bonnerProgram,
+        oneTimeEvents = oneTimeEvents,
         listOfTerms = listOfTerms,
         rsvpedEventsID = rsvpedEventsID,
         currentTime = currentTime,
@@ -46,14 +54,18 @@ def profilePage(username):
         upcomingEvents = getUpcomingEventsForUser(username)
         programs = Program.select()
         interests = Interest.select().where(Interest.user == profileUser)
-        interests_ids = [interest.program for interest in interests]
+        interests_ids = [interest.program.id for interest in interests]
+        rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == profileUser)
+        rsvpedEvents = [event.event.id for event in rsvpedEventsList]
+
         return render_template('/volunteer/volunteerProfile.html',
                                title="Volunteer Interest",
                                user = profileUser,
                                programs = programs,
                                interests = interests,
                                interests_ids = interests_ids,
-                               upcomingEvents = upcomingEvents)
+                               upcomingEvents = upcomingEvents,
+                               rsvpedEvents = rsvpedEvents)
     except Exception as e:
         print(e)
         return "Error retrieving user profile", 500
@@ -81,6 +93,7 @@ def volunteerRegister():
     for the event they have clicked register for.
     """
     eventData = request.form
+
     event = Event.get_by_id(eventData['id'])
 
     user = g.current_user
@@ -109,7 +122,6 @@ def RemoveRSVP():
     This function deletes the user ID and event ID from database when RemoveRSVP  is clicked
     """
     eventData = request.form
-
     event = Event.get_by_id(eventData['id'])
 
     currentRsvpParticipant = EventRsvp.get(EventRsvp.user == g.current_user, EventRsvp.event == event)
@@ -117,6 +129,30 @@ def RemoveRSVP():
 
     flash("Successfully unregistered for event!", "success")
     return redirect(url_for("admin.editEvent", eventId=event.id))
+
+@main_bp.route('/<username>/serviceTranscript', methods = ['GET'])
+def serviceTranscript(username):
+    user = User.get_or_none(User.username == username)
+    if user is None:
+        abort(404)
+    if user != g.current_user and not g.current_user.isAdmin:
+        abort(403)
+
+    programs = getProgramTranscript(username)
+    slCourses = getSlCourseTranscript(username)
+    trainingData = getTrainingTranscript(username)
+    bonnerData = getBonnerScholarEvents(username)
+    totalHours = getTotalHours(username)
+    startDate = getStartYear(username)
+
+    return render_template('main/serviceTranscript.html',
+                            programs = programs,
+                            slCourses = slCourses.objects(),
+                            trainingData = trainingData,
+                            bonnerData = bonnerData,
+                            totalHours = totalHours,
+                            startDate = startDate,
+                            userData = user)
 
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
 def searchUser(query):

@@ -1,14 +1,21 @@
 import pytest
 
 from app.models.term import Term
-from app.logic.utils import deep_update, selectFutureTerms
+from app.logic.utils import deep_update, selectSurroundingTerms
 
 @pytest.mark.integration
-def test_validateListOfTerms():
-    currentTermid = 3
-    listOfTerms = selectFutureTerms(currentTermid)
+def test_selectSurroundingTerms():
+    listOfTerms = selectSurroundingTerms(Term.get_by_id(3))
+    assert [1,2,3,4,5] == [t.id for t in listOfTerms]
 
-    assert Term.get_by_id(3) in listOfTerms and "2024" not in listOfTerms
+    listOfTerms = selectSurroundingTerms(Term.get_by_id(3), prevTerms=0)
+    assert [3,4,5] == [t.id for t in listOfTerms]
+
+    listOfTerms = selectSurroundingTerms(Term.get_by_id(3), prevTerms=1)
+    assert [2,3,4,5] == [t.id for t in listOfTerms]
+
+    listOfTerms = selectSurroundingTerms(Term.get_by_id(3), prevTerms=-1)
+    assert [4,5] == [t.id for t in listOfTerms]
 
 @pytest.mark.unit
 def test_deepUpdate_empty():

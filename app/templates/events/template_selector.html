@@ -18,17 +18,16 @@
     }
 </style>
 
-<h2>Choose Event Type</h2>
+<h2 class="text-center mt-5">Choose Event Type</h2>
+<div class="list-group m-auto">
+  <a href="#" class="list-group-item disabled" tabindex="-1" aria-disabled="true">Templated Events</a>
+  {% for template in templates %}
+  <a href="/event/{{template.id}}/create" class="list-group-item list-group-item-action list-group-indent">{{ template.name }}</a>
+  {% endfor %}
 
-<div class="list-group">
-    <a href="#" class="list-group-item disabled" tabindex="-1" aria-disabled="true">Templated Events</a>
-    {% for template in templates %}
-    <a href="/event/{{template.id}}/create" class="list-group-item list-group-item-action list-group-indent">{{ template.name }}</a>
-    {% endfor %}
-
-    <a href="#" class="list-group-item disabled" tabindex="-1" aria-disabled="true">Single Program Events</a>
-    {% for program in programs %}
-    <a href="/event/1/{{program.id}}/create" class="list-group-item list-group-item-action list-group-indent">{{ program.programName }}</a>
-    {% endfor %}
+  <a href="#" class="list-group-item disabled" tabindex="-1" aria-disabled="true">Single Program Events</a>
+  {% for program in programs %}
+  <a href="/event/1/{{program.id}}/create" class="list-group-item list-group-item-action list-group-indent">{{ program.programName }}</a>
+  {% endfor %}
 </div>
 {% endblock %}
