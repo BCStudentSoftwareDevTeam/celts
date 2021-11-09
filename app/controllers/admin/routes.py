@@ -160,7 +160,7 @@ def addParticipants():
                             title="Add Participants")
 
 @admin_bp.route('/courseManagement', methods = ['GET', 'POST'])
-@admin_bp.route('/<term>/courseManagement', methods = ['GET', 'POST'])
+@admin_bp.route('/courseManagement/<term>', methods = ['GET', 'POST'])
 def courseManagement(term = None):
     '''
     Renders the page for admins to manage Course Proposals
