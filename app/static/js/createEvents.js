@@ -1,6 +1,5 @@
 
 $(document).ready(function(){
-  //Browser detection was implemented using a solution found  here https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
     if (Modernizr.inputtypes.time) {
       $('input[type=time]').timepicker({
           timeFormat : 'HH:mm'
