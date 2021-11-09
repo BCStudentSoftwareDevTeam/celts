@@ -13,9 +13,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.facilitator import Facilitator
 from app.models.interest import Interest
-from app.logic.events import attemptSaveEvent, saveEventToDb, getEvents, deleteEvent, preprocessEventData
-from app.logic.events  import groupEventsByCategory, groupEventsByProgram, validateNewEventData
-from app.logic.events import getAllFacilitators, getUpcomingEventsForUser, calculateRecurringEventFrequency
+from app.logic.events import *
 
 @pytest.mark.integration
 def test_event_model():
@@ -36,7 +34,7 @@ def test_event_model():
 ######################################################################
 ## TODO event list doesn't show events without a program
 ## TODO facilitators didn't stay selected when there was a validation error
-## 
+##
 ######################################################################
 
 @pytest.mark.integration
@@ -48,8 +46,8 @@ def test_getAllEvents():
     assert len(events) > 0
 
     assert events[0].description == "Empty Bowls Spring 2021"
-    assert events[1].description == "Berea Buddies Training"
-    assert events[2].description == "Adopt A Grandparent"
+    assert events[1].description == "Will donate Food to Community"
+    assert events[2].description == "Lecture on adoption"
 
 @pytest.mark.integration
 def test_getEventsWithProgram():
@@ -128,18 +126,18 @@ def test_preprocessEventData_dates():
 
     eventData = {'startDate':''}
     newData = preprocessEventData(eventData)
-    assert newData['startDate'] == '' 
-    assert newData['endDate'] == '' 
+    assert newData['startDate'] == ''
+    assert newData['endDate'] == ''
 
     eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08', 'isRecurring': 'on'}
     newData = preprocessEventData(eventData)
-    assert newData['startDate'] == datetime.strptime("2021-09-07","%Y-%m-%d")
-    assert newData['endDate'] == datetime.strptime("2021-08-08","%Y-%m-%d")
+    assert newData['startDate'] == datetime.datetime.strptime("2021-09-07","%Y-%m-%d")
+    assert newData['endDate'] == datetime.datetime.strptime("2021-08-08","%Y-%m-%d")
 
     # test different date formats
     eventData = {'startDate':parser.parse('09/07/21'), 'endDate': 75, 'isRecurring': 'on'}
     newData = preprocessEventData(eventData)
-    assert newData['startDate'] == datetime.strptime("2021-09-07","%Y-%m-%d")
+    assert newData['startDate'] == datetime.datetime.strptime("2021-09-07","%Y-%m-%d")
     assert newData['endDate'] == ''
 
     # endDate should match startDate for non-recurring events
@@ -210,7 +208,7 @@ def test_preprocessEventData_facilitators():
 
     eventData = {'id': 1, 'facilitators': [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]}
     preprocessEventData(eventData)
-    assert eventData['facilitators'] == [User.get_by_id('ramsayb2'), User.get_by_id('khatts')] 
+    assert eventData['facilitators'] == [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]
 
     eventData = {'id': 1}
     preprocessEventData(eventData)
@@ -227,7 +225,7 @@ def test_correctValidateNewEventData():
                   'isTraining':True, 'isRecurring':False, 'startDate': parser.parse('1999-12-12'),
                   'endDate':parser.parse('2022-06-12'), 'programId':1, 'location':"a big room",
                   'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
-                  'name':'Empty Bowls Spring','term':1,'facilitators':"ramsayb2"}
+                  'name':'Empty Bowls Spring Event 1','term':1,'facilitators':"ramsayb2"}
 
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid == True
@@ -237,10 +235,10 @@ def test_correctValidateNewEventData():
 def test_wrongValidateNewEventData():
 
     eventData =  {'isRsvpRequired':False, 'isService':False,
-                  'isTraining':False, 'isRecurring':False, 'programId':1, 'location':"a big room",
+                  'isTraining':True, 'isRecurring':False, 'programId':1, 'location':"a big room",
                   'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
-                  'name':'Empty Bowls Spring','term':1,'facilitators':"ramsayb2"}
-    
+                  'name':'Empty Bowls Spring Event 1','term':1,'facilitators':"ramsayb2"}
+
     eventData['isRecurring'] = True
     eventData['startDate'] = parser.parse('2021-12-12')
     eventData['endDate'] = parser.parse('2021-06-12')
@@ -316,7 +314,7 @@ def test_attemptSaveEvent():
                   'name':'Empty Bowls Spring','term':1,'facilitators':["ramsayb2"]}
     pass
     eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'startDate': '2021-12-12',
-                   'endDate':'2022-06-12', 'location':"a big room", 
+                   'endDate':'2022-06-12', 'location':"a big room",
                    'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
                    'name':'Attempt Save Test','term':1,'facilitators':["ramsayb2"]}
     eventInfo['program'] = Program.get_by_id(1)
@@ -329,9 +327,9 @@ def test_attemptSaveEvent():
         try:
             event = Event.get(name="Attempt Save Test")
             facilitator = Facilitator.get(event=event)
-            
+
             # Redundant, as the previous lines will throw exceptions, but I like asserting something
-            assert facilitator 
+            assert facilitator
 
         except Exception as e:
             pytest.fail(str(e))
@@ -346,7 +344,7 @@ def test_saveEventToDb_create():
 
     eventInfo =  {'isRsvpRequired':False, 'isService':False,
                   'isTraining':True, 'isRecurring':False, 'startDate': parser.parse('2021-12-12'),
-                   'endDate':parser.parse('2022-06-12'), 'location':"a big room", 
+                   'endDate':parser.parse('2022-06-12'), 'location':"a big room",
                    'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
                    'name':'Empty Bowls Spring','term':1,'facilitators':[User.get_by_id("ramsayb2")]}
     eventInfo['program'] = Program.get_by_id(1)
@@ -404,8 +402,8 @@ def test_saveEventToDb_update():
                     "term": 1,
                     "name": "First Meetup",
                     "description": "This is a Test",
-                    "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
-                    "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+                    "timeStart": datetime.datetime.strptime("6:00 pm", "%I:%M %p"),
+                    "timeEnd": datetime.datetime.strptime("9:00 pm", "%I:%M %p"),
                     "location": "House",
                     'isRecurring': True,
                     'isTraining': True,
@@ -426,8 +424,8 @@ def test_saveEventToDb_update():
                     "term": 1,
                     "name": "First Meetup",
                     "description": "Berea Buddies First Meetup",
-                    "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
-                    "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+                    "timeStart": datetime.datetime.strptime("6:00 pm", "%I:%M %p"),
+                    "timeEnd": datetime.datetime.strptime("9:00 pm", "%I:%M %p"),
                     "location": "House",
                     'isRecurring': True,
                     'isTraining': True,
@@ -469,60 +467,6 @@ def test_deleteEvent():
     assert Event.get_or_none(Event.id == eventId) is None
 
 @pytest.mark.integration
-def test_termDoesNotExist():
-    with pytest.raises(DoesNotExist):
-        groupedEvents = groupEventsByCategory(7)
-
-    with pytest.raises(DoesNotExist):
-        groupedEvents2 = groupEventsByCategory("khatts")
-
-    with pytest.raises(DoesNotExist):
-        groupedEvents3 = groupEventsByCategory("")
-
-@pytest.mark.integration
-def test_groupEventsByProgram():
-    studentLedEvents = (Event.select(Event, Program.id.alias("program_id"))
-                             .join(ProgramEvent)
-                             .join(Program)
-                             .where(Program.isStudentLed,
-                                    Event.term == 1))
-    assert groupEventsByProgram(studentLedEvents) == {Program.get_by_id(1): [Event.get_by_id(1), Event.get_by_id(2)] , Program.get_by_id(2): [Event.get_by_id(4)]}
-
-    trainingEvents = (Event.select(Event, Program.id.alias("program_id"))
-                           .join(ProgramEvent)
-                           .join(Program)
-                           .where(Event.isTraining,
-                                  Event.term == 1))
-    assert groupEventsByProgram(trainingEvents) == {Program.get_by_id(1): [Event.get_by_id(1) , Event.get_by_id(2)] , Program.get_by_id(2): [Event.get_by_id(4)]}
-
-    bonnerScholarsEvents = (Event.select(Event, Program.id.alias("program_id"))
-                                 .join(ProgramEvent)
-                                 .join(Program)
-                                 .where(Program.isBonnerScholars,
-                                        Event.term == 1))
-    assert groupEventsByProgram(bonnerScholarsEvents) == {}
-
-    oneTimeEvents = (Event.select(Event, Program.id.alias("program_id"))
-                          .join(ProgramEvent)
-                          .join(Program)
-                          .where(Program.isStudentLed == False,
-                                 Event.isTraining == False,
-                                 Program.isBonnerScholars == False,
-                                 Event.term == 1))
-    assert groupEventsByProgram(oneTimeEvents) == {}
-
-
-@pytest.mark.integration
-def test_groupEventsByCategory():
-    groupedEventsByCategory = groupEventsByCategory(1)
-    assert groupedEventsByCategory == {"Student Led Events" : {Program.get_by_id(1): [Event.get_by_id(1), Event.get_by_id(2)] , Program.get_by_id(2): [Event.get_by_id(4)]},
-                         "Trainings" : {Program.get_by_id(1): [Event.get_by_id(1) , Event.get_by_id(2)] , Program.get_by_id(2): [Event.get_by_id(4)]} ,
-                         "Bonner Scholars" : {} ,
-                         "One Time Events" : {} }
-
-    assert groupedEventsByCategory
-
-@pytest.mark.integration
 def test_getAllFacilitators():
     userFacilitator = getAllFacilitators()
 
@@ -535,17 +479,17 @@ def test_getAllFacilitators():
 @pytest.mark.integration
 def test_getsCorrectUpcomingEvent():
 
-    testDate = datetime.strptime("2021-08-01 5:00","%Y-%m-%d %H:%M")
+    testDate = datetime.datetime.strptime("2021-08-01 5:00","%Y-%m-%d %H:%M")
 
     user = "khatts"
     events = getUpcomingEventsForUser(user, asOf=testDate)
     assert len(events) == 3
-    assert "Empty Bowls Spring" == events[0].name
+    assert "Empty Bowls Spring Event 1" == events[0].name
 
     user = "ramsayb2"
     events = getUpcomingEventsForUser(user, asOf=testDate)
     assert len(events) == 5
-    assert "Making Bowls" == events[0].name
+    assert "Meet & Greet with Grandparent" == events[0].name
 
 
 @pytest.mark.integration

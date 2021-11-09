@@ -1,10 +1,11 @@
-from flask import request, render_template, url_for, g, Flask, redirect, flash, abort, json, jsonify
+from flask import request, render_template, url_for, g, Flask, redirect, flash, abort, json, jsonify, session
 from peewee import DoesNotExist
-from playhouse.shortcuts import model_to_dict
+from playhouse.shortcuts import model_to_dict, dict_to_model
 import json
 
 from datetime import datetime
 from dateutil import parser
+from app import app
 
 from app.models.program import Program
 from app.models.event import Event
@@ -20,13 +21,26 @@ from app.models.programEvent import ProgramEvent
 
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
-from app.logic.utils import selectFutureTerms
+from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
+from app.controllers.admin.userManagement import manageUsers
+
+@admin_bp.route('/switch_user', methods=['POST'])
+def switchUser():
+    if app.env == "production":
+        print(f"An attempt was made to switch to another user by {g.current_user.username}!")
+        abort(403)
+
+    print(f"Switching user from {g.current_user} to",request.form['newuser'])
+    session['current_user'] = model_to_dict(User.get_by_id(request.form['newuser']))
+
+    return redirect(request.referrer)
+
 
 @admin_bp.route('/template_select')
-def template_select():
+def templateSelect():
     allprograms = Program.select().order_by(Program.programName)
     visibleTemplates = EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
 
@@ -80,7 +94,7 @@ def createEvent(templateid, programid=None):
 
     # make sure our data is the same regardless of GET or POST
     preprocessEventData(eventData)
-    futureTerms = selectFutureTerms(g.current_term)
+    futureTerms = selectSurroundingTerms(g.current_term)
 
     return render_template(f"/admin/{template.templateFile}",
             template = template,
@@ -112,7 +126,7 @@ def editEvent(eventId):
             flash(validationErrorMessage, 'warning')
 
     preprocessEventData(eventData)
-    futureTerms = selectFutureTerms(g.current_term)
+    futureTerms = selectSurroundingTerms(g.current_term)
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
 

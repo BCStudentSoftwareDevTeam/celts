@@ -20,29 +20,23 @@ def trainedParticipants(programID):
     attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(trlist), eventTrainingDataList)))
     return attendedTraining
 
-def sendUserData(bnumber, eventid, programid):
+def sendUserData(bnumber, eventId, programid):
     """Accepts scan input and signs in the user. If user exists or is already
     signed in will return user and login status"""
-    signInUser = User.get(User.bnumber == bnumber)
-    event = Event.get_by_id(eventid)
-    if not isEligibleForProgram(programid, signInUser):
+    signedInUser = User.get(User.bnumber == bnumber)
+    event = Event.get_by_id(eventId)
+    if not isEligibleForProgram(programid, signedInUser):
         userStatus = "banned"
     elif ((EventParticipant.select(EventParticipant.user)
-                           .where(EventParticipant.attended, EventParticipant.user == signInUser, EventParticipant.event == eventid))
-                           .exists()):
+       .where(EventParticipant.user==signedInUser, EventParticipant.event==eventId))
+       .exists()):
         userStatus = "already in"
     else:
         userStatus = "success"
-        if EventParticipant.get_or_none(EventParticipant.user == signInUser, EventParticipant.event == eventid):
-            (EventParticipant.update({EventParticipant.attended: True})
-                             .where(EventParticipant.user == signInUser, EventParticipant.event == eventid)).execute()
-        else:
-            totalHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
-            EventParticipant.insert([{EventParticipant.user: signInUser,
-                                      EventParticipant.event: eventid,
-                                      EventParticipant.attended: True,
-                                      EventParticipant.hoursEarned: totalHours}]).execute()
-    return signInUser, userStatus
+        totalHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
+        EventRsvp.create(user=signedInUser, event=eventId)
+        EventParticipant.create (user=signedInUser, event=eventId, hoursEarned=totalHours)
+    return signedInUser, userStatus
 
 def userRsvpForEvent(user,  event):
     """
@@ -75,10 +69,18 @@ def unattendedRequiredEvents(program, user):
     if requiredEvents:
         attendedRequiredEventsList = []
         for event in requiredEvents:
-            attendedRequirement = (EventParticipant.select().where(EventParticipant.attended == True, EventParticipant.user == user, EventParticipant.event == event))
+            attendedRequirement = (EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event))
             if not attendedRequirement:
                 attendedRequiredEventsList.append(event.name)
         if attendedRequiredEventsList is not None:
             return attendedRequiredEventsList
     else:
         return []
+
+
+def getEventParticipants(event):
+    eventParticipants = (EventParticipant
+        .select()
+        .where(EventParticipant.event==event))
+
+    return {p.user.username: p.hoursEarned for p in eventParticipants}

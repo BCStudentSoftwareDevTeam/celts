@@ -9,52 +9,87 @@ from app.models.eventParticipant import EventParticipant
 from app.models.event import Event
 from peewee import DoesNotExist, fn
 
-def getSlCourseTranscript(username):
-    """
-    Returns a service-learning course list that contains a name of the course, term,
-    list of instructors who teach the course, and hours earned for each course that the user took.
-    :user: model object
-    """
-    user = User.get_by_id(username)
-    slCourseInformation = (CourseParticipant
-        .select(CourseParticipant.course, CourseParticipant.user, fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned"))
-        .group_by(CourseParticipant.course, CourseParticipant.user)
-        .where(CourseParticipant.user == user)
-        .order_by(CourseParticipant.course))
-
-    allCoursesList = []
-    for course in slCourseInformation:
-        user_full_name = f"{course.user.firstName} {course.user.lastName}"
-        course_name = course.course.courseName
-        description = course.course.term.description
-        hours = course.hoursEarned
-        instructorQuery = CourseInstructor.select().where(CourseInstructor.course == course.course)
-        instructorList = [f"{i.user.firstName} {i.user.lastName}" for i in instructorQuery]
-
-        #creates a list for all information of a course that a courseParticipant is involved in
-        allCoursesList.append([ user_full_name , course_name , description , hours , instructorList ])
-
-    return allCoursesList
-
 
 #FIXME: Needs to break hours down by program and term, not just program
 def getProgramTranscript(username):
     """
-    Returns a list of programs that the user participated in. The list includes a program name,
-    term, and hours earned for each program that the user attended.
-    :user: model object
+    Returns a Program query object containing all the programs for
+    current user.
     """
-    user = User.get_by_id(username)
 
     # Add up hours earned in a term for each program they've participated in
-    hoursQuery = (Program
-        .select(Program, Event.term, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
-        .join(ProgramEvent)
+    programData = (ProgramEvent
+        .select(Program, Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
+        .join(Program)
+        .switch(ProgramEvent)
         .join(Event)
         .join(EventParticipant)
-        .where(EventParticipant.user == user)
-        .group_by(Program, Event.term)
-        .order_by(Program.programName))
+        .where(EventParticipant.user == username, Event.isTraining == False, Program.isBonnerScholars == False))
 
-    return [[p.programName, Term.get_by_id(p.term).description, p.hoursEarned] 
-            for p in hoursQuery.objects() ] 
+    return programData
+
+def getBonnerScholarEvents(username):
+    """
+    Returns a bonnerData query object containing all the Bonner events for
+    current user.
+    """
+    bonnerData = (EventParticipant
+        .select(Program, ProgramEvent, EventParticipant.event,  EventParticipant.hoursEarned)
+        .join(ProgramEvent, on=(EventParticipant.event == ProgramEvent.event))
+        .join(Program)
+        .switch(EventParticipant)
+        .join(Event)
+        .where(EventParticipant.user == username,  Event.isTraining == False, Program.isBonnerScholars == True))
+
+    return bonnerData
+
+def getSlCourseTranscript(username):
+    """
+    Returns a SLCourse query object containing all the training events for
+    current user.
+    """
+    slCourses = (Course
+        .select(CourseParticipant.hoursEarned, Course)
+        .join(CourseParticipant, on=(Course.id == CourseParticipant.course))
+        .where(CourseParticipant.user == username).distinct())
+
+    return slCourses
+
+def getTrainingTranscript(username):
+    """
+    Returns a Training query object containing all the training event information for
+    current user.
+    """
+    trainingData = (EventParticipant.select(EventParticipant.event, EventParticipant.hoursEarned)
+                                    .join(Event)
+                                    .where(EventParticipant.user == username, Event.isTraining))
+
+    return trainingData
+
+def getTotalHours(username):
+    """
+    Get the toal hours from events and courses combined.
+
+    """
+
+    eventHours = EventParticipant.select(fn.SUM(EventParticipant.hoursEarned)).where(EventParticipant.user == username).scalar()
+    courseHours =  CourseParticipant.select(fn.SUM(CourseParticipant.hoursEarned)).where(CourseParticipant.user == username).scalar()
+
+    return (eventHours or 0) + (courseHours or 0)
+
+def getStartYear(username):
+    """
+    Returns the users start term for participation in the CELTS organization
+    """
+
+    startDate = (EventParticipant.select(Term.year)
+                    .join(Event)
+                    .join(Term).where(EventParticipant.user == username)
+                + CourseParticipant.select(Term.year)
+                    .join(Course)
+                    .join(Term).where(CourseParticipant.user == username)).order_by(Event.term.year)
+
+    startDate = startDate.first()
+    if startDate:
+        return startDate.event.term.year
+    return "N/A"
