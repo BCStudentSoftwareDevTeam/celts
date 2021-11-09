@@ -8,6 +8,7 @@ from app.models.emailTemplate import EmailTemplate
 from app import app
 import sys
 import webbrowser
+import urllib.parse
 import time
 from pathlib import Path
 
@@ -20,6 +21,26 @@ def getParticipantEmails(eventID = None):
     """ Gets emails of students participating in an event. """
     volunteersToEmail = User.select().join(EventParticipant).where(EventParticipant.event == eventID)
     return [user.email for user in volunteersToEmail]
+
+def useMailTo(emailInfo, recipients):
+    """ opens a new tab/window for the user to send email (using outllok, gmail, etc.)
+        populates the from, to, subject, and body fields with the email the User wants to send"""
+    print(f"""\n using mail to \n sender: {urllib.parse.quote(emailInfo['emailSender'])} \n recipients: {recipients}
+    subject: {urllib.parse.quote(emailInfo['subject'])} \n body: {urllib.parse.quote(emailInfo['message'])} \n""")
+    subject = urllib.parse.quote(emailInfo['subject'])
+    body = urllib.parse.quote(emailInfo['message'])
+    emailRecipients = ",".join(recipients)
+    print(f"\n recipients {emailRecipients}\n")
+
+    mailtoLink = f"mailto:{emailRecipients}?subject={subject}&body={body}"
+    print("\n HERE \n ")
+    print(f"\n {mailtoLink} \n")
+    webbrowser.open_new(mailtoLink)
+
+    time.sleep(2)
+
+    return 1
+
 
 class emailHandler():
     """ A class for email setup and configuring the correct data to send. """
