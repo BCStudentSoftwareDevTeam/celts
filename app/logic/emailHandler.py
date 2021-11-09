@@ -23,9 +23,10 @@ def getParticipantEmails(eventID = None):
 
 class emailHandler():
     """ A class for email setup and configuring the correct data to send. """
-    def __init__(self, emailInfo):
+    def __init__(self, application, emailInfo):
         self.emailInfo = emailInfo
-        self.mail = Mail(app)
+        self.application = application
+        self.mail = Mail(self.application)
 
 
     def updateSenderEmail(self, message):
@@ -53,7 +54,7 @@ class emailHandler():
             message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
         message.reply_to = app.config["REPLY_TO_ADDRESS"]
 
-        self.mail = Mail(app)
+        self.mail = Mail(self.application)
         self.mail.connect()
         self.mail.send(message)
 

@@ -32,7 +32,7 @@ def emailVolunteers():
             flash("Error getting email recipients", "danger")
             return redirect(url_for("main.events", selectedTerm = emailInfo['selectedTerm']))
 
-        email = emailHandler(emailInfo)
+        email = emailHandler(app,emailInfo)
         emailSent = email.sendEmail(Message(emailInfo['subject'],
                                            emails, # recipients
                                            emailInfo['message']),
