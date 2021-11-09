@@ -1,134 +1,120 @@
-{% extends "base.html" %}
-{% block scripts %}
-
-  {{super()}}
-  <style media="screen"></style>
-  <script type="module" src="{{url_for('static', filename='js/slcProposal.js') }}?u={{lastStaticUpdate}}"></script>
-
-{% endblock %}
-
-{% block app_content %}
-
 <h1 class="text-center pb-2 fs-2"> New Proposal For Service Learning Course Designation </h1>
 
 <p class="text-center fw-bold"> Please review the <a href="/slcGuidelines">service learning course guidelines</a> before completing this form </p>
 
-<form id="slcProposalForm" method="post">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="p-2 col-md-6">
-        <label for="courseInstructor">Course Instructor(s)</label>
+<div class="container-fluid">
+  <div class="row">
+    <div class="p-2 col-md-6">
+      <label for="courseInstructor">Course Instructor(s)</label>
+      <input
+        id="courseInstructor"
+        class="form-control"
+        type="search"
+        placeholder="Search instructor" />
+      <table
+        class="table"
+        id="instructorTable"
+        name="instructorTable">
+        <thead>
+          <tr>
+            <th scope="col">Instructor</th>
+            <th scope="col">Remove</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr hidden>
+            <td class="instructorName"></td>
+            <td>
+              <button id="remove" type="button" class="btn btn-danger">Remove</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <label for="courseName" class="pt-3">Course Name</label>
+      <input
+        class="form-control"
+        id="coursName"
+        name="courseName"
+        type="text"
+        placeholder="Default input"
+        required/>
+      <label for="courseAbbreviation">Course Abbreviation</label>
+      <input
+        class="form-control"
+        id="courseAbbreviation"
+        name="courseAbbreviation"
+        type="text"
+        placeholder="Default input"/>
+      <label for="credit">Credit</label>
+      <input
+        class="form-control"
+        id="credit"
+        name="credit"
+        type="number"
+        placeholder="1"/>
+      <label for="courseInstructorPhone">Course Instructor Phone</label>
+      <input
+        class="form-control mb-3"
+        type="text"
+        name="courseInstructorPhone"/>
+      <label for="regularOccurenceToggle">Regularly-occurring?</label>
+      <div class="form-check form-switch pb-4">
         <input
-          id="courseInstructor"
-          class="form-control"
-          type="search"
-          placeholder="Search instructor" />
-        <table
-          class="table"
-          id="instructorTable"
-          name="instructorTable">
-          <thead>
-            <tr>
-              <th scope="col">Instructor</th>
-              <th scope="col">Remove</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr hidden>
-              <td class="instructorName"></td>
-              <td>
-                <button id="remove" type="button" class="btn btn-danger">Remove</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <label for="courseName" class="pt-3">Course Name</label>
-        <input
-          class="form-control"
-          id="coursName"
-          name="courseName"
-          type="text"
-          placeholder="Default input"
-          required/>
-        <label for="courseAbbreviation">Course Abbreviation</label>
-        <input
-          class="form-control"
-          id="courseAbbreviation"
-          name="courseAbbreviation"
-          type="text"
-          placeholder="Default input"/>
-        <label for="credit">Credit</label>
-        <input
-          class="form-control"
-          id="credit"
-          name="credit"
-          type="number"
-          placeholder="1"/>
-        <label for="courseInstructorPhone">Course Instructor Phone</label>
-        <input
-          class="form-control mb-3"
-          type="text"
-          name="courseInstructorPhone"/>
-        <label for="regularOccurenceToggle">Regularly-occurring?</label>
-        <div class="form-check form-switch pb-4">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            name="regularOccurenceToggle"/>
-        </div>
-      </div>
-      <div class="p-2 col-md-6">
-        <label for="inputCourseInstructor">When will this course be offered?</label>
-        <select
-          class="dropdown form-control mb-3"
-          id="inputCourseInstructor"
-          name="term">
-          {% for term in terms %}
-            <option value="{{ term.id }}"> {{ term.description }}</option>
-          {% endfor %}
-        </select>
-        <span>Are all sections SL?</span>
-        <div class="form-check form-switch pb-4">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            name="slSectionsToggle"/>
-        </div>
-        <label class="pt-2" for="slDesignation">Sections with SL Designation</label>
-        <textarea
-          class="form-control"
-          id="slDesignation"
-          name="slDesignation"
-          rows="3">
-        </textarea>
-        <span class="pt-5">Will this course be a permanently designated service learning course?</span>
-        <div class="form-check form-switch">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            name="permanentDesignation"/>
-        </div>
+          class="form-check-input"
+          type="checkbox"
+          name="regularOccurenceToggle"/>
       </div>
     </div>
-    <div class="row align-items-end pt-5">
-      <div class="col">
-        <a
-          href="/slcGuidelines"
-          type="button"
-          class="btn btn-primary col">
-          Previous
-        </a>
+    <div class="p-2 col-md-6">
+      <label for="inputCourseInstructor">When will this course be offered?</label>
+      <select
+        class="dropdown form-control mb-3"
+        id="inputCourseInstructor"
+        name="term">
+        {% for term in terms %}
+          <option value="{{ term.id }}"> {{ term.description }}</option>
+        {% endfor %}
+      </select>
+      <span>Are all sections SL?</span>
+      <div class="form-check form-switch pb-4">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          name="slSectionsToggle"/>
       </div>
-      <div class="col" align="right">
-        <label for="Continue">(2/3)</label>
-        <button
-          id="continue"
-          type="button"
-          class="btn btn-primary col">
-          Continue
-        </button>
+      <label class="pt-2" for="slDesignation">Sections with SL Designation</label>
+      <textarea
+        class="form-control"
+        id="slDesignation"
+        name="slDesignation"
+        rows="3">
+      </textarea>
+      <span class="pt-5">Will this course be a permanently designated service learning course?</span>
+      <div class="form-check form-switch">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          name="permanentDesignation"/>
       </div>
     </div>
   </div>
-</form>
-{% endblock %}
+  <div class="row align-items-end pt-5">
+    <div class="col">
+      <a
+        href="/slcGuidelines"
+        type="button"
+        class="btn btn-primary col">
+        Previous
+      </a>
+    </div>
+    <div class="col" align="right">
+      <label for="Continue">(2/3)</label>
+      <button
+        id="continue"
+        type="button"
+        class="btn btn-primary col">
+        Continue
+      </button>
+    </div>
+  </div>
+</div>
