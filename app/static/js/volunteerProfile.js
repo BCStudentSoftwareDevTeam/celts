@@ -46,11 +46,10 @@ $(document).ready(function(){
   });
 
   $("#banVolunteerNote, #banVolunteerEndDate").change(function () {
-    if( ($("#banVolunteerNote").val()) && ($("#banVolunteerEndDate")).val()) {
-            $("#banVolunteerButton").prop("disabled", false);
-      }
-      else {
-        $("#banVolunteerButton").prop("disabled", true);
+    var enableButton = ($("#banVolunteerNote").val() && $("#banVolunteerEndDate").val());
+    $("#banVolunteerButton").prop("disabled", !enableButton);
+
+
       }
 
   });
