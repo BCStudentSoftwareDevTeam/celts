@@ -35,7 +35,7 @@
 
 <div>
     <div class="row g-0">
-        <nav class="col-md-auto d-none d-lg-block">
+        <nav class="position-fixed col-md-auto d-none d-lg-block">
             {% block sidebar %}
                 {% include 'sidebar.html' %}
             {% endblock %}
@@ -50,7 +50,7 @@
                 </div>
             </div>
         </nav>
-        <div class='col-12 col-md scroll-container overflow-visible'>
+        <div class='col-12 col-md scroll-container overflow-visible' style="margin-left: 280px">
         <div>
             <div class="main-content container">
                 <div class="flash_container">
