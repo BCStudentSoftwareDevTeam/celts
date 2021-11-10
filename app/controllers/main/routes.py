@@ -12,7 +12,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.controllers.main import main_bp
-from app.logic.users import addRemoveInterest, banUnbanUser, isEligibleForProgram
+from app.logic.users import addRemoveInterest, banUser, unbanUser, isEligibleForProgram
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
@@ -88,22 +88,37 @@ def viewVolunteersProfile(username):
     abort(403)
 
 
-@main_bp.route('/banUnbanUser/<program_id>/<username>', methods=['POST'])
-def banUser(program_id, username):
+@main_bp.route('/banUser/<program_id>/<username>', methods=['POST'])
+def ban(program_id, username):
     """
-    This function updates the ban status of a username either when they are banned or unbanned from a program.
-    program_id: the primary id of the program the student is being banned or unbanned from
+    This function updates the ban status of a username either when they are banned from a program.
+    program_id: the primary id of the program the student is being banned from
     username: unique value of a user to correctly identify them
     """
     postData = request.form
     banNote = postData["note"] # This contains the note left about the change
-    banOrUnban = postData["banOrUnban"] # Contains "Ban" or "Unban" to determine whether to ban or unban the user
     banEndDate = postData["endDate"] # Contains the date the ban will no longer be effective
     try:
-        return banUnbanUser(banOrUnban, program_id, username, banNote, banEndDate, g.current_user)
+        return banUser(program_id, username, banNote, banEndDate, g.current_user)
     except Exception as e:
         print(e)
         return "Error Updating Ban", 500
+
+# ===========================Unban===============================================
+@main_bp.route('/unbanUser/<program_id>/<username>', methods=['POST'])
+def unban(program_id, username):
+    """
+    This function updates the ban status of a username either when they are unbanned from a program.
+    program_id: the primary id of the program the student is being unbanned from
+    username: unique value of a user to correctly identify them
+    """
+    postData = request.form
+    unbanNote = postData["note"] # This contains the note left about the change
+    try:
+        return unbanUser(program_id, username, unbanNote, g.current_user)
+    except Exception as e:
+        print(e)
+        return "Error Updating Unban", 500
 
 
 @main_bp.route('/deleteInterest/<program_id>/<username>', methods = ['POST'])
