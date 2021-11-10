@@ -12,7 +12,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.controllers.main import main_bp
-from app.logic.users import addRemoveInterest, banUser, unbanUser, isEligibleForProgram
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
@@ -61,9 +61,6 @@ def viewVolunteersProfile(username):
          programs = Program.select()
          interests = Interest.select().where(Interest.user == username)
          programsInterested = [interest.program for interest in interests]
-         # trainingChecklist = {}
-         # for program in programs:
-         #     trainingChecklist[program.id] = trainedParticipants(program.id)
          eligibilityTable = []
          for program in programs:
               notes = ProgramBan.select().where(ProgramBan.user == username,
@@ -80,7 +77,6 @@ def viewVolunteersProfile(username):
             programs = programs,
             interests = interests,
             programsInterested = programsInterested,
-            # trainingChecklist = trainingChecklist,
             upcomingEvents = upcomingEvents,
             eligibilityTable = eligibilityTable,
             volunteer = User.get(User.username == username),
@@ -121,16 +117,29 @@ def unban(program_id, username):
         return "Error Updating Unban", 500
 
 
-@main_bp.route('/deleteInterest/<program_id>/<username>', methods = ['POST'])
-@main_bp.route('/addInterest/<program_id>/<username>', methods = ['POST'])
-def updateInterest(program_id, username):
+@main_bp.route('/addInterest/<program_id>/<username>', methods=['POST'])
+def addInterest(program_id, username):
     """
-    This function updates the interest table by adding a new row when a user
-    shows interest in a program
+    This function adds a program to the list of programs a user interested in
+    program_id: the primary id of the program the student is adding interest of
+    username: unique value of a user to correctly identify them
     """
-    rule = request.url_rule
     try:
-        return addRemoveInterest(rule, program_id, username)
+        return addUserInterest(program_id, username)
+
+    except Exception as e:
+        print(e)
+        return "Error Updating Interest", 500
+
+@main_bp.route('/removeInterest/<program_id>/<username>', methods=['POST'])
+def removeInterest(program_id, username):
+    """
+    This function removes a program to the list of programs a user interested in
+    program_id: the primary id of the program the student is adding interest of
+    username: unique value of a user to correctly identify them
+    """
+    try:
+        return removeUserInterest(program_id, username)
 
     except Exception as e:
         print(e)
