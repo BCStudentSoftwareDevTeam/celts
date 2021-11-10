@@ -1,5 +1,7 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for
 import datetime
+import re
+
 
 from app import app
 from app.models.program import Program
@@ -177,14 +179,17 @@ def contributors():
 def managePage():
     users = User.select().where(User.isFaculty == 1)
     courseInstructors = CourseInstructor.select()
+
     course_dict = {}
+
     for instructor in courseInstructors:
-        if  instructor.user not in course_dict:
-            course_dict[instructor.user.username] = [instructor.course.courseName]
+        if  instructor.user.username not in course_dict:
+            course_dict[instructor.user.username] = instructor.course.courseName
+            print("not appending", instructor.user.username, instructor.course.courseName)
         else:
             course_dict[instructor.user.username].append(instructor.course.courseName)
-    # for i in course_dict.values():
-    #     word = i.strip([''])
-    #     print(word)
-    # print(course_dict)
+            print("appending", instructor.user.username, instructor.course.courseName)
+            #next work finnd another word for append
+
+
     return render_template('/main/manageServiceLearningFaculty.html', users = users,courseInstructors = course_dict)
