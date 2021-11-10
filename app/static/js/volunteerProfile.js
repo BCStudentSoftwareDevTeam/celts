@@ -48,10 +48,6 @@ $(document).ready(function(){
   $("#banVolunteerNote, #banVolunteerEndDate").change(function () {
     var enableButton = ($("#banVolunteerNote").val() && $("#banVolunteerEndDate").val());
     $("#banVolunteerButton").prop("disabled", !enableButton);
-
-
-      }
-
   });
 
   $("#banVolunteerButton").click(function (){
