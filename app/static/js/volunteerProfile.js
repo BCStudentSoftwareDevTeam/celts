@@ -24,38 +24,38 @@ $(document).ready(function(){
 
   $(".ban").click(function() {
 
-    $("#banVolunteerButton").text($(this).val() + " Volunteer");
+    $("#banButton").text($(this).val() + " Volunteer");
     $(".modal-title").text($(this).val() + " Volunteer");
     $("#modalProgramName").text("Program: " + $(this).attr("name"));
-    $("#banVolunteerModal").modal("toggle");
-    $("#banVolunteerButton").attr("programID", $(this).attr("id"))
-    $("#banVolunteerButton").attr("username", $(".form-check-input").attr("name"))
-    $("#banVolunteerButton").attr("banOrUnban", $(this).val());
+    $("#banModal").modal("toggle");
+    $("#banButton").attr("programID", $(this).attr("id"))
+    $("#banButton").attr("username", $(".form-check-input").attr("name"))
+    $("#banButton").attr("banOrUnban", $(this).val());
     $("#ubanEndDate").show()
     $("#banNoteDiv").hide()
-    $("#banVolunteerEndDate").val("")
+    $("#banEndDate").val("")
     $("#banVolunteerNote").val("")
 
     if( $(this).val()=="Unban"){
       $("#ubanEndDate").hide()
-      $("#banVolunteerEndDate").val("0001-01-01") //This is a placeholder value for the if statement in line 49 to work properly
+      $("#banEndDate").val("0001-01-01") //This is a placeholder value for the if statement in line 49 to work properly
       $("#banNoteDiv").show()
       $("#banNote").text($(this).attr("note"))
     }
 
   });
 
-  $("#banVolunteerNote, #banVolunteerEndDate").change(function () {
-    var enableButton = ($("#banVolunteerNote").val() && $("#banVolunteerEndDate").val());
-    $("#banVolunteerButton").prop("disabled", !enableButton);
+  $("#banVolunteerNote, #banEndDate").change(function () {
+    var enableButton = ($("#banVolunteerNote").val() && $("#banEndDate").val());
+    $("#banButton").prop("disabled", !enableButton);
   });
 
-  $("#banVolunteerButton").click(function (){
+  $("#banButton").click(function (){
     $.ajax({
       method: "POST",
       url: "/" + ($(this).attr("banOrUnban")).toLowerCase() + "User/" + $(this).attr("programID") + "/" + $(this).attr("username"),
       data: {"note": $("#banVolunteerNote").val(),
-             "endDate":$("#banVolunteerEndDate").val()
+             "endDate":$("#banEndDate").val()
             },
       success: function(response) {
         location.reload();
