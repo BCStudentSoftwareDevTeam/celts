@@ -1,3 +1,4 @@
+from flask import g
 from app.models.course import Course
 from app.models.user import User
 from app.models.courseInstructor import CourseInstructor
@@ -28,12 +29,10 @@ def deleteProposal(courseID):
     Key Dependencies: QuestionNote, CourseQuestion, CourseParticipant,
     CourseInstructor"""
     course = Course.get(Course.id == courseID)
-    notes = (QuestionNote.select()
-                         .where(CourseQuestion.course == course)
-                         .join(CourseQuestion))
-    if notes:
-        for note in notes:
-            note.delete_instance()
+    # (QuestionNote.delete().where(CourseQuestion.course == course).join(CourseQuestion)).execute()
+    notes = QuestionNote.select().where(CourseQuestion.course == course).join(CourseQuestion)
+    for note in notes:
+        note.delete().execute()
     (CourseQuestion.delete().where(CourseQuestion.course == course)).execute()
     (CourseParticipant.delete().where(CourseParticipant.course == course)).execute()
     (CourseInstructor.delete().where(CourseInstructor.course == course)).execute()

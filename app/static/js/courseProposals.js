@@ -28,7 +28,7 @@ function withdraw(){
   courseID = $("#courseID").val()
   username = $("#username").val()
   $.ajax({
-    url: "/"+username+"/courseProposals/"+courseID+"/withdraw/",
+    url: "/"+username+"/courseProposals/"+courseID+"/withdraw",
     type: "POST",
     success: function(s){
       location.reload()

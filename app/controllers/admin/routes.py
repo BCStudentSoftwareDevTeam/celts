@@ -18,7 +18,7 @@ from app.models.eventTemplate import EventTemplate
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
-from app.logic.courseProposals import getProposalData, deleteProposal, authorized
+from app.logic.courseProposals import getProposalData, deleteProposal
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
@@ -154,26 +154,6 @@ def addRecurringEvents():
     recurringEvents = calculateRecurringEventFrequency(preprocessEventData(request.form.copy()))
     return json.dumps(recurringEvents, default=str)
 
-@admin_bp.route('/courseProposals', methods=['GET'])
-def createTable():
-    courseDict = getProposalData(g.current_user)
-    try:
-        return render_template("/admin/courseProposals.html",
-                                instructor = g.current_user,
-                                courseDict = courseDict)
-    except Exception as e:
-        print('Error while creating table: ', e)
-        return "", 500
-
-@admin_bp.route('/courseProposals/<courseID>/withdraw/', methods = ['POST'])
-def withdrawCourse(courseID):
-    try:
-        deleteProposal(courseID)
-        flash("Course successfully withdrawn", 'success')
-    except:
-        flash("Withdrawal Unsuccessful", 'warning')
-    return ""
-
 @admin_bp.route('/volunteerProfile', methods=['POST'])
 def volunteerProfile():
     volunteerName= request.form.copy()
@@ -195,31 +175,26 @@ def addParticipants():
                             title="Add Participants")
 
 @admin_bp.route('/<username>/courseProposals', methods=['GET'])
-def createTable(username, unauthorized=False):
-    if unauthorized:
-        flash("Unauthorized to perform this action", 'warning')
-    try:
-        if authorized(username):
-            courseDict = getProposalData(g.current_user)
-            return render_template("/admin/courseProposals.html",
-                                    instructor = g.current_user,
-                                    courseDict = courseDict,
-                                    username = username)
-        else:
-            flash("Unauthorized to view page", 'warning')
-            return redirect(url_for('main.events'))
-    except Exception as e:
-        print('Error while creating table: ', e)
-        return "", 500
+def createTable(username):
+    if g.current_user.isAdmin or g.current_user.isFaculty:
+        user = User.get(User.username == username)
+        courseDict = getProposalData(g.current_user)
+        return render_template("/admin/courseProposals.html",
+                                instructor = g.current_user,
+                                courseDict = courseDict,
+                                username = username)
+    else:
+        flash("Unauthorized to view page", 'warning')
+        return redirect(url_for('main.events'))
 
-@admin_bp.route('/<username>/courseProposals/<courseID>/withdraw/', methods = ['POST'])
+@admin_bp.route('/<username>/courseProposals/<courseID>/withdraw', methods = ['POST'])
 def withdrawCourse(courseID, username):
     try:
-        if authorized(username):
+        if g.current_user.isAdmin or g.current_user.isFaculty:
             deleteProposal(courseID)
             flash("Course successfully withdrawn", 'success')
         else:
-            return redirect(url_for('admin.createTable'), unauthorized = True)
+            flash("Unauthorized to perform this action", 'warning')
     except:
         flash("Withdrawal Unsuccessful", 'warning')
     return ""
