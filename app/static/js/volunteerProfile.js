@@ -5,7 +5,7 @@ $(document).ready(function(){
     var interest = $(this).is(':checked');
     var username = $(this).attr('name');
 
-    var routeUrl = interest ? "addInterest" : "deleteInterest;
+    var routeUrl = interest ? "addInterest" : "deleteInterest";
     interestUrl = "/" + routeUrl + "/" + programID + "/" + username;
     $.ajax({
       method: "POST",
@@ -58,10 +58,9 @@ $(document).ready(function(){
   $("#banVolunteerButton").click(function (){
     $.ajax({
       method: "POST",
-      url: "/banUnbanUser/" + $(this).attr("programID") + "/" + $(this).attr("username"),
+      url: "/" + ($(this).attr("banOrUnban")).toLowerCase() + "User/" + $(this).attr("programID") + "/" + $(this).attr("username"),
       data: {"note": $("#banVolunteerNote").val(),
-             "banOrUnban": $(this).attr("banOrUnban"),
-             "endDate":$("#banVolunteerEndDate").val(),
+             "endDate":$("#banVolunteerEndDate").val()
             },
       success: function(response) {
         location.reload();

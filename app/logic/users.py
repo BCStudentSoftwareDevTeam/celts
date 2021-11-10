@@ -38,32 +38,43 @@ def addRemoveInterest(rule, program_id, username):
             return "This interest does not exist"
 
 
-def banUnbanUser(banOrUnban, program_id, username, note, banEndDate, creator):
+def banUser(program_id, username, note, banEndDate, creator):
     """
     This function creates an entry in the note table and programBan table in order
     to ban the selected user.
     Parameters:
-    banOrUnban: contains "Ban" or "Unban" to determine which action must be taken
-    program_id: primary id of the program the user has been banned or unbanned.
-    username: username of the user to be banned or unbanned
-    note: note left about the ban or unban, expected to be a reason why the action is needed
+    program_id: primary id of the program the user has been banned from
+    username: username of the user to be banned
+    note: note left about the ban, expected to be a reason why the change is needed
     banEndDate: date when the ban will end
-    creator: who banned or unbanned the user
+    creator: the admin or person with authority who created the ban
     """
-    noteForDb  = Note.create(createdBy = creator,
-                            createdOn = datetime.datetime.now(),
-                            noteContent = note,
-                            isPrivate = 0)
-    if banOrUnban == "Ban":
-        ProgramBan.create(program = program_id,
-                          user = username,
-                          endDate = banEndDate,
-                          banNote = noteForDb.id)
-        return "Successfully banned the user"
+    noteForDb = Note.create(createdBy = creator,
+                             createdOn = datetime.datetime.now(),
+                             noteContent = note,
+                             isPrivate = 0)
+    ProgramBan.create(program = program_id,
+                      user = username,
+                      endDate = banEndDate,
+                      banNote = noteForDb.id)
+    return "Successfully banned the user"
 
-    else:
-        ProgramBan.update(endDate = datetime.datetime.now(),
-                                    unbanNote = noteForDb.id).where(ProgramBan.program == program_id,
-                                                                    ProgramBan.user == username,
-                                                                    ProgramBan.endDate >  datetime.datetime.now()).execute()
-        return "Successfully unbanned the user"
+def unbanUser(program_id, username, note, creator):
+    """
+    This function creates an entry in the note table and programBan table in order
+    to ban the selected user.
+    Parameters:
+    program_id: primary id of the program the user has been unbanned from
+    username: username of the user to be unbanned
+    note: note left about the ban, expected to be a reason why the change is needed
+    creator: the admin or person with authority who removed the ban
+    """
+    noteForDb = Note.create(createdBy = creator,
+                             createdOn = datetime.datetime.now(),
+                             noteContent = note,
+                             isPrivate = 0)
+    ProgramBan.update(endDate = datetime.datetime.now(),
+                      unbanNote = noteForDb.id).where(ProgramBan.program == program_id,
+                                                      ProgramBan.user == username,
+                                                      ProgramBan.endDate >  datetime.datetime.now()).execute()
+    return "Successfully unbanned the user"
