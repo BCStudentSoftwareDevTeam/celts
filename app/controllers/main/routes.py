@@ -116,7 +116,7 @@ def unban(program_id, username):
         return "Error Updating Unban", 500
 
 
-@main_bp.route('/addInterest/<program_id>/<username>', methods=['POST'])
+@main_bp.route('/<username>/addInterest/<program_id>', methods=['POST'])
 def addInterest(program_id, username):
     """
     This function adds a program to the list of programs a user interested in
@@ -130,7 +130,7 @@ def addInterest(program_id, username):
         print(e)
         return "Error Updating Interest", 500
 
-@main_bp.route('/removeInterest/<program_id>/<username>', methods=['POST'])
+@main_bp.route('/<username>/removeInterest/<program_id>', methods=['POST'])
 def removeInterest(program_id, username):
     """
     This function removes a program to the list of programs a user interested in

@@ -6,7 +6,7 @@ $(document).ready(function(){
     var username = $(this).attr('name');
 
     var routeUrl = interest ? "addInterest" : "removeInterest";
-    interestUrl = "/" + routeUrl + "/" + programID + "/" + username;
+    interestUrl = "/" + username + "/" + routeUrl + "/" + programID ;
     $.ajax({
       method: "POST",
       url: interestUrl,
