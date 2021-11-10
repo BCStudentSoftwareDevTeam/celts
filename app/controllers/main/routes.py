@@ -54,7 +54,6 @@ def viewVolunteersProfile(username):
     try:
         User.get(User.username == username)
     except Exception as e:
-        print(e)
         return "User does not exist", 404
     if (g.current_user.username == username) or g.current_user.isAdmin:
          upcomingEvents = getUpcomingEventsForUser(username)

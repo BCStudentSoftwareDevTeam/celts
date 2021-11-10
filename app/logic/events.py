@@ -147,8 +147,6 @@ def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
     events = (Event.select(Event)
                             .join(ProgramEvent)
                             .join(Interest, on=(ProgramEvent.program == Interest.program))
-                            # .join(ProgramBan, on=(ProgramEvent.program == ProgramBan.program))
-                            # .where(ProgramBan.program != ProgramEvent.program)
                             .where(Interest.user == user)
                             .where(Event.startDate >= asOf)
                             .where(Event.timeStart > asOf.time())
