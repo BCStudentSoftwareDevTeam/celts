@@ -35,11 +35,15 @@
 
 <div>
     <div class="row g-0">
-        <nav class="position-fixed col-md-auto d-none d-lg-block">
+      <div class="col-md-auto d-none d-lg-block">
+        <div style="margin-right: 280px">
+          <nav class="position-fixed float-start">
             {% block sidebar %}
-                {% include 'sidebar.html' %}
+            {% include 'sidebar.html' %}
             {% endblock %}
-        </nav>
+          </nav>
+        </div>
+      </div>
         <nav class="col-md-auto d-lg-none">
             <div class="offcanvas offcanvas-start w-auto" tabindex="-1" id="offcanvasSidebar" aria-labelledby="sidebar">
                 <div class="offcanvas-body p-0">
@@ -50,7 +54,7 @@
                 </div>
             </div>
         </nav>
-        <div class='col-12 col-md scroll-container overflow-visible' style="margin-left: 280px">
+        <div class='col-12 col-md scroll-container overflow-visible'>
         <div>
             <div class="main-content container">
                 <div class="flash_container">
