@@ -18,24 +18,33 @@ def isEligibleForProgram(program, user):
 
     return True
 
-def addRemoveInterest(rule, program_id, username):
+def addUserInterest(program_id, username):
+    """
+    This function is used to add an interest to .
+    Parameters:
+    program_id: id of the program the user is interested in
+    username: username of the user showing interest
+    """
+    try:
+        Interest.get_or_create(program = program_id, user = username)
+        return "Successfully added interest"
+    except:
+        return "This interest does not exist"
+
+def removeUserInterest(program_id, username):
     """
     This function is used to add or remove interest from the interest table.
     Parameters:
-    rule: Gets the url from the ajax call, specifies to add or remove interest
     program_id: id of the program the user is interested in
-    """
-    if 'addInterest' in str(rule):
-        Interest.get_or_create(program = program_id, user = username)
-        return "Successfully added interest"
+    username: username of the user showing disinterest
 
-    elif 'deleteInterest' in str(rule):
-        try:
-            deleted_interest = Interest.get(Interest.program == program_id, Interest.user == username)
-            deleted_interest.delete_instance()
-            return "Successfully removed interest"
-        except:
-            return "This interest does not exist"
+    """
+    try:
+        interestToDelete = Interest.get(Interest.program == program_id, Interest.user == username)
+        interestToDelete.delete_instance()
+        return "Successfully removed interest"
+    except:
+        return "This interest does not exist"
 
 
 def banUser(program_id, username, note, banEndDate, creator):
@@ -62,7 +71,7 @@ def banUser(program_id, username, note, banEndDate, creator):
 def unbanUser(program_id, username, note, creator):
     """
     This function creates an entry in the note table and programBan table in order
-    to ban the selected user.
+    to unban the selected user.
     Parameters:
     program_id: primary id of the program the user has been unbanned from
     username: username of the user to be unbanned
