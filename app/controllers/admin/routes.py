@@ -178,11 +178,10 @@ def addParticipants():
 def createTable(username):
     if g.current_user.isAdmin or g.current_user.isFaculty:
         user = User.get(User.username == username)
-        courseDict = getProposalData(g.current_user)
+        courseDict = getProposalData(user)
         return render_template("/admin/courseProposals.html",
-                                instructor = g.current_user,
-                                courseDict = courseDict,
-                                username = username)
+                                user = user,
+                                courseDict = courseDict)
     else:
         flash("Unauthorized to view page", 'warning')
         return redirect(url_for('main.events'))
