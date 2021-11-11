@@ -1,45 +1,37 @@
 {% extends "base.html" %}
 {% block scripts %}
   {{super()}}
-  <script type="text/javascript"></script>
+  <script type="module" src="{{url_for('static', filename ='js/slcNewProposal.js') }}"></script>
 {% endblock %}
 
 {% block styles %}
   {{super()}}
-  <style media="screen"></style>
+  <link rel="stylesheet" href="{{url_for('static', filename ='css/slcNewProposal.css')}}">
 {% endblock %}
 
-
 {% block app_content %}
-<form method="post" style="display:none;">
-
+<form id="slcNewProposal" method="post">
   <div class="tab">
-      <!-- guidelines -->
-      {# {% include slcGuidelines.html %} #}
+      {% include "serviceLearning/slcGuidelines.html" %}
   </div>
-
   <div class="tab">
-      <!-- Proposal -->
-
+      {% include "serviceLearning/slcProposal.html" %}
   </div>
-
   <div class="tab">
-      <!-- quesionnaire -->
+      {% include "serviceLearning/slcQuestionnaire.html" %}
   </div>
-
-
-  <div>
-    <button type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
-    <button type="button" id="nextBtn" onclick="nextPrev(1)">Next</button>
+  <div class="row align-items-end pt-5">
+    <div class="col">
+      <button class="btn btn-primary" type="button" id="previousButton">Previous</button>
+    </div>
+    <div class="col" align="right">
+      <button class="btn btn-primary" type="button" id="nextButton">Next</button>
+    </div>
   </div>
-
-  <!-- steps indicator -->
-  <div style="text-align:center;margin-top:40px;">
-   <span class="step"></span>
+  <div class="stepsIndicator">
    <span class="step"></span>
    <span class="step"></span>
    <span class="step"></span>
  </div>
-
 </form>
  {% endblock %}

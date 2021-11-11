@@ -1,74 +1,112 @@
-let currentTab = 0; // Current tab is set to be the first tab (0)
-showTab(currentTab); // Display the current tab
+import searchUser from './searchUser.js'
 
-// function thst displays the specified tab of the form
-function showTab(n) {
-  let tab = $('.tab');
-  tab[n].css("display", "block");
-  //... and fix the Previous/Next buttons:
-  if (n == 0) {
-    $("#prevBtn").css("display", "none");
+let currentTab = 0; // Current tab is set to be the first tab (0)
+
+$(document).ready(function(e) {
+  showTab(currentTab); // Display the current tab
+})
+
+function showTab(currentTab) {
+  // function that displays the specified tab of the form
+  let allTabs = $(".tab");
+  $(allTabs[currentTab]).css("display", "block");
+  if (currentTab == 0) {
+    $("#previousButton").text("Cancel");
   } else {
-    $("#prevBtn").css("display", "inline");
+    $("#previousButton").text("Previous");
   }
-  if (n == (tab.length - 1)) {
-    $("#nextBtn").text("Submit"); // ???
-    // document.getElementById("nextBtn").innerHTML = "Submit";
+
+  if (currentTab == (allTabs.length - 1)) {
+    $("#nextButton").text("Submit");
   } else {
-    $("#nextBtn").text("Next");
-    //document.getElementById("nextBtn").innerHTML = "Next";
+    $("#nextButton").text("Next");
   }
-  //... and run a function that will display the correct step indicator:
-  fixStepIndicator(n)
+  fixStepIndicator(currentTab)
 }
 
-function nextPrev(n) {
+$("#previousButton").on("click", function() {
+  displayCorrectTab(-1);
+});
+
+$("#nextButton").on("click", function() {
+  displayCorrectTab(1);
+});
+
+function displayCorrectTab(navigateTab) {
   // This function will figure out which tab to display
-  var x = document.getElementsByClassName("tab");
-  // Exit the function if any field in the current tab is invalid:
-  if (n == 1 && !validateForm()) return false;
-  // Hide the current tab:
-  x[currentTab].style.display = "none";
+  let allTabs = $(".tab");
+
+  if (navigateTab == 1 && !validateForm()) return false;
+  $(allTabs[currentTab]).css("display", "none");
   // Increase or decrease the current tab by 1:
-  currentTab = currentTab + n;
-  // if you have reached the end of the form...
-  if (currentTab >= x.length) {
-    // ... the form gets submitted:
-    document.getElementById("regForm").submit();
+  currentTab = currentTab + navigateTab;
+
+  if (currentTab >= allTabs.length) {
+    saveCourseInstructors().then($("#slcNewProposal").submit());
     return false;
   }
-  // Otherwise, display the correct tab:
   showTab(currentTab);
 }
 
 function validateForm() {
+  // TODO: Generalize form validation to include textareas and selects
   // This function deals with validation of the form fields
-  var x, y, i, valid = true;
-  x = document.getElementsByClassName("tab");
-  y = x[currentTab].getElementsByTagName("input");
-  // A loop that checks every input field in the current tab:
-  for (i = 0; i < y.length; i++) {
-    // If a field is empty...
-    if (y[i].value == "") {
-      // add an "invalid" class to the field:
-      y[i].className += " invalid";
-      // and set the current valid status to false
+  let valid = true;
+  let allTabs = $(".tab");
+  let allInputs = $(allTabs[currentTab]).find("input");
+
+  for (let i = 0; i < allInputs.length; i++) {
+    if (allInputs[i].value == "") {
+      allInputs[i].className += " invalid";
       valid = false;
     }
   }
-  // If the valid status is true, mark the step as finished and valid:
   if (valid) {
-    document.getElementsByClassName("step")[currentTab].className += " finish";
+    $(".step")[currentTab].className += " finish"
   }
-  return valid; // return the valid status
+  return valid;
 }
 
-function fixStepIndicator(n) {
-  // This function removes the "active" class of all steps...
-  var i, x = document.getElementsByClassName("step");
-  for (i = 0; i < x.length; i++) {
-    x[i].className = x[i].className.replace(" active", "");
+function fixStepIndicator(navigateTab) {
+  // This function updates the active step indicator
+  let steps = $(".step");
+  for (let i = 0; i < steps.length; i++) {
+    steps[i].className = steps[i].className.replace(" active", "");
   }
-  //... and adds the "active" class on the current step:
-  x[n].className += " active";
+  steps[navigateTab].className += " active";
+}
+
+// TODO: empty the courseInstructor input after an instructor has been added to the table.
+function callback() {
+  let instructor = $("#courseInstructor").val();
+  let tableBody = $("#instructorTable").find("tbody");
+  let lastRow = tableBody.find("tr:last");
+  let newRow = lastRow.clone();
+  newRow.find("td:eq(0)").text(instructor);
+  newRow.prop("hidden", false);
+  lastRow.after(newRow);
+}
+
+$("#courseInstructor").on('input', function() {
+  searchUser("courseInstructor", callback);
+});
+
+$("#instructorTable").on("click", "#remove", function() {
+   $(this).closest("tr").remove();
+});
+
+let courseInstructors = []
+function saveCourseInstructors() {
+  $("#instructorTable tr").each(function(a, b) {
+    courseInstructors.push($('.instructorName', b).text());
+  });
+  return $.ajax({
+    url: "/courseInstructors",
+    data: JSON.stringify(courseInstructors),
+    type: "POST",
+    contentType: "application/json",
+    success: function () {
+      console.log("success");
+    }
+  });
 }

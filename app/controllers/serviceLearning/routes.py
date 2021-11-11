@@ -12,8 +12,6 @@ from app.controllers.serviceLearning import serviceLearning_bp
 from app.logic.searchUsers import searchUsers
 from app.logic.getServiceLearningCoursesData import getServiceLearningCoursesData
 
-courseData = {}
-
 @serviceLearning_bp.route('/serviceCourseManagement', methods = ['GET'])
 def serviceCourseManagement():
     """This is a Temporary Page for the Service Course Managment Screen."""
@@ -22,46 +20,23 @@ def serviceCourseManagement():
         instructor=g.current_user,
         courseDict=courseDict)
 
-@serviceLearning_bp.route('/slcGuidelines')
-def slcGuidelines():
-    """ This page renders slc guidelines """
-    return render_template('serviceLearning/slcGuidelines.html')
-
-@serviceLearning_bp.route('/slcProposal', methods=['GET', 'POST'])
-def slcProposal():
-    """This page allows faculties to create service learning proposal"""
+@serviceLearning_bp.route('/slcNewProposal', methods=['GET', 'POST'])
+def slcNewProposal():
     if request.method == "POST":
-        courseData["courseName"] = request.form.get("courseName")
-        courseData["courseAbbreviation"] = request.form.get("courseAbbreviation")
-        courseData["courseCredit"] = request.form.get("credit")
-        courseData["courseInstructorPhone"] = request.form.get("courseInstructorPhone")
-        courseData["regularOccurenceToggle"] = request.form.get("regularOccurenceToggle")
-        courseData["termId"] = request.form.get("term")
-        courseData["slSectionsToggle"] = request.form.get("slSectionsToggle")
-        courseData["slDesignation"] = request.form.get("slDesignation")
-        courseData["permanentDesignation"] = request.form.get("permanentDesignation")
-        return redirect("/slcQuestionnaire")
-
-    terms = Term.select()
-    return render_template('serviceLearning/slcProposal.html', terms=terms)
-
-@serviceLearning_bp.route('/slcQuestionnaire', methods=['GET', 'POST'])
-def slcQuestionnaire():
-    """ This page renders slc questionnare """
-    if request.method == "POST":
-        term = Term.get(Term.id == courseData["termId"])
+        # courseData["courseInstructorPhone"] = request.form.get("courseInstructorPhone")
+        term = Term.get(Term.id == request.form.get("term"))
         status = CourseStatus.get(CourseStatus.status == "Pending")
         course = Course.create(
-            courseName=courseData["courseName"],
-            courseAbbreviation=courseData["courseAbbreviation"],
-            courseCredit=courseData["courseCredit"],
-            isRegularlyOccuring=1 if courseData["regularOccurenceToggle"] else 0,
+            courseName=request.form.get("courseName"),
+            courseAbbreviation=request.form.get("courseAbbreviation"),
+            courseCredit=request.form.get("credit"),
+            isRegularlyOccuring=1 if request.form.get("regularOccurenceToggle") else 0,
             term=term,
             status=status,
             createdBy=g.current_user,
-            isAllSectionsServiceLearning=1 if courseData["slSectionsToggle"] else 0,
-            serviceLearningDesignatedSections=courseData["slDesignation"],
-            isPermanentlyDesignated=1 if courseData["slDesignation"] else 0,
+            isAllSectionsServiceLearning=1 if request.form.get("slSectionsToggle") else 0,
+            serviceLearningDesignatedSections=request.form.get("slDesignation"),
+            isPermanentlyDesignated=1 if request.form.get("permanentDesignation") else 0,
         )
         for i in range(1, 7):
             CourseQuestion.create(
@@ -69,12 +44,14 @@ def slcQuestionnaire():
                 questionContent=request.form.get(f"{i}"),
                 questionNumber=i
             )
-        for instructor in courseData["instructors"]:
+        for instructor in instructorsDict["instructors"]:
             CourseInstructor.create(course=course, user=instructor.username)
         return redirect('/serviceCourseManagement')
 
-    return render_template('serviceLearning/slcQuestionnaire.html')
+    terms = Term.select()
+    return render_template('serviceLearning/slcNewProposal.html', terms=terms)
 
+instructorsDict = {}
 @serviceLearning_bp.route('/courseInstructors', methods=['POST'])
 def getInstructors():
     instructorObjectList = []
@@ -85,7 +62,7 @@ def getInstructors():
             username = instructor.split('(')[-1]
             instructor = User.get(User.username==username)
             instructorObjectList.append(instructor)
-    courseData["instructors"] = instructorObjectList
+    instructorsDict["instructors"] = instructorObjectList
     return jsonify({"Success": True}), 200
 
 # TODO: doesnt work
