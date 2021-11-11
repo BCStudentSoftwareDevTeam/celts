@@ -65,7 +65,7 @@ def getInstructors():
     instructorsDict["instructors"] = instructorObjectList
     return jsonify({"Success": True}), 200
 
-# TODO: doesnt work
+# TODO: doesnt work. Combine with the work that has already been done. 
 @serviceLearning_bp.route('/withdrawCourse/<courseID>', methods = ['POST'])
 def withdrawCourse(courseID):
     course = Course.get(Course.id == courseID)

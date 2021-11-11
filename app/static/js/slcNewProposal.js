@@ -11,6 +11,7 @@ function showTab(currentTab) {
   let allTabs = $(".tab");
   $(allTabs[currentTab]).css("display", "block");
   if (currentTab == 0) {
+    // TODO: make sure cancel redirects to management page. 
     $("#previousButton").text("Cancel");
   } else {
     $("#previousButton").text("Previous");
