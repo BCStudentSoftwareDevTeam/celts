@@ -118,17 +118,17 @@
           <div class="form-inline d-flex">
             <div  class="form-group" >
               <div class="d-inline-flex">
-                <label for="startTime"><strong>Start Time:</strong></label>
+                <label for="startTimePicker"><strong>Start Time:</strong></label>
                 {% if isEditable %}
-                  <input type='time' class="form-control timePicker" id='pickStartTime'value="{{eventData.timeStart}}"  name="timeStart" required>
+                  <input type='time' class="form-control" id='startTime'value="{{eventData.timeStart}}"  name="timeStart" onchange=updateTime(this) required>
                 {% else %}
                   <p>{{ eventData.timeStart.strftime("%I: %M %p") if eventData.timeStart }}</p>
                 {% endif %}
               </div>
               <div class='form-group time d-inline-flex' style="padding: 0 0 0 2rem">
-                <label for="endTime"><strong>End Time:</strong></label>
+                <label for="endTimePicker"><strong>End Time:</strong></label>
                 {% if isEditable %}
-                  <input type='time' class="form-control timePicker" id='pickEndTime' value="{{eventData.timeEnd}}" name="timeEnd" required>
+                  <input type='time' class="form-control" id='endTime' value="{{eventData.timeEnd}}" name="timeEnd" onchange=updateTime(this) required>
                 {% else %}
                   <p>{{ eventData.timeEnd.strftime("%I: %M %p") if eventData.timeEnd }}</p>
                 {% endif %}

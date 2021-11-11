@@ -1,19 +1,19 @@
-
-$(document).ready(function(){
-    if (Modernizr.inputtypes.time) {
-      $('input[type=time]').timepicker({
-          timeFormat : 'HH:mm'
-        }
-    );
-  }
-});
+// //
+// $(document).ready(function(){
+//     if (Modernizr.inputtypes.time) {
+//       $('input[type=time]').timepicker({
+//           timeFormat : 'HH:mm'
+//         }
+//     );
+//   }
+// });
 // updates max and min dates of the datepickers as the other datepicker changes
 function updateDate(obj) {
   var dateToChange = new Date($(obj).val());
   var newMonth = dateToChange.getMonth();
   var newYear = dateToChange.getFullYear();
   var newDay = dateToChange.getDate();
-
+  console.log("Date start");
   if(obj.id == "startDatePicker") {
     $("#endDatePicker").datepicker({minDate: new Date(  newYear, newMonth, newDay)});
     $("#endDatePicker").datepicker( "option", "minDate", new Date(  newYear, newMonth, newDay));
@@ -25,11 +25,23 @@ function updateDate(obj) {
   }
 }
 
+function updateTime(obj) {
+  console.log("Updatiung the time");
+  if (obj.id == "startTime") {
+    $("#startTime").timepicker({timeFormat: 'h:mm p',});
+    console.log("Checking time");
+  }
+
+  if (obj.id == "startTime") {
+    $("#startTime").timepicker({timeFormat: 'h:mm p',});
+    console.log("Checking End time");
+  }
+}
+
 /*
  * Run when the webpage is ready for javascript
  */
 $(document).ready(function(){
-
   $("#checkIsRecurring").click(function() {
     var recurringStatus = $("input[name='isRecurring']:checked").val()
     if (recurringStatus == 'on') {
@@ -42,9 +54,13 @@ $(document).ready(function(){
   });
 
 $(document).ready(function(){
+
+  $('input[type=time]').timepicker({
+           timeFormat : 'HH:mm'
+          }
+      );
   if($(".datePicker").is("readonly")){
-    $( ".datePicker" ).datepicker( "option", "disabled", true );
-}
+    $( ".datePicker" ).datepicker( "option", "disabled", true )};
 
 });
   //makes the input fields act like readonly (readonly doesn't work with required)
@@ -58,13 +74,16 @@ $(document).ready(function(){
     dateFormat:'mm-dd-yy'
   });
 
+
   $("#startDate").click(function() {
+    console.log("Getting inside start date")
     $("#startDatePicker").datepicker().datepicker("show");
   });
 
   $("#endDate").click(function() {
     $("#endDatePicker").datepicker().datepicker("show");
   });
+
 
     $("#startDatePicker, #endDatePicker").change(function(){
 
