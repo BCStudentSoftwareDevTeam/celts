@@ -41,6 +41,16 @@
 
     </ul>
     <hr>
+    {% if env != 'production' %}
+      <h6>Current User: {{g.current_user.username}}</h6>
+      <form action="/switch_user" method="POST" id="userSelectForm">
+          <select name="newuser" class="form-select" style="margin-bottom: 10px" id="userSelect">
+              <option {{"selected" if g.current_user == config.default_user }} value="{{config.default_user}}">Default User: {{config.default_user}}</option>
+              <option {{"selected" if g.current_user == "ramsayb2"}} value="ramsayb2">Admin: ramsayb2</option>
+              <option {{"selected" if g.current_user == "neillz"}} value="neillz">Student: neillz</option>
+          </select>
+      </form>
+    {% endif %}
     <button type="button" class="btn btn-secondary btn-secondary">Log out</button>
   </div>
 

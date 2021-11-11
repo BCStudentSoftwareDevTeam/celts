@@ -19,23 +19,22 @@ def trainedParticipants(programID):
     attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(trlist), eventTrainingDataList)))
     return attendedTraining
 
-def sendUserData(bnumber, eventid, programid):
+def sendUserData(bnumber, eventId, programid):
     """Accepts scan input and signs in the user. If user exists or is already
     signed in will return user and login status"""
     signedInUser = User.get(User.bnumber == bnumber)
-    event = Event.get_by_id(eventid)
+    event = Event.get_by_id(eventId)
     if not isEligibleForProgram(programid, signedInUser):
         userStatus = "banned"
     elif ((EventParticipant.select(EventParticipant.user)
-       .where(EventParticipant.user == signedInUser, EventParticipant.event == eventid))
+       .where(EventParticipant.user==signedInUser, EventParticipant.event==eventId))
        .exists()):
         userStatus = "already in"
     else:
         userStatus = "success"
         totalHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
-        EventParticipant.insert([{EventParticipant.user: signedInUser,
-          EventParticipant.event: eventid,
-          EventParticipant.hoursEarned: totalHours}]).execute()
+        EventRsvp.create(user=signedInUser, event=eventId)
+        EventParticipant.create (user=signedInUser, event=eventId, hoursEarned=totalHours)
     return signedInUser, userStatus
 
 def userRsvpForEvent(user,  event):
