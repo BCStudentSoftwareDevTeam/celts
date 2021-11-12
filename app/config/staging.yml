@@ -2,11 +2,16 @@ use_shibboleth: False
 use_tracy: True
 use_banner: True
 
-mail:
-    enabled: True
-    server: "mail.berea.edu"
-    port: 25
-    tls: False
-    ssl: False
-    reply_to_address: "celts@berea.edu"
-    default_sender: "support@bereacollege.onmicrosoft.com"
+enabled: True
+MAIL_SERVER: "smtp.gmail.com" # use smtp.gmail.com for gmail, mail.berea.edu for Berea
+MAIL_PORT: 465                # use port 465 for gmail, use 25 for Berea
+admin_username: 'bramsayr@gmail.com'      # add the email of the sender (Admin) (for gmail)
+admin_password: 'celtsTest'             # Add the password of the sender (for gmail)
+staff_username: 'sceggenh@gmail.com'   # the email of the sender (celtsStudentStaff)
+staff_password: 'celtsTest2'
+MAIL_SUPRESS_SEND: False
+MAIL_USE_TLS: False
+MAIL_USE_SSL: True
+# MAIL_DEFAULT_SENDER: 'bramsayr@gmail.com' #FIXME: Add sender email address
+MAIL_OVERRIDE_ALL: "j5u6j9w6v1h0p3g1@bereacs.slack.com"
+REPLY_TO_ADDRESS: "j5u6j9w6v1h0p3g1@bereacs.slack.com"
