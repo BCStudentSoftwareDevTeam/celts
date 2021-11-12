@@ -21,6 +21,7 @@ admin_username: 'bramsayr@gmail.com'      # add the email of the sender (Admin) 
 admin_password: 'celtsTest'             # Add the password of the sender (for gmail)
 staff_username: 'sceggenh@gmail.com'   # the email of the sender (celtsStudentStaff)
 staff_password: 'celtsTest2'
+MAIL_SUPRESS_SEND: False
 MAIL_USE_TLS: False
 MAIL_USE_SSL: True
 # MAIL_DEFAULT_SENDER: 'bramsayr@gmail.com' #FIXME: Add sender email address

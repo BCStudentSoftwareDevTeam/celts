@@ -50,7 +50,7 @@ class emailHandler():
         """ Updates the sender and sends the email. """
         message = self.updateSenderEmail(msg)
 
-        if app.config['MAIL_OVERRIDE_ALL']:
+        if 'MAIL_OVERRIDE_ALL' in app.config:
             message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
         message.reply_to = app.config["REPLY_TO_ADDRESS"]
 
