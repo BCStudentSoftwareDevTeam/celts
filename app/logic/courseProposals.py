@@ -28,9 +28,9 @@ def getProposalData(user):
 def deleteProposal(courseID):
     """Deletes proposal of ID passed in. Removes foreign keys first.
     Key Dependencies: QuestionNote, CourseQuestion, CourseParticipant,
-    CourseInstructor"""
+    CourseInstructor, Note"""
     course = Course.get(Course.id == courseID)
-    s = CourseQuestion.select().where(Course.id == id)
-    n = QuestionNote.select().where(QuestionNote.question == s)
-    Note.delete().where(Note.id.in_(n))
+    questions = CourseQuestion.select().where(CourseQuestion.course == course)
+    notes = [note for note in Note.select(Note.id).where(QuestionNote.question.in_(questions)).distinct().join(QuestionNote)]
     course.delete_instance(recursive=True)
+    Note.delete().where(Note.id.in_(notes)).execute()

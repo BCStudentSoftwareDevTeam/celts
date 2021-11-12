@@ -1,13 +1,16 @@
 import pytest
 from flask import Flask, g
+from datetime import datetime
 from peewee import DoesNotExist
 from app.models.program import Program
 from app.models.course import Course
 from app.models.courseParticipant import CourseParticipant
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseQuestion import CourseQuestion
+from app.models.questionNote import QuestionNote
+from app.models.note import Note
 from app.models.user import User
-from app.logic.courseProposals import deleteProposal, getProposalData, authorized
+from app.logic.courseProposals import deleteProposal, getProposalData
 
 @pytest.mark.integration
 def test_isCorrectData():
@@ -24,6 +27,7 @@ def test_isCorrectData():
 def test_deletesProposal():
     '''creates a test course with all foreign key fields. tests if they can
     be deleted'''
+    deleteProposal(99)
     course = Course.create(
             id= 99,
             courseName= "Test",
@@ -35,9 +39,22 @@ def test_deletesProposal():
             isPermanentlyDesignated= False,
             )
     question = CourseQuestion.create(
+        id = 99,
         course=99,
         questionContent="Why must I create so much for just one test?",
         questionNumber=1
+    )
+    note = Note.create(
+        id = 99,
+        createdBy = "neillz",
+        createdOn = "2021-10-12 00:00:00",
+        noteContent = "This is a test note.",
+        isPrivate = False
+    )
+    qnote = QuestionNote.create(
+    id = 99,
+    question = 99,
+    note = 99
     )
     instructor = CourseInstructor.create(
         id= 99,
@@ -49,6 +66,7 @@ def test_deletesProposal():
         user= "neillz",
         hoursEarned= 2.0
     )
+
     deleteProposal(99)
     with pytest.raises(DoesNotExist):
         Course.get_by_id(99)
