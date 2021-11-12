@@ -34,64 +34,64 @@
 {% block content %}
 
 <div>
-    <div class="row g-0">
-      <div class="col-md-auto d-none d-lg-block">
-        <div style="margin-right: 280px">
-          <nav class="position-fixed float-start">
-            {% block sidebar %}
-            {% include 'sidebar.html' %}
-            {% endblock %}
-          </nav>
-        </div>
-      </div>
-        <nav class="col-md-auto d-lg-none">
-            <div class="offcanvas offcanvas-start w-auto" tabindex="-1" id="offcanvasSidebar" aria-labelledby="sidebar">
-                <div class="offcanvas-body p-0">
-                    <button type="button" class="btn btn-dark position-absolute top-0 start-100 rounded-0 rounded-end" data-bs-dismiss="offcanvas" aria-label="Close">
-                        <i class="bi bi-x"></i>
-                    </button>
-                    {% include 'sidebar.html' %}
-                </div>
-            </div>
-        </nav>
-        <div class='col-12 col-md scroll-container overflow-visible'>
-        <div>
-            <div class="main-content container">
-                <div class="flash_container">
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                            {% for category, message in messages %}
-                                <div class="alert  alert-{{category}} alert-dismissible" role="alert">{{ message }}
-                                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
-                </div>
-
-                <div class="d-lg-none position-fixed top-0 start-0 d-print-none">
-                    <button class="btn btn-dark rounded-0 rounded-end" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="sidebar">
-                        <i class="bi bi-list" role="button" aria-label="Sidebar"></i>
-                    </button>
-                </div>
-
-                {% block app_content %}
-                    {# application content needs to be provided in the app_content block #}
-                {% endblock %}
-                <div class="spacer my-0"></div>
-            </div>
-        </div>
-
-        {% block footer %}
-        <footer class="footer mt-auto bg-light d-print-none" style="font-size:small; vertical-align: middle;">
-          <div class="container" style="margin-bottom: 0; line-height:normal;"><br>
-            <span><strong>Issues? Contact: </strong><a href="mailto:support@bereacollege.onmicrosoft.com" class="footerlink">Systems Support </a><br class="d-lg-none">
-              <strong>Created & Designed by the </strong><a href="/contributors" id = "contribLink" class="footerlink">Student Software Development Team</a></span>
-            </div>
-          </footer>
+  <div class="row g-0">
+    <div class="col-md-auto d-none d-lg-block">
+      <div style="margin-right: 280px">
+        <nav class="position-fixed float-start">
+          {% block sidebar %}
+          {% include 'sidebar.html' %}
           {% endblock %}
-        </div>
+        </nav>
+      </div>
     </div>
+      <nav class="col-md-auto d-lg-none">
+        <div class="offcanvas offcanvas-start w-auto" tabindex="-1" id="offcanvasSidebar" aria-labelledby="sidebar">
+          <div class="offcanvas-body p-0">
+            <button type="button" class="btn btn-dark position-absolute top-0 start-100 rounded-0 rounded-end" data-bs-dismiss="offcanvas" aria-label="Close">
+              <span class="bi bi-x"></span>
+            </button>
+            {% include 'sidebar.html' %}
+          </div>
+        </div>
+      </nav>
+      <div class='col-12 col-md scroll-container overflow-visible'>
+        <div>
+          <div class="main-content container">
+            <div class="flash_container">
+              {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                  {% for category, message in messages %}
+                    <div class="alert  alert-{{category}} alert-dismissible" role="alert">{{ message }}
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              {% endwith %}
+            </div>
+
+            <div class="d-lg-none position-fixed top-0 start-0 d-print-none">
+              <button class="btn btn-dark rounded-0 rounded-end" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="sidebar">
+                <span class="bi bi-list" role="button" aria-label="Sidebar"></span>
+              </button>
+            </div>
+
+            {% block app_content %}
+              {# application content needs to be provided in the app_content block #}
+            {% endblock %}
+            <div class="spacer my-0"></div>
+          </div>
+        </div>
+
+      {% block footer %}
+      <footer class="footer mt-auto bg-light d-print-none" style="font-size:small; vertical-align: middle;">
+        <div class="container" style="margin-bottom: 0; line-height:normal;"><br>
+          <span><strong>Issues? Contact: </strong><a href="mailto:support@bereacollege.onmicrosoft.com" class="footerlink">Systems Support </a><br class="d-lg-none">
+          <strong>Created & Designed by the </strong><a href="/contributors" id = "contribLink" class="footerlink">Student Software Development Team</a></span>
+        </div>
+      </footer>
+      {% endblock %}
+    </div>
+  </div>
 </div>
 
 {% endblock %}
