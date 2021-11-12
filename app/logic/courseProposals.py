@@ -29,10 +29,9 @@ def deleteProposal(courseID):
     Key Dependencies: QuestionNote, CourseQuestion, CourseParticipant,
     CourseInstructor"""
     course = Course.get(Course.id == courseID)
-    # (QuestionNote.delete().where(CourseQuestion.course == course).join(CourseQuestion)).execute()
-    notes = QuestionNote.select().where(CourseQuestion.course == course).join(CourseQuestion)
-    for note in notes:
-        note.delete().execute()
+    # notes = QuestionNote.select().where(CourseQuestion.course == course).join(CourseQuestion)
+    # for note in notes: note.delete().execute()
+    (QuestionNote.delete().where(QuestionNote.question.course == course).join(CourseQuestion)).execute()
     (CourseQuestion.delete().where(CourseQuestion.course == course)).execute()
     (CourseParticipant.delete().where(CourseParticipant.course == course)).execute()
     (CourseInstructor.delete().where(CourseInstructor.course == course)).execute()
