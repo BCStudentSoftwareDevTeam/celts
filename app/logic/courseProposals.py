@@ -5,6 +5,7 @@ from app.models.courseInstructor import CourseInstructor
 from app.models.courseParticipant import CourseParticipant
 from app.models.courseQuestion import CourseQuestion
 from app.models.questionNote import QuestionNote
+from app.models.note import Note
 
 def getProposalData(user):
     """Returns dictionary with data used to populate SL proposal table"""
@@ -29,10 +30,7 @@ def deleteProposal(courseID):
     Key Dependencies: QuestionNote, CourseQuestion, CourseParticipant,
     CourseInstructor"""
     course = Course.get(Course.id == courseID)
-    # notes = QuestionNote.select().where(CourseQuestion.course == course).join(CourseQuestion)
-    # for note in notes: note.delete().execute()
-    (QuestionNote.delete().where(QuestionNote.question.course == course).join(CourseQuestion)).execute()
-    (CourseQuestion.delete().where(CourseQuestion.course == course)).execute()
-    (CourseParticipant.delete().where(CourseParticipant.course == course)).execute()
-    (CourseInstructor.delete().where(CourseInstructor.course == course)).execute()
-    course.delete_instance()
+    s = CourseQuestion.select().where(Course.id == id)
+    n = QuestionNote.select().where(QuestionNote.question == s)
+    Note.delete().where(Note.id.in_(n))
+    course.delete_instance(recursive=True)
