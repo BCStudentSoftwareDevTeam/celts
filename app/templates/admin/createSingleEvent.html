@@ -142,7 +142,7 @@
           <div>
             <div  class="form-group" >
               <div class="d-inline-flex" style="width:48%;">
-                <label for="startDatePicker" id="startDatePickerLabel" ><span><strong>Start Date</strong></span></label><br>
+                <label for="startDatePicker" id="startDatePickerLabel" ><span><strong>Start Date:</strong></span></label><br>
               {% if  isEditable  %}
                 <div class='input-group date' id="startDate">
                   <input type='text' class="form-control datePicker readonly" value="{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" name="startDate" placeholder="Start Date" onchange=updateDate(this) id=startDatePicker required>
