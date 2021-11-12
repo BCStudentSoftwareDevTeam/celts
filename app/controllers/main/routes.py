@@ -184,7 +184,7 @@ def managePage():
 
     for instructor in courseInstructors:
         if  instructor.user.username  not in  course_dict:
-            course_dict[instructor.user.username] = instructor.course.courseName
+            course_dict[instructor.user.username] =  instructor.course.courseName
         elif isinstance(course_dict[instructor.user.username],list):
             course_dict[instructor.user.username] .append(instructor.course.courseName)
         else:
@@ -193,6 +193,6 @@ def managePage():
 
 
         print("this is dict", course_dict)
-        
+
 
     return render_template('/main/manageServiceLearningFaculty.html', users = users,courseInstructors = course_dict)
