@@ -7,7 +7,7 @@ from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
-from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours
+from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,updateOrCreateVolunteerBackground
 from app.logic.participants import trainedParticipants, getEventParticipants
 from app.models.user import User
 from app.models.eventRsvp import EventRsvp
@@ -99,9 +99,14 @@ def removeVolunteerFromEvent(user, eventID):
     flash("Volunteer successfully removed", "success")
     return ""
 
-@admin_bp.route('/', methods = ['POST'])
-def updateBackgroundCheck(user, setTo):
-
-    updateBackgroundStatus = BackgroundCheck.select().where(user == user)
-    updateBackgroundStatus.passBackgroundCheck = setTo
-    updateBackgroundCheck.save()
+@admin_bp.route('/updateBackgroundCheck', methods = ['POST'])
+def updateBackgroundCheck():
+    print(".............................................................")
+    eventData = request.form
+    user = eventData['user']
+    setTo = int(eventData['setTo'])
+    print(type(setTo))
+    print("....................................................",eventData)
+    print("This is the data we got",user,setTo)
+    updateOrCreateVolunteerBackground(user,setTo)
+    return ""
