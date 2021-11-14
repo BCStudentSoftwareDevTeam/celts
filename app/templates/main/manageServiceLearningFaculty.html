@@ -24,11 +24,11 @@
   </tr>
   </thead>
   <tbody>
-  {% for user in users%}
+  {% for instructor in courseInstructors%}
 
   <tr>
-    <td>{{courseInstructors}}</td>
-    <td>{{courseInstructors[user.username]}}</td>
+    <td>{{instructor}}</td>
+    <td>{{courseInstructors[instructor]}}</td>
   </tr>
   {% endfor %}
 

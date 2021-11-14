@@ -183,13 +183,13 @@ def managePage():
     course_dict = {}
 
     for instructor in courseInstructors:
-        if  instructor.user.username  not in  course_dict:
-            course_dict[instructor.user.username] =  instructor.course.courseName
-        elif isinstance(course_dict[instructor.user.username],list):
-            course_dict[instructor.user.username] .append(instructor.course.courseName)
+        if  (instructor.user.firstName+ " "+ instructor.user.lastName)  not in  course_dict:
+            course_dict[instructor.user.firstName+ " "+ instructor.user.lastName] =  instructor.course.courseName
         else:
-            course_dict[instructor.user.username]= course_dict[instructor.user.username],instructor.course.courseName
-
+            course_dict[instructor.user.firstName + " "+ instructor.user.lastName] += ", " + instructor.course.courseName
+        # else:
+        #     course_dict[instructor.user.firstName + " "+ instructor.user.lastName]= course_dict[instructor.user.username],instructor.course.courseName
+        #
 
 
         print("this is dict", course_dict)
