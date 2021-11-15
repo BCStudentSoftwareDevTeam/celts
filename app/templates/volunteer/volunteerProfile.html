@@ -58,7 +58,7 @@
   </div>
   <div class="row">
     <div>
-      {% if g.current_user.isCeltsAdmin%}
+      {% if g.current_user.isCeltsAdmin %}
       <label for="check"><strong>Completed their background check:</strong></label>
       {% set username = user.username%}
       <select id="check" onchange="updateBackgroundCheck({{username}})">
