@@ -58,12 +58,14 @@
   </div>
   <div class="row">
     <div>
+      {% if g.current_user.isCeltsAdmin%}
       <label for="check"><strong>Completed their background check:</strong></label>
       {% set username = user.username%}
       <select id="check" onchange="updateBackgroundCheck({{username}})">
         <option value=1>Yes</option>
         <option value=0  {{"selected" if completedBackGroundCheck == False}}>No</option>
       </select>
+      {%endif%}
     </div>
   </div>
 
