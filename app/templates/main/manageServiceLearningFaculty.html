@@ -16,14 +16,14 @@
     <a class="skipContent" href="#backButton" tabindex="1" style="top:8%">Click to Skip</a>
     <div class="contributors" align="center">
       <h2> Manage Service Learning Faculty </h2>
-  <table class="table table-striped">
+  <table class="table table-striped" id="myTable">
     <thead>
-   <tr>
+   <tr class="header">
     <th scope = "col">Name</th>
     <th scope = "col">Prev Classes</th>
   </tr>
   </thead>
-  <tbody>
+  <tbody id = "facultyTable">
   {% for instructor in courseInstructors%}
 
   <tr>
@@ -37,7 +37,7 @@
 </table>
 
 <div class="input-group">
-  <input type="input" id="{{inputId}}" name="{{inputId}}" class="form-control" placeholder="Search" autocomplete="off"/>
+  <input type="input" id="{{inputId}}" name="{{inputId}}" class="form-control" placeholder="Search" autocomplete="off" onkeyup="Function()"/>
   <button type="button" class="btn btn-secondary btn-sm" disabled>
     <span class="bi bi-search"></span>
   </button>
