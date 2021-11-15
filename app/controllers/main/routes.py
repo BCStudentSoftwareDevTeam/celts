@@ -78,8 +78,7 @@ def viewVolunteersProfile(username):
             programsInterested = programsInterested,
             upcomingEvents = upcomingEvents,
             eligibilityTable = eligibilityTable,
-            volunteer = User.get(User.username == username),
-            user = g.current_user)
+            volunteer = User.get(User.username == username))
     abort(403)
 
 
