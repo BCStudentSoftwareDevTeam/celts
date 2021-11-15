@@ -82,7 +82,7 @@ def viewVolunteersProfile(username):
     abort(403)
 
 
-@main_bp.route('/banUser/<program_id>/<username>', methods=['POST'])
+@main_bp.route('/<username>/ban/<program_id>', methods=['POST'])
 def ban(program_id, username):
     """
     This function updates the ban status of a username either when they are banned from a program.
@@ -99,7 +99,7 @@ def ban(program_id, username):
         return "Error Updating Ban", 500
 
 # ===========================Unban===============================================
-@main_bp.route('/unbanUser/<program_id>/<username>', methods=['POST'])
+@main_bp.route('/<username>/unban/<program_id>', methods=['POST'])
 def unban(program_id, username):
     """
     This function updates the ban status of a username either when they are unbanned from a program.

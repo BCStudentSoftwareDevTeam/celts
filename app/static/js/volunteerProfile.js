@@ -53,7 +53,7 @@ $(document).ready(function(){
   $("#banButton").click(function (){
     $.ajax({
       method: "POST",
-      url: "/" + ($(this).attr("banOrUnban")).toLowerCase() + "User/" + $(this).attr("programID") + "/" + $(this).attr("username"),
+      url:  "/" + $(this).attr("username") + "/" + ($(this).attr("banOrUnban")).toLowerCase() + "/" + $(this).attr("programID"),
       data: {"note": $("#banVolunteerNote").val(),
              "endDate":$("#banEndDate").val()
             },
