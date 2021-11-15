@@ -35,6 +35,6 @@ function withdraw(){
     },
     error: function(request, status, error) {
         console.log(status,error);
-      }
+    }
   })
 };

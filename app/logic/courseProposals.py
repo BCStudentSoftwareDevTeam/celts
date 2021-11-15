@@ -13,7 +13,7 @@ def getProposalData(user):
                      .where(CourseInstructor.user==user)
                      .join(CourseInstructor)
                      .order_by(Course.id))
-    courseDict = {} #a dictionary of dictionaries for better readability
+    courseDict = {} 
     for course in courses:
         otherInstructors = (CourseInstructor.select().where(CourseInstructor.course==course))
         faculty = [f"{instructor.user.firstName} {instructor.user.lastName}" for instructor in otherInstructors]
@@ -31,6 +31,6 @@ def deleteProposal(courseID):
     CourseInstructor, Note"""
     course = Course.get(Course.id == courseID)
     questions = CourseQuestion.select().where(CourseQuestion.course == course)
-    notes = Note.select(Note.id).where(QuestionNote.question.in_(questions)).distinct().join(QuestionNote)
+    notes = list(Note.select(Note.id).where(QuestionNote.question.in_(questions)).distinct().join(QuestionNote))
     course.delete_instance(recursive=True)
     Note.delete().where(Note.id.in_(notes)).execute()
