@@ -4,6 +4,7 @@ import datetime
 from app import app
 from app.models.program import Program
 from app.models.event import Event
+from app.models.backgroundCheck import BackgroundCheck
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
@@ -57,6 +58,7 @@ def profilePage(username):
         interests_ids = [interest.program.id for interest in interests]
         rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == profileUser)
         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
+        completedBackGroundCheck = BackgroundCheck.get(BackgroundCheck.user==profileUser)
 
         return render_template('/volunteer/volunteerProfile.html',
                                title="Volunteer Interest",
@@ -65,7 +67,8 @@ def profilePage(username):
                                interests = interests,
                                interests_ids = interests_ids,
                                upcomingEvents = upcomingEvents,
-                               rsvpedEvents = rsvpedEvents)
+                               rsvpedEvents = rsvpedEvents,
+                               completedBackGroundCheck = completedBackGroundCheck.passBackgroundCheck)
     except Exception as e:
         print(e)
         return "Error retrieving user profile", 500

@@ -28,11 +28,11 @@ $(document).ready(function() {
 
 
 // onchange="updateBackgroundCheck(1)"
-function updateBackgroundCheck(setTo){
-  console.log(" This is a test")
+function updateBackgroundCheck(user){
+  let setTo = $( "#check").val();
   let data = {
       setTo : setTo,
-      user: "khatts"
+      user: user.id
   }
 
   $.ajax({
@@ -40,7 +40,8 @@ function updateBackgroundCheck(setTo){
     type: "POST",
     data: data,
     success: function(s){
-        location.reload()
+      console.log("success")
+        // location.reload()
     },
     error: function(error, status){
         console.log(error, status)

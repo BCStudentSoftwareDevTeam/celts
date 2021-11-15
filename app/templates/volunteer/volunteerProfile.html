@@ -54,7 +54,18 @@
           <a href="https://www.berea.edu/celts/community-service-programs/volunteer-opportunities/">For more information click here.</a>
         </small>
       </div>
-  </div>
-</div>
 
+  </div>
+  <div class="row">
+    <div>
+      <label for="check"><strong>Completed their background check:</strong></label>
+      {% set username = user.username%}
+      <select id="check" onchange="updateBackgroundCheck({{username}})">
+        <option value=1>Yes</option>
+        <option value=0  {{"selected" if completedBackGroundCheck == False}}>No</option>
+      </select>
+    </div>
+  </div>
+
+</div>
   {% endblock %}

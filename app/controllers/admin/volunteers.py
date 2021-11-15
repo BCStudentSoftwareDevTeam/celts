@@ -101,12 +101,8 @@ def removeVolunteerFromEvent(user, eventID):
 
 @admin_bp.route('/updateBackgroundCheck', methods = ['POST'])
 def updateBackgroundCheck():
-    print(".............................................................")
     eventData = request.form
     user = eventData['user']
     setTo = int(eventData['setTo'])
-    print(type(setTo))
-    print("....................................................",eventData)
-    print("This is the data we got",user,setTo)
     updateOrCreateVolunteerBackground(user,setTo)
     return ""
