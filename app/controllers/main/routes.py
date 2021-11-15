@@ -187,9 +187,6 @@ def managePage():
             course_dict[instructor.user.firstName+ " "+ instructor.user.lastName] =  instructor.course.courseName
         else:
             course_dict[instructor.user.firstName + " "+ instructor.user.lastName] += ", " + instructor.course.courseName
-        # else:
-        #     course_dict[instructor.user.firstName + " "+ instructor.user.lastName]= course_dict[instructor.user.username],instructor.course.courseName
-        #
 
 
         print("this is dict", course_dict)
