@@ -1,6 +1,6 @@
 from app.models.eventTemplate import EventTemplate
 # from app.models.backgroundCheck import BackgroundCheck
-# from app.models.backgroundCheckType import BackgroundCheckType
+from app.models.backgroundCheckType import BackgroundCheckType
 
 print("Inserting base data needed in all environments.")
 templates = [
@@ -39,34 +39,19 @@ templates = [
 ]
 EventTemplate.insert_many(templates).on_conflict_replace().execute()
 
-# backgroundTypes = [
-#     {
-#     "id": "CAN",
-#     "description": "Child Abuse and Neglect",
-#     },
-#     {
-#     "id": "SHS",
-#     "description": "Safe Hiring Solutions",
-#     },
-#     {
-#     "id": "FBI",
-#     "description": "Federal Criminal Background",
-#     },
-#
-# ]
-# BackgroundCheckType.insert_many(backgroundTypes).on_conflict_replace().execute()
-#
-# background = [
-#
-#     {
-#     "user": "khatts",
-#     "type": "CAN",
-#     "passBackgroundCheck": False,
-#     },
-#     {
-#     "user":"mupotsal",
-#     "type": "SHS",
-#     "passBackgroundCheck":True,
-#     },
-# ]
-# BackgroundCheck.insert_many(background).on_conflict_replace().execute()
+backgroundTypes = [
+    {
+    "id": "CAN",
+    "description": "Child Abuse and Neglect",
+    },
+    {
+    "id": "SHS",
+    "description": "Safe Hiring Solutions",
+    },
+    {
+    "id": "FBI",
+    "description": "Federal Criminal Background",
+    },
+
+]
+BackgroundCheckType.insert_many(backgroundTypes).on_conflict_replace().execute()
