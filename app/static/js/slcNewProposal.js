@@ -3,6 +3,7 @@ import searchUser from './searchUser.js'
 let currentTab = 0; // Current tab is set to be the first tab (0)
 
 $(document).ready(function(e) {
+  $("#cancelButton").hide();
   showTab(currentTab); // Display the current tab
 })
 
@@ -12,9 +13,11 @@ function showTab(currentTab) {
   $(allTabs[currentTab]).css("display", "block");
   if (currentTab == 0) {
     // TODO: make sure cancel redirects to management page.
-    $("#previousButton").text("Cancel");
+    $("#cancelButton").show();
+    $("#previousButton").css("display", "none");
   } else {
-    $("#previousButton").text("Previous");
+    $("#cancelButton").hide();
+    $("#previousButton").css("display", "inline");
   }
 
   if (currentTab == (allTabs.length - 1)) {
@@ -31,6 +34,10 @@ $("#previousButton").on("click", function() {
 
 $("#nextButton").on("click", function() {
   displayCorrectTab(1);
+});
+
+$("#cancelButton").on("click", function() {
+  window.location.replace("/serviceLearning/courseManagement");
 });
 
 function displayCorrectTab(navigateTab) {
