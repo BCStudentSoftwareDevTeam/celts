@@ -15,17 +15,6 @@ function updateDate(obj) {
     $("#startDatePicker").datepicker("option", "maxDate", new Date(  newYear, newMonth, newDay));
   }
 }
-
-function updateTime(obj) {
-  if (obj.id == "startTime") {
-    $("#startTime").timepicker({timeFormat: 'h:mm p',});
-  }
-
-  if (obj.id == "startTime") {
-    $("#startTime").timepicker({timeFormat: 'h:mm p',});
-  }
-}
-
 /*
  * Run when the webpage is ready for javascript
  */
@@ -44,7 +33,8 @@ $(document).ready(function(){
 $(document).ready(function(){
 
   $('input[type=time]').timepicker({
-           timeFormat : 'HH:mm'
+           timeFormat : 'HH:mm',
+           scrollbar: true
           }
       );
 //disable default bootstrap timepicker
@@ -70,7 +60,6 @@ $(document).ready(function(){
     minDate:  new Date($.now()),
     dateFormat:'mm-dd-yy'
   });
-
 
   $("#startDate").click(function() {
     $("#startDatePicker").datepicker().datepicker("show");
