@@ -21,6 +21,7 @@ from app.models.interest import Interest
 from app.models.facilitator import Facilitator
 from app.models.note import Note
 from app.models.backgroundCheck import BackgroundCheck
+from app.models.backgroundCheckType import BackgroundCheckType
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -128,20 +129,6 @@ users = [
 ]
 
 User.insert_many(users).on_conflict_replace().execute()
-
-background = [
-
-    {
-
-    "user": "khatts",
-    "passBackgroundCheck": False,
-    },
-    {
-    "user":"neillz",
-    "passBackgroundCheck":True,
-    },
-]
-BackgroundCheck.insert_many(background).on_conflict_replace().execute()
 
 terms = [
     {
@@ -783,3 +770,35 @@ facilitators = [
     }
 ]
 Facilitator.insert_many(facilitators).on_conflict_replace().execute()
+
+backgroundTypes = [
+    {
+    "id": "CAN",
+    "description": "Child Abuse and Neglect",
+    },
+    {
+    "id": "SHS",
+    "description": "Safe Hiring Solutions",
+    },
+    {
+    "id": "FBI",
+    "description": "Federal Criminal Background",
+    },
+
+]
+BackgroundCheckType.insert_many(backgroundTypes).on_conflict_replace().execute()
+
+background = [
+
+    {
+    "user": "khatts",
+    "type": "CAN",
+    "passBackgroundCheck": False,
+    },
+    {
+    "user":"mupotsal",
+    "type": "SHS",
+    "passBackgroundCheck":True,
+    },
+]
+BackgroundCheck.insert_many(background).on_conflict_replace().execute()
