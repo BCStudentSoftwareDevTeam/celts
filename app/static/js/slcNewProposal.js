@@ -44,8 +44,11 @@ function displayCorrectTab(navigateTab) {
   // Increase or decrease the current tab by 1:
   currentTab = currentTab + navigateTab;
 
-  if (currentTab == allTabs.length) {
-    saveCourseInstructors().then($("#slcNewProposal").submit());
+  if (currentTab >= allTabs.length) {
+    console.log("currentTab: ", currentTab);
+    console.log("all tabs: ", allTabs.length);
+    //saveCourseInstructors().then(() => $("#slcNewProposal").submit());
+    saveCourseInstructors().then(() => console.log("Ends here."));
     return false;
   }
   showTab(currentTab);
@@ -99,11 +102,11 @@ $("#instructorTable").on("click", "#remove", function() {
 });
 
 let courseInstructors = []
-function saveCourseInstructors() {
+async function saveCourseInstructors() {
   $("#instructorTable tr").each(function(a, b) {
     courseInstructors.push($('.instructorName', b).text());
   });
-  return $.ajax({
+  return await $.ajax({
     url: "/courseInstructors",
     data: JSON.stringify(courseInstructors),
     type: "POST",

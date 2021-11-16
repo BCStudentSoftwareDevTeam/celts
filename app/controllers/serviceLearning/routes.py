@@ -47,7 +47,7 @@ def slcNewProposal():
             )
         for instructor in instructorsDict["instructors"]:
             CourseInstructor.create(course=course, user=instructor.username)
-        return redirect('serviceLearning/courseManagement')
+        return redirect('/serviceLearning/courseManagement')
 
     # TODO: should it be more specific? Like filter by Fall, Spring, etc?
     terms = Term.select().where(Term.year >= g.current_term.year)
