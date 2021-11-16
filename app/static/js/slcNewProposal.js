@@ -11,7 +11,7 @@ function showTab(currentTab) {
   let allTabs = $(".tab");
   $(allTabs[currentTab]).css("display", "block");
   if (currentTab == 0) {
-    // TODO: make sure cancel redirects to management page. 
+    // TODO: make sure cancel redirects to management page.
     $("#previousButton").text("Cancel");
   } else {
     $("#previousButton").text("Previous");
@@ -37,12 +37,14 @@ function displayCorrectTab(navigateTab) {
   // This function will figure out which tab to display
   let allTabs = $(".tab");
 
+  // TODO: Keep this or implement new validation?
   if (navigateTab == 1 && !validateForm()) return false;
+
   $(allTabs[currentTab]).css("display", "none");
   // Increase or decrease the current tab by 1:
   currentTab = currentTab + navigateTab;
 
-  if (currentTab >= allTabs.length) {
+  if (currentTab == allTabs.length) {
     saveCourseInstructors().then($("#slcNewProposal").submit());
     return false;
   }
@@ -106,8 +108,6 @@ function saveCourseInstructors() {
     data: JSON.stringify(courseInstructors),
     type: "POST",
     contentType: "application/json",
-    success: function () {
-      console.log("success");
-    }
+    success: function () {}
   });
 }

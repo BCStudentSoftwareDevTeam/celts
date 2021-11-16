@@ -12,7 +12,7 @@ from app.controllers.serviceLearning import serviceLearning_bp
 from app.logic.searchUsers import searchUsers
 from app.logic.getServiceLearningCoursesData import getServiceLearningCoursesData
 
-@serviceLearning_bp.route('/serviceCourseManagement', methods = ['GET'])
+@serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
 def serviceCourseManagement():
     """This is a Temporary Page for the Service Course Managment Screen."""
     courseDict = getServiceLearningCoursesData(g.current_user)
@@ -20,11 +20,12 @@ def serviceCourseManagement():
         instructor=g.current_user,
         courseDict=courseDict)
 
-@serviceLearning_bp.route('/slcNewProposal', methods=['GET', 'POST'])
+@serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcNewProposal():
     if request.method == "POST":
+        # TODO: Whose phone number will this be if there are multiple instructors?
         # courseData["courseInstructorPhone"] = request.form.get("courseInstructorPhone")
-        term = Term.get(Term.id == request.form.get("term"))
+        term = Term.get(Term.id==request.form.get("term"))
         status = CourseStatus.get(CourseStatus.status == "Pending")
         course = Course.create(
             courseName=request.form.get("courseName"),
@@ -46,9 +47,10 @@ def slcNewProposal():
             )
         for instructor in instructorsDict["instructors"]:
             CourseInstructor.create(course=course, user=instructor.username)
-        return redirect('/serviceCourseManagement')
+        return redirect('serviceLearning/courseManagement')
 
-    terms = Term.select()
+    # TODO: should it be more specific? Like filter by Fall, Spring, etc?
+    terms = Term.select().where(Term.year >= g.current_term.year)
     return render_template('serviceLearning/slcNewProposal.html', terms=terms)
 
 instructorsDict = {}
@@ -56,16 +58,15 @@ instructorsDict = {}
 def getInstructors():
     instructorObjectList = []
     instructorsList = request.get_json()
-    for instructor in instructorsList:
-        if instructor != "":
-            instructor = instructor.strip("()")
-            username = instructor.split('(')[-1]
+    for rawInstructor in instructorsList:
+        if rawInstructor != "":
+            username = rawInstructor.strip("()").split('(')[-1]
             instructor = User.get(User.username==username)
             instructorObjectList.append(instructor)
     instructorsDict["instructors"] = instructorObjectList
     return jsonify({"Success": True}), 200
 
-# TODO: doesnt work. Combine with the work that has already been done. 
+# TODO: doesnt work. Combine with the work that has already been done.
 @serviceLearning_bp.route('/withdrawCourse/<courseID>', methods = ['POST'])
 def withdrawCourse(courseID):
     course = Course.get(Course.id == courseID)
