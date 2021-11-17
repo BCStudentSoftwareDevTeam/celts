@@ -1,6 +1,4 @@
 import pytest
-from peewee import IntegrityError, DoesNotExist
-
 from app.models.program import Program
 from app.models.user import User
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
@@ -63,26 +61,21 @@ def test_addUserInterest():
 
 
 
-# @pytest.mark.integration
-# def test_addRemoveInvalidInterest():
-#
-#     program_id = 3
-#
-#     #test for user that doesn't exist
-#     user = "al;skfjelh"
-#     rule = 'addInterest'
-#     with pytest.raises(IntegrityError):
-#         result = addRemoveInterest(rule, program_id, user)
-#         result == "Successfully added interest"
-#
-#     #test removing interest that doesn't exist
-#     user = "lamichhanes2"
-#     rule = 'deleteInterest'
-#     program_id = 1
-#     result = addRemoveInterest(rule, program_id, user)
-#     assert result == "This interest does not exist"
-#
-#     # test for incorrect rule
-#     rule = "lkejfiv"
-#     result = addRemoveInterest(rule, program_id, user)
-#     assert result == None
+@pytest.mark.integration
+def test_removeUserInterestt():
+
+    #test for removing interest
+    username = "ramsayb2"
+    program_id = 2
+    result = removeUserInterest(program_id, username)
+    assert result == "Successfully removed interest"
+
+    username = "khatts"
+    program_id = 2
+    result = removeUserInterest(program_id, username)
+    assert result == "Successfully removed interest"
+
+    #test removing interest with different program id
+    program_id = 3
+    result = removeUserInterest(program_id, username)
+    assert result == "Successfully removed interest"
