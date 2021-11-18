@@ -27,7 +27,8 @@ def test_isCorrectData():
 def test_deletesProposal():
     '''creates a test course with all foreign key fields. tests if they can
     be deleted'''
-    deleteProposal(99)
+    if 99 in Course.select(Course.id):
+        deleteProposal(99)
     course = Course.create(
             id= 99,
             courseName= "Test",
