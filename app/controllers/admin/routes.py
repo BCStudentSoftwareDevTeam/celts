@@ -2,11 +2,10 @@ from flask import request, render_template, url_for, g, Flask, redirect, flash, 
 from peewee import DoesNotExist
 from playhouse.shortcuts import model_to_dict, dict_to_model
 import json
-
 from datetime import datetime
 from dateutil import parser
-from app import app
 
+from app import app
 from app.models.program import Program
 from app.models.event import Event
 from app.models.facilitator import Facilitator
@@ -18,11 +17,12 @@ from app.models.eventTemplate import EventTemplate
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
-from app.logic.courseProposals import getProposalData, deleteProposal
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
+from app.logic.courseManagement import pendingCourses, approvedCourses
+from app.logic.courseProposals import getProposalData, deleteProposal
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
@@ -197,3 +197,24 @@ def withdrawCourse(courseID, username):
     except Exception as e:
         flash("Withdrawal Unsuccessful", 'warning')
     return ""
+
+@admin_bp.route('/courseManagement', methods = ['GET', 'POST'])
+@admin_bp.route('/courseManagement/<term>', methods = ['GET', 'POST'])
+def courseManagement(term = None):
+    '''
+    Renders the page for admins to manage Course Proposals
+    '''
+
+    term = Term.get_or_none(Term.id == term)
+    if not term:
+        term = g.current_term
+
+    pending = pendingCourses(term)
+    approved = approvedCourses(term)
+    terms = selectSurroundingTerms(g.current_term)
+
+    return render_template('/admin/courseManagement.html',
+                            pendingCourses = pending,
+                            approvedCourses = approved,
+                            terms = terms,
+                            term = term)
