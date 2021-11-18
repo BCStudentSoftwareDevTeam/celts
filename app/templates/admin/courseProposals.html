@@ -10,8 +10,8 @@
 
 {% block app_content %}
 
-<input id="username" type="hidden" value='{{ user.username }}'>
-<h1 class="text-center mt-5 mb-2">{{ user.firstName }} {{ user.lastName }}</h1>
+<input id="username" type="hidden" value='{{user.username}}'>
+<h1 class="text-center mt-5 mb-2">{{user.firstName}} {{user.lastName}}</h1>
 <div id="proposalTable">
   <table class="table table-striped">
     <thead>
@@ -26,11 +26,11 @@
     <tbody>
       {% for course in courseDict %}
         <tr>
-          <td>{{ courseDict[course]['name'] }}</td>
-          <td>{{ courseDict[course]['faculty']|join(", ") }}</td>
-          <td>{{ courseDict[course]['term'].description }}</td>
-          <td>{{ courseDict[course]['status'] }}</td>
-          <td><select class="form-select" id="{{ courseDict[course]['id'] }}" onchange='changeAction(this)'>
+          <td>{{courseDict[course]['name']}}</td>
+          <td>{{courseDict[course]['faculty']|join(", ")}}</td>
+          <td>{{courseDict[course]['term'].description}}</td>
+          <td>{{courseDict[course]['status']}}</td>
+          <td><select class="form-select" id="{{courseDict[course]['id']}}" onchange='changeAction(this)'>
             <option value="---" disabled selected>Select Action</option>
             <option value="Renew">Renew</option>
             <option value="View">View</option>
@@ -42,7 +42,7 @@
     </tbody>
   </table>
   {% if not courseDict %}
-    <p class="text-center">{{ user.firstName }} {{ user.lastName }} has no associated course proposals.</p>
+    <p class="text-center">{{user.firstName}} {{user.lastName}} has no associated course proposals.</p>
   {% endif %}
 </div>
 <div class="modal fade" id="withdrawModal" tabindex="-1" aria-labelledby="withdrawModalLabel" aria-hidden="true">
