@@ -1,20 +1,16 @@
 {% extends "base.html"%}
-
 {% block scripts %}
   {{super()}}
   <script src="/static/js/slcManagement.js"></script>
 {% endblock %}
 
-{% block styles %}
-  {{super()}}
-{% endblock %}
-
 {% block app_content %}
-<h1 class="text-center">{{g.current_user.firstName}} {{g.current_user.lastName}}</h1>
+<input id="username" type="hidden" value='{{user.username}}'>
+<h1 class="text-center mt-5 mb-2">{{user.firstName}} {{user.lastName}}</h1>
 <div align="right">
   <a class="btn btn-primary" href="/serviceLearning/newProposal" role="button">Create Course Proposal</a>
 </div>
-<div>
+<div id="proposalTable">
   <table class="table table-striped">
     <thead>
       <tr>
@@ -26,13 +22,13 @@
       </tr>
     </thead>
     <tbody>
-        {% for course in courseDict %}
-          <tr>
-            <td>{{courseDict[course]['name']}}</td>
-            <td>{{courseDict[course]['faculty']|join(", ")}}</td>
-            <td>{{courseDict[course]['term'].description}}</td>
-            <td>{{courseDict[course]['status']}}</td>
-            <td>
+      {% for course in courseDict %}
+        <tr>
+          <td>{{courseDict[course]['name']}}</td>
+          <td>{{courseDict[course]['faculty']|join(", ")}}</td>
+          <td>{{courseDict[course]['term'].description}}</td>
+          <td>{{courseDict[course]['status']}}</td>
+          <td>
             <select class="form-select" id="{{courseDict[course]['id']}}" onchange='changeAction(this)'>
               <option value="---" disabled selected>Select Action</option>
               <option value="Renew">Renew</option>
@@ -45,23 +41,27 @@
       {% endfor %}
     </tbody>
   </table>
-  <!-- Modal -->
-  <div class="modal fade" id="withdrawModal" tabindex="-1" aria-labelledby="withdrawModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="withdrawModalLabel">Remove Course</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          Are you sure you want to withdraw this SL Course? <br>
-          You will have to create or renew this proposal again.
-          <input id="courseToRemove" type="hidden" value="">
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" onclick="withdraw()">Withdraw</button>
-        </div>
+  {% if not courseDict %}
+    <p class="text-center">{{user.firstName}} {{user.lastName}} has no associated course proposals.</p>
+  {% endif %}
+</div>
+<div class="modal fade" id="withdrawModal" tabindex="-1" aria-labelledby="withdrawModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="withdrawModalLabel">Withdraw Course</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input id="courseID" type="hidden" value="">
+        <p>Are you sure you want to withdraw this service learning course proposal?<br><br>
+          <span class="text-danger bi bi-exclamation-triangle-fill"></span>
+          <b>Note: This action is irreversible. Once withdrawn, the proposal will be forever deleted.</b>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="withdrawBtn">Withdraw</button>
       </div>
     </div>
   </div>

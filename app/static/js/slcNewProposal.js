@@ -50,10 +50,7 @@ function displayCorrectTab(navigateTab) {
   currentTab = currentTab + navigateTab;
 
   if (currentTab >= allTabs.length) {
-    console.log("currentTab: ", currentTab);
-    console.log("all tabs: ", allTabs.length);
-    //saveCourseInstructors().then(() => $("#slcNewProposal").submit());
-    saveCourseInstructors().then(() => console.log("Ends here."));
+    saveCourseInstructors().then(() => $("#slcNewProposal").submit());
     return false;
   }
   showTab(currentTab);

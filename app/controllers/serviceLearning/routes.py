@@ -10,15 +10,22 @@ from app.models.courseParticipant import CourseParticipant
 
 from app.controllers.serviceLearning import serviceLearning_bp
 from app.logic.searchUsers import searchUsers
-from app.logic.getServiceLearningCoursesData import getServiceLearningCoursesData
+from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal
 
 @serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
-def serviceCourseManagement():
+@serviceLearning_bp.route('/serviceLearning/courseManagement/<username>', methods = ['GET'])
+def serviceCourseManagement(username=None):
     """This is a Temporary Page for the Service Course Managment Screen."""
-    courseDict = getServiceLearningCoursesData(g.current_user)
-    return render_template('serviceLearning/slcManagment.html',
-        instructor=g.current_user,
-        courseDict=courseDict)
+    # TODO: How to make accessing other user's interfaces more userfriendly?
+    if g.current_user.isAdmin or g.current_user.isFaculty:
+        user = User.get(User.username==username) if username else g.current_user
+        courseDict = getServiceLearningCoursesData(user)
+        return render_template('serviceLearning/slcManagment.html',
+            user=user,
+            courseDict=courseDict)
+    else:
+        flash("Unauthorized to view page", 'warning')
+        return redirect(url_for('main.events'))
 
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcNewProposal():
@@ -49,7 +56,6 @@ def slcNewProposal():
             CourseInstructor.create(course=course, user=instructor.username)
         return redirect('/serviceLearning/courseManagement')
 
-    # TODO: should it be more specific? Like filter by Fall, Spring, etc?
     terms = Term.select().where(Term.year >= g.current_term.year)
     return render_template('serviceLearning/slcNewProposal.html', terms=terms)
 
@@ -66,12 +72,14 @@ def getInstructors():
     instructorsDict["instructors"] = instructorObjectList
     return jsonify({"Success": True}), 200
 
-# TODO: doesnt work. Combine with the work that has already been done.
-@serviceLearning_bp.route('/withdrawCourse/<courseID>', methods = ['POST'])
+@serviceLearning_bp.route('/serviceLearning/withdraw/<courseID>', methods = ['POST'])
 def withdrawCourse(courseID):
-    course = Course.get(Course.id == courseID)
-    (CourseInstructor.delete().where(CourseInstructor.course == course)).execute()  #need to delete all ForeignKeyFields first
-    (CourseParticipant.delete().where(CourseParticipant.course == course)).execute()
-    course.delete_instance()
-    flash("Course successfully withdrawn", 'success')
-    return "Course successfully withdrawn"
+    try:
+        if g.current_user.isAdmin or g.current_user.isFaculty:
+            withdrawProposal(courseID)
+            flash("Course successfully withdrawn", 'success')
+        else:
+            flash("Unauthorized to perform this action", 'warning')
+    except Exception as e:
+        flash("Withdrawal Unsuccessful", 'warning')
+    return ""
