@@ -67,17 +67,50 @@
       </div>
 
   </div>
+
   <div class="row">
     <div>
-      {% if g.current_user.isCeltsAdmin %}
+      <table class="table">
+   <thead>
+     <tr>
+       <th scope="col">Type</th>
+       <th scope="col">Completed</th>
+     </tr>
+   </thead>
+   <tbody>
+     <tr>
+       <td>SHS</td>
+       <td><select id="check" onchange="updateBackgroundCheck({{username}})">
+         <option value=1>Yes</option>
+         <option value=0  {{"selected" if "SHS" not in completedBackGroundCheck or completedBackGroundCheck["SHS"] == False}}>No</option>
+       </select></td>
+     </tr>
+     <tr>
+       <td>FBI</td>
+       <td><select id="check" onchange="updateBackgroundCheck({{username}})">
+         <option value=1>Yes</option>
+         <option value=0  {{"selected" if "FBI" not in completedBackGroundCheck or completedBackGroundCheck["FBI"] == False}}>No</option>
+       </select></td>
+     </tr>
+     <tr>
+       <td>CAN</td>
+       <td><select id="check" onchange="updateBackgroundCheck({{username}})">
+         <option value=1>Yes</option>
+         <option value=0  {{"selected" if "CAN" not in  completedBackGroundCheck or completedBackGroundCheck["CAN"] == False}}>No</option>
+       </select></td>
+     </tr>
+   </tbody>
+ </table>
+  </div>
+      <!-- {% if g.current_user.isCeltsAdmin %}
       <label for="check"><strong>Completed their background check:</strong></label>
       {% set username = user.username%}
       <select id="check" onchange="updateBackgroundCheck({{username}})">
         <option value=1>Yes</option>
         <option value=0  {{"selected" if completedBackGroundCheck == False}}>No</option>
       </select>
-      {%endif%}
-    </div>
+      {%endif%} -->
+
   </div>
 
 </div>

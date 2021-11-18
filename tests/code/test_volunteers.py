@@ -114,14 +114,22 @@ def test_updateEventParticipants():
 @pytest.mark.integration
 def test_backgroundCheck():
 
-    updatebackground = updateOrCreateVolunteerBackground("khatts", True)
-    updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "khatts"))
+    updatebackground = updateOrCreateVolunteerBackground("khatts","CAN",False)
+    updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "khatts",BackgroundCheck.type == "CAN"))
+    assert updatedModel[0].passBackgroundCheck == False
+
+    updatebackground = updateOrCreateVolunteerBackground("khatts","FBI",True)
+    updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "khatts",BackgroundCheck.type == "FBI"))
     assert updatedModel[0].passBackgroundCheck == True
 
-    updatebackground = updateOrCreateVolunteerBackground("neillz", False)
-    updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "neillz"))
+    updatebackground = updateOrCreateVolunteerBackground("khatts","SHS",False)
+    updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "khatts",BackgroundCheck.type == "SHS"))
     assert updatedModel[0].passBackgroundCheck == False
 
-    updatebackground = updateOrCreateVolunteerBackground("mupotsal", False)
-    updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "mupotsal"))
+    updatebackground = updateOrCreateVolunteerBackground("neillz", "FBI",False)
+    updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "neillz",BackgroundCheck.type == "FBI"))
     assert updatedModel[0].passBackgroundCheck == False
+
+    updatebackground = updateOrCreateVolunteerBackground("mupotsal","SHS",True)
+    updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "mupotsal",BackgroundCheck.type == "SHS"))
+    assert updatedModel[0].passBackgroundCheck == True

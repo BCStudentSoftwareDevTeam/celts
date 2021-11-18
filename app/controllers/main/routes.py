@@ -58,7 +58,12 @@ def profilePage(username):
         interests_ids = [interest.program.id for interest in interests]
         rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == profileUser)
         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
-        completedBackGroundCheck = BackgroundCheck.get(BackgroundCheck.user==profileUser)
+
+        allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == profileUser))
+        completedBackGroundCheck = {}
+        for entry in allUserEntries:
+            completedBackGroundCheck[entry.type.id] = entry.passBackgroundCheck
+        print("completedBackGroundCheck.........................kkk......................",completedBackGroundCheck)
 
         return render_template('/volunteer/volunteerProfile.html',
                                title="Volunteer Interest",
@@ -68,7 +73,7 @@ def profilePage(username):
                                interests_ids = interests_ids,
                                upcomingEvents = upcomingEvents,
                                rsvpedEvents = rsvpedEvents,
-                               completedBackGroundCheck = completedBackGroundCheck.passBackgroundCheck)
+                               completedBackGroundCheck = completedBackGroundCheck)
     except Exception as e:
         print(e)
         return "Error retrieving user profile", 500
