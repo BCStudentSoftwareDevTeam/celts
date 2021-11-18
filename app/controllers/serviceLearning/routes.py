@@ -23,7 +23,7 @@ def serviceCourseManagement():
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcNewProposal():
     if request.method == "POST":
-        # TODO: Whose phone number will this be if there are multiple instructors?
+        # TODO: Where to save the phone number?
         # courseData["courseInstructorPhone"] = request.form.get("courseInstructorPhone")
         term = Term.get(Term.id==request.form.get("term"))
         status = CourseStatus.get(CourseStatus.status == "Pending")

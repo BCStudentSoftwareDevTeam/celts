@@ -12,7 +12,6 @@ function showTab(currentTab) {
   let allTabs = $(".tab");
   $(allTabs[currentTab]).css("display", "block");
   if (currentTab == 0) {
-    // TODO: make sure cancel redirects to management page.
     $("#cancelButton").show();
     $("#previousButton").css("display", "none");
   } else {
@@ -44,7 +43,6 @@ function displayCorrectTab(navigateTab) {
   // This function will figure out which tab to display
   let allTabs = $(".tab");
 
-  // TODO: Keep this or implement new validation?
   if (navigateTab == 1 && !validateForm()) return false;
 
   $(allTabs[currentTab]).css("display", "none");
