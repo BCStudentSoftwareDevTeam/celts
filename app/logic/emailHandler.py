@@ -3,6 +3,7 @@ import yaml, os
 from flask_mail import Mail, Message
 from app.models.interest import Interest
 from app.models.user import User
+from app.models.program import Program
 from app.models.eventParticipant import EventParticipant
 from app.models.emailTemplate import EmailTemplate
 from app import app
@@ -11,9 +12,15 @@ import webbrowser
 import time
 from pathlib import Path
 
-def getInterestedEmails(programID = None):
+def getInterestedEmails(listOfPrograms):
     """ Gets emails of students interested in a program. """
-    volunteersToEmail = User.select().join(Interest).where(Interest.program == programID)
+    emails = []
+    print("\n\n\n\n\n",listOfPrograms,"\n\n\n\n\n")
+
+    volunteersToEmail = User.select(User.email).join(Interest).join(Program, on=(Program.id == Interest.program)).where(Program.id.in_([p.id for p in listOfPrograms]))
+    print("\n\n\n\n\n",volunteersToEmail,"\n\n\n\n\n")
+    print("\n\n\n\n\n", volunteersToEmail.objects(),"\n\n\n\n\n")
+
     return [user.email for user in volunteersToEmail]
 
 def getParticipantEmails(eventID = None):
@@ -49,13 +56,15 @@ class emailHandler():
     def sendEmail(self, msg: Message, emails):
         """ Updates the sender and sends the email. """
         message = self.updateSenderEmail(msg)
+        try:
+            if app.config['ENV'] == 'testing':
+                message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
+            message.reply_to = app.config["MAIL_REPLY_TO_ADDRESS"]
 
-        if 'MAIL_OVERRIDE_ALL' in app.config:
-            message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
-        message.reply_to = app.config["REPLY_TO_ADDRESS"]
+            self.mail = Mail(self.application)
+            self.mail.connect()
+            self.mail.send(message)
+        except:
+            return False
 
-        self.mail = Mail(self.application)
-        self.mail.connect()
-        self.mail.send(message)
-
-        return 1
+        return True

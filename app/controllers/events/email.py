@@ -18,15 +18,15 @@ def emailVolunteers():
         return redirect(url_for("main.events", selectedTerm = emailInfo['selectedTerm']))
     else:
         if emailInfo['programID'] == 'Unknown':
-            program = ProgramEvent.get(ProgramEvent.event == emailInfo['eventID'])
-            emailInfo['programID'] = program.id
-
+            emailInfo['eventID'] = 2
+            programs = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event == emailInfo['eventID'])
+            listOfPrograms = [program.program for program in programs.objects()]
+            emailInfo['programID'] = listOfPrograms
+            print("\n\n\n\n\n list of programs:", listOfPrograms, "\n\n\n\n\n\n\n")
         if emailInfo['emailRecipients'] == "interested":
             emails = getInterestedEmails(emailInfo['programID'])
         elif emailInfo['emailRecipients'] == "eventParticipant":
             emails = getParticipantEmails(emailInfo['eventID'])
-        else:
-            flash("Unable to determine email recipients", "danger")
 
         if emails == None:
             flash("Error getting email recipients", "danger")
@@ -37,7 +37,7 @@ def emailVolunteers():
                                            emails, # recipients
                                            emailInfo['message']),
                                            emails) # passed for sending individually
-        if emailSent == 1:
+        if emailSent == True:
             flash("Email successfully sent!", "success")
         else:
             flash("Error sending email", "danger")
@@ -45,7 +45,7 @@ def emailVolunteers():
 
 @events_bp.route('/mailto', methods=['POST'])
 def getEmails(emailGroup, programID=None, eventID=None):
-    """asdfs"""
+    """This is where the ajax call should get the mailto info"""
 
     if emailGroup=='interested' and programID:
         emails = getInterestedEmails(programID)
