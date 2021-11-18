@@ -23,39 +23,46 @@ $(document).ready(function(){
   });
 
   $(".ban").click(function() {
-
-    $("#banButton").text($(this).val() + " Volunteer");
+    var banButton = $("#banButton")
+    var banEndDateDiv = $("#banEndDate") // Div containing the datepicker in the ban modal
+    var banEndDatepicker = $("#banEndDatepicker") // Datepicker in the ban modal
+    var banNoteDiv = $("#banNoteDiv") // Div containing the note displaying why the user was banned previously
+                                     //Should only diplay when the modal is going to unban a user
+    banButton.text($(this).val() + " Volunteer");
+    banButton.attr("programID", $(this).attr("id"))
+    banButton.attr("username", $(".form-check-input").attr("name"))
+    banButton.attr("banOrUnban", $(this).val());
+    banEndDateDiv.show();
+    banEndDatepicker.val("");
     $(".modal-title").text($(this).val() + " Volunteer");
     $("#modalProgramName").text("Program: " + $(this).attr("name"));
     $("#banModal").modal("toggle");
-    $("#banButton").attr("programID", $(this).attr("id"))
-    $("#banButton").attr("username", $(".form-check-input").attr("name"))
-    $("#banButton").attr("banOrUnban", $(this).val());
-    $("#ubanEndDate").show()
-    $("#banNoteDiv").hide()
-    $("#banEndDate").val("")
-    $("#banVolunteerNote").val("")
+    banNoteDiv.hide();
+    $("#banNoteTxtArea").val("");
 
     if( $(this).val()=="Unban"){
-      $("#ubanEndDate").hide()
-      $("#banEndDate").val("0001-01-01") //This is a placeholder value for the if statement in line 49 to work properly
-      $("#banNoteDiv").show()
+      banEndDateDiv.hide()
+      banEndDatepicker.val("0001-01-01") //This is a placeholder value for the if statement in line 52 to work properly #PLCHLD1
+      banNoteDiv.show()
       $("#banNote").text($(this).attr("note"))
     }
 
   });
 
-  $("#banVolunteerNote, #banEndDate").change(function () {
-    var enableButton = ($("#banVolunteerNote").val() && $("#banEndDate").val());
+  $("#banNoteTxtArea, #banEndDatepicker").change(function () { //This is the if statement the placeholder in line 45 is for #PLCHLD1
+    var enableButton = ($("#banNoteTxtArea").val() && $("#banEndDatepicker").val());
     $("#banButton").prop("disabled", !enableButton);
   });
 
   $("#banButton").click(function (){
+    var username = $(this).attr("username") //Expected to be the unique username of a user in the database
+    var route = ($(this).attr("banOrUnban")).toLowerCase() //Expected to be "ban" or "unban"
+    var program = $(this).attr("programID") //Expected to be a program's primary ID
     $.ajax({
       method: "POST",
-      url:  "/" + $(this).attr("username") + "/" + ($(this).attr("banOrUnban")).toLowerCase() + "/" + $(this).attr("programID"),
-      data: {"note": $("#banVolunteerNote").val(),
-             "endDate":$("#banEndDate").val()
+      url:  "/" + username + "/" + route + "/" + program,
+      data: {"note": $("#banNoteTxtArea").val(),
+             "endDate":$("#banEndDatepicker").val() //Expected to be a date in this format YYYY-MM-DD
             },
       success: function(response) {
         location.reload();
