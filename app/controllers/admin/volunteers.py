@@ -103,7 +103,7 @@ def removeVolunteerFromEvent(user, eventID):
 def updateBackgroundCheck():
     eventData = request.form
     user = eventData['user']
-    setTo = int(eventData['setTo'])
+    checkPassed = int(eventData['checkPassed'])
     type = eventData['bgType']
-    setUserBackgroundCheck(user,type, setTo)
+    setUserBackgroundCheck(user,type, checkPassed)
     return ""

@@ -28,10 +28,9 @@ $(document).ready(function() {
 
 function updateBackgroundCheck(user,bgType){
 
-  let setTo = $( "#"+bgType).val();
-  console.log(setTo)
+  let checkPassed = $( "#"+bgType).val();
   let data = {
-      setTo : setTo,
+      checkPassed : checkPassed,
       user: user.id,
       bgType: bgType
   }
