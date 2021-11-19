@@ -3,7 +3,7 @@
 {% block scripts %}
   {{super()}}
   <script type="module" src="/static/js/manageServiceLearningFaculty.js"></script>
-
+  <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/r-2.2.9/datatables.min.js"></script>
 {% endblock %}
 
 {% block app_content %}
@@ -25,23 +25,18 @@
   </thead>
   <tbody id = "facultyTable">
   {% for instructor in courseInstructors%}
-
   <tr>
     <td>{{instructor}}</td>
     <td>{{courseInstructors[instructor]}}</td>
   </tr>
   {% endfor %}
-
-
   </tbody>
 </table>
 
-<div class="input-group">
-  <input type="input" id="{{inputId}}" name="{{inputId}}" class="form-control" placeholder="Search" autocomplete="off" onkeyup="Function()"/>
-  <button type="button" class="btn btn-secondary btn-sm" disabled>
-    <span class="bi bi-search"></span>
-  </button>
-  <button type="button" class="btn btn-primary" disabled>Send Email</button>
+
+
+<div>
+  <button type="button" class="btn btn-primary" disabled> Email all</button>
 </div>
 
 
