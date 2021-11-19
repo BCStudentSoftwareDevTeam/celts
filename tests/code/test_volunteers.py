@@ -1,5 +1,5 @@
 import pytest
-from app.logic.volunteers import getEventLengthInHours, updateEventParticipants, updateOrCreateVolunteerBackground
+from app.logic.volunteers import getEventLengthInHours, updateEventParticipants, setUserBackgroundCheck
 from app.models.eventParticipant import EventParticipant
 from app.controllers.admin.volunteers import addVolunteerToEventRsvp
 from app.models.backgroundCheck import BackgroundCheck
@@ -114,22 +114,22 @@ def test_updateEventParticipants():
 @pytest.mark.integration
 def test_backgroundCheck():
 
-    updatebackground = updateOrCreateVolunteerBackground("khatts","CAN",False)
+    updatebackground = setUserBackgroundCheck("khatts","CAN",False)
     updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "khatts",BackgroundCheck.type == "CAN"))
     assert updatedModel[0].passBackgroundCheck == False
 
-    updatebackground = updateOrCreateVolunteerBackground("khatts","FBI",True)
+    updatebackground = setUserBackgroundCheck("khatts","FBI",True)
     updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "khatts",BackgroundCheck.type == "FBI"))
     assert updatedModel[0].passBackgroundCheck == True
 
-    updatebackground = updateOrCreateVolunteerBackground("khatts","SHS",False)
+    updatebackground = setUserBackgroundCheck("khatts","SHS",False)
     updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "khatts",BackgroundCheck.type == "SHS"))
     assert updatedModel[0].passBackgroundCheck == False
 
-    updatebackground = updateOrCreateVolunteerBackground("neillz", "FBI",False)
+    updatebackground = setUserBackgroundCheck("neillz", "FBI",False)
     updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "neillz",BackgroundCheck.type == "FBI"))
     assert updatedModel[0].passBackgroundCheck == False
 
-    updatebackground = updateOrCreateVolunteerBackground("mupotsal","SHS",True)
+    updatebackground = setUserBackgroundCheck("mupotsal","SHS",True)
     updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "mupotsal",BackgroundCheck.type == "SHS"))
     assert updatedModel[0].passBackgroundCheck == True

@@ -7,7 +7,7 @@ from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
-from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,updateOrCreateVolunteerBackground
+from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck
 from app.logic.participants import trainedParticipants, getEventParticipants
 from app.models.user import User
 from app.models.eventRsvp import EventRsvp
@@ -104,5 +104,6 @@ def updateBackgroundCheck():
     eventData = request.form
     user = eventData['user']
     setTo = int(eventData['setTo'])
-    updateOrCreateVolunteerBackground(user,setTo)
+    type = eventData['bgType']
+    setUserBackgroundCheck(user,type, setTo)
     return ""

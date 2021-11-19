@@ -26,22 +26,22 @@ $(document).ready(function() {
   });
 });
 
+function updateBackgroundCheck(user,bgType){
 
-// onchange="updateBackgroundCheck(1)"
-function updateBackgroundCheck(user){
-  let setTo = $( "#check").val();
+  let setTo = $( "#"+bgType).val();
+  console.log(setTo)
   let data = {
       setTo : setTo,
-      user: user.id
+      user: user.id,
+      bgType: bgType
   }
-
+  console.log(data)
   $.ajax({
     url: "/updateBackgroundCheck",
     type: "POST",
     data: data,
     success: function(s){
-      console.log("success")
-        // location.reload()
+      location.reload()
     },
     error: function(error, status){
         console.log(error, status)

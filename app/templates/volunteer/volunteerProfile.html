@@ -73,44 +73,26 @@
       <table class="table">
    <thead>
      <tr>
-       <th scope="col">Type</th>
+       <th scope="col">Background Type</th>
+       <th scope="col">Description</th>
        <th scope="col">Completed</th>
      </tr>
    </thead>
    <tbody>
+     {% set username = user.username%}
+     {% for entry in backgroundTypes%}
      <tr>
-       <td>SHS</td>
-       <td><select id="check" onchange="updateBackgroundCheck({{username}})">
+       <td>{{entry.id}}</td>
+       <td>{{entry.description}}</td>
+       <td><select id="{{entry.id}}" onchange="updateBackgroundCheck({{username}} , this.id)">
          <option value=1>Yes</option>
-         <option value=0  {{"selected" if "SHS" not in completedBackGroundCheck or completedBackGroundCheck["SHS"] == False}}>No</option>
+         <option value=0 {{"selected" if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False}}>No</option>
        </select></td>
      </tr>
-     <tr>
-       <td>FBI</td>
-       <td><select id="check" onchange="updateBackgroundCheck({{username}})">
-         <option value=1>Yes</option>
-         <option value=0  {{"selected" if "FBI" not in completedBackGroundCheck or completedBackGroundCheck["FBI"] == False}}>No</option>
-       </select></td>
-     </tr>
-     <tr>
-       <td>CAN</td>
-       <td><select id="check" onchange="updateBackgroundCheck({{username}})">
-         <option value=1>Yes</option>
-         <option value=0  {{"selected" if "CAN" not in  completedBackGroundCheck or completedBackGroundCheck["CAN"] == False}}>No</option>
-       </select></td>
-     </tr>
+     {%endfor%}
    </tbody>
  </table>
   </div>
-      <!-- {% if g.current_user.isCeltsAdmin %}
-      <label for="check"><strong>Completed their background check:</strong></label>
-      {% set username = user.username%}
-      <select id="check" onchange="updateBackgroundCheck({{username}})">
-        <option value=1>Yes</option>
-        <option value=0  {{"selected" if completedBackGroundCheck == False}}>No</option>
-      </select>
-      {%endif%} -->
-
   </div>
 
 </div>
