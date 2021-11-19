@@ -79,12 +79,11 @@
      </tr>
    </thead>
    <tbody>
-     {% set username = user.username%}
      {% for entry in backgroundTypes%}
      <tr>
        <td>{{entry.id}}</td>
        <td>{{entry.description}}</td>
-       <td><select id="{{entry.id}}" onchange="updateBackgroundCheck({{username}} , this.id)">
+       <td><select id="{{entry.id}}" onchange="updateBackgroundCheck({{user.username}} , this.id)">
          <option value=1>Yes</option>
          <option value=0 {{"selected" if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False}}>No</option>
        </select></td>
