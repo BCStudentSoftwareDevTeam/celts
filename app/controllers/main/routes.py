@@ -65,7 +65,8 @@ def profilePage(username):
         for entry in allUserEntries:
             completedBackgroundCheck[entry.type.id] = entry.passBackgroundCheck
         backgroundTypes = list(BackgroundCheckType.select())
-        
+
+
         return render_template('/volunteer/volunteerProfile.html',
                                title="Volunteer Interest",
                                user = profileUser,
@@ -75,7 +76,8 @@ def profilePage(username):
                                upcomingEvents = upcomingEvents,
                                rsvpedEvents = rsvpedEvents,
                                backgroundTypes = backgroundTypes,
-                               completedBackgroundCheck = completedBackgroundCheck)
+                               completedBackgroundCheck = completedBackgroundCheck,
+                               currentUser = g.current_user)
     except Exception as e:
         print(e)
         return "Error retrieving user profile", 500

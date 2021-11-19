@@ -79,20 +79,30 @@
      </tr>
    </thead>
    <tbody>
+
      {% for entry in backgroundTypes%}
      <tr>
        <td>{{entry.id}}</td>
        <td>{{entry.description}}</td>
-       <td><select id="{{entry.id}}" onchange="updateBackgroundCheck({{user}} , this.id)">
-         <option value=1>Yes</option>
-         <option value=0 {{"selected" if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False}}>No</option>
-       </select></td>
+       {%if currentUser.isCeltsAdmin%}
+         <td>
+           <select id="{{entry.id}}" onchange="updateBackgroundCheck({{user}} , this.id)">
+             <option value=1>Yes</option>
+             <option value=0 {{"selected" if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False}}>No</option>
+           </select>
+         </td>
+       {% else %}
+         {% if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False%}
+            <td>No</td>
+         {% else%}
+             <td>Yes</td>
+         {% endif%}
+        {% endif %}
      </tr>
      {%endfor%}
    </tbody>
  </table>
   </div>
   </div>
-
 </div>
   {% endblock %}
