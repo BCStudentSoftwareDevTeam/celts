@@ -22,7 +22,7 @@
        <a class="nav-link" aria-current="page" href="/{{volunteer.username}}/serviceTranscript">Service Transcript</a>
      </li>
    </ul>
- </div><br>
+ </div><br><br>
  <div class="row">
    <table class="table">
      {% if upcomingEvents|length > 0 %}
@@ -43,7 +43,7 @@
        </tr>
        {% endfor %}
      {% else %}
-       <h2><p class="text-info">Choose interests below to be notified about upcoming events.</p><h2>
+       <h2><p class="text-primary" align="center">Choose interests below to be notified about upcoming events.</p><h2>
      {% endif %}
    </table>
  </div>
