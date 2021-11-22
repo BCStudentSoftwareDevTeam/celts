@@ -33,13 +33,6 @@ def test_isEligibleForProgram():
     eligible = isEligibleForProgram(4, "ayisie")
     assert eligible
 
-    # user that is banned from a program
-    eligible = isEligibleForProgram(3,  "khatts")
-    assert not eligible
-
-    # user hasn't attend the required event
-    eligible3 = isEligibleForProgram(1, "ayisie")
-    assert not eligible3
 
 @pytest.mark.integration
 def test_addUserInterest():
@@ -81,34 +74,37 @@ def test_removeUserInterestt():
     result = removeUserInterest(program_id, username)
     assert result == "Successfully removed interest"
 
-# @pytest.mark.integration
-# def test_banUser():
-#
-#     #test for banning a user from a program
-#     username = "ramsayb2"
-#     program_id = 2
-#     status = banUser (program_id, username, note, banEndDate, creator)
-#     assert status == "Successfully banned user"
-#
-#     #test for banning a user from a program with different program is
-#     username = "ramsayb2"
-#     program_id = 3
-#     status = banUser (program_id, username, note, banEndDate, creator)
-#     assert status == "Successfully banned user"
-#
-#
-#
-# @pytest.mark.integration
-# def test_unbanUser():
-#
-#     #test for banning a user from a program
-#     username = "ramsayb2"
-#     program_id = 2
-#     status = unbanUser (program_id, username, note, creator)
-#     assert status == "Successfully unbanned user"
-#
-#     #test for banning a user from a program with different program is
-#     username = "ramsayb2"
-#     program_id = 3
-#     status = unbanUser (program_id, username, note, creator)
-#     assert status == "Successfully unbanned user"
+@pytest.mark.integration
+def test_banUser():
+
+    #test for banning a user from a program
+    username = "khatts"
+    program_id = 2
+    note = "Banning user test"
+    creator = "ramsayb2"
+    banEndDate = "2022-11-29"
+    status = banUser (program_id, username, note, banEndDate, creator)
+    assert status == "Successfully banned the user"
+
+    #test for banning a user from a program with different program is
+    program_id = 3
+    status = banUser (program_id, username, note, banEndDate, creator)
+    assert status == "Successfully banned the user"
+
+
+
+@pytest.mark.integration
+def test_unbanUser():
+
+    #test for banning a user from a program
+    username = "khatts"
+    program_id = 2
+    note = "unbanning user test"
+    creator = "ramsayb2"
+    status = unbanUser (program_id, username, note, creator)
+    assert status == "Successfully unbanned the user"
+
+    #test for banning a user from a program with different program is
+    program_id = 3
+    status = unbanUser (program_id, username, note, creator)
+    assert status == "Successfully unbanned the user"
