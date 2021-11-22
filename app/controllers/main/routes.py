@@ -68,6 +68,7 @@ def viewVolunteersProfile(username):
               noteForDict = "None"
               for j in notes:
                   noteForDict = j.banNote.noteContent
+              # noteForDict = list(notes[-1].banNote.noteContent)
               eligibilityTable.append({"program" : program,
                                        "completedTraining" : (username in trainedParticipants(program)),
                                        "isNotBanned" : isEligibleForProgram(program, username),
