@@ -65,14 +65,12 @@ def viewVolunteersProfile(username):
               notes = ProgramBan.select().where(ProgramBan.user == username,
                                                 ProgramBan.program == program,
                                                 ProgramBan.endDate > datetime.datetime.now())
-              noteForDict = "None"
-              for j in notes:
-                  noteForDict = j.banNote.noteContent
-              # noteForDict = list(notes[-1].banNote.noteContent)
+
+              noteForDict = list(notes)[-1].banNote.noteContent if list(notes) else ""
               eligibilityTable.append({"program" : program,
-                                       "completedTraining" : (username in trainedParticipants(program)),
-                                       "isNotBanned" : isEligibleForProgram(program, username),
-                                       "banNote": noteForDict})
+                                   "completedTraining" : (username in trainedParticipants(program)),
+                                   "isNotBanned" : isEligibleForProgram(program, username),
+                                   "banNote": noteForDict})
          return render_template ("/main/volunteerProfile.html",
             programs = programs,
             interests = interests,
