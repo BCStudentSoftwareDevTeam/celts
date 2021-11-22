@@ -3,6 +3,7 @@ $(document).ready( function () {
    "fnDrawCallback": function(oSettings) {
      if ($('#myTable tr').length < 11) {
          $('.dataTables_length').hide();
+         $('.dataTables_filter').addClass('pull-left');
        }
 
     }

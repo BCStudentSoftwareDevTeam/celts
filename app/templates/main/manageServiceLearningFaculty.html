@@ -7,6 +7,12 @@
 {% endblock %}
 
 {% block app_content %}
+<style>
+    .pull-left{
+      float: left !important;
+    }
+</style>
+
 
 
 
@@ -26,7 +32,7 @@
   <tbody id = "facultyTable">
   {% for instructor in courseInstructors%}
   <tr>
-    <td>{{instructor}}</td>
+    <td> <a href=" /courseManagement" class="link-primary">{{instructor}}</a></td>
     <td>{{courseInstructors[instructor]}}</td>
   </tr>
   {% endfor %}
