@@ -1,5 +1,6 @@
 import pytest
 from app.models.program import Program
+from app.models.note import Note
 from app.models.user import User
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
 from app.logic.users import isEligibleForProgram
@@ -79,3 +80,35 @@ def test_removeUserInterestt():
     program_id = 3
     result = removeUserInterest(program_id, username)
     assert result == "Successfully removed interest"
+
+@pytest.mark.integration
+def test_banUser():
+
+    #test for banning a user from a program
+    username = "ramsayb2"
+    program_id = 2
+    status = banUser (program_id, username, note, banEndDate, creator)
+    assert status == "Successfully banned user"
+
+    #test for banning a user from a program with different program is
+    username = "ramsayb2"
+    program_id = 3
+    status = banUser (program_id, username, note, banEndDate, creator)
+    assert status == "Successfully banned user"
+
+
+
+# @pytest.mark.integration
+# def test_unbanUser():
+#
+#     #test for banning a user from a program
+#     username = "ramsayb2"
+#     program_id = 2
+#     status = unbanUser (program_id, username, note, banEndDate, creator)
+#     assert status == "Successfully unbanned user"
+#
+#     #test for banning a user from a program with different program is
+#     username = "ramsayb2"
+#     program_id = 3
+#     status = unbanUser (program_id, username, note, banEndDate, creator)
+#     assert status == "Successfully unbanned user"

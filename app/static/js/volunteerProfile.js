@@ -28,6 +28,8 @@ $(document).ready(function(){
     var banEndDatepicker = $("#banEndDatepicker") // Datepicker in the ban modal
     var banNoteDiv = $("#banNoteDiv") // Div containing the note displaying why the user was banned previously
                                      //Should only diplay when the modal is going to unban a user
+    var banNote = $("#banNote")
+
     banButton.text($(this).val() + " Volunteer");
     banButton.attr("programID", $(this).attr("id"))
     banButton.attr("username", $(".form-check-input").attr("name"))
@@ -44,7 +46,7 @@ $(document).ready(function(){
       banEndDateDiv.hide()
       banEndDatepicker.val("0001-01-01") //This is a placeholder value for the if statement in line 52 to work properly #PLCHLD1
       banNoteDiv.show()
-      $("#banNote").text($(this).attr("note"))
+      banNote.text($(this).attr("note"))
     }
 
   });

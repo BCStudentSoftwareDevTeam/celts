@@ -40,14 +40,13 @@ def removeUserInterest(program_id, username):
     username: username of the user showing disinterest
 
     """
-    try:
-        interestToDelete = Interest.get(Interest.program == program_id, Interest.user == username)
+    interestToDelete = Interest.get(Interest.program == program_id, Interest.user == username)
+    if interestToDelete:
         interestToDelete.delete_instance()
         return "Successfully removed interest"
-    except Exception as e:
-        print("Error: ", e)
-        return "An error ocurred while removing the interest"
-
+    else:
+        raise Exception("Interest does not exist.")
+        return False
 
 def banUser(program_id, username, note, banEndDate, creator):
     """
