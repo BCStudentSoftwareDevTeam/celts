@@ -1,6 +1,5 @@
 $(document).ready(function() {
   $(".form-check-input").click(function updateInterest(el){
-    console.log("passed");
     var programID = $(this).attr('id');
     var interest = $(this).is(':checked');
 
@@ -27,14 +26,12 @@ $(document).ready(function() {
 });
 
 function updateBackgroundCheck(user,bgType){
-
   let checkPassed = $( "#"+bgType).val();
   let data = {
       checkPassed : checkPassed,
       user: user.id,
       bgType: bgType
   }
-  console.log(data)
   $.ajax({
     url: "/updateBackgroundCheck",
     type: "POST",
