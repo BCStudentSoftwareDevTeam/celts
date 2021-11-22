@@ -73,7 +73,6 @@
       <table class="table">
    <thead>
      <tr>
-       <th scope="col">Background Type</th>
        <th scope="col">Description</th>
        <th scope="col">Completed</th>
      </tr>
@@ -82,7 +81,6 @@
 
      {% for entry in backgroundTypes%}
      <tr>
-       <td>{{entry.id}}</td>
        <td>{{entry.description}}</td>
        {%if currentUser.isCeltsAdmin%}
          <td>
