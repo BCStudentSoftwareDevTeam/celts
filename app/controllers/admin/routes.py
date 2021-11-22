@@ -16,13 +16,11 @@ from app.models.eventTemplate import EventTemplate
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
-from app.models.interest import Interest
-from app.models.programBan import ProgramBan
-from app.logic.getSLInstructorTableData import getProposalData
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
+from app.logic.courseManagement import pendingCourses, approvedCourses
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
@@ -175,3 +173,24 @@ def addParticipants():
 
     return render_template('addParticipants.html',
                             title="Add Participants")
+
+@admin_bp.route('/courseManagement', methods = ['GET', 'POST'])
+@admin_bp.route('/courseManagement/<term>', methods = ['GET', 'POST'])
+def courseManagement(term = None):
+    '''
+    Renders the page for admins to manage Course Proposals
+    '''
+
+    term = Term.get_or_none(Term.id == term)
+    if not term:
+        term = g.current_term
+
+    pending = pendingCourses(term)
+    approved = approvedCourses(term)
+    terms = selectSurroundingTerms(g.current_term)
+
+    return render_template('/admin/courseManagement.html',
+                            pendingCourses = pending,
+                            approvedCourses = approved,
+                            terms = terms,
+                            term = term)
