@@ -84,10 +84,14 @@ def addVolunteerToEventRsvp(user, volunteerEventID):
 
 def setUserBackgroundCheck(user,bgType, checkPassed):
     user = User.get_by_id(user)
-    requiredQuery = BackgroundCheck.select().where(BackgroundCheck.user == user, BackgroundCheck.type == bgType)
+    #still working on this
+    update = BackgroundCheck.get_or_create(user = user, type = bgType)
+    update.passBackgroundCheck = checkPassed
+    update.save()
 
-    if not requiredQuery.exists():
-        BackgroundCheck.create(user = user, type = bgType, passBackgroundCheck = checkPassed) # Check if this is needed.
-    else:
-        update = BackgroundCheck.update(passBackgroundCheck = checkPassed).where(BackgroundCheck.user == user, BackgroundCheck.type == bgType)
-        update.execute()
+
+    # if not requiredQuery.exists():
+    #     BackgroundCheck.create(user = user, type = bgType, passBackgroundCheck = checkPassed) # Check if this is needed.
+    # else:
+    #     update = BackgroundCheck.update(passBackgroundCheck = checkPassed).where(BackgroundCheck.user == user, BackgroundCheck.type == bgType)
+    #     update.execute()

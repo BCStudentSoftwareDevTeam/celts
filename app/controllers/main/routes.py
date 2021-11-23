@@ -61,9 +61,7 @@ def profilePage(username):
         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
 
         allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == profileUser))
-        completedBackgroundCheck = {}
-        for entry in allUserEntries:
-            completedBackgroundCheck[entry.type.id] = entry.passBackgroundCheck
+        completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
         backgroundTypes = list(BackgroundCheckType.select())
 
 
@@ -76,8 +74,8 @@ def profilePage(username):
                                upcomingEvents = upcomingEvents,
                                rsvpedEvents = rsvpedEvents,
                                backgroundTypes = backgroundTypes,
-                               completedBackgroundCheck = completedBackgroundCheck,
-                               currentUser = g.current_user)
+                               completedBackgroundCheck = completedBackgroundCheck
+                               )
     except Exception as e:
         print(e)
         return "Error retrieving user profile", 500

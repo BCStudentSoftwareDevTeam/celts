@@ -115,21 +115,21 @@ def test_updateEventParticipants():
 def test_backgroundCheck():
 
     updatebackground = setUserBackgroundCheck("khatts","CAN",False)
-    updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "khatts",BackgroundCheck.type == "CAN"))
-    assert updatedModel[0].passBackgroundCheck == False
+    updatedModel = BackgroundCheck.get(user="khatts", type = "CAN")
+    assert updatedModel.passBackgroundCheck == False
 
     updatebackground = setUserBackgroundCheck("khatts","FBI",True)
-    updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "khatts",BackgroundCheck.type == "FBI"))
-    assert updatedModel[0].passBackgroundCheck == True
+    updatedModel = BackgroundCheck.get(user =  "khatts", type = "FBI")
+    assert updatedModel.passBackgroundCheck == True
 
     updatebackground = setUserBackgroundCheck("khatts","SHS",False)
-    updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "khatts",BackgroundCheck.type == "SHS"))
-    assert updatedModel[0].passBackgroundCheck == False
+    updatedModel = BackgroundCheck.get(user = "khatts", type = "SHS")
+    assert updatedModel.passBackgroundCheck == False
 
     updatebackground = setUserBackgroundCheck("neillz", "FBI",False)
-    updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "neillz",BackgroundCheck.type == "FBI"))
-    assert updatedModel[0].passBackgroundCheck == False
+    updatedModel = BackgroundCheck.get(user =  "neillz", type = "FBI")
+    assert updatedModel.passBackgroundCheck == False
 
     updatebackground = setUserBackgroundCheck("mupotsal","SHS",True)
-    updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "mupotsal",BackgroundCheck.type == "SHS"))
-    assert updatedModel[0].passBackgroundCheck == True
+    updatedModel = BackgroundCheck.get(user = "mupotsal", type = "SHS")
+    assert updatedModel.passBackgroundCheck == True

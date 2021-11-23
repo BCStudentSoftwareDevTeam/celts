@@ -101,9 +101,13 @@ def removeVolunteerFromEvent(user, eventID):
 
 @admin_bp.route('/updateBackgroundCheck', methods = ['POST'])
 def updateBackgroundCheck():
-    eventData = request.form
-    user = eventData['user']
-    checkPassed = int(eventData['checkPassed'])
-    type = eventData['bgType']
-    setUserBackgroundCheck(user,type, checkPassed)
-    return ""
+    if g.current_user.isCeltsAdmin:
+        eventData = request.form
+        user = eventData['user']
+        checkPassed = int(eventData['checkPassed'])
+        type = eventData['bgType']
+        setUserBackgroundCheck(user,type, checkPassed)
+        return ""
+    else:
+        abort(404)
+        return ""
