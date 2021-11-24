@@ -5,7 +5,6 @@ $(document).ready( function () {
          $('.dataTables_length').hide();
          $('.dataTables_filter').addClass('pull-left');
        }
-
     }
   });
 });
