@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block app_content %}
-  {% set isAdmin = g.current_user.isAdmin %}
+  {% set isAdmin = g.current_user.isCeltsAdmin or isProgramManager %}
   {% set isEditable = isAdmin %}
   {% set isNewEvent = 'create' in request.path %}
 
@@ -70,7 +70,10 @@
 
         <div class="d-grid gap-1.5">
           <div class="form-group">
-            <label for='name'> <strong>Event Name</strong></label> <br>
+            <label for='name'> <strong>Event Name {{isProgramManager}}
+
+
+</strong></label> <br>
             {% if isEditable %}
               <input class="form-control"  id='inputEventName' value="{{eventData.name}}" name="name" required>
             {% else %}
@@ -257,5 +260,6 @@
           </div>
       </div>
 </form>
+
 
 {% endblock %}

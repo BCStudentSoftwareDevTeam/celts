@@ -782,6 +782,14 @@ studentManagerPrograms = [
     {
     'user':'ayisie',
     'program':12
+    },
+    {
+    'user':'neillz',
+    'program':'1'
+    },
+    {
+    'user':'neillz',
+    'program':12
     }
 ]
 

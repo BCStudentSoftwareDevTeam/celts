@@ -17,6 +17,7 @@ from app.models.eventTemplate import EventTemplate
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
+from app.models.studentManagerPermissions import StudentManagerPermissions
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
@@ -25,6 +26,7 @@ from app.logic.courseManagement import pendingCourses, approvedCourses
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
+
 
 @admin_bp.route('/switch_user', methods=['POST'])
 def switchUser():
@@ -40,9 +42,18 @@ def switchUser():
 
 @admin_bp.route('/template_select')
 def templateSelect():
-    allprograms = Program.select().order_by(Program.programName)
-    visibleTemplates = EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
+    allprograms = []
+    if g.current_user.isCeltsStudentStaff:
+        studentManagerPrograms = list(StudentManagerPermissions.select().where(StudentManagerPermissions.user==g.current_user))
+        permissionPrograms = [entry.program.id for entry in studentManagerPrograms]
+        editablePrograms = Program.select().where(Program.id.in_(permissionPrograms)).order_by(Program.programName)
+        allprograms = editablePrograms
+    else:
+        allprograms = Program.select().order_by(Program.programName)
 
+    visibleTemplates = EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
+    for program in allprograms:
+        print(program)
     return render_template("/events/template_selector.html",
                 programs=allprograms,
                 templates=visibleTemplates
@@ -94,12 +105,16 @@ def createEvent(templateid, programid=None):
     # make sure our data is the same regardless of GET or POST
     preprocessEventData(eventData)
     futureTerms = selectSurroundingTerms(g.current_term)
-
+    isProgramManager = False
+    queryManager = StudentManagerPermissions.select().where(StudentManagerPermissions.user == g.current_user,StudentManagerPermissions.program==programid)
+    if queryManager.exists():
+        isProgramManager = True
     return render_template(f"/admin/{template.templateFile}",
             template = template,
             eventData = eventData,
             futureTerms = futureTerms,
-            allFacilitators = getAllFacilitators())
+            allFacilitators = getAllFacilitators(),
+            isProgramManager = isProgramManager)
 
 
 @admin_bp.route('/event/<eventId>/edit', methods=['GET','POST'])
@@ -129,16 +144,23 @@ def editEvent(eventId):
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
 
+
+
+    isProgramManager = False
+    programSelect = ProgramEvent.get(event=eventId)
+    query = StudentManagerPermissions.select().where(StudentManagerPermissions.user == g.current_user,StudentManagerPermissions.program==programSelect.program)
+    if query.exists():
+        isProgramManager = True
     return render_template("admin/createSingleEvent.html",
                             eventData = eventData,
                             allFacilitators = getAllFacilitators(),
                             futureTerms = futureTerms,
                             isPastEvent = isPastEvent,
-                            userHasRSVPed = userHasRSVPed)
+                            userHasRSVPed = userHasRSVPed,
+                            isProgramManager = isProgramManager)
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
-
     try:
         term = Event.get(Event.id == eventId).term
         deleteEvent(eventId)

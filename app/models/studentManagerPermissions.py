@@ -5,3 +5,4 @@ from app.models.user import User
 class StudentManagerPermissions(baseModel):
     user = ForeignKeyField(User)
     program = ForeignKeyField(Program)
+    
