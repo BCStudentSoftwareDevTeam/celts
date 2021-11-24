@@ -177,7 +177,10 @@ def contributors():
 
 @main_bp.route('/manageservicelearning', methods = ['GET'])
 def managePage():
-    users = User.select().where(User.isFaculty == 1)
+    """
+    This function selects all the Intructors Name and the previous courses 
+    """
+    users = User.select().where(User.isFaculty)
     courseInstructors = CourseInstructor.select()
 
     course_dict = {}
@@ -187,9 +190,5 @@ def managePage():
             course_dict[instructor.user.firstName+ " "+ instructor.user.lastName] =  instructor.course.courseName
         else:
             course_dict[instructor.user.firstName + " "+ instructor.user.lastName] += ", " + instructor.course.courseName
-
-
-        print("this is dict", course_dict)
-
 
     return render_template('/main/manageServiceLearningFaculty.html', users = users,courseInstructors = course_dict)
