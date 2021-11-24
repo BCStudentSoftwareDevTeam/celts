@@ -12,17 +12,15 @@
 {% block app_content %}
 <form id= "searchStudent" action="/volunteerProfile" method="post">
   <h1 class="text-center mt-5 mb-3">Student Search Page</h1><br>
-  <div class="col-sm-6 col-sm-offset-3 m-auto">
-    <div class="row">
-      <div class="form-group ui-widget">
-        <div class="input-group">
-          <input type="input" id="searchStudentsInput" name="searchStudentsInput" class="form-control" placeholder="Search" autocomplete="off"/>
-          <button type="button" class="btn btn-secondary btn-sm" disabled>
-            <span class="bi bi-search"></span>
-          </button>
-        </div>
-      </div>
+  <div class="input-group col-sm-6 col-sm-offset-3 m-auto pt-5 ui-widget">
+      <select class="form-select" name='searchtype' id='searchtype'>
+        <option id="isStudent" value='Student'>Student</option>
+        <option id="isCeltsStudentStaff" value='Student'>Student Staff</option>
+        <option id="isFaculty" value='Student'>Faculty</option>
+        <option id="isCeltsAdmin" value='Student'>Admin</option>
+      </select>
+      <input type="text" id="searchStudentsInput" class="form-control w-75" aria-label="Text input with dropdown button">
+      <span class="input-group-text bi bi-search ps-2 pt-1"></span>
     </div>
-  </div>
 </form>
 {% endblock %}

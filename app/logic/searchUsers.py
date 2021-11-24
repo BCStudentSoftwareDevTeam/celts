@@ -11,7 +11,7 @@ def searchUsers(query):
     lastName = " ".join(splitSearch[1:]) +"%"
 
     if len(splitSearch) == 1: #search for first or last name
-        results = User.select().where(User.isStudent & User.firstName ** firstName | User.lastName ** firstName)
+        results = User.select().where(User.isStudent & (User.firstName ** firstName | User.lastName ** firstName))
         for participant in results:
             if participant not in resultsDict:
                 resultsDict[f"{participant.firstName} {participant.lastName} ({participant.username})"] = f"{participant.firstName} {participant.lastName} ({participant.username})"
