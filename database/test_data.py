@@ -20,6 +20,7 @@ from app.models.questionNote import QuestionNote
 from app.models.interest import Interest
 from app.models.facilitator import Facilitator
 from app.models.note import Note
+from app.models.studentManagerPermissions import StudentManagerPermissions
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -768,3 +769,20 @@ facilitators = [
     }
 ]
 Facilitator.insert_many(facilitators).on_conflict_replace().execute()
+
+studentManagerPrograms = [
+    {
+    'user':'khatts',
+    'program':1
+    },
+    {
+    'user':'mupotsal',
+    'program':2
+    },
+    {
+    'user':'ayisie',
+    'program':12
+    }
+]
+
+StudentManagerPermissions.insert_many(studentManagerPrograms).on_conflict_replace().execute()
