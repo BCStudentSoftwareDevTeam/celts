@@ -105,8 +105,8 @@ def createEvent(templateid, programid=None):
     # make sure our data is the same regardless of GET or POST
     preprocessEventData(eventData)
     futureTerms = selectSurroundingTerms(g.current_term)
-    isProgramManager = False
     queryManager = StudentManagerPermissions.select().where(StudentManagerPermissions.user == g.current_user,StudentManagerPermissions.program==programid)
+    isProgramManager = False
     if queryManager.exists():
         isProgramManager = True
     return render_template(f"/admin/{template.templateFile}",
