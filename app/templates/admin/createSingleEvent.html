@@ -13,6 +13,7 @@
 
 {% block app_content %}
   {% set isAdmin = g.current_user.isCeltsAdmin or isProgramManager %}
+  <!-- Program manager isCeltsAdmin and they are a manager for the program  -->
   {% set isEditable = isAdmin %}
   {% set isNewEvent = 'create' in request.path %}
 
