@@ -50,7 +50,6 @@ def test_modifyStudentManager():
     currentManagerStatus = StudentManagerPermissions.get(user=user,program=2)
     assert currentManagerStatus.program.id ==2
 
-
 def test_changeCurrentTerm():
     # test via g.current_term
     oldTerm = g.current_term

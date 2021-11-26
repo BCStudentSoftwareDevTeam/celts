@@ -2,7 +2,7 @@ from flask import Flask, render_template,request, flash, g, abort, redirect, url
 import re
 from app.controllers.admin import admin_bp
 from app.models.user import User
-from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff
+from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff, addProgramManager, removeProgramManager
 from app.logic.userManagement import changeCurrentTerm
 from app.logic.utils import selectSurroundingTerms
 from app.models.term import Term
@@ -41,7 +41,9 @@ def manageUsers():
             flash(username+ " is no longer a Celts Student Staff", 'success')
 
     return ("success")
-
+def updateProgramManagers():
+    pass
+    
 @admin_bp.route('/admin', methods = ['GET'])
 def userManagement():
     terms = selectSurroundingTerms(g.current_term)
