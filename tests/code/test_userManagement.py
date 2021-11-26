@@ -1,6 +1,7 @@
 import pytest
-from app.logic.userManagement import addCeltsAdmin, removeCeltsAdmin,addCeltsStudentStaff, removeCeltsStudentStaff, changeCurrentTerm
+from app.logic.userManagement import addCeltsAdmin, removeCeltsAdmin,addCeltsStudentStaff, removeCeltsStudentStaff, changeCurrentTerm,addProgramManager,removeProgramManager
 from app.models.user import User
+from app.models.studentManagerPermissions import StudentManagerPermissions
 from peewee import DoesNotExist
 from flask import g
 @pytest.mark.integration
@@ -35,6 +36,20 @@ def test_modifyCeltsStudentStaff():
         addCeltsStudentStaff("asdf")
     with pytest.raises(DoesNotExist):
         removeCeltsStudentStaff("1234")
+
+@pytest.mark.integration
+def test_modifyStudentManager():
+    user = "mupotsal"
+    current_user = User.get(User.username==user)
+    currentManagerStatus = StudentManagerPermissions.get(user=user,program=2)
+    assert currentManagerStatus.program.id ==2
+    removeProgramManager(user,2)
+    currentManagerStatus = StudentManagerPermissions.select().where(StudentManagerPermissions.user==user,StudentManagerPermissions.program ==2)
+    assert currentManagerStatus.exists() == False
+    addProgramManager(user,2)
+    currentManagerStatus = StudentManagerPermissions.get(user=user,program=2)
+    assert currentManagerStatus.program.id ==2
+
 
 def test_changeCurrentTerm():
     # test via g.current_term

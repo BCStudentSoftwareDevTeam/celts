@@ -84,8 +84,6 @@ def createEvent(templateid, programid=None):
     if program:
         # TODO need to handle the multiple programs case
         eventData["program"] = program
-
-
     # Try to save the form
     if request.method == "POST":
         try:
@@ -144,11 +142,9 @@ def editEvent(eventId):
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
 
-
-
-    isProgramManager = False
     programSelect = ProgramEvent.get(event=eventId)
     query = StudentManagerPermissions.select().where(StudentManagerPermissions.user == g.current_user,StudentManagerPermissions.program==programSelect.program)
+    isProgramManager = False
     if query.exists():
         isProgramManager = True
     return render_template("admin/createSingleEvent.html",
