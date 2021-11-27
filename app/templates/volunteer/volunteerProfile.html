@@ -66,7 +66,7 @@
         </small>
       </div>
   </div>
-
+{% if g.current_user.isCeltsAdmin%}
   <div class="row">
     <h2>Which programs do you want to make {{user.firstName}} {{user.lastName}} manager for?</h2>
     <input id="{{ user.username }}" hidden>
@@ -81,8 +81,24 @@
               <label  style="padding-right:50px;" for="{{ program.id }}">{{program.programName}}</label>
       {% endfor %}
     </div>
-
   </div>
+{% else%}
+<div class="row">
+  <h2>{{user.firstName}} {{user.lastName}} is a manager for the following programs</h2>
+  <input id="{{ user.username }}" hidden>
+  <div>
+    {% for program in programs %}
+      {% set status = '' %}
+        {% if program.id in permissionPrograms %}
+          <p  style="padding-right:50px;">{{program.programName}}</p>
+        {% else %}
+        {% endif %}
+
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
 
 </div>
 
