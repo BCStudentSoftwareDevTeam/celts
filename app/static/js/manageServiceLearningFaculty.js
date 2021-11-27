@@ -4,6 +4,8 @@ $(document).ready( function () {
      if ($('#myTable tr').length < 11) {
          $('.dataTables_length').hide();
          $('.dataTables_filter').addClass('float-start');
+         $('.dataTables_filter label').attr('aria-label','myInput');
+
        }
     }
   });
