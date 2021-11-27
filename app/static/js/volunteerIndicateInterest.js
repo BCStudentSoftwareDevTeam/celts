@@ -1,15 +1,15 @@
 $(document).ready(function() {
   $(".form-check-input").click(function updateInterest(el){
+    console.log("This is the el",el);
     var programID = $(this).attr('id');
     var interest = $(this).is(':checked');
-
+    console.log(" This is the id,.........",programID);
     if (interest) {
       var routeUrl = "/addInterest/"
     }
     else {
       var routeUrl = "/deleteInterest/"
     }
-
     $.ajax({
       method: "POST",
       url: routeUrl + programID,
@@ -24,3 +24,31 @@ $(document).ready(function() {
     });
   });
 });
+
+function updateManagers(el,user,status){
+
+  var programID = el.id;
+  var user = (user[0].id);
+  if (status == undefined){
+    status = true;
+  }
+  let data = {
+      programID : programID,
+      user : user,
+      status:status,
+      from: "ajax"
+  }
+  $.ajax({
+    url: "/updateManagers",
+    type: "POST",
+    data: data,
+    success: function(s){
+        location.reload()
+    },
+    error: function(error, status){
+        console.log(error, status)
+    }
+
+  })
+
+}

@@ -41,9 +41,19 @@ def manageUsers():
             flash(username+ " is no longer a Celts Student Staff", 'success')
 
     return ("success")
+
+@admin_bp.route('/updateManagers', methods=['POST','GET'])
 def updateProgramManagers():
-    pass
-    
+    eventData = request.form
+    user = eventData['user']
+    programID = eventData['programID']
+    status = eventData['status']
+    if status == "true":
+        addProgramManager(user,int(programID))
+    else:
+        removeProgramManager(user,int(programID))
+    return ""
+
 @admin_bp.route('/admin', methods = ['GET'])
 def userManagement():
     terms = selectSurroundingTerms(g.current_term)
