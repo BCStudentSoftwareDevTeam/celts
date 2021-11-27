@@ -1,9 +1,7 @@
 $(document).ready(function() {
   $(".form-check-input").click(function updateInterest(el){
-    console.log("This is the el",el);
     var programID = $(this).attr('id');
     var interest = $(this).is(':checked');
-    console.log(" This is the id,.........",programID);
     if (interest) {
       var routeUrl = "/addInterest/"
     }
@@ -26,7 +24,6 @@ $(document).ready(function() {
 });
 
 function updateManagers(el,user,status){
-
   var programID = el.id;
   var user = (user[0].id);
   if (status == undefined){

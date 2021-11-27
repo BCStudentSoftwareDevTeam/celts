@@ -39,7 +39,6 @@ def manageUsers():
         else:
             removeCeltsStudentStaff(user)
             flash(username+ " is no longer a Celts Student Staff", 'success')
-
     return ("success")
 
 @admin_bp.route('/updateManagers', methods=['POST','GET'])

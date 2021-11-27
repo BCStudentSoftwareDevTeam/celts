@@ -67,6 +67,7 @@
       </div>
   </div>
 {% if g.current_user.isCeltsAdmin%}
+<!-- This makes sure that the CeltsAdmins can make someone program manger or not.  -->
   <div class="row">
     <h2>Which programs do you want to make {{user.firstName}} {{user.lastName}} manager for?</h2>
     <input id="{{ user.username }}" hidden>
