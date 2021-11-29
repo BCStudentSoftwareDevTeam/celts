@@ -84,7 +84,7 @@
        <td>{{entry.description}}</td>
        {%if g.current_user.isCeltsAdmin%}
          <td>
-           <select id="{{entry.id}}" onchange="updateBackgroundCheck({{user}} , this.id)">
+           <select id="{{entry.id}}" onchange="updateBackgroundCheck({{user.username}} , this.id)">
              <option value=1>Yes</option>
              <option value=0 {{"selected" if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False}}>No</option>
            </select>
