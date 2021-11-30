@@ -2,7 +2,6 @@ from app.models import *
 from app.models.program import Program
 from app.models.user import User
 
-class StudentManagerPermissions(baseModel):
+class StudentManager(baseModel):
     user = ForeignKeyField(User)
     program = ForeignKeyField(Program)
-    

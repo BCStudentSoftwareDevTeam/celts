@@ -1,7 +1,7 @@
 import pytest
 from app.logic.userManagement import addCeltsAdmin, removeCeltsAdmin,addCeltsStudentStaff, removeCeltsStudentStaff, changeCurrentTerm,addProgramManager,removeProgramManager
 from app.models.user import User
-from app.models.studentManagerPermissions import StudentManagerPermissions
+from app.models.studentManager import StudentManager
 from peewee import DoesNotExist
 from flask import g
 @pytest.mark.integration
@@ -41,13 +41,13 @@ def test_modifyCeltsStudentStaff():
 def test_modifyStudentManager():
     user = "mupotsal"
     current_user = User.get(User.username==user)
-    currentManagerStatus = StudentManagerPermissions.get(user=user,program=2)
+    currentManagerStatus = StudentManager.get(user=user,program=2)
     assert currentManagerStatus.program.id ==2
     removeProgramManager(user,2)
-    currentManagerStatus = StudentManagerPermissions.select().where(StudentManagerPermissions.user==user,StudentManagerPermissions.program ==2)
+    currentManagerStatus = StudentManager.select().where(StudentManager.user==user,StudentManager.program ==2)
     assert currentManagerStatus.exists() == False
     addProgramManager(user,2)
-    currentManagerStatus = StudentManagerPermissions.get(user=user,program=2)
+    currentManagerStatus = StudentManager.get(user=user,program=2)
     assert currentManagerStatus.program.id ==2
 
 def test_changeCurrentTerm():

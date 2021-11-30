@@ -17,7 +17,7 @@ from app.models.eventTemplate import EventTemplate
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
-from app.models.studentManagerPermissions import StudentManagerPermissions
+from app.models.studentManager import StudentManager
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
@@ -44,7 +44,7 @@ def switchUser():
 def templateSelect():
     allprograms = []
     if g.current_user.isCeltsStudentStaff:
-        studentManagerPrograms = list(StudentManagerPermissions.select().where(StudentManagerPermissions.user==g.current_user))
+        studentManagerPrograms = list(StudentManager.select().where(StudentManager.user==g.current_user))
         permissionPrograms = [entry.program.id for entry in studentManagerPrograms]
         editablePrograms = Program.select().where(Program.id.in_(permissionPrograms)).order_by(Program.programName)
         allprograms = editablePrograms

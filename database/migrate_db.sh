@@ -22,7 +22,7 @@ pem add app.models.courseInstructor.CourseInstructor
 pem add app.models.courseQuestion.CourseQuestion
 pem add app.models.questionNote.QuestionNote
 pem add app.models.eventRsvp.EventRsvp
-pem add app.models.studentManagerPermissions.StudentManagerPermissions
+pem add app.models.studentManager.StudentManager
 
 pem watch
 pem migrate

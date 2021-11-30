@@ -1,6 +1,6 @@
 from app.models.user import User
 from app.models.term import Term
-from app.models.studentManagerPermissions import StudentManagerPermissions
+from app.models.studentManager import StudentManager
 from flask import g, session
 
 from playhouse.shortcuts import model_to_dict
@@ -37,10 +37,10 @@ def changeCurrentTerm(term):
 
 def addProgramManager(user,program):
     user = User.get_by_id(user)
-    managerEntry = StudentManagerPermissions.create(user=user,program=program)
+    managerEntry = StudentManager.create(user=user,program=program)
     managerEntry.save()
 
 def removeProgramManager(user,program):
     user = User.get_by_id(user)
-    delQuery = StudentManagerPermissions.delete().where(StudentManagerPermissions.user == user,StudentManagerPermissions.program == program)
+    delQuery = StudentManager.delete().where(StudentManager.user == user,StudentManager.program == program)
     delQuery.execute()

@@ -9,7 +9,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
-from app.models.studentManagerPermissions import StudentManagerPermissions
+from app.models.studentManager import StudentManager
 
 from app.controllers.main import main_bp
 from app.logic.events import *
@@ -59,7 +59,7 @@ def profilePage(username):
         rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == profileUser)
         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
 
-        studentManagerPrograms = list(StudentManagerPermissions.select().where(StudentManagerPermissions.user==profileUser))
+        studentManagerPrograms = list(StudentManager.select().where(StudentManager.user==profileUser))
         permissionPrograms = [entry.program.id for entry in studentManagerPrograms]
 
         return render_template('/volunteer/volunteerProfile.html',
