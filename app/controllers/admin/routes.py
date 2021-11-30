@@ -25,7 +25,7 @@ from app.logic.courseManagement import pendingCourses, approvedCourses
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
-from app.controllers.main.routes import managePage
+
 
 @admin_bp.route('/switch_user', methods=['POST'])
 def switchUser():

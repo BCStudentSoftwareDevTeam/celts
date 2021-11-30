@@ -1,6 +1,6 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for
 import datetime
-import re
+
 
 
 from app import app
@@ -176,19 +176,26 @@ def contributors():
 
 
 @main_bp.route('/manageservicelearning', methods = ['GET'])
-def managePage():
+def getAllCourseIntructors():
     """
-    This function selects all the Intructors Name and the previous courses 
+    This function selects all the Intructors Name and the previous courses
     """
     users = User.select().where(User.isFaculty)
     courseInstructors = CourseInstructor.select()
 
     course_dict = {}
 
-    for instructor in courseInstructors:
-        if  (instructor.user.firstName+ " "+ instructor.user.lastName)  not in  course_dict:
-            course_dict[instructor.user.firstName+ " "+ instructor.user.lastName] =  instructor.course.courseName
-        else:
-            course_dict[instructor.user.firstName + " "+ instructor.user.lastName] += ", " + instructor.course.courseName
+    for i in courseInstructors:
+        course_dict.setdefault(i.course.courseName, []).append(i.user.firstName + " " + i.user.lastName)
 
-    return render_template('/main/manageServiceLearningFaculty.html', users = users,courseInstructors = course_dict)
+    return course_dict
+
+
+
+    # for instructor in courseInstructors:
+    #     if  (instructor.user.firstName+ " "+ instructor.user.lastName)  not in  course_dict:
+    #         course_dict[instructor.user.firstName+ " "+ instructor.user.lastName] =  instructor.course.courseName
+    #     else:
+    #         course_dict[instructor.user.firstName + " "+ instructor.user.lastName] += ", " + instructor.course.courseName
+
+    return render_template('/main/manageServiceLearningFaculty.html',courseInstructors = course_dict)
