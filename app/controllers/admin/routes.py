@@ -102,7 +102,7 @@ def createEvent(templateid, programid=None):
     # make sure our data is the same regardless of GET or POST
     preprocessEventData(eventData)
     futureTerms = selectSurroundingTerms(g.current_term)
-    queryManager = StudentManagerPermissions.select().where(StudentManagerPermissions.user == g.current_user,StudentManagerPermissions.program==programid)
+    queryManager = StudentManager.select().where(StudentManager.user == g.current_user,StudentManager.program==programid)
     isProgramManager = False
     if queryManager.exists():
         isProgramManager = True
@@ -142,7 +142,7 @@ def editEvent(eventId):
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
 
     programSelect = ProgramEvent.get(event=eventId)
-    query = StudentManagerPermissions.select().where(StudentManagerPermissions.user == g.current_user,StudentManagerPermissions.program==programSelect.program)
+    query = StudentManager.select().where(StudentManager.user == g.current_user,StudentManager.program==programSelect.program)
     isProgramManager = False
     if query.exists():
         isProgramManager = True
