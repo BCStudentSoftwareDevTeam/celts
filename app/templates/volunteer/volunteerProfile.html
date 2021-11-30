@@ -68,6 +68,7 @@
   </div>
 {% if g.current_user.isCeltsAdmin%}
 <!-- This makes sure that the CeltsAdmins can make someone program manger or not.  -->
+{% if user.isCeltsStudentStaff%}
   <div class="row">
     <h2>Which programs do you want to make {{user.firstName}} {{user.lastName}} manager for?</h2>
     <input id="{{ user.username }}" hidden>
@@ -83,7 +84,9 @@
       {% endfor %}
     </div>
   </div>
-{% else%}
+  {% endif %}
+{% elif g.current_user.isCeltsStudentStaff %}
+{% if user.isCeltsStudentStaff %}
 <div class="row">
   <h2>{{user.firstName}} {{user.lastName}} is a manager for the following programs</h2>
   <input id="{{ user.username }}" hidden>
@@ -98,6 +101,7 @@
     {% endfor %}
   </div>
 </div>
+{% endif %}
 {% endif %}
 
 
