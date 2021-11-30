@@ -53,6 +53,22 @@ def test_addUserInterest():
     result = addUserInterest(program_id, username)
     assert result == 'Successfully added interest'
 
+    # test adding interest for user that does not exist
+    username = "jarjug"
+    program_id = 3
+    with pytest.raises(AssertionError):
+        result = addUserInterest(program_id, username)
+        assert result == 'Successfully added interest'
+
+    # test adding interest for program_id that does not exist
+    username = "khatts"
+    program_id = 45
+    with pytest.raises(AssertionError):
+        result = addUserInterest(program_id, username)
+        assert result == 'Successfully added interest'
+
+
+
 
 
 @pytest.mark.integration
@@ -73,6 +89,21 @@ def test_removeUserInterestt():
     program_id = 3
     result = removeUserInterest(program_id, username)
     assert result == "Successfully removed interest"
+
+    # test adding interest for user that does not exist
+    username = "jarjug"
+    program_id = 3
+    with pytest.raises(AssertionError):
+        result = addUserInterest(program_id, username)
+        assert result == 'Successfully added interest'
+
+    # test adding interest for program_id that does not exist
+    username = "khatts"
+    program_id = 45
+    with pytest.raises(AssertionError):
+        result = addUserInterest(program_id, username)
+        assert result == 'Successfully added interest'
+
 
 @pytest.mark.integration
 def test_banUser():
