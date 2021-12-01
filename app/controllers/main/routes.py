@@ -187,11 +187,12 @@ def getAllCourseIntructors():
 
     for i in courseInstructors:
         course_dict.setdefault(i.course.courseName, []).append(i.user.firstName + " " + i.user.lastName)
+    print(course_dict)
 
-    return course_dict
+    # return course_dict
 
 
-
+#
     # for instructor in courseInstructors:
     #     if  (instructor.user.firstName+ " "+ instructor.user.lastName)  not in  course_dict:
     #         course_dict[instructor.user.firstName+ " "+ instructor.user.lastName] =  instructor.course.courseName

@@ -23,8 +23,10 @@
   <tbody id = "facultyTable">
   {% for instructor in courseInstructors%}
   <tr>
-    <td> <a href=" /courseManagement" class="link-primary">{{instructor}}</a></td>
-    <td>{{courseInstructors[instructor]}}</td>
+    <!-- <td> <a href=" /courseManagement" class="link-primary">{{instructor}}</a></td>
+    <td>{{courseInstructors[instructor]}}</td> -->
+    <td> <a href=" /courseManagement" class="link-primary">{{courseInstructors[instructor]}}</a></td>
+    <td>{{instructor}}</td>
   </tr>
   {% endfor %}
   </tbody>
