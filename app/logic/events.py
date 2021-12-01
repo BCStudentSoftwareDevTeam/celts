@@ -114,6 +114,7 @@ def getTrainingProgram(term):
     trainingEvents = (Event.select(Event, Program.id.alias("program_id"))
                            .join(ProgramEvent)
                            .join(Program)
+			   .order_by(Event.startDate.desc())
                            .where(Event.isTraining,
                                   Event.term == term))
     return trainingEvents

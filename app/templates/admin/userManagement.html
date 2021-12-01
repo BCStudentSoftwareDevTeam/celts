@@ -48,13 +48,15 @@
     <div class="text-center">
       <h5 class="my-3">Select the Current Term</h5>
       <div class="col-md-6 mx-auto" name="currentTermList" id="currentTermList">
+	<div class="btn-group-vertical">
         {% for term in terms %}
-        <div class="row mx-auto">
+        <div class="row">
           <button class="btn btn-lg btn-outline-secondary text-start term-btn
           {{ 'active' if g.current_term == term }}" id="termFormID_{{ loop.index }}"
           value='{{ term.id }}'>{{term.description}}</button>
         </div>
         {% endfor %}
+	</div>
         <button class="btn btn-primary my-2 float-end"
         id="submitButton" role="button">Make Current Term</button>
       </div>
