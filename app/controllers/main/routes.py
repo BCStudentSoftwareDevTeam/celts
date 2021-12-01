@@ -92,10 +92,11 @@ def ban(program_id, username):
     banNote = postData["note"] # This contains the note left about the change
     banEndDate = postData["endDate"] # Contains the date the ban will no longer be effective
     try:
+        flash("Successfully banned user", "success")
         return banUser(program_id, username, banNote, banEndDate, g.current_user)
     except Exception as e:
-        print(e)
-        return "Error Updating Ban", 500
+        print("Error  while updating ban", e)
+        return "", 500
 
 # ===========================Unban===============================================
 @main_bp.route('/<username>/unban/<program_id>', methods=['POST'])
@@ -108,10 +109,12 @@ def unban(program_id, username):
     postData = request.form
     unbanNote = postData["note"] # This contains the note left about the change
     try:
+        flash("Successfully Unbanned user", "success")
         return unbanUser(program_id, username, unbanNote, g.current_user)
+
     except Exception as e:
-        print(e)
-        return "Error Updating Unban", 500
+        print("Error  while updating Unban", e)
+        return "", 500
 
 
 @main_bp.route('/<username>/addInterest/<program_id>', methods=['POST'])
