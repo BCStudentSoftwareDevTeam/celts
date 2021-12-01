@@ -1,4 +1,5 @@
 import pytest
+from peewee import *
 from app.models.program import Program
 from app.models.note import Note
 from app.models.user import User
@@ -41,31 +42,31 @@ def test_addUserInterest():
 
     # test adding interest for different users
     result = addUserInterest(program_id, username)
-    assert result == "Successfully added interest"
+    assert result
 
 
     username = "khatts"
     result = addUserInterest(program_id, username)
-    assert result == 'Successfully added interest'
+    assert result
 
     # test adding interest with different program id
     program_id = 3
     result = addUserInterest(program_id, username)
-    assert result == 'Successfully added interest'
+    assert result
 
     # test adding interest for user that does not exist
     username = "jarjug"
     program_id = 3
-    with pytest.raises(AssertionError):
+    with pytest.raises(IntegrityError):
         result = addUserInterest(program_id, username)
-        assert result == 'Successfully added interest'
+        assert result
 
     # test adding interest for program_id that does not exist
     username = "khatts"
     program_id = 45
-    with pytest.raises(AssertionError):
+    with pytest.raises(IntegrityError):
         result = addUserInterest(program_id, username)
-        assert result == 'Successfully added interest'
+        assert result
 
 
 
@@ -78,31 +79,31 @@ def test_removeUserInterestt():
     username = "ramsayb2"
     program_id = 2
     result = removeUserInterest(program_id, username)
-    assert result == "Successfully removed interest"
+    assert result ==  True
 
     username = "khatts"
     program_id = 2
     result = removeUserInterest(program_id, username)
-    assert result == "Successfully removed interest"
+    assert result == True
 
     #test removing interest with different program id
     program_id = 3
     result = removeUserInterest(program_id, username)
-    assert result == "Successfully removed interest"
+    assert result == True
 
     # test adding interest for user that does not exist
     username = "jarjug"
     program_id = 3
-    with pytest.raises(AssertionError):
+    with pytest.raises(IntegrityError):
         result = addUserInterest(program_id, username)
-        assert result == 'Successfully added interest'
+        assert result == True
 
     # test adding interest for program_id that does not exist
     username = "khatts"
     program_id = 45
-    with pytest.raises(AssertionError):
+    with pytest.raises(IntegrityError):
         result = addUserInterest(program_id, username)
-        assert result == 'Successfully added interest'
+        assert result == True
 
 
 @pytest.mark.integration
