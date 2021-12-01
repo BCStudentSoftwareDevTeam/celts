@@ -25,12 +25,8 @@ def addUserInterest(program_id, username):
     program_id: id of the program the user is interested in
     username: username of the user showing interest
     """
-    try:
-        Interest.get_or_create(program = program_id, user = username)
-        return "Successfully added interest"
-    except Exception as e:
-        print("Error: ", e)
-        return "An error ocurred while adding the interest"
+    Interest.get_or_create(program = program_id, user = username)
+    return True
 
 def removeUserInterest(program_id, username):
     """
@@ -43,10 +39,8 @@ def removeUserInterest(program_id, username):
     interestToDelete = Interest.get(Interest.program == program_id, Interest.user == username)
     if interestToDelete:
         interestToDelete.delete_instance()
-        return "Successfully removed interest"
-    else:
-        raise Exception("Interest does not exist.")
-        return False
+    return True
+
 
 def banUser(program_id, username, note, banEndDate, creator):
     """
