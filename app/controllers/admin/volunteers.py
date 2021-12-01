@@ -43,6 +43,8 @@ def trackVolunteersPage(eventID):
         .select()
         .where(EventRsvp.event==event))
 
+    print(event.timeStart, "HERE!       "*10)
+
     eventLengthInHours = getEventLengthInHours(
         event.timeStart,
         event.timeEnd,

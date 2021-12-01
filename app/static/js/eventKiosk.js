@@ -53,13 +53,16 @@ function eventFlasher(flash_message, status){
 
 function submitData(hitEnter = false){
   if(hitEnter){
+    var datestring = Date();
+    var time = datestring.slice(16, 24);
     $("#flasher").remove()
     $.ajax({
       method: "POST",
       url: '/signintoEvent',
       data: {
         "eventid": $("#eventid").val(),
-        "bNumber": $("#submitScannerData").val()
+        "bNumber": $("#submitScannerData").val(),
+        "swipeTime": time
       },
       success: function(flasherMessage) {
         eventFlasher(flasherMessage, "success");

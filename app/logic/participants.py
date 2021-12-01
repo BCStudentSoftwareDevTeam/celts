@@ -20,9 +20,10 @@ def trainedParticipants(programID):
     attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(trlist), eventTrainingDataList)))
     return attendedTraining
 
-def sendUserData(bnumber, eventId, programid):
+def sendUserData(bnumber, eventId, programid, swipeTime):
     """Accepts scan input and signs in the user. If user exists or is already
     signed in will return user and login status"""
+    print(swipeTime)
     signedInUser = User.get(User.bnumber == bnumber)
     event = Event.get_by_id(eventId)
     if not isEligibleForProgram(programid, signedInUser):

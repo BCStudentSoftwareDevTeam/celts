@@ -6,3 +6,5 @@ class EventParticipant(baseModel):
     user = ForeignKeyField(User)
     event = ForeignKeyField(Event)
     hoursEarned = FloatField(null=True)
+    swipeIn = TimeField(null=True)
+    swipeOut = TimeField(null=True)

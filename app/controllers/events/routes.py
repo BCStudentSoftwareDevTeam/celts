@@ -32,6 +32,7 @@ def signinEvent():
     """Utilizes form data and sign in function. Returns correct flasher message."""
     eventid = request.form["eventid"]
     bnumber = request.form["bNumber"]
+    swipeTime = request.form["swipeTime"]
     programid = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event == eventid)
 
     if bnumber[0]==";" and bnumber[-1]=="?": # scanned bNumber starts with ";" and ends with "?"
@@ -42,7 +43,7 @@ def signinEvent():
         elif bnumber[0].upper() != "B":
             return "", 500
     try:
-        kioskUser, userStatus = sendUserData(bnumber, eventid, programid)
+        kioskUser, userStatus = sendUserData(bnumber, eventid, programid, swipeTime)
         if userStatus == "banned":
             return "", 500
 
