@@ -44,3 +44,10 @@ def removeProgramManager(user,program):
     user = User.get_by_id(user)
     delQuery = StudentManager.delete().where(StudentManager.user == user,StudentManager.program == program)
     delQuery.execute()
+
+def hasPrivilege(user, program):
+    user = User.get_by_id(user)
+    if StudentManager.select().where(StudentManager.user == user, StudentManager.program == program).exists():
+        return True
+    else:
+        return False

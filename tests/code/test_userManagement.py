@@ -1,6 +1,5 @@
 import pytest
-from app.logic.userManagement import addCeltsAdmin, removeCeltsAdmin,addCeltsStudentStaff, removeCeltsStudentStaff, changeCurrentTerm,addProgramManager,removeProgramManager
-from app.models.user import User
+from app.logic.userManagement import *
 from app.models.studentManager import StudentManager
 from peewee import DoesNotExist
 from flask import g
@@ -44,9 +43,11 @@ def test_modifyStudentManager():
     currentManagerStatus = StudentManager.get(user=user,program=2)
     assert currentManagerStatus.program.id ==2
     removeProgramManager(user,2)
+    assert hasPrivilege(user, 2) == False
     currentManagerStatus = StudentManager.select().where(StudentManager.user==user,StudentManager.program ==2)
     assert currentManagerStatus.exists() == False
     addProgramManager(user,2)
+    assert hasPrivilege(user, 2) == True
     currentManagerStatus = StudentManager.get(user=user,program=2)
     assert currentManagerStatus.program.id ==2
 
