@@ -16,7 +16,8 @@ The Requirements:
 1. Send Email - Components:- Sender, Receiver, Email Body
 2. Edit Email - Management Page
 3. Create recipients groups? - Would they ever create manual groups for anything?
-   - If so, where would we save this? A new table? Sounds awful.
+   - If so, where would we save this? A new table?
+   - Q: will they send emails to individuals???
 
 TODO:
 
@@ -96,6 +97,7 @@ class emailHandler():
         """ Updates the sender and sends the email. """
         message = self.updateSenderEmail(msg)
 
+        # Q: What's the difference between these two?
         if 'sendIndividually' in self.emailInfo:
             if app.config.mail['MAIL_OVERRIDE_ALL']:
                 message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
@@ -108,7 +110,7 @@ class emailHandler():
                 message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
             message.reply_to = app.config["REPLY_TO_ADDRESS"]
 
-            self.mail = Mail(app)
+            self.mail = Mail(app) # Q: Wasn't this already done in the constructor?
             self.mail.connect()
             self.mail.send(message)
 
