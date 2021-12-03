@@ -23,6 +23,10 @@ class EmailHandler:
         # Q/A: Check for correctness of data/datatype??
         # - check for email addresses -- @
         # set up class variables
+        if "@" in self.email_info['emailSender']:
+            # when people are sending emails as themselves
+            pass
+
         pass
 
     def retrieve_recipients(self):

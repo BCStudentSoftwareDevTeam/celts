@@ -3,6 +3,7 @@ import yaml, os
 from flask_mail import Mail, Message
 from app.models.interest import Interest
 from app.models.user import User
+from app.models.program import Program
 from app.models.eventParticipant import EventParticipant
 from app.models.emailTemplate import EmailTemplate
 from app import app
@@ -11,6 +12,7 @@ import webbrowser
 import time
 from pathlib import Path
 
+<<<<<<< HEAD
 """
 The Requirements:
 1. Send Email - Components:- Sender, Receiver, Email Body
@@ -57,11 +59,16 @@ Notes:
   first it will fetch from the config. If need updated, then the variable alone would be updated.
 """
 
+def getInterestedEmails(listOfPrograms):
 
-
-def getInterestedEmails(programID = None):
     """ Gets emails of students interested in a program. """
-    volunteersToEmail = User.select().join(Interest).where(Interest.program == programID)
+    emails = []
+    print("\n\n\n\n\n",listOfPrograms,"\n\n\n\n\n")
+
+    volunteersToEmail = User.select(User.email).join(Interest).join(Program, on=(Program.id == Interest.program)).where(Program.id.in_([p.id for p in listOfPrograms]))
+    print("\n\n\n\n\n",volunteersToEmail,"\n\n\n\n\n")
+    print("\n\n\n\n\n", volunteersToEmail.objects(),"\n\n\n\n\n")
+
     return [user.email for user in volunteersToEmail]
 
 def getParticipantEmails(eventID = None):
@@ -71,9 +78,10 @@ def getParticipantEmails(eventID = None):
 
 class emailHandler():
     """ A class for email setup and configuring the correct data to send. """
-    def __init__(self, emailInfo):
+    def __init__(self, application, emailInfo):
         self.emailInfo = emailInfo
-        self.mail = Mail(app)
+        self.application = application
+        self.mail = Mail(self.application)
 
 
     def updateSenderEmail(self, message):
@@ -106,12 +114,18 @@ class emailHandler():
                     message.recipients = [email]
                     conn.send(message)
         else:
-            if app.config['MAIL_OVERRIDE_ALL']:
-                message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
-            message.reply_to = app.config["REPLY_TO_ADDRESS"]
+            try:
+                if app.config['ENV'] == 'testing':
+                    message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
+                message.reply_to = app.config["MAIL_REPLY_TO_ADDRESS"]
 
-            self.mail = Mail(app) # Q: Wasn't this already done in the constructor?
-            self.mail.connect()
-            self.mail.send(message)
+                self.mail = Mail(app) # Q: Wasn't this already done in the constructor?
+    # =======
+    #             self.mail = Mail(self.application)
+    # >>>>>>> f1383e327bd8d3176d911de02f37f61f6882329a
+                self.mail.connect()
+                self.mail.send(message)
+            except:
+                return False
 
-        return 1
+        return True

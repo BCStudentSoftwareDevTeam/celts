@@ -10,6 +10,7 @@ from app.models.user import User
 from app.models.programEvent import ProgramEvent
 from app.controllers.events import events_bp
 from app.controllers.events import email
+from app.logic.emailHandler2 import EmailHandler
 from app.logic.events import getUpcomingEventsForUser
 from app.logic.participants import sendUserData
 
@@ -19,6 +20,12 @@ def showUpcomingEvent():
     return render_template('/events/showUpcomingEvents.html',
                             upcomingEvents = upcomingEvents)
 
+@events_bp.route('/email', methods=['POST'])
+def email():
+    email_info = request.form
+    mail = EmailHandler(email_info)
+    mail_sent = mail.send_email()
+    
 
 @events_bp.route('/event/<eventid>/kiosk', methods=['GET'])
 def loadKiosk(eventid):

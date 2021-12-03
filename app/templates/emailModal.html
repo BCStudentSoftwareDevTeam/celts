@@ -32,9 +32,9 @@
               <select class='form-select' id="emailSender" name="emailSender" aria-label="email sender">
                 <option {{ 'selected' if user.isCeltsStudentStaff }}>CELTS Student Staff</option>
                 <option {{ 'selected' if user.isCeltsAdmin else 'disabled' }}>CELTS Admins</option>
-                <!-- <option value="{{g.current_user.email}}">
+                <option value="{{g.current_user.email}}">
                   {{g.current_user.firstName}} {{g.current_user.lastName}} (Currently Logged In)
-                </option> --> <!-- Commented out for demo purposes FIXME: add this option back and get it to work-->
+                </option>
               </select>
             </div>
           </div>

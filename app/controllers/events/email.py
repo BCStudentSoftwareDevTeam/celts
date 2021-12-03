@@ -2,36 +2,58 @@ from flask import Flask, redirect, flash, url_for, request, g
 from flask_mail import Mail, Message
 from app.models.interest import Interest
 from app.models.user import User
+from app.models.event import Event
 from app.models.eventParticipant import EventParticipant
 from app.logic.emailHandler import getInterestedEmails, getParticipantEmails, emailHandler
+from app.models.programEvent import ProgramEvent
 from app.controllers.events import events_bp
 from app import app
 
 @events_bp.route('/email', methods=['POST'])
 def emailVolunteers():
     """ Uses emailHandler to send an email with the form in event_list. """
-    emailInfo = request.form
 
-    if emailInfo['emailRecipients'] == "interested":
-        emails = getInterestedEmails(emailInfo['programID'])
-    elif emailInfo['emailRecipients'] == "eventParticipant":
-        emails = getParticipantEmails(emailInfo['eventID'])
+    emailInfo = request.form.copy()
+    if '@' in emailInfo['emailSender']: # if they are using mailto instead
+        return redirect(url_for("main.events", selectedTerm = emailInfo['selectedTerm']))
+    else:
+        if emailInfo['programID'] == 'Unknown':
+            emailInfo['eventID'] = 2
+            programs = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event == emailInfo['eventID'])
+            listOfPrograms = [program.program for program in programs.objects()]
+            emailInfo['programID'] = listOfPrograms
+            print("\n\n\n\n\n list of programs:", listOfPrograms, "\n\n\n\n\n\n\n")
+        if emailInfo['emailRecipients'] == "interested":
+            emails = getInterestedEmails(emailInfo['programID'])
+        elif emailInfo['emailRecipients'] == "eventParticipant":
+            emails = getParticipantEmails(emailInfo['eventID'])
+
+        if emails == None:
+            flash("Error getting email recipients", "danger")
+            return redirect(url_for("main.events", selectedTerm = emailInfo['selectedTerm']))
+
+        email = emailHandler(app,emailInfo)
+        emailSent = email.sendEmail(Message(emailInfo['subject'],
+                                           emails, # recipients
+                                           emailInfo['message']),
+                                           emails) # passed for sending individually
+        if emailSent == True:
+            flash("Email successfully sent!", "success")
+        else:
+            flash("Error sending email", "danger")
+        return redirect(url_for("main.events", selectedTerm = emailInfo['selectedTerm']))
+
+@events_bp.route('/mailto', methods=['POST'])
+def getEmails(emailGroup, programID=None, eventID=None):
+    """This is where the ajax call should get the mailto info"""
+
+    if emailGroup=='interested' and programID:
+        emails = getInterestedEmails(programID)
+
+    elif emailGroup == 'eventParticipant' and eventID:
+        email = getInterestedEmails(eventID)
+
     else:
         flash("Unable to determine email recipients", "danger")
 
-    print(emailInfo)
-
-    if emails == None:
-        flash("Error getting email recipients", "danger")
-        return redirect(url_for("main.events", selectedTerm = emailInfo['selectedTerm']))
-
-    email = emailHandler(emailInfo)
-    emailSent = email.sendEmail(Message(emailInfo['subject'],
-                                       emails, # recipients
-                                       emailInfo['message']),
-                                       emails) # passed for sending individually
-    if emailSent == 1:
-        flash("Email successfully sent!", "success")
-    else:
-        flash("Error sending email", "danger")
-    return redirect(url_for("main.events", selectedTerm = emailInfo['selectedTerm']))
+    return email
