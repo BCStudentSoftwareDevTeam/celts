@@ -1,7 +1,6 @@
 <div id="sidebar">
   <h1 class="visually-hidden">Admin sidebar</h1>
-
-  <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 280px;">
+  <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 280px">
     <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
       <span class="fs-4">CELTS</span>
     </a>
@@ -15,12 +14,11 @@
         </a>
       </li>
     {% endif %}
-
-      <li class="nav-item">
-        <a href="/" class="nav-link text-white {{ 'active' if request.path =='/' }}" aria-current="page">
-          Events List
-        </a>
-      </li>
+    <li class="nav-item">
+      <a href="/" class="nav-link text-white {{ 'active' if request.path =='/' }}" aria-current="page">
+        Events List
+      </a>
+    </li>
     {% if g.current_user.isAdmin %}
       <li>
         <a href="/template_select" class="nav-link text-white {{ 'active' if request.path =='/template_select' }}">
@@ -38,12 +36,18 @@
         </a>
       </li>
     {% endif %}
-
     </ul>
     <hr>
+    {% if env != 'production' %}
+      <h6>Current User: {{g.current_user.username}}</h6>
+      <form action="/switch_user" method="POST" id="userSelectForm">
+        <select name="newuser" class="form-select" style="margin-bottom: 10px" id="userSelect">
+          <option {{"selected" if g.current_user == config.default_user }} value="{{config.default_user}}">Default User: {{config.default_user}}</option>
+          <option {{"selected" if g.current_user == "ramsayb2"}} value="ramsayb2">Admin: ramsayb2</option>
+          <option {{"selected" if g.current_user == "neillz"}} value="neillz">Student: neillz</option>
+        </select>
+      </form>
+    {% endif %}
     <button type="button" class="btn btn-secondary btn-secondary">Log out</button>
   </div>
-
-  <div class="b-example-divider d-none d-xxl-block"></div>
-
-  </div>
+</div>

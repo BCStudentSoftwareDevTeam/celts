@@ -16,17 +16,29 @@ def manageUsers():
     user = User.get_by_id(username)
 
     if method == "addCeltsAdmin":
-        addCeltsAdmin(user)
-        flash(username+ " has been added as a Celts Admin", 'success')
+        if user.isCeltsAdmin:
+            flash(username+ " is already a Celts Admin", 'danger')
+        else:
+            addCeltsAdmin(user)
+            flash(username+ " has been added as a Celts Admin", 'success')
     elif method == "addCeltsStudentStaff":
-        addCeltsStudentStaff(user)
-        flash(username+ " has been added as a Celts Student Staff", 'success')
+        if user.isCeltsStudentStaff:
+            flash(username+ " is already a Celts Student Staff", 'danger')
+        else:
+            addCeltsStudentStaff(user)
+            flash(username+ " has been added as a Celts Student Staff", 'success')
     elif method == "removeCeltsAdmin":
-        removeCeltsAdmin(user)
-        flash(username+ " is no longer a Celts Admin ", 'success')
+        if not user.isCeltsAdmin:
+            flash(username+ " is not a Celts Admin ", 'danger')
+        else:
+            removeCeltsAdmin(user)
+            flash(username+ " is no longer a Celts Admin ", 'success')
     elif method == "removeCeltsStudentStaff":
-        removeCeltsStudentStaff(user)
-        flash(username+ " is no longer a Celts Student Staff", 'success')
+        if not user.isCeltsStudentStaff:
+            flash(username+ " is not a Celts Student Staff ", 'danger')
+        else:
+            removeCeltsStudentStaff(user)
+            flash(username+ " is no longer a Celts Student Staff", 'success')
 
     return ("success")
 
