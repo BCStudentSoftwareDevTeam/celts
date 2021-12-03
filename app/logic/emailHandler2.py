@@ -1,4 +1,7 @@
 
+from app.models.programEvent import ProgramEvent
+
+
 
 class EmailHandler:
     def __init__(self, email_info):
@@ -12,7 +15,7 @@ class EmailHandler:
         self.override_all_mail = app.config.mail['MAIL_OVERRIDE_ALL'] #? default
 
         #
-        self.program_id
+        self.program_ids    #changed this to be plural because an event could have multiple programs
         self.event_id
         self.course_id
         self.template_identifier
@@ -23,10 +26,26 @@ class EmailHandler:
         # Q/A: Check for correctness of data/datatype??
         # - check for email addresses -- @
         # set up class variables
-        if "@" in self.email_info['emailSender']:
-            # when people are sending emails as themselves
-            pass
 
+        if "@" in self.email_info['emailSender']:
+            # when people are sending emails as themselves (using mailto)
+            pass
+        else:
+
+            if 'courseID' in self.email_info:   #if this email is for a service learning course
+                self.course_id = self.email_info['courseID']
+            else:
+                self.event_id = self.email_info['eventID']
+
+                #This logic should prob be in a seperate file/function, but where?
+                #This gets all the programs for a particular event
+                if self.email_info['programID'] == 'Unknown': #the programId is "Unknown" for all non-studentLedPrograms
+                    programs = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event == self.event_id)
+                    self.program_ids = [program.program for program in programs.objects()]  #this must be a list because there will be multiple programs for an event.
+                else:
+                    self.program_ids = [self.email_info['programID']] #keeping this as a list so that we don't have to handel two forms of self.program_Id
+
+            self.template_identifier = self.email_info['template']
         pass
 
     def retrieve_recipients(self):
@@ -51,7 +70,7 @@ class EmailHandler:
         # One idea: template.format(name, event_name)
 
         # Q: for loop through the emails? Or search bcc??
-        new_template = template_body.format(date=date, event name)
+        new_template = template_body.format(date=date, event, name)
         return new_template
 
     def replace_name_placeholder(self, name, email_body):

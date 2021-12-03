@@ -12,7 +12,6 @@ import webbrowser
 import time
 from pathlib import Path
 
-<<<<<<< HEAD
 """
 The Requirements:
 1. Send Email - Components:- Sender, Receiver, Email Body
@@ -63,11 +62,8 @@ def getInterestedEmails(listOfPrograms):
 
     """ Gets emails of students interested in a program. """
     emails = []
-    print("\n\n\n\n\n",listOfPrograms,"\n\n\n\n\n")
 
     volunteersToEmail = User.select(User.email).join(Interest).join(Program, on=(Program.id == Interest.program)).where(Program.id.in_([p.id for p in listOfPrograms]))
-    print("\n\n\n\n\n",volunteersToEmail,"\n\n\n\n\n")
-    print("\n\n\n\n\n", volunteersToEmail.objects(),"\n\n\n\n\n")
 
     return [user.email for user in volunteersToEmail]
 
