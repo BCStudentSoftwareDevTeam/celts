@@ -58,10 +58,8 @@ def profilePage(username):
         interests_ids = [interest.program.id for interest in interests]
         rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == profileUser)
         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
-
         studentManagerPrograms = list(StudentManager.select().where(StudentManager.user==profileUser))
         permissionPrograms = [entry.program.id for entry in studentManagerPrograms]
-
         return render_template('/volunteer/volunteerProfile.html',
                                title="Volunteer Interest",
                                user = profileUser,

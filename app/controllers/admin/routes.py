@@ -26,6 +26,7 @@ from app.logic.courseManagement import pendingCourses, approvedCourses
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
+from app.logic.userManagement import hasPrivilege
 
 
 @admin_bp.route('/switch_user', methods=['POST'])
@@ -142,10 +143,10 @@ def editEvent(eventId):
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
 
     programSelect = ProgramEvent.get(event=eventId)
-    query = StudentManager.select().where(StudentManager.user == g.current_user,StudentManager.program==programSelect.program)
-    isProgramManager = False
-    if query.exists():
-        isProgramManager = True
+    # query = StudentManager.select().where(StudentManager.user == g.current_user,StudentManager.program==programSelect.program)
+    isProgramManager = hasPrivilege(g.current_user,programSelect.program)
+    # if query.exists():
+    #     isProgramManager = True
     return render_template("admin/createSingleEvent.html",
                             eventData = eventData,
                             allFacilitators = getAllFacilitators(),
