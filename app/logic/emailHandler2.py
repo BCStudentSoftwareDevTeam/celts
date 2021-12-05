@@ -4,49 +4,53 @@ from app.models.programEvent import ProgramEvent
 
 
 class EmailHandler:
-    def __init__(self, email_info):
-        # Q: Will email_info always be a form? Yes
+    def __init__(self, raw_form_data):
         # Q: Can we send email without accessing config?
-        self.email_info = email_info # raw_email_form_data  --- rename
+        # We need config to set up server connection and store all email addresses and passwords.
         self.mail = Mail(app)
-        self.email_sender = app.config.mail['email']
-        self.recipients
-        self.reply_to
-        self.override_all_mail = app.config.mail['MAIL_OVERRIDE_ALL'] #? default
-
-        #
-        self.program_ids    #changed this to be plural because an event could have multiple programs
-        self.event_id
-        self.course_id
-        self.template_identifier
+        self.raw_form_data = raw_form_data
+        self.sender = app.config['admin_username']
+        self.override_all_mail = app.config.mail['MAIL_OVERRIDE_ALL']
+        self.recipients = None
+        self.program_ids = None
+        self.event_id = None
+        self.service_learning_course_id = None
+        self.template_identifier = None
 
     # --------------- sending functionality
     def process_data(self):
-        # clean up email_info to be used in other methods
-        # Q/A: Check for correctness of data/datatype??
-        # - check for email addresses -- @
-        # set up class variables
+        """ Processes raw data and stores it in class variables to be used by other methods """
 
-        if "@" in self.email_info['emailSender']:
-            # when people are sending emails as themselves (using mailto)
+        if "@" in self.raw_form_data['emailSender']:
+            # when people are sending emails as themselves (using mailto) --- Q: are we still going with the mailto option?
             pass
         else:
+            self.template_identifier = self.raw_form_data['templateIdentifier']
 
-            if 'courseID' in self.email_info:   #if this email is for a service learning course
-                self.course_id = self.email_info['courseID']
-            else:
-                self.event_id = self.email_info['eventID']
+            if 'serviceLearningCourseId' in self.raw_form_data:   #if this email is for a service learning course
+                self.service_learning_course_id = self.raw_form_data['serviceLearningCourseId']
 
-                #This logic should prob be in a seperate file/function, but where?
-                #This gets all the programs for a particular event
-                if self.email_info['programID'] == 'Unknown': #the programId is "Unknown" for all non-studentLedPrograms
-                    programs = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event == self.event_id)
-                    self.program_ids = [program.program for program in programs.objects()]  #this must be a list because there will be multiple programs for an event.
-                else:
-                    self.program_ids = [self.email_info['programID']] #keeping this as a list so that we don't have to handel two forms of self.program_Id
+            # I removed the "else" because some service learning courses are tied to events and programs.
+            # TODO: Need to handle the above edge case
+            self.event_id = self.raw_form_data['eventId']
+            fetch_event_programs() # -- Q: We need to decide what needs to be rertuned by functions and what needs to be stored in class variables
 
-            self.template_identifier = self.email_info['template']
         pass
+
+    def fetch_event_programs(self):
+        """ Fetches all the programs of a particular event """
+        # Non-student-led programs have "Unknown" as their id ---Q: maybe this id should be changed to something more specific?
+        if self.raw_form_data['programId'] == 'Unknown':
+            # One event can have multiple programs -- Q: Is this true only for non-student-led events?
+            programs = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event==self.event_id)
+            self.program_ids = [program.program for program in programs.objects()]
+        else:
+            self.program_ids = [self.raw_form_data['programId']]
+
+    def update_sender_config(self):
+        # We might need this.
+        pass
+
 
     def retrieve_recipients(self):
         # retrieves email addresses of different groups:
