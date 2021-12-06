@@ -9,6 +9,8 @@ from app.models.eventParticipant import EventParticipant
 from app.logic.users import isEligibleForProgram
 from app.logic.volunteers import getEventLengthInHours
 
+from datetime import datetime, timedelta
+
 def trainedParticipants(programID):
     """
     This function tracks the users who have attended every Prerequisite
@@ -20,23 +22,30 @@ def trainedParticipants(programID):
     attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(trlist), eventTrainingDataList)))
     return attendedTraining
 
-def sendUserData(bnumber, eventId, programid, swipeTime):
+def sendUserData(bnumber, eventId, programid):
     """Accepts scan input and signs in the user. If user exists or is already
     signed in will return user and login status"""
-    print(swipeTime)
     signedInUser = User.get(User.bnumber == bnumber)
     event = Event.get_by_id(eventId)
+
+    time = datetime.now()
     if not isEligibleForProgram(programid, signedInUser):
         userStatus = "banned"
     elif ((EventParticipant.select(EventParticipant.user)
        .where(EventParticipant.user==signedInUser, EventParticipant.event==eventId))
        .exists()):
-        userStatus = "already in"
+        participant = EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==eventId)
+        if time-participant.swipeIn< timedelta(minutes= 5):
+            userStatus = "already in"
+        else:
+            updateParticipant = EventParticipant.update(swipeOut = time).where(EventParticipant.user==signedInUser, EventParticipant.event==eventId)
+            updateParticipant.execute()
+            userStatus = "swip out"
     else:
         userStatus = "success"
         totalHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
         EventRsvp.create(user=signedInUser, event=eventId)
-        EventParticipant.create (user=signedInUser, event=eventId, hoursEarned=totalHours)
+        EventParticipant.create(user=signedInUser, event=eventId, hoursEarned=totalHours)
     return signedInUser, userStatus
 
 def userRsvpForEvent(user,  event):
