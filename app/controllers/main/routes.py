@@ -182,21 +182,10 @@ def getAllCourseIntructors():
     """
     users = User.select().where(User.isFaculty)
     courseInstructors = CourseInstructor.select()
-
     course_dict = {}
 
     for i in courseInstructors:
-        course_dict.setdefault(i.course.courseName, []).append(i.user.firstName + " " + i.user.lastName)
-    print(course_dict)
+        course_dict.setdefault(i.user.firstName + " " + i.user.lastName, []).append(i.course.courseName)
 
-    # return course_dict
-
-
-#
-    # for instructor in courseInstructors:
-    #     if  (instructor.user.firstName+ " "+ instructor.user.lastName)  not in  course_dict:
-    #         course_dict[instructor.user.firstName+ " "+ instructor.user.lastName] =  instructor.course.courseName
-    #     else:
-    #         course_dict[instructor.user.firstName + " "+ instructor.user.lastName] += ", " + instructor.course.courseName
 
     return render_template('/main/manageServiceLearningFaculty.html',courseInstructors = course_dict)
