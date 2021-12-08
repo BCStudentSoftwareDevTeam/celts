@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block scripts %}
+  {{super()}}
+  <script type="module" src="{{url_for('static', filename ='js/slcNewProposal.js') }}"></script>
+{% endblock %}
+
+{% block styles %}
+  {{super()}}
+  <link rel="stylesheet" href="{{url_for('static', filename ='css/slcNewProposal.css')}}">
+{% endblock %}
+
+{% block app_content %}
+<form id="slcNewProposal" method="post">
+  <div class="tab">
+      {% include "serviceLearning/slcGuidelines.html" %}
+  </div>
+  <div class="tab">
+      {% include "serviceLearning/slcProposal.html" %}
+  </div>
+  <div class="tab">
+      {% include "serviceLearning/slcQuestionnaire.html" %}
+  </div>
+  <div class="row align-items-end pt-5 pb-5">
+    <div class="col">
+      <button class="btn btn-primary" type="button" id="previousButton">Previous</button>
+      <button class="btn btn-danger" type="button" id="cancelButton">Cancel</button>
+    </div>
+    <div class="col stepsIndicator">
+      <span class="step"></span>
+      <span class="step"></span>
+      <span class="step"></span>
+    </div>
+    <div class="col" align="right">
+      <button class="btn btn-primary" type="button" id="nextButton">Next</button>
+    </div>
+  </div>
+</form>
+ {% endblock %}
