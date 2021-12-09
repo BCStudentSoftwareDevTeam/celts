@@ -62,6 +62,7 @@ class EmailHandler:
         # 6. outside participants
 
         # recipient_emails = User.select().query()
+        # recipient = User.select().
         self.recipients = [recipient.email for recipient in recipients_emails]
 
     def replace_general_template_placholders(self, template_body):
@@ -74,21 +75,23 @@ class EmailHandler:
         # One idea: template.format(name, event_name)
 
         # Q: for loop through the emails? Or search bcc??
-        new_template = template_body.format(date=date, event, name)
-        return new_template
+        # new_template = template_body.format(date=date, event, name)
+        # return new_template
+        pass
 
     def replace_name_placeholder(self, name, email_body):
         # new_email_body = email_body.format(name=name)
         return new_email_body
 
     def retrieve_and_modify_email_template(self):  # --rename
-    """ retrieves email template based on idenitifer and calls replace_general_template_placholders"""
+        """ retrieves email template based on idenitifer and calls replace_general_template_placholders"""
         # retrieves email template based on an idenitifer
         # what should the identifier be?
-        template = EmailTemplate.get(jjj)
-        new_body = self.replace_general_template_placholders(template.body)
-
-        return (template.subject, new_body, template.reply_to)
+        # template = EmailTemplate.get(jjj)
+        # new_body = self.replace_general_template_placholders(template.body)
+        #
+        # return (template.subject, new_body, template.reply_to)
+        pass
 
     def attach_attachments(self):
         # TODO for later
@@ -98,11 +101,12 @@ class EmailHandler:
 
     def build_email(self):
         # Most General Scenario
-        process_data()
-        retrieve_recipients()
-        subject, body, reply_to = retrieve_and_modify_email_template()
-
-        return (subject, body, reply_to)
+        # process_data()
+        # retrieve_recipients()
+        # subject, body, reply_to = retrieve_and_modify_email_template()
+        #
+        # return (subject, body, reply_to)
+        pass
 
     def send_email(self):
         subject, body, reply_to = build_email()
@@ -117,6 +121,7 @@ class EmailHandler:
                     email_body,
                     reply_to=reply_to
                 ))
+        pass
 
     # ------------- management functionality
     def update_email_template(self):
