@@ -9,7 +9,7 @@ from app.models.programEvent import ProgramEvent
 from app.controllers.events import events_bp
 from app import app
 
-@events_bp.route('/email', methods=['POST'])
+# @events_bp.route('/email', methods=['POST'])
 def emailVolunteers():
     """ Uses emailHandler to send an email with the form in event_list. """
 
@@ -18,14 +18,12 @@ def emailVolunteers():
         return redirect(url_for("main.events", selectedTerm = emailInfo['selectedTerm']))
     else:
         if emailInfo['programID'] == 'Unknown':
-            emailInfo['eventID'] = 2
             programs = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event == emailInfo['eventID'])
             listOfPrograms = [program.program for program in programs.objects()]
             emailInfo['programID'] = listOfPrograms
-            print("\n\n\n\n\n list of programs:", listOfPrograms, "\n\n\n\n\n\n\n")
-        if emailInfo['emailRecipients'] == "interested":
+        if emailInfo['recipients'] == "interested":
             emails = getInterestedEmails(emailInfo['programID'])
-        elif emailInfo['emailRecipients'] == "eventParticipant":
+        elif emailInfo['recipients'] == "eventParticipant":
             emails = getParticipantEmails(emailInfo['eventID'])
 
         if emails == None:
@@ -35,7 +33,7 @@ def emailVolunteers():
         email = emailHandler(app,emailInfo)
         emailSent = email.sendEmail(Message(emailInfo['subject'],
                                            emails, # recipients
-                                           emailInfo['message']),
+                                           emailInfo['body']),
                                            emails) # passed for sending individually
         if emailSent == True:
             flash("Email successfully sent!", "success")
