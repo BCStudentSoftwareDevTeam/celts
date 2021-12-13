@@ -22,19 +22,18 @@ def showUpcomingEvent():
 
 @events_bp.route('/email', methods=['POST'])
 def email():
-    email_info = request.form.copy()
-    print(email_info)
-    if "@" in email_info['emailSender']:
+    raw_form_data = request.form.copy()
+    if "@" in raw_form_data['emailSender']:
         # when people are sending emails as themselves (using mailto) --- Q: are we still going with the mailto option?
         pass
     else:
-        mail = EmailHandler(email_info)
+        mail = EmailHandler(raw_form_data)
         mail_sent = mail.send_email()
         if mail_sent == True:
             flash("Email successfully sent!", "success")
         else:
             flash("Error sending email", "danger")
-        return redirect(url_for("main.events", selectedTerm = email_info['selectedTerm']))
+        return redirect(url_for("main.events", selectedTerm = raw_form_data['selectedTerm']))
 
 @events_bp.route('/event/<eventid>/kiosk', methods=['GET'])
 def loadKiosk(eventid):

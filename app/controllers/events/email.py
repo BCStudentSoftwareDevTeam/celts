@@ -1,13 +1,27 @@
-from flask import Flask, redirect, flash, url_for, request, g
+from flask import Flask, redirect, flash, url_for, request, g, render_template
 from flask_mail import Mail, Message
 from app.models.interest import Interest
 from app.models.user import User
 from app.models.event import Event
 from app.models.eventParticipant import EventParticipant
-from app.logic.emailHandler import getInterestedEmails, getParticipantEmails, emailHandler
 from app.models.programEvent import ProgramEvent
+from app.models.emailTemplate import EmailTemplate
 from app.controllers.events import events_bp
+from app.logic.emailHandler import getInterestedEmails, getParticipantEmails, emailHandler
 from app import app
+
+@events_bp.route('/renderEmailModal', methods=['GET'])
+def renderEmailTemplate():
+    # Couldn't find a way to do this with render_template
+    # TODO: find a better way?
+    templateInfo = {}
+    emailTemplates = EmailTemplate.select()
+    for index, template in enumerate(emailTemplates):
+        templateInfo[index] = {
+            'purpose': template.purpose,
+            'subject':template.subject,
+            'body': template.body}
+    return templateInfo
 
 # @events_bp.route('/email', methods=['POST'])
 def emailVolunteers():

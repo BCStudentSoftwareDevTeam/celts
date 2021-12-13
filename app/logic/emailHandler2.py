@@ -52,12 +52,9 @@ class EmailHandler:
     def retrieve_recipients(self, recipients_category):
         """ Retrieves recipient based on which category is chosen in the 'To' section of the email modal """
         # retrieves email addresses of different groups:
-        # 1. Participants
-        # 2. Intested.
-        # 3. RSVP'd -- same as participants
-        # 4. course instructors
-        # 5. course Participants
-        # 6. outside participants
+        # - course instructors
+        # - course Participants
+        # - outside participants
         if recipients_category == "interested":
             recipients = (User.select()
                 .join(Interest)

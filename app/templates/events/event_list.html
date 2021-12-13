@@ -4,7 +4,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script src="/static/js/event_list.js"></script>
-
+  <script src="/static/js/emailModal.js"></script>
   </script>
 {% endblock %}
 {% block styles %}
@@ -75,7 +75,7 @@
             {% if user.isAdmin %}
               <td>
 
-                  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#emailModal" onclick="passEventInfo({{event.id}}, 'Unknown', {{selectedTerm}})"{{ 'disabled' if event.isPast }}>
+                  <button class="btn btn-primary" onclick="showEmailModal({{event.id}}, 'Unknown', {{selectedTerm}})"{{ 'disabled' if event.isPast }}>
                     <span class="bi bi-envelope-fill"> Email</span>
                   </button>
               </td>
@@ -139,8 +139,8 @@
                         {% if user.isAdmin %}
                           <td>
 
-                              <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#emailModal"
-                              onclick="passEventInfo({{event.id}}, {{program.id}}, {{selectedTerm}})" {{ 'disabled' if event.isPast }}>
+                              <button class="btn btn-primary"
+                              onclick="showEmailModal({{event.id}}, {{program.id}}, {{selectedTerm}})" {{ 'disabled' if event.isPast }}>
                                 <span class="bi bi-envelope-fill"> Email</span>
                               </button>
                           </td>
