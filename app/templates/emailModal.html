@@ -9,7 +9,7 @@
         <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <h6 class="text-center">Last Email was sent to ______ on 10/20/20</h6>
+        <h6 id="emailLastSent" class="text-center"></h6>
         <form role="form" method="post" id="modal-form" action="/email">
           <div>
             <input id="programID" name="programID" class="form-control" value="" type="hidden">
@@ -18,13 +18,15 @@
 
           </div>
           <h5 class="my-1">Templates</h5>
-          <select class="form-select" onchange="replaceBody()" id='templateIdentifier' name="templateIdentifier" aria-label="template-select"></select>
+          <select class="form-select" onchange="replaceEmailBodyAndSubject()" id='templateIdentifier' name="templateIdentifier" aria-label="template-select">
+            <option disabled selected val="">Select a template</option>
+          </select>
           <div class="row my-3">
             <div class="col-sm-6 form-group">
               <h5>To</h5>
               <select class='form-select' id="emailRecipients" name="recipientsCategory" aria-label="email recipients">
-                <option value="interested">Interested</option>
-                <option value="eventParticipant">RSVP'd</option>
+                <option value="Interested">Interested</option>
+                <option value="RSVP'd">RSVP'd</option>
               </select>
             </div>
             <div class="col-sm-6 form-group">

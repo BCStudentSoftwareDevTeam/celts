@@ -1,12 +1,17 @@
+from flask import request
+from urllib.parse import urlparse
+from datetime import datetime
 from flask_mail import Mail, Message
+
+from app import app
 from app.models.programEvent import ProgramEvent
 from app.models.interest import Interest
 from app.models.user import User
 from app.models.program import Program
 from app.models.eventParticipant import EventParticipant
 from app.models.emailTemplate import EmailTemplate
+from app.models.emailLog import EmailLog
 from app.models.event import Event
-from app import app
 
 class EmailHandler:
     def __init__(self, raw_form_data):
@@ -15,27 +20,30 @@ class EmailHandler:
         self.override_all_mail = app.config['MAIL_OVERRIDE_ALL']
         self.template_identifier = None
         self.program_ids = None
-        self.event_id = None
+        self.event = None
         self.sl_course_id = None # service learning course
         self.recipients = None
 
-    # --------------- sending functionality
     def process_data(self):
         """ Processes raw data and stores it in class variables to be used by other methods """
         self.template_identifier = self.raw_form_data['templateIdentifier']
         self.subject = self.raw_form_data['subject'] if 'subject' in self.raw_form_data else None
         self.body = self.raw_form_data['body'] if 'body' in self.raw_form_data else None
         self.program_ids = self.fetch_event_programs(self.raw_form_data['programID'])
-        self.event_id = self.raw_form_data['eventID'] if 'eventID' in self.raw_form_data else None
+
+        event = Event.get_by_id(self.raw_form_data['eventID'])
+        self.event = event if 'eventID' in self.raw_form_data else None
+
         self.sl_course_id = self.raw_form_data['slCourseId'] if 'slCourseId' in self.raw_form_data else None
-        self.recipients = self.retrieve_recipients(self.raw_form_data["recipientsCategory"])
+        self.recipients_category = self.raw_form_data["recipientsCategory"]
+        self.recipients = self.retrieve_recipients(self.recipients_category)
 
     def fetch_event_programs(self, programId):
         """ Fetches all the programs of a particular event """
         # Non-student-led programs have "Unknown" as their id
         # ---Q: maybe this id should be changed to something more specific?
         if programId == 'Unknown':
-            programs = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event==self.event_id)
+            programs = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event==self.event.id)
             return [program.program for program in programs.objects()]
         else:
             program = ProgramEvent.get_by_id(programId)
@@ -55,29 +63,29 @@ class EmailHandler:
         # - course instructors
         # - course Participants
         # - outside participants
-        if recipients_category == "interested":
+        if recipients_category == "Interested":
             recipients = (User.select()
                 .join(Interest)
                 .join(Program, on=(Program.id==Interest.program))
                 .where(Program.id.in_([p.id for p in self.program_ids])))
 
-        if recipients_category == "eventParticipant":
+        if recipients_category == "RSVP'd":
             recipients = (User.select()
                 .join(EventParticipant)
-                .where(EventParticipant.event==self.event_id))
+                .where(EventParticipant.event==self.event.id))
 
         return [recipient for recipient in recipients]
 
     def replace_general_template_placholders(self, email_body=None):
-        event_link = "event/<self.event_id>" # how are we generating this?
-        event = Event.get_by_id(self.event_id)
+        domain = urlparse(request.base_url) # TODO: how to avoid using request?
+        event_link = f"{domain.scheme}://{domain.netloc}/events/{self.event.id}"
 
-        new_body = email_body.format(event_name=event.name,
-            location=event.location,
-            start_date=event.startDate, # TODO: need to format the dates and times
-            end_date=event.endDate,
-            start_time=event.timeStart,
-            end_time=event.timeEnd,
+        new_body = email_body.format(event_name=self.event.name,
+            location=self.event.location,
+            start_date=(self.event.startDate).strftime('%m/%d/%Y'),
+            end_date=(self.event.endDate).strftime('%m/%d/%Y'),
+            start_time=(self.event.timeStart).strftime('%I:%M'),
+            end_time=(self.event.timeEnd).strftime('%I:%M'),
             event_link=event_link,
             name="{name}")
         return new_body
@@ -87,17 +95,18 @@ class EmailHandler:
         return new_body
 
     def retrieve_and_modify_email_template(self):
-        """ retrieves email template based on idenitifer and calls replace_general_template_placholders"""
+        """ Retrieves email template based on idenitifer and calls replace_general_template_placholders"""
 
-        template_body = EmailTemplate.get(EmailTemplate.purpose==self.template_identifier)
+        email_template = EmailTemplate.get(EmailTemplate.purpose==self.template_identifier) # --Q: should we keep purpose as the identifier?
+        template_id = email_template.id
 
-        subject = self.subject if self.subject else template_body.subject
+        subject = self.subject if self.subject else email_template.subject
 
-        body = self.body if self.body else template_body.body
+        body = self.body if self.body else email_template.body
         new_body = self.replace_general_template_placholders(body)
 
-        reply_to = template_body.replyToAddress
-        return (subject, new_body, reply_to)
+        reply_to = email_template.replyToAddress
+        return (template_id, subject, new_body, reply_to)
 
     def attach_attachments(self):
         # TODO for later
@@ -105,14 +114,24 @@ class EmailHandler:
         # Q: how would this work?
         pass
 
+    def store_sent_email(self, subject, template_id):
+        """ Stores sent email in the email log """
+        date_sent = datetime.now()
+        EmailLog.create(
+            event=self.event.id,
+            subject=subject,
+            templateUsed=template_id,
+            recipientsCategory=self.recipients_category,
+            dateSent=date_sent)
+
     def build_email(self):
         # Most General Scenario
         self.process_data()
-        subject, body, reply_to = self.retrieve_and_modify_email_template()
-        return (subject, body, reply_to)
+        template_id, subject, body, reply_to = self.retrieve_and_modify_email_template()
+        return (template_id, subject, body, reply_to)
 
     def send_email(self):
-        subject, body, reply_to = self.build_email()
+        template_id, subject, body, reply_to = self.build_email()
         try:
             with self.mail.connect() as conn:
                 for recipient in self.recipients:
@@ -127,6 +146,7 @@ class EmailHandler:
                         reply_to=reply_to,
                         sender = ("Sandesh", 'bramsayr@gmail.com')
                     ))
+            self.store_sent_email(subject, template_id)
             return True
         except Exception as e:
             print("Error on sending email: ", e)
