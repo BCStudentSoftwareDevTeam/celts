@@ -6,14 +6,14 @@ from app import app
 # Q: Should we test each method as well?
 @pytest.mark.integration
 def test_email_handler():
-    with app.app_context():
+    with app.test_request_context():
         # Case 1: Send email with subject and body -- as if email is sent using a modal
         raw_form_data = {"templateIdentifier": "Test",
             "subject": "Test Email",
             "body": "Hello {name}",
             "programID":"1",
             "eventID":"1",
-            "recipientsCategory": "interested"}
+            "recipientsCategory": "Interested"}
 
         app.config.update(
             MAIL_SUPRESS_SEND = True
@@ -33,7 +33,7 @@ def test_email_handler():
         raw_form_data = {"templateIdentifier": "Test",
             "programID":"1",
             "eventID":"1",
-            "recipientsCategory": "interested"}
+            "recipientsCategory": "Interested"}
 
         email_2 = EmailHandler(raw_form_data)
 
@@ -43,4 +43,4 @@ def test_email_handler():
 
             assert len(outbox) == 2
             assert outbox[0].subject == "Test Email"
-            assert outbox[0].body == "Hello Sreynit Khatt,  This is a test event named Empty Bowls Spring Event 1 located in Seabury Center. Other info: 2021-10-12-2022-06-12 and this 18:00:00-21:00:00. The link is event/<self.event_id>"
+            assert outbox[0].body == "Hello Sreynit Khatt, This is a test event named Empty Bowls Spring Event 1 located in Seabury Center. Other info: 10/12/2021-06/12/2022 and this 06:00-09:00."

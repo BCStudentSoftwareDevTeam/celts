@@ -12,52 +12,6 @@ import webbrowser
 import time
 from pathlib import Path
 
-"""
-The Requirements:
-1. Send Email - Components:- Sender, Receiver, Email Body
-2. Edit Email - Management Page
-3. Create recipients groups? - Would they ever create manual groups for anything?
-   - If so, where would we save this? A new table?
-   - Q: will they send emails to individuals???
-
-TODO:
-
-- A general method that sets up the connection (would this need to be called when email is sent?)
-
-- Method to receive all the info needed: Sender, Receiver, email_topic, etc.
-  - This method will also clean up the data so it can be used in other methods.
-
-- Method to retrieve email_template
-  - What should be the parameter for retrieval? Not the subject. We should find a better identifies.
-
-- Method to update email_template (after admin edits the tempate this method could be called).
-  - We could check which field(s) needs update in this method. Or create a new one.
-
-- Method to send the email.
-
-- Methods to get the email addresses of all categories (To), such as interested/participating etc.
-  - How many categories/groups will be there?
-
- - Method to replace_fields in email_template
-   - things like recipient name, event name, description, date and time
-   - Come up with a smart way to do this.
-   - This can be called inside send_email method, or another method called before that.
-     because at that point we should have all the fields info
-
-Notes:
-- All the backend logic/processing should happen in the Email Handler class.
-  For instance, the code in /events/email.py can be all moved to the class.
-  So that in email.py, we only do one or two function calls.
-
-- Email Handler class shouldn't be dependent on form data.
-  It should have a method that receives data (could be in any one format),
-  cleans it up. Then other methods will use it.
-
-- Why is the updateSenderEmail updating config? Instead of updating config,
-  the class can have variables that hold sender, receiver, etc. info.
-  first it will fetch from the config. If need updated, then the variable alone would be updated.
-"""
-
 def getInterestedEmails(listOfPrograms):
 
     """ Gets emails of students interested in a program. """
@@ -101,7 +55,6 @@ class emailHandler():
         """ Updates the sender and sends the email. """
         message = self.updateSenderEmail(msg)
 
-        # Q: What's the difference between these two?
         if 'sendIndividually' in self.emailInfo:
             if app.config.mail['MAIL_OVERRIDE_ALL']:
                 message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
@@ -114,11 +67,7 @@ class emailHandler():
                 if app.config['ENV'] == 'testing':
                     message.recipients = [app.config['MAIL_OVERRIDE_ALL']]
                 message.reply_to = app.config["MAIL_REPLY_TO_ADDRESS"]
-
-                self.mail = Mail(app) # Q: Wasn't this already done in the constructor?
-    # =======
-    #             self.mail = Mail(self.application)
-    # >>>>>>> f1383e327bd8d3176d911de02f37f61f6882329a
+                self.mail = Mail(app)
                 self.mail.connect()
                 self.mail.send(message)
             except:

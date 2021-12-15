@@ -19,7 +19,7 @@ def showUpcomingEvent():
     upcomingEvents = getUpcomingEventsForUser(g.current_user)
     return render_template('/events/showUpcomingEvents.html',
                             upcomingEvents = upcomingEvents)
-
+                            
 @events_bp.route('/email', methods=['POST'])
 def email():
     raw_form_data = request.form.copy()
@@ -29,10 +29,12 @@ def email():
     else:
         mail = EmailHandler(raw_form_data)
         mail_sent = mail.send_email()
-        if mail_sent == True:
-            flash("Email successfully sent!", "success")
+
+        if mail_sent:
+            message, status = 'Email successfully sent!', 'success'
         else:
-            flash("Error sending email", "danger")
+            message, status = 'Error sending email', 'danger'
+        flash(message, status)
         return redirect(url_for("main.events", selectedTerm = raw_form_data['selectedTerm']))
 
 @events_bp.route('/event/<eventid>/kiosk', methods=['GET'])
@@ -42,7 +44,6 @@ def loadKiosk(eventid):
     return render_template("/events/eventKiosk.html",
                             event = event,
                             eventid = eventid)
-
 
 @events_bp.route('/signintoEvent', methods=['POST'])
 def signinEvent():
