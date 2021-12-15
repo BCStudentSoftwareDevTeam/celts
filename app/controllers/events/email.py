@@ -29,7 +29,7 @@ def retrieveEmailTemplate():
 @main_bp.route('/fetchEmailLogData/<eventId>', methods=['GET'])
 def fetchEmailLogData(eventId):
     dateSent = recipients = None
-    # TODO: awful implementation. Need to figure out a way to get the most recent email log for an event
+    # TODO: Bruteforce implementation. Need to figure out a way to get the most recent email log for an event
     emailLogs = EmailLog.select().where(EmailLog.event==eventId).order_by(EmailLog.dateSent.asc())
     for emailLog in emailLogs:
         recipients = emailLog.recipientsCategory

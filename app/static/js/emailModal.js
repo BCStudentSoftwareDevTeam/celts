@@ -55,3 +55,9 @@ async function fetchEmailLogData() {
     }
   })
 }
+
+$(function() {
+  $('#emailModal').on('hidden.bs.modal', function () {
+    $('#templateIdentifier option:not(:first)').remove();
+  });
+});
