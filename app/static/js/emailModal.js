@@ -28,17 +28,6 @@ function showEmailModal(eventID, programID, selectedTerm) {
   fetchEmailLogData().then(() => $('#emailModal').modal('show'));
 }
 
-function replaceEmailBodyAndSubject() {
-  let selected = $("#templateIdentifier option:selected" ).val();
-
-  for (let i=0; i < Object.keys(emailTemplateInfo).length; i++) {
-    if (emailTemplateInfo[i]['purpose'] == selected) {
-      $('#subject').val(emailTemplateInfo[i]['subject']);
-      $('#body').val(emailTemplateInfo[i]['body']);
-    }
-  }
-}
-
 async function fetchEmailLogData() {
   eventId = $(".modal-body #eventID").val();
   return await $.ajax({
@@ -54,6 +43,17 @@ async function fetchEmailLogData() {
       }
     }
   })
+}
+
+function replaceEmailBodyAndSubject() {
+  let selected = $("#templateIdentifier option:selected" ).val();
+
+  for (let i=0; i < Object.keys(emailTemplateInfo).length; i++) {
+    if (emailTemplateInfo[i]['purpose'] == selected) {
+      $('#subject').val(emailTemplateInfo[i]['subject']);
+      $('#body').val(emailTemplateInfo[i]['body']);
+    }
+  }
 }
 
 $(function() {
