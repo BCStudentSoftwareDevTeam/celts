@@ -26,7 +26,7 @@ from app.logic.courseManagement import pendingCourses, approvedCourses
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
-from app.logic.userManagement import hasPrivilege
+from app.logic.userManagement import hasPrivilege, getPrograms
 
 
 @admin_bp.route('/switch_user', methods=['POST'])
@@ -45,10 +45,7 @@ def switchUser():
 def templateSelect():
     allprograms = []
     if g.current_user.isCeltsStudentStaff:
-        studentManagerPrograms = list(StudentManager.select().where(StudentManager.user==g.current_user))
-        permissionPrograms = [entry.program.id for entry in studentManagerPrograms]
-        editablePrograms = Program.select().where(Program.id.in_(permissionPrograms)).order_by(Program.programName)
-        allprograms = editablePrograms
+        allprograms = getPrograms()
     else:
         allprograms = Program.select().order_by(Program.programName)
 

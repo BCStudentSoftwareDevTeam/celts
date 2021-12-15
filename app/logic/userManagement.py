@@ -1,6 +1,7 @@
 from app.models.user import User
 from app.models.term import Term
 from app.models.studentManager import StudentManager
+from app.models.program import Program
 from flask import g, session
 
 from playhouse.shortcuts import model_to_dict
@@ -51,3 +52,6 @@ def hasPrivilege(user, program):
         return True
     else:
         return False
+
+def getPrograms():
+    return Program.select().join(StudentManager).where(StudentManager.user==g.current_user).order_by(Program.programName)
