@@ -100,10 +100,8 @@ def createEvent(templateid, programid=None):
     # make sure our data is the same regardless of GET or POST
     preprocessEventData(eventData)
     futureTerms = selectSurroundingTerms(g.current_term)
-    queryManager = StudentManager.select().where(StudentManager.user == g.current_user,StudentManager.program==programid)
-    isProgramManager = False
-    if queryManager.exists():
-        isProgramManager = True
+    isProgramManager = hasPrivilege(g.current_user,programid)
+
     return render_template(f"/admin/{template.templateFile}",
             template = template,
             eventData = eventData,
@@ -138,12 +136,9 @@ def editEvent(eventId):
     futureTerms = selectSurroundingTerms(g.current_term)
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
+    program = event.singleProgram
 
-    programSelect = ProgramEvent.get(event=eventId)
-    # query = StudentManager.select().where(StudentManager.user == g.current_user,StudentManager.program==programSelect.program)
-    isProgramManager = hasPrivilege(g.current_user,programSelect.program)
-    # if query.exists():
-    #     isProgramManager = True
+    isProgramManager = hasPrivilege(g.current_user,program)
     return render_template("admin/createSingleEvent.html",
                             eventData = eventData,
                             allFacilitators = getAllFacilitators(),
