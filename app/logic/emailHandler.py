@@ -34,22 +34,15 @@ class emailHandler():
         self.mail = Mail(self.application)
 
 
-    def updateSenderEmail(self, message):
+    def updateSenderEmail(self, email_sender):
         """ Updates who is sending the emails based on the event_list form. """
-        if self.emailInfo['emailSender'] == 'CELTS Admins':
-            app.config.update(
-                MAIL_USERNAME = app.config['admin_username'],
-                MAIL_PASSWORD = app.config['admin_password']
-            )
-            message.sender = app.config['admin_username']
 
-        elif self.emailInfo['emailSender'] == 'CELTS Student Staff':
-            app.config.update(
-                MAIL_USERNAME = app.config['staff_username'],
-                MAIL_PASSWORD = app.config['staff_password']
-            )
-            message.sender = app.config['staff_username']
-        return message
+        # if self.emailInfo['emailSender'] == 'CELTS Admins':
+        app.config.update(
+            MAIL_USERNAME = app.config[dict[email_sender]['username']],
+            MAIL_PASSWORD = app.config[dict[email_sender]['password']]
+        )
+
 
     def sendEmail(self, msg: Message, emails):
         """ Updates the sender and sends the email. """

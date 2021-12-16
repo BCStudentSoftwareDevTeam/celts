@@ -19,24 +19,46 @@ class EmailHandler:
         self.raw_form_data = raw_form_data
         self.override_all_mail = app.config['MAIL_OVERRIDE_ALL']
         self.template_identifier = None
-        self.program_ids = None
+        self.subject = None
+        self.body = None
+        self.reply_to = None
         self.event = None
-        self.sl_course_id = None # service learning course
+        self.program_ids = None
         self.recipients = None
+        self.sl_course_id = None
+
 
     def process_data(self):
         """ Processes raw data and stores it in class variables to be used by other methods """
+        # Email Template Data
         self.template_identifier = self.raw_form_data['templateIdentifier']
-        self.subject = self.raw_form_data['subject'] if 'subject' in self.raw_form_data else None
-        self.body = self.raw_form_data['body'] if 'body' in self.raw_form_data else None
-        self.program_ids = self.fetch_event_programs(self.raw_form_data['programID'])
 
-        event = Event.get_by_id(self.raw_form_data['eventID'])
-        self.event = event if 'eventID' in self.raw_form_data else None
+        if 'subject' in self.raw_form_data:
+            self.subject = self.raw_form_data['subject']
 
-        self.sl_course_id = self.raw_form_data['slCourseId'] if 'slCourseId' in self.raw_form_data else None
-        self.recipients_category = self.raw_form_data["recipientsCategory"]
-        self.recipients = self.retrieve_recipients(self.recipients_category)
+        if 'body' in self.raw_form_data:
+            self.body = self.raw_form_data['body']
+
+        if 'replyTo' in self.raw_form_data:
+            self.reply_to = self.raw_form_data['replyTo']
+
+        # Event
+        if 'eventID' in self.raw_form_data:
+            event = Event.get_by_id(self.raw_form_data['eventID'])
+            self.event = event
+
+        # Program
+        if 'programID' in self.raw_form_data:
+            self.program_ids = self.fetch_event_programs(self.raw_form_data['programID'])
+
+        # Recipients
+        if 'recipientsCategory' in self.raw_form_data:
+            self.recipients_category = self.raw_form_data['recipientsCategory']
+            self.recipients = self.retrieve_recipients(self.recipients_category)
+
+        # Service Learning Course
+        if 'slCourseId' in self.raw_form_data:
+            self.sl_course_id = self.raw_form_data['slCourseId']
 
     def fetch_event_programs(self, programId):
         """ Fetches all the programs of a particular event """
@@ -49,6 +71,7 @@ class EmailHandler:
             program = ProgramEvent.get_by_id(programId)
             return [program.program]
 
+
     def update_sender_config(self):
         # We might need this.
         # This functionality should be moved somewhere else.
@@ -59,10 +82,10 @@ class EmailHandler:
 
     def retrieve_recipients(self, recipients_category):
         """ Retrieves recipient based on which category is chosen in the 'To' section of the email modal """
-        # retrieves email addresses of different groups:
+        # Other potentioal recipients:
         # - course instructors
         # - course Participants
-        # - outside participants
+        # - outside participants'
         if recipients_category == "Interested":
             recipients = (User.select()
                 .join(Interest)
@@ -77,6 +100,7 @@ class EmailHandler:
         return [recipient for recipient in recipients]
 
     def replace_general_template_placholders(self, email_body=None):
+        """ Replaces all template placeholders except name """
         domain = urlparse(request.base_url) # TODO: how to avoid using request?
         event_link = f"{domain.scheme}://{domain.netloc}/events/{self.event.id}"
 
@@ -91,6 +115,7 @@ class EmailHandler:
         return new_body
 
     def replace_name_placeholder(self, name, body):
+        """ Replaces name placeholder with recipient's full name """
         new_body = body.format(name=name)
         return new_body
 
@@ -105,8 +130,8 @@ class EmailHandler:
         body = self.body if self.body else email_template.body
         new_body = self.replace_general_template_placholders(body)
 
-        reply_to = email_template.replyToAddress
-        return (template_id, subject, new_body, reply_to)
+        self.reply_to = email_template.replyToAddress
+        return (template_id, subject, new_body)
 
     def attach_attachments(self):
         # TODO for later
@@ -127,11 +152,11 @@ class EmailHandler:
     def build_email(self):
         # Most General Scenario
         self.process_data()
-        template_id, subject, body, reply_to = self.retrieve_and_modify_email_template()
-        return (template_id, subject, body, reply_to)
+        template_id, subject, body = self.retrieve_and_modify_email_template()
+        return (template_id, subject, body)
 
     def send_email(self):
-        template_id, subject, body, reply_to = self.build_email()
+        template_id, subject, body = self.build_email()
         try:
             with self.mail.connect() as conn:
                 for recipient in self.recipients:
@@ -143,7 +168,7 @@ class EmailHandler:
                         # [recipient.email],
                         [self.override_all_mail],
                         email_body,
-                        reply_to=reply_to,
+                        reply_to=self.reply_to,
                         sender = ("Sandesh", 'bramsayr@gmail.com')
                     ))
             self.store_sent_email(subject, template_id)
@@ -152,6 +177,13 @@ class EmailHandler:
             print("Error on sending email: ", e)
             return False
 
-    # ------------- management functionality
     def update_email_template(self):
-        pass
+        try:
+            self.process_data()
+            (EmailTemplate.update({
+                EmailTemplate.subject: self.subject,
+                EmailTemplate.body: self.body,
+                EmailTemplate.replyToAddress: self.reply_to
+            }).where(EmailTemplate.purpose==self.template_identifier)).execute()
+        except Exception as e:
+            print("Error updating email template record: ", e)
