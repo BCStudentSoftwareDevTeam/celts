@@ -44,11 +44,20 @@ def manageUsers():
 @admin_bp.route('/updateManagers', methods=['POST','GET'])
 def updateProgramManagers():
     eventData = request.form
+
     if eventData['status'] == "true":
-        addProgramManager(eventData['user'],int(eventData['programID']))
+        try:
+            addProgramManager(eventData['user'],int(eventData['programID']))
+        except:
+            flash('Error while trying to add a manager.')
     else:
-        removeProgramManager(eventData['user'],int(eventData['programID']))
-    return ""
+        try:
+            removeProgramManager(eventData['user'],int(eventData['programID']))
+        except:
+            flash('Error while removing a manager.')
+
+
+
 
 @admin_bp.route('/admin', methods = ['GET'])
 def userManagement():
