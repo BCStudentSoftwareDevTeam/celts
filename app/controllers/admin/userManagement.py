@@ -44,7 +44,6 @@ def manageUsers():
 @admin_bp.route('/updateManagers', methods=['POST','GET'])
 def updateProgramManagers():
     eventData = request.form
-    print("ststtsu.....................",type(eventData['status']))
     if  int(eventData['status']) == 0:
         try:
             addProgramManager(eventData['userID'],int(eventData['programID']))
