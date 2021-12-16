@@ -47,14 +47,11 @@ def updateProgramManagers():
 
     if eventData['status'] == "true":
         try:
-            addProgramManager(eventData['user'],int(eventData['programID']))
+            addProgramManager(eventData['userID'],int(eventData['programID']))
         except:
             flash('Error while trying to add a manager.')
     else:
-        try:
-            removeProgramManager(eventData['user'],int(eventData['programID']))
-        except:
-            flash('Error while removing a manager.')
+        flash('Error while removing a manager.')
 
 
 

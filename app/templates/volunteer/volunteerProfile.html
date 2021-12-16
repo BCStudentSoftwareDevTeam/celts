@@ -86,8 +86,7 @@
     </div>
   </div>
   {% endif %}
-{% elif g.current_user.isCeltsStudentStaff %}
-{% if user.isCeltsStudentStaff %}
+{% else %}
 <div class="row">
   <h2>{{user.firstName}} {{user.lastName}} is a manager for the following programs</h2>
   <input id="{{ user.username }}" hidden>
@@ -103,11 +102,7 @@
   </div>
 </div>
 {% endif %}
-{% endif %}
-
-
 </div>
-
   <div class="row">
     <div><h2>Background Check</h2></div>
     <div>
