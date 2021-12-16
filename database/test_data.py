@@ -22,6 +22,7 @@ from app.models.facilitator import Facilitator
 from app.models.note import Note
 from app.models.backgroundCheck import BackgroundCheck
 # from app.models.backgroundCheckType import BackgroundCheckType
+from app.models.adminLogs import AdminLogs
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -787,3 +788,17 @@ background = [
     },
 ]
 BackgroundCheck.insert_many(background).on_conflict_replace().execute()
+
+logs = [
+   {
+   "createdBy":"ramsayb2",
+   "createdOn": datetime.strptime("2021 12 15","%Y %m %d"),
+   "logContent": "Made Liberty Admin"
+   },
+   {
+   "createdBy":"neillz",
+   "createdOn": datetime.strptime("2021 12 15","%Y %m %d"),
+   "logContent": "Created adoption event"
+   }
+]
+AdminLogs.insert_many(logs).on_conflict_replace().execute()
