@@ -25,14 +25,9 @@ $(document).ready(function() {
 
 
 function updateManagers(el,user,status){
-  var programID = el.id;
-  var userID = (user[0].id);
-  if (status == undefined){
-    status = true;
-  }
   let data = {
-      programID : programID,
-      userID : userID,
+      programID : el.id,
+      userID : (user[0].id),
       status:status,
       from: "ajax"
   }

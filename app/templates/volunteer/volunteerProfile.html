@@ -51,9 +51,9 @@
     <input id="{{ user.username }}" hidden>
       <div class="form-check-inline form-switch">
       {% for program in programs %}
-        {% set status = '' %}
+        {% set status = 0 %}
           {% if program.id in interests_ids %}
-            {% set status = 'checked' %}
+            {% set status = 1 %}
           {% else %}
           {% endif %}
               <input class="form-check-input" type="checkbox" id="{{ program.id }}" {{ status }}>
@@ -75,12 +75,12 @@
     <input id="{{ user.username }}" hidden>
     <div>
       {% for program in programs %}
-        {% set status = '' %}
+        {% set status = 0 %}
           {% if program.id in permissionPrograms %}
-            {% set status = 'checked' %}
+            {% set status = 1 %}
           {% else %}
           {% endif %}
-              <input  type="checkbox" id="{{ program.id }}" {{ status }}  onclick="updateManagers(this,{{user.username}},{{status}})">
+              <input  type="checkbox" id="{{ program.id }}" {{ 'checked' if status==1 else 'unchecked' }}  onclick="updateManagers(this,{{user.username}},{{status}})">
               <label  style="padding-right:50px;" for="{{ program.id }}">{{program.programName}}</label>
       {% endfor %}
     </div>
@@ -91,6 +91,12 @@
   <h2>{{user.firstName}} {{user.lastName}} is a manager for the following programs</h2>
   <input id="{{ user.username }}" hidden>
   <div>
+
+
+
+
+
+
     {% for program in programs %}
       {% set status = '' %}
         {% if program.id in permissionPrograms %}
