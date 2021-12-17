@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+  {{super()}}
+  <script type="module" src="/static/js/userManagement.js"></script>
+
+{% endblock %}
+{% block app_content %}
+
+<h1 class="text-center mt-5 mb-3">Admin Logs</h1>
+<table class="table table-striped table-bordered" align="center">
+  <th>Date</th>
+  <th>User</th>
+  <th>Action</th>
+
+  {% for entry in allLogs%}
+  <tr>
+    <td>{{entry.createdOn}}</td>
+    <td>{{entry.createdBy}}</td>
+    <td>{{entry.logContent}}</td>
+
+ </tr>
+  {%endfor%}
+</table>
+{% endblock %}

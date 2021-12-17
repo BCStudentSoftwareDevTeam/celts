@@ -17,6 +17,7 @@ from app.models.eventTemplate import EventTemplate
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
+from app.models.adminLogs import AdminLogs
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
@@ -25,6 +26,7 @@ from app.logic.courseManagement import pendingCourses, approvedCourses
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
+
 
 @admin_bp.route('/switch_user', methods=['POST'])
 def switchUser():
@@ -196,4 +198,7 @@ def courseManagement(term = None):
                             term = term)
 @admin_bp.route('/adminLogs', methods = ['GET', 'POST'])
 def adminlogs():
-    return render_template("/admin/adminLogs.html")
+    allLogs = AdminLogs.select()
+
+    return render_template("/admin/adminLogs.html",
+                            allLogs = allLogs)
