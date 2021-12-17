@@ -21,6 +21,7 @@ from app.models.adminLogs import AdminLogs
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
+from app.logic.adminLogs import createLog
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.logic.courseManagement import pendingCourses, approvedCourses
 from app.controllers.admin import admin_bp
@@ -87,6 +88,8 @@ def createEvent(templateid, programid=None):
             validationErrorMessage = "Unknown Error Saving Event. Please try again"
 
         if saveSuccess:
+            event = Event.get(name=eventData['name'],term=eventData['term'],timeStart=eventData['timeStart'],startDate=eventData['startDate'])
+            createLog("Created event with id:"+str(event.id)+" :name="+event.name+" startDate:"+str(event.startDate) + " found at:"+"/event/"+str(event.id)+ "/edit")
             noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
             return redirect(url_for("main.events", term = eventData['term']))
@@ -121,6 +124,8 @@ def editEvent(eventId):
         eventData = request.form.copy()
         saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
         if saveSuccess:
+            event = Event.get(name=eventData['name'],term=eventData['term'],timeStart=eventData['timeStart'],startDate=eventData['startDate'])
+            createLog("Edited event with id:"+str(event.id)+" :name="+event.name+" startDate:"+str(event.startDate) + " found at:"+"/event/"+str(event.id)+ "/edit")
             flash("Event successfully updated!", "success")
             return redirect(url_for("admin.editEvent", eventId = eventId))
         else:
@@ -143,7 +148,9 @@ def deleteRoute(eventId):
 
     try:
         term = Event.get(Event.id == eventId).term
+        event = Event.get(Event.id==eventId)
         deleteEvent(eventId)
+        createLog("Deleted event with id"+" "+eventId, +" name: "+event.name)
         flash("Event removed", "success")
         return redirect(url_for("main.events"))
 
@@ -198,7 +205,7 @@ def courseManagement(term = None):
                             term = term)
 @admin_bp.route('/adminLogs', methods = ['GET', 'POST'])
 def adminlogs():
-    allLogs = AdminLogs.select()
+    allLogs = AdminLogs.select().order_by(AdminLogs.createdOn.desc())
 
     return render_template("/admin/adminLogs.html",
                             allLogs = allLogs)

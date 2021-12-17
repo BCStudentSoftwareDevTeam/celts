@@ -6,7 +6,6 @@ from app.logic.adminLogs import createLog
 from playhouse.shortcuts import model_to_dict
 
 def addCeltsAdmin(user):
-    createLog("Tyhis is a test")
     user = User.get_by_id(user)
     user.isCeltsAdmin = True
     user.save()

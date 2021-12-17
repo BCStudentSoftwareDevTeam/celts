@@ -9,9 +9,11 @@ from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck
 from app.logic.participants import trainedParticipants, getEventParticipants
+from app.logic.adminLogs import createLog
 from app.models.user import User
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
+
 
 
 @admin_bp.route('/searchVolunteers/<query>', methods = ['GET'])
@@ -107,7 +109,9 @@ def updateBackgroundCheck():
         checkPassed = int(eventData['checkPassed'])
         type = eventData['bgType']
         setUserBackgroundCheck(user,type, checkPassed)
-        return ""
+        user = User.get_by_id(user)
+        createLog(user.firstName + " "+ user.lastName +"'s backgroundCheck for " +type+ " has been updated to "+ str(bool(checkPassed)))
+        return " "
     else:
         abort(404)
         return ""
