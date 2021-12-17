@@ -194,3 +194,6 @@ def courseManagement(term = None):
                             approvedCourses = approved,
                             terms = terms,
                             term = term)
+@admin_bp.route('/adminLogs', methods = ['GET', 'POST'])
+def adminlogs():
+    return render_template("/admin/adminLogs.html")
