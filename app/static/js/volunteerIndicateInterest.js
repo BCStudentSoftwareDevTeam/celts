@@ -24,3 +24,24 @@ $(document).ready(function() {
     });
   });
 });
+
+function updateBackgroundCheck(user,bgType){
+  let checkPassed = $( "#"+bgType).val();
+  let data = {
+      checkPassed : checkPassed,
+      user: user.id,
+      bgType: bgType
+  }
+  $.ajax({
+    url: "/updateBackgroundCheck",
+    type: "POST",
+    data: data,
+    success: function(s){
+      location.reload()
+    },
+    error: function(error, status){
+        console.log(error, status)
+    }
+
+  })
+}
