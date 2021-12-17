@@ -89,7 +89,7 @@ def createEvent(templateid, programid=None):
 
         if saveSuccess:
             event = Event.get(name=eventData['name'],term=eventData['term'],timeStart=eventData['timeStart'],startDate=eventData['startDate'])
-            createLog("Created event with id:"+str(event.id)+" :name="+event.name+" startDate:"+str(event.startDate) + " found at:"+"/event/"+str(event.id)+ "/edit")
+            createLog("Created event with id:"+str(event.id)+" name: "+event.name+" startDate: "+str(event.startDate) + " found at: "+"/event/"+str(event.id)+ "/edit")
             noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
             return redirect(url_for("main.events", term = eventData['term']))
@@ -150,7 +150,7 @@ def deleteRoute(eventId):
         term = Event.get(Event.id == eventId).term
         event = Event.get(Event.id==eventId)
         deleteEvent(eventId)
-        createLog("Deleted event with id"+" "+eventId, +" name: "+event.name)
+        createLog("Deleted event with id:"+ " "+str(eventId)+" name: "+event.name)
         flash("Event removed", "success")
         return redirect(url_for("main.events"))
 
