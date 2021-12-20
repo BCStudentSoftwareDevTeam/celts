@@ -809,7 +809,6 @@ outsideParticipants = [
 
 OutsideParticipant.insert_many(outsideParticipants).on_conflict_replace().execute()
 
-
 matches = [
     {
     "volunteer": "mupotsal",

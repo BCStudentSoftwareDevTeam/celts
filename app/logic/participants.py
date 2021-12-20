@@ -6,6 +6,7 @@ from app.models.eventRsvp import EventRsvp
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.models.eventParticipant import EventParticipant
+from app.models.matchParticipants import MatchParticipants
 from app.logic.users import isEligibleForProgram
 from app.logic.volunteers import getEventLengthInHours
 
@@ -84,3 +85,7 @@ def getEventParticipants(event):
         .where(EventParticipant.event==event))
 
     return {p.user.username: p.hoursEarned for p in eventParticipants}
+
+def matchVolunteers(volunteer,participant):
+    newEntry = MatchParticipants.create(volunteer=volunteer,outsideParticipant=participant)
+    newEntry.save()
