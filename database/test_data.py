@@ -21,6 +21,8 @@ from app.models.interest import Interest
 from app.models.facilitator import Facilitator
 from app.models.note import Note
 from app.models.backgroundCheck import BackgroundCheck
+from app.models.matchParticipants import MatchParticipants
+from app.models.outsideParticipant import OutsideParticipant
 # from app.models.backgroundCheckType import BackgroundCheckType
 
 print("Inserting data for demo and testing purposes.")
@@ -126,9 +128,11 @@ users = [
         "isStudent": True,
         "phoneNumber": "8599858594"
     },
+
 ]
 
 User.insert_many(users).on_conflict_replace().execute()
+
 
 terms = [
     {
@@ -185,8 +189,6 @@ terms = [
         "isSummer": False,
         "isCurrentTerm": False
     },
-
-
 ]
 Term.insert_many(terms).on_conflict_replace().execute()
 
@@ -787,3 +789,35 @@ background = [
     },
 ]
 BackgroundCheck.insert_many(background).on_conflict_replace().execute()
+
+outsideParticipants = [
+        {
+            "email": "maryjones@example.gmail.com",
+            "firstName": "Mary",
+            "lastName": "Jones",
+            "event": 1,
+            "phoneNumber": "859965452"
+        },
+        {
+            "email": "moorek@example.gmail.com",
+            "firstName": "Moore",
+            "lastName": "Katelyn",
+            "event":2,
+            "phoneNumber": "859945452"
+        },
+]
+
+OutsideParticipant.insert_many(outsideParticipants).on_conflict_replace().execute()
+
+
+matches = [
+    {
+    "volunteer": "mupotsal",
+    "outsideParticipant": "maryjones@example.gmail.com"
+    },
+    {
+    "volunteer": "ayisie",
+    "outsideParticipant": "moorek@example.gmail.com"
+    },
+]
+MatchParticipants.insert_many(matches).on_conflict_replace().execute()

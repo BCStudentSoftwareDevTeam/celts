@@ -2,8 +2,8 @@ from app.models import*
 from app.models.event import Event
 
 class OutsideParticipant(baseModel):
-    event = ForeignKeyField(Event)
+    email = CharField(primary_key=True)
     firstName = CharField()
     lastName = CharField()
-    email = CharField()
+    event = ForeignKeyField(Event)
     phoneNumber = CharField()

@@ -24,6 +24,7 @@ pem add app.models.questionNote.QuestionNote
 pem add app.models.eventRsvp.EventRsvp
 pem add app.models.backgroundCheck.BackgroundCheck
 pem add app.models.backgroundCheckType.BackgroundCheckType
+pem add app.models.matchParticipants.MatchParticipants
 
 pem watch
 pem migrate
