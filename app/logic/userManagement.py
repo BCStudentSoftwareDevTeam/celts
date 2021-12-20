@@ -33,3 +33,27 @@ def changeCurrentTerm(term):
     newCurrentTerm.save()
 
     session["current_term"] = model_to_dict(newCurrentTerm)
+
+def addTerm():
+    terms_table = {"Spring":"Summer",
+                    "Summer":"Fall",
+                    "Fall":"Spring"}
+    terms = list(Term.select().order_by(Term.id))
+    lastCreatedTerm = terms[-1]
+    term = lastCreatedTerm.description
+    term = term.split()
+    year = term[-1]
+    if term[0]=="Fall": # We only change the year when it is Fall
+        year = int(year) + 1
+
+    createdTermDescription = terms_table[term[0]]+" "+str(year)
+    academicYear = lastCreatedTerm.academicYear
+    if term[0] == "Summer": #we only change academic year when the latest term in the table is Summer
+        previousAY = academicYear.split("-")
+        academicYear = str(int(previousAY[0])+1)+"-"+str(int(previousAY[-1])+1)
+
+    isSummer = False
+    if "Summer" in createdTermDescription.split():
+        isSummer = True
+    newTerm = Term.create(description=createdTermDescription,year=year,academicYear=academicYear, isSummer=isSummer)
+    newTerm.save()
