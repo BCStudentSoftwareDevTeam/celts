@@ -180,7 +180,6 @@ def getAllCourseIntructors():
     """
     This function selects all the Intructors Name and the previous courses
     """
-    users = User.select().where(User.isFaculty)
     courseInstructors = CourseInstructor.select()
     course_dict = {}
 
