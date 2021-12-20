@@ -204,7 +204,7 @@ def courseManagement(term = None):
                             terms = terms,
                             term = term)
 @admin_bp.route('/adminLogs', methods = ['GET', 'POST'])
-def adminlogs():
+def adminLogs():
     allLogs = AdminLogs.select().order_by(AdminLogs.createdOn.desc())
 
     return render_template("/admin/adminLogs.html",
