@@ -31,6 +31,7 @@
     </li>
   </ul>
 </div>
+<h2 class ="text-center"> Volunteers </h2>
 <form action="#" method="post"><br>
   <label class='d-none' id="eventLength">{{eventLength}}</label>
   <input  class="form-control" id="eventID" name="event" value="{{event}}" type='hidden'>
@@ -113,7 +114,93 @@
   <div>
     <button type="submit" class="btn btn-primary float-end">Save</button>
   </div>
+</form
+
+<!-- Outside Participant -->
+<h2 class ="text-center">Outside Participants</h2>
+<form action="#" method="post"><br>
+  <label class='d-none' id="eventLength">{{eventLength}}</label>
+  <input  class="form-control" id="eventID" name="event" value="{{event}}" type='hidden'>
+  <div class="flex-container" style="padding: 5px;">
+    <div class='form-group d-inline-flex'>
+      <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addOutsideParticipantModal" style="margin:5px;">Add Outside Participant</a>
+</div>
+<form method="post"><br>
+  <label class='d-none' id="eventLength">{{eventLength}}</label>
+  <input  class="form-control" id="eventID" name="event" value="{{event}}" type='hidden'>
+  <table class="table" id="trackOutsideParticipants">
+    <thead>
+      <tr>
+        <th>Present</th>
+        <th></th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone Number</th>
+        <th>Total Hours</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="volunteerTable">
+      {% for participant in outsideParticipants%}
+      <tr>
+        <td>
+          <input
+            type="checkbox"
+            class='attendanceCheck'
+            name="checkbox_{{participant.username}}"
+            {% if participant.username in eventParticipants %}
+              checked
+            {% endif %} />
+        </td>
+        <td>
+          {% if participant.username not in trainedParticipantsList %}
+            <span data-bs-toggle="tooltip" title="Did Not Complete All Trainings">
+              <span class="text-danger bi bi-exclamation-triangle-fill"></span>
+            </span>
+          {% endif %}
+        </td>
+        <td>
+          <input
+            class="form-control"
+            type='hidden'
+            name="username{{loop.index|string}}"
+            id="{{participant.username}}"
+            value="{{participant.user}}" />
+            {{participant.firstName}} {{participant.lastName}}
+        </td>
+        <td>{{participant.email}}</td>
+        <td>{{participant.phoneNumber}}</td>
+        <td>
+          <input
+            class="form-control number-only form-control input-sm"
+            id="inputHours_{{participant.username}}"
+            name="inputHours_{{participant.username}}"
+            style="max-width: 90px;"
+            type ="number"
+            min="0"
+            step="0.01"
+            {% if participant.username in eventParticipants and eventParticipants[participant.username] == None %}
+              value="{{eventLength}}"
+            {% elif participant.username in eventParticipants %}
+              value="{{eventParticipants[participant.username]}}"
+            {% else %} readonly {% endif %}>
+        </td>
+        <td>
+          <span
+            class="removeVolunteer"
+            id="{{participant.username}}">
+              <i class="bi bi-trash h5 align-middle"></i>
+          </span>
+        </td>
+      </tr>
+      {% endfor %}
+     </tbody>
+    </table>
+  <div>
+    <button type="submit" class="btn btn-primary float-end">Save</button>
+  </div>
 </form>
+
 <!-- Modal -->
 <div class="modal fade float-start" id="addVolunteerModal" tabindex="-1" aria-labelledby="addVolunteerModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -126,6 +213,32 @@
         <div class="input-group">
           <div class="form-group input-group-x form-outline ui-widget" style="width:80%;">
             <input type="input" id="addVolunteerInput" class="form-control" placeholder="Search" autocomplete="off"/>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm">
+            <i class="bi bi-search ms-0"></i>
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button id="selectVolunteerButton" type="button" class="btn btn-primary" disabled>Add participant</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Outside Participant Modal -->
+<div class="modal fade float-start" id="addOutsideParticipantModal" tabindex="-1" aria-labelledby="addOutsideParticipantLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Outside Participant</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group">
+          <div class="form-group input-group-x form-outline ui-widget" style="width:80%;">
+            <input type="input" id="addOutsideParticipantInput" class="form-control" placeholder="Search" autocomplete="off"/>
           </div>
           <button type="button" class="btn btn-primary btn-sm">
             <i class="bi bi-search ms-0"></i>

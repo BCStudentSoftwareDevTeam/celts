@@ -8,7 +8,7 @@ from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck
-from app.logic.participants import trainedParticipants, getEventParticipants
+from app.logic.participants import trainedParticipants, getEventParticipants,getOutsideParticipants
 from app.models.user import User
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
@@ -36,7 +36,8 @@ def trackVolunteersPage(eventID):
 
     trainedParticipantsList = trainedParticipants(program)
     eventParticipants = getEventParticipants(event)
-
+    outsideParticipants = getOutsideParticipants(event)
+    print("This is the data: ,.............. ",outsideParticipants,event)
     if not g.current_user.isCeltsAdmin:
         abort(403)
 
@@ -58,7 +59,8 @@ def trackVolunteersPage(eventID):
         program=program,
         event=event,
         isPastEvent=isPastEvent,
-        trainedParticipantsList=trainedParticipantsList)
+        trainedParticipantsList=trainedParticipantsList,
+        outsideParticipants = outsideParticipants)
 
 @admin_bp.route('/event/<eventID>/track_volunteers', methods=['POST'])
 def updateVolunteerTable(eventID):

@@ -7,6 +7,7 @@ from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.models.eventParticipant import EventParticipant
 from app.models.matchParticipants import MatchParticipants
+from app.models.outsideParticipant import OutsideParticipant
 from app.logic.users import isEligibleForProgram
 from app.logic.volunteers import getEventLengthInHours
 
@@ -85,6 +86,13 @@ def getEventParticipants(event):
         .where(EventParticipant.event==event))
 
     return {p.user.username: p.hoursEarned for p in eventParticipants}
+
+def getOutsideParticipants(event):
+    print("This is the type of the event", type(event))
+    outsideParticipants = (OutsideParticipant
+        .select()
+        .where(OutsideParticipant.event==event))
+    return outsideParticipants
 
 def matchVolunteers(volunteer,participant,event):
     newEntry = MatchParticipants.create(volunteer=volunteer,outsideParticipant=participant,event=event)
