@@ -812,11 +812,13 @@ OutsideParticipant.insert_many(outsideParticipants).on_conflict_replace().execut
 matches = [
     {
     "volunteer": "mupotsal",
-    "outsideParticipant": "maryjones@example.gmail.com"
+    "outsideParticipant": "maryjones@example.gmail.com",
+    "event":1
     },
     {
     "volunteer": "ayisie",
-    "outsideParticipant": "moorek@example.gmail.com"
+    "outsideParticipant": "moorek@example.gmail.com",
+    "event":2
     },
 ]
 MatchParticipants.insert_many(matches).on_conflict_replace().execute()

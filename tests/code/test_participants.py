@@ -251,11 +251,14 @@ def test_getEventParticipantsWithWrongParticipant():
 
 @pytest.mark.integration
 def test_matchVolunteers():
-    currentMatches = sum(list(MatchParticipants.select()))
-    matchVolunteers("neillz","maryjones@example.gmail.com")
-    newTotal = sum(list(MatchParticipants.select()))
+    currentMatches = len(list(MatchParticipants.select()))
+    matchVolunteers("mupotsal","maryjones@example.gmail.com",8)
+    newTotal = len(list(MatchParticipants.select()))
     assert newTotal == currentMatches+1
-    currentMatches = sum(list(MatchParticipants.select()))
-    matchVolunteers("ramsayb2","maryjones@example.gmail.com")
-    newTotal = sum(list(MatchParticipants.select()))
+    MatchParticipants.delete(MatchParticipants.volunteer=="mupotsal",MatchParticipants.outsideParticipant=="maryjones@example.gmail.com",MatchParticipants.event==8).execute()
+
+    currentMatches = len(list(MatchParticipants.select()))
+    matchVolunteers("ramsayb2","maryjones@example.gmail.com",7)
+    newTotal = len(list(MatchParticipants.select()))
     assert newTotal == currentMatches+1
+    MatchParticipants.delete(MatchParticipants.volunteer=="ramsayb2",MatchParticipants.outsideParticipant=="maryjones@example.gmail.com",MatchParticipants.event==7).execute()

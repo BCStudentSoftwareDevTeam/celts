@@ -86,6 +86,6 @@ def getEventParticipants(event):
 
     return {p.user.username: p.hoursEarned for p in eventParticipants}
 
-def matchVolunteers(volunteer,participant):
-    newEntry = MatchParticipants.create(volunteer=volunteer,outsideParticipant=participant)
+def matchVolunteers(volunteer,participant,event):
+    newEntry = MatchParticipants.create(volunteer=volunteer,outsideParticipant=participant,event=event)
     newEntry.save()
