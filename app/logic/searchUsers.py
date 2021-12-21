@@ -40,7 +40,7 @@ def searchOutsideParticipants(query):
         results = OutsideParticipant.select().where(OutsideParticipant.firstName ** firstName | OutsideParticipant.lastName ** firstName)
         for participant in results:
             if participant not in resultsDict:
-                resultsDict[f"{participant.firstName} {participant.lastName}"] = f"{participant.firstName} {participant.lastName}"
+                resultsDict[f"{participant.firstName} {participant.lastName} ({participant.email})"] = f"{participant.firstName} {participant.lastName} ({participant.email})"
     else:
         for searchTerm in splitSearch: #searching for specified first and last name
             if len(searchTerm) > 1:
@@ -48,5 +48,5 @@ def searchOutsideParticipants(query):
                 results = OutsideParticipant.select().where(OutsideParticipant.firstName ** firstName & OutsideParticipant.lastName ** lastName)
                 for participant in results:
                     if participant not in resultsDict:
-                        resultsDict[f"{participant.firstName} {participant.lastName}"] = f"{participant.firstName} {participant.lastName}"
+                        resultsDict[f"{participant.firstName} {participant.lastName}  ({participant.email})"] = f"{participant.firstName} {participant.lastName}  ({participant.email})"
     return resultsDict
