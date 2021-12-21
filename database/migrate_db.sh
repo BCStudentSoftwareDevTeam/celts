@@ -12,7 +12,6 @@ pem add app.models.eventParticipant.EventParticipant
 pem add app.models.facilitator.Facilitator
 pem add app.models.interest.Interest
 pem add app.models.note.Note
-pem add app.models.outsideParticipant.OutsideParticipant
 pem add app.models.partner.Partner
 pem add app.models.program.Program
 pem add app.models.programEvent.ProgramEvent
@@ -24,7 +23,10 @@ pem add app.models.questionNote.QuestionNote
 pem add app.models.eventRsvp.EventRsvp
 pem add app.models.backgroundCheck.BackgroundCheck
 pem add app.models.backgroundCheckType.BackgroundCheckType
+pem add app.models.allOutsideParticipants.AllOutsideParticipants
+pem add app.models.outsideParticipant.OutsideParticipant
 pem add app.models.matchParticipants.MatchParticipants
+
 
 pem watch
 pem migrate

@@ -6,6 +6,7 @@ from app.controllers.admin import admin_bp
 from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
+from app.models.outsideParticipant import OutsideParticipant
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck
 from app.logic.participants import trainedParticipants, getEventParticipants,getOutsideParticipants
@@ -92,6 +93,20 @@ def addVolunteer(volunteer, eventId):
         flash("Volunteer successfully added!", "success")
     else:
         flash("Error when adding volunteer", "danger")
+    return ""
+
+@admin_bp.route('/addOutsideParticipantInputToEvent/<volunteer>/<eventId>', methods = ['POST'])
+def addParticipant(volunteer, eventId):
+    print("This is just a test...............,,,,,,,,,,,,,,,,,,,",volunteer,eventId)
+    username = volunteer.strip("()").split('(')[-1]
+    user = User.get(User.username==username)
+    # This is where all outside participants should go
+    # successfullyAddedVolunteer = addVolunteerToEventRsvp(user, eventId)
+    # EventParticipant.create(user=user, event=eventId) # user is present
+    # if successfullyAddedVolunteer:
+    #     flash("Volunteer successfully added!", "success")
+    # else:
+    #     flash("Error when adding volunteer", "danger")
     return ""
 
 @admin_bp.route('/removeVolunteerFromEvent/<user>/<eventID>', methods = ['POST'])
