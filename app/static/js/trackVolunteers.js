@@ -91,7 +91,13 @@ $(".attendanceCheck").on("change", function() {
 });
 
 
+function callback2() {
+  $("#selectParticipantButton").prop('disabled', false);
+}
+
+$("#selectParticipantButton").prop('disabled', true)
+
 $("#addOutsideParticipantInput").on("input", function() {
   console.log("This is a test here!..................")
-  searchOutsideParticipant("addOutsideParticipantInput", callback, "addOutsideParticipantModal");
+  searchOutsideParticipant("addOutsideParticipantInput", callback2, "addOutsideParticipantModal");
 });
