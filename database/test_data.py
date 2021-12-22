@@ -21,10 +21,8 @@ from app.models.interest import Interest
 from app.models.facilitator import Facilitator
 from app.models.note import Note
 from app.models.backgroundCheck import BackgroundCheck
-from app.models.outsideParticipant import OutsideParticipant
-from app.models.allOutsideParticipants import AllOutsideParticipants
 from app.models.matchParticipants import MatchParticipants
-
+from app.models.outsideParticipant import OutsideParticipant
 # from app.models.backgroundCheckType import BackgroundCheckType
 
 print("Inserting data for demo and testing purposes.")
@@ -792,30 +790,20 @@ background = [
 ]
 BackgroundCheck.insert_many(background).on_conflict_replace().execute()
 
-allOutsideParticipants = [
-            {
-                "email": "maryjones@example.gmail.com",
-                "firstName": "Mary",
-                "lastName": "Jones",
-                "phoneNumber": "859965452"
-            },
-            {
-                "email": "moorek@example.gmail.com",
-                "firstName": "Moore",
-                "lastName": "Katelyn",
-                "phoneNumber": "859945452"
-            },
-]
-AllOutsideParticipants.insert_many(allOutsideParticipants).on_conflict_replace().execute()
-
 outsideParticipants = [
         {
-            "participant": "maryjones@example.gmail.com",
+            "email": "maryjones@example.gmail.com",
+            "firstName": "Mary",
+            "lastName": "Jones",
             "event": 1,
+            "phoneNumber": "859965452"
         },
         {
-            "participant": "moorek@example.gmail.com",
+            "email": "moorek@example.gmail.com",
+            "firstName": "Moore",
+            "lastName": "Katelyn",
             "event":2,
+            "phoneNumber": "859945452"
         },
 ]
 
@@ -825,10 +813,12 @@ matches = [
     {
     "volunteer": "mupotsal",
     "outsideParticipant": "maryjones@example.gmail.com",
+    "event":1
     },
     {
     "volunteer": "ayisie",
     "outsideParticipant": "moorek@example.gmail.com",
+    "event":2
     },
 ]
 MatchParticipants.insert_many(matches).on_conflict_replace().execute()

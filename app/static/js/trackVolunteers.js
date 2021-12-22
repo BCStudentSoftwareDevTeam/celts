@@ -50,22 +50,6 @@ $(document).ready(function() {
       }
     });
   });
-
-  $("#selectParticipantButton").click(function(){
-    let user = $("#addOutsideParticipantInput").val()
-    let eventId = $("#eventID").val()
-
-    $.ajax({
-      url: `/addOutsideParticipantInputToEvent/${user}/${eventId}`,
-      type: "POST",
-      success: function(s){
-        location.reload();
-      },
-      error: function(request, status, error){
-        location.reload();
-      }
-    });
-  });
 });
 
 function callback() {
@@ -106,14 +90,8 @@ $(".attendanceCheck").on("change", function() {
   }
 });
 
-function callback2() {
-  console.log(" The button is invokedd....")
-  $("#selectParticipantButton").prop('disabled', false);
-}
-
-$("#selectParticipantButton").prop('disabled', true)
 
 $("#addOutsideParticipantInput").on("input", function() {
   console.log("This is a test here!..................")
-  searchOutsideParticipant("addOutsideParticipantInput", callback2, "addOutsideParticipantModal");
+  searchOutsideParticipant("addOutsideParticipantInput", callback, "addOutsideParticipantModal");
 });
