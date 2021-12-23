@@ -53,6 +53,17 @@ def trackVolunteersPage(eventID):
 
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
 
+    matched = MatchParticipants.select().where(MatchParticipants.event==event)
+    print("This is matched...................................",matched,event)
+    matches = {}
+    for entry in matched:
+        print(entry.volunteer,entry.outsideParticipant)
+        if entry.volunteer and entry.outsideParticipant:
+            if entry.volunteer not in matches:
+                matches[entry.volunteer]=[entry.outsideParticipant]
+            else:
+                matches[entry.volunteer].append(entry.outsideParticipant)
+
     return render_template("/events/trackVolunteers.html",
         eventRsvpData=list(eventRsvpData),
         eventParticipants=eventParticipants,
@@ -61,7 +72,8 @@ def trackVolunteersPage(eventID):
         event=event,
         isPastEvent=isPastEvent,
         trainedParticipantsList=trainedParticipantsList,
-        outsideParticipants = outsideParticipants)
+        outsideParticipants = outsideParticipants,
+        matches = matches)
 
 @admin_bp.route('/event/<eventID>/track_volunteers', methods=['POST'])
 def updateVolunteerTable(eventID):
@@ -102,6 +114,16 @@ def addParticipant(volunteer, eventId):
     newEntry = MatchParticipants.create(outsideParticipant=email,event=int(event[0]))
     newEntry.save()
     return ""
+
+@admin_bp.route('/matchParticipants/<volunteer>/<eventId>', methods = ['POST'])
+def matchParticipant(volunteer, eventId):
+    # We need participant  and volunteer, and Id.
+    email = volunteer.strip("()").split('(')[-1]
+    event = eventId.split(':')
+    newEntry = MatchParticipants.create(outsideParticipant=email,event=int(event[0]))
+    newEntry.save()
+    return ""
+
 
 @admin_bp.route('/removeVolunteerFromEvent/<user>/<eventID>', methods = ['POST'])
 def removeVolunteerFromEvent(user, eventID):

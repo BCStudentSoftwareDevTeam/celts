@@ -52,6 +52,8 @@
         <th>Email</th>
         <th>Phone Number</th>
         <th>Total Hours</th>
+        <th>Partner</th>
+        <th></th>
         <th></th>
       </tr>
     </thead>
@@ -85,6 +87,7 @@
         </td>
         <td>{{participant.user.email}}</td>
         <td>{{participant.user.phoneNumber}}</td>
+
         <td>
           <input
             class="form-control number-only form-control input-sm"
@@ -100,6 +103,17 @@
               value="{{eventParticipants[participant.user.username]}}"
             {% else %} readonly {% endif %}>
         </td>
+        <td>
+        {% if participant.user in matches%}
+        {% for entry in matches[participant.user]%}
+          {{entry.firstName}} {{entry.lastName}}
+        {% endfor%}
+        {% endif %}
+        </td>
+        <td>
+          <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addMatch" style="margin:5px;">Match</a>
+        </td>
+
         <td>
           <span
             class="removeVolunteer"
@@ -252,4 +266,36 @@
     </div>
   </div>
 </div>
+
+<!-- Edit the Match  -->
+<div class="modal fade float-start" id="addMatch" tabindex="-1" aria-labelledby="addOutsideParticipantLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Matching</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-check-inline form-switch">
+          <ul>
+            {% for participant in outsideParticipants%}
+            <li>
+              <input class="form-check-input" type="checkbox" id="{{ participant.outsideParticipant.email }}" {{ status }}>
+              {% set name = participant.outsideParticipant.firstName + participant.outsideParticipant.lastName%}
+              <label class="form-check-label"  for="{{ participant.outsideParticipant.email}}">{{name}}</label>
+            </li>
+            {% endfor %}
+
+          </ul>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button id="doneMatching" type="button" class="btn btn-primary">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
