@@ -6,6 +6,7 @@ from app.controllers.admin import admin_bp
 from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
+from app.models.matchParticipants import MatchParticipants
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck
 from app.logic.participants import trainedParticipants, getEventParticipants,getOutsideParticipants
@@ -89,6 +90,24 @@ def addVolunteer(volunteer, eventId):
     successfullyAddedVolunteer = addVolunteerToEventRsvp(user, eventId)
     EventParticipant.create(user=user, event=eventId) # user is present
     if successfullyAddedVolunteer:
+        flash("Volunteer successfully added!", "success")
+    else:
+        flash("Error when adding volunteer", "danger")
+    return ""
+
+@admin_bp.route('/addParticipantToEvent/<volunteer>/<eventId>', methods = ['POST'])
+def addParticipant(volunteer, eventId):
+    print("This is the inromation we ot from the UI..........",volunteer,eventId)
+    email = volunteer.strip("()").split('(')[-1]
+    print("User",email)
+    print("Event",eventId)
+    event = eventId.split(':')
+    newEntry = MatchParticipants.create(outsideParticipant=email,event=int(event[0]))
+    newEntry.save()
+    # user = User.get(User.username==username)
+    # successfullyAddedVolunteer = addVolunteerToEventRsvp(user, eventId)
+    # EventParticipant.create(user=user, event=eventId) # user is present
+    if True:
         flash("Volunteer successfully added!", "success")
     else:
         flash("Error when adding volunteer", "danger")

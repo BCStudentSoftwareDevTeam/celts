@@ -50,6 +50,24 @@ $(document).ready(function() {
       }
     });
   });
+
+  // Addding an outside Participant
+  $("#selectParticipantButton").click(function(){
+    let user = $("#addOutsideParticipantInput").val()
+    let eventId = $("#eventID").val()
+
+    $.ajax({
+      url: `/addParticipantToEvent/${user}/${eventId}`,
+      type: "POST",
+      success: function(s){
+        location.reload();
+      },
+      error: function(request, status, error){
+        location.reload();
+      }
+    });
+  });
+
 });
 
 function callback() {

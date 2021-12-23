@@ -795,15 +795,25 @@ outsideParticipants = [
             "email": "maryjones@example.gmail.com",
             "firstName": "Mary",
             "lastName": "Jones",
-            "event": 1,
             "phoneNumber": "859965452"
         },
         {
             "email": "moorek@example.gmail.com",
             "firstName": "Moore",
             "lastName": "Katelyn",
-            "event":2,
             "phoneNumber": "859945452"
+        },
+        {
+            "email": "jonesm@example.gmail.com",
+            "firstName": "Jones",
+            "lastName": "Madison",
+            "phoneNumber": "859978452"
+        },
+        {
+            "email": "gracen@example.gmail.com",
+            "firstName": "Grace",
+            "lastName": "Nicholas",
+            "phoneNumber": "859978452"
         },
 ]
 
@@ -813,12 +823,17 @@ matches = [
     {
     "volunteer": "mupotsal",
     "outsideParticipant": "maryjones@example.gmail.com",
-    "event":1
+    "event":7
     },
     {
     "volunteer": "ayisie",
     "outsideParticipant": "moorek@example.gmail.com",
-    "event":2
+    "event":7
+    },
+    {
+    "volunteer":None,
+    "outsideParticipant": "jonesm@example.gmail.com",
+    "event":7
     },
 ]
 MatchParticipants.insert_many(matches).on_conflict_replace().execute()
