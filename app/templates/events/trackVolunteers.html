@@ -147,34 +147,15 @@
   <table class="table" id="trackOutsideParticipants">
     <thead>
       <tr>
-        <th>Present</th>
-        <th></th>
         <th>Name</th>
         <th>Email</th>
         <th>Phone Number</th>
-        <th>Total Hours</th>
         <th></th>
       </tr>
     </thead>
     <tbody id="volunteerTable">
       {% for participant in outsideParticipants%}
       <tr>
-        <td>
-          <input
-            type="checkbox"
-            class='attendanceCheck'
-            name="checkbox_{{participant.username}}"
-            {% if participant.username in eventParticipants %}
-              checked
-            {% endif %} />
-        </td>
-        <td>
-          {% if participant.username not in trainedParticipantsList %}
-            <span data-bs-toggle="tooltip" title="Did Not Complete All Trainings">
-              <span class="text-danger bi bi-exclamation-triangle-fill"></span>
-            </span>
-          {% endif %}
-        </td>
         <td>
           <input
             class="form-control"
@@ -187,24 +168,9 @@
         <td>{{participant.outsideParticipant.email}}</td>
         <td>{{participant.outsideParticipant.phoneNumber}}</td>
         <td>
-          <input
-            class="form-control number-only form-control input-sm"
-            id="inputHours_{{participant.username}}"
-            name="inputHours_{{participant.username}}"
-            style="max-width: 90px;"
-            type ="number"
-            min="0"
-            step="0.01"
-            {% if participant.username in eventParticipants and eventParticipants[participant.username] == None %}
-              value="{{eventLength}}"
-            {% elif participant.username in eventParticipants %}
-              value="{{eventParticipants[participant.username]}}"
-            {% else %} readonly {% endif %}>
-        </td>
-        <td>
           <span
-            class="removeVolunteer"
-            id="{{participant.username}}">
+            class="removeParticipant"
+            id="{{participant.outsideParticipant.email}}">
               <i class="bi bi-trash h5 align-middle"></i>
           </span>
         </td>
@@ -287,10 +253,7 @@
               <label class="form-check-label"  for="{{ participant.outsideParticipant.email}}">{{name}}</label>
             </li>
             {% endfor %}
-
           </ul>
-
-
         </div>
       </div>
       <div class="modal-footer">

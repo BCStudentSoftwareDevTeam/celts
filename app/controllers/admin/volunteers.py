@@ -129,7 +129,17 @@ def matchParticipant(volunteer, outsideParticipant, eventId):
 def removeVolunteerFromEvent(user, eventID):
     (EventParticipant.delete().where(EventParticipant.user==user, EventParticipant.event==eventID)).execute()
     (EventRsvp.delete().where(EventRsvp.user==user)).execute()
+    update = MatchParticipants.get_or_none(MatchParticipants.volunteer==user,MatchParticipants.event==eventID)
+    if update != None:
+        update.volunteer=None
+        update.save()
     flash("Volunteer successfully removed", "success")
+    return ""
+
+@admin_bp.route('/removeParticipantFromEvent/<participant>/<eventID>', methods = ['POST'])
+def removeParticipantFromEvent(participant, eventID):
+    (MatchParticipants.delete().where(MatchParticipants.outsideParticipant==participant, MatchParticipants.event==eventID)).execute()
+    flash("Particpant successfully removed", "success")
     return ""
 
 @admin_bp.route('/updateBackgroundCheck', methods = ['POST'])

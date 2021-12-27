@@ -26,7 +26,6 @@ $(document).ready( function () {
  $(document).on("click", ".open-MatchDialog", function () {
       currentVolunteer = $(this).data('id');
       $(".matchModalBody #selectionId").val( currentVolunteer );
-      console.log("This is the ID..............",currentVolunteer);
  });
 
  $(".form-check-input").click(function updateMatch(el){
@@ -78,11 +77,11 @@ $(document).ready(function() {
 
   // Addding an outside Participant
   $("#selectParticipantButton").click(function(){
-    let user = $("#addOutsideParticipantInput").val()
+    let participant = $("#addOutsideParticipantInput").val()
     let eventId = $("#eventID").val()
 
     $.ajax({
-      url: `/addParticipantToEvent/${user}/${eventId}`,
+      url: `/addParticipantToEvent/${participant}/${eventId}`,
       type: "POST",
       success: function(s){
         location.reload();
@@ -109,6 +108,20 @@ $(".removeVolunteer").on("click", function() {
   let eventId = $('#eventID').val()
   $.ajax({
     url: `/removeVolunteerFromEvent/${username}/${eventId}`,
+    type: "POST",
+    success: function(s) {
+      location.reload();
+    },
+    error: function(request, status, error) {
+    }
+  });
+});
+
+$(".removeParticipant").on("click", function() {
+  let username =  $(this)[0].id;
+  let eventId = $('#eventID').val()
+  $.ajax({
+    url: `/removeParticipantFromEvent/${username}/${eventId}`,
     type: "POST",
     success: function(s) {
       location.reload();
