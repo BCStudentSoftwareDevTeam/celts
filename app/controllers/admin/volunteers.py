@@ -115,13 +115,20 @@ def addParticipant(volunteer, eventId):
     newEntry.save()
     return ""
 
-@admin_bp.route('/matchParticipants/<volunteer>/<eventId>', methods = ['POST'])
-def matchParticipant(volunteer, eventId):
+@admin_bp.route('/matchParticipants/<volunteer>/<outsideParticipant>/<eventId>', methods = ['POST'])
+def matchParticipant(volunteer, outsideParticipant, eventId):
+    print("The matching function is invoked...................Yay")
     # We need participant  and volunteer, and Id.
-    email = volunteer.strip("()").split('(')[-1]
+    outsideParticipant = outsideParticipant.strip("()").split('(')[-1]
     event = eventId.split(':')
-    newEntry = MatchParticipants.create(outsideParticipant=email,event=int(event[0]))
-    newEntry.save()
+    vol = User.get_by_id(volunteer)
+
+    print("...........................................","outsideParticipant",outsideParticipant," event ",event[0],"volunteer",vol)
+    update = MatchParticipants.get(MatchParticipants.outsideParticipant==outsideParticipant,MatchParticipants.event==int(event[0]))
+    update.volunteer = volunteer
+    update.save()
+    # newEntry = MatchParticipants.create(volunteer=vol,outsideParticipant=outsideParticipant,event=int(event[0]))
+    # newEntry.save()
     return ""
 
 

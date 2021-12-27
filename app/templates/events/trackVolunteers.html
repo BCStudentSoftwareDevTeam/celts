@@ -111,7 +111,7 @@
         {% endif %}
         </td>
         <td>
-          <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addMatch" style="margin:5px;">Match</a>
+          <a class="open-MatchDialog" data-id="{{participant.user}}" btn btn-success" data-bs-toggle="modal" data-bs-target="#addMatch" style="margin:5px;">Match</a>
         </td>
 
         <td>
@@ -220,7 +220,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add a volunteer</h5>
+        <h5 class="modal-title" id="addVolunteerModal">Add a volunteer</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -246,7 +246,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add Outside Participant</h5>
+        <h5 class="modal-title" id="addParticipantModal">Add Outside Participant</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -272,21 +272,22 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Matching</h5>
+        <h5 class="modal-title" id="matchModal">Matching</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body matchModalBody">
         <div class="form-check-inline form-switch">
           <ul>
             {% for participant in outsideParticipants%}
             <li>
-              <input class="form-check-input" type="checkbox" id="{{ participant.outsideParticipant.email }}" {{ status }}>
+              <input class="form-check-input" type="checkbox"  name ="selectionId" id="{{ participant.outsideParticipant.email }}" {{ status }}>
               {% set name = participant.outsideParticipant.firstName + participant.outsideParticipant.lastName%}
               <label class="form-check-label"  for="{{ participant.outsideParticipant.email}}">{{name}}</label>
             </li>
             {% endfor %}
 
           </ul>
+
 
         </div>
       </div>

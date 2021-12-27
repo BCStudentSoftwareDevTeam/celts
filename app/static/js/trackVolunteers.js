@@ -22,9 +22,32 @@ $(document).ready( function () {
 
    }
  });
+ var currentVolunteer = "";
+ $(document).on("click", ".open-MatchDialog", function () {
+      currentVolunteer = $(this).data('id');
+      $(".matchModalBody #selectionId").val( currentVolunteer );
+      console.log("This is the ID..............",currentVolunteer);
+ });
 
  $(".form-check-input").click(function updateMatch(el){
-  console.log(el)
+   let currID =  $(this).attr('id');
+   let user = $(this).attr('name');
+   let eventId = $("#eventID").val()
+
+   console.log("This is the current ID",currID);
+   console.log("This is the user",currentVolunteer);
+
+   $.ajax({
+     url: `/matchParticipants/${currentVolunteer}/${currID}/${eventId}`,
+     type: "POST",
+     success: function(s){
+       // location.reload();
+     },
+     error: function(request, status, error){
+       // location.reload();
+     }
+   });
+
  });
 
 });
@@ -124,3 +147,8 @@ $("#addOutsideParticipantInput").on("input", function() {
   console.log("This is a test here!..................")
   searchOutsideParticipant("addOutsideParticipantInput", callback2, "addOutsideParticipantModal");
 });
+
+function getUser(el){
+  console.log("This is the getUser function!");
+  console.log(el);
+}
