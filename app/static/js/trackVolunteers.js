@@ -34,9 +34,6 @@ $(document).ready( function () {
    let user = $(this).attr('name');
    let eventId = $("#eventID").val()
 
-   console.log("This is the current ID",currID);
-   console.log("This is the user",currentVolunteer);
-
    $.ajax({
      url: `/matchParticipants/${currentVolunteer}/${currID}/${eventId}`,
      type: "POST",
@@ -144,7 +141,6 @@ function callback2() {
 $("#selectParticipantButton").prop('disabled', true)
 
 $("#addOutsideParticipantInput").on("input", function() {
-  console.log("This is a test here!..................")
   searchOutsideParticipant("addOutsideParticipantInput", callback2, "addOutsideParticipantModal");
 });
 

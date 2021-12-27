@@ -38,7 +38,6 @@ def trackVolunteersPage(eventID):
     trainedParticipantsList = trainedParticipants(program)
     eventParticipants = getEventParticipants(event)
     outsideParticipants = getOutsideParticipants(event)
-    print("This is the data: ,.............. ",outsideParticipants,event)
     if not g.current_user.isCeltsAdmin:
         abort(403)
 
@@ -54,7 +53,6 @@ def trackVolunteersPage(eventID):
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
 
     matched = MatchParticipants.select().where(MatchParticipants.event==event)
-    print("This is matched...................................",matched,event)
     matches = {}
     for entry in matched:
         print(entry.volunteer,entry.outsideParticipant)
@@ -117,18 +115,13 @@ def addParticipant(volunteer, eventId):
 
 @admin_bp.route('/matchParticipants/<volunteer>/<outsideParticipant>/<eventId>', methods = ['POST'])
 def matchParticipant(volunteer, outsideParticipant, eventId):
-    print("The matching function is invoked...................Yay")
-    # We need participant  and volunteer, and Id.
     outsideParticipant = outsideParticipant.strip("()").split('(')[-1]
     event = eventId.split(':')
     vol = User.get_by_id(volunteer)
 
-    print("...........................................","outsideParticipant",outsideParticipant," event ",event[0],"volunteer",vol)
     update = MatchParticipants.get(MatchParticipants.outsideParticipant==outsideParticipant,MatchParticipants.event==int(event[0]),MatchParticipants.volunteer==None)
     update.volunteer = volunteer
     update.save()
-    # newEntry = MatchParticipants.create(volunteer=vol,outsideParticipant=outsideParticipant,event=int(event[0]))
-    # newEntry.save()
     return ""
 
 
