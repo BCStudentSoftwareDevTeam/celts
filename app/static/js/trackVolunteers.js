@@ -22,6 +22,11 @@ $(document).ready( function () {
 
    }
  });
+
+ $(".form-check-input").click(function updateMatch(el){
+  console.log(el)
+ });
+
 });
 
 $(document).ready(function() {
