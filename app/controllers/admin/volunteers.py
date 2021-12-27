@@ -124,7 +124,7 @@ def matchParticipant(volunteer, outsideParticipant, eventId):
     vol = User.get_by_id(volunteer)
 
     print("...........................................","outsideParticipant",outsideParticipant," event ",event[0],"volunteer",vol)
-    update = MatchParticipants.get(MatchParticipants.outsideParticipant==outsideParticipant,MatchParticipants.event==int(event[0]))
+    update = MatchParticipants.get(MatchParticipants.outsideParticipant==outsideParticipant,MatchParticipants.event==int(event[0]),MatchParticipants.volunteer==None)
     update.volunteer = volunteer
     update.save()
     # newEntry = MatchParticipants.create(volunteer=vol,outsideParticipant=outsideParticipant,event=int(event[0]))

@@ -148,7 +148,6 @@ $("#addOutsideParticipantInput").on("input", function() {
   searchOutsideParticipant("addOutsideParticipantInput", callback2, "addOutsideParticipantModal");
 });
 
-function getUser(el){
-  console.log("This is the getUser function!");
-  console.log(el);
-}
+$("#doneMatching").on("click",function(){
+  location.reload()
+})
