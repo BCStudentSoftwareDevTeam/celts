@@ -92,6 +92,7 @@ def getOutsideParticipants(event):
     outsideParticipants = (MatchParticipants
         .select()
         .where(MatchParticipants.event==event))
+    outsideParticipants = [outsideParticipant.outsideParticipant for outsideParticipant in outsideParticipants ] 
     return outsideParticipants
 
 def matchVolunteers(volunteer,participant,event):

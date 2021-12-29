@@ -54,13 +54,18 @@ def trackVolunteersPage(eventID):
 
     matched = MatchParticipants.select().where(MatchParticipants.event==event)
     matches = {}
+
+    print("This is the type of the outsideParticipant..............................................",outsideParticipants)
     for entry in matched:
-        print(entry.volunteer,entry.outsideParticipant)
         if entry.volunteer and entry.outsideParticipant:
             if entry.volunteer not in matches:
                 matches[entry.volunteer]=[entry.outsideParticipant]
             else:
                 matches[entry.volunteer].append(entry.outsideParticipant)
+    for entry,v in matches.items():
+        print(entry,v)
+    for entry in outsideParticipants:
+        print(entry)
 
     return render_template("/events/trackVolunteers.html",
         eventRsvpData=list(eventRsvpData),
@@ -118,7 +123,6 @@ def matchParticipant(volunteer, outsideParticipant, eventId):
     outsideParticipant = outsideParticipant.strip("()").split('(')[-1]
     event = eventId.split(':')
     vol = User.get_by_id(volunteer)
-
     update = MatchParticipants.get(MatchParticipants.outsideParticipant==outsideParticipant,MatchParticipants.event==int(event[0]),MatchParticipants.volunteer==None)
     update.volunteer = volunteer
     update.save()
@@ -139,6 +143,15 @@ def removeVolunteerFromEvent(user, eventID):
 @admin_bp.route('/removeParticipantFromEvent/<participant>/<eventID>', methods = ['POST'])
 def removeParticipantFromEvent(participant, eventID):
     (MatchParticipants.delete().where(MatchParticipants.outsideParticipant==participant, MatchParticipants.event==eventID)).execute()
+    flash("Particpant successfully removed", "success")
+    return ""
+
+@admin_bp.route('/unMatch/<volunteer>/<participant>/<eventID>', methods = ['POST'])
+def unMatch(volunteer,participant, eventID):
+    volunteer = User.get_by_id(volunteer)
+    query = MatchParticipants.get(MatchParticipants.volunteer==volunteer,MatchParticipants.outsideParticipant==participant,MatchParticipants.event==eventID)
+    query.volunteer = None
+    query.save()
     flash("Particpant successfully removed", "success")
     return ""
 

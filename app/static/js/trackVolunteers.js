@@ -12,6 +12,7 @@ $(document).ready( function () {
 
     }
   });
+
   var table =  $('#trackOutsideParticipants').DataTable({
   "fnDrawCallback": function(oSettings) {
     if ($('#trackVolunteerstable tr').length < 11) {
@@ -22,29 +23,31 @@ $(document).ready( function () {
 
    }
  });
- var currentVolunteer = "";
- $(document).on("click", ".open-MatchDialog", function () {
-      currentVolunteer = $(this).data('id');
-      $(".matchModalBody #selectionId").val( currentVolunteer );
- });
 
  $(".form-check-input").click(function updateMatch(el){
-   let currID =  $(this).attr('id');
+   let outsidePart =  $(this).attr('id');
    let user = $(this).attr('name');
    let eventId = $("#eventID").val()
-
+   console.log("This is part",outsidePart);
+   console.log("This is the user",user);
+   console.log("This is the eventID",eventID);
+   console.log("This is checked",$(this).attr('checked'))
+   var url = `/matchParticipants/${user}/${outsidePart}/${eventId}`
+   if ($(this).attr('checked') == 'checked'){
+    url = `/unMatch/${user}/${outsidePart}/${eventId}`
+   }
    $.ajax({
-     url: `/matchParticipants/${currentVolunteer}/${currID}/${eventId}`,
+     url: url,
      type: "POST",
      success: function(s){
-       // location.reload();
+       location.reload();
      },
      error: function(request, status, error){
-       // location.reload();
+       location.reload();
      }
-   });
-
+   })
  });
+
 
 });
 
@@ -156,7 +159,3 @@ $("#selectParticipantButton").prop('disabled', true)
 $("#addOutsideParticipantInput").on("input", function() {
   searchOutsideParticipant("addOutsideParticipantInput", callback2, "addOutsideParticipantModal");
 });
-
-$("#doneMatching").on("click",function(){
-  location.reload()
-})

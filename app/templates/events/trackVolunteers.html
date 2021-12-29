@@ -4,12 +4,17 @@
   {{super()}}
   <script type="module" src="/static/js/trackVolunteers.js"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/r-2.2.9/datatables.min.js"></script>
+  <script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script>
+
+
+
 {% endblock %}
 
 {% block styles %}
 
   {{super()}}
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/r-2.2.9/datatables.min.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css">
 
 {% endblock %}
 
@@ -113,8 +118,35 @@
         {% endif %}
         </td>
         <td>
-          <a class="open-MatchDialog btn btn-success" data-id="{{participant.user}}"  data-bs-toggle="modal" data-bs-target="#addMatch" style="margin:5px;">Match</a>
-        </td>
+          <!-- <a class="open-MatchDialog btn btn-success" data-id="{{participant.user}}"  data-bs-toggle="modal" data-bs-target="#addMatch" style="margin:5px;">Match</a> -->
+      <div class="accordion accordion-flush" id="accordionFlushExample">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="flush-headingOne">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+            Match Volunteers
+          </button>
+        </h2>
+        <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+          <div class="accordion-body">
+            <ul>
+              {% for op in outsideParticipants%}
+              {% set status = '' %}
+              {% if participant.user in matches.keys() %}
+              {% if op in matches[participant.user] %}
+              {% set status = 'checked' %}
+              {% endif %}
+              {% endif %}
+              <li>
+                <input class="form-check-input" type="checkbox" name="{{participant.user}}" id="{{ op.email }}" {{status}}>
+                {% set name = op.firstName + op.lastName%}
+                <label class="form-check-label"  for="{{ op.email }}">{{name}}</label>
+              </li>
+              {% endfor %}
+            </ul>
+        </div>
+      </div>
+
+</div>
 
         <td>
           <span
@@ -163,14 +195,14 @@
             name="username{{loop.index|string}}"
             id="{{participant.username}}"
             value="{{participant.user}}" />
-            {{participant.outsideParticipant.firstName}} {{participant.outsideParticipant.lastName}}
+            {{participant.firstName}} {{participant.lastName}}
         </td>
-        <td>{{participant.outsideParticipant.email}}</td>
-        <td>{{participant.outsideParticipant.phoneNumber}}</td>
+        <td>{{participant.email}}</td>
+        <td>{{participant.phoneNumber}}</td>
         <td>
           <span
             class="removeParticipant"
-            id="{{participant.outsideParticipant.email}}">
+            id="{{participant.email}}">
               <i class="bi bi-trash h5 align-middle"></i>
           </span>
         </td>
@@ -230,35 +262,6 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <button id="selectParticipantButton" type="button" class="btn btn-primary" disabled>Add participant</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Edit the Match  -->
-<div class="modal fade float-start" id="addMatch" tabindex="-1" aria-labelledby="addOutsideParticipantLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="matchModal">Matching</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body matchModalBody">
-        <div class="form-check-inline form-switch">
-          <ul>
-            {% for participant in outsideParticipants%}
-            <li>
-              <input class="form-check-input" type="checkbox"  name ="selectionId" id="{{ participant.outsideParticipant.email }}" {{ status }}>
-              {% set name = participant.outsideParticipant.firstName + participant.outsideParticipant.lastName%}
-              <label class="form-check-label"  for="{{ participant.outsideParticipant.email}}">{{name}}</label>
-            </li>
-            {% endfor %}
-          </ul>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button id="doneMatching" type="button" class="btn btn-primary">Done</button>
       </div>
     </div>
   </div>
