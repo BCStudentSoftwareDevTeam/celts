@@ -45,7 +45,7 @@
   <label class='d-none' id="eventLength">{{eventLength}}</label>
   <input  class="form-control" id="eventID" name="event" value="{{event}}" type='hidden'>
   <table class="table" id="trackVolunteerstable">
-    <thead>
+   <thead>
       <tr>
         <th>Present</th>
         <th></th>
@@ -89,31 +89,38 @@
         </td>
         <td>{{participant.user.email}}</td>
         <td>{{participant.user.phoneNumber}}</td>
+      </tr>
+      <td>
+        <input
+          class="form-control number-only form-control input-sm"
+          id="inputHours_{{participant.user.username}}"
+          name="inputHours_{{participant.user.username}}"
+          style="max-width: 90px;"
+          type ="number"
+          min="0"
+          step="0.01"
+          {% if participant.user.username in eventParticipants and eventParticipants[participant.user.username] == None %}
+            value="{{eventLength}}"
+          {% elif participant.user.username in eventParticipants %}
+            value="{{eventParticipants[participant.user.username]}}"
+          {% else %} readonly {% endif %}>
+      </td>
+      <td>
+      {% if participant.user in matches%}
+      {% for entry in matches[participant.user]%}
+      <ul>
+        <li> {{entry.firstName}} {{entry.lastName}} </li>
+      </ul>
+      {% endfor%}
+      {% endif %}
+      </td>
+      <!-- <tr>
 
-        <td>
-          <input
-            class="form-control number-only form-control input-sm"
-            id="inputHours_{{participant.user.username}}"
-            name="inputHours_{{participant.user.username}}"
-            style="max-width: 90px;"
-            type ="number"
-            min="0"
-            step="0.01"
-            {% if participant.user.username in eventParticipants and eventParticipants[participant.user.username] == None %}
-              value="{{eventLength}}"
-            {% elif participant.user.username in eventParticipants %}
-              value="{{eventParticipants[participant.user.username]}}"
-            {% else %} readonly {% endif %}>
-        </td>
-        <td>
-        {% if participant.user in matches%}
-        {% for entry in matches[participant.user]%}
-        <ul>
-          <li> {{entry.firstName}} {{entry.lastName}} </li>
-        </ul>
-        {% endfor%}
-        {% endif %}
-        </td>
+
+
+
+
+
         <td>
             {% set ac = accordionCount.value| string() %}
             {% set accodionFlushNumber = "accordionFlushNumber"+ac %}
@@ -155,17 +162,17 @@
               <i class="bi bi-trash h5 align-middle"></i>
           </span>
         </td>
-      </tr>
+      </tr> -->
       {% endfor %}
      </tbody>
     </table>
   <div>
     <button type="submit" class="btn btn-primary float-end">Save</button>
   </div>
-</form
+</form>
 
 <!-- Outside Participant -->
-<h2 class ="text-center">Outside Participants</h2>
+<!-- <h2 class ="text-center">Outside Participants</h2>
 <form action="#" method="post"><br>
   <label class='d-none' id="eventLength">{{eventLength}}</label>
   <input  class="form-control" id="eventID" name="event" value="{{event}}" type='hidden'>
@@ -213,10 +220,10 @@
   <div>
     <button type="submit" class="btn btn-primary float-end">Save</button>
   </div>
-</form>
+</form> -->
 
 <!-- Modal -->
-<div class="modal fade float-start" id="addVolunteerModal" tabindex="-1" aria-labelledby="addVolunteerModalLabel" aria-hidden="true">
+<!-- <div class="modal fade float-start" id="addVolunteerModal" tabindex="-1" aria-labelledby="addVolunteerModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -239,10 +246,10 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
 
 <!-- Add Outside Participant Modal -->
-<div class="modal fade float-start" id="addOutsideParticipantModal" tabindex="-1" aria-labelledby="addOutsideParticipantLabel" aria-hidden="true">
+<!-- <div class="modal fade float-start" id="addOutsideParticipantModal" tabindex="-1" aria-labelledby="addOutsideParticipantLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -265,6 +272,6 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
 
 {% endblock %}

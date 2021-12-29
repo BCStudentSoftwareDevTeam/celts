@@ -3,19 +3,21 @@ import searchOutsideParticipant from './searchOutsideParticipant.js'
 
 $(document).ready( function () {
    var table =  $('#trackVolunteerstable').DataTable({
-   "fnDrawCallback": function(oSettings) {
-     if ($('#trackVolunteerstable tr').length < 11) {
-         $('.dataTables_paginate').hide(); //disable search and page numbers when the length of the table is less 11
-         $('.dataTables_filter').hide();
-         $('.dataTables_length').hide();
-       }
-
-    }
+     "scrollX": true;
+   // "fnDrawCallback": function(oSettings) {
+   //   if ($('#trackVolunteerstable tr').length < 11) {
+   //       $('.dataTables_paginate').hide(); //disable search and page numbers when the length of the table is less 11
+   //       $('.dataTables_filter').hide();
+   //       $('.dataTables_length').hide();
+   //     }
+   //
+   //  }
   });
 
   var table =  $('#trackOutsideParticipants').DataTable({
+
   "fnDrawCallback": function(oSettings) {
-    if ($('#trackVolunteerstable tr').length < 11) {
+    if ($('#trackOutsideParticipants tr').length < 11) {
         $('.dataTables_paginate').hide(); //disable search and page numbers when the length of the table is less 11
         $('.dataTables_filter').hide();
         $('.dataTables_length').hide();
