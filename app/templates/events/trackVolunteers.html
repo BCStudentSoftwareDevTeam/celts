@@ -89,7 +89,6 @@
         </td>
         <td>{{participant.user.email}}</td>
         <td>{{participant.user.phoneNumber}}</td>
-      </tr>
       <td>
         <input
           class="form-control number-only form-control input-sm"
@@ -114,14 +113,7 @@
       {% endfor%}
       {% endif %}
       </td>
-      <!-- <tr>
-
-
-
-
-
-
-        <td>
+      <td>
             {% set ac = accordionCount.value| string() %}
             {% set accodionFlushNumber = "accordionFlushNumber"+ac %}
             {% set flushCollapseNumber = "flush-collapseOne"+ac %}
@@ -130,7 +122,7 @@
             <div class="accordion-item">
               <h2 class="accordion-header" id="flush-headingOne">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{flushCollapseNumber}}" aria-expanded="false" aria-controls="{{flushCollapseNumber}}">
-                  Match Volunteers
+                  Match
                 </button>
               </h2>
               <div id="{{flushCollapseNumber}}" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#{{accodionFlushNumber}}">
@@ -162,7 +154,7 @@
               <i class="bi bi-trash h5 align-middle"></i>
           </span>
         </td>
-      </tr> -->
+      </tr>
       {% endfor %}
      </tbody>
     </table>
@@ -172,7 +164,7 @@
 </form>
 
 <!-- Outside Participant -->
-<!-- <h2 class ="text-center">Outside Participants</h2>
+<h2 class ="text-center">Outside Participants</h2>
 <form action="#" method="post"><br>
   <label class='d-none' id="eventLength">{{eventLength}}</label>
   <input  class="form-control" id="eventID" name="event" value="{{event}}" type='hidden'>
@@ -220,10 +212,10 @@
   <div>
     <button type="submit" class="btn btn-primary float-end">Save</button>
   </div>
-</form> -->
+</form>
 
 <!-- Modal -->
-<!-- <div class="modal fade float-start" id="addVolunteerModal" tabindex="-1" aria-labelledby="addVolunteerModalLabel" aria-hidden="true">
+ <div class="modal fade float-start" id="addVolunteerModal" tabindex="-1" aria-labelledby="addVolunteerModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -246,10 +238,10 @@
       </div>
     </div>
   </div>
-</div> -->
+</div>
 
 <!-- Add Outside Participant Modal -->
-<!-- <div class="modal fade float-start" id="addOutsideParticipantModal" tabindex="-1" aria-labelledby="addOutsideParticipantLabel" aria-hidden="true">
+<div class="modal fade float-start" id="addOutsideParticipantModal" tabindex="-1" aria-labelledby="addOutsideParticipantLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -272,6 +264,6 @@
       </div>
     </div>
   </div>
-</div> -->
+</div>
 
 {% endblock %}
