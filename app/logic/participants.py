@@ -88,11 +88,10 @@ def getEventParticipants(event):
     return {p.user.username: p.hoursEarned for p in eventParticipants}
 
 def getOutsideParticipants(event):
-    print("This is the type of the event", type(event))
     outsideParticipants = (MatchParticipants
         .select()
         .where(MatchParticipants.event==event))
-    outsideParticipants = [outsideParticipant.outsideParticipant for outsideParticipant in outsideParticipants ] 
+    outsideParticipants = [entry.outsideParticipant for entry in outsideParticipants ]
     return outsideParticipants
 
 def matchVolunteers(volunteer,participant,event):

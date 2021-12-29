@@ -53,19 +53,14 @@ def trackVolunteersPage(eventID):
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
 
     matched = MatchParticipants.select().where(MatchParticipants.event==event)
-    matches = {}
+    matches = {} #This will contain the matches for a particular event
 
-    print("This is the type of the outsideParticipant..............................................",outsideParticipants)
     for entry in matched:
         if entry.volunteer and entry.outsideParticipant:
             if entry.volunteer not in matches:
                 matches[entry.volunteer]=[entry.outsideParticipant]
             else:
                 matches[entry.volunteer].append(entry.outsideParticipant)
-    for entry,v in matches.items():
-        print(entry,v)
-    for entry in outsideParticipants:
-        print(entry)
 
     return render_template("/events/trackVolunteers.html",
         eventRsvpData=list(eventRsvpData),
