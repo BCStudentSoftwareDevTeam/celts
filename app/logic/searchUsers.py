@@ -27,7 +27,7 @@ def searchUsers(query):
     return resultsDict
 
 def searchOutsideParticipants(query):
-    '''Accepts user input and queries the database returning results that matches user search'''
+    '''Accepts user input and queries the database returning results that matches outside Participant search'''
     query = query.strip()
     search = query.upper()
     splitSearch = search.split()

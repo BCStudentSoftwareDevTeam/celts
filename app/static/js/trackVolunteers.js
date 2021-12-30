@@ -99,7 +99,6 @@ function callback() {
 
 $("#selectVolunteerButton").prop('disabled', true)
 $("#addVolunteerInput").on("input", function() {
-  console.log("The search is invoked");
   searchUser("addVolunteerInput", callback, "addVolunteerModal");
 });
 

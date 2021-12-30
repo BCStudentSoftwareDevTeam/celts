@@ -109,8 +109,11 @@ def addVolunteer(volunteer, eventId):
 def addParticipant(volunteer, eventId):
     email = volunteer.strip("()").split('(')[-1]
     event = eventId.split(':')
-    newEntry = MatchParticipants.create(outsideParticipant=email,event=int(event[0]))
-    newEntry.save()
+    newEntry = MatchParticipants.get_or_create(outsideParticipant=email,event=int(event[0]))
+    if newEntry[-1]==False:
+        flash("Participant already added to this event!", "danger")
+    else:
+        flash("Participant succesfully added to the event!", "success")
     return ""
 
 @admin_bp.route('/matchParticipants/<volunteer>/<outsideParticipant>/<eventId>', methods = ['POST'])
@@ -118,9 +121,14 @@ def matchParticipant(volunteer, outsideParticipant, eventId):
     outsideParticipant = outsideParticipant.strip("()").split('(')[-1]
     event = eventId.split(':')
     vol = User.get_by_id(volunteer)
-    update = MatchParticipants.get(MatchParticipants.outsideParticipant==outsideParticipant,MatchParticipants.event==int(event[0]),MatchParticipants.volunteer==None)
-    update.volunteer = volunteer
-    update.save()
+    update = MatchParticipants.get_or_none(MatchParticipants.outsideParticipant==outsideParticipant,MatchParticipants.event==int(event[0]),MatchParticipants.volunteer==None)
+    if update != None:
+        update.volunteer = volunteer
+        update.save()
+        flash("Participant succesfully matched to volunteer", "success")
+
+    else:
+        flash("Participant already matched to someone", "danger")
     return ""
 
 
@@ -129,9 +137,11 @@ def removeVolunteerFromEvent(user, eventID):
     (EventParticipant.delete().where(EventParticipant.user==user, EventParticipant.event==eventID)).execute()
     (EventRsvp.delete().where(EventRsvp.user==user)).execute()
     update = MatchParticipants.get_or_none(MatchParticipants.volunteer==user,MatchParticipants.event==eventID)
-    if update != None:
+    while update:
         update.volunteer=None
         update.save()
+        update = MatchParticipants.get_or_none(MatchParticipants.volunteer==user,MatchParticipants.event==eventID)
+
     flash("Volunteer successfully removed", "success")
     return ""
 

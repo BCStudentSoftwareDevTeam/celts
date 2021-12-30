@@ -179,7 +179,6 @@ def searchUser(query):
 
 @main_bp.route('/searchOutsideParticipant/<query>', methods = ['GET'])
 def searchOutsideParticipant(query):
-    print("The Query is invoked now!!!!!!!!!!!!! . ................................")
     '''Accepts user input and queries the database returning results that matches user search'''
     try:
         query = query.strip()
