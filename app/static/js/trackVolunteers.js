@@ -3,7 +3,6 @@ import searchOutsideParticipant from './searchOutsideParticipant.js'
 
 $(document).ready( function () {
    var table =  $('#trackVolunteerstable').DataTable({
-    "scrollX": true;
    "fnDrawCallback": function(oSettings) {
      if ($('#trackVolunteerstable tr').length < 11) {
          $('.dataTables_paginate').hide(); //disable search and page numbers when the length of the table is less 11
@@ -15,7 +14,6 @@ $(document).ready( function () {
   });
 
   var table =  $('#trackOutsideParticipants').DataTable({
-   "scrollX": true;
   "fnDrawCallback": function(oSettings) {
     if ($('#trackOutsideParticipants tr').length < 11) {
         $('.dataTables_paginate').hide(); //disable search and page numbers when the length of the table is less 11
@@ -29,11 +27,7 @@ $(document).ready( function () {
  $(".form-check-input").click(function updateMatch(el){
    let outsidePart =  $(this).attr('id');
    let user = $(this).attr('name');
-   let eventId = $("#eventID").val()
-   console.log("This is part",outsidePart);
-   console.log("This is the user",user);
-   console.log("This is the eventID",eventID);
-   console.log("This is checked",$(this).attr('checked'))
+   let eventId = $("#eventID").val();
    var url = `/matchParticipants/${user}/${outsidePart}/${eventId}`
    if ($(this).attr('checked') == 'checked'){
     url = `/unMatch/${user}/${outsidePart}/${eventId}`
@@ -105,6 +99,7 @@ function callback() {
 
 $("#selectVolunteerButton").prop('disabled', true)
 $("#addVolunteerInput").on("input", function() {
+  console.log("The search is invoked");
   searchUser("addVolunteerInput", callback, "addVolunteerModal");
 });
 
