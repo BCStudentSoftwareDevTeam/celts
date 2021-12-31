@@ -2,8 +2,8 @@ from app.models.eventParticipant import EventParticipant
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.event import Event
-
-from datetime import datetime
+from app.models.backgroundCheck import BackgroundCheck
+from datetime import datetime, date
 
 
 def getEventLengthInHours(startTime, endTime, eventDate):
@@ -81,3 +81,11 @@ def addVolunteerToEventRsvp(user, volunteerEventID):
 
     except Exception as e:
         return False
+
+def setUserBackgroundCheck(user,bgType, checkPassed):
+    today = date.today()
+    user = User.get_by_id(user)
+    deleteInstance = BackgroundCheck.delete().where(BackgroundCheck.user == user, BackgroundCheck.type == bgType)
+    deleteInstance.execute()
+    update = BackgroundCheck.create(user=user, type=bgType, passBackgroundCheck=checkPassed, datePassed=today)
+    update.save()
