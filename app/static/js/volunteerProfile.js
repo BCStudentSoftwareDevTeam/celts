@@ -27,9 +27,10 @@ $(document).ready(function(){
     banEndDatepicker.datepicker({
       changeYear: true,
       changeMonth: true,
-      minDate: 0,
+      minDate: +1,
       dateFormat: "mm-dd-yy",
       yearRange: "-100:+20",
+
     }).attr('readonly','readonly');
   });
 
