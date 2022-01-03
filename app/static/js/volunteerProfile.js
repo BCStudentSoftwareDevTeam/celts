@@ -21,19 +21,16 @@ $(document).ready(function(){
     });
   });
 
-  //This function is to disable all the dates before current date in the ban modal End Date picker
+  // This function is to disable all the dates before current date in the ban modal End Date picker
   $(function(){
     var banEndDatepicker = $("#banEndDatepicker");
     banEndDatepicker.datepicker({
       changeYear: true,
       changeMonth: true,
-      minDate: +1,
-      dateFormat: "mm-dd-yy",
-      yearRange: "-100:+20",
-
+      minDate:+1,
+      dateFormat: "yy-mm-dd",
     }).attr('readonly','readonly');
   });
-
 
   $(".ban").click(function() {
     var banButton = $("#banButton")
@@ -48,7 +45,7 @@ $(document).ready(function(){
     banButton.attr("username", $(".form-check-input").attr("name"))
     banButton.attr("banOrUnban", $(this).val());
     banEndDateDiv.show();
-    banEndDatepicker.val("");
+    banEndDatepicker.val("")
     $(".modal-title").text($(this).val() + " Volunteer");
     $("#modalProgramName").text("Program: " + $(this).attr("name"));
     $("#banModal").modal("toggle");
@@ -73,6 +70,7 @@ $(document).ready(function(){
     var username = $(this).attr("username") //Expected to be the unique username of a user in the database
     var route = ($(this).attr("banOrUnban")).toLowerCase() //Expected to be "ban" or "unban"
     var program = $(this).attr("programID") //Expected to be a program's primary ID
+    console.log("This is the date value",$("#banEndDatepicker").val())
     $.ajax({
       method: "POST",
       url:  "/" + username + "/" + route + "/" + program,
