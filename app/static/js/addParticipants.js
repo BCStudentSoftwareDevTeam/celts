@@ -1,4 +1,3 @@
-
 function searchVolunteer(){
 var query = $("#volunteerInput").val()
 $("#volunteerInput").autocomplete({

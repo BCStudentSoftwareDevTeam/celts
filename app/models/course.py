@@ -5,9 +5,12 @@ from app.models.note import Note
 
 class Course(baseModel):
     courseName = CharField()
+    courseAbbreviation = CharField()
+    courseCredit = FloatField()
+    isRegularlyOccuring = BooleanField(default=False)
     term = ForeignKeyField(Term)
     status = ForeignKeyField(CourseStatus)
-    courseCredit = CharField()
     createdBy = CharField()
     isAllSectionsServiceLearning = BooleanField(default=False)
+    serviceLearningDesignatedSections = CharField()
     isPermanentlyDesignated = BooleanField(default=False)

@@ -24,7 +24,7 @@ export default function searchUser(inputId, callback, parentElementId=null){
     },
      select: function(event , ui) {
        var user = ui.item.value
-       $(`#${inputId}`).val(ui.item.value)
+       $(`#${inputId}`).val(ui.item.value);
        callback();
      }
   });
