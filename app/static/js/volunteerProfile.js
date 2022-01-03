@@ -1,5 +1,4 @@
 $(document).ready(function(){
-
   $(".form-check-input").click(function updateInterest(){
     var programID = $(this).attr('id');
     var interest = $(this).is(':checked');
@@ -21,6 +20,19 @@ $(document).ready(function(){
       }
     });
   });
+
+  //This function is to disable all the dates before current date in the ban modal End Date picker
+  $(function(){
+    var banEndDatepicker = $("#banEndDatepicker");
+    banEndDatepicker.datepicker({
+      changeYear: true,
+      changeMonth: true,
+      minDate: 0,
+      dateFormat: "mm-dd-yy",
+      yearRange: "-100:+20",
+    }).attr('readonly','readonly');
+  });
+
 
   $(".ban").click(function() {
     var banButton = $("#banButton")
