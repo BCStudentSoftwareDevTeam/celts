@@ -32,6 +32,9 @@ $(document).ready(function(){
     }).attr('readonly','readonly');
   });
 
+// Tooltip functionalities
+  $('[data-toggle="tooltip"]').tooltip();
+
   $(".ban").click(function() {
     var banButton = $("#banButton")
     var banEndDateDiv = $("#banEndDate") // Div containing the datepicker in the ban modal
