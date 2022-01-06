@@ -61,7 +61,7 @@ $(document).ready(function(){
 
   });
 
-  $("#banNoteTxtArea, #banEndDatepicker").change(function () { //This is the if statement the placeholder in line 45 is for #PLCHLD1
+  $("#banNoteTxtArea, #banEndDatepicker").on('input' , function (e) { //This is the if statement the placeholder in line 45 is for #PLCHLD1
     var enableButton = ($("#banNoteTxtArea").val() && $("#banEndDatepicker").val());
     $("#banButton").prop("disabled", !enableButton);
   });
@@ -70,7 +70,6 @@ $(document).ready(function(){
     var username = $(this).attr("username") //Expected to be the unique username of a user in the database
     var route = ($(this).attr("banOrUnban")).toLowerCase() //Expected to be "ban" or "unban"
     var program = $(this).attr("programID") //Expected to be a program's primary ID
-    console.log("This is the date value",$("#banEndDatepicker").val())
     $.ajax({
       method: "POST",
       url:  "/" + username + "/" + route + "/" + program,
