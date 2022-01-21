@@ -793,12 +793,12 @@ logs = [
    {
    "createdBy":"ramsayb2",
    "createdOn": datetime.strptime("2021 12 15","%Y %m %d"),
-   "logContent": "Made Liberty Admin"
+   "logContent": "Made Liberty Admin."
    },
    {
    "createdBy":"neillz",
    "createdOn": datetime.strptime("2021 12 15","%Y %m %d"),
-   "logContent": "Created adoption event"
+   "logContent": "Created Adoption Event."
    }
 ]
 AdminLogs.insert_many(logs).on_conflict_replace().execute()

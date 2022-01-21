@@ -110,7 +110,7 @@ def updateBackgroundCheck():
         type = eventData['bgType']
         setUserBackgroundCheck(user,type, checkPassed)
         user = User.get_by_id(user)
-        createLog(user.firstName + " "+ user.lastName +"'s backgroundCheck for " +type+ " has been updated to "+ str(bool(checkPassed)))
+        createLog(f"Updated {user.firstName} {user.lastName}'s background check for {type} to {str(bool(checkPassed))}.")
         return " "
     else:
         abort(404)

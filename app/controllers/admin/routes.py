@@ -89,7 +89,7 @@ def createEvent(templateid, programid=None):
 
         if saveSuccess:
             event = Event.get(name=eventData['name'],term=eventData['term'],timeStart=eventData['timeStart'],startDate=eventData['startDate'])
-            createLog("Created event with id:"+str(event.id)+" name: "+event.name+" startDate: "+str(event.startDate) + " found at: "+"/event/"+str(event.id)+ "/edit")
+            createLog(f'Created {event.name}, with start date {str(datetime.strftime(event.startDate, "%m/%d/%Y"))}.')
             noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
             return redirect(url_for("main.events", term = eventData['term']))
@@ -124,8 +124,8 @@ def editEvent(eventId):
         eventData = request.form.copy()
         saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
         if saveSuccess:
-            event = Event.get(name=eventData['name'],term=eventData['term'],timeStart=eventData['timeStart'],startDate=eventData['startDate'])
-            createLog("Edited event with id:"+str(event.id)+" :name="+event.name+" startDate:"+str(event.startDate) + " found at:"+"/event/"+str(event.id)+ "/edit")
+            event = Event.get(name=eventData['name'],term=eventData['term'])
+            createLog(f'Edited {event.name}, with start date {str(datetime.strftime(event.startDate, "%m/%d/%Y"))}.')
             flash("Event successfully updated!", "success")
             return redirect(url_for("admin.editEvent", eventId = eventId))
         else:
@@ -150,7 +150,7 @@ def deleteRoute(eventId):
         term = Event.get(Event.id == eventId).term
         event = Event.get(Event.id==eventId)
         deleteEvent(eventId)
-        createLog("Deleted event with id:"+ " "+str(eventId)+" name: "+event.name)
+        createLog(f'Deleted {event.name}, with start date {str(datetime.strftime(event.startDate, "%m/%d/%Y"))}.')
         flash("Event removed", "success")
         return redirect(url_for("main.events"))
 
