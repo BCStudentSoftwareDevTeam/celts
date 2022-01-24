@@ -1,5 +1,4 @@
 import searchUser from './searchUser.js'
-import searchOutsideParticipant from './searchOutsideParticipant.js'
 
 $(document).ready( function () {
    var table =  $('#trackVolunteerstable').DataTable({
@@ -76,11 +75,11 @@ $(document).ready(function() {
 
   // Addding an outside Participant
   $("#selectParticipantButton").click(function(){
-    let participant = $("#addOutsideParticipantInput").val()
+    let outsideParticipant = $("#addOutsideParticipantInput").val()
     let eventId = $("#eventID").val()
 
     $.ajax({
-      url: `/addParticipantToEvent/${participant}/${eventId}`,
+      url: `/addOutsideParticipantToEvent/${outsideParticipant}/${eventId}`,
       type: "POST",
       success: function(s){
         location.reload();
@@ -99,7 +98,7 @@ function callback() {
 
 $("#selectVolunteerButton").prop('disabled', true)
 $("#addVolunteerInput").on("input", function() {
-  searchUser("addVolunteerInput", callback, "addVolunteerModal");
+  searchUser("addVolunteerInput", callback, "addVolunteerModal","volunteer");
 });
 
 $(".removeVolunteer").on("click", function() {
@@ -120,7 +119,7 @@ $(".removeParticipant").on("click", function() {
   let username =  $(this)[0].id;
   let eventId = $('#eventID').val()
   $.ajax({
-    url: `/removeParticipantFromEvent/${username}/${eventId}`,
+    url: `/removeOutsideParticipantFromEvent/${username}/${eventId}`,
     type: "POST",
     success: function(s) {
       location.reload();
@@ -154,5 +153,5 @@ $("#selectParticipantButton").prop('disabled', true)
 
 $("#addOutsideParticipantInput").on("input", function() {
   console.log("The function ois ");
-  searchOutsideParticipant("addOutsideParticipantInput", callback2, "addOutsideParticipantModal");
+  searchUser("addOutsideParticipantInput", callback2, "addOutsideParticipantModal","outsideParticipant");
 });

@@ -16,7 +16,7 @@ from app.controllers.main import main_bp
 from app.logic.events import *
 from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
-from app.logic.searchUsers import searchUsers,searchOutsideParticipants
+from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
 
 @main_bp.route('/', methods=['GET'])
@@ -164,27 +164,14 @@ def serviceTranscript(username):
                             startDate = startDate,
                             userData = user)
 
-@main_bp.route('/searchUser/<query>', methods = ['GET'])
-def searchUser(query):
+@main_bp.route('/searchUser/<query>/<group>', methods = ['GET'])
+def searchUser(query,group):
     '''Accepts user input and queries the database returning results that matches user search'''
     try:
         query = query.strip()
         search = query.upper()
         splitSearch = search.split()
-        searchResults = searchUsers(query)
-        return searchResults
-    except Exception as e:
-        print(e)
-        return "Error in searching for user", 500
-
-@main_bp.route('/searchOutsideParticipant/<query>', methods = ['GET'])
-def searchOutsideParticipant(query):
-    '''Accepts user input and queries the database returning results that matches user search'''
-    try:
-        query = query.strip()
-        search = query.upper()
-        splitSearch = search.split()
-        searchResults = searchOutsideParticipants(query)
+        searchResults = searchUsers(query,group)
         return searchResults
     except Exception as e:
         print(e)

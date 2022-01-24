@@ -1,4 +1,4 @@
-export default function searchUser(inputId, callback, parentElementId=null){
+export default function searchUser(inputId, callback, parentElementId=null,group){
   var query = $(`#${inputId}`).val()
 
   $(`#${inputId}`).autocomplete({
@@ -6,7 +6,7 @@ export default function searchUser(inputId, callback, parentElementId=null){
     minLength: 2,
     source: function(request, response) {
       $.ajax({
-        url: `/searchUser/${query}`,
+        url: `/searchUser/${query}/${group}`,
         type: "GET",
         dataType: "json",
         success: function(dictToJSON) {

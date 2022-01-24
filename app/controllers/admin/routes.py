@@ -198,5 +198,4 @@ def courseManagement(term = None):
 
 @admin_bp.route('/matchVolunteerParticipant',methods = ['GET','POST'])
 def matchParticipants():
-    pass
     matchVolunteers()
