@@ -98,7 +98,6 @@ function callback() {
 
 $("#selectVolunteerButton").prop('disabled', true)
 $("#addVolunteerInput").on("input", function() {
-  console.log("Hey what is here?")
   searchUser("addVolunteerInput", callback, "insideParticipant","addVolunteerModal");
 });
 
