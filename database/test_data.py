@@ -20,6 +20,8 @@ from app.models.questionNote import QuestionNote
 from app.models.interest import Interest
 from app.models.facilitator import Facilitator
 from app.models.note import Note
+from app.models.backgroundCheck import BackgroundCheck
+# from app.models.backgroundCheckType import BackgroundCheckType
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -768,3 +770,20 @@ facilitators = [
     }
 ]
 Facilitator.insert_many(facilitators).on_conflict_replace().execute()
+
+background = [
+
+    {
+    "user": "khatts",
+    "type": "CAN",
+    "passBackgroundCheck": False,
+    "datePassed": datetime.strptime("2021 10 12","%Y %m %d")
+    },
+    {
+    "user":"mupotsal",
+    "type": "SHS",
+    "passBackgroundCheck":True,
+    "datePassed": datetime.strptime("2021 10 12","%Y %m %d")
+    },
+]
+BackgroundCheck.insert_many(background).on_conflict_replace().execute()

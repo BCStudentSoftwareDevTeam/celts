@@ -80,8 +80,47 @@
             </tbody>
       {% endfor %}
 </table>
-  </div>
+</div>
 <!-- End Program Elegibility Table -->
+
+
+{{volunteer.firstName}}
+
+<div class="row">
+  <div>
+    <table class="table">
+ <thead>
+   <tr>
+     <th scope="col">Description</th>
+     <th scope="col">Completed</th>
+   </tr>
+ </thead>
+ <tbody>
+
+   {% for entry in backgroundTypes%}
+   <tr>
+     <td>{{entry.description}}</td>
+     {%if g.current_user.isCeltsAdmin%}
+       <td>
+         <select class="backgroundCheck" id="{{entry.id}}" volunteer="{{volunteer.username}}" >
+           <option value=1>Yes</option>
+           <option value=0 {{"selected" if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False}}>No</option>
+         </select>
+       </td>
+     {% else %}
+       {% if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False%}
+          <td>No</td>
+       {% else%}
+           <td>Yes</td>
+       {% endif%}
+      {% endif %}
+   </tr>
+   {%endfor%}
+ </tbody>
+</table>
+</div>
+</div>
+
 
 <!-- Ban or Unban Modal -->
 <div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banVolunteerModalLabel" aria-hidden="true" style="width:-60px;">

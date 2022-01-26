@@ -3,6 +3,8 @@ from datetime import datetime
 from app import app
 from app.models.program import Program
 from app.models.event import Event
+from app.models.backgroundCheck import BackgroundCheck
+from app.models.backgroundCheckType import BackgroundCheckType
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
@@ -17,6 +19,7 @@ from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, t
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
+from app.logic.volunteers import setUserBackgroundCheck
 
 @main_bp.route('/', methods=['GET'])
 @main_bp.route('/events/<selectedTerm>', methods=['GET'])
@@ -60,6 +63,10 @@ def viewVolunteersProfile(username):
          programs = Program.select()
          interests = Interest.select().where(Interest.user == username)
          programsInterested = [interest.program for interest in interests]
+         print("===============", username, type(username))
+         allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == username))
+         completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
+         backgroundTypes = list(BackgroundCheckType.select())
          eligibilityTable = []
          for program in programs:
               notes = ProgramBan.select().where(ProgramBan.user == username,
@@ -72,12 +79,15 @@ def viewVolunteersProfile(username):
                                    "isNotBanned" : isEligibleForProgram(program, username),
                                    "banNote": noteForDict})
          return render_template ("/main/volunteerProfile.html",
-            programs = programs,
-            interests = interests,
+            # programs = programs,
+            # interests = interests,
             programsInterested = programsInterested,
             upcomingEvents = upcomingEvents,
             eligibilityTable = eligibilityTable,
-            volunteer = User.get(User.username == username))
+            volunteer = User.get(User.username == username),
+            backgroundTypes = backgroundTypes,
+            completedBackgroundCheck = completedBackgroundCheck
+            )
     abort(403)
 
 
@@ -125,8 +135,35 @@ def addInterest(program_id, username):
     username: unique value of a user to correctly identify them
     """
     try:
+# <<<<<<< HEAD
         return addUserInterest(program_id, username)
 
+# =======
+#         profileUser = User.get(User.username == username)
+#         upcomingEvents = getUpcomingEventsForUser(username)
+#         programs = Program.select()
+#         interests = Interest.select().where(Interest.user == profileUser)
+#         interests_ids = [interest.program.id for interest in interests]
+#         rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == profileUser)
+#         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
+#
+#         allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == profileUser))
+#         completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
+#         backgroundTypes = list(BackgroundCheckType.select())
+#
+#
+#         return render_template('/volunteer/volunteerProfile.html',
+#                                title="Volunteer Interest",
+#                                user = profileUser,
+#                                programs = programs,
+#                                interests = interests,
+#                                interests_ids = interests_ids,
+#                                upcomingEvents = upcomingEvents,
+#                                rsvpedEvents = rsvpedEvents,
+#                                backgroundTypes = backgroundTypes,
+#                                completedBackgroundCheck = completedBackgroundCheck
+#                                )
+# >>>>>>> development
     except Exception as e:
         print(e)
         return "Error Updating Interest", 500
