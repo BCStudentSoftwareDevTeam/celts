@@ -98,7 +98,8 @@ function callback() {
 
 $("#selectVolunteerButton").prop('disabled', true)
 $("#addVolunteerInput").on("input", function() {
-  searchUser("addVolunteerInput", callback, "addVolunteerModal","volunteer");
+  console.log("Hey what is here?")
+  searchUser("addVolunteerInput", callback, "insideParticipant","addVolunteerModal");
 });
 
 $(".removeVolunteer").on("click", function() {
@@ -153,5 +154,5 @@ $("#selectParticipantButton").prop('disabled', true)
 
 $("#addOutsideParticipantInput").on("input", function() {
   console.log("The function ois ");
-  searchUser("addOutsideParticipantInput", callback2, "addOutsideParticipantModal","outsideParticipant");
+  searchUser("addOutsideParticipantInput", callback2,"outsideParticipant", "addOutsideParticipantModal");
 });

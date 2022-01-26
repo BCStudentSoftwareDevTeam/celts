@@ -14,13 +14,13 @@ def searchUsers(query,searchGroup):
     searchId = None
 
     if len(splitSearch) == 1: #search for first or last name
-        if searchGroup == "volunteer":
+        if searchGroup == "insideParticipant":
             results = User.select().where(User.isStudent & (User.firstName ** firstName | User.lastName ** firstName))
         else:
             results = OutsideParticipant.select().where(OutsideParticipant.firstName ** firstName | OutsideParticipant.lastName ** firstName)
 
         for participant in results:
-            if searchGroup == 'volunteer':
+            if searchGroup == 'insideParticipant':
                 searchId = participant.username
             else:
                 searchId = participant.email
@@ -32,7 +32,7 @@ def searchUsers(query,searchGroup):
             if len(searchTerm) > 1:
                 searchTerm += "%"
 
-                if searchGroup == "volunteer":
+                if searchGroup == "insideParticipant":
                     searchId = participant.username
                     results = User.select().where(User.isStudent & (User.firstName ** firstName | User.lastName ** firstName))
                 else:

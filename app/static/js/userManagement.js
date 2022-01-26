@@ -8,7 +8,7 @@ function callback() {
 $(document).ready(function() {
   // add celts admin
   $("#searchCeltsAdminInput").on("input", function() {
-    searchUser("searchCeltsAdminInput", callback,'volunteer');
+    searchUser("searchCeltsAdminInput", callback,"insideParticipant");
   });
 
   $("#addCeltsAdmin").on("click", function() {
@@ -17,7 +17,7 @@ $(document).ready(function() {
 
   // add celts student staff
   $("#searchCeltsStudentStaffInput").on("input", function() {
-    searchUser("searchCeltsStudentStaffInput", callback);
+    searchUser("searchCeltsStudentStaffInput", callback, "insideParticipant");
   });
 
   $("#addCeltsStudentStaff").on("click", function() {
@@ -26,7 +26,7 @@ $(document).ready(function() {
 
   // remove celts admin
   $("#removeCeltsAdminInput").on("input", function() {
-    searchUser("removeCeltsAdminInput", callback);
+    searchUser("removeCeltsAdminInput", callback, "insideParticipant");
   });
 
   $("#removeCeltsAdmin").on("click", function() {
@@ -35,7 +35,7 @@ $(document).ready(function() {
 
   // remove celts student staff
   $("#removeCeltsStudentStaffInput").on("input", function() {
-    searchUser("removeCeltsStudentStaffInput", callback);
+    searchUser("removeCeltsStudentStaffInput", callback, "insideParticipant");
   });
 
   $("#removeCeltsStudentStaff").on("click", function() {
