@@ -8,7 +8,7 @@ function callback() {
 $(document).ready(function() {
   // add celts admin
   $("#searchCeltsAdminInput").on("input", function() {
-    searchUser("searchCeltsAdminInput", callback);
+    searchUser("searchCeltsAdminInput", callback,'volunteer');
   });
 
   $("#addCeltsAdmin").on("click", function() {
