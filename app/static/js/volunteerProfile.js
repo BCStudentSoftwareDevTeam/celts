@@ -33,7 +33,7 @@ $(document).ready(function(){
   });
 
 // Tooltip functionalities
-  $('[data-toggle="tooltip"]').tooltip();
+  $('[data-toggle="popover"]').popover();
 
   $(".ban").click(function() {
     var banButton = $("#banButton")
