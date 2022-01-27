@@ -2,6 +2,7 @@
 {% block scripts %}
   {{super()}}
   <script src="/static/js/volunteerProfile.js"></script>
+  </script>
 {% endblock %}
 {% block styles %}
   {{super()}}
@@ -68,7 +69,7 @@
               <tr>
                 <td id="programNameTable">{{program.program.programName}}</td>
                 <td><input class="form-check-input" type="checkbox" id="{{program.program.id}}" name="{{volunteer.username}}" {% if program.program in programsInterested %} checked {% endif %}></td>
-                <td>{% if program.completedTraining == True %}<i class="bi bi-check-lg float-left"></i> {% else %} <i class="bi bi-x-lg"></i>&nbsp&nbsp&nbsp<a href="#" title="Required Trainings" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="List of all trainings">View</a>{% endif %}
+                <td>{% if program.completedTraining == True %}<i class="bi bi-check-lg float-left"></i> {% else %} <i class="bi bi-x-lg"></i>&nbsp&nbsp&nbsp<a href="#" title="Required Trainings,Required Trainings,Required Trainings,Required Trainings,Required Trainings,Required Trainings,Required Trainings" data-bs-toggle="tooltip" data-placement="top" data-trigger="hover">View</a>{% endif %}
                 </td>
                 {% if g.current_user.isCeltsAdmin %}
                 <td class="programBan">
