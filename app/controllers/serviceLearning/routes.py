@@ -26,13 +26,29 @@ def serviceCourseManagement(username=None):
     else:
         flash("Unauthorized to view page", 'warning')
         return redirect(url_for('main.events'))
+
 @serviceLearning_bp.route('/serviceLearning/editProposal/<courseID>', methods=['GET', 'POST'])
 def slcEditProposal(courseID):
     courseData = CourseQuestion.get(CourseQuestion.course == courseID)
     print(courseData.course.id)
     print(courseData.course.courseName)
+    print(courseData.course.isRegularlyOccuring)
+    print(courseData.course.serviceLearningDesignatedSections)
+
+    if courseData.course.isRegularlyOccuring:
+        isRegularlyOccuring = "checked"
+    if courseData.course.isAllSectionsServiceLearning:
+        isAllSectionsServiceLearning = "checked"
+    if courseData.course.isPermanentlyDesignated:
+        isPermanentlyDesignated = "checked"
+
     terms = Term.select().where(Term.year >= g.current_term.year)
-    return render_template('serviceLearning/slcNewProposal.html', courseData = courseData, terms = terms)
+    return render_template('serviceLearning/slcNewProposal.html',
+                                courseData = courseData,
+                                terms = terms,
+                                isRegularlyOccuring = isRegularlyOccuring,
+                                isAllSectionsServiceLearning = isAllSectionsServiceLearning,
+                                isPermanentlyDesignated = isPermanentlyDesignated)
 
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcNewProposal():
