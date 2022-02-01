@@ -32,7 +32,7 @@ $(document).ready(function(){
     }).attr('readonly','readonly');
   });
 
-  // Popover functionalities
+  // Popover functionalitie
   $(function(){
     $(".training_popover").popover({
       trigger: "focus",
