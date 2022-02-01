@@ -53,8 +53,7 @@ def addTerm():
         previousAY = academicYear.split("-")
         academicYear = str(int(previousAY[0])+1)+"-"+str(int(previousAY[-1])+1)
 
-    isSummer = False
-    if "Summer" in createdTermDescription.split():
-        isSummer = True
+    isSummer = True if "Summer" in createdTermDescription.split() else False
+
     newTerm = Term.create(description=createdTermDescription,year=year,academicYear=academicYear, isSummer=isSummer)
     newTerm.save()
