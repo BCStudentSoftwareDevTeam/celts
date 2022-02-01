@@ -26,6 +26,13 @@ def serviceCourseManagement(username=None):
     else:
         flash("Unauthorized to view page", 'warning')
         return redirect(url_for('main.events'))
+@serviceLearning_bp.route('/serviceLearning/editProposal/<courseID>', methods=['GET', 'POST'])
+def slcEditProposal(courseID):
+    courseData = CourseQuestion.get(CourseQuestion.course == courseID)
+    print(courseData.course.id)
+    print(courseData.course.courseName)
+    terms = Term.select().where(Term.year >= g.current_term.year)
+    return render_template('serviceLearning/slcNewProposal.html', courseData = courseData, terms = terms)
 
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcNewProposal():
@@ -57,7 +64,8 @@ def slcNewProposal():
         return redirect('/serviceLearning/courseManagement')
 
     terms = Term.select().where(Term.year >= g.current_term.year)
-    return render_template('serviceLearning/slcNewProposal.html', terms=terms)
+    courseData = None
+    return render_template('serviceLearning/slcNewProposal.html', terms=terms, courseData = courseData)
 
 instructorsDict = {}
 @serviceLearning_bp.route('/courseInstructors', methods=['POST'])

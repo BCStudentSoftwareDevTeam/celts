@@ -34,18 +34,21 @@
         id="coursName"
         name="courseName"
         type="text"
+        value="{{courseData.course.courseName if courseData != None }}"
         required/>
       <label for="courseAbbreviation">Course Abbreviation</label>
       <input
         class="form-control"
         id="courseAbbreviation"
         name="courseAbbreviation"
+        value="{{courseData.course.courseAbbreviation if courseData != None}}"
         type="text"/>
       <label for="credit">Credit</label>
       <input
         class="form-control"
         id="credit"
         name="credit"
+        value="{{courseData.course.courseCredit if courseData != None}}"
         type="number"/>
       <label for="courseInstructorPhone">Course Instructor Phone</label>
       <input
@@ -65,6 +68,7 @@
       <select
         class="dropdown form-control mb-3"
         id="inputCourseInstructor"
+        value="{{courseData.course.term.description if courseData != None}}"
         name="term">
         {% for term in terms %}
           <option value="{{ term.id }}"> {{ term.description }}</option>

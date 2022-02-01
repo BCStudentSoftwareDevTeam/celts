@@ -633,12 +633,12 @@ courseQuestions = [
     "questionNumber":3,
     },
     {
-    "course":1,
+    "course":3,
     "questionContent":" This is another random question",
     "questionNumber":4,
     },
     {
-    "course":1,
+    "course":2,
     "questionContent":" Why are you interested in teaching this course?",
     "questionNumber":5,
     }
