@@ -32,8 +32,14 @@ $(document).ready(function(){
     }).attr('readonly','readonly');
   });
 
-// Tooltip functionalities
-  $('[data-bs-toggle="tooltip"').tooltip();
+  // Popover functionalities
+  $(function(){
+    $(".training_popover").popover({
+      trigger: "focus",
+      sanitize: false,
+      content: "Work!!!!"
+    });
+  });
 
   $(".ban").click(function() {
     var banButton = $("#banButton")
