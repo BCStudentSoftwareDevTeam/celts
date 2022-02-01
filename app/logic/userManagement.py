@@ -34,7 +34,7 @@ def changeCurrentTerm(term):
 
     session["current_term"] = model_to_dict(newCurrentTerm)
 
-def addTerm():
+def addNextTerm():
     terms_table = {"Spring":"Summer",
                     "Summer":"Fall",
                     "Fall":"Spring"}
