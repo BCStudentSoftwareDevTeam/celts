@@ -41,14 +41,15 @@ def addTerm():
     terms = list(Term.select().order_by(Term.id))
     lastCreatedTerm = terms[-1]
     termDescription = lastCreatedTerm.description
-    term = termDescription.split()
-    year = termDescription[-1]
-    if termDescription[0]=="Fall": # We only change the year when it is Fall
+    lastCreatedTermData = termDescription.split()
+    year = lastCreatedTermData[-1]
+
+    if lastCreatedTermData[0]=="Fall": # We only change the year when it is Fall
         year = int(year) + 1
 
-    createdTermDescription = terms_table[term[0]]+" "+str(year)
+    createdTermDescription = terms_table[lastCreatedTermData[0]]+" "+str(year)
     academicYear = lastCreatedTerm.academicYear
-    if termDescription[0] == "Summer": #we only change academic year when the latest term in the table is Summer
+    if lastCreatedTermData[0] == "Summer": #we only change academic year when the latest term in the table is Summer
         previousAY = academicYear.split("-")
         academicYear = str(int(previousAY[0])+1)+"-"+str(int(previousAY[-1])+1)
 
