@@ -61,6 +61,12 @@ def viewVolunteersProfile(username):
     if (g.current_user.username == username) or g.current_user.isAdmin:
          upcomingEvents = getUpcomingEventsForUser(username)
          programs = Program.select()
+         requiredTrainings = ProgramEvent.select().where(ProgramEvent.event.name)
+
+         print(".............................................")
+         print(requiredTrainings)
+         print(".............................................")
+
          interests = Interest.select().where(Interest.user == username)
          programsInterested = [interest.program for interest in interests]
          print("===============", username, type(username))
@@ -84,10 +90,15 @@ def viewVolunteersProfile(username):
             programsInterested = programsInterested,
             upcomingEvents = upcomingEvents,
             eligibilityTable = eligibilityTable,
+<<<<<<< HEAD
             volunteer = User.get(User.username == username),
             backgroundTypes = backgroundTypes,
             completedBackgroundCheck = completedBackgroundCheck
             )
+=======
+            requiredTrainings = requiredTrainings,
+            volunteer = User.get(User.username == username))
+>>>>>>> 86f529d1a06713593cf6d3b15d381e02c9f0042a
     abort(403)
 
 
