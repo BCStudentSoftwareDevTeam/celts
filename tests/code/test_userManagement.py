@@ -1,6 +1,8 @@
 import pytest
-from app.logic.userManagement import addCeltsAdmin, removeCeltsAdmin,addCeltsStudentStaff, removeCeltsStudentStaff, changeCurrentTerm
+from app.logic.userManagement import addCeltsAdmin, removeCeltsAdmin,addCeltsStudentStaff, removeCeltsStudentStaff, changeCurrentTerm, addNextTerm
 from app.models.user import User
+from app.models.term import Term
+
 from peewee import DoesNotExist
 from flask import g
 @pytest.mark.integration
@@ -58,3 +60,50 @@ def test_invalidTermInputs():
         changeCurrentTerm(100)
     with pytest.raises(DoesNotExist):
         changeCurrentTerm("womp")
+
+@pytest.mark.integration
+def test_addNextTerm():
+    newTerm = Term.create(description="Fall 2022",year=2022, academicYear= "2022-2023",isBreak=False, isSummer=False,isCurrentTerm=False)
+    newTerm.save()
+
+    terms = list(Term.select().order_by(Term.id))
+    lastCreatedTerm = terms[-1]
+    addNextTerm()
+    terms = list(Term.select().order_by(Term.id))
+    newlyAddedTerm = terms[-1]
+    assert newlyAddedTerm.description == "Spring 2023"
+    
+    query = Term.get(Term.id == lastCreatedTerm)
+    query.delete_instance()
+    query = Term.get(Term.id == newlyAddedTerm)
+    query.delete_instance()
+
+    newTerm = Term.create(description="Fall 2029",year=2029, academicYear= "2029-2030",isBreak=False, isSummer=False,isCurrentTerm=False)
+    newTerm.save()
+
+    terms = list(Term.select().order_by(Term.id))
+    lastCreatedTerm = terms[-1]
+    addNextTerm()
+    terms = list(Term.select().order_by(Term.id))
+    newlyAddedTerm = terms[-1]
+    assert newlyAddedTerm.description == "Spring 2030"
+
+    query = Term.get(Term.id == lastCreatedTerm)
+    query.delete_instance()
+    query = Term.get(Term.id == newlyAddedTerm)
+    query.delete_instance()
+
+    newTerm = Term.create(description="Spring 2022",year=2022, academicYear= "2021-2022",isBreak=False, isSummer=False,isCurrentTerm=False)
+    newTerm.save()
+
+    terms = list(Term.select().order_by(Term.id))
+    lastCreatedTerm = terms[-1]
+    addNextTerm()
+    terms = list(Term.select().order_by(Term.id))
+    newlyAddedTerm = terms[-1]
+    assert newlyAddedTerm.description == "Summer 2022"
+
+    query = Term.get(Term.id == lastCreatedTerm)
+    query.delete_instance()
+    query = Term.get(Term.id == newlyAddedTerm)
+    query.delete_instance()
