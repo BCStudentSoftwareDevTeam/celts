@@ -61,15 +61,15 @@ def viewVolunteersProfile(username):
     if (g.current_user.username == username) or g.current_user.isAdmin:
          upcomingEvents = getUpcomingEventsForUser(username)
          programs = Program.select()
-         requiredTrainings = ProgramEvent.select().where(ProgramEvent.event.name)
+         # requiredTrainings = ProgramEvent.select().where(ProgramEvent.event.name)
 
-         print(".............................................")
-         print(requiredTrainings)
-         print(".............................................")
+         # print("=============================================")
+         # print(requiredTrainings)
+         # print("=============================================")
 
          interests = Interest.select().where(Interest.user == username)
          programsInterested = [interest.program for interest in interests]
-         print("===============", username, type(username))
+         # print("===============", username, type(username))
          allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == username))
          completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
          backgroundTypes = list(BackgroundCheckType.select())
@@ -79,9 +79,11 @@ def viewVolunteersProfile(username):
                                                 ProgramBan.program == program,
                                                 ProgramBan.endDate > datetime.datetime.now())
 
+              requiredTrainings = (ProgramEvent.select(Event.name))
               noteForDict = list(notes)[-1].banNote.noteContent if list(notes) else ""
               eligibilityTable.append({"program" : program,
                                    "completedTraining" : (username in trainedParticipants(program)),
+                                   "trainingList": requiredTrainings,
                                    "isNotBanned" : isEligibleForProgram(program, username),
                                    "banNote": noteForDict})
          return render_template ("/main/volunteerProfile.html",

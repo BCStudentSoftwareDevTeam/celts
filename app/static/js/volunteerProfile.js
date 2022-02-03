@@ -33,10 +33,13 @@ $(document).ready(function(){
 
   // Popover functionalitie
   $(function(){
-    $(".training_popover").popover({
+    var requiredTraining = $(".trainingPopover");
+    requiredTraining.popover({
       trigger: "focus",
       sanitize: false,
-      content: "Work!!!!"
+      content: function() {
+                     return $(this).attr('data-content');
+        }
     });
   });
 
