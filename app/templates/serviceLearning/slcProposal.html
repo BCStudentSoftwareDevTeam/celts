@@ -8,7 +8,8 @@
         id="courseInstructor"
         class="form-control"
         type="search"
-        placeholder="Search instructor" />
+        placeholder="Search instructor"
+        value="" />
       <table
         class="table"
         id="instructorTable"
@@ -26,7 +27,18 @@
               <button id="remove" type="button" class="btn btn-danger">Remove</button>
             </td>
           </tr>
+          {% for instructor in courseInstructor %}
+          <tr>
+            <td>
+              {{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user}})
+            </td>
+            <td>
+              <button id="remove" type="button" class="btn btn-danger">Remove</button>
+            </td>
+          </tr>
+          {% endfor %}
         </tbody>
+
       </table>
       <label for="courseName" class="pt-3">Course Name</label>
       <input
@@ -71,7 +83,7 @@
         value="{{courseData.course.term.description if courseData != None}}"
         name="term">
         {% for term in terms %}
-          <option value="{{ term.id }}"> {{ term.description }}</option>
+          <option value="{{ term.id }}" {{ "selected" if courseData.course.term == term }}> {{ term.description }}</option>
         {% endfor %}
       </select>
       <span>Are all sections SL?</span>
