@@ -66,7 +66,7 @@ def viewVolunteersProfile(username):
          # print("=============================================")
          # print(requiredTrainings)
          # print("=============================================")
-
+         events1 = Event.select(Event.name)
          interests = Interest.select().where(Interest.user == username)
          programsInterested = [interest.program for interest in interests]
          # print("===============", username, type(username))
@@ -78,14 +78,16 @@ def viewVolunteersProfile(username):
               notes = ProgramBan.select().where(ProgramBan.user == username,
                                                 ProgramBan.program == program,
                                                 ProgramBan.endDate > datetime.datetime.now())
-
-              requiredTrainings = (ProgramEvent.select(Event.name))
+              requiredTrainings = (ProgramEvent.select().where(Event.name==events1))
               noteForDict = list(notes)[-1].banNote.noteContent if list(notes) else ""
               eligibilityTable.append({"program" : program,
                                    "completedTraining" : (username in trainedParticipants(program)),
                                    "trainingList": requiredTrainings,
                                    "isNotBanned" : isEligibleForProgram(program, username),
                                    "banNote": noteForDict})
+         print("-------------------------------------")
+         print(requiredTrainings)
+         print("................................................")
          return render_template ("/main/volunteerProfile.html",
             # programs = programs,
             # interests = interests,
