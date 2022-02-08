@@ -78,7 +78,12 @@ def viewVolunteersProfile(username):
               notes = ProgramBan.select().where(ProgramBan.user == username,
                                                 ProgramBan.program == program,
                                                 ProgramBan.endDate > datetime.datetime.now())
-              requiredTrainings = (ProgramEvent.select().where(Event.name==events1))
+              # requiredTrainings = (Event.select(Event.id.alias("event_id"))
+              #                           .join(ProgramEvent)
+              #                           .where(Event.isTraining,
+              #                                  Event.name))
+              # so you'll want to .select() the events where isTraining is true and they are events for the program
+              requiredTrainings = Event.select().where(Event.isTraining == True)
               noteForDict = list(notes)[-1].banNote.noteContent if list(notes) else ""
               eligibilityTable.append({"program" : program,
                                    "completedTraining" : (username in trainedParticipants(program)),
