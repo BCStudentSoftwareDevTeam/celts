@@ -31,6 +31,11 @@
           <tr>
             <td>
               {{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user}})
+              <input
+              class="form-control mb-3"
+              type="text"
+              value="{{instructor.user.phoneNumber}}"
+              name="courseInstructorPhone"/>
             </td>
             <td>
               <button id="remove" type="button" class="btn btn-danger">Remove</button>
@@ -62,11 +67,6 @@
         name="credit"
         value="{{courseData.course.courseCredit if courseData != None}}"
         type="number"/>
-      <label for="courseInstructorPhone">Course Instructor Phone</label>
-      <input
-        class="form-control mb-3"
-        type="text"
-        name="courseInstructorPhone"/>
       <label for="regularOccurenceToggle">Regularly-occurring?</label>
       <div class="form-check form-switch pb-4">
         <input

@@ -53,7 +53,7 @@ users = [
         "username": "neillz",
         "bnumber": "B00751864",
         "email": "neillz@berea.edu",
-        "phoneNumber": "555-555-5555",
+        "phoneNumber": "555-985-1234",
         "firstName": "Zach",
         "lastName": "Neill",
         "isStudent": True,
