@@ -8,52 +8,46 @@
 
     {% if g.current_user.isStudent or g.current_user.isCeltsStudentStaff %}
       <li>
-        {% if request.path == "/profile/{{g.current_user.username}}" %}
-          {% set active_list_item="active" %} {% set current_page="aria-current='true'" %}
-        {% endif %}
-        <a href="/profile/{{g.current_user.username}}" class="nav-link text-white {{active_list_item}}" {{current_page}}>
+        <a href="/profile/{{g.current_user.username}}"
+           class="nav-link text-white {{'active' if request.path =='/profile/{g.current_user.username}'}}"
+           {{"aria-current='page'" if request.path =='/profile/{{g.current_user.username'}}>
           My Profile
         </a>
       </li>
     {% endif %}
     <li class="nav-item">
-      {% if request.path == "/" %}
-        {% set active_list_item="active" %} {% set current_page="aria-current='true'" %}
-      {% endif %}
-      <a href="/" class="nav-link text-white {{active_list_item}}" {{current_page}}>
+      <a href="/"
+         class="nav-link text-white {{'active' if request.path =='/'}}"
+         {{"aria-current='page'" if request.path =='/'}}>
         Events List
       </a>
     </li>
     {% if g.current_user.isAdmin %}
       <li>
-        {% if request.path == "/template_select" %}
-          {% set active_list_item="active" %} {% set current_page="aria-current='true'" %}
-        {% endif %}
-        <a href="/template_select" class="nav-link text-white {{active_list_item}}" {{current_page}}>
+        <a href="/template_select"
+           class="nav-link text-white {{'active' if request.path =='/template_select'}}"
+           {{"aria-current='page'" if request.path =='/template_select'}}>
           Create Event
         </a>
       </li>
       <li>
-        {% if request.path == "/search_student" %}
-          {% set active_list_item="active" %} {% set current_page="aria-current='true'" %}
-        {% endif %}
-        <a href="/search_student" class="nav-link text-white {{active_list_item}}" {{current_page}}>
+        <a href="/search_student"
+           class="nav-link text-white {{'active' if request.path =='/search_student'}}"
+           {{"aria-current='page'" if request.path =='/search_student'}}>
           Volunteer Search
         </a>
       </li>
       <li>
-        {% if request.path == "/admin" %}
-          {% set active_list_item="active" %} {% set current_page="aria-current='true'" %}
-        {% endif %}
-        <a href="/admin" class="nav-link text-white {{active_list_item}}" {{current_page}}>
+        <a href="/admin"
+           class="nav-link text-white {{'active' if request.path =='/admin'}}"
+           {{"aria-current='page'" if request.path =='/admin'}}>
           Admin Management
         </a>
       </li>
       <li>
-        {% if request.path == "/serviceLearning/courseManagement" %}
-          {% set active_list_item="active" %} {% set current_page="aria-current='true'" %}
-        {% endif %}
-        <a href="/serviceLearning/courseManagement" class="nav-link text-white {{active_list_item}}" {{current_page}}>
+        <a href="/serviceLearning/courseManagement"
+           class="nav-link text-white {{'active' if request.path =='/serviceLearning/courseManagement'}}"
+           {{"aria-current='page'" if request.path =='/serviceLearning/courseManagement'}}>
           Course Proposal Management
         </a>
       </li>
