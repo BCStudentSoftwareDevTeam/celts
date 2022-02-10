@@ -68,9 +68,9 @@
         </td>
         <td>
           {% if participant.user.username not in trainedParticipantsList %}
-            <span data-bs-toggle="tooltip" title="Did Not Complete All Trainings">
+            <a href="#" data-toggle="tooltip" title="Did Not Complete All Trainings">
               <span class="text-danger bi bi-exclamation-triangle-fill"></span>
-            </span>
+            </a>
           {% endif %}
         </td>
         <td>
@@ -102,7 +102,7 @@
         <td>
           <span
             class="removeVolunteer"
-            id="{{participant.user.username}}">
+            id="{{participant.user.username}}" tabindex="0">
               <i class="bi bi-trash h5 align-middle"></i>
           </span>
         </td>

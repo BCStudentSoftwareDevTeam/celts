@@ -1,20 +1,17 @@
 import searchUser from './searchUser.js'
 
-$(document).ready( function () {
-   var table =  $('#trackVolunteerstable').DataTable({
-   "fnDrawCallback": function(oSettings) {
-     if ($('#trackVolunteerstable tr').length < 11) {
-         $('.dataTables_paginate').hide(); //disable search and page numbers when the length of the table is less 11
-         $('.dataTables_filter').hide();
-         $('.dataTables_length').hide();
-       }
-
-    }
-  });
-});
-
 $(document).ready(function() {
-  $('[data-bs-toggle="tooltip"]').tooltip();
+  var table =  $('#trackVolunteerstable').DataTable({
+  "fnDrawCallback": function(oSettings) {
+    if ($('#trackVolunteerstable tr').length < 11) {
+        $('.dataTables_paginate').hide(); //disable search and page numbers when the length of the table is less 11
+        $('.dataTables_filter').hide();
+        $('.dataTables_length').hide();
+    }
+   }
+  });
+
+  $('[data-toggle="tooltip"]').tooltip();
 // Search functionalities from the volunteer table in the UI
   $("#trackVolunteersInput").on("keyup", function() {
     var value = $(this).val().toLowerCase();
