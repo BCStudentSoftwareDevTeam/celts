@@ -61,42 +61,28 @@ def viewVolunteersProfile(username):
     if (g.current_user.username == username) or g.current_user.isAdmin:
          upcomingEvents = getUpcomingEventsForUser(username)
          programs = Program.select()
-         # requiredTrainings = ProgramEvent.select().where(ProgramEvent.event.name)
-
-         # print("=============================================")
-         # print(requiredTrainings)
-         # print("=============================================")
-         events1 = Event.select(Event.name)
          interests = Interest.select().where(Interest.user == username)
          programsInterested = [interest.program for interest in interests]
-         # print("===============", username, type(username))
          allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == username))
          completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
          backgroundTypes = list(BackgroundCheckType.select())
+         # requiredTrainings = Event.select(Event,ProgramEvent.program).where(Event.isTraining == True, ProgramEvent.program == ProgramEvent.event)
+         requiredTrainings = Event.select().where(Event.isTraining == True)
+
          eligibilityTable = []
          for program in programs:
               notes = ProgramBan.select().where(ProgramBan.user == username,
                                                 ProgramBan.program == program,
                                                 ProgramBan.endDate > datetime.datetime.now())
-              # requiredTrainings = (Event.select(Event.id.alias("event_id"))
-              #                           .join(ProgramEvent)
-              #                           .where(Event.isTraining,
-              #                                  Event.name))
-              # so you'll want to .select() the events where isTraining is true and they are events for the program
-              requiredTrainings = Event.select().where(Event.isTraining == True)
               noteForDict = list(notes)[-1].banNote.noteContent if list(notes) else ""
               eligibilityTable.append({"program" : program,
                                    "completedTraining" : (username in trainedParticipants(program)),
                                    "trainingList": requiredTrainings,
                                    "isNotBanned" : isEligibleForProgram(program, username),
                                    "banNote": noteForDict})
-         print("-------------------------------------")
-         print(requiredTrainings)
-         print("................................................")
          return render_template ("/main/volunteerProfile.html",
-            # programs = programs,
-            # interests = interests,
             programsInterested = programsInterested,
+            requiredTrainings = requiredTrainings,
             upcomingEvents = upcomingEvents,
             eligibilityTable = eligibilityTable,
             volunteer = User.get(User.username == username),
