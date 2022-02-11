@@ -67,12 +67,12 @@ def test_addNextTerm():
     newTerm.save()
 
     terms = list(Term.select().order_by(Term.id))
-    lastCreatedTerm = terms[-1]
+    lastCreatedTerm = newTerm
     addNextTerm()
     terms = list(Term.select().order_by(Term.id))
     newlyAddedTerm = terms[-1]
     assert newlyAddedTerm.description == "Spring 2023"
-    
+
     query = Term.get(Term.id == lastCreatedTerm)
     query.delete_instance()
     query = Term.get(Term.id == newlyAddedTerm)
