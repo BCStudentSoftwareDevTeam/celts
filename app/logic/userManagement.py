@@ -57,3 +57,4 @@ def addNextTerm():
 
     newTerm = Term.create(description=createdTermDescription,year=year,academicYear=academicYear, isSummer=isSummer)
     newTerm.save()
+    return newTerm
