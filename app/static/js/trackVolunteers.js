@@ -8,8 +8,17 @@ $(document).ready(function() {
         $('.dataTables_filter').hide();
         $('.dataTables_length').hide();
     }
-   }
+  },
+  "columnDefs": [
+    {
+      "targets": [0, 1],
+      "searchable": false
+    }
+  ]
   });
+  // $(".noSort").DataTable({
+  //   "ordering":false
+  // })
 
   $('[data-toggle="tooltip"]').tooltip();
 // Search functionalities from the volunteer table in the UI
