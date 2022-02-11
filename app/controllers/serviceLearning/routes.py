@@ -29,11 +29,10 @@ def serviceCourseManagement(username=None):
 
 @serviceLearning_bp.route('/serviceLearning/editProposal/<courseID>', methods=['GET', 'POST'])
 def slcEditProposal(courseID):
-    courseData = CourseQuestion.get(CourseQuestion.course == courseID)
+    questionData = CourseQuestion.select().where(CourseQuestion.course == courseID)
+    courseData = questionData[0]
     courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
 
-    for inst in courseInstructor:
-        print(inst.user.firstName)
     isRegularlyOccuring = ""
     isAllSectionsServiceLearning = ""
     isPermanentlyDesignated = ""
@@ -47,14 +46,9 @@ def slcEditProposal(courseID):
 
     terms = Term.select().where(Term.year >= g.current_term.year)
 
-    print(type(courseData.course.term))
-
-    for term in terms:
-        print(type(term))
-        if courseData.course.term == term.id:
-            print("Hello")
     return render_template('serviceLearning/slcNewProposal.html',
                                 courseData = courseData,
+                                questionData = questionData,
                                 terms = terms,
                                 courseInstructor = courseInstructor,
                                 isRegularlyOccuring = isRegularlyOccuring,

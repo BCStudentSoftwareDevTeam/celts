@@ -72,7 +72,7 @@ function validateForm() {
   if (valid) {
     $(".step")[currentTab].className += " finish"
   }
-  return valid;
+  return true;
 }
 
 function fixStepIndicator(navigateTab) {

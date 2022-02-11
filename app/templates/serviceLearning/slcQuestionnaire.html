@@ -1,10 +1,13 @@
+{% for i in questionData %}
+  {% set answer[loop.index] = i %}
+{% endfor %}
 <h1 class="text-center pt-4 fs-2">New Designated Service Learning Course</h1>
 <p class="text-center fw-bold"> Please review the <a href="/slcGuidelines">service learning course guidelines</a> before completing this form </p>
 <div class="pt-4">
   <label>
     1. Indicate the specific course learning objective(s) that will be addressed by the service-learning component
   </label>
-  <textarea class="form-control" aria-label="With textarea" name="1">{{courseData.questionContent if courseData.questionNumber == 1 }}</textarea>
+  <textarea class="form-control" aria-label="With textarea" name="1">{{ answer[1] }}</textarea>
   <label>
     2. Describe the method of structured, critical reflection you will use in order to connect the service
     activity or activities to the learning objective(s) of the course.
