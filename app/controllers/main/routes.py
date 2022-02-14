@@ -67,7 +67,20 @@ def viewVolunteersProfile(username):
          completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
          backgroundTypes = list(BackgroundCheckType.select())
          # requiredTrainings = Event.select(Event,ProgramEvent.program).where(Event.isTraining == True, ProgramEvent.program == ProgramEvent.event)
-         requiredTrainings = Event.select().where(Event.isTraining == True)
+         print("==================================================================")
+         requiredTrainings = ProgramEvent.select().join(Event).where(ProgramEvent.event == Event.id)
+         print(requiredTrainings)
+         print("==================================================================")
+         reqTable = {}
+         for ele in requiredTrainings:
+             print(".................................................................................",type(ele))
+             if ele.program not in reqTable:
+                 if ele.event.isTraining:
+                     reqTable[ele.program] = [ele.event.name]
+             else:
+                if ele.event.isTraining:
+                    reqTable[ele.program].append(ele.event.name)
+         print("This is the reqTable",reqTable)
 
          eligibilityTable = []
          for program in programs:
@@ -82,8 +95,8 @@ def viewVolunteersProfile(username):
                                    "banNote": noteForDict})
          return render_template ("/main/volunteerProfile.html",
             programsInterested = programsInterested,
-            requiredTrainings = requiredTrainings,
             upcomingEvents = upcomingEvents,
+            reqTable = reqTable,
             eligibilityTable = eligibilityTable,
             volunteer = User.get(User.username == username),
             backgroundTypes = backgroundTypes,
