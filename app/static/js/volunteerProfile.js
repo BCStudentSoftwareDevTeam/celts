@@ -32,16 +32,27 @@ $(document).ready(function(){
   });
 
   // Popover functionalitie
-  $(function(){
-    var requiredTraining = $(".trainingPopover");
-    requiredTraining.popover({
+  // $(function(){
+  //   var requiredTraining = $(".trainingPopover");
+  //   requiredTraining.popover({
+  //     trigger: "focus",
+  //     sanitize: false,
+  //     content: function() {
+  //                    return $(this).attr('data-content');
+  //       }
+  //   });
+  // });
+
+  $(document).ready(function() {
+    $('[data-toggle="popover"]').popover({
+      html: true,
       trigger: "focus",
-      sanitize: false,
       content: function() {
-                     return $(this).attr('data-content');
-        }
+        return $('#popover-content').html();
+      }
     });
   });
+
 
   $(".ban").click(function() {
     var banButton = $("#banButton")
