@@ -76,11 +76,11 @@ def viewVolunteersProfile(username):
              print(".................................................................................",type(ele))
              if ele.program not in reqTable:
                  if ele.event.isTraining:
-                     reqTable[ele.program] = [ele.event.name]
+                     reqTable[ele.program] = ele.event.name
              else:
                 if ele.event.isTraining:
-                    reqTable[ele.program].append(ele.event.name)
-         print("This is the reqTable",reqTable)
+                    reqTable[ele.program] += " "+ele.event.name
+         print("==================================================================This is the reqTable",reqTable)
 
          eligibilityTable = []
          for program in programs:
