@@ -10,7 +10,7 @@
 
 {% block app_content %}
 <h1 class="text-center mt-5 mb-5">Choose Event Type</h1>
-<div class="card m-auto" style="width: 18rem;">
+<div class="card m-auto" style="width: 400px;">
   <div class="card-header">Templated Events</div>
   {% for template in templates %}
   <a href="/event/{{template.id}}/create" class="list-group-item list-group-item-action">{{ template.name }}</a>
