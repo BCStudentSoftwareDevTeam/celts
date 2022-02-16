@@ -7,38 +7,32 @@
 {% endblock %}
 {% block app_content %}
 
-<h1 class="text-center mt-5 mb-3">Admin Management</h1>
+<h1 class="text-center mt-5 mb-5">Admin Management</h1>
 
-{% macro createInputsButtons(inputId, buttonId, buttonName, buttonClass) %}
-<div class="input-group">
-  <input type="input" id="{{inputId}}" name="{{inputId}}" class="form-control" placeholder="Search" autocomplete="off"/>
-  <button type="button" class="btn btn-secondary btn-sm" disabled>
-    <span class="bi bi-search"></span>
-  </button>
+{% macro createInputsButtons(inputId, buttonId, buttonName, buttonClass, labelName) %}
+<label class="form-label col-md-10" for="{{inputId}}"><strong>{{labelName}}</strong></label>
+  <div class="input-group">
+  <input type="input" id="{{inputId}}" name="{{inputId}}" class="form-control" placeholder="Search" autocomplete="off" style="width:50%;"/>
+  <span class="input-group-text me-1"><span class="bi bi-search"></span></span>
+  <button type="button" class="btn btn-{{buttonClass}} btn-md" id="{{buttonId}}">{{buttonName}}</button>
 </div>
-<div class="col-md-4"><button type="button" class="btn btn-{{buttonClass}} btn-sm" id="{{buttonId}}">{{buttonName}}</button></div>
 {% endmacro %}
 
-<div class="container-fluid">
-  <div class="row offset-md-3">
-    <div class="col-md-4">
-      <div class="text-nowrap">Add Celts Admin</div>
-      {{createInputsButtons("searchCeltsAdminInput","addCeltsAdmin","Add","success")}}
+<div class="container-fluid col-10">
+  <div class="row d-flex justify-content-center mb-3">
+    <div class="col-md-6 mb-3">
+      {{createInputsButtons("searchCeltsAdminInput","addCeltsAdmin","Add","success", "Add Celts Admin")}}
     </div>
-    <div class="col-md-4">
-      <div class="text-nowrap">Add Celts Student Staff</div>
-      {{createInputsButtons("searchCeltsStudentStaffInput","addCeltsStudentStaff","Add","success")}}
+    <div class="col-md-6">
+      {{createInputsButtons("searchCeltsStudentStaffInput","addCeltsStudentStaff","Add","success", "Add Celts Student Staff")}}
     </div>
   </div>
-  <br>
-  <div class="row offset-md-3">
-    <div class="col-md-4">
-      <div class="text-nowrap">Remove Celts Admin</div>
-      {{createInputsButtons("removeCeltsAdminInput","removeCeltsAdmin","Remove","danger")}}
+  <div class="row d-flex justify-content-center">
+    <div class="col-md-6 mb-3">
+      {{createInputsButtons("removeCeltsAdminInput","removeCeltsAdmin","Remove","danger","Remove Celts Admin")}}
     </div>
-    <div class="col-md-4">
-      <div class="text-nowrap">Remove Celts Student Staff</div>
-      {{createInputsButtons("removeCeltsStudentStaffInput","removeCeltsStudentStaff","Remove","danger")}}
+    <div class="col-md-6">
+      {{createInputsButtons("removeCeltsStudentStaffInput","removeCeltsStudentStaff","Remove","danger", "Remove Celts Student Staff")}}
     </div>
   </div>
 </div>
