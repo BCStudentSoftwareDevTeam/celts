@@ -7,18 +7,9 @@ $(document).ready(function() {
         $('.dataTables_paginate').hide(); //disable search and page numbers when the length of the table is less 11
         $('.dataTables_filter').hide();
         $('.dataTables_length').hide();
+      }
     }
-  },
-  "columnDefs": [
-    {
-      "targets": [0, 1],
-      "searchable": false
-    }
-  ]
   });
-  // $(".noSort").DataTable({
-  //   "ordering":false
-  // })
 
   $('[data-toggle="tooltip"]').tooltip();
 // Search functionalities from the volunteer table in the UI

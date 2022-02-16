@@ -73,7 +73,7 @@
           {% if isEditable %}
             <input class="form-control" id='inputEventName' value="{{eventData.name}}" placeholder="Enter event name" name="name" required>
           {% else %}
-            <p id="inputEventName">{{eventData.name}}</p>
+            <p>{{eventData.name}}</p>
           {% endif %}
         </div>
         <div class="form-group mb-4">
@@ -88,7 +88,7 @@
               {% endfor %}
             </select>
           {% else %}
-            <p id="inputEventTerm">{{ eventData.term.description if eventData.term }}</p>
+            <p>{{ eventData.term.description if eventData.term }}</p>
           {% endif %}
         </div>
         <div class="form-group mb-4">
@@ -96,7 +96,7 @@
           {% if isEditable %}
             <input class="form-control" id='inputEventLocation' value="{{eventData.location}}" placeholder="Enter location" name="location" required>
           {%else%}
-            <p id='inputEventLocation'>{{eventData.location}}</p>
+            <p>{{eventData.location}}</p>
           {%endif%}
         </div>
         {% if isNewEvent %}
@@ -114,7 +114,7 @@
                 {% if isEditable %}
                   <input type='time' class="form-control timePicker" id='pickStartTime' value="{{eventData.timeStart}}" name="timeStart" required>
                 {% else %}
-                  <p id='pickStartTime'>{{eventData.timeStart.strftime("%I: %M %p") if eventData.timeStart }}</p>
+                  <p>{{eventData.timeStart.strftime("%I: %M %p") if eventData.timeStart }}</p>
                 {% endif %}
               </div>
               <div class='form-group time d-inline-flex' style="padding: 0 0 0 2rem">
@@ -122,7 +122,7 @@
                 {% if isEditable %}
                   <input type='time' class="form-control timePicker" id='pickEndTime' value="{{eventData.timeEnd}}" name="timeEnd" required>
                 {% else %}
-                  <p id='pickEndTime'>{{eventData.timeEnd.strftime("%I: %M %p") if eventData.timeEnd }}</p>
+                  <p>{{eventData.timeEnd.strftime("%I: %M %p") if eventData.timeEnd }}</p>
                 {% endif %}
               </div>
             </div>
@@ -141,7 +141,7 @@
                 </div>
               </div>
               {% else %}
-                  <p id=startDatePicker>{{eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}</p>
+                  <p>{{eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}</p>
               {% endif %}
             </div>
             <div class="d-inline-flex d-none" id ="endDateStyle" style="width:51%;">
@@ -195,7 +195,7 @@
             {% if isEditable %}
               <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' placeholder="Enter event description" name="description" required>{{eventData.description}}</textarea>
             {% else %}
-              <p id='inputEventDescription'>{{eventData.description}}</p>
+              <p>{{eventData.description}}</p>
             {% endif %}
           </div>
           <div class='form-group'>
@@ -215,11 +215,11 @@
             </select>
           {% else %}
               {% if not eventData.facilitators|count %}
-                <p id="inputEventFacilitators">None</p>
+                <p>None</p>
               {%endif%}
 
               {% for f in eventData.facilitators %}
-                <p id="inputEventFacilitators">{{f.firstName}} {{f.lastName}}</p>
+                <p>{{f.firstName}} {{f.lastName}}</p>
               {% endfor %}
           {% endif %}
         </div>
