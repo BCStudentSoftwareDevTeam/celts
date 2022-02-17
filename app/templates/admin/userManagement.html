@@ -38,21 +38,23 @@
 </div>
 
 <div class="row">
-  <div class="container-fluid mt-5 col-6">
+  <div class="container-fluid mt-5 col-md-4">
     <div class="text-center">
-      <h5 class="my-3">Select the Current Term</h5>
-      <div class="col-md-6 mx-auto" name="currentTermList" id="currentTermList">
-        {% for term in terms %}
-        <div class="row mx-auto">
-          <button class="btn btn-lg btn-outline-secondary text-start term-btn
+      <div class="card">
+      <div class="card-header"> <strong>Select the Current Term</strong> </div>
+        <ul class="list-group list-unstyled" name="currentTermList" id="currentTermList">
+          {% for term in terms %}
+          <li class=" term-btn list-group-item
           {{ 'active' if g.current_term == term }}" id="termFormID_{{ loop.index }}"
-          value='{{ term.id }}'>{{term.description}}</button>
+          aria-description="{{'Current term' if g.current_term == term}}"
+          value='{{ term.id }}'> {{term.description}}</li>
+          {% endfor %}
+        </ul>
         </div>
-        {% endfor %}
         <button class="btn btn-primary my-2 float-end"
         id="submitButton" role="button">Make Current Term</button>
       </div>
     </div>
   </div>
-</div>
+
 {% endblock %}
