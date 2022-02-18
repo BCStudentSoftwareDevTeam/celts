@@ -56,8 +56,9 @@ def changeTerm():
         termData = request.form
         term = int(termData["id"])
         changeCurrentTerm(term)
-        flash('Current term changed successfully', 'success')
+        newCurrentTerm = Term.get_by_id(term)
+        flash(f'Current term successfully changed to {newCurrentTerm.description}.', 'success')
     except:
-        flash('Error. Current term request unsuccessful', 'warning')
+        flash('Current term was not changed. Please try again.', 'warning')
 
     return ""

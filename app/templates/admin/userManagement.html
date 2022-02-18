@@ -36,25 +36,27 @@
     </div>
   </div>
 </div>
-
 <div class="row">
   <div class="container-fluid mt-5 col-md-4">
     <div class="text-center">
       <div class="card">
-      <div class="card-header"> <strong>Select the Current Term</strong> </div>
-        <ul class="list-group list-unstyled" name="currentTermList" id="currentTermList">
+      <div class="card-header"><strong>Select the Current Term</strong></div>
+        <ul class="list-group" name="currentTermList" id="currentTermList">
           {% for term in terms %}
-          <li class=" term-btn list-group-item
-          {{ 'active' if g.current_term == term }}" id="termFormID_{{ loop.index }}"
-          aria-description="{{'Current term' if g.current_term == term}}"
-          value='{{ term.id }}'> {{term.description}}</li>
+          <li class="term-btn list-group-item list-group-item-action {{ 'active' if g.current_term == term }}"
+            id="termFormID_{{ loop.index }}"
+            aria-label="{{'Current term' if g.current_term == term}}"
+            value='{{ term.id }}'
+            tabindex="0">
+            {{term.description}}
+            <span class="sr-only visually-hidden">{{'Selected term' if g.current_term == term}}</span>
+          </li>
           {% endfor %}
         </ul>
         </div>
         <button class="btn btn-primary my-2 float-end"
-        id="submitButton" role="button">Make Current Term</button>
+          id="submitButton" role="button">Make Current Term</button>
       </div>
     </div>
   </div>
-
 {% endblock %}
