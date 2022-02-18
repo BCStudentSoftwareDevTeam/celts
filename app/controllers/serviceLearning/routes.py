@@ -11,7 +11,7 @@ from app.models.courseParticipant import CourseParticipant
 from app.controllers.serviceLearning import serviceLearning_bp
 from app.logic.searchUsers import searchUsers
 from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal
-from app.logic.courseManagement import updatecourse
+from app.logic.courseManagement import updateCourse
 
 @serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
 @serviceLearning_bp.route('/serviceLearning/courseManagement/<username>', methods = ['GET'])
@@ -65,7 +65,6 @@ def slcNewProposal():
         term = Term.get(Term.id==request.form.get("term"))
         status = CourseStatus.get(CourseStatus.status == "Pending")
         coursecheck = Course.get_or_none(Course.courseName == request.form.get("courseName"))
-        print("OVERHEREEEEEE", coursecheck)
         if coursecheck == None:
             course = Course.create(
                 courseName=request.form.get("courseName"),
@@ -89,7 +88,7 @@ def slcNewProposal():
                 CourseInstructor.create(course=course, user=instructor.username)
             return redirect('/serviceLearning/courseManagement')
         else:
-            updatecourse(request.form.copy())
+            updateCourse(request.form.copy())
 
     terms = Term.select().where(Term.year >= g.current_term.year)
     courseData = None
@@ -118,4 +117,4 @@ def withdrawCourse(courseID):
             flash("Unauthorized to perform this action", 'warning')
     except Exception as e:
         flash("Withdrawal Unsuccessful", 'warning')
-    return "" 
+    return ""
