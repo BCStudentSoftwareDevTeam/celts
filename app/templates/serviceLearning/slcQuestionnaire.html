@@ -1,39 +1,36 @@
-{% for i in questionData %}
-  {% set answer[loop.index] = i %}
-{% endfor %}
 <h1 class="text-center pt-4 fs-2">New Designated Service Learning Course</h1>
 <p class="text-center fw-bold"> Please review the <a href="/slcGuidelines">service learning course guidelines</a> before completing this form </p>
 <div class="pt-4">
   <label>
     1. Indicate the specific course learning objective(s) that will be addressed by the service-learning component
   </label>
-  <textarea class="form-control" aria-label="With textarea" name="1">{{ answer[1] }}</textarea>
+  <textarea class="form-control" aria-label="With textarea" name="1">{{questionanswers[0] if questionanswers}}</textarea>
   <label>
     2. Describe the method of structured, critical reflection you will use in order to connect the service
     activity or activities to the learning objective(s) of the course.
   </label>
-  <textarea class="form-control" aria-label="With textarea" name="2"></textarea>
+  <textarea class="form-control" aria-label="With textarea" name="2">{{questionanswers[1] if questionanswers}}</textarea>
   <label>
     3. Describe the service-learning activity or activities. Indicate the approximate number of hours or
     days of service experience. There is no formal requirement, but the activity must be substantial and
     sustained throughout the semester.
   </label>
-  <textarea class="form-control" aria-label="With textarea" name="3"></textarea>
+  <textarea class="form-control" aria-label="With textarea" name="3">{{questionanswers[2] if questionanswers}}</textarea>
   <label>
     4. Identify the community partner(s) with whom you will collaborate in order to structure this
     service-learning experience.  How will the community partner(s) be involved in planning, implementation,
     and evaluation?
   </label>
-  <textarea class="form-control" aria-label="With textarea" name="4"></textarea>
+  <textarea class="form-control" aria-label="With textarea" name="4">{{questionanswers[3] if questionanswers}}</textarea>
   <label>
     5. Describe the final product to be completed by the students. How will this benefit the community?
   </label>
-  <textarea class="form-control" aria-label="With textarea" name="5"></textarea>
+  <textarea class="form-control" aria-label="With textarea" name="5">{{questionanswers[4] if questionanswers}}</textarea>
   <label>
     6. Indicate how you will assess student learning related to the identified course objective(s) that will
     be enhanced by the service-learning experience. Identify what percentage of the final grade will be based
     on the assessment of reflection, the final product, and other forms of assessment related to the identified
     course objective(s).
   </label>
-  <textarea class="form-control" aria-label="With textarea" name="6"></textarea>
+  <textarea class="form-control" aria-label="With textarea" name="6">{{questionanswers[5] if questionanswers}}</textarea>
 </div>

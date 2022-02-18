@@ -11,6 +11,7 @@ from app.models.courseParticipant import CourseParticipant
 from app.controllers.serviceLearning import serviceLearning_bp
 from app.logic.searchUsers import searchUsers
 from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal
+from app.logic.courseManagement import updatecourse
 
 @serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
 @serviceLearning_bp.route('/serviceLearning/courseManagement/<username>', methods = ['GET'])
@@ -30,6 +31,7 @@ def serviceCourseManagement(username=None):
 @serviceLearning_bp.route('/serviceLearning/editProposal/<courseID>', methods=['GET', 'POST'])
 def slcEditProposal(courseID):
     questionData = CourseQuestion.select().where(CourseQuestion.course == courseID)
+    questionanswers = [question.questionContent for question in questionData]
     courseData = questionData[0]
     courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
 
@@ -48,7 +50,7 @@ def slcEditProposal(courseID):
 
     return render_template('serviceLearning/slcNewProposal.html',
                                 courseData = courseData,
-                                questionData = questionData,
+                                questionanswers = questionanswers,
                                 terms = terms,
                                 courseInstructor = courseInstructor,
                                 isRegularlyOccuring = isRegularlyOccuring,
@@ -62,27 +64,32 @@ def slcNewProposal():
         # courseData["courseInstructorPhone"] = request.form.get("courseInstructorPhone")
         term = Term.get(Term.id==request.form.get("term"))
         status = CourseStatus.get(CourseStatus.status == "Pending")
-        course = Course.create(
-            courseName=request.form.get("courseName"),
-            courseAbbreviation=request.form.get("courseAbbreviation"),
-            courseCredit=request.form.get("credit"),
-            isRegularlyOccuring=1 if request.form.get("regularOccurenceToggle") else 0,
-            term=term,
-            status=status,
-            createdBy=g.current_user,
-            isAllSectionsServiceLearning=1 if request.form.get("slSectionsToggle") else 0,
-            serviceLearningDesignatedSections=request.form.get("slDesignation"),
-            isPermanentlyDesignated=1 if request.form.get("permanentDesignation") else 0,
-        )
-        for i in range(1, 7):
-            CourseQuestion.create(
-                course=course,
-                questionContent=request.form.get(f"{i}"),
-                questionNumber=i
+        coursecheck = Course.get_or_none(Course.courseName == request.form.get("courseName"))
+        print("OVERHEREEEEEE", coursecheck)
+        if coursecheck == None:
+            course = Course.create(
+                courseName=request.form.get("courseName"),
+                courseAbbreviation=request.form.get("courseAbbreviation"),
+                courseCredit=request.form.get("credit"),
+                isRegularlyOccuring=1 if request.form.get("regularOccurenceToggle") else 0,
+                term=term,
+                status=status,
+                createdBy=g.current_user,
+                isAllSectionsServiceLearning=1 if request.form.get("slSectionsToggle") else 0,
+                serviceLearningDesignatedSections=request.form.get("slDesignation"),
+                isPermanentlyDesignated=1 if request.form.get("permanentDesignation") else 0,
             )
-        for instructor in instructorsDict["instructors"]:
-            CourseInstructor.create(course=course, user=instructor.username)
-        return redirect('/serviceLearning/courseManagement')
+            for i in range(1, 7):
+                CourseQuestion.create(
+                    course=course,
+                    questionContent=request.form.get(f"{i}"),
+                    questionNumber=i
+                )
+            for instructor in instructorsDict["instructors"]:
+                CourseInstructor.create(course=course, user=instructor.username)
+            return redirect('/serviceLearning/courseManagement')
+        else:
+            updatecourse(request.form.copy())
 
     terms = Term.select().where(Term.year >= g.current_term.year)
     courseData = None

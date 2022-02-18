@@ -1,4 +1,6 @@
+from flask import request, render_template, g, abort, json, redirect, jsonify, flash
 from app.models.courseInstructor import CourseInstructor
+from app.models.courseQuestion import CourseQuestion
 from app.models.courseStatus import CourseStatus
 from app.models.course import Course
 from app.models.term import Term
@@ -41,3 +43,27 @@ def getinstructorData(courseIds):
         instructorDict.setdefault(i.course.id, []).append(i.user.firstName + " " + i.user.lastName)
 
     return instructorDict
+
+def updatecourse(courseData):
+    print("hello")
+    status = CourseStatus.get(CourseStatus.status == "Pending")
+    course = Course.update(
+        courseName= courseData["courseName"],
+        courseAbbreviation=courseData["courseAbbreviation"],
+        courseCredit=courseData["credit"],
+        isRegularlyOccuring=1 if courseData["regularOccurenceToggle"] else 0,
+        term= courseData['term'],
+        status=status,
+        createdBy=g.current_user,
+        isAllSectionsServiceLearning=1 if courseData["slSectionsToggle"] else 0,
+        serviceLearningDesignatedSections=courseData["slDesignation"],
+        isPermanentlyDesignated=1 if courseData["permanentDesignation"] else 0,
+    ).where(Course.courseName == courseData['courseName']).execute()
+    for i in range(1, 7):
+        CourseQuestion.update(
+            course=course,
+            questionContent=courseData[f"{i}"]
+        ).where(CourseQuestion.questionNumber == i).execute()
+    for instructor in instructorsDict["instructors"]:
+        CourseInstructor.update(course=course, user=instructor.username).where(Course.courseName == courseData['courseName']).execute()
+    return redirect('/serviceLearning/courseManagement')
