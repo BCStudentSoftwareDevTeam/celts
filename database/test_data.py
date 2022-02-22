@@ -22,6 +22,11 @@ from app.models.facilitator import Facilitator
 from app.models.note import Note
 from app.models.studentManager import StudentManager
 from app.models.backgroundCheck import BackgroundCheck
+<<<<<<< HEAD
+=======
+# from app.models.backgroundCheckType import BackgroundCheckType
+
+>>>>>>> 668293c51263165dcb8c8572c28d9300d27248a2
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -59,7 +64,7 @@ users = [
         "isStudent": True,
         "isFaculty": False,
         "isCeltsAdmin": False,
-        "isCeltsStudentStaff": False
+        "isCeltsStudentStaff": True
     },
 
     {
@@ -124,7 +129,8 @@ users = [
         "firstName": "Liberty",
         "lastName": "Mupotsa",
         "isStudent": True,
-        "phoneNumber": "8599858594"
+        "phoneNumber": "8599858594",
+        "isCeltsStudentStaff": True
     },
 ]
 
@@ -766,7 +772,10 @@ facilitators = [
 ]
 Facilitator.insert_many(facilitators).on_conflict_replace().execute()
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 668293c51263165dcb8c8572c28d9300d27248a2
 studentManagerPrograms = [
     {
     'user':'khatts',
@@ -791,7 +800,10 @@ studentManagerPrograms = [
 ]
 
 StudentManager.insert_many(studentManagerPrograms).on_conflict_replace().execute()
+<<<<<<< HEAD
 
+=======
+>>>>>>> 668293c51263165dcb8c8572c28d9300d27248a2
 background = [
 
     {

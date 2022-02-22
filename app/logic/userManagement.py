@@ -1,6 +1,7 @@
 from app.models.user import User
 from app.models.term import Term
 from app.models.studentManager import StudentManager
+from app.models.program import Program
 from flask import g, session
 
 from playhouse.shortcuts import model_to_dict
@@ -53,6 +54,7 @@ def hasPrivilege(user, program):
     else:
         return False
 
+<<<<<<< HEAD
 def addNextTerm():
     newSemesterMap = {"Spring":"Summer",
                     "Summer":"Fall",
@@ -77,3 +79,7 @@ def addNextTerm():
     newTerm.save()
 
     return newTerm
+=======
+def getPrograms():
+    return Program.select().join(StudentManager).where(StudentManager.user==g.current_user).order_by(Program.programName)
+>>>>>>> 668293c51263165dcb8c8572c28d9300d27248a2
