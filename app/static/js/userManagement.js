@@ -15,6 +15,9 @@ $(document).ready(function() {
     submitRequest("addCeltsAdmin","#searchCeltsAdminInput")
   });
 
+  $("#addNewTerm").on("click",function(){
+    addNewTerm();
+  });
   // add celts student staff
   $("#searchCeltsStudentStaffInput").on("input", function() {
     searchUser("searchCeltsStudentStaffInput", callback);
@@ -83,6 +86,19 @@ function submitTerm(){
     url: "/admin/changeTerm",
     type: "POST",
     data: termInfo,
+    success: function(s){
+      location.reload()
+    },
+    error: function(error, status){
+        console.log(error, status)
+    }
+  })
+};
+
+function addNewTerm(){
+  $.ajax({
+    url: "/admin/addNewTerm",
+    type: "POST",
     success: function(s){
       location.reload()
     },

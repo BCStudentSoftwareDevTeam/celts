@@ -54,6 +54,7 @@ def slcNewProposal():
             )
         for instructor in instructorsDict["instructors"]:
             CourseInstructor.create(course=course, user=instructor.username)
+        flash("New service-learning course successfully created.", "success")
         return redirect('/serviceLearning/courseManagement')
 
     terms = Term.select().where(Term.year >= g.current_term.year)
