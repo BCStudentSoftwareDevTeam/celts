@@ -93,13 +93,17 @@ def load_user():
     try:
         g.current_user = dict_to_model(User,session['current_user'])
     except Exception as e:
-        session['current_user'] = model_to_dict(getLoginUser())
+        user = getLoginUser()
+        session['current_user'] = model_to_dict(user)
+        g.current_user = user
 
 from app.logic.loginManager import getCurrentTerm
 @app.before_request
 def load_currentTerm():
     # An exception handles both current_term not being set and a mismatch between models
-    try: 
-        g.current_term = dict_to_model(Term,session['current_term'])
+    try:
+        g.current_term = dict_to_model(Term, session['current_term'])
     except Exception as e:
-        session['current_term'] = model_to_dict(getCurrentTerm())
+        term = getCurrentTerm()
+        session['current_term'] = model_to_dict(term)
+        g.current_term = term
