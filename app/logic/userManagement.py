@@ -35,26 +35,26 @@ def changeCurrentTerm(term):
     session["current_term"] = model_to_dict(newCurrentTerm)
 
 def addNextTerm():
-    terms_table = {"Spring":"Summer",
+    newSemesterMap = {"Spring":"Summer",
                     "Summer":"Fall",
                     "Fall":"Spring"}
     terms = list(Term.select().order_by(Term.id))
-    lastCreatedTerm = terms[-1]
-    termDescription = lastCreatedTerm.description
-    lastCreatedTermData = termDescription.split()
-    year = lastCreatedTermData[-1]
+    prevTerm = terms[-1]
+    prevSemester, prevYear = prevTerm.description.split()
 
-    if lastCreatedTermData[0]=="Fall": # We only change the year when it is Fall
-        year = int(year) + 1
+    newYear = int(prevYear) + 1 if prevSemester == "Fall" else int(prevYear)
+    newDescription = newSemesterMap[prevSemester] + " " + str(newYear)
+    newAY = prevTerm.academicYear
 
-    createdTermDescription = terms_table[lastCreatedTermData[0]]+" "+str(year)
-    academicYear = lastCreatedTerm.academicYear
-    if lastCreatedTermData[0] == "Summer": #we only change academic year when the latest term in the table is Summer
-        previousAY = academicYear.split("-")
-        academicYear = str(int(previousAY[0])+1)+"-"+str(int(previousAY[-1])+1)
+    if prevSemester == "Summer": # we only change academic year when the latest term in the table is Summer
+        year1, year2 = prevTerm.academicYear.split("-")
+        newAY = year2 + "-" + str(int(year2)+1)
 
-    isSummer = "Summer" in createdTermDescription.split() 
-
-    newTerm = Term.create(description=createdTermDescription,year=year,academicYear=academicYear, isSummer=isSummer)
+    newTerm = Term.create(
+            description=newDescription,
+            year=newYear,
+            academicYear=newAY, 
+            isSummer="Summer" in newDescription.split())
     newTerm.save()
+
     return newTerm

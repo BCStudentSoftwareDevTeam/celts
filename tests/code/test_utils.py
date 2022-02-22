@@ -1,8 +1,10 @@
 import pytest
-from app.logic.userManagement import addCeltsAdmin, removeCeltsAdmin,addCeltsStudentStaff, removeCeltsStudentStaff, changeCurrentTerm, addNextTerm
+
+from app.models import mainDB
 from app.models.user import User
 from app.models.term import Term
 from app.logic.utils import deep_update, selectSurroundingTerms
+from app.logic.userManagement import addCeltsAdmin, removeCeltsAdmin,addCeltsStudentStaff, removeCeltsStudentStaff, changeCurrentTerm, addNextTerm
 
 @pytest.mark.integration
 def test_selectSurroundingTerms():
@@ -120,47 +122,40 @@ def test_invalidTermInputs():
 
 @pytest.mark.integration
 def test_addNextTerm():
-    newTerm = Term.create(description="Fall 2022",year=2022, academicYear= "2022-2023",isBreak=False, isSummer=False,isCurrentTerm=False)
-    newTerm.save()
+    with mainDB.atomic() as transaction:
+        testTerm = Term.create(description="Fall 2022",year=2022, academicYear= "2022-2023", isSummer=False,isCurrentTerm=False)
+        testTerm.save()
 
-    terms = list(Term.select().order_by(Term.id))
-    lastCreatedTerm = newTerm
-    addNextTerm()
-    terms = list(Term.select().order_by(Term.id))
-    newlyAddedTerm = terms[-1]
-    assert newlyAddedTerm.description == "Spring 2023"
+        newTerm = addNextTerm()
+        assert newTerm.description == "Spring 2023"
 
-    query = Term.get(Term.id == lastCreatedTerm)
-    query.delete_instance()
-    query = Term.get(Term.id == newlyAddedTerm)
-    query.delete_instance()
+        # test to make sure we're using the db properly at least once
+        terms = list(Term.select().order_by(Term.id))
+        newTerm = terms[-1]
+        assert newTerm.description == "Spring 2023"
+        assert not newTerm.isSummer
+        assert not newTerm.isCurrentTerm
 
-    newTerm = Term.create(description="Fall 2029",year=2029, academicYear= "2029-2030",isBreak=False, isSummer=False,isCurrentTerm=False)
-    newTerm.save()
+        transaction.rollback()
 
-    terms = list(Term.select().order_by(Term.id))
-    lastCreatedTerm = terms[-1]
-    addNextTerm()
-    terms = list(Term.select().order_by(Term.id))
-    newlyAddedTerm = terms[-1]
-    assert newlyAddedTerm.description == "Spring 2030"
 
-    query = Term.get(Term.id == lastCreatedTerm)
-    query.delete_instance()
-    query = Term.get(Term.id == newlyAddedTerm)
-    query.delete_instance()
+    with mainDB.atomic() as transaction:
+        testTerm = Term.create(description="Fall 2029",year=2029, academicYear= "2029-2030", isSummer=False,isCurrentTerm=False)
+        testTerm.save()
 
-    newTerm = Term.create(description="Spring 2022",year=2022, academicYear= "2021-2022",isBreak=False, isSummer=False,isCurrentTerm=False)
-    newTerm.save()
+        newTerm = addNextTerm()
+        assert newTerm.description == "Spring 2030"
+        assert not newTerm.isSummer
 
-    terms = list(Term.select().order_by(Term.id))
-    lastCreatedTerm = terms[-1]
-    addNextTerm()
-    terms = list(Term.select().order_by(Term.id))
-    newlyAddedTerm = terms[-1]
-    assert newlyAddedTerm.description == "Summer 2022"
+        transaction.rollback()
 
-    query = Term.get(Term.id == lastCreatedTerm)
-    query.delete_instance()
-    query = Term.get(Term.id == newlyAddedTerm)
-    query.delete_instance()
+
+    with mainDB.atomic() as transaction:
+        testTerm = Term.create(description="Spring 2022",year=2022, academicYear= "2021-2022", isSummer=False,isCurrentTerm=False)
+        testTerm.save()
+
+        newTerm = addNextTerm()
+        assert newTerm.description == "Summer 2022"
+        assert newTerm.isSummer
+
+        transaction.rollback()

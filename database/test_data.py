@@ -136,7 +136,6 @@ terms = [
         "description": "Spring A 2021",
         "year": 2021,
         "academicYear": "2020-2021",
-        "isBreak": False,
         "isSummer": False,
         "isCurrentTerm": False
     },
@@ -145,7 +144,6 @@ terms = [
         "description": "Spring B 2021",
         "year": 2021,
         "academicYear": "2020-2021",
-        "isBreak": False,
         "isSummer": False,
         "isCurrentTerm": False
     },
@@ -154,7 +152,6 @@ terms = [
         "description": "Summer 2021",
         "year": 2021,
         "academicYear": "2020-2021",
-        "isBreak": False,
         "isSummer": True,
         "isCurrentTerm": True
     },
@@ -163,29 +160,17 @@ terms = [
         "description": "Fall 2021",
         "year": 2021,
         "academicYear": "2021-2022",
-        "isBreak": False,
         "isSummer": False,
         "isCurrentTerm": False
     },
     {
         "id": 5,
         "description": "Spring 2022",
-        "year": 2021,
+        "year": 2022,
         "academicYear": "2021-2022",
-        "isBreak": True,
         "isSummer": False,
         "isCurrentTerm": False
     },
-    {
-        "id": 6,
-        "description": "Spring 2022",
-        "year": 2022,
-        "academicYear": "2021-2022",
-        "isBreak": False,
-        "isSummer": True,
-        "isCurrentTerm": False
-    },
-
 
 ]
 Term.insert_many(terms).on_conflict_replace().execute()
