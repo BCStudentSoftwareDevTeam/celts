@@ -55,7 +55,8 @@
         <select name="newuser" class="form-select" style="margin-bottom: 10px" id="userSelect">
           <option {{"selected" if g.current_user == config.default_user }} value="{{config.default_user}}">Default User: {{config.default_user}}</option>
           <option {{"selected" if g.current_user == "ramsayb2"}} value="ramsayb2">Admin: ramsayb2</option>
-          <option {{"selected" if g.current_user == "neillz"}} value="neillz">Student: neillz</option>
+          <option {{"selected" if g.current_user == "neillz"}} value="neillz">Student Staff: neillz</option>
+          <option {{"selected" if g.current_user == "ayisie"}} value="neillz">Student: ayisie</option>
         </select>
       </form>
     {% endif %}

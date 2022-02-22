@@ -1,7 +1,10 @@
 import pytest
 
+from app.models import mainDB
+from app.models.user import User
 from app.models.term import Term
 from app.logic.utils import deep_update, selectSurroundingTerms
+from app.logic.userManagement import addCeltsAdmin, removeCeltsAdmin,addCeltsStudentStaff, removeCeltsStudentStaff, changeCurrentTerm, addNextTerm
 
 @pytest.mark.integration
 def test_selectSurroundingTerms():
@@ -36,7 +39,7 @@ def test_deepUpdate_empty():
     assert result == return_val
 
     d1 = {"a" : {"key": 7}}
-    d2 = None 
+    d2 = None
     result = {"a" : {"key": 7}}
 
     return_val = deep_update(d1, d2)
@@ -45,7 +48,7 @@ def test_deepUpdate_empty():
 
     # since there is no reference parameter to update, we can only check the return value
     d1 = None
-    d2 = {"b": {"alpha" : 17}} 
+    d2 = {"b": {"alpha" : 17}}
     result = {"b": {"alpha" : 17}}
 
     return_val = deep_update(d1, d2)
@@ -93,3 +96,73 @@ def test_deepUpdate():
     return_val = deep_update(d1, d2)
     assert result == d1
     assert result == return_val
+
+def test_changeCurrentTerm():
+    # test via g.current_term
+    oldTerm = g.current_term
+    changeCurrentTerm(2)
+    assert g.current_term == 2
+    assert not oldTerm
+
+    # test via isCurrentTerm
+    oldTerm2 = g.current_term
+    newTerm = changeCurrentTerm(1)
+    assert newTerm.isCurrentTerm
+    assert not oldTerm2 == g.current_term
+    assert not oldTerm2.isCurrentTerm
+
+    # reset data back to before test
+    changeCurrentTerm(oldTerm)
+
+def test_invalidTermInputs():
+    with pytest.raises(DoesNotExist):
+        changeCurrentTerm(100)
+    with pytest.raises(DoesNotExist):
+        changeCurrentTerm("womp")
+
+@pytest.mark.integration
+def test_addNextTerm():
+    with mainDB.atomic() as transaction:
+        testTerm = Term.create(description="Summer 2022",year=2022, academicYear= "2021-2022", isSummer=True,isCurrentTerm=True)
+        testTerm.save()
+
+        addNextTerm()
+
+        # for the first test,  make sure we're using the db properly
+        terms = list(Term.select().order_by(Term.id))
+        newTerm = terms[-1]
+        assert newTerm.description == "Fall 2022"
+        assert newTerm.year == 2022
+        assert newTerm.academicYear == "2022-2023"
+        assert not newTerm.isSummer
+        assert not newTerm.isCurrentTerm
+
+        transaction.rollback()
+
+
+    with mainDB.atomic() as transaction:
+        testTerm = Term.create(description="Fall 2029",year=2029, academicYear= "2029-2030", isSummer=False,isCurrentTerm=False)
+        testTerm.save()
+
+        newTerm = addNextTerm()
+        assert newTerm.description == "Spring 2030"
+        assert newTerm.year == 2030
+        assert newTerm.academicYear == "2029-2030"
+        assert not newTerm.isSummer
+        assert not newTerm.isCurrentTerm
+
+        transaction.rollback()
+
+
+    with mainDB.atomic() as transaction:
+        testTerm = Term.create(description="Spring 2022",year=2022, academicYear= "2021-2022", isSummer=False,isCurrentTerm=False)
+        testTerm.save()
+
+        newTerm = addNextTerm()
+        assert newTerm.description == "Summer 2022"
+        assert newTerm.year == 2022
+        assert newTerm.academicYear == "2021-2022"
+        assert newTerm.isSummer
+        assert not newTerm.isCurrentTerm
+
+        transaction.rollback()
