@@ -2,6 +2,7 @@ import pytest
 from datetime import datetime
 from peewee import IntegrityError, DoesNotExist
 
+from app.models import mainDB
 from app.models.user import User
 from app.models.event import Event
 from app.models.eventParticipant import EventParticipant
@@ -173,14 +174,17 @@ def test_unattendedRequiredEvents():
     user = 'ramsayb2'
 
     unattendedEvents = unattendedRequiredEvents(program, user)
-    assert len(unattendedEvents) == 3
+    assert len(unattendedEvents) == 1
 
     # test after user has attended an event
-    event = Event.get(Event.name == unattendedEvents[0])
-    EventParticipant.create(user = user, event = event)
-    unattendedEvents = unattendedRequiredEvents(program, user)
-    assert len(unattendedEvents) == 2
-    (EventParticipant.delete().where(EventParticipant.user == user, EventParticipant.event == event)).execute()
+    with mainDB.atomic() as transaction:
+        event = Event.get(Event.name == unattendedEvents[0])
+        EventParticipant.create(user = user, event = event)
+
+        unattendedEvents = unattendedRequiredEvents(program, user)
+        assert len(unattendedEvents) == 0
+
+        mainDB.rollback()
 
     # test where all required events are attended
     user = 'khatts'
@@ -202,7 +206,7 @@ def test_unattendedRequiredEvents():
     program = 1
     user = "asdfasdf56"
     unattendedEvents = unattendedRequiredEvents(program, user)
-    assert unattendedEvents == ['Empty Bowls Spring Event 1', 'Hunger Hurts', 'Empty Bowl with Community']
+    assert unattendedEvents == ['Empty Bowls Spring Event 1']
 
 @pytest.mark.integration
 def test_sendUserData():
@@ -239,8 +243,8 @@ def test_sendUserData():
 def test_getEventParticipants():
     event = Event.get_by_id(1)
     eventParticipantsDict = getEventParticipants(event)
-    assert "partont" in eventParticipantsDict
-    assert eventParticipantsDict["partont"] == 1
+    assert "khatts" in eventParticipantsDict
+    assert eventParticipantsDict["khatts"] == 2
 
 @pytest.mark.integration
 def test_getEventParticipantsWithWrongParticipant():
