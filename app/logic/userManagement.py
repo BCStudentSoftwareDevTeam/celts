@@ -54,7 +54,6 @@ def hasPrivilege(user, program):
     else:
         return False
 
-<<<<<<< HEAD
 def addNextTerm():
     newSemesterMap = {"Spring":"Summer",
                     "Summer":"Fall",
@@ -79,7 +78,6 @@ def addNextTerm():
     newTerm.save()
 
     return newTerm
-=======
+
 def getPrograms():
     return Program.select().join(StudentManager).where(StudentManager.user==g.current_user).order_by(Program.programName)
->>>>>>> 668293c51263165dcb8c8572c28d9300d27248a2

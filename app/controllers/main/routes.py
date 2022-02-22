@@ -64,10 +64,6 @@ def profilePage(username):
         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
         studentManagerPrograms = list(StudentManager.select().where(StudentManager.user==profileUser))
         permissionPrograms = [entry.program.id for entry in studentManagerPrograms]
-<<<<<<< HEAD
-
-=======
->>>>>>> 668293c51263165dcb8c8572c28d9300d27248a2
         allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == profileUser))
         completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
         backgroundTypes = list(BackgroundCheckType.select())

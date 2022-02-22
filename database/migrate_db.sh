@@ -25,10 +25,7 @@ pem add app.models.eventRsvp.EventRsvp
 pem add app.models.studentManager.StudentManager
 pem add app.models.backgroundCheck.BackgroundCheck
 pem add app.models.backgroundCheckType.BackgroundCheckType
-<<<<<<< HEAD
 
-=======
->>>>>>> 668293c51263165dcb8c8572c28d9300d27248a2
 
 pem watch
 pem migrate
