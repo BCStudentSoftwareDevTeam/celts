@@ -128,7 +128,7 @@ def test_banUser():
 @pytest.mark.integration
 def test_unbanUser():
 
-    #test for banning a user from a program
+    #test for unbanning a user from a program
     username = "khatts"
     program_id = 2
     note = "unbanning user test"
@@ -136,7 +136,7 @@ def test_unbanUser():
     status = unbanUser (program_id, username, note, creator)
     assert status == "Successfully unbanned the user"
 
-    #test for banning a user from a program with different program is
+    #test for unbanning a user from a program with different program
     program_id = 3
     status = unbanUser (program_id, username, note, creator)
     assert status == "Successfully unbanned the user"

@@ -3,6 +3,9 @@
   {{super()}}
   <script src="/static/js/volunteerProfile.js"></script>
 {% endblock %}
+{% block styles %}
+  {{super()}}
+{% endblock %}
 {% block app_content %}
 <div>
 <h1 align="center">{{g.current_user.firstName}} {{g.current_user.lastName}}</h1>
