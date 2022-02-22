@@ -9,25 +9,16 @@
 {% endblock %}
 
 {% block app_content %}
-<style>
-    .list-group-indent {
-        padding-left: 2rem;
-    }
-    .list-group {
-        max-width: 400px;
-    }
-</style>
-
-<h2 class="text-center mt-5">Choose Event Type</h2>
-<div class="list-group m-auto">
-  <a href="#" class="list-group-item disabled" tabindex="-1" aria-disabled="true">Templated Events</a>
+<h1 class="text-center mt-5 mb-5">Choose Event Type</h1>
+<div class="card m-auto" style="width: 400px;">
+  <div class="card-header">Templated Events</div>
   {% for template in templates %}
-  <a href="/event/{{template.id}}/create" class="list-group-item list-group-item-action list-group-indent">{{ template.name }}</a>
+  <a href="/event/{{template.id}}/create" class="list-group-item list-group-item-action">{{ template.name }}</a>
   {% endfor %}
 
-  <a href="#" class="list-group-item disabled" tabindex="-1" aria-disabled="true">Single Program Events</a>
+  <div class="card-header">Single Program Events</div>
   {% for program in programs %}
-  <a href="/event/1/{{program.id}}/create" class="list-group-item list-group-item-action list-group-indent">{{ program.programName }}</a>
+  <a href="/event/1/{{program.id}}/create" class="list-group-item list-group-item-action">{{ program.programName }}</a>
   {% endfor %}
 </div>
 {% endblock %}
