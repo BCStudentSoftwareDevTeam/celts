@@ -123,16 +123,17 @@ def test_invalidTermInputs():
 @pytest.mark.integration
 def test_addNextTerm():
     with mainDB.atomic() as transaction:
-        testTerm = Term.create(description="Fall 2022",year=2022, academicYear= "2022-2023", isSummer=False,isCurrentTerm=False)
+        testTerm = Term.create(description="Summer 2022",year=2022, academicYear= "2021-2022", isSummer=True,isCurrentTerm=True)
         testTerm.save()
 
-        newTerm = addNextTerm()
-        assert newTerm.description == "Spring 2023"
+        addNextTerm()
 
-        # test to make sure we're using the db properly at least once
+        # for the first test,  make sure we're using the db properly
         terms = list(Term.select().order_by(Term.id))
         newTerm = terms[-1]
-        assert newTerm.description == "Spring 2023"
+        assert newTerm.description == "Fall 2022"
+        assert newTerm.year == 2022
+        assert newTerm.academicYear == "2022-2023"
         assert not newTerm.isSummer
         assert not newTerm.isCurrentTerm
 
@@ -145,7 +146,10 @@ def test_addNextTerm():
 
         newTerm = addNextTerm()
         assert newTerm.description == "Spring 2030"
+        assert newTerm.year == 2030
+        assert newTerm.academicYear == "2029-2030"
         assert not newTerm.isSummer
+        assert not newTerm.isCurrentTerm
 
         transaction.rollback()
 
@@ -156,6 +160,9 @@ def test_addNextTerm():
 
         newTerm = addNextTerm()
         assert newTerm.description == "Summer 2022"
+        assert newTerm.year == 2022
+        assert newTerm.academicYear == "2021-2022"
         assert newTerm.isSummer
+        assert not newTerm.isCurrentTerm
 
         transaction.rollback()
