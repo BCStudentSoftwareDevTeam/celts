@@ -272,7 +272,7 @@ events = [
         "term": 1,
         "name": "Hunger Hurts",
         "description": "Will donate Food to Community",
-        "isTraining": True,
+        "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Berea Community School",
@@ -332,7 +332,7 @@ events = [
         "term": 3,
         "name": "Empty Bowl with Community",
         "description": "Open to Berea community",
-        "isTraining": True,
+        "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Berea Community Park",
@@ -655,6 +655,16 @@ questionNote = [
 QuestionNote.insert_many(questionNote).on_conflict_replace().execute()
 
 eventParticipants = [
+    {
+        "user": "neillz",
+        "event": 1,
+        "hoursEarned": 2
+    },
+    {
+        "user": "khatts",
+        "event": 1,
+        "hoursEarned": 2
+    },
     {
         "user": "neillz",
         "event": 2,
