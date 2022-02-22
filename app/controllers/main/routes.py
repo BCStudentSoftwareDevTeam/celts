@@ -1,9 +1,13 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for
 import datetime
 
+
+
 from app import app
 from app.models.program import Program
 from app.models.event import Event
+from app.models.backgroundCheck import BackgroundCheck
+from app.models.backgroundCheckType import BackgroundCheckType
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
@@ -60,6 +64,12 @@ def profilePage(username):
         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
         studentManagerPrograms = list(StudentManager.select().where(StudentManager.user==profileUser))
         permissionPrograms = [entry.program.id for entry in studentManagerPrograms]
+
+        allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == profileUser))
+        completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
+        backgroundTypes = list(BackgroundCheckType.select())
+
+
         return render_template('/volunteer/volunteerProfile.html',
                                title="Volunteer Interest",
                                user = profileUser,
@@ -68,7 +78,9 @@ def profilePage(username):
                                interests_ids = interests_ids,
                                upcomingEvents = upcomingEvents,
                                rsvpedEvents = rsvpedEvents,
-                               permissionPrograms = permissionPrograms
+                               permissionPrograms = permissionPrograms,
+                               backgroundTypes = backgroundTypes,
+                               completedBackgroundCheck = completedBackgroundCheck
                                )
     except Exception as e:
         print(e)
@@ -174,3 +186,20 @@ def searchUser(query):
 @main_bp.route('/contributors',methods = ['GET'])
 def contributors():
     return render_template("/contributors.html")
+
+
+
+@main_bp.route('/manageservicelearning', methods = ['GET'])
+def getAllCourseIntructors():
+    """
+    This function selects all the Intructors Name and the previous courses
+    """
+    users = User.select().where(User.isFaculty)
+    courseInstructors = CourseInstructor.select()
+    course_dict = {}
+
+    for i in courseInstructors:
+        course_dict.setdefault(i.user.firstName + " " + i.user.lastName, []).append(i.course.courseName)
+
+
+    return render_template('/main/manageServiceLearningFaculty.html',courseInstructors = course_dict)

@@ -29,6 +29,7 @@ from app.controllers.admin.userManagement import manageUsers
 from app.logic.userManagement import hasPrivilege
 
 
+
 @admin_bp.route('/switch_user', methods=['POST'])
 def switchUser():
     if app.env == "production":

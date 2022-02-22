@@ -5,6 +5,7 @@ from app.models.user import User
 from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff, addProgramManager, removeProgramManager
 from app.logic.userManagement import changeCurrentTerm
 from app.logic.utils import selectSurroundingTerms
+from app.logic.userManagement import addNextTerm
 from app.models.term import Term
 
 @admin_bp.route('/admin/manageUsers', methods = ['POST'])
@@ -71,4 +72,9 @@ def changeTerm():
     except:
         flash('Error. Current term request unsuccessful', 'warning')
 
+    return ""
+
+@admin_bp.route('/admin/addNewTerm', methods = ['POST'])
+def addNewTerm():
+    addNextTerm()
     return ""

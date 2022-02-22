@@ -65,6 +65,7 @@
           <a href="https://www.berea.edu/celts/community-service-programs/volunteer-opportunities/">For more information click here.</a>
         </small>
       </div>
+
   </div>
 {% if g.current_user.isCeltsAdmin%}
 <!-- This makes sure that the CeltsAdmins can make someone program manger or not.  -->
@@ -107,4 +108,39 @@
 
 </div>
 
+  <div class="row">
+    <div>
+      <table class="table">
+   <thead>
+     <tr>
+       <th scope="col">Description</th>
+       <th scope="col">Completed</th>
+     </tr>
+   </thead>
+   <tbody>
+
+     {% for entry in backgroundTypes%}
+     <tr>
+       <td>{{entry.description}}</td>
+       {%if g.current_user.isCeltsAdmin%}
+         <td>
+           <select id="{{entry.id}}" onchange="updateBackgroundCheck({{user.username}} , this.id)">
+             <option value=1>Yes</option>
+             <option value=0 {{"selected" if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False}}>No</option>
+           </select>
+         </td>
+       {% else %}
+         {% if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False%}
+            <td>No</td>
+         {% else%}
+             <td>Yes</td>
+         {% endif%}
+        {% endif %}
+     </tr>
+     {%endfor%}
+   </tbody>
+ </table>
+  </div>
+  </div>
+</div>
   {% endblock %}
