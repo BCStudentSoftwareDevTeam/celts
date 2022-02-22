@@ -25,6 +25,7 @@ from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
 
+
 @admin_bp.route('/switch_user', methods=['POST'])
 def switchUser():
     if app.env == "production":

@@ -3,15 +3,11 @@
   {{super()}}
   <script src="/static/js/volunteerProfile.js"></script>
 {% endblock %}
-{% block styles %}
-  {{super()}}
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
-{% endblock %}
 {% block app_content %}
 <div>
-<h1 align="center">{{volunteer.firstName}} {{volunteer.lastName}}</h1>
-<h6 align="center">{{volunteer.email}}</h6>
-<h6 align="center">{{volunteer.phoneNumber}}</h6>
+<h1 align="center">{{g.current_user.firstName}} {{g.current_user.lastName}}</h1>
+<h6 align="center">{{g.current_user.email}}</h6>
+<h6 align="center">{{g.current_user.phoneNumber}}</h6>
 </div>
 <div class="btn-group">
    <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="tabs-tab" role="tablist">
@@ -19,7 +15,7 @@
        <a class="nav-link active" href="#">Upcoming Events</a>
      </li>
      <li class="nav-item">
-       <a class="nav-link" aria-current="page" href="/{{volunteer.username}}/serviceTranscript">Service Transcript</a>
+       <a class="nav-link" aria-current="page" href="/{{g.current_user.username}}/serviceTranscript">Service Transcript</a>
      </li>
    </ul>
  </div><br><br>
@@ -67,7 +63,7 @@
               {% for program in eligibilityTable %}
               <tr>
                 <td id="programNameTable">{{program.program.programName}}</td>
-                <td><input class="form-check-input" type="checkbox" id="{{program.program.id}}" name="{{volunteer.username}}" {% if program.program in programsInterested %} checked {% endif %}></td>
+                <td><input class="form-check-input" type="checkbox" id="{{program.program.id}}" name="{{g.current_user.username}}" {% if program.program in programsInterested %} checked {% endif %}></td>
                 <td>{% if program.completedTraining == True %}<i class="bi bi-check-lg"></i> {% else %} <i class="bi bi-x-lg"></i>{% endif %}</td>
                 {% if g.current_user.isCeltsAdmin %}
                 <td class="programBan">
@@ -83,8 +79,7 @@
 </div>
 <!-- End Program Elegibility Table -->
 
-
-{{volunteer.firstName}}
+<!-- Start Background Check Table -->
 
 <div class="row">
   <div>
@@ -96,13 +91,12 @@
    </tr>
  </thead>
  <tbody>
-
    {% for entry in backgroundTypes%}
    <tr>
      <td>{{entry.description}}</td>
      {%if g.current_user.isCeltsAdmin%}
        <td>
-         <select class="backgroundCheck" id="{{entry.id}}" volunteer="{{volunteer.username}}" >
+         <select class="backgroundCheck" id="{{entry.id}}" volunteer="{{g.current_user.username}}" >
            <option value=1>Yes</option>
            <option value=0 {{"selected" if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False}}>No</option>
          </select>
@@ -120,7 +114,7 @@
 </table>
 </div>
 </div>
-
+<!-- End Background Check Table -->
 
 <!-- Ban or Unban Modal -->
 <div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
@@ -131,9 +125,9 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body" style="align=center">
-        <h6 align="left">{{volunteer.firstName}} {{volunteer.lastName}}</h6>
-        <h6 align="left">{{volunteer.email}}</h6>
-        <h6 align="left"><a href="tel:{{volunteer.phoneNumber}}">{{volunteer.phoneNumber}}</a></h6>
+        <h6 align="left">{{g.current_user.firstName}} {{g.current_user.lastName}}</h6>
+        <h6 align="left">{{g.current_user.email}}</h6>
+        <h6 align="left"><a href="tel:{{g.current_user.phoneNumber}}">{{g.current_user.phoneNumber}}</a></h6>
         <div id="banNoteDiv">
           <h6 align="left">Reason for ban:</h6>
           <p align="left" id="banNote">Why the student was banned</p>

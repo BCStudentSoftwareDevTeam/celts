@@ -58,12 +58,11 @@ def viewVolunteersProfile(username):
         User.get(User.username == username)
     except Exception as e:
         return "User does not exist", 404
-    if (g.current_user.username == username) or g.current_user.isAdmin:
+    if (g.current_user == username) or g.current_user.isAdmin:
          upcomingEvents = getUpcomingEventsForUser(username)
          programs = Program.select()
          interests = Interest.select().where(Interest.user == username)
          programsInterested = [interest.program for interest in interests]
-         print("===============", username, type(username))
          allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == username))
          completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
          backgroundTypes = list(BackgroundCheckType.select())
@@ -79,12 +78,10 @@ def viewVolunteersProfile(username):
                                    "isNotBanned" : isEligibleForProgram(program, username),
                                    "banNote": noteForDict})
          return render_template ("/main/volunteerProfile.html",
-            # programs = programs,
-            # interests = interests,
             programsInterested = programsInterested,
             upcomingEvents = upcomingEvents,
             eligibilityTable = eligibilityTable,
-            volunteer = User.get(User.username == username),
+            # volunteer = User.get(User.username == username),
             backgroundTypes = backgroundTypes,
             completedBackgroundCheck = completedBackgroundCheck
             )
@@ -102,7 +99,7 @@ def ban(program_id, username):
     banNote = postData["note"] # This contains the note left about the change
     banEndDate = postData["endDate"] # Contains the date the ban will no longer be effective
     try:
-        flash("Successfully banned user", "success")
+        # flash("Successfully banned user", "success")
         return banUser(program_id, username, banNote, banEndDate, g.current_user)
     except Exception as e:
         print("Error  while updating ban", e)
@@ -119,7 +116,7 @@ def unban(program_id, username):
     postData = request.form
     unbanNote = postData["note"] # This contains the note left about the change
     try:
-        flash("Successfully Unbanned user", "success")
+        # flash("Successfully Unbanned user", "success")
         return unbanUser(program_id, username, unbanNote, g.current_user)
 
     except Exception as e:
@@ -135,35 +132,7 @@ def addInterest(program_id, username):
     username: unique value of a user to correctly identify them
     """
     try:
-# <<<<<<< HEAD
         return addUserInterest(program_id, username)
-
-# =======
-#         profileUser = User.get(User.username == username)
-#         upcomingEvents = getUpcomingEventsForUser(username)
-#         programs = Program.select()
-#         interests = Interest.select().where(Interest.user == profileUser)
-#         interests_ids = [interest.program.id for interest in interests]
-#         rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == profileUser)
-#         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
-#
-#         allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == profileUser))
-#         completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
-#         backgroundTypes = list(BackgroundCheckType.select())
-#
-#
-#         return render_template('/volunteer/volunteerProfile.html',
-#                                title="Volunteer Interest",
-#                                user = profileUser,
-#                                programs = programs,
-#                                interests = interests,
-#                                interests_ids = interests_ids,
-#                                upcomingEvents = upcomingEvents,
-#                                rsvpedEvents = rsvpedEvents,
-#                                backgroundTypes = backgroundTypes,
-#                                completedBackgroundCheck = completedBackgroundCheck
-#                                )
-# >>>>>>> development
     except Exception as e:
         print(e)
         return "Error Updating Interest", 500
@@ -266,3 +235,20 @@ def searchUser(query):
 @main_bp.route('/contributors',methods = ['GET'])
 def contributors():
     return render_template("/contributors.html")
+
+
+
+@main_bp.route('/manageservicelearning', methods = ['GET'])
+def getAllCourseIntructors():
+    """
+    This function selects all the Intructors Name and the previous courses
+    """
+    users = User.select().where(User.isFaculty)
+    courseInstructors = CourseInstructor.select()
+    course_dict = {}
+
+    for i in courseInstructors:
+        course_dict.setdefault(i.user.firstName + " " + i.user.lastName, []).append(i.course.courseName)
+
+
+    return render_template('/main/manageServiceLearningFaculty.html',courseInstructors = course_dict)
