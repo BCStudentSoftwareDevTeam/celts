@@ -69,6 +69,9 @@ app.register_blueprint(events_bp)
 
 from app.controllers.main import main_bp as main_bp
 app.register_blueprint(main_bp)
+
+from app.controllers.serviceLearning import serviceLearning_bp as serviceLearning_bp
+app.register_blueprint(serviceLearning_bp)
 ##################################
 
 # Make 'ENV' a variable everywhere
@@ -86,15 +89,17 @@ from app.logic.loginManager import getLoginUser
 from flask import g
 @app.before_request
 def load_user():
-    if 'current_user' not in session:
+    # An exception handles both current_user not being set and a mismatch between models
+    try:
+        g.current_user = dict_to_model(User,session['current_user'])
+    except Exception as e:
         session['current_user'] = model_to_dict(getLoginUser())
-
-    g.current_user = dict_to_model(User,session['current_user'])
 
 from app.logic.loginManager import getCurrentTerm
 @app.before_request
 def load_currentTerm():
-    if 'current_term' not in session:
+    # An exception handles both current_term not being set and a mismatch between models
+    try: 
+        g.current_term = dict_to_model(Term,session['current_term'])
+    except Exception as e:
         session['current_term'] = model_to_dict(getCurrentTerm())
-
-    g.current_term = dict_to_model(Term,session['current_term'])

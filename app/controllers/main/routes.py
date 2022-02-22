@@ -6,6 +6,8 @@ import datetime
 from app import app
 from app.models.program import Program
 from app.models.event import Event
+from app.models.backgroundCheck import BackgroundCheck
+from app.models.backgroundCheckType import BackgroundCheckType
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
@@ -60,6 +62,11 @@ def profilePage(username):
         rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == profileUser)
         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
 
+        allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == profileUser))
+        completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
+        backgroundTypes = list(BackgroundCheckType.select())
+
+
         return render_template('/volunteer/volunteerProfile.html',
                                title="Volunteer Interest",
                                user = profileUser,
@@ -67,7 +74,10 @@ def profilePage(username):
                                interests = interests,
                                interests_ids = interests_ids,
                                upcomingEvents = upcomingEvents,
-                               rsvpedEvents = rsvpedEvents)
+                               rsvpedEvents = rsvpedEvents,
+                               backgroundTypes = backgroundTypes,
+                               completedBackgroundCheck = completedBackgroundCheck
+                               )
     except Exception as e:
         print(e)
         return "Error retrieving user profile", 500
