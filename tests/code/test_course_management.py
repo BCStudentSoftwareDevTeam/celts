@@ -33,8 +33,8 @@ def test_course_management():
                                                     user = 'ramsayb2')
 
         termId = 3
-        pending, pendingInstructor = pendingCourses(termId)
-        approved, approveInstructor = approvedCourses(termId)
+        pending = pendingCourses(termId)
+        approved = approvedCourses(termId)
         pendingCourse = []
         approvedCourse = []
         for courses in pending:

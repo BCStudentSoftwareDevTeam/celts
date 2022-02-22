@@ -3,7 +3,6 @@ $(document).ready(function(){
     var programID = $(this).attr('id');
     var interest = $(this).is(':checked');
     var username = $(this).attr('name');
-
     var routeUrl = interest ? "addInterest" : "removeInterest";
     interestUrl = "/" + username + "/" + routeUrl + "/" + programID ;
     $.ajax({
@@ -81,4 +80,27 @@ $(document).ready(function(){
       }
     });
   });
+
+
+  $(".backgroundCheck").change(function () { // Updates the Background check of a volunteer in the database
+    let data = {
+        checkPassed : $(this).val(), //Expected to be either a 0 or a 1
+        user: $(this).attr("volunteer"), //Expected to be the username of a volunteer in the database
+        bgType: $(this).attr("id") // Expected to be the ID of a background check in the database
+    }
+    $.ajax({
+      url: "/updateBackgroundCheck",
+      type: "POST",
+      data: data,
+      success: function(s){
+        location.reload()
+      },
+      error: function(error, status){
+          console.log(error, status)
+      }
+
+    })
+
+  });
+
 });

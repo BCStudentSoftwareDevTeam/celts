@@ -19,6 +19,7 @@ from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, t
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
+from app.logic.volunteers import setUserBackgroundCheck
 
 @main_bp.route('/', methods=['GET'])
 @main_bp.route('/events/<selectedTerm>', methods=['GET'])
@@ -62,6 +63,10 @@ def viewVolunteersProfile(username):
          programs = Program.select()
          interests = Interest.select().where(Interest.user == username)
          programsInterested = [interest.program for interest in interests]
+         print("===============", username, type(username))
+         allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == username))
+         completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
+         backgroundTypes = list(BackgroundCheckType.select())
          eligibilityTable = []
          for program in programs:
               notes = ProgramBan.select().where(ProgramBan.user == username,
@@ -74,12 +79,15 @@ def viewVolunteersProfile(username):
                                    "isNotBanned" : isEligibleForProgram(program, username),
                                    "banNote": noteForDict})
          return render_template ("/main/volunteerProfile.html",
-            programs = programs,
-            interests = interests,
+            # programs = programs,
+            # interests = interests,
             programsInterested = programsInterested,
             upcomingEvents = upcomingEvents,
             eligibilityTable = eligibilityTable,
-            volunteer = User.get(User.username == username))
+            volunteer = User.get(User.username == username),
+            backgroundTypes = backgroundTypes,
+            completedBackgroundCheck = completedBackgroundCheck
+            )
     abort(403)
 
 
@@ -127,8 +135,6 @@ def addInterest(program_id, username):
     username: unique value of a user to correctly identify them
     """
     try:
-        return addUserInterest(program_id, username)
-
         profileUser = User.get(User.username == username)
         upcomingEvents = getUpcomingEventsForUser(username)
         programs = Program.select()
@@ -153,6 +159,9 @@ def addInterest(program_id, username):
                                backgroundTypes = backgroundTypes,
                                completedBackgroundCheck = completedBackgroundCheck
                                )
+
+        return addUserInterest(program_id, username)
+        
     except Exception as e:
         print(e)
         return "Error Updating Interest", 500
