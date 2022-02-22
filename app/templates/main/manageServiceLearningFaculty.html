@@ -13,24 +13,28 @@
     <a class="skipContent" href="#backButton" tabindex="1" style="top:8%">Click to Skip</a>
     <div class="contributors" align="center">
       <h2> Manage Service Learning Faculty </h2>
-  <table class="table table-striped" id="myTable">
-    <thead>
-    <tr class="header">
-    <th scope = "col">Name</th>
-    <th scope = "col">Prev Classes</th>
-    </tr>
-    </thead>
-  <tbody id = "facultyTable">
-  {% for instructor in courseInstructors%}
-  <tr>
+       <table class="table table-striped" id="myTable">
+        <thead>
+          <tr class="header">
+          <th scope = "col">Name</th>
+          <th scope = "col">Prev Classes</th>
+          </tr>
+        </thead>
+        <tbody id = "facultyTable">
+          {% for instructor in courseInstructors%}
+            <tr>
 
-    <td> <a href=" /courseManagement" class="link-primary">{{instructor}}</a></td>
-    <td>{{(', '.join(courseInstructors[instructor]))}}</td>
+              <td> <a href=" /courseManagement" class="link-primary">{{instructor}}</a></td>
+              <td>{{(', '.join(courseInstructors[instructor]))}}</td>
 
-  </tr>
-  {% endfor %}
-  </tbody>
-  </table>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+     </div>
+  </div>
+</div>
+
 
 <div>
   <button type="button" class="btn btn-primary" disabled> Email all</button>
