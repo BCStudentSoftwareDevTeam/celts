@@ -135,6 +135,8 @@ def addInterest(program_id, username):
     username: unique value of a user to correctly identify them
     """
     try:
+        return addUserInterest(program_id, username)
+
         profileUser = User.get(User.username == username)
         upcomingEvents = getUpcomingEventsForUser(username)
         programs = Program.select()
@@ -161,7 +163,7 @@ def addInterest(program_id, username):
                                )
 
         return addUserInterest(program_id, username)
-        
+
     except Exception as e:
         print(e)
         return "Error Updating Interest", 500
