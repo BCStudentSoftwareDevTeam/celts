@@ -50,16 +50,17 @@ def updateProgramManagers():
             addProgramManager(eventData['userID'],int(eventData['programID']))
         except:
             flash('Error while trying to add a manager.')
+            return 500
     elif int(eventData['status']) == 1:
         try:
             removeProgramManager(eventData['userID'],int(eventData['programID']))
         except:
             flash('Error while trying to remove a manager.')
+            return 500
     else:
         flash('Error while removing a manager.')
+        return 500
     return ""
-
-
 
 
 @admin_bp.route('/admin', methods = ['GET'])

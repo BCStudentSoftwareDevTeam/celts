@@ -43,16 +43,21 @@ def test_modifyCeltsStudentStaff():
 @pytest.mark.integration
 def test_modifyStudentManager():
     current_user = User.get(User.username=="mupotsal")
+
     # testing removing a student manager from a program
     currentManagerStatus = StudentManager.get(user="mupotsal",program=2)
     assert currentManagerStatus.program.id ==2
+    
     removeProgramManager("mupotsal",2)
     assert hasPrivilege("mupotsal", 2) == False
+
     # testing adding student Manager to a program
     currentManagerStatus = StudentManager.select().where(StudentManager.user=="mupotsal",StudentManager.program ==2)
     assert currentManagerStatus.exists() == False
+
     addProgramManager("mupotsal",2)
     assert hasPrivilege("mupotsal", 2) == True
+
     currentManagerStatus = StudentManager.get(user="mupotsal",program=2)
     assert currentManagerStatus.program.id ==2
 
