@@ -1,6 +1,8 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for
 import datetime
 
+
+
 from app import app
 from app.models.program import Program
 from app.models.event import Event
@@ -180,3 +182,20 @@ def searchUser(query):
 @main_bp.route('/contributors',methods = ['GET'])
 def contributors():
     return render_template("/contributors.html")
+
+
+
+@main_bp.route('/manageservicelearning', methods = ['GET'])
+def getAllCourseIntructors():
+    """
+    This function selects all the Intructors Name and the previous courses
+    """
+    users = User.select().where(User.isFaculty)
+    courseInstructors = CourseInstructor.select()
+    course_dict = {}
+
+    for i in courseInstructors:
+        course_dict.setdefault(i.user.firstName + " " + i.user.lastName, []).append(i.course.courseName)
+
+
+    return render_template('/main/manageServiceLearningFaculty.html',courseInstructors = course_dict)
