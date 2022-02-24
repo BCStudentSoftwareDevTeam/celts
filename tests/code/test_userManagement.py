@@ -47,7 +47,7 @@ def test_modifyStudentManager():
     # testing removing a student manager from a program
     currentManagerStatus = StudentManager.get(user="mupotsal",program=2)
     assert currentManagerStatus.program.id ==2
-    
+
     removeProgramManager("mupotsal",2)
     assert hasPrivilege("mupotsal", 2) == False
 

@@ -25,6 +25,7 @@ $(document).ready(function() {
 
 
 function updateManagers(el,user,status){
+
   let data = {
       programID : el.id,
       userID : (user[0].id),
@@ -37,7 +38,6 @@ function updateManagers(el,user,status){
     data: data,
     success: function(s){
         location.reload()
-<<<<<<< HEAD
       },
       error: function(error, status){
           console.log(error, status)
@@ -45,15 +45,8 @@ function updateManagers(el,user,status){
     })
   }
 
-=======
-      }
-
-    })
-
-  }
 
 
->>>>>>> 668293c51263165dcb8c8572c28d9300d27248a2
 function updateBackgroundCheck(user,bgType){
   let checkPassed = $( "#"+bgType).val();
   let data = {
@@ -70,14 +63,6 @@ function updateBackgroundCheck(user,bgType){
     },
     error: function(error, status){
         console.log(error, status)
-<<<<<<< HEAD
       }
     })
   }
-=======
-    }
-
-  })
-
-}
->>>>>>> 668293c51263165dcb8c8572c28d9300d27248a2
