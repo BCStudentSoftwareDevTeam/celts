@@ -25,6 +25,7 @@ $(document).ready(function() {
 
 
 function updateManagers(el,user,status){
+
   let data = {
       programID : el.id,
       userID : (user[0].id),
@@ -37,11 +38,13 @@ function updateManagers(el,user,status){
     data: data,
     success: function(s){
         location.reload()
-      }
-
+      },
+      error: function(error, status){
+          console.log(error, status)
+        }
     })
-
   }
+
 
 
 function updateBackgroundCheck(user,bgType){
@@ -60,8 +63,6 @@ function updateBackgroundCheck(user,bgType){
     },
     error: function(error, status){
         console.log(error, status)
-    }
-
-  })
-
-}
+      }
+    })
+  }

@@ -22,7 +22,6 @@ from app.models.facilitator import Facilitator
 from app.models.note import Note
 from app.models.studentManager import StudentManager
 from app.models.backgroundCheck import BackgroundCheck
-# from app.models.backgroundCheckType import BackgroundCheckType
 
 
 print("Inserting data for demo and testing purposes.")
@@ -793,6 +792,7 @@ studentManagerPrograms = [
 ]
 
 StudentManager.insert_many(studentManagerPrograms).on_conflict_replace().execute()
+
 background = [
 
     {

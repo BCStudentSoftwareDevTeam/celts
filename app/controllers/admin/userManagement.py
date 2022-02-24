@@ -57,9 +57,7 @@ def updateProgramManagers():
             flash('Error while trying to remove a manager.')
     else:
         flash('Error while removing a manager.')
-    return ""
-
-
+    abort(500)
 
 
 @admin_bp.route('/admin', methods = ['GET'])
