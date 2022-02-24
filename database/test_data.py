@@ -139,7 +139,6 @@ terms = [
         "description": "Spring A 2021",
         "year": 2021,
         "academicYear": "2020-2021",
-        "isBreak": False,
         "isSummer": False,
         "isCurrentTerm": False
     },
@@ -148,7 +147,6 @@ terms = [
         "description": "Spring B 2021",
         "year": 2021,
         "academicYear": "2020-2021",
-        "isBreak": False,
         "isSummer": False,
         "isCurrentTerm": False
     },
@@ -157,7 +155,6 @@ terms = [
         "description": "Summer 2021",
         "year": 2021,
         "academicYear": "2020-2021",
-        "isBreak": False,
         "isSummer": True,
         "isCurrentTerm": True
     },
@@ -166,29 +163,17 @@ terms = [
         "description": "Fall 2021",
         "year": 2021,
         "academicYear": "2021-2022",
-        "isBreak": False,
         "isSummer": False,
         "isCurrentTerm": False
     },
     {
         "id": 5,
         "description": "Spring 2022",
-        "year": 2021,
+        "year": 2022,
         "academicYear": "2021-2022",
-        "isBreak": True,
         "isSummer": False,
         "isCurrentTerm": False
     },
-    {
-        "id": 6,
-        "description": "Spring 2024",
-        "year": 2024,
-        "academicYear": "2023-2024",
-        "isBreak": False,
-        "isSummer": False,
-        "isCurrentTerm": False
-    },
-
 
 ]
 Term.insert_many(terms).on_conflict_replace().execute()
@@ -275,7 +260,7 @@ events = [
         "term": 1,
         "name": "Hunger Hurts",
         "description": "Will donate Food to Community",
-        "isTraining": True,
+        "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Berea Community School",
@@ -335,7 +320,7 @@ events = [
         "term": 3,
         "name": "Empty Bowl with Community",
         "description": "Open to Berea community",
-        "isTraining": True,
+        "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Berea Community Park",
@@ -658,6 +643,16 @@ questionNote = [
 QuestionNote.insert_many(questionNote).on_conflict_replace().execute()
 
 eventParticipants = [
+    {
+        "user": "neillz",
+        "event": 1,
+        "hoursEarned": 2
+    },
+    {
+        "user": "khatts",
+        "event": 1,
+        "hoursEarned": 2
+    },
     {
         "user": "neillz",
         "event": 2,

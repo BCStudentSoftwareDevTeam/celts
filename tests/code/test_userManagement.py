@@ -1,6 +1,9 @@
 import pytest
 from app.logic.userManagement import *
 from app.models.studentManager import StudentManager
+from app.models.user import User
+from app.models.term import Term
+
 from peewee import DoesNotExist
 from flask import g
 @pytest.mark.integration
@@ -35,6 +38,7 @@ def test_modifyCeltsStudentStaff():
         addCeltsStudentStaff("asdf")
     with pytest.raises(DoesNotExist):
         removeCeltsStudentStaff("1234")
+<<<<<<< HEAD
 
 @pytest.mark.integration
 def test_modifyStudentManager():
@@ -74,3 +78,5 @@ def test_invalidTermInputs():
         changeCurrentTerm(100)
     with pytest.raises(DoesNotExist):
         changeCurrentTerm("womp")
+=======
+>>>>>>> development

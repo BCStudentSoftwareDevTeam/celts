@@ -89,15 +89,21 @@ from app.logic.loginManager import getLoginUser
 from flask import g
 @app.before_request
 def load_user():
-    if 'current_user' not in session:
-        session['current_user'] = model_to_dict(getLoginUser())
-
-    g.current_user = dict_to_model(User,session['current_user'])
+    # An exception handles both current_user not being set and a mismatch between models
+    try:
+        g.current_user = dict_to_model(User,session['current_user'])
+    except Exception as e:
+        user = getLoginUser()
+        session['current_user'] = model_to_dict(user)
+        g.current_user = user
 
 from app.logic.loginManager import getCurrentTerm
 @app.before_request
 def load_currentTerm():
-    if 'current_term' not in session:
-        session['current_term'] = model_to_dict(getCurrentTerm())
-
-    g.current_term = dict_to_model(Term,session['current_term'])
+    # An exception handles both current_term not being set and a mismatch between models
+    try:
+        g.current_term = dict_to_model(Term, session['current_term'])
+    except Exception as e:
+        term = getCurrentTerm()
+        session['current_term'] = model_to_dict(term)
+        g.current_term = term
