@@ -55,7 +55,7 @@ def viewVolunteersProfile(username):
     This function displays the information of a volunteer to the user
     """
     try:
-        User.get(User.username == username)
+        volunteer = User.get(User.username == username)
     except Exception as e:
         return "User does not exist", 404
     if (g.current_user == username) or g.current_user.isAdmin:
@@ -81,13 +81,13 @@ def viewVolunteersProfile(username):
             programsInterested = programsInterested,
             upcomingEvents = upcomingEvents,
             eligibilityTable = eligibilityTable,
-            # volunteer = User.get(User.username == username),
+            volunteer = volunteer,
             backgroundTypes = backgroundTypes,
             completedBackgroundCheck = completedBackgroundCheck
             )
     abort(403)
 
-
+# ===========================Ban===============================================
 @main_bp.route('/<username>/ban/<program_id>', methods=['POST'])
 def ban(program_id, username):
     """
@@ -99,11 +99,13 @@ def ban(program_id, username):
     banNote = postData["note"] # This contains the note left about the change
     banEndDate = postData["endDate"] # Contains the date the ban will no longer be effective
     try:
-        # flash("Successfully banned user", "success")
-        return banUser(program_id, username, banNote, banEndDate, g.current_user)
+        banUser(program_id, username, banNote, banEndDate, g.current_user)
+        flash("Successfully banned the volunteer", "success")
+        return ""
     except Exception as e:
         print("Error  while updating ban", e)
-        return "", 500
+        flash("Failed to ban the volunteer", "danger")
+        return "Failed to ban the volunteer", 500
 
 # ===========================Unban===============================================
 @main_bp.route('/<username>/unban/<program_id>', methods=['POST'])
@@ -116,12 +118,14 @@ def unban(program_id, username):
     postData = request.form
     unbanNote = postData["note"] # This contains the note left about the change
     try:
-        # flash("Successfully Unbanned user", "success")
-        return unbanUser(program_id, username, unbanNote, g.current_user)
+        unbanUser(program_id, username, unbanNote, g.current_user)
+        flash("Successfully unbanned the volunteer", "success")
+        return "Successfully unbanned the volunteer"
 
     except Exception as e:
         print("Error  while updating Unban", e)
-        return "", 500
+        flash("Failed to unban the volunteer", "danger")
+        return "Failed to unban the volunteer", 500
 
 
 @main_bp.route('/<username>/addInterest/<program_id>', methods=['POST'])

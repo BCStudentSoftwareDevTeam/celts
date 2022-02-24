@@ -58,10 +58,9 @@ def banUser(program_id, username, note, banEndDate, creator):
                              noteContent = note,
                              isPrivate = 0)
     ProgramBan.create(program = program_id,
-                      user = username,
+                      user = "username",
                       endDate = banEndDate,
                       banNote = noteForDb)
-    return "Successfully banned the user"
 
 def unbanUser(program_id, username, note, creator):
     """
@@ -81,4 +80,3 @@ def unbanUser(program_id, username, note, creator):
                       unbanNote = noteForDb).where(ProgramBan.program == program_id,
                                                    ProgramBan.user == username,
                                                    ProgramBan.endDate >  datetime.datetime.now()).execute()
-    return "Successfully unbanned the user"
