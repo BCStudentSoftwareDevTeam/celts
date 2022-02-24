@@ -34,12 +34,13 @@ async function fetchEmailLogData() {
     url: `/fetchEmailLogData/${eventId}`,
     type: 'GET',
     success: function(emailLog) {
-      if (emailLog['recipients']) {
-        log = `Email was last sent to ${emailLog['recipients']} on ${emailLog['dateSent']}`
-        $('#emailLastSent').text(log);
+      if (emailLog['exists'] == false) {
+        $('#emailLastSent').attr('hidden', true);
       }
       else {
-        $('#emailLastSent').attr('hidden', true);
+        log = `Email was last sent to ${emailLog['recipients']} on ${emailLog['dateSent']}`
+        $('#emailLastSent').text(log);
+        $('#emailLastSent').attr('hidden', false);
       }
     }
   })

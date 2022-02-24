@@ -8,7 +8,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.interest import Interest
 from app.models.user import User
 from app.models.program import Program
-from app.models.eventParticipant import EventParticipant
+from app.models.eventRsvp import EventRsvp
 from app.models.emailTemplate import EmailTemplate
 from app.models.emailLog import EmailLog
 from app.models.event import Event
@@ -65,8 +65,8 @@ class EmailHandler:
         # Non-student-led programs have "Unknown" as their id
         # ---Q: maybe this id should be changed to something more specific?
         if programId == 'Unknown':
-            programs = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event==self.event.id)
-            return [program.program for program in programs.objects()]
+            programEvents = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event==self.event.id)
+            return [program.program for program in programEvents.objects()]
         else:
             program = ProgramEvent.get_by_id(programId)
             return [program.program]
@@ -94,8 +94,8 @@ class EmailHandler:
 
         if recipients_category == "RSVP'd":
             recipients = (User.select()
-                .join(EventParticipant)
-                .where(EventParticipant.event==self.event.id))
+                .join(EventRsvp)
+                .where(EventRsvp.event==self.event.id))
 
         return [recipient for recipient in recipients]
 
