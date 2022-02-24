@@ -57,10 +57,9 @@ def changeTerm():
         termData = request.form
         term = int(termData["id"])
         changeCurrentTerm(term)
-        flash('Current term changed successfully', 'success')
+        flash(f'Current term successfully changed to {g.current_term.description}.', 'success')
     except:
-        flash('Error. Current term request unsuccessful', 'warning')
-
+        flash('Current term was not changed. Please try again.', 'warning')
     return ""
 
 @admin_bp.route('/admin/addNewTerm', methods = ['POST'])
