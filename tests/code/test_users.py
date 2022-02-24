@@ -123,6 +123,17 @@ def test_banUser():
     status = banUser (program_id, username, note, banEndDate, creator)
     assert status == "Successfully banned the user"
 
+    #test for exceptions when banning the user
+    username = "khatts"
+    program_id = 100
+    note = "Banning user test"
+    creator = "ramsayb2"
+    banEndDate = "2022-11-29"
+    with pytest.raises(Exception):
+        status = banUser (program_id, username, note, banEndDate, creator)
+        assert status == False
+
+
 
 
 @pytest.mark.integration
@@ -140,3 +151,13 @@ def test_unbanUser():
     program_id = 3
     status = unbanUser (program_id, username, note, creator)
     assert status == "Successfully unbanned the user"
+
+    #test for exceptions when unbanning the user
+    username = "ramsayb2"
+    program_id = 100
+    note = "Banning user test"
+    creator = "ramsayb2"
+    banEndDate = "2022-11-29"
+    with pytest.raises(Exception):
+        status = unbanUser (program_id, username, note, creator)
+        assert status == False
