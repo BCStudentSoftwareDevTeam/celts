@@ -89,6 +89,7 @@ def slcNewProposal():
             return redirect('/serviceLearning/courseManagement')
         else:
             updateCourse(request.form.copy())
+            return redirect('/serviceLearning/courseManagement')
 
     terms = Term.select().where(Term.year >= g.current_term.year)
     courseData = None
