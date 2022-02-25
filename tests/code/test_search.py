@@ -1,5 +1,6 @@
 import pytest
 from flask import json, jsonify
+from app.models import mainDB
 from app.logic.searchUsers import searchUsers
 #from app.controllers.admin.routes import searchVolunteers
 from app.models.user import User
@@ -33,9 +34,9 @@ def test_searchStudents():
 
 
     #test for last name
-    query = 'ramsay'
+    query = 'khatt'
     searchResults = searchUsers(query)
-    assert searchResults['Brian Ramsay (ramsayb2)'] == 'Brian Ramsay (ramsayb2)'
+    assert searchResults['Sreynit Khatt (khatts)'] == 'Sreynit Khatt (khatts)'
 
     #test with non existing username
     query = 'abc'
@@ -51,11 +52,11 @@ def test_searchStudents():
     assert len(searchResults) == 0
 
     #test with multiple users matching query
-    User.get_or_create(username = 'sawconc', firstName = 'Candace', lastName = 'Sawcon', bnumber = '021556782')
-    query = 'sa'
-    searchResults = searchUsers(query)
-    assert len(searchResults) == 2
-    assert searchResults['Sandesh Lamichhane (lamichhanes2)'] == 'Sandesh Lamichhane (lamichhanes2)'
-    assert searchResults['Candace Sawcon (sawconc)'] == 'Candace Sawcon (sawconc)'
-
-    (User.delete().where(User.username == 'sawconc')).execute()
+    with mainDB.atomic() as transaction:
+        User.get_or_create(username = 'sawconc', firstName = 'Candace', lastName = 'Sawcon', bnumber = '021556782', isStudent = True)
+        query = 'sa'
+        searchResults = searchUsers(query)
+        assert len(searchResults) == 2
+        assert searchResults['Sandesh Lamichhane (lamichhanes2)'] == 'Sandesh Lamichhane (lamichhanes2)'
+        assert searchResults['Candace Sawcon (sawconc)'] == 'Candace Sawcon (sawconc)'
+        transaction.rollback()

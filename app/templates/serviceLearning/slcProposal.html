@@ -1,4 +1,4 @@
-<h1 class="text-center pt-4 pb-2 fs-2"> New Proposal For Service Learning Course Designation </h1>
+<h2 class="text-center pt-4 pb-2"> New Proposal For Service-Learning Course Designation</h2>
 <p class="text-center fw-bold"> Please review the <a href="/serviceLearning/newProposal">service learning course guidelines</a> before completing this form </p>
 <div class="container-fluid">
   <div class="row">
@@ -11,7 +11,7 @@
         placeholder="Search instructor"
         value="" />
       <table
-        class="table"
+        class="table mb-3"
         id="instructorTable"
         name="instructorTable">
         <thead>
@@ -99,10 +99,13 @@
       </textarea>
       <span class="pt-5">Will this course be a permanently designated service learning course?</span>
       <div class="form-check form-switch">
+        <label class="form-label" for="permanentDesignation"><strong>Will this course be a permanently designated service-learning course?</strong></label>
         <input
           class="form-check-input"
           type="checkbox"
-          name="permanentDesignation" {{isPermanentlyDesignated}}/>
+          name="permanentDesignation"
+          id="permanentDesignation"
+          {{isPermanentlyDesignated}}/>
       </div>
     </div>
   </div>

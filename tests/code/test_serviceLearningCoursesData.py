@@ -12,7 +12,7 @@ from app.models.courseQuestion import CourseQuestion
 from app.models.questionNote import QuestionNote
 from app.models.note import Note
 
-from app.logic.courseProposals import withdrawProposal, getServiceLearningCoursesData
+from app.logic.serviceLearningCoursesData import withdrawProposal, getServiceLearningCoursesData
 
 @pytest.mark.integration
 def test_getServiceLearningCoursesData():
