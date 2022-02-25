@@ -63,7 +63,6 @@ class EmailHandler:
     def fetch_event_programs(self, programId):
         """ Fetches all the programs of a particular event """
         # Non-student-led programs have "Unknown" as their id
-        # ---Q: maybe this id should be changed to something more specific?
         if programId == 'Unknown':
             programEvents = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event==self.event.id)
             return [program.program for program in programEvents.objects()]
@@ -82,7 +81,7 @@ class EmailHandler:
 
     def retrieve_recipients(self, recipients_category):
         """ Retrieves recipient based on which category is chosen in the 'To' section of the email modal """
-        # Other potentioal recipients:
+        # Other potential recipients:
         # - course instructors
         # - course Participants
         # - outside participants'
@@ -102,7 +101,7 @@ class EmailHandler:
     def replace_general_template_placholders(self, email_body=None):
         """ Replaces all template placeholders except name """
         domain = urlparse(request.base_url) # TODO: how to avoid using request?
-        event_link = f"{domain.scheme}://{domain.netloc}/events/{self.event.id}"
+        event_link = f"{domain.scheme}://{domain.netloc}/event/{self.event.id}/edit"
 
         new_body = email_body.format(event_name=self.event.name,
             location=self.event.location,
