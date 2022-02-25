@@ -14,9 +14,11 @@ def test_modifyCeltsAdmin():
     user = "agliullovak"
     current_user = User.get(User.username == user)
     assert current_user.isCeltsAdmin == False
+
     addCeltsAdmin(current_user)
     current_user = User.get(User.username == user)
     assert current_user.isCeltsAdmin == True
+    
     removeCeltsAdmin(current_user)
     current_user = User.get(User.username == user)
     assert current_user.isCeltsAdmin == False
@@ -30,9 +32,11 @@ def test_modifyCeltsStudentStaff():
     user = "mupotsal"
     current_user = User.get(User.username == user)
     assert current_user.isCeltsAdmin == False
+
     addCeltsStudentStaff(current_user)
     current_user = User.get(User.username == user)
     assert current_user.isCeltsAdmin == True
+
     removeCeltsStudentStaff(current_user)
     current_user = User.get(User.username == user)
     assert current_user.isCeltsAdmin == False
