@@ -24,7 +24,7 @@
           {% for instructor in courseInstructors%}
             <tr>
 
-              <td> <a href=" /courseManagement" class="link-primary">{{instructor}}</a></td>
+              <td> <a href=" /courseManagement" class="link-primary">{{instructor.firstName}} {{instructor.lastName}}</a></td>
               <td>{{(', '.join(courseInstructors[instructor]))}}</td>
 
             </tr>

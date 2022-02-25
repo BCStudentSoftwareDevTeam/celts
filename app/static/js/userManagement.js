@@ -54,6 +54,10 @@ $(document).ready(function() {
   });
 });
 
+function clickTerm(term){
+  $(".term-btn").removeClass("active");
+  term.addClass('active');
+};
 
 function submitRequest(method,identifier){
   let data = {
@@ -75,10 +79,6 @@ function submitRequest(method,identifier){
 
   })
 }
-function clickTerm(term){
-  $(".term-btn").removeClass("active");
-  term.addClass('active');
-};
 
 function submitTerm(){
   var termInfo = {id: $("#currentTermList .active").val()};
