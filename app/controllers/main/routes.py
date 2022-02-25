@@ -1,8 +1,6 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for
 import datetime
 
-
-
 from app import app
 from app.models.program import Program
 from app.models.event import Event
@@ -22,7 +20,7 @@ from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
 
 @main_bp.route('/', methods=['GET'])
-@main_bp.route('/events/<selectedTerm>', methods=['GET'])
+@main_bp.route('/<selectedTerm>', methods=['GET'])
 def events(selectedTerm=None):
     currentTerm = g.current_term
     if selectedTerm:
@@ -37,9 +35,8 @@ def events(selectedTerm=None):
     participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
-
     return render_template("/events/event_list.html",
-        selectedTerm = Term.get_by_id(currentTerm),
+        selectedTerm = term,
         studentLedProgram = studentLedProgram,
         trainingProgram = trainingProgram,
         bonnerProgram = bonnerProgram,

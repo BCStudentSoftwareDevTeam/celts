@@ -4,8 +4,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script src="/static/js/event_list.js"></script>
-
-  </script>
 {% endblock %}
 {% block styles %}
   {{super()}}
@@ -21,7 +19,7 @@
     </div>
     <div class="col-md-3 me-auto">
       <div class="form-group">
-        <select class="form-select" name='eventTerm' id='inputTerm' onchange="location = '/events/' + this.value;">
+        <select class="form-select" name='eventTerm' id='inputTerm' onchange="location=this.value;">
           {% for term in listOfTerms %}
             <option value='/{{term}}' {{ "selected" if selectedTerm.id == term.id }}>{{term.description}} </option>
           {% endfor %}
