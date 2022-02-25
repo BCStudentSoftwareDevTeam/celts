@@ -10,7 +10,7 @@ from app.models.user import User
 from app.models.programEvent import ProgramEvent
 from app.controllers.events import events_bp
 from app.controllers.events import email
-from app.logic.emailHandler2 import EmailHandler
+from app.logic.emailHandler import EmailHandler
 from app.logic.events import getUpcomingEventsForUser
 from app.logic.participants import sendUserData
 
@@ -19,7 +19,7 @@ def showUpcomingEvent():
     upcomingEvents = getUpcomingEventsForUser(g.current_user)
     return render_template('/events/showUpcomingEvents.html',
                             upcomingEvents = upcomingEvents)
-                            
+
 @events_bp.route('/email', methods=['POST'])
 def email():
     raw_form_data = request.form.copy()

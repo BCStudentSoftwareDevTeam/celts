@@ -1,72 +1,66 @@
 import pytest
 from flask_mail import Message
-from app.logic.emailHandler import *
 from app import app
-
-#
-# class emailHandler():
-#     def __init__(self,)
+from app.models.emailTemplate import EmailTemplate
+from app.logic.emailHandler import EmailHandler
 
 @pytest.mark.integration
-def test_getVolunteerEmails():
+def test_send_email_using_modal():
+    with app.test_request_context():
 
-    programID = 1
-
-    volunteerEmails = getInterestedEmails(programID)
-    assert "bryanta@berea.edu" in volunteerEmails
-
-    # check for non existing programId
-    programID = 40
-    volunteerEmails = getInterestedEmails(programID)
-
-    assert volunteerEmails == []
-
-    # invalid eventID
-    programID = 1
-    eventID = -1
-    emailRecipients = "eventParticipant"
-
-    volunteerEmails = getParticipantEmails(eventID)
-    assert volunteerEmails == []
-    volunteerEmails = getInterestedEmails(eventID)
-    assert volunteerEmails == []
-
-    # invalid recipients
-    emailRecipients = 2
-    volunteerEmails = getParticipantEmails(eventID)
-    assert volunteerEmails == []
-
-@pytest.mark.integration
-def test_emailHandler():
-
-    with app.app_context():
-        emailInfo = {'emailSender': 'CELTS Admins'}
         app.config.update(
-            TESTING = True,
             MAIL_SUPRESS_SEND = True
         )
-        emails = getParticipantEmails(1)
-        email = emailHandler(app,emailInfo)
+        # Case 1: Send email with subject and body -- as if email is sent using a modal
+        raw_form_data = {"templateIdentifier": "Test",
+            "subject": "Test Email",
+            "body": "Hello {name}",
+            "programID":"1",
+            "eventID":"1",
+            "recipientsCategory": "Interested"}
 
-        msg = Message("this email is for testing",
-                      emails, # recipients
-                      "Yup, just testing, don't look any closer.")
+        email = EmailHandler(raw_form_data)
 
-        #test updating sender
-        updatedMsg = email.updateSenderEmail(msg)
-        assert updatedMsg.sender == 'bramsayr@gmail.com'
-        emailInfo['emailSender'] = "CELTS Student Staff"
-        email.emailInfo = emailInfo
-        updatedMsg = email.updateSenderEmail(msg)
-        assert updatedMsg.sender == 'sceggenh@gmail.com'
-
-        #test sending email
         with email.mail.record_messages() as outbox:
-            emailSent = email.sendEmail(msg,emails) # passed for sending individually
-            assert len(outbox) == 1;
-            assert outbox[0].subject == "this email is for testing"
-            assert outbox[0].body == "Yup, just testing, don't look any closer."
-            if 'MAIL_OVERRIDE_ALL' in app.config:
-                assert outbox[0].recipients == ["j5u6j9w6v1h0p3g1@bereacs.slack.com"]
-            else:
-                assert outbox[0].recipients == emails
+            email_sent = email.send_email()
+            assert email_sent == True
+
+            assert len(outbox) == 2
+            assert outbox[0].subject == "Test Email"
+            assert outbox[0].body == "Hello Sreynit Khatt"
+
+@pytest.mark.integration
+def test_sending_automated_email():
+    with app.test_request_context():
+        # Case 2: Send email without subject and body -- as if email is sent automatically
+        raw_form_data = {"templateIdentifier": "Test",
+            "programID":"1",
+            "eventID":"1",
+            "recipientsCategory": "Interested"}
+
+        email = EmailHandler(raw_form_data)
+
+        with email.mail.record_messages() as outbox:
+            email_sent = email.send_email()
+            assert email_sent == True
+
+            assert len(outbox) == 2
+            assert outbox[0].subject == "Test Email"
+            assert outbox[0].body == "Hello Sreynit Khatt, This is a test event named Empty Bowls Spring Event 1 located in Seabury Center. Other info: 10/12/2021-06/12/2022 and this 06:00-09:00."
+
+@pytest.mark.integration
+def test_update_email_template():
+    with app.test_request_context():
+        raw_form_data = {"templateIdentifier": "Test2",
+            "subject":"This is only a test",
+            "body":"Hello {name}, Regards",
+            "replyTo": "test.email@gmail.comm"}
+
+        email = EmailHandler(raw_form_data)
+        email.update_email_template()
+
+        new_email_template = EmailTemplate.get(EmailTemplate.purpose==raw_form_data['templateIdentifier'])
+
+        assert new_email_template.subject == raw_form_data['subject']
+        assert new_email_template.body == raw_form_data['body']
+        assert new_email_template.replyToAddress == raw_form_data['replyTo']
