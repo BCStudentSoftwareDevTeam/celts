@@ -88,8 +88,8 @@ def createEvent(templateid, programid=None):
             validationErrorMessage = "Unknown Error Saving Event. Please try again"
 
         if saveSuccess:
-            event = Event.get(name=eventData['name'],term=eventData['term'],timeStart=eventData['timeStart'],startDate=eventData['startDate'])
-            createLog(f'Created {event.name}, with start date {str(datetime.strftime(event.startDate, "%m/%d/%Y"))}.')
+            # event = Event.get(name=eventData['name'],term=eventData['term'],timeStart=eventData['timeStart'],startDate=eventData['startDate'])
+            # createLog(f'Created {event.name}, with start date {str(datetime.strftime(event.startDate, "%m/%d/%Y"))}.')
             noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
             return redirect(url_for("main.events", term = eventData['term']))

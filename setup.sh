@@ -2,8 +2,8 @@
 
 # Check for correct python version
 VERSION=`python3 --version | awk '{print $2}'`
-if [ "${VERSION:0:1}" -ne "3" ] || [ "${VERSION:2:1}" -lt "7" ] || [ "${VERSION:2:1}" -gt "9" ]; then
-	echo "You must use Python 3.7 - 3.9. You are using $VERSION"
+if [ "${VERSION:2:1}" -lt "7" ] || [ "${VERSION:2:1}" -gt "9" ]; then
+	echo "You must use Python 3.7 - 3.10 You are using $VERSION"
     echo "When upgrading, remember to install python3.X-dev and python3.X-venv (and maybe the right pip)"
 	return 1
 else

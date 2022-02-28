@@ -13,6 +13,8 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
+from app.logic.adminLogs import createLog
+
 
 def getEvents(program_id=None):
 
@@ -40,6 +42,8 @@ def attemptSaveEvent(eventData):
 
     try:
         events = saveEventToDb(newEventData)
+        # event = Event.get(name=eventData['name'],term=eventData['term'],timeStart=eventData['timeStart'],startDate=eventData['startDate'])
+        createLog(f"Edited {eventData['name']}, with start date {str(datetime.datetime.strftime(eventData['startDate'], '%m/%d/%Y'))}.")
         return True, ""
     except Exception as e:
         print(e)
