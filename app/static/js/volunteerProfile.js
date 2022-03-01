@@ -31,6 +31,23 @@ $(document).ready(function(){
     }).attr('readonly','readonly');
   });
 
+
+  // var checker = setInterval(function()
+    $(function validate(){
+    var EndDatepicker = document.getElementById('banEndDatepicker').value;
+    var NoteTxtArea = document.getElementById('banNoteTxtArea');
+
+    if(EndDatepicker.length == 0) {
+      console.log("Testing when length is 0");
+
+      NoteTxtArea.disabled = true;
+    } else {
+      console.log("Testing when length is >0");
+      //when its clear, it enabled again
+      NoteTxtArea.disabled = false;
+    }
+  });
+
   $(".ban").click(function() {
     var banButton = $("#banButton")
     var banEndDateDiv = $("#banEndDate") // Div containing the datepicker in the ban modal
