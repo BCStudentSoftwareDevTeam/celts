@@ -45,6 +45,7 @@ def getinstructorData(courseIds):
     return instructorDict
 
 def updateCourse(courseData):
+    print(courseData['courseID'])
     for toggler in ["regularOccurenceToggle", "slSectionsToggle", "permanentDesignation"]:
         courseData.setdefault(toggler, "off")
     status = CourseStatus.get(CourseStatus.status == "Pending")
@@ -59,12 +60,11 @@ def updateCourse(courseData):
         isAllSectionsServiceLearning=1 if "on" in courseData["slSectionsToggle"] else 0,
         serviceLearningDesignatedSections=courseData["slDesignation"],
         isPermanentlyDesignated=1 if "on" in courseData["permanentDesignation"] else 0,
-    ).where(Course.courseName == courseData['courseName']).execute()
-    # for i in range(1, 7):
-    #     CourseQuestion.update(
-    #         course=course,
-    #         questionContent=courseData[f"{i}"]
-    #     ).where(CourseQuestion.questionNumber == i).execute()
-    # for instructor in instructorsDict["instructors"]:
-    #     CourseInstructor.update(course=course, user=instructor.username).where(Course.courseName == courseData['courseName']).execute()
-    return redirect('/serviceLearning/courseManagement')
+    ).where(Course.id == courseData['courseID']).execute()
+    for i in range(1, 7):
+        CourseQuestion.update(
+            course=course,
+            questionContent=courseData[f"{i}"]
+        ).where(CourseQuestion.questionNumber == i).execute()
+    for instructor in instructorsDict["instructors"]:
+        CourseInstructor.update(course=course, user=instructor.username).where(Course.id == courseData['courseID']).execute()

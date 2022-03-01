@@ -23,4 +23,6 @@ def searchUsers(query):
                 for participant in results:
                     if participant not in resultsDict:
                         resultsDict[f"{participant.firstName} {participant.lastName} ({participant.username})"] = f"{participant.firstName} {participant.lastName} ({participant.username})"
+
+    print("resultsDict",resultsDict)
     return resultsDict

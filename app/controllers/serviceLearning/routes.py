@@ -55,7 +55,8 @@ def slcEditProposal(courseID):
                                 courseInstructor = courseInstructor,
                                 isRegularlyOccuring = isRegularlyOccuring,
                                 isAllSectionsServiceLearning = isAllSectionsServiceLearning,
-                                isPermanentlyDesignated = isPermanentlyDesignated)
+                                isPermanentlyDesignated = isPermanentlyDesignated,
+                                courseID=courseID)
 
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcNewProposal():
@@ -64,7 +65,7 @@ def slcNewProposal():
         # courseData["courseInstructorPhone"] = request.form.get("courseInstructorPhone")
         term = Term.get(Term.id==request.form.get("term"))
         status = CourseStatus.get(CourseStatus.status == "Pending")
-        coursecheck = Course.get_or_none(Course.courseName == request.form.get("courseName"))
+        coursecheck = Course.get_or_none(Course.id == request.form.get("courseID"))
         if coursecheck == None:
             course = Course.create(
                 courseName=request.form.get("courseName"),
@@ -89,11 +90,7 @@ def slcNewProposal():
             return redirect('/serviceLearning/courseManagement')
         else:
             updateCourse(request.form.copy())
-<<<<<<< HEAD
-=======
             return redirect('/serviceLearning/courseManagement')
-
->>>>>>> c2811606292f21eb47a7742cccbc4f9cb4b21729
     terms = Term.select().where(Term.year >= g.current_term.year)
     courseData = None
     return render_template('serviceLearning/slcNewProposal.html', terms=terms, courseData = courseData)

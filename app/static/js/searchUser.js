@@ -1,6 +1,6 @@
 export default function searchUser(inputId, callback, parentElementId=null){
   var query = $(`#${inputId}`).val()
-
+  console.log(query)
   $(`#${inputId}`).autocomplete({
     appendTo: (parentElementId === null) ? null : `#${parentElementId}`,
     minLength: 2,

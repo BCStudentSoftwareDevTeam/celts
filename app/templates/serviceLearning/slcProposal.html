@@ -24,19 +24,23 @@
           <tr hidden>
             <td class="instructorName"></td>
             <td><button id="remove" type="button" class="btn btn-danger">Remove</button></td>
+            <td class="phone"></td>
+            <!-- <div class="input-group mb-3 pt-3">
+              <input type="text" class="form-control-sm mb-3" name="courseInstructorPhone" aria-label="Recipient's username" aria-describedby="button-addon2" value=""/>
+              <button class="btn btn-primary mb-3" type="button" id="button-addon2">Save</button>
+            </div> -->
           </tr>
           {% for instructor in courseInstructor %}
           <tr>
             <td>
               {{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user}})
-              <div class="input-group mb-3 pt-3">
-                <input type="text" class="form-control-sm mb-3" name="courseInstructorPhone" aria-label="Recipient's username" aria-describedby="button-addon2"value="{{instructor.user.phoneNumber}}"/>
-                <button class="btn btn-primary mb-3" type="button" id="button-addon2">Save</button>
-              </div>
             </td>
             <td>
               <button id="remove" type="button" class="btn btn-danger">Remove</button>
             </td>
+            <!-- <td>
+              Phone
+              </td> -->
           </tr>
           {% endfor %}
         </tbody>
@@ -109,4 +113,5 @@
       </div>
     </div>
   </div>
+  <input value={{courseID}} name="courseID" hidden/>
 </div>
