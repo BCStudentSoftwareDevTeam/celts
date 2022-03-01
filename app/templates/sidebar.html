@@ -47,11 +47,13 @@
         </a>
       </li>
       <li>
-        <a href="/serviceLearning/courseManagement"
-           class="nav-link text-white {{'active' if request.path =='/serviceLearning/courseManagement'}}"
-           {{"aria-current='page'" if request.path =='/serviceLearning/courseManagement'}}>
-          Course Proposal Management
+        <a href="/manageServiceLearning" class="nav-link text-white {{ 'active' if request.path =='/manageServiceLearning' }}">
+          Service Learning
         </a>
+      </li>
+      <li>
+        <a href="/serviceLearning/courseManagement" class="nav-link text-white {{ 'active' if request.path =='/serviceLearning/courseManagement' }}" aria-current="page">
+          Course Proposal Management </a>
       </li>
     {% endif %}
     </ul>

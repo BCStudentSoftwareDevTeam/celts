@@ -3,7 +3,12 @@
 {% block scripts %}
   {{super()}}
   <script type="module" src="/static/js/manageServiceLearningFaculty.js"></script>
-  <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/r-2.2.9/datatables.min.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+
+  {% block styles %}
+      {{super()}}
+      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+    {% endblock %}
 {% endblock %}
 
 {% block app_content %}
@@ -12,28 +17,23 @@
   <div class ="container">
     <a class="skipContent" href="#backButton" tabindex="1" style="top:8%">Click to Skip</a>
     <div class="contributors" align="center">
-      <h2> Manage Service Learning Faculty </h2>
-       <table class="table table-striped" id="myTable">
-        <thead>
-          <tr class="header">
+      <h1 class="text-center mt-5 mb-3">Manage Service Learning Faculty</h1>
+  <table class="table table-striped" id="myTable">
+      <thead>
+        <tr class="header">
           <th scope = "col">Name</th>
           <th scope = "col">Prev Classes</th>
-          </tr>
-        </thead>
-        <tbody id = "facultyTable">
-          {% for instructor in courseInstructors%}
-            <tr>
-
-              <td> <a href=" /courseManagement" class="link-primary">{{instructor.firstName}} {{instructor.lastName}}</a></td>
-              <td>{{(', '.join(courseInstructors[instructor]))}}</td>
-
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-     </div>
-  </div>
-</div>
+        </tr>
+      </thead>
+    <tbody id = "facultyTable">
+    {% for instructor in courseInstructors%}
+        <tr>
+          <td> <a href=" /courseManagement" class="link-primary">{{instructor}}</a></td>
+          <td>{{(', '.join(courseInstructors[instructor]))}}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+  </table>
 
 
 <div>
