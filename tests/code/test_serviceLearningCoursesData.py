@@ -73,3 +73,11 @@ def test_withdrawProposal():
     withdrawProposal(99)
     with pytest.raises(DoesNotExist):
         Course.get_by_id(99)
+
+@pytest.mark.integration
+def test_getCourseDict():
+    """
+    This test is to selects all the Intructors Name and the previous courses and group it in a dictionary
+    """
+    courseDict = getCourseDict('ramsayb2')
+    assert 'Spanish Help' in courseDict
