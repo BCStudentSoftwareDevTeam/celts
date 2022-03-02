@@ -13,12 +13,12 @@
 <div class="card m-auto" style="width: 400px;">
   <div class="card-header">Templated Events</div>
   {% for template in templates %}
-  <a href="/event/{{template.id}}/create" class="list-group-item list-group-item-action">{{ template.name }}</a>
+  <a href="/eventTemplates/{{template.id}}/create" class="list-group-item list-group-item-action">{{ template.name }}</a>
   {% endfor %}
 
   <div class="card-header">Single Program Events</div>
   {% for program in programs %}
-  <a href="/event/1/{{program.id}}/create" class="list-group-item list-group-item-action">{{ program.programName }}</a>
+  <a href="/eventTemplates/1/{{program.id}}/create" class="list-group-item list-group-item-action">{{ program.programName }}</a>
   {% endfor %}
 </div>
 {% endblock %}
