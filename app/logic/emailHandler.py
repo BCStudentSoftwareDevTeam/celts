@@ -1,5 +1,3 @@
-from flask import request
-from urllib.parse import urlparse
 from datetime import datetime
 from flask_mail import Mail, Message
 
@@ -14,9 +12,10 @@ from app.models.emailLog import EmailLog
 from app.models.event import Event
 
 class EmailHandler:
-    def __init__(self, raw_form_data):
+    def __init__(self, raw_form_data, url_domain):
         self.mail = Mail(app)
         self.raw_form_data = raw_form_data
+        self.url_domain = url_domain
         self.override_all_mail = app.config['MAIL_OVERRIDE_ALL']
         self.template_identifier = None
         self.subject = None
@@ -60,14 +59,14 @@ class EmailHandler:
         if 'slCourseId' in self.raw_form_data:
             self.sl_course_id = self.raw_form_data['slCourseId']
 
-    def fetch_event_programs(self, programId):
+    def fetch_event_programs(self, program_id):
         """ Fetches all the programs of a particular event """
         # Non-student-led programs have "Unknown" as their id
-        if programId == 'Unknown':
+        if program_id == 'Unknown':
             programEvents = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event==self.event.id)
             return [program.program for program in programEvents.objects()]
         else:
-            program = ProgramEvent.get_by_id(programId)
+            program = ProgramEvent.get_by_id(program_id)
             return [program.program]
 
 
@@ -100,8 +99,7 @@ class EmailHandler:
 
     def replace_general_template_placholders(self, email_body=None):
         """ Replaces all template placeholders except name """
-        domain = urlparse(request.base_url) # TODO: how to avoid using request?
-        event_link = f"{domain.scheme}://{domain.netloc}/event/{self.event.id}/edit"
+        event_link = f"{self.url_domain}/eventsList/{self.event.id}/edit"
 
         new_body = email_body.format(event_name=self.event.name,
             location=self.event.location,
@@ -146,6 +144,7 @@ class EmailHandler:
             subject=subject,
             templateUsed=template_id,
             recipientsCategory=self.recipients_category,
+            recipients=", ".join(recipient.email for recipient in self.recipients),
             dateSent=date_sent)
 
     def build_email(self):
@@ -184,5 +183,7 @@ class EmailHandler:
                 EmailTemplate.body: self.body,
                 EmailTemplate.replyToAddress: self.reply_to
             }).where(EmailTemplate.purpose==self.template_identifier)).execute()
+            return True
         except Exception as e:
             print("Error updating email template record: ", e)
+            return False

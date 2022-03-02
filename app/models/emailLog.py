@@ -7,4 +7,5 @@ class EmailLog(baseModel):
     subject = CharField()
     templateUsed = ForeignKeyField(EmailTemplate)
     recipientsCategory = CharField()
+    recipients = CharField()
     dateSent = DateTimeField()

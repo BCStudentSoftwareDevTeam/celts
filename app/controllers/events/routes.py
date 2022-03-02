@@ -1,6 +1,7 @@
 from flask import Flask, redirect, flash, url_for, request, render_template, g, json
 from datetime import datetime
 from peewee import DoesNotExist
+from urllib.parse import urlparse
 
 from app.models.term import Term
 from app.models.program import Program
@@ -27,7 +28,8 @@ def email():
         # when people are sending emails as themselves (using mailto) --- Q: are we still going with the mailto option?
         pass
     else:
-        mail = EmailHandler(raw_form_data)
+        url_domain = urlparse(request.base_url).netloc
+        mail = EmailHandler(raw_form_data, url_domain)
         mail_sent = mail.send_email()
 
         if mail_sent:
