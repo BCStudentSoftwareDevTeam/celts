@@ -9,7 +9,6 @@ from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck
 from app.logic.participants import trainedParticipants, getEventParticipants
-from app.logic.adminLogs import createLog
 from app.models.user import User
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
@@ -110,7 +109,6 @@ def updateBackgroundCheck():
         type = eventData['bgType']
         setUserBackgroundCheck(user,type, checkPassed)
         user = User.get_by_id(user)
-        createLog(f"Updated {user.firstName} {user.lastName}'s background check for {type} to {str(bool(checkPassed))}.")
         return " "
     else:
         abort(404)

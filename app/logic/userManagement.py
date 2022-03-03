@@ -9,21 +9,29 @@ def addCeltsAdmin(user):
     user = User.get_by_id(user)
     user.isCeltsAdmin = True
     user.save()
+    createLog(f'Made {user.firstName} {user.lastName} a Celts Admin.')
+
 
 def addCeltsStudentStaff(user):
     user = User.get_by_id(user)
     user.isCeltsStudentStaff = True
     user.save()
+    createLog(f'Made {user.firstName} {user.lastName} a Celts Student Staff.')
+
 
 def removeCeltsAdmin(user):
     user = User.get_by_id(user)
     user.isCeltsAdmin = False
     user.save()
+    createLog(f'Removed {user.firstName} {user.lastName} from Celts Admins.')
+
 
 def removeCeltsStudentStaff(user):
     user = User.get_by_id(user)
     user.isCeltsStudentStaff = False
     user.save()
+    createLog(f'Removed {user.firstName} {user.lastName} from a Celts Student Staff.')
+
 
 def changeCurrentTerm(term):
     oldCurrentTerm = Term.get_by_id(g.current_term)
@@ -32,8 +40,8 @@ def changeCurrentTerm(term):
     newCurrentTerm = Term.get_by_id(term)
     newCurrentTerm.isCurrentTerm = True
     newCurrentTerm.save()
-
     session["current_term"] = model_to_dict(newCurrentTerm)
+    createLog(f"Changed Current Term from {oldCurrentTerm.description} to {newCurrentTerm.description}")
 
 def addNextTerm():
     newSemesterMap = {"Spring":"Summer",
@@ -54,7 +62,7 @@ def addNextTerm():
     newTerm = Term.create(
             description=newDescription,
             year=newYear,
-            academicYear=newAY, 
+            academicYear=newAY,
             isSummer="Summer" in newDescription.split())
     newTerm.save()
 

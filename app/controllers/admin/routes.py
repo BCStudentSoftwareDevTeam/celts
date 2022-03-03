@@ -21,7 +21,6 @@ from app.models.adminLogs import AdminLogs
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
-from app.logic.adminLogs import createLog
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.logic.courseManagement import pendingCourses, approvedCourses
 from app.controllers.admin import admin_bp
@@ -88,8 +87,6 @@ def createEvent(templateid, programid=None):
             validationErrorMessage = "Unknown Error Saving Event. Please try again"
 
         if saveSuccess:
-            # event = Event.get(name=eventData['name'],term=eventData['term'],timeStart=eventData['timeStart'],startDate=eventData['startDate'])
-            # createLog(f'Created {event.name}, with start date {str(datetime.strftime(event.startDate, "%m/%d/%Y"))}.')
             noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
             return redirect(url_for("main.events", term = eventData['term']))
@@ -125,7 +122,6 @@ def editEvent(eventId):
         saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
         if saveSuccess:
             event = Event.get(name=eventData['name'],term=eventData['term'])
-            createLog(f'Edited {event.name}, with start date {str(datetime.strftime(event.startDate, "%m/%d/%Y"))}.')
             flash("Event successfully updated!", "success")
             return redirect(url_for("admin.editEvent", eventId = eventId))
         else:
@@ -150,7 +146,6 @@ def deleteRoute(eventId):
         term = Event.get(Event.id == eventId).term
         event = Event.get(Event.id==eventId)
         deleteEvent(eventId)
-        createLog(f'Deleted {event.name}, with start date {str(datetime.strftime(event.startDate, "%m/%d/%Y"))}.')
         flash("Event removed", "success")
         return redirect(url_for("main.events"))
 

@@ -88,4 +88,6 @@ def setUserBackgroundCheck(user,bgType, checkPassed):
     deleteInstance = BackgroundCheck.delete().where(BackgroundCheck.user == user, BackgroundCheck.type == bgType)
     deleteInstance.execute()
     update = BackgroundCheck.create(user=user, type=bgType, passBackgroundCheck=checkPassed, datePassed=today)
+    createLog(f"Updated {user.firstName} {user.lastName}'s background check for {bgType} to {str(bool(checkPassed))}.")
+
     update.save()

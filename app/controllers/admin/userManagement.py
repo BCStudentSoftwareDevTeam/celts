@@ -5,7 +5,6 @@ from app.models.user import User
 from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff
 from app.logic.userManagement import changeCurrentTerm
 from app.logic.utils import selectSurroundingTerms
-from app.logic.adminLogs import createLog
 from app.logic.userManagement import addNextTerm
 from app.models.term import Term
 
@@ -22,28 +21,24 @@ def manageUsers():
             flash(username+ " is already a Celts Admin", 'danger')
         else:
             addCeltsAdmin(user)
-            createLog(f'Made {user.firstName} {user.lastName} a Celts Admin.')
             flash(user.firstName + " "+ user.lastName + " has been added as a Celts Admin", 'success')
     elif method == "addCeltsStudentStaff":
         if user.isCeltsStudentStaff:
             flash(username+ " is already a Celts Student Staff", 'danger')
         else:
             addCeltsStudentStaff(user)
-            createLog(f'Made {user.firstName} {user.lastName} a Celts Student Staff.')
             flash(username+ " has been added as a Celts Student Staff", 'success')
     elif method == "removeCeltsAdmin":
         if not user.isCeltsAdmin:
             flash(username+ " is not a Celts Admin ", 'danger')
         else:
             removeCeltsAdmin(user)
-            createLog(f'Removed {user.firstName} {user.lastName} from Celts Admins.')
             flash(username+ " is no longer a Celts Admin ", 'success')
     elif method == "removeCeltsStudentStaff":
         if not user.isCeltsStudentStaff:
             flash(username+ " is not a Celts Student Staff ", 'danger')
         else:
             removeCeltsStudentStaff(user)
-            createLog(f'Removed {user.firstName} {user.lastName} from a Celts Student Staff.')
             flash(username+ " is no longer a Celts Student Staff", 'success')
 
     return ("success")
