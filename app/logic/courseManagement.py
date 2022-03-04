@@ -62,9 +62,5 @@ def updateCourse(courseData):
         isPermanentlyDesignated=1 if "on" in courseData["permanentDesignation"] else 0,
     ).where(Course.id == courseData['courseID']).execute()
     for i in range(1, 7):
-        CourseQuestion.update(
-            course=course,
-            questionContent=courseData[f"{i}"]
-        ).where(CourseQuestion.questionNumber == i).execute()
-    for instructor in instructorsDict["instructors"]:
-        CourseInstructor.update(course=course, user=instructor.username).where(Course.id == courseData['courseID']).execute()
+        (CourseQuestion.update(questionContent=courseData[f"{i}"])
+                    .where((CourseQuestion.questionNumber == i) & (CourseQuestion.course==courseData["courseID"])).execute())
