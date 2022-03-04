@@ -86,11 +86,16 @@ function fixStepIndicator(navigateTab) {
 
 // TODO: empty the courseInstructor input after an instructor has been added to the table.
 function callback() {
-  let instructor = $("#courseInstructor").val();
+  let data = $("#courseInstructor").val();
+  $("#courseInstructor").val("");
+  data = data.split(",");
+  let instructor = data[0]
+  let phone = data[1]
   let tableBody = $("#instructorTable").find("tbody");
   let lastRow = tableBody.find("tr:last");
   let newRow = lastRow.clone();
-  newRow.find("td:eq(0)").text(instructor);
+  newRow.find("td:eq(0) p").text(instructor);
+  newRow.find("td:eq(0) div input").val(phone);
   newRow.prop("hidden", false);
   lastRow.after(newRow);
 }

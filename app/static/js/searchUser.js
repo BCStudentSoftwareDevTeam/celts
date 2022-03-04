@@ -19,10 +19,16 @@ export default function searchUser(inputId, callback, parentElementId=null, obje
           )}
           else {
             response(Object.keys(dictToJSON).map( (item, index) => {
-              if (index ===0){
+              if (index === 0){
                 return {
                   label: item,
-                  value: dictToJSON[item]
+                  value: Object.values(dictToJSON)
+                }
+              }
+              else {
+                return {
+                  label: "",
+                  value: ""
                 }
               }
             })
