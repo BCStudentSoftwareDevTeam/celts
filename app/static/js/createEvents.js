@@ -1,4 +1,3 @@
-
 // updates max and min dates of the datepickers as the other datepicker changes
 function updateDate(obj) {
   var dateToChange = new Date($(obj).val());
@@ -18,7 +17,7 @@ function updateDate(obj) {
 /*
  * Run when the webpage is ready for javascript
  */
-$(document).ready(function(){
+$(document).ready(function() {
   $("#checkIsRecurring").click(function() {
     var recurringStatus = $("input[name='isRecurring']:checked").val()
     if (recurringStatus == 'on') {
@@ -30,31 +29,22 @@ $(document).ready(function(){
     }
   });
 
-$(document).ready(function(){
-
-  $('input[type=time]').timepicker({
-           timeFormat : 'HH:mm',
-           scrollbar: true
-          }
-      );
-//disable default bootstrap timepicker
-  $("#startTime").on('click', function(e){
-    e.preventDefault();
+  $('input.timepicker').timepicker({
+           timeFormat : 'hh:mm p',
+           scrollbar: true,
+           minTime: "8:00am",
+           maxTime: "10:00pm"
   });
 
-  $("#endTime").on('click', function(e){
-    e.preventDefault();
-  });
+  if ($(".datePicker").is("readonly")) {
+    $( ".datePicker" ).datepicker( "option", "disabled", true )
+  };
 
-  if($(".datePicker").is("readonly")){
-    $( ".datePicker" ).datepicker( "option", "disabled", true )};
-
-});
   //makes the input fields act like readonly (readonly doesn't work with required)
   $(".readonly").on('keydown paste', function(e){
         if(e.keyCode != 9) // ignore tab
             e.preventDefault();
-    });
+  });
 
   $.datepicker.setDefaults({
     minDate:  new Date($.now()),
@@ -69,44 +59,38 @@ $(document).ready(function(){
     $("#endDatePicker").datepicker().datepicker("show");
   });
 
+  $("#startDatePicker, #endDatePicker").change(function(){
+    if ( $("#startDatePicker").val() && $("#endDatePicker").val()){
+      var eventDatesAndName = {name:$("#inputEventName").val(),
+                               isRecurring: true,
+                               startDate:$("#startDatePicker").val(),
+                               endDate:$("#endDatePicker").val()}
+      $.ajax({
+        type:"POST",
+        url: "/makeRecurringEvents",
+        data: eventDatesAndName, //get the startDate, endDate and name as a dictionary
+        success: function(jsonData){
+          var recurringEvents = JSON.parse(jsonData)
+          var recurringTable = $("#recurringEventsTable")
+          $("#recurringEventsTable tbody tr").remove();
 
-    $("#startDatePicker, #endDatePicker").change(function(){
-
-      if ( $("#startDatePicker").val() && $("#endDatePicker").val()){
-
-        var eventDatesAndName = {name:$("#inputEventName").val(),
-                                 isRecurring: true,
-                                 startDate:$("#startDatePicker").val(),
-                                 endDate:$("#endDatePicker").val()}
-        $.ajax({
-          type:"POST",
-          url: "/makeRecurringEvents",
-          data: eventDatesAndName, //get the startDate, endDate and name as a dictionary
-          success: function(jsonData){
-            var recurringEvents = JSON.parse(jsonData)
-            var recurringTable = $("#recurringEventsTable")
-            $("#recurringEventsTable tbody tr").remove();
-
-            for (var event of recurringEvents){
-              recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+event.date+"'>"+event.date+"</td></tr>");
-              }
-          },
-          error: function(error){
-            console.log(error)
-          }
-        });
-      }
-    });
+          for (var event of recurringEvents){
+            recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+event.date+"'>"+event.date+"</td></tr>");
+            }
+        },
+        error: function(error){
+          console.log(error)
+        }
+      });
+    }
+  });
 
   $("#checkIsTraining").click(function(){
-
     if ($("input[name='isTraining']:checked").val() == 'on'){
       $("#checkIsRequired").prop('checked', true);
 
-    }else{
+    } else{
       $("#checkIsRequired").prop('disabled', false);
     }
-
-
   });
 });

@@ -20,6 +20,8 @@ from app.models.questionNote import QuestionNote
 from app.models.interest import Interest
 from app.models.facilitator import Facilitator
 from app.models.note import Note
+from app.models.backgroundCheck import BackgroundCheck
+# from app.models.backgroundCheckType import BackgroundCheckType
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -134,7 +136,6 @@ terms = [
         "description": "Spring A 2021",
         "year": 2021,
         "academicYear": "2020-2021",
-        "isBreak": False,
         "isSummer": False,
         "isCurrentTerm": False
     },
@@ -143,7 +144,6 @@ terms = [
         "description": "Spring B 2021",
         "year": 2021,
         "academicYear": "2020-2021",
-        "isBreak": False,
         "isSummer": False,
         "isCurrentTerm": False
     },
@@ -152,7 +152,6 @@ terms = [
         "description": "Summer 2021",
         "year": 2021,
         "academicYear": "2020-2021",
-        "isBreak": False,
         "isSummer": True,
         "isCurrentTerm": True
     },
@@ -161,29 +160,17 @@ terms = [
         "description": "Fall 2021",
         "year": 2021,
         "academicYear": "2021-2022",
-        "isBreak": False,
         "isSummer": False,
         "isCurrentTerm": False
     },
     {
         "id": 5,
         "description": "Spring 2022",
-        "year": 2021,
+        "year": 2022,
         "academicYear": "2021-2022",
-        "isBreak": True,
         "isSummer": False,
         "isCurrentTerm": False
     },
-    {
-        "id": 6,
-        "description": "Spring 2024",
-        "year": 2024,
-        "academicYear": "2023-2024",
-        "isBreak": False,
-        "isSummer": False,
-        "isCurrentTerm": False
-    },
-
 
 ]
 Term.insert_many(terms).on_conflict_replace().execute()
@@ -270,7 +257,7 @@ events = [
         "term": 1,
         "name": "Hunger Hurts",
         "description": "Will donate Food to Community",
-        "isTraining": True,
+        "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Berea Community School",
@@ -330,7 +317,7 @@ events = [
         "term": 3,
         "name": "Empty Bowl with Community",
         "description": "Open to Berea community",
-        "isTraining": True,
+        "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Berea Community Park",
@@ -655,6 +642,16 @@ QuestionNote.insert_many(questionNote).on_conflict_replace().execute()
 eventParticipants = [
     {
         "user": "neillz",
+        "event": 1,
+        "hoursEarned": 2
+    },
+    {
+        "user": "khatts",
+        "event": 1,
+        "hoursEarned": 2
+    },
+    {
+        "user": "neillz",
         "event": 2,
         "hoursEarned": 2
     },
@@ -768,3 +765,20 @@ facilitators = [
     }
 ]
 Facilitator.insert_many(facilitators).on_conflict_replace().execute()
+
+background = [
+
+    {
+    "user": "khatts",
+    "type": "CAN",
+    "passBackgroundCheck": False,
+    "datePassed": datetime.strptime("2021 10 12","%Y %m %d")
+    },
+    {
+    "user":"mupotsal",
+    "type": "SHS",
+    "passBackgroundCheck":True,
+    "datePassed": datetime.strptime("2021 10 12","%Y %m %d")
+    },
+]
+BackgroundCheck.insert_many(background).on_conflict_replace().execute()
