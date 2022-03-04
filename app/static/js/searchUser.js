@@ -1,21 +1,32 @@
-export default function searchUser(inputId, callback, parentElementId=null){
+export default function searchUser(inputId, callback, parentElementId=null, object=false){
   var query = $(`#${inputId}`).val()
-  console.log(query)
   $(`#${inputId}`).autocomplete({
     appendTo: (parentElementId === null) ? null : `#${parentElementId}`,
     minLength: 2,
     source: function(request, response) {
       $.ajax({
-        url: `/searchUser/${query}`,
+        url: `/searchUser/${query}/${object}`,
         type: "GET",
         dataType: "json",
         success: function(dictToJSON) {
-          response($.map( dictToJSON, function( item ) {
-            return {
-              label: item,
-              value: dictToJSON[item]
-            }
-          }))
+          if (object===false){
+            response($.map( dictToJSON, function( item ) {
+              return {
+                label: item,
+                value: dictToJSON[item]
+              }
+            })
+          )}
+          else {
+            response(Object.keys(dictToJSON).map( (item, index) => {
+              if (index ===0){
+                return {
+                  label: item,
+                  value: dictToJSON[item]
+                }
+              }
+            })
+          )}
         },
         error: function(request, status, error) {
           console.log(status, error);

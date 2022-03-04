@@ -96,7 +96,7 @@ function callback() {
 }
 
 $("#courseInstructor").on('input', function() {
-  searchUser("courseInstructor", callback);
+  searchUser("courseInstructor", callback, null, true);
 });
 
 $("#instructorTable").on("click", "#remove", function() {
@@ -107,6 +107,7 @@ let courseInstructors = []
 async function saveCourseInstructors() {
   $("#instructorTable tr").each(function(a, b) {
     courseInstructors.push($('.instructorName', b).text());
+    console.log(courseInstructors)
   });
   return await $.ajax({
     url: "/courseInstructors",
