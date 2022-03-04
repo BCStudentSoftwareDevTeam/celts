@@ -1,6 +1,8 @@
 // updates max and min dates of the datepickers as the other datepicker changes
 function updateDate(obj) {
-  var dateToChange = new Date($(obj).val());
+  // we need to replace "-" with "/" because firefox cannot turn a date with "-" to a datetime object
+  var selectedDate = ($(obj).val()).replaceAll("-", "/")
+  var dateToChange = new Date(selectedDate);
   var newMonth = dateToChange.getMonth();
   var newYear = dateToChange.getFullYear();
   var newDay = dateToChange.getDate();

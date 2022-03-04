@@ -139,7 +139,7 @@
             <label class="form-label me-2" for="startDatePicker"><strong>Start Date:</strong></label>
             {% if  isEditable  %}
               <div class='input-group date' id="startDate">
-                <input type='text' class="form-control datePicker readonly" value="{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" name="startDate" placeholder="Pick a start date" onchange=updateDate(this) id=startDatePicker required>
+                <input type='text' class="form-control datePicker readonly" value="{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" name="startDate" placeholder="Pick a start date" onchange="updateDate(this)" id=startDatePicker required>
                 <div class="input-group-text" id="calendarIconStart">
                   <span><i class="bi bi-calendar-plus-fill"></i></span>
                 </div>
