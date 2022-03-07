@@ -108,6 +108,18 @@ def getInstructors():
     instructorsDict["instructors"] = instructorObjectList
     return jsonify({"Success": True}), 200
 
+@serviceLearning_bp.route('/updateInstructorPhone', methods=['POST'])
+def updateInstructorPhone():
+    try:
+        instructorData = request.get_json()
+        print(instructorData)
+        updateInstructorPhone = User.update(phoneNumber=instructorData[1]).where(User.username == instructorData[0]).execute()
+        flash("Instructor's phone number updated", 'success')
+        return ""
+    except Exception as e:
+        print(e)
+        flash("Failed to update phone number", 'warning')
+        return e
 @serviceLearning_bp.route('/serviceLearning/withdraw/<courseID>', methods = ['POST'])
 def withdrawCourse(courseID):
     try:

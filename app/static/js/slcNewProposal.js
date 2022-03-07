@@ -87,7 +87,6 @@ function fixStepIndicator(navigateTab) {
 // TODO: empty the courseInstructor input after an instructor has been added to the table.
 function callback() {
   let data = $("#courseInstructor").val();
-  $("#courseInstructor").val("");
   data = data.split(",");
   let instructor = data[0]
   let phone = data[1]
@@ -96,12 +95,28 @@ function callback() {
   let newRow = lastRow.clone();
   newRow.find("td:eq(0) p").text(instructor);
   newRow.find("td:eq(0) div input").val(phone);
+  newRow.find("td:eq(0) div button").attr("data-id", phone);
+  newRow.find("td:eq(0) div input").attr("data-id", instructor);
+  newRow.find("td:eq(0) div input").attr("id", phone);
   newRow.prop("hidden", false);
   lastRow.after(newRow);
 }
 
 $("#courseInstructor").on('input', function() {
   searchUser("courseInstructor", callback, null, true);
+});
+
+$("#instructorTable").on("click", "#instructorPhoneUpdate", function() {
+   var inputId = $(this).attr("data-id")
+   var instructorData = [$("#" + inputId).attr("data-id"), $("#" + inputId).val()]
+
+   $.ajax({
+     url: "/updateInstructorPhone",
+     data: JSON.stringify(instructorData),
+     type: "POST",
+     contentType: "application/json",
+     success: function(){}
+   });
 });
 
 $("#instructorTable").on("click", "#remove", function() {
