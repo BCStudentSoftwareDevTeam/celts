@@ -24,55 +24,39 @@
 <div class="btn-group">
   <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
     <li class="nav-item" role="presentation">
-      <a class="nav-link" href="/event/{{event.id}}/edit">Edit Event</a>
+      <a class="nav-link" href="/event/{{event.id}}/edit" role="tab" aria-selected="false">Edit Event</a>
     </li>
-    <li class="nav-item">
-      <a class="nav-link active" aria-current="page" href="#" >Track Volunteers</a>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link active" href="#" role="tab" aria-selected="true">Track Volunteers</a>
     </li>
   </ul>
 </div>
-<form action="#" method="post"><br>
-  <label class='d-none' id="eventLength">{{eventLength}}</label>
-  <input  class="form-control" id="eventID" name="event" value="{{event}}" type='hidden'>
-  <div class="flex-container" style="padding: 5px;">
-    <div class='form-group d-inline-flex'>
-      <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add volunteer</a>
-      <a class="btn btn-warning" href= "/event/{{event.id}}/kiosk" role="button" style="margin:5px;">Kiosk Entry</a>
+<label class='d-none' id="eventLength">{{eventLength}}</label>
+<input class="form-control" id="eventID" name="event" value="{{event}}" type='hidden' />
+<div class="flex-container" style="padding: 5px;">
+  <div class='form-group d-inline-flex'>
+    <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add volunteer</a>
+    <a class="btn btn-warning" role="button" href= "/event/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
+  </div>
 </div>
-<form method="post"><br>
+<form method="post">
   <label class='d-none' id="eventLength">{{eventLength}}</label>
-  <input  class="form-control" id="eventID" name="event" value="{{event}}" type='hidden'>
+  <input class="form-control" id="eventID" name="event" value="{{event}}" type='hidden'>
   <table class="table" id="trackVolunteerstable">
     <thead>
       <tr>
-        <th>Present</th>
-        <th></th>
         <th>Name</th>
         <th>Email</th>
         <th>Phone Number</th>
-        <th>Total Hours</th>
-        <th></th>
+        <th class="noSort">Completed Trainings?</th>
+        <th class="noSort">Total Hours</th>
+        <th class="noSort">Present</th>
+        <th class="noSort">Remove Volunteer</th>
       </tr>
     </thead>
-    <tbody id="volunteerTable">
+    <tbody class="align-middle" id="volunteerTable">
       {% for participant in eventRsvpData%}
       <tr>
-        <td>
-          <input
-            type="checkbox"
-            class='attendanceCheck'
-            name="checkbox_{{participant.user.username}}"
-            {% if participant.user.username in eventParticipants %}
-              checked
-            {% endif %} />
-        </td>
-        <td>
-          {% if participant.user.username not in trainedParticipantsList %}
-            <span data-bs-toggle="tooltip" title="Did Not Complete All Trainings">
-              <span class="text-danger bi bi-exclamation-triangle-fill"></span>
-            </span>
-          {% endif %}
-        </td>
         <td>
           <input
             class="form-control"
@@ -84,6 +68,13 @@
         </td>
         <td>{{participant.user.email}}</td>
         <td>{{participant.user.phoneNumber}}</td>
+        <td style="text-align:center">
+          {% if participant.user.username not in trainedParticipantsList %}
+            <span class="bi bi-x-lg" aria-label="Did not complete all trainings."></span>
+          {% else %}
+            <span class="bi bi-check-lg" aria-label="Completed all trainings."></span>
+          {% endif %}
+        </td>
         <td>
           <input
             class="form-control number-only form-control input-sm"
@@ -97,14 +88,25 @@
               value="{{eventLength}}"
             {% elif participant.user.username in eventParticipants %}
               value="{{eventParticipants[participant.user.username]}}"
-            {% else %} readonly {% endif %}>
+            {% else %} disabled {% endif %} />
         </td>
-        <td>
-          <span
-            class="removeVolunteer"
-            id="{{participant.user.username}}">
+        <td style="text-align:center">
+          <input
+            type="checkbox"
+            class='attendanceCheck'
+            name="checkbox_{{participant.user.username}}"
+            {% if participant.user.username in eventParticipants %}
+              checked
+            {% endif %} />
+        </td>
+        <td style="text-align:center">
+          <button
+            type="button"
+            class="removeVolunteer btn btn-danger btn-sm"
+            id="{{participant.user.username}}"
+            aria-label="remove volunteer">
               <i class="bi bi-trash h5 align-middle"></i>
-          </span>
+          </button>
         </td>
       </tr>
       {% endfor %}
