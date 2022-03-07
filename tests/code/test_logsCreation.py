@@ -4,6 +4,7 @@ from app import app
 from app.models.adminLogs import AdminLogs
 from app.logic.adminLogs import createLog
 from app.models import mainDB
+from app.models.user import User
 
 @pytest.mark.integration
 def test_createLogs():

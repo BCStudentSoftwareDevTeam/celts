@@ -30,7 +30,8 @@ def deleteEvent(eventId):
     event = Event.get_or_none(Event.id == eventId)
     if event:
         event.delete_instance(recursive = True, delete_nullable = True)
-    createLog(f'Deleted event: {event.name}, with start date {str(datetime.datetime.strftime(event.startDate, "%m/%d/%Y"))}.')
+    print('This is the startdate.............................................................',event.startDate)
+    # createLog(f'Deleted event: {event.name}, with start date {str(datetime.datetime.strftime(event.startDate, "%m/%d/%Y"))}.')
 
 
 def attemptSaveEvent(eventData):
@@ -88,12 +89,12 @@ def saveEventToDb(newEventData):
                 # TODO handle multiple programs
                 if 'program' in newEventData:
                     ProgramEvent.create(program=newEventData['program'], event=eventRecord)
-                    createLog(f"Created event: {eventData['name']},for {(ProgramEvent.get(program =newEventData['program'])).program.programName} Program, with start date {str(datetime.datetime.strftime(eventData['startDate'], '%m/%d/%Y'))}.")
+                    # createLog(f"Created event: {eventData['name']},for {(ProgramEvent.get(program =newEventData['program'])).program.programName} Program, with start date {str(datetime.datetime.strftime(eventData['startDate'], '%m/%d/%Y'))}.")
 
             else:
                 eventRecord = Event.get_by_id(newEventData['id'])
                 Event.update(**eventData).where(Event.id == eventRecord).execute()
-                createLog(f"Updated event: {eventData['name']} with start date {str(datetime.datetime.strftime(eventData['startDate'], '%m/%d/%Y'))}.")
+                # createLog(f"Updated event: {eventData['name']} with start date {str(datetime.datetime.strftime(eventData['startDate'], '%m/%d/%Y'))}.")
 
             Facilitator.delete().where(Facilitator.event == eventRecord).execute()
             for f in newEventData['facilitators']:
