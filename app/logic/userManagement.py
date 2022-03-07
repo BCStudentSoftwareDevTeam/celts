@@ -16,21 +16,21 @@ def addCeltsStudentStaff(user):
     user = User.get_by_id(user)
     user.isCeltsStudentStaff = True
     user.save()
-    createLog(f'Made {user.firstName} {user.lastName} a Celts Student Staff.')
+    # createLog(f'Made {user.firstName} {user.lastName} a Celts Student Staff.')
 
 
 def removeCeltsAdmin(user):
     user = User.get_by_id(user)
     user.isCeltsAdmin = False
     user.save()
-    createLog(f'Removed {user.firstName} {user.lastName} from Celts Admins.')
+    # createLog(f'Removed {user.firstName} {user.lastName} from Celts Admins.')
 
 
 def removeCeltsStudentStaff(user):
     user = User.get_by_id(user)
     user.isCeltsStudentStaff = False
     user.save()
-    createLog(f'Removed {user.firstName} {user.lastName} from a Celts Student Staff.')
+    # createLog(f'Removed {user.firstName} {user.lastName} from a Celts Student Staff.')
 
 
 def changeCurrentTerm(term):
@@ -41,7 +41,7 @@ def changeCurrentTerm(term):
     newCurrentTerm.isCurrentTerm = True
     newCurrentTerm.save()
     session["current_term"] = model_to_dict(newCurrentTerm)
-    createLog(f"Changed Current Term from {oldCurrentTerm.description} to {newCurrentTerm.description}")
+    # createLog(f"Changed Current Term from {oldCurrentTerm.description} to {newCurrentTerm.description}")
 
 def addNextTerm():
     newSemesterMap = {"Spring":"Summer",

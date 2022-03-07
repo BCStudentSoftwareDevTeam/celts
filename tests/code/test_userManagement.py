@@ -1,5 +1,5 @@
 import pytest
-from app.logic.userManagement import addCeltsAdmin, removeCeltsAdmin,addCeltsStudentStaff, removeCeltsStudentStaff, changeCurrentTerm, addNextTerm
+from app.logic.userManagement import *
 from app.models.user import User
 from app.models.term import Term
 
