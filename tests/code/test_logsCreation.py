@@ -8,6 +8,7 @@ from app.models import mainDB
 @pytest.mark.integration
 def test_createLogs():
     with mainDB.atomic() as transaction:
+        g.current_user = User.get_by_id("ramsayb2")
         currentLogsCount = len(list(AdminLogs.select()))
         createLog("This is a test log")
         assert len(list(AdminLogs.select())) == currentLogsCount +1
