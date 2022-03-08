@@ -76,7 +76,7 @@ def createEvent(templateid, programid=None):
         # TODO need to handle the multiple programs case
         eventData["program"] = program
 
-
+    print("This is the event Data,.......................<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",eventData)
     # Try to save the form
     if request.method == "POST":
         try:
