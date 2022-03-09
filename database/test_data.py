@@ -674,6 +674,16 @@ eventParticipants = [
         "user": "partont",
         "event": 2,
         "hoursEarned": 5
+    },
+    {
+        "user": "khatts",
+        "event": 6,
+        "hoursEarned": 3,
+    },
+    {
+        "user": "khatts",
+        "event": 10,
+        "hoursEarned": 3,
     }
 ]
 EventParticipant.insert_many(eventParticipants).on_conflict_replace().execute()

@@ -5,6 +5,7 @@ from peewee import IntegrityError, DoesNotExist
 from app.models import mainDB
 from app.models.user import User
 from app.models.event import Event
+from app.models.term import Term
 from app.models.eventParticipant import EventParticipant
 from app.logic.volunteers import addVolunteerToEventRsvp
 from app.logic.participants import trainedParticipants
@@ -102,15 +103,29 @@ def test_updateEventParticipants():
 
 @pytest.mark.integration
 def test_trainedParticipants():
-    attendedPreq = trainedParticipants(1)
-    assert "neillz" and "khatts" in attendedPreq
+    currentTerm = Term.get(Term.isCurrentTerm==1)
+    # Case1: test for an event in the current term
+    attendedPreq = trainedParticipants(3, currentTerm)
+    assert attendedPreq == ["khatts"]
 
-    #test for program with no prereq
-    attendedPreq = trainedParticipants(4)
+    # Case2: test for an event in a past term
+    attendedPreq = trainedParticipants(1, currentTerm)
     assert attendedPreq == []
 
-    #test for program that doesn't exist
-    attendedPreq = trainedParticipants(500)
+    # Case3: test for when user changes current term
+    currentTerm = Term.get(Term.id==1)
+    attendedPreq = trainedParticipants(1, currentTerm)
+    assert attendedPreq == ["neillz", "khatts", "ayisie"]
+
+    attendedPreq = trainedParticipants(3, currentTerm)
+    assert attendedPreq == []
+
+    # Case4: test for program with no prereq
+    attendedPreq = trainedParticipants(4, currentTerm)
+    assert attendedPreq == []
+
+    # Case5: test for program that doesn't exist
+    attendedPreq = trainedParticipants(500, currentTerm)
     assert attendedPreq == []
 
 @pytest.mark.integration

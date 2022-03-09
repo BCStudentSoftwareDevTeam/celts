@@ -74,7 +74,7 @@ def viewVolunteersProfile(username):
 
               noteForDict = list(notes)[-1].banNote.noteContent if list(notes) else ""
               eligibilityTable.append({"program" : program,
-                                   "completedTraining" : (username in trainedParticipants(program)),
+                                   "completedTraining" : (username in trainedParticipants(program, g.current_term)),
                                    "isNotBanned" : isEligibleForProgram(program, username),
                                    "banNote": noteForDict})
          return render_template ("/main/volunteerProfile.html",

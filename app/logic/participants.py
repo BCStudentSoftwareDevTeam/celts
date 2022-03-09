@@ -8,14 +8,14 @@ from app.models.eventParticipant import EventParticipant
 from app.logic.users import isEligibleForProgram
 from app.logic.volunteers import getEventLengthInHours
 
-def trainedParticipants(programID):
+def trainedParticipants(programID, currentTerm):
     """
     This function tracks the users who have attended every Prerequisite
     event and adds them to a list that will not flag them when tracking hours.
     """
     trainingEvents = list(Event.select()
                                .join(ProgramEvent)
-                               .where(ProgramEvent.program == programID,Event.isTraining==True))
+                               .where(ProgramEvent.program==programID, Event.isTraining==True, Event.term==currentTerm))
 
     eventTrainingDataList = [participant.user.username for participant in (
         EventParticipant.select().where(EventParticipant.event.in_(trainingEvents))
