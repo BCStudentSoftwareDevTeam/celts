@@ -34,6 +34,8 @@ $(document).ready(function(){
 // Disabling the textbox until a user insert a date.
   $("input").change(function(){
        $('textarea').removeAttr('disabled');
+       $('#banNoteDiv').removeAttr('disabled');
+
     });
 
 
