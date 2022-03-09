@@ -34,6 +34,8 @@ $(document).ready(function() {
   $('input.timepicker').timepicker({
            timeFormat : 'hh:mm p',
            scrollbar: true,
+           dropdown: true,
+           dynamic: true,
            minTime: "8:00am",
            maxTime: "10:00pm"
   });

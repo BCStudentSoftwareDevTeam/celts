@@ -113,7 +113,8 @@
               <label class="form-label me-2" for="startTime"><strong>Start Time</strong></label>
               {% if isEditable %}
               <div class="input-group">
-                <input class="form-control timepicker" id='startTime'value="{{eventData.timeStart}}" name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time" required>
+                {% set startTime = eventData.timeStart.strftime("%I: %M %p") if eventData.timeStart and eventData.timeStart.strftime else eventData.timeStart%}
+                <input class="form-control timepicker" id='startTime' value="{{startTime}}" name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time" required />
                 <span class="input-group-text" id="timeIcon1"><i class="bi bi-clock"></i></span>
               </div>
               {% else %}
@@ -124,7 +125,8 @@
               <label class="form-label me-2" for="pickEndTime"><strong>End Time</strong></label>
               {% if isEditable %}
               <div class="input-group">
-                <input class="form-control timepicker" id='endTime' value="{{eventData.timeEnd}}" name="timeEnd" aria-describedby="timeIcon2" placeholder="Pick an end time" required>
+                {% set endTime = eventData.timeEnd.strftime("%I: %M %p") if eventData.timeEnd and eventData.timeEnd.strftime else eventData.timeEnd%}
+                <input class="form-control timepicker" id='endTime' value="{{endTime}}" name="timeEnd" aria-describedby="timeIcon2" placeholder="Pick an end time" required />
                 <span class="input-group-text" id="timeIcon2"><i class="bi bi-clock"></i></span>
               </div>
               {% else %}
