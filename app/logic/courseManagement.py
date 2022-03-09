@@ -44,8 +44,8 @@ def getinstructorData(courseIds):
 
     return instructorDict
 
-def updateCourse(courseData):
-    print(courseData['courseID'])
+def updateCourse(courseData, instructorsDict):
+    print(instructorsDict)
     for toggler in ["regularOccurenceToggle", "slSectionsToggle", "permanentDesignation"]:
         courseData.setdefault(toggler, "off")
     status = CourseStatus.get(CourseStatus.status == "Pending")
@@ -64,3 +64,9 @@ def updateCourse(courseData):
     for i in range(1, 7):
         (CourseQuestion.update(questionContent=courseData[f"{i}"])
                     .where((CourseQuestion.questionNumber == i) & (CourseQuestion.course==courseData["courseID"])).execute())
+    currentInstructors = CourseInstructor.select().where(CourseInstructor.course == courseData["courseID"])
+    instructors = [instructor.user for instructor in currentInstructors]
+    print(instructors)
+    for instructor in instructorsDict["instructors"]:
+        if instructor not in instructors:
+            CourseInstructor.create(course=courseData["courseID"], user=instructor.username)

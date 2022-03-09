@@ -23,9 +23,9 @@
         <tbody>
           <tr hidden>
             <td>
-              <p id="instructorName"></p>
+              <p class="instructorName"></p>
               <div class="input-group mb-3 pt-3">
-                <input type="text" class="form-control-sm mb-3" data-id="" id="" name="courseInstructorPhone" aria-label="Instructor's Phone Number." />
+                <input type="text" class="form-control-sm mb-3" id="" name="courseInstructorPhone" aria-label="Instructor's Phone Number." />
                 <button class="btn btn-primary mb-3" data-id='' aria-label="Button updates Instructor's phone number." type="button" id="instructorPhoneUpdate">Update</button>
               </div>
             </td>
@@ -36,10 +36,10 @@
           {% for instructor in courseInstructor %}
           <tr>
             <td>
-              <p>{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user}})</p>
+              <p class="instructorName">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user}})</p>
               <div class="input-group mb-3 pt-3">
-                <input type="text" class="form-control-sm mb-3" data-id="{{instructor.user}}" id="{{instructor.user.phoneNumber}}" name="" aria-label="Recipient's username" aria-describedby="button-addon2" value="{{instructor.user.phoneNumber}}"/>
-                <button class="btn btn-primary mb-3" data-id="{{instructor.user.phoneNumber}}" type="button" id="instructorPhoneUpdate">Update</button>
+                <input type="text" class="form-control-sm mb-3" id="{{instructor.user}}" name="" aria-label="Recipient's username" aria-describedby="button-addon2" value="{{instructor.user.phoneNumber}}"/>
+                <button class="btn btn-primary mb-3" data-id="{{instructor.user}}" type="button" id="instructorPhoneUpdate">Update</button>
               </div>
             </td>
             <td>
@@ -106,7 +106,6 @@
         name="slDesignation"
         rows="3">{{courseData.course.serviceLearningDesignatedSections if courseData != None}}
       </textarea>
-      <span class="pt-5">Will this course be a permanently designated service learning course?</span>
       <div class="form-check form-switch">
         <label class="form-label" for="permanentDesignation"><strong>Will this course be a permanently designated service-learning course?</strong></label>
         <input

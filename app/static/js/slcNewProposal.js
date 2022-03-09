@@ -95,9 +95,8 @@ function callback() {
   let newRow = lastRow.clone();
   newRow.find("td:eq(0) p").text(instructor);
   newRow.find("td:eq(0) div input").val(phone);
-  newRow.find("td:eq(0) div button").attr("data-id", phone);
-  newRow.find("td:eq(0) div input").attr("data-id", instructor);
-  newRow.find("td:eq(0) div input").attr("id", phone);
+  newRow.find("td:eq(0) div button").attr("data-id", instructor);
+  newRow.find("td:eq(0) div input").attr("id", instructor);
   newRow.prop("hidden", false);
   lastRow.after(newRow);
 }
@@ -108,14 +107,21 @@ $("#courseInstructor").on('input', function() {
 
 $("#instructorTable").on("click", "#instructorPhoneUpdate", function() {
    var inputId = $(this).attr("data-id")
-   var instructorData = [$("#" + inputId).attr("data-id"), $("#" + inputId).val()]
+   console.log($("#" + inputId).val())
+   var instructorData = [inputId, $("#" + inputId).val()]
 
    $.ajax({
      url: "/updateInstructorPhone",
      data: JSON.stringify(instructorData),
      type: "POST",
      contentType: "application/json",
-     success: function(){}
+     success: function(response) {
+         msgFlash("Instructor's phone number updated", "success")
+     },
+     error: function(request, status, error) {
+       console.log(status,error);
+       msgFlash("Error updating phone number", "danger")
+     }
    });
 });
 

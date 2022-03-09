@@ -89,7 +89,7 @@ def slcNewProposal():
                 CourseInstructor.create(course=course, user=instructor.username)
             return redirect('/serviceLearning/courseManagement')
         else:
-            updateCourse(request.form.copy())
+            updateCourse(request.form.copy(), instructorsDict)
             return redirect('/serviceLearning/courseManagement')
     terms = Term.select().where(Term.year >= g.current_term.year)
     courseData = None
@@ -112,14 +112,12 @@ def getInstructors():
 def updateInstructorPhone():
     try:
         instructorData = request.get_json()
-        print(instructorData)
         updateInstructorPhone = User.update(phoneNumber=instructorData[1]).where(User.username == instructorData[0]).execute()
-        flash("Instructor's phone number updated", 'success')
-        return ""
+        return "success"
     except Exception as e:
         print(e)
-        flash("Failed to update phone number", 'warning')
         return e
+        
 @serviceLearning_bp.route('/serviceLearning/withdraw/<courseID>', methods = ['POST'])
 def withdrawCourse(courseID):
     try:

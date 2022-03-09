@@ -52,18 +52,8 @@
     <div class='col-12 col-md scroll-container overflow-visible'>
       <div>
         <div id="maincontent" class="main-content container">
-          <div class="flash_container">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-              {% if messages %}
-                {% for category, message in messages %}
-                  <div class="alert  alert-{{category}} alert-dismissible" role="alert">{{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                  </div>
-                {% endfor %}
-              {% endif %}
-            {% endwith %}
+          <div class="flash_container" id="flash_container">
           </div>
-
           <div class="d-lg-none position-fixed top-0 start-0 d-print-none">
             <button class="btn btn-dark rounded-0 rounded-end" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="sidebar">
               <span class="bi bi-list" role="button" aria-label="Sidebar"></span>
