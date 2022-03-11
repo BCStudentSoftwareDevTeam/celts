@@ -468,7 +468,6 @@ def test_deleteEvent():
                                           endDate= "2022-6-12")
 
             testingEvent = Event.get(Event.name == "Testing delete event")
-            print("This is testtingevent date",testingEvent.startDate)
 
             eventId = testingEvent.id
             deletingEvent = deleteEvent(eventId)
@@ -481,12 +480,11 @@ def test_deleteEvent():
 @pytest.mark.integration
 def test_getAllFacilitators():
     userFacilitator = getAllFacilitators()
-
     assert len(userFacilitator) >= 1
-    # assert userFacilitator[1].username == 'lamichhanes2'
-    # assert userFacilitator[1].isFaculty == True
-    # assert userFacilitator[0].username == "khatts"
-    # assert userFacilitator[0].isFaculty == False
+    assert userFacilitator[0].username == 'khatts'
+    assert userFacilitator[0].isFaculty == False
+    assert userFacilitator[1].username == "lamichhanes2"
+    assert userFacilitator[1].isFaculty == True
 
 @pytest.mark.integration
 def test_getsCorrectUpcomingEvent():

@@ -30,7 +30,16 @@ def deleteEvent(eventId):
     event = Event.get_or_none(Event.id == eventId)
     if event:
         event.delete_instance(recursive = True, delete_nullable = True)
-        createLog(f"Deleted event: {event.name}, which had a startdate of {str(datetime.datetime.strftime(event.startDate, '%m/%d/%Y'))}")
+        if event.startDate:
+            try:
+                createLog(f"Deleted event: {event.name}, which had a startdate of {str(datetime.datetime.strftime(event.startDate, '%m/%d/%Y'))}")
+            except:
+                try:
+                    createLog(f"Deleted event: {event.name}, which had a startdate of {str(datetime.datetime.strptime(event.startDate, '%m/%d/%Y'))}")
+                except:
+                    createLog(f"Deleted event: {event.name}") #making a log without a date because the date can not be processsed (Usually from testing with 00-00-00 dates).
+                    print("There was a problem  making a log with the folllowing date.",event.startDate)
+
 
 
 
@@ -167,7 +176,7 @@ def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
 
 def getAllFacilitators():
 
-    facilitators = User.select(User).where((User.isFaculty == 1) | (User.isCeltsAdmin == 1) | (User.isCeltsStudentStaff == 1))
+    facilitators = User.select(User).where((User.isFaculty == 1) | (User.isCeltsAdmin == 1) | (User.isCeltsStudentStaff == 1)).order_by(User.username) #ordered because of the tests
     return facilitators
 
 def validateNewEventData(data):
