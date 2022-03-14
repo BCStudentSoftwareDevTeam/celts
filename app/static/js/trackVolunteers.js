@@ -21,28 +21,27 @@ $(document).ready(function() {
 
    }
  });
+});
 
- $(".form-check-input").click(function updateMatch(el){
-   let outsidePart =  $(this).attr('id');
-   let user = $(this).attr('name');
-   let eventId = $("#eventID").val();
-   var url = `/matchParticipants/${user}/${outsidePart}/${eventId}`
-   if ($(this).attr('checked') == 'checked'){
-    url = `/unMatch/${user}/${outsidePart}/${eventId}`
-   }
-   $.ajax({
-     url: url,
-     type: "POST",
-     success: function(s){
-       location.reload();
-     },
-     error: function(request, status, error){
-       location.reload();
-     }
-   })
- });
-
-
+$(".form-check-input").change(function updateMatch(el){
+  console.log("Match is invoked right away!");
+  let outsidePart =  $(this).attr('id');
+  let user = $(this).attr('name');
+  let eventId = $("#eventID").val();
+  var url = `/matchParticipants/${user}/${outsidePart}/${eventId}`
+  if ($(this).attr('checked') == 'checked'){
+   url = `/unMatch/${user}/${outsidePart}/${eventId}`
+  }
+  $.ajax({
+    url: url,
+    type: "POST",
+    success: function(s){
+      location.reload();
+    },
+    error: function(request, status, error){
+      location.reload();
+    }
+  })
 });
 
   $('[data-toggle="tooltip"]').tooltip();
@@ -88,7 +87,7 @@ $(document).ready(function() {
     });
   });
 
-});
+
 
 function callback() {
   $("#selectVolunteerButton").prop('disabled', false);

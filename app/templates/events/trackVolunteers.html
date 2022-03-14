@@ -32,14 +32,15 @@
     </li>
   </ul>
 </div>
+
 <h2 class ="text-center"> Volunteers </h2>
 <form action="#" method="post"><br>
-<label class='d-none' id="eventLength">{{eventLength}}</label>
-<input class="form-control" id="eventID" name="event" value="{{event}}" type='hidden' />
-<div class="flex-container" style="padding: 5px;">
-  <div class='form-group d-inline-flex'>
-    <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add volunteer</a>
-    <a class="btn btn-warning" role="button" href= "/event/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
+  <label class='d-none' id="eventLength">{{eventLength}}</label>
+  <input class="form-control" id="eventID" name="event" value="{{event}}" type='hidden' />
+  <div class="flex-container" style="padding: 5px;">
+    <div class='form-group d-inline-flex'>
+      <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add volunteer</a>
+      <a class="btn btn-warning" role="button" href= "/event/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
   </div>
 </div>
 <form method="post">
@@ -51,20 +52,17 @@
         <th>Name</th>
         <th>Email</th>
         <th>Phone Number</th>
+        <th class="noSort">Completed Trainings?</th>
         <th>Total Hours</th>
         <th>Partner(s)</th>
-        <th></th>
+        <th>Match</th>
+        <th class="noSort">Present</th>
+        <th class="noSort">Remove Volunteer</th>
         <th></th>
       </tr>
     </thead>
-    <tbody id="volunteerTable">
-      {% set accordionCount = namespace(value=1) %}
-        <th class="noSort">Completed Trainings?</th>
-        <th class="noSort">Total Hours</th>
-        <th class="noSort">Present</th>
-        <th class="noSort">Remove Volunteer</th>
-
     <tbody class="align-middle" id="volunteerTable">
+      {% set accordionCount = namespace(value=1) %}
       {% for participant in eventRsvpData%}
       <tr>
         <td>
@@ -102,33 +100,14 @@
             {% else %} disabled {% endif %} />
         </td>
         <td>
-          {% if participant.user in matches%}
-          {% for entry in matches[participant.user]%}
-          <ul>
-            <li> {{entry.firstName}} {{entry.lastName}} </li>
-          </ul>
-          {% endfor%}
-          {% endif %}
-       </td>
-        <td style="text-align:center">
-          <input
-            type="checkbox"
-            class='attendanceCheck'
-            name="checkbox_{{participant.user.username}}"
-            {% if participant.user.username in eventParticipants %}
-              checked
-            {% endif %} />
+        {% if participant.user in matches%}
+        {% for entry in matches[participant.user]%}
+        <ul>
+          <li> {{entry.firstName}} {{entry.lastName}} </li>
+        </ul>
+        {% endfor%}
+        {% endif %}
         </td>
-
-        <td style="text-align:center">
-            <button
-              type="button"
-              class="removeVolunteer btn btn-danger btn-sm"
-              id="{{participant.user.username}}"
-              aria-label="remove volunteer">
-                <i class="bi bi-trash h5 align-middle"></i>
-            </button>
-          </td>
 
         <td>
               {% set ac = accordionCount.value| string() %}
@@ -163,6 +142,16 @@
               </div>
             </div>
             </div>
+          </td>
+
+          <td style="text-align:center">
+            <input
+              type="checkbox"
+              class='attendanceCheck'
+              name="checkbox_{{participant.user.username}}"
+              {% if participant.user.username in eventParticipants %}
+                checked
+              {% endif %} />
           </td>
 
           <td>
