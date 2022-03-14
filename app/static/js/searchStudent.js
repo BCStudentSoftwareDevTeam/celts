@@ -5,5 +5,5 @@ function callback() {
 }
 
 $("#searchStudentsInput").on("input", function() {
-  searchUser("searchStudentsInput", callback,"insideParticipant");
+  searchUser("searchStudentsInput", callback,"student");
 });

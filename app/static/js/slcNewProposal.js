@@ -96,7 +96,7 @@ function callback() {
 }
 
 $("#courseInstructor").on('input', function() {
-  searchUser("courseInstructor", callback,"insideParticipant");
+  searchUser("courseInstructor", callback,"student");
 });
 
 $("#instructorTable").on("click", "#remove", function() {
