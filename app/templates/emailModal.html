@@ -9,6 +9,14 @@
         <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <div class="pastEventWarning" hidden>
+          <div class="alert alert-danger d-flex justify-content-center" role="alert">
+            <span class="bi bi-exclamation-triangle-fill me-2"></span>
+            <div>
+              This event is in the past
+            </div>
+          </div>
+        </div>
         <h6 id="emailLastSent" class="text-center"></h6>
         <form role="form" method="post" id="modal-form" action="/email">
           <div>
