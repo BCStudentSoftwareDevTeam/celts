@@ -119,13 +119,13 @@ def addOutsideParticipant(outsideParticipant, eventId):
 @admin_bp.route('/matchParticipants', methods = ['POST'])
 def matchParticipant():
     matchData = request.form
-    
+
     volunteer = matchData['volunteer']
     outsideParticipant = matchData['outsideParticipant']
-    event = matchData['eventId'][0]
+    eventId = matchData['eventId'][0]
 
     vol = User.get_by_id(volunteer)
-    update = MatchParticipants.get_or_none(MatchParticipants.outsideParticipant==outsideParticipant,MatchParticipants.event==int(event),MatchParticipants.volunteer==None)
+    update = MatchParticipants.get_or_none(MatchParticipants.outsideParticipant==outsideParticipant,MatchParticipants.event==int(eventId),MatchParticipants.volunteer==None)
     if update != None:
         update.volunteer = volunteer
         update.save()
@@ -135,6 +135,21 @@ def matchParticipant():
         flash("Participant already matched to someone", "danger")
     return ""
 
+
+@admin_bp.route('/unMatch', methods = ['POST'])
+def unMatch():
+    matchData = request.form
+
+    volunteer = matchData['volunteer']
+    outsideParticipant = matchData['outsideParticipant']
+    eventId = matchData['eventId'][0]
+
+    volunteer = User.get_by_id(volunteer)
+    query = MatchParticipants.get(MatchParticipants.volunteer==volunteer,MatchParticipants.outsideParticipant==outsideParticipant,MatchParticipants.event==eventId)
+    query.volunteer = None
+    query.save()
+    flash("Outside particpant successfully removed", "success")
+    return ""
 
 @admin_bp.route('/removeVolunteerFromEvent/<user>/<eventID>', methods = ['POST'])
 def removeVolunteerFromEvent(user, eventID):
@@ -150,15 +165,6 @@ def removeVolunteerFromEvent(user, eventID):
 def removeParticipantFromEvent(outsideParticipant, eventID):
     (MatchParticipants.delete().where(MatchParticipants.outsideParticipant==outsideParticipant, MatchParticipants.event==eventID)).execute()
     flash("Particpant successfully removed", "success")
-    return ""
-
-@admin_bp.route('/unMatch/<volunteer>/<outsideParticipant>/<eventID>', methods = ['POST'])
-def unMatch(volunteer,outsideParticipant, eventID):
-    volunteer = User.get_by_id(volunteer)
-    query = MatchParticipants.get(MatchParticipants.volunteer==volunteer,MatchParticipants.outsideParticipant==outsideParticipant,MatchParticipants.event==eventID)
-    query.volunteer = None
-    query.save()
-    flash("Outside particpant successfully removed", "success")
     return ""
 
 @admin_bp.route('/updateBackgroundCheck', methods = ['POST'])

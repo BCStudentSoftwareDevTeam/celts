@@ -29,7 +29,7 @@ $(".form-check-input").change(function updateMatch(el){
   let eventId = $("#eventID").val();
   var url = `/matchParticipants`
   if ($(this).attr('checked') == 'checked'){
-   url = `/unMatch/${volunteer}/${outsidePart}/${eventId}`
+   url = `/unMatch`
   }
   var matchData = {
     volunteer:volunteer,
