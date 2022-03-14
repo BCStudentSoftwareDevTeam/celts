@@ -15,6 +15,9 @@ $(document).ready(function() {
     submitRequest("addCeltsAdmin","#searchCeltsAdminInput")
   });
 
+  $("#addNewTerm").on("click",function(){
+    addNewTerm();
+  });
   // add celts student staff
   $("#searchCeltsStudentStaffInput").on("input", function() {
     searchUser("searchCeltsStudentStaffInput", callback, "insideParticipant");
@@ -51,6 +54,10 @@ $(document).ready(function() {
   });
 });
 
+function clickTerm(term){
+  $(".term-btn").removeClass("active");
+  term.addClass('active');
+};
 
 function submitRequest(method,identifier){
   let data = {
@@ -72,10 +79,6 @@ function submitRequest(method,identifier){
 
   })
 }
-function clickTerm(term){
-  $(".term-btn").removeClass("active");
-  term.addClass('active');
-};
 
 function submitTerm(){
   var termInfo = {id: $("#currentTermList .active").val()};
@@ -83,6 +86,19 @@ function submitTerm(){
     url: "/admin/changeTerm",
     type: "POST",
     data: termInfo,
+    success: function(s){
+      location.reload()
+    },
+    error: function(error, status){
+        console.log(error, status)
+    }
+  })
+};
+
+function addNewTerm(){
+  $.ajax({
+    url: "/admin/addNewTerm",
+    type: "POST",
     success: function(s){
       location.reload()
     },
