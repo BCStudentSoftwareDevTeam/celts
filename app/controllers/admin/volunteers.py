@@ -116,12 +116,16 @@ def addOutsideParticipant(outsideParticipant, eventId):
         flash("Participant succesfully added to the event!", "success")
     return ""
 
-@admin_bp.route('/matchParticipants/<volunteer>/<outsideParticipant>/<eventId>', methods = ['POST'])
-def matchParticipant(volunteer, outsideParticipant, eventId):
-    outsideParticipant = outsideParticipant.strip("()").split('(')[-1]
-    event = eventId.split(':')
+@admin_bp.route('/matchParticipants', methods = ['POST'])
+def matchParticipant():
+    matchData = request.form
+    
+    volunteer = matchData['volunteer']
+    outsideParticipant = matchData['outsideParticipant']
+    event = matchData['eventId'][0]
+
     vol = User.get_by_id(volunteer)
-    update = MatchParticipants.get_or_none(MatchParticipants.outsideParticipant==outsideParticipant,MatchParticipants.event==int(event[0]),MatchParticipants.volunteer==None)
+    update = MatchParticipants.get_or_none(MatchParticipants.outsideParticipant==outsideParticipant,MatchParticipants.event==int(event),MatchParticipants.volunteer==None)
     if update != None:
         update.volunteer = volunteer
         update.save()

@@ -24,17 +24,23 @@ $(document).ready(function() {
 });
 
 $(".form-check-input").change(function updateMatch(el){
-  console.log("Match is invoked right away!");
   let outsidePart =  $(this).attr('id');
-  let user = $(this).attr('name');
+  let volunteer = $(this).attr('name');
   let eventId = $("#eventID").val();
-  var url = `/matchParticipants/${user}/${outsidePart}/${eventId}`
+  var url = `/matchParticipants`
   if ($(this).attr('checked') == 'checked'){
-   url = `/unMatch/${user}/${outsidePart}/${eventId}`
+   url = `/unMatch/${volunteer}/${outsidePart}/${eventId}`
   }
+  var matchData = {
+    volunteer:volunteer,
+    outsideParticipant:outsidePart,
+    eventId:eventId,
+  }
+
   $.ajax({
     url: url,
     type: "POST",
+    data: matchData,
     success: function(s){
       location.reload();
     },

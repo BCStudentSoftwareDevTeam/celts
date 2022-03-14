@@ -17,7 +17,7 @@ from app.models.eventTemplate import EventTemplate
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
-from app.logic.participants import trainedParticipants, matchVolunteers
+from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
@@ -195,8 +195,3 @@ def courseManagement(term = None):
                             approvedCourses = approved,
                             terms = terms,
                             term = term)
-
-
-@admin_bp.route('/matchVolunteerParticipant',methods = ['GET','POST'])
-def matchParticipants():
-    matchVolunteers()
