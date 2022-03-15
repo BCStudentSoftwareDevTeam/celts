@@ -80,11 +80,8 @@
           <label class="form-label" for='inputEventTerm'><strong>Term</strong></label>
           {% if isEditable  %}
             <select class="form-select" name='term' id='inputEventTerm' required>
-              {% if eventData.term and eventData.term not in futureTerms %}
-                <option value='{{eventData.term.id}}' selected>{{eventData.term.description}}</option>
-              {% endif %}
-              {% for future in futureTerms %}
-                <option value='{{future}}' {{"selected" if future == eventData.term}}>{{future.description}}</option>
+              {% for term in futureTerms %}
+                <option value='{{term}}' {{"selected" if term == eventData.term}}>{{term.description}}</option>
               {% endfor %}
             </select>
           {% else %}
