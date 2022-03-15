@@ -18,6 +18,7 @@ export default function searchUser(inputId, callback, parentElementId=null, obje
             })
           )}
           else {
+            console.log("phone")
             response(Object.keys(dictToJSON).map( (item, index) => {
               if (index === 0){
                 return {

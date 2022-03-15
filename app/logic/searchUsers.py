@@ -15,7 +15,7 @@ def searchUsers(query, object):
         for participant in results:
             if participant not in resultsDict:
                 resultsDict[f"{participant.firstName} {participant.lastName} ({participant.username})"] = f"{participant.firstName} {participant.lastName} ({participant.username})"
-                if object:
+                if object=="true":
                     resultsDict[f"{participant.username} phoneNumber"] = participant.phoneNumber
     else:
         for searchTerm in splitSearch: #searching for specified first and last name
@@ -25,7 +25,7 @@ def searchUsers(query, object):
                 for participant in results:
                     if participant not in resultsDict:
                         resultsDict[f"{participant.firstName} {participant.lastName} ({participant.username})"] = f"{participant.firstName} {participant.lastName} ({participant.username})"
-                        if object:
+                        if object=="true":
                             resultsDict[f"{participant.username} phoneNumber"] = participant.phoneNumber
 
     print("resultsDict", resultsDict)

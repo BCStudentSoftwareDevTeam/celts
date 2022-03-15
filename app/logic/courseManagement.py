@@ -50,13 +50,12 @@ def updateCourse(courseData, instructorsDict):
         courseData.setdefault(toggler, "off")
     status = CourseStatus.get(CourseStatus.status == "Pending")
     course = Course.update(
-        courseName= courseData["courseName"],
+        courseName=courseData["courseName"],
         courseAbbreviation=courseData["courseAbbreviation"],
         courseCredit=courseData["credit"],
         isRegularlyOccuring=1 if "on" in courseData["regularOccurenceToggle"] else 0,
-        term= courseData['term'],
+        term=courseData['term'],
         status=status,
-        createdBy=g.current_user,
         isAllSectionsServiceLearning=1 if "on" in courseData["slSectionsToggle"] else 0,
         serviceLearningDesignatedSections=courseData["slDesignation"],
         isPermanentlyDesignated=1 if "on" in courseData["permanentDesignation"] else 0,
@@ -64,9 +63,6 @@ def updateCourse(courseData, instructorsDict):
     for i in range(1, 7):
         (CourseQuestion.update(questionContent=courseData[f"{i}"])
                     .where((CourseQuestion.questionNumber == i) & (CourseQuestion.course==courseData["courseID"])).execute())
-    currentInstructors = CourseInstructor.select().where(CourseInstructor.course == courseData["courseID"])
-    instructors = [instructor.user for instructor in currentInstructors]
-    print(instructors)
+    removeInstructors = CourseInstructor.delete().where(CourseInstructor.course == courseData["courseID"]).execute()
     for instructor in instructorsDict["instructors"]:
-        if instructor not in instructors:
-            CourseInstructor.create(course=courseData["courseID"], user=instructor.username)
+        addInstructors = CourseInstructor.create(course=courseData["courseID"], user=instructor)
