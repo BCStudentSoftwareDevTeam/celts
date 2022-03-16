@@ -31,7 +31,7 @@ $(document).ready(function() {
     }
   });
 
-  if (navigator.userAgent.indexOf("Firefox") != -1 ) {
+  if (navigator.userAgent.indexOf("Firefox") != -1 || navigator.userAgent.indexOf("Safari") != -1) {
     $('input.timepicker').timepicker({
              timeFormat : 'hh:mm p',
              scrollbar: true,
