@@ -31,14 +31,22 @@ $(document).ready(function() {
     }
   });
 
-  $('input.timepicker').timepicker({
-           timeFormat : 'hh:mm p',
-           scrollbar: true,
-           dropdown: true,
-           dynamic: true,
-           minTime: "8:00am",
-           maxTime: "10:00pm"
-  });
+  if (navigator.userAgent.indexOf("Firefox") != -1 ) {
+    $('input.timepicker').timepicker({
+             timeFormat : 'hh:mm p',
+             scrollbar: true,
+             dropdown: true,
+             dynamic: true,
+             minTime: "8:00am",
+             maxTime: "10:00pm"
+    });
+    $(".timepicker").prop("type", "text");
+    $(".timeIcons").prop("hidden", false);
+  }
+  else {
+    $(".timepicker").prop("type", "time");
+    $(".timeIcons").prop("hidden", true);
+  }
 
   if ($(".datePicker").is("readonly")) {
     $( ".datePicker" ).datepicker( "option", "disabled", true )
