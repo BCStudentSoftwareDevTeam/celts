@@ -13,9 +13,27 @@ def trainedParticipants(programID, currentTerm):
     This function tracks the users who have attended every Prerequisite
     event and adds them to a list that will not flag them when tracking hours.
     """
+    # programId = 3
+    # events = 3, 6, 10, 12
+    # 10 - All celts training
+
+    #trainingEvents = [3, 6, 10]
+
+    # exclude events with name All celts training and All volunteer training
     trainingEvents = list(Event.select()
                                .join(ProgramEvent)
                                .where(ProgramEvent.program==programID, Event.isTraining==True, Event.term==currentTerm))
+
+
+    # Exception for All Celts training and All volunteer training
+    # if 10 in trainingEvents and (if user and 10 is in EventParticipant)
+    # [3, 6, 10] - [10]
+
+    #term term.academicYear "2021-2022"
+    # isInCurrentAcademicYear = if (fall in term.description and term.year in term.academicYear[everything-before-dash])   term.academicYear.split("-")[0]
+
+
+
 
     eventTrainingDataList = [participant.user.username for participant in (
         EventParticipant.select().where(EventParticipant.event.in_(trainingEvents))

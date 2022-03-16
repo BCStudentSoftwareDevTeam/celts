@@ -13,6 +13,7 @@ from app.models.programBan import ProgramBan
 from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
+from app.models.note import Note
 from app.controllers.main import main_bp
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
@@ -67,13 +68,22 @@ def viewVolunteersProfile(username):
          completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
          backgroundTypes = list(BackgroundCheckType.select())
          eligibilityTable = []
-         for program in programs:
-              notes = ProgramBan.select().where(ProgramBan.user == username,
-                                                ProgramBan.program == program,
-                                                ProgramBan.endDate > datetime.datetime.now())
 
-              noteForDict = list(notes)[-1].banNote.noteContent if list(notes) else ""
-              eligibilityTable.append({"program" : program,
+         for program in programs:
+            notes = (ProgramBan.select(ProgramBan).where(
+                ProgramBan.user == username,
+                ProgramBan.program == program,
+                ProgramBan.endDate > datetime.datetime.now()))
+
+            # noteForDict = list(notes)[-1].banNote.noteContent
+
+            if list(notes):
+                if (list(notes)[-1].banNote):
+                    noteForDict = list(notes)[-1].banNote.noteContent
+            else:
+                 noteForDict = ""
+
+            eligibilityTable.append({"program" : program,
                                    "completedTraining" : (username in trainedParticipants(program, g.current_term)),
                                    "isNotBanned" : isEligibleForProgram(program, username),
                                    "banNote": noteForDict})
