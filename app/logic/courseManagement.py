@@ -45,7 +45,6 @@ def getinstructorData(courseIds):
     return instructorDict
 
 def updateCourse(courseData, instructorsDict):
-    print(instructorsDict)
     for toggler in ["regularOccurenceToggle", "slSectionsToggle", "permanentDesignation"]:
         courseData.setdefault(toggler, "off")
     status = CourseStatus.get(CourseStatus.status == "Pending")

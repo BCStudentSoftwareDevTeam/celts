@@ -18,7 +18,6 @@ export default function searchUser(inputId, callback, parentElementId=null, obje
             })
           )}
           else {
-            console.log("phone")
             response(Object.keys(dictToJSON).map( (item, index) => {
               if (index === 0){
                 return {
@@ -44,6 +43,8 @@ export default function searchUser(inputId, callback, parentElementId=null, obje
        var user = ui.item.value
        $(`#${inputId}`).val(ui.item.value);
        callback();
+       $(`#${inputId}`).val("");
+       return false;
      }
   });
 };

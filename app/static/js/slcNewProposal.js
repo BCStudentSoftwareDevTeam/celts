@@ -89,14 +89,15 @@ function callback() {
   let data = $("#courseInstructor").val();
   data = data.split(",");
   let instructor = data[0]
+  let username = instructor.split('(').pop().split(')')[0]; // returns 'two'
   let phone = data[1]
   let tableBody = $("#instructorTable").find("tbody");
   let lastRow = tableBody.find("tr:last");
   let newRow = lastRow.clone();
   newRow.find("td:eq(0) p").text(instructor);
   newRow.find("td:eq(0) div input").val(phone);
-  newRow.find("td:eq(0) div button").attr("data-id", instructor);
-  newRow.find("td:eq(0) div input").attr("id", instructor);
+  newRow.find("td:eq(0) div button").attr("data-id", username);
+  newRow.find("td:eq(0) div input").attr("id", username);
   newRow.prop("hidden", false);
   lastRow.after(newRow);
 }
@@ -107,9 +108,7 @@ $("#courseInstructor").on('input', function() {
 
 $("#instructorTable").on("click", "#instructorPhoneUpdate", function() {
    var inputId = $(this).attr("data-id")
-   console.log($("#" + inputId).val())
    var instructorData = [inputId, $("#" + inputId).val()]
-
    $.ajax({
      url: "/updateInstructorPhone",
      data: JSON.stringify(instructorData),
@@ -133,7 +132,6 @@ let courseInstructors = []
 async function saveCourseInstructors() {
   $("#instructorTable tr").each(function(a, b) {
     courseInstructors.push($('.instructorName', b).text());
-    console.log(courseInstructors)
   });
   return await $.ajax({
     url: "/courseInstructors",
