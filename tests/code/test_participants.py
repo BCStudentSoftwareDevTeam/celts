@@ -113,7 +113,7 @@ def test_trainedParticipants():
     assert attendedPreq == []
 
     # Case3: test for when user changes current term
-    currentTerm = Term.get(Term.id==1)
+    currentTerm = Term.get_by_id(2)
     attendedPreq = trainedParticipants(1, currentTerm)
     assert attendedPreq == ["neillz", "khatts", "ayisie"]
 

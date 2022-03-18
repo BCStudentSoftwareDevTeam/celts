@@ -1,45 +1,47 @@
 from peewee import fn
 from app.models.user import User
 from app.models.event import Event
+from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.models.eventParticipant import EventParticipant
 from app.logic.users import isEligibleForProgram
 from app.logic.volunteers import getEventLengthInHours
+from app.logic.utils import getStartofCurrentAcademicYear
 
 def trainedParticipants(programID, currentTerm):
     """
     This function tracks the users who have attended every Prerequisite
     event and adds them to a list that will not flag them when tracking hours.
     """
-    # programId = 3
-    # events = 3, 6, 10, 12
-    # 10 - All celts training
+    # Reset program eligibility each term, except for All Celts Training and All Volunteer Training events.
+    trainingEvents = (Event.select().join(ProgramEvent).where(
+        ProgramEvent.program==programID,
+        Event.isTraining==True,
+        Event.term==currentTerm))
 
-    #trainingEvents = [3, 6, 10]
+    print("\n\n training: ", len(trainingEvents))
+    # Reset program eligibility each AY when event is All Celts Training or All Volunteer Training
+    test = (Event.select().join(ProgramEvent).where(
+        ProgramEvent.program==programID,
+        Event.term==getStartofCurrentAcademicYear(currentTerm),
+        (Event.name == "All Celts Training" | Event.name == "All Volunteer Training")))
 
-    # exclude events with name All celts training and All volunteer training
-    trainingEvents = list(Event.select()
-                               .join(ProgramEvent)
-                               .where(ProgramEvent.program==programID, Event.isTraining==True, Event.term==currentTerm))
+    print("\n\n test: ", len(test))
 
+    final = trainingEvents.union_all(test)
 
-    # Exception for All Celts training and All volunteer training
-    # if 10 in trainingEvents and (if user and 10 is in EventParticipant)
-    # [3, 6, 10] - [10]
-
-    #term term.academicYear "2021-2022"
-    # isInCurrentAcademicYear = if (fall in term.description and term.year in term.academicYear[everything-before-dash])   term.academicYear.split("-")[0]
-
-
-
+    print("\n\n final: ", len(final))
 
     eventTrainingDataList = [participant.user.username for participant in (
-        EventParticipant.select().where(EventParticipant.event.in_(trainingEvents))
+        EventParticipant.select().where(EventParticipant.event.in_(final))
         )]
 
-    attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(trainingEvents), eventTrainingDataList)))
+    print("\n\n eventTrainingDataList: ", eventTrainingDataList)
+    attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(final), eventTrainingDataList)))
+
+    print("\n\n\n attendedTraining: ", attendedTraining, "\n\n\n")
     return attendedTraining
 
 def sendUserData(bnumber, eventId, programid):
