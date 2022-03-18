@@ -169,6 +169,7 @@ def serviceTranscript(username):
 @main_bp.route('/searchUser/<query>/<group>', methods = ['GET'])
 def searchUser(query,group):
     '''Accepts user input and queries the database returning results that matches user search'''
+    print( "query ...............", query)
     try:
         query = query.strip()
         search = query.upper()
