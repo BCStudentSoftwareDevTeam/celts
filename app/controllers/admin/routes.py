@@ -4,7 +4,6 @@ from playhouse.shortcuts import model_to_dict, dict_to_model
 import json
 from datetime import datetime
 from dateutil import parser
-
 from app import app
 from app.models.program import Program
 from app.models.event import Event
@@ -100,6 +99,7 @@ def createEvent(templateid, programid=None):
 
     # make sure our data is the same regardless of GET or POST
     preprocessEventData(eventData)
+
     futureTerms = selectSurroundingTerms(g.current_term)
     isProgramManager = hasPrivilege(g.current_user,programid)
 

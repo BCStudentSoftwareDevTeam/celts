@@ -1,6 +1,7 @@
 from app.models import*
 from app.models.term import Term
 from app.models.program import Program
+from datetime import datetime
 
 class Event(baseModel):
     name = CharField()
@@ -29,3 +30,9 @@ class Event(baseModel):
             return self.programEvents.get().program
         else:
             return None
+    @property
+    def isPast(self):
+        currentTime = datetime.now()
+        startDatePassed = self.startDate < currentTime.date()
+        startTimePassed = self.timeStart < currentTime.time() and self.startDate == currentTime.date()
+        return startDatePassed or startTimePassed 

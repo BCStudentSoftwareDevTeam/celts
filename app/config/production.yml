@@ -2,12 +2,3 @@ use_shibboleth: True
 use_tracy: True
 use_banner: True
 show_queries: False
-
-mail:
-    enabled: True
-    server: "mail.berea.edu"
-    port: 25
-    tls: False
-    ssl: False
-    reply_to_address: "celts@berea.edu"
-    default_sender: "support@bereacollege.onmicrosoft.com"
