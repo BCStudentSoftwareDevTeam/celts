@@ -22,6 +22,7 @@ pem add app.models.courseInstructor.CourseInstructor
 pem add app.models.courseQuestion.CourseQuestion
 pem add app.models.questionNote.QuestionNote
 pem add app.models.eventRsvp.EventRsvp
+pem add app.models.emailLog.EmailLog
 pem add app.models.backgroundCheck.BackgroundCheck
 pem add app.models.backgroundCheckType.BackgroundCheckType
 
