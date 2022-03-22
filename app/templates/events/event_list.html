@@ -4,8 +4,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script src="/static/js/event_list.js"></script>
-
-  </script>
+  <script src="/static/js/emailModal.js"></script>
 {% endblock %}
 {% block styles %}
   {{super()}}
@@ -17,20 +16,19 @@
 <div class="container-fluid px-1 py-3">
   <div class="row d-flex align-items-baseline p-3">
     <div class="col-md-1 ps-1 ms-auto">
-      <h4><strong>Term</strong></h4>
+      <label class="form-label" for="inputTerm"><h4><strong>Term</strong></h4></label>
     </div>
     <div class="col-md-3 me-auto">
       <div class="form-group">
-        <select class="form-select" name='eventTerm' id='inputTerm' onchange="location = '/events/' + this.value;">
+        <select class="form-select" name='eventTerm' id='inputTerm' onchange="location=this.value">
           {% for term in listOfTerms %}
-            <option value='/{{term}}' {{ "selected" if selectedTerm.id == term.id }}>{{term.description}} </option>
+            <option value='/eventsList/{{term}}' {{ "selected" if selectedTerm.id == term.id }}>{{term.description}} </option>
           {% endfor %}
         </select>
       </div>
     </div>
   </div>
 </div>
-
 <div>
   <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
   <li class="nav-item" role="presentation">
@@ -64,18 +62,23 @@
       </tr>
     </thead>
     <tbody>
-
         {% for event in events %}
           <tr>
-            <td> <a href="/event/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+            <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
             <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
             <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
             <td>{{event.location}}</td>
             {% if user.isAdmin %}
-              <td><i class="bi bi-envelope-fill"> Email</i></td>
-              {# FIXME: the Email icon should be clickable and lead to email template #}
+              <td>
+                {% if event.isPast %}
+                  {% set isPastEvent = "true" %}
+                {% endif %}
+                <button class="btn btn-primary" onclick="showEmailModal({{event.id}}, 'Unknown', {{selectedTerm}}, {{isPastEvent}})">
+                  <span class="bi bi-envelope-fill"> Email</span>
+                </button>
+              </td>
             {% else %}
-              {% if (event.startDate < currentTime.date()) or (event.timeStart < currentTime.time() and event.startDate == currentTime.date())%}
+              {% if (event.isPast) %}
                 <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
               {% elif event.id in rsvpedEventsID %}
                 <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.program_id}}, {{event.id}})">Remove RSVP</button></td>
@@ -91,13 +94,11 @@
   <p>No upcoming events for this term</p>
 {% endif %}
 {% endmacro %}
-
 <div class="tab-content" id="pills-tabContent">
   <div class="tab-pane fade show active" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
     {% if studentLedProgram %}
     <div class="accordion" id="categoryAccordion">
       {% for program,events in studentLedProgram.items() %}
-
         <div class="accordion-item">
           <h2 class="accordion-header" id="accordion__header_{{program}}">
             <button class="accordion-button collapsed"
@@ -125,19 +126,24 @@
                   </tr>
                 </thead>
                 <tbody>
-
                     {% for event in events %}
                       <tr>
-                        <td> <a href="/event/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+                        <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
                         <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
                         <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
                         <td>{{event.location}}</td>
                         {% if user.isAdmin %}
-                          <td><i class="bi bi-envelope-fill"> Email</i></td>
-                          {# FIXME: the Email icon should be clickable and lead to email template #}
-
+                          <td>
+                            {% if event.isPast %}
+                              {% set isPastEvent = "true" %}
+                            {% endif %}
+                            <button class="btn btn-primary"
+                            onclick="showEmailModal({{event.id}}, {{program.id}}, {{selectedTerm}}, {{isPastEvent}})">
+                              <span class="bi bi-envelope-fill"> Email</span>
+                            </button>
+                          </td>
                         {% else %}
-                          {% if (event.startDate < currentTime.date()) or (event.timeStart < currentTime.time() and event.startDate == currentTime.date())%}
+                          {% if event.isPast%}
                             <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
                           {% elif event.id in rsvpedEventsID %}
                             <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{program.id}}, {{event.id}})">Remove RSVP</button></td>
@@ -152,16 +158,14 @@
             </div>
           </div>
         </div>
-      {% endfor %}
+    {% endfor %}
     </div>
     {% else %}
       <p>No upcoming events for this term</p>
     {% endif %}
   </div>
-
   <div class="tab-pane fade show" id="pills-training" role="tabpanel" aria-labelledby="pills-training-tab">
     {{createTable(trainingProgram)}}
-
   </div>
   <div class="tab-pane fade show" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="pills-bonner-scholars-tab">
     {{createTable(bonnerProgram)}}
@@ -170,5 +174,5 @@
     {{createTable(oneTimeEvents)}}
   </div>
 </div>
-
+{% include 'emailModal.html' %}
 {% endblock %}

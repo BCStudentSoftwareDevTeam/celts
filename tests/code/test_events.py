@@ -31,6 +31,10 @@ def test_event_model():
     assert event.singleProgram == None
     assert not event.noProgram
 
+    # program/event passed
+    event = Event.get_by_id(11)
+    assert event.isPast
+
 ######################################################################
 ## TODO event list doesn't show events without a program
 ## TODO facilitators didn't stay selected when there was a validation error
