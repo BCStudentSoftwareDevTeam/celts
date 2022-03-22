@@ -44,18 +44,22 @@ def switchUser():
 
 @admin_bp.route('/eventTemplates')
 def templateSelect():
-    allprograms = []
-    if g.current_user.isCeltsStudentStaff:
-        allprograms = getPrograms(g.current_user)
+    if g.current_user.isCeltsAdmin:
+        allprograms = []
+        if g.current_user.isCeltsStudentStaff:
+            allprograms = getPrograms(g.current_user)
+        else:
+            allprograms = Program.select().order_by(Program.programName)
+
+        visibleTemplates = EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
+
+        return render_template("/events/template_selector.html",
+                    programs=allprograms,
+                    templates=visibleTemplates
+                )
     else:
-        allprograms = Program.select().order_by(Program.programName)
+        abort(403)
 
-    visibleTemplates = EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
-
-    return render_template("/events/template_selector.html",
-                programs=allprograms,
-                templates=visibleTemplates
-            )
 
 @admin_bp.route('/eventTemplates/<templateid>/create', methods=['GET','POST'])
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
