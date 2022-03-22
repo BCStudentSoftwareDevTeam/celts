@@ -82,8 +82,6 @@ def viewVolunteersProfile(username):
                     reqTable[ele.program].append(ele.event.name)
          print("==================================================================This is the reqTable",reqTable)
 
-         # data-content="{{reqTable[program.program]}}" # data-content from Javascript
-
          eligibilityTable = []
          for program in programs:
               notes = ProgramBan.select().where(ProgramBan.user == username,

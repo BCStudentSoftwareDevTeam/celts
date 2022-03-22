@@ -85,20 +85,20 @@
 </div>
 
 {% for program in eligibilityTable %}
-  <div id="popover-content-1" style="display: none">
+  <div id="{{program.program.id}}" style="display: none">
       <ol class="list-group custom-popover-1">
         {% for i in reqTable[program.program] %}
           <li class="list-group-item">{{i}}</li>
         {% endfor %}
       </ol>
   </div>
-  <div id="popover-content-2" style="display: none">
+  <!-- <div id="popover-content-2" style="display: none">
       <ol class="list-group custom-popover-2">
         {% for i in reqTable[program.program] %}
           <li class="list-group-item">{{i}}</li>
         {% endfor %}
       </ol>
-  </div>
+  </div> -->
 {% endfor %}
 <!-- End Program Elegibility Table -->
 
