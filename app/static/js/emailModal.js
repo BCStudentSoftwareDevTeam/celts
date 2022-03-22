@@ -16,10 +16,16 @@ function retrieveEmailTemplateData() {
   });
 }
 
-function showEmailModal(eventID, programID, selectedTerm) {
+function showEmailModal(eventID, programID, selectedTerm, isPastEvent) {
   $(".modal-body #eventID").val(eventID);
   $(".modal-body #programID").val(programID);
   $(".modal-body #selectedTerm").val(selectedTerm);
+
+  if (isPastEvent) {
+    $(".pastEventWarning").prop("hidden", false);
+  } else {
+    $(".pastEventWarning").prop("hidden", true);
+  }
 
   for (let i=0; i < Object.keys(emailTemplateInfo).length; i++) {
     let option = `<option value='${emailTemplateInfo[i]['purpose']}'>${emailTemplateInfo[i]['subject']}</option>`;

@@ -71,9 +71,12 @@
             <td>{{event.location}}</td>
             {% if user.isAdmin %}
               <td>
-                  <button class="btn btn-primary" onclick="showEmailModal({{event.id}}, 'Unknown', {{selectedTerm}})"{{ 'disabled' if event.isPast }}>
-                    <span class="bi bi-envelope-fill"> Email</span>
-                  </button>
+                {% if event.isPast %}
+                  {% set isPastEvent = "true" %}
+                {% endif %}
+                <button class="btn btn-primary" onclick="showEmailModal({{event.id}}, 'Unknown', {{selectedTerm}}, {{isPastEvent}})">
+                  <span class="bi bi-envelope-fill"> Email</span>
+                </button>
               </td>
             {% else %}
               {% if (event.isPast) %}
@@ -132,10 +135,13 @@
                         <td>{{event.location}}</td>
                         {% if user.isAdmin %}
                           <td>
-                              <button class="btn btn-primary"
-                              onclick="showEmailModal({{event.id}}, {{program.id}}, {{selectedTerm}})" {{ 'disabled' if event.isPast }}>
-                                <span class="bi bi-envelope-fill"> Email</span>
-                              </button>
+                            {% if event.isPast %}
+                              {% set isPastEvent = "true" %}
+                            {% endif %}
+                            <button class="btn btn-primary"
+                            onclick="showEmailModal({{event.id}}, {{program.id}}, {{selectedTerm}}, {{isPastEvent}})">
+                              <span class="bi bi-envelope-fill"> Email</span>
+                            </button>
                           </td>
                         {% else %}
                           {% if event.isPast%}

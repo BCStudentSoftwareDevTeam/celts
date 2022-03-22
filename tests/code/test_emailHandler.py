@@ -3,6 +3,7 @@ from flask_mail import Message
 from urllib.parse import urlparse
 from flask import request
 from datetime import datetime
+import time
 from app import app
 from app.models.emailTemplate import EmailTemplate
 from app.models.emailLog import EmailLog
@@ -103,6 +104,7 @@ def test_email_log():
             assert emailLog.subject == "Test Email"
             assert emailLog.templateUsed_id == 1
             assert emailLog.recipientsCategory == "RSVP'd"
+            time.sleep(.2) # Let's make sure that there is some separation in the times
             assert emailLog.dateSent <= datetime.now()
 
             rsvp_users = EventRsvp.select().where(EventRsvp.event_id==1)
