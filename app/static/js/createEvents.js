@@ -1,10 +1,11 @@
 // updates max and min dates of the datepickers as the other datepicker changes
 function updateDate(obj) {
-  var dateToChange = new Date($(obj).val());
+  // we need to replace "-" with "/" because firefox cannot turn a date with "-" to a datetime object
+  var selectedDate = ($(obj).val()).replaceAll("-", "/")
+  var dateToChange = new Date(selectedDate);
   var newMonth = dateToChange.getMonth();
   var newYear = dateToChange.getFullYear();
   var newDay = dateToChange.getDate();
-
   if(obj.id == "startDatePicker") {
     $("#endDatePicker").datepicker({minDate: new Date(  newYear, newMonth, newDay)});
     $("#endDatePicker").datepicker( "option", "minDate", new Date(  newYear, newMonth, newDay));
@@ -15,11 +16,10 @@ function updateDate(obj) {
     $("#startDatePicker").datepicker("option", "maxDate", new Date(  newYear, newMonth, newDay));
   }
 }
-
 /*
  * Run when the webpage is ready for javascript
  */
-$(document).ready(function(){
+$(document).ready(function() {
   $("#checkIsRecurring").click(function() {
     var recurringStatus = $("input[name='isRecurring']:checked").val()
     if (recurringStatus == 'on') {
@@ -31,15 +31,32 @@ $(document).ready(function(){
     }
   });
 
-  if($(".datePicker").is("readonly")){
-    $( ".datePicker" ).datepicker( "option", "disabled", true );
+  if (navigator.userAgent.indexOf("Firefox") != -1 || navigator.userAgent.indexOf("Safari") != -1) {
+    $('input.timepicker').timepicker({
+             timeFormat : 'hh:mm p',
+             scrollbar: true,
+             dropdown: true,
+             dynamic: true,
+             minTime: "8:00am",
+             maxTime: "10:00pm"
+    });
+    $(".timepicker").prop("type", "text");
+    $(".timeIcons").prop("hidden", false);
   }
+  else {
+    $(".timepicker").prop("type", "time");
+    $(".timeIcons").prop("hidden", true);
+  }
+
+  if ($(".datePicker").is("readonly")) {
+    $( ".datePicker" ).datepicker( "option", "disabled", true )
+  };
 
   //makes the input fields act like readonly (readonly doesn't work with required)
   $(".readonly").on('keydown paste', function(e){
         if(e.keyCode != 9) // ignore tab
             e.preventDefault();
-    });
+  });
 
   $.datepicker.setDefaults({
     minDate:  new Date($.now()),
@@ -79,6 +96,7 @@ $(document).ready(function(){
       });
     }
   });
+
   $("#checkIsTraining").click(function(){
     if ($("input[name='isTraining']:checked").val() == 'on'){
       $("#checkIsRequired").prop('checked', true);
