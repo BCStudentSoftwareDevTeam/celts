@@ -21,27 +21,25 @@ def trainedParticipants(programID, currentTerm):
         Event.isTraining==True,
         Event.term==currentTerm))
 
-    print("\n\n training: ", len(trainingEvents))
+    print("\n\n ", programID, "\n\n")
+    print("\n\n ", len(trainingEvents), "\n\n")
     # Reset program eligibility each AY when event is All Celts Training or All Volunteer Training
     test = (Event.select().join(ProgramEvent).where(
         ProgramEvent.program==programID,
         Event.term==getStartofCurrentAcademicYear(currentTerm),
         (Event.name == "All Celts Training" | Event.name == "All Volunteer Training")))
 
-    print("\n\n test: ", len(test))
+    print("\n\n ", len(test), "\n\n")
 
-    final = trainingEvents.union_all(test)
-
-    print("\n\n final: ", len(final))
 
     eventTrainingDataList = [participant.user.username for participant in (
-        EventParticipant.select().where(EventParticipant.event.in_(final))
+        EventParticipant.select().where(EventParticipant.event.in_(trainingEvents) & EventParticipant.event.in_(test))
         )]
 
-    print("\n\n eventTrainingDataList: ", eventTrainingDataList)
-    attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(final), eventTrainingDataList)))
+    # print("\n\n eventTrainingDataList: ", eventTrainingDataList)
+    attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(trainingEvents) + len(test), eventTrainingDataList)))
 
-    print("\n\n\n attendedTraining: ", attendedTraining, "\n\n\n")
+    # print("\n\n\n attendedTraining: ", attendedTraining, "\n\n\n")
     return attendedTraining
 
 def sendUserData(bnumber, eventId, programid):
