@@ -1,6 +1,7 @@
 from flask import Flask, redirect, flash, url_for, request, render_template, g, json
 from datetime import datetime
 from peewee import DoesNotExist
+from urllib.parse import urlparse
 
 from app.models.term import Term
 from app.models.program import Program
@@ -9,6 +10,8 @@ from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.programEvent import ProgramEvent
 from app.controllers.events import events_bp
+from app.controllers.events import email
+from app.logic.emailHandler import EmailHandler
 from app.logic.events import getUpcomingEventsForUser
 from app.logic.participants import sendUserData
 
@@ -18,8 +21,25 @@ def showUpcomingEvent():
     return render_template('/events/showUpcomingEvents.html',
                             upcomingEvents = upcomingEvents)
 
+@events_bp.route('/email', methods=['POST'])
+def email():
+    raw_form_data = request.form.copy()
+    if "@" in raw_form_data['emailSender']:
+        # when people are sending emails as themselves (using mailto) --- Q: are we still going with the mailto option?
+        pass
+    else:
+        url_domain = urlparse(request.base_url).netloc
+        mail = EmailHandler(raw_form_data, url_domain)
+        mail_sent = mail.send_email()
 
-@events_bp.route('/event/<eventid>/kiosk', methods=['GET'])
+        if mail_sent:
+            message, status = 'Email successfully sent!', 'success'
+        else:
+            message, status = 'Error sending email', 'danger'
+        flash(message, status)
+        return redirect(url_for("main.events", selectedTerm = raw_form_data['selectedTerm']))
+
+@events_bp.route('/eventsList/<eventid>/kiosk', methods=['GET'])
 def loadKiosk(eventid):
     """Renders kiosk for specified event."""
     event = Event.get_by_id(eventid)

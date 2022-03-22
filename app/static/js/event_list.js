@@ -1,5 +1,3 @@
-
-
 function rsvpForEvent(programID, eventID){
   rsvpInfo = {id: eventID,
               programId: programID,
@@ -15,8 +13,7 @@ function rsvpForEvent(programID, eventID){
     error: function(error, status){
         console.log(error, status)
     }
-
-  })
+  });
 }
 
 function removeRsvpForEvent(programID, eventID){
