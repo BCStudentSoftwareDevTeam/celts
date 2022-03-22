@@ -19,11 +19,18 @@ def trainedParticipants(programID, currentTerm):
     trainingEvents = (Event.select().join(ProgramEvent).where(
         ProgramEvent.program==programID,
         Event.isTraining==True,
-        Event.term==currentTerm))
+        Event.term==currentTerm,
+        (Event.term==getStartofCurrentAcademicYear(currentTerm) &
+        (Event.name == "All Celts Training" | Event.name == "All Volunteer Training"))
+        ))
 
-    print("\n\n ", programID, "\n\n")
+    print("\n\n ", programID,)
+    print("\n\n The training events are:", trainingEvents, "\n\n")
     print("\n\n ", len(trainingEvents), "\n\n")
     # Reset program eligibility each AY when event is All Celts Training or All Volunteer Training
+    firstTermOfAcademicYear = getStartofCurrentAcademicYear(currentTerm)
+    print("\n\n Academic Year starts at:", firstTermOfAcademicYear, "\n current term is: ", currentTerm, "\n\n")
+
     test = (Event.select().join(ProgramEvent).where(
         ProgramEvent.program==programID,
         Event.term==getStartofCurrentAcademicYear(currentTerm),
@@ -31,13 +38,14 @@ def trainedParticipants(programID, currentTerm):
 
     print("\n\n ", len(test), "\n\n")
 
+    allTrainingEvents = (list(trainingEvents))
 
     eventTrainingDataList = [participant.user.username for participant in (
-        EventParticipant.select().where(EventParticipant.event.in_(trainingEvents) & EventParticipant.event.in_(test))
+        EventParticipant.select().where(EventParticipant.event.in_(allTrainingEvents) & EventParticipant.event.in_(test))
         )]
 
     # print("\n\n eventTrainingDataList: ", eventTrainingDataList)
-    attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(trainingEvents) + len(test), eventTrainingDataList)))
+    attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(allTrainingEvents) + len(test), eventTrainingDataList)))
 
     # print("\n\n\n attendedTraining: ", attendedTraining, "\n\n\n")
     return attendedTraining
