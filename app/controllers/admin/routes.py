@@ -46,7 +46,7 @@ def switchUser():
 def templateSelect():
     allprograms = []
     if g.current_user.isCeltsStudentStaff:
-        allprograms = getPrograms()
+        allprograms = getPrograms(g.current_user)
     else:
         allprograms = Program.select().order_by(Program.programName)
 

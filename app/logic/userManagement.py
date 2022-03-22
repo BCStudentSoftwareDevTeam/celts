@@ -78,5 +78,5 @@ def addNextTerm():
 
     return newTerm
 
-def getPrograms():
-    return Program.select().join(StudentManager).where(StudentManager.user==g.current_user).order_by(Program.programName)
+def getPrograms(currentUser):
+    return Program.select().join(StudentManager).where(StudentManager.user==currentUser).order_by(Program.programName)
