@@ -58,24 +58,24 @@ def viewVolunteersProfile(username):
         volunteer = User.get(User.username == username)
     except Exception as e:
         return "User does not exist", 404
-    if (g.current_user == username) or g.current_user.isAdmin:
-         upcomingEvents = getUpcomingEventsForUser(username)
+    if (g.current_user == volunteer) or g.current_user.isAdmin:
+         upcomingEvents = getUpcomingEventsForUser(volunteer)
          programs = Program.select()
-         interests = Interest.select().where(Interest.user == username)
+         interests = Interest.select().where(Interest.user == volunteer)
          programsInterested = [interest.program for interest in interests]
-         allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == username))
+         allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == volunteer))
          completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
          backgroundTypes = list(BackgroundCheckType.select())
          eligibilityTable = []
          for program in programs:
-              notes = ProgramBan.select().where(ProgramBan.user == username,
+              notes = ProgramBan.select().where(ProgramBan.user == volunteer,
                                                 ProgramBan.program == program,
                                                 ProgramBan.endDate > datetime.datetime.now())
 
               noteForDict = list(notes)[-1].banNote.noteContent if list(notes) else ""
               eligibilityTable.append({"program" : program,
-                                   "completedTraining" : (username in trainedParticipants(program)),
-                                   "isNotBanned" : isEligibleForProgram(program, username),
+                                   "completedTraining" : (volunteer in trainedParticipants(program)),
+                                   "isNotBanned" : isEligibleForProgram(program, volunteer),
                                    "banNote": noteForDict})
          return render_template ("/main/volunteerProfile.html",
             programsInterested = programsInterested,
