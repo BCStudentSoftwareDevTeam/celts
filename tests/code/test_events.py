@@ -31,6 +31,10 @@ def test_event_model():
     assert event.singleProgram == None
     assert not event.noProgram
 
+    # program/event passed
+    event = Event.get_by_id(11)
+    assert event.isPast
+
 ######################################################################
 ## TODO event list doesn't show events without a program
 ## TODO facilitators didn't stay selected when there was a validation error
@@ -282,23 +286,23 @@ def test_wrongValidateNewEventData():
 def test_calculateRecurringEventFrequency():
 
     eventInfo = {'name':"testEvent",
-                 'startDate':parser.parse("02-22-2023"),
-                 'endDate': parser.parse("03-9-2023")}
+                 'startDate': parser.parse("02/22/2023"),
+                 'endDate': parser.parse("03/9/2023")}
 
     # test correct response
     returnedEvents = calculateRecurringEventFrequency(eventInfo)
-    assert returnedEvents[0] == {'name': 'testEvent Week 1', 'date': parser.parse('02-22-2023'), 'week': 1}
-    assert returnedEvents[1] == {'name': 'testEvent Week 2', 'date': parser.parse('03-01-2023'), 'week': 2}
-    assert returnedEvents[2] == {'name': 'testEvent Week 3', 'date': parser.parse('03-08-2023'), 'week': 3}
+    assert returnedEvents[0] == {'name': 'testEvent Week 1', 'date': '02/22/2023', 'week': 1}
+    assert returnedEvents[1] == {'name': 'testEvent Week 2', 'date': '03/01/2023', 'week': 2}
+    assert returnedEvents[2] == {'name': 'testEvent Week 3', 'date': '03/08/2023', 'week': 3}
 
     # test non-datetime
-    eventInfo["startDate"] = '2021-06-07'
+    eventInfo["startDate"] = '2021/06/07'
     with pytest.raises(Exception):
         returnedEvents = calculateRecurringEventFrequency(eventInfo)
 
     # test non-recurring
-    eventInfo["startDate"] = parser.parse('2021-06-07')
-    eventInfo["endDate"] = parser.parse('2021-06-07')
+    eventInfo["startDate"] = '2021/06/07'
+    eventInfo["endDate"] = '2021/06/07'
     with pytest.raises(Exception):
         returnedEvents = calculateRecurringEventFrequency(eventInfo)
 

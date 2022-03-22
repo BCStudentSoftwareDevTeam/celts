@@ -1,42 +1,39 @@
-
-// withdrawing a course
-
-$( document ).ready(function() {
-  //if they decide not to withdraw, change selection back to "select action"
+$(document).ready(function() {
+  // if they decide not to withdraw, change selection back to "select action"
   $('#withdrawModal').on('hidden.bs.modal', function () {
-    $('.form-select').val('---')
-
+    $('.form-select').val('---');
+  });
+  $("#withdrawBtn").on("click", function() {
+    withdraw();
   });
 });
 
-
 function changeAction(action){
+  // decides what to do based on selection
   if (action.value=="Renew"){
     // Renew
-
   } else if (action.value=="View"){
     // View
-
   } else if (action.value=="Withdraw"){
-    courseID = action.id
-    $('.modal-body #courseToRemove').val(courseID)
+    courseID = action.id;
+    $('#courseID').val(courseID);
     $('#withdrawModal').modal('show');
-
   } else if(action.value=="Edit"){
     // Edit
   }
 }
 
 function withdraw(){
-  courseID = $("#courseToRemove").val()
+  // uses hidden label to withdraw course
+  courseID = $("#courseID").val();
   $.ajax({
-    url: "/withdrawCourse/"+ courseID,
+    url: `/serviceLearning/withdraw/${courseID}`,
     type: "POST",
     success: function(s){
-      location.reload()
+      location.reload();
     },
     error: function(request, status, error) {
         console.log(status,error);
-      }
+    }
   })
-}
+};

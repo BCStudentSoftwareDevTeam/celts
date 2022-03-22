@@ -1,5 +1,3 @@
-
-
 function rsvpForEvent(programID, eventID){
   rsvpInfo = {id: eventID,
               programId: programID,

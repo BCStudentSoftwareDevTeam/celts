@@ -1,8 +1,7 @@
-from peewee import DoesNotExist
+from peewee import DoesNotExist, fn
 from dateutil import parser
 import datetime
 from werkzeug.datastructures import MultiDict
-
 from app.models import mainDB
 from app.models.user import User
 from app.models.event import Event
@@ -111,6 +110,8 @@ def getStudentLedProgram(term):
 
 def getTrainingProgram(term):
 
+    allTrainingsEvent = (ProgramEvent.select(ProgramEvent.event, fn.COUNT(ProgramEvent.event).alias('num_programs')).group_by(ProgramEvent.event)).order_by(fn.COUNT(ProgramEvent.event).desc())
+    print(allTrainingsEvent[0])
     trainingEvents = (Event.select(Event, Program.id.alias("program_id"))
                            .join(ProgramEvent)
                            .join(Program)
@@ -215,7 +216,7 @@ def calculateRecurringEventFrequency(event):
         raise Exception("This event is not a recurring event")
 
     return [ {'name': f"{event['name']} Week {counter+1}",
-              'date': event['startDate'] + datetime.timedelta(days=7*counter),
+              'date': (event['startDate'] + datetime.timedelta(days=7*counter)).strftime("%m/%d/%Y"),
               "week": counter+1}
             for counter in range(0, ((event['endDate']-event['startDate']).days//7)+1)]
 

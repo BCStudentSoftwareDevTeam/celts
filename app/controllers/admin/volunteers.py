@@ -7,10 +7,11 @@ from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
-from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours
+from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck
 from app.logic.participants import trainedParticipants, getEventParticipants
 from app.models.user import User
 from app.models.eventRsvp import EventRsvp
+from app.models.backgroundCheck import BackgroundCheck
 
 
 @admin_bp.route('/searchVolunteers/<query>', methods = ['GET'])
@@ -97,3 +98,16 @@ def removeVolunteerFromEvent(user, eventID):
     (EventRsvp.delete().where(EventRsvp.user==user)).execute()
     flash("Volunteer successfully removed", "success")
     return ""
+
+@admin_bp.route('/updateBackgroundCheck', methods = ['POST'])
+def updateBackgroundCheck():
+    if g.current_user.isCeltsAdmin:
+        eventData = request.form
+        user = eventData['user']
+        checkPassed = int(eventData['checkPassed'])
+        type = eventData['bgType']
+        setUserBackgroundCheck(user,type, checkPassed)
+        return ""
+    else:
+        abort(404)
+        return ""
