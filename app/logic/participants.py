@@ -15,39 +15,44 @@ def trainedParticipants(programID, currentTerm):
     This function tracks the users who have attended every Prerequisite
     event and adds them to a list that will not flag them when tracking hours.
     """
-    # Reset program eligibility each term, except for All Celts Training and All Volunteer Training events.
-    trainingEvents = (Event.select().join(ProgramEvent).where(
-        ProgramEvent.program==programID,
-        Event.isTraining==True,
-        Event.term==currentTerm,
-        (Event.term==getStartofCurrentAcademicYear(currentTerm) &
-        (Event.name == "All Celts Training" | Event.name == "All Volunteer Training"))
-        ))
 
-    print("\n\n ", programID,)
-    print("\n\n The training events are:", trainingEvents, "\n\n")
-    print("\n\n ", len(trainingEvents), "\n\n")
     # Reset program eligibility each AY when event is All Celts Training or All Volunteer Training
-    firstTermOfAcademicYear = getStartofCurrentAcademicYear(currentTerm)
-    print("\n\n Academic Year starts at:", firstTermOfAcademicYear, "\n current term is: ", currentTerm, "\n\n")
-
-    test = (Event.select().join(ProgramEvent).where(
+    allCeltsAndAllVolunteerTrainings = (Event.select(Event.id).join(ProgramEvent).where(
         ProgramEvent.program==programID,
         Event.term==getStartofCurrentAcademicYear(currentTerm),
         (Event.name == "All Celts Training" | Event.name == "All Volunteer Training")))
 
-    print("\n\n ", len(test), "\n\n")
+    # Reset program eligibility each term for all other trainings
+    otherTrainingEvents = (Event.select(Event.id).join(ProgramEvent).where(
+        ProgramEvent.program==programID,
+        Event.isTraining==True,
+        Event.term==currentTerm))
 
-    allTrainingEvents = (list(trainingEvents))
+    print("\n\n programID: ", programID, "\n\n")
+    print("\n\n currentTerm: ", currentTerm, "\n\n")
+    print("\n\n otherTrainingEvents: ", len(otherTrainingEvents), list(otherTrainingEvents), "\n\n")
+
+    allTraningEvents = allCeltsAndAllVolunteerTrainings + otherTrainingEvents
+    print("\n\n total number of trainings: ", len(allTraningEvents), "\n\n")
+
 
     eventTrainingDataList = [participant.user.username for participant in (
-        EventParticipant.select().where(EventParticipant.event.in_(allTrainingEvents) & EventParticipant.event.in_(test))
+        EventParticipant.select().where(EventParticipant.event.in_(allTraningEvents))
         )]
+    print("\n\n eventTrainingDataList: ", eventTrainingDataList, "\n\n")
+    # Find a way to check for all required trainings in EventParticipant table
 
-    # print("\n\n eventTrainingDataList: ", eventTrainingDataList)
-    attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(allTrainingEvents) + len(test), eventTrainingDataList)))
+    # program id = 3
+    # [3, 6, 10]
 
-    # print("\n\n\n attendedTraining: ", attendedTraining, "\n\n\n")
+    # term = spring 2021
+    # sreynit = 10
+    # allTraningEvents = [10]
+    # eventTrainingDataList = ["khatts"]
+
+
+    attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(allTraningEvents), eventTrainingDataList)))
+
     return attendedTraining
 
 def sendUserData(bnumber, eventId, programid):
