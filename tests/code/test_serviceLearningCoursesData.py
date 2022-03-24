@@ -13,7 +13,7 @@ from app.models.questionNote import QuestionNote
 from app.models.note import Note
 
 from app.logic.serviceLearningCoursesData import withdrawProposal, getServiceLearningCoursesData
-
+from app.logic.manageSLFaculty import getCourseDict
 @pytest.mark.integration
 def test_getServiceLearningCoursesData():
     '''tests for the successful implementation of populating the proposal table'''
@@ -73,3 +73,15 @@ def test_withdrawProposal():
     withdrawProposal(99)
     with pytest.raises(DoesNotExist):
         Course.get_by_id(99)
+
+@pytest.mark.integration
+def test_getCourseDict():
+    """
+    This test is to get the faculty intructors and check their previous courses they taught
+    """
+    courseDict = getCourseDict()
+    currentFaculty = User.get_by_id("ramsayb2")
+    currentFacultyCourses = courseDict[currentFaculty]
+    assert 'Spanish Help' in currentFacultyCourses
+    assert 'Databases' in currentFacultyCourses
+    assert 'Math' not in currentFacultyCourses

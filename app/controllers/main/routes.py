@@ -18,6 +18,7 @@ from app.logic.users import addRemoveInterest
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
+from app.logic.manageSLFaculty import getCourseDict
 
 @main_bp.route('/', methods=['GET'])
 def redirectToEventsList():
@@ -185,17 +186,10 @@ def contributors():
 
 
 
-@main_bp.route('/manageservicelearning', methods = ['GET'])
+@main_bp.route('/manageServiceLearning', methods = ['GET'])
 def getAllCourseIntructors():
     """
     This function selects all the Intructors Name and the previous courses
     """
-    users = User.select().where(User.isFaculty)
-    courseInstructors = CourseInstructor.select()
-    course_dict = {}
-
-    for i in courseInstructors:
-        course_dict.setdefault(i.user.firstName + " " + i.user.lastName, []).append(i.course.courseName)
-
-
-    return render_template('/main/manageServiceLearningFaculty.html',courseInstructors = course_dict)
+    courseDict = getCourseDict()
+    return render_template('/main/manageServiceLearningFaculty.html', courseInstructors = courseDict)
