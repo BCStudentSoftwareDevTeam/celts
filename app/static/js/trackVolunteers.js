@@ -148,6 +148,7 @@ $(".attendanceCheck").on("change", function() {
 });
 
 
+#changing modals functions 
 function callback2() {
   $("#selectParticipantButton").prop('disabled', false);
 }
@@ -157,4 +158,11 @@ $("#selectParticipantButton").prop('disabled', true)
 $("#addOutsideParticipantInput").on("input", function() {
   console.log("The function ois ");
   searchUser("addOutsideParticipantInput", callback2,"outsideParticipant", "addOutsideParticipantModal");
+});
+
+
+
+$(document).on("click",".new_user",function(){
+  $('#id_of_sign_in_modal').modal('hide');
+  $('#id_of_sign_up_modal').modal('show');
 });
