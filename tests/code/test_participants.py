@@ -7,6 +7,7 @@ from app.models.user import User
 from app.models.event import Event
 from app.models.term import Term
 from app.models.eventParticipant import EventParticipant
+from app.models.programEvent import ProgramEvent
 from app.logic.volunteers import addVolunteerToEventRsvp
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours, updateEventParticipants
@@ -115,17 +116,48 @@ def test_trainedParticipants():
     # Case3: test for when user changes current term
     currentTerm = Term.get_by_id(2)
     attendedPreq = trainedParticipants(1, currentTerm)
-    assert attendedPreq == ["neillz", "khatts", "ayisie"]
+    assert attendedPreq == ['neillz', 'khatts', 'ayisie']
 
-    attendedPreq = trainedParticipants(3, currentTerm)
-    assert attendedPreq == []
-
-    # Case4: test for program with no prereq
+    # Case4: test for program with no prerequisite
     attendedPreq = trainedParticipants(4, currentTerm)
     assert attendedPreq == []
 
     # Case5: test for program that doesn't exist
     attendedPreq = trainedParticipants(500, currentTerm)
+    assert attendedPreq == []
+
+    # Case6: Test that ALL Celts training and All volunteer training is valid for one AY
+    # AY is 2020-2021
+    currentTerm = Term.get_by_id(1) # Fall 2020
+    attendedPreq = trainedParticipants(3, currentTerm)
+    assert attendedPreq == ["khatts"]
+
+    currentTerm = Term.get_by_id(2) # Spring A 2021
+    attendedPreq = trainedParticipants(3, currentTerm)
+    assert attendedPreq == ["khatts"]
+
+    currentTerm = Term.get_by_id(3) # Spring B 2021
+    attendedPreq = trainedParticipants(3, currentTerm)
+    assert attendedPreq == ["khatts"]
+
+    currentTerm = Term.get_by_id(4) # Summer 2021
+    attendedPreq = trainedParticipants(3, currentTerm)
+    assert attendedPreq == ["khatts"]
+
+    with mainDB.atomic() as transaction:
+        ProgramEvent.create(program = 3, event=14) # require AVT
+        attendedPreq = trainedParticipants(3, currentTerm)
+        assert attendedPreq == []   # no user has completed both AVT and ACT for program 3
+
+        EventParticipant.create(user="khatts", event=14)
+        attendedPreq = trainedParticipants(3, currentTerm)
+        assert attendedPreq == ["khatts"]   # "khatts" has completed both AVT and ACT for program 3
+
+        transaction.rollback()
+
+    # Neither AVT nor ACT is required
+    currentTerm = Term.get_by_id(6)
+    attendedPreq = trainedParticipants(4, currentTerm)
     assert attendedPreq == []
 
 @pytest.mark.integration
