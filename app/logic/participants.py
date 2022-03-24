@@ -28,28 +28,11 @@ def trainedParticipants(programID, currentTerm):
         Event.isTraining==True,
         Event.term==currentTerm))
 
-    print("\n\n programID: ", programID, "\n\n")
-    print("\n\n currentTerm: ", currentTerm, "\n\n")
-    print("\n\n otherTrainingEvents: ", len(otherTrainingEvents), list(otherTrainingEvents), "\n\n")
-
-    allTraningEvents = allCeltsAndAllVolunteerTrainings + otherTrainingEvents
-    print("\n\n total number of trainings: ", len(allTraningEvents), "\n\n")
-
+    allTraningEvents = set(allCeltsAndAllVolunteerTrainings + otherTrainingEvents)
 
     eventTrainingDataList = [participant.user.username for participant in (
         EventParticipant.select().where(EventParticipant.event.in_(allTraningEvents))
         )]
-    print("\n\n eventTrainingDataList: ", eventTrainingDataList, "\n\n")
-    # Find a way to check for all required trainings in EventParticipant table
-
-    # program id = 3
-    # [3, 6, 10]
-
-    # term = spring 2021
-    # sreynit = 10
-    # allTraningEvents = [10]
-    # eventTrainingDataList = ["khatts"]
-
 
     attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(allTraningEvents), eventTrainingDataList)))
 
