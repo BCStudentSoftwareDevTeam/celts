@@ -48,13 +48,13 @@
             <a class="nav-link active" href="#" role="tab" aria-selected="true">Edit Event</a>
           </li>
           <li class="nav-item" role="presentation">
-            <a class="nav-link" href="/event/{{eventData.id}}/track_volunteers" role="tab" aria-selected="false">Track Volunteers</a>
+            <a class="nav-link" href="/eventsList/{{eventData.id}}/track_volunteers" role="tab" aria-selected="false">Track Volunteers</a>
           </li>
         </ul>
       </div>
       <div class="col">
         <form action="/event/{{eventData.id}}/delete" method='post'>
-          <input type="submit" class="btn btn-danger float-end" value="Cancel Event"/>
+          <input type="submit" class="btn btn-danger float-end" value="Delete Event"/>
           <div>
             <input type="hidden" value="{{eventData.id}}" name="id">
           </div>
