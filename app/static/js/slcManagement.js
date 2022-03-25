@@ -19,7 +19,6 @@ function changeAction(action){
     $('#courseID').val(courseID);
     $('#withdrawModal').modal('show');
   } else if(action.value=="Edit"){
-    console.log(courseID)
     location = '/serviceLearning/editProposal/' + courseID;
   }
 }

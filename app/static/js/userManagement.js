@@ -1,7 +1,6 @@
 import searchUser from './searchUser.js'
 
 function callback() {
-  console.log("This function is called")
   $("#searchAdmin").submit();
 }
 

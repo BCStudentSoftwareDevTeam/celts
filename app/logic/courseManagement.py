@@ -57,7 +57,7 @@ def updateCourse(courseData, instructorsDict):
         This function will take in courseData for the SLC proposal page and a dictionary
         of instuctors assigned to the course and update the information in the db.
     """
-    print(instructorsDict)
+
     for toggler in ["regularOccurenceToggle", "slSectionsToggle", "permanentDesignation"]:
         courseData.setdefault(toggler, "off")
     status = CourseStatus.get(CourseStatus.status == "Pending")
