@@ -1,15 +1,15 @@
-export default function searchUser(inputId, callback, parentElementId=null, object=false){
+export default function searchUser(inputId, callback, parentElementId=null, phoneNumber=false){
   var query = $(`#${inputId}`).val()
   $(`#${inputId}`).autocomplete({
     appendTo: (parentElementId === null) ? null : `#${parentElementId}`,
     minLength: 2,
     source: function(request, response) {
       $.ajax({
-        url: `/searchUser/${query}/${object}`,
+        url: `/searchUser/${query}/${phoneNumber}`,
         type: "GET",
         dataType: "json",
         success: function(dictToJSON) {
-          if (object===false){
+          if (phoneNumber===false){
             response($.map( dictToJSON, function( item ) {
               return {
                 label: item,
@@ -18,7 +18,6 @@ export default function searchUser(inputId, callback, parentElementId=null, obje
             })
           )}
           else {
-            console.log("phone")
             response(Object.keys(dictToJSON).map( (item, index) => {
               if (index === 0){
                 return {

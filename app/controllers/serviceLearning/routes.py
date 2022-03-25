@@ -7,11 +7,12 @@ from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseQuestion import CourseQuestion
 from app.models.courseParticipant import CourseParticipant
+from app.logic.utils import selectSurroundingTerms
 
 from app.controllers.serviceLearning import serviceLearning_bp
 from app.logic.searchUsers import searchUsers
 from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal
-from app.logic.courseManagement import updateCourse
+from app.logic.courseManagement import updateCourse, createOrUpdate
 
 @serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
 @serviceLearning_bp.route('/serviceLearning/courseManagement/<username>', methods = ['GET'])
@@ -45,9 +46,7 @@ def slcEditProposal(courseID):
         isAllSectionsServiceLearning = "checked"
     if courseData.course.isPermanentlyDesignated:
         isPermanentlyDesignated = "checked"
-
-    terms = Term.select().where(Term.year >= g.current_term.year)
-
+    terms = selectSurroundingTerms(g.current_term, 0)
     return render_template('serviceLearning/slcNewProposal.html',
                                 courseData = courseData,
                                 questionanswers = questionanswers,
@@ -65,8 +64,8 @@ def slcNewProposal():
         # courseData["courseInstructorPhone"] = request.form.get("courseInstructorPhone")
         term = Term.get(Term.id==request.form.get("term"))
         status = CourseStatus.get(CourseStatus.status == "Pending")
-        coursecheck = Course.get_or_none(Course.id == request.form.get("courseID"))
-        if coursecheck == None:
+        create = createOrUpdate(request.form.get("courseID"))
+        if create:
             course = Course.create(
                 courseName=request.form.get("courseName"),
                 courseAbbreviation=request.form.get("courseAbbreviation"),
@@ -117,7 +116,7 @@ def updateInstructorPhone():
     except Exception as e:
         print(e)
         return e
-        
+
 @serviceLearning_bp.route('/serviceLearning/withdraw/<courseID>', methods = ['POST'])
 def withdrawCourse(courseID):
     try:

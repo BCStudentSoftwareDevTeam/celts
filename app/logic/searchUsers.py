@@ -1,6 +1,6 @@
 from app.models.user import User
 
-def searchUsers(query, object):
+def searchUsers(query, phoneNumber):
     '''Accepts user input and queries the database returning results that matches user search'''
     query = query.strip()
     search = query.upper()
@@ -15,7 +15,7 @@ def searchUsers(query, object):
         for participant in results:
             if participant not in resultsDict:
                 resultsDict[f"{participant.firstName} {participant.lastName} ({participant.username})"] = f"{participant.firstName} {participant.lastName} ({participant.username})"
-                if object=="true":
+                if phoneNumber=="true":
                     resultsDict[f"{participant.username} phoneNumber"] = participant.phoneNumber
     else:
         for searchTerm in splitSearch: #searching for specified first and last name
@@ -25,8 +25,7 @@ def searchUsers(query, object):
                 for participant in results:
                     if participant not in resultsDict:
                         resultsDict[f"{participant.firstName} {participant.lastName} ({participant.username})"] = f"{participant.firstName} {participant.lastName} ({participant.username})"
-                        if object=="true":
+                        if phoneNumber=="true":
                             resultsDict[f"{participant.username} phoneNumber"] = participant.phoneNumber
 
-    print("resultsDict", resultsDict)
     return resultsDict

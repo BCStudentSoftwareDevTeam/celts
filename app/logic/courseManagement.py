@@ -44,7 +44,19 @@ def getinstructorData(courseIds):
 
     return instructorDict
 
+def createOrUpdate(id):
+    """This function will return True or False based on wether a course exist or not"""
+    coursecheck = Course.get_or_none(Course.id == id)
+
+    if coursecheck != None:
+        return False
+    return True
+
 def updateCourse(courseData, instructorsDict):
+    """
+        This function will take in courseData for the SLC proposal page and a dictionary
+        of instuctors assigned to the course and update the information in the db.
+    """
     print(instructorsDict)
     for toggler in ["regularOccurenceToggle", "slSectionsToggle", "permanentDesignation"]:
         courseData.setdefault(toggler, "off")
@@ -53,12 +65,12 @@ def updateCourse(courseData, instructorsDict):
         courseName=courseData["courseName"],
         courseAbbreviation=courseData["courseAbbreviation"],
         courseCredit=courseData["credit"],
-        isRegularlyOccuring=1 if "on" in courseData["regularOccurenceToggle"] else 0,
+        isRegularlyOccuring=("on" in courseData["regularOccurenceToggle"]),
         term=courseData['term'],
         status=status,
-        isAllSectionsServiceLearning=1 if "on" in courseData["slSectionsToggle"] else 0,
+        isAllSectionsServiceLearning=("on" in courseData["slSectionsToggle"]),
         serviceLearningDesignatedSections=courseData["slDesignation"],
-        isPermanentlyDesignated=1 if "on" in courseData["permanentDesignation"] else 0,
+        isPermanentlyDesignated=("on" in courseData["permanentDesignation"]),
     ).where(Course.id == courseData['courseID']).execute()
     for i in range(1, 7):
         (CourseQuestion.update(questionContent=courseData[f"{i}"])
