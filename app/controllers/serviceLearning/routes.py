@@ -27,7 +27,7 @@ def serviceCourseManagement(username=None):
             courseDict=courseDict)
     else:
         flash("Unauthorized to view page", 'warning')
-        return redirect(url_for('main.events'))
+        return redirect(url_for('main.events', selectedTerm=g.current_term))
 
 @serviceLearning_bp.route('/serviceLearning/editProposal/<courseID>', methods=['GET', 'POST'])
 def slcEditProposal(courseID):

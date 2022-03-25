@@ -20,8 +20,10 @@ from app.models.questionNote import QuestionNote
 from app.models.interest import Interest
 from app.models.facilitator import Facilitator
 from app.models.note import Note
+from app.models.emailTemplate import EmailTemplate
 from app.models.backgroundCheck import BackgroundCheck
 # from app.models.backgroundCheckType import BackgroundCheckType
+
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -766,8 +768,26 @@ facilitators = [
 ]
 Facilitator.insert_many(facilitators).on_conflict_replace().execute()
 
-background = [
+emailTemplates = [
+    {
+    'subject': 'Test Email',
+    'body': 'Hello {name}, This is a test event named {event_name} located in {location}. Other info: {start_date}-{end_date} and this {start_time}-{end_time}.',
+    'action': 'sent',
+    'purpose': 'Test',
+    'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
+    },
+    {
+    'subject': 'Test Email 2',
+    'body': 'Hello {name}, This is another test event named {event_name} located in {location}. Other info: {start_date}-{end_date} and this {start_time}-{end_time}. The link is {event_link}',
+    'action': 'sent',
+    'purpose': 'Test2',
+    'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
+    }
+]
 
+EmailTemplate.insert_many(emailTemplates).on_conflict_replace().execute()
+
+background = [
     {
     "user": "khatts",
     "type": "CAN",
@@ -782,3 +802,4 @@ background = [
     },
 ]
 BackgroundCheck.insert_many(background).on_conflict_replace().execute()
+

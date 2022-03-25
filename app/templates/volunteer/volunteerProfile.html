@@ -15,7 +15,7 @@
         <a class="nav-link active" aria-current="page" href="#">Upcoming Events</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/{{user.username}}/serviceTranscript">Service Transcript</a>
+        <a class="nav-link" href="/profile/{{user.username}}/serviceTranscript">Service Transcript</a>
       </li>
     </ul>
   </div>
@@ -33,7 +33,7 @@
         {% for event in upcomingEvents %}
         <tr>
           <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
-          <td><a href= '/event/{{event.id}}/edit' class="link-primary">{{event.name}}</a></td>
+          <td><a href= '/eventsList/{{event.id}}/edit' class="link-primary">{{event.name}}</a></td>
           <td>{{event.startDate}}</td>
           <td>{{event.endDate}}</td>
           <td>{{"RSVP'ed" if event.id in rsvpedEvents else "Not RSVP'ed"}}</td>

@@ -4,6 +4,7 @@
   {{super()}}
   <script src="/static/js/createEvents.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+
 {% endblock %}
 
 {% block styles %}
@@ -47,13 +48,13 @@
             <a class="nav-link active" href="#" role="tab" aria-selected="true">Edit Event</a>
           </li>
           <li class="nav-item" role="presentation">
-            <a class="nav-link" href="/event/{{eventData.id}}/track_volunteers" role="tab" aria-selected="false">Track Volunteers</a>
+            <a class="nav-link" href="/eventsList/{{eventData.id}}/track_volunteers" role="tab" aria-selected="false">Track Volunteers</a>
           </li>
         </ul>
       </div>
       <div class="col">
         <form action="/event/{{eventData.id}}/delete" method='post'>
-          <input type="submit" class="btn btn-danger float-end" value="Cancel Event"/>
+          <input type="submit" class="btn btn-danger float-end" value="Delete Event"/>
           <div>
             <input type="hidden" value="{{eventData.id}}" name="id">
           </div>
@@ -80,11 +81,8 @@
           <label class="form-label" for='inputEventTerm'><strong>Term</strong></label>
           {% if isEditable  %}
             <select class="form-select" name='term' id='inputEventTerm' required>
-              {% if eventData.term and eventData.term not in futureTerms %}
-                <option value='{{eventData.term.id}}' selected>{{eventData.term.description}}</option>
-              {% endif %}
-              {% for future in futureTerms %}
-                <option value='{{future}}' {{"selected" if future == eventData.term}}>{{future.description}}</option>
+              {% for term in futureTerms %}
+                <option value='{{term}}' {{"selected" if term == eventData.term}}>{{term.description}}</option>
               {% endfor %}
             </select>
           {% else %}
@@ -106,29 +104,36 @@
         </div>
         {% endif %}
         <!-- Start and End Time -->
-        <div class="flex-container mb-4">
-          <div class="form-inline d-flex">
-            <div  class="form-group" >
-              <div class="d-inline-flex">
-                <label class="form-label me-2" for="pickStartTime"><strong>Start Time</strong></label>
-                {% if isEditable %}
-                  <input type='time' class="form-control timePicker" id='pickStartTime' value="{{eventData.timeStart}}" name="timeStart" required>
-                {% else %}
-                  <p>{{eventData.timeStart.strftime("%I: %M %p") if eventData.timeStart }}</p>
-                {% endif %}
+        <div class="mb-4">
+          <div class="row col-md-12" >
+            <div class="form-group col-md-6">
+              <label class="form-label me-2" for="startTime"><strong>Start Time</strong></label>
+              {% if isEditable %}
+              <div class="input-group">
+                {% set startTime = eventData.timeStart.strftime("%I: %M %p") if eventData.timeStart and eventData.timeStart.strftime else eventData.timeStart%}
+                <input type="time" class="form-control timepicker" id='startTime' value="{{startTime}}" name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time" required />
+                <span class="input-group-text timeIcons" id="timeIcon1" hidden><i class="bi bi-clock"></i></span>
               </div>
-              <div class='form-group time d-inline-flex ps-4'>
-                <label for="pickEndTime" class="form-label me-2"><strong>End Time:</strong></label>
-                {% if isEditable %}
-                  <input type='time' class="form-control timePicker" id='pickEndTime' value="{{eventData.timeEnd}}" name="timeEnd" required>
-                {% else %}
-                  <p>{{eventData.timeEnd.strftime("%I: %M %p") if eventData.timeEnd }}</p>
-                {% endif %}
+              {% else %}
+                <p>{{eventData.timeStart.strftime("%I: %M %p") if eventData.timeStart }}</p>
+              {% endif %}
+            </div>
+            <div class='form-group col-md-6'>
+              <label class="form-label me-2" for="pickEndTime"><strong>End Time</strong></label>
+              {% if isEditable %}
+              <div class="input-group">
+                {% set endTime = eventData.timeEnd.strftime("%I: %M %p") if eventData.timeEnd and eventData.timeEnd.strftime else eventData.timeEnd%}
+                <input type="time" class="form-control timepicker" id='endTime' value="{{endTime}}" name="timeEnd" aria-describedby="timeIcon2" placeholder="Pick an end time" required />
+                <span class="input-group-text timeIcons" id="timeIcon2" hidden><i class="bi bi-clock"></i></span>
               </div>
+              {% else %}
+                <p>{{eventData.timeEnd.strftime("%I: %M %p") if eventData.timeEnd }}</p>
+              {% endif %}
             </div>
           </div>
         </div>
         <!-- Start and End Datepickers -->
+<<<<<<< HEAD
         <div class="flex-container">
           <div>
             <div  class="form-group" >
@@ -155,6 +160,29 @@
                 <div class="input-group-text" id="calendarIconEnd">
                   <span><i class="bi bi-calendar-plus-fill"></i></span>
                 </div>
+=======
+        <div class="row col-md-12">
+          <div class="form-group col-md-6">
+            <label class="form-label me-2" for="startDatePicker"><strong>Start Date:</strong></label>
+            {% if  isEditable  %}
+              <div class='input-group date' id="startDate">
+                <input type='text' class="form-control datePicker readonly" value="{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" name="startDate" placeholder="Pick a start date" onchange="updateDate(this)" id=startDatePicker required>
+                <div class="input-group-text" id="calendarIconStart">
+                  <span><i class="bi bi-calendar-plus-fill"></i></span>
+                </div>
+              </div>
+            {% else %}
+                <p>{{eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}</p>
+            {% endif %}
+          </div>
+          <div class="form-group col-md-6 d-none" id ="endDateStyle">
+            <!--datePicker for End date-->
+            <label class="form-label" for="endDatePicker"><strong>End Date</strong></label>
+            <div class='input-group date' id="endDate">
+              <input type='text' class="form-control datePicker readonly" id='endDatePicker' value="{{eventData.endDate.strftime('%m-%d-%Y') if eventData.endDate and eventData.endDate.strftime else eventData.endDate}}" name="endDate" placeholder="Pick an end date" onchange="updateDate(this)" {{"readonly" if not isEditable}}>
+              <div class="input-group-text" id="calendarIconEnd">
+                <span><i class="bi bi-calendar-plus-fill"></i></span>
+>>>>>>> 02d2bf676b0d350ff2f96996d4aae5a50c2af3a1
               </div>
             </div>
           </div>
