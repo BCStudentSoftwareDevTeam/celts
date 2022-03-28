@@ -40,7 +40,8 @@ function updateManagers(el,user,status){
         location.reload()
       },
       error: function(error, status){
-          console.log(error, status)
+          console.log(error, status);
+          location.reload();
         }
     })
   }

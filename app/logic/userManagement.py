@@ -40,13 +40,13 @@ def addProgramManager(user,program):
     user = User.get_by_id(user)
     managerEntry = StudentManager.create(user=user,program=program)
     managerEntry.save()
-    return f"Added {user.firstName}{user.user.lastName} as manager"
+    return(f'{user} added as manager')
 
 def removeProgramManager(user,program):
     user = User.get_by_id(user)
     delQuery = StudentManager.delete().where(StudentManager.user == user,StudentManager.program == program)
     delQuery.execute()
-    return f"Removed {user.firstName}{user.user.lastName} as manager"
+    return (f'{user} removed from managers')
 
 def hasPrivilege(user, program):
     user = User.get_by_id(user)

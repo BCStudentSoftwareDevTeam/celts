@@ -47,21 +47,21 @@ def updateProgramManagers():
     eventData = request.form
     if  int(eventData['status']) == 0:
         try:
-            addProgramManager(eventData['userID'],int(eventData['programID']))
+            return(addProgramManager(eventData['userID'],int(eventData['programID'])))
         except:
-            flash('Error while trying to add a manager.')
-            return "Error while adding manager."
+            flash('Error while trying to add a manager.','warning')
+            abort(500,"'Error while trying to add a manager.'")
 
     elif int(eventData['status']) == 1:
         try:
-            removeProgramManager(eventData['userID'],int(eventData['programID']))
+            return(removeProgramManager(eventData['userID'],int(eventData['programID'])))
         except:
-            flash('Error while trying to remove a manager.')
-            return "Error while removing manager."
+            flash('Error while removing a manager.','warning')
+            abort(500,"'Error while trying to remove a manager.'")
 
     else:
-        flash('Error while removing a manager.')
-        return "Error while removing manager."
+        flash('Error while removing a manager.','warning')
+        abort(500,"'Error while trying to remove a manager.'")
 
 
 
