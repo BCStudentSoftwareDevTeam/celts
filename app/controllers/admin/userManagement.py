@@ -42,7 +42,7 @@ def manageUsers():
             flash(username+ " is no longer a Celts Student Staff", 'success')
     return ("success")
 
-@admin_bp.route('/updateManagers', methods=['POST','GET'])
+@admin_bp.route('/updateManagers', methods=['POST'])
 def updateProgramManagers():
     eventData = request.form
     if  int(eventData['status']) == 0:
@@ -50,14 +50,19 @@ def updateProgramManagers():
             addProgramManager(eventData['userID'],int(eventData['programID']))
         except:
             flash('Error while trying to add a manager.')
+            return "Error while adding manager."
+
     elif int(eventData['status']) == 1:
         try:
             removeProgramManager(eventData['userID'],int(eventData['programID']))
         except:
             flash('Error while trying to remove a manager.')
+            return "Error while removing manager."
+
     else:
         flash('Error while removing a manager.')
-    abort(500)
+        return "Error while removing manager."
+
 
 
 @admin_bp.route('/admin', methods = ['GET'])
