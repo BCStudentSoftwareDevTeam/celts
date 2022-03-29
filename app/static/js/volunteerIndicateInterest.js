@@ -24,24 +24,26 @@ $(document).ready(function() {
 });
 
 
-function updateManagers(el,user,status){
-
+function updateManagers(el,username,action){
+  var routeUrl = '/removeProgramManagers';
+  if (action == "add"){
+    routeUrl = '/addProgramManagers';
+  }
   let data = {
-      programID : el.id,
-      userID : (user[0].id),
-      status:status,
+      programID : $(el).data("programid"),
+      username : username,
       from: "ajax"
   }
   $.ajax({
-    url: "/updateManagers",
+    url: routeUrl,
     type: "POST",
     data: data,
     success: function(s){
-        location.reload()
+        // location.reload()
       },
       error: function(error, status){
           console.log(error, status);
-          location.reload();
+          // location.reload();
         }
     })
   }

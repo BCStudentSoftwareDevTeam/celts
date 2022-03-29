@@ -42,28 +42,27 @@ def manageUsers():
             flash(username+ " is no longer a Celts Student Staff", 'success')
     return ("success")
 
-@admin_bp.route('/updateManagers', methods=['POST'])
-def updateProgramManagers():
+@admin_bp.route('/addProgramManagers', methods=['POST'])
+def addProgramManagers():
+
     eventData = request.form
-    if  int(eventData['status']) == 0:
-        try:
-            return(addProgramManager(eventData['userID'],int(eventData['programID'])))
-        except:
-            flash('Error while trying to add a manager.','warning')
-            abort(500,"'Error while trying to add a manager.'")
+    try:
+        return addProgramManager(eventData['username'],int(eventData['programID']))
+    except Exception as e:
+        print(e)
+        flash('Error while trying to add a manager.','warning')
+        abort(500,"'Error while trying to add a manager.'")
 
-    elif int(eventData['status']) == 1:
-        try:
-            return(removeProgramManager(eventData['userID'],int(eventData['programID'])))
-        except:
-            flash('Error while removing a manager.','warning')
-            abort(500,"'Error while trying to remove a manager.'")
+@admin_bp.route('/removeProgramManagers', methods=['POST'])
+def removeProgramManagers():
 
-    else:
+    eventData = request.form
+    try:
+        return removeProgramManager(eventData['username'],int(eventData['programID']))
+    except Exception as e:
+        print(e)
         flash('Error while removing a manager.','warning')
-        abort(500,"'Error while trying to remove a manager.'")
-
-
+        abort(500,"Error while trying to remove a manager.")
 
 @admin_bp.route('/admin', methods = ['GET'])
 def userManagement():

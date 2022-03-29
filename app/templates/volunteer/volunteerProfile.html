@@ -7,6 +7,8 @@
 {% endblock %}
 
 {% block app_content %}
+<input id="{{ user.username }}" hidden>
+
 <div class="container">
   <h1 class="mt-5 mb-3 text-center">{{ user.firstName }} {{ user.lastName }}</h1>
   <div class="btn-group">
@@ -48,7 +50,6 @@
   </div>
   <div class="row">
     <h2>Which programs do you want to receive information about?</h2>
-    <input id="{{ user.username }}" hidden>
       <div class="form-check-inline form-switch">
       {% for program in programs %}
         {% set status = 0 %}
@@ -56,8 +57,8 @@
             {% set status = 1 %}
           {% else %}
           {% endif %}
-              <input class="form-check-input" type="checkbox" id="{{ program.id }}" {{ status }}>
-              <label class="form-check-label" style="padding-right:50px;" for="{{ program.id }}">{{program.programName}}</label>
+              <input class="form-check-input" type="checkbox" id="info-check-{{ program.id }}" {{ status }}>
+              <label class="form-check-label" style="padding-right:50px;" for="info-check-{{ program.id }}">{{program.programName}}</label>
       {% endfor %}
       </div>
       <div>
@@ -68,20 +69,20 @@
 
   </div>
 {% if g.current_user.isCeltsAdmin%}
-<!-- This makes sure that the CeltsAdmins can make someone program manger or not.  -->
+<!-- This makes sure that the CeltsAdmins can make someone program manager or not.  -->
   {% if user.isCeltsStudentStaff%}
       <div class="row">
         <h2>Which programs do you want to make {{user.firstName}} {{user.lastName}} manager for?</h2>
-        <input id="{{ user.username }}" hidden>
         <div>
           {% for program in programs %}
-            {% set status = 0 %}
-              {% if program.id in permissionPrograms %}
-                {% set status = 1 %}
-              {% else %}
-              {% endif %}
-                  <input  type="checkbox" id="{{ program.id }}" {{ 'checked' if status==1 else 'unchecked' }}  onclick="updateManagers(this,{{user.username}},{{status}})">
-                  <label  style="padding-right:50px;" for="{{ program.id }}">{{program.programName}}</label>
+            {% set action = "add" %}
+            {% set checked = "" %}
+            {% if program.id in permissionPrograms %}
+                  {% set action = "remove" %}
+                  {% set checked = "checked" %}
+            {% endif %}
+                  <input  type="checkbox" id="mgr-{{ program.id }}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{user.username}}','{{action}}')">
+                  <label  style="padding-right:50px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
           {% endfor %}
         </div>
       </div>
@@ -89,7 +90,6 @@
 {% elif g.current_user.isCeltsStudentStaff %}
   <div class="row">
     <h2>{{user.firstName}} {{user.lastName}} is a manager for the following programs</h2>
-    <input id="{{ user.username }}" hidden>
     <div>
       {% for program in programs %}
         {% set status = '' %}
