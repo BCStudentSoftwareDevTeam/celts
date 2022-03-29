@@ -32,25 +32,18 @@ $(document).ready(function(){
   });
 
   // Popover functionalitie
-  // $(function(){
-  //   var requiredTraining = $(".trainingPopover");
-  //   requiredTraining.popover({
-  //     trigger: "focus",
-  //     sanitize: false,
-  //     content: function() {
-  //                    return $(this).attr('data-content');
-  //       }
-  //   });
-  // });
-
-  var test = $('[data-toggle="popover"]').data('content');
-  console.log(test);
-  $('[data-toggle="popover"]').popover({
-    html: true,
-    trigger: "focus",
-    placement: "bottom",
-    content: test,
+  $(function(){
+    var requiredTraining = $(".trainingPopover");
+    requiredTraining.popover({
+      trigger: "focus",
+      sanitize: false,
+      html: true,
+      content: function() {
+                     return $(this).attr('data-content');
+        }
+    });
   });
+
 
   $(".ban").click(function() {
     var banButton = $("#banButton")
