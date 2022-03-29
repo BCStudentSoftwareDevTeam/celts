@@ -67,20 +67,18 @@ def viewVolunteersProfile(username):
          completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
          backgroundTypes = list(BackgroundCheckType.select())
          # requiredTrainings = Event.select(Event,ProgramEvent.program).where(Event.isTraining == True, ProgramEvent.program == ProgramEvent.event)
-         print("==================================================================")
-         requiredTrainings = ProgramEvent.select().join(Event).where(ProgramEvent.event == Event.id)
-         print(requiredTrainings)
-         print("==================================================================")
-         reqTable = {}
-         for ele in requiredTrainings:
-             print(".................................................................................",type(ele))
-             if ele.program not in reqTable:
-                 if ele.event.isTraining:
-                     reqTable[ele.program] = [ele.event.name]
+
+         programEventObjs = ProgramEvent.select().join(Event).where(ProgramEvent.event == Event.id)
+         print("\n\n\n requiredTraining: ", programEventObjs, "\n\n\n")
+         requiredTrainingsDict = {}
+         for obj in programEventObjs:
+             if obj.program.id not in requiredTrainingsDict:
+                 if obj.event.isTraining:
+                     requiredTrainingsDict[obj.program.id] = [obj.event.name]
              else:
-                if ele.event.isTraining:
-                    reqTable[ele.program].append(ele.event.name)
-         print("==================================================================This is the reqTable",reqTable)
+                if obj.event.isTraining:
+                    requiredTrainingsDict[obj.program.id].append(obj.event.name)
+         print("\n\n\n This is the requiredTrainingsDict ", requiredTrainingsDict, "\n\n\n")
 
          eligibilityTable = []
          for program in programs:
@@ -90,13 +88,13 @@ def viewVolunteersProfile(username):
               noteForDict = list(notes)[-1].banNote.noteContent if list(notes) else ""
               eligibilityTable.append({"program" : program,
                                    "completedTraining" : (username in trainedParticipants(program)),
-                                   "trainingList": requiredTrainings,
+                                   "trainingList": requiredTrainingsDict,
                                    "isNotBanned" : isEligibleForProgram(program, username),
                                    "banNote": noteForDict})
          return render_template ("/main/volunteerProfile.html",
             programsInterested = programsInterested,
             upcomingEvents = upcomingEvents,
-            reqTable = reqTable,
+            requiredTrainingsDict = requiredTrainingsDict,
             eligibilityTable = eligibilityTable,
             volunteer = User.get(User.username == username),
             backgroundTypes = backgroundTypes,

@@ -69,7 +69,13 @@
               <tr>
                 <td id="programNameTable">{{program.program.programName}}</td>
                 <td><input class="form-check-input" type="checkbox" id="{{program.program.id}}" name="{{volunteer.username}}" {% if program.program in programsInterested %} checked {% endif %}></td>
-                <td>{% if program.completedTraining == True %}<i class="bi bi-check-lg float-left"></i> {% else %} <i class="bi bi-x-lg"></i>&nbsp&nbsp&nbsp<a class="trainingPopover" href='javascript:;'  data-toggle='popover' data-placement='bottom' data-trigger='focus' title='Required Trainings'>View</a>{% endif %}
+                <td>
+                  {% if program.completedTraining == True %}
+                    <i class="bi bi-check-lg float-left"></i>
+                  {% else %}
+                    <i class="bi bi-x-lg"></i>&nbsp&nbsp&nbsp
+                    <a class="trainingPopover" id="{{program.program.id}}" href="#" data-toggle="popover" title="Required Trainings" data-content="{{program.trainingList[program.program.id]}}">View {{program.trainingList[program.program.id]}}</a>
+                  {% endif %}
                 </td>
                 {% if g.current_user.isCeltsAdmin %}
                 <td class="programBan">
@@ -87,18 +93,18 @@
 {% for program in eligibilityTable %}
   <div id="{{program.program.id}}" style="display: none">
       <ol class="list-group custom-popover-1">
-        {% for i in reqTable[program.program] %}
+        {% for i in requiredTrainingsDict[program.program] %}
           <li class="list-group-item">{{i}}</li>
         {% endfor %}
       </ol>
   </div>
-  <!-- <div id="popover-content-2" style="display: none">
+  {#<!-- <div id="popover-content-2" style="display: none">
       <ol class="list-group custom-popover-2">
         {% for i in reqTable[program.program] %}
           <li class="list-group-item">{{i}}</li>
         {% endfor %}
       </ol>
-  </div> -->
+  </div> -->#}
 {% endfor %}
 <!-- End Program Elegibility Table -->
 

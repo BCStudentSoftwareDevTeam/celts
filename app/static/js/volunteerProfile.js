@@ -43,16 +43,14 @@ $(document).ready(function(){
   //   });
   // });
 
-  $(document).ready(function() {
-    $('[data-toggle="popover"]').popover({
-      html: true,
-      trigger: "focus",
-      content: function() {
-        return $('#').html();
-      }
-    });
+  var test = $('[data-toggle="popover"]').data('content');
+  console.log(test);
+  $('[data-toggle="popover"]').popover({
+    html: true,
+    trigger: "focus",
+    placement: "bottom",
+    content: test,
   });
-
 
   $(".ban").click(function() {
     var banButton = $("#banButton")
