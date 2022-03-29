@@ -1,6 +1,6 @@
 $(document).ready(function() {
   $(".form-check-input").click(function updateInterest(el){
-    var programID = $(this).attr('id');
+    var programID = $(this).data("programid");
     var interest = $(this).is(':checked');
     if (interest) {
       var routeUrl = "/addInterest/"
@@ -39,11 +39,11 @@ function updateManagers(el,username,action){
     type: "POST",
     data: data,
     success: function(s){
-        // location.reload()
+        location.reload()
       },
       error: function(error, status){
           console.log(error, status);
-          // location.reload();
+          location.reload();
         }
     })
   }
