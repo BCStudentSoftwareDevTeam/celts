@@ -59,8 +59,11 @@ def saveEventToDb(newEventData):
                                 'date':newEventData['startDate'],
                                 "week":1})
 
+    print(f"\n\n\n{newEventData['sendReminder']}\n\n\n\n")
+    print(f"\n\n\n\n{newEventData}\n\n\n")
     eventRecords = []
     for eventInstance in eventsToCreate:
+        print(f"\n\n\n{eventInstance['sendReminder']}\n\n\n\n")
         with mainDB.atomic():
             eventData = {
                     "term": newEventData['term'],
@@ -93,7 +96,22 @@ def saveEventToDb(newEventData):
 
             eventRecords.append(eventRecord)
 
+        if eventInstance['sendReminder']:
+            sendReminder(eventData)
+        else:
+            print("\n\n\n\n You should NOT send a reminder for this event \n\n\n")
+
     return eventRecords
+
+def sendReminder(eventData):
+    """
+    send a remineder email for each future event
+
+    eventData: data for the event that is being created or updated
+    """
+    print("\n\n\n\n You should send a reminder for this event \n\n\n")
+
+
 
 def getStudentLedProgram(term):
 

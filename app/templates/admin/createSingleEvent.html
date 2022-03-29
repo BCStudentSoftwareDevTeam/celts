@@ -111,7 +111,7 @@
               {% if isEditable %}
               <div class="input-group">
                 {% set startTime = eventData.timeStart.strftime("%I: %M %p") if eventData.timeStart and eventData.timeStart.strftime else eventData.timeStart%}
-                <input type="time" class="form-control timepicker" id='startTime' value="{{startTime}}" name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time" required />
+                <input type="time" class="form-control timepicker readonly" id='startTime' value="{{startTime}}" name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time" required autocomplete="off"/>
                 <span class="input-group-text timeIcons" id="timeIcon1" hidden><i class="bi bi-clock"></i></span>
               </div>
               {% else %}
@@ -123,7 +123,7 @@
               {% if isEditable %}
               <div class="input-group">
                 {% set endTime = eventData.timeEnd.strftime("%I: %M %p") if eventData.timeEnd and eventData.timeEnd.strftime else eventData.timeEnd%}
-                <input type="time" class="form-control timepicker" id='endTime' value="{{endTime}}" name="timeEnd" aria-describedby="timeIcon2" placeholder="Pick an end time" required />
+                <input type="time" class="form-control timepicker readonly" id='endTime' value="{{endTime}}" name="timeEnd" aria-describedby="timeIcon2" placeholder="Pick an end time" required autocomplete="off"/>
                 <span class="input-group-text timeIcons" id="timeIcon2" hidden><i class="bi bi-clock"></i></span>
               </div>
               {% else %}
@@ -178,6 +178,10 @@
           <div class="form-check form-switch mb-4">
             <label class="custom-control-label" for='earnServiceHours'><strong>This event earns service hours.</strong></label>
             <input class="form-check-input" type="checkbox" id="earnServiceHours" name="isService" {{"checked" if eventData.isService}}/>
+          </div>
+          <div class="form-check form-switch mb-4">
+            <label class="custom-control-label" for="sendReminderEmails"><strong>Send reminder emails for this event.</strong></label>
+            <input class="form-check-input" type="checkbox" id="sendReminderEmails" name="sendReminder" checked/>
           </div>
           {% else %}
             <div class="mb-4">
