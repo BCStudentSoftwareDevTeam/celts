@@ -35,7 +35,7 @@ $(document).ready(function(){
   $(function(){
     var requiredTraining = $(".trainingPopover");
     requiredTraining.popover({
-      trigger: "focus",
+      trigger: "hover",
       sanitize: false,
       html: true,
       content: function() {
