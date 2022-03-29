@@ -12,7 +12,7 @@ from app.logic.utils import selectSurroundingTerms
 from app.controllers.serviceLearning import serviceLearning_bp
 from app.logic.searchUsers import searchUsers
 from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal
-from app.logic.courseManagement import updateCourse, createOrUpdate
+from app.logic.courseManagement import updateCourse, createCourse
 
 @serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
 @serviceLearning_bp.route('/serviceLearning/courseManagement/<username>', methods = ['GET'])
@@ -41,11 +41,11 @@ def slcEditProposal(courseID):
     isPermanentlyDesignated = ""
 
     if courseData.course.isRegularlyOccuring:
-        isRegularlyOccuring = "checked"
+        isRegularlyOccuring = True
     if courseData.course.isAllSectionsServiceLearning:
-        isAllSectionsServiceLearning = "checked"
+        isAllSectionsServiceLearning = True
     if courseData.course.isPermanentlyDesignated:
-        isPermanentlyDesignated = "checked"
+        isPermanentlyDesignated = True
     terms = selectSurroundingTerms(g.current_term, 0)
     return render_template('serviceLearning/slcNewProposal.html',
                                 courseData = courseData,
@@ -58,34 +58,11 @@ def slcEditProposal(courseID):
                                 courseID=courseID)
 
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
-def slcNewProposal():
+def slcCreateOrEdit():
     if request.method == "POST":
-        # TODO: Where to save the phone number?
-        # courseData["courseInstructorPhone"] = request.form.get("courseInstructorPhone")
-        term = Term.get(Term.id==request.form.get("term"))
-        status = CourseStatus.get(CourseStatus.status == "Pending")
-        create = createOrUpdate(request.form.get("courseID"))
-        if create:
-            course = Course.create(
-                courseName=request.form.get("courseName"),
-                courseAbbreviation=request.form.get("courseAbbreviation"),
-                courseCredit=request.form.get("credit"),
-                isRegularlyOccuring=1 if request.form.get("regularOccurenceToggle") else 0,
-                term=term,
-                status=status,
-                createdBy=g.current_user,
-                isAllSectionsServiceLearning=1 if request.form.get("slSectionsToggle") else 0,
-                serviceLearningDesignatedSections=request.form.get("slDesignation"),
-                isPermanentlyDesignated=1 if request.form.get("permanentDesignation") else 0,
-            )
-            for i in range(1, 7):
-                CourseQuestion.create(
-                    course=course,
-                    questionContent=request.form.get(f"{i}"),
-                    questionNumber=i
-                )
-            for instructor in instructorsDict["instructors"]:
-                CourseInstructor.create(course=course, user=instructor.username)
+        courseExist = Course.get_or_none(Course.id == request.form.get('courseID'))
+        if not courseExist:
+            createCourse(request.form.copy(), instructorsDict)
             return redirect('/serviceLearning/courseManagement')
         else:
             updateCourse(request.form.copy(), instructorsDict)

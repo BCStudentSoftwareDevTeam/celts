@@ -1,4 +1,4 @@
-export default function searchUser(inputId, callback, parentElementId=null, phoneNumber=false){
+export default function searchUser(inputId, callback, parentElementId=null, phoneNumber=0){
   var query = $(`#${inputId}`).val()
   $(`#${inputId}`).autocomplete({
     appendTo: (parentElementId === null) ? null : `#${parentElementId}`,

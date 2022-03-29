@@ -6,6 +6,7 @@ def searchUsers(query, phoneNumber):
     search = query.upper()
     splitSearch = search.split()
     resultsDict = {}
+    print(phoneNumber)
 
     firstName = splitSearch[0] + "%"
     lastName = " ".join(splitSearch[1:]) +"%"
@@ -15,7 +16,7 @@ def searchUsers(query, phoneNumber):
         for participant in results:
             if participant not in resultsDict:
                 resultsDict[f"{participant.firstName} {participant.lastName} ({participant.username})"] = f"{participant.firstName} {participant.lastName} ({participant.username})"
-                if phoneNumber=="true":
+                if phoneNumber:
                     resultsDict[f"{participant.username} phoneNumber"] = participant.phoneNumber
     else:
         for searchTerm in splitSearch: #searching for specified first and last name
@@ -25,7 +26,7 @@ def searchUsers(query, phoneNumber):
                 for participant in results:
                     if participant not in resultsDict:
                         resultsDict[f"{participant.firstName} {participant.lastName} ({participant.username})"] = f"{participant.firstName} {participant.lastName} ({participant.username})"
-                        if phoneNumber=="true":
+                        if phoneNumber:
                             resultsDict[f"{participant.username} phoneNumber"] = participant.phoneNumber
 
     return resultsDict

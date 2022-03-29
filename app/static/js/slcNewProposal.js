@@ -59,7 +59,21 @@ function displayCorrectTab(navigateTab) {
 function validateForm() {
   // TODO: Generalize form validation to include textareas and selects
   // This function deals with validation of the form fields
-  return true;
+  let valid = true;
+  console.log($( ":input" ));
+  let allTabs = $(".tab");
+  let allInputs = $(allTabs[currentTab]).find("input");
+
+  for (let i = 0; i < allInputs.length; i++) {
+    if (allInputs[i].value == "") {
+      allInputs[i].className += " invalid";
+      valid = false;
+    }
+  }
+  if (valid) {
+    $(".step")[currentTab].className += " finish"
+  }
+  return valid;
 }
 
 function fixStepIndicator(navigateTab) {
@@ -73,8 +87,7 @@ function fixStepIndicator(navigateTab) {
 
 // TODO: empty the courseInstructor input after an instructor has been added to the table.
 function callback() {
-  let data = $("#courseInstructor").val();
-  data = data.split(",");
+  let data = $("#courseInstructor").val().split(",");
   let instructor = data[0]
   let username = instructor.split('(').pop().split(')')[0]; // returns 'two'
   let phone = data[1]
@@ -90,7 +103,7 @@ function callback() {
 }
 
 $("#courseInstructor").on('input', function() {
-  searchUser("courseInstructor", callback, null, true);
+  searchUser("courseInstructor", callback, null, 1);
 });
 
 $("#instructorTable").on("click", "#instructorPhoneUpdate", function() {
@@ -105,7 +118,6 @@ $("#instructorTable").on("click", "#instructorPhoneUpdate", function() {
          msgFlash("Instructor's phone number updated", "success")
      },
      error: function(request, status, error) {
-       console.log(status,error);
        msgFlash("Error updating phone number", "danger")
      }
    });

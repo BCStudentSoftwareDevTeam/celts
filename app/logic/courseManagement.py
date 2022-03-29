@@ -44,13 +44,32 @@ def getinstructorData(courseIds):
 
     return instructorDict
 
-def createOrUpdate(id):
-    """This function will return True or False based on wether a course exist or not"""
-    coursecheck = Course.get_or_none(Course.id == id)
-
-    if coursecheck != None:
-        return False
-    return True
+def createCourse(courseData, instructorsDict):
+    """This function will create a course given a form."""
+    term = Term.get(Term.id==courseData["term"])
+    status = CourseStatus.get(CourseStatus.status == "Pending")
+    for toggler in ["regularOccurenceToggle", "slSectionsToggle", "permanentDesignation"]:
+        courseData.setdefault(toggler, "off")
+    course = Course.create(
+        courseName=courseData["courseName"],
+        courseAbbreviation=courseData["courseAbbreviation"],
+        courseCredit=courseData["credit"],
+        isRegularlyOccuring=("on" in courseData["regularOccurenceToggle"]),
+        term=term,
+        status=status,
+        createdBy=g.current_user,
+        isAllSectionsServiceLearning=("on" in courseData["slSectionsToggle"]),
+        serviceLearningDesignatedSections=courseData["slDesignation"],
+        isPermanentlyDesignated=("on" in courseData["permanentDesignation"]),
+    )
+    for i in range(1, 7):
+        CourseQuestion.create(
+            course=course,
+            questionContent=courseData[f"{i}"],
+            questionNumber=i
+        )
+    for instructor in instructorsDict["instructors"]:
+        CourseInstructor.create(course=course, user=instructor.username)
 
 def updateCourse(courseData, instructorsDict):
     """

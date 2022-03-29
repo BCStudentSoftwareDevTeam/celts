@@ -56,7 +56,7 @@ def test_searchStudents():
         User.get_or_create(username = 'sawconc', firstName = 'Candace', lastName = 'Sawcon', bnumber = '021556782', isStudent = True)
         query = 'sa'
         searchResults = searchUsers(query, False)
-        searchPhoneNumber = searchUsers(query, 'true')
+        searchPhoneNumber = searchUsers(query, True)
         assert len(searchResults) == 2
         assert searchResults['Sandesh Lamichhane (lamichhanes2)'] == 'Sandesh Lamichhane (lamichhanes2)'
         assert searchResults['Candace Sawcon (sawconc)'] == 'Candace Sawcon (sawconc)'
