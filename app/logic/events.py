@@ -31,16 +31,7 @@ def deleteEvent(eventId):
     if event:
         event.delete_instance(recursive = True, delete_nullable = True)
         if event.startDate:
-            try:
-                createLog(f"Deleted event: {event.name}, which had a startdate of {str(datetime.datetime.strftime(event.startDate, '%m/%d/%Y'))}")
-            except:
-                try:
-                    createLog(f"Deleted event: {event.name}, which had a startdate of {str(datetime.datetime.strptime(event.startDate, '%m/%d/%Y'))}")
-                except:
-                    createLog(f"Deleted event: {event.name}") #making a log without a date because the date can not be processsed (Usually from testing with 00-00-00 dates).
-                    print("There was a problem  making a log with the folllowing date.",event.startDate)
-
-
+            createLog(f"Deleted event: {event.name}, which had a startdate of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
 
 
 def attemptSaveEvent(eventData):
