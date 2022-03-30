@@ -40,7 +40,7 @@ def switchUser():
     return redirect(request.referrer)
 
 
-@admin_bp.route('/template_select')
+@admin_bp.route('/eventTemplates')
 def templateSelect():
     allprograms = Program.select().order_by(Program.programName)
     visibleTemplates = EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
@@ -50,8 +50,8 @@ def templateSelect():
                 templates=visibleTemplates
             )
 
-@admin_bp.route('/event/<templateid>/create', methods=['GET','POST'])
-@admin_bp.route('/event/<templateid>/<programid>/create', methods=['GET','POST'])
+@admin_bp.route('/eventTemplates/<templateid>/create', methods=['GET','POST'])
+@admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
 def createEvent(templateid, programid=None):
     if not g.current_user.isAdmin:
         abort(403)
@@ -88,13 +88,13 @@ def createEvent(templateid, programid=None):
         if saveSuccess:
             noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
-            return redirect(url_for("main.events", term = eventData['term']))
+            return redirect(url_for("main.events", selectedTerm=eventData['term']))
         else:
             flash(validationErrorMessage, 'warning')
 
     # make sure our data is the same regardless of GET or POST
     preprocessEventData(eventData)
-    futureTerms = selectSurroundingTerms(g.current_term)
+    futureTerms = selectSurroundingTerms(g.current_term, prevTerms=0)
 
     return render_template(f"/admin/{template.templateFile}",
             template = template,
@@ -103,7 +103,7 @@ def createEvent(templateid, programid=None):
             allFacilitators = getAllFacilitators())
 
 
-@admin_bp.route('/event/<eventId>/edit', methods=['GET','POST'])
+@admin_bp.route('/eventsList/<eventId>/edit', methods=['GET','POST'])
 def editEvent(eventId):
     if request.method == "POST" and not g.current_user.isAdmin:
         abort(403)
@@ -142,8 +142,8 @@ def deleteRoute(eventId):
 
     try:
         deleteEvent(eventId)
-        flash("Event removed", "success")
-        return redirect(url_for("main.events"))
+        flash("Event successfully deleted.", "success")
+        return redirect(url_for("main.events", selectedTerm=g.current_term))
 
     except Exception as e:
         print('Error while canceling event:', e)
