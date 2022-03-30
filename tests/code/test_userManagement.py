@@ -12,14 +12,14 @@ def test_modifyCeltsAdmin():
     with app.app_context():
         g.current_user = "ramsayb2"
         user = "agliullovak"
-        current_user = User.get(User.username == user)
-        assert current_user.isCeltsAdmin == False
-        addCeltsAdmin(current_user)
-        current_user = User.get(User.username == user)
-        assert current_user.isCeltsAdmin == True
-        removeCeltsAdmin(current_user)
-        current_user = User.get(User.username == user)
-        assert current_user.isCeltsAdmin == False
+        userInTest = User.get(User.username == user)
+        assert userInTest.isCeltsAdmin == False
+        addCeltsAdmin(userInTest)
+        userInTest = User.get(User.username == user)
+        assert userInTest.isCeltsAdmin == True
+        removeCeltsAdmin(userInTest)
+        userInTest = User.get(User.username == user)
+        assert userInTest.isCeltsAdmin == False
 
         with pytest.raises(DoesNotExist):
             addCeltsAdmin("blahbah")
@@ -30,14 +30,14 @@ def test_modifyCeltsStudentStaff():
     with app.app_context():
         g.current_user = "ramsayb2"
         user = "mupotsal"
-        current_user = User.get(User.username == user)
-        assert current_user.isCeltsAdmin == False
-        addCeltsStudentStaff(current_user)
-        current_user = User.get(User.username == user)
-        assert current_user.isCeltsStudentStaff == True
-        removeCeltsStudentStaff(current_user)
-        current_user = User.get(User.username == user)
-        assert current_user.isCeltsStudentStaff == False
+        userInTest = User.get(User.username == user)
+        assert userInTest.isCeltsAdmin == False
+        addCeltsStudentStaff(userInTest)
+        userInTest = User.get(User.username == user)
+        assert userInTest.isCeltsStudentStaff == True
+        removeCeltsStudentStaff(userInTest)
+        userInTest = User.get(User.username == user)
+        assert userInTest.isCeltsStudentStaff == False
 
         with pytest.raises(DoesNotExist):
             addCeltsStudentStaff("asdf")

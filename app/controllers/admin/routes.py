@@ -120,7 +120,6 @@ def editEvent(eventId):
         eventData = request.form.copy()
         saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
         if saveSuccess:
-            event = Event.get(name=eventData['name'],term=eventData['term'])
             flash("Event successfully updated!", "success")
             return redirect(url_for("admin.editEvent", eventId = eventId))
         else:
@@ -142,8 +141,6 @@ def editEvent(eventId):
 def deleteRoute(eventId):
 
     try:
-        term = Event.get(Event.id == eventId).term
-        event = Event.get(Event.id==eventId)
         deleteEvent(eventId)
         flash("Event removed", "success")
         return redirect(url_for("main.events"))

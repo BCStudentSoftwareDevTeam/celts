@@ -1,6 +1,5 @@
 from flask import g
 from datetime import datetime
-from app.models.user import User
 from app.models.adminLogs import AdminLogs
 
 def createLog(content):

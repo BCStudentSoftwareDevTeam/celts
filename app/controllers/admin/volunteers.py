@@ -108,8 +108,4 @@ def updateBackgroundCheck():
         checkPassed = int(eventData['checkPassed'])
         type = eventData['bgType']
         setUserBackgroundCheck(user,type, checkPassed)
-        user = User.get_by_id(user)
         return " "
-    else:
-        abort(404)
-        return ""
