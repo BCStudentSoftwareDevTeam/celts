@@ -3,7 +3,7 @@ import os
 from flask import Flask
 from flask.helpers import get_env
 from playhouse.shortcuts import model_to_dict, dict_to_model
-from celery import Celery
+# from celery import Celery
 
 from config2.config import config
 import yaml
@@ -11,11 +11,11 @@ import yaml
 # Initialize our application
 app = Flask(__name__, template_folder="templates")
 
-app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
-app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
-
-celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
-celery.conf.update(app.config)
+# app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
+# app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
+#
+# celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+# celery.conf.update(app.config)
 
 ######### Set up Application Configuration #############
 # Uses config2 - https://pypi.org/project/config2/ - with the addition of an uncommitted

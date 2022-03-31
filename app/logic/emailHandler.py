@@ -1,6 +1,5 @@
 from datetime import datetime
 from flask_mail import Mail, Message
-from celery import Celery
 
 from app import app
 from app.models.programEvent import ProgramEvent
@@ -26,6 +25,8 @@ class EmailHandler:
         self.program_ids = None
         self.recipients = None
         self.sl_course_id = None
+
+        self.__name__ = self.__class__.__name__
 
 
     def process_data(self):
@@ -154,7 +155,7 @@ class EmailHandler:
         template_id, subject, body = self.retrieve_and_modify_email_template()
         return (template_id, subject, body)
 
-    @Celery.task
+    # @Celery.task
     def send_email(self):
         template_id, subject, body = self.build_email()
         try:
@@ -172,7 +173,7 @@ class EmailHandler:
                         sender = ("Sandesh", 'bramsayr@gmail.com')
                     ))
             self.store_sent_email(subject, template_id)
-            return True
+            # return True
         except Exception as e:
             print("Error on sending email: ", e)
             return False

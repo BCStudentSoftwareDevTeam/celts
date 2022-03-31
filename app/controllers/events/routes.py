@@ -1,7 +1,10 @@
 from flask import Flask, redirect, flash, url_for, request, render_template, g, json
-from datetime import datetime
+from datetime import datetime, timedelta
 from peewee import DoesNotExist
 from urllib.parse import urlparse
+# from app import celery
+from celery import Celery
+from app import app
 
 from app.models.term import Term
 from app.models.program import Program
@@ -14,6 +17,17 @@ from app.controllers.events import email
 from app.logic.emailHandler import EmailHandler
 from app.logic.events import getUpcomingEventsForUser
 from app.logic.participants import sendUserData
+
+app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
+app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
+
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+celery.conf.update(app.config)
+
+@celery.task
+def dummy(mail):
+    mail.send_email()
+    print("Hello")
 
 @events_bp.route('/events/upcoming_events', methods=['GET'])
 def showUpcomingEvent():
@@ -30,13 +44,13 @@ def email():
     else:
         url_domain = urlparse(request.base_url).netloc
         mail = EmailHandler(raw_form_data, url_domain)
-        mail_sent = mail.send_email()
+        dummy.apply_async(args=[mail], eta=datetime.now() + timedelta(seconds=60))
 
-        if mail_sent:
-            message, status = 'Email successfully sent!', 'success'
-        else:
-            message, status = 'Error sending email', 'danger'
-        flash(message, status)
+        # if mail_sent:
+        #     message, status = 'Email successfully sent!', 'success'
+        # else:
+        #     message, status = 'Error sending email', 'danger'
+        # flash(message, status)
         return redirect(url_for("main.events", selectedTerm = raw_form_data['selectedTerm']))
 
 @events_bp.route('/eventsList/<eventid>/kiosk', methods=['GET'])
