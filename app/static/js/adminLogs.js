@@ -1,7 +1,3 @@
-$(document).ready( function () {
-    $('#logsTable').DataTable(
-      {
-        "order": [[ 0, "desc" ]]
-    }
-    );
-} );
+$(document).ready(function() {
+    $('#logsTable').DataTable({ "order": [[ 0, "desc" ]] });
+  });
