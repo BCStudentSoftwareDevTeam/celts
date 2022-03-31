@@ -43,9 +43,6 @@ $(document).ready(function(){
         }
     });
   });
-  $('body').on('click', '#{{program.program.id}}', function(){
-   window.alert('I was clicked');
-});
 
 
   $(".ban").click(function() {
