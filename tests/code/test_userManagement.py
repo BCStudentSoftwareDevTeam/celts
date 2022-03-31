@@ -9,11 +9,11 @@ from peewee import DoesNotExist
 from flask import g
 @pytest.mark.integration
 def test_modifyCeltsAdmin():
+    user = "agliullovak"
+    userInTest = User.get(User.username == user)
+    assert userInTest.isCeltsAdmin == False
     with app.app_context():
         g.current_user = "ramsayb2"
-        user = "agliullovak"
-        userInTest = User.get(User.username == user)
-        assert userInTest.isCeltsAdmin == False
         addCeltsAdmin(userInTest)
         userInTest = User.get(User.username == user)
         assert userInTest.isCeltsAdmin == True
@@ -27,18 +27,21 @@ def test_modifyCeltsAdmin():
             addCeltsAdmin("ksgvoidsid;")
 
 def test_modifyCeltsStudentStaff():
+    user = "mupotsal"
+    userInTest = User.get(User.username == user)
+    assert userInTest.isCeltsAdmin == False
     with app.app_context():
         g.current_user = "ramsayb2"
-        user = "mupotsal"
-        userInTest = User.get(User.username == user)
-        assert userInTest.isCeltsAdmin == False
         addCeltsStudentStaff(userInTest)
-        userInTest = User.get(User.username == user)
-        assert userInTest.isCeltsStudentStaff == True
+    userInTest = User.get(User.username == user)
+    assert userInTest.isCeltsStudentStaff == True
+    with app.app_context():
+        g.current_user = "ramsayb2"
         removeCeltsStudentStaff(userInTest)
-        userInTest = User.get(User.username == user)
-        assert userInTest.isCeltsStudentStaff == False
-
+    userInTest = User.get(User.username == user)
+    assert userInTest.isCeltsStudentStaff == False
+    with app.app_context():
+        g.current_user = "ramsayb2"
         with pytest.raises(DoesNotExist):
             addCeltsStudentStaff("asdf")
         with pytest.raises(DoesNotExist):

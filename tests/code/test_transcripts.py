@@ -15,111 +15,111 @@ from app.logic.events import deleteEvent
 def setup_module():
     with app.app_context():
         g.current_user = User.get_by_id("ramsayb2")
-        user = User.create(
-                            username = "namet",
-                            bnumber = "B001234567",
-                            email = "namet@berea.edu",
-                            phoneNumber = "555-123-1234",
-                            firstName = "Test",
-                            lastName  = "Name",
-                            isStudent = 1,
-                            isFaculty = 0,
-                            isCeltsAdmin = 0,
-                            isCeltsStudentStaff = 0,
-                            )
+    user = User.create(
+                        username = "namet",
+                        bnumber = "B001234567",
+                        email = "namet@berea.edu",
+                        phoneNumber = "555-123-1234",
+                        firstName = "Test",
+                        lastName  = "Name",
+                        isStudent = 1,
+                        isFaculty = 0,
+                        isCeltsAdmin = 0,
+                        isCeltsStudentStaff = 0,
+                        )
 
-        newTrainingEvent = Event.create(name = "Test Training Event",
-                                  term = 1,
-                                  description= "Event for testing",
-                                  timeStart = "18:00:00",
-                                  timeEnd = "21:00:00",
-                                  location = "The testing lab",
-                                  isRecurring = 0,
-                                  isRsvpRequired = 0,
-                                  isPrerequisiteForProgram = 0,
-                                  isTraining = 1,
-                                  isService = 0,
-                                  startDate =  "2021-12-12",
-                                  endDate =  "2021-12-13")
+    newTrainingEvent = Event.create(name = "Test Training Event",
+                              term = 1,
+                              description= "Event for testing",
+                              timeStart = "18:00:00",
+                              timeEnd = "21:00:00",
+                              location = "The testing lab",
+                              isRecurring = 0,
+                              isRsvpRequired = 0,
+                              isPrerequisiteForProgram = 0,
+                              isTraining = 1,
+                              isService = 0,
+                              startDate =  "2021-12-12",
+                              endDate =  "2021-12-13")
 
-        programEvent = ProgramEvent.create(program=2, event=newTrainingEvent)
+    programEvent = ProgramEvent.create(program=2, event=newTrainingEvent)
 
-        facilitatorEntry = Facilitator.create(user = 'ramsayb2',event = newTrainingEvent)
+    facilitatorEntry = Facilitator.create(user = 'ramsayb2',event = newTrainingEvent)
 
-        newBonnerEvent = Event.create(name = "Test Bonner Event",
-                                  term = 1,
-                                  description= "Event for testing",
-                                  timeStart = "18:00:00",
-                                  timeEnd = "21:00:00",
-                                  location = "The testing lab",
-                                  isRecurring = 0,
-                                  isRsvpRequired = 0,
-                                  isPrerequisiteForProgram = 0,
-                                  isTraining = 0,
-                                  isService = 0,
-                                  startDate =  "2021-12-12",
-                                  endDate =  "2021-12-13")
+    newBonnerEvent = Event.create(name = "Test Bonner Event",
+                              term = 1,
+                              description= "Event for testing",
+                              timeStart = "18:00:00",
+                              timeEnd = "21:00:00",
+                              location = "The testing lab",
+                              isRecurring = 0,
+                              isRsvpRequired = 0,
+                              isPrerequisiteForProgram = 0,
+                              isTraining = 0,
+                              isService = 0,
+                              startDate =  "2021-12-12",
+                              endDate =  "2021-12-13")
 
-        programEvent = ProgramEvent.create(program=5, event=newBonnerEvent)
+    programEvent = ProgramEvent.create(program=5, event=newBonnerEvent)
 
-        facilitatorEntry = Facilitator.create(user = 'ramsayb2',event = newBonnerEvent)
+    facilitatorEntry = Facilitator.create(user = 'ramsayb2',event = newBonnerEvent)
 
-        username = "namet"
-        adminName = "ramsayb2"
+    username = "namet"
+    adminName = "ramsayb2"
 
-        newCourse = Course.create(courseName = "Test Course",
-                                    term = 1,
-                                    status = 1,
-                                    courseCredit = "45",
-                                    createdBy = "ramsayb2",
-                                    isAllSectionsServiceLearning = 0,
-                                    isPermanentlyDesignated = 0,
-                                    sectionBQuestion1 = "CharField()",
-                                    sectionBQuestion2 = "CharField()",
-                                    sectionBQuestion3 = "CharField()",
-                                    sectionBQuestion4 = "CharField()",
-                                    sectionBQuestion5 = "CharField()",
-                                    sectionBQuestion6 = "CharField()")
+    newCourse = Course.create(courseName = "Test Course",
+                                term = 1,
+                                status = 1,
+                                courseCredit = "45",
+                                createdBy = "ramsayb2",
+                                isAllSectionsServiceLearning = 0,
+                                isPermanentlyDesignated = 0,
+                                sectionBQuestion1 = "CharField()",
+                                sectionBQuestion2 = "CharField()",
+                                sectionBQuestion3 = "CharField()",
+                                sectionBQuestion4 = "CharField()",
+                                sectionBQuestion5 = "CharField()",
+                                sectionBQuestion6 = "CharField()")
 
-        testingCourse = Course.get(Course.courseName == "Test Course")
-        instructor = CourseInstructor.create(course = testingCourse.id, user = adminName)
-        courseParticipant = CourseParticipant.create(course = testingCourse.id,
-                                                        user = username,
-                                                        hoursEarned = 3.0)
+    testingCourse = Course.get(Course.courseName == "Test Course")
+    instructor = CourseInstructor.create(course = testingCourse.id, user = adminName)
+    courseParticipant = CourseParticipant.create(course = testingCourse.id,
+                                                    user = username,
+                                                    hoursEarned = 3.0)
 
-        newProgramEvent = Event.create(name = "Test Program Event",
-                                  term = 1,
-                                  description= "Event for testing",
-                                  timeStart = "18:00:00",
-                                  timeEnd = "21:00:00",
-                                  location = "The testing lab",
-                                  isRecurring = 0,
-                                  isRsvpRequired = 0,
-                                  isPrerequisiteForProgram = 0,
-                                  isTraining = 0,
-                                  isService = 0,
-                                  startDate =  "2021-12-12",
-                                  endDate =  "2021-12-13")
+    newProgramEvent = Event.create(name = "Test Program Event",
+                              term = 1,
+                              description= "Event for testing",
+                              timeStart = "18:00:00",
+                              timeEnd = "21:00:00",
+                              location = "The testing lab",
+                              isRecurring = 0,
+                              isRsvpRequired = 0,
+                              isPrerequisiteForProgram = 0,
+                              isTraining = 0,
+                              isService = 0,
+                              startDate =  "2021-12-12",
+                              endDate =  "2021-12-13")
 
-        programEvent = ProgramEvent.create(program=1, event=newProgramEvent)
+    programEvent = ProgramEvent.create(program=1, event=newProgramEvent)
 
-        testingTrainingEvent = Event.get(Event.name == "Test Training Event")
-        trainingpart = EventParticipant.create(user = "namet",
-                                                event = testingTrainingEvent.id,
-                                                attended = True,
-                                                hoursEarned = 2)
+    testingTrainingEvent = Event.get(Event.name == "Test Training Event")
+    trainingpart = EventParticipant.create(user = "namet",
+                                            event = testingTrainingEvent.id,
+                                            attended = True,
+                                            hoursEarned = 2)
 
-        testingBonnerEvent = Event.get(Event.name == "Test Bonner Event")
-        trainingpart = EventParticipant.create(user = "namet",
-                                                event = testingBonnerEvent.id,
-                                                attended = True,
-                                                hoursEarned = 2)
+    testingBonnerEvent = Event.get(Event.name == "Test Bonner Event")
+    trainingpart = EventParticipant.create(user = "namet",
+                                            event = testingBonnerEvent.id,
+                                            attended = True,
+                                            hoursEarned = 2)
 
-        testingProgramEvent = Event.get(Event.name == "Test Program Event")
-        trainingpart = EventParticipant.create(user = "namet",
-                                                event = testingProgramEvent.id,
-                                                attended = True,
-                                                hoursEarned = 2)
+    testingProgramEvent = Event.get(Event.name == "Test Program Event")
+    trainingpart = EventParticipant.create(user = "namet",
+                                            event = testingProgramEvent.id,
+                                            attended = True,
+                                            hoursEarned = 2)
 
 @pytest.mark.integration
 def testingTrainings():
