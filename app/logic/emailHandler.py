@@ -1,5 +1,6 @@
 from datetime import datetime
 from flask_mail import Mail, Message
+from celery import Celery
 
 from app import app
 from app.models.programEvent import ProgramEvent
@@ -153,6 +154,7 @@ class EmailHandler:
         template_id, subject, body = self.retrieve_and_modify_email_template()
         return (template_id, subject, body)
 
+    @Celery.task
     def send_email(self):
         template_id, subject, body = self.build_email()
         try:

@@ -4,6 +4,7 @@ attributedict==0.3.0
 attrs==21.2.0
 blessings==1.7
 blinker==1.4
+celery[redis]==5.2.2
 certifi==2020.12.5
 cffi==1.14.5
 chardet==4.0.0
