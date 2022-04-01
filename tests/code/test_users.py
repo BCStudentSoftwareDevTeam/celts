@@ -115,13 +115,14 @@ def test_banUser():
     note = "Banning user test"
     creator = "ramsayb2"
     banEndDate = "2022-11-29"
-    status = banUser (program_id, username, note, banEndDate, creator)
-    assert status == "Successfully banned the user"
+    # status = banUser (program_id, username, note, banEndDate, creator)
+    status = banUser(program_id, username, note, banEndDate, creator)
+    assert status is None
 
     #test for banning a user from a program with different program is
     program_id = 3
     status = banUser (program_id, username, note, banEndDate, creator)
-    assert status == "Successfully banned the user"
+    assert status is None
 
     #test for exceptions when banning the user
     username = "khatts"
@@ -145,12 +146,12 @@ def test_unbanUser():
     note = "unbanning user test"
     creator = "ramsayb2"
     status = unbanUser (program_id, username, note, creator)
-    assert status == "Successfully unbanned the user"
+    assert status is None
 
     #test for unbanning a user from a program with different program
     program_id = 3
     status = unbanUser (program_id, username, note, creator)
-    assert status == "Successfully unbanned the user"
+    assert status is None
 
     #test for exceptions when unbanning the user
     username = "ramsayb2"
