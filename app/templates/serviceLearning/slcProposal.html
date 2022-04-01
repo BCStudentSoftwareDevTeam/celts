@@ -23,7 +23,7 @@
         <tbody>
           <tr hidden>
             <td>
-              <p class="instructorName"></p>
+              <p class="instructorName" required></p>
               <div class="input-group mb-3 pt-3">
                 <input type="text" class="form-control-sm mb-3" id="" name="courseInstructorPhone" aria-label="Instructor's Phone Number." />
                 <button class="btn btn-primary mb-3" data-id='' aria-label="Button updates Instructor's phone number." type="button" id="instructorPhoneUpdate">Update</button>
@@ -65,14 +65,16 @@
         id="courseAbbreviation"
         name="courseAbbreviation"
         value="{{courseData.course.courseAbbreviation if courseData != None}}"
-        type="text"/>
+        type="text"
+        required/>
       <label for="credit">Credit</label>
       <input
         class="form-control"
         id="credit"
         name="credit"
         value="{{courseData.course.courseCredit if courseData != None}}"
-        type="number"/>
+        type="number"
+        required/>
       <label for="regularOccurenceToggle">Regularly-occurring?</label>
       <div class="form-check form-switch pb-4">
         <input

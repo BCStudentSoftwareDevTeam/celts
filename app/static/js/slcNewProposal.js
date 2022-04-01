@@ -60,21 +60,22 @@ function validateForm() {
   // TODO: Generalize form validation to include textareas and selects
   // This function deals with validation of the form fields
   let valid = true;
-  console.log($( ":input" ));
   let allTabs = $(".tab");
   let allInputs = $(allTabs[currentTab]).find("input");
-
   for (let i = 0; i < allInputs.length; i++) {
-    if (allInputs[i].value == "") {
-      allInputs[i].className += " invalid";
-      valid = false;
+    console.log(allInputs[i])
+    if ($(allInputs[i].id).attr("required")) {
+      if (allInputs[i].value == ""){
+        allInputs[i].className += " invalid";
+        valid = false;
+      }
     }
   }
   if (valid) {
     $(".step")[currentTab].className += " finish"
   }
   return valid;
-}
+};
 
 function fixStepIndicator(navigateTab) {
   // This function updates the active step indicator
