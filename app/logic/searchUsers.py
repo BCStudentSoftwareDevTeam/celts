@@ -1,12 +1,12 @@
+from playhouse.shortcuts import model_to_dict
 from app.models.user import User
-
-def searchUsers(query, phoneNumber):
+def searchUsers(query):
     '''Accepts user input and queries the database returning results that matches user search'''
+    print(query)
     query = query.strip()
     search = query.upper()
     splitSearch = search.split()
     resultsDict = {}
-    print(phoneNumber)
 
     firstName = splitSearch[0] + "%"
     lastName = " ".join(splitSearch[1:]) +"%"
@@ -15,9 +15,7 @@ def searchUsers(query, phoneNumber):
         results = User.select().where(User.isStudent & (User.firstName ** firstName | User.lastName ** firstName))
         for participant in results:
             if participant not in resultsDict:
-                resultsDict[f"{participant.firstName} {participant.lastName} ({participant.username})"] = f"{participant.firstName} {participant.lastName} ({participant.username})"
-                if phoneNumber:
-                    resultsDict[f"{participant.username} phoneNumber"] = participant.phoneNumber
+                resultsDict[participant.username]=model_to_dict(participant)
     else:
         for searchTerm in splitSearch: #searching for specified first and last name
             if len(searchTerm) > 1:
@@ -25,8 +23,6 @@ def searchUsers(query, phoneNumber):
                 results = User.select().where(User.isStudent & User.firstName ** firstName & User.lastName ** lastName)
                 for participant in results:
                     if participant not in resultsDict:
-                        resultsDict[f"{participant.firstName} {participant.lastName} ({participant.username})"] = f"{participant.firstName} {participant.lastName} ({participant.username})"
-                        if phoneNumber:
-                            resultsDict[f"{participant.username} phoneNumber"] = participant.phoneNumber
+                        resultsDict[participant.username]=model_to_dict(participant)
 
     return resultsDict

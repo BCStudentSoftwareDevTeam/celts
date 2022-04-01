@@ -1,5 +1,6 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for
 import datetime
+import json
 
 from app import app
 from app.models.program import Program
@@ -19,7 +20,6 @@ from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
 from app.logic.manageSLFaculty import getCourseDict
-
 @main_bp.route('/', methods=['GET'])
 def redirectToEventsList():
     return redirect(url_for("main.events", selectedTerm=g.current_term))
@@ -167,14 +167,14 @@ def serviceTranscript(username):
                             startDate = startDate,
                             userData = user)
 
-@main_bp.route('/searchUser/<query>/<object>', methods = ['GET'])
-def searchUser(query, object):
+@main_bp.route('/searchUser/<query>', methods = ['GET'])
+def searchUser(query):
     '''Accepts user input and queries the database returning results that matches user search'''
     try:
         query = query.strip()
         search = query.upper()
         splitSearch = search.split()
-        searchResults = searchUsers(query, object)
+        searchResults = searchUsers(query)
         return searchResults
     except Exception as e:
         print(e)
