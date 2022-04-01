@@ -1,6 +1,5 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for
-import datetime
-
+from datetime import datetime
 from app import app
 from app.models.program import Program
 from app.models.event import Event
@@ -9,17 +8,19 @@ from app.models.backgroundCheckType import BackgroundCheckType
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
+from app.models.event import Event
+from app.models.programBan import ProgramBan
+from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.models.studentManager import StudentManager
-
 from app.controllers.main import main_bp
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
+from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
 from app.logic.events import *
-from app.logic.users import addRemoveInterest
-from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
-from app.logic.manageSLFaculty import getCourseDict
+from app.logic.volunteers import setUserBackgroundCheck
 
 @main_bp.route('/', methods=['GET'])
 def redirectToEventsList():
@@ -51,10 +52,11 @@ def events(selectedTerm):
         currentTime = currentTime,
         user = g.current_user)
 
-@main_bp.route('/profile/<username>', methods = ['GET'])
-def profilePage(username):
-    if not g.current_user.isCeltsAdmin and not g.current_user.isCeltsStudentStaff and g.current_user.username != username:
-        return "Access Denied", 403
+@main_bp.route('/profile/<username>', methods=['GET'])
+def viewVolunteersProfile(username):
+    """
+    This function displays the information of a volunteer to the user
+    """
     try:
         profileUser = User.get(User.username == username)
         upcomingEvents = getUpcomingEventsForUser(username)
@@ -68,8 +70,6 @@ def profilePage(username):
         allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == profileUser))
         completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
         backgroundTypes = list(BackgroundCheckType.select())
-
-
         return render_template('/volunteer/volunteerProfile.html',
                                title="Volunteer Interest",
                                user = profileUser,
@@ -82,21 +82,101 @@ def profilePage(username):
                                backgroundTypes = backgroundTypes,
                                completedBackgroundCheck = completedBackgroundCheck
                                )
+        volunteer = User.get(User.username == username)
+    except Exception as e:
+        return "User does not exist", 404
+    if (g.current_user == volunteer) or g.current_user.isAdmin:
+         upcomingEvents = getUpcomingEventsForUser(volunteer)
+         programs = Program.select()
+         interests = Interest.select().where(Interest.user == volunteer)
+         programsInterested = [interest.program for interest in interests]
+         allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == volunteer))
+         completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
+         backgroundTypes = list(BackgroundCheckType.select())
+         eligibilityTable = []
+         for program in programs:
+              notes = ProgramBan.select().where(ProgramBan.user == volunteer,
+                                                ProgramBan.program == program,
+                                                ProgramBan.endDate > datetime.datetime.now())
+
+              noteForDict = list(notes)[-1].banNote.noteContent if list(notes) else ""
+              eligibilityTable.append({"program" : program,
+                                   "completedTraining" : (volunteer in trainedParticipants(program)),
+                                   "isNotBanned" : isEligibleForProgram(program, volunteer),
+                                   "banNote": noteForDict})
+         return render_template ("/main/volunteerProfile.html",
+            programsInterested = programsInterested,
+            upcomingEvents = upcomingEvents,
+            eligibilityTable = eligibilityTable,
+            volunteer = volunteer,
+            backgroundTypes = backgroundTypes,
+            completedBackgroundCheck = completedBackgroundCheck
+            )
+    abort(403)
+
+# ===========================Ban===============================================
+@main_bp.route('/<username>/ban/<program_id>', methods=['POST'])
+def ban(program_id, username):
+    """
+    This function updates the ban status of a username either when they are banned from a program.
+    program_id: the primary id of the program the student is being banned from
+    username: unique value of a user to correctly identify them
+    """
+    postData = request.form
+    banNote = postData["note"] # This contains the note left about the change
+    banEndDate = postData["endDate"] # Contains the date the ban will no longer be effective
+    try:
+        banUser(program_id, username, banNote, banEndDate, g.current_user)
+        flash("Successfully banned the volunteer", "success")
+        return ""
+    except Exception as e:
+        print("Error  while updating ban", e)
+        flash("Failed to ban the volunteer", "danger")
+        return "Failed to ban the volunteer", 500
+
+# ===========================Unban===============================================
+@main_bp.route('/<username>/unban/<program_id>', methods=['POST'])
+def unban(program_id, username):
+    """
+    This function updates the ban status of a username either when they are unbanned from a program.
+    program_id: the primary id of the program the student is being unbanned from
+    username: unique value of a user to correctly identify them
+    """
+    postData = request.form
+    unbanNote = postData["note"] # This contains the note left about the change
+    try:
+        unbanUser(program_id, username, unbanNote, g.current_user)
+        flash("Successfully unbanned the volunteer", "success")
+        return "Successfully unbanned the volunteer"
+
+    except Exception as e:
+        print("Error  while updating Unban", e)
+        flash("Failed to unban the volunteer", "danger")
+        return "Failed to unban the volunteer", 500
+
+
+@main_bp.route('/<username>/addInterest/<program_id>', methods=['POST'])
+def addInterest(program_id, username):
+    """
+    This function adds a program to the list of programs a user interested in
+    program_id: the primary id of the program the student is adding interest of
+    username: unique value of a user to correctly identify them
+    """
+    try:
+        return addUserInterest(program_id, username)
     except Exception as e:
         print(e)
-        return "Error retrieving user profile", 500
+        return "Error Updating Interest", 500
 
-@main_bp.route('/deleteInterest/<program_id>', methods = ['POST'])
-@main_bp.route('/addInterest/<program_id>', methods = ['POST'])
-def updateInterest(program_id):
+@main_bp.route('/<username>/removeInterest/<program_id>', methods=['POST'])
+def removeInterest(program_id, username):
     """
-    This function updates the interest table by adding a new row when a user
-    shows interest in a program
+    This function removes a program to the list of programs a user interested in
+    program_id: the primary id of the program the student is adding interest of
+    username: unique value of a user to correctly identify them
     """
-    rule = request.url_rule
-    user = g.current_user
     try:
-        return addRemoveInterest(rule, program_id, user)
+        return removeUserInterest(program_id, username)
 
     except Exception as e:
         print(e)
