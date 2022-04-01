@@ -155,7 +155,7 @@ def test_userRsvpForEvent():
 
     # the user is not eligible to register (reason: user is banned)
     volunteer = userRsvpForEvent("ayisie", 1)
-    assert volunteer 
+    assert volunteer
 
     # User does not exist
     with pytest.raises(DoesNotExist):
