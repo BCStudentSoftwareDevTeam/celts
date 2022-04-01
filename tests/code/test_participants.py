@@ -213,7 +213,7 @@ def test_sendUserData():
     # Tests the Kiosk
     # user is banned
     signedInUser, userStatus = sendUserData("B00739736", 2, 1)
-    assert userStatus == "banned"
+    assert userStatus == "ban"
     with pytest.raises(DoesNotExist):
         EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
 
