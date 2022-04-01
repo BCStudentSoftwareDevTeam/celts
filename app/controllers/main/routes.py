@@ -13,6 +13,7 @@ from app.models.programBan import ProgramBan
 from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
+from app.models.studentManager import StudentManager
 from app.controllers.main import main_bp
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
@@ -22,24 +23,26 @@ from app.logic.transcript import *
 from app.logic.volunteers import setUserBackgroundCheck
 
 @main_bp.route('/', methods=['GET'])
-@main_bp.route('/events/<selectedTerm>', methods=['GET'])
-def events(selectedTerm=None):
+def redirectToEventsList():
+    return redirect(url_for("main.events", selectedTerm=g.current_term))
+
+@main_bp.route('/eventsList/<selectedTerm>', methods=['GET'])
+def events(selectedTerm):
     currentTerm = g.current_term
     if selectedTerm:
         currentTerm = selectedTerm
     currentTime = datetime.datetime.now()
+    listOfTerms = Term.select()
+    participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
+    rsvpedEventsID = [event.event.id for event in participantRSVP]
     term = Term.get_by_id(currentTerm)
     studentLedProgram = getStudentLedProgram(term)
     trainingProgram = getTrainingProgram(term)
     bonnerProgram = getBonnerProgram(term)
     oneTimeEvents = getOneTimeEvents(term)
-    listOfTerms = Term.select()
-    participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
-    rsvpedEventsID = [event.event.id for event in participantRSVP]
-
 
     return render_template("/events/event_list.html",
-        selectedTerm = Term.get_by_id(currentTerm),
+        selectedTerm = term,
         studentLedProgram = studentLedProgram,
         trainingProgram = trainingProgram,
         bonnerProgram = bonnerProgram,
@@ -55,6 +58,30 @@ def viewVolunteersProfile(username):
     This function displays the information of a volunteer to the user
     """
     try:
+        profileUser = User.get(User.username == username)
+        upcomingEvents = getUpcomingEventsForUser(username)
+        programs = Program.select()
+        interests = Interest.select().where(Interest.user == profileUser)
+        interests_ids = [interest.program.id for interest in interests]
+        rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == profileUser)
+        rsvpedEvents = [event.event.id for event in rsvpedEventsList]
+        studentManagerPrograms = list(StudentManager.select().where(StudentManager.user==profileUser))
+        permissionPrograms = [entry.program.id for entry in studentManagerPrograms]
+        allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == profileUser))
+        completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
+        backgroundTypes = list(BackgroundCheckType.select())
+        return render_template('/volunteer/volunteerProfile.html',
+                               title="Volunteer Interest",
+                               user = profileUser,
+                               programs = programs,
+                               interests = interests,
+                               interests_ids = interests_ids,
+                               upcomingEvents = upcomingEvents,
+                               rsvpedEvents = rsvpedEvents,
+                               permissionPrograms = permissionPrograms,
+                               backgroundTypes = backgroundTypes,
+                               completedBackgroundCheck = completedBackgroundCheck
+                               )
         volunteer = User.get(User.username == username)
     except Exception as e:
         return "User does not exist", 404
@@ -199,7 +226,7 @@ def RemoveRSVP():
     flash("Successfully unregistered for event!", "success")
     return redirect(url_for("admin.editEvent", eventId=event.id))
 
-@main_bp.route('/<username>/serviceTranscript', methods = ['GET'])
+@main_bp.route('/profile/<username>/serviceTranscript', methods = ['GET'])
 def serviceTranscript(username):
     user = User.get_or_none(User.username == username)
     if user is None:
@@ -242,17 +269,10 @@ def contributors():
 
 
 
-@main_bp.route('/manageservicelearning', methods = ['GET'])
+@main_bp.route('/manageServiceLearning', methods = ['GET'])
 def getAllCourseIntructors():
     """
     This function selects all the Intructors Name and the previous courses
     """
-    users = User.select().where(User.isFaculty)
-    courseInstructors = CourseInstructor.select()
-    course_dict = {}
-
-    for i in courseInstructors:
-        course_dict.setdefault(i.user.firstName + " " + i.user.lastName, []).append(i.course.courseName)
-
-
-    return render_template('/main/manageServiceLearningFaculty.html',courseInstructors = course_dict)
+    courseDict = getCourseDict()
+    return render_template('/main/manageServiceLearningFaculty.html', courseInstructors = courseDict)

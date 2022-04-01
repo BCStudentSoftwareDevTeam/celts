@@ -24,22 +24,22 @@
 <div class="btn-group">
   <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
     <li class="nav-item" role="presentation">
-      <a class="nav-link" href="/event/{{event.id}}/edit" role="tab" aria-selected="false">Edit Event</a>
+      <a class="nav-link" href="/eventsList/{{event.id}}/edit" role="tab" aria-selected="false">Edit Event</a>
     </li>
     <li class="nav-item" role="presentation">
       <a class="nav-link active" href="#" role="tab" aria-selected="true">Track Volunteers</a>
     </li>
   </ul>
 </div>
-<form action="#" method="post"><br>
-  <label class='d-none' id="eventLength">{{eventLength}}</label>
-  <input  class="form-control" id="eventID" name="event" value="{{event}}" type='hidden'>
-  <div class="flex-container" style="padding: 5px;">
-    <div class='form-group d-inline-flex'>
-      <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add volunteer</a>
-      <a class="btn btn-warning" role="button" href= "/event/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
+<label class='d-none' id="eventLength">{{eventLength}}</label>
+<input class="form-control" id="eventID" name="event" value="{{event}}" type='hidden' />
+<div class="flex-container" style="padding: 5px;">
+  <div class='form-group d-inline-flex'>
+    <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add volunteer</a>
+    <a class="btn btn-warning" role="button" href= "/eventsList/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
+  </div>
 </div>
-<form method="post"><br>
+<form method="post">
   <label class='d-none' id="eventLength">{{eventLength}}</label>
   <input class="form-control" id="eventID" name="event" value="{{event}}" type='hidden'>
   <table class="table" id="trackVolunteerstable">
@@ -88,7 +88,7 @@
               value="{{eventLength}}"
             {% elif participant.user.username in eventParticipants %}
               value="{{eventParticipants[participant.user.username]}}"
-            {% else %} disabled {% endif %}>
+            {% else %} disabled {% endif %} />
         </td>
         <td style="text-align:center">
           <input
