@@ -63,11 +63,12 @@ function validateForm() {
   let allTabs = $(".tab");
   let allInputs = $(allTabs[currentTab]).find("input");
   for (let i = 0; i < allInputs.length; i++) {
-    console.log(allInputs[i])
-    if ($(allInputs[i].id).attr("required")) {
-      if (allInputs[i].value == ""){
+    if (allInputs[i].required) {
+      if (!allInputs[i].value){
         allInputs[i].className += " invalid";
         valid = false;
+      } else {
+        allInputs[i].className = "form-control";
       }
     }
   }
@@ -86,12 +87,12 @@ function fixStepIndicator(navigateTab) {
   steps[navigateTab].className += " active";
 }
 
-// TODO: empty the courseInstructor input after an instructor has been added to the table.
 function callback() {
-  let data = $("#courseInstructor").val().split(",");
-  let instructor = data[0]
-  let username = instructor.split('(').pop().split(')')[0]; // returns 'two'
-  let phone = data[1]
+  // JSON.parse is required to de-stringify the search results into a dictionary.
+  let data = JSON.parse($("#courseInstructor").val());
+  let instructor = (data["firstName"]+" "+data["lastName"]+" ("+data["username"]+")");
+  let username = data["username"];
+  let phone = data["phoneNumber"];
   let tableBody = $("#instructorTable").find("tbody");
   let lastRow = tableBody.find("tr:last");
   let newRow = lastRow.clone();
@@ -104,7 +105,8 @@ function callback() {
 }
 
 $("#courseInstructor").on('input', function() {
-  searchUser("courseInstructor", callback, null, 1);
+  // To retrieve specific columns into a dict, create a [] list and put columns inside
+  searchUser("courseInstructor", callback, null, ["phoneNumber", "firstName", "lastName", "username"]);
 });
 
 $("#instructorTable").on("click", "#instructorPhoneUpdate", function() {
