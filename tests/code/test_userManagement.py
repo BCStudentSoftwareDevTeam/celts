@@ -4,6 +4,7 @@ from app import app
 from app.logic.userManagement import *
 from app.models.user import User
 from app.models.term import Term
+from app.models.studentManager import StudentManager
 
 from peewee import DoesNotExist
 from flask import g
