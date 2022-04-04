@@ -66,12 +66,12 @@ $(".attendanceCheck").on("change", function() {
   let inputFieldID = `inputHours_${username}`
 
   if ($(this)[0].checked) {
-    $(`#${inputFieldID}`).prop('readonly', false);
+    $(`#${inputFieldID}`).prop('disabled', false);
     let eventLength = $("#eventLength").text();
     $(`#${inputFieldID}`).val(eventLength);
 
   } else {
-    $(`#${inputFieldID}`).prop('readonly', true);
+    $(`#${inputFieldID}`).prop('disabled', true);
     $(`#${inputFieldID}`).val(null);
   }
 });
