@@ -173,7 +173,7 @@ class EmailHandler:
                         sender = ("Sandesh", 'bramsayr@gmail.com')
                     ))
             self.store_sent_email(subject, template_id)
-            # return True
+            return True
         except Exception as e:
             print("Error on sending email: ", e)
             return False

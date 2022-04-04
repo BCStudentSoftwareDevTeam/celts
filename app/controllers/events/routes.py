@@ -19,15 +19,24 @@ from app.logic.events import getUpcomingEventsForUser
 from app.logic.participants import sendUserData
 
 app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
-app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
+# app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
 
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 
+#  Connection error solution
+#  sudo apt-get install redis-server
+#  sudo service redis-server  {start|stop|restart|force-reload|status}
+
 @celery.task
-def dummy(mail):
-    mail.send_email()
-    print("Hello")
+def dummy(raw_form_data, url_domain):
+    try:
+        mail = EmailHandler(raw_form_data, url_domain)
+        mail.send_email()
+        print("\n\n\n\n Hello: ", mail, "\n\n\n\n")
+        return {"status": True}
+    except Exception as e:
+        return {"status": False, "error": e}
 
 @events_bp.route('/events/upcoming_events', methods=['GET'])
 def showUpcomingEvent():
@@ -43,8 +52,9 @@ def email():
         pass
     else:
         url_domain = urlparse(request.base_url).netloc
-        mail = EmailHandler(raw_form_data, url_domain)
-        dummy.apply_async(args=[mail], eta=datetime.now() + timedelta(seconds=60))
+        # mail = EmailHandler(raw_form_data, url_domain)
+        result = dummy.apply_async(args=[raw_form_data, url_domain], countdown=60)
+        print("\n\n\n\n Reslt: ", result, "\n\n\n")
 
         # if mail_sent:
         #     message, status = 'Email successfully sent!', 'success'
