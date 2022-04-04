@@ -312,36 +312,36 @@ def test_calculateRecurringEventFrequency():
 @pytest.mark.integration
 def test_attemptSaveEvent():
     # This test duplicates some of the saving tests, but with raw data, like from a form
-        eventData =  {'isRsvpRequired':False, 'isService':False,
-                      'isTraining':True, 'isRecurring':True, 'startDate': '2021-12-12',
-                      'endDate': '2021-06-12', 'programId':1, 'location':"a big room",
-                      'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
-                      'name':'Empty Bowls Spring','term':1,'facilitators':["ramsayb2"]}
-        eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'startDate': '2021-12-12',
-                       'endDate':'2022-06-12', 'location':"a big room",
-                       'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
-                       'name':'Attempt Save Test','term':1,'facilitators':["ramsayb2"]}
-        eventInfo['program'] = Program.get_by_id(1)
+    eventData =  {'isRsvpRequired':False, 'isService':False,
+                  'isTraining':True, 'isRecurring':True, 'startDate': '2021-12-12',
+                  'endDate': '2021-06-12', 'programId':1, 'location':"a big room",
+                  'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
+                  'name':'Empty Bowls Spring','term':1,'facilitators':["ramsayb2"]}
+    eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'startDate': '2021-12-12',
+                   'endDate':'2022-06-12', 'location':"a big room",
+                   'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
+                   'name':'Attempt Save Test','term':1,'facilitators':["ramsayb2"]}
+    eventInfo['program'] = Program.get_by_id(1)
 
-        with mainDB.atomic() as transaction:
-            with app.app_context():
-                g.current_user = User.get_by_id("ramsayb2")
-                success, errorMessage = attemptSaveEvent(eventInfo)
-            if not success:
-                pytest.fail(f"Save failed: {errorMessage}")
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+            g.current_user = User.get_by_id("ramsayb2")
+            success, errorMessage = attemptSaveEvent(eventInfo)
+        if not success:
+            pytest.fail(f"Save failed: {errorMessage}")
 
-            try:
-                event = Event.get(name="Attempt Save Test")
-                facilitator = Facilitator.get(event=event)
+        try:
+            event = Event.get(name="Attempt Save Test")
+            facilitator = Facilitator.get(event=event)
 
-                # Redundant, as the previous lines will throw exceptions, but I like asserting something
-                assert facilitator
+            # Redundant, as the previous lines will throw exceptions, but I like asserting something
+            assert facilitator
 
-            except Exception as e:
-                pytest.fail(str(e))
+        except Exception as e:
+            pytest.fail(str(e))
 
-            finally:
-                transaction.rollback() # undo our database changes
+        finally:
+            transaction.rollback() # undo our database changes
 
 
 
