@@ -118,7 +118,7 @@ def test_banUser():
     status = banUser (program_id, username, note, banEndDate, creator)
     assert status == "Successfully banned the user"
 
-    #test for banning a user from a program with different program is
+    #test for banning a user from a program with different program id
     program_id = 3
     status = banUser (program_id, username, note, banEndDate, creator)
     assert status == "Successfully banned the user"

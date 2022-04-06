@@ -154,8 +154,8 @@ def test_userRsvpForEvent():
     (EventParticipant.delete().where(EventParticipant.user == 'agliullovak', EventParticipant.event == 11)).execute()
 
     # the user is not eligible to register (reason: user is banned)
-    volunteer = userRsvpForEvent("ayisie", 1)
-    assert volunteer == False
+    volunteer = userRsvpForEvent("khatts", 3)
+    assert volunteer != True
 
     # User does not exist
     with pytest.raises(DoesNotExist):
@@ -214,6 +214,7 @@ def test_sendUserData():
     # user is banned
     signedInUser, userStatus = sendUserData("B00739736", 2, 1)
     assert userStatus == "banned"
+
     with pytest.raises(DoesNotExist):
         EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
 
