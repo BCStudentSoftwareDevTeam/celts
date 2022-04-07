@@ -7,6 +7,8 @@
 {% endblock %}
 
 {% block app_content %}
+<input id="{{ user.username }}" hidden>
+
 <div class="container">
   <h1 class="mt-5 mb-3 text-center">{{ user.firstName }} {{ user.lastName }}</h1>
   <div class="btn-group">
@@ -15,7 +17,7 @@
         <a class="nav-link active" aria-current="page" href="#">Upcoming Events</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/{{user.username}}/serviceTranscript">Service Transcript</a>
+        <a class="nav-link" href="/profile/{{user.username}}/serviceTranscript">Service Transcript</a>
       </li>
     </ul>
   </div>
@@ -33,31 +35,27 @@
         {% for event in upcomingEvents %}
         <tr>
           <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
-          <td><a href= '/event/{{event.id}}/edit' class="link-primary">{{event.name}}</a></td>
+          <td><a href= '/eventsList/{{event.id}}/edit' class="link-primary">{{event.name}}</a></td>
           <td>{{event.startDate}}</td>
           <td>{{event.endDate}}</td>
           <td>{{"RSVP'ed" if event.id in rsvpedEvents else "Not RSVP'ed"}}</td>
         {% endfor %}
         </tr>
-
-      {% else %}
-        <h2> Choose interests below to be notified about upcoming events. <h2>
       {% endif %}
 
     </table>
   </div>
+  {% if user == g.current_user %}
   <div class="row">
     <h2>Which programs do you want to receive information about?</h2>
-    <input id="{{ user.username }}" hidden>
       <div class="form-check-inline form-switch">
       {% for program in programs %}
-        {% set status = '' %}
+        {% set checked = "" %}
           {% if program.id in interests_ids %}
-            {% set status = 'checked' %}
-          {% else %}
+            {% set checked = 'checked' %}
           {% endif %}
-              <input class="form-check-input" type="checkbox" id="{{ program.id }}" {{ status }}>
-              <label class="form-check-label" style="padding-right:50px;" for="{{ program.id }}">{{program.programName}}</label>
+              <input class="form-check-input" type="checkbox" id="info-check-{{ program.id }}" data-programid="{{program.id}}" {{ checked }}>
+              <label class="form-check-label" style="padding-right:50px;" for="info-check-{{ program.id }}">{{program.programName}}</label>
       {% endfor %}
       </div>
       <div>
@@ -65,10 +63,45 @@
           <a href="https://www.berea.edu/celts/community-service-programs/volunteer-opportunities/">For more information click here.</a>
         </small>
       </div>
-
   </div>
+  {% endif %}
+{% if g.current_user.isCeltsAdmin%}
+<!-- This makes sure that the CeltsAdmins can make someone program manager or not.  -->
+  {% if user.isCeltsStudentStaff%}
+      <div class="row">
+        <h2>Which programs do you want to make {{user.firstName}} {{user.lastName}} manager for?</h2>
+        <div>
+          {% for program in programs %}
+            {% set action = "add" %}
+            {% set checked = "" %}
+            {% if program.id in permissionPrograms %}
+                  {% set action = "remove" %}
+                  {% set checked = "checked" %}
+            {% endif %}
+                  <input  type="checkbox" id="mgr-{{ program.id }}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{user.username}}','{{action}}')">
+                  <label  style="padding-right:50px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+{% elif g.current_user.isCeltsStudentStaff %}
+  <div class="row">
+    <h2>{{user.firstName}} {{user.lastName}} is a manager for the following programs</h2>
+    <div>
+      {% for program in programs %}
+        {% set status = '' %}
+          {% if program.id in permissionPrograms %}
+            <p  style="padding-right:50px;">{{program.programName}}</p>
+          {% else %}
+          {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+</div>
 
   <div class="row">
+    <div><h2>Background Check</h2></div>
     <div>
       <table class="table">
    <thead>

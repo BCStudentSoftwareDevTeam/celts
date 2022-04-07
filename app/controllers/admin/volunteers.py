@@ -21,7 +21,7 @@ def getVolunteers(query):
 
     return json.dumps(searchUsers(query,"volunteers"))
 
-@admin_bp.route('/event/<eventID>/track_volunteers', methods=['GET'])
+@admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['GET'])
 def trackVolunteersPage(eventID):
     try:
         event = Event.get_by_id(eventID)
@@ -73,7 +73,7 @@ def trackVolunteersPage(eventID):
         outsideParticipants = outsideParticipants,
         matches = matches)
 
-@admin_bp.route('/event/<eventID>/track_volunteers', methods=['POST'])
+@admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['POST'])
 def updateVolunteerTable(eventID):
     try:
         event = Event.get_by_id(eventID)
