@@ -23,6 +23,7 @@ $(document).ready(function() {
  });
 });
 
+
 $(".form-check-input").change(function updateMatch(el){
   let outsidePart =  $(this).attr('id');
   let volunteer = $(this).attr('name');
@@ -59,50 +60,27 @@ $(".form-check-input").change(function updateMatch(el){
     });
   });
 
-  // Adding the new volunteer to the user database table
-  $("#selectVolunteerButton").click(function(){
-    let user = $("#addVolunteerInput").val()
-    let eventId = $("#eventID").val()
-
-    $.ajax({
-      url: `/addVolunteerToEvent/${user}/${eventId}`,
-      type: "POST",
-      success: function(s){
-        location.reload();
-      },
-      error: function(request, status, error){
-        location.reload();
-      }
-    });
-  });
-
-  // Addding an outside Participant
-  $("#selectParticipantButton").click(function(){
-    let outsideParticipant = $("#addOutsideParticipantInput").val()
-    let eventId = $("#eventID").val()
-
-    $.ajax({
-      url: `/addOutsideParticipantToEvent/${outsideParticipant}/${eventId}`,
-      type: "POST",
-      success: function(s){
-        location.reload();
-      },
-      error: function(request, status, error){
-        location.reload();
-      }
-    });
-  });
-
-
 
 function callback() {
   $("#selectVolunteerButton").prop('disabled', false);
 }
 
 $("#selectVolunteerButton").prop('disabled', true)
+
 $("#addVolunteerInput").on("input", function() {
+   console.log(addVolunteerInput,"this............");
   searchUser("addVolunteerInput", callback, "","addVolunteerModal");
+  console.log(addVolunteerInput,"that...................");
+
 });
+
+
+$("#addOutsideParticipantButton").on("click",function(){
+  $('#addVolunteerInput').id = "addOutsideParticipantInput";
+  console.log($('addOutsideParticipantInput').val);
+  console.log("The button transformation");
+});
+
 
 $(".removeVolunteer").on("click", function() {
   let username =  $(this)[0].id;
@@ -147,6 +125,45 @@ $(".attendanceCheck").on("change", function() {
   }
 });
 
+// WE HAVE TO MERGE THE FOLLOWING CODE BLOCLK ############################################
+// Adding the new volunteer to the user database table
+$("#selectVolunteerButton").click(function(){
+  let user = $("#addVolunteerInput").val()
+  let eventId = $("#eventID").val()
+
+  $.ajax({
+    url: `/addVolunteerToEvent/${user}/${eventId}`,
+    type: "POST",
+    success: function(s){
+      location.reload();
+    },
+    error: function(request, status, error){
+      location.reload();
+    }
+  });
+});
+
+// Addding an outside Participant
+$("#selectParticipantButton").click(function(){
+  let outsideParticipant = $("#addOutsideParticipantInput").val()
+  let eventId = $("#eventID").val()
+
+  $.ajax({
+    url: `/addOutsideParticipantToEvent/${outsideParticipant}/${eventId}`,
+    type: "POST",
+    success: function(s){
+      location.reload();
+    },
+    error: function(request, status, error){
+      location.reload();
+    }
+  });
+});
+
+
+
+
+ // END OF THE CODE BLOCKES TO MBE MERGED.
 
 //changing modals functions
 function callback2() {
@@ -156,13 +173,6 @@ function callback2() {
 $("#selectParticipantButton").prop('disabled', true)
 
 $("#addOutsideParticipantInput").on("input", function() {
+  console.log("This function is called");
   searchUser("addOutsideParticipantInput", callback2,"outsideParticipant", "addOutsideParticipantModal");
-});
-
-
-$("#addOutsideParticipantButton").on("click",function(){
-  console.log("Add Outside Participant Clicke");
-  var e = document.getElementById("addVolunteerInput");
-  e.id = "addOutsideParticipantInput";
-
 });
