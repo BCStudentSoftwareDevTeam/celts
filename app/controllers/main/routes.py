@@ -11,6 +11,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
+from app.models.studentManager import StudentManager
 
 from app.controllers.main import main_bp
 from app.logic.events import *
@@ -62,7 +63,8 @@ def profilePage(username):
         interests_ids = [interest.program.id for interest in interests]
         rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == profileUser)
         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
-
+        studentManagerPrograms = list(StudentManager.select().where(StudentManager.user==profileUser))
+        permissionPrograms = [entry.program.id for entry in studentManagerPrograms]
         allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == profileUser))
         completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
         backgroundTypes = list(BackgroundCheckType.select())
@@ -76,6 +78,7 @@ def profilePage(username):
                                interests_ids = interests_ids,
                                upcomingEvents = upcomingEvents,
                                rsvpedEvents = rsvpedEvents,
+                               permissionPrograms = permissionPrograms,
                                backgroundTypes = backgroundTypes,
                                completedBackgroundCheck = completedBackgroundCheck
                                )

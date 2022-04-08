@@ -73,7 +73,8 @@ function submitRequest(method,identifier){
         location.reload()
     },
     error: function(error, status){
-        console.log(error, status)
+      location.reload()
+      console.log(error, status)
     }
 
   })
