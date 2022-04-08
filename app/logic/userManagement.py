@@ -1,5 +1,7 @@
 from app.models.user import User
 from app.models.term import Term
+from app.models.studentManager import StudentManager
+from app.models.program import Program
 from flask import g, session
 
 from playhouse.shortcuts import model_to_dict
@@ -34,6 +36,25 @@ def changeCurrentTerm(term):
 
     session["current_term"] = model_to_dict(newCurrentTerm)
 
+def addProgramManager(user,program):
+    user = User.get_by_id(user)
+    managerEntry = StudentManager.create(user=user,program=program)
+    managerEntry.save()
+    return(f'{user} added as manager')
+
+def removeProgramManager(user,program):
+    user = User.get_by_id(user)
+    delQuery = StudentManager.delete().where(StudentManager.user == user,StudentManager.program == program)
+    delQuery.execute()
+    return (f'{user} removed from managers')
+
+def hasPrivilege(user, program):
+    user = User.get_by_id(user)
+    if StudentManager.select().where(StudentManager.user == user, StudentManager.program == program).exists():
+        return True
+    else:
+        return False
+
 def addNextTerm():
     newSemesterMap = {"Spring":"Summer",
                     "Summer":"Fall",
@@ -53,8 +74,11 @@ def addNextTerm():
     newTerm = Term.create(
             description=newDescription,
             year=newYear,
-            academicYear=newAY, 
+            academicYear=newAY,
             isSummer="Summer" in newDescription.split())
     newTerm.save()
 
     return newTerm
+
+def getPrograms(currentUser):
+    return Program.select().join(StudentManager).where(StudentManager.user==currentUser).order_by(Program.programName)
