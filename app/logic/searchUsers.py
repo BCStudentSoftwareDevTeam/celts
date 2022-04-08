@@ -2,7 +2,6 @@ from playhouse.shortcuts import model_to_dict
 from app.models.user import User
 def searchUsers(query):
     '''Accepts user input and queries the database returning results that matches user search'''
-    print(query)
     query = query.strip()
     search = query.upper()
     splitSearch = search.split()
