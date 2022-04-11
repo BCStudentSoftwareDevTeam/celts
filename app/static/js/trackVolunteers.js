@@ -68,25 +68,7 @@ $("#selectVolunteerButton").prop('disabled', true)
 
 $("#addVolunteerButton").on("click",function(){
   $("#addVolunteerInput").on("input", function() {
-     console.log(addVolunteerInput,"this............");
     searchUser("addVolunteerInput", callback, "","addVolunteerModal");
-    console.log(addVolunteerInput,"that...................");
-  });
-
-  $(".removeVolunteer").on("click", function() {
-    let username =  $(this)[0].id;
-    let eventId = $('#eventID').val();
-    console.log("This is the username",username);
-    console.log("This is the eventID",eventId);
-    $.ajax({
-      url: `/removeVolunteerFromEvent/${username}/${eventId}`,
-      type: "POST",
-      success: function(s) {
-        location.reload();
-      },
-      error: function(request, status, error) {
-      }
-    });
   });
 
   $("#selectVolunteerButton").click(function(){
@@ -110,23 +92,7 @@ $("#addVolunteerButton").on("click",function(){
 
 $("#addOutsideParticipantButton").on("click",function(){
     $("#addVolunteerInput").on("input", function() {
-       console.log(addVolunteerInput,"this............");
       searchUser("addVolunteerInput", callback, "outsideParticipant","addVolunteerModal");
-      console.log(addVolunteerInput,"that out yaya...................");
-    });
-
-    $(".removeParticipant").on("click", function() {
-      let username =  $(this)[0].id;
-      let eventId = $('#eventID').val()
-      $.ajax({
-        url: `/removeOutsideParticipantFromEvent/${username}/${eventId}`,
-        type: "POST",
-        success: function(s) {
-          location.reload();
-        },
-        error: function(request, status, error) {
-        }
-      });
     });
 
     $("#selectVolunteerButton").click(function(){
@@ -144,7 +110,36 @@ $("#addOutsideParticipantButton").on("click",function(){
         }
       });
     });
+});
 
+$(".removeParticipant").on("click", function() {
+  let username =  $(this)[0].id;
+  let eventId = $('#eventID').val()
+  $.ajax({
+    url: `/removeOutsideParticipantFromEvent/${username}/${eventId}`,
+    type: "POST",
+    success: function(s) {
+      location.reload();
+    },
+    error: function(request, status, error) {
+    }
+  });
+});
+
+$(".removeVolunteer").on("click", function() {
+  let username =  $(this)[0].id;
+  let eventId = $('#eventID').val();
+  console.log("This is the username",username);
+  console.log("This is the eventID",eventId);
+  $.ajax({
+    url: `/removeVolunteerFromEvent/${username}/${eventId}`,
+    type: "POST",
+    success: function(s) {
+      location.reload();
+    },
+    error: function(request, status, error) {
+    }
+  });
 });
 
 
