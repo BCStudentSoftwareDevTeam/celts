@@ -1,6 +1,5 @@
 export default function searchUser(inputId, callback,group,parentElementId=null){
   var query = $(`#${inputId}`).val();
-  console.log("search ...............", group);
   if (group != "outsideParticipant"){
     group = "default"
   }

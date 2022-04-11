@@ -71,6 +71,8 @@ $("#addVolunteerButton").on("click",function(){
     searchUser("addVolunteerInput", callback, "","addVolunteerModal");
   });
 
+  $("#addVolunteerModalText").text("Add Volunteer")
+
   $("#selectVolunteerButton").click(function(){
     let user = $("#addVolunteerInput").val()
     let eventId = $("#eventID").val()
@@ -94,6 +96,9 @@ $("#addOutsideParticipantButton").on("click",function(){
     $("#addVolunteerInput").on("input", function() {
       searchUser("addVolunteerInput", callback, "outsideParticipant","addVolunteerModal");
     });
+
+  $("#addVolunteerModalText").text("Add Outside Participant")
+
 
     $("#selectVolunteerButton").click(function(){
       let outsideParticipant = $("#addVolunteerInput").val()
