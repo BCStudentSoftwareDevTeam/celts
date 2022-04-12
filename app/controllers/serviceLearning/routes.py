@@ -31,6 +31,10 @@ def serviceCourseManagement(username=None):
 
 @serviceLearning_bp.route('/serviceLearning/editProposal/<courseID>', methods=['GET', 'POST'])
 def slcEditProposal(courseID):
+    """
+        Route for editing proposals, it will fill the form with the data found in the database
+        given a courseID.
+    """
     questionData = CourseQuestion.select().where(CourseQuestion.course == courseID)
     questionanswers = [question.questionContent for question in questionData]
     courseData = questionData[0]
@@ -61,11 +65,11 @@ def slcEditProposal(courseID):
 def slcCreateOrEdit():
     if request.method == "POST":
         courseExist = Course.get_or_none(Course.id == request.form.get('courseID'))
-        if not courseExist:
-            createCourse(request.form.copy(), instructorsDict)
+        if courseExist:
+            updateCourse(request.form.copy(), instructorsDict)
             return redirect('/serviceLearning/courseManagement')
         else:
-            updateCourse(request.form.copy(), instructorsDict)
+            createCourse(request.form.copy(), instructorsDict)
             return redirect('/serviceLearning/courseManagement')
     terms = Term.select().where(Term.year >= g.current_term.year)
     courseData = None
