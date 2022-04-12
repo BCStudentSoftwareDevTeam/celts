@@ -9,17 +9,17 @@ $(document).ready(function() {
 });
 
 function changeAction(action){
+  courseID = action.id;
   // decides what to do based on selection
   if (action.value=="Renew"){
     // Renew
   } else if (action.value=="View"){
     // View
   } else if (action.value=="Withdraw"){
-    courseID = action.id;
     $('#courseID').val(courseID);
     $('#withdrawModal').modal('show');
   } else if(action.value=="Edit"){
-    // Edit
+    location = '/serviceLearning/editProposal/' + courseID;
   }
 }
 

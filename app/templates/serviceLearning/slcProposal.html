@@ -3,13 +3,13 @@
 <div class="container-fluid">
   <div class="row">
     <div class="p-2 col-md-6">
-      <div class="form-group">
-        <label class="form-label" for="courseInstructor"><strong>Course Instructor(s)</strong></label>
-        <input class="form-control"
-          id="courseInstructor"
-          type="search"
-          placeholder="Search instructor" />
-      </div>
+      <label for="courseInstructor">Course Instructor(s)</label>
+      <input
+        id="courseInstructor"
+        class="form-control"
+        type="search"
+        placeholder="Search instructor"
+        value="" />
       <table
         class="table mb-3"
         id="instructorTable"
@@ -22,90 +22,103 @@
         </thead>
         <tbody>
           <tr hidden>
-            <td class="instructorName"></td>
+            <td>
+              <p class="instructorName" required></p>
+              <div class="input-group mb-3 pt-3">
+                <input type="text" class="form-control-sm mb-3" id="" name="courseInstructorPhone" aria-label="Instructor's Phone Number." />
+                <button class="btn btn-primary mb-3" data-id='' aria-label="Button updates Instructor's phone number." type="button" id="instructorPhoneUpdate">Update</button>
+              </div>
+            </td>
+            <td><button id="remove" type="button" class="btn btn-danger">Remove</button></td>
+            <td class="phone"></td>
+
+          </tr>
+          {% for instructor in courseInstructor %}
+          <tr>
+            <td>
+              <p class="instructorName">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user}})</p>
+              <div class="input-group mb-3 pt-3">
+                <input type="text" class="form-control-sm mb-3" id="{{instructor.user}}" name="" aria-label="Recipient's username" aria-describedby="button-addon2" value="{{instructor.user.phoneNumber}}"/>
+                <button class="btn btn-primary mb-3" data-id="{{instructor.user}}" type="button" id="instructorPhoneUpdate">Update</button>
+              </div>
+            </td>
             <td>
               <button id="remove" type="button" class="btn btn-danger">Remove</button>
             </td>
+
           </tr>
-        </tbody>
-      </table>
-      <div class="form-group mb-3">
-        <label class="form-label" for="courseName"><strong>Course Name</strong></label>
-        <input class="form-control"
-          id="courseName"
-          name="courseName"
-          type="text"
-          placeholder="Enter course name" />
-      </div>
-      <div class="form-group mb-3">
-        <label class="form-label" for="courseAbbreviation"><strong>Course Abbreviation</strong></label>
-        <input class="form-control"
-          id="courseAbbreviation"
-          name="courseAbbreviation"
-          type="text"
-          placeholder="Enter course abbreviation"/>
-      </div>
-      <div class="form-group mb-3">
-        <label class="form-label" for="credit"><strong>Credit</strong></label>
-        <input class="form-control"
-          id="credit"
-          name="credit"
-          type="number"
-          placeholder="Enter course credit" />
-      </div>
-      <div class="form-group mb-3">
-        <label class="form-label" for="courseInstructorPhone"><strong>Course Instructor Phone Number</strong></label>
-        <input class="form-control mb-3"
-          type="text"
-          name="courseInstructorPhone"
-          id="courseInstructorPhone"
-          placeholder="Enter course instructor phone number" />
-      </div>
-      <div class="form-check form-switch">
-        <label class="form-label" for="regularOccurenceToggle"><strong>Will this course be a regularly occurring service-learning course?</strong></label>
-        <input class="form-check-input"
-          type="checkbox"
-          name="regularOccurenceToggle"
-          id="regularOccurenceToggle"/>
-      </div>
-    </div>
-    <div class="p-2 col-md-6">
-      <div class="form-group mb-3">
-        <label class="form-label" for="inputCourseInstructor"><strong>When will this course be offered?</strong></label>
-        <select
-          class="dropdown form-control mb-3"
-          id="inputCourseInstructor"
-          name="term">
-          {% for term in terms %}
-            <option value="{{ term.id }}"> {{ term.description }}</option>
           {% endfor %}
-        </select>
-      </div>
-      <div class="form-check form-switch mb-3">
-        <label class="form-label" for="slSectionsToggle"><strong>Are all sections of the course service-learning?</strong></label>
+        </tbody>
+
+      </table>
+      <label for="courseName" class="pt-3">Course Name</label>
+      <input
+        class="form-control"
+        id="coursName"
+        name="courseName"
+        type="text"
+        value="{{courseData.course.courseName if courseData != None }}"
+        required/>
+      <label for="courseAbbreviation">Course Abbreviation</label>
+      <input
+        class="form-control"
+        id="courseAbbreviation"
+        name="courseAbbreviation"
+        value="{{courseData.course.courseAbbreviation if courseData != None}}"
+        type="text"
+        required/>
+      <label for="credit">Credit</label>
+      <input
+        class="form-control"
+        id="credit"
+        name="credit"
+        value="{{courseData.course.courseCredit if courseData != None}}"
+        type="number"
+        min="0"
+        required/>
+      <label for="regularOccurenceToggle">Regularly-occurring?</label>
+      <div class="form-check form-switch pb-4">
         <input
           class="form-check-input"
           type="checkbox"
-          name="slSectionsToggle"
-          id="slSectionsToggle"/>
+          name="regularOccurenceToggle"{{"checked" if isRegularlyOccuring}}/>
       </div>
-      <div class="form-group mb-3">
-        <label class="form-label" for="slDesignation"><strong>Sections with Service-Learning Designation</strong></label>
-        <textarea
-          class="form-control"
-          id="slDesignation"
-          name="slDesignation"
-          rows="3"
-          placeholder="Enter sections with service-learning designation"></textarea>
+    </div>
+    <div class="p-2 col-md-6">
+      <label for="inputCourseInstructor">When will this course be offered?</label>
+      <select
+        class="dropdown form-control mb-3"
+        id="inputCourseInstructor"
+        value="{{courseData.course.term.description if courseData != None}}"
+        name="term">
+        {% for term in terms %}
+          <option value="{{ term.id }}" {{ "selected" if courseData != None and courseData.course.term == term }}> {{ term.description }}</option>
+        {% endfor %}
+      </select>
+      <span>Are all sections SL?</span>
+      <div class="form-check form-switch pb-4">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          name="slSectionsToggle" {{"checked" if isAllSectionsServiceLearning}}/>
       </div>
+      <label class="pt-2" for="slDesignation">Sections with SL Designation</label>
+      <textarea
+        class="form-control"
+        id="slDesignation"
+        name="slDesignation"
+        rows="3">{{courseData.course.serviceLearningDesignatedSections if courseData != None}}
+      </textarea>
       <div class="form-check form-switch">
         <label class="form-label" for="permanentDesignation"><strong>Will this course be a permanently designated service-learning course?</strong></label>
         <input
           class="form-check-input"
           type="checkbox"
           name="permanentDesignation"
-          id="permanentDesignation"/>
+          id="permanentDesignation"
+          {{"checked" if isPermanentlyDesignated}}/>
       </div>
     </div>
   </div>
+  <input value={{courseID}} name="courseID" hidden/>
 </div>
