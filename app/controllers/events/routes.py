@@ -2,9 +2,6 @@ from flask import Flask, redirect, flash, url_for, request, render_template, g, 
 from datetime import datetime, timedelta
 from peewee import DoesNotExist
 from urllib.parse import urlparse
-# from app import celery
-from celery import Celery
-from app import app
 
 from app.models.term import Term
 from app.models.program import Program
@@ -14,29 +11,11 @@ from app.models.user import User
 from app.models.programEvent import ProgramEvent
 from app.controllers.events import events_bp
 from app.controllers.events import email
-from app.logic.emailHandler import EmailHandler
+# from app.logic.emailHandler import EmailHandler
 from app.logic.events import getUpcomingEventsForUser
 from app.logic.participants import sendUserData
+from app.logic.tasks import dummy
 
-app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
-app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
-
-celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
-celery.conf.update(app.config)
-
-#  Connection error solution
-#  sudo apt-get install redis-server
-#  sudo service redis-server  {start|stop|restart|force-reload|status}
-
-@celery.task
-def dummy(raw_form_data, url_domain):
-    try:
-        mail = EmailHandler(raw_form_data, url_domain)
-        mail.send_email()
-        print("\n\n\n\n Hello: ", mail, "\n\n\n\n")
-        return {"status": True}
-    except Exception as e:
-        return {"status": False, "error": e}
 
 @events_bp.route('/events/upcoming_events', methods=['GET'])
 def showUpcomingEvent():
