@@ -751,11 +751,14 @@ bannedUser = [
     {
         "user": "khatts",
         "program": 3,
+        "endDate": "2023-11-29"
+
     },
 
     {
         "user": "ayisie",
         "program": 1,
+        "endDate": "2023-11-29"
     }
 ]
 
