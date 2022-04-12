@@ -56,7 +56,7 @@ users = [
         "username": "neillz",
         "bnumber": "B00751864",
         "email": "neillz@berea.edu",
-        "phoneNumber": "555-555-5555",
+        "phoneNumber": "555-985-1234",
         "firstName": "Zach",
         "lastName": "Neill",
         "isStudent": True,
@@ -622,12 +622,12 @@ courseQuestions = [
     "questionNumber":3,
     },
     {
-    "course":1,
+    "course":3,
     "questionContent":" This is another random question",
     "questionNumber":4,
     },
     {
-    "course":1,
+    "course":2,
     "questionContent":" Why are you interested in teaching this course?",
     "questionNumber":5,
     }
