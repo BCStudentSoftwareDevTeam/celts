@@ -23,7 +23,8 @@ from app.models.note import Note
 from app.models.studentManager import StudentManager
 from app.models.emailTemplate import EmailTemplate
 from app.models.backgroundCheck import BackgroundCheck
-
+# from app.models.backgroundCheckType import BackgroundCheckType
+from app.models.adminLogs import AdminLogs
 
 
 print("Inserting data for demo and testing purposes.")
@@ -829,3 +830,17 @@ background = [
     },
 ]
 BackgroundCheck.insert_many(background).on_conflict_replace().execute()
+
+logs = [
+   {
+   "createdBy":"ramsayb2",
+   "createdOn": datetime.strptime("2021 12 15","%Y %m %d"),
+   "logContent": "Made Liberty Admin."
+   },
+   {
+   "createdBy":"neillz",
+   "createdOn": datetime.strptime("2021 12 15","%Y %m %d"),
+   "logContent": "Created Adoption Event."
+   }
+]
+AdminLogs.insert_many(logs).on_conflict_replace().execute()
