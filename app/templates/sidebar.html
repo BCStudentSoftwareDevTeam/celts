@@ -10,25 +10,25 @@
 
     {% if g.current_user.isStudent or g.current_user.isCeltsStudentStaff %}
       <li>
-        <a href="/profile/{{g.current_user.username}}"
-           class="nav-link text-white {{'active' if request.path =='/profile/{g.current_user.username}'}}"
-           {{"aria-current='page'" if request.path =='/profile/{{g.current_user.username'}}>
+        <a href="/profile/{{g.current_user}}"
+           class="nav-link text-white {{'active' if 'profile' in request.path }}"
+           {{"aria-current='page'" if 'profile' in request.path }}>
           My Profile
         </a>
       </li>
     {% endif %}
     <li class="nav-item">
-      <a href="/"
-         class="nav-link text-white {{'active' if request.path =='/'}}"
-         {{"aria-current='page'" if request.path =='/'}}>
+      <a href="/eventsList/{{g.current_term}}"
+         class="nav-link text-white {{'active' if 'eventsList' in request.path}}"
+         {{"aria-current='page'" if 'eventsList' in request.path}}>
         Events List
       </a>
     </li>
     {% if g.current_user.isAdmin %}
       <li>
-        <a href="/template_select"
-           class="nav-link text-white {{'active' if request.path =='/template_select'}}"
-           {{"aria-current='page'" if request.path =='/template_select'}}>
+        <a href="/eventTemplates"
+           class="nav-link text-white {{'active' if 'eventTemplates' in request.path}}"
+           {{"aria-current='page'" if 'eventTemplates' in request.path}}>
           Create Event
         </a>
       </li>
@@ -47,9 +47,12 @@
         </a>
       </li>
       <li>
+        <a href="/manageServiceLearning" class="nav-link text-white {{ 'active' if request.path =='/manageServiceLearning' }}">
+          Service Learning
+
         <a href="/serviceLearning/courseManagement"
-           class="nav-link text-white {{'active' if request.path =='/serviceLearning/courseManagement'}}"
-           {{"aria-current='page'" if request.path =='/serviceLearning/courseManagement'}}>
+           class="nav-link text-white {{'active' if 'serviceLearning' in request.path }}"
+           {{"aria-current='page'"  if 'serviceLearning' in request.path}}>
           Course Proposal Management
         </a>
       </li>
@@ -60,10 +63,10 @@
       <h6>Current User: {{g.current_user.username}}</h6>
       <form action="/switch_user" method="POST" id="userSelectForm">
         <select name="newuser" class="form-select" style="margin-bottom: 10px" id="userSelect">
-          <option {{"selected" if g.current_user == config.default_user }} value="{{config.default_user}}">Default User: {{config.default_user}}</option>
-          <option {{"selected" if g.current_user == "ramsayb2"}} value="ramsayb2">Admin: ramsayb2</option>
-          <option {{"selected" if g.current_user == "neillz"}} value="neillz">Student Staff: neillz</option>
-          <option {{"selected" if g.current_user == "ayisie"}} value="neillz">Student: ayisie</option>
+          <option {{"selected" if g.current_user.username == config.default_user }} value="{{config.default_user}}">Default User: {{config.default_user}}</option>
+          <option {{"selected" if g.current_user.username == "ramsayb2"}} value="ramsayb2">Admin: ramsayb2</option>
+          <option {{"selected" if g.current_user.username == "neillz"}} value="neillz">Student Staff: neillz</option>
+          <option {{"selected" if g.current_user.username == "ayisie"}} value="ayisie">Student: ayisie</option>
         </select>
       </form>
     {% endif %}
