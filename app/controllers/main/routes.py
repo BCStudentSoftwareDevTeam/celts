@@ -1,5 +1,6 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for
 import datetime
+import json
 
 from app import app
 from app.models.program import Program
@@ -11,6 +12,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
+from app.models.studentManager import StudentManager
 
 from app.controllers.main import main_bp
 from app.logic.events import *
@@ -19,7 +21,6 @@ from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
 from app.logic.manageSLFaculty import getCourseDict
-
 @main_bp.route('/', methods=['GET'])
 def redirectToEventsList():
     return redirect(url_for("main.events", selectedTerm=g.current_term))
@@ -62,7 +63,8 @@ def profilePage(username):
         interests_ids = [interest.program.id for interest in interests]
         rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == profileUser)
         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
-
+        studentManagerPrograms = list(StudentManager.select().where(StudentManager.user==profileUser))
+        permissionPrograms = [entry.program.id for entry in studentManagerPrograms]
         allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == profileUser))
         completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
         backgroundTypes = list(BackgroundCheckType.select())
@@ -76,6 +78,7 @@ def profilePage(username):
                                interests_ids = interests_ids,
                                upcomingEvents = upcomingEvents,
                                rsvpedEvents = rsvpedEvents,
+                               permissionPrograms = permissionPrograms,
                                backgroundTypes = backgroundTypes,
                                completedBackgroundCheck = completedBackgroundCheck
                                )
