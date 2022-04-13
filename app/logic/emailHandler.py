@@ -164,14 +164,15 @@ class EmailHandler:
                     full_name = f'{recipient.firstName} {recipient.lastName}'
                     email_body = self.replace_name_placeholder(full_name, body)
 
-                    conn.send(Message(
-                        subject,
-                        # [recipient.email],
-                        [self.override_all_mail],
-                        email_body,
-                        reply_to=self.reply_to,
-                        sender = ("Sandesh", 'bramsayr@gmail.com')
-                    ))
+                    with app.app_context():
+                        conn.send(Message(
+                            subject,
+                            # [recipient.email],
+                            [self.override_all_mail],
+                            email_body,
+                            reply_to=self.reply_to,
+                            sender = ("Sandesh", 'bramsayr@gmail.com')
+                        ))
             self.store_sent_email(subject, template_id)
             return True
         except Exception as e:

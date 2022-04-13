@@ -32,11 +32,9 @@ def email():
     else:
         url_domain = urlparse(request.base_url).netloc
         # mail = EmailHandler(raw_form_data, url_domain)
-        result = dummy.apply_async(args=[raw_form_data, url_domain])
-        # result.forget()
-        print("\n\n\n\n Reslt: ", result.successful(), "\n\n\n")
-        # print("\n\n\n\n Reslt: ", result.state, "\n\n\n")
-        # print("\n\n\n\n Reslt: ", result.result, "\n\n\n")
+        arrivalDate = datetime.now() + timedelta(minutes=2)
+        result = dummy.apply_async(args=[raw_form_data, url_domain], eta=arrivalDate)
+        print("\n\n\n\n Reslt: ", result.state, "\n\n\n")
 
         # if mail_sent:
         #     message, status = 'Email successfully sent!', 'success'
