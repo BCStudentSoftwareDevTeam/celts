@@ -2,6 +2,7 @@ from datetime import datetime
 from flask_mail import Mail, Message
 
 from app import app
+from app import celery
 from app.models.programEvent import ProgramEvent
 from app.models.interest import Interest
 from app.models.user import User
@@ -32,7 +33,8 @@ class EmailHandler:
     def process_data(self):
         """ Processes raw data and stores it in class variables to be used by other methods """
         # Email Template Data
-        self.template_identifier = self.raw_form_data['templateIdentifier']
+        if 'templateIdentifier' in self.raw_form_data:
+            self.template_identifier = self.raw_form_data['templateIdentifier']
 
         if 'subject' in self.raw_form_data:
             self.subject = self.raw_form_data['subject']
@@ -138,7 +140,7 @@ class EmailHandler:
         # Q: how would this work?
         pass
 
-    def store_sent_email(self, subject, template_id):
+    def store_sent_email(self, subject, template_id=None):
         """ Stores sent email in the email log """
         date_sent = datetime.now()
         EmailLog.create(
@@ -155,7 +157,7 @@ class EmailHandler:
         template_id, subject, body = self.retrieve_and_modify_email_template()
         return (template_id, subject, body)
 
-    # @Celery.task
+    @celery.task
     def send_email(self):
         template_id, subject, body = self.build_email()
         try:

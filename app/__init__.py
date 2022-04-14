@@ -17,7 +17,6 @@ app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
 
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
-
 ######### Set up Application Configuration #############
 # Uses config2 - https://pypi.org/project/config2/ - with the addition of an uncommitted
 # override yml to set instance parameters. By default, 'local-override.yml'

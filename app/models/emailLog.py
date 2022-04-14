@@ -5,7 +5,7 @@ from app.models.event import Event
 class EmailLog(baseModel):
     event = ForeignKeyField(Event)
     subject = CharField()
-    templateUsed = ForeignKeyField(EmailTemplate)
+    templateUsed = ForeignKeyField(EmailTemplate, null=True)
     recipientsCategory = CharField()
     recipients = CharField()
     dateSent = DateTimeField()
