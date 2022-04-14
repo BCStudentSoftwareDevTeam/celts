@@ -23,16 +23,18 @@ def searchUsers(query,searchGroup):
         for participant in results:
             if searchGroup != "outsideParticipant":
                 searchId = participant.username
+                if participant not in resultsDict:
+                    resultsDict[participant.username]=model_to_dict(participant)
             else:
                 searchId = participant.email
+                if participant not in resultsDict:
+                    resultsDict[participant.email]=model_to_dict(participant)
 
-            if participant not in resultsDict:
-                resultsDict[participant.username]=model_to_dict(participant)
+
     else:
         for searchTerm in splitSearch: #searching for specified first and last name
             if len(searchTerm) > 1:
                 searchTerm += "%"
-
                 if searchGroup != "outsideParticipant":
                     searchId = participant.username
                     results = User.select().where(User.isStudent & (User.firstName ** firstName | User.lastName ** firstName))
@@ -43,4 +45,5 @@ def searchUsers(query,searchGroup):
                     if participant not in resultsDict:
                         resultsDict[participant.username]=model_to_dict(participant)
 
+    print(resultsDict, "ahaaammammmmmmmmmmmmmm.........")
     return resultsDict

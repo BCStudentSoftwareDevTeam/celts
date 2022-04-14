@@ -67,11 +67,11 @@ function callback() {
 $("#selectVolunteerButton").prop('disabled', true)
 
 $("#addVolunteerButton").on("click",function(){
+  $("#addVolunteerModalText").text("Add Volunteer");
   $("#addVolunteerInput").on("input", function() {
     searchUser("addVolunteerInput", callback, "","addVolunteerModal");
   });
 
-  $("#addVolunteerModalText").text("Add Volunteer")
 
   $("#selectVolunteerButton").click(function(){
     let user = $("#addVolunteerInput").val()
