@@ -15,6 +15,7 @@ from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 
 
+
 @admin_bp.route('/searchVolunteers/<query>', methods = ['GET'])
 def getVolunteers(query):
     '''Accepts user input and queries the database returning results that matches user search'''
@@ -175,7 +176,4 @@ def updateBackgroundCheck():
         checkPassed = int(eventData['checkPassed'])
         type = eventData['bgType']
         setUserBackgroundCheck(user,type, checkPassed)
-        return ""
-    else:
-        abort(404)
-        return ""
+        return " "

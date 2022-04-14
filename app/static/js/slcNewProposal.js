@@ -62,18 +62,21 @@ function validateForm() {
   let valid = true;
   let allTabs = $(".tab");
   let allInputs = $(allTabs[currentTab]).find("input");
-
   for (let i = 0; i < allInputs.length; i++) {
-    if (allInputs[i].value == "") {
-      allInputs[i].className += " invalid";
-      valid = false;
+    if (allInputs[i].required) {
+      if (!allInputs[i].value){
+        allInputs[i].className += " invalid";
+        valid = false;
+      } else {
+        allInputs[i].className = "form-control";
+      }
     }
   }
   if (valid) {
     $(".step")[currentTab].className += " finish"
   }
   return valid;
-}
+};
 
 function fixStepIndicator(navigateTab) {
   // This function updates the active step indicator
@@ -84,19 +87,43 @@ function fixStepIndicator(navigateTab) {
   steps[navigateTab].className += " active";
 }
 
-// TODO: empty the courseInstructor input after an instructor has been added to the table.
 function callback() {
-  let instructor = $("#courseInstructor").val();
+  // JSON.parse is required to de-stringify the search results into a dictionary.
+  let data = JSON.parse($("#courseInstructor").val());
+  let instructor = (data["firstName"]+" "+data["lastName"]+" ("+data["username"]+")");
+  let username = data["username"];
+  let phone = data["phoneNumber"];
   let tableBody = $("#instructorTable").find("tbody");
   let lastRow = tableBody.find("tr:last");
   let newRow = lastRow.clone();
-  newRow.find("td:eq(0)").text(instructor);
+  newRow.find("td:eq(0) p").text(instructor);
+  newRow.find("td:eq(0) div input").val(phone);
+  newRow.find("td:eq(0) div button").attr("data-id", username);
+  newRow.find("td:eq(0) div input").attr("id", username);
   newRow.prop("hidden", false);
   lastRow.after(newRow);
 }
 
 $("#courseInstructor").on('input', function() {
-  searchUser("courseInstructor", callback,"");
+  // To retrieve specific columns into a dict, create a [] list and put columns inside
+  searchUser("courseInstructor", callback, null, ["phoneNumber", "firstName", "lastName", "username"]);
+});
+
+$("#instructorTable").on("click", "#instructorPhoneUpdate", function() {
+   var inputId = $(this).attr("data-id")
+   var instructorData = [inputId, $("#" + inputId).val()]
+   $.ajax({
+     url: "/updateInstructorPhone",
+     data: JSON.stringify(instructorData),
+     type: "POST",
+     contentType: "application/json",
+     success: function(response) {
+         msgFlash("Instructor's phone number updated", "success")
+     },
+     error: function(request, status, error) {
+       msgFlash("Error updating phone number", "danger")
+     }
+   });
 });
 
 $("#instructorTable").on("click", "#remove", function() {

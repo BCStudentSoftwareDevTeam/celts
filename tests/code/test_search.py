@@ -28,15 +28,17 @@ def test_searchStudents():
 
     #tests that the search works
 
-    query = 'z'
+    query = 'za'
+    test1 = User.select().where(User.firstName == query)
     searchResults = searchUsers(query)
-    assert searchResults['Zach Neill (neillz)'] == 'Zach Neill (neillz)'
+    assert searchResults['neillz'] == test1
 
 
     #test for last name
     query = 'khatt'
+    test2 = User.select().where(User.firstName == query)
     searchResults = searchUsers(query)
-    assert searchResults['Sreynit Khatt (khatts)'] == 'Sreynit Khatt (khatts)'
+    assert searchResults['khatts'] == test2
 
     #test with non existing username
     query = 'abc'
@@ -56,7 +58,9 @@ def test_searchStudents():
         User.get_or_create(username = 'sawconc', firstName = 'Candace', lastName = 'Sawcon', bnumber = '021556782', isStudent = True)
         query = 'sa'
         searchResults = searchUsers(query)
+        test3 = User.select().where(User.firstName == query)
         assert len(searchResults) == 2
-        assert searchResults['Sandesh Lamichhane (lamichhanes2)'] == 'Sandesh Lamichhane (lamichhanes2)'
-        assert searchResults['Candace Sawcon (sawconc)'] == 'Candace Sawcon (sawconc)'
+        assert searchResults['lamichhanes2'] == test3
+        assert 'Sawcon' in searchResults["sawconc"].values()
+        assert '555-555-5555' in searchResults["lamichhanes2"].values()
         transaction.rollback()

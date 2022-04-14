@@ -1,3 +1,4 @@
+from playhouse.shortcuts import model_to_dict
 from app.models.user import User
 from app.models.outsideParticipant import OutsideParticipant
 
@@ -26,7 +27,7 @@ def searchUsers(query,searchGroup):
                 searchId = participant.email
 
             if participant not in resultsDict:
-                resultsDict[f"{participant.firstName} {participant.lastName} ({searchId})"] = f"{participant.firstName} {participant.lastName} ({searchId})"
+                resultsDict[participant.username]=model_to_dict(participant)
     else:
         for searchTerm in splitSearch: #searching for specified first and last name
             if len(searchTerm) > 1:
@@ -40,6 +41,6 @@ def searchUsers(query,searchGroup):
                     OutsideParticipant.select().where(OutsideParticipant.firstName ** firstName & OutsideParticipant.lastName ** lastName)
                 for participant in results:
                     if participant not in resultsDict:
-                        resultsDict[f"{participant.firstName} {participant.lastName}  ({searchId})"] = f"{participant.firstName} {participant.lastName}  ({searchId})"
+                        resultsDict[participant.username]=model_to_dict(participant)
 
     return resultsDict

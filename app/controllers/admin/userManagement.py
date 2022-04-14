@@ -21,7 +21,7 @@ def manageUsers():
             flash(username+ " is already a Celts Admin", 'danger')
         else:
             addCeltsAdmin(user)
-            flash(username+ " has been added as a Celts Admin", 'success')
+            flash(user.firstName + " "+ user.lastName + " has been added as a Celts Admin", 'success')
     elif method == "addCeltsStudentStaff":
         if user.isCeltsStudentStaff:
             flash(username+ " is already a Celts Student Staff", 'danger')
