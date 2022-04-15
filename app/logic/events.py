@@ -110,15 +110,20 @@ def getStudentLedProgram(term):
 
 def getTrainingProgram(term):
 
-    allTrainingsEvent = (ProgramEvent.select(ProgramEvent.event, fn.COUNT(1).alias('num_programs')).group_by(ProgramEvent.event).order_by(fn.COUNT(1).desc())).get()
-    print(allTrainingsEvent)
-    trainingEvents = (Event.select(Event, Program.id.alias("program_id"))
-                           .join(ProgramEvent)
-                           .join(Program)
-			   .order_by(Event.startDate.desc())
+    allTrainingsEvent = ((ProgramEvent.select(ProgramEvent.event, fn.COUNT(1).alias('num_programs'))
+                                        .join(Event)
+                                        .group_by(ProgramEvent.event)
+                                        .order_by(fn.COUNT(1).desc()))
+                                        .where(Event.term == term).get())
+    trainingEvents = ((Event.select(Event)
+			               .order_by((Event.id == allTrainingsEvent.event.id).desc(), Event.startDate.desc())
                            .where(Event.isTraining,
-                                  Event.term == term))
-    return trainingEvents
+                                  Event.term == term)))
+
+    for t in trainingEvents:
+        print(t)
+
+    return allTrainingsEvent.event, trainingEvents
 def getBonnerProgram(term):
 
     bonnerScholarsEvents = (Event.select(Event, Program.id.alias("program_id"))

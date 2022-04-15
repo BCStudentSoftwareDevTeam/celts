@@ -36,12 +36,13 @@ def events(selectedTerm):
     rsvpedEventsID = [event.event.id for event in participantRSVP]
     term = Term.get_by_id(currentTerm)
     studentLedProgram = getStudentLedProgram(term)
-    trainingProgram = getTrainingProgram(term)
+    allTrainingsEvent, trainingProgram = getTrainingProgram(term)
     bonnerProgram = getBonnerProgram(term)
     oneTimeEvents = getOneTimeEvents(term)
 
     return render_template("/events/event_list.html",
         selectedTerm = term,
+        allTrainingsEvent = allTrainingsEvent,
         studentLedProgram = studentLedProgram,
         trainingProgram = trainingProgram,
         bonnerProgram = bonnerProgram,
