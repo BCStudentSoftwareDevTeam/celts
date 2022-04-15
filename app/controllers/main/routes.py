@@ -1,6 +1,5 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for
 import datetime
-import json
 
 from app import app
 from app.models.program import Program
@@ -21,6 +20,7 @@ from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
 from app.logic.manageSLFaculty import getCourseDict
+
 @main_bp.route('/', methods=['GET'])
 def redirectToEventsList():
     return redirect(url_for("main.events", selectedTerm=g.current_term))
@@ -36,13 +36,12 @@ def events(selectedTerm):
     rsvpedEventsID = [event.event.id for event in participantRSVP]
     term = Term.get_by_id(currentTerm)
     studentLedProgram = getStudentLedProgram(term)
-    allTrainingsEvent, trainingProgram = getTrainingProgram(term)
+    trainingProgram = getTrainingProgram(term)
     bonnerProgram = getBonnerProgram(term)
     oneTimeEvents = getOneTimeEvents(term)
 
     return render_template("/events/event_list.html",
         selectedTerm = term,
-        allTrainingsEvent = allTrainingsEvent,
         studentLedProgram = studentLedProgram,
         trainingProgram = trainingProgram,
         bonnerProgram = bonnerProgram,
