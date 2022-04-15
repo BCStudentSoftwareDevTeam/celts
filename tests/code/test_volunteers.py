@@ -1,4 +1,6 @@
 import pytest
+from flask import g
+from app import app
 from app.logic.volunteers import getEventLengthInHours, updateEventParticipants, setUserBackgroundCheck
 from app.models.eventParticipant import EventParticipant
 from app.controllers.admin.volunteers import addVolunteerToEventRsvp
@@ -113,23 +115,24 @@ def test_updateEventParticipants():
 
 @pytest.mark.integration
 def test_backgroundCheck():
+    with app.app_context():
+        g.current_user = "ramsayb2"
+        updatebackground = setUserBackgroundCheck("khatts","CAN",False)
+        updatedModel = BackgroundCheck.get(user="khatts", type = "CAN")
+        assert updatedModel.passBackgroundCheck == False
 
-    updatebackground = setUserBackgroundCheck("khatts","CAN",False)
-    updatedModel = BackgroundCheck.get(user="khatts", type = "CAN")
-    assert updatedModel.passBackgroundCheck == False
+        updatebackground = setUserBackgroundCheck("khatts","FBI",True)
+        updatedModel = BackgroundCheck.get(user =  "khatts", type = "FBI")
+        assert updatedModel.passBackgroundCheck == True
 
-    updatebackground = setUserBackgroundCheck("khatts","FBI",True)
-    updatedModel = BackgroundCheck.get(user =  "khatts", type = "FBI")
-    assert updatedModel.passBackgroundCheck == True
+        updatebackground = setUserBackgroundCheck("khatts","SHS",False)
+        updatedModel = BackgroundCheck.get(user = "khatts", type = "SHS")
+        assert updatedModel.passBackgroundCheck == False
 
-    updatebackground = setUserBackgroundCheck("khatts","SHS",False)
-    updatedModel = BackgroundCheck.get(user = "khatts", type = "SHS")
-    assert updatedModel.passBackgroundCheck == False
+        updatebackground = setUserBackgroundCheck("neillz", "FBI",False)
+        updatedModel = BackgroundCheck.get(user =  "neillz", type = "FBI")
+        assert updatedModel.passBackgroundCheck == False
 
-    updatebackground = setUserBackgroundCheck("neillz", "FBI",False)
-    updatedModel = BackgroundCheck.get(user =  "neillz", type = "FBI")
-    assert updatedModel.passBackgroundCheck == False
-
-    updatebackground = setUserBackgroundCheck("mupotsal","SHS",True)
-    updatedModel = BackgroundCheck.get(user = "mupotsal", type = "SHS")
-    assert updatedModel.passBackgroundCheck == True
+        updatebackground = setUserBackgroundCheck("mupotsal","SHS",True)
+        updatedModel = BackgroundCheck.get(user = "mupotsal", type = "SHS")
+        assert updatedModel.passBackgroundCheck == True

@@ -17,6 +17,7 @@ from app.models.eventTemplate import EventTemplate
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
+from app.models.adminLogs import AdminLogs
 from app.models.studentManager import StudentManager
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
@@ -86,6 +87,7 @@ def createEvent(templateid, programid=None):
     if program:
         # TODO need to handle the multiple programs case
         eventData["program"] = program
+
     # Try to save the form
     if request.method == "POST":
         try:
@@ -155,7 +157,6 @@ def editEvent(eventId):
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
     try:
-        term = Event.get(Event.id == eventId).term
         deleteEvent(eventId)
         flash("Event successfully deleted.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
@@ -209,3 +210,9 @@ def courseManagement(term = None):
                             approvedCourses = approved,
                             terms = terms,
                             term = term)
+@admin_bp.route('/adminLogs', methods = ['GET', 'POST'])
+def adminLogs():
+    allLogs = AdminLogs.select().order_by(AdminLogs.createdOn.desc())
+
+    return render_template("/admin/adminLogs.html",
+                            allLogs = allLogs)

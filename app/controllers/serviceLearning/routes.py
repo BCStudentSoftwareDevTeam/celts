@@ -7,10 +7,12 @@ from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseQuestion import CourseQuestion
 from app.models.courseParticipant import CourseParticipant
+from app.logic.utils import selectSurroundingTerms
 
 from app.controllers.serviceLearning import serviceLearning_bp
 from app.logic.searchUsers import searchUsers
 from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal
+from app.logic.courseManagement import updateCourse, createCourse
 
 @serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
 @serviceLearning_bp.route('/serviceLearning/courseManagement/<username>', methods = ['GET'])
@@ -27,38 +29,51 @@ def serviceCourseManagement(username=None):
         flash("Unauthorized to view page", 'warning')
         return redirect(url_for('main.events', selectedTerm=g.current_term))
 
-@serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
-def slcNewProposal():
-    if request.method == "POST":
-        # TODO: Where to save the phone number?
-        # courseData["courseInstructorPhone"] = request.form.get("courseInstructorPhone")
-        term = Term.get(Term.id==request.form.get("term"))
-        status = CourseStatus.get(CourseStatus.status == "Pending")
-        course = Course.create(
-            courseName=request.form.get("courseName"),
-            courseAbbreviation=request.form.get("courseAbbreviation"),
-            courseCredit=request.form.get("credit"),
-            isRegularlyOccuring=1 if request.form.get("regularOccurenceToggle") else 0,
-            term=term,
-            status=status,
-            createdBy=g.current_user,
-            isAllSectionsServiceLearning=1 if request.form.get("slSectionsToggle") else 0,
-            serviceLearningDesignatedSections=request.form.get("slDesignation"),
-            isPermanentlyDesignated=1 if request.form.get("permanentDesignation") else 0,
-        )
-        for i in range(1, 7):
-            CourseQuestion.create(
-                course=course,
-                questionContent=request.form.get(f"{i}"),
-                questionNumber=i
-            )
-        for instructor in instructorsDict["instructors"]:
-            CourseInstructor.create(course=course, user=instructor.username)
-        flash("New service-learning course successfully created.", "success")
-        return redirect('/serviceLearning/courseManagement')
+@serviceLearning_bp.route('/serviceLearning/editProposal/<courseID>', methods=['GET', 'POST'])
+def slcEditProposal(courseID):
+    """
+        Route for editing proposals, it will fill the form with the data found in the database
+        given a courseID.
+    """
+    questionData = CourseQuestion.select().where(CourseQuestion.course == courseID)
+    questionanswers = [question.questionContent for question in questionData]
+    courseData = questionData[0]
+    courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
 
+    isRegularlyOccuring = ""
+    isAllSectionsServiceLearning = ""
+    isPermanentlyDesignated = ""
+
+    if courseData.course.isRegularlyOccuring:
+        isRegularlyOccuring = True
+    if courseData.course.isAllSectionsServiceLearning:
+        isAllSectionsServiceLearning = True
+    if courseData.course.isPermanentlyDesignated:
+        isPermanentlyDesignated = True
+    terms = selectSurroundingTerms(g.current_term, 0)
+    return render_template('serviceLearning/slcNewProposal.html',
+                                courseData = courseData,
+                                questionanswers = questionanswers,
+                                terms = terms,
+                                courseInstructor = courseInstructor,
+                                isRegularlyOccuring = isRegularlyOccuring,
+                                isAllSectionsServiceLearning = isAllSectionsServiceLearning,
+                                isPermanentlyDesignated = isPermanentlyDesignated,
+                                courseID=courseID)
+
+@serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
+def slcCreateOrEdit():
+    if request.method == "POST":
+        courseExist = Course.get_or_none(Course.id == request.form.get('courseID'))
+        if courseExist:
+            updateCourse(request.form.copy(), instructorsDict)
+            return redirect('/serviceLearning/courseManagement')
+        else:
+            createCourse(request.form.copy(), instructorsDict)
+            return redirect('/serviceLearning/courseManagement')
     terms = Term.select().where(Term.year >= g.current_term.year)
-    return render_template('serviceLearning/slcNewProposal.html', terms=terms)
+    courseData = None
+    return render_template('serviceLearning/slcNewProposal.html', terms=terms, courseData = courseData)
 
 instructorsDict = {}
 @serviceLearning_bp.route('/courseInstructors', methods=['POST'])
@@ -72,6 +87,16 @@ def getInstructors():
             instructorObjectList.append(instructor)
     instructorsDict["instructors"] = instructorObjectList
     return jsonify({"Success": True}), 200
+
+@serviceLearning_bp.route('/updateInstructorPhone', methods=['POST'])
+def updateInstructorPhone():
+    try:
+        instructorData = request.get_json()
+        updateInstructorPhone = User.update(phoneNumber=instructorData[1]).where(User.username == instructorData[0]).execute()
+        return "success"
+    except Exception as e:
+        print(e)
+        return e
 
 @serviceLearning_bp.route('/serviceLearning/withdraw/<courseID>', methods = ['POST'])
 def withdrawCourse(courseID):

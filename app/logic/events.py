@@ -12,6 +12,8 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
+from app.logic.adminLogs import createLog
+
 
 def getEvents(program_id=None):
 
@@ -27,6 +29,9 @@ def deleteEvent(eventId):
     event = Event.get_or_none(Event.id == eventId)
     if event:
         event.delete_instance(recursive = True, delete_nullable = True)
+        if event.startDate:
+            createLog(f"Deleted event: {event.name}, which had a startdate of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
+
 
 def attemptSaveEvent(eventData):
 
@@ -53,6 +58,7 @@ def saveEventToDb(newEventData):
     eventsToCreate = []
     if isNewEvent and newEventData['isRecurring']:
         eventsToCreate = calculateRecurringEventFrequency(newEventData)
+
     else:
         eventsToCreate.append({'name': f"{newEventData['name']}",
                                 'date':newEventData['startDate'],
@@ -82,6 +88,7 @@ def saveEventToDb(newEventData):
                 # TODO handle multiple programs
                 if 'program' in newEventData:
                     ProgramEvent.create(program=newEventData['program'], event=eventRecord)
+
             else:
                 eventRecord = Event.get_by_id(newEventData['id'])
                 Event.update(**eventData).where(Event.id == eventRecord).execute()
@@ -165,7 +172,7 @@ def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
 
 def getAllFacilitators():
 
-    facilitators = User.select(User).where((User.isFaculty == 1) | (User.isCeltsAdmin == 1) | (User.isCeltsStudentStaff == 1))
+    facilitators = User.select(User).where((User.isFaculty == 1) | (User.isCeltsAdmin == 1) | (User.isCeltsStudentStaff == 1)).order_by(User.username) #ordered because of the tests
     return facilitators
 
 def validateNewEventData(data):
