@@ -41,7 +41,7 @@ export default function searchUser(inputId, callback, clear=false, parentElement
        var user = ui.item.value
        $(`#${inputId}`).val(ui.item.value);
        callback();
-       if(clear == true){
+       if(clear){
        $(`#${inputId}`).val("");
        return false;
      }
