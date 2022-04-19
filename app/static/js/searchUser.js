@@ -1,8 +1,6 @@
 export default function searchUser(inputId, callback, clear=false, parentElementId=null, columnRequested=null){
   var query = $(`#${inputId}`).val()
   let columnDict={};
-  console.log(inputId)
-  console.log(clear)
   $(`#${inputId}`).autocomplete({
     appendTo: (parentElementId === null) ? null : `#${parentElementId}`,
     minLength: 2,
