@@ -41,8 +41,6 @@ export default function searchUser(inputId, callback, parentElementId=null, colu
        var user = ui.item.value
        $(`#${inputId}`).val(ui.item.value);
        callback();
-       $(`#${inputId}`).val("");
-       return false;
      }
   });
 };
