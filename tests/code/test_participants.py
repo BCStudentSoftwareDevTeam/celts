@@ -216,6 +216,7 @@ def test_sendUserData():
         signedInUser, userStatus = sendUserData("B00739736", 2, 1)
         assert userStatus == "banned"
 
+
         # user is already signed in
         signedInUser, userStatus = sendUserData("B00751360", 2, 1)
         assert userStatus == "already in"
