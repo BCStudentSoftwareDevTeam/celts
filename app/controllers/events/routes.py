@@ -39,7 +39,7 @@ def email():
         flash(message, status)
         return redirect(url_for("main.events", selectedTerm = raw_form_data['selectedTerm']))
 
-@events_bp.route('/event/<eventid>/kiosk', methods=['GET'])
+@events_bp.route('/eventsList/<eventid>/kiosk', methods=['GET'])
 def loadKiosk(eventid):
     """Renders kiosk for specified event."""
     event = Event.get_by_id(eventid)

@@ -1,5 +1,7 @@
 import pytest
 from peewee import DoesNotExist
+from flask import g
+from app import app
 
 from app.logic.transcript import *
 from app.models.user import User
@@ -11,6 +13,8 @@ from app.logic.events import deleteEvent
 
 @pytest.mark.integration
 def setup_module():
+    with app.app_context():
+        g.current_user = User.get_by_id("ramsayb2")
     user = User.create(
                         username = "namet",
                         bnumber = "B001234567",
@@ -35,8 +39,8 @@ def setup_module():
                               isPrerequisiteForProgram = 0,
                               isTraining = 1,
                               isService = 0,
-                              startDate =  2021-12-12,
-                              endDate =  2021-12-13)
+                              startDate =  "2021-12-12",
+                              endDate =  "2021-12-13")
 
     programEvent = ProgramEvent.create(program=2, event=newTrainingEvent)
 
@@ -53,8 +57,8 @@ def setup_module():
                               isPrerequisiteForProgram = 0,
                               isTraining = 0,
                               isService = 0,
-                              startDate =  2021-12-12,
-                              endDate =  2021-12-13)
+                              startDate =  "2021-12-12",
+                              endDate =  "2021-12-13")
 
     programEvent = ProgramEvent.create(program=5, event=newBonnerEvent)
 
@@ -94,8 +98,8 @@ def setup_module():
                               isPrerequisiteForProgram = 0,
                               isTraining = 0,
                               isService = 0,
-                              startDate =  2021-12-12,
-                              endDate =  2021-12-13)
+                              startDate =  "2021-12-12",
+                              endDate =  "2021-12-13")
 
     programEvent = ProgramEvent.create(program=1, event=newProgramEvent)
 
@@ -190,23 +194,24 @@ def testingTotalHours():
 
 @pytest.mark.integration
 def teardown_module():
-
-    testingTrainingEvent = Event.get(Event.name == "Test Training Event")
-    deleteEvent(testingTrainingEvent)
-    assert Event.get_or_none(Event.id == testingTrainingEvent) is None
-    # delete bonner
-    testingBonnerEvent = Event.get(Event.name == "Test Bonner Event")
-    deleteEvent(testingBonnerEvent)
-    assert Event.get_or_none(Event.id == testingBonnerEvent) is None
-    # delete courses
-    testingCourse = Course.get(Course.courseName == "Test Course")
-    testingCourse.delete_instance(recursive = True, delete_nullable = True)
-    assert Course.get_or_none(Course.id == testingCourse.id) is None
-    # delete program
-    testingProgramEvent = Event.get(Event.name == "Test program Event")
-    deleteEvent(testingProgramEvent)
-    assert Event.get_or_none(Event.id == testingProgramEvent) is None
-    # delete user
-    user = User.get(User.username == "namet")
-    user.delete_instance(recursive = True, delete_nullable = True)
-    assert User.get_or_none(User.username == "namet") is None
+    with app.app_context():
+        g.current_user = User.get_by_id("ramsayb2")
+        testingTrainingEvent = Event.get(Event.name == "Test Training Event")
+        deleteEvent(testingTrainingEvent)
+        assert Event.get_or_none(Event.id == testingTrainingEvent) is None
+        # delete bonner
+        testingBonnerEvent = Event.get(Event.name == "Test Bonner Event")
+        deleteEvent(testingBonnerEvent)
+        assert Event.get_or_none(Event.id == testingBonnerEvent) is None
+        # delete courses
+        testingCourse = Course.get(Course.courseName == "Test Course")
+        testingCourse.delete_instance(recursive = True, delete_nullable = True)
+        assert Course.get_or_none(Course.id == testingCourse.id) is None
+        # delete program
+        testingProgramEvent = Event.get(Event.name == "Test program Event")
+        deleteEvent(testingProgramEvent)
+        assert Event.get_or_none(Event.id == testingProgramEvent) is None
+        # delete user
+        user = User.get(User.username == "namet")
+        user.delete_instance(recursive = True, delete_nullable = True)
+        assert User.get_or_none(User.username == "namet") is None

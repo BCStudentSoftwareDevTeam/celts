@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+  {{super()}}
+  <script type="module" src="/static/js/adminLogs.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+
+  {% block styles %}
+    {{super()}}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+  {% endblock %}
+{% endblock %}
+{% block app_content %}
+
+<h1 class="text-center mt-5 mb-3">Admin Logs</h1>
+<table class="display" id="logsTable">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>User</th>
+      <th>Action</th>
+    </tr>
+
+  </thead>
+<tbody>
+  {% for entry in allLogs%}
+  <tr>
+    <td>{{entry.createdOn}}</td>
+    <td>{{entry.createdBy.firstName+ " "+ entry.createdBy.lastName}}</td>
+    <td>{{entry.logContent}}</td>
+
+ </tr>
+  {%endfor%}
+</tbody>
+
+</table>
+{% endblock %}

@@ -1,6 +1,6 @@
 $(document).ready(function() {
   $(".form-check-input").click(function updateInterest(el){
-    var programID = $(this).attr('id');
+    var programID = $(this).data("programid");
     var interest = $(this).is(':checked');
     if (interest) {
       var routeUrl = "/addInterest/"
@@ -24,23 +24,26 @@ $(document).ready(function() {
 });
 
 
-function updateManagers(el,user,status){
-
+function updateManagers(el,username,action){
+  var routeUrl = '/removeProgramManagers';
+  if (action == "add"){
+    routeUrl = '/addProgramManagers';
+  }
   let data = {
-      programID : el.id,
-      userID : (user[0].id),
-      status:status,
+      programID : $(el).data("programid"),
+      username : username,
       from: "ajax"
   }
   $.ajax({
-    url: "/updateManagers",
+    url: routeUrl,
     type: "POST",
     data: data,
     success: function(s){
         location.reload()
       },
       error: function(error, status){
-          console.log(error, status)
+          console.log(error, status);
+          location.reload();
         }
     })
   }

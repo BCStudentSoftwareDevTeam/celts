@@ -1,7 +1,6 @@
 import searchUser from './searchUser.js'
 
 function callback() {
-  console.log("This function is called")
   $("#searchAdmin").submit();
 }
 
@@ -74,7 +73,8 @@ function submitRequest(method,identifier){
         location.reload()
     },
     error: function(error, status){
-        console.log(error, status)
+      location.reload()
+      console.log(error, status)
     }
 
   })

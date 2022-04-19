@@ -1,4 +1,6 @@
 import pytest
+from flask import g
+from app import app
 from peewee import DoesNotExist, OperationalError, IntegrityError
 from datetime import datetime
 from dateutil import parser
@@ -310,13 +312,11 @@ def test_calculateRecurringEventFrequency():
 @pytest.mark.integration
 def test_attemptSaveEvent():
     # This test duplicates some of the saving tests, but with raw data, like from a form
-
     eventData =  {'isRsvpRequired':False, 'isService':False,
                   'isTraining':True, 'isRecurring':True, 'startDate': '2021-12-12',
                   'endDate': '2021-06-12', 'programId':1, 'location':"a big room",
                   'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring','term':1,'facilitators':["ramsayb2"]}
-    pass
     eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'startDate': '2021-12-12',
                    'endDate':'2022-06-12', 'location':"a big room",
                    'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
@@ -324,7 +324,9 @@ def test_attemptSaveEvent():
     eventInfo['program'] = Program.get_by_id(1)
 
     with mainDB.atomic() as transaction:
-        success, errorMessage = attemptSaveEvent(eventInfo)
+        with app.app_context():
+            g.current_user = User.get_by_id("ramsayb2")
+            success, errorMessage = attemptSaveEvent(eventInfo)
         if not success:
             pytest.fail(f"Save failed: {errorMessage}")
 
@@ -345,7 +347,6 @@ def test_attemptSaveEvent():
 
 @pytest.mark.integration
 def test_saveEventToDb_create():
-
     eventInfo =  {'isRsvpRequired':False, 'isService':False,
                   'isTraining':True, 'isRecurring':False, 'startDate': parser.parse('2021-12-12'),
                    'endDate':parser.parse('2022-06-12'), 'location':"a big room",
@@ -355,17 +356,23 @@ def test_saveEventToDb_create():
 
     # if valid is not added to the dict
     with pytest.raises(Exception):
-        saveEventToDb(eventInfo)
+        with app.app_context():
+            g.current_user = User.get_by_id("ramsayb2")
+            saveEventToDb(eventInfo)
 
     # if 'valid' is not True
     eventInfo['valid'] = False
     with pytest.raises(Exception):
-        saveEventToDb(eventInfo)
+        with app.app_context():
+            g.current_user = User.get_by_id("ramsayb2")
+            saveEventToDb(eventInfo)
 
     #test that the event and facilitators are added successfully
     with mainDB.atomic() as transaction:
         eventInfo['valid'] = True
-        createdEvents = saveEventToDb(eventInfo)
+        with app.app_context():
+            g.current_user = User.get_by_id("ramsayb2")
+            createdEvents = saveEventToDb(eventInfo)
         assert len(createdEvents) == 1
         assert createdEvents[0].singleProgram.id == 1
 
@@ -389,7 +396,9 @@ def test_saveEventToDb_recurring():
     eventInfo['valid'] = True
     eventInfo['program'] = Program.get_by_id(1)
     with mainDB as transaction:
-        createdEvents = saveEventToDb(eventInfo)
+        with app.app_context():
+            g.current_user = User.get_by_id("ramsayb2")
+            createdEvents = saveEventToDb(eventInfo)
         assert len(createdEvents) == 6
 
         transaction.rollback()
@@ -418,7 +427,9 @@ def test_saveEventToDb_update():
                     "facilitators": [User.get_by_id('ramsayb2')],
                     "valid": True
                 }
-    eventFunction = saveEventToDb(newEventData)
+    with app.app_context():
+        g.current_user = User.get_by_id("ramsayb2")
+        eventFunction = saveEventToDb(newEventData)
     afterUpdate = Event.get_by_id(newEventData['id'])
     assert afterUpdate.description == "This is a Test"
 
@@ -440,45 +451,51 @@ def test_saveEventToDb_update():
                     "facilitators": [User.get_by_id('ramsayb2')],
                     "valid": True
                 }
-    eventFunction = saveEventToDb(newEventData)
+    with app.app_context():
+        g.current_user = User.get_by_id("ramsayb2")
+        eventFunction = saveEventToDb(newEventData)
     afterUpdate = Event.get_by_id(newEventData['id'])
 
     assert afterUpdate.description == "Berea Buddies First Meetup"
 
 @pytest.mark.integration
 def test_deleteEvent():
+    with mainDB.atomic() as transaction:
+        testingEvent = Event.create(name = "Testing delete event",
+                                      term = 2,
+                                      description= "This Event is Created to be Deleted.",
+                                      timeStart= "6:00 pm",
+                                      timeEnd= "9:00 pm",
+                                      location = "No Where",
+                                      isRecurring = 0,
+                                      isRsvpRequired = 0,
+                                      isTraining = 0,
+                                      isService = 0,
+                                      startDate= "2021-12-12",
+                                      endDate= "2022-6-12")
 
-    testingEvent = Event.create(name = "Testing delete event",
-                                  term = 2,
-                                  description= "This Event is Created to be Deleted.",
-                                  timeStart= "6:00 pm",
-                                  timeEnd= "9:00 pm",
-                                  location = "No Where",
-                                  isRecurring = 0,
-                                  isRsvpRequired = 0,
-                                  isTraining = 0,
-                                  isService = 0,
-                                  startDate= "2021 12 12",
-                                  endDate= "2022 6 12")
+        testingEvent = Event.get(Event.name == "Testing delete event")
 
-    testingEvent = Event.get(Event.name == "Testing delete event")
+        eventId = testingEvent.id
+        with app.app_context():
+            g.current_user = User.get_by_id("ramsayb2")
+            deletingEvent = deleteEvent(eventId)
+        assert Event.get_or_none(Event.id == eventId) is None
 
-    eventId = testingEvent.id
-    deletingEvent = deleteEvent(eventId)
-    assert Event.get_or_none(Event.id == eventId) is None
-
-    deletingEvent = deleteEvent(eventId)
-    assert Event.get_or_none(Event.id == eventId) is None
+        with app.app_context():
+            g.current_user = User.get_by_id("ramsayb2")
+            deletingEvent = deleteEvent(eventId)
+        assert Event.get_or_none(Event.id == eventId) is None
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_getAllFacilitators():
     userFacilitator = getAllFacilitators()
-
     assert len(userFacilitator) >= 1
-    assert userFacilitator[1].username == 'lamichhanes2'
-    assert userFacilitator[1].isFaculty == True
-    assert userFacilitator[0].username == "khatts"
+    assert userFacilitator[0].username == 'khatts'
     assert userFacilitator[0].isFaculty == False
+    assert userFacilitator[1].username == "lamichhanes2"
+    assert userFacilitator[1].isFaculty == True
 
 @pytest.mark.integration
 def test_getsCorrectUpcomingEvent():

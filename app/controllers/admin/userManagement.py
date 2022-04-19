@@ -21,7 +21,7 @@ def manageUsers():
             flash(username+ " is already a Celts Admin", 'danger')
         else:
             addCeltsAdmin(user)
-            flash(username+ " has been added as a Celts Admin", 'success')
+            flash(user.firstName + " "+ user.lastName + " has been added as a Celts Admin", 'success')
     elif method == "addCeltsStudentStaff":
         if user.isCeltsStudentStaff:
             flash(username+ " is already a Celts Student Staff", 'danger')
@@ -42,23 +42,27 @@ def manageUsers():
             flash(username+ " is no longer a Celts Student Staff", 'success')
     return ("success")
 
-@admin_bp.route('/updateManagers', methods=['POST','GET'])
-def updateProgramManagers():
-    eventData = request.form
-    if  int(eventData['status']) == 0:
-        try:
-            addProgramManager(eventData['userID'],int(eventData['programID']))
-        except:
-            flash('Error while trying to add a manager.')
-    elif int(eventData['status']) == 1:
-        try:
-            removeProgramManager(eventData['userID'],int(eventData['programID']))
-        except:
-            flash('Error while trying to remove a manager.')
-    else:
-        flash('Error while removing a manager.')
-    abort(500)
+@admin_bp.route('/addProgramManagers', methods=['POST'])
+def addProgramManagers():
 
+    eventData = request.form
+    try:
+        return addProgramManager(eventData['username'],int(eventData['programID']))
+    except Exception as e:
+        print(e)
+        flash('Error while trying to add a manager.','warning')
+        abort(500,"'Error while trying to add a manager.'")
+
+@admin_bp.route('/removeProgramManagers', methods=['POST'])
+def removeProgramManagers():
+
+    eventData = request.form
+    try:
+        return removeProgramManager(eventData['username'],int(eventData['programID']))
+    except Exception as e:
+        print(e)
+        flash('Error while removing a manager.','warning')
+        abort(500,"Error while trying to remove a manager.")
 
 @admin_bp.route('/admin', methods = ['GET'])
 def userManagement():

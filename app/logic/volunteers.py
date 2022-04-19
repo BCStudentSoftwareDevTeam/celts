@@ -4,6 +4,8 @@ from app.models.user import User
 from app.models.event import Event
 from app.models.backgroundCheck import BackgroundCheck
 from datetime import datetime, date
+from app.logic.adminLogs import createLog
+
 
 
 def getEventLengthInHours(startTime, endTime, eventDate):
@@ -89,3 +91,4 @@ def setUserBackgroundCheck(user,bgType, checkPassed):
     deleteInstance.execute()
     update = BackgroundCheck.create(user=user, type=bgType, passBackgroundCheck=checkPassed, datePassed=today)
     update.save()
+    createLog(f"Updated {user.firstName} {user.lastName}'s background check for {bgType} to {bool(checkPassed)}.")
