@@ -1,4 +1,4 @@
-export default function searchUser(inputId, callback, parentElementId=null, columnRequested=null){
+export default function searchUser(inputId, callback, clear=false, parentElementId=null, columnRequested=null){
   var query = $(`#${inputId}`).val()
   let columnDict={};
   $(`#${inputId}`).autocomplete({
@@ -41,6 +41,10 @@ export default function searchUser(inputId, callback, parentElementId=null, colu
        var user = ui.item.value
        $(`#${inputId}`).val(ui.item.value);
        callback();
+       if(clear == true){
+       $(`#${inputId}`).val("");
+       return false;
+     }
      }
   });
 };
