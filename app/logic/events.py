@@ -112,18 +112,24 @@ def getStudentLedProgram(term):
 
 def getTrainingProgram(term):
 
+    """
+        The allTrainingsEvent query is designed to select and count eventId's after grouping them
+        together by id's of similiar value. The query will then return the event that is associated
+        with the most programs (highest count) by doing this we can ensure that the event being
+        returned is the All Trainings Event.
+    """
+
     allTrainingsEvent = ((ProgramEvent.select(ProgramEvent.event, fn.COUNT(1).alias('num_programs'))
                                         .join(Event)
                                         .group_by(ProgramEvent.event)
                                         .order_by(fn.COUNT(1).desc()))
                                         .where(Event.term == term).get())
+
     trainingEvents = ((Event.select(Event)
 			               .order_by((Event.id == allTrainingsEvent.event.id).desc(), Event.startDate.desc())
                            .where(Event.isTraining,
                                   Event.term == term)))
 
-    for t in trainingEvents:
-        print(t)
 
     return trainingEvents
 def getBonnerProgram(term):
