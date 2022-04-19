@@ -25,8 +25,8 @@
             <input id="selectedTerm" name="selectedTerm" class="form-control" value="" type="hidden">
           </div>
           <label for="templateIdentifier" class="form-label my-1 fs-5">Templates</label>
-          <select class="form-select" onchange="replaceEmailBodyAndSubject()" id='templateIdentifier' name="templateIdentifier" aria-label="template-select">
-            <option disabled selected val="">Select a template</option>
+          <select class="form-select" onchange="replaceEmailBodyAndSubject()" id='templateIdentifier' name="templateIdentifier" aria-label="template-select" required>
+            <option disabled val="">Select a template</option>
           </select>
           <div class="row my-3">
             <div class="col-sm-6 form-group">

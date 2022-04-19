@@ -27,9 +27,6 @@ class EmailHandler:
         self.recipients = None
         self.sl_course_id = None
 
-        self.__name__ = self.__class__.__name__
-
-
     def process_data(self):
         """ Processes raw data and stores it in class variables to be used by other methods """
         # Email Template Data
@@ -122,16 +119,18 @@ class EmailHandler:
 
     def retrieve_and_modify_email_template(self):
         """ Retrieves email template based on idenitifer and calls replace_general_template_placholders"""
-
-        email_template = EmailTemplate.get(EmailTemplate.purpose==self.template_identifier) # --Q: should we keep purpose as the identifier?
-        template_id = email_template.id
+        template_id = None
+        if self.template_identifier:
+            email_template = EmailTemplate.get(EmailTemplate.purpose==self.template_identifier) # --Q: should we keep purpose as the identifier?
+            template_id = email_template.id
+            self.reply_to = email_template.replyToAddress
 
         subject = self.subject if self.subject else email_template.subject
 
         body = self.body if self.body else email_template.body
         new_body = self.replace_general_template_placholders(body)
 
-        self.reply_to = email_template.replyToAddress
+        # self.reply_to = email_template.replyToAddress
         return (template_id, subject, new_body)
 
     def attach_attachments(self):
@@ -140,13 +139,15 @@ class EmailHandler:
         # Q: how would this work?
         pass
 
-    def store_sent_email(self, subject, template_id=None):
+    def store_sent_email(self, subject, body, template_id=None):
         """ Stores sent email in the email log """
+        print("\n\n\n Email body: ", body, "\n\n\n")
         date_sent = datetime.now()
         EmailLog.create(
             event=self.event.id,
-            subject=subject,
             templateUsed=template_id,
+            subject=subject,
+            body=body,
             recipientsCategory=self.recipients_category,
             recipients=", ".join(recipient.email for recipient in self.recipients),
             dateSent=date_sent)
@@ -157,10 +158,10 @@ class EmailHandler:
         template_id, subject, body = self.retrieve_and_modify_email_template()
         return (template_id, subject, body)
 
-    @celery.task
+    # @celery.task
     def send_email(self):
-        template_id, subject, body = self.build_email()
         try:
+            template_id, subject, body = self.build_email()
             with self.mail.connect() as conn:
                 for recipient in self.recipients:
                     full_name = f'{recipient.firstName} {recipient.lastName}'
@@ -175,7 +176,7 @@ class EmailHandler:
                             reply_to=self.reply_to,
                             sender = ("Sandesh", 'bramsayr@gmail.com')
                         ))
-            self.store_sent_email(subject, template_id)
+            self.store_sent_email(subject, body, template_id)
             return True
         except Exception as e:
             print("Error on sending email: ", e)

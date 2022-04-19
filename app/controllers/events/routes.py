@@ -32,7 +32,9 @@ def email():
     else:
         url_domain = urlparse(request.base_url).netloc
         # mail = EmailHandler(raw_form_data, url_domain)
-        arrivalDate = datetime.now() + timedelta(minutes=2)
+        # TODO: Get the start date of the event and set it to arrivalDate
+        arrivalDate = datetime.utcnow() + timedelta(minutes=2)
+        print("\n\n\n\n arrivalDate: ", arrivalDate, "\n\n\n")
         result = dummy.apply_async(args=[raw_form_data, url_domain], eta=arrivalDate)
         print("\n\n\n\n Reslt: ", result.state, "\n\n\n")
 
