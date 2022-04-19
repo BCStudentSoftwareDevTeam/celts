@@ -40,13 +40,7 @@
         </a>
       </li>
       <li>
-        <a href="/admin"
-           class="nav-link text-white {{'active' if request.path =='/admin'}}"
-           {{"aria-current='page'" if request.path =='/admin'}}>
-          Settings
-        </a>
-      </li>
-      <li>
+      {% if g.current_user.isCeltsAdmin %}
         <nav class="navbar navbar-dark bg-dark">
           <div class="container-fluid">
             <button class="navbar-toggler text-white border-0 fs-6 ps-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,25 +50,25 @@
         </nav>
         <div class="collapse" id="navbarToggleExternalContent">
           <div class="bg-dark p-4">
-            <h5 class="text-white h4">Collapsed content</h5>
-            <span class="text-muted">Toggleable via the navbar brand.</span>
+            <a href="/adminLogs" class="nav-link text-white {{ 'active' if request.path =='/adminLogs' }}">
+              Admin Logs
+            </a>
+            <a href="/admin"
+               class="nav-link text-white {{'active' if request.path =='/admin'}}"
+               {{"aria-current='page'" if request.path =='/admin'}}>
+              Settings
+            </a>
+            <a href="/manageServiceLearning" class="nav-link text-white {{ 'active' if request.path =='/manageServiceLearning' }}">
+              Service Learning
+
+            <a href="/serviceLearning/courseManagement"
+               class="nav-link text-white {{'active' if 'serviceLearning' in request.path }}"
+               {{"aria-current='page'"  if 'serviceLearning' in request.path}}>
+              Course Proposal Management
+            </a>
           </div>
         </div>
-      </li>
-      <li>
-        <a href="/manageServiceLearning" class="nav-link text-white {{ 'active' if request.path =='/manageServiceLearning' }}">
-          Service Learning
-
-        <a href="/serviceLearning/courseManagement"
-           class="nav-link text-white {{'active' if 'serviceLearning' in request.path }}"
-           {{"aria-current='page'"  if 'serviceLearning' in request.path}}>
-          Course Proposal Management
-        </a>
-      </li>
-      <li>
-        <a href="/adminLogs" class="nav-link text-white {{ 'active' if request.path =='/adminLogs' }}">
-          Admin Logs
-        </a>
+        {% endif %}
       </li>
 
     {% endif %}
