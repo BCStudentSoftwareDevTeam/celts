@@ -2,6 +2,7 @@ from flask import Flask, redirect, flash, url_for, request, render_template, g, 
 from datetime import datetime, timedelta
 from peewee import DoesNotExist
 from urllib.parse import urlparse
+from celery.result import ResultBase
 
 from app.models.term import Term
 from app.models.program import Program
@@ -14,7 +15,7 @@ from app.controllers.events import email
 # from app.logic.emailHandler import EmailHandler
 from app.logic.events import getUpcomingEventsForUser
 from app.logic.participants import sendUserData
-from app.logic.tasks import dummy
+from app.logic.tasks import sendEmailTask
 
 
 @events_bp.route('/events/upcoming_events', methods=['GET'])
@@ -39,9 +40,14 @@ def email():
         event = Event.get_by_id(eventID)
         eventDateTime = datetime.combine(event.startDate, event.timeStart)
         arrivalDate = eventDateTime - timedelta(days=1)
-        result = dummy.apply_async(args=[raw_form_data, url_domain], eta=arrivalDate, expires=eventDateTime)
+        # mailSent = sendEmailTask.apply_async(args=[raw_form_data, url_domain], eta=arrivalDate, expires=eventDateTime)
 
-        print("\n\n\n result: ", result.successful())
+        # TODO: trying to get the final state of the task, so we can check
+        # if it was successful or not. 
+        mailSent = sendEmailTask.apply_async(args=[raw_form_data, url_domain], countdown=10)
+        task = sendEmailTask.AsyncResult(mailSent.id)
+
+        print(task.state)
         # if mail_sent:
         #     message, status = 'Email successfully sent!', 'success'
         # else:
