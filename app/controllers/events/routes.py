@@ -31,24 +31,17 @@ def email():
         pass
     else:
         url_domain = urlparse(request.base_url).netloc
-        # mail = EmailHandler(raw_form_data, url_domain)
-        # TODO: Get the start date of the event and set it to arrivalDate
         # TODO: create a test for celery... idk how but prob needed
         # TODO: let the user know that a reminder email was sent (there is a section in the email modal for last email sent)
         # TODO: Wait, should facilitators also get the emails???
 
-        print("\n\n\n\n raw_form_data: ", raw_form_data, "\n\n\n")
-
         eventID = raw_form_data['eventID']
         event = Event.get_by_id(eventID)
         eventDateTime = datetime.combine(event.startDate, event.timeStart)
-        print("\n\n\n\n eventDateTime: ", eventDateTime, type(eventDateTime), "\n\n\n")
-
         arrivalDate = eventDateTime - timedelta(days=1)
-        print("\n\n\n\n arrivalDate: ", arrivalDate, type(arrivalDate), "\n\n\n")
         result = dummy.apply_async(args=[raw_form_data, url_domain], eta=arrivalDate, expires=eventDateTime)
-        print("\n\n\n\n Reslt: ", result.state, "\n\n\n")
 
+        print("\n\n\n result: ", result.successful())
         # if mail_sent:
         #     message, status = 'Email successfully sent!', 'success'
         # else:
