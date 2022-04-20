@@ -20,9 +20,11 @@ from app.models.questionNote import QuestionNote
 from app.models.interest import Interest
 from app.models.facilitator import Facilitator
 from app.models.note import Note
+from app.models.studentManager import StudentManager
 from app.models.emailTemplate import EmailTemplate
 from app.models.backgroundCheck import BackgroundCheck
 # from app.models.backgroundCheckType import BackgroundCheckType
+from app.models.adminLogs import AdminLogs
 
 
 print("Inserting data for demo and testing purposes.")
@@ -55,13 +57,13 @@ users = [
         "username": "neillz",
         "bnumber": "B00751864",
         "email": "neillz@berea.edu",
-        "phoneNumber": "555-555-5555",
+        "phoneNumber": "555-985-1234",
         "firstName": "Zach",
         "lastName": "Neill",
         "isStudent": True,
         "isFaculty": False,
         "isCeltsAdmin": False,
-        "isCeltsStudentStaff": False
+        "isCeltsStudentStaff": True
     },
 
     {
@@ -126,7 +128,8 @@ users = [
         "firstName": "Liberty",
         "lastName": "Mupotsa",
         "isStudent": True,
-        "phoneNumber": "8599858594"
+        "phoneNumber": "8599858594",
+        "isCeltsStudentStaff": True
     },
 ]
 
@@ -628,12 +631,12 @@ courseQuestions = [
     "questionNumber":3,
     },
     {
-    "course":1,
+    "course":3,
     "questionContent":" This is another random question",
     "questionNumber":4,
     },
     {
-    "course":1,
+    "course":2,
     "questionContent":" Why are you interested in teaching this course?",
     "questionNumber":5,
     }
@@ -768,12 +771,14 @@ bannedUser = [
         "user": "khatts",
         "program": 3,
         "endDate": datetime.now() + timedelta(days=360),
+        "banNote": 1,
     },
 
     {
         "user": "ayisie",
         "program": 1,
         "endDate": datetime.now() + timedelta(days=150),
+        "banNote": 2,
     }
 ]
 
@@ -787,6 +792,31 @@ facilitators = [
     }
 ]
 Facilitator.insert_many(facilitators).on_conflict_replace().execute()
+
+studentManagerPrograms = [
+    {
+    'user':'khatts',
+    'program':1
+    },
+    {
+    'user':'mupotsal',
+    'program':2
+    },
+    {
+    'user':'ayisie',
+    'program':12
+    },
+    {
+    'user':'neillz',
+    'program':'1'
+    },
+    {
+    'user':'neillz',
+    'program':12
+    }
+]
+
+StudentManager.insert_many(studentManagerPrograms).on_conflict_replace().execute()
 
 emailTemplates = [
     {
@@ -823,3 +853,16 @@ background = [
 ]
 BackgroundCheck.insert_many(background).on_conflict_replace().execute()
 
+logs = [
+   {
+   "createdBy":"ramsayb2",
+   "createdOn": datetime.strptime("2021 12 15","%Y %m %d"),
+   "logContent": "Made Liberty Admin."
+   },
+   {
+   "createdBy":"neillz",
+   "createdOn": datetime.strptime("2021 12 15","%Y %m %d"),
+   "logContent": "Created Adoption Event."
+   }
+]
+AdminLogs.insert_many(logs).on_conflict_replace().execute()

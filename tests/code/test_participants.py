@@ -201,8 +201,8 @@ def test_userRsvpForEvent():
     (EventParticipant.delete().where(EventParticipant.user == 'agliullovak', EventParticipant.event == 11)).execute()
 
     # the user is not eligible to register (reason: user is banned)
-    volunteer = userRsvpForEvent("ayisie", 1)
-    assert volunteer == False
+    volunteer = userRsvpForEvent("khatts", 3)
+    assert volunteer != True
 
     # User does not exist
     with pytest.raises(DoesNotExist):
@@ -259,32 +259,33 @@ def test_unattendedRequiredEvents():
 def test_sendUserData():
     # Tests the Kiosk
     # user is banned
-    signedInUser, userStatus = sendUserData("B00739736", 2, 1)
-    assert userStatus == "banned"
-    with pytest.raises(DoesNotExist):
-        EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
+    with mainDB.atomic() as transaction:
+        signedInUser, userStatus = sendUserData("B00739736", 2, 1)
+        assert userStatus == "banned"
 
-    # user is already signed in
-    signedInUser, userStatus = sendUserData("B00751360", 2, 1)
-    assert userStatus == "already in"
 
-    # user is eligible but the user is not in EventParticipant and EventRsvp
-    signedInUser = User.get(User.bnumber=="B00759117")
-    with pytest.raises(DoesNotExist):
-        EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
-        EventRsvp.get(EventRsvp.user==signedInUser, EventRsvp.event==2)
+        # user is already signed in
+        signedInUser, userStatus = sendUserData("B00751360", 2, 1)
+        assert userStatus == "already in"
 
-        signedInUser, userStatus = sendUserData("B00759117", 2, 1)
-        assert userStatus == "success"
+        # user is eligible but the user is not in EventParticipant and EventRsvp
+        signedInUser = User.get(User.bnumber=="B00759117")
+        with pytest.raises(DoesNotExist):
+            EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
+            EventRsvp.get(EventRsvp.user==signedInUser, EventRsvp.event==2)
 
-        participant = EventParticipant.select().where(EventParticipant.event==2, EventParticipant.user==signedInUser)
-        assert "agliullovak" in participant
+            signedInUser, userStatus = sendUserData("B00759117", 2, 1)
+            assert userStatus == "success"
 
-        userRsvp = EventRsvp.select().where(EventRsvp.event==2, EventRsvp.user==signedInUser)
-        assert "agliullovak" in userRsvp
+            participant = EventParticipant.select().where(EventParticipant.event==2, EventParticipant.user==signedInUser)
+            assert "agliullovak" in participant
 
-        EventParticipant.delete(EventParticipant.user==signedInUser, EventParticipant.event==2).execute()
-        EventRsvp.delete(EventRsvp.user==signedInUser, EventRsvp.event==2).execute()
+            userRsvp = EventRsvp.select().where(EventRsvp.event==2, EventRsvp.user==signedInUser)
+            assert "agliullovak" in userRsvp
+
+            EventParticipant.delete(EventParticipant.user==signedInUser, EventParticipant.event==2).execute()
+            EventRsvp.delete(EventRsvp.user==signedInUser, EventRsvp.event==2).execute()
+        mainDB.rollback()
 
 @pytest.mark.integration
 def test_getEventParticipants():

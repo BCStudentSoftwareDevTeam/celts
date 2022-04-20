@@ -1,5 +1,6 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for
-from datetime import datetime
+import datetime
+import json
 from app import app
 from app.models.program import Program
 from app.models.event import Event
@@ -14,6 +15,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
+from app.models.studentManager import StudentManager
 from app.controllers.main import main_bp
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
@@ -61,41 +63,43 @@ def viewVolunteersProfile(username):
         volunteer = User.get(User.username == username)
     except Exception as e:
         return "User does not exist", 404
-    if (g.current_user == username) or g.current_user.isAdmin:
-         upcomingEvents = getUpcomingEventsForUser(username)
-         programs = Program.select()
-         interests = Interest.select().where(Interest.user == username)
-         programsInterested = [interest.program for interest in interests]
-         allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == username))
-         completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
-         backgroundTypes = list(BackgroundCheckType.select())
-         eligibilityTable = []
 
-         for program in programs:
-            notes = (ProgramBan.select(ProgramBan).where(
-                ProgramBan.user == username,
-                ProgramBan.program == program,
-                ProgramBan.endDate > datetime.datetime.now()))
+    if (g.current_user == volunteer) or g.current_user.isAdmin:
+        upcomingEvents = getUpcomingEventsForUser(volunteer)
+        programs = Program.select()
+        interests = Interest.select().where(Interest.user == volunteer)
+        programsInterested = [interest.program for interest in interests]
 
-            # noteForDict = list(notes)[-1].banNote.noteContent
+        rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == volunteer)
+        rsvpedEvents = [event.event.id for event in rsvpedEventsList]
 
-            if list(notes):
-                if (list(notes)[-1].banNote):
-                    noteForDict = list(notes)[-1].banNote.noteContent
-            else:
-                 noteForDict = ""
+        studentManagerPrograms = list(StudentManager.select().where(StudentManager.user == volunteer))
+        permissionPrograms = [entry.program.id for entry in studentManagerPrograms]
 
+        allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == volunteer))
+        completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
+        backgroundTypes = list(BackgroundCheckType.select())
+
+        eligibilityTable = []
+        for program in programs:
+            notes = ProgramBan.select().where(ProgramBan.user == volunteer,
+                                              ProgramBan.program == program,
+                                              ProgramBan.endDate > datetime.datetime.now())
+
+            noteForDict = list(notes)[-1].banNote.noteContent if list(notes) else ""
             eligibilityTable.append({"program" : program,
-                                   "completedTraining" : (username in trainedParticipants(program, g.current_term)),
-                                   "isNotBanned" : isEligibleForProgram(program, username),
+                                   "completedTraining" : (volunteer.username in trainedParticipants(program, g.current_term)),
+                                   "isNotBanned" : isEligibleForProgram(program, volunteer),
                                    "banNote": noteForDict})
-         return render_template ("/main/volunteerProfile.html",
-            programsInterested = programsInterested,
-            upcomingEvents = upcomingEvents,
-            eligibilityTable = eligibilityTable,
-            volunteer = volunteer,
-            backgroundTypes = backgroundTypes,
-            completedBackgroundCheck = completedBackgroundCheck
+        return render_template ("/main/volunteerProfile.html",
+                programsInterested = programsInterested,
+                upcomingEvents = upcomingEvents,
+                rsvpedEvents = rsvpedEvents,
+                permissionPrograms = permissionPrograms,
+                eligibilityTable = eligibilityTable,
+                volunteer = volunteer,
+                backgroundTypes = backgroundTypes,
+                completedBackgroundCheck = completedBackgroundCheck
             )
     abort(403)
 

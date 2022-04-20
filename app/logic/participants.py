@@ -35,7 +35,6 @@ def trainedParticipants(programID, currentTerm):
         )]
 
     attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(allTraningEvents), eventTrainingDataList)))
-
     return attendedTraining
 
 def sendUserData(bnumber, eventId, programid):
