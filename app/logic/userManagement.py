@@ -4,7 +4,6 @@ from app.models.studentManager import StudentManager
 from app.models.program import Program
 from flask import g, session
 from app.logic.adminLogs import createLog
-
 from playhouse.shortcuts import model_to_dict
 
 def addCeltsAdmin(user):

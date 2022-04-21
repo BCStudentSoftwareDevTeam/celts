@@ -7,4 +7,5 @@ class ProgramBan(baseModel):
     user = ForeignKeyField(User)
     program = ForeignKeyField(Program)
     endDate = DateField(null=True)
-    note = ForeignKeyField(Note, null=True)
+    banNote = ForeignKeyField(Note, null=True)
+    unbanNote = ForeignKeyField(Note, null=True)
