@@ -94,21 +94,26 @@ def updateVolunteerTable(eventID):
         flash("Error adding volunteer", "danger")
     return redirect(url_for("admin.trackVolunteersPage", eventID=eventID))
 
-@admin_bp.route('/addVolunteerToEvent/<volunteer>/<eventId>', methods = ['POST'])
-def addVolunteer(volunteer, eventId):
-    username = volunteer.strip("()").split('(')[-1]
+@admin_bp.route('/addVolunteerToEvent', methods = ['POST'])
+def addVolunteer():
+    volunteerData = request.form
+    username = volunteerData["username"]
     user = User.get(User.username==username)
+    eventId = volunteerData['eventId'][0]
     successfullyAddedVolunteer = addVolunteerToEventRsvp(user, eventId)
     EventParticipant.create(user=user, event=eventId) # user is present
     if successfullyAddedVolunteer:
         flash("Volunteer successfully added!", "success")
     else:
-        flash("Error when adding volunteer", "danger")
+        flash("Error when adding vol    unteer", "danger")
     return ""
 
-@admin_bp.route('/addOutsideParticipantToEvent/<outsideParticipant>/<eventId>', methods = ['POST'])
-def addOutsideParticipant(outsideParticipant, eventId):
-    email = outsideParticipant.strip("()").split('(')[-1]
+@admin_bp.route('/addOutsideParticipantToEvent', methods = ['POST'])
+def addOutsideParticipant():
+
+    outsideParticipantData = request.form
+    email = outsideParticipantData['email']
+    eventId = outsideParticipantData['eventId']
     event = eventId.split(':')
     newEntry = MatchParticipants.get_or_create(outsideParticipant=email,event=int(event[0]))
     if newEntry[-1]==False:

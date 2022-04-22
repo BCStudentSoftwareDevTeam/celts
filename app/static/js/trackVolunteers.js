@@ -75,11 +75,17 @@ $("#addVolunteerButton").on("click",function(){
 
 
   $("#selectVolunteerButton").click(function(){
-    let user = $("#addVolunteerInput").val()
+    let username = $("#addVolunteerInput").val()
     let eventId = $("#eventID").val()
 
+    var volunteerData = {
+      username:username,
+      eventId:eventId,
+    }
+
     $.ajax({
-      url: `/addVolunteerToEvent/${user}/${eventId}`,
+      url: `/addVolunteerToEvent`,
+      data:volunteerData,
       type: "POST",
       success: function(s){
         location.reload();
@@ -105,8 +111,14 @@ $("#addOutsideParticipantButton").on("click",function(){
       let outsideParticipant = $("#addVolunteerInput").val()
       let eventId = $("#eventID").val()
 
+      var outsideParticipantData = {
+        email:outsideParticipant,
+        eventId: eventId,
+
+      }
       $.ajax({
-        url: `/addOutsideParticipantToEvent/${outsideParticipant}/${eventId}`,
+        url: `/addOutsideParticipantToEvent`,
+        data : outsideParticipantData,
         type: "POST",
         success: function(s){
           location.reload();
