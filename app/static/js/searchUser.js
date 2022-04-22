@@ -1,9 +1,8 @@
-export default function searchUser(inputId, callback,clear=false,group, parentElementId=null, columnRequested=null){
+export default function searchUser(inputId, callback,clear=false,group="default", parentElementId=null, columnRequested=null){
   var query = $(`#${inputId}`).val();
   if (group != "outsideParticipant"){
     group = "default"
   }
-  console.log(group,"this is ..............");
   let columnDict={};
   $(`#${inputId}`).autocomplete({
     appendTo: (parentElementId === null) ? null : `#${parentElementId}`,
