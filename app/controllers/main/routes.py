@@ -194,5 +194,8 @@ def getAllCourseIntructors():
     """
     This function selects all the Intructors Name and the previous courses
     """
-    courseDict = getCourseDict()
-    return render_template('/main/manageServiceLearningFaculty.html', courseInstructors = courseDict)
+    if g.current_user.isCeltsAdmin:
+        courseDict = getCourseDict()
+        return render_template('/main/manageServiceLearningFaculty.html', courseInstructors = courseDict)
+    else:
+        abort(403)
