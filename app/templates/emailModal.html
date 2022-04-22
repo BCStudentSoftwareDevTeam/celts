@@ -1,0 +1,75 @@
+<script src="/static/js/event_list.js"></script>
+<script src="/static/js/emailModal.js"></script>
+
+<div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title m-auto" id="emailModalLabel">Event/Program Email Template</h4>
+        <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="pastEventWarning" hidden>
+          <div class="alert alert-danger d-flex justify-content-center" role="alert">
+            <span class="bi bi-exclamation-triangle-fill me-2"></span>
+            <div>
+              This event is in the past
+            </div>
+          </div>
+        </div>
+        <h6 id="emailLastSent" class="text-center"></h6>
+        <form role="form" method="post" id="modal-form" action="/email">
+          <div>
+            <input id="programID" name="programID" class="form-control" value="" type="hidden">
+            <input id="eventID" name="eventID" class="form-control" value="" type="hidden">
+            <input id="selectedTerm" name="selectedTerm" class="form-control" value="" type="hidden">
+          </div>
+          <label for="templateIdentifier" class="form-label my-1 fs-5">Templates</label>
+          <select class="form-select" onchange="replaceEmailBodyAndSubject()" id='templateIdentifier' name="templateIdentifier" aria-label="template-select">
+            <option disabled selected val="">Select a template</option>
+          </select>
+          <div class="row my-3">
+            <div class="col-sm-6 form-group">
+              <label for="emailRecipients" class="form-label my-1 fs-5">To</label>
+              <select class='form-select' id="emailRecipients" name="recipientsCategory" aria-label="email recipients">
+                <option value="Interested">Interested</option>
+                <option value="RSVP'd">RSVP'd</option>
+              </select>
+            </div>
+            <div class="col-sm-6 form-group">
+              <label for="emailSender" class="form-label my-1 fs-5">From</label>
+              <select class='form-select' id="emailSender" name="emailSender" aria-label="email sender">
+                {% set user = g.current_user %}
+                <option {{ 'selected' if user.CeltsStudentStaff }}>CELTS Student Staff</option>
+                <option {{ 'selected' if user.isCeltsAdmin else 'hidden' }}>CELTS Admins</option>
+                <option value="{{user.email}}">
+                  {{user.firstName}} {{user.lastName}} (Currently Logged In)
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="my-3">
+            <label for="subject" class="form-label my-1 fs-5">Subject</label>
+            <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject" required>
+          </div>
+          <div class="mt-3">
+            <label for="body" class="form-label my-1 fs-5">Email Body</label>
+            <textarea class="form-control" type="textarea" name="body" id="body" maxlength="8000" rows="5"
+              placeholder="Type your email message here (Max 8000 characters)"></textarea>
+          </div>
+          <!-- <div class="text-wrap">
+            <input class="form-check-input me-1" type="checkbox" value="True" id="sendIndividually" name="sendIndividually">
+            <!-- <label class="form-check-label" white-space="normal" for="sendIndividually">
+              Send Email Individually
+            </label>
+          </div> --> <!-- Commented out for demo purposes FIXME: add this option back and get it to work-->
+          <br>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="$('.modal').modal('hide')">Cancel</button>
+            <button type="submit" id="sendEmail" class="btn btn-primary">Send Email</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

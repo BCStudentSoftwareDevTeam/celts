@@ -1,10 +1,12 @@
 $(document).ready(function(){
   $(".form-check-input").click(function updateInterest(){
-    var programID = $(this).attr('id');
+    var programID = $(this).data("programid");
+    var username = $(this).data('username');
+
     var interest = $(this).is(':checked');
-    var username = $(this).attr('name');
     var routeUrl = interest ? "addInterest" : "removeInterest";
     interestUrl = "/" + username + "/" + routeUrl + "/" + programID ;
+
     $.ajax({
       method: "POST",
       url: interestUrl,
@@ -48,13 +50,13 @@ $(document).ready(function(){
     var banNote = $("#banNote")
 
     banButton.text($(this).val() + " Volunteer");
-    banButton.attr("programID", $(this).attr("id"))
-    banButton.attr("username", $(".form-check-input").attr("name"))
-    banButton.attr("banOrUnban", $(this).val());
+    banButton.data("programID", $(this).data("id"))
+    banButton.data("username", $(".form-check-input").data("username"))
+    banButton.data("banOrUnban", $(this).val());
     banEndDateDiv.show();
     banEndDatepicker.val("")
     $(".modal-title").text($(this).val() + " Volunteer");
-    $("#modalProgramName").text("Program: " + $(this).attr("name"));
+    $("#modalProgramName").text("Program: " + $(this).data("name"));
     $("#banModal").modal("toggle");
     banNoteDiv.hide();
     $("#banNoteTxtArea").val("");
@@ -63,7 +65,7 @@ $(document).ready(function(){
       banEndDateDiv.hide()
       banEndDatepicker.val("0001-01-01") //This is a placeholder value for the if statement in line 52 to work properly #PLCHLD1
       banNoteDiv.show()
-      banNote.text($(this).attr("note"))
+      banNote.text($(this).data("note"))
     }
 
   });
@@ -74,9 +76,9 @@ $(document).ready(function(){
   });
 
   $("#banButton").click(function (){
-    var username = $(this).attr("username") //Expected to be the unique username of a user in the database
-    var route = ($(this).attr("banOrUnban")).toLowerCase() //Expected to be "ban" or "unban"
-    var program = $(this).attr("programID") //Expected to be a program's primary ID
+    var username = $(this).data("username") //Expected to be the unique username of a user in the database
+    var route = ($(this).data("banOrUnban")).toLowerCase() //Expected to be "ban" or "unban"
+    var program = $(this).data("programID") //Expected to be a program's primary ID
     $.ajax({
       method: "POST",
       url:  "/" + username + "/" + route + "/" + program,
@@ -84,6 +86,7 @@ $(document).ready(function(){
              "endDate":$("#banEndDatepicker").val() //Expected to be a date in this format YYYY-MM-DD
             },
       success: function(response) {
+        
         location.reload();
       }
     });
@@ -93,7 +96,7 @@ $(document).ready(function(){
   $(".backgroundCheck").change(function () { // Updates the Background check of a volunteer in the database
     let data = {
         checkPassed : $(this).val(), //Expected to be either a 0 or a 1
-        user: $(this).attr("volunteer"), //Expected to be the username of a volunteer in the database
+        user: $(this).data("username"), //Expected to be the username of a volunteer in the database
         bgType: $(this).attr("id") // Expected to be the ID of a background check in the database
     }
     $.ajax({

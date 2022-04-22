@@ -1,7 +1,6 @@
 import searchUser from './searchUser.js'
 
 function callback() {
-  console.log("This function is called")
   $("#searchAdmin").submit();
 }
 
@@ -15,6 +14,9 @@ $(document).ready(function() {
     submitRequest("addCeltsAdmin","#searchCeltsAdminInput")
   });
 
+  $("#addNewTerm").on("click",function(){
+    addNewTerm();
+  });
   // add celts student staff
   $("#searchCeltsStudentStaffInput").on("input", function() {
     searchUser("searchCeltsStudentStaffInput", callback);
@@ -51,6 +53,10 @@ $(document).ready(function() {
   });
 });
 
+function clickTerm(term){
+  $(".term-btn").removeClass("active");
+  term.addClass('active');
+};
 
 function submitRequest(method,identifier){
   let data = {
@@ -67,15 +73,12 @@ function submitRequest(method,identifier){
         location.reload()
     },
     error: function(error, status){
-        console.log(error, status)
+      location.reload()
+      console.log(error, status)
     }
 
   })
 }
-function clickTerm(term){
-  $(".term-btn").removeClass("active");
-  term.addClass('active');
-};
 
 function submitTerm(){
   var termInfo = {id: $("#currentTermList .active").val()};
@@ -83,6 +86,19 @@ function submitTerm(){
     url: "/admin/changeTerm",
     type: "POST",
     data: termInfo,
+    success: function(s){
+      location.reload()
+    },
+    error: function(error, status){
+        console.log(error, status)
+    }
+  })
+};
+
+function addNewTerm(){
+  $.ajax({
+    url: "/admin/addNewTerm",
+    type: "POST",
     success: function(s){
       location.reload()
     },

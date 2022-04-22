@@ -1,28 +1,32 @@
 {% extends "base.html"%}
+
 {% block scripts %}
   {{super()}}
-  <script src="/static/js/volunteerProfile.js"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/volunteerProfile.js') }}?u={{lastStaticUpdate}}"></script>
 {% endblock %}
+
 {% block styles %}
   {{super()}}
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
 {% endblock %}
+
 {% block app_content %}
 <div>
-<h1 align="center">{{volunteer.firstName}} {{volunteer.lastName}}</h1>
-<h6 align="center">{{volunteer.email}}</h6>
-<h6 align="center">{{volunteer.phoneNumber}}</h6>
+    <h1 align="center">{{volunteer.firstName}} {{volunteer.lastName}}</h1>
+    <h6 align="center">{{volunteer.email}}</h6>
+    <h6 align="center">{{volunteer.phoneNumber}}</h6>
 </div>
+
 <div class="btn-group">
    <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="tabs-tab" role="tablist">
      <li class="nav-item" role="presentation">
-       <a class="nav-link active" href="#">Upcoming Events</a>
+       <a class="nav-link active" aria-current="page" href="#">Upcoming Events</a>
      </li>
      <li class="nav-item">
-       <a class="nav-link" aria-current="page" href="/{{volunteer.username}}/serviceTranscript">Service Transcript</a>
+       <a class="nav-link" href="/profile/{{volunteer.username}}/serviceTranscript">Service Transcript</a>
      </li>
    </ul>
  </div><br><br>
+
  <div class="row">
    <table class="table">
      {% if upcomingEvents|length > 0 %}
@@ -31,16 +35,18 @@
          <th scope="col"><h4><strong>Event Name</strong></h4>
          <th scope="col"><h4><strong>Event Date</strong></h4>
          <th scope="col"><h4><strong>Time</strong></h4>
-        <th scope="col"><h4><strong>Location</strong></h4>
+         <th scope="col"><h4><strong>Location</strong></h4>
+         <th scope="col"><h4><strong>RSVP Status</strong></h4>
        </thead>
        {% for event in upcomingEvents %}
-       <tr>
-         <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
-         <td>{{event.name}}</td>
-         <td>{{event.startDate.strftime('%m/%d/%Y')}}</td>
-         <td>{{event.timeStart.strftime('%-I:%M %p')}}</td>
-         <td>{{event.location}}</td>
-       </tr>
+           <tr>
+             <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
+             <td><a href= '/eventsList/{{event.id}}/edit' class="link-primary">{{event.name}}</a></td>
+             <td>{{event.startDate.strftime('%m/%d/%Y')}}</td>
+             <td>{{event.timeStart.strftime('%-I:%M %p')}}</td>
+             <td>{{event.location}}</td>
+              <td>{{"RSVP'ed" if event.id in rsvpedEvents else "Not RSVP'ed"}}</td>
+           </tr>
        {% endfor %}
      {% else %}
        <h2><p class="text-dark" align="center">Choose interests below to be notified about upcoming events.</p><h2>
@@ -50,79 +56,134 @@
  <br>
  <br>
  <br>
- <!-- Start Program Elegibility Table -->
+
+ <!-- Start Program Eligibility Table -->
  <div class="row">
    <table class="table">
-            <tbody id="volunteerTable">
-              <thead>
-                <tr>
-                  <th scope="col">Program</th>
-                  <th scope="col">Interested?</th>
-                  <th scope="col">Completed Training</th>
-                  {% if g.current_user.isCeltsAdmin %}
-                  <th scope="col">Elegibility</th>
-                  {% endif %}
-                </tr>
-              </thead>
-              {% for program in eligibilityTable %}
-              <tr>
-                <td id="programNameTable">{{program.program.programName}}</td>
-                <td><input class="form-check-input" type="checkbox" id="{{program.program.id}}" name="{{volunteer.username}}" {% if program.program in programsInterested %} checked {% endif %}></td>
-                <td>{% if program.completedTraining == True %}<i class="bi bi-check-lg"></i> {% else %} <i class="bi bi-x-lg"></i>{% endif %}</td>
-                {% if g.current_user.isCeltsAdmin %}
-                <td class="programBan">
-                  {% if program.isNotBanned %}<i class="bi bi-check-lg"></i><button type="button" class="ban btn btn-link" id="{{program.program.id}}" name="{{program.program.programName}}" value="Ban">Edit</button>
-                  {% else %} <i class="bi bi-x-lg"></i><button type="button" class="ban btn btn-link" id="{{program.program.id}}" name="{{program.program.programName}}" note="{{program.banNote}}" value="Unban">Edit</button>
-                  {% endif %}
-                </td>
+      <thead>
+        <tr>
+          <th scope="col">Program</th>
+          <th scope="col">Interested?</th>
+          <th scope="col">Completed Training</th>
+          {% if g.current_user.isCeltsAdmin %}
+            <th scope="col">Eligibility</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+      {% for row in eligibilityTable %}
+        {% set checked = "" %}
+        {% if row.program in programsInterested %}
+            {% set checked = "checked" %}
+        {% endif %}
+          <tr>
+            <td id="programNameTable">{{row.program.programName}}</td>
+            <td><input class="form-check-input" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>
+            <td>
+                {% if row.completedTraining %}
+                    <i class="bi bi-check-lg"></i>
+                {% else %}
+                    <i class="bi bi-x-lg"></i>
                 {% endif %}
-              </tr>
-            </tbody>
-      {% endfor %}
+            </td>
+            {% if g.current_user.isCeltsAdmin %}
+            <td class="programBan">
+              {% set imgclass = "bi-x-lg" %}
+              {% set label = "Unban" %}
+              {% if row.isNotBanned %}
+                  {% set imgclass = "bi-check-lg" %}
+                  {% set label = "Ban" %}
+              {% endif %}
+              <i class="bi {{imgclass}}"></i>
+              <button type="button" class="ban btn btn-link" data-programid="{{row.program.id}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}">Edit</button>
+            </td>
+            {% endif %}
+          </tr>
+    {% endfor %}
+    </tbody>
 </table>
 </div>
-<!-- End Program Elegibility Table -->
-{{volunteer.firstName}}
+<div>
+    <small><a href="https://www.berea.edu/celts/community-service-programs/volunteer-opportunities/">For more information about CELTS opportunities, click here.</a></small>
+</div>
+<!-- End Program Eligibility Table -->
+
+<!-- Program Manager Selection -->
+{% if g.current_user.isCeltsAdmin%}
+<!-- This makes sure that the CeltsAdmins can make someone program manager or not.  -->
+  {% if volunteer.isCeltsStudentStaff%}
+      <div class="row">
+        <h2>Which programs do you want to make {{volunteer.firstName}} {{volunteer.lastName}} manager for?</h2>
+        <div>
+          {% for program in programs %}
+            {% set action = "add" %}
+            {% set checked = "" %}
+            {% if program.id in permissionPrograms %}
+                  {% set action = "remove" %}
+                  {% set checked = "checked" %}
+            {% endif %}
+                  <input  type="checkbox" id="mgr-{{ program.id }}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}','{{action}}')">
+                  <label  style="padding-right:50px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+{% elif g.current_user.isCeltsStudentStaff %}
+  <div class="row">
+    <h2>{{volunteer.firstName}} {{volunteer.lastName}} is a manager for the following programs</h2>
+    <div>
+      {% for program in programs %}
+        {% set status = '' %}
+          {% if program.id in permissionPrograms %}
+            <p  style="padding-right:50px;">{{program.programName}}</p>
+          {% else %}
+          {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+  <!-- End Program Manager Selection -->
+
+<!-- Start Background Check Table -->
 
 <div class="row">
-  <div>
-    <table class="table">
- <thead>
-   <tr>
-     <th scope="col">Description</th>
-     <th scope="col">Completed</th>
-   </tr>
- </thead>
- <tbody>
-
-   {% for entry in backgroundTypes%}
-   <tr>
-     <td>{{entry.description}}</td>
-     {%if g.current_user.isCeltsAdmin%}
-       <td>
-         <select class="backgroundCheck" id="{{entry.id}}" volunteer="{{volunteer.username}}" >
-           <option value=1>Yes</option>
-           <option value=0 {{"selected" if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False}}>No</option>
-         </select>
-       </td>
-     {% else %}
-       {% if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False%}
-          <td>No</td>
-       {% else%}
-           <td>Yes</td>
-       {% endif%}
-      {% endif %}
-   </tr>
-   {%endfor%}
- </tbody>
-</table>
+  <h2>Background Check</h2>
+  <table class="table">
+     <thead>
+       <tr>
+         <th scope="col">Description</th>
+         <th scope="col">Completed</th>
+       </tr>
+     </thead>
+     <tbody>
+       {% for entry in backgroundTypes%}
+       <tr>
+         <td>{{entry.description}}</td>
+         {%if g.current_user.isCeltsAdmin%}
+           <td>
+             <select class="backgroundCheck" id="{{entry.id}}" data-username="{{volunteer.username}}" >
+               <option value=1>Yes</option>
+               <option value=0 {{"selected" if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False}}>No</option>
+             </select>
+           </td>
+         {% else %}
+           {% if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False%}
+              <td>No</td>
+           {% else%}
+               <td>Yes</td>
+           {% endif%}
+          {% endif %}
+       </tr>
+       {%endfor%}
+     </tbody>
+  </table>
 </div>
-</div>
-
+<!-- End Background Check Table -->
 
 <!-- Ban or Unban Modal -->
-<form onsubmit="return validate();">
   <div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
+  <form onsubmit="return validate();">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -146,15 +207,16 @@
             </div>
           </div>
         </div>
-        <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button id="banButton" type="button" class="btn btn-danger" banOrUnban="" disabled>Ban/Unban Volunteer</button>
+      </div>
 
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button id="banButton" type="button" class="btn btn-danger" data-banOrUnban="" disabled>Ban/Unban Volunteer</button>
+      </div>
 
-        </div>
-      </form>
     </div>
   </div>
+</form>
 </div>
 {% endblock %}
 <!-- End Ban or Unban Modal -->

@@ -1,5 +1,6 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for
-from datetime import datetime
+import datetime
+import json
 from app import app
 from app.models.program import Program
 from app.models.event import Event
@@ -13,33 +14,37 @@ from app.models.programBan import ProgramBan
 from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
+from app.models.note import Note
+from app.models.studentManager import StudentManager
 from app.controllers.main import main_bp
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
-from app.logic.volunteers import setUserBackgroundCheck
+from app.logic.manageSLFaculty import getCourseDict
 
 @main_bp.route('/', methods=['GET'])
-@main_bp.route('/events/<selectedTerm>', methods=['GET'])
-def events(selectedTerm=None):
+def redirectToEventsList():
+    return redirect(url_for("main.events", selectedTerm=g.current_term))
+
+@main_bp.route('/eventsList/<selectedTerm>', methods=['GET'])
+def events(selectedTerm):
     currentTerm = g.current_term
     if selectedTerm:
         currentTerm = selectedTerm
     currentTime = datetime.datetime.now()
+    listOfTerms = Term.select()
+    participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
+    rsvpedEventsID = [event.event.id for event in participantRSVP]
     term = Term.get_by_id(currentTerm)
     studentLedProgram = getStudentLedProgram(term)
     trainingProgram = getTrainingProgram(term)
     bonnerProgram = getBonnerProgram(term)
     oneTimeEvents = getOneTimeEvents(term)
-    listOfTerms = Term.select()
-    participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
-    rsvpedEventsID = [event.event.id for event in participantRSVP]
-
 
     return render_template("/events/event_list.html",
-        selectedTerm = Term.get_by_id(currentTerm),
+        selectedTerm = term,
         studentLedProgram = studentLedProgram,
         trainingProgram = trainingProgram,
         bonnerProgram = bonnerProgram,
@@ -55,42 +60,50 @@ def viewVolunteersProfile(username):
     This function displays the information of a volunteer to the user
     """
     try:
-        User.get(User.username == username)
+        volunteer = User.get(User.username == username)
     except Exception as e:
         return "User does not exist", 404
-    if (g.current_user.username == username) or g.current_user.isAdmin:
-         upcomingEvents = getUpcomingEventsForUser(username)
-         programs = Program.select()
-         interests = Interest.select().where(Interest.user == username)
-         programsInterested = [interest.program for interest in interests]
-         print("===============", username, type(username))
-         allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == username))
-         completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
-         backgroundTypes = list(BackgroundCheckType.select())
-         eligibilityTable = []
-         for program in programs:
-              notes = ProgramBan.select().where(ProgramBan.user == username,
-                                                ProgramBan.program == program,
-                                                ProgramBan.endDate > datetime.datetime.now())
 
-              noteForDict = list(notes)[-1].banNote.noteContent if list(notes) else ""
-              eligibilityTable.append({"program" : program,
-                                   "completedTraining" : (username in trainedParticipants(program)),
-                                   "isNotBanned" : isEligibleForProgram(program, username),
+    if (g.current_user == volunteer) or g.current_user.isAdmin:
+        upcomingEvents = getUpcomingEventsForUser(volunteer)
+        programs = Program.select()
+        interests = Interest.select().where(Interest.user == volunteer)
+        programsInterested = [interest.program for interest in interests]
+
+        rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == volunteer)
+        rsvpedEvents = [event.event.id for event in rsvpedEventsList]
+
+        studentManagerPrograms = list(StudentManager.select().where(StudentManager.user == volunteer))
+        permissionPrograms = [entry.program.id for entry in studentManagerPrograms]
+
+        allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == volunteer))
+        completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
+        backgroundTypes = list(BackgroundCheckType.select())
+
+        eligibilityTable = []
+        for program in programs:
+            notes = ProgramBan.select().where(ProgramBan.user == volunteer,
+                                              ProgramBan.program == program,
+                                              ProgramBan.endDate > datetime.datetime.now())
+
+            noteForDict = list(notes)[-1].banNote.noteContent if list(notes) else ""
+            eligibilityTable.append({"program" : program,
+                                   "completedTraining" : (volunteer.username in trainedParticipants(program, g.current_term)),
+                                   "isNotBanned" : isEligibleForProgram(program, volunteer),
                                    "banNote": noteForDict})
-         return render_template ("/main/volunteerProfile.html",
-            # programs = programs,
-            # interests = interests,
-            programsInterested = programsInterested,
-            upcomingEvents = upcomingEvents,
-            eligibilityTable = eligibilityTable,
-            volunteer = User.get(User.username == username),
-            backgroundTypes = backgroundTypes,
-            completedBackgroundCheck = completedBackgroundCheck
+        return render_template ("/main/volunteerProfile.html",
+                programsInterested = programsInterested,
+                upcomingEvents = upcomingEvents,
+                rsvpedEvents = rsvpedEvents,
+                permissionPrograms = permissionPrograms,
+                eligibilityTable = eligibilityTable,
+                volunteer = volunteer,
+                backgroundTypes = backgroundTypes,
+                completedBackgroundCheck = completedBackgroundCheck
             )
     abort(403)
 
-
+# ===========================Ban===============================================
 @main_bp.route('/<username>/ban/<program_id>', methods=['POST'])
 def ban(program_id, username):
     """
@@ -102,11 +115,13 @@ def ban(program_id, username):
     banNote = postData["note"] # This contains the note left about the change
     banEndDate = postData["endDate"] # Contains the date the ban will no longer be effective
     try:
-        flash("Successfully banned user", "success")
-        return banUser(program_id, username, banNote, banEndDate, g.current_user)
+        banUser(program_id, username, banNote, banEndDate, g.current_user)
+        flash("Successfully banned the volunteer", "success")
+        return ""
     except Exception as e:
         print("Error  while updating ban", e)
-        return "", 500
+        flash("Failed to ban the volunteer", "danger")
+        return "Failed to ban the volunteer", 500
 
 # ===========================Unban===============================================
 @main_bp.route('/<username>/unban/<program_id>', methods=['POST'])
@@ -119,12 +134,14 @@ def unban(program_id, username):
     postData = request.form
     unbanNote = postData["note"] # This contains the note left about the change
     try:
-        flash("Successfully Unbanned user", "success")
-        return unbanUser(program_id, username, unbanNote, g.current_user)
+        unbanUser(program_id, username, unbanNote, g.current_user)
+        flash("Successfully unbanned the volunteer", "success")
+        return "Successfully unbanned the volunteer"
 
     except Exception as e:
         print("Error  while updating Unban", e)
-        return "", 500
+        flash("Failed to unban the volunteer", "danger")
+        return "Failed to unban the volunteer", 500
 
 
 @main_bp.route('/<username>/addInterest/<program_id>', methods=['POST'])
@@ -135,33 +152,6 @@ def addInterest(program_id, username):
     username: unique value of a user to correctly identify them
     """
     try:
-        return addUserInterest(program_id, username)
-
-        profileUser = User.get(User.username == username)
-        upcomingEvents = getUpcomingEventsForUser(username)
-        programs = Program.select()
-        interests = Interest.select().where(Interest.user == profileUser)
-        interests_ids = [interest.program.id for interest in interests]
-        rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == profileUser)
-        rsvpedEvents = [event.event.id for event in rsvpedEventsList]
-
-        allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == profileUser))
-        completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
-        backgroundTypes = list(BackgroundCheckType.select())
-
-
-        return render_template('/volunteer/volunteerProfile.html',
-                               title="Volunteer Interest",
-                               user = profileUser,
-                               programs = programs,
-                               interests = interests,
-                               interests_ids = interests_ids,
-                               upcomingEvents = upcomingEvents,
-                               rsvpedEvents = rsvpedEvents,
-                               backgroundTypes = backgroundTypes,
-                               completedBackgroundCheck = completedBackgroundCheck
-                               )
-
         return addUserInterest(program_id, username)
 
     except Exception as e:
@@ -226,7 +216,7 @@ def RemoveRSVP():
     flash("Successfully unregistered for event!", "success")
     return redirect(url_for("admin.editEvent", eventId=event.id))
 
-@main_bp.route('/<username>/serviceTranscript', methods = ['GET'])
+@main_bp.route('/profile/<username>/serviceTranscript', methods = ['GET'])
 def serviceTranscript(username):
     user = User.get_or_none(User.username == username)
     if user is None:
@@ -266,3 +256,13 @@ def searchUser(query):
 @main_bp.route('/contributors',methods = ['GET'])
 def contributors():
     return render_template("/contributors.html")
+
+
+
+@main_bp.route('/manageServiceLearning', methods = ['GET'])
+def getAllCourseIntructors():
+    """
+    This function selects all the Intructors Name and the previous courses
+    """
+    courseDict = getCourseDict()
+    return render_template('/main/manageServiceLearningFaculty.html', courseInstructors = courseDict)

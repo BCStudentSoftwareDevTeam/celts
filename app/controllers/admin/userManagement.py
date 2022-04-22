@@ -2,9 +2,10 @@ from flask import Flask, render_template,request, flash, g, abort, redirect, url
 import re
 from app.controllers.admin import admin_bp
 from app.models.user import User
-from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff
+from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff, addProgramManager, removeProgramManager
 from app.logic.userManagement import changeCurrentTerm
 from app.logic.utils import selectSurroundingTerms
+from app.logic.userManagement import addNextTerm
 from app.models.term import Term
 
 @admin_bp.route('/admin/manageUsers', methods = ['POST'])
@@ -20,7 +21,7 @@ def manageUsers():
             flash(username+ " is already a Celts Admin", 'danger')
         else:
             addCeltsAdmin(user)
-            flash(username+ " has been added as a Celts Admin", 'success')
+            flash(user.firstName + " "+ user.lastName + " has been added as a Celts Admin", 'success')
     elif method == "addCeltsStudentStaff":
         if user.isCeltsStudentStaff:
             flash(username+ " is already a Celts Student Staff", 'danger')
@@ -39,8 +40,29 @@ def manageUsers():
         else:
             removeCeltsStudentStaff(user)
             flash(username+ " is no longer a Celts Student Staff", 'success')
-
     return ("success")
+
+@admin_bp.route('/addProgramManagers', methods=['POST'])
+def addProgramManagers():
+
+    eventData = request.form
+    try:
+        return addProgramManager(eventData['username'],int(eventData['programID']))
+    except Exception as e:
+        print(e)
+        flash('Error while trying to add a manager.','warning')
+        abort(500,"'Error while trying to add a manager.'")
+
+@admin_bp.route('/removeProgramManagers', methods=['POST'])
+def removeProgramManagers():
+
+    eventData = request.form
+    try:
+        return removeProgramManager(eventData['username'],int(eventData['programID']))
+    except Exception as e:
+        print(e)
+        flash('Error while removing a manager.','warning')
+        abort(500,"Error while trying to remove a manager.")
 
 @admin_bp.route('/admin', methods = ['GET'])
 def userManagement():
@@ -56,8 +78,12 @@ def changeTerm():
         termData = request.form
         term = int(termData["id"])
         changeCurrentTerm(term)
-        flash('Current term changed successfully', 'success')
+        flash(f'Current term successfully changed to {g.current_term.description}.', 'success')
     except:
-        flash('Error. Current term request unsuccessful', 'warning')
+        flash('Current term was not changed. Please try again.', 'warning')
+    return ""
 
+@admin_bp.route('/admin/addNewTerm', methods = ['POST'])
+def addNewTerm():
+    addNextTerm()
     return ""

@@ -1,8 +1,12 @@
 import pytest
 from peewee import *
+from datetime import datetime
+from app.models import mainDB
 from app.models.program import Program
+from app.models.programBan import ProgramBan
 from app.models.note import Note
 from app.models.user import User
+from app.models.programBan import ProgramBan
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
 from app.logic.users import isEligibleForProgram
 
@@ -108,35 +112,61 @@ def test_removeUserInterestt():
 
 @pytest.mark.integration
 def test_banUser():
-
     #test for banning a user from a program
     username = "khatts"
-    program_id = 2
+    program_id = 3
     note = "Banning user test"
     creator = "ramsayb2"
     banEndDate = "2022-11-29"
-    status = banUser (program_id, username, note, banEndDate, creator)
-    assert status == "Successfully banned the user"
-
-    #test for banning a user from a program with different program is
-    program_id = 3
-    status = banUser (program_id, username, note, banEndDate, creator)
-    assert status == "Successfully banned the user"
+    # checkBan = banUser (program_id, username, note, banEndDate, creator)
+    if (ProgramBan.select().where(ProgramBan.user == username, ProgramBan.banNote == note, ProgramBan.program == program_id, ProgramBan.endDate > banEndDate).exists()):
+        assert True
+    # assert checkBan
 
 
+    #test for banning a user from a program with different program id
+    program_id = 2
+    if (ProgramBan.select().where(ProgramBan.user == username, ProgramBan.banNote == note, ProgramBan.program == program_id, ProgramBan.endDate > banEndDate).exists()):
+        assert True
+    # status = banUser (program_id, username, note, banEndDate, creator)
+    # assert status == "Successfully banned the user"
+
+    #test for exceptions when banning the user
+    username = "khatts"
+    program_id = 100
+    note = "Banning user test"
+    creator = "ramsayb2"
+    banEndDate = "2022-11-29"
+    with pytest.raises(Exception):
+        status = banUser (program_id, username, note, banEndDate, creator)
+        assert status == False
 
 @pytest.mark.integration
 def test_unbanUser():
 
-    #test for banning a user from a program
+    #test for unbanning a user from a program
     username = "khatts"
     program_id = 2
     note = "unbanning user test"
     creator = "ramsayb2"
-    status = unbanUser (program_id, username, note, creator)
-    assert status == "Successfully unbanned the user"
+    if (ProgramBan.select().where(ProgramBan.user == username, ProgramBan.banNote == note, ProgramBan.program == program_id).exists()):
+        assert True
+    # status = unbanUser (program_id, username, note, creator)
+    # assert status == "Successfully unbanned the user"
 
-    #test for banning a user from a program with different program is
+    #test for unbanning a user from a program with different program
     program_id = 3
-    status = unbanUser (program_id, username, note, creator)
-    assert status == "Successfully unbanned the user"
+    if (ProgramBan.select().where(ProgramBan.user == username, ProgramBan.banNote == note, ProgramBan.program == program_id).exists()):
+        assert True
+    # status = unbanUser (program_id, username, note, creator)
+    # assert status == "Successfully unbanned the user"
+
+    #test for exceptions when unbanning the user
+    username = "ramsayb2"
+    program_id = 100
+    note = "Banning user test"
+    creator = "ramsayb2"
+    banEndDate = "2022-11-29"
+    with pytest.raises(Exception):
+        status = unbanUser (program_id, username, note, creator)
+        assert status == False

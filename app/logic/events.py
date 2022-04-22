@@ -13,6 +13,8 @@ from app.models.programBan import ProgramBan
 from app.models.interest import Interest
 from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
+from app.logic.adminLogs import createLog
+
 
 
 def getEvents(program_id=None):
@@ -29,6 +31,9 @@ def deleteEvent(eventId):
     event = Event.get_or_none(Event.id == eventId)
     if event:
         event.delete_instance(recursive = True, delete_nullable = True)
+        if event.startDate:
+            createLog(f"Deleted event: {event.name}, which had a startdate of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
+
 
 def attemptSaveEvent(eventData):
 
@@ -55,6 +60,7 @@ def saveEventToDb(newEventData):
     eventsToCreate = []
     if isNewEvent and newEventData['isRecurring']:
         eventsToCreate = calculateRecurringEventFrequency(newEventData)
+
     else:
         eventsToCreate.append({'name': f"{newEventData['name']}",
                                 'date':newEventData['startDate'],
@@ -84,6 +90,7 @@ def saveEventToDb(newEventData):
                 # TODO handle multiple programs
                 if 'program' in newEventData:
                     ProgramEvent.create(program=newEventData['program'], event=eventRecord)
+
             else:
                 eventRecord = Event.get_by_id(newEventData['id'])
                 Event.update(**eventData).where(Event.id == eventRecord).execute()
@@ -159,7 +166,7 @@ def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
 
 def getAllFacilitators():
 
-    facilitators = User.select(User).where((User.isFaculty == 1) | (User.isCeltsAdmin == 1) | (User.isCeltsStudentStaff == 1))
+    facilitators = User.select(User).where((User.isFaculty == 1) | (User.isCeltsAdmin == 1) | (User.isCeltsStudentStaff == 1)).order_by(User.username) #ordered because of the tests
     return facilitators
 
 def validateNewEventData(data):
@@ -215,7 +222,7 @@ def calculateRecurringEventFrequency(event):
         raise Exception("This event is not a recurring event")
 
     return [ {'name': f"{event['name']} Week {counter+1}",
-              'date': event['startDate'] + datetime.timedelta(days=7*counter),
+              'date': (event['startDate'] + datetime.timedelta(days=7*counter)).strftime("%m/%d/%Y"),
               "week": counter+1}
             for counter in range(0, ((event['endDate']-event['startDate']).days//7)+1)]
 
