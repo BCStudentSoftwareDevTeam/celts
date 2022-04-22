@@ -1,9 +1,12 @@
 import pytest
 from peewee import *
+from datetime import datetime
+from app.models import mainDB
 from app.models.program import Program
 from app.models.programBan import ProgramBan
 from app.models.note import Note
 from app.models.user import User
+from app.models.programBan import ProgramBan
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
 from app.logic.users import isEligibleForProgram
 
@@ -109,7 +112,6 @@ def test_removeUserInterestt():
 
 @pytest.mark.integration
 def test_banUser():
-
     #test for banning a user from a program
     username = "khatts"
     program_id = 3
@@ -138,9 +140,6 @@ def test_banUser():
     with pytest.raises(Exception):
         status = banUser (program_id, username, note, banEndDate, creator)
         assert status == False
-
-
-
 
 @pytest.mark.integration
 def test_unbanUser():

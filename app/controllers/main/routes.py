@@ -1,7 +1,6 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for
 import datetime
 import json
-
 from app import app
 from app.models.program import Program
 from app.models.event import Event
@@ -15,8 +14,8 @@ from app.models.programBan import ProgramBan
 from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
+from app.models.note import Note
 from app.models.studentManager import StudentManager
-
 from app.controllers.main import main_bp
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
@@ -24,6 +23,7 @@ from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
 from app.logic.manageSLFaculty import getCourseDict
+
 @main_bp.route('/', methods=['GET'])
 def redirectToEventsList():
     return redirect(url_for("main.events", selectedTerm=g.current_term))
@@ -88,7 +88,7 @@ def viewVolunteersProfile(username):
 
             noteForDict = list(notes)[-1].banNote.noteContent if list(notes) else ""
             eligibilityTable.append({"program" : program,
-                                   "completedTraining" : (volunteer in trainedParticipants(program)),
+                                   "completedTraining" : (volunteer.username in trainedParticipants(program, g.current_term)),
                                    "isNotBanned" : isEligibleForProgram(program, volunteer),
                                    "banNote": noteForDict})
         return render_template ("/main/volunteerProfile.html",
