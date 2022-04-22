@@ -3,22 +3,22 @@ import pytest
 from app.models import mainDB
 from app.models.user import User
 from app.models.term import Term
-from app.logic.utils import deep_update, selectSurroundingTerms
+from app.logic.utils import deep_update, selectSurroundingTerms, getStartofCurrentAcademicYear
 from app.logic.userManagement import addCeltsAdmin, removeCeltsAdmin,addCeltsStudentStaff, removeCeltsStudentStaff, changeCurrentTerm, addNextTerm
 
 @pytest.mark.integration
 def test_selectSurroundingTerms():
     listOfTerms = selectSurroundingTerms(Term.get_by_id(3))
-    assert [1,2,3,4,5] == [t.id for t in listOfTerms]
+    assert [1,2,3,4,5,6] == [t.id for t in listOfTerms]
 
     listOfTerms = selectSurroundingTerms(Term.get_by_id(3), prevTerms=0)
-    assert [3,4,5] == [t.id for t in listOfTerms]
+    assert [3,4,5,6] == [t.id for t in listOfTerms]
 
     listOfTerms = selectSurroundingTerms(Term.get_by_id(3), prevTerms=1)
-    assert [2,3,4,5] == [t.id for t in listOfTerms]
+    assert [2,3,4,5,6] == [t.id for t in listOfTerms]
 
     listOfTerms = selectSurroundingTerms(Term.get_by_id(3), prevTerms=-1)
-    assert [4,5] == [t.id for t in listOfTerms]
+    assert [4,5,6] == [t.id for t in listOfTerms]
 
 @pytest.mark.unit
 def test_deepUpdate_empty():
@@ -164,5 +164,32 @@ def test_addNextTerm():
         assert newTerm.academicYear == "2021-2022"
         assert newTerm.isSummer
         assert not newTerm.isCurrentTerm
+
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_getStartofCurrentAcademicYear():
+    with mainDB.atomic() as transaction:
+        # Case1: current term is Fall 2020
+        currentTerm = Term.get_by_id(1)
+        fallTerm = getStartofCurrentAcademicYear(currentTerm)
+        assert fallTerm.year == 2020
+        assert fallTerm.description == "Fall 2020"
+        assert fallTerm.academicYear == "2020-2021"
+
+        # Case2: current term is Spring 2021
+        currentTerm = Term.get_by_id(2)
+        fallTerm = getStartofCurrentAcademicYear(currentTerm)
+        assert fallTerm.year == 2020
+        assert fallTerm.description == "Fall 2020"
+        assert fallTerm.academicYear == "2020-2021"
+
+        # Case3: current term is Summer 2021
+        currentTerm = Term.get_by_id(4)
+        fallTerm = getStartofCurrentAcademicYear(currentTerm)
+
+        assert fallTerm.year == 2020
+        assert fallTerm.description == "Fall 2020"
+        assert fallTerm.academicYear == "2020-2021"
 
         transaction.rollback()
