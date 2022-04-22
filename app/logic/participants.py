@@ -1,27 +1,40 @@
 from peewee import fn
 from app.models.user import User
 from app.models.event import Event
+from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.models.eventParticipant import EventParticipant
 from app.logic.users import isEligibleForProgram
 from app.logic.volunteers import getEventLengthInHours
+from app.logic.utils import getStartofCurrentAcademicYear
 
-def trainedParticipants(programID):
+def trainedParticipants(programID, currentTerm):
     """
     This function tracks the users who have attended every Prerequisite
     event and adds them to a list that will not flag them when tracking hours.
     """
-    trainingEvents = list(Event.select()
-                               .join(ProgramEvent)
-                               .where(ProgramEvent.program == programID,Event.isTraining==True))
+
+    # Reset program eligibility each AY when event is All Celts Training or All Volunteer Training
+    allCeltsAndAllVolunteerTrainings = (Event.select(Event.id).join(ProgramEvent).where(
+        ProgramEvent.program==programID,
+        Event.term==getStartofCurrentAcademicYear(currentTerm),
+        (Event.name == "All Celts Training" | Event.name == "All Volunteer Training")))
+
+    # Reset program eligibility each term for all other trainings
+    otherTrainingEvents = (Event.select(Event.id).join(ProgramEvent).where(
+        ProgramEvent.program==programID,
+        Event.isTraining==True,
+        Event.term==currentTerm))
+
+    allTraningEvents = set(allCeltsAndAllVolunteerTrainings + otherTrainingEvents)
 
     eventTrainingDataList = [participant.user.username for participant in (
-        EventParticipant.select().where(EventParticipant.event.in_(trainingEvents))
+        EventParticipant.select().where(EventParticipant.event.in_(allTraningEvents))
         )]
 
-    attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(trainingEvents), eventTrainingDataList)))
+    attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(allTraningEvents), eventTrainingDataList)))
     return attendedTraining
 
 def sendUserData(bnumber, eventId, programid):
