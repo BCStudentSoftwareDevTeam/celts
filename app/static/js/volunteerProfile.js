@@ -33,12 +33,6 @@ $(document).ready(function(){
     }).attr('readonly','readonly');
   });
 
-// Disabling the textbox until a user insert a date.
-  $("input").change(function(){
-       $('textarea').removeAttr('disabled');
-       $('#banNoteDiv').removeAttr('disabled');
-
-    });
 
 
   $(".ban").click(function() {
@@ -50,7 +44,7 @@ $(document).ready(function(){
     var banNote = $("#banNote")
 
     banButton.text($(this).val() + " Volunteer");
-    banButton.data("programID", $(this).data("id"))
+    banButton.data("programID", $(this).data("programid"))
     banButton.data("username", $(".form-check-input").data("username"))
     banButton.data("banOrUnban", $(this).val());
     banEndDateDiv.show();
