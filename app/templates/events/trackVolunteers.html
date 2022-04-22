@@ -110,8 +110,8 @@
         </td>
 
         <td>
-              {% set ac = accordionCount.value| string() %}
-              {% set accodionFlushNumber = "accordionFlushNumber"+ac %}
+              {% set accodionFlushNumber = accordionCount.value| string() %}
+              {% set accodionFlushNumber = "accordionFlushNumber"+accodionFlushNumber %}
               {% set flushCollapseNumber = "flush-collapseOne"+ac %}
               {% set accordionCount.value = accordionCount.value + 1 %}
               <div class="accordion accordion-flush" id={{accodionFlushNumber}}>
@@ -125,17 +125,17 @@
                   <div class="accordion-body">
                     <ul>
                       {% for outsideParticipant in outsideParticipants%}
-                      {% set status = '' %}
-                      {% if participant.user in matches.keys() %}
-                      {% if outsideParticipant in matches[participant.user] %}
-                      {% set status = 'checked' %}
-                      {% endif %}
-                      {% endif %}
-                      <li>
-                        <input class="form-check-input" type="checkbox" name="{{participant.user}}" id="{{ outsideParticipant.email }}" {{status}}>
-                        {% set name = outsideParticipant.firstName + outsideParticipant.lastName%}
-                        <label class="form-check-label"  for="{{ outsideParticipant.email }}">{{name}}</label>
-                      </li>
+                        {% set status = '' %}
+                        {% if participant.user in matches.keys() %}
+                          {% if outsideParticipant in matches[participant.user] %}
+                            {% set status = 'checked' %}
+                          {% endif %}
+                        {% endif %}
+                        <li>
+                          <input class="form-check-input" type="checkbox" name="{{participant.user}}" id="{{ outsideParticipant.email }}" {{status}}>
+                          {% set name = outsideParticipant.firstName + outsideParticipant.lastName%}
+                          <label class="form-check-label"  for="{{ outsideParticipant.email }}">{{name}}</label>
+                        </li>
                       {% endfor %}
                     </ul>
                   </div>
