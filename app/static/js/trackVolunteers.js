@@ -94,7 +94,7 @@ $("#addVolunteerButton").on("click",function(){
 
 $("#addOutsideParticipantButton").on("click",function(){
     $("#addVolunteerInput").on("input", function() {
-      searchUser("addVolunteerInput", callback, "outsideParticipant","addVolunteerModal");
+      searchUser("addVolunteerInput", callback, false,"outsideParticipant","addVolunteerModal");
     });
 
   $("#addVolunteerModalText").text("Add Outside Participant")

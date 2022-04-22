@@ -1,4 +1,4 @@
-export default function searchUser(inputId, callback,group, parentElementId=null, columnRequested=null){
+export default function searchUser(inputId, callback,clear=false,group, parentElementId=null, columnRequested=null){
   var query = $(`#${inputId}`).val();
   if (group != "outsideParticipant"){
     group = "default"
@@ -45,8 +45,10 @@ export default function searchUser(inputId, callback,group, parentElementId=null
        var user = ui.item.value
        $(`#${inputId}`).val(ui.item.value);
        callback();
+       if(clear){
        $(`#${inputId}`).val("");
        return false;
+     }
      }
   });
 };

@@ -36,7 +36,7 @@ def trackVolunteersPage(eventID):
     if not program:
         return "TODO: What do we do for no programs or multiple programs?"
 
-    trainedParticipantsList = trainedParticipants(program)
+    trainedParticipantsList = trainedParticipants(program, g.current_term)
     eventParticipants = getEventParticipants(event)
     outsideParticipants = getOutsideParticipants(event)
     if not g.current_user.isCeltsAdmin:
