@@ -132,7 +132,7 @@ def matchParticipant():
 
     vol = User.get_by_id(volunteer)
     update = MatchParticipants.get_or_none(MatchParticipants.outsideParticipant==outsideParticipant,MatchParticipants.event==int(eventId),MatchParticipants.volunteer==None)
-    if update != None:
+    if update:
         update.volunteer = volunteer
         update.save()
         flash("Participant succesfully matched to volunteer", "success")
