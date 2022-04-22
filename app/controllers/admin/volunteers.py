@@ -130,7 +130,6 @@ def matchParticipant():
     outsideParticipant = matchData['outsideParticipant']
     eventId = matchData['eventId'][0]
 
-    vol = User.get_by_id(volunteer)
     update = MatchParticipants.get_or_none(MatchParticipants.outsideParticipant==outsideParticipant,MatchParticipants.event==int(eventId),MatchParticipants.volunteer==None)
     if update:
         update.volunteer = volunteer
