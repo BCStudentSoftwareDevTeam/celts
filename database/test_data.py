@@ -587,7 +587,7 @@ courseInstructorRecords = [
     {
         "id": 3,
         "course": 2,
-        "user": "neillz"
+        "user": "heggens"
     },
 
 ]
