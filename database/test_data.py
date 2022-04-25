@@ -272,8 +272,8 @@ events = [
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Seabury Center",
-        "startDate": datetime.strptime("2021 10 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
+        "startDate": datetime.strptime("2022 5 12","%Y %m %d"),
+        "endDate": datetime.strptime("2022 5 13","%Y %m %d")
     },
     {
         "id": 2,
@@ -687,11 +687,6 @@ eventParticipants = [
         "user": "khatts",
         "event": 3,
         "hoursEarned": 3,
-    },
-    {
-        "user" : "ayisie",
-        "event" : 1,
-        "hoursEarned" : None,
     },
     {
         "user": "partont",
