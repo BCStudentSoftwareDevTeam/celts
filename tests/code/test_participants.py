@@ -5,7 +5,9 @@ from peewee import IntegrityError, DoesNotExist
 from app.models import mainDB
 from app.models.user import User
 from app.models.event import Event
+from app.models.term import Term
 from app.models.eventParticipant import EventParticipant
+from app.models.programEvent import ProgramEvent
 from app.logic.volunteers import addVolunteerToEventRsvp
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours, updateEventParticipants
@@ -102,15 +104,60 @@ def test_updateEventParticipants():
 
 @pytest.mark.integration
 def test_trainedParticipants():
-    attendedPreq = trainedParticipants(1)
-    assert "neillz" and "khatts" in attendedPreq
+    currentTerm = Term.get(Term.isCurrentTerm==1)
+    # Case1: test for an event in the current term
+    attendedPreq = trainedParticipants(3, currentTerm)
+    assert attendedPreq == ["khatts"]
 
-    #test for program with no prereq
-    attendedPreq = trainedParticipants(4)
+    # Case2: test for an event in a past term
+    attendedPreq = trainedParticipants(1, currentTerm)
     assert attendedPreq == []
 
-    #test for program that doesn't exist
-    attendedPreq = trainedParticipants(500)
+    # Case3: test for when user changes current term
+    currentTerm = Term.get_by_id(2)
+    attendedPreq = trainedParticipants(1, currentTerm)
+    assert attendedPreq == ['neillz', 'khatts', 'ayisie']
+
+    # Case4: test for program with no prerequisite
+    attendedPreq = trainedParticipants(4, currentTerm)
+    assert attendedPreq == []
+
+    # Case5: test for program that doesn't exist
+    attendedPreq = trainedParticipants(500, currentTerm)
+    assert attendedPreq == []
+
+    # Case6: Test that ALL Celts training and All volunteer training is valid for one AY
+    # AY is 2020-2021
+    currentTerm = Term.get_by_id(1) # Fall 2020
+    attendedPreq = trainedParticipants(3, currentTerm)
+    assert attendedPreq == ["khatts"]
+
+    currentTerm = Term.get_by_id(2) # Spring A 2021
+    attendedPreq = trainedParticipants(3, currentTerm)
+    assert attendedPreq == ["khatts"]
+
+    currentTerm = Term.get_by_id(3) # Spring B 2021
+    attendedPreq = trainedParticipants(3, currentTerm)
+    assert attendedPreq == ["khatts"]
+
+    currentTerm = Term.get_by_id(4) # Summer 2021
+    attendedPreq = trainedParticipants(3, currentTerm)
+    assert attendedPreq == ["khatts"]
+
+    with mainDB.atomic() as transaction:
+        ProgramEvent.create(program = 3, event=14) # require AVT
+        attendedPreq = trainedParticipants(3, currentTerm)
+        assert attendedPreq == []   # no user has completed both AVT and ACT for program 3
+
+        EventParticipant.create(user="khatts", event=14)
+        attendedPreq = trainedParticipants(3, currentTerm)
+        assert attendedPreq == ["khatts"]   # "khatts" has completed both AVT and ACT for program 3
+
+        transaction.rollback()
+
+    # Neither AVT nor ACT is required
+    currentTerm = Term.get_by_id(6)
+    attendedPreq = trainedParticipants(4, currentTerm)
     assert attendedPreq == []
 
 @pytest.mark.integration
@@ -154,8 +201,8 @@ def test_userRsvpForEvent():
     (EventParticipant.delete().where(EventParticipant.user == 'agliullovak', EventParticipant.event == 11)).execute()
 
     # the user is not eligible to register (reason: user is banned)
-    volunteer = userRsvpForEvent("ayisie", 1)
-    assert volunteer == False
+    volunteer = userRsvpForEvent("khatts", 3)
+    assert volunteer != True
 
     # User does not exist
     with pytest.raises(DoesNotExist):
@@ -212,32 +259,33 @@ def test_unattendedRequiredEvents():
 def test_sendUserData():
     # Tests the Kiosk
     # user is banned
-    signedInUser, userStatus = sendUserData("B00739736", 2, 1)
-    assert userStatus == "banned"
-    with pytest.raises(DoesNotExist):
-        EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
+    with mainDB.atomic() as transaction:
+        signedInUser, userStatus = sendUserData("B00739736", 2, 1)
+        assert userStatus == "banned"
 
-    # user is already signed in
-    signedInUser, userStatus = sendUserData("B00751360", 2, 1)
-    assert userStatus == "already in"
 
-    # user is eligible but the user is not in EventParticipant and EventRsvp
-    signedInUser = User.get(User.bnumber=="B00759117")
-    with pytest.raises(DoesNotExist):
-        EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
-        EventRsvp.get(EventRsvp.user==signedInUser, EventRsvp.event==2)
+        # user is already signed in
+        signedInUser, userStatus = sendUserData("B00751360", 2, 1)
+        assert userStatus == "already in"
 
-        signedInUser, userStatus = sendUserData("B00759117", 2, 1)
-        assert userStatus == "success"
+        # user is eligible but the user is not in EventParticipant and EventRsvp
+        signedInUser = User.get(User.bnumber=="B00759117")
+        with pytest.raises(DoesNotExist):
+            EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
+            EventRsvp.get(EventRsvp.user==signedInUser, EventRsvp.event==2)
 
-        participant = EventParticipant.select().where(EventParticipant.event==2, EventParticipant.user==signedInUser)
-        assert "agliullovak" in participant
+            signedInUser, userStatus = sendUserData("B00759117", 2, 1)
+            assert userStatus == "success"
 
-        userRsvp = EventRsvp.select().where(EventRsvp.event==2, EventRsvp.user==signedInUser)
-        assert "agliullovak" in userRsvp
+            participant = EventParticipant.select().where(EventParticipant.event==2, EventParticipant.user==signedInUser)
+            assert "agliullovak" in participant
 
-        EventParticipant.delete(EventParticipant.user==signedInUser, EventParticipant.event==2).execute()
-        EventRsvp.delete(EventRsvp.user==signedInUser, EventRsvp.event==2).execute()
+            userRsvp = EventRsvp.select().where(EventRsvp.event==2, EventRsvp.user==signedInUser)
+            assert "agliullovak" in userRsvp
+
+            EventParticipant.delete(EventParticipant.user==signedInUser, EventParticipant.event==2).execute()
+            EventRsvp.delete(EventRsvp.user==signedInUser, EventRsvp.event==2).execute()
+        mainDB.rollback()
 
 @pytest.mark.integration
 def test_getEventParticipants():
