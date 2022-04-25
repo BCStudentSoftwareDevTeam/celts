@@ -176,7 +176,7 @@ terms = [
         "year": 2021,
         "academicYear": "2020-2021",
         "isSummer": True,
-        "isCurrentTerm": True
+        "isCurrentTerm": False
     },
     {
         "id": 5,
@@ -192,7 +192,7 @@ terms = [
         "year": 2022,
         "academicYear": "2021-2022",
         "isSummer": False,
-        "isCurrentTerm": False
+        "isCurrentTerm": True
     },
 
 ]
@@ -265,7 +265,7 @@ Program.insert_many(programs).on_conflict_replace().execute()
 events = [
     {
         "id": 1,
-        "term": 2,
+        "term": 6,
         "name": "Empty Bowls Spring Event 1",
         "description": "Empty Bowls Spring 2021",
         "isTraining": True,
@@ -277,7 +277,7 @@ events = [
     },
     {
         "id": 2,
-        "term": 2,
+        "term": 6,
         "name": "Hunger Hurts",
         "description": "Will donate Food to Community",
         "isTraining": False,
@@ -349,7 +349,7 @@ events = [
     },
     {
         "id": 8,
-        "term": 3,
+        "term": 6,
         "name": "Berea Buddies Second Meeting",
         "description": "Play game to bond with buddy",
         "isTraining": True,
@@ -361,7 +361,7 @@ events = [
     },
     {
         "id": 9,
-        "term": 3,
+        "term": 6,
         "name": "Field Trip with Buddies",
         "description": "A small trip to Berea Farm",
         "isTraining": True,
