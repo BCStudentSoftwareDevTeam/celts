@@ -13,6 +13,7 @@ from app.models.programBan import ProgramBan
 from app.models.interest import Interest
 from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
+from app.logic.adminLogs import createLog
 
 
 def getEvents(program_id=None):
