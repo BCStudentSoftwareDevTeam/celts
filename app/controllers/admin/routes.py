@@ -210,7 +210,9 @@ def courseManagement(term = None):
                             term = term)
 @admin_bp.route('/adminLogs', methods = ['GET', 'POST'])
 def adminLogs():
-    allLogs = AdminLogs.select().order_by(AdminLogs.createdOn.desc())
-
-    return render_template("/admin/adminLogs.html",
-                            allLogs = allLogs)
+    if g.current_user.isCeltsAdmin:
+        allLogs = AdminLogs.select().order_by(AdminLogs.createdOn.desc())
+        return render_template("/admin/adminLogs.html",
+                                allLogs = allLogs)
+    else:
+        abort(403)

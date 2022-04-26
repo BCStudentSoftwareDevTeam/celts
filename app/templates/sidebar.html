@@ -40,26 +40,35 @@
         </a>
       </li>
       <li>
-        <a href="/admin"
-           class="nav-link text-white {{'active' if request.path =='/admin'}}"
-           {{"aria-current='page'" if request.path =='/admin'}}>
-          Admin Management
-        </a>
-      </li>
-      <li>
-        <a href="/manageServiceLearning" class="nav-link text-white {{ 'active' if request.path =='/manageServiceLearning' }}">
-          Service Learning
+      {% if g.current_user.isCeltsAdmin %}
+        <nav class="navbar navbar-dark bg-dark">
+          <div class="container-fluid">
+            <button class="navbar-toggler text-white border-0 fs-6 ps-3 dropdown-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+              Admin
+            </button>
+          </div>
+        </nav>
+        <div class="{{ 'collapse-show' if request.path =='/adminLogs' or request.path =='/manageServiceLearning' or request.path =='/admin' or 'serviceLearning' in request.path else 'collapse'}}" id="navbarToggleExternalContent">
+          <div class="bg-dark ps-3">
+            <a href="/adminLogs" class="nav-link text-white {{ 'active' if request.path =='/adminLogs' }}">
+              Activity Logs
+            </a>
+            <a href="/admin"
+               class="nav-link text-white {{'active' if request.path =='/admin'}}"
+               {{"aria-current='page'" if request.path =='/admin'}}>
+              Settings
+            </a>
+            <a href="/manageServiceLearning" class="nav-link text-white {{ 'active' if request.path =='/manageServiceLearning' }}">
+              Service Learning
 
-        <a href="/serviceLearning/courseManagement"
-           class="nav-link text-white {{'active' if 'serviceLearning' in request.path }}"
-           {{"aria-current='page'"  if 'serviceLearning' in request.path}}>
-          Course Proposal Management
-        </a>
-      </li>
-      <li>
-        <a href="/adminLogs" class="nav-link text-white {{ 'active' if request.path =='/adminLogs' }}">
-          Admin Logs
-        </a>
+            <a href="/serviceLearning/courseManagement"
+               class="nav-link text-white {{'active' if 'serviceLearning' in request.path}}"
+               {{"aria-current='page'"  if 'serviceLearning' in request.path}}>
+              Course Proposals
+            </a>
+          </div>
+        </div>
+        {% endif %}
       </li>
 
     {% endif %}
