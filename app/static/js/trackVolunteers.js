@@ -44,7 +44,7 @@ function callback() {
 
 $("#selectVolunteerButton").prop('disabled', true)
 $("#addVolunteerInput").on("input", function() {
-  searchUser("addVolunteerInput", callback, "addVolunteerModal");
+  searchUser("addVolunteerInput", callback, false, "addVolunteerModal");
 });
 
 $(".removeVolunteer").on("click", function() {

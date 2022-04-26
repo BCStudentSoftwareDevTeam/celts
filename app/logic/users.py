@@ -1,5 +1,7 @@
 from app.models.programBan import ProgramBan
 from app.models.interest import Interest
+from app.models.note import Note
+import datetime
 
 def isEligibleForProgram(program, user):
     """
@@ -10,28 +12,72 @@ def isEligibleForProgram(program, user):
     :param user: accepts a User object or userid
     :return: True if the user is not banned and meets the requirements, and False otherwise
     """
-
-    if (ProgramBan.select().where(ProgramBan.user == user, ProgramBan.program == program).exists()):
+    now = datetime.datetime.now()
+    if (ProgramBan.select().where(ProgramBan.user == user, ProgramBan.program == program, ProgramBan.endDate > now).exists()):
         return False
 
     return True
 
-def addRemoveInterest(rule, program_id, currentUser):
+def addUserInterest(program_id, username):
+    """
+    This function is used to add an interest to .
+    Parameters:
+    program_id: id of the program the user is interested in
+    username: username of the user showing interest
+    """
+    Interest.get_or_create(program = program_id, user = username)
+    return True
+
+def removeUserInterest(program_id, username):
     """
     This function is used to add or remove interest from the interest table.
     Parameters:
-    rule: Gets the url from the ajax call, specifies to add or remove interest
     program_id: id of the program the user is interested in
+    username: username of the user showing disinterest
+
     """
+    interestToDelete = Interest.get(Interest.program == program_id, Interest.user == username)
+    if interestToDelete:
+        interestToDelete.delete_instance()
+    return True
 
-    if 'addInterest' in str(rule):
-        Interest.get_or_create(program = program_id, user = currentUser)
-        return "Successfully added interest"
 
-    elif 'deleteInterest' in str(rule):
-        try:
-            deleted_interest = Interest.get(Interest.program == program_id, Interest.user == currentUser)
-            deleted_interest.delete_instance()
-            return "Successfully removed interest"
-        except:
-            return "This interest does not exist"
+def banUser(program_id, username, note, banEndDate, creator):
+    """
+    This function creates an entry in the note table and programBan table in order
+    to ban the selected user.
+    Parameters:
+    program_id: primary id of the program the user has been banned from
+    username: username of the user to be banned
+    note: note left about the ban, expected to be a reason why the change is needed
+    banEndDate: date when the ban will end
+    creator: the admin or person with authority who created the ban
+    """
+    noteForDb = Note.create(createdBy = creator,
+                             createdOn = datetime.datetime.now(),
+                             noteContent = note,
+                             isPrivate = 0)
+                             
+    ProgramBan.create(program = program_id,
+                      user = username,
+                      endDate = banEndDate,
+                      banNote = noteForDb)
+
+def unbanUser(program_id, username, note, creator):
+    """
+    This function creates an entry in the note table and programBan table in order
+    to unban the selected user.
+    Parameters:
+    program_id: primary id of the program the user has been unbanned from
+    username: username of the user to be unbanned
+    note: note left about the ban, expected to be a reason why the change is needed
+    creator: the admin or person with authority who removed the ban
+    """
+    noteForDb = Note.create(createdBy = creator,
+                             createdOn = datetime.datetime.now(),
+                             noteContent = note,
+                             isPrivate = 0)
+    ProgramBan.update(endDate = datetime.datetime.now(),
+                      unbanNote = noteForDb).where(ProgramBan.program == program_id,
+                                                   ProgramBan.user == username,
+                                                   ProgramBan.endDate >  datetime.datetime.now()).execute()

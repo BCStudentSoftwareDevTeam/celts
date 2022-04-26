@@ -14,6 +14,7 @@ from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 
 
+
 @admin_bp.route('/searchVolunteers/<query>', methods = ['GET'])
 def getVolunteers(query):
     '''Accepts user input and queries the database returning results that matches user search'''
@@ -34,7 +35,7 @@ def trackVolunteersPage(eventID):
     if not program:
         return "TODO: What do we do for no programs or multiple programs?"
 
-    trainedParticipantsList = trainedParticipants(program)
+    trainedParticipantsList = trainedParticipants(program, g.current_term)
     eventParticipants = getEventParticipants(event)
 
     if not g.current_user.isCeltsAdmin:
@@ -107,7 +108,4 @@ def updateBackgroundCheck():
         checkPassed = int(eventData['checkPassed'])
         type = eventData['bgType']
         setUserBackgroundCheck(user,type, checkPassed)
-        return ""
-    else:
-        abort(404)
-        return ""
+        return " "

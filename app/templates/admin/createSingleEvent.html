@@ -135,34 +135,6 @@
           </div>
         </div>
         <!-- Start and End Datepickers -->
-<<<<<<< HEAD
-        <div class="flex-container">
-          <div>
-            <div  class="form-group" >
-              <div class="d-inline-flex w-50 mb-2">
-                <label class="form-label me-2" for="startDatePicker" id="startDatePickerLabel" ><span><strong>Start Date</strong></span></label><br>
-              {% if  isEditable  %}
-                <div class='input-group date' id="startDate">
-                  <input type='text' class="form-control datePicker readonly" value="{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" name="startDate" placeholder="Start Date" onchange=updateDate(this) id=startDatePicker required>
-
-                  <div class="input-group-text" id="calendarIconStart">
-                    <span><i class="bi bi-calendar-plus-fill"></i></span>
-                  </div>
-                </div>
-              </div>
-              {% else %}
-                  <p>{{eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}</p>
-              {% endif %}
-            </div>
-            <div class="d-inline-flex d-none w-50" id ="endDateStyle">
-              <!--datePicker for End date-->
-              <label class="form-label" for="endDatePicker"><strong>End Date</strong></label>
-              <div class='input-group date ms-2' id="endDate">
-                <input type='text' class="form-control datePicker readonly" id='endDatePicker' value="{{eventData.endDate.strftime('%m-%d-%Y') if eventData.endDate and eventData.endDate.strftime else eventData.endDate}}" name="endDate" placeholder="End date" onchange="updateDate(this)" {{"readonly" if not isEditable}}>
-                <div class="input-group-text" id="calendarIconEnd">
-                  <span><i class="bi bi-calendar-plus-fill"></i></span>
-                </div>
-=======
         <div class="row col-md-12">
           <div class="form-group col-md-6">
             <label class="form-label me-2" for="startDatePicker"><strong>Start Date:</strong></label>
@@ -184,7 +156,6 @@
               <input type='text' class="form-control datePicker readonly" id='endDatePicker' value="{{eventData.endDate.strftime('%m-%d-%Y') if eventData.endDate and eventData.endDate.strftime else eventData.endDate}}" name="endDate" placeholder="Pick an end date" onchange="updateDate(this)" {{"readonly" if not isEditable}}>
               <div class="input-group-text" id="calendarIconEnd">
                 <span><i class="bi bi-calendar-plus-fill"></i></span>
->>>>>>> 02d2bf676b0d350ff2f96996d4aae5a50c2af3a1
               </div>
             </div>
           </div>

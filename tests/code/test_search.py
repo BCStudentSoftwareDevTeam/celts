@@ -28,37 +28,39 @@ def test_searchStudents():
 
     #tests that the search works
 
-    query = 'z'
-    searchResults = searchUsers(query, False)
-    assert searchResults['Zach Neill (neillz)'] == 'Zach Neill (neillz)'
+    query = 'za'
+    test1 = User.select().where(User.firstName == query)
+    searchResults = searchUsers(query)
+    assert searchResults['neillz'] == test1
 
 
     #test for last name
     query = 'khatt'
-    searchResults = searchUsers(query, False)
-    assert searchResults['Sreynit Khatt (khatts)'] == 'Sreynit Khatt (khatts)'
+    test2 = User.select().where(User.firstName == query)
+    searchResults = searchUsers(query)
+    assert searchResults['khatts'] == test2
 
     #test with non existing username
     query = 'abc'
-    searchResults = searchUsers(query, False)
+    searchResults = searchUsers(query)
     assert len(searchResults) == 0
 
     query = 'its easy as'
-    searchResults = searchUsers(query, False)
+    searchResults = searchUsers(query)
     assert len(searchResults) == 0
 
     query = '123'
-    searchResults = searchUsers(query, False)
+    searchResults = searchUsers(query)
     assert len(searchResults) == 0
 
     #test with multiple users matching query
     with mainDB.atomic() as transaction:
         User.get_or_create(username = 'sawconc', firstName = 'Candace', lastName = 'Sawcon', bnumber = '021556782', isStudent = True)
         query = 'sa'
-        searchResults = searchUsers(query, False)
-        searchPhoneNumber = searchUsers(query, 'true')
+        searchResults = searchUsers(query)
+        test3 = User.select().where(User.firstName == query)
         assert len(searchResults) == 2
-        assert searchResults['Sandesh Lamichhane (lamichhanes2)'] == 'Sandesh Lamichhane (lamichhanes2)'
-        assert searchResults['Candace Sawcon (sawconc)'] == 'Candace Sawcon (sawconc)'
-        assert searchPhoneNumber['lamichhanes2 phoneNumber'] == '555-555-5555'
+        assert searchResults['lamichhanes2'] == test3
+        assert 'Sawcon' in searchResults["sawconc"].values()
+        assert '555-555-5555' in searchResults["lamichhanes2"].values()
         transaction.rollback()

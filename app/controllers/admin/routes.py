@@ -4,7 +4,6 @@ from playhouse.shortcuts import model_to_dict, dict_to_model
 import json
 from datetime import datetime
 from dateutil import parser
-
 from app import app
 from app.models.program import Program
 from app.models.event import Event
@@ -17,8 +16,7 @@ from app.models.eventTemplate import EventTemplate
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
-from app.models.studentManager import StudentManager
-from app.logic.participants import trainedParticipants
+from app.models.adminLogs import AdminLogs
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
@@ -86,6 +84,7 @@ def createEvent(templateid, programid=None):
     if program:
         # TODO need to handle the multiple programs case
         eventData["program"] = program
+
     # Try to save the form
     if request.method == "POST":
         try:
@@ -155,7 +154,6 @@ def editEvent(eventId):
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
     try:
-        term = Event.get(Event.id == eventId).term
         deleteEvent(eventId)
         flash("Event successfully deleted.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
@@ -169,12 +167,13 @@ def addRecurringEvents():
     recurringEvents = calculateRecurringEventFrequency(preprocessEventData(request.form.copy()))
     return json.dumps(recurringEvents, default=str)
 
+
 @admin_bp.route('/volunteerProfile', methods=['POST'])
 def volunteerProfile():
     volunteerName= request.form.copy()
     username = volunteerName['searchStudentsInput'].strip("()")
     user=username.split('(')[-1]
-    return redirect(url_for('main.profilePage', username=user))
+    return redirect(url_for('main.viewVolunteersProfile', username=user))
 
 @admin_bp.route('/search_student', methods=['GET'])
 def studentSearchPage():
@@ -209,3 +208,9 @@ def courseManagement(term = None):
                             approvedCourses = approved,
                             terms = terms,
                             term = term)
+@admin_bp.route('/adminLogs', methods = ['GET', 'POST'])
+def adminLogs():
+    allLogs = AdminLogs.select().order_by(AdminLogs.createdOn.desc())
+
+    return render_template("/admin/adminLogs.html",
+                            allLogs = allLogs)
