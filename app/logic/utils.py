@@ -1,11 +1,12 @@
 import collections
+from peewee import DoesNotExist
 from app.models.term import Term
 
 def selectSurroundingTerms(currentTerm, prevTerms=2):
     """
-    Returns a list of term objects around the provided Term object for the current term. 
-    Chooses the previous terms according to the prevTerms parameter (defaulting to 2), 
-    and then chooses terms for the next two years after the current term. 
+    Returns a list of term objects around the provided Term object for the current term.
+    Chooses the previous terms according to the prevTerms parameter (defaulting to 2),
+    and then chooses terms for the next two years after the current term.
 
     To get only the current and future terms, pass prevTerms=0.
     """
@@ -35,3 +36,9 @@ def deep_update(d, u):
             d = {key: u[key]}
 
     return d
+
+def getStartofCurrentAcademicYear(currentTerm):
+    if ("Summer" in currentTerm.description) or ("Spring" in currentTerm.description):
+        fallTerm = Term.select().where(Term.year==currentTerm.year-1, Term.description == f"Fall {currentTerm.year-1}").get()
+        return fallTerm
+    return currentTerm

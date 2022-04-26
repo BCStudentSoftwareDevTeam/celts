@@ -42,13 +42,12 @@ $("#cancelButton").on("click", function() {
 function displayCorrectTab(navigateTab) {
   // This function will figure out which tab to display
   let allTabs = $(".tab");
-
   if (navigateTab == 1 && !validateForm()) return false;
-
+  
   $(allTabs[currentTab]).css("display", "none");
   // Increase or decrease the current tab by 1:
   currentTab = currentTab + navigateTab;
-
+  
   if (currentTab >= allTabs.length) {
     saveCourseInstructors().then(() => $("#slcNewProposal").submit());
     return false;
@@ -72,8 +71,15 @@ function validateForm() {
       }
     }
   }
+
+  if ($("table").find('td').length < 5 && currentTab ==1) { // checks if there are more than the default hidden 3 tds
+    valid = false;
+    $("#courseInstructor").addClass("invalid");
+  } else {
+    $("#courseInstructor").removeClass("invalid");
+  }
   if (valid) {
-    $(".step")[currentTab].className += " finish"
+    $(".step")[currentTab].className += " finish";
   }
   return valid;
 };

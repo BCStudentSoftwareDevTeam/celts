@@ -2,7 +2,7 @@
 Chech phpmyadmin to see if your changes are reflected
 This file will need to be changed if the format of models changes (new fields, dropping fields, renaming...)'''
 
-from datetime import *
+from datetime import datetime, timedelta
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.term import Term
@@ -138,6 +138,14 @@ User.insert_many(users).on_conflict_replace().execute()
 terms = [
     {
         "id": 1,
+        "description": "Fall 2020",
+        "year": 2020,
+        "academicYear": "2020-2021",
+        "isSummer": False,
+        "isCurrentTerm": False
+    },
+    {
+        "id": 2,
         "description": "Spring A 2021",
         "year": 2021,
         "academicYear": "2020-2021",
@@ -145,7 +153,7 @@ terms = [
         "isCurrentTerm": False
     },
     {
-        "id": 2,
+        "id": 3,
         "description": "Spring B 2021",
         "year": 2021,
         "academicYear": "2020-2021",
@@ -153,7 +161,7 @@ terms = [
         "isCurrentTerm": False
     },
     {
-        "id": 3,
+        "id": 4,
         "description": "Summer 2021",
         "year": 2021,
         "academicYear": "2020-2021",
@@ -161,7 +169,7 @@ terms = [
         "isCurrentTerm": True
     },
     {
-        "id": 4,
+        "id": 5,
         "description": "Fall 2021",
         "year": 2021,
         "academicYear": "2021-2022",
@@ -169,7 +177,7 @@ terms = [
         "isCurrentTerm": False
     },
     {
-        "id": 5,
+        "id": 6,
         "description": "Spring 2022",
         "year": 2022,
         "academicYear": "2021-2022",
@@ -247,7 +255,7 @@ Program.insert_many(programs).on_conflict_replace().execute()
 events = [
     {
         "id": 1,
-        "term": 1,
+        "term": 2,
         "name": "Empty Bowls Spring Event 1",
         "description": "Empty Bowls Spring 2021",
         "isTraining": True,
@@ -259,7 +267,7 @@ events = [
     },
     {
         "id": 2,
-        "term": 1,
+        "term": 2,
         "name": "Hunger Hurts",
         "description": "Will donate Food to Community",
         "isTraining": False,
@@ -271,7 +279,7 @@ events = [
     },
     {
         "id": 3,
-        "term": 3,
+        "term": 4,
         "name": "Adoption 101",
         "description": "Lecture on adoption",
         "isTraining": True,
@@ -283,7 +291,7 @@ events = [
     },
     {
         "id": 4,
-        "term": 3,
+        "term": 4,
         "name": "First Meetup",
         "description": "Berea Buddies First Meetup",
         "isTraining": False,
@@ -295,7 +303,7 @@ events = [
     },
     {
         "id": 5,
-        "term": 3,
+        "term": 4,
         "name": "Tutoring",
         "description": "Tutoring Training",
         "isTraining": False,
@@ -307,7 +315,7 @@ events = [
     },
     {
         "id": 6,
-        "term": 3,
+        "term": 4,
         "name": "Meet & Greet with Grandparent",
         "description": "Students meet with grandparent for the first time",
         "isTraining": True,
@@ -319,7 +327,7 @@ events = [
     },
     {
         "id": 7,
-        "term": 3,
+        "term": 4,
         "name": "Empty Bowl with Community",
         "description": "Open to Berea community",
         "isTraining": False,
@@ -331,7 +339,7 @@ events = [
     },
     {
         "id": 8,
-        "term": 1,
+        "term": 3,
         "name": "Berea Buddies Second Meeting",
         "description": "Play game to bond with buddy",
         "isTraining": True,
@@ -343,7 +351,7 @@ events = [
     },
     {
         "id": 9,
-        "term": 1,
+        "term": 3,
         "name": "Field Trip with Buddies",
         "description": "A small trip to Berea Farm",
         "isTraining": True,
@@ -356,7 +364,7 @@ events = [
     },
     {
         "id": 10,
-        "term": 3,
+        "term": 1,
         "name": "All Celts Training",
         "description": "Training event for all CELTS programs",
         "isTraining": True,
@@ -368,7 +376,7 @@ events = [
     },
     {
         "id": 11,
-        "term": 3,
+        "term": 4,
         "name": "Celts Admin Meeting",
         "description": "Not a required event",
         "isTraining": False,
@@ -380,7 +388,7 @@ events = [
     },
     {
         "id": 12,
-        "term": 3,
+        "term": 4,
         "name": "Dinner with Grandparent",
         "description": "Second event with grandparent",
         "isTraining": False,
@@ -392,7 +400,7 @@ events = [
     },
     {
         "id": 13,
-        "term": 2,
+        "term": 3,
         "name": "Community Clean Up",
         "description": "This event doesn't belong to any program",
         "isTraining": False,
@@ -404,7 +412,7 @@ events = [
     },
     {
         "id": 14,
-        "term": 2,
+        "term": 1,
         "name": "All Volunteer Training",
         "description": "testing multiple programs",
         "isTraining": True,
@@ -416,7 +424,7 @@ events = [
     },
     {
         "id": 15,
-        "term": 3,
+        "term": 4,
         "name": "Training Event",
         "description": "Test for training",
         "isTraining": True,
@@ -522,7 +530,7 @@ courses = [
     {
         "id": 1,
         "courseName": "Databases",
-        "term": 2,
+        "term": 3,
         "status": 1,
         "courseCredit": "",
         "createdBy": "",
@@ -533,7 +541,7 @@ courses = [
     {
         "id": 2,
         "courseName": "Spanish Help",
-        "term": 1,
+        "term": 2,
         "status": 2,
         "courseCredit": "",
         "createdBy": "",
@@ -544,7 +552,7 @@ courses = [
     {
         "id": 3,
         "courseName": "French Help",
-        "term": 3,
+        "term": 4,
         "status": 3,
         "courseCredit": "",
         "createdBy": "",
@@ -679,6 +687,16 @@ eventParticipants = [
         "user": "partont",
         "event": 2,
         "hoursEarned": 5
+    },
+    {
+        "user": "khatts",
+        "event": 6,
+        "hoursEarned": 3,
+    },
+    {
+        "user": "khatts",
+        "event": 10,
+        "hoursEarned": 3,
     }
 ]
 EventParticipant.insert_many(eventParticipants).on_conflict_replace().execute()
@@ -752,14 +770,15 @@ bannedUser = [
     {
         "user": "khatts",
         "program": 3,
-        "endDate": "2023-11-29"
-
+        "endDate": datetime.now() + timedelta(days=360),
+        "banNote": 1,
     },
 
     {
         "user": "ayisie",
         "program": 1,
-        "endDate": "2023-11-29"
+        "endDate": datetime.now() + timedelta(days=150),
+        "banNote": 2,
     }
 ]
 

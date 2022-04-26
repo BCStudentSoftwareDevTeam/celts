@@ -17,8 +17,6 @@ from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.models.adminLogs import AdminLogs
-from app.models.studentManager import StudentManager
-from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
@@ -212,7 +210,9 @@ def courseManagement(term = None):
                             term = term)
 @admin_bp.route('/adminLogs', methods = ['GET', 'POST'])
 def adminLogs():
-    allLogs = AdminLogs.select().order_by(AdminLogs.createdOn.desc())
-
-    return render_template("/admin/adminLogs.html",
-                            allLogs = allLogs)
+    if g.current_user.isCeltsAdmin:
+        allLogs = AdminLogs.select().order_by(AdminLogs.createdOn.desc())
+        return render_template("/admin/adminLogs.html",
+                                allLogs = allLogs)
+    else:
+        abort(403)

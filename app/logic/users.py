@@ -57,6 +57,7 @@ def banUser(program_id, username, note, banEndDate, creator):
                              createdOn = datetime.datetime.now(),
                              noteContent = note,
                              isPrivate = 0)
+                             
     ProgramBan.create(program = program_id,
                       user = username,
                       endDate = banEndDate,
