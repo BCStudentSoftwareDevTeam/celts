@@ -194,20 +194,22 @@ def courseManagement(term = None):
     '''
     Renders the page for admins to manage Course Proposals
     '''
+    if g.current_user.isCeltsAdmin:
+        term = Term.get_or_none(Term.id == term)
+        if not term:
+            term = g.current_term
 
-    term = Term.get_or_none(Term.id == term)
-    if not term:
-        term = g.current_term
+        pending = pendingCourses(term)
+        approved = approvedCourses(term)
+        terms = selectSurroundingTerms(g.current_term)
 
-    pending = pendingCourses(term)
-    approved = approvedCourses(term)
-    terms = selectSurroundingTerms(g.current_term)
-
-    return render_template('/admin/courseManagement.html',
-                            pendingCourses = pending,
-                            approvedCourses = approved,
-                            terms = terms,
-                            term = term)
+        return render_template('/admin/courseManagement.html',
+                                pendingCourses = pending,
+                                approvedCourses = approved,
+                                terms = terms,
+                                term = term)
+    else:
+        abort(403)
 @admin_bp.route('/adminLogs', methods = ['GET', 'POST'])
 def adminLogs():
     if g.current_user.isCeltsAdmin:
