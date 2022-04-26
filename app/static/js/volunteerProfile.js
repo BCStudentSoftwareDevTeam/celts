@@ -1,5 +1,4 @@
 $(document).ready(function(){
-
   $(".form-check-input").click(function updateInterest(){
     var programID = $(this).data("programid");
     var username = $(this).data('username');
@@ -23,6 +22,19 @@ $(document).ready(function(){
     });
   });
 
+  // This function is to disable all the dates before current date in the ban modal End Date picker
+  $(function(){
+    var banEndDatepicker = $("#banEndDatepicker");
+    banEndDatepicker.datepicker({
+      changeYear: true,
+      changeMonth: true,
+      minDate:+1,
+      dateFormat: "yy-mm-dd",
+    }).attr('readonly','readonly');
+  });
+
+
+
   $(".ban").click(function() {
     var banButton = $("#banButton")
     var banEndDateDiv = $("#banEndDate") // Div containing the datepicker in the ban modal
@@ -32,11 +44,11 @@ $(document).ready(function(){
     var banNote = $("#banNote")
 
     banButton.text($(this).val() + " Volunteer");
-    banButton.data("programID", $(this).data("id"))
+    banButton.data("programID", $(this).data("programid"))
     banButton.data("username", $(".form-check-input").data("username"))
     banButton.data("banOrUnban", $(this).val());
     banEndDateDiv.show();
-    banEndDatepicker.val("");
+    banEndDatepicker.val("")
     $(".modal-title").text($(this).val() + " Volunteer");
     $("#modalProgramName").text("Program: " + $(this).data("name"));
     $("#banModal").modal("toggle");
@@ -52,7 +64,7 @@ $(document).ready(function(){
 
   });
 
-  $("#banNoteTxtArea, #banEndDatepicker").change(function () { //This is the if statement the placeholder in line 45 is for #PLCHLD1
+  $("#banNoteTxtArea, #banEndDatepicker").on('input' , function (e) { //This is the if statement the placeholder in line 45 is for #PLCHLD1
     var enableButton = ($("#banNoteTxtArea").val() && $("#banEndDatepicker").val());
     $("#banButton").prop("disabled", !enableButton);
   });
