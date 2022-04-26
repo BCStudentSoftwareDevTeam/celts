@@ -13,8 +13,6 @@ from app.models.programBan import ProgramBan
 from app.models.interest import Interest
 from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
-from app.logic.adminLogs import createLog
-
 
 
 def getEvents(program_id=None):
@@ -33,7 +31,6 @@ def deleteEvent(eventId):
         event.delete_instance(recursive = True, delete_nullable = True)
         if event.startDate:
             createLog(f"Deleted event: {event.name}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
-
 
 def attemptSaveEvent(eventData):
 
@@ -60,7 +57,6 @@ def saveEventToDb(newEventData):
     eventsToCreate = []
     if isNewEvent and newEventData['isRecurring']:
         eventsToCreate = calculateRecurringEventFrequency(newEventData)
-
     else:
         eventsToCreate.append({'name': f"{newEventData['name']}",
                                 'date':newEventData['startDate'],
@@ -90,7 +86,6 @@ def saveEventToDb(newEventData):
                 # TODO handle multiple programs
                 if 'program' in newEventData:
                     ProgramEvent.create(program=newEventData['program'], event=eventRecord)
-
             else:
                 eventRecord = Event.get_by_id(newEventData['id'])
                 Event.update(**eventData).where(Event.id == eventRecord).execute()
@@ -119,14 +114,25 @@ def getStudentLedProgram(term):
 
 def getTrainingProgram(term):
 
-    allTrainingsEvent = (ProgramEvent.select(ProgramEvent.event, fn.COUNT(ProgramEvent.event).alias('num_programs')).group_by(ProgramEvent.event)).order_by(fn.COUNT(ProgramEvent.event).desc())
-    print(allTrainingsEvent[0])
-    trainingEvents = (Event.select(Event, Program.id.alias("program_id"))
-                           .join(ProgramEvent)
-                           .join(Program)
-			   .order_by(Event.startDate.desc())
+    """
+        The allTrainingsEvent query is designed to select and count eventId's after grouping them
+        together by id's of similiar value. The query will then return the event that is associated
+        with the most programs (highest count) by doing this we can ensure that the event being
+        returned is the All Trainings Event.
+    """
+
+    allTrainingsEvent = ((ProgramEvent.select(ProgramEvent.event, fn.COUNT(1).alias('num_programs'))
+                                        .join(Event)
+                                        .group_by(ProgramEvent.event)
+                                        .order_by(fn.COUNT(1).desc()))
+                                        .where(Event.term == term).get())
+
+    trainingEvents = ((Event.select(Event)
+			               .order_by((Event.id == allTrainingsEvent.event.id).desc(), Event.startDate.desc())
                            .where(Event.isTraining,
-                                  Event.term == term))
+                                  Event.term == term)))
+
+
     return trainingEvents
 def getBonnerProgram(term):
 
@@ -168,7 +174,6 @@ def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
 
 
 def getAllFacilitators():
-
     facilitators = User.select(User).where((User.isFaculty == 1) | (User.isCeltsAdmin == 1) | (User.isCeltsStudentStaff == 1)).order_by(User.username) # ordered because of the tests
     return facilitators
 
