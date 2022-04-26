@@ -67,7 +67,7 @@ def removeProgramManagers():
 @admin_bp.route('/admin', methods = ['GET'])
 def userManagement():
     terms = selectSurroundingTerms(g.current_term)
-    if g.current_user.isAdmin:
+    if g.current_user.isCeltsAdmin:
         return render_template('admin/userManagement.html',
                                 terms=terms)
     abort(403)

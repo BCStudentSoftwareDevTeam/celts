@@ -1,6 +1,7 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for
 import datetime
 import json
+
 from app import app
 from app.models.program import Program
 from app.models.event import Event
@@ -264,5 +265,8 @@ def getAllCourseIntructors():
     """
     This function selects all the Intructors Name and the previous courses
     """
-    courseDict = getCourseDict()
-    return render_template('/main/manageServiceLearningFaculty.html', courseInstructors = courseDict)
+    if g.current_user.isCeltsAdmin:
+        courseDict = getCourseDict()
+        return render_template('/main/manageServiceLearningFaculty.html', courseInstructors = courseDict)
+    else:
+        abort(403)
