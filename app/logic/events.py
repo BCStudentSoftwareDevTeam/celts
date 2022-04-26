@@ -32,7 +32,7 @@ def deleteEvent(eventId):
     if event:
         event.delete_instance(recursive = True, delete_nullable = True)
         if event.startDate:
-            createLog(f"Deleted event: {event.name}, which had a startdate of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
+            createLog(f"Deleted event: {event.name}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
 
 
 def attemptSaveEvent(eventData):
@@ -169,7 +169,7 @@ def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
 
 def getAllFacilitators():
 
-    facilitators = User.select(User).where((User.isFaculty == 1) | (User.isCeltsAdmin == 1) | (User.isCeltsStudentStaff == 1)).order_by(User.username) #ordered because of the tests
+    facilitators = User.select(User).where((User.isFaculty == 1) | (User.isCeltsAdmin == 1) | (User.isCeltsStudentStaff == 1)).order_by(User.username) # ordered because of the tests
     return facilitators
 
 def validateNewEventData(data):
