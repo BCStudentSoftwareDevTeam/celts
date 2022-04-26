@@ -67,10 +67,9 @@ def slcCreateOrEdit():
         courseExist = Course.get_or_none(Course.id == request.form.get('courseID'))
         if courseExist:
             updateCourse(request.form.copy(), instructorsDict)
-            return redirect('/serviceLearning/courseManagement')
         else:
             createCourse(request.form.copy(), instructorsDict)
-            return redirect('/serviceLearning/courseManagement')
+        return redirect('/serviceLearning/courseManagement')
     terms = Term.select().where(Term.year >= g.current_term.year)
     courseData = None
     return render_template('serviceLearning/slcNewProposal.html', terms=terms, courseData = courseData)
