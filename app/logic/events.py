@@ -32,7 +32,7 @@ def deleteEvent(eventId):
     if event:
         event.delete_instance(recursive = True, delete_nullable = True)
         if event.startDate:
-            createLog(f"Deleted event: {event.name}, which had a startdate of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
+            createLog(f"Deleted event: {event.name}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
 
 
 def attemptSaveEvent(eventData):
