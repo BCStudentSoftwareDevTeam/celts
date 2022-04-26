@@ -5,13 +5,15 @@ from werkzeug.datastructures import MultiDict
 from app.models import mainDB
 from app.models.user import User
 from app.models.event import Event
-from app.models.interest import Interest
 from app.models.facilitator import Facilitator
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.models.term import Term
+from app.models.programBan import ProgramBan
+from app.models.interest import Interest
 from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
+
 
 def getEvents(program_id=None):
 
@@ -27,6 +29,8 @@ def deleteEvent(eventId):
     event = Event.get_or_none(Event.id == eventId)
     if event:
         event.delete_instance(recursive = True, delete_nullable = True)
+        if event.startDate:
+            createLog(f"Deleted event: {event.name}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
 
 def attemptSaveEvent(eventData):
 
@@ -110,18 +114,24 @@ def getStudentLedProgram(term):
 
 def getTrainingProgram(term):
 
+    """
+        The allTrainingsEvent query is designed to select and count eventId's after grouping them
+        together by id's of similiar value. The query will then return the event that is associated
+        with the most programs (highest count) by doing this we can ensure that the event being
+        returned is the All Trainings Event.
+    """
+
     allTrainingsEvent = ((ProgramEvent.select(ProgramEvent.event, fn.COUNT(1).alias('num_programs'))
                                         .join(Event)
                                         .group_by(ProgramEvent.event)
                                         .order_by(fn.COUNT(1).desc()))
                                         .where(Event.term == term).get())
+
     trainingEvents = ((Event.select(Event)
 			               .order_by((Event.id == allTrainingsEvent.event.id).desc(), Event.startDate.desc())
                            .where(Event.isTraining,
                                   Event.term == term)))
 
-    for t in trainingEvents:
-        print(t)
 
     return trainingEvents
 def getBonnerProgram(term):
@@ -144,7 +154,6 @@ def getOneTimeEvents(term):
 def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
     """
         Get the list of upcoming events that the user is interested in.
-
         :param user: a username or User object
         :param asOf: The date to use when determining future and past events.
                       Used in testing, defaults to the current timestamp.
@@ -163,9 +172,9 @@ def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
 
     return list(events)
 
-def getAllFacilitators():
 
-    facilitators = User.select(User).where((User.isFaculty == 1) | (User.isCeltsAdmin == 1) | (User.isCeltsStudentStaff == 1))
+def getAllFacilitators():
+    facilitators = User.select(User).where((User.isFaculty == 1) | (User.isCeltsAdmin == 1) | (User.isCeltsStudentStaff == 1)).order_by(User.username) # ordered because of the tests
     return facilitators
 
 def validateNewEventData(data):

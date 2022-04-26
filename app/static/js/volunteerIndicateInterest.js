@@ -1,13 +1,15 @@
 $(document).ready(function() {
   $(".form-check-input").click(function updateInterest(el){
-    var programID = $(this).data("programid");
+    var programID = $(this).attr('id');
     var interest = $(this).is(':checked');
+
     if (interest) {
       var routeUrl = "/addInterest/"
     }
     else {
       var routeUrl = "/deleteInterest/"
     }
+
     $.ajax({
       method: "POST",
       url: routeUrl + programID,
@@ -22,33 +24,6 @@ $(document).ready(function() {
     });
   });
 });
-
-
-function updateManagers(el,username,action){
-  var routeUrl = '/removeProgramManagers';
-  if (action == "add"){
-    routeUrl = '/addProgramManagers';
-  }
-  let data = {
-      programID : $(el).data("programid"),
-      username : username,
-      from: "ajax"
-  }
-  $.ajax({
-    url: routeUrl,
-    type: "POST",
-    data: data,
-    success: function(s){
-        location.reload()
-      },
-      error: function(error, status){
-          console.log(error, status);
-          location.reload();
-        }
-    })
-  }
-
-
 
 function updateBackgroundCheck(user,bgType){
   let checkPassed = $( "#"+bgType).val();
@@ -66,6 +41,7 @@ function updateBackgroundCheck(user,bgType){
     },
     error: function(error, status){
         console.log(error, status)
-      }
-    })
-  }
+    }
+
+  })
+}

@@ -4,7 +4,6 @@ from playhouse.shortcuts import model_to_dict, dict_to_model
 import json
 from datetime import datetime
 from dateutil import parser
-
 from app import app
 from app.models.program import Program
 from app.models.event import Event
@@ -18,8 +17,6 @@ from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.models.adminLogs import AdminLogs
-from app.models.studentManager import StudentManager
-from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
@@ -170,12 +167,13 @@ def addRecurringEvents():
     recurringEvents = calculateRecurringEventFrequency(preprocessEventData(request.form.copy()))
     return json.dumps(recurringEvents, default=str)
 
+
 @admin_bp.route('/volunteerProfile', methods=['POST'])
 def volunteerProfile():
     volunteerName= request.form.copy()
     username = volunteerName['searchStudentsInput'].strip("()")
     user=username.split('(')[-1]
-    return redirect(url_for('main.profilePage', username=user))
+    return redirect(url_for('main.viewVolunteersProfile', username=user))
 
 @admin_bp.route('/search_student', methods=['GET'])
 def studentSearchPage():
