@@ -122,40 +122,6 @@ def addOutsideParticipant():
         flash("Participant succesfully added to the event!", "success")
     return ""
 
-@admin_bp.route('/matchParticipants', methods = ['POST'])
-def matchParticipant():
-    matchData = request.form
-
-    volunteer = matchData['volunteer']
-    outsideParticipant = matchData['outsideParticipant']
-    eventId = matchData['eventId'][0]
-
-    update = MatchParticipants.get_or_none(MatchParticipants.outsideParticipant==outsideParticipant,MatchParticipants.event==int(eventId),MatchParticipants.volunteer==None)
-    if update:
-        update.volunteer = volunteer
-        update.save()
-        flash("Participant succesfully matched to volunteer", "success")
-
-    else:
-        flash("Participant already matched to someone", "danger")
-    return ""
-
-
-@admin_bp.route('/unMatch', methods = ['POST'])
-def unMatch():
-    matchData = request.form
-
-    volunteer = matchData['volunteer']
-    outsideParticipant = matchData['outsideParticipant']
-    eventId = matchData['eventId'][0]
-
-    volunteer = User.get_by_id(volunteer)
-    query = MatchParticipants.get(MatchParticipants.volunteer==volunteer,MatchParticipants.outsideParticipant==outsideParticipant,MatchParticipants.event==eventId)
-    query.volunteer = None
-    query.save()
-    flash("Outside particpant successfully removed", "success")
-    return ""
-
 @admin_bp.route('/removeVolunteerFromEvent/<user>/<eventID>', methods = ['POST'])
 def removeVolunteerFromEvent(user, eventID):
     (EventParticipant.delete().where(EventParticipant.user==user, EventParticipant.event==eventID)).execute()
