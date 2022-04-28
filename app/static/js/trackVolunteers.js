@@ -41,7 +41,12 @@ $("#selectVolunteerButton").prop('disabled', true)
 $("#addVolunteerButton").on("click",function(){
   $("#addVolunteerModalText").text("Add Volunteer");
   $("#addVolunteerInput").on("input", function() {
-    searchUser("addVolunteerInput",callback,false, "","addVolunteerModal");
+    var searchOptions = {
+      inputId : "addVolunteerInput",
+      callback : callback,
+      parentElementId : "addVolunteerModal"
+    }
+    searchUser(searchOptions);
 
   });
 

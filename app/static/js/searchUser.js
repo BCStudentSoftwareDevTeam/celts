@@ -1,20 +1,32 @@
-export default function searchUser(inputId, callback,clear=false,group="default", parentElementId=null, columnRequested=null){
-  var query = $(`#${inputId}`).val();
-  if (group != "outsideParticipant"){
-    group = "default"
+export default function searchUser(searchOptions){
+  // inputId, callback,clear=false,group="default", parentElementId=null, columnRequested=null
+  var defaultOptions = {
+    clear:false,
+    group:"default",
+    parentElementId:null,
+    columnRequested:null,
+  };
+  
+  for (var key in defaultOptions){
+    if (searchOptions.hasOwnProperty(key) == false){
+      searchOptions[key] = defaultOptions[key];
+    }
   }
+
+
+  var query = $(`#${searchOptions.inputId}`).val();
   let columnDict={};
-  $(`#${inputId}`).autocomplete({
-    appendTo: (parentElementId === null) ? null : `#${parentElementId}`,
+  $(`#${searchOptions.inputId}`).autocomplete({
+    appendTo: (searchOptions.parentElementId === null) ? null : `#${searchOptions.parentElementId}`,
     minLength: 2,
     source: function(request, response) {
       $.ajax({
-        url: `/searchUser/${query}/${group}`,
+        url: `/searchUser/${query}/${searchOptions.group}`,
         type: "GET",
         dataType: "json",
         success: function(searchResults) {
           response(Object.entries(searchResults).map( (item) => {
-            if (!columnRequested){
+            if (!searchOptions.columnRequested){
               return {
                 // label: firstName lastName (username)
                 // value: username
@@ -22,7 +34,7 @@ export default function searchUser(inputId, callback,clear=false,group="default"
                 value: item[0]
               }
             } else {
-              for (const column of columnRequested) {
+              for (const column of searchOptions.columnRequested) {
                 columnDict[column]=item[1][column];
               };
               return {
@@ -42,10 +54,10 @@ export default function searchUser(inputId, callback,clear=false,group="default"
     },
      select: function(event, ui) {
        var user = ui.item.value
-       $(`#${inputId}`).val(ui.item.value);
-       callback();
+       $(`#${searchOptions.inputId}`).val(ui.item.value);
+       searchOptions.callback();
        if(clear){
-       $(`#${inputId}`).val("");
+       $(`#${searchOptions.inputId}`).val("");
        return false;
      }
      }
