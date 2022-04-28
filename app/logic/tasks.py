@@ -7,6 +7,7 @@ from app.logic.emailHandler import EmailHandler
 
 @celery.task(bind=True)
 def sendEmailTask(self, raw_form_data, url_domain):
+    print("Hello, I exist")
     try:
         print("I am sending an email... maybe")
         mail = EmailHandler(raw_form_data, url_domain)
