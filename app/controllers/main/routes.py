@@ -24,6 +24,9 @@ from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
 from app.logic.manageSLFaculty import getCourseDict
+from app.logic.courseManagement import pendingCourses, approvedCourses
+from app.logic.utils import selectSurroundingTerms
+
 
 @main_bp.route('/', methods=['GET'])
 def redirectToEventsList():
@@ -260,13 +263,27 @@ def contributors():
 
 
 
-@main_bp.route('/manageServiceLearning', methods = ['GET'])
-def getAllCourseIntructors():
+@main_bp.route('/manageServiceLearning/<term>', methods = ['GET', 'POST'])
+def getAllCourseIntructors(term=None):
     """
     This function selects all the Intructors Name and the previous courses
     """
     if g.current_user.isCeltsAdmin:
         courseDict = getCourseDict()
-        return render_template('/main/manageServiceLearningFaculty.html', courseInstructors = courseDict)
+
+        term = Term.get_or_none(Term.id == term)
+        if not term:
+            term = g.current_term
+
+        pending = pendingCourses(term)
+        approved = approvedCourses(term)
+        terms = selectSurroundingTerms(g.current_term)
+
+        return render_template('/main/manageServiceLearningFaculty.html',
+                                courseInstructors = courseDict,
+                                pendingCourses = pending,
+                                approvedCourses = approved,
+                                terms = terms,
+                                term = term)
     else:
         abort(403)
