@@ -4,8 +4,7 @@ from app.models.event import Event
 
 from app.models.outsideParticipant import OutsideParticipant
 
-class MatchParticipants(baseModel):
-    volunteer = ForeignKeyField(User,null=True,default=None)
+class EventOutsideParticipants(baseModel):
     outsideParticipant = ForeignKeyField(OutsideParticipant)
     event = ForeignKeyField(Event)
 

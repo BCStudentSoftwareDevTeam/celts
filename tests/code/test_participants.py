@@ -15,7 +15,7 @@ from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents,ma
 from app.logic.participants import sendUserData
 from app.logic.participants import getEventParticipants
 from app.models.eventRsvp import EventRsvp
-from app.models.matchParticipants import MatchParticipants
+from app.models.matchParticipants import EventOutsideParticipants
 
 @pytest.mark.integration
 def test_getEventLengthInHours():
@@ -300,17 +300,3 @@ def test_getEventParticipantsWithWrongParticipant():
     event = Event.get_by_id(1)
     eventParticipantsDict = getEventParticipants(event)
     assert "agliullovak" not in eventParticipantsDict
-
-@pytest.mark.integration
-def test_matchVolunteers():
-    currentMatches = len(list(MatchParticipants.select()))
-    matchVolunteers("mupotsal","maryjones@example.gmail.com",8)
-    newTotal = len(list(MatchParticipants.select()))
-    assert newTotal == currentMatches+1
-    MatchParticipants.delete(MatchParticipants.volunteer=="mupotsal",MatchParticipants.outsideParticipant=="maryjones@example.gmail.com",MatchParticipants.event==8).execute()
-
-    currentMatches = len(list(MatchParticipants.select()))
-    matchVolunteers("ramsayb2","maryjones@example.gmail.com",7)
-    newTotal = len(list(MatchParticipants.select()))
-    assert newTotal == currentMatches+1
-    MatchParticipants.delete(MatchParticipants.volunteer=="ramsayb2",MatchParticipants.outsideParticipant=="maryjones@example.gmail.com",MatchParticipants.event==7).execute()

@@ -6,7 +6,7 @@ from app.models.eventRsvp import EventRsvp
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.models.eventParticipant import EventParticipant
-from app.models.matchParticipants import MatchParticipants
+from app.models.matchParticipants import EventOutsideParticipants
 from app.logic.users import isEligibleForProgram
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import getStartofCurrentAcademicYear
@@ -104,12 +104,8 @@ def getEventParticipants(event):
     return {p.user.username: p.hoursEarned for p in eventParticipants}
 
 def getOutsideParticipants(event):
-    outsideParticipants = (MatchParticipants
+    outsideParticipants = (EventOutsideParticipants
         .select()
-        .where(MatchParticipants.event==event))
+        .where(EventOutsideParticipants.event==event))
     outsideParticipants = [entry.outsideParticipant for entry in outsideParticipants ]
     return outsideParticipants
-
-def matchVolunteers(volunteer,participant,event):
-    newEntry = MatchParticipants.create(volunteer=volunteer,outsideParticipant=participant,event=event)
-    newEntry.save()

@@ -6,7 +6,7 @@ from app.controllers.admin import admin_bp
 from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
-from app.models.matchParticipants import MatchParticipants
+from app.models.matchParticipants import EventOutsideParticipants
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck
 from app.logic.participants import trainedParticipants, getEventParticipants,getOutsideParticipants
@@ -53,16 +53,6 @@ def trackVolunteersPage(eventID):
 
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
 
-    matched = MatchParticipants.select().where(MatchParticipants.event==event)
-    matches = {} #This will contain the matches for a particular event
-
-    for entry in matched:
-        if entry.volunteer and entry.outsideParticipant:
-            if entry.volunteer not in matches:
-                matches[entry.volunteer]=[entry.outsideParticipant]
-            else:
-                matches[entry.volunteer].append(entry.outsideParticipant)
-
     return render_template("/events/trackVolunteers.html",
         eventRsvpData=list(eventRsvpData),
         eventParticipants=eventParticipants,
@@ -72,7 +62,7 @@ def trackVolunteersPage(eventID):
         isPastEvent=isPastEvent,
         trainedParticipantsList=trainedParticipantsList,
         outsideParticipants = outsideParticipants,
-        matches = matches)
+        )
 
 @admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['POST'])
 def updateVolunteerTable(eventID):
@@ -115,7 +105,7 @@ def addOutsideParticipant():
     email = outsideParticipantData['email']
     eventId = outsideParticipantData['eventId']
     event = eventId.split(':')
-    newEntry = MatchParticipants.get_or_create(outsideParticipant=email,event=int(event[0]))
+    newEntry = EventOutsideParticipants.get_or_create(outsideParticipant=email,event=int(event[0]))
     if newEntry[-1]==False:
         flash("Participant already added to this event!", "danger")
     else:
@@ -126,15 +116,12 @@ def addOutsideParticipant():
 def removeVolunteerFromEvent(user, eventID):
     (EventParticipant.delete().where(EventParticipant.user==user, EventParticipant.event==eventID)).execute()
     (EventRsvp.delete().where(EventRsvp.user==user)).execute()
-    update = (MatchParticipants.update({MatchParticipants.volunteer: None}).where(MatchParticipants.volunteer==user,MatchParticipants.event==eventID))
-    update.execute()
-
     flash("Volunteer successfully removed", "success")
     return ""
 
 @admin_bp.route('/removeOutsideParticipantFromEvent/<outsideParticipant>/<eventID>', methods = ['POST'])
 def removeParticipantFromEvent(outsideParticipant, eventID):
-    (MatchParticipants.delete().where(MatchParticipants.outsideParticipant==outsideParticipant, MatchParticipants.event==eventID)).execute()
+    (EventOutsideParticipants.delete().where(EventOutsideParticipants.outsideParticipant==outsideParticipant, EventOutsideParticipants.event==eventID)).execute()
     flash("Particpant successfully removed", "success")
     return ""
 

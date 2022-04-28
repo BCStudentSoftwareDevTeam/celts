@@ -23,7 +23,7 @@ from app.models.note import Note
 from app.models.studentManager import StudentManager
 from app.models.emailTemplate import EmailTemplate
 from app.models.backgroundCheck import BackgroundCheck
-from app.models.matchParticipants import MatchParticipants
+from app.models.matchParticipants import EventOutsideParticipants
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.adminLogs import AdminLogs
 
@@ -898,24 +898,21 @@ outsideParticipants = [
 
 OutsideParticipant.insert_many(outsideParticipants).on_conflict_replace().execute()
 
-matches = [
+eventMatches = [
     {
-    "volunteer": "mupotsal",
     "outsideParticipant": "maryjones@example.gmail.com",
     "event":7
     },
     {
-    "volunteer": "ayisie",
     "outsideParticipant": "moorek@example.gmail.com",
     "event":7
     },
     {
-    "volunteer":None,
     "outsideParticipant": "jonesm@example.gmail.com",
     "event":7
     },
 ]
-MatchParticipants.insert_many(matches).on_conflict_replace().execute()
+EventOutsideParticipants.insert_many(eventMatches).on_conflict_replace().execute()
 
 logs = [
    {
