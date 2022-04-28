@@ -23,34 +23,6 @@ $(document).ready(function() {
  });
 });
 
-
-$(".form-check-input").change(function updateMatch(el){
-  let outsidePart =  $(this).attr('id');
-  let volunteer = $(this).attr('name');
-  let eventId = $("#eventID").val();
-  var url = `/matchParticipants`
-  if ($(this).attr('checked') == 'checked'){
-   url = `/unMatch`
-  }
-  var matchData = {
-    volunteer:volunteer,
-    outsideParticipant:outsidePart,
-    eventId:eventId,
-  }
-
-  $.ajax({
-    url: url,
-    type: "POST",
-    data: matchData,
-    success: function(s){
-      location.reload();
-    },
-    error: function(request, status, error){
-      location.reload();
-    }
-  })
-});
-
   $('[data-toggle="tooltip"]').tooltip();
 // Search functionalities from the volunteer table in the UI
   $("#trackVolunteersInput").on("keyup", function() {

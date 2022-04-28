@@ -54,8 +54,6 @@
         <th>Phone Number</th>
         <th class="noSort">Completed Trainings?</th>
         <th>Total Hours</th>
-        <th>Partner(s)</th>
-        <th>Match</th>
         <th class="noSort">Present</th>
         <th class="noSort">Remove Volunteer</th>
         <th></th>
@@ -99,50 +97,6 @@
               value="{{eventParticipants[participant.user.username]}}"
             {% else %} disabled {% endif %} />
         </td>
-        <td>
-        {% if participant.user in matches%}
-        {% for entry in matches[participant.user]%}
-        <ul>
-          <li> {{entry.firstName}} {{entry.lastName}} </li>
-        </ul>
-        {% endfor%}
-        {% endif %}
-        </td>
-
-        <td>
-              {% set accodionFlushNumber = accordionCount.value| string() %}
-              {% set accodionFlushNumber = "accordionFlushNumber"+accodionFlushNumber %}
-              {% set flushCollapseNumber = "flush-collapseOne"+ac %}
-              {% set accordionCount.value = accordionCount.value + 1 %}
-              <div class="accordion accordion-flush" id={{accodionFlushNumber}}>
-              <div class="accordion-item">
-                <h2 class="accordion-header" id="flush-headingOne">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{flushCollapseNumber}}" aria-expanded="false" aria-controls="{{flushCollapseNumber}}">
-                    Match
-                  </button>
-                </h2>
-                <div id="{{flushCollapseNumber}}" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#{{accodionFlushNumber}}">
-                  <div class="accordion-body">
-                    <ul>
-                      {% for outsideParticipant in outsideParticipants%}
-                        {% set status = '' %}
-                        {% if participant.user in matches.keys() %}
-                          {% if outsideParticipant in matches[participant.user] %}
-                            {% set status = 'checked' %}
-                          {% endif %}
-                        {% endif %}
-                        <li>
-                          <input class="form-check-input" type="checkbox" name="{{participant.user}}" id="{{ outsideParticipant.email }}" {{status}}>
-                          {% set name = outsideParticipant.firstName + outsideParticipant.lastName%}
-                          <label class="form-check-label"  for="{{ outsideParticipant.email }}">{{name}}</label>
-                        </li>
-                      {% endfor %}
-                    </ul>
-                  </div>
-              </div>
-            </div>
-            </div>
-          </td>
 
           <td style="text-align:center">
             <input
