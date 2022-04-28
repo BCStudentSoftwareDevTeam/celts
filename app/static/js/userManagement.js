@@ -7,7 +7,11 @@ function callback() {
 $(document).ready(function() {
   // add celts admin
   $("#searchCeltsAdminInput").on("input", function() {
-    searchUser("searchCeltsAdminInput", callback,"");
+    var searchOptions = {
+      inputId:"searchCeltsAdminInput",
+      callback:callback,
+    };
+    searchUser(searchOptions);
   });
 
   $("#addCeltsAdmin").on("click", function() {
@@ -19,7 +23,11 @@ $(document).ready(function() {
   });
   // add celts student staff
   $("#searchCeltsStudentStaffInput").on("input", function() {
-    searchUser("searchCeltsStudentStaffInput", callback, "");
+    var searchOptions = {
+      inputId:"searchCeltsStudentStaffInput",
+      callback:callback,
+    };
+    searchUser(searchOptions);
   });
 
   $("#addCeltsStudentStaff").on("click", function() {
@@ -28,7 +36,11 @@ $(document).ready(function() {
 
   // remove celts admin
   $("#removeCeltsAdminInput").on("input", function() {
-    searchUser("removeCeltsAdminInput", callback, "");
+    var searchOptions = {
+      inputId:"removeCeltsAdminInput",
+      callback:callback,
+    };
+    searchUser(searchOptions);
   });
 
   $("#removeCeltsAdmin").on("click", function() {
@@ -37,7 +49,11 @@ $(document).ready(function() {
 
   // remove celts student staff
   $("#removeCeltsStudentStaffInput").on("input", function() {
-    searchUser("removeCeltsStudentStaffInput", callback, "");
+    var searchOptions = {
+      inputId:"removeCeltsStudentStaffInput",
+      callback:callback,
+    };
+    searchUser(searchOptions);
   });
 
   $("#removeCeltsStudentStaff").on("click", function() {

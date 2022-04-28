@@ -5,5 +5,9 @@ function callback() {
 }
 
 $("#searchStudentsInput").on("input", function() {
-  searchUser("searchStudentsInput", callback,"");
+  var searchOptions = {
+    inputId:"searchStudentsInput",
+    callback:callback,
+  }
+  searchUser(searchOptions);
 });

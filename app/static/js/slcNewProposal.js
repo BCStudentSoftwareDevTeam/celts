@@ -106,7 +106,13 @@ function callback() {
 
 $("#courseInstructor").on('input', function() {
   // To retrieve specific columns into a dict, create a [] list and put columns inside
-  searchUser("courseInstructor", callback, true, null, ["phoneNumber", "firstName", "lastName", "username"]);
+  var searchOptions = {
+    inputId:"courseInstructor",
+    callback:callback,
+    clear:true,
+    columnRequested:["phoneNumber", "firstName", "lastName", "username"],
+  };
+  searchUser(searchOptions);
 });
 
 $("#instructorTable").on("click", "#instructorPhoneUpdate", function() {

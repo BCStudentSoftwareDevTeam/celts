@@ -6,13 +6,12 @@ export default function searchUser(searchOptions){
     parentElementId:null,
     columnRequested:null,
   };
-  
+
   for (var key in defaultOptions){
     if (searchOptions.hasOwnProperty(key) == false){
       searchOptions[key] = defaultOptions[key];
     }
   }
-
 
   var query = $(`#${searchOptions.inputId}`).val();
   let columnDict={};
