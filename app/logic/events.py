@@ -63,12 +63,12 @@ def saveEventToDb(newEventData):
                                 'date':newEventData['startDate'],
                                 "week":1})
 
-    print(f"\n\n\n{newEventData['sendReminder']}\n\n\n\n")
-    print(f"\n\n\n\n{newEventData}\n\n\n")
+    # print(f"\n\n\n{newEventData['sendReminder']}\n\n\n\n")
+    # print(f"\n\n\n\n{newEventData}\n\n\n")
     eventRecords = []
     for eventInstance in eventsToCreate:
-        print(f"\n\n\n{eventInstance['sendReminder']}\n\n\n\n")
         with mainDB.atomic():
+            # print(f"\n\n\n{eventInstance['sendReminder']}\n\n\n\n")
             eventData = {
                     "term": newEventData['term'],
                     "name": eventInstance['name'],
@@ -100,10 +100,10 @@ def saveEventToDb(newEventData):
 
             eventRecords.append(eventRecord)
 
-        if eventInstance['sendReminder']:
-            sendReminder(eventData)
-        else:
-            print("\n\n\n\n You should NOT send a reminder for this event \n\n\n")
+        # if eventInstance['sendReminder']:
+        #     sendReminder(eventData)
+        # else:
+        #     print("\n\n\n\n You should NOT send a reminder for this event \n\n\n")
 
     return eventRecords
 

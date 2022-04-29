@@ -70,21 +70,13 @@ class EmailHandler:
             program = ProgramEvent.get_by_id(program_id)
             return [program.program]
 
-
-    def update_sender_config(self):
-        # We might need this.
-        # This functionality should be moved somewhere else.
-        # The function in another file would receive email_info[sender]
-        # and update the config based on that and wherever we will end up saving emails and passwords
-        #The sender information should be saved like so: {"name": [email, password], } or in the database
-        pass
-
     def retrieve_recipients(self, recipients_category):
         """ Retrieves recipient based on which category is chosen in the 'To' section of the email modal """
         # Other potential recipients:
         # - course instructors
         # - course Participants
         # - outside participants'
+        # - eligible volunteers: those who are not banned, completed all trainings, and background checks 
         if recipients_category == "Interested":
             recipients = (User.select()
                 .join(Interest)
@@ -141,7 +133,6 @@ class EmailHandler:
 
     def store_sent_email(self, subject, body, template_id=None):
         """ Stores sent email in the email log """
-        print("\n\n\n Email body: ", body, "\n\n\n")
         date_sent = datetime.now()
         EmailLog.create(
             event=self.event.id,

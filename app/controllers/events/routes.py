@@ -43,11 +43,9 @@ def email():
         # mailSent = sendEmailTask.apply_async(args=[raw_form_data, url_domain], eta=arrivalDate, expires=eventDateTime)
 
         # TODO: trying to get the final state of the task, so we can check
-        # if it was successful or not. 
-        mailSent = sendEmailTask.apply_async(args=[raw_form_data, url_domain], countdown=10)
-        task = sendEmailTask.AsyncResult(mailSent.id)
-
-        print(task.state)
+        # if it was successful or not.
+        mailSent = sendEmailTask.apply_async(args=[raw_form_data, url_domain], countdown=3)
+        print(mailSent.state)
         # if mail_sent:
         #     message, status = 'Email successfully sent!', 'success'
         # else:

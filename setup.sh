@@ -24,6 +24,16 @@ python3 -m pip install --upgrade pip #added python-m for pip installs (source se
 python3 -m pip install -r requirements.txt
 # To generate a new requirements.txt file, run "pip freeze > requirements.txt"
 
+# Start redis server for celery
+sudo service redis-server start
+# Other redis-server commands: sudo service redis-server  {start|stop|restart|force-reload|status}
+
+# TODO: Not the best way to set this up
+# stop previous celery worker
+ps auxww | grep 'celery worker' | awk '{print $2}' | xargs kill -9
+# Start celery worker in the background
+celery -A app.celery  worker --loglevel=INFO --detach
+
 echo
 if [[ ! -e app/config/local-override.yml ]]; then
 	touch app/config/local-override.yml
@@ -36,5 +46,3 @@ export FLASK_APP=run.py
 export FLASK_ENV=development
 export FLASK_RUN_PORT=8080
 export FLASK_RUN_HOST=0.0.0.0   # To allow external routing to the application for development
-
-export PYTEST_PLUGINS=celery.contrib.pytest
