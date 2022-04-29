@@ -2,11 +2,14 @@ from app.models.eventParticipant import EventParticipant
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.event import Event
+from app.models.interest import Interest
+from app.models.note import Note
+from app.models.studentManager import StudentManager
 from app.models.backgroundCheck import BackgroundCheck
+from app.models.backgroundCheckType import BackgroundCheckType
+
 from datetime import datetime, date
 from app.logic.adminLogs import createLog
-
-
 
 def getEventLengthInHours(startTime, endTime, eventDate):
     """
@@ -84,6 +87,15 @@ def addVolunteerToEventRsvp(user, volunteerEventID):
     except Exception as e:
         return False
 
+def getBackgroundCheckData(volunteer):
+    """
+    Sets up the background check to be used in the Volunteer Profile table
+    """
+    allUserEntries = BackgroundCheck.select().where(BackgroundCheck.user == volunteer)
+    backgroundTypes = BackgroundCheckType.select()
+
+    return allUserEntries, backgroundTypes
+
 def setUserBackgroundCheck(user,bgType, checkPassed):
     today = date.today()
     user = User.get_by_id(user)
@@ -92,3 +104,9 @@ def setUserBackgroundCheck(user,bgType, checkPassed):
     update = BackgroundCheck.create(user=user, type=bgType, passBackgroundCheck=checkPassed, datePassed=today)
     update.save()
     createLog(f"Updated {user.firstName} {user.lastName}'s background check for {bgType} to {bool(checkPassed)}.")
+
+def getVolunteerTableColumns(volunteer):
+    interests = Interest.select().where(Interest.user == volunteer)
+    rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == volunteer)
+    studentManagerPrograms = StudentManager.select().where(StudentManager.user == volunteer)
+    return interests, rsvpedEventsList, studentManagerPrograms

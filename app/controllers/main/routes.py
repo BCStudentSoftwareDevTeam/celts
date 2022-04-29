@@ -5,18 +5,11 @@ import json
 from app import app
 from app.models.program import Program
 from app.models.event import Event
-from app.models.backgroundCheck import BackgroundCheck
-from app.models.backgroundCheckType import BackgroundCheckType
 from app.models.user import User
-from app.models.eventParticipant import EventParticipant
-from app.models.interest import Interest
 from app.models.event import Event
 from app.models.programBan import ProgramBan
-from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
-from app.models.note import Note
-from app.models.studentManager import StudentManager
 from app.controllers.main import main_bp
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
@@ -24,6 +17,7 @@ from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
 from app.logic.manageSLFaculty import getCourseDict
+from app.logic.volunteers import getBackgroundCheckData, getVolunteerTableColumns
 
 @main_bp.route('/', methods=['GET'])
 def redirectToEventsList():
@@ -55,8 +49,9 @@ def events(selectedTerm):
         currentTime = currentTime,
         user = g.current_user)
 
-@main_bp.route('/profile/<username>', methods=['GET'])
-def viewVolunteersProfile(username):
+@main_bp.route('/profile/<username>', defaults={'fullList': ''})
+@main_bp.route('/profile/<username>/<fullList>', methods=['GET'])
+def viewVolunteersProfile(username, fullList):
     """
     This function displays the information of a volunteer to the user
     """
@@ -67,21 +62,19 @@ def viewVolunteersProfile(username):
 
     if (g.current_user == volunteer) or g.current_user.isAdmin:
         upcomingEvents = getUpcomingEventsForUser(volunteer)
-        programs = Program.select()
-        interests = Interest.select().where(Interest.user == volunteer)
+        
+        interests, rsvpedEventsList, studentManagerPrograms = getVolunteerTableColumns(volunteer)
+
         programsInterested = [interest.program for interest in interests]
-
-        rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == volunteer)
         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
-
-        studentManagerPrograms = list(StudentManager.select().where(StudentManager.user == volunteer))
-        permissionPrograms = [entry.program.id for entry in studentManagerPrograms]
-
-        allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == volunteer))
-        completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
-        backgroundTypes = list(BackgroundCheckType.select())
-
+        permissionPrograms = [entry.program.id for entry in list(studentManagerPrograms)]
         eligibilityTable = []
+
+        if fullList == 'fullList':
+            programs = Program.select()
+        else:
+            programs = Program.select().limit(4)
+
         for program in programs:
             notes = ProgramBan.select().where(ProgramBan.user == volunteer,
                                               ProgramBan.program == program,
@@ -99,7 +92,27 @@ def viewVolunteersProfile(username):
                 permissionPrograms = permissionPrograms,
                 eligibilityTable = eligibilityTable,
                 volunteer = volunteer,
-                backgroundTypes = backgroundTypes,
+                fullList = fullList
+            )
+    abort(403)
+
+@main_bp.route('/profile/<username>/backgroundCheck', methods=['GET'])
+def viewBackgroundCheck(username):
+    """
+    This function displays the information of a volunteer to the user
+    """
+    try:
+        volunteer = User.get(User.username == username)
+    except Exception as e:
+        return "User does not exist", 404
+
+    if (g.current_user == volunteer) or g.current_user.isAdmin:
+        allUserEntries, backgroundTypes = getBackgroundCheckData(volunteer)
+        completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in list(allUserEntries)}
+
+        return render_template ("/main/backgroundCheck.html",
+                volunteer = volunteer,
+                backgroundTypes = list(backgroundTypes),
                 completedBackgroundCheck = completedBackgroundCheck
             )
     abort(403)
@@ -246,8 +259,6 @@ def searchUser(query):
     '''Accepts user input and queries the database returning results that matches user search'''
     try:
         query = query.strip()
-        search = query.upper()
-        splitSearch = search.split()
         searchResults = searchUsers(query)
         return searchResults
     except Exception as e:
