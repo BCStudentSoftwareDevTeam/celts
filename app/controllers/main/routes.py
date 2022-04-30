@@ -262,7 +262,7 @@ def contributors():
     return render_template("/contributors.html")
 
 
-
+@main_bp.route('/manageServiceLearning', methods = ['GET', 'POST'])
 @main_bp.route('/manageServiceLearning/<term>', methods = ['GET', 'POST'])
 def getAllCourseIntructors(term=None):
     """

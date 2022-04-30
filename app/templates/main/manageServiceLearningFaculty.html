@@ -18,7 +18,7 @@
   <div class ="container">
     <a class="skipContent" href="#backButton" tabindex="1" style="top:8%">Click to Skip</a>
     <div class="contributors" align="center">
-      <h2 class="text-center mt-5 mb-3">Manage Service Learning Faculty</h2>
+      <h1 class="text-center mt-5 mb-3">Manage Service Learning Faculty</h1>
   <table class="table table-striped" id="myTable">
       <thead>
         <tr class="header">
@@ -35,14 +35,15 @@
     {% endfor %}
     </tbody>
   </table>
+</div>
 
-
-<div>
+<div class="text-center">
   <button type="button" class="btn btn-primary" disabled> Email all</button>
 </div>
 
+</div>
 <div id="content">
-  <h2 class="text-center pt-1 pb-4">Service Learning Course Proposal Management</h2>
+  <h1 class="text-center pt-1 pb-4">Service Learning Course Proposal Management</h1>
   <div class="text-center">
     <form id="termSelector" action="" method="post">
       <select class="w-25" id="selectTerm" onchange="formSubmit(this.value)">
@@ -126,5 +127,5 @@
     <button class="btn btn-primary"> Send to Registrar</button>
   </div>
 </div>
-
+</div>
 {% endblock %}
