@@ -30,7 +30,7 @@
     <tbody id = "facultyTable">
     {% for instructor in courseInstructors%}
         <tr>
-          <td> <a href=" /courseManagement" class="link-primary">{{instructor.firstName }} {{instructor.lastName}}</a></td>
+          <td> {{instructor.firstName }} {{instructor.lastName}}</td>
           <td>{{(', '.join(courseInstructors[instructor]))}}</td>
         </tr>
     {% endfor %}
