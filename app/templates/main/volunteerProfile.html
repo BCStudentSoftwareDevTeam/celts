@@ -80,7 +80,7 @@
                     <i class="bi bi-check-lg float-left"></i>
                   {% else %}
                     <i class="bi bi-x-lg"></i>&nbsp&nbsp&nbsp
-                    <a class="trainingPopover" id="{{program.program.id}}" href="#" data-toggle="popover" title="Required Trainings" data-content= "{{trainingListView() |safe}}">View</a>
+                    <a class="trainingPopover" id="{{program.program.id}}" href="#" data-toggle="popover" title="Required Trainings" data-content= "{{trainingListView()}}">View</a>
                   {% endif %}
                 </td>
                 {% if g.current_user.isCeltsAdmin %}
