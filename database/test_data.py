@@ -832,6 +832,13 @@ emailTemplates = [
     'action': 'sent',
     'purpose': 'Test2',
     'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
+    },
+    {
+    'subject': 'Event Reminder',
+    'body': 'Hello {name}, This is a reminder that the {event_name} event will be occuring soon. Other info: {start_date}-{end_date} and this event starts at {start_time}-{end_time}',
+    'action':'sent',
+    'purpose':'Test Event Reminder',
+    'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
     }
 ]
 

@@ -14,6 +14,7 @@ from app.models.interest import Interest
 from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
 from app.logic.adminLogs import createLog
+from app.controllers.events.routes import email
 
 
 def getEvents(program_id=None):
@@ -100,8 +101,8 @@ def saveEventToDb(newEventData):
 
             eventRecords.append(eventRecord)
 
-        # if eventInstance['sendReminder']:
-        #     sendReminder(eventData)
+        if eventInstance['sendReminder']:
+            sendReminder(eventData)
         # else:
         #     print("\n\n\n\n You should NOT send a reminder for this event \n\n\n")
 
@@ -113,6 +114,12 @@ def sendReminder(eventData):
 
     eventData: data for the event that is being created or updated
     """
+    eventData['template_identifier'] = 'Event Reminder'
+    try:
+        emailSent = email(isReminderEmail=True,eventData=eventData)
+    except Excption as e:
+        print(f"\n\n{e}\n\n")
+        # raise Exception('Unable to schedule reminder email')
     print("\n\n\n\n You should send a reminder for this event \n\n\n")
 
 

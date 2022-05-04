@@ -25,32 +25,41 @@ def showUpcomingEvent():
                             upcomingEvents = upcomingEvents)
 
 @events_bp.route('/email', methods=['POST'])
-def email():
-    raw_form_data = request.form.copy()
+def email(isReminderEmail=False,eventData=None):
+
+    if isReminderEmail:
+        raw_form_data = eventData
+    else:
+        raw_form_data = request.form.copy()
     if "@" in raw_form_data['emailSender']:
         # when people are sending emails as themselves (using mailto) --- Q: are we still going with the mailto option?
         pass
     else:
         url_domain = urlparse(request.base_url).netloc
-        # TODO: create a test for celery... idk how but prob needed
         # TODO: let the user know that a reminder email was sent (there is a section in the email modal for last email sent)
         # TODO: Wait, should facilitators also get the emails???
 
         eventID = raw_form_data['eventID']
         event = Event.get_by_id(eventID)
         eventDateTime = datetime.combine(event.startDate, event.timeStart)
-        arrivalDate = eventDateTime - timedelta(days=1)
-        # mailSent = sendEmailTask.apply_async(args=[raw_form_data, url_domain], eta=arrivalDate, expires=eventDateTime)
+        arrivalDate = eventDateTime - timedelta(days=1) # what day the email should be sent
+        secondsRemaining = (arrivalDate- datetime.utcnow() - timedelta(hours=4)).total_seconds() #in how many seconds the email should be sent
 
         # TODO: trying to get the final state of the task, so we can check
         # if it was successful or not.
-        mailSent = sendEmailTask.apply_async(args=[raw_form_data, url_domain], countdown=3)
-        print(mailSent.state)
-        # if mail_sent:
-        #     message, status = 'Email successfully sent!', 'success'
-        # else:
-        #     message, status = 'Error sending email', 'danger'
-        # flash(message, status)
+
+        if isReminderEmail:
+            mailSent = sendEmailTask.apply_async(args=[raw_form_data, url_domain], countdown=secondsRemaining, expires=eventDateTime)
+        else:
+            mailSent = sendEmailTask.apply_async(args=[raw_form_data, url_domain])
+        # print(f"\n\n mailSent? {mailSent.state} \n\n")
+
+        #TODO:: this check might not work
+        if mail_sent['stauts']:
+            message, status = 'Email successfully sent!', 'success'
+        else:
+            message, status = 'Error sending email', 'danger'
+        flash(message, status)
         return redirect(url_for("main.events", selectedTerm = raw_form_data['selectedTerm']))
 
 @events_bp.route('/eventsList/<eventid>/kiosk', methods=['GET'])
