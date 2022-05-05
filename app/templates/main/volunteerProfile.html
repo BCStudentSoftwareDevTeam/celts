@@ -182,7 +182,7 @@
 <!-- End Background Check Table -->
 
 <!-- Ban or Unban Modal -->
-  <div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
+<div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
   <form onsubmit="return validate();">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -191,9 +191,9 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" style="align=center">
-          <h6 align="left">{{volunteer.firstName}} {{volunteer.lastName}}</h6>
-          <h6 align="left">{{volunteer.email}}</h6>
-          <h6 align="left"><a href="tel:{{volunteer.phoneNumber}}">{{volunteer.phoneNumber}}</a></h6>
+          <h6 align="left">Full Name: {{volunteer.firstName}} {{volunteer.lastName}} </h6>
+          <h6 align="left">Email Address: {{volunteer.email}}</h6>
+          <h6 align="left">Phone Number: <a href="tel:{{volunteer.phoneNumber}}">{{volunteer.phoneNumber}}</a></h6>
           <div id="banNoteDiv">
             <h6 align="left">Reason for ban:</h6>
             <p align="left" id="banNote">Why the student was banned</p>
@@ -207,16 +207,13 @@
             </div>
           </div>
         </div>
-
-		  <div class="modal-footer justify-content-between">
-			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-			<button id="banButton" type="button" class="btn btn-danger" data-banOrUnban="" >Ban/Unban Volunteer</button>
-		  </div>
+  		  <div class="modal-footer justify-content-between">
+    			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    			<button id="banButton" type="button" class="btn btn-danger" data-banOrUnban="" >Ban/Unban Volunteer</button>
+  		  </div>
       </div>
-
     </div>
-  </div>
-</form>
+  </form>
 </div>
 {% endblock %}
 <!-- End Ban or Unban Modal -->
