@@ -14,7 +14,8 @@ from app.models.interest import Interest
 from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
 from app.logic.adminLogs import createLog
-from app.controllers.events.routes import email
+from app.logic.tasks import sendEmailTask
+# from app.controllers.events.routes import email
 
 
 def getEvents(program_id=None):
@@ -116,7 +117,11 @@ def sendReminder(eventData):
     """
     eventData['template_identifier'] = 'Event Reminder'
     try:
-        emailSent = email(isReminderEmail=True,eventData=eventData)
+        url_domain='celts.com' #TODO: WHAT IS THE URL FOR THE WEBSITE?
+        eventDateTime = datetime.combine(eventData.startDate, eventData.timeStart)
+        arrivalDate = eventDateTime - timedelta(days=1) # what day the email should be sent
+        secondsRemaining = (arrivalDate- datetime.utcnow() - timedelta(hours=4)).total_seconds() #in how many seconds the email should be sent
+        mailSent = sendEmailTask.apply_async(args=[raw_form_data, url_domain], countdown=secondsRemaining, expires=eventDateTime)
     except Excption as e:
         print(f"\n\n{e}\n\n")
         # raise Exception('Unable to schedule reminder email')

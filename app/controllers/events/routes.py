@@ -27,10 +27,8 @@ def showUpcomingEvent():
 @events_bp.route('/email', methods=['POST'])
 def email(isReminderEmail=False,eventData=None):
 
-    if isReminderEmail:
-        raw_form_data = eventData
-    else:
-        raw_form_data = request.form.copy()
+
+    raw_form_data = request.form.copy()
     if "@" in raw_form_data['emailSender']:
         # when people are sending emails as themselves (using mailto) --- Q: are we still going with the mailto option?
         pass
@@ -45,13 +43,10 @@ def email(isReminderEmail=False,eventData=None):
         arrivalDate = eventDateTime - timedelta(days=1) # what day the email should be sent
         secondsRemaining = (arrivalDate- datetime.utcnow() - timedelta(hours=4)).total_seconds() #in how many seconds the email should be sent
 
+
+        mailSent = sendEmailTask.apply_async(args=[raw_form_data, url_domain])
         # TODO: trying to get the final state of the task, so we can check
         # if it was successful or not.
-
-        if isReminderEmail:
-            mailSent = sendEmailTask.apply_async(args=[raw_form_data, url_domain], countdown=secondsRemaining, expires=eventDateTime)
-        else:
-            mailSent = sendEmailTask.apply_async(args=[raw_form_data, url_domain])
         # print(f"\n\n mailSent? {mailSent.state} \n\n")
 
         #TODO:: this check might not work
