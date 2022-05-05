@@ -37,20 +37,13 @@ def email(isReminderEmail=False,eventData=None):
         # TODO: let the user know that a reminder email was sent (there is a section in the email modal for last email sent)
         # TODO: Wait, should facilitators also get the emails???
 
-        eventID = raw_form_data['eventID']
-        event = Event.get_by_id(eventID)
-        eventDateTime = datetime.combine(event.startDate, event.timeStart)
-        arrivalDate = eventDateTime - timedelta(days=1) # what day the email should be sent
-        secondsRemaining = (arrivalDate- datetime.utcnow() - timedelta(hours=4)).total_seconds() #in how many seconds the email should be sent
-
-
         mailSent = sendEmailTask.apply_async(args=[raw_form_data, url_domain])
         # TODO: trying to get the final state of the task, so we can check
         # if it was successful or not.
         # print(f"\n\n mailSent? {mailSent.state} \n\n")
 
         #TODO:: this check might not work
-        if mail_sent['stauts']:
+        if mail_sent['status']:
             message, status = 'Email successfully sent!', 'success'
         else:
             message, status = 'Error sending email', 'danger'

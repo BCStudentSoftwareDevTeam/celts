@@ -103,15 +103,15 @@ def saveEventToDb(newEventData):
             eventRecords.append(eventRecord)
 
         if eventInstance['sendReminder']:
-            sendReminder(eventData)
+            scheduleReminder(eventData)
         # else:
         #     print("\n\n\n\n You should NOT send a reminder for this event \n\n\n")
 
     return eventRecords
 
-def sendReminder(eventData):
+def scheduleReminder(eventData):
     """
-    send a remineder email for each future event
+    schedule a remineder email for each future event
 
     eventData: data for the event that is being created or updated
     """
