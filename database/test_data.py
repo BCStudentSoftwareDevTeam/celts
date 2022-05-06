@@ -23,7 +23,7 @@ from app.models.note import Note
 from app.models.studentManager import StudentManager
 from app.models.emailTemplate import EmailTemplate
 from app.models.backgroundCheck import BackgroundCheck
-from app.models.matchParticipants import EventOutsideParticipants
+from app.models.EventOutsideParticipants import EventOutsideParticipants
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.adminLogs import AdminLogs
 
