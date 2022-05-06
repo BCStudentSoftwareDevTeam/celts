@@ -11,10 +11,11 @@ from app.models.programEvent import ProgramEvent
 from app.logic.volunteers import addVolunteerToEventRsvp
 from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours, updateEventParticipants
-from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
+from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents,matchVolunteers
 from app.logic.participants import sendUserData
 from app.logic.participants import getEventParticipants
 from app.models.eventRsvp import EventRsvp
+from app.models.EventOutsideParticipants import EventOutsideParticipants
 
 @pytest.mark.integration
 def test_getEventLengthInHours():

@@ -23,7 +23,8 @@ from app.models.note import Note
 from app.models.studentManager import StudentManager
 from app.models.emailTemplate import EmailTemplate
 from app.models.backgroundCheck import BackgroundCheck
-# from app.models.backgroundCheckType import BackgroundCheckType
+from app.models.EventOutsideParticipants import EventOutsideParticipants
+from app.models.outsideParticipant import OutsideParticipant
 from app.models.adminLogs import AdminLogs
 
 
@@ -131,9 +132,11 @@ users = [
         "phoneNumber": "8599858594",
         "isCeltsStudentStaff": True
     },
+
 ]
 
 User.insert_many(users).on_conflict_replace().execute()
+
 
 terms = [
     {
@@ -852,6 +855,64 @@ background = [
     },
 ]
 BackgroundCheck.insert_many(background).on_conflict_replace().execute()
+
+
+outsideParticipants = [
+        {
+            "email": "maryjones@example.gmail.com",
+            "firstName": "Mary",
+            "lastName": "Jones",
+            "phoneNumber": "859965452"
+        },
+        {
+            "email": "moorek@example.gmail.com",
+            "firstName": "Moore",
+            "lastName": "Katelyn",
+            "phoneNumber": "859945452"
+        },
+        {
+            "email": "jonesm@example.gmail.com",
+            "firstName": "Kacy",
+            "lastName": "Madison",
+            "phoneNumber": "859978452"
+        },
+        {
+            "email": "gracen@example.gmail.com",
+            "firstName": "Grace",
+            "lastName": "Nicholas",
+            "phoneNumber": "859978452"
+        },
+        {
+            "email": "isaacp@example.gmail.com",
+            "firstName": "Isaac",
+            "lastName": "White",
+            "phoneNumber": "859988452"
+        },
+        {
+            "email": "jefft@example.gmail.com",
+            "firstName": "Jefferson",
+            "lastName": "Thomas",
+            "phoneNumber": "859978452"
+        },
+]
+
+OutsideParticipant.insert_many(outsideParticipants).on_conflict_replace().execute()
+
+eventMatches = [
+    {
+    "outsideParticipant": "maryjones@example.gmail.com",
+    "event":7
+    },
+    {
+    "outsideParticipant": "moorek@example.gmail.com",
+    "event":7
+    },
+    {
+    "outsideParticipant": "jonesm@example.gmail.com",
+    "event":7
+    },
+]
+EventOutsideParticipants.insert_many(eventMatches).on_conflict_replace().execute()
 
 logs = [
    {

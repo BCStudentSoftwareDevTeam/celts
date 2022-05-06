@@ -6,6 +6,7 @@ from app.models.eventRsvp import EventRsvp
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.models.eventParticipant import EventParticipant
+from app.models.EventOutsideParticipants import EventOutsideParticipants
 from app.logic.users import isEligibleForProgram
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import getStartofCurrentAcademicYear
@@ -101,3 +102,10 @@ def getEventParticipants(event):
         .where(EventParticipant.event==event))
 
     return {p.user.username: p.hoursEarned for p in eventParticipants}
+
+def getOutsideParticipants(event):
+    outsideParticipants = (EventOutsideParticipants
+        .select()
+        .where(EventOutsideParticipants.event==event))
+    outsideParticipants = [entry.outsideParticipant for entry in outsideParticipants ]
+    return outsideParticipants

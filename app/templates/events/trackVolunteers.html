@@ -4,6 +4,7 @@
   {{super()}}
   <script type="module" src="/static/js/trackVolunteers.js"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/r-2.2.9/datatables.min.js"></script>
+
 {% endblock %}
 
 {% block styles %}
@@ -31,30 +32,35 @@
     </li>
   </ul>
 </div>
-<label class='d-none' id="eventLength">{{eventLength}}</label>
-<input class="form-control" id="eventID" name="event" value="{{event}}" type='hidden' />
-<div class="flex-container" style="padding: 5px;">
-  <div class='form-group d-inline-flex'>
-    <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add volunteer</a>
-    <a class="btn btn-warning" role="button" href= "/eventsList/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
+
+<h2 class ="text-center"> Volunteers </h2>
+<form action="#" method="post"><br>
+  <label class='d-none' id="eventLength">{{eventLength}}</label>
+  <input class="form-control" id="eventID" name="event" value="{{event}}" type='hidden' />
+  <div class="flex-container" style="padding: 5px;">
+    <div class='form-group d-inline-flex'>
+      <a class="btn btn-success" id="addVolunteerButton" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;" >Add volunteer</a>
+      <a class="btn btn-warning" role="button" href= "/event/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
   </div>
 </div>
 <form method="post">
   <label class='d-none' id="eventLength">{{eventLength}}</label>
   <input class="form-control" id="eventID" name="event" value="{{event}}" type='hidden'>
   <table class="table" id="trackVolunteerstable">
-    <thead>
+   <thead>
       <tr>
         <th>Name</th>
         <th>Email</th>
         <th>Phone Number</th>
         <th class="noSort">Completed Trainings?</th>
-        <th class="noSort">Total Hours</th>
+        <th>Total Hours</th>
         <th class="noSort">Present</th>
         <th class="noSort">Remove Volunteer</th>
+        <th></th>
       </tr>
     </thead>
     <tbody class="align-middle" id="volunteerTable">
+      {% set accordionCount = namespace(value=1) %}
       {% for participant in eventRsvpData%}
       <tr>
         <td>
@@ -66,7 +72,8 @@
             value="{{participant.user}}" />
             {{participant.user.firstName}} {{participant.user.lastName}}
         </td>
-        <td>{{participant.user.email}}</td>
+        <td>{{participant.user.email}}
+        </td>
         <td>{{participant.user.phoneNumber}}</td>
         <td style="text-align:center">
           {% if participant.user.username not in trainedParticipantsList %}
@@ -90,24 +97,24 @@
               value="{{eventParticipants[participant.user.username]}}"
             {% else %} disabled {% endif %} />
         </td>
-        <td style="text-align:center">
-          <input
-            type="checkbox"
-            class='attendanceCheck'
-            name="checkbox_{{participant.user.username}}"
-            {% if participant.user.username in eventParticipants %}
-              checked
-            {% endif %} />
-        </td>
-        <td style="text-align:center">
-          <button
-            type="button"
-            class="removeVolunteer btn btn-danger btn-sm"
-            id="{{participant.user.username}}"
-            aria-label="remove volunteer">
-              <i class="bi bi-trash h5 align-middle"></i>
-          </button>
-        </td>
+
+          <td style="text-align:center">
+            <input
+              type="checkbox"
+              class='attendanceCheck'
+              name="checkbox_{{participant.user.username}}"
+              {% if participant.user.username in eventParticipants %}
+                checked
+              {% endif %} />
+          </td>
+
+          <td>
+            <span
+              class="removeVolunteer"
+              id="{{participant.user.username}}">
+                <i class="bi bi-trash h5 align-middle"></i>
+            </span>
+          </td>
       </tr>
       {% endfor %}
      </tbody>
@@ -116,12 +123,61 @@
     <button type="submit" class="btn btn-primary float-end">Save</button>
   </div>
 </form>
+
+<!-- Outside Participant -->
+<h2 class ="text-center">Outside Participants</h2>
+<form action="#" method="post"><br>
+  <label class='d-none' id="eventLength">{{eventLength}}</label>
+  <input  class="form-control" id="eventID" name="event" value="{{event}}" type='hidden'>
+  <div class="flex-container" style="padding: 5px;">
+    <div class='form-group d-inline-flex'>
+      <a class="btn btn-success" id="addOutsideParticipantButton" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add Outside Participant</a>
+</div>
+<form method="post"><br>
+  <label class='d-none' id="eventLength">{{eventLength}}</label>
+  <input  class="form-control" id="eventID" name="event" value="{{event}}" type='hidden'>
+  <table class="table" id="trackOutsideParticipants">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone Number</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="volunteerTable">
+      {% for participant in outsideParticipants%}
+      <tr>
+        <td>
+          <input
+            class="form-control"
+            type='hidden'
+            name="username{{loop.index|string}}"
+            id="{{participant.email}}"
+            value="{{participant.email}}" />
+            {{participant.firstName}} {{participant.lastName}}
+        </td>
+        <td>{{participant.email}}</td>
+        <td>{{participant.phoneNumber}}</td>
+        <td>
+          <span
+            class="removeParticipant"
+            id="{{participant.email}}">
+              <i class="bi bi-trash h5 align-middle"></i>
+          </span>
+        </td>
+      </tr>
+      {% endfor %}
+     </tbody>
+    </table>
+</form>
+
 <!-- Modal -->
-<div class="modal fade float-start" id="addVolunteerModal" tabindex="-1" aria-labelledby="addVolunteerModalLabel" aria-hidden="true">
+ <div class="modal fade float-start" id="addVolunteerModal" tabindex="-1" aria-labelledby="addVolunteerModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add a volunteer</h5>
+        <h5 class="modal-title" id="addVolunteerModalText">Add a volunteer</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -141,4 +197,5 @@
     </div>
   </div>
 </div>
+
 {% endblock %}
