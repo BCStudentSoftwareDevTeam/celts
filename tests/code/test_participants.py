@@ -15,7 +15,7 @@ from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents,ma
 from app.logic.participants import sendUserData
 from app.logic.participants import getEventParticipants
 from app.models.eventRsvp import EventRsvp
-from app.models.matchParticipants import EventOutsideParticipants
+from app.models.EventOutsideParticipants import EventOutsideParticipants
 
 @pytest.mark.integration
 def test_getEventLengthInHours():

@@ -132,8 +132,6 @@ $(".removeParticipant").on("click", function() {
 $(".removeVolunteer").on("click", function() {
   let username =  $(this)[0].id;
   let eventId = $('#eventID').val();
-  console.log("This is the username",username);
-  console.log("This is the eventID",eventId);
   $.ajax({
     url: `/removeVolunteerFromEvent/${username}/${eventId}`,
     type: "POST",

@@ -6,7 +6,7 @@ from app.models.eventRsvp import EventRsvp
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.models.eventParticipant import EventParticipant
-from app.models.matchParticipants import EventOutsideParticipants
+from app.models.EventOutsideParticipants import EventOutsideParticipants
 from app.logic.users import isEligibleForProgram
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import getStartofCurrentAcademicYear

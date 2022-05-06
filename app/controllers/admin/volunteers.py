@@ -6,7 +6,7 @@ from app.controllers.admin import admin_bp
 from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
-from app.models.matchParticipants import EventOutsideParticipants
+from app.models.EventOutsideParticipants import EventOutsideParticipants
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck
 from app.logic.participants import trainedParticipants, getEventParticipants,getOutsideParticipants
