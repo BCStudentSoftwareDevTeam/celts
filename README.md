@@ -13,8 +13,8 @@ Python 3.7+
 2. Run ```source setup.sh```
 3. Ensure mysql is running. You may need to do ```sudo systemctl start mysql``` (Linux) or ```brew services start mysql``` (Mac OS with Homebrew)
 4. Match your MySQL configuration to the application config. You can either:
-  - Update MySQL to include the database, username, and password in ```app/config/default.yml```. OR...
-  - Copy the ```db``` configuration lines from ```app/config/default.yml``` and paste them into ```app/config/development.yml```. Edit them to create custom database, username, and password configurations. They will need to match what is in your MySQL service.  
+    - Update MySQL to include the database, username, and password in ```app/config/default.yml```. OR...
+    - Copy the ```db``` configuration lines from ```app/config/default.yml``` and paste them into ```app/config/development.yml```. Edit them to create custom database, username, and password configurations. They will need to match what is in your MySQL service.  
 5. In the database directory, run ```./reset_database.sh test```. Use ```real``` instead of ```test``` to use production data.
 6. Run the app with ```flask run``` in the root directory
 
