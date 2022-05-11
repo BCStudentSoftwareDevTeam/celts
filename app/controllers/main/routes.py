@@ -281,6 +281,7 @@ def getAllCourseIntructors(term=None):
 
         return render_template('/main/manageServiceLearningFaculty.html',
                                 courseInstructors = courseDict,
+                                facultyInstructors = courseDict,
                                 pendingCourses = pending,
                                 approvedCourses = approved,
                                 terms = terms,

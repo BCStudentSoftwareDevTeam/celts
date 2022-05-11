@@ -21,6 +21,9 @@
     <div class="contributors" align="center">
       <h1 class="text-center mt-5 mb-3">Manage Service Learning Faculty</h1>
   <table class="table table-striped" id="myTable">
+    <div align="right">
+      <button type="button" class="ban btn btn-link">Add Instructor</button>
+    </div>
       <thead>
         <tr class="header">
           <th scope = "col">Name</th>
@@ -32,6 +35,12 @@
         <tr>
           <td> {{instructor.firstName }} {{instructor.lastName}}</td>
           <td>{{(', '.join(courseInstructors[instructor]))}}</td>
+        </tr>
+    {% endfor %}
+    {% for user in facultyInstructors %}
+        <tr>
+          <td> {{user.firstName }} {{user.lastName}}</td>
+          <td>{{(', '.join(facultyInstructors[user]))}}</td>
         </tr>
     {% endfor %}
     </tbody>
@@ -129,5 +138,24 @@
   </div>
   </div>
 </div>
+</div>
+<div class="modal fade" id="addInstructorModal" tabindex="-1" aria-labelledby="addInstructorModalLabel" aria-hidden="true" style="width:-60px;">
+  <form onsubmit="return validate();">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Course Instructor</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" style="align=center">
+          <label for="fullName">Full Name: </label>
+          <input type="<textarea name="fullName" rows="8" cols="80"></textarea>><br>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </form>
 </div>
 {% endblock %}
