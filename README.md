@@ -1,7 +1,7 @@
 # Flask application to manage CELTS programs
 
 ## Requirements
-Python 3.7+ 
+Python 3.7+
 
 **Packages (Ubuntu)**
  * python3-dev
@@ -12,8 +12,11 @@ Python 3.7+
 1. Pull down the repo in your home directory: ```git clone <URL>```
 2. Run ```source setup.sh```
 3. Ensure mysql is running. You may need to do ```sudo systemctl start mysql``` (Linux) or ```brew services start mysql``` (Mac OS with Homebrew)
-4. In the database directory, run ```./reset_database.sh test```. Use ```real``` instead of ```test``` to use production data.
-5. Run the app with ```flask run``` in the root directory
+4. Match your MySQL configuration to the application config. You can either:
+  a. Update MySQL to include the database, username, and password in ```app/config/default.yml```. OR...
+  b. Copy the ```db``` configuration lines from ```app/config/default.yml``` and paste them into ```app/config/development.yml```. Edit them to create custom database, username, and password configurations. They will need to match what is in your MySQL service.  
+5. In the database directory, run ```./reset_database.sh test```. Use ```real``` instead of ```test``` to use production data.
+6. Run the app with ```flask run``` in the root directory
 
 ## Testing
 Test should be added in `tests/code/`, logically grouped into files named `test_EXAMPLE.py`. you can run tests individually with `pytest`, or run the entire suite with `tests/run_tests.sh`. The most common usage will be to run the non-ui tests continually by running `tests/monitor.sh no-ui` from the root directory of the repo. Where possible, use TDD and write your test before the code that makes it pass. Follow the Fail - Implement - Pass cycle.
