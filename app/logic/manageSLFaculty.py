@@ -17,3 +17,6 @@ def getCourseDict():
     for u in facultyInstructors:
         user_dict.setdefault(i.user, []).append(i.course.courseName)
     return user_dict
+
+def createNewInstructor(instructor_info):
+    pass

@@ -281,10 +281,21 @@ def getAllCourseIntructors(term=None):
 
         return render_template('/main/manageServiceLearningFaculty.html',
                                 courseInstructors = courseDict,
-                                facultyInstructors = courseDict,
                                 pendingCourses = pending,
                                 approvedCourses = approved,
                                 terms = terms,
                                 term = term)
     else:
         abort(403)
+
+@main_bp.route('/addInstructor', methods = ['POST'])
+def addInstructor():
+    print("got in here")
+    new_instructor_info = request.form
+    print(postData["username"])
+    print(postData["bnumber"])
+    print(postData["email"])
+    print(postData["phoneNumber"])
+    print(postData["firstName"])
+    print(postData["lastName"])
+    return ""
