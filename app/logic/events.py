@@ -176,7 +176,6 @@ def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
 
 def getAllFacilitators():
     facilitators = User.select(User).where((User.isFaculty == 1) | (User.isCeltsAdmin == 1) | (User.isCeltsStudentStaff == 1)).order_by(User.username) # ordered because of the tests
-
     return facilitators
 
 def validateNewEventData(data):
