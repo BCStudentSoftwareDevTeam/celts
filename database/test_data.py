@@ -168,7 +168,7 @@ terms = [
         "year": 2021,
         "academicYear": "2020-2021",
         "isSummer": False,
-        "isCurrentTerm": True
+        "isCurrentTerm": False
     },
     {
         "id": 4,
@@ -176,7 +176,7 @@ terms = [
         "year": 2021,
         "academicYear": "2020-2021",
         "isSummer": True,
-        "isCurrentTerm": False
+        "isCurrentTerm": True
     },
     {
         "id": 5,
@@ -703,6 +703,11 @@ eventParticipants = [
         "user": "khatts",
         "event": 3,
         "hoursEarned": 3,
+    },
+    {
+        "user" : "ayisie",
+        "event" : 1,
+        "hoursEarned" : None,
     },
     {
         "user": "partont",
