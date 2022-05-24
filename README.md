@@ -1,12 +1,13 @@
 # Flask application to manage CELTS programs
 
 ## Requirements
-Python 3.7+
+ * Python 3.7+
 
 **Packages (Ubuntu)**
  * python3-dev
  * python3-pip
  * python3-venv
+ * mysql-server
 
 ## Developing on CELTS
 1. Pull down the repo in your home directory: ```git clone <URL>```
