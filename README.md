@@ -7,6 +7,12 @@ Python 3.7+
  * python3-dev
  * python3-pip
  * python3-venv
+ * mysql-server
+
+**Assumptions**
+ * Mac OS or Linux
+ * mysql ```root``` user is accessible by a non-root OS user, with password ```root``` (in order to run ```reset_database.sh```
+ * default python is Python 3
 
 ## Developing on CELTS
 1. Pull down the repo in your home directory: ```git clone <URL>```
