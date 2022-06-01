@@ -24,7 +24,7 @@ function header {
 # ui
 function ui {
 	header UI
-	python -m pytest $FLAGS $UI_URLS tests/ui/smoke_test.py tests/ui/functional_test.py
+	python3 -m pytest $FLAGS $UI_URLS tests/ui/smoke_test.py tests/ui/functional_test.py
 	#header functional
 	#python -m pytest $FLAGS $UI_URLS tests/ui/functional_test.py
 }
@@ -32,7 +32,7 @@ function ui {
 # no-ui
 function no_ui {
 	header non-UI
-	python -m pytest $FLAGS -m "unit or integration"
+	python3 -m pytest $FLAGS -m "unit or integration"
 
 	#header integration
 	#python -m pytest $FLAGS -m integration
