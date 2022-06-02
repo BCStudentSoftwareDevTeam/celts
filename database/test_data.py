@@ -138,7 +138,7 @@ users = [
         "firstName": "Scott",
         "lastName": "Heggen",
         "phoneNumber": "8599855555",
-        "isCeltsAdmin": True,
+        "isCeltsAdmin": False,
         "isFaculty": True,
         "isCeltsStudentStaff": False
     }
