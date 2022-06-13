@@ -492,10 +492,10 @@ def test_deleteEvent():
 def test_getAllFacilitators():
     userFacilitator = getAllFacilitators()
     assert len(userFacilitator) >= 1
-    assert userFacilitator[1].username == 'khatts'
-    assert userFacilitator[1].isFaculty == False
-    assert userFacilitator[2].username == "lamichhanes2"
-    assert userFacilitator[2].isFaculty == True
+    assert userFacilitator[0].username == 'khatts'
+    assert userFacilitator[0].isFaculty == False
+    assert userFacilitator[1].username == "lamichhanes2"
+    assert userFacilitator[1].isFaculty == True
 
 @pytest.mark.integration
 def test_getsCorrectUpcomingEvent():
