@@ -123,7 +123,7 @@
                   {% set checked = "checked" %}
             {% endif %}
                   <input  type="checkbox" id="mgr-{{ program.id }}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}','{{action}}')">
-                  <label  style="padding-right:50px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
+                  <label  style="padding-left: 100px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
           {% endfor %}
         </div>
       </div>
@@ -154,6 +154,7 @@
        <tr>
          <th scope="col">Description</th>
          <th scope="col">Completed</th>
+         <th scope="col"> Date Completed </th>
        </tr>
      </thead>
      <tbody>
@@ -166,7 +167,8 @@
                <option value=1>Yes</option>
                <option value=0 {{"selected" if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False}}>No</option>
              </select>
-           </td>
+	 </td>
+   <td> <input type="date" id="{{datePassed}}"> </td>
          {% else %}
            {% if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False%}
               <td>No</td>
