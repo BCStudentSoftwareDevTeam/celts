@@ -17,6 +17,7 @@
         </a>
       </li>
     {% endif %}
+    {% if not g.current_user.isFaculty %}
     <li class="nav-item">
       <a href="/eventsList/{{g.current_term}}"
          class="nav-link text-white {{'active' if 'eventsList' in request.path}}"
@@ -24,6 +25,16 @@
         Events List
       </a>
     </li>
+    {% endif %}
+    {% if g.current_user.isFaculty %}
+    <li>
+      <a href="/serviceLearning/courseManagement"
+         class="nav-link text-white {{'active' if request.path =='/serviceLearning/courseManagement'}}"
+         {{"aria-current='page'" if request.path =='/serviceLearning/courseManagement'}}>
+        Course Proposals
+      </a>
+    </li>
+    {% endif %}
     {% if g.current_user.isAdmin %}
       <li>
         <a href="/eventTemplates"
