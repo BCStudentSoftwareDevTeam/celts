@@ -27,6 +27,7 @@ pem add app.models.emailLog.EmailLog
 pem add app.models.backgroundCheck.BackgroundCheck
 pem add app.models.backgroundCheckType.BackgroundCheckType
 pem add app.models.adminLogs.AdminLogs
+pem add app.models.instructor.Instructor
 
 
 pem watch

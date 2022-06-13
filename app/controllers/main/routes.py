@@ -291,11 +291,11 @@ def getAllCourseIntructors(term=None):
 @main_bp.route('/addInstructor', methods = ['POST'])
 def addInstructor():
     print("got in here")
-    new_instructor_info = request.form
+    postData = request.form
     print(postData["username"])
     print(postData["bnumber"])
     print(postData["email"])
     print(postData["phoneNumber"])
     print(postData["firstName"])
     print(postData["lastName"])
-    return ""
+    return "True"

@@ -1,3 +1,4 @@
+import email
 import pytest
 from peewee import *
 from datetime import datetime
@@ -7,7 +8,7 @@ from app.models.programBan import ProgramBan
 from app.models.note import Note
 from app.models.user import User
 from app.models.programBan import ProgramBan
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram,addInstrutcor
 from app.logic.users import isEligibleForProgram
 
 @pytest.mark.integration
@@ -170,3 +171,16 @@ def test_unbanUser():
     with pytest.raises(Exception):
         status = unbanUser (program_id, username, note, creator)
         assert status == False
+@pytest.mark.integration
+def test_addInstrutcor():
+
+    #test for removing interest
+    username = "ramsayb2"
+    fname = "Brian"
+    lname="qasem"
+    pnum=859
+    bnum="B0075912"
+    email="ala@gmail.com"
+
+    result = addInstrutcor(username,bnum,email,fname,lname,pnum)
+    assert result ==  True

@@ -1,5 +1,8 @@
+from sqlalchemy import true
+from app.models import instructor
 from app.models.programBan import ProgramBan
 from app.models.interest import Interest
+from app.models.instructor import Instructor
 from app.models.note import Note
 import datetime
 
@@ -81,3 +84,9 @@ def unbanUser(program_id, username, note, creator):
                       unbanNote = noteForDb).where(ProgramBan.program == program_id,
                                                    ProgramBan.user == username,
                                                    ProgramBan.endDate >  datetime.datetime.now()).execute()
+
+
+def addInstrutcor(uname, bnum, pNumber, Email, fname,lname):
+    Instructor.get_or_create(username=uname,bnumber=bnum,email=Email,firstName=fname,lastName=lname,phoneNumber=pNumber)
+    return True
+
