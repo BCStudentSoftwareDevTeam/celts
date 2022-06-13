@@ -7,11 +7,17 @@ Python 3.7+
  * python3-dev
  * python3-pip
  * python3-venv
+ * mysql-server
+
+**Assumptions**
+ * Mac OS or Linux
+ * mysql ```root``` user is accessible by a non-root OS user, with password ```root``` (in order to run ```reset_database.sh```
+ * default python is Python 3
 
 ## Developing on CELTS
 1. Pull down the repo in your home directory: ```git clone <URL>```
 2. Run ```source setup.sh```
-3. Ensure mysql is running. You may need to do ```sudo systemctl start mysql``` (Linux) or ```brew services start mysql``` (Mac OS with Homebrew)
+3. Ensure mysql is running. You may need to do ```sudo systemctl start mysql``` or ```/etc/init.d/mysql start``` (Linux) or ```brew services start mysql``` (Mac OS with Homebrew)
 4. In the database directory, run ```./reset_database.sh test```. Use ```real``` instead of ```test``` to use production data.
 5. Run the app with ```flask run``` in the root directory
 
