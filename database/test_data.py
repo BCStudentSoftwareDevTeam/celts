@@ -131,6 +131,17 @@ users = [
         "phoneNumber": "8599858594",
         "isCeltsStudentStaff": True
     },
+    {
+        "username": "heggens",
+        "bnumber": "B00765098",
+        "email": "heggens@berea.edu",
+        "firstName": "Scott",
+        "lastName": "Heggen",
+        "phoneNumber": "8599855555",
+        "isCeltsAdmin": False,
+        "isFaculty": True,
+        "isCeltsStudentStaff": False
+    }
 ]
 
 User.insert_many(users).on_conflict_replace().execute()
@@ -560,6 +571,17 @@ courses = [
         "isPermanentlyDesignated": False,
 
     },
+    {
+        "id": 3,
+        "courseName": "French Help",
+        "term": 4,
+        "status": 3,
+        "courseCredit": "",
+        "createdBy": "",
+        "isAllSectionsServiceLearning": True,
+        "isPermanentlyDesignated": False,
+
+    }
 ]
 Course.insert_many(courses).on_conflict_replace().execute()
 
@@ -579,6 +601,11 @@ courseInstructorRecords = [
         "course": 2,
         "user": "neillz"
     },
+    {
+        "id": 4,
+        "course": 3,
+        "user": "heggens"
+    }
 
 ]
 CourseInstructor.insert_many(courseInstructorRecords).on_conflict_replace().execute()
