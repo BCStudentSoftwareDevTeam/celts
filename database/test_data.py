@@ -138,8 +138,9 @@ users = [
         "firstName": "Scott",
         "lastName": "Heggen",
         "phoneNumber": "8599855555",
-        "isCeltsAdmin": True,
-        "isFaculty": True
+        "isCeltsAdmin": False,
+        "isFaculty": True,
+        "isCeltsStudentStaff": False
     }
 ]
 
@@ -176,7 +177,7 @@ terms = [
         "year": 2021,
         "academicYear": "2020-2021",
         "isSummer": True,
-        "isCurrentTerm": False
+        "isCurrentTerm": True
     },
     {
         "id": 5,
@@ -192,7 +193,7 @@ terms = [
         "year": 2022,
         "academicYear": "2021-2022",
         "isSummer": False,
-        "isCurrentTerm": True
+        "isCurrentTerm": False
     },
 
 ]
@@ -265,19 +266,19 @@ Program.insert_many(programs).on_conflict_replace().execute()
 events = [
     {
         "id": 1,
-        "term": 6,
+        "term": 2,
         "name": "Empty Bowls Spring Event 1",
         "description": "Empty Bowls Spring 2021",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Seabury Center",
-        "startDate": datetime.strptime("2022 5 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 5 13","%Y %m %d")
+        "startDate": datetime.strptime("2021 10 12","%Y %m %d"),
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
     },
     {
         "id": 2,
-        "term": 6,
+        "term": 2,
         "name": "Hunger Hurts",
         "description": "Will donate Food to Community",
         "isTraining": False,
@@ -349,7 +350,7 @@ events = [
     },
     {
         "id": 8,
-        "term": 6,
+        "term": 3,
         "name": "Berea Buddies Second Meeting",
         "description": "Play game to bond with buddy",
         "isTraining": True,
@@ -361,7 +362,7 @@ events = [
     },
     {
         "id": 9,
-        "term": 6,
+        "term": 3,
         "name": "Field Trip with Buddies",
         "description": "A small trip to Berea Farm",
         "isTraining": True,
@@ -570,6 +571,17 @@ courses = [
         "isPermanentlyDesignated": False,
 
     },
+    {
+        "id": 3,
+        "courseName": "French Help",
+        "term": 4,
+        "status": 3,
+        "courseCredit": "",
+        "createdBy": "",
+        "isAllSectionsServiceLearning": True,
+        "isPermanentlyDesignated": False,
+
+    }
 ]
 Course.insert_many(courses).on_conflict_replace().execute()
 
@@ -587,8 +599,13 @@ courseInstructorRecords = [
     {
         "id": 3,
         "course": 2,
-        "user": "heggens"
+        "user": "neillz"
     },
+    {
+        "id": 4,
+        "course": 3,
+        "user": "heggens"
+    }
 
 ]
 CourseInstructor.insert_many(courseInstructorRecords).on_conflict_replace().execute()
@@ -687,6 +704,11 @@ eventParticipants = [
         "user": "khatts",
         "event": 3,
         "hoursEarned": 3,
+    },
+    {
+        "user" : "ayisie",
+        "event" : 1,
+        "hoursEarned" : None,
     },
     {
         "user": "partont",
