@@ -12,6 +12,7 @@ from app.logic.participants import trainedParticipants, getEventParticipants
 from app.models.user import User
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
+from app.models.studentManager import StudentManager
 
 
 
@@ -37,8 +38,7 @@ def trackVolunteersPage(eventID):
 
     trainedParticipantsList = trainedParticipants(program, g.current_term)
     eventParticipants = getEventParticipants(event)
-
-    if not g.current_user.isCeltsAdmin:
+    if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and StudentManager.select().where(StudentManager.user == g.current_user.username, StudentManager.program == eventID))):
         abort(403)
 
     eventRsvpData = (EventRsvp
