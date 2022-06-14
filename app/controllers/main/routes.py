@@ -121,7 +121,8 @@ def ban(program_id, username):
     try:
         banUser(program_id, username, banNote, banEndDate, g.current_user)
         flash("Successfully banned the volunteer", "success")
-        return ""
+        createLog(f'Banned {username}.')
+        return "Success", 200
     except Exception as e:
         print("Error  while updating ban", e)
         flash("Failed to ban the volunteer", "danger")
