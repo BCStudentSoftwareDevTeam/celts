@@ -1,6 +1,6 @@
 from datetime import datetime
 from flask_mail import Mail, Message
-
+from peewee import JOIN
 from app import app
 from app.models.programEvent import ProgramEvent
 from app.models.interest import Interest
@@ -10,6 +10,7 @@ from app.models.eventRsvp import EventRsvp
 from app.models.emailTemplate import EmailTemplate
 from app.models.emailLog import EmailLog
 from app.models.event import Event
+from app.models.programBan import ProgramBan
 
 class EmailHandler:
     def __init__(self, raw_form_data, url_domain):
@@ -94,6 +95,17 @@ class EmailHandler:
             recipients = (User.select()
                 .join(EventRsvp)
                 .where(EventRsvp.event==self.event.id))
+
+        if recipients_category == "Eligible Students":
+            print("here we are")
+            bannedUsers = ProgramBan.select(ProgramBan.user)        # TODO Which program?
+            recipients = (User.select()
+                .join(bannedUsers, JOIN.LEFT_OUTER, on=(ProgramBan.user.username == User.username)) 
+                #.where(bannedUsers is not )
+                .distinct()
+                )
+            print ([bannedUser.user for bannedUser in bannedUsers])
+        print([recipient for recipient in recipients])
 
         return [recipient for recipient in recipients]
 
