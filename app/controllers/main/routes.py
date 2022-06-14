@@ -120,8 +120,9 @@ def ban(program_id, username):
     banEndDate = postData["endDate"] # Contains the date the ban will no longer be effective
     try:
         banUser(program_id, username, banNote, banEndDate, g.current_user)
+        programInfo = Program.get(program_id)
         flash("Successfully banned the volunteer", "success")
-        createLog(f'Banned {username}.')
+        createLog(f'Banned {username} from {programInfo.programName} until {banEndDate}.')
         return "Success", 200
     except Exception as e:
         print("Error  while updating ban", e)
@@ -140,6 +141,9 @@ def unban(program_id, username):
     unbanNote = postData["note"] # This contains the note left about the change
     try:
         unbanUser(program_id, username, unbanNote, g.current_user)
+        programInfo = Program.get(program_id)
+        print("____________________________"+program_id)
+        createLog(f'Unbanned {username} from {programInfo.programName}. ')
         flash("Successfully unbanned the volunteer", "success")
         return "Successfully unbanned the volunteer"
 
