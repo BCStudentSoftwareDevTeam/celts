@@ -26,7 +26,7 @@ def addUserInterest(program_id, username):
     username: username of the user showing interest
     """
     Interest.get_or_create(program = program_id, user = username)
-    return ""
+    return True
 
 def removeUserInterest(program_id, username):
     """
@@ -39,7 +39,7 @@ def removeUserInterest(program_id, username):
     interestToDelete = Interest.get(Interest.program == program_id, Interest.user == username)
     if interestToDelete:
         interestToDelete.delete_instance()
-    return ""
+    return True
 
 
 def banUser(program_id, username, note, banEndDate, creator):
@@ -57,7 +57,7 @@ def banUser(program_id, username, note, banEndDate, creator):
                              createdOn = datetime.datetime.now(),
                              noteContent = note,
                              isPrivate = 0)
-                             
+
     ProgramBan.create(program = program_id,
                       user = username,
                       endDate = banEndDate,
