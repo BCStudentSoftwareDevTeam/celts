@@ -93,7 +93,7 @@ $(document).ready(function(){
         checkPassed : $(this).val(),      // Expected to be either a 0 or a 1
         user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
         bgType: checkType,       // Expected to be the ID of a background check in the database
-        bgDate: $("#" + checkType + "_date").val()
+        bgDate: $("#" + checkType + "_date").val()  // Expected to be the type (ex. FBI) and  _date
     }
 
     $.ajax({
@@ -101,7 +101,6 @@ $(document).ready(function(){
       type: "POST",
       data: data,
       success: function(s){
-        //location.reload()
       },
       error: function(error, status){
           console.log(error, status)

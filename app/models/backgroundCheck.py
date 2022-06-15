@@ -7,5 +7,6 @@ class BackgroundCheck(baseModel):
     type = ForeignKeyField(BackgroundCheckType)
     passBackgroundCheck = BooleanField(default=False)
     datePassed = DateField(null=True)
+
     class Meta:
         primary_key=CompositeKey('user', 'type')
