@@ -17,6 +17,7 @@ class EmailHandler:
         self.raw_form_data = raw_form_data
         self.url_domain = url_domain
         self.override_all_mail = app.config['MAIL_OVERRIDE_ALL']
+        self.current_user = g.current_user
         self.template_identifier = None
         self.subject = None
         self.body = None
@@ -145,7 +146,8 @@ class EmailHandler:
             templateUsed=template_id,
             recipientsCategory=self.recipients_category,
             recipients=", ".join(recipient.email for recipient in self.recipients),
-            dateSent=date_sent)
+            dateSent=date_sent,
+            sender=self.current_user)
 
     def build_email(self):
         # Most General Scenario
