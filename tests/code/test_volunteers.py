@@ -1,12 +1,13 @@
 import pytest
 from flask import g
 from app import app
-from app.logic.volunteers import getEventLengthInHours, updateEventParticipants, setUserBackgroundCheck
+from app.logic.volunteers import getEventLengthInHours, updateEventParticipants, setUserBackgroundCheck, getStudentManagerForEvent
 from app.models.eventParticipant import EventParticipant
 from app.controllers.admin.volunteers import addVolunteerToEventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 from datetime import datetime
 from peewee import DoesNotExist
+
 
 
 @pytest.mark.integration
@@ -136,3 +137,7 @@ def test_backgroundCheck():
         updatebackground = setUserBackgroundCheck("mupotsal","SHS",True)
         updatedModel = BackgroundCheck.get(user = "mupotsal", type = "SHS")
         assert updatedModel.passBackgroundCheck == True
+
+@pytest.mark.integration
+def test_getStudentManagerForEvent():
+    with app.app_context():

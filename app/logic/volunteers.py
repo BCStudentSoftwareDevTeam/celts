@@ -3,8 +3,12 @@ from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.event import Event
 from app.models.backgroundCheck import BackgroundCheck
+from app.models.studentManager import StudentManager
 from datetime import datetime, date
 from app.logic.adminLogs import createLog
+from app.logic.events import getEvents
+
+
 
 
 
@@ -92,3 +96,14 @@ def setUserBackgroundCheck(user,bgType, checkPassed):
     update = BackgroundCheck.create(user=user, type=bgType, passBackgroundCheck=checkPassed, datePassed=today)
     update.save()
     createLog(f"Updated {user.firstName} {user.lastName}'s background check for {bgType} to {bool(checkPassed)}.")
+
+def getStudentManagerForEvent(studentManager, eventId):
+    """
+    This function checks to see if a user is a student manager for an event.
+    """
+    student = User.get_by_id(studentManager)
+    event = getEvent(eventId)
+
+    studentManagerResult = StudentManager.select().where(StudentManager.user == student,
+                                        StudentManager.program == event)
+    return studentManagerResult
