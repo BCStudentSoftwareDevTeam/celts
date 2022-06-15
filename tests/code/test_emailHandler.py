@@ -97,7 +97,8 @@ def test_email_log():
             raw_form_data = {"templateIdentifier": "Test",
                 "programID":"1",
                 "eventID":"1",
-                "recipientsCategory": "RSVP'd"}
+                "recipientsCategory": "RSVP'd",
+                "sender":"ramsayb2"}
 
             email = EmailHandler(raw_form_data, url_domain)
 
@@ -114,5 +115,5 @@ def test_email_log():
 
             rsvp_users = EventRsvp.select().where(EventRsvp.event_id==1)
             assert emailLog.recipients == ", ".join(user.user.email for user in rsvp_users)
-
+            assert emailLog.sender == "ramsayb2"
             transaction.rollback()
