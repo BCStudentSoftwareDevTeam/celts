@@ -113,3 +113,15 @@ $(document).ready(function(){
   });
 
 });
+
+function updateManagers(el, volunteerusername, action ){// retrieve the data of the studnet staff and program id if the boxes are checked or not
+  var program_id=$(el).attr('data-programid');
+  $.ajax({
+    method:"POST",
+    url:"/updateProgramManager",
+    data : {"user_name":volunteerusername, //student staff: user_name
+            "program_id":program_id,       // program id
+            "action":action,               //action: add or remove 
+             },  
+  })
+}
