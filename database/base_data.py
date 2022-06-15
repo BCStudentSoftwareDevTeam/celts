@@ -28,21 +28,14 @@ templates = [
         "templateFile": "createSingleEvent.html",
         "isVisible": True
     },
-    {
-        "id": 4,
-        "name": "Student-Led Program Training",
-        "tag": "student-led-trainings",
-        "templateJSON": '{}',
-        "templateFile": "createStudentLedTrainingEvents.html",
-        "isVisible": True
-    },
+
 ]
 EventTemplate.insert_many(templates).on_conflict_replace().execute()
 
 backgroundTypes = [
     {
     "id": "CAN",
-    "description": "Child Abuse and Neglect",
+    "description": "Child Abuse and Neglect Background Check",
     },
     {
     "id": "SHS",
@@ -50,7 +43,7 @@ backgroundTypes = [
     },
     {
     "id": "FBI",
-    "description": "Federal Criminal Background",
+    "description": "Federal Criminal Background Check",
     },
 
 ]

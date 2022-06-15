@@ -96,6 +96,7 @@ def viewVolunteersProfile(username):
                                    "isNotBanned" : isEligibleForProgram(program, volunteer),
                                    "banNote": noteForDict})
         return render_template ("/main/volunteerProfile.html",
+                programs = programs,
                 programsInterested = programsInterested,
                 upcomingEvents = upcomingEvents,
                 rsvpedEvents = rsvpedEvents,
@@ -120,8 +121,10 @@ def ban(program_id, username):
     banEndDate = postData["endDate"] # Contains the date the ban will no longer be effective
     try:
         banUser(program_id, username, banNote, banEndDate, g.current_user)
+        programInfo = Program.get(int(program_id))
         flash("Successfully banned the volunteer", "success")
-        return ""
+        createLog(f'Banned {username} from {programInfo.programName} until {banEndDate}.')
+        return "Successfully banned the volunteer."
     except Exception as e:
         print("Error  while updating ban", e)
         flash("Failed to ban the volunteer", "danger")
@@ -139,6 +142,8 @@ def unban(program_id, username):
     unbanNote = postData["note"] # This contains the note left about the change
     try:
         unbanUser(program_id, username, unbanNote, g.current_user)
+        programInfo = Program.get(int(program_id))
+        createLog(f'Unbanned {username} from {programInfo.programName}.')
         flash("Successfully unbanned the volunteer", "success")
         return "Successfully unbanned the volunteer"
 
