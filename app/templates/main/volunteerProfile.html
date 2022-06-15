@@ -78,7 +78,7 @@
         {% endif %}
           <tr>
             <td id="programNameTable">{{row.program.programName}}</td>
-            <td><input class="form-check-input" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>
+            <td><input class="form-check-input" type="checkbox" value="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>
             <td>
                 {% if row.completedTraining %}
                     <i class="bi bi-check-lg"></i>
@@ -122,7 +122,7 @@
                   {% set action = "remove" %}
                   {% set checked = "checked" %}
             {% endif %}
-                  <input  type="checkbox" id="mgr-{{ program.id }}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}','{{action}}')">
+                  <input class="program_checkboxes" type="checkbox" id="mgr-{{ program.id }}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}','{{action}}')">
                   <label  style="padding-right:50px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
           {% endfor %}
         </div>

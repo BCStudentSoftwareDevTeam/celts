@@ -1,8 +1,12 @@
+from tkinter import INSERT
+from sqlalchemy import insert
+from app.models import studentManager
 from app.models.eventParticipant import EventParticipant
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.event import Event
 from app.models.backgroundCheck import BackgroundCheck
+from app.models.studentManager import StudentManager
 from datetime import datetime, date
 from app.logic.adminLogs import createLog
 
@@ -92,3 +96,19 @@ def setUserBackgroundCheck(user,bgType, checkPassed):
     update = BackgroundCheck.create(user=user, type=bgType, passBackgroundCheck=checkPassed, datePassed=today)
     update.save()
     createLog(f"Updated {user.firstName} {user.lastName}'s background check for {bgType} to {bool(checkPassed)}.")
+
+def setPromgramManager(user_name, program_id, action):
+    ''' 
+    adds and removes the studentstaff from program that makes them  student manager.
+
+    param: uername - a string 
+           program_id - id
+           action: add, remove
+    
+    '''
+    deleteInstance = StudentManager.delete().where(StudentManager.user == user_name, StudentManager.program == program_id)
+    deleteInstance.execute()
+    if action == "add":
+        update= StudentManager.create(user=user_name, program=program_id)
+        update.save()
+    

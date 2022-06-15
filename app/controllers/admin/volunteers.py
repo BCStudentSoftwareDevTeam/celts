@@ -3,11 +3,12 @@ from datetime import datetime
 from peewee import DoesNotExist
 
 from app.controllers.admin import admin_bp
+from app.models import event
 from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
-from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck
+from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck, setPromgramManager
 from app.logic.participants import trainedParticipants, getEventParticipants
 from app.models.user import User
 from app.models.eventRsvp import EventRsvp
@@ -109,3 +110,14 @@ def updateBackgroundCheck():
         type = eventData['bgType']
         setUserBackgroundCheck(user,type, checkPassed)
         return " "
+
+@admin_bp.route('/updateProgramManager', methods=["POST"])
+def updateProgramManager():
+    if g.current_user.isCeltsAdmin:
+        data =request.form
+        setPromgramManager(data["user_name"], data["program_id"], data["action"])
+
+
+
+        return ""
+
