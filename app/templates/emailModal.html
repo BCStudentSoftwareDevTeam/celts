@@ -34,6 +34,7 @@
               <select class='form-select' id="emailRecipients" name="recipientsCategory" aria-label="email recipients">
                 <option value="Interested">Interested</option>
                 <option value="RSVP'd">RSVP'd</option>
+                <option {{ 'selected' if user.isCeltsAdmin else 'hidden' }}>Previous Participants</option>
               </select>
             </div>
             <div class="col-sm-6 form-group">
