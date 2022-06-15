@@ -17,7 +17,7 @@ from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.models.adminLogs import AdminLogs
-from app.logic.volunteers import getEventLengthInHours
+from app.logic.volunteers import getEventLengthInHours, getProgramManagerForEvent
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.logic.courseManagement import pendingCourses, approvedCourses
@@ -62,7 +62,7 @@ def templateSelect():
 @admin_bp.route('/eventTemplates/<templateid>/create', methods=['GET','POST'])
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
 def createEvent(templateid, programid=None):
-    if not g.current_user.isAdmin:
+    if not g.current_user.isAdmin or (g.c):
         abort(403)
 
     # Validate given URL

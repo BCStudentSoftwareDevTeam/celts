@@ -7,7 +7,7 @@ from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
-from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck, getStudentManagerForEvent
+from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck, getProgramManagerForEvent
 from app.logic.participants import trainedParticipants, getEventParticipants
 from app.models.user import User
 from app.models.eventRsvp import EventRsvp
@@ -38,7 +38,8 @@ def trackVolunteersPage(eventID):
 
     trainedParticipantsList = trainedParticipants(program, g.current_term)
     eventParticipants = getEventParticipants(event)
-    studentManagerResult = getStudentManagerForEvent(g.current_user, event)
+    studentManagerResult = getProgramManagerForEvent(g.current_user, event)
+    
     if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and studentManagerResult)):
         abort(403)
 

@@ -2,6 +2,8 @@ from app.models.eventParticipant import EventParticipant
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.event import Event
+from app.models.program import Program
+from app.models.programEvent import ProgramEvent
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.studentManager import StudentManager
 from datetime import datetime, date
@@ -97,12 +99,14 @@ def setUserBackgroundCheck(user,bgType, checkPassed):
     update.save()
     createLog(f"Updated {user.firstName} {user.lastName}'s background check for {bgType} to {bool(checkPassed)}.")
 
-def getStudentManagerForEvent(studentManager, event):
+def getProgramManagerForEvent(studentManager, event= None, programId = None):
     """
     This function checks to see if a user is a student manager for an event.
     studentManager: expects a user peewee object
     event: expects an event peewee object
     """
-    studentManagerResult = StudentManager.select().where(StudentManager.user == studentManager,
-                                                         StudentManager.program == event)
-    return studentManagerResult
+    if event:
+        programId = ProgramEvent.select().where(ProgramEvent.event == event)
+    programManagerResult = StudentManager.select().where(StudentManager.user == studentManager,
+                                                         StudentManager.program == programId[0].program)
+    return programManagerResult
