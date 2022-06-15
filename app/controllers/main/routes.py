@@ -177,8 +177,8 @@ def removeInterest(program_id, username):
     username: unique value of a user to correctly identify them
     """
     try:
-        failed = removeUserInterest(program_id, username)
-        if failed:
+        removed = removeUserInterest(program_id, username)
+        if removed:
             return ""
 
     except Exception as e:
