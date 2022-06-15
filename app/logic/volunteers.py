@@ -97,13 +97,12 @@ def setUserBackgroundCheck(user,bgType, checkPassed):
     update.save()
     createLog(f"Updated {user.firstName} {user.lastName}'s background check for {bgType} to {bool(checkPassed)}.")
 
-def getStudentManagerForEvent(studentManager, eventId):
+def getStudentManagerForEvent(studentManager, event):
     """
     This function checks to see if a user is a student manager for an event.
+    studentManager: expects a user peewee object
+    event: expects an event peewee object
     """
-    student = User.get_by_id(studentManager)
-    event = getEvent(eventId)
-
-    studentManagerResult = StudentManager.select().where(StudentManager.user == student,
-                                        StudentManager.program == event)
+    studentManagerResult = StudentManager.select().where(StudentManager.user == studentManager,
+                                                         StudentManager.program == event)
     return studentManagerResult

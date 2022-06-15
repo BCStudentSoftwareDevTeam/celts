@@ -3,6 +3,8 @@ from flask import g
 from app import app
 from app.logic.volunteers import getEventLengthInHours, updateEventParticipants, setUserBackgroundCheck, getStudentManagerForEvent
 from app.models.eventParticipant import EventParticipant
+from app.models.user import User
+from app.models.event import Event
 from app.controllers.admin.volunteers import addVolunteerToEventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 from datetime import datetime
@@ -141,3 +143,39 @@ def test_backgroundCheck():
 @pytest.mark.integration
 def test_getStudentManagerForEvent():
     with app.app_context():
+
+        student = User.get_by_id("neillz")
+        event = Event.get_by_id(1)
+        studentManager = getStudentManagerForEvent(student, event)
+        assert len(studentManager) == 1
+
+        student = User.get_by_id("khatts")
+        event = Event.get_by_id(1)
+        studentManager = getStudentManagerForEvent(student, event)
+        assert len(studentManager) == 1
+
+        student = User.get_by_id("partont")
+        event = Event.get_by_id(4)
+        studentManager = getStudentManagerForEvent(student, event)
+        assert len(studentManager) == 0
+
+        student = User.get_by_id("mupotsal")
+        event = Event.get_by_id(4)
+        studentManager = getStudentManagerForEvent(student, event)
+        assert len(studentManager) == 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# --
