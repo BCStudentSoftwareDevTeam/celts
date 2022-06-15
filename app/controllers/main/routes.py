@@ -162,7 +162,7 @@ def addInterest(program_id, username):
     """
     try:
         success = addUserInterest(program_id, username)
-        if success == True:
+        if success:
             return ""
 
     except Exception as e:
@@ -178,7 +178,7 @@ def removeInterest(program_id, username):
     """
     try:
         failed = removeUserInterest(program_id, username)
-        if failed == True:
+        if failed:
             return ""
 
     except Exception as e:
