@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask, render_template
 from flask.helpers import get_env
 from playhouse.shortcuts import model_to_dict, dict_to_model
 
@@ -107,3 +107,19 @@ def load_currentTerm():
         term = getCurrentTerm()
         session['current_term'] = model_to_dict(term)
         g.current_term = term
+"""
+Error handling for all 403, 404, 500 errors. Works by rendering a customm html
+file located at templates/errors. All abort calls are automatically routed here
+to be handled.
+"""
+@app.errorhandler(403)
+def handle_bad_request(e):
+    return render_template("/errors/403error.html")
+
+@app.errorhandler(404)
+def handle_bad_request(e):
+    return render_template("/errors/404error.html")
+
+@app.errorhandler(500)
+def handle_bad_request(e):
+    return render_template("/errors/500error.html")

@@ -287,20 +287,3 @@ def getAllCourseIntructors(term=None):
                                 term = term)
     else:
         abort(403)
-
-"""
-Error handling for all 403, 404, 500 errors. Works by rendering a customm html
-file located at templates/errors. All abort calls are automatically routed here
-to be handled.
-"""
-@app.errorhandler(403)
-def handle_bad_request(e):
-    return render_template("/errors/403error.html")
-
-@app.errorhandler(404)
-def handle_bad_request(e):
-    return render_template("/errors/404error.html")
-
-@app.errorhandler(500)
-def handle_bad_request(e):
-    return render_template("/errors/500error.html")
