@@ -65,7 +65,7 @@
           <th scope="col">Program</th>
           <th scope="col">Interested?</th>
           <th scope="col">Completed Training</th>
-          {% if g.current_user.isCeltsAdmin %}
+          {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff%}
             <th scope="col">Eligibility</th>
           {% endif %}
         </tr>
@@ -86,7 +86,7 @@
                     <i class="bi bi-x-lg"></i>
                 {% endif %}
             </td>
-            {% if g.current_user.isCeltsAdmin %}
+            {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
             <td class="programBan">
               {% set imgclass = "bi-x-lg" %}
               {% set label = "Unban" %}
@@ -95,7 +95,9 @@
                   {% set label = "Ban" %}
               {% endif %}
               <i class="bi {{imgclass}}"></i>
+              {% if g.current_user.isCeltsAdmin %}
               <button type="button" class="ban btn btn-link" data-programid="{{row.program.id}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}">Edit</button>
+              {% endif %}
             </td>
             {% endif %}
           </tr>
