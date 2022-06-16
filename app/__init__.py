@@ -112,14 +112,20 @@ Error handling for all 403, 404, 500 errors. Works by rendering a customm html
 file located at templates/errors. All abort calls are automatically routed here
 to be handled.
 """
+
+supportContactEmail = app.config["support_email_contact"]
+
 @app.errorhandler(403)
 def handle_bad_request(e):
-    return render_template("/errors/403error.html")
+    return render_template("/errors/403error.html",
+                            supportEmail = supportContactEmail)
 
 @app.errorhandler(404)
 def handle_bad_request(e):
-    return render_template("/errors/404error.html")
+    return render_template("/errors/404error.html",
+                            supportEmail = supportContactEmail)
 
 @app.errorhandler(500)
 def handle_bad_request(e):
-    return render_template("/errors/500error.html")
+    return render_template("/errors/500error.html",
+                            supportEmail = supportContactEmail)
