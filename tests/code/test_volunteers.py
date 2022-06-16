@@ -1,7 +1,7 @@
 import pytest
 from flask import g
 from app import app
-from app.logic.volunteers import getEventLengthInHours, updateEventParticipants, setUserBackgroundCheck, getStudentManagerForEvent
+from app.logic.volunteers import getEventLengthInHours, updateEventParticipants, setUserBackgroundCheck, getProgramManagerForEvent
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.event import Event
@@ -146,23 +146,23 @@ def test_getStudentManagerForEvent():
 
         student = User.get_by_id("neillz")
         event = Event.get_by_id(1)
-        studentManager = getStudentManagerForEvent(student, event)
+        studentManager = getProgramManagerForEvent(student, event)
         assert len(studentManager) == 1
 
         student = User.get_by_id("khatts")
         event = Event.get_by_id(1)
-        studentManager = getStudentManagerForEvent(student, event)
+        studentManager = getProgramManagerForEvent(student, event)
         assert len(studentManager) == 1
 
         student = User.get_by_id("partont")
         event = Event.get_by_id(4)
-        studentManager = getStudentManagerForEvent(student, event)
+        studentManager = getProgramManagerForEvent(student, event)
         assert len(studentManager) == 0
 
         student = User.get_by_id("mupotsal")
         event = Event.get_by_id(4)
-        studentManager = getStudentManagerForEvent(student, event)
-        assert len(studentManager) == 0
+        studentManager = getProgramManagerForEvent(student, event)
+        assert len(studentManager) == 1
 
 
 

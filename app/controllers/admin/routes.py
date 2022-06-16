@@ -62,7 +62,7 @@ def templateSelect():
 @admin_bp.route('/eventTemplates/<templateid>/create', methods=['GET','POST'])
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
 def createEvent(templateid, programid=None):
-    if not g.current_user.isAdmin or (g.c):
+    if not g.current_user.isAdmin:
         abort(403)
 
     # Validate given URL
@@ -116,7 +116,7 @@ def createEvent(templateid, programid=None):
 
 @admin_bp.route('/eventsList/<eventId>/edit', methods=['GET','POST'])
 def editEvent(eventId):
-    if request.method == "POST" and not g.current_user.isAdmin:
+    if request.method == "POST" and not (g.current_user.isCeltsAdmin or (1 == len(getProgramManagerForEvent(g.current_user, eventId)))):
         abort(403)
 
     # Validate given URL

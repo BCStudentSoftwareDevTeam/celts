@@ -102,11 +102,14 @@ def setUserBackgroundCheck(user,bgType, checkPassed):
 def getProgramManagerForEvent(studentManager, event= None, programId = None):
     """
     This function checks to see if a user is a student manager for an event.
+    NOTE: this function needs either the event or programId parameters to work
     studentManager: expects a user peewee object
     event: expects an event peewee object
+    programId: expects an int that is the primary ID of a program in the database.
     """
     if event:
         programId = ProgramEvent.select().where(ProgramEvent.event == event)
+
     programManagerResult = StudentManager.select().where(StudentManager.user == studentManager,
-                                                         StudentManager.program == programId[0].program)
+                                                        StudentManager.program == programId[0].program)
     return programManagerResult
