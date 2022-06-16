@@ -98,10 +98,15 @@ class EmailHandler:
 
         if recipients_category == "Eligible Students":
             print("here we are")
-            bannedUsers = ProgramBan.select(ProgramBan.user)        # TODO Which program?
+            bannedUsers = ProgramBan.select(ProgramBan.user_id)
             recipients = User.select().where(User.username.not_in(bannedUsers))
+            print("--------")
+            print(bannedUsers)
             print ([bannedUser for bannedUser in bannedUsers])
+            print("--------")
+            print(recipients)
             print([recipient for recipient in recipients])
+            print("--------")
 
         return [recipient for recipient in recipients]
 
