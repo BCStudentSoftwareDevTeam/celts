@@ -62,11 +62,11 @@
    <table class="table">
       <thead>
         <tr>
-          <th scope="col">PROGRAM</th>
-          <th scope="col">INTERESTED?</th>
-          <th scope="col">COMPLETED TRAINING</th>
+          <th scope="col">Program</th>
+          <th scope="col">Interested?</th>
+          <th scope="col">Completed Training</th>
           {% if g.current_user.isCeltsAdmin %}
-            <th scope="col">ELIGIBILITY</th>
+            <th scope="col">Eligibility</th>
           {% endif %}
           <th scope="col"></th>
         </tr>
@@ -96,13 +96,14 @@
                   {% set label = "Ban" %}
                   <p> Eligible </p>
               {% else %}
-                  <p> <FONT COLOR = red> Banned </p>
-	      {% endif %}
+                  <p class="text-danger">Banned</p>
+	            {% endif %}
             </td>
-	    <td>
+	         <td>
               <button type="button" class="ban btn btn-link" data-programid="{{row.program.id}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}">Edit</button>
-              {% endif %}
-           </td>    
+           </td>
+            {% endif %}
+
       </tr>
     {% endfor %}
     </tbody>
