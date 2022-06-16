@@ -37,7 +37,7 @@ $(document).ready(function() {
              scrollbar: true,
              dropdown: true,
              dynamic: true,
-             minTime: "8:00am",
+             minTime: "08:00am",
              maxTime: "10:00pm"
     });
     $(".timepicker").prop("type", "text");
