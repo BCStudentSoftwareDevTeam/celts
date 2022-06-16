@@ -90,11 +90,13 @@ $(document).ready(function(){
   $(".backgroundCheck").change(function () { // Updates the Background check of a volunteer in the database
     checkType = $(this).attr("id")
     let data = {
-        checkPassed : $(this).val(),      // Expected to be either a 0 or a 1
+        checkPassed : $(this).val(),      // Expected to be either a 0 or a 1volunteerProfile.js
+
         user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
         bgType: checkType,       // Expected to be the ID of a background check in the database
-        bgDate: $("#" + checkType + "_date").val()  // Expected to be the type (ex. FBI) and  _date
+        bgDate: $("#" + checkType + "_date").val()  //Expected to be the date of the background check completion
     }
+
 
     $.ajax({
       url: "/updateBackgroundCheck",
