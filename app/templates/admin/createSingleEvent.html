@@ -27,8 +27,6 @@
           {% set page_title = 'Create All Volunteer Training' %}
         {% elif template.tag == 'no-program' %}
           {% set page_title = 'Create One-off Event' %}
-        {% elif template.tag == 'student-led-trainings' %}
-          {% set page_title = 'Create Student-Led Trainings' %}
         {% else %}
           {% set page_title = 'Create ' + template.name + ' Event' %}
         {% endif %}

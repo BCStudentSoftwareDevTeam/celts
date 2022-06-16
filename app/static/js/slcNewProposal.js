@@ -36,7 +36,7 @@ $("#nextButton").on("click", function() {
 });
 
 $("#cancelButton").on("click", function() {
-  window.location.replace("/serviceLearning/courseManagement");
+  window.location.replace("/manageServiceLearning");
 });
 
 function displayCorrectTab(navigateTab) {
