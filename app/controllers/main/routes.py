@@ -16,7 +16,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
-from app.models.studentManager import StudentManager
+from app.models.programManager import ProgramManager
 from app.controllers.main import main_bp
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
@@ -77,8 +77,8 @@ def viewVolunteersProfile(username):
         rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == volunteer)
         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
 
-        studentManagerPrograms = list(StudentManager.select().where(StudentManager.user == volunteer))
-        permissionPrograms = [entry.program.id for entry in studentManagerPrograms]
+        ProgramManagerPrograms = list(ProgramManager.select().where(ProgramManager.user == volunteer))
+        permissionPrograms = [entry.program.id for entry in ProgramManagerPrograms]
 
         allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == volunteer))
         completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
