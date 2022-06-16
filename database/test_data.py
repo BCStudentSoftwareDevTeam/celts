@@ -870,12 +870,39 @@ EmailTemplate.insert_many(emailTemplates).on_conflict_replace().execute()
 emailLogs = [
     {
     'event': 5,
+    'subject': 'Location Change for {event_name}',
+    'templateUsed': 2,
+    'recipientsCategory': "eventRsvp",
+    'recipients': 'neillz',
+    'dateSent': datetime.strptime("2022 5 7","%Y %m %d"),
+    'sender': 'ramsayb2'
+    },
+    {
+    'event': 5,
     'subject': 'Time Change for {event_name}',
     'templateUsed': 2,
     'recipientsCategory': "eventRsvp",
     'recipients': 'ramsayb2',
-    'dateSent': datetime.strptime("2022 5 5","%Y %m %d"),
+    'dateSent': datetime.strptime("2022 6 5","%Y %m %d"),
     'sender': 'neillz'
+    },
+    {
+    'event': 5,
+    'subject': 'Time Change for {event_name}',
+    'templateUsed': 2,
+    'recipientsCategory': "eventRsvp",
+    'recipients': 'ramsayb2',
+    'dateSent': datetime.strptime("2022 5 4","%Y %m %d"),
+    'sender': 'neillz'
+    },
+    {
+    'event': 4,
+    'subject': 'Time Change for {event_name}',
+    'templateUsed': 2,
+    'recipientsCategory': "eventRsvp",
+    'recipients': 'neillz',
+    'dateSent': datetime.strptime("2022 5 2","%Y %m %d"),
+    'sender': 'ramsayb2'
     },
     {
     'event': 3,
