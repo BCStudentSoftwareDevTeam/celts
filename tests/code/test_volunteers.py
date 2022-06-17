@@ -144,38 +144,46 @@ def test_backgroundCheck():
 def test_getStudentManagerForEvent():
     with app.app_context():
 
+
+        #gives event & programID
+        ## user is manager of program
         student = User.get_by_id("neillz")
         event = Event.get_by_id(1)
-        studentManager = getProgramManagerForEvent(student, event)
-        assert len(studentManager) == 1
+        studentManager = getProgramManagerForEvent(student, event, 1)
+        assert studentManager == True
+        ## user is not manager of program
+        student = User.get_by_id("khatts")
+        event = Event.get_by_id(1)
+        studentManager = getProgramManagerForEvent(student, event, 5)
+        assert studentManager == False
 
+        #gives event but no programId
+        ## user is manager of program
         student = User.get_by_id("khatts")
         event = Event.get_by_id(1)
         studentManager = getProgramManagerForEvent(student, event)
-        assert len(studentManager) == 1
+        assert studentManager == True
+        ## user is not manager of program
+        student = User.get_by_id("khatts")
+        event = Event.get_by_id(5)
+        studentManager = getProgramManagerForEvent(student, event, 5)
+        assert studentManager == False
 
+        #gives programID but no event
+        ## user is manager of program
+        student = User.get_by_id("neillz")
+        event = Event.get_by_id(1)
+        studentManager = getProgramManagerForEvent(student, programId = 1)
+        assert studentManager == True
+        ## user is not manager of program
         student = User.get_by_id("partont")
-        event = Event.get_by_id(4)
-        studentManager = getProgramManagerForEvent(student, event)
-        assert len(studentManager) == 0
+        event = Event.get_by_id(1)
+        studentManager = getProgramManagerForEvent(student, programId = 5)
+        assert studentManager == False
 
-        student = User.get_by_id("mupotsal")
-        event = Event.get_by_id(4)
-        studentManager = getProgramManagerForEvent(student, event)
-        assert len(studentManager) == 1
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# --
+        #gives neither event or programID
+        ## shuold give an error, most likely a 500: system error
+        # student = User.get_by_id("neillz")
+        # event = Event.get_by_id(None)
+        studentManager = getProgramManagerForEvent(student)
+        assert studentManager == False # use different assertion for errors handling?
