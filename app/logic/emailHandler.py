@@ -18,7 +18,6 @@ class EmailHandler:
         self.raw_form_data = raw_form_data
         self.url_domain = url_domain
         self.override_all_mail = app.config['MAIL_OVERRIDE_ALL']
-        # self.current_user = sender_username
         self.template_identifier = None
         self.subject = None
         self.body = None
@@ -172,7 +171,7 @@ class EmailHandler:
                         reply_to=self.reply_to,
                         sender = ("Sandesh", 'bramsayr@gmail.com')
                     ))
-            self.store_sent_email(subject, template_id)
+            self.store_sent_email(subject, template_id, g.current_user)
             return True
         except Exception as e:
             print("Error on sending email: ", e)
@@ -192,5 +191,9 @@ class EmailHandler:
             return False
 
     def retrieve_last_email(event_id):
-        get_query = EmailLog.select().where(EmailLog.event==event_id).order_by(EmailLog.dateSent.desc()).get()
-        return get_query
+        try:
+            get_query = EmailLog.select().where(EmailLog.event==event_id).order_by(EmailLog.dateSent.desc()).get()
+            return get_query
+        except Exception as e:
+            print("No last email found ")
+            return None

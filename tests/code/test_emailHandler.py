@@ -15,6 +15,7 @@ from app.logic.emailHandler import EmailHandler
 @pytest.mark.integration
 @pytest.mark.skip(reason="Authentication Issues")
 def test_send_email_using_modal():
+    pass # For now we are skipping the email tests
     with app.test_request_context():
 
         app.config.update(
@@ -97,9 +98,10 @@ def test_email_log():
             raw_form_data = {"templateIdentifier": "Test",
                 "programID":"1",
                 "eventID":"1",
-                "recipientsCategory": "RSVP'd"}
+                "recipientsCategory": "RSVP'd",
+                "sender": User.get_by_id("ramsayb2")}
 
-            email = EmailHandler(raw_form_data, url_domain, g.current_user)
+            email = EmailHandler(raw_form_data, url_domain, )
 
             with email.mail.record_messages() as outbox:
                 email_sent = email.send_email()
@@ -114,8 +116,7 @@ def test_email_log():
 
             rsvp_users = EventRsvp.select().where(EventRsvp.event_id==1)
             assert emailLog.recipients == ", ".join(user.user.email for user in rsvp_users)
-            assert emailLog.sender == "ramsayb2"
-            EmailHandler.store_sent_email("Test Subject", 2, User.get_by_id("ramsayb2"))
+            assert emailLog.sender == User.get_by_id("ramsayb2")
             transaction.rollback()
 
 
@@ -127,4 +128,6 @@ def test_get_last_email():
     assert query.templateUsed.subject == "Test Email 2"
     assert query.recipientsCategory == "eventRsvp"
     assert query.recipients == "ramsayb2"
-    # assert query.dateSent == "2022-06-05 00:00:00"
+
+    query = EmailHandler.retrieve_last_email(37)
+    assert query is None
