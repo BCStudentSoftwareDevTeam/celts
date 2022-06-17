@@ -872,7 +872,7 @@ emailLogs = [
     'event': 5,
     'subject': 'Location Change for {event_name}',
     'templateUsed': 2,
-    'recipientsCategory': "eventRsvp",
+    'recipientsCategory': "RSVP'd",
     'recipients': 'neillz',
     'dateSent': datetime.strptime("2022 5 7","%Y %m %d"),
     'sender': User.get_by_id("neillz")
@@ -881,7 +881,7 @@ emailLogs = [
     'event': 5,
     'subject': 'Time Change for {event_name}',
     'templateUsed': 2,
-    'recipientsCategory': "eventRsvp",
+    'recipientsCategory': "RSVP'd",
     'recipients': 'ramsayb2',
     'dateSent': datetime.strptime("2022 6 5","%Y %m %d"),
     'sender': User.get_by_id("neillz")
@@ -890,7 +890,7 @@ emailLogs = [
     'event': 5,
     'subject': 'Time Change for {event_name}',
     'templateUsed': 2,
-    'recipientsCategory': "eventRsvp",
+    'recipientsCategory': "RSVP'd",
     'recipients': 'ramsayb2',
     'dateSent': datetime.strptime("2022 5 4","%Y %m %d"),
     'sender': User.get_by_id("neillz")
@@ -899,7 +899,7 @@ emailLogs = [
     'event': 4,
     'subject': 'Time Change for {event_name}',
     'templateUsed': 2,
-    'recipientsCategory': "eventRsvp",
+    'recipientsCategory': "RSVP'd",
     'recipients': 'neillz',
     'dateSent': datetime.strptime("2022 5 2","%Y %m %d"),
     'sender': User.get_by_id("ramsayb2")
@@ -908,7 +908,7 @@ emailLogs = [
     'event': 3,
     'subject': 'Location Change for {event_name}',
     'templateUsed': 1,
-    'recipientsCategory': "interest",
+    'recipientsCategory': "Interested",
     'recipients': 'neillz',
     'dateSent': datetime.strptime("2022 6 6","%Y %m %d"),
     'sender': User.get_by_id("ramsayb2")
