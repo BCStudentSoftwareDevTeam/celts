@@ -98,13 +98,14 @@ def setUserBackgroundCheck(user,bgType, checkPassed, datePassed):
     update.save()
     createLog(f"Updated {user.firstName} {user.lastName}'s background check for {bgType} to {bool(checkPassed)}.")
 
-def getProgramManagerForEvent(studentManager, event= None, programId = None):
+def getProgramManagerForEvent(user, event= None, programId = None):
     """
-    This function checks to see if a user is a student manager for an event.
+    This function checks to see if a user is a program manager for a program.
     NOTE: this function needs either the event or programId parameters to work
-    studentManager: expects a user peewee object
+    user: expects a user peewee object
     event: expects an event peewee object
     programId: expects an int that is the primary ID of a program in the database.
+    Returns: bool whether the appropriate information is given.
     """
 
     #neither event nor programId are passed
@@ -112,15 +113,16 @@ def getProgramManagerForEvent(studentManager, event= None, programId = None):
         return "Clever error message (should have given event or programId(unlucky)). "
     #if event is passed but no programId is passed
     if event and not programId:
-        programId = ProgramEvent.get(ProgramEvent.event == event)
+        programIdQuery = (ProgramEvent.get(ProgramEvent.event == event)).program
+        # print("---ev!pid---", programSomethingClever)
     #if event is not passed but programId is passed or both are passed
-    #
+    if programId:
+        programIdQuery = Program.get_by_id(programId)
     #if at least programId is passed
-    programManagerResult = StudentManager.get(StudentManager.user == studentManager,
-                                              StudentManager.program == programId.program)
-
-
-
-
-
-    return programManagerResult
+    try:
+        programManagerResult = StudentManager.get(StudentManager.user == user,
+                                                  StudentManager.program == programIdQuery)
+        return True
+    except StudentManager.DoesNotExist as e:
+        # print(e)
+        return False
