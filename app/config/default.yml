@@ -5,6 +5,7 @@ use_banner: False
 override_file: "local-override.yml"
 default_user: "ramsayb2"
 celts_admin_contact: "celts@berea.edu"
+support_email_contact: "support@bereacollege.onmicrosoft.com"
 show_queries: True
 
 db:
