@@ -875,7 +875,7 @@ emailLogs = [
     'recipientsCategory': "eventRsvp",
     'recipients': 'neillz',
     'dateSent': datetime.strptime("2022 5 7","%Y %m %d"),
-    'sender': 'ramsayb2'
+    'sender': User.get_by_id("neillz")
     },
     {
     'event': 5,
@@ -884,7 +884,7 @@ emailLogs = [
     'recipientsCategory': "eventRsvp",
     'recipients': 'ramsayb2',
     'dateSent': datetime.strptime("2022 6 5","%Y %m %d"),
-    'sender': 'neillz'
+    'sender': User.get_by_id("neillz")
     },
     {
     'event': 5,
@@ -893,7 +893,7 @@ emailLogs = [
     'recipientsCategory': "eventRsvp",
     'recipients': 'ramsayb2',
     'dateSent': datetime.strptime("2022 5 4","%Y %m %d"),
-    'sender': 'neillz'
+    'sender': User.get_by_id("neillz")
     },
     {
     'event': 4,
@@ -902,7 +902,7 @@ emailLogs = [
     'recipientsCategory': "eventRsvp",
     'recipients': 'neillz',
     'dateSent': datetime.strptime("2022 5 2","%Y %m %d"),
-    'sender': 'ramsayb2'
+    'sender': User.get_by_id("ramsayb2")
     },
     {
     'event': 3,
@@ -911,7 +911,7 @@ emailLogs = [
     'recipientsCategory': "interest",
     'recipients': 'neillz',
     'dateSent': datetime.strptime("2022 6 6","%Y %m %d"),
-    'sender': 'ramsayb2'
+    'sender': User.get_by_id("ramsayb2")
     }
 ]
 
