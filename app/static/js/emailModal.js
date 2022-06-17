@@ -40,12 +40,16 @@ async function fetchEmailLogData() {
     url: `/fetchEmailLogData/${eventId}`,
     type: 'GET',
     success: function(emailLog) {
+      console.log(emailLog)
       if (emailLog['exists'] == false) {
         $('#emailLastSent').attr('hidden', true);
       }
       else {
-        log = `Email was last sent to ${emailLog['recipients']} on ${emailLog['dateSent']}`
-        $('#emailLastSent').text(log);
+        // log = `The last email was sent to ${emailLog['recipients']} on ${emailLog['dateSent']} by ${emailLog['sender']}. Subject: \"${emailLog['subject']}\" `
+        // log2 =  `Subject`
+
+        $('#emailLastSent').text(emailLog['last_log']);
+        $('#emailLastSentSubject').text(emailLog['last_log2']);
         $('#emailLastSent').attr('hidden', false);
       }
     }
