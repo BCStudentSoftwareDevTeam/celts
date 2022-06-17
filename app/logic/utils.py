@@ -45,4 +45,8 @@ def getStartofCurrentAcademicYear(currentTerm):
     return currentTerm
 
 def format24HourTime(time_str):
-    return datetime.strptime(time_str, "%I:%M %p").strftime("%H:%M") # Converts string to datetime and formats correctly
+    if type(time_str) is str:
+        return datetime.strptime(time_str, "%I:%M %p").strftime("%H:%M") # Converts string to datetime and formats correctly
+    else:
+        print("I am here")
+        return time_str.strftime("%H:%M")

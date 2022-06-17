@@ -31,7 +31,10 @@ $(document).ready(function() {
     }
   });
 
-  if (navigator.userAgent.indexOf("Firefox") != -1 || navigator.userAgent.indexOf("Safari") != -1) {
+  // everything except Chrome
+  if (navigator.userAgent.indexOf("Chrome") == -1) {
+    console.log ("But we have Chrome")
+    console.log(navigator.userAgent)
     $('input.timepicker').timepicker({
              timeFormat : 'hh:mm p',
              scrollbar: true,
