@@ -1,0 +1,15 @@
+<!--Custom HTML error template for Error Code 404-->
+
+{% extends "base.html"%}
+
+{% block app_content %}
+<div class="text-center">
+    <h1>Page Not Found</h1>
+
+    <p class="">The page you tried to access does not exist. If you believe this is a mistake,
+                <a href="mailto:{{ supportEmail }}">please contact the system administrator.</a></p>
+    <br>
+    <a class="btn btn-primary" href="/" role="button">Return Home</a>
+</div>
+
+{% endblock %}
