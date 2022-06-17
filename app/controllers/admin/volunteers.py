@@ -107,5 +107,6 @@ def updateBackgroundCheck():
         user = eventData['user']
         checkPassed = int(eventData['checkPassed'])
         type = eventData['bgType']
-        setUserBackgroundCheck(user,type, checkPassed)
+        datePassed = eventData['bgDate']
+        setUserBackgroundCheck(user,type, checkPassed, datePassed)
         return " "
