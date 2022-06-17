@@ -14,7 +14,7 @@ from app.models.interest import Interest
 from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
 from app.logic.adminLogs import createLog
-import datetime
+from app.logic.utils import format24HourTime
 
 def getEvents(program_id=None):
 
@@ -70,8 +70,8 @@ def saveEventToDb(newEventData):
                     "term": newEventData['term'],
                     "name": eventInstance['name'],
                     "description": newEventData['description'],
-                    "timeStart": getStartTime(newEventData),
-                    "timeEnd": getEndTime(newEventData),
+                    "timeStart": format24HourTime(newEventData['timeStart']),
+                    "timeEnd": format24HourTime(newEventData['timeEnd']),
                     "location": newEventData['location'],
                     "isRecurring": newEventData['isRecurring'],
                     "isTraining": newEventData['isTraining'],
@@ -178,15 +178,6 @@ def getAllFacilitators():
     facilitators = User.select(User).where((User.isFaculty == 1) | (User.isCeltsAdmin == 1) | (User.isCeltsStudentStaff == 1)).order_by(User.username) # ordered because of the tests
     return facilitators
 
-def getStartTime(data):
-    startTime = datetime.datetime.strptime(data['timeStart'], "%I:%M %p").strftime("%H:%M") # Converts string to datetime and formats correctly
-    return startTime
-
-def getEndTime(data):
-    endTime = datetime.datetime.strptime(data['timeEnd'], "%I:%M %p").strftime("%H:%M")
-    return endTime
-
-
 def validateNewEventData(data):
     """
         Confirm that the provided data is valid for an event.
@@ -195,7 +186,6 @@ def validateNewEventData(data):
 
         Returns 3 values: (boolean success, the validation error message, the data object)
     """
-    # timeEnd = datetime.time(data['timeEnd'])
 
     if 'on' in [data['isRsvpRequired'], data['isTraining'], data['isService'], data['isRecurring']]:
         return (False, "Raw form data passed to validate method. Preprocess first.")
@@ -203,7 +193,7 @@ def validateNewEventData(data):
     if data['isRecurring'] and data['endDate']  <  data['startDate']:
         return (False, "Event start date is after event end date")
 
-    if data['endDate'] ==  data['startDate'] and getEndTime(data) <=  getStartTime(data):
+    if data['endDate'] ==  data['startDate'] and format24HourTime(data['timeEnd']) <= format24HourTime(data['timeStart']):
         return (False, "Event start time is after event end time")
 
     # Validation if we are inserting a new event

@@ -1,6 +1,7 @@
 import collections
 from peewee import DoesNotExist
 from app.models.term import Term
+from datetime import datetime
 
 def selectSurroundingTerms(currentTerm, prevTerms=2):
     """
@@ -42,3 +43,6 @@ def getStartofCurrentAcademicYear(currentTerm):
         fallTerm = Term.select().where(Term.year==currentTerm.year-1, Term.description == f"Fall {currentTerm.year-1}").get()
         return fallTerm
     return currentTerm
+
+def format24HourTime(time_str):
+    return datetime.strptime(time_str, "%I:%M %p").strftime("%H:%M") # Converts string to datetime and formats correctly
