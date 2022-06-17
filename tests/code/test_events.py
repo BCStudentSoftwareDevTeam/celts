@@ -512,7 +512,6 @@ def test_getsCorrectUpcomingEvent():
     assert len(events) == 2
     assert "Meet & Greet with Grandparent" == events[0].name
 
-
 @pytest.mark.integration
 def test_userWithNoInterestedEvent():
 
@@ -523,3 +522,19 @@ def test_userWithNoInterestedEvent():
     user = "ayisie" #no interest selected
     events = getUpcomingEventsForUser(user)
     assert len(events) == 0
+
+@pytest.mark.integration
+def test_format24HourTime():
+
+    # tests valid "input times"
+    assert format24HourTime('08:00 AM')
+    assert format24HourTime('8:00 AM')
+    assert format24HourTime('05:00 PM')
+    assert format24HourTime('07:30 PM')
+
+    # tests "input times" that are not valid inputs
+    with pytest.raises(ValueError):
+        assert format24HourTime('13:30 PM')
+        assert format24HourTime('13:30 AM')
+        assert format24HourTime('21:00')
+        assert format24HourTime('01:30:00 PM')
