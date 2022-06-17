@@ -185,5 +185,7 @@ def test_getStudentManagerForEvent():
         ## shuold give an error, most likely a 500: system error
         # student = User.get_by_id("neillz")
         # event = Event.get_by_id(None)
-        studentManager = getProgramManagerForEvent(student)
-        assert studentManager == False # use different assertion for errors handling?
+        with pytest.raises(ValueError):
+            # EventParticipant.get(EventParticipant.user=="agliullovak", EventParticipant.event==3)
+            studentManager = getProgramManagerForEvent(student)
+        # assert studentManager == False # use different assertion for errors handling?

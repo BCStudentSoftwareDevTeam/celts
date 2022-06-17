@@ -110,7 +110,7 @@ def getProgramManagerForEvent(user, event= None, programId = None):
 
     #neither event nor programId are passed
     if not (event or programId):
-        return "Clever error message (should have given event or programId(unlucky)). "
+        raise ValueError("Not enough parameters given to this function.")
     #if event is passed but no programId is passed
     if event and not programId:
         programIdQuery = (ProgramEvent.get(ProgramEvent.event == event)).program
