@@ -230,7 +230,7 @@ def test_correctValidateNewEventData():
     eventData =  {'isRsvpRequired':False, 'isService':False,
                   'isTraining':True, 'isRecurring':False, 'startDate': parser.parse('1999-12-12'),
                   'endDate':parser.parse('2022-06-12'), 'programId':1, 'location':"a big room",
-                  'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
+                  'timeEnd':'04:00', 'timeStart':'06:00', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring Event 1','term':1,'facilitators':"ramsayb2"}
 
     isValid, eventErrorMessage = validateNewEventData(eventData)
@@ -242,7 +242,7 @@ def test_wrongValidateNewEventData():
 
     eventData =  {'isRsvpRequired':False, 'isService':False,
                   'isTraining':True, 'isRecurring':False, 'programId':1, 'location':"a big room",
-                  'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
+                  'timeEnd':'12:00 PM', 'timeStart':'03:00 PM', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring Event 1','term':1,'facilitators':"ramsayb2"}
 
     eventData['isRecurring'] = True
@@ -267,7 +267,7 @@ def test_wrongValidateNewEventData():
     # testing event starts after it ends.
     eventData["startDate"] = parser.parse('2021-06-12')
     eventData["endDate"] = parser.parse('2021-06-12')
-    eventData["timeStart"] =  '21:39'
+    eventData["timeStart"] =  '09:39 PM'
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid == False
     assert eventErrorMessage == "Event start time is after event end time"
@@ -315,11 +315,11 @@ def test_attemptSaveEvent():
     eventData =  {'isRsvpRequired':False, 'isService':False,
                   'isTraining':True, 'isRecurring':True, 'startDate': '2021-12-12',
                   'endDate': '2021-06-12', 'programId':1, 'location':"a big room",
-                  'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
+                  'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring','term':1,'facilitators':["ramsayb2"]}
     eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'startDate': '2021-12-12',
                    'endDate':'2022-06-12', 'location':"a big room",
-                   'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
+                   'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                    'name':'Attempt Save Test','term':1,'facilitators':["ramsayb2"]}
     eventInfo['program'] = Program.get_by_id(1)
 
@@ -350,7 +350,7 @@ def test_saveEventToDb_create():
     eventInfo =  {'isRsvpRequired':False, 'isService':False,
                   'isTraining':True, 'isRecurring':False, 'startDate': parser.parse('2021-12-12'),
                    'endDate':parser.parse('2022-06-12'), 'location':"a big room",
-                   'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
+                   'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                    'name':'Empty Bowls Spring','term':1,'facilitators':[User.get_by_id("ramsayb2")]}
     eventInfo['program'] = Program.get_by_id(1)
 
@@ -391,7 +391,7 @@ def test_saveEventToDb_recurring():
     eventInfo =  {'isRsvpRequired':False, 'isService':False,
                   'isTraining':True, 'isRecurring': True, 'startDate': parser.parse('12-12-2021'),
                    'endDate':parser.parse('01-18-2022'), 'location':"this is only a test",
-                   'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
+                   'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                    'name':'Empty Bowls Spring','term':1,'facilitators':[User.get_by_id("ramsayb2")]}
     eventInfo['valid'] = True
     eventInfo['program'] = Program.get_by_id(1)
@@ -415,8 +415,8 @@ def test_saveEventToDb_update():
                     "term": 1,
                     "name": "First Meetup",
                     "description": "This is a Test",
-                    "timeStart": datetime.datetime.strptime("6:00 pm", "%I:%M %p"),
-                    "timeEnd": datetime.datetime.strptime("9:00 pm", "%I:%M %p"),
+                    "timeStart": datetime.datetime.strptime("06:00 PM", "%I:%M %p"),
+                    "timeEnd": datetime.datetime.strptime("09:00 PM", "%I:%M %p"),
                     "location": "House",
                     'isRecurring': True,
                     'isTraining': True,
@@ -439,8 +439,8 @@ def test_saveEventToDb_update():
                     "term": 1,
                     "name": "First Meetup",
                     "description": "Berea Buddies First Meetup",
-                    "timeStart": datetime.datetime.strptime("6:00 pm", "%I:%M %p"),
-                    "timeEnd": datetime.datetime.strptime("9:00 pm", "%I:%M %p"),
+                    "timeStart": datetime.datetime.strptime("06:00 PM", "%I:%M %p"),
+                    "timeEnd": datetime.datetime.strptime("09:00 PM", "%I:%M %p"),
                     "location": "House",
                     'isRecurring': True,
                     'isTraining': True,
@@ -464,8 +464,8 @@ def test_deleteEvent():
         testingEvent = Event.create(name = "Testing delete event",
                                       term = 2,
                                       description= "This Event is Created to be Deleted.",
-                                      timeStart= "6:00 pm",
-                                      timeEnd= "9:00 pm",
+                                      timeStart= "06:00 PM",
+                                      timeEnd= "09:00 PM",
                                       location = "No Where",
                                       isRecurring = 0,
                                       isRsvpRequired = 0,
