@@ -348,7 +348,7 @@ def test_attemptSaveEvent():
 @pytest.mark.integration
 def test_saveEventToDb_create():
     eventInfo =  {'isRsvpRequired':False, 'isService':False,
-                  'isTraining':True, 'isRecurring':False, 'startDate': parser.parse('2021-12-12'),
+                  'isTraining':True, 'isRecurring':False,'isAllVolunteerTraining': True, 'startDate': parser.parse('2021-12-12'),
                    'endDate':parser.parse('2022-06-12'), 'location':"a big room",
                    'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
                    'name':'Empty Bowls Spring','term':1,'facilitators':[User.get_by_id("ramsayb2")]}
@@ -388,7 +388,7 @@ def test_saveEventToDb_create():
 
 @pytest.mark.integration
 def test_saveEventToDb_recurring():
-    eventInfo =  {'isRsvpRequired':False, 'isService':False,
+    eventInfo =  {'isRsvpRequired':False, 'isService':False, 'isAllVolunteerTraining': True,
                   'isTraining':True, 'isRecurring': True, 'startDate': parser.parse('12-12-2021'),
                    'endDate':parser.parse('01-18-2022'), 'location':"this is only a test",
                    'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
@@ -421,6 +421,7 @@ def test_saveEventToDb_update():
                     'isRecurring': True,
                     'isTraining': True,
                     'isRsvpRequired': False,
+                    'isAllVolunteerTraining': True,
                     'isService': False,
                     "startDate": "2021-12-12",
                     "endDate": "2022-6-12",
@@ -432,6 +433,7 @@ def test_saveEventToDb_update():
         eventFunction = saveEventToDb(newEventData)
     afterUpdate = Event.get_by_id(newEventData['id'])
     assert afterUpdate.description == "This is a Test"
+    assert afterUpdate.isAllVolunteerTraining == True
 
     newEventData = {
                     "id": 4,
@@ -445,6 +447,7 @@ def test_saveEventToDb_update():
                     'isRecurring': True,
                     'isTraining': True,
                     'isRsvpRequired': False,
+                    'isAllVolunteerTraining': False,
                     'isService': 5,
                     "startDate": "2021-12-12",
                     "endDate": "2022-6-12",
@@ -523,7 +526,3 @@ def test_userWithNoInterestedEvent():
     user = "ayisie" #no interest selected
     events = getUpcomingEventsForUser(user)
     assert len(events) == 0
-
-@pytest.mark.integration
-def test_allVolunteerTrained():
-    
