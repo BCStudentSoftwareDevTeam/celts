@@ -1,6 +1,6 @@
 from datetime import datetime
 from flask_mail import Mail, Message
-
+from flask import g, session
 from app import app
 from app.models.programEvent import ProgramEvent
 from app.models.interest import Interest
@@ -10,6 +10,7 @@ from app.models.eventRsvp import EventRsvp
 from app.models.emailTemplate import EmailTemplate
 from app.models.emailLog import EmailLog
 from app.models.event import Event
+import peewee
 
 class EmailHandler:
     def __init__(self, raw_form_data, url_domain):
@@ -17,7 +18,6 @@ class EmailHandler:
         self.raw_form_data = raw_form_data
         self.url_domain = url_domain
         self.override_all_mail = app.config['MAIL_OVERRIDE_ALL']
-        self.current_user = g.current_user
         self.template_identifier = None
         self.subject = None
         self.body = None
@@ -137,7 +137,7 @@ class EmailHandler:
         # Q: how would this work?
         pass
 
-    def store_sent_email(self, subject, template_id):
+    def store_sent_email(self, subject, template_id, sender_object):
         """ Stores sent email in the email log """
         date_sent = datetime.now()
         EmailLog.create(
@@ -147,7 +147,7 @@ class EmailHandler:
             recipientsCategory=self.recipients_category,
             recipients=", ".join(recipient.email for recipient in self.recipients),
             dateSent=date_sent,
-            sender=self.current_user)
+            sender=sender_object)
 
     def build_email(self):
         # Most General Scenario
@@ -171,7 +171,7 @@ class EmailHandler:
                         reply_to=self.reply_to,
                         sender = ("Sandesh", 'bramsayr@gmail.com')
                     ))
-            self.store_sent_email(subject, template_id)
+            self.store_sent_email(subject, template_id, g.current_user)
             return True
         except Exception as e:
             print("Error on sending email: ", e)
@@ -189,3 +189,11 @@ class EmailHandler:
         except Exception as e:
             print("Error updating email template record: ", e)
             return False
+
+    def retrieve_last_email(event_id):
+        try:
+            get_query = EmailLog.select().where(EmailLog.event==event_id).order_by(EmailLog.dateSent.desc()).get()
+            return get_query
+        except Exception as e:
+            print("No last email found ")
+            return None
