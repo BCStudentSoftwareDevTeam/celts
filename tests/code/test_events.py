@@ -62,8 +62,6 @@ def test_getEventsWithProgram():
 
 
     assert len(events) > 0
-
-
     assert events[0].description == "Berea Buddies First Meetup"
 
 @pytest.mark.integration
@@ -415,8 +413,8 @@ def test_saveEventToDb_update():
                     "term": 1,
                     "name": "First Meetup",
                     "description": "This is a Test",
-                    "timeStart": datetime.datetime.strptime("06:00 PM", "%I:%M %p"),
-                    "timeEnd": datetime.datetime.strptime("09:00 PM", "%I:%M %p"),
+                    "timeStart": "06:00 PM",
+                    "timeEnd": "09:00 PM",
                     "location": "House",
                     'isRecurring': True,
                     'isTraining': True,
@@ -439,8 +437,8 @@ def test_saveEventToDb_update():
                     "term": 1,
                     "name": "First Meetup",
                     "description": "Berea Buddies First Meetup",
-                    "timeStart": datetime.datetime.strptime("06:00 PM", "%I:%M %p"),
-                    "timeEnd": datetime.datetime.strptime("09:00 PM", "%I:%M %p"),
+                    "timeStart": "06:00 PM",
+                    "timeEnd": "09:00 PM",
                     "location": "House",
                     'isRecurring': True,
                     'isTraining': True,
