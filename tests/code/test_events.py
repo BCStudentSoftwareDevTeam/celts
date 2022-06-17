@@ -523,3 +523,7 @@ def test_userWithNoInterestedEvent():
     user = "ayisie" #no interest selected
     events = getUpcomingEventsForUser(user)
     assert len(events) == 0
+
+@pytest.mark.integration
+def test_allVolunteerTrained():
+    

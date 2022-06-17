@@ -100,6 +100,7 @@ class EmailHandler:
             print("here we are")
             bannedUsers = ProgramBan.select(ProgramBan.user_id)
             recipients = User.select().where(User.username.not_in(bannedUsers))
+            # trained = 
             print("--------")
             print(bannedUsers)
             print ([bannedUser for bannedUser in bannedUsers])

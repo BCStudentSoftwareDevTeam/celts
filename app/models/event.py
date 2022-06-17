@@ -14,6 +14,7 @@ class Event(baseModel):
     isTraining = BooleanField(default=False)
     isRsvpRequired = BooleanField(default=False)
     isService = BooleanField(default=False)
+    isAllVolunteerTraining = BooleanField(default=False)
     startDate = DateField()
     endDate = DateField(null=True)
 
@@ -35,4 +36,4 @@ class Event(baseModel):
         currentTime = datetime.now()
         startDatePassed = self.startDate < currentTime.date()
         startTimePassed = self.timeStart < currentTime.time() and self.startDate == currentTime.date()
-        return startDatePassed or startTimePassed 
+        return startDatePassed or startTimePassed
