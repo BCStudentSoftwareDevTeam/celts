@@ -13,7 +13,6 @@ from app.logic.events import getEvents
 
 
 
-
 def getEventLengthInHours(startTime, endTime, eventDate):
     """
     Converts the event length hours into decimal
@@ -107,9 +106,21 @@ def getProgramManagerForEvent(studentManager, event= None, programId = None):
     event: expects an event peewee object
     programId: expects an int that is the primary ID of a program in the database.
     """
-    if event:
-        programId = ProgramEvent.select().where(ProgramEvent.event == event)
 
-    programManagerResult = StudentManager.select().where(StudentManager.user == studentManager,
-                                                        StudentManager.program == programId[0].program)
+    #neither event nor programId are passed
+    if not (event or programId):
+        return "Clever error message (should have given event or programId(unlucky)). "
+    #if event is passed but no programId is passed
+    if event and not programId:
+        programId = ProgramEvent.get(ProgramEvent.event == event)
+    #if event is not passed but programId is passed or both are passed
+    #
+    #if at least programId is passed
+    programManagerResult = StudentManager.get(StudentManager.user == studentManager,
+                                              StudentManager.program == programId.program)
+
+
+
+
+
     return programManagerResult
