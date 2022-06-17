@@ -28,14 +28,7 @@ templates = [
         "templateFile": "createSingleEvent.html",
         "isVisible": True
     },
-    {
-        "id": 4,
-        "name": "Student-Led Program Training",
-        "tag": "student-led-trainings",
-        "templateJSON": '{}',
-        "templateFile": "createStudentLedTrainingEvents.html",
-        "isVisible": True
-    },
+
 ]
 EventTemplate.insert_many(templates).on_conflict_replace().execute()
 
