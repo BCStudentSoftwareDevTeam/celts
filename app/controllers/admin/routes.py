@@ -1,3 +1,4 @@
+from curses.ascii import US
 from flask import request, render_template, url_for, g, Flask, redirect, flash, abort, json, jsonify, session
 from peewee import DoesNotExist
 from playhouse.shortcuts import model_to_dict, dict_to_model
@@ -191,7 +192,8 @@ def addParticipants():
 @admin_bp.route('/adminLogs', methods = ['GET', 'POST'])
 def adminLogs():
     if g.current_user.isCeltsAdmin:
-        allLogs = AdminLogs.select().order_by(AdminLogs.createdOn.desc())
+        allLogs = AdminLogs.select(AdminLogs, User.firstName, User.lastName).join(User, on=(AdminLogs.createdBy==User.username)).order_by(AdminLogs.createdOn.desc()).objects()
+        print(allLogs)
         return render_template("/admin/adminLogs.html",
                                 allLogs = allLogs)
     else:
