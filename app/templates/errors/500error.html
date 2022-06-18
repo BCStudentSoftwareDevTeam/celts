@@ -1,0 +1,15 @@
+<!--Custom HTML error template for Error Code 500-->
+
+{% extends "base.html"%}
+
+
+{% block app_content %}
+<div class="text-center">
+    <h1>System Error</h1>
+    <p class="">Something went wrong on our end, please try again in a few minutes.
+                  If the problem persists, <a href="mailto:{{ supportEmail }}">please contact the system administrators.</a></p>
+    <br>
+    <a class="btn btn-primary" href="/" role="button">Return Home</a>
+</div>
+
+{% endblock %}

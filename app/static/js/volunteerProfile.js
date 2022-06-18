@@ -80,7 +80,7 @@ $(document).ready(function(){
              "endDate":$("#banEndDatepicker").val() //Expected to be a date in this format YYYY-MM-DD
             },
       success: function(response) {
-        
+
         location.reload();
       }
     });
@@ -88,17 +88,21 @@ $(document).ready(function(){
 
 
   $(".backgroundCheck").change(function () { // Updates the Background check of a volunteer in the database
+    checkType = $(this).attr("id")
     let data = {
-        checkPassed : $(this).val(), //Expected to be either a 0 or a 1
-        user: $(this).data("username"), //Expected to be the username of a volunteer in the database
-        bgType: $(this).attr("id") // Expected to be the ID of a background check in the database
+        checkPassed : $(this).val(),      // Expected to be either a 0 or a 1volunteerProfile.js
+
+        user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
+        bgType: checkType,       // Expected to be the ID of a background check in the database
+        bgDate: $("#" + checkType + "_date").val()  //Expected to be the date of the background check completion
     }
+
+
     $.ajax({
       url: "/updateBackgroundCheck",
       type: "POST",
       data: data,
       success: function(s){
-        location.reload()
       },
       error: function(error, status){
           console.log(error, status)

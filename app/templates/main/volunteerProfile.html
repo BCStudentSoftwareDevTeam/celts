@@ -1,3 +1,5 @@
+
+{%set title ="Volunteer Profile"%}
 {% extends "base.html"%}
 
 {% block scripts %}
@@ -65,9 +67,10 @@
           <th scope="col">Program</th>
           <th scope="col">Interested?</th>
           <th scope="col">Completed Training</th>
-          {% if g.current_user.isCeltsAdmin %}
+          {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff%}
             <th scope="col">Eligibility</th>
           {% endif %}
+          <th scope="col"></th>
         </tr>
       </thead>
       <tbody>
@@ -86,19 +89,26 @@
                     <i class="bi bi-x-lg"></i>
                 {% endif %}
             </td>
-            {% if g.current_user.isCeltsAdmin %}
+          {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
             <td class="programBan">
               {% set imgclass = "bi-x-lg" %}
               {% set label = "Unban" %}
               {% if row.isNotBanned %}
                   {% set imgclass = "bi-check-lg" %}
                   {% set label = "Ban" %}
+                  <p> Eligible </p>
+              {% else %}
+                  <p class="text-danger">Banned</p>
               {% endif %}
-              <i class="bi {{imgclass}}"></i>
-              <button type="button" class="ban btn btn-link" data-programid="{{row.program.id}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}">Edit</button>
             </td>
+            <td>
+            {% if g.current_user.isCeltsAdmin %}
+                <button type="button" class="ban btn btn-link" data-programid="{{row.program.id}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}">Edit</button>
             {% endif %}
-          </tr>
+            </td>
+          {% endif %}
+
+      </tr>
     {% endfor %}
     </tbody>
 </table>
@@ -122,8 +132,8 @@
                   {% set action = "remove" %}
                   {% set checked = "checked" %}
             {% endif %}
-                  <input type="checkbox" id="mgr-{{ program.id }}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}','{{action}}')">
-                  <label  style="padding-right:50px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
+                  <input  type="checkbox" id="mgr-{{ program.id }}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}','{{action}}')">
+                  <label  style="padding-left: 100px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
           {% endfor %}
         </div>
       </div>
@@ -153,6 +163,7 @@
      <thead>
        <tr>
          <th scope="col">Description</th>
+         <th scope="col">Date Completed</th>
          <th scope="col">Completed</th>
        </tr>
      </thead>
@@ -160,20 +171,21 @@
        {% for entry in backgroundTypes%}
        <tr>
          <td>{{entry.description}}</td>
+         <td> <input name="datePassed" type="date" id="{{entry.id}}_date" value="{{ entry.datePassed }}" class="form-control" /> </td>
+         <td>
          {%if g.current_user.isCeltsAdmin%}
-           <td>
              <select class="backgroundCheck" id="{{entry.id}}" data-username="{{volunteer.username}}" >
                <option value=1>Yes</option>
                <option value=0 {{"selected" if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False}}>No</option>
              </select>
-           </td>
-         {% else %}
+        {% else %}
            {% if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False%}
-              <td>No</td>
-           {% else%}
-               <td>Yes</td>
+               No
+           {% else %}
+               Yes
            {% endif%}
-          {% endif %}
+        {% endif %}
+         </td>
        </tr>
        {%endfor%}
      </tbody>

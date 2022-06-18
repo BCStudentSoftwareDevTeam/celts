@@ -96,7 +96,7 @@ def viewVolunteersProfile(username):
                                    "isNotBanned" : isEligibleForProgram(program, volunteer),
                                    "banNote": noteForDict})
         return render_template ("/main/volunteerProfile.html",
-                programs=programs,
+                programs = programs,
                 programsInterested = programsInterested,
                 upcomingEvents = upcomingEvents,
                 rsvpedEvents = rsvpedEvents,
@@ -161,7 +161,9 @@ def addInterest(program_id, username):
     username: unique value of a user to correctly identify them
     """
     try:
-        return addUserInterest(program_id, username)
+        success = addUserInterest(program_id, username)
+        if success:
+            return ""
 
     except Exception as e:
         print(e)
@@ -175,7 +177,9 @@ def removeInterest(program_id, username):
     username: unique value of a user to correctly identify them
     """
     try:
-        return removeUserInterest(program_id, username)
+        removed = removeUserInterest(program_id, username)
+        if removed:
+            return ""
 
     except Exception as e:
         print(e)
