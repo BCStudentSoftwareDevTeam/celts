@@ -110,12 +110,16 @@ $(document).ready(function(){
 
 });
 
-function updateManagers(el, volunteerusername, action ){// retrieve the data of the studnet staff and program id if the boxes are checked or not
+function updateManagers(el, volunteer_username, action ){// retrieve the data of the studnet staff and program id if the boxes are checked or not
   var program_id=$(el).attr('data-programid');
+  console.log(volunteer_username)
+  console.log(program_id)
+  console.log(action)
+
   $.ajax({
     method:"POST",
     url:"/updateProgramManager",
-    data : {"user_name":volunteerusername, //student staff: user_name
+    data : {"user_name":volunteer_username, //student staff: user_name
             "program_id":program_id,       // program id
             "action":action,               //action: add or remove 
              },  

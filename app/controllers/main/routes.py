@@ -96,6 +96,7 @@ def viewVolunteersProfile(username):
                                    "isNotBanned" : isEligibleForProgram(program, volunteer),
                                    "banNote": noteForDict})
         return render_template ("/main/volunteerProfile.html",
+                programs=programs,
                 programsInterested = programsInterested,
                 upcomingEvents = upcomingEvents,
                 rsvpedEvents = rsvpedEvents,
