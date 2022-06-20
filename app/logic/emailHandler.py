@@ -10,6 +10,7 @@ from app.models.eventRsvp import EventRsvp
 from app.models.emailTemplate import EmailTemplate
 from app.models.emailLog import EmailLog
 from app.models.event import Event
+from app.models.eventParticipant import EventParticipant
 from app.models.programBan import ProgramBan
 
 class EmailHandler:
@@ -96,18 +97,18 @@ class EmailHandler:
                 .join(EventRsvp)
                 .where(EventRsvp.event==self.event.id))
 
-        #if recipients_category == "Eligible Students":
-            #print("here we are")
-            #bannedUsers = ProgramBan.select(ProgramBan.user_id)
-            #recipients = User.select().where(User.username.not_in(bannedUsers))
-            # trained =
-            #print("--------")
-            #print(bannedUsers)
-            #print ([bannedUser for bannedUser in bannedUsers])
-            #print("--------")
-            #print(recipients)
-            #print([recipient for recipient in recipients])
-            #print("--------")
+        if recipients_category == "Eligible Students":
+            print("here we are")
+            bannedUsers = ProgramBan.select(ProgramBan.user_id).where((ProgramBan.endDate > datetime.now()) | (ProgramBan.endDate is None), ProgramBan.program_id.in_([p.id for p in self.program_ids]))
+            allVolunteer = Event.select(Event.isAllVolunteerTraining)
+            recipients = User.select().join(EventParticipant).join(Event).where(User.username.not_in(bannedUsers), Event.isAllVolunteerTraining)
+            print("--------")
+            print(bannedUsers)
+            print ([bannedUser for bannedUser in bannedUsers])
+            print("--------")
+            print(recipients)
+            print([recipient for recipient in recipients])
+            print("--------")
 
         return [recipient for recipient in recipients]
 
