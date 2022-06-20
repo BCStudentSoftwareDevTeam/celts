@@ -31,7 +31,7 @@ def test_send_email_using_modal():
                 "eventID":"1",
                 "recipientsCategory": "Interested"}
 
-            email = EmailHandler(raw_form_data, url_domain)
+            email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
 
             with email.mail.record_messages() as outbox:
                 email_sent = email.send_email()
@@ -55,7 +55,7 @@ def test_sending_automated_email():
                 "eventID":"1",
                 "recipientsCategory": "Interested"}
 
-            email = EmailHandler(raw_form_data, url_domain)
+            email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
 
             with email.mail.record_messages() as outbox:
                 email_sent = email.send_email()
@@ -78,7 +78,7 @@ def test_update_email_template():
                 "body":"Hello {name}, Regards",
                 "replyTo": "test.email@gmail.comm"}
 
-            email = EmailHandler(raw_form_data, url_domain)
+            email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
             email.update_email_template()
 
             new_email_template = EmailTemplate.get(EmailTemplate.purpose==raw_form_data['templateIdentifier'])
@@ -101,7 +101,7 @@ def test_email_log():
                 "recipientsCategory": "RSVP'd",
                 "sender": User.get_by_id("ramsayb2")}
 
-            email = EmailHandler(raw_form_data, url_domain, )
+            email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
 
             with email.mail.record_messages() as outbox:
                 email_sent = email.send_email()
@@ -126,7 +126,7 @@ def test_get_last_email():
     assert query.sender.username == "neillz"
     assert query.subject == "Time Change for {event_name}"
     assert query.templateUsed.subject == "Test Email 2"
-    assert query.recipientsCategory == "eventRsvp"
+    assert query.recipientsCategory == "RSVP'd"
     assert query.recipients == "ramsayb2"
 
     query = EmailHandler.retrieve_last_email(37)

@@ -10,14 +10,14 @@ from app.models.eventRsvp import EventRsvp
 from app.models.emailTemplate import EmailTemplate
 from app.models.emailLog import EmailLog
 from app.models.event import Event
-import peewee
-
+from peewee import DoesNotExist
 class EmailHandler:
-    def __init__(self, raw_form_data, url_domain):
+    def __init__(self, raw_form_data, url_domain, sender_object):
         self.mail = Mail(app)
         self.raw_form_data = raw_form_data
         self.url_domain = url_domain
         self.override_all_mail = app.config['MAIL_OVERRIDE_ALL']
+        self.sender = sender_object
         self.template_identifier = None
         self.subject = None
         self.body = None
@@ -137,7 +137,7 @@ class EmailHandler:
         # Q: how would this work?
         pass
 
-    def store_sent_email(self, subject, template_id, sender_object):
+    def store_sent_email(self, subject, template_id):
         """ Stores sent email in the email log """
         date_sent = datetime.now()
         EmailLog.create(
@@ -147,7 +147,7 @@ class EmailHandler:
             recipientsCategory=self.recipients_category,
             recipients=", ".join(recipient.email for recipient in self.recipients),
             dateSent=date_sent,
-            sender=sender_object)
+            sender=self.sender)
 
     def build_email(self):
         # Most General Scenario
@@ -171,7 +171,7 @@ class EmailHandler:
                         reply_to=self.reply_to,
                         sender = ("Sandesh", 'bramsayr@gmail.com')
                     ))
-            self.store_sent_email(subject, template_id, g.current_user)
+            self.store_sent_email(subject, template_id)
             return True
         except Exception as e:
             print("Error on sending email: ", e)
@@ -194,6 +194,5 @@ class EmailHandler:
         try:
             get_query = EmailLog.select().where(EmailLog.event==event_id).order_by(EmailLog.dateSent.desc()).get()
             return get_query
-        except Exception as e:
-            print("No last email found ")
+        except DoesNotExist:
             return None
