@@ -117,22 +117,22 @@ def test_updateEventParticipants():
 def test_backgroundCheck():
     with app.app_context():
         g.current_user = "ramsayb2"
-        updatebackground = setUserBackgroundCheck("khatts","CAN",False)
+        updatebackground = setUserBackgroundCheck("khatts","CAN",False,"") # empty string for people that have not passed bgCheck yet
         updatedModel = BackgroundCheck.get(user="khatts", type = "CAN")
         assert updatedModel.passBackgroundCheck == False
 
-        updatebackground = setUserBackgroundCheck("khatts","FBI",True)
+        updatebackground = setUserBackgroundCheck("khatts","FBI",True,"06-15-2004")
         updatedModel = BackgroundCheck.get(user =  "khatts", type = "FBI")
         assert updatedModel.passBackgroundCheck == True
 
-        updatebackground = setUserBackgroundCheck("khatts","SHS",False)
+        updatebackground = setUserBackgroundCheck("khatts","SHS",False,"")
         updatedModel = BackgroundCheck.get(user = "khatts", type = "SHS")
         assert updatedModel.passBackgroundCheck == False
 
-        updatebackground = setUserBackgroundCheck("neillz", "FBI",False)
+        updatebackground = setUserBackgroundCheck("neillz", "FBI",False,"")
         updatedModel = BackgroundCheck.get(user =  "neillz", type = "FBI")
         assert updatedModel.passBackgroundCheck == False
 
-        updatebackground = setUserBackgroundCheck("mupotsal","SHS",True)
+        updatebackground = setUserBackgroundCheck("mupotsal","SHS",True,"06-15-2004")
         updatedModel = BackgroundCheck.get(user = "mupotsal", type = "SHS")
         assert updatedModel.passBackgroundCheck == True
