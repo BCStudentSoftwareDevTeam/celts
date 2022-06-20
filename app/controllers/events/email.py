@@ -19,8 +19,7 @@ def retrieveEmailTemplate():
 
 @main_bp.route('/fetchEmailLogData/<eventId>', methods=['GET'])
 def fetchEmailLogData(eventId):
-    handle_last_email = EmailHandler(None, None, g.current_user)
-    last_email = handle_last_email.retrieve_last_email(eventId)
+    last_email = EmailHandler.retrieve_last_email(eventId)
     if last_email:
         return {'last_log': "The last email was sent to " + last_email.recipientsCategory + " on " + last_email.dateSent.strftime('%m/%d/%Y') + " by " + last_email.sender.email  + "." , 'last_log2': " Subject: " + last_email.subject}
     else:
