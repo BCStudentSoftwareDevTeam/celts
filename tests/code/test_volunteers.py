@@ -120,19 +120,25 @@ def test_backgroundCheck():
         updatebackground = setUserBackgroundCheck("khatts","CAN",False,"") # empty string for people that have not passed bgCheck yet
         updatedModel = BackgroundCheck.get(user="khatts", type = "CAN")
         assert updatedModel.passBackgroundCheck == False
+        assert updatedModel.datePassed is None
 
-        updatebackground = setUserBackgroundCheck("khatts","FBI",True,"06-15-2004")
+        updatebackground = setUserBackgroundCheck("khatts","FBI",True,"05-16-2003")
         updatedModel = BackgroundCheck.get(user =  "khatts", type = "FBI")
         assert updatedModel.passBackgroundCheck == True
+        #print(type(updatedModel.datePassed))
+        assert updatedModel.datePassed.strftime("%m/%d/%Y") == "05-16-2003"
 
         updatebackground = setUserBackgroundCheck("khatts","SHS",False,"")
         updatedModel = BackgroundCheck.get(user = "khatts", type = "SHS")
         assert updatedModel.passBackgroundCheck == False
+        assert updatedModel.datePassed is None
 
         updatebackground = setUserBackgroundCheck("neillz", "FBI",False,"")
         updatedModel = BackgroundCheck.get(user =  "neillz", type = "FBI")
         assert updatedModel.passBackgroundCheck == False
+        assert updatedModel.datePassed is None
 
-        updatebackground = setUserBackgroundCheck("mupotsal","SHS",True,"06-15-2004")
+        updatebackground = setUserBackgroundCheck("mupotsal","SHS",True,"05-16-2003")
         updatedModel = BackgroundCheck.get(user = "mupotsal", type = "SHS")
         assert updatedModel.passBackgroundCheck == True
+        assert updatedModel.datePassed.strftime("%m/%d/%Y") == "2004-15-06"
