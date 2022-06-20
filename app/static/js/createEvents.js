@@ -30,7 +30,7 @@ $(document).ready(function() {
       $("#endDatePicker").prop('required', false);
     }
   });
-
+  console.log(navigator.userAgent);
   // everything except Chrome
   if (navigator.userAgent.indexOf("Chrome") == -1) {
     console.log ("But we have Chrome")
