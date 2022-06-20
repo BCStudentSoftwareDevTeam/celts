@@ -5,6 +5,8 @@ from app.logic.volunteers import getEventLengthInHours, updateEventParticipants,
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.event import Event
+from app.models.program import Program
+from app.models.programEvent import ProgramEvent
 from app.controllers.admin.volunteers import addVolunteerToEventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 from datetime import datetime
@@ -143,7 +145,39 @@ def test_backgroundCheck():
 @pytest.mark.integration
 def test_getStudentManagerForEvent():
     with app.app_context():
+        testData = [
+        {
+        "id":13,
+        "programName":"testName",
+        "isStudentLed": False,
+        "isBonnerScholars":False,
+        }
+        ]
+        Program.insert_many(testData).on_conflict_replace().execute()
 
+        testEvent = [
+        {
+        "id": 16,
+        "term": 2,
+        "name": "testEvent",
+        "description": "testEvent",
+        "isTraining": True,
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+        "location": "Seabury Center",
+        "startDate": datetime.strptime("2021 10 12","%Y %m %d"),
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
+        }
+        ]
+        Event.insert_many(testEvent).on_conflict_replace().execute()
+
+        testProgramEvent = [
+        {
+        "program_id":13,
+        "event_id":16,
+        }
+        ]
+        #ProgramEvent.insert_many(testProgramEvent).on_conflict_replace().execute()
 
         #gives event & programID
         ## user is manager of program
@@ -189,3 +223,6 @@ def test_getStudentManagerForEvent():
             # EventParticipant.get(EventParticipant.user=="agliullovak", EventParticipant.event==3)
             studentManager = getProgramManagerForEvent(student)
         # assert studentManager == False # use different assertion for errors handling?
+        Program.get(Program.id==13).delete_instance()
+        Event.get(Event.id==16).delete_instance()
+        #ProgramEvent.get(ProgramEvent.event_id==13).delete_instance()
