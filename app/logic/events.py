@@ -14,7 +14,6 @@ from app.models.interest import Interest
 from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
 from app.logic.adminLogs import createLog
-from app.logic.utils import format24HourTime
 
 def getEvents(program_id=None):
 
@@ -70,8 +69,8 @@ def saveEventToDb(newEventData):
                     "term": newEventData['term'],
                     "name": eventInstance['name'],
                     "description": newEventData['description'],
-                    "timeStart": format24HourTime(newEventData['timeStart']),
-                    "timeEnd": format24HourTime(newEventData['timeEnd']),
+                    "timeStart": newEventData['timeStart'],
+                    "timeEnd": newEventData['timeEnd'],
                     "location": newEventData['location'],
                     "isRecurring": newEventData['isRecurring'],
                     "isTraining": newEventData['isTraining'],
@@ -193,7 +192,7 @@ def validateNewEventData(data):
     if data['isRecurring'] and data['endDate']  <  data['startDate']:
         return (False, "Event start date is after event end date")
 
-    if data['endDate'] ==  data['startDate'] and format24HourTime(data['timeEnd']) <= format24HourTime(data['timeStart']):
+    if data['endDate'] ==  data['startDate'] and data['timeEnd'] <= data['timeStart']:
         return (False, "Event start time is after event end time")
 
     # Validation if we are inserting a new event

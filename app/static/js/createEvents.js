@@ -16,6 +16,21 @@ function updateDate(obj) {
     $("#startDatePicker").datepicker("option", "maxDate", new Date(  newYear, newMonth, newDay));
   }
 }
+// turns a string with a time with HH:mm format to %I:%M %p format
+// used to display 12 hour format but still use 24 hour format in the backend
+function format24to12HourTime(timeStr){
+  var formattedTime;
+    if (parseInt(timeStr.slice(0, 2)) > 12){
+      formattedTime = "0" + String(parseInt(timeStr.slice(0, 2)) - 12) + timeStr.slice(2) + " PM";
+    }
+    else if (parseInt(timeStr.slice(0, 2)) < 12 ){
+      formattedTime =  timeStr + " AM";
+    }
+    else {
+      formattedTime = timeStr + " PM";
+    }
+    return formattedTime;
+  }
 /*
  * Run when the webpage is ready for javascript
  */
@@ -30,11 +45,8 @@ $(document).ready(function() {
       $("#endDatePicker").prop('required', false);
     }
   });
-  console.log(navigator.userAgent);
   // everything except Chrome
   if (navigator.userAgent.indexOf("Chrome") == -1) {
-    console.log ("But we have Chrome")
-    console.log(navigator.userAgent)
     $('input.timepicker').timepicker({
              timeFormat : 'hh:mm p',
              scrollbar: true,
@@ -45,6 +57,11 @@ $(document).ready(function() {
     });
     $(".timepicker").prop("type", "text");
     $(".timeIcons").prop("hidden", false);
+
+    var formattedStartTime = format24to12HourTime($("#startTime").prop("defaultValue"));
+    var formattedEndTime = format24to12HourTime($("#endTime").prop("defaultValue"));
+    $("#startTime").val(formattedStartTime);
+    $("#endTime").val(formattedEndTime);
   }
   else {
     $(".timepicker").prop("type", "time");

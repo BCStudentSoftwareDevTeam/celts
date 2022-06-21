@@ -43,34 +43,3 @@ def getStartofCurrentAcademicYear(currentTerm):
         fallTerm = Term.select().where(Term.year==currentTerm.year-1, Term.description == f"Fall {currentTerm.year-1}").get()
         return fallTerm
     return currentTerm
-
-def format24HourTime(timeStr):
-    """
-
-    timeStr: expects a string HH:mm
-    """
-    print("----", type(timeStr))
-    timeThing = format24to12HourTime(timeStr)
-
-    # try:
-    # if type(time_str) is str:
-    time = datetime.strptime(timeThing, "%I:%M %p").strftime("%H:%M") # Converts string to datetime and formats correctly
-    print("====", time)
-    print("====", type(time))
-    # except Exception as e:
-    # # else:
-    #     print("----", e)
-    #     time_str.strftime("%H:%M")
-
-    return time
-
-def format24to12HourTime(timeStr):
-    """
-    """
-    if int(timeStr[:2]) > 12:
-        formattedTime = "0" + str(int(timeStr[:2]) - 12) + timeStr[2:] + " PM"
-    elif int(timeStr[:2]) < 12:
-        formattedTime =  timeStr + " AM"
-    else:
-        formattedTime = timeStr + " PM"
-    return formattedTime
