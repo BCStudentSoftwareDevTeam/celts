@@ -34,13 +34,13 @@ def setup_module():
                               timeStart = "18:00:00",
                               timeEnd = "21:00:00",
                               location = "The testing lab",
-                              isRecurring = 0,
                               isRsvpRequired = 0,
                               isPrerequisiteForProgram = 0,
                               isTraining = 1,
                               isService = 0,
                               startDate =  "2021-12-12",
-                              endDate =  "2021-12-13")
+                              endDate =  "2021-12-13",
+                              recurring_id = None)
 
     programEvent = ProgramEvent.create(program=2, event=newTrainingEvent)
 
@@ -52,13 +52,13 @@ def setup_module():
                               timeStart = "18:00:00",
                               timeEnd = "21:00:00",
                               location = "The testing lab",
-                              isRecurring = 0,
                               isRsvpRequired = 0,
                               isPrerequisiteForProgram = 0,
                               isTraining = 0,
                               isService = 0,
                               startDate =  "2021-12-12",
-                              endDate =  "2021-12-13")
+                              endDate =  "2021-12-13",
+                              recurring_id = None)
 
     programEvent = ProgramEvent.create(program=5, event=newBonnerEvent)
 
@@ -93,13 +93,13 @@ def setup_module():
                               timeStart = "18:00:00",
                               timeEnd = "21:00:00",
                               location = "The testing lab",
-                              isRecurring = 0,
                               isRsvpRequired = 0,
                               isPrerequisiteForProgram = 0,
                               isTraining = 0,
                               isService = 0,
                               startDate =  "2021-12-12",
-                              endDate =  "2021-12-13")
+                              endDate =  "2021-12-13",
+                              recurring_id = None)
 
     programEvent = ProgramEvent.create(program=1, event=newProgramEvent)
 
