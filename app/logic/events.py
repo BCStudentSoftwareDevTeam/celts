@@ -14,6 +14,7 @@ from app.models.interest import Interest
 from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
 from app.logic.adminLogs import createLog
+from app.logic.utils import format24HourTime
 
 def getEvents(program_id=None):
 
@@ -192,7 +193,7 @@ def validateNewEventData(data):
     if data['isRecurring'] and data['endDate']  <  data['startDate']:
         return (False, "Event start date is after event end date")
 
-    if data['endDate'] ==  data['startDate'] and data['timeEnd'] <= data['timeStart']:
+    if data['endDate'] ==  data['startDate'] and datetime.datetime.strptime(data['timeEnd'], "%I:%M %p") <= datetime.datetime.strptime(data['timeStart'], "%I:%M %p"):
         return (False, "Event start time is after event end time")
 
     # Validation if we are inserting a new event
@@ -274,6 +275,12 @@ def preprocessEventData(eventData):
             eventData['term'] = Term.get_by_id(eventData['term'])
         except DoesNotExist:
             eventData['term'] = ''
+
+    if 'startTime' in eventData:
+        eventData['startTime'] = format24HourTime(eventData['startTime'])
+
+    if 'endTime' in eventData:
+        eventData['endTime'] = format24HourTime(eventData['endTime'])
 
     ## Get the facilitator objects from the list or from the event if there is a problem
     try:

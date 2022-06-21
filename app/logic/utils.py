@@ -43,3 +43,11 @@ def getStartofCurrentAcademicYear(currentTerm):
         fallTerm = Term.select().where(Term.year==currentTerm.year-1, Term.description == f"Fall {currentTerm.year-1}").get()
         return fallTerm
     return currentTerm
+
+def format24HourTime(timeStr):
+    """
+    timeStr: expects a string HH:mm
+    """
+    time = datetime.strptime(timeStr, "%I:%M %p").strftime("%H:%M") # Converts string to datetime and formats correctly
+
+    return time

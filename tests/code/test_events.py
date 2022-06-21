@@ -529,10 +529,11 @@ def test_format24HourTime():
     assert format24HourTime('8:00 AM')
     assert format24HourTime('05:00 PM')
     assert format24HourTime('07:30 PM')
+    assert format24HourTime('12:00 PM')
 
     # tests "input times" that are not valid inputs
     with pytest.raises(ValueError):
         assert format24HourTime('13:30 PM')
         assert format24HourTime('13:30 AM')
-        assert format24HourTime('21:00')
         assert format24HourTime('01:30:00 PM')
+        assert format24HourTime('21:00')
