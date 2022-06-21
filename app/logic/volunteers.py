@@ -111,13 +111,15 @@ def getProgramManagerForEvent(user, event= None, programId = None):
     #neither event nor programId are passed
     if not (event or programId):
         raise ValueError("Not enough parameters given to this function.")
+
     #if event is passed but no programId is passed
     if event and not programId:
         programIdQuery = (ProgramEvent.get(ProgramEvent.event == event)).program
-        # print("---ev!pid---", programSomethingClever)
+
     #if event is not passed but programId is passed or both are passed
     if programId:
         programIdQuery = Program.get_by_id(programId)
+
     #if at least programId is passed
     try:
         programManagerResult = StudentManager.get(StudentManager.user == user,

@@ -6,7 +6,9 @@ from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.event import Event
 from app.models.program import Program
+from app.models.studentManager import StudentManager
 from app.models.programEvent import ProgramEvent
+from app.models import mainDB
 from app.controllers.admin.volunteers import addVolunteerToEventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 from datetime import datetime
@@ -144,17 +146,22 @@ def test_backgroundCheck():
 
 @pytest.mark.integration
 def test_getStudentManagerForEvent():
-    with app.app_context():
-        testData = [
+    with mainDB.atomic() as transaction:
+
+        #Test data for creating a program
+        testProgramData = [
         {
         "id":13,
-        "programName":"testName",
+        "programName":"testProgram",
         "isStudentLed": False,
         "isBonnerScholars":False,
         }
         ]
-        Program.insert_many(testData).on_conflict_replace().execute()
 
+        #Inserts new row into Program table
+        Program.insert_many(testProgramData).on_conflict_replace().execute()
+
+        #Test data for creating an event
         testEvent = [
         {
         "id": 16,
@@ -169,60 +176,99 @@ def test_getStudentManagerForEvent():
         "endDate": datetime.strptime("2022 6 12","%Y %m %d")
         }
         ]
-        Event.insert_many(testEvent).on_conflict_replace().execute()
 
+        Event.insert_many(testEvent).on_conflict_replace().execute() #Inserts new row into Event table
+
+        #Test data for creating a new row in ProgramEvent table
         testProgramEvent = [
         {
         "program_id":13,
         "event_id":16,
         }
         ]
-        #ProgramEvent.insert_many(testProgramEvent).on_conflict_replace().execute()
+
+        #Inserts new row into ProgramEvent table
+        ProgramEvent.insert_many(testProgramEvent).on_conflict_replace().execute()
+
+        #Test data for test users, inserted in User table
+        testUserData = [
+        {#This user is not a program manager
+        "username": "testUser",
+        "bnumber": "B00724094",
+        "email": "martinj2@berea.edu",
+        "phoneNumber": "555-555-5555",
+        "firstName": "Joey",
+        "lastName": "Martin",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": False
+
+        },
+        {#This user is a program manager
+        "username": "testUser2",
+        "bnumber": "B00762158",
+        "email": "studentmanagertest@berea.edu",
+        "phoneNumber": "555-555-5555",
+        "firstName": "Paw",
+        "lastName": "Thaw",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": True
+        }
+        ]
+
+        #Insert new row into User table
+        User.insert_many(testUserData).on_conflict_replace().execute()
+
+        #Test data for StudentManager table, inserted in to StudentManager table
+        testProgramManagerData = [
+        {
+        'user': 'testUser2',
+        'program': 13
+        }
+        ]
+        
+        #Insert new row into StudentManager table
+        StudentManager.insert_many(testProgramManagerData).on_conflict_replace().execute()
+
+        test_program = 13 #programID is passed in  as an int
+        test_event = Event.get_by_id(16) #gets event object
+        student = User.get_by_id("testUser") #This test user is not a program manager
+        programManager = User.get_by_id("testUser2") ##This user is a program manager
 
         #gives event & programID
         ## user is manager of program
-        student = User.get_by_id("neillz")
-        event = Event.get_by_id(1)
-        studentManager = getProgramManagerForEvent(student, event, 1)
+        studentManager = getProgramManagerForEvent(programManager, test_event, test_program)
         assert studentManager == True
+
         ## user is not manager of program
-        student = User.get_by_id("khatts")
-        event = Event.get_by_id(1)
-        studentManager = getProgramManagerForEvent(student, event, 5)
+        studentManager = getProgramManagerForEvent(student, test_event, test_program)
         assert studentManager == False
 
         #gives event but no programId
         ## user is manager of program
-        student = User.get_by_id("khatts")
-        event = Event.get_by_id(1)
-        studentManager = getProgramManagerForEvent(student, event)
+        studentManager = getProgramManagerForEvent(programManager, test_event)
         assert studentManager == True
+
         ## user is not manager of program
-        student = User.get_by_id("khatts")
-        event = Event.get_by_id(5)
-        studentManager = getProgramManagerForEvent(student, event, 5)
+        studentManager = getProgramManagerForEvent(student, test_event)
         assert studentManager == False
+
 
         #gives programID but no event
         ## user is manager of program
-        student = User.get_by_id("neillz")
-        event = Event.get_by_id(1)
-        studentManager = getProgramManagerForEvent(student, programId = 1)
+        studentManager = getProgramManagerForEvent(programManager, programId = test_program)
         assert studentManager == True
+
         ## user is not manager of program
-        student = User.get_by_id("partont")
-        event = Event.get_by_id(1)
-        studentManager = getProgramManagerForEvent(student, programId = 5)
+        studentManager = getProgramManagerForEvent(student, programId = test_program)
         assert studentManager == False
 
+
         #gives neither event or programID
-        ## shuold give an error, most likely a 500: system error
-        # student = User.get_by_id("neillz")
-        # event = Event.get_by_id(None)
+        ## shuold give an error
         with pytest.raises(ValueError):
-            # EventParticipant.get(EventParticipant.user=="agliullovak", EventParticipant.event==3)
             studentManager = getProgramManagerForEvent(student)
-        # assert studentManager == False # use different assertion for errors handling?
-        Program.get(Program.id==13).delete_instance()
-        Event.get(Event.id==16).delete_instance()
-        #ProgramEvent.get(ProgramEvent.event_id==13).delete_instance()
+        transaction.rollback()
