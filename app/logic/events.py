@@ -121,20 +121,26 @@ def getTrainingProgram(term):
         with the most programs (highest count) by doing this we can ensure that the event being
         returned is the All Trainings Event.
     """
+    try:
+        allTrainingsEvent = ((ProgramEvent.select(ProgramEvent.event, fn.COUNT(1).alias('num_programs'))
+                                            .join(Event)
+                                            .group_by(ProgramEvent.event)
+                                            .order_by(fn.COUNT(1).desc()))
+                                            .where(Event.term == term).get())
 
-    allTrainingsEvent = ((ProgramEvent.select(ProgramEvent.event, fn.COUNT(1).alias('num_programs'))
-                                        .join(Event)
-                                        .group_by(ProgramEvent.event)
-                                        .order_by(fn.COUNT(1).desc()))
-                                        .where(Event.term == term).get())
+        trainingEvents = (Event.select(Event)
+    			               .order_by((Event.id == allTrainingsEvent.event.id).desc(), Event.startDate.desc())
+                               .where(Event.isTraining,
+                                      Event.term == term))
 
-    trainingEvents = ((Event.select(Event)
-			               .order_by((Event.id == allTrainingsEvent.event.id).desc(), Event.startDate.desc())
-                           .where(Event.isTraining,
-                                  Event.term == term)))
-
+    except DoesNotExist:
+        trainingEvents = (Event.select(Event)
+    			               .order_by( Event.startDate.desc())
+                               .where(Event.isTraining,
+                                      Event.term == term))
 
     return trainingEvents
+
 def getBonnerProgram(term):
 
     bonnerScholarsEvents = (Event.select(Event, Program.id.alias("program_id"))
