@@ -25,6 +25,7 @@ from app.models.emailTemplate import EmailTemplate
 from app.models.backgroundCheck import BackgroundCheck
 # from app.models.backgroundCheckType import BackgroundCheckType
 from app.models.adminLogs import AdminLogs
+from app.models.instructor import Instructor
 
 
 print("Inserting data for demo and testing purposes.")
@@ -608,6 +609,7 @@ courseInstructorRecords = [
     }
 
 ]
+Instructor.insert_many(courseInstructorRecords).on_conflict_replace().execute()
 CourseInstructor.insert_many(courseInstructorRecords).on_conflict_replace().execute()
 
 
