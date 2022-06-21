@@ -196,3 +196,10 @@ def adminLogs():
                                 allLogs = allLogs)
     else:
         abort(403)
+
+@admin_bp.route('/programSettings', methods = ['GET', 'POST'])
+def programSettings():
+    if g.current_user.isCeltsAdmin:
+        return render_template("/admin/programSettings.html")
+    else:
+        abort(403)

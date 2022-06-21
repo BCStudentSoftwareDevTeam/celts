@@ -8,7 +8,7 @@
 
     <ul class="nav nav-pills flex-column mb-auto">
 
-  
+
     <li>
       <a href="/profile/{{g.current_user}}"
           class="nav-link text-white {{'active' if 'profile' in request.path }}"
@@ -16,7 +16,7 @@
         My Profile
       </a>
     </li>
-   
+
     {% if g.current_user.isFaculty %}
     <li>
       <a href="/serviceLearning/courseManagement"
@@ -77,6 +77,9 @@
             <a href="/manageServiceLearning" class="nav-link text-white {{ 'active' if request.path =='/manageServiceLearning' }}">
               Service Learning
                </a>
+            <a href="/programSettings" class="nav-link text-white{{'active' if request.path =='/programSettings'}}">
+              Program Settings
+            </a>
           </div>
         </div>
         {% endif %}
