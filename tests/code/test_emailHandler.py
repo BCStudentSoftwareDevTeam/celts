@@ -116,3 +116,17 @@ def test_email_log():
             assert emailLog.recipients == ", ".join(user.user.email for user in rsvp_users)
 
             transaction.rollback()
+
+@pytest.mark.integration
+def test_recipients_category():
+    with app.test_request_context():
+        url_domain = urlparse(request.base_url).netloc
+        raw_form_data = {"templateIdentifier": "Test",
+            "programID":"1",
+            "eventID":"1",
+            "recipientsCategory": "Eligile Students"}
+
+        email = EmailHandler(raw_form_data, url_domain)
+        recipients = email.retrieve_recipients
+
+        assert recipients.recipients_category == "Eligible Students"
