@@ -9,6 +9,7 @@ from app.models.emailTemplate import EmailTemplate
 from app.models.emailLog import EmailLog
 from app.models.eventRsvp import EventRsvp
 from app.models import mainDB
+from app.models.user import User
 from app.logic.emailHandler import EmailHandler
 
 @pytest.mark.integration
@@ -122,10 +123,14 @@ def test_recipients_category():
     with app.test_request_context():
         url_domain = urlparse(request.base_url).netloc
         raw_form_data = {"templateIdentifier": "Test",
-            "programID":"1",
+            "programID":"3",
             "eventID":"1",
             "recipientsCategory": "Eligible Students"}
 
         email = EmailHandler(raw_form_data, url_domain)
+        email.process_data()
+        user ="khatts"
 
-        assert email.retrieve_recipients(raw_form_data["recipientsCategory"]) == "Eligible Students"
+        target_results = []
+
+        assert email.recipients == target_results

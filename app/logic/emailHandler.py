@@ -68,8 +68,8 @@ class EmailHandler:
             programEvents = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event==self.event.id)
             return [program.program for program in programEvents.objects()]
         else:
-            program = ProgramEvent.get_by_id(program_id)
-            return [program.program]
+            program = Program.get_by_id(program_id)
+            return [program]
 
 
     def update_sender_config(self):
@@ -98,17 +98,17 @@ class EmailHandler:
                 .where(EventRsvp.event==self.event.id))
 
         if recipients_category == "Eligible Students":
-            #print("here we are")
+            print("here we are")
             bannedUsers = ProgramBan.select(ProgramBan.user_id).where((ProgramBan.endDate > datetime.now()) | (ProgramBan.endDate is None), ProgramBan.program_id.in_([p.id for p in self.program_ids]))
             allVolunteer = Event.select(Event.isAllVolunteerTraining)
             recipients = User.select().join(EventParticipant).join(Event).where(User.username.not_in(bannedUsers), Event.isAllVolunteerTraining)
-            #print("--------")
-            #print(bannedUsers)
-            #print ([bannedUser for bannedUser in bannedUsers])
-            #print("--------")
-            #print(recipients)
-            #print([recipient for recipient in recipients])
-            #print("--------")
+            print("--------")
+            print(bannedUsers)
+            print ([bannedUser for bannedUser in bannedUsers])
+            print("--------")
+            print(recipients)
+            print([recipient for recipient in recipients])
+            print("--------")
 
         return [recipient for recipient in recipients]
 
