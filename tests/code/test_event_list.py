@@ -3,6 +3,7 @@ from peewee import DoesNotExist
 from app.models import mainDB
 from app.models.programEvent import ProgramEvent
 from app.models.event import Event
+from app.models.event import Term
 from app.logic.events import getStudentLedProgram,  getTrainingProgram, getBonnerProgram, getOneTimeEvents
 
 @pytest.mark.integration
@@ -39,7 +40,6 @@ def test_event_list():
                                 endDate = 2021-12-13)
         bonnerProgramEvent = ProgramEvent.create(program = 5, event = bonner)
 
-
         oneTime = Event.create(name = "Test One Time",
                                 term = 3,
                                 description = "event for testing",
@@ -50,12 +50,16 @@ def test_event_list():
                                 endDate = 2021-12-13)
         oneTimeProgramEvent = ProgramEvent.create(program = 6, event = oneTime)
 
-        studentledProgram = getStudentLedProgram(3)
-        trainingProgram = getTrainingProgram(3)
-        trainingProgram2 = getTrainingProgram(2)
-        bonnerProgram = getBonnerProgram(3)
-        oneTimeEvents = getOneTimeEvents(3)
+        newTerm= Term.create(
+            description= "Fall 2025",
+            year= 2025,
+            academicYear= 2024-2025,
+            isSummer= 0,
+            isCurrentTerm=0)
 
+
+
+        studentledProgram = getStudentLedProgram(3)
         assert studentledProgram
         studentledRes = []
         for program, events in studentledProgram.items():
@@ -63,17 +67,31 @@ def test_event_list():
                 studentledRes.append(event.name)
         assert "Test Student Lead" in studentledRes
 
+        trainingProgram = getTrainingProgram(3)
+        trainingProgram2 = getTrainingProgram(2)
+        trainingProgram3 = getTrainingProgram(newTerm)
+
+        newTerm.delete_instance()
+
+
         assert trainingProgram
         assert training in trainingProgram
         assert Studentled not in studentledProgram
         assert training not in trainingProgram2
+        assert trainingProgram3 == [1]
 
+
+        bonnerProgram = getBonnerProgram(3)
         assert bonnerProgram
         assert bonner in bonnerProgram
         assert Studentled not in bonnerProgram
 
+        oneTimeEvents = getOneTimeEvents(3)
         assert oneTimeEvents
         assert oneTime in oneTimeEvents
         assert Studentled not in oneTimeEvents
+
+
+
 
         transaction.rollback()
