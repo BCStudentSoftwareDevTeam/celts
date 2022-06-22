@@ -191,7 +191,7 @@ def addParticipants():
 @admin_bp.route('/adminLogs', methods = ['GET', 'POST'])
 def adminLogs():
     if g.current_user.isCeltsAdmin:
-        allLogs = AdminLogs.select(AdminLogs, User.firstName, User.lastName).join(User).order_by(AdminLogs.createdOn.desc()).objects()
+        allLogs = AdminLogs.select(AdminLogs, User).join(User).order_by(AdminLogs.createdOn.desc())
         return render_template("/admin/adminLogs.html",
                                 allLogs = allLogs)
     else:

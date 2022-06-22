@@ -27,7 +27,7 @@
   {% for entry in allLogs%}
   <tr>
     <td>{{entry.createdOn}}</td>
-    <td>{{entry.firstName+ " "+ entry.lastName}}</td>
+    <td>{{entry.createdBy.firstName+ " "+ entry.createdBy.lastName}}</td>
     <td>{{entry.logContent}}</td>
 
  </tr>
