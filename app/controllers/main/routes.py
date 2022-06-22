@@ -266,6 +266,21 @@ def searchUser(query):
         print(e)
         return "Error in searching for user", 500
 
+
+@main_bp.route('/searchInstructor/<query>', methods = ['GET'])
+def searchInstructor(query):
+    '''Accepts user input and queries the database returning results that matches user search'''
+    try:
+        query = query.strip()
+        search = query.upper()
+        splitSearch = search.split()
+        searchResults = searchInstructors(query)
+        return searchResults
+    except Exception as e:
+        print(e)
+        return "Error in searching for user", 500
+        
+
 @main_bp.route('/contributors',methods = ['GET'])
 def contributors():
     return render_template("/contributors.html")

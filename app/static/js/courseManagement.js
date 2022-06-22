@@ -28,3 +28,10 @@ function addInstructor() {
     }
   });
 }
+function callback(){
+  $("searchinstructor").submit();
+  
+}
+$(#"uname").on("input", function()){
+  searchInstructor("uname", callback);
+}
