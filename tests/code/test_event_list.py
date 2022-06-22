@@ -56,9 +56,6 @@ def test_event_list():
             academicYear= 2024-2025,
             isSummer= 0,
             isCurrentTerm=0)
-
-
-
         studentledProgram = getStudentLedProgram(3)
         assert studentledProgram
         studentledRes = []
@@ -70,16 +67,13 @@ def test_event_list():
         trainingProgram = getTrainingProgram(3)
         trainingProgram2 = getTrainingProgram(2)
         trainingProgram3 = getTrainingProgram(newTerm)
-
         newTerm.delete_instance()
-
 
         assert trainingProgram
         assert training in trainingProgram
         assert Studentled not in studentledProgram
         assert training not in trainingProgram2
         assert trainingProgram3 == [1]
-
 
         bonnerProgram = getBonnerProgram(3)
         assert bonnerProgram
@@ -90,8 +84,5 @@ def test_event_list():
         assert oneTimeEvents
         assert oneTime in oneTimeEvents
         assert Studentled not in oneTimeEvents
-
-
-
 
         transaction.rollback()
