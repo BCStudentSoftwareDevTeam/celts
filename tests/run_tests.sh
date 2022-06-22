@@ -1,4 +1,3 @@
-#!/usr/bin/bash
 if [[ `pwd` =~ tests$ ]]; then
     cd ../
 fi
@@ -41,7 +40,6 @@ function no_ui {
 case "$1" in
 	"")
 		no_ui
-		ui
 		;;
 	all)
 		no_ui
