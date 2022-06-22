@@ -5,6 +5,7 @@ from werkzeug.datastructures import MultiDict
 from app.models import mainDB
 from app.models.user import User
 from app.models.event import Event
+from app.models.eventParticipant import EventParticipant
 from app.models.facilitator import Facilitator
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
@@ -218,7 +219,15 @@ def validateNewEventData(data):
     return (True, "All inputs are valid.")
 
 def calculateNewRecurringId():
-        return Event.select(fn.MAX(Event.recurring_id)).scalar() + 1
+    recurringId = Event.select(fn.MAX(Event.recurring_id)).scalar()
+    if recurringId != None:
+        return recurringId + 1
+    else:
+        return None
+
+def getPreviousRecurringEventData(recurring_id, start_date):
+    return list(User.select(User.username).join(EventParticipant).join(Event).where(Event.recurring_id==recurring_id, Event.startDate<start_date))
+    #Event.select(EventParticipant.user.username).join(EventParticipant).where(Event.recurring_id==recurring_id, Event.startDate<start_date)
 
 def calculateRecurringEventFrequency(event):
     """
@@ -236,7 +245,7 @@ def calculateRecurringEventFrequency(event):
         raise Exception("This event is not a recurring event")
 
     return [ {'name': f"{event['name']} Week {counter+1}",
-              'date': (event['startDate'] + datetime.timedelta(days=7*counter)).strftime("%m/%d/%Y"),
+              'date': event['startDate'] + datetime.timedelta(days=7*counter),
               "week": counter+1}
             for counter in range(0, ((event['endDate']-event['startDate']).days//7)+1)]
 

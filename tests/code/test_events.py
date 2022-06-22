@@ -293,9 +293,9 @@ def test_calculateRecurringEventFrequency():
 
     # test correct response
     returnedEvents = calculateRecurringEventFrequency(eventInfo)
-    assert returnedEvents[0] == {'name': 'testEvent Week 1', 'date': '02/22/2023', 'week': 1}
-    assert returnedEvents[1] == {'name': 'testEvent Week 2', 'date': '03/01/2023', 'week': 2}
-    assert returnedEvents[2] == {'name': 'testEvent Week 3', 'date': '03/08/2023', 'week': 3}
+    assert returnedEvents[0] == {'name': 'testEvent Week 1', 'date': parser.parse('02/22/2023'), 'week': 1}
+    assert returnedEvents[1] == {'name': 'testEvent Week 2', 'date': parser.parse('03/01/2023'), 'week': 2}
+    assert returnedEvents[2] == {'name': 'testEvent Week 3', 'date': parser.parse('03/08/2023'), 'week': 3}
 
     # test non-datetime
     eventInfo["startDate"] = '2021/06/07'
@@ -529,3 +529,59 @@ def test_userWithNoInterestedEvent():
 @pytest.mark.integration
 def test_calculateNewRecurringId():
     assert calculateNewRecurringId() == 4
+
+@pytest.mark.integration
+def test_getPreviousRecurringEventData():
+    with mainDB.atomic() as transaction:
+        testingEvent1 = Event.create(name = "Testing delete event",
+                                      term = 2,
+                                      description= "This Event is Created to be Deleted.",
+                                      timeStart= "6:00 pm",
+                                      timeEnd= "9:00 pm",
+                                      location = "No Where",
+                                      isRsvpRequired = 0,
+                                      isTraining = 0,
+                                      isService = 0,
+                                      startDate= "2021-12-5",
+                                      endDate= "2022-12-5",
+                                      recurring_id = 3)
+        testingEvent2 = Event.create(name = "Testing delete event",
+                                      term = 2,
+                                      description= "This Event is Created to be Deleted.",
+                                      timeStart= "6:00 pm",
+                                      timeEnd= "9:00 pm",
+                                      location = "No Where",
+                                      isRsvpRequired = 0,
+                                      isTraining = 0,
+                                      isService = 0,
+                                      startDate= "2022-12-12",
+                                      endDate= "2022-12-12",
+                                      recurring_id = 3)
+        testingEvent3 = Event.create(name = "Testing delete event",
+                                      term = 2,
+                                      description= "This Event is Created to be Deleted.",
+                                      timeStart= "6:00 pm",
+                                      timeEnd= "9:00 pm",
+                                      location = "No Where",
+                                      isRsvpRequired = 0,
+                                      isTraining = 0,
+                                      isService = 0,
+                                      startDate= "2022-12-19",
+                                      endDate= "2022-12-19",
+                                      recurring_id = 3)
+
+        testingParticipant1 = EventParticipant.create(user = User.get_by_id("neillz"),
+                                                    event = testingEvent2.id,
+                                                    hoursEarned = None)
+        testingParticipant2 = EventParticipant.create(user = User.get_by_id("ramsayb2"),
+                                                    event = testingEvent2.id,
+                                                    hoursEarned = None)
+        testingParticipant3 = EventParticipant.create(user = User.get_by_id("khatts"),
+                                                    event = testingEvent2.id,
+                                                    hoursEarned = None)
+
+        val = getPreviousRecurringEventData(testingEvent3.recurring_id, testingEvent3.startDate)
+        assert val[0].username == "neillz"
+        assert val[1].username == "ramsayb2"
+        assert val[2].username == "khatts"
+        transaction.rollback()
