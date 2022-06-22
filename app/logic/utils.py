@@ -38,12 +38,6 @@ def deep_update(d, u):
 
     return d
 
-def getStartofCurrentAcademicYear(currentTerm):
-    if ("Summer" in currentTerm.description) or ("Spring" in currentTerm.description):
-        fallTerm = Term.select().where(Term.year==currentTerm.year-1, Term.description == f"Fall {currentTerm.year-1}").get()
-        return fallTerm
-    return currentTerm
-
 def format24HourTime(time_str):
     if type(time_str) is str:
         return datetime.strptime(time_str, "%I:%M %p").strftime("%H:%M") # Converts string to datetime and formats correctly
