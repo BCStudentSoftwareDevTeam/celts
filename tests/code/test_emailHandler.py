@@ -124,9 +124,8 @@ def test_recipients_category():
         raw_form_data = {"templateIdentifier": "Test",
             "programID":"1",
             "eventID":"1",
-            "recipientsCategory": "Eligile Students"}
+            "recipientsCategory": "Eligible Students"}
 
         email = EmailHandler(raw_form_data, url_domain)
-        recipients = email.retrieve_recipients
 
-        assert recipients.recipients_category == "Eligible Students"
+        assert email.retrieve_recipients(raw_form_data["recipientsCategory"]) == "Eligible Students"
