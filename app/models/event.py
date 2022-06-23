@@ -39,10 +39,10 @@ class Event(baseModel):
 
     @property
     def isRecurring(self):
-        return bool(self.recurringid)
+        return bool(self.recurringId)
 
     @property
     def isFirstRecurringEvent(self):
-        firstRecurringEvent = Event.select().where(Event.recurringid==self.recurringid).order_by(Event.startDate).get()
+        firstRecurringEvent = Event.select().where(Event.recurringId==self.recurringId).order_by(Event.startDate).get()
         return firstRecurringEvent.id == self.id
     

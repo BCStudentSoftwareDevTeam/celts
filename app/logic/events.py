@@ -60,7 +60,7 @@ def saveEventToDb(newEventData):
     recurringSeriesId = None
     if isNewEvent and newEventData['isRecurring']:
         eventsToCreate = calculateRecurringEventFrequency(newEventData)
-        recurringSeriesId = calculateNewRecurringId()
+        recurringSeriesId = calculateNewrecurringId()
     else:
         eventsToCreate.append({'name': f"{newEventData['name']}",
                                 'date':newEventData['startDate'],
@@ -217,8 +217,8 @@ def validateNewEventData(data):
 
     return (True, "All inputs are valid.")
 
-def calculateNewRecurringId():
-    recurringId = Event.select(fn.MAX(Event.recurringid)).scalar()
+def calculateNewrecurringId():
+    recurringId = Event.select(fn.MAX(Event.recurringId)).scalar()
     if recurringId:
         return recurringId + 1
     else:
@@ -226,7 +226,7 @@ def calculateNewRecurringId():
 
 def getPreviousRecurringEventData(recurringId, startDate):
     return list(User.select(User.username).join(EventParticipant).join(Event)
-    .where(Event.recurringid==recurringId, Event.startDate<startDate))
+    .where(Event.recurringId==recurringId, Event.startDate<startDate))
 
 def calculateRecurringEventFrequency(event):
     """
