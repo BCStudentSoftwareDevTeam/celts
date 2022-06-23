@@ -22,7 +22,7 @@ def getEvents(program_id=None):
     if program_id:
         Program.get_by_id(program_id) # raises an exception if program doesn't exist
         return (Event.select(Event).join(ProgramEvent)
-                     .where(ProgramEvent.program == program_id).distinct())
+                    .where(ProgramEvent.program == program_id).distinct())
     else:
         return Event.select()
 
@@ -75,7 +75,7 @@ def saveEventToDb(newEventData):
                     "timeStart": newEventData['timeStart'],
                     "timeEnd": newEventData['timeEnd'],
                     "location": newEventData['location'],
-                    "recurringid": recurringSeriesId,
+                    "recurringId": recurringSeriesId,
                     "isTraining": newEventData['isTraining'],
                     "isRsvpRequired": newEventData['isRsvpRequired'],
                     "isService": newEventData['isService'],

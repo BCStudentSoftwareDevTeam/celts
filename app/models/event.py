@@ -15,7 +15,7 @@ class Event(baseModel):
     isService = BooleanField(default=False)
     startDate = DateField()
     endDate = DateField(null=True)
-    recurringid = IntegerField(null=True)
+    recurringId = IntegerField(null=True)
 
     def __str__(self):
         return f"{self.id}: {self.description}"
