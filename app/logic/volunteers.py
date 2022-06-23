@@ -84,12 +84,12 @@ def addVolunteerToEventRsvp(user, volunteerEventID):
     except Exception as e:
         return False
 
-def setUserBackgroundCheck(user,bgType, checkPassed, datePassed):
+def setUserBackgroundCheck(user,bgType, checkPassed, dateCompleted):
     today = date.today()
     user = User.get_by_id(user)
     deleteInstance = BackgroundCheck.delete().where(BackgroundCheck.user == user, BackgroundCheck.type == bgType)
     deleteInstance.execute()
-    if not datePassed:
-        datePassed = None
-    update = BackgroundCheck.create(user=user, type=bgType, passBackgroundCheck=checkPassed, datePassed=datePassed)
+    if not dateCompleted:
+        dateCompleted = None
+    update = BackgroundCheck.create(user=user, type=bgType, passBackgroundCheck=checkPassed, dateCompleted=dateCompleted)
     createLog(f"Updated {user.firstName} {user.lastName}'s background check for {bgType} to {bool(checkPassed)}.")
