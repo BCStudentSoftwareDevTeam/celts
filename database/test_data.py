@@ -20,7 +20,7 @@ from app.models.questionNote import QuestionNote
 from app.models.interest import Interest
 from app.models.facilitator import Facilitator
 from app.models.note import Note
-from app.models.studentManager import StudentManager
+from app.models.programManager import ProgramManager
 from app.models.emailTemplate import EmailTemplate
 from app.models.backgroundCheck import BackgroundCheck
 # from app.models.backgroundCheckType import BackgroundCheckType
@@ -821,7 +821,7 @@ facilitators = [
 ]
 Facilitator.insert_many(facilitators).on_conflict_replace().execute()
 
-studentManagerPrograms = [
+programManagerPrograms = [
     {
     'user':'khatts',
     'program':1
@@ -844,7 +844,7 @@ studentManagerPrograms = [
     }
 ]
 
-StudentManager.insert_many(studentManagerPrograms).on_conflict_replace().execute()
+ProgramManager.insert_many(programManagerPrograms).on_conflict_replace().execute()
 
 emailTemplates = [
     {
