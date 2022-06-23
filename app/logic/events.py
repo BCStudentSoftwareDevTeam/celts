@@ -1,3 +1,4 @@
+from reprlib import recursive_repr
 from peewee import DoesNotExist, fn
 from dateutil import parser
 import datetime
@@ -65,8 +66,6 @@ def saveEventToDb(newEventData):
         eventsToCreate.append({'name': f"{newEventData['name']}",
                                 'date':newEventData['startDate'],
                                 "week":1})
-    #import pdb; pdb.set_trace()
-    print("adding to the db")
     eventRecords = []
     for eventInstance in eventsToCreate:
         with mainDB.atomic():
@@ -87,23 +86,20 @@ def saveEventToDb(newEventData):
 
             # Create or update the event
             if isNewEvent:
-                print("before event create")
                 eventRecord = Event.create(**eventData)
                 # TODO handle multiple programs
-                print("before programevent create")
                 if 'program' in newEventData:
                     ProgramEvent.create(program=newEventData['program'], event=eventRecord)
             else:
                 eventRecord = Event.get_by_id(newEventData['id'])
                 Event.update(**eventData).where(Event.id == eventRecord).execute()
 
-            print("before facilitator create")
             Facilitator.delete().where(Facilitator.event == eventRecord).execute()
             for f in newEventData['facilitators']:
                 Facilitator.create(user=f, event=eventRecord)
 
             eventRecords.append(eventRecord)
-        print("finished transaction")
+
     return eventRecords
 
 def getStudentLedProgram(term):
@@ -227,7 +223,7 @@ def calculateNewRecurringId():
     if recurringId != None:
         return recurringId + 1
     else:
-        return None
+        return 0
 
 def getPreviousRecurringEventData(recurring_id, start_date):
     return list(User.select(User.username).join(EventParticipant).join(Event).where(Event.recurring_id==recurring_id, Event.startDate<start_date))
@@ -247,7 +243,6 @@ def calculateRecurringEventFrequency(event):
 
     if event['endDate'] == event['startDate']:
         raise Exception("This event is not a recurring event")
-    print(type(event['startDate'] ))
     return [ {'name': f"{event['name']} Week {counter+1}",
               'date': event['startDate'] + datetime.timedelta(days=7*counter),
               "week": counter+1}

@@ -528,8 +528,12 @@ def test_userWithNoInterestedEvent():
 
 @pytest.mark.integration
 def test_calculateNewRecurringId():
-    assert calculateNewRecurringId() == 4
+    testing_newRecurringId=Event.select(fn.MAX(Event.recurring_id)).scalar() 
+    if testing_newRecurringId== None:
+        testing_newRecurringId = 0
+    assert calculateNewRecurringId() == testing_newRecurringId
 
+    
 @pytest.mark.integration
 def test_getPreviousRecurringEventData():
     with mainDB.atomic() as transaction:
