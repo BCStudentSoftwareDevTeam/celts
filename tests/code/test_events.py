@@ -240,7 +240,7 @@ def test_wrongValidateNewEventData():
 
     eventData =  {'isRsvpRequired':False, 'isService':False,
                   'isTraining':True, 'isRecurring':False, 'programId':1, 'location':"a big room",
-                  'timeEnd':'12:00 PM', 'timeStart':'03:00 PM', 'description':"Empty Bowls Spring 2021",
+                  'timeEnd':'12:00', 'timeStart':'15:00', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring Event 1','term':1,'facilitators':"ramsayb2"}
 
     eventData['isRecurring'] = True
@@ -265,7 +265,7 @@ def test_wrongValidateNewEventData():
     # testing event starts after it ends.
     eventData["startDate"] = parser.parse('2021-06-12')
     eventData["endDate"] = parser.parse('2021-06-12')
-    eventData["timeStart"] =  '09:39 PM'
+    eventData["timeStart"] =  '21:39'
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid == False
     assert eventErrorMessage == "Event start time is after event end time"
@@ -525,11 +525,12 @@ def test_userWithNoInterestedEvent():
 def test_format24HourTime():
 
     # tests valid "input times"
-    assert format24HourTime('08:00 AM')
-    assert format24HourTime('8:00 AM')
-    assert format24HourTime('05:00 PM')
-    assert format24HourTime('07:30 PM')
-    assert format24HourTime('12:00 PM')
+    assert format24HourTime('08:00 AM') == "08:00"
+    assert format24HourTime('5:38 AM') == "05:38"
+    assert format24HourTime('05:00 PM') == "17:00"
+    assert format24HourTime('7:30 PM') == "19:30"
+    assert format24HourTime('12:32 PM') == "12:32"
+    assert format24HourTime('12:01 AM') == "00:01"
 
     # tests "input times" that are not valid inputs
     with pytest.raises(ValueError):

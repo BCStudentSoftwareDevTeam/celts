@@ -193,7 +193,7 @@ def validateNewEventData(data):
     if data['isRecurring'] and data['endDate']  <  data['startDate']:
         return (False, "Event start date is after event end date")
 
-    if data['endDate'] ==  data['startDate'] and datetime.datetime.strptime(data['timeEnd'], "%I:%M %p") <= datetime.datetime.strptime(data['timeStart'], "%I:%M %p"):
+    if data['endDate'] ==  data['startDate'] and datetime.datetime.strptime(data['timeEnd'], "%H:%M") <= datetime.datetime.strptime(data['timeStart'], "%H:%M"):
         return (False, "Event start time is after event end time")
 
     # Validation if we are inserting a new event
@@ -244,6 +244,7 @@ def preprocessEventData(eventData):
         - facilitators should be a list of objects. Use the given list of usernames if possible
           (and check for a MultiDict with getlist), or else get it from the existing event
           (or use an empty list if no event)
+        - times should exist be strings in 12 hour format example: 2:40 PM
     """
 
     ## Process checkboxes
@@ -276,11 +277,11 @@ def preprocessEventData(eventData):
         except DoesNotExist:
             eventData['term'] = ''
 
-    if 'startTime' in eventData:
-        eventData['startTime'] = format24HourTime(eventData['startTime'])
+    if 'timeStart' in eventData:
+        eventData['timeStart'] = format24HourTime(eventData['timeStart'])
 
-    if 'endTime' in eventData:
-        eventData['endTime'] = format24HourTime(eventData['endTime'])
+    if 'timeEnd' in eventData:
+        eventData['timeEnd'] = format24HourTime(eventData['timeEnd'])
 
     ## Get the facilitator objects from the list or from the event if there is a problem
     try:
