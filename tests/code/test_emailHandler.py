@@ -3,6 +3,7 @@ from flask_mail import Message
 from urllib.parse import urlparse
 from flask import request
 from datetime import datetime
+from dateutil import parser
 import time
 from app import app
 from app.models.emailTemplate import EmailTemplate
@@ -10,6 +11,7 @@ from app.models.emailLog import EmailLog
 from app.models.eventRsvp import EventRsvp
 from app.models import mainDB
 from app.models.user import User
+from app.models.event import Event
 from app.logic.emailHandler import EmailHandler
 
 @pytest.mark.integration
@@ -121,16 +123,32 @@ def test_email_log():
 @pytest.mark.integration
 def test_recipients_category():
     with app.test_request_context():
-        url_domain = urlparse(request.base_url).netloc
-        raw_form_data = {"templateIdentifier": "Test",
-            "programID":"3",
-            "eventID":"1",
-            "recipientsCategory": "Eligible Students"}
+        with mainDB.atomic() as transaction:
+            url_domain = urlparse(request.base_url).netloc
+            raw_form_data = {"templateIdentifier": "Test",
+                "programID":"3",
+                "eventID":"1",
+                "recipientsCategory": "Eligible Students"}
 
-        email = EmailHandler(raw_form_data, url_domain)
-        email.process_data()
-        user ="khatts"
+            testUserEmail = User.create( username="testuser",
+                                    bnumber="B00000001",
+                                    email="test@test.edu",
+                                    phoneNumber="555-555-5555",
+                                    firstName="Test",
+                                    lastName="User",
+                                    isFaculty="1")
 
-        target_results = []
+            eventData =  {'isRsvpRequired':False, 'isService':False,
+                          'isTraining':True, 'isRecurring':False, 'isAllVolunteerTraining':True, 'startDate': parser.parse('1999-12-12'),
+                          'endDate':parser.parse('2022-06-12'), 'programId':1, 'location':"a big room",
+                          'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
+                          'name':'Empty Bowls Spring Event 1','term':1,'facilitators':"ramsayb2"}
 
-        assert email.recipients == target_results
+            Event.create(eventData)
+            email = EmailHandler(raw_form_data, url_domain)
+            email.process_data()
+
+            target_results = [testUserEmail]
+
+            assert email.recipients == target_results
+            transaction.rollback()
