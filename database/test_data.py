@@ -922,13 +922,13 @@ background = [
     "user": "khatts",
     "type": "CAN",
     "passBackgroundCheck": False,
-    "datePassed": datetime.strptime("2021 10 12","%Y %m %d")
+    "dateCompleted": datetime.strptime("2021 10 12","%Y %m %d")
     },
     {
     "user":"mupotsal",
     "type": "SHS",
     "passBackgroundCheck":True,
-    "datePassed": datetime.strptime("2021 10 12","%Y %m %d")
+    "dateCompleted": datetime.strptime("2021 10 12","%Y %m %d")
     },
 ]
 BackgroundCheck.insert_many(background).on_conflict_replace().execute()
