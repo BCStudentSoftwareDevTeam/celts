@@ -17,7 +17,7 @@ from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.models.adminLogs import AdminLogs
-from app.logic.volunteers import getEventLengthInHours, getProgramManagerForEvent
+from app.logic.volunteers import getEventLengthInHours, isProgramManagerForEvent
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.logic.courseManagement import pendingCourses, approvedCourses
@@ -62,7 +62,7 @@ def templateSelect():
 @admin_bp.route('/eventTemplates/<templateid>/create', methods=['GET','POST'])
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
 def createEvent(templateid, programid=None):
-    if not (g.current_user.isAdmin or getProgramManagerForEvent(g.current_user, programId = programid)):
+    if not (g.current_user.isAdmin):
         abort(403)
 
     # Validate given URL
@@ -116,7 +116,7 @@ def createEvent(templateid, programid=None):
 
 @admin_bp.route('/eventsList/<eventId>/edit', methods=['GET','POST'])
 def editEvent(eventId):
-    if request.method == "POST" and not (g.current_user.isCeltsAdmin or getProgramManagerForEvent(g.current_user, eventId)):
+    if request.method == "POST" and not (g.current_user.isCeltsAdmin or isProgramManagerForEvent(g.current_user, eventId)):
         abort(403)
 
     # Validate given URL

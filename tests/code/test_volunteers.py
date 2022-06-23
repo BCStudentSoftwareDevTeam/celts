@@ -1,7 +1,7 @@
 import pytest
 from flask import g
 from app import app
-from app.logic.volunteers import getEventLengthInHours, updateEventParticipants, setUserBackgroundCheck, getProgramManagerForEvent
+from app.logic.volunteers import getEventLengthInHours, updateEventParticipants, setUserBackgroundCheck, isProgramManagerForEvent
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.event import Event
@@ -229,7 +229,7 @@ def test_getStudentManagerForEvent():
         'program': 13
         }
         ]
-        
+
         #Insert new row into StudentManager table
         StudentManager.insert_many(testProgramManagerData).on_conflict_replace().execute()
 
@@ -238,37 +238,21 @@ def test_getStudentManagerForEvent():
         student = User.get_by_id("testUser") #This test user is not a program manager
         programManager = User.get_by_id("testUser2") ##This user is a program manager
 
-        #gives event & programID
-        ## user is manager of program
-        studentManager = getProgramManagerForEvent(programManager, test_event, test_program)
-        assert studentManager == True
-
-        ## user is not manager of program
-        studentManager = getProgramManagerForEvent(student, test_event, test_program)
-        assert studentManager == False
 
         #gives event but no programId
         ## user is manager of program
-        studentManager = getProgramManagerForEvent(programManager, test_event)
+        studentManager = isProgramManagerForEvent(programManager, test_event)
+        print(studentManager)
         assert studentManager == True
 
         ## user is not manager of program
-        studentManager = getProgramManagerForEvent(student, test_event)
-        assert studentManager == False
-
-
-        #gives programID but no event
-        ## user is manager of program
-        studentManager = getProgramManagerForEvent(programManager, programId = test_program)
-        assert studentManager == True
-
-        ## user is not manager of program
-        studentManager = getProgramManagerForEvent(student, programId = test_program)
+        studentManager = isProgramManagerForEvent(student, test_event)
+        print(studentManager)
         assert studentManager == False
 
 
         #gives neither event or programID
         ## shuold give an error
         with pytest.raises(ValueError):
-            studentManager = getProgramManagerForEvent(student)
+            studentManager = isProgramManagerForEvent(student)
         transaction.rollback()
