@@ -1,7 +1,7 @@
 import pytest
 from flask_mail import Message
 from urllib.parse import urlparse
-from flask import request
+from flask import request, g
 from datetime import datetime
 from dateutil import parser
 import time
@@ -9,6 +9,7 @@ from app import app
 from app.models.emailTemplate import EmailTemplate
 from app.models.emailLog import EmailLog
 from app.models.eventRsvp import EventRsvp
+from app.models.user import User
 from app.models import mainDB
 from app.models.user import User
 from app.models.event import Event
@@ -33,7 +34,7 @@ def test_send_email_using_modal():
                 "eventID":"1",
                 "recipientsCategory": "Interested"}
 
-            email = EmailHandler(raw_form_data, url_domain)
+            email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
 
             with email.mail.record_messages() as outbox:
                 email_sent = email.send_email()
@@ -57,7 +58,7 @@ def test_sending_automated_email():
                 "eventID":"1",
                 "recipientsCategory": "Interested"}
 
-            email = EmailHandler(raw_form_data, url_domain)
+            email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
 
             with email.mail.record_messages() as outbox:
                 email_sent = email.send_email()
@@ -80,7 +81,7 @@ def test_update_email_template():
                 "body":"Hello {name}, Regards",
                 "replyTo": "test.email@gmail.comm"}
 
-            email = EmailHandler(raw_form_data, url_domain)
+            email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
             email.update_email_template()
 
             new_email_template = EmailTemplate.get(EmailTemplate.purpose==raw_form_data['templateIdentifier'])
@@ -100,9 +101,10 @@ def test_email_log():
             raw_form_data = {"templateIdentifier": "Test",
                 "programID":"1",
                 "eventID":"1",
-                "recipientsCategory": "RSVP'd"}
+                "recipientsCategory": "RSVP'd",
+                "sender": User.get_by_id("ramsayb2")}
 
-            email = EmailHandler(raw_form_data, url_domain)
+            email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
 
             with email.mail.record_messages() as outbox:
                 email_sent = email.send_email()
@@ -117,9 +119,10 @@ def test_email_log():
 
             rsvp_users = EventRsvp.select().where(EventRsvp.event_id==1)
             assert emailLog.recipients == ", ".join(user.user.email for user in rsvp_users)
-
+            assert emailLog.sender == User.get_by_id("ramsayb2")
             transaction.rollback()
 
+<<<<<<< HEAD
 @pytest.mark.integration
 def test_recipients_category():
     with app.test_request_context():
@@ -152,3 +155,17 @@ def test_recipients_category():
 
             assert email.recipients == target_results
             transaction.rollback()
+=======
+
+@pytest.mark.integration
+def test_get_last_email():
+    last_email = EmailHandler.retrieve_last_email(5)
+    assert last_email.sender.username == "neillz"
+    assert last_email.subject == "Time Change for {event_name}"
+    assert last_email.templateUsed.subject == "Test Email 2"
+    assert last_email.recipientsCategory == "RSVP'd"
+    assert last_email.recipients == "ramsayb2"
+
+    last_email = EmailHandler.retrieve_last_email(37)
+    assert last_email is None
+>>>>>>> 2eb1a1cef9584b393de65befc81b94ac41225591

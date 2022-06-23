@@ -44,8 +44,8 @@ async function fetchEmailLogData() {
         $('#emailLastSent').attr('hidden', true);
       }
       else {
-        log = `Email was last sent to ${emailLog['recipients']} on ${emailLog['dateSent']}`
-        $('#emailLastSent').text(log);
+        $('#emailLastSent').text(emailLog['last_log']);
+        $('#emailLastSentSubject').text(emailLog['last_log2']);
         $('#emailLastSent').attr('hidden', false);
       }
     }
