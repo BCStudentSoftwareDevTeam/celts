@@ -5,6 +5,7 @@ from werkzeug.datastructures import MultiDict
 from app.models import mainDB
 from app.models.user import User
 from app.models.event import Event
+from app.models.eventParticipant import EventParticipant
 from app.models.facilitator import Facilitator
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
@@ -21,7 +22,7 @@ def getEvents(program_id=None):
     if program_id:
         Program.get_by_id(program_id) # raises an exception if program doesn't exist
         return (Event.select(Event).join(ProgramEvent)
-                     .where(ProgramEvent.program == program_id).distinct())
+                    .where(ProgramEvent.program == program_id).distinct())
     else:
         return Event.select()
 
@@ -56,13 +57,14 @@ def saveEventToDb(newEventData):
     isNewEvent = ('id' not in newEventData)
 
     eventsToCreate = []
+    recurringSeriesId = None
     if isNewEvent and newEventData['isRecurring']:
         eventsToCreate = calculateRecurringEventFrequency(newEventData)
+        recurringSeriesId = calculateNewrecurringId()
     else:
         eventsToCreate.append({'name': f"{newEventData['name']}",
                                 'date':newEventData['startDate'],
                                 "week":1})
-
     eventRecords = []
     for eventInstance in eventsToCreate:
         with mainDB.atomic():
@@ -73,7 +75,7 @@ def saveEventToDb(newEventData):
                     "timeStart": newEventData['timeStart'],
                     "timeEnd": newEventData['timeEnd'],
                     "location": newEventData['location'],
-                    "isRecurring": newEventData['isRecurring'],
+                    "recurringId": recurringSeriesId,
                     "isTraining": newEventData['isTraining'],
                     "isRsvpRequired": newEventData['isRsvpRequired'],
                     "isService": newEventData['isService'],
@@ -223,6 +225,17 @@ def validateNewEventData(data):
 
     return (True, "All inputs are valid.")
 
+def calculateNewrecurringId():
+    recurringId = Event.select(fn.MAX(Event.recurringId)).scalar()
+    if recurringId:
+        return recurringId + 1
+    else:
+        return 1
+
+def getPreviousRecurringEventData(recurringId, startDate):
+    return list(User.select(User.username).join(EventParticipant).join(Event)
+    .where(Event.recurringId==recurringId, Event.startDate<startDate))
+
 def calculateRecurringEventFrequency(event):
     """
         Calculate the events to create based on a recurring event start and end date. Takes a
@@ -237,9 +250,8 @@ def calculateRecurringEventFrequency(event):
 
     if event['endDate'] == event['startDate']:
         raise Exception("This event is not a recurring event")
-
     return [ {'name': f"{event['name']} Week {counter+1}",
-              'date': (event['startDate'] + datetime.timedelta(days=7*counter)).strftime("%m/%d/%Y"),
+              'date': event['startDate'] + datetime.timedelta(days=7*counter),
               "week": counter+1}
             for counter in range(0, ((event['endDate']-event['startDate']).days//7)+1)]
 
