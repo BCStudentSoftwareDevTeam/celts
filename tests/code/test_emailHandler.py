@@ -122,12 +122,12 @@ def test_email_log():
 
 @pytest.mark.integration
 def test_get_last_email():
-    query = EmailHandler.retrieve_last_email(5)
-    assert query.sender.username == "neillz"
-    assert query.subject == "Time Change for {event_name}"
-    assert query.templateUsed.subject == "Test Email 2"
-    assert query.recipientsCategory == "RSVP'd"
-    assert query.recipients == "ramsayb2"
+    last_email = EmailHandler.retrieve_last_email(5)
+    assert last_email.sender.username == "neillz"
+    assert last_email.subject == "Time Change for {event_name}"
+    assert last_email.templateUsed.subject == "Test Email 2"
+    assert last_email.recipientsCategory == "RSVP'd"
+    assert last_email.recipients == "ramsayb2"
 
-    query = EmailHandler.retrieve_last_email(37)
-    assert query is None
+    last_email = EmailHandler.retrieve_last_email(37)
+    assert last_email is None

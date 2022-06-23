@@ -1,6 +1,4 @@
 from app.models.emailTemplate import EmailTemplate
-from flask import g
-from urllib.parse import urlparse
 from app.models.emailLog import EmailLog
 from app.controllers.main import main_bp
 from app.logic.emailHandler import EmailHandler

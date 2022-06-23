@@ -1,4 +1,5 @@
 from datetime import datetime
+from peewee import DoesNotExist
 from flask_mail import Mail, Message
 from flask import g, session
 from app import app
@@ -10,7 +11,7 @@ from app.models.eventRsvp import EventRsvp
 from app.models.emailTemplate import EmailTemplate
 from app.models.emailLog import EmailLog
 from app.models.event import Event
-from peewee import DoesNotExist
+
 class EmailHandler:
     def __init__(self, raw_form_data, url_domain, sender_object):
         self.mail = Mail(app)
@@ -192,7 +193,7 @@ class EmailHandler:
 
     def retrieve_last_email(event_id):
         try:
-            get_query = EmailLog.select().where(EmailLog.event==event_id).order_by(EmailLog.dateSent.desc()).get()
-            return get_query
+            last_email = EmailLog.select().where(EmailLog.event==event_id).order_by(EmailLog.dateSent.desc()).get()
+            return last_email
         except DoesNotExist:
             return None
