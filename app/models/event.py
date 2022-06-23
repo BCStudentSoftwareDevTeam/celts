@@ -15,7 +15,7 @@ class Event(baseModel):
     isService = BooleanField(default=False)
     startDate = DateField()
     endDate = DateField(null=True)
-    recurring_id = IntegerField(null=True)
+    recurringid = IntegerField(null=True)
 
     def __str__(self):
         return f"{self.id}: {self.description}"
@@ -39,10 +39,10 @@ class Event(baseModel):
 
     @property
     def isRecurring(self):
-        return bool(self.recurring_id)
+        return bool(self.recurringid)
 
     @property
     def isFirstRecurringEvent(self):
-        firstRecurringEvent = Event.select().where(Event.recurring_id==self.recurring_id).order_by(Event.startDate).get()
+        firstRecurringEvent = Event.select().where(Event.recurringid==self.recurringid).order_by(Event.startDate).get()
         return firstRecurringEvent.id == self.id
     

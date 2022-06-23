@@ -75,7 +75,7 @@ def saveEventToDb(newEventData):
                     "timeStart": newEventData['timeStart'],
                     "timeEnd": newEventData['timeEnd'],
                     "location": newEventData['location'],
-                    "recurring_id": recurringSeriesId,
+                    "recurringid": recurringSeriesId,
                     "isTraining": newEventData['isTraining'],
                     "isRsvpRequired": newEventData['isRsvpRequired'],
                     "isService": newEventData['isService'],
@@ -218,7 +218,7 @@ def validateNewEventData(data):
     return (True, "All inputs are valid.")
 
 def calculateNewRecurringId():
-    recurringId = Event.select(fn.MAX(Event.recurring_id)).scalar()
+    recurringId = Event.select(fn.MAX(Event.recurringid)).scalar()
     if recurringId:
         return recurringId + 1
     else:
@@ -226,7 +226,7 @@ def calculateNewRecurringId():
 
 def getPreviousRecurringEventData(recurringId, startDate):
     return list(User.select(User.username).join(EventParticipant).join(Event)
-    .where(Event.recurring_id==recurringId, Event.startDate<startDate))
+    .where(Event.recurringid==recurringId, Event.startDate<startDate))
 
 def calculateRecurringEventFrequency(event):
     """

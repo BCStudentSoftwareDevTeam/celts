@@ -313,11 +313,11 @@ def test_calculateRecurringEventFrequency():
 def test_attemptSaveEvent():
     # This test duplicates some of the saving tests, but with raw data, like from a form
     eventData =  {'isRsvpRequired':False, 'isService':False,
-                  'isTraining':True, 'isRecurring':True, 'recurring_id':0, 'startDate': '2021-12-12',
+                  'isTraining':True, 'isRecurring':True, 'recurringid':0, 'startDate': '2021-12-12',
                   'endDate': '2021-06-12', 'programId':1, 'location':"a big room",
                   'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring','term':1,'facilitators':["ramsayb2"]}
-    eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'recurring_id':None, 'startDate': '2021-12-12',
+    eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'recurringid':None, 'startDate': '2021-12-12',
                    'endDate':'2022-06-12', 'location':"a big room",
                    'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
                    'name':'Attempt Save Test','term':1,'facilitators':["ramsayb2"]}
@@ -348,7 +348,7 @@ def test_attemptSaveEvent():
 @pytest.mark.integration
 def test_saveEventToDb_create():
     eventInfo =  {'isRsvpRequired':False, 'isService':False,
-                  'isTraining':True, 'isRecurring':False, 'recurring_id':None, 'startDate': parser.parse('2021-12-12'),
+                  'isTraining':True, 'isRecurring':False, 'recurringid':None, 'startDate': parser.parse('2021-12-12'),
                    'endDate':parser.parse('2022-06-12'), 'location':"a big room",
                    'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
                    'name':'Empty Bowls Spring','term':1,'facilitators':[User.get_by_id("ramsayb2")]}
@@ -389,7 +389,7 @@ def test_saveEventToDb_create():
 @pytest.mark.integration
 def test_saveEventToDb_recurring():
     eventInfo =  {'isRsvpRequired':False, 'isService':False,
-                  'isTraining':True, 'isRecurring': True, 'recurring_id':1, 'startDate': parser.parse('12-12-2021'),
+                  'isTraining':True, 'isRecurring': True, 'recurringid':1, 'startDate': parser.parse('12-12-2021'),
                    'endDate':parser.parse('01-18-2022'), 'location':"this is only a test",
                    'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
                    'name':'Empty Bowls Spring','term':1,'facilitators':[User.get_by_id("ramsayb2")]}
@@ -419,7 +419,7 @@ def test_saveEventToDb_update():
                     "timeEnd": datetime.datetime.strptime("9:00 pm", "%I:%M %p"),
                     "location": "House",
                     'isRecurring': True,
-                    'recurring_id': 2,
+                    'recurringid': 2,
                     'isTraining': True,
                     'isRsvpRequired': False,
                     'isService': False,
@@ -444,7 +444,7 @@ def test_saveEventToDb_update():
                     "timeEnd": datetime.datetime.strptime("9:00 pm", "%I:%M %p"),
                     "location": "House",
                     'isRecurring': True,
-                    'recurring_id': 3,
+                    'recurringid': 3,
                     'isTraining': True,
                     'isRsvpRequired': False,
                     'isService': 5,
@@ -474,7 +474,7 @@ def test_deleteEvent():
                                       isService = 0,
                                       startDate= "2021-12-12",
                                       endDate= "2022-6-12",
-                                      recurring_id = None)
+                                      recurringid = None)
 
         testingEvent = Event.get(Event.name == "Testing delete event")
 
@@ -528,7 +528,7 @@ def test_userWithNoInterestedEvent():
 
 @pytest.mark.integration
 def test_calculateNewRecurringId():
-    testing_newRecurringId=Event.select(fn.MAX(Event.recurring_id)).scalar() 
+    testing_newRecurringId=Event.select(fn.MAX(Event.recurringid)).scalar() 
     if testing_newRecurringId== None:
         testing_newRecurringId = 1
     assert calculateNewRecurringId() == testing_newRecurringId
@@ -548,7 +548,7 @@ def test_getPreviousRecurringEventData():
                                       isService = 0,
                                       startDate= "2021-12-5",
                                       endDate= "2022-12-5",
-                                      recurring_id = 3)
+                                      recurringid = 3)
         testingEvent2 = Event.create(name = "Testing delete event",
                                       term = 2,
                                       description= "This Event is Created to be Deleted.",
@@ -560,7 +560,7 @@ def test_getPreviousRecurringEventData():
                                       isService = 0,
                                       startDate= "2022-12-12",
                                       endDate= "2022-12-12",
-                                      recurring_id = 3)
+                                      recurringid = 3)
         testingEvent3 = Event.create(name = "Testing delete event",
                                       term = 2,
                                       description= "This Event is Created to be Deleted.",
@@ -572,7 +572,7 @@ def test_getPreviousRecurringEventData():
                                       isService = 0,
                                       startDate= "2022-12-19",
                                       endDate= "2022-12-19",
-                                      recurring_id = 3)
+                                      recurringid = 3)
 
         testingParticipant1 = EventParticipant.create(user = User.get_by_id("neillz"),
                                                     event = testingEvent2.id,
@@ -584,7 +584,7 @@ def test_getPreviousRecurringEventData():
                                                     event = testingEvent2.id,
                                                     hoursEarned = None)
 
-        val = getPreviousRecurringEventData(testingEvent3.recurring_id, testingEvent3.startDate)
+        val = getPreviousRecurringEventData(testingEvent3.recurringid, testingEvent3.startDate)
         assert val[0].username == "neillz"
         assert val[1].username == "ramsayb2"
         assert val[2].username == "khatts"
