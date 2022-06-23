@@ -10,7 +10,7 @@ function openForm() {
   $("#myForm").modal("toggle");
 }
 
-function addInstructor() {
+function addInstructorS() {
   console.log("We're here");
   $.ajax({
     method: "POST",
@@ -27,11 +27,4 @@ function addInstructor() {
       location.reload();
     }
   });
-}
-function callback(){
-  $("searchinstructor").submit();
-  
-}
-$(#"uname").on("input", function()){
-  searchInstructor("uname", callback);
 }

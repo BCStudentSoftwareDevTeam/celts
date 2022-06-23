@@ -32,22 +32,11 @@
               <h5 class="modal-title">New Instructor Info</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="closeForm()" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <form id = "searchinstructor" action="/action_page.php">
-                  <label for="fname">Username:</label>
-                  <input type="text" id="uname" name="fname"><br><br>
-                  <label for="fname">B Number:</label>
-                  <input type="text" id="bnum" name="fname"><br><br>
-                  <label for="fname">Email:</label>
-                  <input type="text" id="email" name="fname"><br><br>
-                  <label for="fname">Phone Number:</label>
-                  <input type="text" id="pnum" name="fname"><br><br>
-                  <label for="fname">First Name:</label>
-                  <input type="text" id="fname" name="fname"><br><br>
-                  <label for="fname">Last Name:</label>
-                  <input type="text" id="lname" name="fname"><br><br>
-                </form>
-            </div>
+            <div class="form-group ui-widget">
+              <div class="input-group">
+                <input type="input" id="searchStudentsInput" name="searchStudentsInput" class="form-control" placeholder="Search" autocomplete="off"/>
+                <span class="input-group-text"><span class="bi bi-search"></span></span>
+              </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
               <button type="button" class="btn btn-primary" id="addInstructorButton" onclick="addInstructor()">Add Instructor</button>
