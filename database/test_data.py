@@ -428,6 +428,7 @@ events = [
         "name": "All Volunteer Training",
         "description": "testing multiple programs",
         "isTraining": True,
+        "isAllVolunteerTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Woods-Penniman",

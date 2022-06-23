@@ -5,6 +5,7 @@ from flask import request, g
 from datetime import datetime
 from dateutil import parser
 import time
+
 from app import app
 from app.models.emailTemplate import EmailTemplate
 from app.models.emailLog import EmailLog
@@ -13,6 +14,8 @@ from app.models.user import User
 from app.models import mainDB
 from app.models.user import User
 from app.models.event import Event
+from app.models.programEvent import ProgramEvent
+from app.models.eventParticipant import EventParticipant
 from app.logic.emailHandler import EmailHandler
 
 @pytest.mark.integration
@@ -122,7 +125,6 @@ def test_email_log():
             assert emailLog.sender == User.get_by_id("ramsayb2")
             transaction.rollback()
 
-<<<<<<< HEAD
 @pytest.mark.integration
 def test_recipients_category():
     with app.test_request_context():
@@ -133,30 +135,21 @@ def test_recipients_category():
                 "eventID":"1",
                 "recipientsCategory": "Eligible Students"}
 
-            testUserEmail = User.create( username="testuser",
-                                    bnumber="B00000001",
-                                    email="test@test.edu",
-                                    phoneNumber="555-555-5555",
-                                    firstName="Test",
-                                    lastName="User",
-                                    isFaculty="1")
+            testSender = User.get_by_id('ramsayb2')
 
-            eventData =  {'isRsvpRequired':False, 'isService':False,
-                          'isTraining':True, 'isRecurring':False, 'isAllVolunteerTraining':True, 'startDate': parser.parse('1999-12-12'),
-                          'endDate':parser.parse('2022-06-12'), 'programId':1, 'location':"a big room",
-                          'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
-                          'name':'Empty Bowls Spring Event 1','term':1,'facilitators':"ramsayb2"}
-
-            Event.create(eventData)
-            email = EmailHandler(raw_form_data, url_domain)
+            email = EmailHandler(raw_form_data, url_domain, testSender)
             email.process_data()
+            target_results = []
+            assert email.recipients == target_results
 
-            target_results = [testUserEmail]
+            # Add partont to All Volunteer Training event
+            newTrainedStudent = EventParticipant.create(user = "partont", event = 14)
+            email.process_data()
+            target_results = [User.get_by_id("partont")]
 
             assert email.recipients == target_results
-            transaction.rollback()
-=======
 
+            transaction.rollback()
 @pytest.mark.integration
 def test_get_last_email():
     last_email = EmailHandler.retrieve_last_email(5)
@@ -168,4 +161,3 @@ def test_get_last_email():
 
     last_email = EmailHandler.retrieve_last_email(37)
     assert last_email is None
->>>>>>> 2eb1a1cef9584b393de65befc81b94ac41225591
