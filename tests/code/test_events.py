@@ -528,10 +528,12 @@ def test_userWithNoInterestedEvent():
 
 @pytest.mark.integration
 def test_calculateNewrecurringId():
-    testing_newrecurringId=Event.select(fn.MAX(Event.recurringId)).scalar()+1
-    if testing_newrecurringId== None:
-        testing_newrecurringId = 1 
-    assert calculateNewrecurringId() == testing_newrecurringId
+    maxRecurringId = Event.select(fn.MAX(Event.recurringId)).scalar()
+    if maxRecurringId == None:
+        maxRecurringId = 1 
+    else:
+        maxRecurringId += 1
+    assert calculateNewrecurringId() == maxRecurringId
 
     
 @pytest.mark.integration
