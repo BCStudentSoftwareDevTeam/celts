@@ -73,7 +73,7 @@ def test_event_list():
         assert training in trainingProgram
         assert Studentled not in studentledProgram
         assert training not in trainingProgram2
-        assert trainingProgram3 == [1]
+        assert trainingProgram3 == []
 
         bonnerProgram = getBonnerProgram(3)
         assert bonnerProgram

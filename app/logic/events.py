@@ -139,7 +139,7 @@ def getTrainingProgram(term):
                                .where(Event.isTraining,
                                       Event.term == term))
 
-    return trainingEvents
+    return list(trainingEvents)
 
 def getBonnerProgram(term):
 
@@ -148,7 +148,8 @@ def getBonnerProgram(term):
                                  .join(Program)
                                  .where(Program.isBonnerScholars,
                                         Event.term == term))
-    return bonnerScholarsEvents
+    return list(bonnerScholarsEvents)
+
 def getOneTimeEvents(term):
     oneTimeEvents = (Event.select(Event, Program.id.alias("program_id"))
                           .join(ProgramEvent)
@@ -156,7 +157,7 @@ def getOneTimeEvents(term):
                           .where(Program.isStudentLed == False,
                                  Program.isBonnerScholars == False,
                                  Event.term == term))
-    return oneTimeEvents
+    return list(oneTimeEvents)
 
 def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
     """
