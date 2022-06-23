@@ -142,10 +142,31 @@ def test_recipients_category():
             target_results = []
             assert email.recipients == target_results
 
-            # Add partont to All Volunteer Training event
+            # Add partont to All Volunteer Training event: NOT banned and IS trained
             newTrainedStudent = EventParticipant.create(user = "partont", event = 14)
             email.process_data()
             target_results = [User.get_by_id("partont")]
+
+            assert email.recipients == target_results
+
+            # Add partont to All Volunteer Training event: IS banned and IS trained
+            newTrainedStudent = EventParticipant.create(user = "khatts", event = 14)
+            email.process_data()
+            target_results = [User.get_by_id("khatts")]
+
+            assert email.recipients == target_results
+
+            # Add partont to All Volunteer Training event: NOT banned and NOT trained
+            newTrainedStudent = EventParticipant.create(user = "ayisie", event = 5)
+            email.process_data()
+            target_results = [User.get_by_id("ayisie")]
+
+            assert email.recipients == target_results
+
+            # Add partont to All Volunteer Training event: IS banned NOT trained
+            newTrainedStudent = EventParticipant.create(user = "", event = 14)
+            email.process_data()
+            target_results = [User.get_by_id("")]
 
             assert email.recipients == target_results
 
