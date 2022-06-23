@@ -42,9 +42,7 @@ class Event(baseModel):
         return bool(self.recurring_id)
 
     @property
-    def isNotFirstRecurringEvent(self):
+    def isFirstRecurringEvent(self):
         firstRecurringEvent = Event.select().where(Event.recurring_id==self.recurring_id).order_by(Event.startDate).get()
-        if firstRecurringEvent.id == self.id:
-            return False
-        else:
-            return True
+        return firstRecurringEvent.id == self.id
+    

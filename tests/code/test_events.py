@@ -530,7 +530,7 @@ def test_userWithNoInterestedEvent():
 def test_calculateNewRecurringId():
     testing_newRecurringId=Event.select(fn.MAX(Event.recurring_id)).scalar() 
     if testing_newRecurringId== None:
-        testing_newRecurringId = 0
+        testing_newRecurringId = 1
     assert calculateNewRecurringId() == testing_newRecurringId
 
     

@@ -1,4 +1,3 @@
-from reprlib import recursive_repr
 from peewee import DoesNotExist, fn
 from dateutil import parser
 import datetime
@@ -220,14 +219,14 @@ def validateNewEventData(data):
 
 def calculateNewRecurringId():
     recurringId = Event.select(fn.MAX(Event.recurring_id)).scalar()
-    if recurringId != None:
+    if recurringId:
         return recurringId + 1
     else:
-        return 0
+        return 1
 
-def getPreviousRecurringEventData(recurring_id, start_date):
-    return list(User.select(User.username).join(EventParticipant).join(Event).where(Event.recurring_id==recurring_id, Event.startDate<start_date))
-    #Event.select(EventParticipant.user.username).join(EventParticipant).where(Event.recurring_id==recurring_id, Event.startDate<start_date)
+def getPreviousRecurringEventData(recurringId, startDate):
+    return list(User.select(User.username).join(EventParticipant).join(Event)
+    .where(Event.recurring_id==recurringId, Event.startDate<startDate))
 
 def calculateRecurringEventFrequency(event):
     """
