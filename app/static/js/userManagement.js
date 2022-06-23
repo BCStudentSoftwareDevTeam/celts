@@ -51,6 +51,9 @@ $(document).ready(function() {
   $("#submitButton").on("click", function() {
     submitTerm();
   });
+  $("#updateReplyToEmail").on("click", function() {
+    console.log("gg");
+  });
 });
 
 function clickTerm(term){
@@ -106,4 +109,11 @@ function addNewTerm(){
         console.log(error, status)
     }
   })
+};
+
+function updateReplyToEmail(){
+  let data = {
+  }
+}
+
 };
