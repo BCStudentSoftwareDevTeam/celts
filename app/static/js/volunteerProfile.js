@@ -40,7 +40,6 @@ $(document).ready(function() {
     var banNoteDiv = $("#banNoteDiv") // Div containing the note displaying why the user was banned previously
     //Should only diplay when the modal is going to unban a user
     var banNote = $("#banNote")
-
     banButton.text($(this).val() + " Volunteer");
     banButton.data("programID", $(this).data("programid"))
     banButton.data("username", $(".form-check-input").data("username"))
@@ -84,7 +83,6 @@ $(document).ready(function() {
   });
 
   // $(".changeHandler").change(function() { // Updates the Background check of a volunteer in the database
-
   $(".backgroundCheck").change(function() { // Updates the Background check of a volunteer in the database
     checkType = $(this).attr("id")
     let data = {
