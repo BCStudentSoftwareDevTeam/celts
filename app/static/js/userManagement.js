@@ -51,7 +51,7 @@ $(document).ready(function() {
   $("#submitButton").on("click", function() {
     submitTerm();
   });
-  $("#updateReplyToEmail").on("click", function() {
+  $("#updateProgramInfo").on("click", function() {
     console.log("gg");
   });
 });
@@ -111,6 +111,6 @@ function addNewTerm(){
   })
 };
 
-function updateReplyToEmail(){
+function updateProgramInfo(){
   console.log("gg")// let data = {
   };
