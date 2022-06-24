@@ -538,7 +538,6 @@ def test_calculateNewrecurringId():
         maxRecurringId += 1
     assert calculateNewrecurringId() == maxRecurringId
 
-
 @pytest.mark.integration
 def test_getPreviousRecurringEventData():
     with mainDB.atomic() as transaction:

@@ -1,5 +1,4 @@
 import pytest
-from peewee import DoesNotExist
 from flask_mail import Message
 from urllib.parse import urlparse
 from flask import request, g
