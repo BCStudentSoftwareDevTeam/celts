@@ -51,15 +51,14 @@ $(document).ready(function() {
   $("#submitButton").on("click", function() {
     submitTerm();
   });
-  $("#updateProgramInfo").on("click", function() {
-    console.log("gg");
+  $("#programSelect").on("click", function(){
+    programSelect();
   });
 });
-
 function clickTerm(term){
   $(".term-btn").removeClass("active");
   term.addClass('active');
-};
+}
 
 function submitRequest(method,identifier){
   let data = {
@@ -96,7 +95,7 @@ function submitTerm(){
         console.log(error, status)
     }
   })
-};
+}
 
 function addNewTerm(){
   $.ajax({
@@ -109,8 +108,14 @@ function addNewTerm(){
         console.log(error, status)
     }
   })
-};
+}
 
-function updateProgramInfo(){
-  console.log("gg")// let data = {
-  };
+function programSelect(){
+  const programList = ["Program1", "Program2","Program3","Program4"];
+  var options = "";
+  for(var i=1; i<=programList.length; i++){
+    options += "<option>"+ programList[i] +"</option>";
+    console.log(i);
+  }
+  document.getElementById("programSelect").innerHTML = options;
+}
