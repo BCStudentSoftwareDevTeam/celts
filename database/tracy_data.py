@@ -14,8 +14,9 @@ def main():
 
     pyconn = pyodbc.connect(pyodbc_uri)  # connects a tcp based client socket to a tcp based server socket
     c = pyconn.cursor()  # allows python to execute sql database command??
-
+    fub = 0
     for row in c.execute('select * from STUSTAFF'):
+
         try:
             user = {"username": getUsernameFromEmail(row[4]),
                     "bnumber": row[1],
@@ -28,15 +29,18 @@ def main():
                     "isCeltsAdmin":False,
                     "isCeltsStudentStaff": False
             }
+            fub += 1
 
-            User.insert(user).execute()
+            #User.insert(user).execute()
         except:
             pass
 
-
 def getUsernameFromEmail(emailStr):
     newEmailStr = ''
-
+    
+    if "@berea.edu" not in emailStr:
+        fub += 1
+        print(fub,") ", emailStr)
     for i in emailStr:
         if i != '@':
             newEmailStr += i
