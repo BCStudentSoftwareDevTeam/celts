@@ -26,6 +26,7 @@ from app.logic.transcript import *
 from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import pendingCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
+from app.logic.userManagement import addSlInstructor
 
 
 @main_bp.route('/', methods=['GET'])
@@ -254,7 +255,9 @@ def serviceTranscript(username):
                             userData = user)
 
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
+@main_bp.route('/searchInstructor/<query>', methods = ['GET'])
 def searchUser(query):
+    print(request.path)
     '''Accepts user input and queries the database returning results that matches user search'''
     try:
         query = query.strip()
@@ -311,3 +314,12 @@ def getAllCourseIntructors(term=None):
                                 term = term)
     else:
         abort(403)
+
+
+@main_bp.route('/addSLInstructor', methods = ['POST'])
+def AddSLInstructor():
+    Data=request.form
+    addSlInstructor(Data["username"])
+
+    return ""
+

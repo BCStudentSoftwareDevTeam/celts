@@ -1,3 +1,4 @@
+import searchUser from './searchUser.js'
 $(document).ready( function () {
   //make html table to datatable
    var table =  $('#myTable').DataTable({
@@ -10,4 +11,18 @@ $(document).ready( function () {
        }
     }
   });
+});
+
+function callback() {
+
+  let data = JSON.parse($("#searchInstructorinput").val());
+  $.ajax({
+    url: "/addSLInstructor",
+     data: data,
+     type: "POST",
+  })
+}
+
+$("#searchInstructorinput").on("input", function() {
+  searchUser("searchInstructorinput", callback, true, "myForm", ["phoneNumber", "firstName", "lastName", "username"]);
 });
