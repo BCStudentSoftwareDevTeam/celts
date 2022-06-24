@@ -10,12 +10,12 @@ class Event(baseModel):
     timeStart = TimeField()
     timeEnd = TimeField()
     location = CharField()
-    isRecurring = BooleanField(default=False)
     isTraining = BooleanField(default=False)
     isRsvpRequired = BooleanField(default=False)
     isService = BooleanField(default=False)
     startDate = DateField()
     endDate = DateField(null=True)
+    recurringId = IntegerField(null=True)
 
     def __str__(self):
         return f"{self.id}: {self.description}"
@@ -35,4 +35,14 @@ class Event(baseModel):
         currentTime = datetime.now()
         startDatePassed = self.startDate < currentTime.date()
         startTimePassed = self.timeStart < currentTime.time() and self.startDate == currentTime.date()
-        return startDatePassed or startTimePassed 
+        return startDatePassed or startTimePassed
+
+    @property
+    def isRecurring(self):
+        return bool(self.recurringId)
+
+    @property
+    def isFirstRecurringEvent(self):
+        firstRecurringEvent = Event.select().where(Event.recurringId==self.recurringId).order_by(Event.startDate).get()
+        return firstRecurringEvent.id == self.id
+    

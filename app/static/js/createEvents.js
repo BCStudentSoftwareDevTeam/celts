@@ -71,6 +71,7 @@ $(document).ready(function() {
     $("#endDatePicker").datepicker().datepicker("show");
   });
 
+
   $("#startDatePicker, #endDatePicker").change(function(){
     if ( $("#startDatePicker").val() && $("#endDatePicker").val()){
       var eventDatesAndName = {name:$("#inputEventName").val(),
@@ -87,8 +88,9 @@ $(document).ready(function() {
           $("#recurringEventsTable tbody tr").remove();
 
           for (var event of recurringEvents){
-            recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+event.date+"'>"+event.date+"</td></tr>");
-            }
+            eventdate= new Date(event.date).toLocaleDateString()
+            recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
+            }   
         },
         error: function(error){
           console.log(error)
