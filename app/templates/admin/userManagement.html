@@ -93,38 +93,25 @@
       </h3>
       <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#adminManagement">
         <div class="accordion-body">
-          <div id="proposalTable">
-            <table class="table table-striped">
-              <thead>
-                <tr>
-                  <th scope="col">Program Select</th>
-                  <th scope="col">Email</th>
-                  <th scope="col">Sender</th>
-                </tr>
-              </thead>
-              <tbody>
-                  <tr>
-                    <td>
-                      <select class="form-select programData" id="programID" onchange='changeAction(this)'>
-                        <option value="---" disabled selected>Select Program</option>
-                        <option value="Program1">Program1</option>
-                        <option value="Program2">Program2</option>
-                        <option value="Program3">Program3</option>
-                        <option value="Program4">Program4</option>
-                      </select>
-                    </td>
-                    <td><input type="text" name="Email" value=""><input type="submit" name="Submit" value="Submit" id="updateReplyToEmail"></td>
-                    <td><input type="text" name="Sender" value=""><input type="Submit" name="Submit" value="Submit"></td>
+          <form action="" id="programSettings">
 
+            <div>
+                        <label for="programSelect">Program Select</label>
+                        <select class="form-select programData" id="programSelect" form="programSettings" onchange='changeAction(this)'>
+                          <option value="---" disabled selected>Select Program</option>
+                          <option value="Program1">Program1</option>
+                          <option value="Program2">Program2</option>
+                          <option value="Program3">Program3</option>
+                          <option value="Program4">Program4</option>
+                        </select>
+                        <label for="replyToEmail">Reply To Email</label>
+                        <input type="text" name="Email" id="replyToEmail" value="">
+                        <label for="senderName">Sender Name</label>
+                        <input type="text" name="Sender" value="">
+                        <input type="Submit" name="Submit" value="Submit" id="updateReplyToEmail">
 
-                  </tr>
-              </tbody>
-            </table>
-
-
-
-
-        </div>
+            </div>
+        </form>
       </div>
   </div>
 </div>

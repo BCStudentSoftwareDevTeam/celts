@@ -112,8 +112,5 @@ function addNewTerm(){
 };
 
 function updateReplyToEmail(){
-  let data = {
-  }
-}
-
-};
+  console.log("gg")// let data = {
+  };
