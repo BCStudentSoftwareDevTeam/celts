@@ -10,6 +10,10 @@ class Term(baseModel):
 
     @property
     def academicYearStartingTerm(self):
+        """
+        Saves the term that starts the academic year of the chosen term in a cache
+        to avoid doing multiple queries for the same information.
+        """
         if self._cache is None:
             if ("Summer" in self.description) or ("Spring" in self.description):
                 self._cache = Term.select().where(Term.year==self.year-1, Term.description == f"Fall {self.year-1}").get()
