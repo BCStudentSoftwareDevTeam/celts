@@ -29,7 +29,7 @@ def email():
         pass
     else:
         url_domain = urlparse(request.base_url).netloc
-        mail = EmailHandler(raw_form_data, url_domain)
+        mail = EmailHandler(raw_form_data, url_domain, g.current_user)
         mail_sent = mail.send_email()
 
         if mail_sent:

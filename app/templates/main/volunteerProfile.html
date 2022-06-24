@@ -171,7 +171,7 @@
        {% for entry in backgroundTypes%}
        <tr>
          <td>{{entry.description}}</td>
-         <td> <input name="datePassed" type="date" id="{{entry.id}}_date" value="{{ entry.datePassed }}" class="form-control" /> </td>
+         <td> <input name="dateCompleted" type="date" id="{{entry.id}}_date" value="{{ entry.dateCompleted }}" class="form-control" /> </td>
          <td>
          {%if g.current_user.isCeltsAdmin%}
              <select class="backgroundCheck" id="{{entry.id}}" data-username="{{volunteer.username}}" >
