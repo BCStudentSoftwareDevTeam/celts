@@ -103,7 +103,7 @@
             </td>
             <td>
             {% if g.current_user.isCeltsAdmin %}
-                <button type="button" class="ban btn btn-link" data-programid="{{row.program.id}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}">Edit</button>
+                <button style="position: relative; bottom: 8px" type="button" class="ban btn btn-link" data-programid="{{row.program.id}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}">Edit</button>
             {% endif %}
             </td>
           {% endif %}
