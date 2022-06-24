@@ -171,17 +171,22 @@ def test_recipients_category():
             email.process_data()
             assert email.recipients == [User.get_by_id("partont"), User.get_by_id("khatts")]
             newTrainedStudent.delete_instance()
-            transaction.rollback()
-'''            
-            # Add a user who does not exist and has All Volunteer Training:
-            print("here")
-            newTrainedStudent = EventParticipant.create(User.get_by_id("stettenra"), event = 14)
-            email.process_data()
-            assert email.recipients == [User.get_by_id('partont')]
-            newTrainedStudent.delete_instance()
 
             transaction.rollback()
-'''
+
+            # Test a program that should have nothing in banned users and nothing in All Volunteer:
+            raw_form_data = {"templateIdentifier": "Test",
+                "programID":"9",
+                "eventID":"1",
+                "recipientsCategory": "Eligible Students"}
+
+            testSender = User.get_by_id('ramsayb2')
+
+            email = EmailHandler(raw_form_data, url_domain, testSender)
+            email.process_data()
+            assert email.recipients == []
+
+
 @pytest.mark.integration
 def test_get_last_email():
     last_email = EmailHandler.retrieve_last_email(5)

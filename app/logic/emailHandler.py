@@ -103,7 +103,7 @@ class EmailHandler:
         if recipients_category == "Eligible Students":
             bannedUsers = ProgramBan.select(ProgramBan.user_id).where((ProgramBan.endDate > datetime.now()) | (ProgramBan.endDate is None), ProgramBan.program_id.in_([p.id for p in self.program_ids]))
             allVolunteer = Event.select().where(Event.isAllVolunteerTraining == True)
-            recipients = User.select().join(EventParticipant).join(Event).where(User.username.not_in(bannedUsers), EventParticipant.event.in_(allVolunteer))
+            recipients = User.select().join(EventParticipant).where(User.username.not_in(bannedUsers), EventParticipant.event.in_(allVolunteer))
 
         return [recipient for recipient in recipients]
 
