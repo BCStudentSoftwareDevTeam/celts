@@ -21,7 +21,6 @@ function changeAction(action){
   } else if(action.value=="Edit"){
     location = '/serviceLearning/editProposal/' + courseID;
   }
-}
 
 function withdraw(){
   // uses hidden label to withdraw course

@@ -134,7 +134,7 @@ def ban(program_id, username):
 @main_bp.route('/<username>/unban/<program_id>', methods=['POST'])
 def unban(program_id, username):
     """
-    This function updates the ban status of a username either when they are unbanned from a program.
+    This function updates the ban status of a username either when they are banned or unbanned from a program.
     program_id: the primary id of the program the student is being unbanned from
     username: unique value of a user to correctly identify them
     """
