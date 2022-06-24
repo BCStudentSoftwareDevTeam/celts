@@ -16,7 +16,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
-from app.models.studentManager import StudentManager
+from app.models.programManager import ProgramManager
 from app.controllers.main import main_bp
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
