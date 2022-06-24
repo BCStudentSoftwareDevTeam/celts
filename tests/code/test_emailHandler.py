@@ -1,4 +1,5 @@
 import pytest
+from peewee import DoesNotExist
 from flask_mail import Message
 from urllib.parse import urlparse
 from flask import request, g
@@ -140,44 +141,47 @@ def test_recipients_category():
 
             email = EmailHandler(raw_form_data, url_domain, testSender)
             email.process_data()
-            print("0")
-            #assert email.recipients == []
+            assert email.recipients == []
 
             # Add partont to All Volunteer Training event: NOT banned and IS trained
-            print("1")
             newTrainedStudent = EventParticipant.create(user = "partont", event = 14)
             email.process_data()
             assert email.recipients == [User.get_by_id("partont")]
 
             # Add ayisie to a non-all volunteer training event: NOT banned and NOT trained
-            print("2")
             newTrainedStudent = EventParticipant.create(user = "ayisie", event = 5)
             email.process_data()
             assert email.recipients ==  [User.get_by_id("partont")]
 
-            # Train ayisie and he shows up in the results: NOT banned and IS trained
-            print("3")
+            # Train ayisie so they show up in the results: NOT banned and IS trained
             newTrainedStudent = EventParticipant.create(user = "ayisie", event = 14)
             email.process_data()
             assert email.recipients ==  [User.get_by_id("partont"),User.get_by_id("ayisie")]
             newTrainedStudent.delete_instance()
 
             # Add khatts to All Volunteer Training event: IS banned and IS trained
-            print("4")
             newTrainedStudent = EventParticipant.create(user = "khatts", event = 14)
             email.process_data()
             assert email.recipients == [User.get_by_id("partont")]
             newTrainedStudent.delete_instance()
 
-            # Unban Sreynit: NOT banned IS trained
-            print("5")
+            # Unban khatts while they have All Volunteer Training: NOT banned IS trained
             ProgramBan.update(endDate = parser.parser("2022-6-23")).where(ProgramBan.user == "khatts").execute()
             newTrainedStudent = EventParticipant.create(user = "khatts", event = 14)
             email.process_data()
             assert email.recipients == [User.get_by_id("partont"), User.get_by_id("khatts")]
+            newTrainedStudent.delete_instance()
+            transaction.rollback()
+'''            
+            # Add a user who does not exist and has All Volunteer Training:
+            print("here")
+            newTrainedStudent = EventParticipant.create(User.get_by_id("stettenra"), event = 14)
+            email.process_data()
+            assert email.recipients == [User.get_by_id('partont')]
+            newTrainedStudent.delete_instance()
 
             transaction.rollback()
-
+'''
 @pytest.mark.integration
 def test_get_last_email():
     last_email = EmailHandler.retrieve_last_email(5)
