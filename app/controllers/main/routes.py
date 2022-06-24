@@ -78,7 +78,7 @@ def viewVolunteersProfile(username):
         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
 
         programManagerPrograms = list(ProgramManager.select().where(ProgramManager.user == volunteer))
-        permissionPrograms = [entry.program.id for entry in ProgramManagerPrograms]
+        permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
         allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == volunteer))
         completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
