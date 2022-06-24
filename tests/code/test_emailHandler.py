@@ -2,7 +2,7 @@ import pytest
 from flask_mail import Message
 from urllib.parse import urlparse
 from flask import request, g
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from dateutil import parser
 import time
 
@@ -16,6 +16,7 @@ from app.models.user import User
 from app.models.event import Event
 from app.models.programEvent import ProgramEvent
 from app.models.eventParticipant import EventParticipant
+from app.models.programBan import ProgramBan
 from app.logic.emailHandler import EmailHandler
 
 @pytest.mark.integration
@@ -139,38 +140,44 @@ def test_recipients_category():
 
             email = EmailHandler(raw_form_data, url_domain, testSender)
             email.process_data()
-            target_results = []
-            assert email.recipients == target_results
+            print("0")
+            #assert email.recipients == []
 
             # Add partont to All Volunteer Training event: NOT banned and IS trained
+            print("1")
             newTrainedStudent = EventParticipant.create(user = "partont", event = 14)
             email.process_data()
-            target_results = [User.get_by_id("partont")]
+            assert email.recipients == [User.get_by_id("partont")]
 
-            assert email.recipients == target_results
-
-            # Add partont to All Volunteer Training event: IS banned and IS trained
-            newTrainedStudent = EventParticipant.create(user = "khatts", event = 14)
-            email.process_data()
-            target_results = [User.get_by_id("khatts")]
-
-            assert email.recipients == target_results
-
-            # Add partont to All Volunteer Training event: NOT banned and NOT trained
+            # Add ayisie to a non-all volunteer training event: NOT banned and NOT trained
+            print("2")
             newTrainedStudent = EventParticipant.create(user = "ayisie", event = 5)
             email.process_data()
-            target_results = [User.get_by_id("ayisie")]
+            assert email.recipients ==  [User.get_by_id("partont")]
 
-            assert email.recipients == target_results
-
-            # Add partont to All Volunteer Training event: IS banned NOT trained
-            newTrainedStudent = EventParticipant.create(user = "", event = 14)
+            # Train ayisie and he shows up in the results: NOT banned and IS trained
+            print("3")
+            newTrainedStudent = EventParticipant.create(user = "ayisie", event = 14)
             email.process_data()
-            target_results = [User.get_by_id("")]
+            assert email.recipients ==  [User.get_by_id("partont"),User.get_by_id("ayisie")]
+            newTrainedStudent.delete_instance()
 
-            assert email.recipients == target_results
+            # Add khatts to All Volunteer Training event: IS banned and IS trained
+            print("4")
+            newTrainedStudent = EventParticipant.create(user = "khatts", event = 14)
+            email.process_data()
+            assert email.recipients == [User.get_by_id("partont")]
+            newTrainedStudent.delete_instance()
+
+            # Unban Sreynit: NOT banned IS trained
+            print("5")
+            ProgramBan.update(endDate = parser.parser("2022-6-23")).where(ProgramBan.user == "khatts").execute()
+            newTrainedStudent = EventParticipant.create(user = "khatts", event = 14)
+            email.process_data()
+            assert email.recipients == [User.get_by_id("partont"), User.get_by_id("khatts")]
 
             transaction.rollback()
+
 @pytest.mark.integration
 def test_get_last_email():
     last_email = EmailHandler.retrieve_last_email(5)
