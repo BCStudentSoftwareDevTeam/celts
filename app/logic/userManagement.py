@@ -1,5 +1,3 @@
-
-from turtle import up, update
 from app.models.user import User
 from app.models.term import Term
 from app.models.studentManager import StudentManager

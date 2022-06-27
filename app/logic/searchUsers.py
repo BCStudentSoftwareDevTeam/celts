@@ -1,6 +1,6 @@
 from playhouse.shortcuts import model_to_dict
 from app.models.user import User
-def searchUsers(query):
+def searchUsers(query, searchvalue):
     '''Accepts user input and queries the database returning results that matches user search'''
     query = query.strip()
     search = query.upper()
@@ -11,7 +11,11 @@ def searchUsers(query):
     lastName = " ".join(splitSearch[1:]) +"%"
 
     if len(splitSearch) == 1: #search for first or last name
-        results = User.select().where(User.isStudent & (User.firstName ** firstName | User.lastName ** firstName))
+        if searchvalue =="searchSl":
+            results = User.select().where( (User.isFaculty | User.isCeltsAdmin) & (User.firstName ** firstName | User.lastName ** firstName))
+        else:
+
+            results = User.select().where(User.isStudent & (User.firstName ** firstName | User.lastName ** firstName))
         for participant in results:
             if participant not in resultsDict:
                 resultsDict[participant.username]=model_to_dict(participant)

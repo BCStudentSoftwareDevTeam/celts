@@ -257,13 +257,15 @@ def serviceTranscript(username):
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
 @main_bp.route('/searchInstructor/<query>', methods = ['GET'])
 def searchUser(query):
-    print(request.path)
+
+    data= request.args.get("searchvalue")
+   
     '''Accepts user input and queries the database returning results that matches user search'''
     try:
         query = query.strip()
         search = query.upper()
         splitSearch = search.split()
-        searchResults = searchUsers(query)
+        searchResults = searchUsers(query,data)
         return searchResults
     except Exception as e:
         print(e)

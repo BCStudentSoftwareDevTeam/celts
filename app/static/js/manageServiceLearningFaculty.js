@@ -24,5 +24,5 @@ function callback() {
 }
 
 $("#searchInstructorinput").on("input", function() {
-  searchUser("searchInstructorinput", callback, true, "myForm", ["phoneNumber", "firstName", "lastName", "username"]);
+  searchUser("searchInstructorinput", callback, true, "myForm", ["phoneNumber", "firstName", "lastName", "username"], "searchSl");
 });
