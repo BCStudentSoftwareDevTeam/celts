@@ -90,7 +90,7 @@
           </td>
           <td>{{data.term.description}}</td>
           <td>{{data.status.status}}</td>
-          <td><button type="button" class="btn {{'btn-primary' if data.status.status == 'Pending' else 'btn-warning'}} btn-sm">{{ "Review" if data.status.status == "Pending" else "In Progress" }}</button></td>
+          <td><button type="button" class="btn {{'btn-primary' if data.status.status == 'Pending' else 'btn-warning'}} btn-sm" href="/reviewPendingCourse">{{ "Review" if data.status.status == "Pending" else "In Progress" }}</button></td>
         </tr>
         {% endfor %}
     </tbody>

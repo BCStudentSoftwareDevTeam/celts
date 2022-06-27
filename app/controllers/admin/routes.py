@@ -196,3 +196,9 @@ def adminLogs():
                                 allLogs = allLogs)
     else:
         abort(403)
+
+@admin_bp.route('/reviewPendingCourse', methods=['GET'])
+def reviewPendingCourse():
+    if g.current_user.isAdmin:
+        return render_template("admin/reviewPendingCourse.html")
+    abort(403)
