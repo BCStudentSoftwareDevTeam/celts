@@ -143,6 +143,7 @@ def test_backgroundCheck():
         updatebackground = setUserBackgroundCheck("mupotsal","SHS",True)
         updatedModel = BackgroundCheck.get(user = "mupotsal", type = "SHS")
         assert updatedModel.passBackgroundCheck == True
+        assert updatedModel.dateCompleted.strftime("%Y-%m-%d") == "2021-07-20"
 
 @pytest.mark.integration
 def test_getStudentManagerForEvent():
