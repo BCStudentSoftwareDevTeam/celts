@@ -26,8 +26,6 @@ from app.logic.transcript import *
 from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import pendingCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
-from app.logic.userManagement import addSlInstructor
-
 
 @main_bp.route('/', methods=['GET'])
 def redirectToEventsList():
@@ -255,11 +253,10 @@ def serviceTranscript(username):
                             userData = user)
 
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
-@main_bp.route('/searchInstructor/<query>', methods = ['GET'])
 def searchUser(query):
 
     data= request.args.get("searchvalue")
-   
+
     '''Accepts user input and queries the database returning results that matches user search'''
     try:
         query = query.strip()
@@ -271,25 +268,9 @@ def searchUser(query):
         print(e)
         return "Error in searching for user", 500
 
-
-@main_bp.route('/searchInstructor/<query>', methods = ['GET'])
-def searchInstructor(query):
-    '''Accepts user input and queries the database returning results that matches user search'''
-    try:
-        query = query.strip()
-        search = query.upper()
-        splitSearch = search.split()
-        searchResults = searchInstructors(query)
-        return searchResults
-    except Exception as e:
-        print(e)
-        return "Error in searching for user", 500
-        
-
 @main_bp.route('/contributors',methods = ['GET'])
 def contributors():
     return render_template("/contributors.html")
-
 
 @main_bp.route('/manageServiceLearning', methods = ['GET', 'POST'])
 @main_bp.route('/manageServiceLearning/<term>', methods = ['GET', 'POST'])
@@ -324,4 +305,3 @@ def AddSLInstructor():
     addSlInstructor(Data["username"])
 
     return ""
-

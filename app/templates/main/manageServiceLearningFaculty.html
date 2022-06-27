@@ -13,7 +13,6 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
 {% endblock %}
 
-
 {% block app_content %}
 <div id="wrapper">
   <div class ="container">
@@ -21,35 +20,6 @@
     <div class="contributors" align="center">
       <h1 class="text-center mt-5 mb-3">Manage Service Learning Faculty</h1>
   <table class="table table-striped" id="myTable">
-    <div align="right">
-      <button class="btn btn-link open-button" onclick="openForm()" align="right">Add Instructor</button>
-      <div align="left" class="modal fade pl-3" tabindex="-1" id="myForm">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="closeForm()" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <form id= "searchStudent" action="/addSLInstructor" method="post" value="">
-                <h3 class="text-center mt-1 mb-1">Search SL Instructor</h1><br>
-                <div class="col-sm-20 col-sm-offset-3 m-auto mb-3">
-                  <div class="row">
-                    <div class="form-group ui-widget">
-                      <div class="input-group">
-                        <input type="input" id="searchInstructorinput" name="searchInstructorinput" class="form-control" placeholder="Search" autocomplete="off"/>
-                        <span class="input-group-text"><span class="bi bi-search"></span></span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </form>
-            </div>
-            <div class="modal-footer">
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
       <thead>
         <tr class="header">
           <th scope = "col">Name</th>

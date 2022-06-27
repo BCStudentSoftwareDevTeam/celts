@@ -1,20 +1,14 @@
-export default function searchUser(inputId, callback, clear=false, parentElementId=null, columnRequested=null, user){
+export default function searchUser(inputId, callback, clear=false, parentElementId=null, columnRequested=null){
   var query = $(`#${inputId}`).val()
-
   let columnDict={};
-  console.log(user)
   $(`#${inputId}`).autocomplete({
     appendTo: (parentElementId === null) ? null : `#${parentElementId}`,
     minLength: 2,
-    
     source: function(request, response) {
-      
       $.ajax({
         url: `/searchUser/${query}`,
         type: "GET",
-        data:{"searchvalue":user},
         dataType: "json",
-        // data:{"user1":user},
         success: function(searchResults) {
           response(Object.entries(searchResults).map( (item) => {
             if (!columnRequested){

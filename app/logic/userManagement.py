@@ -90,7 +90,3 @@ def addNextTerm():
 
 def getPrograms(currentUser):
     return Program.select().join(StudentManager).where(StudentManager.user==currentUser).order_by(Program.programName)
- 
-def addSlInstructor(username):
-    update=User.update({User.isSLinstructor:True}).where(User.username==username).execute()
-    

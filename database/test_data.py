@@ -141,7 +141,7 @@ users = [
         "isCeltsAdmin": False,
         "isFaculty": True,
         "isCeltsStudentStaff": False,
-        "isSLinstructor": True
+        "isStaff": True
     },
      {
         "username": "qasema",
@@ -153,7 +153,7 @@ users = [
         "isCeltsAdmin": True,
         "isFaculty": True,
         "isCeltsStudentStaff": False,
-        "isSLinstructor": True
+        "isStaff": True
     }
 ]
 
