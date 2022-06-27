@@ -240,20 +240,15 @@ def test_getStudentManagerForEvent():
         programManager = User.get_by_id("testUser2") ##This user is a program manager
 
 
-        #gives event but no programId
+
         ## user is manager of program
         studentManager = isProgramManagerForEvent(programManager, test_event)
-        print(studentManager)
         assert studentManager == True
 
         ## user is not manager of program
         studentManager = isProgramManagerForEvent(student, test_event)
-        print(studentManager)
         assert studentManager == False
 
 
-        #gives neither event or programID
-        ## shuold give an error
-        with pytest.raises(ValueError):
-            studentManager = isProgramManagerForEvent(student)
+
         transaction.rollback()

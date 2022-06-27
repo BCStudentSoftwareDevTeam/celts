@@ -99,7 +99,7 @@ def setUserBackgroundCheck(user,bgType, checkPassed, datePassed):
     update.save()
     createLog(f"Updated {user.firstName} {user.lastName}'s background check for {bgType} to {bool(checkPassed)}.")
 
-def isProgramManagerForEvent(user, event= None):
+def isProgramManagerForEvent(user, event):
     """
     This function checks to see if a user is a program manager for a program.
     NOTE: this function needs the event parameter to work
@@ -108,16 +108,7 @@ def isProgramManagerForEvent(user, event= None):
     Returns: bool whether the appropriate information is given.
     """
 
-    #neither event nor programId are passed
-    if not (event):
-        raise ValueError("Not enough parameters given to this function.")
+    programIdQuery = event.singleProgram
+    programManagerResult = hasPrivilege(user, programIdQuery)
 
-    #if event is passed but no programId is passed
-    if event:
-        programIdQuery = (ProgramEvent.get(ProgramEvent.event == event)).program
-        programManagerResult = hasPrivilege(user, programIdQuery)
-    if programManagerResult == True:
-        return True
-    else:
-        # print(e)
-        return False
+    return programManagerResult
