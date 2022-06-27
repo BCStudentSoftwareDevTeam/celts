@@ -17,6 +17,9 @@ $(document).ready(function() {
   $("#addNewTerm").on("click",function(){
     addNewTerm();
   });
+  $("#addNewProgramInfo").on("click",function(){
+    addNewProgramInfo();
+  });
   // add celts student staff
   $("#searchCeltsStudentStaffInput").on("input", function() {
     searchUser("searchCeltsStudentStaffInput", callback);
@@ -50,9 +53,6 @@ $(document).ready(function() {
   };
   $("#submitButton").on("click", function() {
     submitTerm();
-  });
-  $("#programSelect").on("click", function(){
-    programSelect();
   });
 });
 function clickTerm(term){
@@ -110,12 +110,19 @@ function addNewTerm(){
   })
 }
 
-function programSelect(){
-  const programList = ["Program1", "Program2","Program3","Program4"];
-  var options = "";
-  for(var i=1; i<=programList.length; i++){
-    options += "<option>"+ programList[i] +"</option>";
-    console.log(i);
-  }
-  document.getElementById("programSelect").innerHTML = options;
+function addNewProgramInfo(){
+  var programInfo = {senderName: $("#senderName").val(),
+                    replyToEmail: $("#replyToEmail").val(),
+                    programId: $("#programSelect").val()};
+  $.ajax({   // sends ajax request to controller with programInfo containing user input
+    url: "/admin/addNewProgramInfo",
+    type: "POST",
+    data: programInfo,
+    success: function(s){
+      location.reload()
+    },
+    error: function(error, status){
+        console.log(error, status)
+    }
+  })
 }

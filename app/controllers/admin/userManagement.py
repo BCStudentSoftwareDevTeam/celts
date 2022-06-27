@@ -2,8 +2,10 @@ from flask import Flask, render_template,request, flash, g, abort, redirect, url
 import re
 from app.controllers.admin import admin_bp
 from app.models.user import User
+from app.models.program import Program
 from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff, addProgramManager, removeProgramManager
 from app.logic.userManagement import changeCurrentTerm
+from app.logic.userManagement import addNewProgramInfo
 from app.logic.utils import selectSurroundingTerms
 from app.logic.userManagement import addNextTerm
 from app.models.term import Term
@@ -64,12 +66,27 @@ def removeProgramManagers():
         flash('Error while removing a manager.','warning')
         abort(500,"Error while trying to remove a manager.")
 
+@admin_bp.route('/admin/addNewProgramInfo', methods=['POST'])
+def addProgramInfo():
+    """Grabs info from JavaScript and then outputs it to logic function"""
+    programInfo = request.form #grabs user inputs from js
+    try:
+        return addNewProgramInfo(programInfo["senderName"],  #calls logic function to add data to database
+                                programInfo["replyToEmail"],
+                                programInfo["programId"])
+    except Exception as e:
+        print(e)
+        flash('Error while adding program info to database.','warning')
+        abort(500,'Error while adding program info to database.')
+
 @admin_bp.route('/admin', methods = ['GET'])
 def userManagement():
     terms = selectSurroundingTerms(g.current_term)
+    current_programs = Program.select()
     if g.current_user.isCeltsAdmin:
         return render_template('admin/userManagement.html',
-                                terms=terms)
+                                terms=terms,
+                                programs=list(current_programs))
     abort(403)
 
 @admin_bp.route('/admin/changeTerm', methods=['POST'])

@@ -88,5 +88,11 @@ def addNextTerm():
 
     return newTerm
 
+def addNewProgramInfo(newEmail, newSender, programId):
+    """Updates the program info with a new sender and email."""
+    updatedProgram = Program.update({Program.replyToEmail: newEmail, Program.senderName:newSender}).where(Program.id==programId)
+    updatedProgram.execute()
+    return (f'Program email info updated')
+
 def getPrograms(currentUser):
     return Program.select().join(StudentManager).where(StudentManager.user==currentUser).order_by(Program.programName)

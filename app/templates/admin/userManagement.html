@@ -102,16 +102,21 @@
             <tr>
             <form action="" id="programSettings">
                       <div>
-                          <label for="programSelect">Program Select</label>
-                          <td><select class="form-select programData" id="programSelect" form="programSettings">
-                          </select></td>
-                          <label for="replyToEmail">Reply To Email</label>
+                          <td>
+                            <select class="form-select programData" id="programSelect" form="programSettings">
+                              <option selected>--Choose a Program--</option>
+                              {% for program in programs %}
+                              <option value ={{program.id}}>{{program.programName}}</option>
+                              {% endfor %}
+                            </select>
+                          </td>
                           <td><input type="text" name="Email" id="replyToEmail" value=""></td>
-                          <label for="senderName">Sender Name</label>
-                          <td><input type="text" name="Sender" value=""></td>
-
+                          <td><input type="text" name="Sender" value="" id="senderName"></td>
+                          <td>
+                            <button type="button" class="btn btn-success w-101" id="addNewProgramInfo" role ="button">Update</button>
+                          </td>
                         </div>
-                      </form>
+            </form>
           </tr>
         </table>
       </div>
