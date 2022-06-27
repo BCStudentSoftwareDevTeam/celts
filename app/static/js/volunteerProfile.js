@@ -54,7 +54,7 @@ $(document).ready(function(){
     $("#banModal").modal("toggle");
     banNoteDiv.hide();
     $("#banNoteTxtArea").val("");
-
+    $("#banButton").prop("disabled", true);
     if( $(this).val()=="Unban"){
       banEndDateDiv.hide()
       banEndDatepicker.val("0001-01-01") //This is a placeholder value for the if statement in line 52 to work properly #PLCHLD1
