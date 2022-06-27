@@ -12,7 +12,7 @@ def searchUsers(query, searchvalue):
 
     if len(splitSearch) == 1: #search for first or last name
         if searchvalue =="searchInstructor":
-            results = User.select().where( (User.isFaculty | User.isStaff) & (User.firstName ** firstName | User.lastName ** firstName))
+            results = User.select().where( User.isFaculty & (User.firstName ** firstName | User.lastName ** firstName))
         else:
 
             results = User.select().where(User.isStudent & (User.firstName ** firstName | User.lastName ** firstName))
