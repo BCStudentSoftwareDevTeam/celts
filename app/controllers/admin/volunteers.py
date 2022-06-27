@@ -9,6 +9,7 @@ from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck
 from app.logic.participants import trainedParticipants, getEventParticipants
+from app.logic.events import getPreviousRecurringEventData
 from app.models.user import User
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
@@ -97,7 +98,9 @@ def removeVolunteerFromEvent(user, eventID):
     (EventRsvp.delete().where(EventRsvp.user==user)).execute()
     flash("Volunteer successfully removed", "success")
     return ""
-
+@admin_bp.route('/getPastVolunteer/<recurringId>/<startDate>', methods = ['POST'])
+def getPastVolunteer(recurringId, startDate):  
+    return json.dumps(getPreviousRecurringEventData(recurringId, startDate))
 @admin_bp.route('/updateBackgroundCheck', methods = ['POST'])
 def updateBackgroundCheck():
     if g.current_user.isCeltsAdmin:

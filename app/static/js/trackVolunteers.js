@@ -12,6 +12,7 @@ $(document).ready(function() {
   });
 
   $('[data-toggle="tooltip"]').tooltip();
+  })
 // Search functionalities from the volunteer table in the UI
   $("#trackVolunteersInput").on("keyup", function() {
     var value = $(this).val().toLowerCase();
@@ -36,7 +37,6 @@ $(document).ready(function() {
       }
     });
   });
-});
 
 function callback() {
   $("#selectVolunteerButton").prop('disabled', false);
@@ -60,6 +60,30 @@ $(".removeVolunteer").on("click", function() {
     }
   });
 });
+$(".getPreviousEventData").on("click", function(){
+  $.ajax({
+    type: "POST",
+    success: function(jsonData) {
+      var volunteerTable = $("#trackVolunteerstable")
+      `/getPastVolunteer/${recurringId}/${startDate}`
+      location.reload();
+    }
+  });
+});
+// $.ajax({
+//   type:"POST",
+//   url: "/makeRecurringEvents",
+//   data: eventDatesAndName, //get the startDate, endDate and name as a dictionary
+//   success: function(jsonData){
+//     var recurringEvents = JSON.parse(jsonData)
+//     var recurringTable = $("#recurringEventsTable")
+//     $("#recurringEventsTable tbody tr").remove();
+
+//     for (var event of recurringEvents){
+//       eventdate= new Date(event.date).toLocaleDateString()
+//       recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
+//       }   
+//   };
 
 $(".attendanceCheck").on("change", function() {
   let username =  $(this)[0].name.substring(9) //get everything after the 9th character;
