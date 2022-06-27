@@ -38,7 +38,7 @@
   <div class='form-group d-inline-flex'>
     <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add volunteer</a>
     {% if event.isRecurring and not event.isFirstRecurringEvent%}
-      <a class="btn btn-success" id="pastVolunteers" role="button" data-bs-toggle="modal" style="margin:5px;">Add Previous Volunteers</a>
+      <a class="btn btn-success" id="pastVolunteers" role="button" data-bs-toggle="modal" data-recurring-id = {{recurringEventID}} style="margin:5px;">Add Previous Volunteers</a>
     {% endif %}
     <a class="btn btn-warning" role="button" href= "/eventsList/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
   </div>

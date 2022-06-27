@@ -51,6 +51,7 @@ def trackVolunteersPage(eventID):
         event.timeEnd,
         event.startDate)
 
+    recurringEventID = '' # query Event Table to get recurringId using Event ID.
 
     return render_template("/events/trackVolunteers.html",
         eventRsvpData=list(eventRsvpData),
@@ -58,6 +59,7 @@ def trackVolunteersPage(eventID):
         eventLength=eventLengthInHours,
         program=program,
         event=event,
+        recurringEventID = recurringEventID,
         trainedParticipantsList=trainedParticipantsList)
 
 @admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['POST'])
@@ -98,9 +100,14 @@ def removeVolunteerFromEvent(user, eventID):
     (EventRsvp.delete().where(EventRsvp.user==user)).execute()
     flash("Volunteer successfully removed", "success")
     return ""
+
 @admin_bp.route('/getPastVolunteer/<recurringId>/<startDate>', methods = ['POST'])
-def getPastVolunteer(recurringId, startDate):  
-    return json.dumps(getPreviousRecurringEventData(recurringId, startDate))
+def getPastVolunteer():
+    eventName = request.form
+    eventRecurringId =  Event.select(Event.recurringId).where(Event.name==eventName)
+    eventStartDate = Event.select(Event.startDate).where(Event.name==eventName)
+    return json.dumps(getPreviousRecurringEventData(eventRecurringId, eventStartDate))
+
 @admin_bp.route('/updateBackgroundCheck', methods = ['POST'])
 def updateBackgroundCheck():
     if g.current_user.isCeltsAdmin:
