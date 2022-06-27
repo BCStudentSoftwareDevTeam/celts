@@ -73,11 +73,4 @@ def test_updatedProgramManager():
     action3 = "remove"
     setProgramManager(user_name3, program_id3, action3)
     assert StudentManager.get_or_none(StudentManager.program==program_id3, StudentManager.user == user_name3) is None
-
-
-
-
-
-
-
-
+    
