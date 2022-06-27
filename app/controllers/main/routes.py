@@ -287,9 +287,7 @@ def getAllCourseIntructors(term=None):
         pending = pendingCourses(term)
         approved = approvedCourses(term)
         terms = selectSurroundingTerms(g.current_term)
-        for i in pending:
-            print(i)
-        
+
         return render_template('/main/manageServiceLearningFaculty.html',
                                 courseInstructors = courseDict,
                                 pendingCourses = pending,
