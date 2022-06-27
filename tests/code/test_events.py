@@ -13,7 +13,7 @@ from app.models.eventTemplate import EventTemplate
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.models.term import Term
-from app.models.facilitator import Facilitator
+from app.models.eventFacilitator import EventFacilitator
 from app.models.interest import Interest
 from app.logic.events import *
 
@@ -332,7 +332,7 @@ def test_attemptSaveEvent():
 
         try:
             event = Event.get(name="Attempt Save Test")
-            facilitator = Facilitator.get(event=event)
+            facilitator = EventFacilitator.get(event=event)
 
             # Redundant, as the previous lines will throw exceptions, but I like asserting something
             assert facilitator
@@ -376,7 +376,7 @@ def test_saveEventToDb_create():
         assert len(createdEvents) == 1
         assert createdEvents[0].singleProgram.id == 1
 
-        createdEventFacilitator = Facilitator.get(event=createdEvents[0])
+        createdEventFacilitator = EventFacilitator.get(event=createdEvents[0])
         assert createdEventFacilitator # kind of redundant, as the previous line will throw an exception
 
         transaction.rollback()
@@ -530,12 +530,12 @@ def test_userWithNoInterestedEvent():
 def test_calculateNewrecurringId():
     maxRecurringId = Event.select(fn.MAX(Event.recurringId)).scalar()
     if maxRecurringId == None:
-        maxRecurringId = 1 
+        maxRecurringId = 1
     else:
         maxRecurringId += 1
     assert calculateNewrecurringId() == maxRecurringId
 
-    
+
 @pytest.mark.integration
 def test_getPreviousRecurringEventData():
     with mainDB.atomic() as transaction:

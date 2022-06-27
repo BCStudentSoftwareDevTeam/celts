@@ -6,7 +6,7 @@ from app.models import mainDB
 from app.models.user import User
 from app.models.event import Event
 from app.models.eventParticipant import EventParticipant
-from app.models.facilitator import Facilitator
+from app.models.eventFacilitator import EventFacilitator
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.models.term import Term
@@ -93,9 +93,9 @@ def saveEventToDb(newEventData):
                 eventRecord = Event.get_by_id(newEventData['id'])
                 Event.update(**eventData).where(Event.id == eventRecord).execute()
 
-            Facilitator.delete().where(Facilitator.event == eventRecord).execute()
+            EventFacilitator.delete().where(EventFacilitator.event == eventRecord).execute()
             for f in newEventData['facilitators']:
-                Facilitator.create(user=f, event=eventRecord)
+                EventFacilitator.create(user=f, event=eventRecord)
 
             eventRecords.append(eventRecord)
 
@@ -303,6 +303,6 @@ def preprocessEventData(eventData):
         eventData['facilitators'] = [User.get_by_id(f) for f in eventData['facilitators']]
     except Exception as e:
         event = eventData.get('id', -1)
-        eventData['facilitators'] = list(User.select().join(Facilitator).where(Facilitator.event == event))
+        eventData['facilitators'] = list(User.select().join(EventFacilitator).where(EventFacilitator.event == event))
 
     return eventData
