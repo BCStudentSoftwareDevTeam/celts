@@ -203,7 +203,7 @@ def validateNewEventData(data):
     if data['isRecurring'] and data['endDate']  <  data['startDate']:
         return (False, "Event start date is after event end date")
 
-    if data['endDate'] ==  data['startDate'] and datetime.datetime.strptime(data['timeEnd'], "%H:%M") <= datetime.datetime.strptime(data['timeStart'], "%H:%M"):
+    if data['endDate'] ==  data['startDate'] and data['timeEnd'] <= data['timeStart']:
         return (False, "Event start time is after event end time")
 
     # Validation if we are inserting a new event
