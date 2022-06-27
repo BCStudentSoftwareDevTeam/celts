@@ -11,8 +11,13 @@ $(document).ready(function() {
     }
   });
 
+
   $('[data-toggle="tooltip"]').tooltip();
   })
+  $("pastVolunteers").on("click", function(){
+    pastVolunteersButton();
+
+ });
 // Search functionalities from the volunteer table in the UI
   $("#trackVolunteersInput").on("keyup", function() {
     var value = $(this).val().toLowerCase();
@@ -60,16 +65,20 @@ $(".removeVolunteer").on("click", function() {
     }
   });
 });
-$(".getPreviousEventData").on("click", function(){
-  $.ajax({
-    type: "POST",
-    success: function(jsonData) {
-      var volunteerTable = $("#trackVolunteerstable")
-      `/getPastVolunteer/${recurringId}/${startDate}`
-      location.reload();
-    }
-  });
-});
+
+function pastVolunteersButton(){
+  console.log("hello")
+}
+  // $.ajax({
+  //   type: "POST",
+  //   data: {recurringId: recurringId, startDate: startDate},
+  //   success: function(jsonData) {
+  //     var volunteerTable = $("#trackVolunteerstable")
+  //     `/getPastVolunteer/${recurringId}/${startDate}`
+  //     location.reload();
+  //   }
+  // });
+
 // $.ajax({
 //   type:"POST",
 //   url: "/makeRecurringEvents",
