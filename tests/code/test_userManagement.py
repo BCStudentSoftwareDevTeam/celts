@@ -6,9 +6,9 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.studentManager import StudentManager
 from app.logic.volunteers import setProgramManager
-
 from peewee import DoesNotExist
 from flask import g
+
 @pytest.mark.integration
 def test_modifyCeltsAdmin():
     user = "agliullovak"
