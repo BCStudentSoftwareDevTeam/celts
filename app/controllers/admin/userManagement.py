@@ -5,7 +5,7 @@ from app.models.user import User
 from app.models.program import Program
 from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff, addProgramManager, removeProgramManager
 from app.logic.userManagement import changeCurrentTerm
-from app.logic.userManagement import addNewProgramInfo
+from app.logic.userManagement import changeProgramInfo
 from app.logic.utils import selectSurroundingTerms
 from app.logic.userManagement import addNextTerm
 from app.models.term import Term
@@ -72,8 +72,8 @@ def updateProgramInfo():
     programInfo = request.form #grabs user inputs
     if g.current_user.isCeltsAdmin:
         try:
-            return addNewProgramInfo(programInfo["senderName"],  #calls logic function to add data to database
-                                    programInfo["replyToEmail"],
+            return changeProgramInfo(programInfo["replyToEmail"],  #calls logic function to add data to database
+                                    programInfo["senderName"],
                                     programInfo["programId"])
         except Exception as e:
             print(e)
