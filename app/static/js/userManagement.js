@@ -20,6 +20,10 @@ $(document).ready(function() {
   $("#addNewProgramInfo").on("click",function(){
     addNewProgramInfo();
   });
+  $("#programSelect").on("change",function(){
+    displayProgramInfo();
+  });
+
   // add celts student staff
   $("#searchCeltsStudentStaffInput").on("input", function() {
     searchUser("searchCeltsStudentStaffInput", callback);
@@ -125,4 +129,11 @@ function addNewProgramInfo(){
         console.log(error, status)
     }
   })
+}
+
+function displayProgramInfo(){
+  var programInfo = $("#programSelect option:selected")[0]
+  $("#replyToEmail").val($(programInfo).data("replytoemail"))
+  $("#senderName").val($(programInfo).data("sendername"))
+
 }

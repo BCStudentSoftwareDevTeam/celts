@@ -106,7 +106,7 @@
                             <select class="form-select programData" id="programSelect" form="programSettings">
                               <option selected>--Choose a Program--</option>
                               {% for program in programs %}
-                              <option value ={{program.id}}>{{program.programName}}</option>
+                              <option value ="{{program.id}}" data-replytoemail="{{program.replyToEmail}}" data-sendername="{{program.senderName}}">{{program.programName}}</option>
                               {% endfor %}
                             </select>
                           </td>

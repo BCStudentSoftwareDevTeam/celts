@@ -1,4 +1,4 @@
-from flask import Flask, render_template,request, flash, g, abort, redirect, url_for
+from flask import Flask, render_template,request, flash, g, json, abort, redirect, url_for
 import re
 from app.controllers.admin import admin_bp
 from app.models.user import User
