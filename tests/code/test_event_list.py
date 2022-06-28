@@ -99,7 +99,7 @@ def training_event():
                                 startDate = 2021-12-12,
                                 endDate = 2021-12-13)
 
-        testProgramEvent = ProgramEvent.create(program = 2, event = testEvent)
+        testProgramEvent = ProgramEvent.create(program = 3, event = testEvent)
 
         yield testEvent
 
@@ -111,14 +111,6 @@ def test_studentled_event(training_event):
         assert testProgramEvent
         print(testProgramEvent)
 
-        studentledRes = []
-
-        for program, events in testProgramEvent.items():
-            for event in events:
-                studentledRes.append(event.name)
-
-        assert "Test Student Lead" in studentledRes
-        print(studentledRes)
 '''
 @pytest.mark.integration
 def test_training_event(training_event):
