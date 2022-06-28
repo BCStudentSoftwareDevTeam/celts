@@ -1,6 +1,6 @@
 from app.models.user import User
 from app.models.term import Term
-from app.models.studentManager import StudentManager
+from app.models.programManager import ProgramManager
 from app.models.program import Program
 from flask import g, session
 from app.logic.adminLogs import createLog
@@ -46,19 +46,19 @@ def changeCurrentTerm(term):
 
 def addProgramManager(user,program):
     user = User.get_by_id(user)
-    managerEntry = StudentManager.create(user=user,program=program)
+    managerEntry = ProgramManager.create(user=user,program=program)
     managerEntry.save()
     return(f'{user} added as manager')
 
 def removeProgramManager(user,program):
     user = User.get_by_id(user)
-    delQuery = StudentManager.delete().where(StudentManager.user == user,StudentManager.program == program)
+    delQuery = ProgramManager.delete().where(ProgramManager.user == user,ProgramManager.program == program)
     delQuery.execute()
     return (f'{user} removed from managers')
 
 def hasPrivilege(user, program):
     user = User.get_by_id(user)
-    if StudentManager.select().where(StudentManager.user == user, StudentManager.program == program).exists():
+    if ProgramManager.select().where(ProgramManager.user == user, ProgramManager.program == program).exists():
         return True
     else:
         return False
@@ -95,4 +95,4 @@ def addNewProgramInfo(newEmail, newSender, programId):
     return (f'Program email info updated')
 
 def getPrograms(currentUser):
-    return Program.select().join(StudentManager).where(StudentManager.user==currentUser).order_by(Program.programName)
+    return Program.select().join(ProgramManager).where(ProgramManager.user==currentUser).order_by(Program.programName)

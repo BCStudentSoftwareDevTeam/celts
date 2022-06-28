@@ -51,7 +51,7 @@
   </ul>
 </div>
 {% macro createTable(events) %}
-{% if events.exists() %}
+{% if events|count %}
   <table class="table table-striped">
     <thead>
       <tr>
