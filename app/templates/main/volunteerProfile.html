@@ -61,7 +61,7 @@
 
  <!-- Start Program Eligibility Table -->
  <div class="row">
-   <table class="table">
+   <table class="table banTable">
       <thead>
         <tr>
           <th scope="col">Program</th>
@@ -92,12 +92,10 @@
           {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
               {% if row.isNotBanned %}
                 <td class="programBan">
-                  {% set imgclass = "bi-check-lg" %}
                   {% set label = "Ban" %}
                   Eligible
               {% else %}
                 <td class="programBan text-danger">
-                  {% set imgclass = "bi-x-lg" %}
                   {% set label = "Unban" %}
                     Banned
               {% endif %}

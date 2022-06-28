@@ -1,7 +1,3 @@
-.ban{
-  bottom: 8px;
-}
-
-tr {
+.banTable tr {
   vertical-align: middle;
 }
