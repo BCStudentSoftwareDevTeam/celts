@@ -9,7 +9,7 @@ export default function searchUser(inputId, callback, clear=false, parentElement
         url: `/searchUser/${query}`,
         type: "GET",
         dataType: "json",
-        data:{"searchInstructor":searchUser},
+        data:{"searchCategory":searchUser},
         success: function(searchResults) {
           response(Object.entries(searchResults).map( (item) => {
             if (!columnRequested){

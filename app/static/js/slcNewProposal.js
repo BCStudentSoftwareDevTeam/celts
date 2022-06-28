@@ -43,11 +43,11 @@ function displayCorrectTab(navigateTab) {
   // This function will figure out which tab to display
   let allTabs = $(".tab");
   if (navigateTab == 1 && !validateForm()) return false;
-  
+
   $(allTabs[currentTab]).css("display", "none");
   // Increase or decrease the current tab by 1:
   currentTab = currentTab + navigateTab;
-  
+
   if (currentTab >= allTabs.length) {
     saveCourseInstructors().then(() => $("#slcNewProposal").submit());
     return false;
@@ -112,7 +112,7 @@ function callback() {
 
 $("#courseInstructor").on('input', function() {
   // To retrieve specific columns into a dict, create a [] list and put columns inside
-  searchUser("courseInstructor", callback, true, null, ["phoneNumber", "firstName", "lastName", "username"],"searchInstructor");
+  searchUser("courseInstructor", callback, true, null, ["phoneNumber", "firstName", "lastName", "username"],"searchCategory");
 });
 
 $("#instructorTable").on("click", "#instructorPhoneUpdate", function() {

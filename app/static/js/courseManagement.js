@@ -6,9 +6,6 @@ function formSubmit(el) {
   $("#termSelector").attr('action', '/manageServiceLearning/' + el);
   $("#termSelector").submit()
 }
-function openForm() {
-  $("#myForm").modal("toggle");
-}
 
 function addInstructorS() {
   console.log("We're here");
@@ -16,11 +13,6 @@ function addInstructorS() {
     method: "POST",
     url:  "/addInstructor",
     data: {"username": $("#uname").val(),
-           "bnumber":$("#bnum").val(),
-           "email":$("#email").val(),
-           "phoneNumber":$("#pnum").val(),
-           "firstName":$("#fname").val(),
-           "lastName":$("#lname").val()
           },
     success: function(response) {
 

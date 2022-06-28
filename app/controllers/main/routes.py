@@ -255,7 +255,7 @@ def serviceTranscript(username):
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
 def searchUser(query):
 
-    data= request.args.get("searchInstructor")
+    data= request.args.get("searchCategory")
 
     '''Accepts user input and queries the database returning results that matches user search'''
     try:
