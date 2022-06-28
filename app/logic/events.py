@@ -152,18 +152,18 @@ def getBonnerProgram(term):
                                         Event.term == term))
     return list(bonnerScholarsEvents)
 
-def getOneTimeEvents(term):
+def getnonProgramEvents(term):
     """
     Get the list of the one-time events to be displayed in the Other Events section
     of the Events List page.
     :return: A list of One Time Events objects
     """
-    oneTimeEvents = (Event.select()
+    nonProgramEvents = (Event.select()
                         .join(ProgramEvent, JOIN.LEFT_OUTER)
-                        .where(Program.id.alias("program_id") == None,
+                        .where(ProgramEvent.program == None,
                         Event.isTraining == False))
 
-    return list(oneTimeEvents)
+    return list(nonProgramEvents)
 
 def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
     """
