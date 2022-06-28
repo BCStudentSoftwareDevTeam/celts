@@ -12,19 +12,19 @@ $(document).ready(function() {
   })
 
   function pastVolunteersButton(){
-    // console.log($('#pastVolunteers').data('recurring-id'))
-    // console.log($('#pastVolunteers').data('start-date'))
-    // console.log($('#pastVolunteers').data('volunteer-info'))
+    console.log($('#pastVolunteers').data('recurring-id'))
+    console.log($('#pastVolunteers').data('start-date'))
+    console.log($('#pastVolunteers').data('volunteer-info'))
   
-  $.ajax({
-    url: '/getPastVolunteer/<recurringId>/<startDate>',
-    type: "POST",
-    data: $('#pastVolunteers').data('recurring-id'),
-    //  $('#pastVolunteers').data('start-date'),
-    success: function() {
-      location.reload();
-    }
-  });
+  // $.ajax({
+  //   url: '/getPastVolunteer/<recurringId>/<startDate>',
+  //   type: "POST",
+  //   data: $('#pastVolunteers').data('recurring-id'),
+  //   //  $('#pastVolunteers').data('start-date'),
+  //   success: function() {
+  //     location.reload();
+  //   }
+  // });
   };
 
   $("#pastVolunteers").on("click", function(){
