@@ -62,7 +62,7 @@ def templateSelect():
 @admin_bp.route('/eventTemplates/<templateid>/create', methods=['GET','POST'])
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
 def createEvent(templateid, programid=None):
-    if not (g.current_user.isAdmin):
+    if not (g.current_user.isAdmin or hasPrivilege(g.current_user, programid)):
         abort(403)
 
     # Validate given URL
