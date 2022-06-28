@@ -9,6 +9,3 @@ class ProgramBan(baseModel):
     endDate = DateField(null=True)
     banNote = ForeignKeyField(Note, null=False)
     unbanNote = ForeignKeyField(Note, null=True)
-
-    def __str__(self):
-        return f"{self.user.username}"

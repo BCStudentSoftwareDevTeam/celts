@@ -170,7 +170,8 @@ def test_recipients_category():
             email.process_data()
             assert email.recipients == [User.get_by_id("partont"), User.get_by_id("khatts")]
             newTrainedStudent.delete_instance()
-            
+
+            #clearing data for the next test
             transaction.rollback()
 
             # Test a program that should have nothing in banned users and nothing in All Volunteer:
