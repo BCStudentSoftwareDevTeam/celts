@@ -18,13 +18,14 @@ from app.models.eventParticipant import EventParticipant
 from app.models.courseQuestion import CourseQuestion
 from app.models.questionNote import QuestionNote
 from app.models.interest import Interest
-from app.models.facilitator import Facilitator
+from app.models.eventFacilitator import EventFacilitator
 from app.models.note import Note
-from app.models.studentManager import StudentManager
+from app.models.programManager import ProgramManager
 from app.models.emailTemplate import EmailTemplate
 from app.models.backgroundCheck import BackgroundCheck
 # from app.models.backgroundCheckType import BackgroundCheckType
 from app.models.adminLogs import AdminLogs
+from app.models.emailLog import EmailLog
 
 
 print("Inserting data for demo and testing purposes.")
@@ -818,9 +819,9 @@ facilitators = [
     'event': 1
     }
 ]
-Facilitator.insert_many(facilitators).on_conflict_replace().execute()
+EventFacilitator.insert_many(facilitators).on_conflict_replace().execute()
 
-studentManagerPrograms = [
+programManagerPrograms = [
     {
     'user':'khatts',
     'program':1
@@ -843,10 +844,11 @@ studentManagerPrograms = [
     }
 ]
 
-StudentManager.insert_many(studentManagerPrograms).on_conflict_replace().execute()
+ProgramManager.insert_many(programManagerPrograms).on_conflict_replace().execute()
 
 emailTemplates = [
     {
+    #'id': 1,
     'subject': 'Test Email',
     'body': 'Hello {name}, This is a test event named {event_name} located in {location}. Other info: {start_date}-{end_date} and this {start_time}-{end_time}.',
     'action': 'sent',
@@ -854,6 +856,7 @@ emailTemplates = [
     'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
     },
     {
+    #'id': 2,
     'subject': 'Test Email 2',
     'body': 'Hello {name}, This is another test event named {event_name} located in {location}. Other info: {start_date}-{end_date} and this {start_time}-{end_time}. The link is {event_link}',
     'action': 'sent',
@@ -864,18 +867,68 @@ emailTemplates = [
 
 EmailTemplate.insert_many(emailTemplates).on_conflict_replace().execute()
 
+emailLogs = [
+    {
+    'event': 5,
+    'subject': 'Location Change for {event_name}',
+    'templateUsed': 2,
+    'recipientsCategory': "RSVP'd",
+    'recipients': 'neillz',
+    'dateSent': datetime.strptime("2022 5 7","%Y %m %d"),
+    'sender': "neillz"
+    },
+    {
+    'event': 5,
+    'subject': 'Time Change for {event_name}',
+    'templateUsed': 2,
+    'recipientsCategory': "RSVP'd",
+    'recipients': 'ramsayb2',
+    'dateSent': datetime.strptime("2022 6 5","%Y %m %d"),
+    'sender': "neillz"
+    },
+    {
+    'event': 5,
+    'subject': 'Time Change for {event_name}',
+    'templateUsed': 2,
+    'recipientsCategory': "RSVP'd",
+    'recipients': 'ramsayb2',
+    'dateSent': datetime.strptime("2022 5 4","%Y %m %d"),
+    'sender': "neillz"
+    },
+    {
+    'event': 4,
+    'subject': 'Time Change for {event_name}',
+    'templateUsed': 2,
+    'recipientsCategory': "RSVP'd",
+    'recipients': 'neillz',
+    'dateSent': datetime.strptime("2022 5 2","%Y %m %d"),
+    'sender': "ramsayb2"
+    },
+    {
+    'event': 3,
+    'subject': 'Location Change for {event_name}',
+    'templateUsed': 1,
+    'recipientsCategory': "Interested",
+    'recipients': 'neillz',
+    'dateSent': datetime.strptime("2022 6 6","%Y %m %d"),
+    'sender': "ramsayb2"
+    }
+]
+
+EmailLog.insert_many(emailLogs).on_conflict_replace().execute()
+
 background = [
     {
     "user": "khatts",
     "type": "CAN",
     "passBackgroundCheck": False,
-    "datePassed": datetime.strptime("2021 10 12","%Y %m %d")
+    "dateCompleted": datetime.strptime("2021 10 12","%Y %m %d")
     },
     {
     "user":"mupotsal",
     "type": "SHS",
     "passBackgroundCheck":True,
-    "datePassed": datetime.strptime("2021 10 12","%Y %m %d")
+    "dateCompleted": datetime.strptime("2021 10 12","%Y %m %d")
     },
 ]
 BackgroundCheck.insert_many(background).on_conflict_replace().execute()

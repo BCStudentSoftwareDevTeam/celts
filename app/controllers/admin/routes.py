@@ -7,7 +7,7 @@ from dateutil import parser
 from app import app
 from app.models.program import Program
 from app.models.event import Event
-from app.models.facilitator import Facilitator
+from app.models.eventFacilitator import EventFacilitator
 from app.models.eventParticipant import EventParticipant
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
@@ -191,7 +191,7 @@ def addParticipants():
 @admin_bp.route('/adminLogs', methods = ['GET', 'POST'])
 def adminLogs():
     if g.current_user.isCeltsAdmin:
-        allLogs = AdminLogs.select().order_by(AdminLogs.createdOn.desc())
+        allLogs = AdminLogs.select(AdminLogs, User).join(User).order_by(AdminLogs.createdOn.desc())
         return render_template("/admin/adminLogs.html",
                                 allLogs = allLogs)
     else:
