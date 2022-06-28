@@ -38,9 +38,9 @@ def trackVolunteersPage(eventID):
 
     trainedParticipantsList = trainedParticipants(program, g.current_term)
     eventParticipants = getEventParticipants(event)
-    programManagerResult = isProgramManagerForEvent(g.current_user, event)
+    isProgramManager = isProgramManagerForEvent(g.current_user, event)
 
-    if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and programManagerResult)):
+    if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
         abort(403)
 
     eventRsvpData = (EventRsvp
