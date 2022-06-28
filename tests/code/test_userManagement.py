@@ -8,7 +8,6 @@ from app.models.programManager import ProgramManager
 from app.logic.volunteers import setProgramManager
 from peewee import DoesNotExist
 
-
 @pytest.mark.integration
 def test_modifyCeltsAdmin():
     user = "agliullovak"
