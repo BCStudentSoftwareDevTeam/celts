@@ -6,7 +6,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.event import Event
 from app.models.program import Program
-from app.models.studentManager import StudentManager
+from app.models.programManager import ProgramManager
 from app.models.programEvent import ProgramEvent
 from app.models import mainDB
 from app.controllers.admin.volunteers import addVolunteerToEventRsvp
@@ -237,7 +237,7 @@ def test_getStudentManagerForEvent():
         ]
 
         #Insert new row into StudentManager table
-        StudentManager.insert_many(testProgramManagerData).on_conflict_replace().execute()
+        ProgramManager.insert_many(testProgramManagerData).on_conflict_replace().execute()
 
         test_program = 13 #programID is passed in  as an int
         test_event = Event.get_by_id(16) #gets event object
@@ -247,12 +247,12 @@ def test_getStudentManagerForEvent():
 
 
         ## user is manager of program
-        studentManager = isProgramManagerForEvent(programManager, test_event)
-        assert studentManager == True
+        programManager = isProgramManagerForEvent(programManager, test_event)
+        assert programManager == True
 
         ## user is not manager of program
-        studentManager = isProgramManagerForEvent(student, test_event)
-        assert studentManager == False
+        programManager = isProgramManagerForEvent(student, test_event)
+        assert programManager == False
 
 
 

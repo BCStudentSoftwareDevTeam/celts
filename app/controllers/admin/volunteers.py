@@ -12,7 +12,7 @@ from app.logic.participants import trainedParticipants, getEventParticipants
 from app.models.user import User
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
-from app.models.studentManager import StudentManager
+from app.models.programManager import ProgramManager
 
 
 
