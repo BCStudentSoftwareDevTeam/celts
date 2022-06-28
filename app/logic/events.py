@@ -6,7 +6,7 @@ from app.models import mainDB
 from app.models.user import User
 from app.models.event import Event
 from app.models.eventParticipant import EventParticipant
-from app.models.facilitator import Facilitator
+from app.models.eventFacilitator import EventFacilitator
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.models.term import Term
@@ -93,9 +93,9 @@ def saveEventToDb(newEventData):
                 eventRecord = Event.get_by_id(newEventData['id'])
                 Event.update(**eventData).where(Event.id == eventRecord).execute()
 
-            Facilitator.delete().where(Facilitator.event == eventRecord).execute()
+            EventFacilitator.delete().where(EventFacilitator.event == eventRecord).execute()
             for f in newEventData['facilitators']:
-                Facilitator.create(user=f, event=eventRecord)
+                EventFacilitator.create(user=f, event=eventRecord)
 
             eventRecords.append(eventRecord)
 
@@ -123,20 +123,26 @@ def getTrainingProgram(term):
         with the most programs (highest count) by doing this we can ensure that the event being
         returned is the All Trainings Event.
     """
+    try:
+        allTrainingsEvent = ((ProgramEvent.select(ProgramEvent.event, fn.COUNT(1).alias('num_programs'))
+                                            .join(Event)
+                                            .group_by(ProgramEvent.event)
+                                            .order_by(fn.COUNT(1).desc()))
+                                            .where(Event.term == term).get())
 
-    allTrainingsEvent = ((ProgramEvent.select(ProgramEvent.event, fn.COUNT(1).alias('num_programs'))
-                                        .join(Event)
-                                        .group_by(ProgramEvent.event)
-                                        .order_by(fn.COUNT(1).desc()))
-                                        .where(Event.term == term).get())
+        trainingEvents = (Event.select(Event)
+    			               .order_by((Event.id == allTrainingsEvent.event.id).desc(), Event.startDate.desc())
+                               .where(Event.isTraining,
+                                      Event.term == term))
 
-    trainingEvents = ((Event.select(Event)
-			               .order_by((Event.id == allTrainingsEvent.event.id).desc(), Event.startDate.desc())
-                           .where(Event.isTraining,
-                                  Event.term == term)))
+    except DoesNotExist:
+        trainingEvents = (Event.select(Event)
+    			               .order_by( Event.startDate.desc())
+                               .where(Event.isTraining,
+                                      Event.term == term))
 
+    return list(trainingEvents)
 
-    return trainingEvents
 def getBonnerProgram(term):
 
     bonnerScholarsEvents = (Event.select(Event, Program.id.alias("program_id"))
@@ -144,7 +150,8 @@ def getBonnerProgram(term):
                                  .join(Program)
                                  .where(Program.isBonnerScholars,
                                         Event.term == term))
-    return bonnerScholarsEvents
+    return list(bonnerScholarsEvents)
+
 def getOneTimeEvents(term):
     oneTimeEvents = (Event.select(Event, Program.id.alias("program_id"))
                           .join(ProgramEvent)
@@ -152,7 +159,7 @@ def getOneTimeEvents(term):
                           .where(Program.isStudentLed == False,
                                  Program.isBonnerScholars == False,
                                  Event.term == term))
-    return oneTimeEvents
+    return list(oneTimeEvents)
 
 def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
     """
@@ -298,6 +305,6 @@ def preprocessEventData(eventData):
         eventData['facilitators'] = [User.get_by_id(f) for f in eventData['facilitators']]
     except Exception as e:
         event = eventData.get('id', -1)
-        eventData['facilitators'] = list(User.select().join(Facilitator).where(Facilitator.event == event))
+        eventData['facilitators'] = list(User.select().join(EventFacilitator).where(EventFacilitator.event == event))
 
     return eventData
