@@ -171,7 +171,6 @@ def test_recipients_category():
             assert email.recipients == [User.get_by_id("partont"), User.get_by_id("khatts")]
             newTrainedStudent.delete_instance()
 
-            transaction.rollback()
 
             # Test a program that should have nothing in banned users and nothing in All Volunteer:
             raw_form_data = {"templateIdentifier": "Test",
@@ -185,6 +184,7 @@ def test_recipients_category():
             email.process_data()
             assert email.recipients == []
 
+            transaction.rollback()
 
 @pytest.mark.integration
 def test_get_last_email():
