@@ -18,6 +18,7 @@ from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
 from app.models.programManager import ProgramManager
 from app.controllers.main import main_bp
+from app.controllers.admin.routes import studentSearchPage
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
 from app.logic.events import *
@@ -66,7 +67,8 @@ def viewVolunteersProfile(username):
     try:
         volunteer = User.get(User.username == username)
     except Exception as e:
-        return "User does not exist", 404
+        flash(f"{username} does not exist! ", category='danger')
+        return redirect(url_for('admin.studentSearchPage'))
 
     if (g.current_user == volunteer) or g.current_user.isAdmin:
         upcomingEvents = getUpcomingEventsForUser(volunteer)
