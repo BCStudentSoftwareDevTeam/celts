@@ -8,7 +8,7 @@ from app.models.user import User
 from app.models.courseParticipant import CourseParticipant
 from app.models.event import Event
 from app.models.programEvent import ProgramEvent
-from app.models.facilitator import Facilitator
+from app.models.eventFacilitator import EventFacilitator
 from app.logic.events import deleteEvent
 
 @pytest.mark.integration
@@ -34,17 +34,17 @@ def setup_module():
                               timeStart = "18:00:00",
                               timeEnd = "21:00:00",
                               location = "The testing lab",
-                              isRecurring = 0,
                               isRsvpRequired = 0,
                               isPrerequisiteForProgram = 0,
                               isTraining = 1,
                               isService = 0,
                               startDate =  "2021-12-12",
-                              endDate =  "2021-12-13")
+                              endDate =  "2021-12-13",
+                              recurringId = None)
 
     programEvent = ProgramEvent.create(program=2, event=newTrainingEvent)
 
-    facilitatorEntry = Facilitator.create(user = 'ramsayb2',event = newTrainingEvent)
+    facilitatorEntry = EventFacilitator.create(user = 'ramsayb2',event = newTrainingEvent)
 
     newBonnerEvent = Event.create(name = "Test Bonner Event",
                               term = 1,
@@ -52,17 +52,17 @@ def setup_module():
                               timeStart = "18:00:00",
                               timeEnd = "21:00:00",
                               location = "The testing lab",
-                              isRecurring = 0,
                               isRsvpRequired = 0,
                               isPrerequisiteForProgram = 0,
                               isTraining = 0,
                               isService = 0,
                               startDate =  "2021-12-12",
-                              endDate =  "2021-12-13")
+                              endDate =  "2021-12-13",
+                              recurringId = None)
 
     programEvent = ProgramEvent.create(program=5, event=newBonnerEvent)
 
-    facilitatorEntry = Facilitator.create(user = 'ramsayb2',event = newBonnerEvent)
+    facilitatorEntry = EventFacilitator.create(user = 'ramsayb2',event = newBonnerEvent)
 
     username = "namet"
     adminName = "ramsayb2"
@@ -93,13 +93,13 @@ def setup_module():
                               timeStart = "18:00:00",
                               timeEnd = "21:00:00",
                               location = "The testing lab",
-                              isRecurring = 0,
                               isRsvpRequired = 0,
                               isPrerequisiteForProgram = 0,
                               isTraining = 0,
                               isService = 0,
                               startDate =  "2021-12-12",
-                              endDate =  "2021-12-13")
+                              endDate =  "2021-12-13",
+                              recurringId = None)
 
     programEvent = ProgramEvent.create(program=1, event=newProgramEvent)
 

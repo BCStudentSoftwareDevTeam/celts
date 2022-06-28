@@ -52,7 +52,6 @@ def trackVolunteersPage(eventID):
         event.timeEnd,
         event.startDate)
 
-    isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
 
     return render_template("/events/trackVolunteers.html",
         eventRsvpData=list(eventRsvpData),
@@ -60,7 +59,6 @@ def trackVolunteersPage(eventID):
         eventLength=eventLengthInHours,
         program=program,
         event=event,
-        isPastEvent=isPastEvent,
         trainedParticipantsList=trainedParticipantsList)
 
 @admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['POST'])
@@ -109,6 +107,6 @@ def updateBackgroundCheck():
         user = eventData['user']
         checkPassed = int(eventData['checkPassed'])
         type = eventData['bgType']
-        datePassed = eventData['bgDate']
-        setUserBackgroundCheck(user,type, checkPassed, datePassed)
+        dateCompleted = eventData['bgDate']
+        setUserBackgroundCheck(user,type, checkPassed, dateCompleted)
         return " "
