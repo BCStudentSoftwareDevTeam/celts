@@ -82,7 +82,6 @@ function submitRequest(method,identifier){
       location.reload()
       console.log(error, status)
     }
-
   })
 }
 
