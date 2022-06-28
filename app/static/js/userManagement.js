@@ -118,14 +118,17 @@ function addNewProgramInfo(){
                     replyToEmail: $("#replyToEmail").val(),
                     programId: $("#programSelect").val()};
   $.ajax({   // sends ajax request to controller with programInfo containing user input
-    url: "/admin/addNewProgramInfo",
+    url: "/admin/updateProgramInfo",
     type: "POST",
     data: programInfo,
     success: function(s){
-      location.reload()
+      $('body').prepend('<div id="flash" style="display:none"></div>');
+      $('#flash').html("Successfully updated information.");
+      $('#flash').slideDown('slow');
+      $('#flash').click(function () { $('#flash').toggle('highlight') });
     },
     error: function(error, status){
-        console.log(error, status)
+        console.log(error, status);
     }
   })
 }

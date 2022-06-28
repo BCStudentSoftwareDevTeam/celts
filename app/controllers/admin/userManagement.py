@@ -66,18 +66,20 @@ def removeProgramManagers():
         flash('Error while removing a manager.','warning')
         abort(500,"Error while trying to remove a manager.")
 
-@admin_bp.route('/admin/addNewProgramInfo', methods=['POST'])
-def addProgramInfo():
-    """Grabs info from JavaScript and then outputs it to logic function"""
-    programInfo = request.form #grabs user inputs from js
-    try:
-        return addNewProgramInfo(programInfo["senderName"],  #calls logic function to add data to database
-                                programInfo["replyToEmail"],
-                                programInfo["programId"])
-    except Exception as e:
-        print(e)
-        flash('Error while adding program info to database.','warning')
-        abort(500,'Error while adding program info to database.')
+@admin_bp.route('/admin/updateProgramInfo', methods=['POST'])
+def updateProgramInfo():
+    """Grabs info and then outputs it to logic function"""
+    programInfo = request.form #grabs user inputs
+    if g.current_user.isCeltsAdmin:
+        try:
+            return addNewProgramInfo(programInfo["senderName"],  #calls logic function to add data to database
+                                    programInfo["replyToEmail"],
+                                    programInfo["programId"])
+        except Exception as e:
+            print(e)
+            flash('Error while updating program info.','warning')
+            abort(500,'Error while updating program.')
+    abort(403)
 
 @admin_bp.route('/admin', methods = ['GET'])
 def userManagement():
