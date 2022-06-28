@@ -14,6 +14,7 @@ from app.models.emailLog import EmailLog
 from app.models.event import Event
 from app.models.eventParticipant import EventParticipant
 from app.models.programBan import ProgramBan
+from app.models.term import Term
 
 class EmailHandler:
     def __init__(self, raw_form_data, url_domain, sender_object):
@@ -101,8 +102,9 @@ class EmailHandler:
                 .where(EventRsvp.event==self.event.id))
 
         if recipients_category == "Eligible Students":
+            term = Term.select()
             bannedUsers = ProgramBan.select(ProgramBan.user_id).where((ProgramBan.endDate > datetime.now()) | (ProgramBan.endDate is None), ProgramBan.program_id.in_([p.id for p in self.program_ids]))
-            allVolunteer = Event.select().where(Event.isAllVolunteerTraining == True)
+            allVolunteer = Event.select().where(Event.isAllVolunteerTraining == True,)
             recipients = User.select().join(EventParticipant).where(User.username.not_in(bannedUsers), EventParticipant.event.in_(allVolunteer))
 
         return [recipient for recipient in recipients]
