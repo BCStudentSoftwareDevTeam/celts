@@ -537,12 +537,20 @@ def test_format24HourTime():
     assert format24HourTime('00:01') == "00:01"
     assert format24HourTime('17:07') == "17:07"
     assert format24HourTime('23:59') == "23:59"
+    time = datetime.datetime(1900, 1, 1, 8, 30)
+    assert format24HourTime(time) == "08:30"
+    time = datetime.datetime(1900, 1, 1, 23, 59)
+    assert format24HourTime(time) == "23:59"
+    time = datetime.datetime(1900, 1, 1, 00, 1)
+    assert format24HourTime(time) == "00:01"
 
     # tests "input times" that are not valid inputs
     with pytest.raises(ValueError):
         assert format24HourTime('13:30 PM')
         assert format24HourTime('13:30 AM')
+        assert format24HourTime(':30')
         assert format24HourTime('01:30:00 PM')
+        assert format24HourTime('Clever String')
 
 @pytest.mark.integration
 def test_calculateNewrecurringId():
