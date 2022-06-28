@@ -1,6 +1,7 @@
 from datetime import datetime
+from peewee import DoesNotExist
 from flask_mail import Mail, Message
-
+from flask import g, session
 from app import app
 from app.models.programEvent import ProgramEvent
 from app.models.interest import Interest
@@ -12,11 +13,12 @@ from app.models.emailLog import EmailLog
 from app.models.event import Event
 
 class EmailHandler:
-    def __init__(self, raw_form_data, url_domain):
+    def __init__(self, raw_form_data, url_domain, sender_object):
         self.mail = Mail(app)
         self.raw_form_data = raw_form_data
         self.url_domain = url_domain
         self.override_all_mail = app.config['MAIL_OVERRIDE_ALL']
+        self.sender = sender_object
         self.template_identifier = None
         self.subject = None
         self.body = None
@@ -145,7 +147,8 @@ class EmailHandler:
             templateUsed=template_id,
             recipientsCategory=self.recipients_category,
             recipients=", ".join(recipient.email for recipient in self.recipients),
-            dateSent=date_sent)
+            dateSent=date_sent,
+            sender=self.sender)
 
     def build_email(self):
         # Most General Scenario
@@ -187,3 +190,10 @@ class EmailHandler:
         except Exception as e:
             print("Error updating email template record: ", e)
             return False
+
+    def retrieve_last_email(event_id):
+        try:
+            last_email = EmailLog.select().where(EmailLog.event==event_id).order_by(EmailLog.dateSent.desc()).get()
+            return last_email
+        except DoesNotExist:
+            return None

@@ -7,7 +7,7 @@ from app.controllers.admin.volunteers import addVolunteerToEventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 from datetime import datetime
 from peewee import DoesNotExist
-
+from dateutil import parser
 
 @pytest.mark.integration
 def test_getEventLengthInHours():
@@ -117,22 +117,28 @@ def test_updateEventParticipants():
 def test_backgroundCheck():
     with app.app_context():
         g.current_user = "ramsayb2"
-        updatebackground = setUserBackgroundCheck("khatts","CAN",False)
+        updatebackground = setUserBackgroundCheck("khatts","CAN",False,parser.parse("2020-07-20"))
         updatedModel = BackgroundCheck.get(user="khatts", type = "CAN")
         assert updatedModel.passBackgroundCheck == False
+        assert updatedModel.dateCompleted.strftime("%Y-%m-%d") == "2020-07-20"
 
-        updatebackground = setUserBackgroundCheck("khatts","FBI",True)
+        updatebackground = setUserBackgroundCheck("khatts","FBI",True,parser.parse("1999-07-20"))
         updatedModel = BackgroundCheck.get(user =  "khatts", type = "FBI")
         assert updatedModel.passBackgroundCheck == True
+        assert updatedModel.dateCompleted.strftime("%Y-%m-%d") == "1999-07-20"
 
-        updatebackground = setUserBackgroundCheck("khatts","SHS",False)
+
+        updatebackground = setUserBackgroundCheck("khatts","SHS",False,parser.parse("2019-07-20"))
         updatedModel = BackgroundCheck.get(user = "khatts", type = "SHS")
         assert updatedModel.passBackgroundCheck == False
+        assert updatedModel.dateCompleted.strftime("%Y-%m-%d") == "2019-07-20"
 
-        updatebackground = setUserBackgroundCheck("neillz", "FBI",False)
+        updatebackground = setUserBackgroundCheck("neillz", "FBI",False,parser.parse("2009-07-20"))
         updatedModel = BackgroundCheck.get(user =  "neillz", type = "FBI")
         assert updatedModel.passBackgroundCheck == False
+        assert updatedModel.dateCompleted.strftime("%Y-%m-%d") == "2009-07-20"
 
-        updatebackground = setUserBackgroundCheck("mupotsal","SHS",True)
+        updatebackground = setUserBackgroundCheck("mupotsal","SHS",True,parser.parse("2021-07-20"))
         updatedModel = BackgroundCheck.get(user = "mupotsal", type = "SHS")
         assert updatedModel.passBackgroundCheck == True
+        assert updatedModel.dateCompleted.strftime("%Y-%m-%d") == "2021-07-20"
