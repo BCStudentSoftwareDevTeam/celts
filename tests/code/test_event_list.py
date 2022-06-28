@@ -90,7 +90,7 @@ def test_event_list():
 @pytest.mark.integration
 @pytest.fixture
 def training_event():
-        testEvent = Event.create(name = "Test Event",
+        testEvent = Event.create(name = "Test Student Lead",
                                 term = 3,
                                 description = "event for testing",
                                 timeStart = "18:00:00",
@@ -101,20 +101,28 @@ def training_event():
 
         testProgramEvent = ProgramEvent.create(program = 2, event = testEvent)
 
-        return testEvent
+        yield testEvent
+
+        testEvent.delete_instance(testProgramEvent)
 
 @pytest.mark.integration
 def test_studentled_event(training_event):
         testProgramEvent = getStudentLedProgram(3)
         assert testProgramEvent
+        print(testProgramEvent)
+
         studentledRes = []
+
         for program, events in testProgramEvent.items():
             for event in events:
                 studentledRes.append(event.name)
-        assert "Test Student Lead" in studentledRes
 
+        assert "Test Student Lead" in studentledRes
+        print(studentledRes)
+'''
 @pytest.mark.integration
 def test_training_event(training_event):
+
         newTerm= Term.create(
             description= "Fall 2025",
             year= 2025,
@@ -127,12 +135,7 @@ def test_training_event(training_event):
         testProgramEvent3 = getTrainingProgram(newTerm)
         newTerm.delete_instance()
 
-        assert testProgramEvent
-        assert testEvent in testProgramEvent
-        assert Studentled not in studentledProgram
-        assert testEvent not in testProgramEvent2
-        assert testProgramEvent3 == []
-'''
+
 @pytest.mark.integration
 def test_bonner_event(training_event):
         testProgramEvent = getBonnerProgram(3)
