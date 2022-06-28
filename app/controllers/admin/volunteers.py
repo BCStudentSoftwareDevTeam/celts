@@ -52,8 +52,8 @@ def trackVolunteersPage(eventID):
         event.startDate)
 
     recurringEventID = event.recurringId # query Event Table to get recurringId using Event ID.
-    recurringEventStartDate = event.startDate
-
+    recurringEventStartDate = event.startDate  
+    recurringVolunteers = getPreviousRecurringEventData(recurringEventID, recurringEventStartDate)
     return render_template("/events/trackVolunteers.html",
         eventRsvpData=list(eventRsvpData),
         eventParticipants=eventParticipants,
@@ -62,6 +62,7 @@ def trackVolunteersPage(eventID):
         event=event,
         recurringEventID = recurringEventID,
         recurringEventStartDate = recurringEventStartDate,
+        recurringVolunteers = recurringVolunteers,
         trainedParticipantsList=trainedParticipantsList)
 
 @admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['POST'])

@@ -227,8 +227,7 @@ def calculateNewrecurringId():
 
 def getPreviousRecurringEventData(recurringId, startDate):
     #joins the User db table and Event Participant db table so that we can get the information of a Particpant if they attended an event
-    return list(User.select(User.username).join(EventParticipant).join(Event)
-    .where(Event.recurringId==recurringId, Event.startDate<startDate))
+    return list(User.select(User.username).join(EventParticipant).join(Event).where(Event.recurringId==recurringId, Event.startDate<startDate))
 
 def calculateRecurringEventFrequency(event):
     """
