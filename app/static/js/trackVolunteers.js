@@ -14,15 +14,17 @@ $(document).ready(function() {
   })
 
   function pastVolunteersButton(){
-    var eventName = event.name;
-    $.ajax({
-      url: '/getPastVolunteer/<recurringId>/<startDate>',
-      type: "POST",
-      data: eventName,
-      success: function() {
-        location.reload();
-      }
-    });
+    // var eventName = event.name;
+    console.log($('#pastVolunteers').data('recurring-id'))
+    console.log($('#pastVolunteers').data('start-date'))
+    // $.ajax({
+    //   url: '/getPastVolunteer/<recurringId>/<startDate>',
+    //   type: "POST",
+    //   data: eventName,
+    //   success: function() {
+    //     location.reload();
+    //   }
+    // });
   };
 
   $("#pastVolunteers").on("click", function(){
