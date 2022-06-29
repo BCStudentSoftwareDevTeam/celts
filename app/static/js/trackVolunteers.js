@@ -9,13 +9,14 @@ $(document).ready(function() {
         $('.dataTables_length').hide();
       }
     }
+    $('[data-toggle="tooltip"]').tooltip();
   })
 
   function pastVolunteersButton(){
     console.log($('#pastVolunteers').data('recurring-id'))
     console.log($('#pastVolunteers').data('start-date'))
     console.log($('#pastVolunteers').data('volunteer-info'))
-  
+
   // $.ajax({
   //   url: '/getPastVolunteer/<recurringId>/<startDate>',
   //   type: "POST",
