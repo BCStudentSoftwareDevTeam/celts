@@ -1,10 +1,9 @@
-from app.models import studentManager
 from app.models.eventParticipant import EventParticipant
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.event import Event
 from app.models.backgroundCheck import BackgroundCheck
-from app.models.studentManager import StudentManager
+from app.models.programManager import ProgramManager
 from datetime import datetime, date
 from app.logic.adminLogs import createLog
 
@@ -105,10 +104,10 @@ def setProgramManager(user_name, program_id, action):
            action: add, remove
     
     '''
-    deleteInstance = StudentManager.delete().where(StudentManager.user == user_name, StudentManager.program == program_id)
+    deleteInstance = ProgramManager.delete().where(ProgramManager.user == user_name, ProgramManager.program == program_id)
     deleteInstance.execute()
     studentstaff=User.get(User.username== user_name)
     if action == "add" and studentstaff.isCeltsStudentStaff==True:
-        update= StudentManager.create(user=user_name, program=program_id)
+        update= ProgramManager.create(user=user_name, program=program_id)
         update.save()
     
