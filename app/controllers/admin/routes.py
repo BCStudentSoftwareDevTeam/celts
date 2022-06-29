@@ -24,7 +24,7 @@ from app.logic.courseManagement import pendingCourses, approvedCourses
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
-from app.logic.userManagement import hasPrivilege, getPrograms
+from app.logic.userManagement import getPrograms
 
 
 
@@ -103,7 +103,10 @@ def createEvent(templateid, programid=None):
 
     # make sure our data is the same regardless of GET or POST
     preprocessEventData(eventData)
-    isProgramManager = hasPrivilege(g.current_user,programid)
+    
+    user = User.get_by_id(g.current_user)
+    isProgramManager = user.isProgramManagerFor(programid)
+   
     futureTerms = selectSurroundingTerms(g.current_term, prevTerms=0)
 
     return render_template(f"/admin/{template.templateFile}",
@@ -141,8 +144,10 @@ def editEvent(eventId):
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     program = event.singleProgram
+    user = User.get_by_id(g.current_user)
+    user.isProgramManagerFor(Program)
 
-    isProgramManager = hasPrivilege(g.current_user,program)
+    isProgramManager =   user.isProgramManagerFor(Program)
     return render_template("admin/createSingleEvent.html",
                             eventData = eventData,
                             allFacilitators = getAllFacilitators(),

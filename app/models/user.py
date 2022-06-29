@@ -1,4 +1,5 @@
-from app.models import*
+from app.models import *
+
 
 class User(baseModel):
     username = CharField(primary_key=True)
@@ -15,3 +16,13 @@ class User(baseModel):
     @property
     def isAdmin(self):
         return (self.isCeltsAdmin or self.isCeltsStudentStaff)
+    
+    def isProgramManagerFor(self, program):
+        from app.models.programManager import ProgramManager  # Must defer import until now to avoid circular reference
+        if ProgramManager.select().where(ProgramManager.user == self.username, ProgramManager.program == program).exists():
+            return True
+        else:
+            return False
+
+ 
+
