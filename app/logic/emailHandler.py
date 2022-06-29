@@ -1,7 +1,7 @@
 from datetime import datetime
 from peewee import DoesNotExist
 from flask_mail import Mail, Message
-from flask import g, session
+from flask import g, session, request
 from app import app
 from app.models.programEvent import ProgramEvent
 from app.models.interest import Interest
@@ -11,6 +11,8 @@ from app.models.eventRsvp import EventRsvp
 from app.models.emailTemplate import EmailTemplate
 from app.models.emailLog import EmailLog
 from app.models.event import Event
+from PIL import Image
+import os
 
 class EmailHandler:
     def __init__(self, raw_form_data, url_domain, sender_object):
@@ -27,7 +29,6 @@ class EmailHandler:
         self.program_ids = None
         self.recipients = None
         self.sl_course_id = None
-
 
     def process_data(self):
         """ Processes raw data and stores it in class variables to be used by other methods """
@@ -133,22 +134,36 @@ class EmailHandler:
         return (template_id, subject, new_body)
 
     def attach_attachments(self):
-        # TODO for later
-        # retrieve attachments, attach it to the email
-        # Q: how would this work?
-        pass
+        """
+        This creates the directory/path for the object from the "Choose File" input in the emailModal.html file.
+        Additionally, it saves the attachment in the app/static/files/attachments/ directory.
+        :returns: directory path for attachment
+        """
+        attachmentObject = request.files['attachmentObject']
+        attachmentName = attachmentObject.filename
+        attachment_path = 'app/static/files/attachments'
+        try:  # tries to create the attachment_path directory and passes if already created
+            os.mkdir(attachment_path)
+        except:
+            pass
+        attachmentDirectory = os.path.join(attachment_path, attachmentName) # joins attachmnet_path with attachment name to create directory
+        attachmentObject.save(attachmentDirectory) # saves attachment in directory
+        return attachmentDirectory
+
 
     def store_sent_email(self, subject, template_id):
         """ Stores sent email in the email log """
         date_sent = datetime.now()
+
         EmailLog.create(
-            event=self.event.id,
-            subject=subject,
-            templateUsed=template_id,
-            recipientsCategory=self.recipients_category,
-            recipients=", ".join(recipient.email for recipient in self.recipients),
-            dateSent=date_sent,
-            sender=self.sender)
+            event = self.event.id,
+            subject = subject,
+            templateUsed = template_id,
+            recipientsCategory = self.recipients_category,
+            recipients = ", ".join(recipient.email for recipient in self.recipients),
+            dateSent = date_sent,
+            sender = self.sender,
+            attachmentDirectory = self.attach_attachments())
 
     def build_email(self):
         # Most General Scenario
@@ -158,21 +173,24 @@ class EmailHandler:
 
     def send_email(self):
         template_id, subject, body = self.build_email()
+        self.store_sent_email(subject, template_id)  # since there is no send() working currently, we use this here to update database after commenting out conn.send(183-192)
+
         try:
             with self.mail.connect() as conn:
                 for recipient in self.recipients:
                     full_name = f'{recipient.firstName} {recipient.lastName}'
                     email_body = self.replace_name_placeholder(full_name, body)
 
-                    conn.send(Message(
-                        subject,
-                        # [recipient.email],
-                        [self.override_all_mail],
-                        email_body,
-                        reply_to=self.reply_to,
-                        sender = ("Sandesh", 'bramsayr@gmail.com')
-                    ))
-            self.store_sent_email(subject, template_id)
+            #         conn.send(Message(
+            #             subject,
+            #             # [recipient.email],
+            #             [self.override_all_mail],
+            #             email_body,
+            #             reply_to=self.reply_to,
+            #             file_attachment=self.attach_attachments(),
+            #             sender = ("Sandesh", 'bramsayr@gmail.com')
+            #         ))
+            # self.store_sent_email(subject, template_id)
             return True
         except Exception as e:
             print("Error on sending email: ", e)
