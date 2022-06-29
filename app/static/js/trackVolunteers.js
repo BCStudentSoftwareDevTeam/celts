@@ -9,22 +9,22 @@ $(document).ready(function() {
         $('.dataTables_length').hide();
       }
     }
-  // $('[data-toggle="tooltip"]').tooltip();
-
   })
 
   function pastVolunteersButton(){
-    // var eventName = event.name;
     console.log($('#pastVolunteers').data('recurring-id'))
     console.log($('#pastVolunteers').data('start-date'))
-    // $.ajax({
-    //   url: '/getPastVolunteer/<recurringId>/<startDate>',
-    //   type: "POST",
-    //   data: eventName,
-    //   success: function() {
-    //     location.reload();
-    //   }
-    // });
+    console.log($('#pastVolunteers').data('volunteer-info'))
+  
+  // $.ajax({
+  //   url: '/getPastVolunteer/<recurringId>/<startDate>',
+  //   type: "POST",
+  //   data: $('#pastVolunteers').data('recurring-id'),
+  //   //  $('#pastVolunteers').data('start-date'),
+  //   success: function() {
+  //     location.reload();
+  //   }
+  // });
   };
 
   $("#pastVolunteers").on("click", function(){
