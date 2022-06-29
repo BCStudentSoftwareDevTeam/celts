@@ -102,12 +102,12 @@ class EmailHandler:
                 .where(EventRsvp.event==self.event.id))
 
         if recipients_category == "Eligible Students":
-            term = list(Term.select().order_by(Term.id))
-            prevTerm = term[-1]
-            prevSemester, prevYear = prevTerm.description.split()
-
-            if prevSemester == "Summer":
-
+            # term = list(Term.select().order_by(Term.id))
+            # prevTerm = term[-1]
+            # prevSemester, prevYear = prevTerm.description.split()
+            #
+            # if prevSemester == "Summer":
+            #     allVolunteer
 
             bannedUsers = ProgramBan.select(ProgramBan.user_id).where((ProgramBan.endDate > datetime.now()) | (ProgramBan.endDate is None), ProgramBan.program_id.in_([p.id for p in self.program_ids]))
             allVolunteer = Event.select().where(Event.isAllVolunteerTraining == True,)
