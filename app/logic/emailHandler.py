@@ -74,6 +74,7 @@ class EmailHandler:
 
     def update_sender_config(self):
         # We might need this.
+        # Is this where sender/reply-to-ewail functionality should go?
         # This functionality should be moved somewhere else.
         # The function in another file would receive email_info[sender]
         # and update the config based on that and wherever we will end up saving emails and passwords
