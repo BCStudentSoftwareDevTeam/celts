@@ -12,21 +12,25 @@ $(document).ready(function() {
   });
 
   $('[data-toggle="tooltip"]').tooltip();
-  
-  function pastVolunteersButton(){
-    console.log($('#pastVolunteers').data('recurring-id'))
-    console.log($('#pastVolunteers').data('start-date'))
-    console.log($('#pastVolunteers').data('volunteer-info'))
 
-  // $.ajax({
-  //   url: '/getPastVolunteer/<recurringId>/<startDate>',
-  //   type: "POST",
-  //   data: $('#pastVolunteers').data('recurring-id'),
-  //   //  $('#pastVolunteers').data('start-date'),
-  //   success: function() {
-  //     location.reload();
-  //   }
-  // });
+  function pastVolunteersButton(){
+
+    // console.log($('#pastVolunteers').data('start-date'))
+    // console.log($('#pastVolunteers').data('volunteer-info'))
+    let recurringId = $('#pastVolunteers').data('recurring-id')
+
+    $.ajax({
+      url: `/getRecurrentEventParticipants/${recurringId}`,
+      type: "POST",
+      success: function(response){
+        var table = document.getElementById("volunteerTable");
+        table.innerHTML += response;
+
+      },
+      error: function(request, status, error){
+        location.reload();
+      }
+    });
   };
 
   $("#pastVolunteers").on("click", function(){
@@ -51,7 +55,8 @@ $(document).ready(function() {
       $.ajax({
         url: `/addVolunteerToEvent/${user}/${eventId}`,
         type: "POST",
-        success: function(s){
+        success: function(response){
+          console.log(response)
           location.reload();
         },
         error: function(request, status, error){

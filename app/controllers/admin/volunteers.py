@@ -1,6 +1,7 @@
 from flask import request, render_template, redirect, url_for, request, flash, abort, g, json, jsonify
 from datetime import datetime
 from peewee import DoesNotExist
+from playhouse.shortcuts import model_to_dict
 
 from app.controllers.admin import admin_bp
 from app.models.event import Event
@@ -52,8 +53,8 @@ def trackVolunteersPage(eventID):
         event.startDate)
 
     recurringEventID = event.recurringId # query Event Table to get recurringId using Event ID.
-    recurringEventStartDate = event.startDate  
-    recurringVolunteers = getPreviousRecurringEventData(recurringEventID, recurringEventStartDate)
+    recurringEventStartDate = event.startDate
+    recurringVolunteers = getPreviousRecurringEventData(recurringEventID)
     return render_template("/events/trackVolunteers.html",
         eventRsvpData=list(eventRsvpData),
         eventParticipants=eventParticipants,
@@ -104,12 +105,11 @@ def removeVolunteerFromEvent(user, eventID):
     flash("Volunteer successfully removed", "success")
     return ""
 
-@admin_bp.route('/getPastVolunteer/<recurringId>/<startDate>', methods = ['POST'])
-def getPastVolunteer():
-    eventName = request.form
-    eventRecurringId =  Event.select(Event.recurringId).where(Event.name==eventName)
-    eventStartDate = Event.select(Event.startDate).where(Event.name==eventName)
-    return json.dumps(getPreviousRecurringEventData(eventRecurringId, eventStartDate))
+@admin_bp.route('/getRecurrentEventParticipants/<recurringId>', methods = ['POST'])
+def getPastVolunteer(recurringId):
+    pastEventParticipants = getPreviousRecurringEventData(recurringId)
+    return json.dumps([model_to_dict(pastEventParticipant) for pastEventParticipant in pastEventParticipants])
+    # getPreviousRecurringEventData(eventRecurringId, eventStartDate)
 
 @admin_bp.route('/updateBackgroundCheck', methods = ['POST'])
 def updateBackgroundCheck():
