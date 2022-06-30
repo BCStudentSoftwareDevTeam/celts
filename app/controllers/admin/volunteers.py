@@ -4,18 +4,16 @@ from peewee import DoesNotExist
 from playhouse.shortcuts import model_to_dict
 
 from app.controllers.admin import admin_bp
-from app.models import event
 from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
-from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck, setProgramManager
+from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck
 from app.logic.participants import trainedParticipants, getEventParticipants
 from app.logic.events import getPreviousRecurringEventData
 from app.models.user import User
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
-from app.logic.adminLogs import createLog
 
 
 
@@ -88,6 +86,7 @@ def updateVolunteerTable(eventID):
         flash("Error adding volunteer", "danger")
     return redirect(url_for("admin.trackVolunteersPage", eventID=eventID))
 
+@admin_bp.route('/addVolunteersToEvent', methods = ['POST'])
 @admin_bp.route('/addVolunteerToEvent/<volunteer>/<eventId>', methods = ['POST'])
 def addVolunteer(volunteer, eventId):
     username = volunteer.strip("()").split('(')[-1]
@@ -129,15 +128,3 @@ def updateBackgroundCheck():
         dateCompleted = eventData['bgDate']
         setUserBackgroundCheck(user,type, checkPassed, dateCompleted)
         return " "
-
-@admin_bp.route('/updateProgramManager', methods=["POST"])
-def updateProgramManager():
-    if g.current_user.isCeltsAdmin:
-        data =request.form  
-        username = User.get(User.username == data["user_name"])
-        event =Event.get_by_id(data['program_id'])
-        setProgramManager(data["user_name"], data["program_id"], data["action"])
-        createLog(f'{username.firstName} has been {data["action"]}ed as a Program Manager for {event.name}')
-        return ""
-    else:
-        abort(403)
