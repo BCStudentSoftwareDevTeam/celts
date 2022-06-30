@@ -77,8 +77,8 @@ def viewVolunteersProfile(username):
         rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == volunteer)
         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
 
-        studentManagerPrograms = StudentManager.select().where(StudentManager.user == volunteer)
-        permissionPrograms = [entry.program.id for entry in studentManagerPrograms]
+        programManagerPrograms = programManager.select().where(programManager.user == volunteer)
+        permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
         allUserEntries = BackgroundCheck.select().where(BackgroundCheck.user == volunteer)
         completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
