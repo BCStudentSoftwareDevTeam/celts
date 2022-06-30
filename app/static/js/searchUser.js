@@ -1,4 +1,4 @@
-export default function searchUser(inputId, callback, clear=false, parentElementId=null, columnRequested=null, searchUser){
+export default function searchUser(inputId, callback, clear=false, parentElementId=null, columnRequested=null, category = null){
   var query = $(`#${inputId}`).val()
   let columnDict={};
   $(`#${inputId}`).autocomplete({
@@ -9,7 +9,7 @@ export default function searchUser(inputId, callback, clear=false, parentElement
         url: `/searchUser/${query}`,
         type: "GET",
         dataType: "json",
-        data:{"searchCategory":searchUser},
+        data:{"category":category},
         success: function(searchResults) {
           response(Object.entries(searchResults).map( (item) => {
             if (!columnRequested){

@@ -1,4 +1,3 @@
-import searchUser from './searchUser.js'
 $(document).ready( function () {
   //make html table to datatable
    var table =  $('#myTable').DataTable({

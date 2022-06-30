@@ -255,7 +255,7 @@ def serviceTranscript(username):
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
 def searchUser(query):
 
-    data= request.args.get("searchCategory")
+    data= request.args.get("category")
 
     '''Accepts user input and queries the database returning results that matches user search'''
     try:
@@ -297,11 +297,3 @@ def getAllCourseIntructors(term=None):
                                 term = term)
     else:
         abort(403)
-
-
-@main_bp.route('/addSLInstructor', methods = ['POST'])
-def AddSLInstructor():
-    Data=request.form
-    addSlInstructor(Data["username"])
-
-    return ""

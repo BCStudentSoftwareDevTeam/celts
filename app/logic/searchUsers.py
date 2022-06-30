@@ -11,7 +11,7 @@ def searchUsers(query, category):
     lastName = " ".join(splitSearch[1:]) +"%"
 
     if len(splitSearch) == 1: #search for first or last name
-        if category =="searchCategory":
+        if category =="instructor":
             results = User.select().where( User.isFaculty & (User.firstName ** firstName | User.lastName ** firstName))
         else:
             results = User.select().where(User.isStudent & (User.firstName ** firstName | User.lastName ** firstName))
@@ -22,7 +22,7 @@ def searchUsers(query, category):
         for searchTerm in splitSearch: #searching for both first and last names
             if len(searchTerm) > 1:
                 searchTerm += "%"
-                if category =="searchCategory":
+                if category =="instructor":
                     results = User.select().where( User.isFaculty & (User.firstName ** firstName | User.lastName ** firstName))
                 else:
                     results = User.select().where(User.isStudent & (User.firstName ** firstName | User.lastName ** firstName))
