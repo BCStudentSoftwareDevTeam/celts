@@ -14,6 +14,8 @@ db:
     username: "celts_user"
     password: "password"
 
+email:
+  attachment_path: 'app/static/files/attachments/'
 
 MAIL_ENABLED: True
 MAIL_SERVER: "smtp.gmail.com" # use smtp.gmail.com for gmail, mail.berea.edu for Berea
