@@ -104,16 +104,16 @@ class EmailHandler:
         if recipients_category == "Eligible Students":
             # all terms with the same accademic year as the current term,
             # the allVolunteer training term then needs to be in that query
-            term = Term.select()
-            current = term.isCurrentTerm
-            print(current.academicYear)
-            print(current.description)
-            # termDescript = prevTerm.academicYear
-            # print(termDescript)
+            term = Term.get(isCurrentTerm = True)
+            print(term)
+            print(term.description)
+            print(term.academicYear)
+
+            sameYear = Term.select()
 
             bannedUsers = ProgramBan.select(ProgramBan.user_id).where((ProgramBan.endDate > datetime.now()) | (ProgramBan.endDate is None), ProgramBan.program_id.in_([p.id for p in self.program_ids]))
             # allVolunteer = Event.select().where(Event.isAllVolunteerTraining == True)
-            allVolunteer = Event.select().join(current.academicYear).where(Event.isAllVolunteerTraining == True)
+            #allVolunteer = Event.select().where(Event.academicYear == term, Event.isAllVolunteerTraining == True)
             recipients = User.select().join(EventParticipant).where(User.username.not_in(bannedUsers), EventParticipant.event.in_(allVolunteer))
 
         return [recipient for recipient in recipients]
