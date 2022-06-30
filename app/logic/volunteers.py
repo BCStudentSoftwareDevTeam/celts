@@ -100,6 +100,7 @@ def setUserBackgroundCheck(user,bgType, checkPassed, dateCompleted):
     update = BackgroundCheck.create(user=user, type=bgType, passBackgroundCheck=checkPassed, dateCompleted=dateCompleted)
     createLog(f"Updated {user.firstName} {user.lastName}'s background check for {bgType} to {bool(checkPassed)}.")
 
+
 def isProgramManagerForEvent(user, event):
     """
     This function checks to see if a user is a program manager for a program.
@@ -112,3 +113,19 @@ def isProgramManagerForEvent(user, event):
     isProgramManager = hasPrivilege(user, event.singleProgram)
 
     return isProgramManager
+
+def setProgramManager(user_name, program_id, action):
+    '''
+    adds and removes the studentstaff from program that makes them  student manager.
+
+    param: uername - a string
+           program_id - id
+           action: add, remove
+
+    '''
+    deleteInstance = ProgramManager.delete().where(ProgramManager.user == user_name, ProgramManager.program == program_id)
+    deleteInstance.execute()
+    studentstaff=User.get(User.username== user_name)
+    if action == "add" and studentstaff.isCeltsStudentStaff==True:
+        update= ProgramManager.create(user=user_name, program=program_id)
+        update.save()
