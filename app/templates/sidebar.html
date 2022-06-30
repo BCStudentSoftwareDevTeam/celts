@@ -8,7 +8,7 @@
 
     <ul class="nav nav-pills flex-column mb-auto">
 
-  
+
     <li>
       <a href="/profile/{{g.current_user}}"
           class="nav-link text-white {{'active' if 'profile' in request.path }}"
@@ -16,7 +16,7 @@
         My Profile
       </a>
     </li>
-   
+
     {% if g.current_user.isFaculty %}
     <li>
       <a href="/serviceLearning/courseManagement"
@@ -49,11 +49,13 @@
         </a>
       </li>
       <li>
-        <a href="/serviceLearning/courseManagement"
-           class="nav-link text-white {{'active' if request.path =='/serviceLearning/courseManagement'}}"
-           {{"aria-current='page'" if request.path =='/serviceLearning/courseManagement'}}>
-          Course Proposals
-        </a>
+        {% if g.current_user.isCeltsStudentStaff == False %}
+          <a href="/serviceLearning/courseManagement"
+             class="nav-link text-white {{'active' if request.path =='/serviceLearning/courseManagement'}}"
+             {{"aria-current='page'" if request.path =='/serviceLearning/courseManagement'}}>
+            Course Proposals
+          </a>
+        {% endif %}
       </li>
       <li>
       {% if g.current_user.isCeltsAdmin %}
