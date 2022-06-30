@@ -131,8 +131,10 @@
                   {% set action = "remove" %}
                   {% set checked = "checked" %}
             {% endif %}
-                  <input  type="checkbox" id="mgr-{{ program.id }}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}','{{action}}')">
-                  <label  style="padding-left: 100px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
+              <table>
+                    <input  type="checkbox" id="mgr-{{ program.id }}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}')">
+                    <label  style="padding-left: 15px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
+              </table>
           {% endfor %}
         </div>
       </div>

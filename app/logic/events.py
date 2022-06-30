@@ -15,7 +15,7 @@ from app.models.interest import Interest
 from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
 from app.logic.adminLogs import createLog
-
+from app.logic.utils import format24HourTime
 
 def getEvents(program_id=None):
 
@@ -51,6 +51,7 @@ def attemptSaveEvent(eventData):
         return False, e
 
 def saveEventToDb(newEventData):
+
     if not newEventData.get('valid', False):
         raise Exception("Unvalidated data passed to saveEventToDb")
 
@@ -203,7 +204,7 @@ def validateNewEventData(data):
     if data['isRecurring'] and data['endDate']  <  data['startDate']:
         return (False, "Event start date is after event end date")
 
-    if data['endDate'] ==  data['startDate'] and data['timeEnd'] <=  data['timeStart']:
+    if data['endDate'] ==  data['startDate'] and data['timeEnd'] <= data['timeStart']:
         return (False, "Event start time is after event end time")
 
     # Validation if we are inserting a new event
@@ -222,7 +223,6 @@ def validateNewEventData(data):
             return (False, "This event already exists")
 
     data['valid'] = True
-
     return (True, "All inputs are valid.")
 
 def calculateNewrecurringId():
@@ -265,6 +265,7 @@ def preprocessEventData(eventData):
         - facilitators should be a list of objects. Use the given list of usernames if possible
           (and check for a MultiDict with getlist), or else get it from the existing event
           (or use an empty list if no event)
+        - times should exist be strings in 24 hour format example: 14:40 
     """
 
     ## Process checkboxes
@@ -296,6 +297,12 @@ def preprocessEventData(eventData):
             eventData['term'] = Term.get_by_id(eventData['term'])
         except DoesNotExist:
             eventData['term'] = ''
+
+    if 'timeStart' in eventData:
+        eventData['timeStart'] = format24HourTime(eventData['timeStart'])
+
+    if 'timeEnd' in eventData:
+        eventData['timeEnd'] = format24HourTime(eventData['timeEnd'])
 
     ## Get the facilitator objects from the list or from the event if there is a problem
     try:

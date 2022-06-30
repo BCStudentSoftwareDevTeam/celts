@@ -62,8 +62,6 @@ def test_getEventsWithProgram():
 
 
     assert len(events) > 0
-
-
     assert events[0].description == "Berea Buddies First Meetup"
 
 @pytest.mark.integration
@@ -230,7 +228,7 @@ def test_correctValidateNewEventData():
     eventData =  {'isRsvpRequired':False, 'isService':False,
                   'isTraining':True, 'isRecurring':False, 'startDate': parser.parse('1999-12-12'),
                   'endDate':parser.parse('2022-06-12'), 'programId':1, 'location':"a big room",
-                  'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
+                  'timeEnd':'04:00', 'timeStart':'06:00', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring Event 1','term':1,'facilitators':"ramsayb2"}
 
     isValid, eventErrorMessage = validateNewEventData(eventData)
@@ -242,7 +240,7 @@ def test_wrongValidateNewEventData():
 
     eventData =  {'isRsvpRequired':False, 'isService':False,
                   'isTraining':True, 'isRecurring':False, 'programId':1, 'location':"a big room",
-                  'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
+                  'timeEnd':'12:00', 'timeStart':'15:00', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring Event 1','term':1,'facilitators':"ramsayb2"}
 
     eventData['isRecurring'] = True
@@ -315,11 +313,11 @@ def test_attemptSaveEvent():
     eventData =  {'isRsvpRequired':False, 'isService':False,
                   'isTraining':True, 'isRecurring':True, 'recurringId':0, 'startDate': '2021-12-12',
                   'endDate': '2021-06-12', 'programId':1, 'location':"a big room",
-                  'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
+                  'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring','term':1,'facilitators':["ramsayb2"]}
     eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'recurringId':None, 'startDate': '2021-12-12',
                    'endDate':'2022-06-12', 'location':"a big room",
-                   'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
+                   'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                    'name':'Attempt Save Test','term':1,'facilitators':["ramsayb2"]}
     eventInfo['program'] = Program.get_by_id(1)
 
@@ -350,7 +348,7 @@ def test_saveEventToDb_create():
     eventInfo =  {'isRsvpRequired':False, 'isService':False,
                   'isTraining':True, 'isRecurring':False,'isAllVolunteerTraining': True, 'recurringId':None, 'startDate': parser.parse('2021-12-12'),
                    'endDate':parser.parse('2022-06-12'), 'location':"a big room",
-                   'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
+                   'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                    'name':'Empty Bowls Spring','term':1,'facilitators':[User.get_by_id("ramsayb2")]}
     eventInfo['program'] = Program.get_by_id(1)
 
@@ -391,7 +389,7 @@ def test_saveEventToDb_recurring():
     eventInfo =  {'isRsvpRequired':False, 'isService':False, 'isAllVolunteerTraining': True,
                   'isTraining':True, 'isRecurring': True, 'recurringId':1, 'startDate': parser.parse('12-12-2021'),
                    'endDate':parser.parse('01-18-2022'), 'location':"this is only a test",
-                   'timeEnd':'21:00', 'timeStart':'18:00', 'description':"Empty Bowls Spring 2021",
+                   'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
                    'name':'Empty Bowls Spring','term':1,'facilitators':[User.get_by_id("ramsayb2")]}
     eventInfo['valid'] = True
     eventInfo['program'] = Program.get_by_id(1)
@@ -415,8 +413,8 @@ def test_saveEventToDb_update():
                     "term": 1,
                     "name": "First Meetup",
                     "description": "This is a Test",
-                    "timeStart": datetime.datetime.strptime("6:00 pm", "%I:%M %p"),
-                    "timeEnd": datetime.datetime.strptime("9:00 pm", "%I:%M %p"),
+                    "timeStart": "06:00 PM",
+                    "timeEnd": "09:00 PM",
                     "location": "House",
                     'isRecurring': True,
                     'recurringId': 2,
@@ -442,8 +440,8 @@ def test_saveEventToDb_update():
                     "term": 1,
                     "name": "First Meetup",
                     "description": "Berea Buddies First Meetup",
-                    "timeStart": datetime.datetime.strptime("6:00 pm", "%I:%M %p"),
-                    "timeEnd": datetime.datetime.strptime("9:00 pm", "%I:%M %p"),
+                    "timeStart": "06:00 PM",
+                    "timeEnd": "09:00 PM",
                     "location": "House",
                     'isRecurring': True,
                     'recurringId': 3,
@@ -469,8 +467,8 @@ def test_deleteEvent():
         testingEvent = Event.create(name = "Testing delete event",
                                       term = 2,
                                       description= "This Event is Created to be Deleted.",
-                                      timeStart= "6:00 pm",
-                                      timeEnd= "9:00 pm",
+                                      timeStart= "06:00 PM",
+                                      timeEnd= "09:00 PM",
                                       location = "No Where",
                                       isRsvpRequired = 0,
                                       isTraining = 0,
@@ -517,7 +515,6 @@ def test_getsCorrectUpcomingEvent():
     assert len(events) == 2
     assert "Meet & Greet with Grandparent" == events[0].name
 
-
 @pytest.mark.integration
 def test_userWithNoInterestedEvent():
 
@@ -528,6 +525,35 @@ def test_userWithNoInterestedEvent():
     user = "ayisie" #no interest selected
     events = getUpcomingEventsForUser(user)
     assert len(events) == 0
+
+@pytest.mark.integration
+def test_format24HourTime():
+
+    # tests valid "input times"
+    assert format24HourTime('08:00 AM') == "08:00"
+    assert format24HourTime('5:38 AM') == "05:38"
+    assert format24HourTime('05:00 PM') == "17:00"
+    assert format24HourTime('7:30 PM') == "19:30"
+    assert format24HourTime('12:32 PM') == "12:32"
+    assert format24HourTime('12:01 AM') == "00:01"
+    assert format24HourTime('12:32') == "12:32"
+    assert format24HourTime('00:01') == "00:01"
+    assert format24HourTime('17:07') == "17:07"
+    assert format24HourTime('23:59') == "23:59"
+    time = datetime.datetime(1900, 1, 1, 8, 30)
+    assert format24HourTime(time) == "08:30"
+    time = datetime.datetime(1900, 1, 1, 23, 59)
+    assert format24HourTime(time) == "23:59"
+    time = datetime.datetime(1900, 1, 1, 00, 1)
+    assert format24HourTime(time) == "00:01"
+
+    # tests "input times" that are not valid inputs
+    with pytest.raises(ValueError):
+        assert format24HourTime('13:30 PM')
+        assert format24HourTime('13:30 AM')
+        assert format24HourTime(':30')
+        assert format24HourTime('01:30:00 PM')
+        assert format24HourTime('Clever String')
 
 @pytest.mark.integration
 def test_calculateNewrecurringId():
