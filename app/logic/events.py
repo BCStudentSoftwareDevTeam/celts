@@ -152,7 +152,7 @@ def getBonnerProgram(term):
                                         Event.term == term))
     return list(bonnerScholarsEvents)
 
-def getnonProgramEvents(term):
+def getNonProgramEvents(term):
     """
     Get the list of the one-time events to be displayed in the Other Events section
     of the Events List page.

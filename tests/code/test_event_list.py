@@ -4,7 +4,7 @@ from app.models import mainDB
 from app.models.programEvent import ProgramEvent
 from app.models.event import Event
 from app.models.event import Term
-from app.logic.events import getStudentLedProgram,  getTrainingProgram, getBonnerProgram, getnonProgramEvents
+from app.logic.events import getStudentLedProgram,  getTrainingProgram, getBonnerProgram, getNonProgramEvents
 
 @pytest.mark.integration
 def test_event_list():
@@ -80,7 +80,7 @@ def test_event_list():
         assert bonner in bonnerProgram
         assert Studentled not in bonnerProgram
 
-        nonProgramEvents = getnonProgramEvents(3)
+        nonProgramEvents = getNonProgramEvents(3)
         assert nonProgramEvents
         assert nonProgram not in nonProgramEvents
         assert Studentled not in nonProgramEvents

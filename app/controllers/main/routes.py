@@ -45,7 +45,7 @@ def events(selectedTerm):
     studentLedProgram = getStudentLedProgram(term)
     trainingProgram = getTrainingProgram(term)
     bonnerProgram = getBonnerProgram(term)
-    nonProgramEvents = getnonProgramEvents(term)
+    nonProgramEvents = getNonProgramEvents(term)
 
     return render_template("/events/event_list.html",
         selectedTerm = term,
