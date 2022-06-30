@@ -56,7 +56,7 @@ def test_updatedProgramManager():
     program_id = 1
     action = "add"
     setProgramManager(user_name, program_id, action)
-    assert StudentManager.get_or_none(StudentManager.program == program_id, StudentManager.user == user_name) is not None
+    assert ProgramManager.get_or_none(ProgramManager.program == program_id, ProgramManager.user == user_name) is not None
 
 
     # Not a student staff, should not be added as a program manager
@@ -64,12 +64,12 @@ def test_updatedProgramManager():
     program_id2 = 1
     action2 = "add"
     setProgramManager(user_name2, program_id2, action2)
-    assert StudentManager.get_or_none(StudentManager.program==program_id2, StudentManager.user == user_name2) is None
+    assert ProgramManager.get_or_none(ProgramManager.program==program_id2, ProgramManager.user == user_name2) is None
 
     # if action remove, user should be removed from the table
     user_name3 = "mupotsal"
     program_id3 = 1
     action3 = "remove"
     setProgramManager(user_name3, program_id3, action3)
-    assert StudentManager.get_or_none(StudentManager.program==program_id3, StudentManager.user == user_name3) is None
+    assert ProgramManager.get_or_none(ProgramManager.program==program_id3, ProgramManager.user == user_name3) is None
     
