@@ -53,7 +53,7 @@
         </ul>
       </div>
       <div class="col">
-        <form action="/event/{{eventData.id}}/delete" method='post'>
+        <form enctype="multipart/form-data" action="/event/{{eventData.id}}/delete" method='post'>
           <input type="submit" class="btn btn-danger float-end" value="Delete Event"/>
           <div>
             <input type="hidden" value="{{eventData.id}}" name="id">
@@ -222,6 +222,7 @@
                 <p>{{f.firstName}} {{f.lastName}}</p>
               {% endfor %}
           {% endif %}
+          <input type="file" id="attachmentObject" name="attachmentObject" class="form-control col-sm-6 mt-4 mb-2" />
         </div>
       </div>
       <div class="row justify-content-left mt-2">

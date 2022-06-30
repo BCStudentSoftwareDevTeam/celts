@@ -15,7 +15,7 @@ from app.models.interest import Interest
 from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
 from app.logic.adminLogs import createLog
-
+from app.logic.emailHandler import attach_attachments
 
 def getEvents(program_id=None):
 
@@ -80,7 +80,8 @@ def saveEventToDb(newEventData):
                     "isRsvpRequired": newEventData['isRsvpRequired'],
                     "isService": newEventData['isService'],
                     "startDate": eventInstance['date'],
-                    "endDate": eventInstance['date']
+                    "endDate": eventInstance['date'],
+                    "attachmentDirectory": attach_attachments()
             }
 
             # Create or update the event

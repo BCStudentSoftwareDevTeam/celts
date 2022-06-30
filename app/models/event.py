@@ -16,6 +16,7 @@ class Event(baseModel):
     startDate = DateField()
     endDate = DateField(null=True)
     recurringId = IntegerField(null=True)
+    attachmentDirectory = CharField()
 
     def __str__(self):
         return f"{self.id}: {self.description}"
@@ -45,4 +46,3 @@ class Event(baseModel):
     def isFirstRecurringEvent(self):
         firstRecurringEvent = Event.select().where(Event.recurringId==self.recurringId).order_by(Event.startDate).get()
         return firstRecurringEvent.id == self.id
-    
