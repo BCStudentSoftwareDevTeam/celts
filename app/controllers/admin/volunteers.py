@@ -107,9 +107,15 @@ def removeVolunteerFromEvent(user, eventID):
 
 @admin_bp.route('/getRecurrentEventParticipants/<recurringId>', methods = ['POST'])
 def getPastVolunteer(recurringId):
+    """
+    This function gets all volunteers from the previous week's event and formats
+    the data into a nested list of user data.
+    Expects:
+    recurringID signifying that an event is recurring. ie: "TestEvent week 2 == recurringId = 1"
+    """
     pastEventParticipants = getPreviousRecurringEventData(recurringId)
+
     return json.dumps([model_to_dict(pastEventParticipant) for pastEventParticipant in pastEventParticipants])
-    # getPreviousRecurringEventData(eventRecurringId, eventStartDate)
 
 @admin_bp.route('/updateBackgroundCheck', methods = ['POST'])
 def updateBackgroundCheck():
