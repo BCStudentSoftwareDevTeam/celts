@@ -13,7 +13,7 @@ from app.models.eventTemplate import EventTemplate
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.models.term import Term
-from app.models.facilitator import Facilitator
+from app.models.eventFacilitator import EventFacilitator
 from app.models.interest import Interest
 from app.logic.events import *
 
@@ -240,7 +240,7 @@ def test_wrongValidateNewEventData():
 
     eventData =  {'isRsvpRequired':False, 'isService':False,
                   'isTraining':True, 'isRecurring':False, 'programId':1, 'location':"a big room",
-                  'timeEnd':'12:00 PM', 'timeStart':'03:00 PM', 'description':"Empty Bowls Spring 2021",
+                  'timeEnd':'12:00', 'timeStart':'15:00', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring Event 1','term':1,'facilitators':"ramsayb2"}
 
     eventData['isRecurring'] = True
@@ -265,7 +265,7 @@ def test_wrongValidateNewEventData():
     # testing event starts after it ends.
     eventData["startDate"] = parser.parse('2021-06-12')
     eventData["endDate"] = parser.parse('2021-06-12')
-    eventData["timeStart"] =  '09:39 PM'
+    eventData["timeStart"] =  '21:39'
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid == False
     assert eventErrorMessage == "Event start time is after event end time"
@@ -330,7 +330,7 @@ def test_attemptSaveEvent():
 
         try:
             event = Event.get(name="Attempt Save Test")
-            facilitator = Facilitator.get(event=event)
+            facilitator = EventFacilitator.get(event=event)
 
             # Redundant, as the previous lines will throw exceptions, but I like asserting something
             assert facilitator
@@ -374,7 +374,7 @@ def test_saveEventToDb_create():
         assert len(createdEvents) == 1
         assert createdEvents[0].singleProgram.id == 1
 
-        createdEventFacilitator = Facilitator.get(event=createdEvents[0])
+        createdEventFacilitator = EventFacilitator.get(event=createdEvents[0])
         assert createdEventFacilitator # kind of redundant, as the previous line will throw an exception
 
         transaction.rollback()
@@ -522,6 +522,35 @@ def test_userWithNoInterestedEvent():
     user = "ayisie" #no interest selected
     events = getUpcomingEventsForUser(user)
     assert len(events) == 0
+
+@pytest.mark.integration
+def test_format24HourTime():
+
+    # tests valid "input times"
+    assert format24HourTime('08:00 AM') == "08:00"
+    assert format24HourTime('5:38 AM') == "05:38"
+    assert format24HourTime('05:00 PM') == "17:00"
+    assert format24HourTime('7:30 PM') == "19:30"
+    assert format24HourTime('12:32 PM') == "12:32"
+    assert format24HourTime('12:01 AM') == "00:01"
+    assert format24HourTime('12:32') == "12:32"
+    assert format24HourTime('00:01') == "00:01"
+    assert format24HourTime('17:07') == "17:07"
+    assert format24HourTime('23:59') == "23:59"
+    time = datetime.datetime(1900, 1, 1, 8, 30)
+    assert format24HourTime(time) == "08:30"
+    time = datetime.datetime(1900, 1, 1, 23, 59)
+    assert format24HourTime(time) == "23:59"
+    time = datetime.datetime(1900, 1, 1, 00, 1)
+    assert format24HourTime(time) == "00:01"
+
+    # tests "input times" that are not valid inputs
+    with pytest.raises(ValueError):
+        assert format24HourTime('13:30 PM')
+        assert format24HourTime('13:30 AM')
+        assert format24HourTime(':30')
+        assert format24HourTime('01:30:00 PM')
+        assert format24HourTime('Clever String')
 
 @pytest.mark.integration
 def test_calculateNewrecurringId():

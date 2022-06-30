@@ -3,6 +3,7 @@ from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.event import Event
 from app.models.backgroundCheck import BackgroundCheck
+from app.models.programManager import ProgramManager
 from datetime import datetime, date
 from app.logic.adminLogs import createLog
 
@@ -93,3 +94,20 @@ def setUserBackgroundCheck(user,bgType, checkPassed, dateCompleted):
         dateCompleted = None
     update = BackgroundCheck.create(user=user, type=bgType, passBackgroundCheck=checkPassed, dateCompleted=dateCompleted)
     createLog(f"Updated {user.firstName} {user.lastName}'s background check for {bgType} to {bool(checkPassed)}.")
+
+def setProgramManager(user_name, program_id, action):
+    ''' 
+    adds and removes the studentstaff from program that makes them  student manager.
+
+    param: uername - a string 
+           program_id - id
+           action: add, remove
+    
+    '''
+    deleteInstance = ProgramManager.delete().where(ProgramManager.user == user_name, ProgramManager.program == program_id)
+    deleteInstance.execute()
+    studentstaff=User.get(User.username== user_name)
+    if action == "add" and studentstaff.isCeltsStudentStaff==True:
+        update= ProgramManager.create(user=user_name, program=program_id)
+        update.save()
+    

@@ -6,7 +6,7 @@ from app.models import mainDB
 from app.models.user import User
 from app.models.event import Event
 from app.models.eventParticipant import EventParticipant
-from app.models.facilitator import Facilitator
+from app.models.eventFacilitator import EventFacilitator
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.models.term import Term
@@ -73,8 +73,8 @@ def saveEventToDb(newEventData):
                     "term": newEventData['term'],
                     "name": eventInstance['name'],
                     "description": newEventData['description'],
-                    "timeStart": format24HourTime(newEventData['timeStart']),
-                    "timeEnd": format24HourTime(newEventData['timeEnd']),
+                    "timeStart": newEventData['timeStart'],
+                    "timeEnd": newEventData['timeEnd'],
                     "location": newEventData['location'],
                     "recurringId": recurringSeriesId,
                     "isTraining": newEventData['isTraining'],
@@ -94,9 +94,9 @@ def saveEventToDb(newEventData):
                 eventRecord = Event.get_by_id(newEventData['id'])
                 Event.update(**eventData).where(Event.id == eventRecord).execute()
 
-            Facilitator.delete().where(Facilitator.event == eventRecord).execute()
+            EventFacilitator.delete().where(EventFacilitator.event == eventRecord).execute()
             for f in newEventData['facilitators']:
-                Facilitator.create(user=f, event=eventRecord)
+                EventFacilitator.create(user=f, event=eventRecord)
 
             eventRecords.append(eventRecord)
 
@@ -203,7 +203,7 @@ def validateNewEventData(data):
     if data['isRecurring'] and data['endDate']  <  data['startDate']:
         return (False, "Event start date is after event end date")
 
-    if data['endDate'] ==  data['startDate'] and format24HourTime(data['timeEnd']) <= format24HourTime(data['timeStart']):
+    if data['endDate'] ==  data['startDate'] and data['timeEnd'] <= data['timeStart']:
         return (False, "Event start time is after event end time")
 
     # Validation if we are inserting a new event
@@ -264,6 +264,7 @@ def preprocessEventData(eventData):
         - facilitators should be a list of objects. Use the given list of usernames if possible
           (and check for a MultiDict with getlist), or else get it from the existing event
           (or use an empty list if no event)
+        - times should exist be strings in 24 hour format example: 14:40 
     """
 
     ## Process checkboxes
@@ -296,6 +297,12 @@ def preprocessEventData(eventData):
         except DoesNotExist:
             eventData['term'] = ''
 
+    if 'timeStart' in eventData:
+        eventData['timeStart'] = format24HourTime(eventData['timeStart'])
+
+    if 'timeEnd' in eventData:
+        eventData['timeEnd'] = format24HourTime(eventData['timeEnd'])
+
     ## Get the facilitator objects from the list or from the event if there is a problem
     try:
         if type(eventData) == MultiDict and type(eventData['facilitators']) is not list:
@@ -303,6 +310,6 @@ def preprocessEventData(eventData):
         eventData['facilitators'] = [User.get_by_id(f) for f in eventData['facilitators']]
     except Exception as e:
         event = eventData.get('id', -1)
-        eventData['facilitators'] = list(User.select().join(Facilitator).where(Facilitator.event == event))
+        eventData['facilitators'] = list(User.select().join(EventFacilitator).where(EventFacilitator.event == event))
 
     return eventData

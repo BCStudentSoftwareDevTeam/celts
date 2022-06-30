@@ -54,7 +54,7 @@ $(document).ready(function(){
     $("#banModal").modal("toggle");
     banNoteDiv.hide();
     $("#banNoteTxtArea").val("");
-
+    $("#banButton").prop("disabled", true);
     if( $(this).val()=="Unban"){
       banEndDateDiv.hide()
       banEndDatepicker.val("0001-01-01") //This is a placeholder value for the if statement in line 52 to work properly #PLCHLD1
@@ -97,7 +97,6 @@ $(document).ready(function(){
         bgDate: $("#" + checkType + "_date").val()  //Expected to be the date of the background check completion
     }
 
-
     $.ajax({
       url: "/updateBackgroundCheck",
       type: "POST",
@@ -107,9 +106,20 @@ $(document).ready(function(){
       error: function(error, status){
           console.log(error, status)
       }
-
     })
-
   });
-
 });
+
+function updateManagers(el, volunteer_username ){// retrieve the data of the studnet staff and program id if the boxes are checked or not
+  var program_id=$(el).attr('data-programid');
+  action= el.checked ? 'add' : 'remove';
+  
+  $.ajax({
+    method:"POST",
+    url:"/updateProgramManager",
+    data : {"user_name":volunteer_username, //student staff: user_name
+            "program_id":program_id,       // program id
+            "action":action,          //action: add or remove 
+             },  
+  })
+}

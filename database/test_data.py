@@ -18,7 +18,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.courseQuestion import CourseQuestion
 from app.models.questionNote import QuestionNote
 from app.models.interest import Interest
-from app.models.facilitator import Facilitator
+from app.models.eventFacilitator import EventFacilitator
 from app.models.note import Note
 from app.models.programManager import ProgramManager
 from app.models.emailTemplate import EmailTemplate
@@ -819,7 +819,7 @@ facilitators = [
     'event': 1
     }
 ]
-Facilitator.insert_many(facilitators).on_conflict_replace().execute()
+EventFacilitator.insert_many(facilitators).on_conflict_replace().execute()
 
 programManagerPrograms = [
     {
