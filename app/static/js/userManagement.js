@@ -1,5 +1,4 @@
 import searchUser from './searchUser.js'
-
 function callback() {
   $("#searchAdmin").submit();
 }
@@ -114,18 +113,16 @@ function addNewTerm(){
 }
 
 function addNewProgramInfo(){
-  var programInfo = {senderName: $("#senderName").val(),
-                    replyToEmail: $("#replyToEmail").val(),
+  var programInfo = {emailSenderName: $("#emailSenderName").val(),
+                    emailReplyTo: $("#emailReplyTo").val(),
                     programId: $("#programSelect").val()};
   $.ajax({   // sends ajax request to controller with programInfo containing user input
     url: "/admin/updateProgramInfo",
     type: "POST",
     data: programInfo,
     success: function(s){
-      $('body').prepend('<div id="flash" style="display:none"></div>');
-      $('#flash').html("Successfully updated information.");
-      $('#flash').slideDown('slow');
-      $('#flash').click(function () { $('#flash').toggle('highlight') });
+      $("#flash_container").prepend('<div class=\"w-50 position-absolute top-0 start-50 translate-middle-x alert alert-'+ "success" + '\" role="alert" id="flasher">' + "Successfully updated program info" + '</div>');
+      $("#flasher").delay(5000).fadeOut(); //kept getting errors when importing, no one could figure it out, so had to do it unconventionally.
     },
     error: function(error, status){
         console.log(error, status);
@@ -135,7 +132,7 @@ function addNewProgramInfo(){
 
 function displayProgramInfo(){
   var programInfo = $("#programSelect option:selected")[0]
-  $("#replyToEmail").val($(programInfo).data("replytoemail"))
-  $("#senderName").val($(programInfo).data("sendername"))
+  $("#emailReplyTo").val($(programInfo).data("replytoemail"))
+  $("#emailSenderName").val($(programInfo).data("sendername"))
 
 }

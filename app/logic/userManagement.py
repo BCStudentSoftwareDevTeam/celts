@@ -90,7 +90,7 @@ def addNextTerm():
 
 def changeProgramInfo(newEmail, newSender, programId):
     """Updates the program info with a new sender and email."""
-    updatedProgram = Program.update({Program.replyToEmail: newEmail, Program.senderName:newSender}).where(Program.id==programId)
+    updatedProgram = Program.update({Program.emailReplyTo: newEmail, Program.emailSenderName:newSender}).where(Program.id==programId)
     updatedProgram.execute()
     return (f'Program email info updated')
 

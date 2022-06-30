@@ -106,12 +106,12 @@
                   <select class="form-select programData" id="programSelect" form="programSettings">
                     <option selected disabled>--Choose a Program--</option>
                     {% for program in programs %}
-                    <option value ="{{program.id}}" data-replytoemail="{{program.replyToEmail}}" data-sendername="{{program.senderName}}">{{program.programName}}</option>
+                    <option value ="{{program.id}}" data-replytoemail="{{program.emailReplyTo}}" data-sendername="{{program.emailSenderName}}">{{program.programName}}</option>
                     {% endfor %}
                   </select>
                 </td>
-                <td><input type="text" name="Email" id="replyToEmail" value=""></td>
-                <td><input type="text" name="Sender" value="" id="senderName"></td>
+                <td><input type="text" name="Email" id="emailReplyTo" value=""></td>
+                <td><input type="text" name="Sender" value="" id="emailSenderName"></td>
                 <td>
                   <button type="button" class="btn btn-success w-101" id="addNewProgramInfo" role ="button">Update</button>
                 </td>

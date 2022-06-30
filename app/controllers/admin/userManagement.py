@@ -72,8 +72,8 @@ def updateProgramInfo():
     programInfo = request.form #grabs user inputs
     if g.current_user.isCeltsAdmin:
         try:
-            return changeProgramInfo(programInfo["replyToEmail"],  #calls logic function to add data to database
-                                    programInfo["senderName"],
+            return changeProgramInfo(programInfo["emailReplyTo"],  #calls logic function to add data to database
+                                    programInfo["emailSenderName"],
                                     programInfo["programId"])
         except Exception as e:
             print(e)

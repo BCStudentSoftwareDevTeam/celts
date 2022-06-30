@@ -52,12 +52,12 @@ def test_modifyCeltsStudentStaff():
 @pytest.mark.integration
 def test_changeProgramInfo():
     programId = 3
-    senderName = "New Test Name"
-    replyToEmail = 'newtest@email'
+    emailSenderName = "New Test Name"
+    emailReplyTo = 'newtest@email'
     currentProgramInfo = Program.select().where(Program.id==programId).get()
-    assert currentProgramInfo.senderName == "testName"
-    assert currentProgramInfo.replyToEmail == "test@email"
-    changeProgramInfo(replyToEmail, senderName, programId)
+    assert currentProgramInfo.emailSenderName == "testName"
+    assert currentProgramInfo.emailReplyTo == "test@email"
+    changeProgramInfo(emailReplyTo, emailSenderName, programId)
     currentProgramInfo = Program.select().where(Program.id==programId).get()
-    assert currentProgramInfo.senderName == senderName
-    assert currentProgramInfo.replyToEmail == replyToEmail
+    assert currentProgramInfo.emailSenderName == emailSenderName
+    assert currentProgramInfo.emailReplyTo == emailReplyTo

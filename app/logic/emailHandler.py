@@ -197,3 +197,11 @@ class EmailHandler:
             return last_email
         except DoesNotExist:
             return None
+
+    def getProgramEmailInfo(programId): #query to get sender info
+        programInfo = Program.get_by_id(programId)
+        return programInfo.emailSenderName
+
+    def setEmailReplyTo(programId):
+        programInfo = Program.get_by_id(programId) # not exactly sure what to do with this method.
+        return programInfo.replyToEmail
