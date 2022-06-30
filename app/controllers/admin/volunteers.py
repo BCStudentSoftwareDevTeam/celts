@@ -1,18 +1,18 @@
 from flask import request, render_template, redirect, url_for, request, flash, abort, g, json, jsonify
 from datetime import datetime
 from peewee import DoesNotExist
-
 from app.controllers.admin import admin_bp
 from app.models import event
 from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
-from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck, setProgramManager
+from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck, setProgramManager, isProgramManagerForEvent
 from app.logic.participants import trainedParticipants, getEventParticipants
 from app.models.user import User
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
+from app.models.programManager import ProgramManager
 from app.logic.adminLogs import createLog
 
 
@@ -39,8 +39,9 @@ def trackVolunteersPage(eventID):
 
     trainedParticipantsList = trainedParticipants(program, g.current_term)
     eventParticipants = getEventParticipants(event)
+    isProgramManager = isProgramManagerForEvent(g.current_user, event)
 
-    if not g.current_user.isCeltsAdmin:
+    if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
         abort(403)
 
     eventRsvpData = (EventRsvp
@@ -114,7 +115,7 @@ def updateBackgroundCheck():
 @admin_bp.route('/updateProgramManager', methods=["POST"])
 def updateProgramManager():
     if g.current_user.isCeltsAdmin:
-        data =request.form  
+        data =request.form
         username = User.get(User.username == data["user_name"])
         event =Event.get_by_id(data['program_id'])
         setProgramManager(data["user_name"], data["program_id"], data["action"])

@@ -2,10 +2,15 @@ from app.models.eventParticipant import EventParticipant
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.event import Event
+from app.models.program import Program
+from app.models.programEvent import ProgramEvent
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.programManager import ProgramManager
 from datetime import datetime, date
 from app.logic.adminLogs import createLog
+from app.logic.events import getEvents
+from app.logic.userManagement import hasPrivilege
+
 
 
 
@@ -95,14 +100,28 @@ def setUserBackgroundCheck(user,bgType, checkPassed, dateCompleted):
     update = BackgroundCheck.create(user=user, type=bgType, passBackgroundCheck=checkPassed, dateCompleted=dateCompleted)
     createLog(f"Updated {user.firstName} {user.lastName}'s background check for {bgType} to {bool(checkPassed)}.")
 
+
+def isProgramManagerForEvent(user, event):
+    """
+    This function checks to see if a user is a program manager for a program.
+    NOTE: this function needs the event parameter to work
+    user: expects a user peewee object
+    event: expects an event peewee object
+    Returns: bool whether the appropriate information is given.
+    """
+
+    isProgramManager = hasPrivilege(user, event.singleProgram)
+
+    return isProgramManager
+
 def setProgramManager(user_name, program_id, action):
-    ''' 
+    '''
     adds and removes the studentstaff from program that makes them  student manager.
 
-    param: uername - a string 
+    param: uername - a string
            program_id - id
            action: add, remove
-    
+
     '''
     deleteInstance = ProgramManager.delete().where(ProgramManager.user == user_name, ProgramManager.program == program_id)
     deleteInstance.execute()
@@ -110,4 +129,3 @@ def setProgramManager(user_name, program_id, action):
     if action == "add" and studentstaff.isCeltsStudentStaff==True:
         update= ProgramManager.create(user=user_name, program=program_id)
         update.save()
-    
