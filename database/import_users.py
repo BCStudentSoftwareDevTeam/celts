@@ -1,13 +1,12 @@
 import pyodbc
 from app.models.user import User
+import peewee as exc
 
 def main():
     """
     This function runs the updateRecords function once the script is run.
     """
     updateRecords()
-
-
 
 def updateRecords():
     """
@@ -50,9 +49,12 @@ def getFacultyUserData(details):
             }
             User.insert(user).execute()
         except Exception as e:
-            # Duplicate entry exceptions are expected due to user data already being
-            # in the User table of the Celts database
-            print(e, " Duplicate entry exceptions are expected.")
+            if exc.IntegrityError:
+                # Duplicate entry exceptions are expected due to user data already being
+                # in the User table of the Celts database
+                print(e, "Duplicate entry exceptions are expected.")
+            else:
+                print(e)
 
 def getStudentUserData(details):
     """
@@ -79,9 +81,12 @@ def getStudentUserData(details):
             }
             User.insert(user).execute()
         except Exception as e:
-            # Duplicate entry exceptions are expected due to user data already being
-            # in the User table of the Celts database
-            print(e, " Duplicate entry exceptions are expected.")
+            if exc.IntegrityError:
+                # Duplicate entry exceptions are expected due to user data already being
+                # in the User table of the Celts database
+                print(e, " Duplicate entry exceptions are expected.")
+            else:
+                print(e)
 
 def getUsernameFromEmail(emailStr):
     """
