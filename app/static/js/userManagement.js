@@ -121,8 +121,7 @@ function addNewProgramInfo(){
     type: "POST",
     data: programInfo,
     success: function(s){
-      $("#flash_container").prepend('<div class=\"w-50 position-absolute top-0 start-50 translate-middle-x alert alert-'+ "success" + '\" role="alert" id="flasher">' + "Successfully updated program info" + '</div>');
-      $("#flasher").delay(5000).fadeOut(); //kept getting errors when importing, no one could figure it out, so had to do it unconventionally.
+      msgFlash("Successfully updated program info", "success")
     },
     error: function(error, status){
         console.log(error, status);

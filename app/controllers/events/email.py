@@ -2,6 +2,7 @@ from app.models.emailTemplate import EmailTemplate
 from app.models.emailLog import EmailLog
 from app.controllers.main import main_bp
 from app.logic.emailHandler import EmailHandler
+from app.models.program import Program
 from flask import request
 
 @main_bp.route('/retrieveEmailTemplate', methods=['GET'])
@@ -24,9 +25,7 @@ def fetchEmailLogData(eventId):
     else:
         return {'exists': False}
 
-@main_bp.route("/getProgramSender/", methods=['POST'])
+@main_bp.route("/getProgramSender/", methods=['GET'])
 def getProgramSender():
-    programInfo = request.form
-    programId = programInfo['programId']
-    emailSender = EmailHandler.getEmailSender(programId)
-    return emailSender
+    programId = request.args.get("programId")
+    return Program.get_by_id(programId).emailSenderName
