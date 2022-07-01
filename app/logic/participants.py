@@ -8,7 +8,6 @@ from app.models.programEvent import ProgramEvent
 from app.models.eventParticipant import EventParticipant
 from app.logic.users import isEligibleForProgram
 from app.logic.volunteers import getEventLengthInHours
-from app.logic.utils import getStartofCurrentAcademicYear
 
 def trainedParticipants(programID, currentTerm):
     """
@@ -16,19 +15,18 @@ def trainedParticipants(programID, currentTerm):
     event and adds them to a list that will not flag them when tracking hours.
     """
 
-    # Reset program eligibility each AY when event is All Celts Training or All Volunteer Training
-    allCeltsAndAllVolunteerTrainings = (Event.select(Event.id).join(ProgramEvent).where(
-        ProgramEvent.program==programID,
-        Event.term==getStartofCurrentAcademicYear(currentTerm),
-        (Event.name == "All Celts Training" | Event.name == "All Volunteer Training")))
+    ayStart = currentTerm.academicYearStartingTerm
 
     # Reset program eligibility each term for all other trainings
-    otherTrainingEvents = (Event.select(Event.id).join(ProgramEvent).where(
-        ProgramEvent.program==programID,
-        Event.isTraining==True,
-        Event.term==currentTerm))
 
-    allTraningEvents = set(allCeltsAndAllVolunteerTrainings + otherTrainingEvents)
+    otherTrainingEvents = (Event.select(Event.id).join(ProgramEvent)
+            .where(
+                ProgramEvent.program==programID,
+                Event.isTraining==True,
+                (((Event.name == "All Celts Training") | (Event.name == "All Volunteer Training")) & (Event.term == ayStart)) | (Event.term==currentTerm))
+            )
+
+    allTraningEvents = set(otherTrainingEvents)
 
     eventTrainingDataList = [participant.user.username for participant in (
         EventParticipant.select().where(EventParticipant.event.in_(allTraningEvents))

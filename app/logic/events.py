@@ -1,4 +1,4 @@
-from peewee import DoesNotExist, fn
+from peewee import DoesNotExist, fn, JOIN
 from dateutil import parser
 import datetime
 from werkzeug.datastructures import MultiDict
@@ -154,14 +154,18 @@ def getBonnerProgram(term):
                                         Event.term == term))
     return list(bonnerScholarsEvents)
 
-def getOneTimeEvents(term):
-    oneTimeEvents = (Event.select(Event, Program.id.alias("program_id"))
-                          .join(ProgramEvent)
-                          .join(Program)
-                          .where(Program.isStudentLed == False,
-                                 Program.isBonnerScholars == False,
-                                 Event.term == term))
-    return list(oneTimeEvents)
+def getNonProgramEvents(term):
+    """
+    Get the list of the one-time events to be displayed in the Other Events section
+    of the Events List page.
+    :return: A list of One Time Events objects
+    """
+    nonProgramEvents = (Event.select()
+                        .join(ProgramEvent, JOIN.LEFT_OUTER)
+                        .where(ProgramEvent.program == None,
+                        Event.isTraining == False))
+
+    return list(nonProgramEvents)
 
 def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
     """

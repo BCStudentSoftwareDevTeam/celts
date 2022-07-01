@@ -1,6 +1,7 @@
-from flask import request, render_template, g, abort, flash, redirect, url_for
+from flask import request, render_template, g, abort, flash, redirect, url_for, session
 import datetime
 import json
+from http import cookies
 
 from app import app
 from app.models.program import Program
@@ -45,14 +46,14 @@ def events(selectedTerm):
     studentLedProgram = getStudentLedProgram(term)
     trainingProgram = getTrainingProgram(term)
     bonnerProgram = getBonnerProgram(term)
-    oneTimeEvents = getOneTimeEvents(term)
+    nonProgramEvents = getNonProgramEvents(term)
 
     return render_template("/events/event_list.html",
         selectedTerm = term,
         studentLedProgram = studentLedProgram,
         trainingProgram = trainingProgram,
         bonnerProgram = bonnerProgram,
-        oneTimeEvents = oneTimeEvents,
+        nonProgramEvents = nonProgramEvents,
         listOfTerms = listOfTerms,
         rsvpedEventsID = rsvpedEventsID,
         currentTime = currentTime,
@@ -77,10 +78,10 @@ def viewVolunteersProfile(username):
         rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == volunteer)
         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
 
-        programManagerPrograms = list(ProgramManager.select().where(ProgramManager.user == volunteer))
+        programManagerPrograms = programManager.select().where(programManager.user == volunteer)
         permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
-        allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == volunteer))
+        allUserEntries = BackgroundCheck.select().where(BackgroundCheck.user == volunteer)
         completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
         backgroundTypes = list(BackgroundCheckType.select())
 
@@ -90,10 +91,10 @@ def viewVolunteersProfile(username):
                                               ProgramBan.program == program,
                                               ProgramBan.endDate > datetime.datetime.now())
 
-            noteForDict = list(notes)[-1].banNote.noteContent if list(notes) else ""
+            noteForDict = notes[-1].banNote.noteContent if notes else ""
             eligibilityTable.append({"program" : program,
                                    "completedTraining" : (volunteer.username in trainedParticipants(program, g.current_term)),
-                                   "isNotBanned" : isEligibleForProgram(program, volunteer),
+                                   "isNotBanned" : True if not notes else False,
                                    "banNote": noteForDict})
         return render_template ("/main/volunteerProfile.html",
                 programs = programs,
@@ -277,7 +278,10 @@ def getAllCourseIntructors(term=None):
     """
     This function selects all the Intructors Name and the previous courses
     """
+    for i in session:
+        print(i)
     if g.current_user.isCeltsAdmin:
+        setRedirectTarget("/manageServiceLearning")
         courseDict = getCourseDict()
 
         term = Term.get_or_none(Term.id == term)
@@ -296,3 +300,27 @@ def getAllCourseIntructors(term=None):
                                 term = term)
     else:
         abort(403)
+
+def getRedirectTarget(popTarget):
+    """
+    This function returns a string with the URL or route to a page in the Application
+        saved with setRedirectTarget() and is able to pop the value from the session
+        to make it an empty value
+    popTarget: expects a bool value to determine whether or not to reset
+                redirectTarget to an emtpy value
+    return: a string with the URL or route to a page in the application that was
+            saved in setRedirectTarget()
+    """
+    target = session["redirectTarget"]
+    if popTarget:
+        session.pop("redirectTarget")
+    return target
+
+def setRedirectTarget(target):
+    """
+    This function saves the target URL in the session for future redirection
+        to said page
+    target: expects a string that is a URL or a route to a page in the application
+    return: None
+    """
+    session["redirectTarget"] = target
