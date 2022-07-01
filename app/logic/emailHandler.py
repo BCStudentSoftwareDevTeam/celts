@@ -68,9 +68,7 @@ class EmailHandler:
             programEvents = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event==self.event.id)
             return [program.program for program in programEvents.objects()]
         else:
-            program = ProgramEvent.get_by_id(program_id)
-            return [program.program]
-
+            return [Program.get_by_id(program_id)]
 
     def update_sender_config(self):
         # We might need this.
@@ -157,7 +155,13 @@ class EmailHandler:
         return (template_id, subject, body)
 
     def send_email(self):
+        defaultEmailInfo = {"senderName":"Sandesh", "replyTo":self.reply_to}
         template_id, subject, body = self.build_email()
+        if len(self.program_ids) == 1:
+            if self.program_ids[0].emailReplyTo:
+                defaultEmailInfo["replyTo"] = self.program_ids[0].emailReplyTo
+            if self.program_ids[0].emailSenderName:
+                defaultEmailInfo["senderName"] = self.program_ids[0].emailSenderName
         try:
             with self.mail.connect() as conn:
                 for recipient in self.recipients:
@@ -169,8 +173,8 @@ class EmailHandler:
                         # [recipient.email],
                         [self.override_all_mail],
                         email_body,
-                        reply_to=self.reply_to,
-                        sender = ("Sandesh", 'bramsayr@gmail.com')
+                        reply_to=defaultEmailInfo["replyTo"],
+                        sender = (defaultEmailInfo["senderName"], defaultEmailInfo["replyTo"])
                     ))
             self.store_sent_email(subject, template_id)
             return True

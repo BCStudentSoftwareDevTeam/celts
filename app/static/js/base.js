@@ -11,7 +11,6 @@ function msgFlash(flash_message, status){
     }
 
 }
-
 $(document).ready(function() {
     $("#userSelect").on('change', function() {
         $("#userSelectForm").submit();
