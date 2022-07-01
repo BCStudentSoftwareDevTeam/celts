@@ -17,6 +17,7 @@ from app.models.event import Event
 from app.models.programEvent import ProgramEvent
 from app.models.eventParticipant import EventParticipant
 from app.models.programBan import ProgramBan
+from app.models.term import Term
 from app.logic.emailHandler import EmailHandler
 
 @pytest.mark.integration
@@ -171,7 +172,7 @@ def test_recipients_category():
             assert email.recipients == [User.get_by_id("partont"), User.get_by_id("khatts")]
             newTrainedStudent.delete_instance()
 
-            #clearing data for the next test
+            # clearing data for the next test
             transaction.rollback()
 
             # Test a program that should have nothing in banned users and nothing in All Volunteer:
@@ -183,6 +184,35 @@ def test_recipients_category():
             testSender = User.get_by_id('ramsayb2')
 
             email = EmailHandler(raw_form_data, url_domain, testSender)
+            email.process_data()
+            assert email.recipients == []
+
+            # clearing data for the next test
+            transaction.rollback()
+
+            # Test a program that has AllVolunteerTraining done in the previous
+            # academic year not the current one
+            raw_form_data = {"templateIdentifier": "Test",
+                "programID":"3",
+                "eventID":"1",
+                "recipientsCategory": "Eligible Students"}
+
+            testSender = User.get_by_id('ramsayb2')
+
+            email = EmailHandler(raw_form_data, url_domain, testSender)
+            email.process_data()
+            assert email.recipients == []
+
+            # Change the term that the All Volunteer Training takes place so that
+            # it is the next academic year
+            firstTerm = Term.select().order_by(Term.id)
+            nextTerm = firstTerm[-1]
+            updateEvent = Event.get_by_id(14)
+            updateEvent.term = nextTerm
+            updateEvent.save()
+
+            # Add partont to All Volunteer Training Event in the prevous academic year: NOT banned and IS trained
+            newTrainedStudent = EventParticipant.create(user = "partont", event = 14)
             email.process_data()
             assert email.recipients == []
 
