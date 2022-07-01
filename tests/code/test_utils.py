@@ -3,8 +3,9 @@ import pytest
 from app.models import mainDB
 from app.models.user import User
 from app.models.term import Term
-from app.logic.utils import deep_update, selectSurroundingTerms, getStartofCurrentAcademicYear
+from app.logic.utils import deep_update, selectSurroundingTerms
 from app.logic.userManagement import addCeltsAdmin, removeCeltsAdmin,addCeltsStudentStaff, removeCeltsStudentStaff, changeCurrentTerm, addNextTerm
+
 
 @pytest.mark.integration
 def test_selectSurroundingTerms():
@@ -172,21 +173,21 @@ def test_getStartofCurrentAcademicYear():
     with mainDB.atomic() as transaction:
         # Case1: current term is Fall 2020
         currentTerm = Term.get_by_id(1)
-        fallTerm = getStartofCurrentAcademicYear(currentTerm)
+        fallTerm = currentTerm.academicYearStartingTerm
         assert fallTerm.year == 2020
         assert fallTerm.description == "Fall 2020"
         assert fallTerm.academicYear == "2020-2021"
 
         # Case2: current term is Spring 2021
         currentTerm = Term.get_by_id(2)
-        fallTerm = getStartofCurrentAcademicYear(currentTerm)
+        fallTerm = currentTerm.academicYearStartingTerm
         assert fallTerm.year == 2020
         assert fallTerm.description == "Fall 2020"
         assert fallTerm.academicYear == "2020-2021"
 
         # Case3: current term is Summer 2021
         currentTerm = Term.get_by_id(4)
-        fallTerm = getStartofCurrentAcademicYear(currentTerm)
+        fallTerm = currentTerm.academicYearStartingTerm
 
         assert fallTerm.year == 2020
         assert fallTerm.description == "Fall 2020"
