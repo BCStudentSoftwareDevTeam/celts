@@ -10,7 +10,7 @@ from app.models.emailLog import EmailLog
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models import mainDB
-from app.logic.emailHandler import *
+from app.logic.emailHandler import EmailHandler
 
 @pytest.mark.integration
 @pytest.mark.skip(reason="Authentication issues")

@@ -61,11 +61,11 @@ function fetchProgramSender() { // gets the sender name based on what is in the 
   $.ajax({
 
    url: "/getProgramSender/",
-   type: "POST",
+   type: "GET",
    data: programInfo,
    success: function(s) {
-     var selectEmail = document.getElementById("senderEmail")
-     selectEmail.innerHTML = s;
+     var selectEmail = $("#senderEmail")
+     selectEmail.html(s);
    },
    error: function(error, status){
        console.log(error, status);

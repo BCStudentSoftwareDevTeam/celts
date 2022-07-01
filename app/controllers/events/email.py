@@ -1,7 +1,7 @@
 from app.models.emailTemplate import EmailTemplate
 from app.models.emailLog import EmailLog
 from app.controllers.main import main_bp
-from app.logic.emailHandler import *
+from app.logic.emailHandler import EmailHandler
 from flask import request
 
 @main_bp.route('/retrieveEmailTemplate', methods=['GET'])
@@ -28,4 +28,5 @@ def fetchEmailLogData(eventId):
 def getProgramSender():
     programInfo = request.form
     programId = programInfo['programId']
-    return str((EmailHandler.getEmailSender(programId)))
+    emailSender = EmailHandler.getEmailSender(programId)
+    return emailSender

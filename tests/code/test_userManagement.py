@@ -54,7 +54,7 @@ def test_changeProgramInfo():
     programId = 3
     emailSenderName = "New Test Name"
     emailReplyTo = 'newtest@email'
-    currentProgramInfo = Program.select().where(Program.id==programId).get()
+    currentProgramInfo = Program.get_by_id(programId)
     assert currentProgramInfo.emailSenderName == "testName"
     assert currentProgramInfo.emailReplyTo == "test@email"
     changeProgramInfo(emailReplyTo, emailSenderName, programId)
