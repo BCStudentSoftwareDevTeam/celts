@@ -19,6 +19,8 @@ from app.logic.courseManagement import updateCourse, createCourse
 def serviceCourseManagement(username=None):
     """This is a Temporary Page for the Service Course Managment Screen."""
     # TODO: How to make accessing other user's interfaces more userfriendly?
+    if g.current_user.isStudent:
+        abort(403)
     if g.current_user.isCeltsAdmin or g.current_user.isFaculty:
         user = User.get(User.username==username) if username else g.current_user
         courseDict = getServiceLearningCoursesData(user)
