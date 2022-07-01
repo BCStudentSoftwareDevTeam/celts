@@ -8,18 +8,19 @@ from app.models.emailTemplate import EmailTemplate
 from datetime import date, datetime, timedelta
 
 def checkForEvents():
-    currentDate = date.today().strftime("%m/%d/%Y")
-    today = datetime.strptime(currentDate,"%m/%d/%Y")
-    tomorrowDate = today + timedelta(days=1)
+    tomorrowDate = date.today() + timedelta(days=1)
     currentTerm = Term.select(Term.id).where(Term.isCurrentTerm==1)
     events = list(Event.select().where(Event.startDate==tomorrowDate))
-    template = EmailTemplate.select().where(EmailTemplate.purpose == "Reminder").dicts()
-    templateSubject = template[0]['subject']
-    templateBody = template[0]['body']
-    for i in range(len(events)):
-        programId = ProgramEvent.select(ProgramEvent.program).where(Program.event==events[i].id)
-        senderName = Program.get(Program.senderName)
-        emailData = {"EventId":events[i].id,
+
+    template = EmailTemplate.get(purpose = "Reminder")
+    templateSubject = template.subject
+    templateBody = template.body
+    print(events)
+    for event in events:
+        programId = event.singleProgram
+        print(programId)
+        senderName = Program.get(Program.emailSenderName)
+        emailData = {"EventId":event.id,
                         "ProgramId":programId,
                         "term":currentTerm,
                         "purpose":"Reminder",
