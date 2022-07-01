@@ -46,14 +46,14 @@ def events(selectedTerm):
     studentLedProgram = getStudentLedProgram(term)
     trainingProgram = getTrainingProgram(term)
     bonnerProgram = getBonnerProgram(term)
-    oneTimeEvents = getOneTimeEvents(term)
+    nonProgramEvents = getNonProgramEvents(term)
 
     return render_template("/events/event_list.html",
         selectedTerm = term,
         studentLedProgram = studentLedProgram,
         trainingProgram = trainingProgram,
         bonnerProgram = bonnerProgram,
-        oneTimeEvents = oneTimeEvents,
+        nonProgramEvents = nonProgramEvents,
         listOfTerms = listOfTerms,
         rsvpedEventsID = rsvpedEventsID,
         currentTime = currentTime,
