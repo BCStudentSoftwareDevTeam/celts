@@ -155,12 +155,12 @@ class EmailHandler:
         return (template_id, subject, body)
 
     def send_email(self):
-        defaultEmailInfo = {"senderName":"Sandesh", "replyTo":'bramsayr@gmail.com'}
+        defaultEmailInfo = {"senderName":"Sandesh", "replyTo":self.reply_to}
         template_id, subject, body = self.build_email()
-        if len(self.program_ids) == 1:  # check to see if it is a single program event
-            if self.program_ids[0].emailReplyTo:  # check to see if a default reply to has been input, if not, just use the default initialized above
+        if len(self.program_ids) == 1:
+            if self.program_ids[0].emailReplyTo:
                 defaultEmailInfo["replyTo"] = self.program_ids[0].emailReplyTo
-            if self.program_ids[0].emailSenderName:  # check to see if a default sender name has been input, if not, use the default initialized above
+            if self.program_ids[0].emailSenderName:
                 defaultEmailInfo["senderName"] = self.program_ids[0].emailSenderName
         try:
             with self.mail.connect() as conn:
@@ -174,7 +174,7 @@ class EmailHandler:
                         [self.override_all_mail],
                         email_body,
                         reply_to=defaultEmailInfo["replyTo"],
-                        sender = defaultEmailInfo["senderName"]
+                        sender = (defaultEmailInfo["senderName"], defaultEmailInfo["replyTo"])
                     ))
             self.store_sent_email(subject, template_id)
             return True
