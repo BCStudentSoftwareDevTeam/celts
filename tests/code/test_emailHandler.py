@@ -210,9 +210,8 @@ def test_recipients_category():
             allVolunteerEvent.term = firstTerm
             allVolunteerEvent.save()
 
-            # Updating the current term in the database
-            nextTerm = Term.update(isCurrentTerm = Term.id[6]).where(Term.isCurrentTerm = True).exicute()
-            print(nextTerm)
+            # Update the current term in the database
+            Term.update(isCurrentTerm = Term.id[6]).where(Term.isCurrentTerm == True).execute()
 
             # Add partont to All Volunteer Training Event in the prevous academic year: NOT banned and IS trained
             newTrainedStudent = EventParticipant.create(user = "partont", event = allVolunteerEvent)
