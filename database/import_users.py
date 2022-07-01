@@ -1,17 +1,13 @@
 import pyodbc
 from app.models.user import User
-import schedule
-import time
 
 def main():
     """
-    This function runs the updateRecords function once every 24 hours.
+    This function runs the updateRecords function once the script is run.
     """
-    schedule.every(24).hours.do(updateRecords)
+    updateRecords()
 
-    while 1:
-        schedule.run_pending()
-        time.sleep(1)
+
 
 def updateRecords():
     """
