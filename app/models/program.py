@@ -8,3 +8,5 @@ class Program(baseModel):
     partner = ForeignKeyField(Partner, null=True)
     isStudentLed = BooleanField(default=False)
     isBonnerScholars = BooleanField(default=False)
+    emailReplyTo = CharField()
+    emailSenderName = CharField()
