@@ -29,8 +29,6 @@ class EmailHandler:
         self.recipients = None
         self.sl_course_id = None
         self.attachment_path = app.config['email']['attachment_path']
-        self.attachmentFullPath = os.path.join(self.attachment_path, request.files['attachmentObject'].filename)
-
 
     def process_data(self):
         """ Processes raw data and stores it in class variables to be used by other methods """
@@ -144,11 +142,12 @@ class EmailHandler:
             os.mkdir(self.attachment_path)
         except:
             pass
-        return self.attachmentFullPath
+        attachmentFullPath = os.path.join(self.attachment_path, request.files['attachmentObject'].filename)
+        return attachmentFullPath
 
     def saveAttachment(self):
         """ Saves the attachment in the app/static/files/attachments/ directory """
-        request.files['attachmentObject'].save(self.attachmentFullPath) # saves attachment in directory
+        request.files['attachmentObject'].save(self.getAttachmentFullPath()) # saves attachment in directory
 
     def store_sent_email(self, subject, template_id):
         """ Stores sent email in the email log """
@@ -166,7 +165,6 @@ class EmailHandler:
 
     def build_email(self):
         # Most General Scenario
-        self.saveAttachment()
         self.process_data()
         template_id, subject, body = self.retrieve_and_modify_email_template()
         return (template_id, subject, body)
@@ -186,10 +184,10 @@ class EmailHandler:
                         [self.override_all_mail],
                         email_body,
                         reply_to=self.reply_to,
-                        file_attachment=self.attach_attachments(),
-                        sender = ("Sandesh", 'bramsayr@gmail.com')
+                        file_attachment=self.getAttachmentFullPath(),
+                        sender = ("Sandesh", 'IsaacandGarrettWereHere@gmail.com')
                     ))
-            self.store_sent_email(subject, template_id)
+                self.store_sent_email(subject, template_id)
             return True
         except Exception as e:
             print("Error on sending email: ", e)
