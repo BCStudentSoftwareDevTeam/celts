@@ -104,9 +104,10 @@ class EmailHandler:
         if recipients_category == "Eligible Students":
             # all terms with the same accademic year as the current term,
             # the allVolunteer training term then needs to be in that query
-            currentTerm = Term.get(isCurrentTerm = True)
+            #currentTerm = Term.get(isCurrentTerm = True)
+            Term2 = Term.alias()
 
-            sameYearTerms = Term.select().where(Term.academicYear == currentTerm.academicYear)
+            sameYearTerms = Term.select().join(Term2, on=(Term.academicYear == Term2.academicYear)).where(Term2.isCurrentTerm == True)
 
             bannedUsers = ProgramBan.select(ProgramBan.user_id).where((ProgramBan.endDate > datetime.now()) | (ProgramBan.endDate is None), ProgramBan.program_id.in_([p.id for p in self.program_ids]))
             allVolunteer = Event.select().where(Event.isAllVolunteerTraining == True, Event.term.in_(sameYearTerms))

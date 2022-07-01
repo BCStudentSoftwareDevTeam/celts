@@ -204,15 +204,18 @@ def test_recipients_category():
             assert email.recipients == []
 
             # Change the term that the All Volunteer Training takes place so that
-            # it is the next academic year
-            firstTerm = Term.select().order_by(Term.id)
-            nextTerm = firstTerm[-1]
-            updateEvent = Event.get_by_id(14)
-            updateEvent.term = nextTerm
-            updateEvent.save()
+            # it is in the past
+            firstTerm = Term.select().order_by(Term.id).get()
+            allVolunteerEvent = Event.get_by_id(14)
+            allVolunteerEvent.term = firstTerm
+            allVolunteerEvent.save()
+
+            moveCurrentTerm = list(Term.select().order_by(Term.id))
+            nextCurrentTerm = moveCurrentTerm[-1]
+            nextCurrentTerm.save()
 
             # Add partont to All Volunteer Training Event in the prevous academic year: NOT banned and IS trained
-            newTrainedStudent = EventParticipant.create(user = "partont", event = 14)
+            newTrainedStudent = EventParticipant.create(user = "partont", event = nextCurrentTerm)
             email.process_data()
             assert email.recipients == []
 
