@@ -21,10 +21,14 @@ $(document).ready(function() {
 
     // console.log($('#pastVolunteers').data('start-date'))
     // console.log($('#pastVolunteers').data('volunteer-info'))
+    console.log($('#pastVolunteers').data('eventRsvpData'))
     let recurringId = $('#pastVolunteers').data('recurring-id')
+    let eventId = $("#eventID").val()
 
     $.ajax({
-      url: `/getRecurrentEventParticipants/${recurringId}`,
+      url: '/addVolunteersToEvent',
+      data: {"recurringId": recurringId,
+            "event_id": eventId},
       dataType: "json",
       type: "POST",
       success: function(response){

@@ -1,3 +1,4 @@
+import re
 from flask import request, render_template, redirect, url_for, request, flash, abort, g, json, jsonify
 from datetime import datetime
 from peewee import DoesNotExist
@@ -90,16 +91,31 @@ def updateVolunteerTable(eventID):
 
 @admin_bp.route('/addVolunteersToEvent', methods = ['POST'])
 @admin_bp.route('/addVolunteerToEvent/<volunteer>/<eventId>', methods = ['POST'])
-def addVolunteer(volunteer, eventId):
-    username = volunteer.strip("()").split('(')[-1]
-    user = User.get(User.username==username)
-    successfullyAddedVolunteer = addVolunteerToEventRsvp(user, eventId)
-    EventParticipant.create(user=user, event=eventId) # user is present
-    if successfullyAddedVolunteer:
-        flash("Volunteer successfully added!", "success")
+def addVolunteer(volunteer = None, eventId = None):
+    if volunteer == None and eventId == None:
+        data = request.form
+        recurringId = data["recurringId"]
+        succesfullygetRecurringVolunteer = getPreviousRecurringEventData(recurringId)
+        for user in succesfullygetRecurringVolunteer:
+            print(user)
+            username = user.username
+            eventId = data["event_id"]
+            print(eventId)
+            EventParticipant.create(user = username, event = eventId)
+        if succesfullygetRecurringVolunteer:
+            flash("Volunteer successfully added!", "success")
+        else:
+            flash("Error when adding volunteer", "danger")
     else:
-        flash("Error when adding volunteer", "danger")
-    return ""
+        username = volunteer.strip("()").split('(')[-1]
+        user = User.get(User.username==username)
+        successfullyAddedVolunteer = addVolunteerToEventRsvp(user, eventId)
+        EventParticipant.create(user=user, event=eventId) # user is present
+        if successfullyAddedVolunteer:
+            flash("Volunteer successfully added!", "success")
+        else:
+            flash("Error when adding volunteer", "danger")
+    return "recurring people have been added!"
 
 @admin_bp.route('/removeVolunteerFromEvent/<user>/<eventID>', methods = ['POST'])
 def removeVolunteerFromEvent(user, eventID):
@@ -108,17 +124,17 @@ def removeVolunteerFromEvent(user, eventID):
     flash("Volunteer successfully removed", "success")
     return ""
 
-@admin_bp.route('/getRecurrentEventParticipants/<recurringId>', methods = ['POST'])
-def getPastVolunteer(recurringId):
-    """
-    This function gets all volunteers from the previous week's event and formats
-    the data into a nested list of user data.
-    Expects:
-    recurringID signifying that an event is recurring. ie: "TestEvent week 2 == recurringId = 1"
-    """
-    pastEventParticipants = getPreviousRecurringEventData(recurringId)
+# @admin_bp.route('/getRecurrentEventParticipants/<recurringId>', methods = ['POST'])
+# def getPastVolunteer(recurringId):
+#     """
+#     This function gets all volunteers from the previous week's event and formats
+#     the data into a nested list of user data.
+#     Expects:
+#     recurringID signifying that an event is recurring. ie: "TestEvent week 2 == recurringId = 1"
+#     """
+#     pastEventParticipants = getPreviousRecurringEventData(recurringId)
 
-    return json.dumps([model_to_dict(pastEventParticipant) for pastEventParticipant in pastEventParticipants])
+#     return json.dumps([model_to_dict(pastEventParticipant) for pastEventParticipant in pastEventParticipants])
 
 @admin_bp.route('/updateBackgroundCheck', methods = ['POST'])
 def updateBackgroundCheck():
