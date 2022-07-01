@@ -210,6 +210,7 @@ def test_recipients_category():
             allVolunteerEvent.term = firstTerm
             allVolunteerEvent.save()
 
+            # Move the current term up one semester so that it is in the next academic year
             moveCurrentTerm = list(Term.select().order_by(Term.id))
             nextCurrentTerm = moveCurrentTerm[-1]
             nextCurrentTerm.save()

@@ -104,7 +104,6 @@ class EmailHandler:
         if recipients_category == "Eligible Students":
             # all terms with the same accademic year as the current term,
             # the allVolunteer training term then needs to be in that query
-            #currentTerm = Term.get(isCurrentTerm = True)
             Term2 = Term.alias()
 
             sameYearTerms = Term.select().join(Term2, on=(Term.academicYear == Term2.academicYear)).where(Term2.isCurrentTerm == True)
