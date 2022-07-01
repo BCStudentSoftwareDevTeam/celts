@@ -20,12 +20,27 @@ function showTab(currentTab) {
   }
 
   if (currentTab == (allTabs.length - 1)) {
+    $("#approveButton").show();
     $("#nextButton").text("Submit");
   } else {
     $("#nextButton").text("Next");
+    $("#approveButton").hide();
   }
   fixStepIndicator(currentTab)
 }
+
+$("#approveButton").click(function(){
+  var data = $("form").serialize()
+  $.ajax({
+    url: "/serviceLearning/approveCourse/",
+    type: "POST",
+    data: data,
+    success: function(response) {
+        msgFlash("Course approved!", "success")
+        window.location.replace("/manageServiceLearning")
+    }
+  });
+});
 
 $("#previousButton").on("click", function() {
   displayCorrectTab(-1);
@@ -43,11 +58,11 @@ function displayCorrectTab(navigateTab) {
   // This function will figure out which tab to display
   let allTabs = $(".tab");
   if (navigateTab == 1 && !validateForm()) return false;
-  
+
   $(allTabs[currentTab]).css("display", "none");
   // Increase or decrease the current tab by 1:
   currentTab = currentTab + navigateTab;
-  
+
   if (currentTab >= allTabs.length) {
     saveCourseInstructors().then(() => $("#slcNewProposal").submit());
     return false;

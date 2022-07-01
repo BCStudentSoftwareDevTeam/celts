@@ -68,7 +68,6 @@ def slcEditProposal(courseID):
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcCreateOrEdit():
     if request.method == "POST":
-
         courseExist = Course.get_or_none(Course.id == request.form.get('courseID'))
         if courseExist:
             updateCourse(request.form.copy(), instructorsDict)
@@ -114,4 +113,18 @@ def withdrawCourse(courseID):
             flash("Unauthorized to perform this action", 'warning')
     except Exception as e:
         flash("Withdrawal Unsuccessful", 'warning')
+    return ""
+
+@serviceLearning_bp.route('/serviceLearning/approveCourse/', methods=['POST'])
+def approveCourse():
+    """
+    """
+    # print(instructorsDict)
+    # requestData = request.form
+    # print(requestData)
+    # qry=User.update({User.age:25}).where(User.age>20)
+    updateCourse(request.form.copy(), instructorsDict)
+    print("================")
+    # courseExist = Course.get_or_none(Course.id == request.form.get('courseID'))
+    # print("---------------------", courseExist)
     return ""
