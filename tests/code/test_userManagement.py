@@ -28,7 +28,6 @@ def test_modifyCeltsAdmin():
         with pytest.raises(DoesNotExist):
             addCeltsAdmin("ksgvoidsid;")
 
-@pytest.mark.integration
 def test_modifyCeltsStudentStaff():
     user = "mupotsal"
     userInTest = User.get(User.username == user)
