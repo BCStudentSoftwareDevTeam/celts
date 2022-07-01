@@ -118,13 +118,12 @@ def withdrawCourse(courseID):
 @serviceLearning_bp.route('/serviceLearning/approveCourse/', methods=['POST'])
 def approveCourse():
     """
+    This function updates and approves a Service Learning Course when using  the
+        approve button.
+    return: empty string because AJAX needs to receive something
     """
-    # print(instructorsDict)
-    # requestData = request.form
-    # print(requestData)
-    # qry=User.update({User.age:25}).where(User.age>20)
-    updateCourse(request.form.copy(), instructorsDict)
-    print("================")
-    # courseExist = Course.get_or_none(Course.id == request.form.get('courseID'))
-    # print("---------------------", courseExist)
+    updateCourse(request.form.copy(), instructorsDict) # Updates database with the completed fields
+    # The next line creates the query to approve the course
+    course = Course.update(status = 2).where(Course.id == request.form.copy()['courseID'])
+    course.execute() # Executes the query and approves course in the database
     return ""

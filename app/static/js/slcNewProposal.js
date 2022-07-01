@@ -23,21 +23,22 @@ function showTab(currentTab) {
     $("#approveButton").show();
     $("#nextButton").text("Submit");
   } else {
-    $("#nextButton").text("Next");
     $("#approveButton").hide();
+    $("#nextButton").text("Next");
   }
   fixStepIndicator(currentTab)
 }
 
 $("#approveButton").click(function(){
   var data = $("form").serialize()
+  saveCourseInstructors()
   $.ajax({
     url: "/serviceLearning/approveCourse/",
     type: "POST",
     data: data,
     success: function(response) {
-        msgFlash("Course approved!", "success")
         window.location.replace("/manageServiceLearning")
+        msgFlash("Course approved!", "success")
     }
   });
 });
