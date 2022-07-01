@@ -7,7 +7,7 @@ from dateutil import parser
 from app import app
 from app.models.program import Program
 from app.models.event import Event
-from app.models.eventFacilitator import EventFacilitator
+from app.models.facilitator import EventFacilitator
 from app.models.eventParticipant import EventParticipant
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
@@ -17,7 +17,7 @@ from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.models.adminLogs import AdminLogs
-from app.logic.volunteers import getEventLengthInHours
+from app.logic.volunteers import getEventLengthInHours, isProgramManagerForEvent
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.logic.courseManagement import pendingCourses, approvedCourses
@@ -62,7 +62,7 @@ def templateSelect():
 @admin_bp.route('/eventTemplates/<templateid>/create', methods=['GET','POST'])
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
 def createEvent(templateid, programid=None):
-    if not g.current_user.isAdmin:
+    if not (g.current_user.isAdmin or hasPrivilege(g.current_user, programid)):
         abort(403)
 
     # Validate given URL
@@ -116,7 +116,7 @@ def createEvent(templateid, programid=None):
 
 @admin_bp.route('/eventsList/<eventId>/edit', methods=['GET','POST'])
 def editEvent(eventId):
-    if request.method == "POST" and not g.current_user.isAdmin:
+    if request.method == "POST" and not (g.current_user.isCeltsAdmin or isProgramManagerForEvent(g.current_user, eventId)):
         abort(403)
 
     # Validate given URL
