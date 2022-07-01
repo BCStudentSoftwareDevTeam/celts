@@ -210,13 +210,12 @@ def test_recipients_category():
             allVolunteerEvent.term = firstTerm
             allVolunteerEvent.save()
 
-            # Move the current term up one semester so that it is in the next academic year
-            moveCurrentTerm = list(Term.select().order_by(Term.id))
-            nextCurrentTerm = moveCurrentTerm[-1]
-            nextCurrentTerm.save()
+            # Updating the current term in the database
+            nextTerm = Term.update(isCurrentTerm = Term.id[6]).where(Term.isCurrentTerm = True).exicute()
+            print(nextTerm)
 
             # Add partont to All Volunteer Training Event in the prevous academic year: NOT banned and IS trained
-            newTrainedStudent = EventParticipant.create(user = "partont", event = nextCurrentTerm)
+            newTrainedStudent = EventParticipant.create(user = "partont", event = allVolunteerEvent)
             email.process_data()
             assert email.recipients == []
 
