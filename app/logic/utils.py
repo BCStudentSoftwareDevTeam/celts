@@ -61,3 +61,4 @@ def format24HourTime(unformattedTime):
     elif isinstance(unformattedTime, datetime):
         formattedTime = unformattedTime.strftime("%H:%M")
         return formattedTime
+        

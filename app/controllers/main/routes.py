@@ -77,10 +77,10 @@ def viewVolunteersProfile(username):
         rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == volunteer)
         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
 
-        programManagerPrograms = list(ProgramManager.select().where(ProgramManager.user == volunteer))
+        programManagerPrograms = programManager.select().where(programManager.user == volunteer)
         permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
-        allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == volunteer))
+        allUserEntries = BackgroundCheck.select().where(BackgroundCheck.user == volunteer)
         completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
         backgroundTypes = list(BackgroundCheckType.select())
 
@@ -90,10 +90,10 @@ def viewVolunteersProfile(username):
                                               ProgramBan.program == program,
                                               ProgramBan.endDate > datetime.datetime.now())
 
-            noteForDict = list(notes)[-1].banNote.noteContent if list(notes) else ""
+            noteForDict = notes[-1].banNote.noteContent if notes else ""
             eligibilityTable.append({"program" : program,
                                    "completedTraining" : (volunteer.username in trainedParticipants(program, g.current_term)),
-                                   "isNotBanned" : isEligibleForProgram(program, volunteer),
+                                   "isNotBanned" : True if not notes else False,
                                    "banNote": noteForDict})
         return render_template ("/main/volunteerProfile.html",
                 programs = programs,
