@@ -97,11 +97,11 @@ def addVolunteer(volunteer = None, eventId = None):
         recurringId = data["recurringId"]
         succesfullygetRecurringVolunteer = getPreviousRecurringEventData(recurringId)
         for user in succesfullygetRecurringVolunteer:
-            print(user)
             username = user.username
             eventId = data["event_id"]
-            print(eventId)
+            successfullyAddedRecurringVolunteer = addVolunteerToEventRsvp(username, eventId)
             EventParticipant.create(user = username, event = eventId)
+
         if succesfullygetRecurringVolunteer:
             flash("Volunteer successfully added!", "success")
         else:

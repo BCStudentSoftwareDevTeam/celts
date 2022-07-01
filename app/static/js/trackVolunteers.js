@@ -43,7 +43,7 @@ $(document).ready(function() {
     });
   };
 
-  $("#pastVolunteers").on("click", function(){
+  $("#AddPastVolunteerButton").on("click", function(){
     pastVolunteersButton();
 
   });

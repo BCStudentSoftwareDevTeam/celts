@@ -36,9 +36,9 @@
 <input class="form-control" id="eventID" name="event" value="{{event}}" type='hidden' />
 <div class="flex-container" style="padding: 5px;">
   <div class='form-group d-inline-flex'>
-    <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add volunteer</a>
+    <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">{{eventRsvpData}}</a>
     {% if event.isRecurring and not event.isFirstRecurringEvent%}
-      <a class="btn btn-success" id="pastVolunteers" role="button" data-bs-toggle="modal" data-eventRsvpData = {{eventRsvpData}} data-recurring-id= {{recurringEventID}} data-start-date= {{recurringEventStartDate}} data-volunteer-info = {{recurringVolunteers}} style="margin:5px;">Add Past Volunteers</a>
+      <a class="btn btn-success" id="pastVolunteers" role="button" data-bs-toggle="modal" data-bs-target= "#addPastVolunteerModal" data-recurring-id= {{recurringEventID}} data-start-date= {{recurringEventStartDate}} data-volunteer-info = {{recurringVolunteers}} style="margin:5px;">Add Past Volunteers</a>
     {% endif %}
     <a class="btn btn-warning" role="button" href= "/eventsList/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
   </div>
@@ -142,6 +142,28 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <button id="selectVolunteerButton" type="button" class="btn btn-primary" disabled>Add participant</button>
       </div>
+    </div>
+  </div>
+</div>
+<!-- Modal for Add Past Volunteers-->
+<div class="modal fade float-start" id="addPastVolunteerModal" tabindex="-1" aria-labelledby="addPastVolunteerModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Past Volunteers</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group">
+          <input type="checkbox" id="PastVolunteers" />
+          
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary">Select All</button>
+        <button id="AddPastVolunteerButton" type="button" class="btn btn-primary" >Confirm Selection</button>
+      </div>
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
     </div>
   </div>
 </div>
