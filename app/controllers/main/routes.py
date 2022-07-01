@@ -67,7 +67,11 @@ def viewVolunteersProfile(username):
     try:
         volunteer = User.get(User.username == username)
     except Exception as e:
-        return "User does not exist", 404
+        if g.current_user.isAdmin:
+            flash(f"{username} does not exist! ", category='danger')
+            return redirect(url_for('admin.studentSearchPage'))
+        else:
+            abort(403)  # Error 403 if non admin/student-staff user trys to access via url
 
     if (g.current_user == volunteer) or g.current_user.isAdmin:
         upcomingEvents = getUpcomingEventsForUser(volunteer)
