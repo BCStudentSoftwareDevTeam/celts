@@ -1,5 +1,4 @@
-from flask import request, render_template, g, abort, json, redirect, jsonify, flash
-
+from flask import request, render_template, g, abort, json, redirect, jsonify, flash, session
 from app.models.user import User
 from app.models.term import Term
 from app.models.course import Course
@@ -14,6 +13,8 @@ from app.logic.searchUsers import searchUsers
 from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal
 from app.logic.courseManagement import updateCourse, createCourse
 
+from app.controllers.main.routes import getRedirectTarget, setRedirectTarget
+
 @serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
 @serviceLearning_bp.route('/serviceLearning/courseManagement/<username>', methods = ['GET'])
 def serviceCourseManagement(username=None):
@@ -22,6 +23,7 @@ def serviceCourseManagement(username=None):
     if g.current_user.isStudent:
         abort(403)
     if g.current_user.isCeltsAdmin or g.current_user.isFaculty:
+        setRedirectTarget("/serviceLearning/courseManagement")
         user = User.get(User.username==username) if username else g.current_user
         courseDict = getServiceLearningCoursesData(user)
         return render_template('serviceLearning/slcManagment.html',
@@ -66,11 +68,14 @@ def slcEditProposal(courseID):
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcCreateOrEdit():
     if request.method == "POST":
+
         courseExist = Course.get_or_none(Course.id == request.form.get('courseID'))
         if courseExist:
             updateCourse(request.form.copy(), instructorsDict)
         else:
             createCourse(request.form.copy(), instructorsDict)
+        if getRedirectTarget(False):
+            return redirect('' + getRedirectTarget(True) + '')
         return redirect('/serviceLearning/courseManagement')
     terms = Term.select().where(Term.year >= g.current_term.year)
     courseData = None
