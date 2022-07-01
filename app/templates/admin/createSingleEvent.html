@@ -98,7 +98,7 @@
             <p>{{eventData.location}}</p>
           {%endif%}
         </div>
-        {% if isNewEvent %}
+        {% if isNewEvent and page_title != 'Create All Volunteer Training' %}
         <div class="form-check form-switch pb-1">
           <label class="custom-control-label" for='checkIsRecurring'><strong>This event is a recurring event</strong></label>
           <input class="form-check-input" type="checkbox" id="checkIsRecurring" name="isRecurring"/>
@@ -136,7 +136,7 @@
         <!-- Start and End Datepickers -->
         <div class="row col-md-12">
           <div class="form-group col-md-6">
-            <label class="form-label me-2" for="startDatePicker"><strong>Start Date:</strong></label>
+            <label class="form-label me-2" for="startDatePicker"><strong>Start Date</strong></label>
             {% if  isEditable  %}
               <div class='input-group date' id="startDate">
                 <input type='text' class="form-control datePicker readonly" value="{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" name="startDate" placeholder="Pick a start date" onchange="updateDate(this)" id=startDatePicker required>
@@ -169,7 +169,7 @@
       <div class="col-md-6 form-group">
         {% if isEditable and page_title != 'Create All Volunteer Training' %}
           <div class="form-check form-switch">
-            <label class="custom-control-label" for="checkIsTraining"><strong>This event is a training.</strong></label>
+            <label class="custom-control-label" for="checkIsTraining"><strong> This event is a training. </strong></label>
             <input class="form-check-input" type="checkbox" id="checkIsTraining" name="isTraining" {{"checked" if eventData.isTraining}}/>
           </div>
           <div class="form-check form-switch">
@@ -181,7 +181,7 @@
             <input class="form-check-input" type="checkbox" id="earnServiceHours" name="isService" {{"checked" if eventData.isService}}/>
           </div>
           {% else %}
-            <div class="mb-4">    
+            <div class="mb-4">
             {% if eventData.isRsvpRequired %}
               <label><strong>This event requires RSVP</strong></label><br>
             {% endif %}
@@ -191,7 +191,7 @@
             </div>
           {% endif %}
           <div class="form-group mb-4">
-            <label class="form-label" for='inputEventDescription'><strong>Description</strong></label>
+            <label class="form-label" for='inputEventDescription'><strong> Description </strong></label>
             {% if isEditable %}
               <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' placeholder="Enter event description" name="description" required>{{eventData.description}}</textarea>
             {% else %}
