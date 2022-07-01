@@ -1,6 +1,7 @@
-from flask import request, render_template, g, abort, flash, redirect, url_for
+from flask import request, render_template, g, abort, flash, redirect, url_for, session
 import datetime
 import json
+from http import cookies
 
 from app import app
 from app.models.program import Program
@@ -277,7 +278,10 @@ def getAllCourseIntructors(term=None):
     """
     This function selects all the Intructors Name and the previous courses
     """
+    for i in session:
+        print(i)
     if g.current_user.isCeltsAdmin:
+        setRedirectTarget("/manageServiceLearning")
         courseDict = getCourseDict()
 
         term = Term.get_or_none(Term.id == term)
@@ -296,3 +300,27 @@ def getAllCourseIntructors(term=None):
                                 term = term)
     else:
         abort(403)
+
+def getRedirectTarget(popTarget):
+    """
+    This function returns a string with the URL or route to a page in the Application
+        saved with setRedirectTarget() and is able to pop the value from the session
+        to make it an empty value
+    popTarget: expects a bool value to determine whether or not to reset
+                redirectTarget to an emtpy value
+    return: a string with the URL or route to a page in the application that was
+            saved in setRedirectTarget()
+    """
+    target = session["redirectTarget"]
+    if popTarget:
+        session.pop("redirectTarget")
+    return target
+
+def setRedirectTarget(target):
+    """
+    This function saves the target URL in the session for future redirection
+        to said page
+    target: expects a string that is a URL or a route to a page in the application
+    return: None
+    """
+    session["redirectTarget"] = target
