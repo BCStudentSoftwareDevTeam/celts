@@ -99,7 +99,7 @@ class EmailHandler:
 
         return [recipient for recipient in recipients]
 
-    def replace_general_template_placholders(self, email_body=None):
+    def replace_general_template_placeholders(self, email_body=None):
         """ Replaces all template placeholders except name """
         event_link = f"{self.url_domain}/eventsList/{self.event.id}/edit"
 
@@ -119,7 +119,7 @@ class EmailHandler:
         return new_body
 
     def retrieve_and_modify_email_template(self):
-        """ Retrieves email template based on idenitifer and calls replace_general_template_placholders"""
+        """ Retrieves email template based on idenitifer and calls replace_general_template_placeholders"""
 
         email_template = EmailTemplate.get(EmailTemplate.purpose==self.template_identifier) # --Q: should we keep purpose as the identifier?
         template_id = email_template.id
@@ -127,7 +127,7 @@ class EmailHandler:
         subject = self.subject if self.subject else email_template.subject
 
         body = self.body if self.body else email_template.body
-        new_body = self.replace_general_template_placholders(body)
+        new_body = self.replace_general_template_placeholders(body)
 
         self.reply_to = email_template.replyToAddress
         return (template_id, subject, new_body)
