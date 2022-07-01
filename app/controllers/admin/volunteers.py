@@ -2,18 +2,19 @@ from flask import request, render_template, redirect, url_for, request, flash, a
 from datetime import datetime
 from peewee import DoesNotExist
 from playhouse.shortcuts import model_to_dict
-
 from app.controllers.admin import admin_bp
 from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
-from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck
+from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck, setProgramManager, isProgramManagerForEvent
 from app.logic.participants import trainedParticipants, getEventParticipants
 from app.logic.events import getPreviousRecurringEventData
 from app.models.user import User
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
+from app.models.programManager import ProgramManager
+from app.logic.adminLogs import createLog
 
 
 
@@ -39,8 +40,9 @@ def trackVolunteersPage(eventID):
 
     trainedParticipantsList = trainedParticipants(program, g.current_term)
     eventParticipants = getEventParticipants(event)
+    isProgramManager = isProgramManagerForEvent(g.current_user, event)
 
-    if not g.current_user.isCeltsAdmin:
+    if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
         abort(403)
 
     eventRsvpData = (EventRsvp
@@ -128,3 +130,15 @@ def updateBackgroundCheck():
         dateCompleted = eventData['bgDate']
         setUserBackgroundCheck(user,type, checkPassed, dateCompleted)
         return " "
+
+@admin_bp.route('/updateProgramManager', methods=["POST"])
+def updateProgramManager():
+    if g.current_user.isCeltsAdmin:
+        data =request.form
+        username = User.get(User.username == data["user_name"])
+        event =Event.get_by_id(data['program_id'])
+        setProgramManager(data["user_name"], data["program_id"], data["action"])
+        createLog(f'{username.firstName} has been {data["action"]}ed as a Program Manager for {event.name}')
+        return ""
+    else:
+        abort(403)
