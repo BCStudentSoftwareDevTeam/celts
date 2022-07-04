@@ -206,60 +206,80 @@ programs = [
         "programName": "Empty Bowls",
         "isStudentLed": False,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 2,
         "programName": "Berea Buddies",
         "isStudentLed": True,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 3,
         "programName": "Adopt A Grandparent",
         "isStudentLed": True,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 5,
         "programName": "Bonners Scholars",
         "isStudentLed": False,
         "isBonnerScholars": True,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 6,
         "programName": "Habitat For Humanity",
         "isStudentLed": False,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 7,
         "programName": "Berea Teen Mentoring",
         "isStudentLed": True,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 8,
         "programName": "Hispanic Outreach Program",
         "isStudentLed": True,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 9,
         "programName": "People Who Care",
         "isStudentLed": True,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 10,
         "programName": "Food Drive",
         "isStudentLed": False,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 12,
         "programName": "Berea Tutoring",
         "isStudentLed": False,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     }
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
