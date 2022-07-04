@@ -15,10 +15,8 @@ def checkForEvents():
     template = EmailTemplate.get(purpose = "Reminder")
     templateSubject = template.subject
     templateBody = template.body
-    print(events)
     for event in events:
         programId = event.singleProgram
-        print(programId)
         senderName = Program.get(Program.emailSenderName)
         emailData = {"EventId":event.id,
                         "ProgramId":programId,
