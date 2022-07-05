@@ -1,0 +1,19 @@
+{%set title = "Review SLC Proposal"%}
+{% extends "base.html"%}
+
+{% block scripts %}
+  {{super()}}
+{% endblock %}
+
+{% block styles %}
+  {{super()}}
+{% endblock %}
+
+{% block app_content %}
+<div>
+    <p>hello</p>
+    {% for instructor in courseInstructor %}
+        <p>{{instructor.user.firstName}}</p>
+        {% endfor %}
+</div>
+{% endblock %}
