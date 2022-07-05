@@ -18,7 +18,7 @@ def training_event():
                                 startDate = 2021-12-12,
                                 endDate = 2021-12-13)
 
-        testProgramEvent = ProgramEvent.create(program = 3, event = testEvent)
+        testProgramEvent = ProgramEvent.create(program = 5, event = testEvent)
 
         yield testEvent
 
@@ -28,8 +28,6 @@ def training_event():
 def test_studentled_event(training_event):
         testProgramEvent = getStudentLedProgram(3)
         assert testProgramEvent
-        print(testProgramEvent)
-
 
 @pytest.mark.integration
 def test_training_event(training_event):
@@ -42,14 +40,18 @@ def test_training_event(training_event):
             isCurrentTerm=0)
 
         testProgramEvent = getTrainingProgram(3)
-        testProgramEvent2 = getTrainingProgram(2)
-        testProgramEvent3 = getTrainingProgram(newTerm)
+        testProgramEvent2 = getTrainingProgram(newTerm)
+
+        assert testProgramEvent not in testProgramEvent2
+
         newTerm.delete_instance()
 
+@pytest.mark.integration
+def test_bonner_event(training_event):
+    testProgramEvent = getBonnerProgram(3)
+    assert testProgramEvent
 
-# @pytest.mark.integration
-# def test_bonner_event(training_event):
-
-
-# @pytest.mark.integration
-# def test_oneTime_event(training_event):
+@pytest.mark.integration
+def test_nonProgram_event(training_event):
+    testProgramEvent = getNonProgramEvents(6)
+    assert testProgramEvent
