@@ -43,9 +43,9 @@ def events(selectedTerm):
     participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
     term = Term.get_by_id(currentTerm)
-    studentLedProgram = getStudentLedProgram(term)
-    trainingProgram = getTrainingProgram(term)
-    bonnerProgram = getBonnerProgram(term)
+    studentLedProgram = getStudentLedEvent(term)
+    trainingProgram = getTrainingEvent(term)
+    bonnerProgram = getBonnerEvent(term)
     nonProgramEvents = getNonProgramEvents(term)
 
     return render_template("/events/event_list.html",
@@ -82,7 +82,7 @@ def viewVolunteersProfile(username):
         rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == volunteer)
         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
 
-        programManagerPrograms = programManager.select().where(programManager.user == volunteer)
+        programManagerPrograms = ProgramManager.select().where(ProgramManager.user == volunteer)
         permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
         allUserEntries = BackgroundCheck.select().where(BackgroundCheck.user == volunteer)
