@@ -54,6 +54,5 @@ def test_bonner_event(training_event):
 @pytest.mark.integration
 def test_nonProgram_event(training_event):
     testProgramEvent = getNonProgramEvents(6)
-    print(testProgramEvent)
 
     assert testProgramEvent
