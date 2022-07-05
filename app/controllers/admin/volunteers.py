@@ -104,11 +104,11 @@ def addVolunteer(volunteer = None, eventId = None):
                 successfullyAddedRecurringVolunteer = addVolunteerToEventRsvp(username, eventId)
                 EventParticipant.create(user = username, event = eventId)
             else:
-                if username == eventParticipants[username]:
-                    print("This user has alreay been added to this event")
-                # else username != eventParticipants[username]:
-                #     successfullyAddedRecurringVolunteer = addVolunteerToEventRsvp(username, eventId)
-                #     EventParticipant.create(user = username, event = eventId)
+                if EventRsvp.select(EventRsvp.user==username, EventRsvp.event_id == eventId).exists():
+                    print("This user has already been added to this event")
+                else:
+                    successfullyAddedRecurringVolunteer = addVolunteerToEventRsvp(username, eventId)
+                    EventParticipant.create(user = username, event = eventId)
 
         if succesfullygetRecurringVolunteer:
             flash("Volunteer successfully added!", "success")
