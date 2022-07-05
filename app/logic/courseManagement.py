@@ -96,4 +96,7 @@ def updateCourse(courseData, instructorsDict):
                     .where((CourseQuestion.questionNumber == i) & (CourseQuestion.course==courseData["courseID"])).execute())
     removeInstructors = CourseInstructor.delete().where(CourseInstructor.course == courseData["courseID"]).execute()
     for instructor in instructorsDict["instructors"]:
-        addInstructors = CourseInstructor.create(course=courseData["courseID"], user=instructor)
+        if not CourseInstructor.select().where(CourseInstructor.course==courseData["courseID"], CourseInstructor.user==instructor).exists():
+            addInstructors = CourseInstructor.create(course=courseData["courseID"], user=instructor)
+        else:
+            flash("The Insructor has already been added before.", "danger")
