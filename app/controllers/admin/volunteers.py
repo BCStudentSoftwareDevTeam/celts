@@ -95,12 +95,20 @@ def addVolunteer(volunteer = None, eventId = None):
     if volunteer == None and eventId == None:
         data = request.form
         recurringId = data["recurringId"]
+        eventId = data["event_id"]
         succesfullygetRecurringVolunteer = getPreviousRecurringEventData(recurringId)
+        eventParticipants = getEventParticipants(eventId)
         for user in succesfullygetRecurringVolunteer:
             username = user.username
-            eventId = data["event_id"]
-            successfullyAddedRecurringVolunteer = addVolunteerToEventRsvp(username, eventId)
-            EventParticipant.create(user = username, event = eventId)
+            if len(eventParticipants) == 0:
+                successfullyAddedRecurringVolunteer = addVolunteerToEventRsvp(username, eventId)
+                EventParticipant.create(user = username, event = eventId)
+            else:
+                if username == eventParticipants[username]:
+                    print("This user has alreay been added to this event")
+                # else username != eventParticipants[username]:
+                #     successfullyAddedRecurringVolunteer = addVolunteerToEventRsvp(username, eventId)
+                #     EventParticipant.create(user = username, event = eventId)
 
         if succesfullygetRecurringVolunteer:
             flash("Volunteer successfully added!", "success")
@@ -123,18 +131,6 @@ def removeVolunteerFromEvent(user, eventID):
     (EventRsvp.delete().where(EventRsvp.user==user)).execute()
     flash("Volunteer successfully removed", "success")
     return ""
-
-# @admin_bp.route('/getRecurrentEventParticipants/<recurringId>', methods = ['POST'])
-# def getPastVolunteer(recurringId):
-#     """
-#     This function gets all volunteers from the previous week's event and formats
-#     the data into a nested list of user data.
-#     Expects:
-#     recurringID signifying that an event is recurring. ie: "TestEvent week 2 == recurringId = 1"
-#     """
-#     pastEventParticipants = getPreviousRecurringEventData(recurringId)
-
-#     return json.dumps([model_to_dict(pastEventParticipant) for pastEventParticipant in pastEventParticipants])
 
 @admin_bp.route('/updateBackgroundCheck', methods = ['POST'])
 def updateBackgroundCheck():

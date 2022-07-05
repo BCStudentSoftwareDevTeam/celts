@@ -154,10 +154,14 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <div class="input-group">
-          <input type="checkbox" id="PastVolunteers" />
-          
-        </div>
+          {%for participant in eventRsvpData%}
+            {% set action = "add" %}
+            {% set checked = "" %}
+              {% if participant in eventRsvpData %}
+                <input type="checkbox" id="PastVolunteers" disabled />
+                <label class="form-check-label" for="PastVolunteers"> {{participant.user.firstName}} {{participant.user.lastName}} </label>
+              {% endif %}
+          {% endfor %}
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary">Select All</button>

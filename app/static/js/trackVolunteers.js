@@ -14,14 +14,6 @@ $(document).ready(function() {
   $('[data-toggle="tooltip"]').tooltip();
 
   function pastVolunteersButton(){
-    /**
-    This button utilizes an AJAX request to get a list of recurring volunteer user dataType
-    ie: First and Last name, email, phone number.
-    */
-
-    // console.log($('#pastVolunteers').data('start-date'))
-    // console.log($('#pastVolunteers').data('volunteer-info'))
-    console.log($('#pastVolunteers').data('eventRsvpData'))
     let recurringId = $('#pastVolunteers').data('recurring-id')
     let eventId = $("#eventID").val()
 
@@ -33,9 +25,8 @@ $(document).ready(function() {
       type: "POST",
       success: function(response){
         let table = document.getElementById("volunteerTable");
-        console.log(response);
         table.innerHTML += (response);
-
+        location.reload();
       },
       error: function(request, status, error,response){
         console.log(response);
