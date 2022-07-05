@@ -18,14 +18,13 @@ from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.models.adminLogs import AdminLogs
 from app.logic.volunteers import getEventLengthInHours, isProgramManagerForEvent
-from app.logic.utils import selectSurroundingTerms
+from app.logic.utils import selectSurroundingTerms, format24to12HourTime
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.logic.courseManagement import pendingCourses, approvedCourses
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
 from app.logic.userManagement import hasPrivilege, getPrograms
-
 
 
 @admin_bp.route('/switch_user', methods=['POST'])
@@ -141,8 +140,12 @@ def editEvent(eventId):
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     program = event.singleProgram
-
     isProgramManager = hasPrivilege(g.current_user,program)
+
+    if (g.current_user.isStudent or g.current_user.isFaculty) and not isProgramManager:  # only formats to 12 hour time if user doesn't have access (for display purposes)
+        eventData['timeStart'] = format24to12HourTime(eventData['timeStart'])
+        eventData['timeEnd'] = format24to12HourTime(eventData['timeEnd'])
+
     return render_template("admin/createSingleEvent.html",
                             eventData = eventData,
                             allFacilitators = getAllFacilitators(),

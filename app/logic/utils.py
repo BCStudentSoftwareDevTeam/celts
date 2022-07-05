@@ -58,7 +58,20 @@ def format24HourTime(unformattedTime):
             #  calling strptime here to explicitly raise an exception if it wasn't properly in 24 hour format
             formattedTime = datetime.strptime(unformattedTime, "%H:%M")
             return unformattedTime
-    elif isinstance(unformattedTime, datetime):
+    else:
         formattedTime = unformattedTime.strftime("%H:%M")
         return formattedTime
-        
+
+def format24to12HourTime(timeStr):
+    """
+    Formats a string that is in 24 hour time to a string that is in 12 hour time.
+    :returns: Formatted time string (12 hour time)
+    """
+    if int(timeStr[:2]) > 12:
+      formattedTime = str(int(timeStr[:2]) - 12) + str(timeStr[2:]) + " PM"
+    elif int(timeStr[:2]) < 12:
+      formattedTime =  timeStr + " AM"
+    else:
+      formattedTime = timeStr + " PM"
+
+    return formattedTime;
