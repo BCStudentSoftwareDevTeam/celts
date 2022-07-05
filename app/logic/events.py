@@ -102,7 +102,7 @@ def saveEventToDb(newEventData):
 
     return eventRecords
 
-def getStudentLedEvent(term):
+def getStudentLedEvents(term):
 
     studentLedEvents = (Event.select(Event, Program.id.alias("program_id"))
                              .join(ProgramEvent)
@@ -116,7 +116,7 @@ def getStudentLedEvent(term):
 
     return programs
 
-def getTrainingEvent(term):
+def getTrainingEvents(term):
 
     """
         The allTrainingsEvent query is designed to select and count eventId's after grouping them
@@ -144,7 +144,7 @@ def getTrainingEvent(term):
 
     return list(trainingEvents)
 
-def getBonnerEvent(term):
+def getBonnerEvents(term):
 
     bonnerScholarsEvents = (Event.select(Event, Program.id.alias("program_id"))
                                  .join(ProgramEvent)

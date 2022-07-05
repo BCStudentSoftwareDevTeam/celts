@@ -4,7 +4,7 @@ from app.models import mainDB
 from app.models.programEvent import ProgramEvent
 from app.models.event import Event
 from app.models.event import Term
-from app.logic.events import getStudentLedEvent,  getTrainingEvent, getBonnerEvent, getNonProgramEvents
+from app.logic.events import getStudentLedEvents,  getTrainingEvents, getBonnerEvents, getNonProgramEvents
 
 @pytest.mark.integration
 @pytest.fixture
@@ -26,7 +26,7 @@ def training_event():
 
 @pytest.mark.integration
 def test_studentled_event(training_event):
-        testProgramEvent = getStudentLedEvent(3)
+        testProgramEvent = getStudentLedEvents(3)
         assert testProgramEvent
 
 @pytest.mark.integration
@@ -39,9 +39,8 @@ def test_training_event(training_event):
             isSummer= 0,
             isCurrentTerm=0)
 
-        testProgramEvent = getTrainingEvent(3)
-        print(testProgramEvent)
-        testProgramEvent2 = getTrainingEvent(newTerm)
+        testProgramEvent = getTrainingEvents(3)
+        testProgramEvent2 = getTrainingEvents(newTerm)
 
         assert testProgramEvent not in testProgramEvent2
 
@@ -49,9 +48,7 @@ def test_training_event(training_event):
 
 @pytest.mark.integration
 def test_bonner_event(training_event):
-    testProgramEvent = getBonnerEvent(3)
-    print(testProgramEvent)
-
+    testProgramEvent = getBonnerEvents(3)
     assert testProgramEvent
 
 @pytest.mark.integration
