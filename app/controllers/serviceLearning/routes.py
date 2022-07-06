@@ -122,8 +122,12 @@ def approveCourse():
         approve button.
     return: empty string because AJAX needs to receive something
     """
-    updateCourse(request.form.copy(), instructorsDict) # Updates database with the completed fields
-    # The next line creates the query to approve the course
-    course = Course.update(status = 2).where(Course.id == request.form.copy()['courseID'])
-    course.execute() # Executes the query and approves course in the database
+    try:
+        updateCourse(request.form.copy(), instructorsDict) # Updates database with the completed fields
+        # The next line creates the query to approve the course
+        course = Course.update(status = 2).where(Course.id == request.form['courseID'])
+        course.execute() # Executes the query and approves course in the database
+        flash("Course approved!", "success")
+    except:
+        flash("Course not approved", "warning")
     return ""

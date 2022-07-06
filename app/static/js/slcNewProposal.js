@@ -38,7 +38,6 @@ $("#approveButton").click(function(){
     data: data,
     success: function(response) {
         window.location.replace("/manageServiceLearning")
-        msgFlash("Course approved!", "success")
     }
   });
 });
