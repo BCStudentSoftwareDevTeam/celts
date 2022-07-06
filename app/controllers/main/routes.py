@@ -27,6 +27,7 @@ from app.logic.transcript import *
 from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import pendingCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
+from app.models.courseInstructor import CourseInstructor
 
 
 @main_bp.route('/', methods=['GET'])
@@ -275,6 +276,11 @@ def searchUser(query):
 def contributors():
     return render_template("/contributors.html")
 
+@main_bp.route('/proposalReview/<courseID>', methods = ['GET', 'POST'])
+def reviewProposal(courseID):
+    courseInformation=CourseInstructor.select().where(CourseInstructor.course==courseID)
+    return render_template('/main/manageServiceLearningFaculty.html',
+                            courseInformation = courseInformation)
 
 @main_bp.route('/manageServiceLearning', methods = ['GET', 'POST'])
 @main_bp.route('/manageServiceLearning/<term>', methods = ['GET', 'POST'])
@@ -295,7 +301,6 @@ def getAllCourseIntructors(term=None):
         pending = pendingCourses(term)
         approved = approvedCourses(term)
         terms = selectSurroundingTerms(g.current_term)
-
         return render_template('/main/manageServiceLearningFaculty.html',
                                 courseInstructors = courseDict,
                                 pendingCourses = pending,
