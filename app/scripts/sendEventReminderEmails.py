@@ -11,8 +11,14 @@ from datetime import date, datetime, timedelta
 def checkForEvents():
     try:
         tomorrowDate = date.today() + timedelta(days=1)
-        currentTerm = Term.select(Term.id).where(Term.isCurrentTerm==1)
         events = list(Event.select().where(Event.startDate==tomorrowDate))
+        return events
+    except (DoesNotExist, IndexError) as e:
+        print(e)
+
+def sendAutomatedEmail(events):
+    try:
+        currentTerm = Term.select(Term.id).where(Term.isCurrentTerm==1)
         template = EmailTemplate.get(purpose = "Reminder")
         templateSubject = template.subject
         templateBody = template.body
@@ -29,10 +35,10 @@ def checkForEvents():
                             "body":templateBody}
             sendEmail = EmailHandler(emailData, "172.31.3.239:8080", User.get_by_id("ramsayb2"))
             sendEmail.send_email()
-
     except (DoesNotExist, IndexError) as e:
         print(e)
+
 def main():
-    checkForEvents()
+    sendAutomatedEmail(checkForEvents())
 
 main()
