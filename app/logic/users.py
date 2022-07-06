@@ -12,8 +12,7 @@ def isEligibleForProgram(program, user):
     :param user: accepts a User object or userid
     :return: True if the user is not banned and meets the requirements, and False otherwise
     """
-    now = datetime.datetime.now()
-    if (ProgramBan.select().where(ProgramBan.user == user, ProgramBan.program == program, ProgramBan.endDate > now).exists()):
+    if (ProgramBan.select().where(ProgramBan.user == user, ProgramBan.program == program).exists()):
         return False
 
     return True
@@ -42,7 +41,7 @@ def removeUserInterest(program_id, username):
     return True
 
 
-def banUser(program_id, username, note, banEndDate, creator):
+def banUser(program_id, username, note,creator):
     """
     This function creates an entry in the note table and programBan table in order
     to ban the selected user.
@@ -50,7 +49,6 @@ def banUser(program_id, username, note, banEndDate, creator):
     program_id: primary id of the program the user has been banned from
     username: username of the user to be banned
     note: note left about the ban, expected to be a reason why the change is needed
-    banEndDate: date when the ban will end
     creator: the admin or person with authority who created the ban
     """
     noteForDb = Note.create(createdBy = creator,
@@ -60,7 +58,6 @@ def banUser(program_id, username, note, banEndDate, creator):
 
     ProgramBan.create(program = program_id,
                       user = username,
-                      endDate = banEndDate,
                       banNote = noteForDb)
 
 def unbanUser(program_id, username, note, creator):
@@ -77,7 +74,5 @@ def unbanUser(program_id, username, note, creator):
                              createdOn = datetime.datetime.now(),
                              noteContent = note,
                              isPrivate = 0)
-    ProgramBan.update(endDate = datetime.datetime.now(),
-                      unbanNote = noteForDb).where(ProgramBan.program == program_id,
-                                                   ProgramBan.user == username,
-                                                   ProgramBan.endDate >  datetime.datetime.now()).execute()
+    ProgramBan.update(unbanNote = noteForDb).where(ProgramBan.program == program_id,
+                                                   ProgramBan.user == username).execute()

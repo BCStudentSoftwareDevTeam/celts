@@ -22,23 +22,8 @@ $(document).ready(function(){
     });
   });
 
-  // This function is to disable all the dates before current date in the ban modal End Date picker
-  $(function(){
-    var banEndDatepicker = $("#banEndDatepicker");
-    banEndDatepicker.datepicker({
-      changeYear: true,
-      changeMonth: true,
-      minDate:+1,
-      dateFormat: "yy-mm-dd",
-    }).attr('readonly','readonly');
-  });
-
-
-
   $(".ban").click(function() {
     var banButton = $("#banButton")
-    var banEndDateDiv = $("#banEndDate") // Div containing the datepicker in the ban modal
-    var banEndDatepicker = $("#banEndDatepicker") // Datepicker in the ban modal
     var banNoteDiv = $("#banNoteDiv") // Div containing the note displaying why the user was banned previously
                                      //Should only diplay when the modal is going to unban a user
     var banNote = $("#banNote")
@@ -47,8 +32,6 @@ $(document).ready(function(){
     banButton.data("programID", $(this).data("programid"))
     banButton.data("username", $(".form-check-input").data("username"))
     banButton.data("banOrUnban", $(this).val());
-    banEndDateDiv.show();
-    banEndDatepicker.val("")
     $(".modal-title").text($(this).val() + " Volunteer");
     $("#modalProgramName").text("Program: " + $(this).data("name"));
     $("#banModal").modal("toggle");
@@ -56,16 +39,14 @@ $(document).ready(function(){
     $("#banNoteTxtArea").val("");
     $("#banButton").prop("disabled", true);
     if( $(this).val()=="Unban"){
-      banEndDateDiv.hide()
-      banEndDatepicker.val("0001-01-01") //This is a placeholder value for the if statement in line 52 to work properly #PLCHLD1
       banNoteDiv.show()
       banNote.text($(this).data("note"))
     }
 
   });
 
-  $("#banNoteTxtArea, #banEndDatepicker").on('input' , function (e) { //This is the if statement the placeholder in line 45 is for #PLCHLD1
-    var enableButton = ($("#banNoteTxtArea").val() && $("#banEndDatepicker").val());
+  $("#banNoteTxtArea").on('input' , function (e) { //This is the if statement the placeholder in line 45 is for #PLCHLD1
+    var enableButton = $("#banNoteTxtArea").val();
     $("#banButton").prop("disabled", !enableButton);
   });
 
@@ -76,8 +57,7 @@ $(document).ready(function(){
     $.ajax({
       method: "POST",
       url:  "/" + username + "/" + route + "/" + program,
-      data: {"note": $("#banNoteTxtArea").val(),
-             "endDate":$("#banEndDatepicker").val() //Expected to be a date in this format YYYY-MM-DD
+      data: {"note": $("#banNoteTxtArea").val()
             },
       success: function(response) {
 
@@ -113,13 +93,13 @@ $(document).ready(function(){
 function updateManagers(el, volunteer_username ){// retrieve the data of the studnet staff and program id if the boxes are checked or not
   var program_id=$(el).attr('data-programid');
   action= el.checked ? 'add' : 'remove';
-  
+
   $.ajax({
     method:"POST",
     url:"/updateProgramManager",
     data : {"user_name":volunteer_username, //student staff: user_name
             "program_id":program_id,       // program id
-            "action":action,          //action: add or remove 
-             },  
+            "action":action,          //action: add or remove
+             },
   })
 }
