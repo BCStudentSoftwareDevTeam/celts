@@ -89,12 +89,10 @@ class EmailHandler:
                 .join(Interest)
                 .join(Program, on=(Program.id==Interest.program))
                 .where(Program.id.in_([p.id for p in self.program_ids])))
-
         if recipients_category == "RSVP'd":
             recipients = (User.select()
                 .join(EventRsvp)
                 .where(EventRsvp.event==self.event.id))
-
         return [recipient for recipient in recipients]
 
     def replace_general_template_placeholders(self, email_body=None):
