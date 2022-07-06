@@ -1,5 +1,5 @@
 from flask import request, render_template, url_for, g, Flask, redirect, flash, abort, json, jsonify, session
-from peewee import DoesNotExist
+from peewee import DoesNotExist, fn
 from playhouse.shortcuts import model_to_dict, dict_to_model
 import json
 from datetime import datetime
@@ -97,7 +97,8 @@ def createEvent(templateid, programid=None):
         if saveSuccess:
             noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
-            return redirect(url_for("main.events", selectedTerm=eventData['term']))
+            eventId = Event.select(fn.MAX(Event.id)).scalar()
+            return redirect(url_for("admin.editEvent", eventId = eventId))
         else:
             flash(validationErrorMessage, 'warning')
 
@@ -132,7 +133,7 @@ def editEvent(eventId):
         saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
         if saveSuccess:
             flash("Event successfully updated!", "success")
-            return redirect(url_for("main.events", selectedTerm=eventData['term']))
+            return redirect(url_for("admin.editEvent", eventId = eventId))
         else:
             flash(validationErrorMessage, 'warning')
 
