@@ -1,7 +1,6 @@
 from datetime import datetime
 from peewee import DoesNotExist
 from flask_mail import Mail, Message
-from flask import g, session, request
 from app import app
 from app.models.programEvent import ProgramEvent
 from app.models.interest import Interest
@@ -14,7 +13,7 @@ from app.models.event import Event
 import os
 
 class EmailHandler:
-    def __init__(self, raw_form_data, url_domain, sender_object):
+    def __init__(self, raw_form_data, url_domain, sender_object, attachment_file=None):
         self.mail = Mail(app)
         self.raw_form_data = raw_form_data
         self.url_domain = url_domain
@@ -29,8 +28,7 @@ class EmailHandler:
         self.recipients = None
         self.sl_course_id = None
         self.attachment_path = app.config['email']['attachment_path']
-        self.attachmentFullPath = os.path.join(self.attachment_path, request.files['attachmentObject'].filename)
-
+        self.attachment_file = attachment_file
 
     def process_data(self):
         """ Processes raw data and stores it in class variables to be used by other methods """
@@ -138,15 +136,16 @@ class EmailHandler:
         This creates the directory/path for the object from the "Choose File" input in the emailModal.html file.
         :returns: directory path for attachment
         """
+        attachmentFullPath = os.path.join(self.attachment_path, self.attachment_file.filename)
         try:  # tries to create the full path of the files location and passes if already created
             os.mkdir(self.attachment_path)
         except:
             pass
-        return self.attachmentFullPath
+        return attachmentFullPath
 
     def saveAttachment(self):
         """ Saves the attachment in the app/static/files/attachments/ directory """
-        request.files['attachmentObject'].save(self.attachmentFullPath) # saves attachment in directory
+        self.attachment_file.save(self.getAttachmentFullPath()) # saves attachment in directory
 
     def store_sent_email(self, subject, template_id):
         """ Stores sent email in the email log """
@@ -160,7 +159,7 @@ class EmailHandler:
             recipients = ", ".join(recipient.email for recipient in self.recipients),
             dateSent = date_sent,
             sender = self.sender,
-            attachmentFullPath = self.getAttachmentFullPath())
+            attachmentName = self.attachment_file.filename)
 
     def build_email(self):
         # Most General Scenario
