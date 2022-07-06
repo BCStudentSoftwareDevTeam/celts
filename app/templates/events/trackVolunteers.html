@@ -161,7 +161,7 @@
                   {% set action ="remove" %}
                   {% set checked ="checked" %}
               {% endif %}
-            <input type="checkbox" id="PastVolunteers" data-checked= "{{checked}}" data-user= {{participant}} />
+            <input type="checkbox" id="PastVolunteers" data-checked= "{{checked}}" data-user= {{participant}}  />
             <label class="form-check-label" for="PastVolunteers"> {{participant.firstName}} {{participant.lastName}} </label>
           {% endfor %}
       </div>

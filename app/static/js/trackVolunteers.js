@@ -13,19 +13,23 @@ $(document).ready(function() {
 
   $('[data-toggle="tooltip"]').tooltip();
 
-  function volunteerCheckbox(){
+  function volunteerCheckbox(el){
     let eventId = $("#eventID").val()
     var user=$("#PastVolunteers").attr('data-user');
     var checked=$("#PastVolunteers").attr('data-checked');
-
-    action= .checked ? 'add' : 'remove';
+    console.log(checked);
+    var action = el.checked;
+    action = el.checked ? true : false;
 
     $.ajax({
       url: `/addVolunteerToEvent/${eventId}`,
-      data: {"action": action
-              "user": user},
+      data: { action: "action",
+              user: "user"},
       dataType: "json",
-      type: "POST"
+      type: "POST",
+      success: function(response){
+        console.log(response)
+      }
     });
 
   };
@@ -53,7 +57,7 @@ $(document).ready(function() {
 
   });
   $('#PastVolunteers').on("click", function(){
-    volunteerCheckbox();
+    volunteerCheckbox(this);
 
   });
 

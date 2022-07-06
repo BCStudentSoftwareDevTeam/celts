@@ -93,11 +93,13 @@ def updateVolunteerTable(eventID):
 @admin_bp.route('/addVolunteerToEvent/<eventId>/<volunteer>', methods = ['POST'])
 def addVolunteer(eventId, volunteer = None):
     data = request.form
+    print(data["action"])
+    print(data["action"])
     getRecurringId  = Event.select(Event.recurringId).where(Event.id == eventId).distinct()
     eventParticipants = getEventParticipants(eventId)
     if volunteer == None:
         successfullyAddedRecurringVolunteer = None
-        if data["action"] == "add":
+        if data["action"] == True:
             if len(eventParticipants) == 0:
                 successfullyAddedRecurringVolunteer = addVolunteerToEventRsvp(data["user"].username, eventId)
                 EventParticipant.create(user = username, event = eventId)
