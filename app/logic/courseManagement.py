@@ -98,5 +98,4 @@ def updateCourse(courseData, instructorsDict):
     for instructor in instructorsDict["instructors"]:
         if not CourseInstructor.select().where(CourseInstructor.course==courseData["courseID"], CourseInstructor.user==instructor).exists():
             addInstructors = CourseInstructor.create(course=courseData["courseID"], user=instructor)
-        else:
-            flash("The Insructor has already been added before.", "danger")
+       
