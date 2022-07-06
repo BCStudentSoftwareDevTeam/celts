@@ -1,6 +1,9 @@
 export default function searchUser(inputId, callback, clear=false, parentElementId=null, columnRequested=null){
   var query = $(`#${inputId}`).val()
   let columnDict={};
+  if(query == ""){
+    return msgFlash("Cannot enter nothing!", "success")
+  }
   $(`#${inputId}`).autocomplete({
     appendTo: (parentElementId === null) ? null : `#${parentElementId}`,
     minLength: 2,
@@ -34,6 +37,7 @@ export default function searchUser(inputId, callback, clear=false, parentElement
         ))},
         error: function(request, status, error) {
           console.log(status, error);
+
         }
       })
     },

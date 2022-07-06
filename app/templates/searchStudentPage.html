@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block app_content %}
-<form id= "searchStudent" action="/volunteerProfile" method="post">
+<form id= "searchStudent" action="/volunteerProfile" method="post" onkeydown="return event.key != 'Enter';">
   <h1 class="text-center mt-5 mb-3">Student Search Page</h1><br>
   <div class="col-sm-6 col-sm-offset-3 m-auto">
     <div class="row">
