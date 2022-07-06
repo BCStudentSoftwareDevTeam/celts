@@ -190,8 +190,11 @@ def test_recipients_eligible_students():
             # clearing data for the next test
             transaction.rollback()
 
-            # Test a program that has AllVolunteerTraining done in the previous
-            # academic year not the current one
+            # Changed current term to next academic year while making training
+            # occur in the previous academic year
+            allVolunteerEvent = Event.get_by_id(14)
+            newTrainedStudent = EventParticipant.create(user = "partont", event = allVolunteerEvent)
+
             raw_form_data = {"templateIdentifier": "Test",
                 "programID":"3",
                 "eventID":"1",
@@ -201,20 +204,19 @@ def test_recipients_eligible_students():
 
             email = EmailHandler(raw_form_data, url_domain, testSender)
             email.process_data()
-            assert email.recipients == []
+            assert email.recipients == [User.get_by_id("partont")]
 
             # Change the term that the All Volunteer Training takes place so that
             # it is in the past
             firstTerm = Term.select().order_by(Term.id).get()
-            allVolunteerEvent = Event.get_by_id(14)
             allVolunteerEvent.term = firstTerm
             allVolunteerEvent.save()
 
-            # Update the current term in the database
-            Term.update(isCurrentTerm = Term.id[6]).where(Term.isCurrentTerm == True).execute()
+            # Update the current term in the database so that it is in the next
+            # academic year
+            Term.update(isCurrentTerm = False).where(Term.isCurrentTerm == True).execute()
+            Term.update(isCurrentTerm = True).where(Term.id == 6).execute()
 
-            # Add partont to All Volunteer Training Event in the prevous academic year: NOT banned and IS trained
-            newTrainedStudent = EventParticipant.create(user = "partont", event = allVolunteerEvent)
             email.process_data()
             assert email.recipients == []
 
