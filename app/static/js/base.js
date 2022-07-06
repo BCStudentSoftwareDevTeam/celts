@@ -16,3 +16,8 @@ $(document).ready(function() {
         $("#userSelectForm").submit();
     });
 });
+
+$(".search").on("keydown", function() {
+    if($(this).val() == '')
+      return event.key != "Enter";
+});

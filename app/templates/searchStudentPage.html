@@ -11,13 +11,13 @@
 {% endblock %}
 
 {% block app_content %}
-<form id= "searchStudent" action="/volunteerProfile" method="post" onkeydown="return event.key != 'Enter';">
+<form id= "searchStudent" action="/volunteerProfile" method="post">
   <h1 class="text-center mt-5 mb-3">Student Search Page</h1><br>
   <div class="col-sm-6 col-sm-offset-3 m-auto">
     <div class="row">
       <div class="form-group ui-widget">
         <div class="input-group">
-          <input type="input" id="searchStudentsInput" name="searchStudentsInput" class="form-control" placeholder="Search" autocomplete="off"/>
+          <input type="input" id="searchStudentsInput" name="searchStudentsInput" class="form-control search" placeholder="Search" autocomplete="off"/>
           <span class="input-group-text"><span class="bi bi-search"></span></span>
         </div>
       </div>
