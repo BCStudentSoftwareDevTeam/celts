@@ -29,10 +29,6 @@ export default function searchUser(inputId, callback, clear=false, parentElement
                 // must JSON.parse
                 label: (item[1]["firstName"]+" "+item[1]["lastName"]+" ("+item[0]+")"),
                 dictvalue:JSON.stringify(columnDict),
-                
-                
-                
-                
               }
             }
           }
