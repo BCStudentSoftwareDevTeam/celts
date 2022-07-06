@@ -15,9 +15,8 @@ $(document).ready(function() {
     $("#userSelect").on('change', function() {
         $("#userSelectForm").submit();
     });
-});
-
-$(".search").on("keydown", function() {
-    if($(this).val() == '')
-      return event.key != "Enter";
+    $("input.search").on("keydown", function() {
+        if($(this).val() == '')
+          return event.key != "Enter";
+    });
 });
