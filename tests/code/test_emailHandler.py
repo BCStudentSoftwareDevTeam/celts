@@ -2,7 +2,7 @@ import pytest
 from flask_mail import Message
 from urllib.parse import urlparse
 from flask import request, g
-from datetime import datetime, date, timedelta
+from datetime import datetime, date
 from dateutil import parser
 import time
 
@@ -128,7 +128,7 @@ def test_email_log():
             transaction.rollback()
 
 @pytest.mark.integration
-def test_recipients_category():
+def test_recipients_eligible_students():
     with app.test_request_context():
         with mainDB.atomic() as transaction:
             url_domain = urlparse(request.base_url).netloc
