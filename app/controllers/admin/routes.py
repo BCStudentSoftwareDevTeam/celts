@@ -103,9 +103,7 @@ def createEvent(templateid, programid=None):
 
     # make sure our data is the same regardless of GET or POST
     preprocessEventData(eventData)
-    
-    user = User.get_by_id(g.current_user)
-    isProgramManager = user.isProgramManagerFor(programid)
+    isProgramManager = g.current_user.isProgramManagerFor(programid)
    
     futureTerms = selectSurroundingTerms(g.current_term, prevTerms=0)
 
@@ -144,10 +142,7 @@ def editEvent(eventId):
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     program = event.singleProgram
-    user = User.get_by_id(g.current_user)
-    user.isProgramManagerFor(Program)
-
-    isProgramManager =   user.isProgramManagerFor(Program)
+    isProgramManager =   g.current_user.isProgramManagerFor(Program)
     return render_template("admin/createSingleEvent.html",
                             eventData = eventData,
                             allFacilitators = getAllFacilitators(),
