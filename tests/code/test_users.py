@@ -119,14 +119,14 @@ def test_banUser():
     creator = "ramsayb2"
     banEndDate = "2022-11-29"
     # checkBan = banUser (program_id, username, note, banEndDate, creator)
-    if (ProgramBan.select().where(ProgramBan.user == username, ProgramBan.banNote == note, ProgramBan.program == program_id, ProgramBan.endDate > banEndDate).exists()):
+    if (ProgramBan.select().where(ProgramBan.user == username, ProgramBan.banNote == note, ProgramBan.program == program_id).exists()):
         assert True
     # assert checkBan
 
 
     #test for banning a user from a program with different program id
     program_id = 2
-    if (ProgramBan.select().where(ProgramBan.user == username, ProgramBan.banNote == note, ProgramBan.program == program_id, ProgramBan.endDate > banEndDate).exists()):
+    if (ProgramBan.select().where(ProgramBan.user == username, ProgramBan.banNote == note, ProgramBan.program == program_id).exists()):
         assert True
     # status = banUser (program_id, username, note, banEndDate, creator)
     # assert status == "Successfully banned the user"

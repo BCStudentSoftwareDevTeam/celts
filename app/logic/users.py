@@ -12,8 +12,7 @@ def isEligibleForProgram(program, user):
     :param user: accepts a User object or userid
     :return: True if the user is not banned and meets the requirements, and False otherwise
     """
-    now = datetime.datetime.now()
-    if (ProgramBan.select().where(ProgramBan.user == user, ProgramBan.program == program, ProgramBan.endDate > now).exists()):
+    if (ProgramBan.select().where(ProgramBan.user == user, ProgramBan.program == program).exists()):
         return False
 
     return True
@@ -60,7 +59,6 @@ def banUser(program_id, username, note, banEndDate, creator):
 
     ProgramBan.create(program = program_id,
                       user = username,
-                      endDate = banEndDate,
                       banNote = noteForDb)
 
 def unbanUser(program_id, username, note, creator):
@@ -77,7 +75,5 @@ def unbanUser(program_id, username, note, creator):
                              createdOn = datetime.datetime.now(),
                              noteContent = note,
                              isPrivate = 0)
-    ProgramBan.update(endDate = datetime.datetime.now(),
-                      unbanNote = noteForDb).where(ProgramBan.program == program_id,
-                                                   ProgramBan.user == username,
-                                                   ProgramBan.endDate >  datetime.datetime.now()).execute()
+    ProgramBan.update(unbanNote = noteForDb).where(ProgramBan.program == program_id,
+                                                   ProgramBan.user == username).execute()

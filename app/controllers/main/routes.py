@@ -92,8 +92,7 @@ def viewVolunteersProfile(username):
         eligibilityTable = []
         for program in programs:
             notes = ProgramBan.select().where(ProgramBan.user == volunteer,
-                                              ProgramBan.program == program,
-                                              ProgramBan.endDate > datetime.datetime.now())
+                                              ProgramBan.program == program)
 
             noteForDict = notes[-1].banNote.noteContent if notes else ""
             eligibilityTable.append({"program" : program,
@@ -123,7 +122,6 @@ def ban(program_id, username):
     """
     postData = request.form
     banNote = postData["note"] # This contains the note left about the change
-    banEndDate = postData["endDate"] # Contains the date the ban will no longer be effective
     try:
         banUser(program_id, username, banNote, banEndDate, g.current_user)
         programInfo = Program.get(int(program_id))
