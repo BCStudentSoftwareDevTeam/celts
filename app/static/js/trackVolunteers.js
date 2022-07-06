@@ -13,14 +13,28 @@ $(document).ready(function() {
 
   $('[data-toggle="tooltip"]').tooltip();
 
+  function volunteerCheckbox(){
+    let eventId = $("#eventID").val()
+    var user=$("#PastVolunteers").attr('data-user');
+    var checked=$("#PastVolunteers").attr('data-checked');
+
+    action= .checked ? 'add' : 'remove';
+
+    $.ajax({
+      url: `/addVolunteerToEvent/${eventId}`,
+      data: {"action": action
+              "user": user},
+      dataType: "json",
+      type: "POST"
+    });
+
+  };
+
   function pastVolunteersButton(){
-    let recurringId = $('#pastVolunteers').data('recurring-id')
     let eventId = $("#eventID").val()
 
     $.ajax({
-      url: '/addVolunteersToEvent',
-      data: {"recurringId": recurringId,
-            "event_id": eventId},
+      url: `/addVolunteerToEvent/${eventId}`,
       dataType: "json",
       type: "POST",
       success: function(response){
@@ -38,7 +52,10 @@ $(document).ready(function() {
     pastVolunteersButton();
 
   });
+  $('#PastVolunteers').on("click", function(){
+    volunteerCheckbox();
 
+  });
 
   // Search functionalities from the volunteer table in the UI
     $("#trackVolunteersInput").on("keyup", function() {
@@ -54,7 +71,7 @@ $(document).ready(function() {
       let eventId = $("#eventID").val()
 
       $.ajax({
-        url: `/addVolunteerToEvent/${user}/${eventId}`,
+        url: `/addVolunteerToEvent/${eventId}/${user}`,
         type: "POST",
         success: function(response){
           console.log(response)

@@ -36,9 +36,9 @@
 <input class="form-control" id="eventID" name="event" value="{{event}}" type='hidden' />
 <div class="flex-container" style="padding: 5px;">
   <div class='form-group d-inline-flex'>
-    <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">{{eventRsvpData}}</a>
+    <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add Volunteer</a>
     {% if event.isRecurring and not event.isFirstRecurringEvent%}
-      <a class="btn btn-success" id="pastVolunteers" role="button" data-bs-toggle="modal" data-bs-target= "#addPastVolunteerModal" data-recurring-id= {{recurringEventID}} data-start-date= {{recurringEventStartDate}} data-volunteer-info = {{recurringVolunteers}} style="margin:5px;">Add Past Volunteers</a>
+      <a class="btn btn-success" id="pastVolunteers" role="button" data-bs-toggle="modal" data-bs-target= "#addPastVolunteerModal" style="margin:5px;">Add Past Volunteers</a>
     {% endif %}
     <a class="btn btn-warning" role="button" href= "/eventsList/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
   </div>
@@ -154,13 +154,15 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-          {%for participant in eventRsvpData%}
+          {%for participant in recurringVolunteers%}
             {% set action = "add" %}
             {% set checked = "" %}
-              {% if participant in eventRsvpData %}
-                <input type="checkbox" id="PastVolunteers" disabled />
-                <label class="form-check-label" for="PastVolunteers"> {{participant.user.firstName}} {{participant.user.lastName}} </label>
+              {% if participant in eventParticipants %}
+                  {% set action ="remove" %}
+                  {% set checked ="checked" %}
               {% endif %}
+            <input type="checkbox" id="PastVolunteers" data-checked= "{{checked}}" data-user= {{participant}} />
+            <label class="form-check-label" for="PastVolunteers"> {{participant.firstName}} {{participant.lastName}} </label>
           {% endfor %}
       </div>
       <div class="modal-footer">

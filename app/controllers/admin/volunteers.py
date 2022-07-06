@@ -89,28 +89,28 @@ def updateVolunteerTable(eventID):
         flash("Error adding volunteer", "danger")
     return redirect(url_for("admin.trackVolunteersPage", eventID=eventID))
 
-@admin_bp.route('/addVolunteersToEvent', methods = ['POST'])
-@admin_bp.route('/addVolunteerToEvent/<volunteer>/<eventId>', methods = ['POST'])
-def addVolunteer(volunteer = None, eventId = None):
-    if volunteer == None and eventId == None:
-        data = request.form
-        recurringId = data["recurringId"]
-        eventId = data["event_id"]
-        succesfullygetRecurringVolunteer = getPreviousRecurringEventData(recurringId)
-        eventParticipants = getEventParticipants(eventId)
-        for user in succesfullygetRecurringVolunteer:
-            username = user.username
+@admin_bp.route('/addVolunteersToEvent/<eventId>', methods = ['POST'])
+@admin_bp.route('/addVolunteerToEvent/<eventId>/<volunteer>', methods = ['POST'])
+def addVolunteer(eventId, volunteer = None):
+    data = request.form
+    getRecurringId  = Event.select(Event.recurringId).where(Event.id == eventId).distinct()
+    eventParticipants = getEventParticipants(eventId)
+    if volunteer == None:
+        successfullyAddedRecurringVolunteer = None
+        if data["action"] == "add":
             if len(eventParticipants) == 0:
-                successfullyAddedRecurringVolunteer = addVolunteerToEventRsvp(username, eventId)
+                successfullyAddedRecurringVolunteer = addVolunteerToEventRsvp(data["user"].username, eventId)
                 EventParticipant.create(user = username, event = eventId)
             else:
-                if EventRsvp.select(EventRsvp.user==username, EventRsvp.event_id == eventId).exists():
+                if EventRsvp.select(EventRsvp.user==data["user"].username, EventRsvp.event_id == eventId).exists():
                     print("This user has already been added to this event")
                 else:
-                    successfullyAddedRecurringVolunteer = addVolunteerToEventRsvp(username, eventId)
-                    EventParticipant.create(user = username, event = eventId)
+                    successfullyAddedRecurringVolunteer = addVolunteerToEventRsvp(data["user"].username, eventId)
+                    EventParticipant.create(user = data["user"].username, event = eventId)
+        else:
+            return "Nothing yet!"
 
-        if succesfullygetRecurringVolunteer:
+        if successfullyAddedRecurringVolunteer:
             flash("Volunteer successfully added!", "success")
         else:
             flash("Error when adding volunteer", "danger")
