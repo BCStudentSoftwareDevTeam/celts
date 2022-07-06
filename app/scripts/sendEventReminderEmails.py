@@ -13,28 +13,29 @@ def checkForEvents():
         tomorrowDate = date.today() + timedelta(days=1)
         events = list(Event.select().where(Event.startDate==tomorrowDate))
         return events
-    except (DoesNotExist, IndexError) as e:
+    except (DoesNotExist) as e:
         print(e)
 
 def sendAutomatedEmail(events):
     try:
+        counter = 0
         currentTerm = Term.select(Term.id).where(Term.isCurrentTerm==1)
         template = EmailTemplate.get(purpose = "Reminder")
         templateSubject = template.subject
         templateBody = template.body
         for event in events:
             programId = event.singleProgram
-            senderName = programId.emailSenderName
             emailData = {"eventID":event.id,
                             "programID":programId,
                             "term":currentTerm,
                             "templateIdentifier":"Reminder",
                             "recipientsCategory":"Interested",
-                            "senderName":senderName,
                             "subject":templateSubject,
                             "body":templateBody}
             sendEmail = EmailHandler(emailData, "172.31.3.239:8080", User.get_by_id("ramsayb2"))
             sendEmail.send_email()
+            counter+=1
+        return counter
     except (DoesNotExist, IndexError) as e:
         print(e)
 
