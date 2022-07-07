@@ -68,7 +68,7 @@ class EmailHandler:
     def fetch_event_programs(self, program_id):
         """ Fetches all the programs of a particular event """
         # Non-student-led programs have "Unknown" as their id
-        if program_id == 'Unknown':
+        if program_id == 'Unknown' or program_id is None:
             programEvents = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event==self.event.id)
             return [program.program for program in programEvents.objects()]
         else:
@@ -93,7 +93,6 @@ class EmailHandler:
                 .join(Interest)
                 .join(Program, on=(Program.id==Interest.program))
                 .where(Program.id.in_([p.id for p in self.program_ids])))
-
         if recipients_category == "RSVP'd":
             recipients = (User.select()
                 .join(EventRsvp)
@@ -109,10 +108,9 @@ class EmailHandler:
             bannedUsers = ProgramBan.select(ProgramBan.user_id).where((ProgramBan.endDate > datetime.now()) | (ProgramBan.endDate is None), ProgramBan.program_id.in_([p.id for p in self.program_ids]))
             allVolunteer = Event.select().where(Event.isAllVolunteerTraining == True, Event.term.in_(sameYearTerms))
             recipients = User.select().join(EventParticipant).where(User.username.not_in(bannedUsers), EventParticipant.event.in_(allVolunteer))
-
         return [recipient for recipient in recipients]
 
-    def replace_general_template_placholders(self, email_body=None):
+    def replace_general_template_placeholders(self, email_body=None):
         """ Replaces all template placeholders except name """
         event_link = f"{self.url_domain}/eventsList/{self.event.id}/edit"
 
@@ -132,7 +130,7 @@ class EmailHandler:
         return new_body
 
     def retrieve_and_modify_email_template(self):
-        """ Retrieves email template based on idenitifer and calls replace_general_template_placholders"""
+        """ Retrieves email template based on idenitifer and calls replace_general_template_placeholders"""
 
         email_template = EmailTemplate.get(EmailTemplate.purpose==self.template_identifier) # --Q: should we keep purpose as the identifier?
         template_id = email_template.id
@@ -140,7 +138,7 @@ class EmailHandler:
         subject = self.subject if self.subject else email_template.subject
 
         body = self.body if self.body else email_template.body
-        new_body = self.replace_general_template_placholders(body)
+        new_body = self.replace_general_template_placeholders(body)
 
         self.reply_to = email_template.replyToAddress
         return (template_id, subject, new_body)
