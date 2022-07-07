@@ -138,15 +138,21 @@ class EmailHandler:
         This creates the directory/path for the object from the "Choose File" input in the emailModal.html file.
         :returns: directory path for attachment
         """
-        try:  # tries to create the full path of the files location and passes if already created
-            os.mkdir(self.attachment_path)
-        except:
+        try:
+            try:  # tries to create the full path of the files location and passes if already created
+                os.mkdir(self.attachment_path)
+            except:
+                pass
+            return self.attachmentFullPath
+        except AttributeError:  # will pass if there is no attachment to save
             pass
-        return self.attachmentFullPath
 
     def saveAttachment(self):
         """ Saves the attachment in the app/static/files/attachments/ directory """
-        request.files['attachmentObject'].save(self.attachmentFullPath) # saves attachment in directory
+        try:
+            request.files['attachmentObject'].save(self.attachmentFullPath) # saves attachment in directory
+        except AttributeError: # will pass if there is no attachment to save
+            pass
 
     def store_sent_email(self, subject, template_id):
         """ Stores sent email in the email log """
@@ -190,8 +196,8 @@ class EmailHandler:
                         # [recipient.email],
                         [self.override_all_mail],
                         email_body,
-                        file_attachment=self.attach_attachments(),
-                        reply_to=defaultEmailInfo["replyTo"],
+                        file_attachment = self.getAttachmentFullPath(),
+                        reply_to = defaultEmailInfo["replyTo"],
                         sender = (defaultEmailInfo["senderName"], defaultEmailInfo["replyTo"])
                     ))
             self.store_sent_email(subject, template_id)
