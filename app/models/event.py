@@ -13,6 +13,7 @@ class Event(baseModel):
     isTraining = BooleanField(default=False)
     isRsvpRequired = BooleanField(default=False)
     isService = BooleanField(default=False)
+    isAllVolunteerTraining = BooleanField(default=False)
     startDate = DateField()
     endDate = DateField(null=True)
     recurringId = IntegerField(null=True)
@@ -45,4 +46,3 @@ class Event(baseModel):
     def isFirstRecurringEvent(self):
         firstRecurringEvent = Event.select().where(Event.recurringId==self.recurringId).order_by(Event.startDate).get()
         return firstRecurringEvent.id == self.id
-    
