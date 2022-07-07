@@ -1,0 +1,22 @@
+{% set title = "View Event" %}
+{% extends "base.html"%}
+
+{% block app_content%}
+    <div class="text-center mt-5 mb-3">
+        {% set page_title = eventData.name %}
+    <h1 id="title">{{page_title}}</h1>
+    {% if isPastEvent %}
+      <div class="alert alert-danger" role="alert">This event is in the past.</div>
+    {% endif %}
+    </div>
+        <p><font size="+2"><b>{{eventData.name}}</b> will take place on <b>{{eventData.startDate}}</b> from <b>{{eventData.timeStart}}</b> to <b>{{eventData.timeEnd}}</b> and will be located in <b>{{eventData.location}}</b>.</font></p>
+            <div>
+                <p><font size="+2"><b><br>Description:</b><br>{{eventData.description}}</p>
+            </div>
+            <h3>Facilitators:</h3>
+                <ul>
+                    {% for facilitator in allFacilitators%}
+                        <li>{{facilitator}}</li>
+                    {% endfor %}
+                </ul>
+{% endblock %}

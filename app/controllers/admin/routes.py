@@ -150,10 +150,33 @@ def editEvent(eventId):
     return render_template("admin/createSingleEvent.html",
                             eventData = eventData,
                             allFacilitators = getAllFacilitators(),
-                            futureTerms = futureTerms,
                             isPastEvent = isPastEvent,
                             userHasRSVPed = userHasRSVPed,
                             isProgramManager = isProgramManager)
+
+@admin_bp.route('/event/<eventId>/view', methods=['GET'])
+def viewEvent(eventId):
+    # Validate given URL
+    try:
+        event = Event.get_by_id(eventId)
+    except DoesNotExist as e:
+        print(f"Unknown event: {eventId}")
+        abort(404)
+
+    eventData = model_to_dict(event, recurse=False)
+    preprocessEventData(eventData)
+    userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
+    program = event.singleProgram
+    isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
+    eventData["startDate"] = eventData["startDate"].strftime("%m/%d/%Y")
+    eventData['timeStart'] = datetime.strptime(eventData['timeStart'], "%H:%M").strftime("%I:%M %p")
+    eventData['timeEnd'] = datetime.strptime(eventData['timeEnd'], "%H:%M").strftime("%I:%M %p")
+    return render_template("eventStudentView.html",
+                            eventData = eventData,
+                            allFacilitators = getAllFacilitators(),
+                            isPastEvent = isPastEvent,
+                            userHasRSVPed = userHasRSVPed)
+
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
