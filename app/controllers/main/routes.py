@@ -86,7 +86,7 @@ def viewVolunteersProfile(username):
         permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
         allUserEntries = BackgroundCheck.select().where(BackgroundCheck.user == volunteer)
-        completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
+        completedBackgroundCheck = {entry.type.id: [entry.passBackgroundCheck, entry.dateCompleted] for entry in allUserEntries}
         backgroundTypes = list(BackgroundCheckType.select())
 
         eligibilityTable = []

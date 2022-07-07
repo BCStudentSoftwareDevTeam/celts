@@ -158,40 +158,53 @@
 
 <!-- Start Background Check Table -->
 
-<div class="row">
-  <h2>Background Check</h2>
-  <table class="table">
-     <thead>
-       <tr>
-         <th scope="col">Description</th>
-         <th scope="col">Date Completed</th>
-         <th scope="col">Completed</th>
-       </tr>
-     </thead>
-     <tbody>
-       {% for entry in backgroundTypes%}
-       <tr>
-         <td>{{entry.description}}</td>
-         <td> <input name="dateCompleted" type="date" id="{{entry.id}}_date" value="{{ entry.dateCompleted }}" class="form-control" /> </td>
-         <td>
-         {%if g.current_user.isCeltsAdmin%}
-             <select class="backgroundCheck" id="{{entry.id}}" data-username="{{volunteer.username}}" >
-               <option value=1>Yes</option>
-               <option value=0 {{"selected" if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False}}>No</option>
-             </select>
-        {% else %}
-           {% if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False%}
-               No
-           {% else %}
-               Yes
-           {% endif%}
-        {% endif %}
-         </td>
-       </tr>
-       {%endfor%}
-     </tbody>
-  </table>
-</div>
+{% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
+    <div class="row">
+      <h2>Background Check</h2>
+      <table class="table">
+         <thead>
+           <tr>
+             <th scope="col">Description</th>
+             <th scope="col">Date Completed</th>
+             <th scope="col">Completed</th>
+           </tr>
+         </thead>
+         <tbody>
+           {% for entry in backgroundTypes %}
+           <tr>
+             <td>{{entry.description}}</td>
+             {% if g.current_user.isCeltsAdmin%}
+                 {% if entry.id in completedBackgroundCheck %}
+                     <td> <input name="dateCompleted" type="date" id="{{entry.id}}_date" value="{{completedBackgroundCheck[entry.id][1]}}" class="form-control" /> </td>
+                 {% else %}
+                     <td> <input name="dateCompleted" type="date" id="{{entry.id}}_date" class="form-control" /> </td>
+                 {% endif %}
+                 <td>
+                     <select class="backgroundCheck" id="{{entry.id}}" data-username="{{volunteer.username}}" >
+                       <option value=1>Yes</option>
+                       <option value=0 {{"selected" if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False}}>No</option>
+                     </select>
+                 </td>
+            {% else %}
+                {% if entry.id in completedBackgroundCheck %}
+                    <td>{{completedBackgroundCheck[entry.id][1].strftime('%m-%d-%Y')}}
+                {% else %}
+                    <td>-</td>
+                {% endif %}
+                <td>
+                   {% if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False %}
+                       No
+                   {% else %}
+                       Yes
+                   {% endif %}
+                </td>
+             {% endif %}
+           </tr>
+          {%endfor%}
+         </tbody>
+      </table>
+    </div>
+{% endif %}
 <!-- End Background Check Table -->
 
 <!-- Ban or Unban Modal -->
