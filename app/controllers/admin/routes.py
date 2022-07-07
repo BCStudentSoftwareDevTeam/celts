@@ -142,7 +142,7 @@ def editEvent(eventId):
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     program = event.singleProgram
-    isProgramManager =   g.current_user.isProgramManagerFor(Program)
+    isProgramManager =   g.current_user.isProgramManagerFor(program)
     return render_template("admin/createSingleEvent.html",
                             eventData = eventData,
                             allFacilitators = getAllFacilitators(),

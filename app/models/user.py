@@ -19,10 +19,8 @@ class User(baseModel):
     
     def isProgramManagerFor(self, program):
         from app.models.programManager import ProgramManager  # Must defer import until now to avoid circular reference
-        if ProgramManager.select().where(ProgramManager.user == self.username, ProgramManager.program == program).exists():
-            return True
-        else:
-            return False
+        return ProgramManager.select().where(ProgramManager.user == self, ProgramManager.program == program).exists()
+    
 
  
 
