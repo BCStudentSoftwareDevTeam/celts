@@ -126,7 +126,7 @@
         {% endfor %}
     </tbody>
     </table>
-{% if term.isCurrentTerm %}
+{% if term.isCurrentTerm or term.isFutureTerm %}
   <div class="float-end">
     <button class="btn btn-primary">Send to Registrar</button>
   </div>
