@@ -64,7 +64,7 @@ class EmailHandler:
     def fetch_event_programs(self, program_id):
         """ Fetches all the programs of a particular event """
         # Non-student-led programs have "Unknown" as their id
-        if program_id == 'Unknown':
+        if program_id == 'Unknown' or program_id is None:
             programEvents = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event==self.event.id)
             return [program.program for program in programEvents.objects()]
         else:

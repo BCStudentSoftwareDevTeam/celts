@@ -1,18 +1,17 @@
 import pytest
-from dateutil import parser
 from datetime import date, datetime, timedelta
 
-from app.models.user import User
 from app.models import mainDB
 from app.models.event import Event
-from app.models.program import Program
-from app.logic.events import saveEventToDb
-from app.scripts.sendEventReminderEmails import checkForEvents, sendAutomatedEmail
+from app.logic.events import getTomorrowsEvents
+from app.scripts.sendEventReminderEmails import sendAutomatedEmail
 
 @pytest.mark.integration
-def test_checkForEvents():
+def test_sendAutomatedEmail():
     with mainDB.atomic() as transaction:
         tomorrow = date.today() + timedelta(days=1)
+        emailsSent = sendAutomatedEmail(None)
+        assert emailsSent == 0 # if no events are found, should return 0
         newEvent = Event.create(name = "Test event",
                       term = 2,
                       description= "This Event is Created to be Deleted.",
@@ -25,7 +24,7 @@ def test_checkForEvents():
                       startDate=  tomorrow,
                       endDate= "2022-12-19",
                       recurringId = 0)
-        tomorrowEvents = checkForEvents()
+        tomorrowEvents = getTomorrowsEvents()
         emailsSent = sendAutomatedEmail(tomorrowEvents)
         assert emailsSent == 1
         assert len(tomorrowEvents) == 1
@@ -41,7 +40,7 @@ def test_checkForEvents():
                       startDate=  tomorrow,
                       endDate= "2022-12-19",
                       recurringId = 0)
-        tomorrowEvents = checkForEvents()
+        tomorrowEvents = getTomorrowsEvents()
         emailsSent = sendAutomatedEmail(tomorrowEvents)
         assert emailsSent == 2
         assert len(tomorrowEvents) == 2

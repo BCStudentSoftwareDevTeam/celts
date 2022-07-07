@@ -1,5 +1,6 @@
 from peewee import DoesNotExist, fn, JOIN
 from dateutil import parser
+from datetime import timedelta, date
 import datetime
 from werkzeug.datastructures import MultiDict
 from app.models import mainDB
@@ -268,7 +269,7 @@ def preprocessEventData(eventData):
         - facilitators should be a list of objects. Use the given list of usernames if possible
           (and check for a MultiDict with getlist), or else get it from the existing event
           (or use an empty list if no event)
-        - times should exist be strings in 24 hour format example: 14:40 
+        - times should exist be strings in 24 hour format example: 14:40
     """
 
     ## Process checkboxes
@@ -317,3 +318,10 @@ def preprocessEventData(eventData):
         eventData['facilitators'] = list(User.select().join(EventFacilitator).where(EventFacilitator.event == event))
 
     return eventData
+
+
+def getTomorrowsEvents():
+    """Grabs each event that occurs tomorrow"""
+    tomorrowDate = date.today() + timedelta(days=1)
+    events = list(Event.select().where(Event.startDate==tomorrowDate))
+    return events
