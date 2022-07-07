@@ -23,9 +23,9 @@ def searchUsers(query, category=None):
             if len(searchTerm) > 1:
                 searchTerm += "%"
                 if category =="instructor":
-                    results = User.select().where( User.isFaculty & (User.firstName ** firstName | User.lastName ** firstName))
+                    results = User.select().where( User.isFaculty & (User.firstName ** firstName & User.lastName ** lastName))
                 else:
-                    results = User.select().where(User.isStudent & (User.firstName ** firstName | User.lastName ** firstName))
+                    results = User.select().where(User.isStudent & (User.firstName ** firstName & User.lastName ** lastName))
                 for participant in results:
                     if participant not in resultsDict:
                         resultsDict[participant.username]=model_to_dict(participant)
