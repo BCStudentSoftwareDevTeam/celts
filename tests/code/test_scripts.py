@@ -10,7 +10,7 @@ from app.scripts.sendEventReminderEmails import sendAutomatedEmail
 def test_sendAutomatedEmail():
     with mainDB.atomic() as transaction:
         tomorrow = date.today() + timedelta(days=1)
-        emailsSent = sendAutomatedEmail(None)
+        emailsSent = sendAutomatedEmail([])
         assert emailsSent == 0 # if no events are found, should return 0
         newEvent = Event.create(name = "Test event",
                       term = 2,
