@@ -1,6 +1,8 @@
 from datetime import datetime
-from peewee import DoesNotExist
+from peewee import DoesNotExist, JOIN
 from flask_mail import Mail, Message
+import os
+
 from app import app
 from app.models.programEvent import ProgramEvent
 from app.models.interest import Interest
@@ -10,7 +12,9 @@ from app.models.eventRsvp import EventRsvp
 from app.models.emailTemplate import EmailTemplate
 from app.models.emailLog import EmailLog
 from app.models.event import Event
-import os
+from app.models.eventParticipant import EventParticipant
+from app.models.programBan import ProgramBan
+from app.models.term import Term
 
 class EmailHandler:
     def __init__(self, raw_form_data, url_domain, sender_object, attachment_file=None):
@@ -95,6 +99,17 @@ class EmailHandler:
             recipients = (User.select()
                 .join(EventRsvp)
                 .where(EventRsvp.event==self.event.id))
+
+        if recipients_category == "Eligible Students":
+            # all terms with the same accademic year as the current term,
+            # the allVolunteer training term then needs to be in that query
+            Term2 = Term.alias()
+
+            sameYearTerms = Term.select().join(Term2, on=(Term.academicYear == Term2.academicYear)).where(Term2.isCurrentTerm == True)
+
+            bannedUsers = ProgramBan.select(ProgramBan.user_id).where((ProgramBan.endDate > datetime.now()) | (ProgramBan.endDate is None), ProgramBan.program_id.in_([p.id for p in self.program_ids]))
+            allVolunteer = Event.select().where(Event.isAllVolunteerTraining == True, Event.term.in_(sameYearTerms))
+            recipients = User.select().join(EventParticipant).where(User.username.not_in(bannedUsers), EventParticipant.event.in_(allVolunteer))
 
         return [recipient for recipient in recipients]
 
