@@ -12,7 +12,11 @@ class EmailLog(baseModel):
     dateSent = DateTimeField()
     sender = ForeignKeyField(User)
 <<<<<<< HEAD
+<<<<<<< HEAD
     attachmentFullPath = CharField(null=True)
+=======
+    attachmentName = CharField()
+>>>>>>> 9879f1e39c590d5dc2c5b13e0a647cbfa06cb07c
 =======
     attachmentName = CharField()
 >>>>>>> 9879f1e39c590d5dc2c5b13e0a647cbfa06cb07c
