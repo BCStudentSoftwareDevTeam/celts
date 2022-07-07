@@ -58,7 +58,6 @@ def format24HourTime(unformattedTime):
             #  calling strptime here to explicitly raise an exception if it wasn't properly in 24 hour format
             formattedTime = datetime.strptime(unformattedTime, "%H:%M")
             return unformattedTime
-    elif isinstance(unformattedTime, datetime):
+    else:
         formattedTime = unformattedTime.strftime("%H:%M")
         return formattedTime
-        

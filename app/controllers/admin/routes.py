@@ -1,5 +1,5 @@
 from flask import request, render_template, url_for, g, Flask, redirect, flash, abort, json, jsonify, session
-from peewee import DoesNotExist
+from peewee import DoesNotExist, fn
 from playhouse.shortcuts import model_to_dict, dict_to_model
 import json
 from datetime import datetime
@@ -25,7 +25,6 @@ from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
 from app.logic.userManagement import hasPrivilege, getPrograms
-
 
 
 @admin_bp.route('/switch_user', methods=['POST'])
@@ -97,7 +96,8 @@ def createEvent(templateid, programid=None):
         if saveSuccess:
             noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
-            return redirect(url_for("main.events", selectedTerm=eventData['term']))
+            eventId = Event.select(fn.MAX(Event.id)).scalar()
+            return redirect(url_for("admin.editEvent", eventId = eventId))
         else:
             flash(validationErrorMessage, 'warning')
 
@@ -141,8 +141,12 @@ def editEvent(eventId):
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     program = event.singleProgram
-
     isProgramManager = hasPrivilege(g.current_user,program)
+
+    if (g.current_user.isStudent or g.current_user.isFaculty) and not isProgramManager:  # only formats to 12 hour time if user doesn't have access (for display purposes)
+        eventData['timeStart'] = datetime.strptime(eventData['timeStart'], "%H:%M").strftime("%I:%M %p")
+        eventData['timeEnd'] = datetime.strptime(eventData['timeEnd'], "%H:%M").strftime("%I:%M %p")
+
     return render_template("admin/createSingleEvent.html",
                             eventData = eventData,
                             allFacilitators = getAllFacilitators(),

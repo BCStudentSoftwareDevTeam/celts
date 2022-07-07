@@ -82,6 +82,7 @@ def saveEventToDb(newEventData):
                     "isRsvpRequired": newEventData['isRsvpRequired'],
                     "isService": newEventData['isService'],
                     "startDate": eventInstance['date'],
+                    "isAllVolunteerTraining": newEventData['isAllVolunteerTraining'],
                     "endDate": eventInstance['date']
             }
 
@@ -273,7 +274,7 @@ def preprocessEventData(eventData):
     """
 
     ## Process checkboxes
-    eventCheckBoxes = ['isRsvpRequired', 'isService', 'isTraining', 'isRecurring']
+    eventCheckBoxes = ['isRsvpRequired', 'isService', 'isTraining', 'isRecurring', 'isAllVolunteerTraining']
 
     for checkBox in eventCheckBoxes:
         if checkBox not in eventData:
