@@ -92,28 +92,22 @@ def updateVolunteerTable(eventID):
 @admin_bp.route('/addVolunteersToEvent/<eventId>', methods = ['POST'])
 @admin_bp.route('/addVolunteerToEvent/<eventId>/<volunteer>', methods = ['POST'])
 def addVolunteer(eventId, volunteer = None):
-    data = request.form
-    print(data["action"])
-    print(data["action"])
-    getRecurringId  = Event.select(Event.recurringId).where(Event.id == eventId).distinct()
-    eventParticipants = getEventParticipants(eventId)
     if volunteer == None:
+        username = request.form.get("volunteer[]")
+        user = User.get(User.username==username)
+        getRecurringId  = Event.select(Event.recurringId).where(Event.id == eventId).distinct()
+        eventParticipants = getEventParticipants(eventId)
         successfullyAddedRecurringVolunteer = None
-        if data["action"] == True:
-            if len(eventParticipants) == 0:
-                successfullyAddedRecurringVolunteer = addVolunteerToEventRsvp(data["user"].username, eventId)
-                EventParticipant.create(user = username, event = eventId)
-            else:
-                if EventRsvp.select(EventRsvp.user==data["user"].username, EventRsvp.event_id == eventId).exists():
-                    print("This user has already been added to this event")
-                else:
-                    successfullyAddedRecurringVolunteer = addVolunteerToEventRsvp(data["user"].username, eventId)
-                    EventParticipant.create(user = data["user"].username, event = eventId)
+        if len(eventParticipants) == 0:
+                successfullyAddedRecurringVolunteer = addVolunteerToEventRsvp(user, eventId)
+                EventParticipant.create(user = user, event = eventId)
+        elif EventRsvp.select().where(EventRsvp.user==username, EventRsvp.event_id == eventId) == False:
+            print("This user has already been added to this event")
         else:
-            return "Nothing yet!"
-
+            successfullyAddedRecurringVolunteer = addVolunteerToEventRsvp(user, eventId)
+            EventParticipant.create(user = user, event = eventId)
         if successfullyAddedRecurringVolunteer:
-            flash("Volunteer successfully added!", "success")
+            return redirect(url_for('admin.trackVolunteersPage', eventID = eventId))
         else:
             flash("Error when adding volunteer", "danger")
     else:
@@ -125,12 +119,12 @@ def addVolunteer(eventId, volunteer = None):
             flash("Volunteer successfully added!", "success")
         else:
             flash("Error when adding volunteer", "danger")
-    return "recurring people have been added!"
+    return redirect(url_for('admin.trackVolunteersPage', eventID = eventId))
 
 @admin_bp.route('/removeVolunteerFromEvent/<user>/<eventID>', methods = ['POST'])
 def removeVolunteerFromEvent(user, eventID):
     (EventParticipant.delete().where(EventParticipant.user==user, EventParticipant.event==eventID)).execute()
-    (EventRsvp.delete().where(EventRsvp.user==user)).execute()
+    (EventRsvp.delete().where(EventRsvp.user==user, EventRsvp.event==eventID)).execute()
     flash("Volunteer successfully removed", "success")
     return ""
 

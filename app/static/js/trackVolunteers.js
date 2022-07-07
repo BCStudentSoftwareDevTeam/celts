@@ -13,54 +13,6 @@ $(document).ready(function() {
 
   $('[data-toggle="tooltip"]').tooltip();
 
-  function volunteerCheckbox(el){
-    let eventId = $("#eventID").val()
-    var user=$("#PastVolunteers").attr('data-user');
-    var checked=$("#PastVolunteers").attr('data-checked');
-    console.log(checked);
-    var action = el.checked;
-    action = el.checked ? true : false;
-
-    $.ajax({
-      url: `/addVolunteerToEvent/${eventId}`,
-      data: { action: "action",
-              user: "user"},
-      dataType: "json",
-      type: "POST",
-      success: function(response){
-        console.log(response)
-      }
-    });
-
-  };
-
-  function pastVolunteersButton(){
-    let eventId = $("#eventID").val()
-
-    $.ajax({
-      url: `/addVolunteerToEvent/${eventId}`,
-      dataType: "json",
-      type: "POST",
-      success: function(response){
-        let table = document.getElementById("volunteerTable");
-        table.innerHTML += (response);
-        location.reload();
-      },
-      error: function(request, status, error,response){
-        console.log(response);
-      }
-    });
-  };
-
-  $("#AddPastVolunteerButton").on("click", function(){
-    pastVolunteersButton();
-
-  });
-  $('#PastVolunteers').on("click", function(){
-    volunteerCheckbox(this);
-
-  });
-
   // Search functionalities from the volunteer table in the UI
     $("#trackVolunteersInput").on("keyup", function() {
       var value = $(this).val().toLowerCase();

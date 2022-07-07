@@ -45,7 +45,7 @@
 </div>
 <form method="post">
   <label class='d-none' id="eventLength">{{eventLength}}</label>
-  <input class="form-control" id="eventID" name="event" value="{{event}}" type='hidden'>
+  <input class="form-control" id="eventID" name="event" value="{{event.id}}" type='hidden'>
   <table class="table" id="trackVolunteerstable">
     <thead>
       <tr>
@@ -149,27 +149,29 @@
 <div class="modal fade float-start" id="addPastVolunteerModal" tabindex="-1" aria-labelledby="addPastVolunteerModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add Past Volunteers</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-          {%for participant in recurringVolunteers%}
-            {% set action = "add" %}
-            {% set checked = "" %}
-              {% if participant in eventParticipants %}
-                  {% set action ="remove" %}
-                  {% set checked ="checked" %}
-              {% endif %}
-            <input type="checkbox" id="PastVolunteers" data-checked= "{{checked}}" data-user= {{participant}}  />
-            <label class="form-check-label" for="PastVolunteers"> {{participant.firstName}} {{participant.lastName}} </label>
-          {% endfor %}
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary">Select All</button>
-        <button id="AddPastVolunteerButton" type="button" class="btn btn-primary" >Confirm Selection</button>
-      </div>
-      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      <form action="/addVolunteersToEvent/{{event.id}}" method="POST">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Add Past Volunteers</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              {%for participant in recurringVolunteers%}
+                {% set action = "add" %}
+                {% set checked = "" %}
+                  {% if participant.username in eventParticipants %}
+                      {% set action ="remove" %}
+                      {% set checked ="checked" %}
+                  {% endif %}
+                  <input type="checkbox" name="volunteer[]" id="PastVolunteers" value= "{{participant}}" {{checked}}  />
+                  <label class="form-check-label" for="PastVolunteers"> {{participant.firstName}} {{participant.lastName}}  </label>
+              {% endfor %}
+          </div>
+          <div class="modal-footer">
+              <button type="button" id = "selectAllVolunteers" class="btn btn-secondary">Select All</button>
+            <button id="AddPastVolunteerButton" type="submit" class="btn btn-primary" >Confirm Selection</button>
+          </div>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close </button>
+      </form>
     </div>
   </div>
 </div>
