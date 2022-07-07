@@ -151,15 +151,18 @@ class EmailHandler:
         This creates the directory/path for the object from the "Choose File" input in the emailModal.html file.
         :returns: directory path for attachment
         """
-        attachmentFullPath = os.path.join(self.attachment_path, self.attachment_file.filename)
         try:
-            try:  # tries to create the full path of the files location and passes if already created
-                os.mkdir(self.attachment_path)
-            except:
-                pass
-            return attachmentFullPath
+            # tries to create the full path of the files location and passes if 
+            # the directories already exist or there is no attachment
+            attachmentFullPath = os.path.join(self.attachment_path, self.attachment_file.filename)
+            os.mkdir(self.attachment_path)
+
         except AttributeError:  # will pass if there is no attachment to save
             pass
+        except FileExistsError:
+            pass
+
+        return attachmentFullPath
 
     def saveAttachment(self):
         """ Saves the attachment in the app/static/files/attachments/ directory """
