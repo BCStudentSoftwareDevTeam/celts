@@ -86,8 +86,12 @@ def viewVolunteersProfile(username):
         permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
         allUserEntries = BackgroundCheck.select().where(BackgroundCheck.user == volunteer)
-        completedBackgroundCheck = {entry.type.id: [entry.passBackgroundCheck, entry.dateCompleted] for entry in allUserEntries}
+        completedBackgroundCheck = {entry.type: [entry.passBackgroundCheck, entry.dateCompleted] for entry in allUserEntries}
         backgroundTypes = list(BackgroundCheckType.select())
+
+        for checkType in backgroundTypes:
+            if checkType not in completedBackgroundCheck.keys():
+                completedBackgroundCheck[checkType] = [False, datetime.datetime.now()] # start here tommorow
 
         eligibilityTable = []
         for program in programs:
@@ -100,6 +104,7 @@ def viewVolunteersProfile(username):
                                    "completedTraining" : (volunteer.username in trainedParticipants(program, g.current_term)),
                                    "isNotBanned" : True if not notes else False,
                                    "banNote": noteForDict})
+
         return render_template ("/main/volunteerProfile.html",
                 programs = programs,
                 programsInterested = programsInterested,
