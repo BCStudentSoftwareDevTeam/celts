@@ -115,7 +115,7 @@
                 <span class="input-group-text timeIcons" id="timeIcon1" hidden><i class="bi bi-clock"></i></span>
               </div>
               {% else %}
-                <p>{{eventData.timeStart.strftime('%H:%M') if eventData.timeStart and eventData.timeStart.strftime else eventData.timeStart}}</p>
+                <p>{{eventData.timeStart}}</p>
               {% endif %}
             </div>
             <div class='form-group col-md-6'>
@@ -126,7 +126,7 @@
                 <span class="input-group-text timeIcons" id="timeIcon2" hidden><i class="bi bi-clock"></i></span>
               </div>
               {% else %}
-                <p>{{eventData.timeEnd.strftime('%H:%M') if eventData.timeEnd and eventData.timeEnd.strftime else eventData.timeEnd }}</p>
+                <p>{{eventData.timeEnd }}</p>
               {% endif %}
             </div>
           </div>
