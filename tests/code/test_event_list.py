@@ -51,6 +51,12 @@ def test_bonner_event(training_event):
     testProgramEvent = getBonnerEvents(3)
     assert testProgramEvent
 
+    nonBonner = Event.get_by_id(9)
+    print(nonBonner)
+    # prove that getBonnerEvents is a different event
+    assert testProgramEvent not in nonBonner
+
+
 @pytest.mark.integration
 def test_nonProgram_event(training_event):
     testProgramEvent = getNonProgramEvents(6)
