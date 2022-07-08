@@ -280,11 +280,11 @@ def contributors():
 def reviewProposal():
     courseID=request.form
     course_data=Course.get_by_id(courseID["course_id"])
-    print(course_data.courseName)
     instructors_data=course_data.courseInstructors
     return render_template('/main/reviewproposal.html',
                             course_data=course_data,
-                            instructors_data=instructors_data)
+                            instructors_data=instructors_data,
+                            courseID=courseID["course_id"])
 
 @main_bp.route('/manageServiceLearning', methods = ['GET', 'POST'])
 @main_bp.route('/manageServiceLearning/<term>', methods = ['GET', 'POST'])

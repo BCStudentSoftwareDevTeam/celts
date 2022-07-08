@@ -91,7 +91,7 @@
             </td>
             <td>{{data.term.description}}</td>
             <td>{{data.status.status}}</td>
-            <td><button type="button" href="/proposalReview/{{ data }}" onclick="reviewCourses()" class="btn {{'btn-primary' if data.status.status == 'Pending' else 'btn-warning'}} btn-sm">{{ "Review" if data.status.status == "Pending" else "In Progress" }}</button></td>
+            <td><button type="button" data-id="{{data}}" onclick="reviewCourses(this)" class="btn {{'btn-primary' if data.status.status == 'Pending' else 'btn-warning'}} btn-sm">{{ "Review" if data.status.status == "Pending" else "In Progress" }}</button></td>
             <td><a type="button" href="/serviceLearning/editProposal/{{data }}" class="btn btn-primary btn-sm">Edit</a></td>
           </tr>
           {% endfor %}
@@ -132,4 +132,5 @@
   </div>
 </div>
 </div>
+<div id="review-modal"></div>
 {% endblock %}
