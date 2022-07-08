@@ -63,9 +63,10 @@ $(document).ready(function() {
     });
   });
 
-  $(".attendanceCheck").on("change", function() {
+$(".attendanceCheck").on("change", function() {
     let username =  $(this)[0].name.substring(9) //get everything after the 9th character;
     let inputFieldID = `inputHours_${username}`
+
 
     if ($(this)[0].checked) {
       $(`#${inputFieldID}`).prop('disabled', false);

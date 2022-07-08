@@ -34,11 +34,7 @@ def trackVolunteersPage(eventID):
         abort(404)
 
     program = event.singleProgram
-
-    # TODO: What do we do for no programs or multiple programs?
-    if not program:
-        return "TODO: What do we do for no programs or multiple programs?"
-
+    
     trainedParticipantsList = trainedParticipants(program, g.current_term)
     eventParticipants = getEventParticipants(event)
     isProgramManager = isProgramManagerForEvent(g.current_user, event)
