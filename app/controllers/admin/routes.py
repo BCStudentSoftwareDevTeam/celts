@@ -169,15 +169,18 @@ def viewEvent(eventId):
     program = event.singleProgram
     eventFacilitators = EventFacilitator.select().where(EventFacilitator.event == eventId)
     eventFacilitatorNames = [eventFacilitator.user for eventFacilitator in eventFacilitators]
+    programTrainings = Event.select().join(ProgramEvent).where(Event.isTraining == 1, ProgramEvent.program == program)
+    listOfProgramTrainings = [programTraining.id for programTraining in programTrainings]
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     eventData["startDate"] = eventData["startDate"].strftime("%m/%d/%Y")
     eventData['timeStart'] = datetime.strptime(eventData['timeStart'], "%H:%M").strftime("%I:%M %p")
     eventData['timeEnd'] = datetime.strptime(eventData['timeEnd'], "%H:%M").strftime("%I:%M %p")
     return render_template("eventStudentView.html",
                             eventData = eventData,
-                            eventFacilitatorNames = eventFacilitators,
+                            eventFacilitatorNames = eventFacilitatorNames,
                             isPastEvent = isPastEvent,
-                            userHasRSVPed = userHasRSVPed)
+                            userHasRSVPed = userHasRSVPed,
+                            programTrainings = listOfProgramTrainings)
 
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])

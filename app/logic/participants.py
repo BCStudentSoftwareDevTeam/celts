@@ -26,13 +26,13 @@ def trainedParticipants(programID, currentTerm):
                 (((Event.name == "All Celts Training") | (Event.name == "All Volunteer Training")) & (Event.term == ayStart)) | (Event.term==currentTerm))
             )
 
-    allTraningEvents = set(otherTrainingEvents)
+    allTrainingEvents = set(otherTrainingEvents)
 
     eventTrainingDataList = [participant.user.username for participant in (
-        EventParticipant.select().where(EventParticipant.event.in_(allTraningEvents))
+        EventParticipant.select().where(EventParticipant.event.in_(allTrainingEvents))
         )]
 
-    attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(allTraningEvents), eventTrainingDataList)))
+    attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(allTrainingEvents), eventTrainingDataList)))
     return attendedTraining
 
 def sendUserData(bnumber, eventId, programid):
