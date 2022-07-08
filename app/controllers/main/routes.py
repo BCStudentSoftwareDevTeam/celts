@@ -86,16 +86,18 @@ def viewVolunteersProfile(username):
         permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
         allUserEntries = BackgroundCheck.select().where(BackgroundCheck.user == volunteer)
-        backgroundTypes = list(BackgroundCheckType.select())
 
         if g.current_user.isCeltsAdmin:
             completedBackgroundCheck = {entry.type: [entry.passBackgroundCheck, entry.dateCompleted] for entry in allUserEntries}
         else:
-            completedBackgroundCheck = {entry.type: ['Yes' if entry.passBackgroundCheck else 'No',  # sets the values to strings because student staff do not have access to input boxes
+            # sets the values to strings because student staff do not have access to input boxes
+            completedBackgroundCheck = {entry.type: ['Yes' if entry.passBackgroundCheck else 'No',
                                                     'Not Completed' if entry.dateCompleted == None
                                                     else entry.dateCompleted.strftime('%m/%d/%Y')] for entry in allUserEntries}
 
-        for checkType in backgroundTypes:  # creates data structure for bgTypes that are not currently completed
+        backgroundTypes = list(BackgroundCheckType.select())
+        # creates data structure for background checks that are not currently completed
+        for checkType in backgroundTypes:
             if checkType not in completedBackgroundCheck.keys():
                 completedBackgroundCheck[checkType] = [False, ""]
 
