@@ -165,8 +165,8 @@
          <thead>
            <tr>
              <th scope="col">Description</th>
-             <th scope="col">Date Completed</th>
              <th scope="col">Completed</th>
+             <th scope="col">Date</th>
            </tr>
          </thead>
          <tbody>
@@ -174,16 +174,16 @@
            <tr>
              <td>{{entry.description}}</td>
              {% if g.current_user.isCeltsAdmin %}
-                <td> <input name="dateCompleted" type="date" id="{{entry.id}}_date" value="{{completedBackgroundCheck[entry][1]}}" class="form-control"/></td>
                 <td>
-                     <select class="backgroundCheck" id="{{entry.id}}" data-username="{{volunteer.username}}" >
-                       <option value=1>Yes</option>
-                       <option value=0>No</option>
-                     </select>
-                 </td>
+                    <select class="backgroundCheck" id="{{entry.id}}" data-username="{{volunteer.username}}" >
+                      <option value=0>No</option>
+                      <option value=1>Yes</option>
+                    </select>
+                </td>
+                <td> <input name="dateCompleted" type="date" id="{{entry.id}}_date" value="{{completedBackgroundCheck[entry][1]}}" class="form-control"/></td>
             {% else %}
-                <td>{{completedBackgroundCheck[entry][1]}}</td>
                 <td>{{completedBackgroundCheck[entry][0]}}</td>
+                <td>{{completedBackgroundCheck[entry][1]}}</td>
             </tr>
            {% endif %}
           {%endfor%}
