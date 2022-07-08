@@ -91,7 +91,7 @@ def viewVolunteersProfile(username):
         if g.current_user.isCeltsAdmin:
             completedBackgroundCheck = {entry.type: [entry.passBackgroundCheck, entry.dateCompleted] for entry in allUserEntries}
         else:
-            completedBackgroundCheck = {entry.type: ['Yes' if entry.passBackgroundCheck else 'No',     # sets the values to strings because student staff do not have access to input boxes
+            completedBackgroundCheck = {entry.type: ['Yes' if entry.passBackgroundCheck else 'No',  # sets the values to strings because student staff do not have access to input boxes
                                                     'Not Completed' if entry.dateCompleted == None
                                                     else entry.dateCompleted.strftime('%m/%d/%Y')] for entry in allUserEntries}
 
