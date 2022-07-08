@@ -80,13 +80,11 @@ $(".attendanceCheck").on("change", function() {
   });
 
   $("#selectAllVolunteers").click(function(){
-      let checkbox = $(".PastVolunteerCheck")
-      // for (const checked in checkbox){
-      //     console.log(checked)
-      //
-      //     // property.checked;
-      // }
+      let checkboxId = $("#checkboxLength").val()
+      console.log(checkboxId)
+      for(var i = 1; i<checkboxId+1; i++){
+          $("#PastVolunteers_"+i).prop('checked', true)
 
-      console.log(checkbox)
+      }
   });
 });

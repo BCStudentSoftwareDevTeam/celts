@@ -156,13 +156,14 @@
           </div>
           <div class="modal-body">
               {%for participant in recurringVolunteers%}
-                  <input type="checkbox" name="volunteer[]" id="PastVolunteers" value= {{participant}} class= "PastVolunteerCheck" aria-checked = "false" />
-                  <label class="form-check-label" for="PastVolunteers"> {{participant.firstName}} {{participant.lastName}}  </label>
+                <input id= "checkboxLength" value= "{{loop.length}}" hidden />    
+                <input type="checkbox" name="volunteer[]" id="PastVolunteers_{{loop.index}}" value= {{participant}} class= "PastVolunteerCheck"  />
+                <label class="form-check-label" for="PastVolunteers"> {{participant.firstName}} {{participant.lastName}}  </label>
               {% endfor %}
           </div>
           <div class="modal-footer" >
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close </button>
-            <button type="button" id = "selectAllVolunteers" class="btn btn-secondary">Select All</button>
+            <button type="button" id = "selectAllVolunteers" class="btn btn-secondary" >Select All</button>
             <button id="AddPastVolunteerButton" type="submit" class="btn btn-primary" >Confirm Selection</button>
           </div>
       </form>
