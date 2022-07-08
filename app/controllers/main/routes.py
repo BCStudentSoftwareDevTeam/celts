@@ -29,7 +29,6 @@ from app.logic.courseManagement import pendingCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
 from app.models.courseInstructor import CourseInstructor
 
-
 @main_bp.route('/', methods=['GET'])
 def redirectToEventsList():
     return redirect(url_for("main.events", selectedTerm=g.current_term))
@@ -83,7 +82,7 @@ def viewVolunteersProfile(username):
         rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == volunteer)
         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
 
-        programManagerPrograms = programManager.select().where(programManager.user == volunteer)
+        programManagerPrograms = ProgramManager.select().where(ProgramManager.user == volunteer)
         permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
         allUserEntries = BackgroundCheck.select().where(BackgroundCheck.user == volunteer)
@@ -261,12 +260,15 @@ def serviceTranscript(username):
 
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
 def searchUser(query):
+
+    category= request.args.get("category")
+
     '''Accepts user input and queries the database returning results that matches user search'''
     try:
         query = query.strip()
         search = query.upper()
         splitSearch = search.split()
-        searchResults = searchUsers(query)
+        searchResults = searchUsers(query,category)
         return searchResults
     except Exception as e:
         print(e)
@@ -285,7 +287,6 @@ def reviewProposal():
                             course_data=course_data,
                             instructors_data=instructors_data,
                             courseID=courseID["course_id"])
-
 @main_bp.route('/manageServiceLearning', methods = ['GET', 'POST'])
 @main_bp.route('/manageServiceLearning/<term>', methods = ['GET', 'POST'])
 def getAllCourseIntructors(term=None):
