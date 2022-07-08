@@ -174,16 +174,16 @@
            <tr>
              <td>{{entry.description}}</td>
              {% if g.current_user.isCeltsAdmin %}
-                <td> <input name="dateCompleted" type="date" id="{{entry.id}}_date" value="{{completedBackgroundCheck[entry][1]}}" class="form-control" /> </td>
+                <td> <input name="dateCompleted" type="date" id="{{entry.id}}_date" value="{{completedBackgroundCheck[entry][1]}}" class="form-control"/></td>
                 <td>
                      <select class="backgroundCheck" id="{{entry.id}}" data-username="{{volunteer.username}}" >
                        <option value=1>Yes</option>
-                       <option value=0 {{"selected" if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False}}>No</option>
+                       <option value=0>No</option>
                      </select>
                  </td>
             {% else %}
-                <td>{{completedBackgroundCheck[entry.id]}}</td>
-                <td>{{completedBackgroundCheck[entry.id][1]}}</td>
+                <td>{{completedBackgroundCheck[entry][1]}}</td>
+                <td>{{completedBackgroundCheck[entry][0]}}</td>
             </tr>
            {% endif %}
           {%endfor%}
