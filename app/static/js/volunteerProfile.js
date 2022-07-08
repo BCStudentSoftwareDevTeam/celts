@@ -86,40 +86,40 @@ $(document).ready(function(){
     });
   });
 
-
-  $(".backgroundCheck").change(function () { // Updates the Background check of a volunteer in the database
-    checkType = $(this).attr("id")
-    let data = {
-        checkPassed : $(this).val(),      // Expected to be either a 0 or a 1volunteerProfile.js
-
-        user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
-        bgType: checkType,       // Expected to be the ID of a background check in the database
-        bgDate: $("#" + checkType + "_date").val()  //Expected to be the date of the background check completion
+    for (i=0; i<3; i++){
+        let buttonIndex = i;
+      $("[data-id=" + i + "]").click(function () { // Updates the Background check of a volunteer in the database
+        isPassed = $("[data-check=" + buttonIndex + "]").val()
+        let data = {
+            checkPassed: isPassed,      // Expected to be either a 0 or a 1 volunteerProfile.js
+            user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
+            bgType: $(this).attr("id"),       // Expected to be the ID of a background check in the database
+            bgDate: $("#" + buttonIndex + "_date").val()  //Expected to be the date of the background check completion
+        }
+        $.ajax({
+          url: "/updateBackgroundCheck",
+          type: "POST",
+          data: data,
+          success: function(s){
+          },
+          error: function(error, status){
+              console.log(error, status)
+          }
+        })
+      });
     }
-
-    $.ajax({
-      url: "/updateBackgroundCheck",
-      type: "POST",
-      data: data,
-      success: function(s){
-      },
-      error: function(error, status){
-          console.log(error, status)
-      }
-    })
-  });
 });
 
 function updateManagers(el, volunteer_username ){// retrieve the data of the studnet staff and program id if the boxes are checked or not
   var program_id=$(el).attr('data-programid');
   action= el.checked ? 'add' : 'remove';
-  
+
   $.ajax({
     method:"POST",
     url:"/updateProgramManager",
     data : {"user_name":volunteer_username, //student staff: user_name
             "program_id":program_id,       // program id
-            "action":action,          //action: add or remove 
-             },  
+            "action":action,          //action: add or remove
+             },
   })
 }

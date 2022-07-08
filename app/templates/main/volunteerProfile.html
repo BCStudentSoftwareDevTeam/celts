@@ -155,9 +155,7 @@
   </div>
 {% endif %}
   <!-- End Program Manager Selection -->
-
 <!-- Start Background Check Table -->
-
 {% if g.current_user.isAdmin %}
     <div class="row">
       <h2>Background Check</h2>
@@ -167,6 +165,9 @@
              <th scope="col">Description</th>
              <th scope="col">Completed</th>
              <th scope="col">Date</th>
+             {% if g.current_user.isCeltsAdmin%}
+                <th scope="col"></th>
+             {% endif %}
            </tr>
          </thead>
          <tbody>
@@ -175,12 +176,13 @@
              <td>{{bgType.description}}</td>
              {% if g.current_user.isCeltsAdmin %}
                 <td>
-                    <select class="backgroundCheck" id="{{bgType.id}}" data-username="{{volunteer.username}}" >
+                    <select class="backgroundCheck" name="{{bgType.id}}" data-check="{{loop.index-1}}" id="{{bgType.id}}">
                       <option value=0>No</option>
                       <option value=1>Yes</option>
                     </select>
                 </td>
-                <td> <input name="dateCompleted" type="date" id="{{bgType.id}}_date" value="{{completedBackgroundCheck[bgType][1]}}" class="form-control"/></td>
+                <td><input name="dateCompleted" type="date" id="{{loop.index-1}}_date" value="{{completedBackgroundCheck[bgType][1]}}" class="form-control"/></td>
+                <td><button type="button" class="btn btn-primary" id="{{bgType.id}}" data-id="{{loop.index-1}}" data-username="{{volunteer.username}}">Save</button></td>
             {% else %}
                 <td>{{completedBackgroundCheck[bgType][0]}}</td>
                 <td>{{completedBackgroundCheck[bgType][1]}}</td>
@@ -192,7 +194,6 @@
     </div>
 {% endif %}
 <!-- End Background Check Table -->
-
 <!-- Ban or Unban Modal -->
 <div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
   <form onsubmit="return validate();">
