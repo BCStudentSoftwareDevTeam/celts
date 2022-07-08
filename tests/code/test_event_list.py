@@ -4,7 +4,7 @@ from app.models import mainDB
 from app.models.programEvent import ProgramEvent
 from app.models.event import Event
 from app.models.event import Term
-from app.logic.events import getStudentLedProgram,  getTrainingProgram, getBonnerProgram, getOneTimeEvents
+from app.logic.events import getStudentLedProgram,  getTrainingProgram, getBonnerProgram, getNonProgramEvents
 
 @pytest.mark.integration
 def test_event_list():
@@ -40,7 +40,7 @@ def test_event_list():
                                 endDate = 2021-12-13)
         bonnerProgramEvent = ProgramEvent.create(program = 5, event = bonner)
 
-        oneTime = Event.create(name = "Test One Time",
+        nonProgram = Event.create(name = "Test Non-program Event",
                                 term = 3,
                                 description = "event for testing",
                                 timeStart = "18:00:00",
@@ -48,7 +48,7 @@ def test_event_list():
                                 location = "basement",
                                 startDate = 2021-12-12,
                                 endDate = 2021-12-13)
-        oneTimeProgramEvent = ProgramEvent.create(program = 6, event = oneTime)
+        nonProgramEvent = ProgramEvent.create(program = 6, event = nonProgram)
 
         newTerm= Term.create(
             description= "Fall 2025",
@@ -80,9 +80,9 @@ def test_event_list():
         assert bonner in bonnerProgram
         assert Studentled not in bonnerProgram
 
-        oneTimeEvents = getOneTimeEvents(3)
-        assert oneTimeEvents
-        assert oneTime in oneTimeEvents
-        assert Studentled not in oneTimeEvents
+        nonProgramEvents = getNonProgramEvents(3)
+        assert nonProgramEvents
+        assert nonProgram not in nonProgramEvents
+        assert Studentled not in nonProgramEvents
 
         transaction.rollback()
