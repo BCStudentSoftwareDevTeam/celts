@@ -77,4 +77,15 @@ $(document).ready(function() {
       $(`#${inputFieldID}`).val(null);
     }
   });
+
+  $("#selectAllVolunteers").click(function(){
+      let checkbox = $(".PastVolunteerCheck")
+      // for (const checked in checkbox){
+      //     console.log(checked)
+      //
+      //     // property.checked;
+      // }
+
+      console.log(checkbox)
+  });
 });
