@@ -173,25 +173,19 @@
            {% for entry in backgroundTypes %}
            <tr>
              <td>{{entry.description}}</td>
-             {% if g.current_user.isCeltsAdmin%}
+             {% if g.current_user.isCeltsAdmin %}
                 <td> <input name="dateCompleted" type="date" id="{{entry.id}}_date" value="{{completedBackgroundCheck[entry][1]}}" class="form-control" /> </td>
-             {% endif %}
-                 <td>
+                <td>
                      <select class="backgroundCheck" id="{{entry.id}}" data-username="{{volunteer.username}}" >
                        <option value=1>Yes</option>
                        <option value=0 {{"selected" if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False}}>No</option>
                      </select>
                  </td>
             {% else %}
-                {% if entry.id in completedBackgroundCheck %}
-                    <td>{{completedBackgroundCheck[entry.id][1].strftime('%m-%d-%Y')}}</td>
-                {% else %}
-                    <td>-</td>
-                {% endif %}
-                <td>
-                   {{completedBackgroundCheck[entry.id]}}
-                </td>
-           </tr>
+                <td>{{completedBackgroundCheck[entry.id]}}</td>
+                <td>{{completedBackgroundCheck[entry.id][1]}}</td>
+            </tr>
+           {% endif %}
           {%endfor%}
          </tbody>
       </table>

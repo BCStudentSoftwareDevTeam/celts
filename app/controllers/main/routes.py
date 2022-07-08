@@ -86,12 +86,15 @@ def viewVolunteersProfile(username):
         permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
         allUserEntries = BackgroundCheck.select().where(BackgroundCheck.user == volunteer)
-        completedBackgroundCheck = {entry.type: [entry.passBackgroundCheck, entry.dateCompleted] for entry in allUserEntries}
         backgroundTypes = list(BackgroundCheckType.select())
+        if g.current_user.isCeltsAdmin:
+            completedBackgroundCheck = {entry.type: [entry.passBackgroundCheck, entry.dateCompleted] for entry in allUserEntries}
+        else:
+            completedBackgroundCheck = {entry.type: [entry.passBackgroundCheck, entry.dateCompleted.strftime('%m-%d-%Y')] for entry in allUserEntries}
 
         for checkType in backgroundTypes:
             if checkType not in completedBackgroundCheck.keys():
-                completedBackgroundCheck[checkType] = [False, datetime.datetime.now()] # start here tommorow
+                completedBackgroundCheck[checkType] = [False, ""]
 
         eligibilityTable = []
         for program in programs:
@@ -105,6 +108,9 @@ def viewVolunteersProfile(username):
                                    "isNotBanned" : True if not notes else False,
                                    "banNote": noteForDict})
 
+        print('====', completedBackgroundCheck)
+        print('****', completedBackgroundCheck["<BackgroundCheckType: CAN>"][1])
+        print('----', completedBackgroundCheck.keys())
         return render_template ("/main/volunteerProfile.html",
                 programs = programs,
                 programsInterested = programsInterested,
