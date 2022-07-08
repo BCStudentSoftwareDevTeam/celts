@@ -152,7 +152,7 @@ class EmailHandler:
         :returns: directory path for attachment
         """
         try:
-            # tries to create the full path of the files location and passes if 
+            # tries to create the full path of the files location and passes if
             # the directories already exist or there is no attachment
             attachmentFullPath = os.path.join(self.attachment_path, self.attachment_file.filename)
             os.mkdir(self.attachment_path)
@@ -175,6 +175,10 @@ class EmailHandler:
         """ Stores sent email in the email log """
         date_sent = datetime.now()
 
+        attachmentName = ''
+        if self.attachment_file:
+            attachmentName = self.attachment_file.filename
+
         EmailLog.create(
             event = self.event.id,
             subject = subject,
@@ -183,7 +187,7 @@ class EmailHandler:
             recipients = ", ".join(recipient.email for recipient in self.recipients),
             dateSent = date_sent,
             sender = self.sender,
-            attachmentName = self.attachment_file.filename)
+            attachmentName = attachmentName)
 
     def build_email(self):
         # Most General Scenario

@@ -8,4 +8,4 @@ class EmailLog(baseModel):
     recipients = CharField()
     dateSent = DateTimeField()
     sender = ForeignKeyField(User)
-    attachmentFullPath = CharField(null=True)
+    attachmentName = CharField(null=True)
