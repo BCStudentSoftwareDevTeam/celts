@@ -13,7 +13,7 @@
         </a>
       </li>
       <li>
-        <a href="/profile/{{g.current_user}}" class="nav-link text-white {{'active' if 'profile' in request.path }}" {{"aria-current='page'" if 'profile' in request.path }}>
+        <a href="/profile/{{g.current_user}}" class="nav-link text-white {{'active' if 'profile' and g.current_user.username in request.path }}" {{"aria-current='page'" if 'profile' in request.path }}>
           My Profile
         </a>
       </li>
