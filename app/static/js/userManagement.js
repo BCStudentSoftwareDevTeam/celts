@@ -1,5 +1,5 @@
 import searchUser from './searchUser.js'
-function callback() {
+function callback(selected) {
   $("#searchAdmin").submit();
 }
 
