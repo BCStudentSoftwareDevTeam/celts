@@ -276,11 +276,15 @@ def searchUser(query):
 def contributors():
     return render_template("/contributors.html")
 
-@main_bp.route('/proposalReview/<courseID>', methods = ['GET', 'POST'])
-def reviewProposal(courseID):
-    courseInformation=CourseInstructor.select().where(CourseInstructor.course==courseID)
-    return render_template('/main/manageServiceLearningFaculty.html',
-                            courseInformation = courseInformation)
+@main_bp.route('/proposalReview/', methods = ['GET', 'POST'])
+def reviewProposal():
+    courseID=request.form
+    course_data=Course.get_by_id(courseID["course_id"])
+    print(course_data.courseName)
+    instructors_data=course_data.courseInstructors
+    return render_template('/main/reviewproposal.html',
+                            course_data=course_data,
+                            instructors_data=instructors_data)
 
 @main_bp.route('/manageServiceLearning', methods = ['GET', 'POST'])
 @main_bp.route('/manageServiceLearning/<term>', methods = ['GET', 'POST'])
@@ -301,6 +305,7 @@ def getAllCourseIntructors(term=None):
         pending = pendingCourses(term)
         approved = approvedCourses(term)
         terms = selectSurroundingTerms(g.current_term)
+
         return render_template('/main/manageServiceLearningFaculty.html',
                                 courseInstructors = courseDict,
                                 pendingCourses = pending,
