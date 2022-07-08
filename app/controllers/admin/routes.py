@@ -2,7 +2,7 @@ from flask import request, render_template, url_for, g, Flask, redirect, flash, 
 from peewee import DoesNotExist, fn
 from playhouse.shortcuts import model_to_dict, dict_to_model
 import json
-from datetime import datetime
+from datetime import datetime, date
 from dateutil import parser
 from app import app
 from app.models.program import Program
@@ -21,6 +21,7 @@ from app.logic.volunteers import getEventLengthInHours, isProgramManagerForEvent
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.logic.courseManagement import pendingCourses, approvedCourses
+from app.logic.participants import getEventParticipants
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
@@ -152,7 +153,8 @@ def editEvent(eventId):
                             allFacilitators = getAllFacilitators(),
                             isPastEvent = isPastEvent,
                             userHasRSVPed = userHasRSVPed,
-                            isProgramManager = isProgramManager)
+                            isProgramManager = isProgramManager,
+                            futureTerms=futureTerms)
 
 @admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
 def viewEvent(eventId):
@@ -170,7 +172,17 @@ def viewEvent(eventId):
     eventFacilitators = EventFacilitator.select().where(EventFacilitator.event == eventId)
     eventFacilitatorNames = [eventFacilitator.user for eventFacilitator in eventFacilitators]
     programTrainings = Event.select().join(ProgramEvent).where(Event.isTraining == 1, ProgramEvent.program == program)
-    listOfProgramTrainings = [programTraining.id for programTraining in programTrainings]
+    listOfProgramTrainings = [programTraining for programTraining in programTrainings]
+    userParticipatedEvents = {}
+    for training in listOfProgramTrainings:
+        eventParticipants = getEventParticipants(training.id)
+        if training.startDate>date.today():
+            didParticipate = None
+        elif g.current_user.username in eventParticipants.keys():
+            didParticipate = True
+        else:
+            didParticipate = False
+        userParticipatedEvents[training.name] = didParticipate
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     eventData["startDate"] = eventData["startDate"].strftime("%m/%d/%Y")
     eventData['timeStart'] = datetime.strptime(eventData['timeStart'], "%H:%M").strftime("%I:%M %p")
@@ -180,7 +192,7 @@ def viewEvent(eventId):
                             eventFacilitatorNames = eventFacilitatorNames,
                             isPastEvent = isPastEvent,
                             userHasRSVPed = userHasRSVPed,
-                            programTrainings = listOfProgramTrainings)
+                            programTrainings = userParticipatedEvents)
 
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
