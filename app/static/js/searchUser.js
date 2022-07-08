@@ -1,4 +1,4 @@
-export default function searchUser(inputId, callback, clear=false, parentElementId=null, columnRequested=null){
+export default function searchUser(inputId, callback, clear=false, parentElementId=null, columnRequested=null, category = null){
   var query = $(`#${inputId}`).val()
   let columnDict={};
   $(`#${inputId}`).autocomplete({
@@ -9,6 +9,7 @@ export default function searchUser(inputId, callback, clear=false, parentElement
         url: `/searchUser/${query}`,
         type: "GET",
         dataType: "json",
+        data:{"category":category},
         success: function(searchResults) {
           response(Object.entries(searchResults).map( (item) => {
             if (!columnRequested){
@@ -27,7 +28,7 @@ export default function searchUser(inputId, callback, clear=false, parentElement
                 // value: "{column: response, column2: response2, ...}"
                 // must JSON.parse
                 label: (item[1]["firstName"]+" "+item[1]["lastName"]+" ("+item[0]+")"),
-                value: JSON.stringify(columnDict)
+                dictvalue:JSON.stringify(columnDict),
               }
             }
           }
@@ -39,10 +40,10 @@ export default function searchUser(inputId, callback, clear=false, parentElement
     },
      select: function(event, ui) {
        var user = ui.item.value
-       $(`#${inputId}`).val(ui.item.value);
+       $(`#${inputId}`).val(ui.item.dictvalue);
        callback();
        if(clear){
-       $(`#${inputId}`).val("");
+         $(`#${inputId}`).val("");
        return false;
      }
      }
