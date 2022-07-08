@@ -141,7 +141,20 @@ users = [
         "phoneNumber": "(859)985-5555",
         "isCeltsAdmin": False,
         "isFaculty": True,
-        "isCeltsStudentStaff": False
+        "isCeltsStudentStaff": False,
+        "isStaff": True
+    },
+     {
+        "username": "qasema",
+        "bnumber": "B00000000",
+        "email": "qasema@berea.edu",
+        "firstName": "Ala",
+        "lastName": "Qasem",
+        "phoneNumber": "8599723821",
+        "isCeltsAdmin": True,
+        "isFaculty": True,
+        "isCeltsStudentStaff": False,
+        "isStaff": True
     }
 ]
 

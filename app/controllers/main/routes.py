@@ -28,7 +28,6 @@ from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import pendingCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
 
-
 @main_bp.route('/', methods=['GET'])
 def redirectToEventsList():
     return redirect(url_for("main.events", selectedTerm=g.current_term))
@@ -260,12 +259,15 @@ def serviceTranscript(username):
 
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
 def searchUser(query):
+
+    category= request.args.get("category")
+
     '''Accepts user input and queries the database returning results that matches user search'''
     try:
         query = query.strip()
         search = query.upper()
         splitSearch = search.split()
-        searchResults = searchUsers(query)
+        searchResults = searchUsers(query,category)
         return searchResults
     except Exception as e:
         print(e)
@@ -274,7 +276,6 @@ def searchUser(query):
 @main_bp.route('/contributors',methods = ['GET'])
 def contributors():
     return render_template("/contributors.html")
-
 
 @main_bp.route('/manageServiceLearning', methods = ['GET', 'POST'])
 @main_bp.route('/manageServiceLearning/<term>', methods = ['GET', 'POST'])

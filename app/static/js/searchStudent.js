@@ -1,5 +1,4 @@
 import searchUser from './searchUser.js'
-
 function callback() {
   $("#searchStudent").submit();
 }
