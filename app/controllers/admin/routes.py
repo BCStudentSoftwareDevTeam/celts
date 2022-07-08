@@ -1,5 +1,5 @@
 from flask import request, render_template, url_for, g, Flask, redirect, flash, abort, json, jsonify, session
-from peewee import DoesNotExist
+from peewee import DoesNotExist, fn
 from playhouse.shortcuts import model_to_dict, dict_to_model
 import json
 from datetime import datetime
@@ -7,7 +7,7 @@ from dateutil import parser
 from app import app
 from app.models.program import Program
 from app.models.event import Event
-from app.models.eventFacilitator import EventFacilitator
+from app.models.facilitator import EventFacilitator
 from app.models.eventParticipant import EventParticipant
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
@@ -17,7 +17,7 @@ from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.models.adminLogs import AdminLogs
-from app.logic.volunteers import getEventLengthInHours
+from app.logic.volunteers import getEventLengthInHours, isProgramManagerForEvent
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.logic.courseManagement import pendingCourses, approvedCourses
@@ -25,7 +25,6 @@ from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
 from app.logic.userManagement import getPrograms
-
 
 
 @admin_bp.route('/switch_user', methods=['POST'])
@@ -62,7 +61,7 @@ def templateSelect():
 @admin_bp.route('/eventTemplates/<templateid>/create', methods=['GET','POST'])
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
 def createEvent(templateid, programid=None):
-    if not g.current_user.isAdmin:
+    if not (g.current_user.isAdmin or hasPrivilege(g.current_user, programid)):
         abort(403)
 
     # Validate given URL
@@ -97,7 +96,8 @@ def createEvent(templateid, programid=None):
         if saveSuccess:
             noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
-            return redirect(url_for("main.events", selectedTerm=eventData['term']))
+            eventId = Event.select(fn.MAX(Event.id)).scalar()
+            return redirect(url_for("admin.editEvent", eventId = eventId))
         else:
             flash(validationErrorMessage, 'warning')
 
@@ -117,7 +117,7 @@ def createEvent(templateid, programid=None):
 
 @admin_bp.route('/eventsList/<eventId>/edit', methods=['GET','POST'])
 def editEvent(eventId):
-    if request.method == "POST" and not g.current_user.isAdmin:
+    if request.method == "POST" and not (g.current_user.isCeltsAdmin or isProgramManagerForEvent(g.current_user, eventId)):
         abort(403)
 
     # Validate given URL
@@ -143,6 +143,9 @@ def editEvent(eventId):
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     program = event.singleProgram
     isProgramManager =   g.current_user.isProgramManagerFor(program)
+    if (g.current_user.isStudent or g.current_user.isFaculty) and not isProgramManager:  # only formats to 12 hour time if user doesn't have access (for display purposes)
+        eventData['timeStart'] = datetime.strptime(eventData['timeStart'], "%H:%M").strftime("%I:%M %p")
+        eventData['timeEnd'] = datetime.strptime(eventData['timeEnd'], "%H:%M").strftime("%I:%M %p")
     return render_template("admin/createSingleEvent.html",
                             eventData = eventData,
                             allFacilitators = getAllFacilitators(),
