@@ -19,3 +19,15 @@ function reviewCourses(el) {
     }
   })
 }
+
+function approve_proposal(el){
+  var courseID=$(el).attr('course-id');
+  $.ajax({
+    url:'/serviceLearning/approveCourse/',
+    type:"POST",
+    data:{"course_id":courseID},
+    success: function(){
+      location.reload()
+    }  
+  })
+}

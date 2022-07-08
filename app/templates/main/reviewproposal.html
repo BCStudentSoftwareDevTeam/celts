@@ -44,7 +44,7 @@
         </div>
         <div class="modal-footer">
           <a type="button" href="/serviceLearning/editProposal/{{courseID }}"  class="btn btn-secondary">  Edit  </a>
-          <button type="button" class="btn btn-primary" id="approveButton" onclick="approve_proposal()">Approve</button>
+          <button type="button" class="btn btn-primary" course-id="{{courseID}}" id="approveButton" onclick="approve_proposal(this)">Approve</button>
         </div>
       </div>
     </div>

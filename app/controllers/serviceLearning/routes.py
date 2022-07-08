@@ -129,5 +129,10 @@ def approveCourse():
         course.execute() # Executes the query and approves course in the database
         flash("Course approved!", "success")
     except:
-        flash("Course not approved", "warning")
+        courseID=request.form #has only the course id
+        if courseID: #if only approving a pending course
+            course = Course.update(status = 2).where(Course.id == courseID["course_id"])
+            course.execute() # Executes the query and approves course in the database
+        else:
+            flash("Course not approved", "warning")
     return ""
