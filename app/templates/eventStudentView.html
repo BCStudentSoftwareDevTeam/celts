@@ -21,17 +21,21 @@
     </div>
         <p><font size="+2"><b>{{eventData.name}}</b> will take place on <b>{{eventData.startDate}}</b> from <b>{{eventData.timeStart}}</b> to <b>{{eventData.timeEnd}}</b> and will be located in <b>{{eventData.location}}</b>.</font></p>
             <div>
-                <p><font size="+2"><b><br>Description:</b><br>{{eventData.description}}<br><br></p>
+                <div><font size="+2"><h3><br>Description:</h3>{{eventData.description}}<br><br></div>
             </div>
             <div class="container">
               <div class="row">
                 <div class="col-sm">
                     <h3>Facilitators:</h3>
-                        <ul>
-                            {% for facilitator in eventFacilitatorNames%}
-                                <li>{{facilitator.firstName}} {{facilitator.lastName}}</li>
-                            {% endfor %}
-                        </ul>
+                        {% if eventFacilitatorNames %}
+                            <ul>
+                                {% for facilitator in eventFacilitatorNames%}
+                                    <li>{{facilitator.firstName}} {{facilitator.lastName}}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <div>No facilitators.</div>
+                        {% endif %}
                     </div>
                     <div class="col-sm">
                         <div class="form-check">
@@ -77,17 +81,29 @@
                     </div>
                 </div>
                 <div>
-                    <h2><br>Program Trainings</h2>
-                        {% for training, participated in programTrainings.items() %}
-                            {% if participated == 1 %}
-                                <div>{{training}}: Attended.</div>
-                            {% elif participated == 0 %}
-                                <div>{{training}}: Did not attend.</div>
-                            {% else %}
-                                <div>{{training}}: Upcoming.</div>
-                            {% endif%}
-                        {% endfor %}
+                    <div class="row">
+                      <div class="col-sm">
+                            <h3><br>Program Trainings</h3>
+                                {% for training, participated in programTrainings.items() %}
+                                    {% if participated == 1 %}
+                                        <div><b>{{training}}</b>: Attended</div>
+                                    {% elif participated == 0 %}
+                                        <div><b>{{training}}</b>: Not attended</div>
+                                    {% else %}
+                                        <div><b>{{training}}</b>: Upcoming</div>
+                                    {% endif%}
+                                {% endfor %}
+                        </div>
+                        <div class="col-sm">
+                            {% if programManager %}
+                                <div><br><h3>Program Manager</h3></div>
+                                    <div>
+                                        {{programManager.firstName}} {{programManager.lastName}}<br>
+                                        {{programManager.email}}
+                                    <div>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
-
             </div>
 {% endblock %}

@@ -12,6 +12,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.term import Term
+from app.models.programManager import ProgramManager
 from app.models.eventTemplate import EventTemplate
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
@@ -151,10 +152,10 @@ def editEvent(eventId):
     return render_template("admin/createSingleEvent.html",
                             eventData = eventData,
                             allFacilitators = getAllFacilitators(),
+                            futureTerms=futureTerms,
                             isPastEvent = isPastEvent,
                             userHasRSVPed = userHasRSVPed,
-                            isProgramManager = isProgramManager,
-                            futureTerms=futureTerms)
+                            isProgramManager = isProgramManager)
 
 @admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
 def viewEvent(eventId):
@@ -173,6 +174,7 @@ def viewEvent(eventId):
     eventFacilitatorNames = [eventFacilitator.user for eventFacilitator in eventFacilitators]
     programTrainings = Event.select().join(ProgramEvent).where(Event.isTraining == 1, ProgramEvent.program == program)
     listOfProgramTrainings = [programTraining for programTraining in programTrainings]
+    programManager = ProgramManager.get_or_none(program=program).user
     userParticipatedEvents = {}
     for training in listOfProgramTrainings:
         eventParticipants = getEventParticipants(training.id)
@@ -192,7 +194,8 @@ def viewEvent(eventId):
                             eventFacilitatorNames = eventFacilitatorNames,
                             isPastEvent = isPastEvent,
                             userHasRSVPed = userHasRSVPed,
-                            programTrainings = userParticipatedEvents)
+                            programTrainings = userParticipatedEvents,
+                            programManager = programManager)
 
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
