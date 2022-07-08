@@ -12,25 +12,13 @@ export default function searchUser(inputId, callback, clear=false, parentElement
         data:{"category":category},
         success: function(searchResults) {
           response(Object.entries(searchResults).map( (item) => {
-            if (!columnRequested){
               return {
                 // label: firstName lastName (username)
                 // value: username
                 label: (item[1]["firstName"]+" "+item[1]["lastName"]+" ("+item[0]+")"),
-                value: item[0]
+                value: item[1]["username"],
+                dictvalue: item[1],
               }
-            } else {
-              for (const column of columnRequested) {
-                columnDict[column]=item[1][column];
-              };
-              return {
-                // label: firstName lastName (username)
-                // value: "{column: response, column2: response2, ...}"
-                // must JSON.parse
-                label: (item[1]["firstName"]+" "+item[1]["lastName"]+" ("+item[0]+")"),
-                dictvalue:JSON.stringify(columnDict),
-              }
-            }
           }
         ))},
         error: function(request, status, error) {
@@ -39,13 +27,13 @@ export default function searchUser(inputId, callback, clear=false, parentElement
       })
     },
      select: function(event, ui) {
-       var user = ui.item.value
-       $(`#${inputId}`).val(ui.item.dictvalue);
-       callback();
+       $(`#${inputId}`).val(ui.item.value);
+       callback(ui.item.dictvalue);
        if(clear){
          $(`#${inputId}`).val("");
+        }
+
        return false;
-     }
      }
   });
 };
