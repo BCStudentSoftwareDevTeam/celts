@@ -7,6 +7,7 @@ from app.logic.events import getTomorrowsEvents
 from app.scripts.sendEventReminderEmails import sendAutomatedEmail
 
 @pytest.mark.integration
+@pytest.mark.skip(reason="Authentication issues")
 def test_sendAutomatedEmail():
     with mainDB.atomic() as transaction:
         tomorrow = date.today() + timedelta(days=1)
