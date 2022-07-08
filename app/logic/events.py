@@ -1,5 +1,6 @@
 from peewee import DoesNotExist, fn, JOIN
 from dateutil import parser
+from datetime import timedelta, date
 import datetime
 from werkzeug.datastructures import MultiDict
 from app.models import mainDB
@@ -318,3 +319,10 @@ def preprocessEventData(eventData):
         eventData['facilitators'] = list(User.select().join(EventFacilitator).where(EventFacilitator.event == event))
 
     return eventData
+
+
+def getTomorrowsEvents():
+    """Grabs each event that occurs tomorrow"""
+    tomorrowDate = date.today() + timedelta(days=1)
+    events = list(Event.select().where(Event.startDate==tomorrowDate))
+    return events

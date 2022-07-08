@@ -141,7 +141,20 @@ users = [
         "phoneNumber": "(859)985-5555",
         "isCeltsAdmin": False,
         "isFaculty": True,
-        "isCeltsStudentStaff": False
+        "isCeltsStudentStaff": False,
+        "isStaff": True
+    },
+     {
+        "username": "qasema",
+        "bnumber": "B00000000",
+        "email": "qasema@berea.edu",
+        "firstName": "Ala",
+        "lastName": "Qasem",
+        "phoneNumber": "8599723821",
+        "isCeltsAdmin": True,
+        "isFaculty": True,
+        "isCeltsStudentStaff": False,
+        "isStaff": True
     }
 ]
 
@@ -882,6 +895,13 @@ emailTemplates = [
     'body': 'Hello {name}, This is another test event named {event_name} located in {location}. Other info: {start_date}-{end_date} and this {start_time}-{end_time}. The link is {event_link}',
     'action': 'sent',
     'purpose': 'Test2',
+    'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
+    },
+    {
+    'subject': 'Event Reminder',
+    'body': 'Hello! This is a reminder that you have an event coming up tomorrow, {start_date}. The event is {event_name} and it will be taking place at {location} from {start_time}-{end_time}. The link is {event_link}.',
+    'action': 'sent',
+    'purpose': 'Reminder',
     'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
     }
 ]
