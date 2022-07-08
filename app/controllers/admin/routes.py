@@ -154,7 +154,7 @@ def editEvent(eventId):
                             userHasRSVPed = userHasRSVPed,
                             isProgramManager = isProgramManager)
 
-@admin_bp.route('/event/<eventId>/view', methods=['GET'])
+@admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
 def viewEvent(eventId):
     # Validate given URL
     try:
@@ -167,13 +167,15 @@ def viewEvent(eventId):
     preprocessEventData(eventData)
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     program = event.singleProgram
+    eventFacilitators = EventFacilitator.select().where(EventFacilitator.event == eventId)
+    eventFacilitatorNames = [eventFacilitator.user for eventFacilitator in eventFacilitators]
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     eventData["startDate"] = eventData["startDate"].strftime("%m/%d/%Y")
     eventData['timeStart'] = datetime.strptime(eventData['timeStart'], "%H:%M").strftime("%I:%M %p")
     eventData['timeEnd'] = datetime.strptime(eventData['timeEnd'], "%H:%M").strftime("%I:%M %p")
     return render_template("eventStudentView.html",
                             eventData = eventData,
-                            allFacilitators = getAllFacilitators(),
+                            eventFacilitatorNames = eventFacilitators,
                             isPastEvent = isPastEvent,
                             userHasRSVPed = userHasRSVPed)
 

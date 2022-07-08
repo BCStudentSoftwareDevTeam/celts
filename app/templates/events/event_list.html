@@ -65,7 +65,11 @@
     <tbody>
         {% for event in events %}
           <tr>
-            <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+              {% if user.isCeltsAdmin or user.isCeltsStudentStaff %}
+                <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+              {% else %}
+                <td> <a href="/eventsList/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
+              {% endif %}
             <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
             <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
             <td>{{event.location}}</td>
@@ -129,7 +133,11 @@
                 <tbody>
                     {% for event in events %}
                       <tr>
-                        <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+                          {% if user.isCeltsAdmin or user.isCeltsStudentStaff %}
+                            <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+                          {% else %}
+                            <td> <a href="/eventsList/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
+                          {% endif %}
                         <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
                         <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
                         <td>{{event.location}}</td>
