@@ -2,134 +2,133 @@
 {% extends "base.html" %}
 
 {% block scripts %}
-{{super()}}
-<script type="module" src="/static/js/manageServiceLearningFaculty.js"></script>
-<script src="/static/js/courseManagement.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+  {{super()}}
+  <script type="module" src="/static/js/manageServiceLearningFaculty.js"></script>
+  <script src="/static/js/courseManagement.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
 {% endblock %}
 
 {% block styles %}
-{{super()}}
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+    {{super()}}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
 {% endblock %}
 
 {% block app_content %}
 
 <div id="content">
-    <h1 class="text-center pt-1 pb-4">Course Proposal Management</h1>
+  <h1 class="text-center pt-1 pb-4">Course Proposal Management</h1>
+  <div class="text-center">
+    <form id="termSelector" action="" method="post">
+      <select class="w-25" id="selectTerm" onchange="formSubmit(this.value)">
+          {% for t in terms %}
+            <option value="{{t.id}}" {{ "selected" if t.id == term.id }}> {{ t.description }}</option>
+          {% endfor %}
+      </select>
+    </form>
+  </div>
+  <div class="pt-4">
+    <div class="container">
+  <div class="row">
+    <div class="col">
+      <h2> Pending </h2>
+    </div>
+    <div class="col">
+      <div class="float-end">
+        <button type="button" class="btn btn-primary btn-sm">Send To Faculty Fellow</button>
+        <a type="button" href="/serviceLearning/newProposal" class="btn btn-success btn-sm">Add Course</a>
+      </div>
+    </div>
+  </div>
+</div>
+    <table class="table table-striped border">
+    <thead>
+      <tr>
+        <th scope="col">Courses</th>
+        <th scope="col">Faculty</th>
+        <th scope="col">Term</th>
+        <th scope="col">Status</th>
+        <th scope="col">Review</th>
+        <th scope="col">Edit</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for data in pendingCourses %}
+        <tr>
+          <td>{{data.courseName}}</td>
+          <td>
+            {% for instructor in data.courseInstructors %}
+              {{ instructor.user.firstName }} {{ instructor.user.lastName }} <br>
+            {% endfor %}
+          </td>
+          <td>{{data.term.description}}</td>
+          <td>{{data.status.status}}</td>
+          <td><button type="button" class="btn {{'btn-primary' if data.status.status == 'Pending' else 'btn-warning'}} btn-sm">{{ "Review" if data.status.status == "Pending" else "In Progress" }}</button></td>
+          <td><a type="button" href="/serviceLearning/editProposal/{{ data }}" class="btn btn-primary btn-sm">Edit</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+  </div>
+  <div class="pb-5">
+    <h2>Approved</h2>
+    <table class="table table-striped border">
+    <thead>
+      <tr>
+        <th scope="col">Courses</th>
+        <th scope="col">Faculty</th>
+        <th scope="col">Term</th>
+        <th scope="col">Status</th>
+        <th scope="col">Sent</th>
+      </tr>
+    </thead> 
+    <tbody>
+        {% for data in approvedCourses %}
+        <tr>
+          <td>{{data.courseName}}</td>
+          <td>
+            {% for instructor in data.courseInstructors %}
+              {{ instructor.user.firstName }} {{ instructor.user.lastName }} <br>
+            {% endfor %}
+          </td>
+          <td>{{data.term.description}}</td>
+          <td>{{data.status.status}}</td>
+          <td><i class="bi bi-check2"></i></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
 
-    <div class="text-center">
-        <form id="termSelector" action="" method="post">
-            <select class="w-25" id="selectTerm" onchange="formSubmit(this.value)">
-                {% for t in terms %}
-                <option value="{{t.id}}" {{ "selected" if t.id == term.id }}> {{ t.description }}</option>
-                {% endfor %}
-            </select>
-        </form>
-    </div>
-    <div class="pt-4">
-        <div class="container">
-            <div class="row">
-                <div class="col">
-                    <h2> Pending </h2>
-                </div>
-                <div class="col">
-                    <div class="float-end">
-                        <button type="button" class="btn btn-primary btn-sm">Send To Faculty Fellow</button>
-                        <a type="button" href="/serviceLearning/newProposal" class="btn btn-success btn-sm">Add Course</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <table class="table table-striped border">
-            <thead>
-                <tr>
-                    <th scope="col">Courses</th>
-                    <th scope="col">Faculty</th>
-                    <th scope="col">Term</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Review</th>
-                    <th scope="col">Edit</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for data in pendingCourses %}
-                <tr>
-                    <td>{{data.courseName}}</td>
-                    <td>
-                        {% for instructor in data.courseInstructors %}
-                        {{ instructor.user.firstName }} {{ instructor.user.lastName }} <br>
-                        {% endfor %}
-                    </td>
-                    <td>{{data.term.description}}</td>
-                    <td>{{data.status.status}}</td>
-                    <td><button type="button" class="btn {{'btn-primary' if data.status.status == 'Pending' else 'btn-warning'}} btn-sm">{{ "Review" if data.status.status == "Pending" else "In Progress" }}</button></td>
-                    <td><a type="button" href="/serviceLearning/editProposal/{{ data }}" class="btn btn-primary btn-sm">Edit</a></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <div class="pb-5">
-        <h2>Approved</h2>
-        <table class="table table-striped border">
-            <thead>
-                <tr>
-                    <th scope="col">Courses</th>
-                    <th scope="col">Faculty</th>
-                    <th scope="col">Term</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Sent</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for data in approvedCourses %}
-                <tr>
-                    <td>{{data.courseName}}</td>
-                    <td>
-                        {% for instructor in data.courseInstructors %}
-                        {{ instructor.user.firstName }} {{ instructor.user.lastName }} <br>
-                        {% endfor %}
-                    </td>
-                    <td>{{data.term.description}}</td>
-                    <td>{{data.status.status}}</td>
-                    <td><i class="bi bi-check2"></i></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <div class="float-end">
-            <button class="btn btn-primary"> Send to Registrar</button>
-        </div>
-    </div>
+  <div class="float-end">
+    <button class="btn btn-primary"> Send to Registrar</button>
+  </div>
+  </div>
 </div>
 
 <div id="wrapper">
-    <h2 class="text-center pt-1 pb-4">Service Learning Faculty</h2>
-    <div class="container">
-        <a class="skipContent" href="#backButton" tabindex="1" style="top:8%">Click to Skip</a>
-        <div class="contributors" align="center">
-            <table class="table table-striped" id="myTable">
-                <thead>
-                    <tr class="header">
-                        <th scope="col">Name</th>
-                        <th scope="col">Prev Classes</th>
-                    </tr>
-                </thead>
-                <tbody id="facultyTable">
-                    {% for instructor in courseInstructors%}
-                    <tr>
-                        <td> {{instructor.firstName }} {{instructor.lastName}}</td>
-                        <td>{{(', '.join(courseInstructors[instructor]))}}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    <h1 class="text-center pt-1 pb-4">Service Learning Faculty</h1>
+  <div class ="container">
+    <a class="skipContent" href="#backButton" tabindex="1" style="top:8%">Click to Skip</a>
+    <div class="contributors" align="center">
+  <table class="table table-striped" id="myTable">
+      <thead>
+        <tr class="header">
+          <th scope = "col">Name</th>
+          <th scope = "col">Prev Classes</th>
+        </tr>
+      </thead>
+    <tbody id = "facultyTable">
+    {% for instructor in courseInstructors%}
+        <tr>
+          <td> {{instructor.firstName }} {{instructor.lastName}}</td>
+          <td>{{(', '.join(courseInstructors[instructor]))}}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
 
-        <div class="text-center">
-            <button type="button" class="btn btn-primary" disabled> Email all</button>
-        </div>
-    </div>
-    {% endblock %}
+<div class="text-center">
+  <button type="button" class="btn btn-primary" disabled> Email all</button>
+</div>
+</div>
+{% endblock %}
