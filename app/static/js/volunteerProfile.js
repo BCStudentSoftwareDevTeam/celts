@@ -86,28 +86,25 @@ $(document).ready(function(){
     });
   });
 
-    for (i=0; i<3; i++){
-        let buttonIndex = i;
-      $("[data-id=" + i + "]").click(function () { // Updates the Background check of a volunteer in the database
-        isPassed = $("[data-check=" + buttonIndex + "]").val()
-        let data = {
-            checkPassed: isPassed,      // Expected to be either a 0 or a 1 volunteerProfile.js
-            user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
-            bgType: $(this).attr("id"),       // Expected to be the ID of a background check in the database
-            bgDate: $("#" + buttonIndex + "_date").val()  //Expected to be the date of the background check completion
-        }
-        $.ajax({
-          url: "/updateBackgroundCheck",
-          type: "POST",
-          data: data,
-          success: function(s){
-          },
-          error: function(error, status){
-              console.log(error, status)
-          }
-        })
-      });
+  $(".savebtn").click(function () { // Updates the Background check of a volunteer in the database
+    bgCheckType = $(this).data("id")
+    let data = {
+        checkPassed: $("[data-id=" + bgCheckType + "]").val(),      // Expected to be either a 0 or a 1 volunteerProfile.js
+        user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
+        bgType: $(this).attr("id"),       // Expected to be the ID of a background check in the database
+        bgDate: $("#" + bgCheckType + "_date").val()  // Expected to be the date of the background check completion
     }
+    $.ajax({
+      url: "/updateBackgroundCheck",
+      type: "POST",
+      data: data,
+      success: function(s){
+      },
+      error: function(error, status){
+          console.log(error, status)
+      }
+    })
+  });
 });
 
 function updateManagers(el, volunteer_username ){// retrieve the data of the studnet staff and program id if the boxes are checked or not
