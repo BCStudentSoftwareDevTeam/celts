@@ -45,8 +45,8 @@
     data-bs-toggle="pill" data-bs-target="#pills-bonner-scholars" type="button" role="tab" aria-controls="pills-bonner-scholars" aria-selected="false">Bonner Scholars</button>
   </li>
   <li class="nav-item" role="presentation">
-    <button class="nav-link" id="oneTimeEvents"
-    data-bs-toggle="pill" data-bs-target="#pills-one-time" type="button" role="tab" aria-controls="pills-one-time" aria-selected="false">One-time Events</button>
+    <button class="nav-link" id="nonProgramEvents"
+    data-bs-toggle="pill" data-bs-target="#pills-one-time" type="button" role="tab" aria-controls="pills-one-time" aria-selected="false">Other Events</button>
   </li>
   </ul>
 </div>
@@ -172,7 +172,7 @@
     {{createTable(bonnerProgram)}}
   </div>
   <div class="tab-pane fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
-    {{createTable(oneTimeEvents)}}
+    {{createTable(nonProgramEvents)}}
   </div>
 </div>
 {% include 'emailModal.html' %}

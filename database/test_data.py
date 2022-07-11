@@ -34,7 +34,7 @@ users = [
         "username": "ramsayb2",
         "bnumber": "B00173723",
         "email": "ramsayb2@berea.edu",
-        "phoneNumber": "555-555-5555",
+        "phoneNumber": "(555)555-5555",
         "firstName": "Brian",
         "lastName": "Ramsay",
         "isStudent": False,
@@ -46,7 +46,7 @@ users = [
         "username" : "khatts",
         "bnumber" : "B00759107",
         "email": "khatts@berea.edu",
-        "phoneNumber": "555-555-5555",
+        "phoneNumber": "(555)555-5555",
         "firstName" : "Sreynit",
         "lastName" : "Khatt",
         "isStudent": True,
@@ -58,7 +58,7 @@ users = [
         "username": "neillz",
         "bnumber": "B00751864",
         "email": "neillz@berea.edu",
-        "phoneNumber": "555-985-1234",
+        "phoneNumber": "(555)985-1234",
         "firstName": "Zach",
         "lastName": "Neill",
         "isStudent": True,
@@ -71,7 +71,7 @@ users = [
         "username" : "lamichhanes2",
         "bnumber": "B00733993",
         "email": "lamichhanes2@berea.edu",
-        "phoneNumber": "555-555-5555",
+        "phoneNumber": "(555)555-5555",
         "firstName": "Sandesh",
         "lastName":"Lamichhane",
         "isStudent": True,
@@ -83,7 +83,7 @@ users = [
         "username" : "ayisie",
         "bnumber": "B00739736",
         "email": "ayisie@berea.edu",
-        "phoneNumber": "192202903939",
+        "phoneNumber": "(220)290-3939",
         "firstName": "Ebenezer",
         "lastName":"Ayisi",
         "isStudent": True,
@@ -96,7 +96,7 @@ users = [
         "username": "agliullovak",
         "bnumber": "B00759117",
         "email": "agliullovak@berea.edu",
-        "phoneNumber": "555-555-5555",
+        "phoneNumber": "(555)555-5555",
         "firstName": "Karina",
         "lastName": "Agliullova",
         "isStudent": True,
@@ -108,7 +108,7 @@ users = [
         "username": "bryanta",
         "bnumber": "B00708826",
         "email": "bryanta@berea.edu",
-        "phoneNumber": "85943311598",
+        "phoneNumber": "(859)433-1159",
         "firstName": "Alex",
         "lastName": "Bryant",
         "isStudent": True,
@@ -120,7 +120,7 @@ users = [
         "firstName": "Tyler",
         "lastName": "Parton",
         "isStudent": True,
-        "phoneNumber": "9119119111"
+        "phoneNumber": "(859)433-1559"
     },
     {
         "username": "mupotsal",
@@ -129,7 +129,7 @@ users = [
         "firstName": "Liberty",
         "lastName": "Mupotsa",
         "isStudent": True,
-        "phoneNumber": "8599858594",
+        "phoneNumber": "(859)463-1159",
         "isCeltsStudentStaff": True
     },
     {
@@ -138,10 +138,23 @@ users = [
         "email": "heggens@berea.edu",
         "firstName": "Scott",
         "lastName": "Heggen",
-        "phoneNumber": "8599855555",
+        "phoneNumber": "(859)985-5555",
         "isCeltsAdmin": False,
         "isFaculty": True,
-        "isCeltsStudentStaff": False
+        "isCeltsStudentStaff": False,
+        "isStaff": True
+    },
+     {
+        "username": "qasema",
+        "bnumber": "B00000000",
+        "email": "qasema@berea.edu",
+        "firstName": "Ala",
+        "lastName": "Qasem",
+        "phoneNumber": "8599723821",
+        "isCeltsAdmin": True,
+        "isFaculty": True,
+        "isCeltsStudentStaff": False,
+        "isStaff": True
     }
 ]
 
@@ -206,60 +219,80 @@ programs = [
         "programName": "Empty Bowls",
         "isStudentLed": False,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 2,
         "programName": "Berea Buddies",
         "isStudentLed": True,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 3,
         "programName": "Adopt A Grandparent",
         "isStudentLed": True,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 5,
         "programName": "Bonners Scholars",
         "isStudentLed": False,
         "isBonnerScholars": True,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 6,
         "programName": "Habitat For Humanity",
         "isStudentLed": False,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 7,
         "programName": "Berea Teen Mentoring",
         "isStudentLed": True,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 8,
         "programName": "Hispanic Outreach Program",
         "isStudentLed": True,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 9,
         "programName": "People Who Care",
         "isStudentLed": True,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 10,
         "programName": "Food Drive",
         "isStudentLed": False,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 12,
         "programName": "Berea Tutoring",
         "isStudentLed": False,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     }
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
@@ -428,6 +461,7 @@ events = [
         "name": "All Volunteer Training",
         "description": "testing multiple programs",
         "isTraining": True,
+        "isAllVolunteerTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Woods-Penniman",
@@ -861,6 +895,13 @@ emailTemplates = [
     'body': 'Hello {name}, This is another test event named {event_name} located in {location}. Other info: {start_date}-{end_date} and this {start_time}-{end_time}. The link is {event_link}',
     'action': 'sent',
     'purpose': 'Test2',
+    'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
+    },
+    {
+    'subject': 'Event Reminder',
+    'body': 'Hello! This is a reminder that you have an event coming up tomorrow, {start_date}. The event is {event_name} and it will be taking place at {location} from {start_time}-{end_time}. The link is {event_link}.',
+    'action': 'sent',
+    'purpose': 'Reminder',
     'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
     }
 ]
