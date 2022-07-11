@@ -23,7 +23,7 @@
      <li class="nav-item" role="presentation">
        <a class="nav-link active" aria-current="page" href="#">Upcoming Events</a>
      </li>
-     {% if g.current_user.isCeltsAdmin or g.current_user.username in volunteer.username %}
+     {% if g.current_user.isCeltsAdmin or g.current_user.username == volunteer.username %}
      <li class="nav-item">
        <a class="nav-link" href="/profile/{{volunteer.username}}/serviceTranscript">Service Transcript</a>
      </li>
