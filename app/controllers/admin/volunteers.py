@@ -34,7 +34,11 @@ def trackVolunteersPage(eventID):
         abort(404)
 
     program = event.singleProgram
-    
+
+    # TODO: What do we do for no programs or multiple programs?
+    if not program:
+        return "TODO: What do we do for no programs or multiple programs?"
+
     trainedParticipantsList = trainedParticipants(program, g.current_term)
     eventParticipants = getEventParticipants(event)
     isProgramManager = isProgramManagerForEvent(g.current_user, event)
@@ -97,6 +101,11 @@ def addVolunteer(eventId, volunteer = None):
         for user in usernameList:
             user = User.get(User.username==user)
 
+            if len(usernameList) == 0:
+                noVolunteersSelectedMessage = "No volunteers selected, please select a volunteer."
+                successfullyAddedRecurringVolunteer = False
+                noVolunteerSelected = True
+
             if len(eventParticipants) == 0:
                 addVolunteerToEventRsvp(user, eventId)
                 EventParticipant.create(user = user, event = eventId)
@@ -104,8 +113,9 @@ def addVolunteer(eventId, volunteer = None):
 
             elif (EventRsvp.select().where(EventRsvp.user==user, EventRsvp.event_id == eventId) and
                   EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event_id == eventId)):
+                duplicateVolunteerMessage = "This volunteer has already been added to this event."
                 successfullyAddedRecurringVolunteer = False
-                duplicateVolunteerMessage = "This user has already been added to this event"
+
 
             else:
                 addVolunteerToEventRsvp(user, eventId)
@@ -121,7 +131,7 @@ def addVolunteer(eventId, volunteer = None):
     if (successfullyAddedRecurringVolunteer or successfullyAddedVolunteer == True) :
         return redirect(url_for('admin.trackVolunteersPage', eventID = eventId))
     else:
-        flash(duplicateVolunteerMessage, "danger")
+        flash("Error when adding volunteer to event." ,"danger")
         return redirect(url_for('admin.trackVolunteersPage', eventID = eventId))
 
 

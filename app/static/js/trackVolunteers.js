@@ -80,11 +80,6 @@ $(".attendanceCheck").on("change", function() {
   });
 
   $("#selectAllVolunteers").click(function(){
-      let checkboxId = $("#checkboxLength").val()
-      console.log(checkboxId)
-      for(var i = 1; i<checkboxId+1; i++){
-          $("#PastVolunteers_"+i).prop('checked', true)
-
-      }
+      $("#addPastVolunteerModal input[type=checkbox]").prop('checked', true)
   });
 });

@@ -151,16 +151,15 @@
     <div class="modal-content">
       <form action="/addVolunteersToEvent/{{event.id}}" method="POST">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Add Past Volunteers</h5>
+            <h5 class="modal-title">Add Past Volunteers</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body">
-              {%for participant in recurringVolunteers%}
-                <input id= "checkboxLength" value= "{{loop.length}}" hidden />    
-                <input type="checkbox" name="volunteer[]" id="PastVolunteers_{{loop.index}}" value= {{participant}} class= "PastVolunteerCheck"  />
-                <label class="form-check-label" for="PastVolunteers"> {{participant.firstName}} {{participant.lastName}}  </label>
-              {% endfor %}
-          </div>
+              <div class="modal-body">
+                  {%for participant in recurringVolunteers%}
+                    <input type="checkbox" name="volunteer[]" value= {{participant}}  />
+                    <label class="form-check-label" for="PastVolunteers"> {{participant.firstName}} {{participant.lastName}}  </label>
+                  {% endfor %}
+              </div>
           <div class="modal-footer" >
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close </button>
             <button type="button" id = "selectAllVolunteers" class="btn btn-secondary" >Select All</button>
