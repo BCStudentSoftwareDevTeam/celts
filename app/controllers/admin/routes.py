@@ -174,7 +174,7 @@ def viewEvent(eventId):
     eventFacilitatorNames = [eventFacilitator.user for eventFacilitator in eventFacilitators]
     programTrainings = Event.select().join(ProgramEvent).where(Event.isTraining == 1, ProgramEvent.program == program)
     listOfProgramTrainings = [programTraining for programTraining in programTrainings]
-    programManager = ProgramManager.get_or_none(program=program).user
+    programManager = ProgramManager.get_or_none(program=program)
     userParticipatedEvents = {}
     for training in listOfProgramTrainings:
         eventParticipants = getEventParticipants(training.id)
@@ -195,7 +195,8 @@ def viewEvent(eventId):
                             isPastEvent = isPastEvent,
                             userHasRSVPed = userHasRSVPed,
                             programTrainings = userParticipatedEvents,
-                            programManager = programManager)
+                            programManager = programManager,
+                            currentUser = g.current_user)
 
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])

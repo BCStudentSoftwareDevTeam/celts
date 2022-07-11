@@ -19,14 +19,38 @@
       <div class="alert alert-danger" role="alert">This event is in the past.</div>
     {% endif %}
     </div>
+    {% if isPastEvent %}
+        <p><font size="+2"><b>{{eventData.name}}</b> took place on <b>{{eventData.startDate}}</b> from <b>{{eventData.timeStart}}</b> to <b>{{eventData.timeEnd}}</b> and was located in <b>{{eventData.location}}</b>.</font></p>
+    {% else %}
         <p><font size="+2"><b>{{eventData.name}}</b> will take place on <b>{{eventData.startDate}}</b> from <b>{{eventData.timeStart}}</b> to <b>{{eventData.timeEnd}}</b> and will be located in <b>{{eventData.location}}</b>.</font></p>
+    {% endif %}
             <div>
-                <div><font size="+2"><h3><br>Description:</h3>{{eventData.description}}<br><br></div>
+                <div>
+                    <font size="+2"><h3><br>Description:</h3>{{eventData.description}}<br><br>
+                    <div>
+                        {% if eventData.isService %}
+                            This event earns service hours.
+                        {% elif not eventData.isService %}
+                            This event does not earn service hours.
+                        {% endif %}
+                        {% if eventData.isRsvpRequired %}
+                            This event requires RSVP.
+                        {% elif not eventData.isRsvpRequired %}
+                            This event does not require RSVP.
+                        {% endif %}
+                        {% if eventData.recurringId %}
+                            This event is a recurring event.
+                        {% endif %}
+                        {% if eventData.isTraining %}
+                            This event is a training.
+                        {% endif %}
+                    </div>
+                </div>
             </div>
             <div class="container">
               <div class="row">
                 <div class="col-sm">
-                    <h3>Facilitators:</h3>
+                    <h3><br>Facilitators:</h3>
                         {% if eventFacilitatorNames %}
                             <ul>
                                 {% for facilitator in eventFacilitatorNames%}
@@ -38,70 +62,34 @@
                         {% endif %}
                     </div>
                     <div class="col-sm">
-                        <div class="form-check">
-                            {% if eventData.isRsvpRequired %}
-                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked disabled>
-                            {% else %}
-                                <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" disabled>
-                            {% endif %}
-                          <label class="form-check-label" for="flexCheckDefault">
-                            Requires RSVP
-                          </label>
-                        </div>
-                        <div class="form-check">
-                            {% if eventData.isService %}
-                                <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked disabled>
-                            {% else %}
-                                <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" disabled>
-                            {% endif %}
-                          <label class="form-check-label" for="flexCheckChecked">
-                            Earns Service Hours
-                          </label>
-                        </div>
-                        <div class="form-check">
-                            {% if eventData.recurringId %}
-                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked disabled>
-                            {% else %}
-                                <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" disabled>
-                            {% endif %}
-                          <label class="form-check-label" for="flexCheckDefault">
-                            Recurring
-                          </label>
-                        </div>
-                        <div class="form-check">
-                            {% if eventData.isTraining %}
-                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked disabled>
-                            {% else %}
-                                <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" disabled>
-                            {% endif %}
-                          <label class="form-check-label" for="flexCheckDefault">
-                            Training
-                          </label>
-                        </div>
+                        {% if programManager %}
+                            <div><h3><br>Program Manager:</h3></div>
+                                <div>
+                                    {{programManager.user.firstName}} {{programManager.user.lastName}}<br>
+                                    {{programManager.user.email}}
+                                </div>
+                        {% endif %}
                     </div>
                 </div>
                 <div>
                     <div class="row">
                       <div class="col-sm">
-                            <h3><br>Program Trainings</h3>
+                          {% if program != None %}
+                            <h3><br>Program Trainings:</h3>
                                 {% for training, participated in programTrainings.items() %}
-                                    {% if participated == 1 %}
-                                        <div><b>{{training}}</b>: Attended</div>
-                                    {% elif participated == 0 %}
-                                        <div><b>{{training}}</b>: Not attended</div>
+                                    {% if currentUser.isCeltsAdmin %}
+                                      <div>{{training}}</div>
                                     {% else %}
-                                        <div><b>{{training}}</b>: Upcoming</div>
-                                    {% endif%}
+                                        {% if participated == 1 %}
+                                            <div><b>{{training}}</b>: Attended</div>
+                                        {% elif participated == 0 %}
+                                            <div><b>{{training}}</b>: Not attended</div>
+                                        {% else %}
+                                            <div><b>{{training}}</b>: Upcoming</div>
+                                        {% endif%}
+                                    {% endif %}
                                 {% endfor %}
-                        </div>
-                        <div class="col-sm">
-                            {% if programManager %}
-                                <div><br><h3>Program Manager</h3></div>
-                                    <div>
-                                        {{programManager.firstName}} {{programManager.lastName}}<br>
-                                        {{programManager.email}}
-                                    <div>
-                            {% endif %}
+                          {% endif %}
                         </div>
                     </div>
                 </div>
