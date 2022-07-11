@@ -9,7 +9,7 @@ from app.models.programManager import ProgramManager
 from datetime import datetime, date
 from app.logic.adminLogs import createLog
 from app.logic.events import getEvents
-from app.logic.userManagement import hasPrivilege
+
 
 
 
