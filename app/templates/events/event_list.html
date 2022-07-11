@@ -71,11 +71,11 @@
             <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
             <td>{{event.location}}</td>
             {% if event.programEvents%}
-            {% for programEvent in event.programEvents%}
-            <td>{{programEvent.program.programName}}</td>
-            {% endfor %}
+              {% for programEvent in event.programEvents%}
+              <td>{{programEvent.program.programName}}</td>
+              {% endfor %}
             {% else %}
-            <td>This event does not belong to any program</td>
+              <td>This event does not belong to any program</td>
             {% endif %}
             {% if user.isAdmin %}
               <td>
