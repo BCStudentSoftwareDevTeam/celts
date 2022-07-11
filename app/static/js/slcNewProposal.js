@@ -108,12 +108,12 @@ function fixStepIndicator(navigateTab) {
   steps[navigateTab].className += " active";
 }
 
-function callback() {
+function callback(selectedInstructor) {
   // JSON.parse is required to de-stringify the search results into a dictionary.
-  let data = JSON.parse($("#courseInstructor").val());
-  let instructor = (data["firstName"]+" "+data["lastName"]+" ("+data["username"]+")");
-  let username = data["username"];
-  let phone = data["phoneNumber"];
+  let instructor = (selectedInstructor["firstName"]+" "+selectedInstructor["lastName"]+" ("+selectedInstructor["username"]+")");
+  let username = selectedInstructor["username"];
+  let phone = selectedInstructor["phoneNumber"];
+
   let tableBody = $("#instructorTable").find("tbody");
   let lastRow = tableBody.find("tr:last");
   let newRow = lastRow.clone();
