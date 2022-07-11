@@ -26,7 +26,7 @@
 <tbody>
   {% for entry in allLogs%}
   <tr>
-    <td>{{entry.createdOn}}</td>
+    <td>{{entry.createdOn.strftime('%m/%d/%Y %I:%M %p')}} </td>
     <td>{{entry.createdBy.firstName+ " "+ entry.createdBy.lastName}}</td>
     <td>{{entry.logContent}}</td>
 
