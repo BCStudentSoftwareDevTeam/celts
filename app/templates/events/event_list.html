@@ -1,182 +1,178 @@
 {% set title = "Events List"%}
 {% extends "base.html"%}
 {% block scripts %}
-  {{super()}}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.js"></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <script src="/static/js/event_list.js"></script>
-  <script src="/static/js/emailModal.js"></script>
+{{super()}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="/static/js/event_list.js"></script>
+<script src="/static/js/emailModal.js"></script>
 {% endblock %}
 {% block styles %}
-  {{super()}}
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.css" />
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+{{super()}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.css" />
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 {% endblock %}
 {% block app_content %}
 <h1 class="text-center mt-5">Events List for {{selectedTerm.description}}</h1>
 <div class="container-fluid px-1 py-3">
-  <div class="row d-flex align-items-baseline p-3">
-    <div class="col-md-1 ps-1 ms-auto">
-      <label class="form-label" for="inputTerm"><h4><strong>Term</strong></h4></label>
+    <div class="row d-flex align-items-baseline p-3">
+        <div class="col-md-1 ps-1 ms-auto">
+            <label class="form-label" for="inputTerm">
+                <h4><strong>Term</strong></h4>
+            </label>
+        </div>
+        <div class="col-md-3 me-auto">
+            <div class="form-group">
+                <select class="form-select" name='eventTerm' id='inputTerm' onchange="location=this.value">
+                    {% for term in listOfTerms %}
+                        <option value='/eventsList/{{term}}' {{ "selected" if selectedTerm.id == term.id }}>{{term.description}} </option>
+                        {% endfor %}
+                        </select>
+            </div>
+        </div>
     </div>
-    <div class="col-md-3 me-auto">
-      <div class="form-group">
-        <select class="form-select" name='eventTerm' id='inputTerm' onchange="location=this.value">
-          {% for term in listOfTerms %}
-            <option value='/eventsList/{{term}}' {{ "selected" if selectedTerm.id == term.id }}>{{term.description}} </option>
-          {% endfor %}
-        </select>
-      </div>
-    </div>
-  </div>
 </div>
 <div>
-  <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
-  <li class="nav-item" role="presentation">
-    <button class="nav-link active" id="studentLedEvents"
-    data-bs-toggle="pill" data-bs-target="#pills-student-led" type="button" role="tab" aria-controls="pills-student-led" aria-selected="true">Student Led Service</button>
-  </li>
-  <li class="nav-item" role="presentation">
-    <button class="nav-link" id="trainingEvents"
-    data-bs-toggle="pill" data-bs-target="#pills-training" type="button" role="tab" aria-controls="pills-training" aria-selected="false">Training and Education</button>
-  </li>
-  <li class="nav-item" role="presentation">
-    <button class="nav-link" id="bonnerScholarsEvents"
-    data-bs-toggle="pill" data-bs-target="#pills-bonner-scholars" type="button" role="tab" aria-controls="pills-bonner-scholars" aria-selected="false">Bonner Scholars</button>
-  </li>
-  <li class="nav-item" role="presentation">
-    <button class="nav-link" id="nonProgramEvents"
-    data-bs-toggle="pill" data-bs-target="#pills-one-time" type="button" role="tab" aria-controls="pills-one-time" aria-selected="false">Other Events</button>
-  </li>
-  </ul>
+    <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="studentLedEvents" data-bs-toggle="pill" data-bs-target="#pills-student-led" type="button" role="tab" aria-controls="pills-student-led" aria-selected="true">Student Led Service</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="trainingEvents" data-bs-toggle="pill" data-bs-target="#pills-training" type="button" role="tab" aria-controls="pills-training" aria-selected="false">Training and Education</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="bonnerScholarsEvents" data-bs-toggle="pill" data-bs-target="#pills-bonner-scholars" type="button" role="tab" aria-controls="pills-bonner-scholars" aria-selected="false">Bonner Scholars</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="nonProgramEvents" data-bs-toggle="pill" data-bs-target="#pills-one-time" type="button" role="tab" aria-controls="pills-one-time" aria-selected="false">Other Events</button>
+        </li>
+    </ul>
 </div>
 {% macro createTable(events) %}
 {% if events|count %}
-  <table class="table table-striped">
+<table class="table table-striped">
     <thead>
-      <tr>
-        <th scope="col">Event Name</th>
-        <th scope="col">Date</th>
-        <th scope="col">Time</th>
-        <th scope="col">Location</th>
-        <th> Event Purpose </th>
-        <th scope="col">Invitation</th>
-      </tr>
+        <tr>
+            <th scope="col">Event Name</th>
+            <th scope="col">Date</th>
+            <th scope="col">Time</th>
+            <th scope="col">Location</th>
+            <th> Event Purpose </th>
+            <th scope="col">Invitation</th>
+        </tr>
     </thead>
     <tbody>
         {% for event in events %}
-          <tr>
+        <tr>
             <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
             <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
             <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
             <td>{{event.location}}</td>
-            <td>dsajbcsb</td>
+            {% if event.programEvents%}
+            {% for programEvent in event.programEvents%}
+            <td>{{programEvent.program.programName}}</td>
+            {% endfor %}
+            {% else %}
+            <td>This event does not belong to any program</td>
+            {% endif %}
+
             {% if user.isAdmin %}
-              <td>
+            <td>
                 {% if event.isPast %}
-                  {% set isPastEvent = "true" %}
+                {% set isPastEvent = "true" %}
                 {% endif %}
                 <button class="btn btn-primary" onclick="showEmailModal({{event.id}}, 'Unknown', {{selectedTerm}}, {{isPastEvent}})">
-                  <span class="bi bi-envelope-fill"> Email</span>
+                    <span class="bi bi-envelope-fill"> Email</span>
                 </button>
-              </td>
+            </td>
             {% else %}
-              {% if (event.isPast) %}
-                <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
-              {% elif event.id in rsvpedEventsID %}
-                <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.program_id}}, {{event.id}})">Remove RSVP</button></td>
-              {% else %}
-                <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.program_id}}, {{event.id}})">RSVP</button></td>
-              {% endif %}
+            {% if (event.isPast) %}
+            <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
+            {% elif event.id in rsvpedEventsID %}
+            <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.program_id}}, {{event.id}})">Remove RSVP</button></td>
+            {% else %}
+            <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.program_id}}, {{event.id}})">RSVP</button></td>
             {% endif %}
-          </tr>
+            {% endif %}
+        </tr>
         {% endfor %}
     </tbody>
-  </table>
+</table>
 {% else %}
-  <p>No upcoming events for this term</p>
+<p>No upcoming events for this term</p>
 {% endif %}
 {% endmacro %}
 <div class="tab-content" id="pills-tabContent">
-  <div class="tab-pane fade show active" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
-    {% if studentLedProgram %}
-    <div class="accordion" id="categoryAccordion">
-      {% for program,events in studentLedProgram.items() %}
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="accordion__header_{{program}}">
-            <button class="accordion-button collapsed"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#accordion__body_{{program}}_num_{{ loop.index }}"
-                    aria-expanded="true"
-                    aria-controls="accordion__body_{{program}}" >
-                    {{program.programName}}
-            </button>
-          </h2>
-          <div id="accordion__body_{{program}}_num_{{ loop.index }}"
-                class="accordion-collapse collapse"
-                aria-labelledby="accordion__header_{{program}}"
-                data-bs-parent="#categoryAccordion">
-            <div class="accordion-body">
-              <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th scope="col">Event Name</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Time</th>
-                    <th scope="col">Location</th>
-                    <th scope="col">Invitation</th>
-                  </tr>
-                </thead>
-                <tbody>
-                    {% for event in events %}
-                      <tr>
-                        <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
-                        <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
-                        <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
-                        <td>{{event.location}}</td>
-                    
-                        {% if user.isAdmin %}
-                          <td>
-                            {% if event.isPast %}
-                              {% set isPastEvent = "true" %}
-                            {% endif %}
-                            <button class="btn btn-primary"
-                            onclick="showEmailModal({{event.id}}, {{program.id}}, {{selectedTerm}}, {{isPastEvent}})">
-                              <span class="bi bi-envelope-fill"> Email</span>
-                            </button>
-                          </td>
-                        {% else %}
-                          {% if event.isPast%}
-                            <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
-                          {% elif event.id in rsvpedEventsID %}
-                            <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{program.id}}, {{event.id}})">Remove RSVP</button></td>
-                          {% else %}
-                            <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{program.id}}, {{event.id}})">RSVP</button></td>
-                          {% endif %}
-                        {% endif %}
-                      </tr>
-                    {% endfor %}
-                </tbody>
-              </table>
+    <div class="tab-pane fade show active" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
+        {% if studentLedProgram %}
+        <div class="accordion" id="categoryAccordion">
+            {% for program,events in studentLedProgram.items() %}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="accordion__header_{{program}}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#accordion__body_{{program}}_num_{{ loop.index }}" aria-expanded="true" aria-controls="accordion__body_{{program}}">
+                        {{program.programName}}
+                    </button>
+                </h2>
+                <div id="accordion__body_{{program}}_num_{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="accordion__header_{{program}}" data-bs-parent="#categoryAccordion">
+                    <div class="accordion-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Event Name</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Time</th>
+                                    <th scope="col">Location</th>
+                                    <th scope="col">Invitation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for event in events %}
+                                <tr>
+                                    <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+                                    <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
+                                    <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
+                                    <td>{{event.location}}</td>
+
+                                    {% if user.isAdmin %}
+                                    <td>
+                                        {% if event.isPast %}
+                                        {% set isPastEvent = "true" %}
+                                        {% endif %}
+                                        <button class="btn btn-primary" onclick="showEmailModal({{event.id}}, {{program.id}}, {{selectedTerm}}, {{isPastEvent}})">
+                                            <span class="bi bi-envelope-fill"> Email</span>
+                                        </button>
+                                    </td>
+                                    {% else %}
+                                    {% if event.isPast%}
+                                    <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
+                                    {% elif event.id in rsvpedEventsID %}
+                                    <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{program.id}}, {{event.id}})">Remove RSVP</button></td>
+                                    {% else %}
+                                    <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{program.id}}, {{event.id}})">RSVP</button></td>
+                                    {% endif %}
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-          </div>
+            {% endfor %}
         </div>
-    {% endfor %}
+        {% else %}
+        <p>No upcoming events for this term</p>
+        {% endif %}
     </div>
-    {% else %}
-      <p>No upcoming events for this term</p>
-    {% endif %}
-  </div>
-  <div class="tab-pane fade show" id="pills-training" role="tabpanel" aria-labelledby="pills-training-tab">
-    {{createTable(trainingProgram)}}
-  </div>
-  <div class="tab-pane fade show" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="pills-bonner-scholars-tab">
-    {{createTable(bonnerProgram)}}
-  </div>
-  <div class="tab-pane fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
-    {{createTable(nonProgramEvents)}}
-  </div>
+    <div class="tab-pane fade show" id="pills-training" role="tabpanel" aria-labelledby="pills-training-tab">
+        {{createTable(trainingProgram)}}
+    </div>
+    <div class="tab-pane fade show" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="pills-bonner-scholars-tab">
+        {{createTable(bonnerProgram)}}
+    </div>
+    <div class="tab-pane fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
+        {{createTable(nonProgramEvents)}}
+    </div>
 </div>
 {% include 'emailModal.html' %}
 {% endblock %}
