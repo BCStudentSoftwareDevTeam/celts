@@ -62,5 +62,5 @@ def test_searchStudents():
         assert len(searchResults) == 2
         assert searchResults['lamichhanes2'] == test3
         assert 'Sawcon' in searchResults["sawconc"].values()
-        assert '555-555-5555' in searchResults["lamichhanes2"].values()
+        assert '(555)555-5555' in searchResults["lamichhanes2"].values()
         transaction.rollback()

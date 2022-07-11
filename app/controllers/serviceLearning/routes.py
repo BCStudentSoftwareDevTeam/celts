@@ -68,7 +68,6 @@ def slcEditProposal(courseID):
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcCreateOrEdit():
     if request.method == "POST":
-
         courseExist = Course.get_or_none(Course.id == request.form.get('courseID'))
         if courseExist:
             updateCourse(request.form.copy(), instructorsDict)
@@ -114,4 +113,21 @@ def withdrawCourse(courseID):
             flash("Unauthorized to perform this action", 'warning')
     except Exception as e:
         flash("Withdrawal Unsuccessful", 'warning')
+    return ""
+
+@serviceLearning_bp.route('/serviceLearning/approveCourse/', methods=['POST'])
+def approveCourse():
+    """
+    This function updates and approves a Service Learning Course when using  the
+        approve button.
+    return: empty string because AJAX needs to receive something
+    """
+    try:
+        updateCourse(request.form.copy(), instructorsDict) # Updates database with the completed fields
+        # The next line creates the query to approve the course
+        course = Course.update(status = 2).where(Course.id == request.form['courseID'])
+        course.execute() # Executes the query and approves course in the database
+        flash("Course approved!", "success")
+    except:
+        flash("Course not approved", "warning")
     return ""

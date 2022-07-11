@@ -27,7 +27,6 @@ from app.controllers.admin.userManagement import manageUsers
 from app.logic.userManagement import hasPrivilege, getPrograms
 
 
-
 @admin_bp.route('/switch_user', methods=['POST'])
 def switchUser():
     if app.env == "production":
@@ -142,8 +141,12 @@ def editEvent(eventId):
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     program = event.singleProgram
-
     isProgramManager = hasPrivilege(g.current_user,program)
+
+    if (g.current_user.isStudent or g.current_user.isFaculty) and not isProgramManager:  # only formats to 12 hour time if user doesn't have access (for display purposes)
+        eventData['timeStart'] = datetime.strptime(eventData['timeStart'], "%H:%M").strftime("%I:%M %p")
+        eventData['timeEnd'] = datetime.strptime(eventData['timeEnd'], "%H:%M").strftime("%I:%M %p")
+
     return render_template("admin/createSingleEvent.html",
                             eventData = eventData,
                             allFacilitators = getAllFacilitators(),

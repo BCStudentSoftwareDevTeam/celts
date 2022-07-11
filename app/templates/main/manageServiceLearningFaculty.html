@@ -13,39 +13,11 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
 {% endblock %}
 
-
 {% block app_content %}
 
-<div id="wrapper">
-  <div class ="container">
-    <a class="skipContent" href="#backButton" tabindex="1" style="top:8%">Click to Skip</a>
-    <div class="contributors" align="center">
-      <h1 class="text-center mt-5 mb-3">Manage Service Learning Faculty</h1>
-  <table class="table table-striped" id="myTable">
-      <thead>
-        <tr class="header">
-          <th scope = "col">Name</th>
-          <th scope = "col">Prev Classes</th>
-        </tr>
-      </thead>
-    <tbody id = "facultyTable">
-    {% for instructor in courseInstructors%}
-        <tr>
-          <td> {{instructor.firstName }} {{instructor.lastName}}</td>
-          <td>{{(', '.join(courseInstructors[instructor]))}}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-</div>
-
-<div class="text-center">
-  <button type="button" class="btn btn-primary" disabled> Email all</button>
-</div>
-</div>
-
 <div id="content">
-  <h1 class="text-center pt-1 pb-4">Service Learning Course Proposal Management</h1>
+  <h1 class="text-center pt-1 pb-4">Course Proposal Management</h1>
+  <h2 class="text-center pt-1 pb-4">Service Learning Faculty</h2>
   <div class="text-center">
     <form id="termSelector" action="" method="post">
       <select class="w-25" id="selectTerm" onchange="formSubmit(this.value)">
@@ -126,12 +98,39 @@
         {% endfor %}
     </tbody>
     </table>
-{% if term.isCurrentTerm or term.isFutureTerm %}
-  <div class="float-end">
-    <button class="btn btn-primary">Send to Registrar</button>
-  </div>
-  {% endif %}
-  </div>
+
+    {% if term.isCurrentTerm or term.isFutureTerm %}
+      <div class="float-end">
+        <button class="btn btn-primary">Send to Registrar</button>
+      </div>
+      {% endif %}
+      </div>
+    </div>
+
+<div id="wrapper">
+  <div class ="container">
+    <a class="skipContent" href="#backButton" tabindex="1" style="top:8%">Click to Skip</a>
+    <div class="contributors" align="center">
+  <table class="table table-striped" id="myTable">
+      <thead>
+        <tr class="header">
+          <th scope = "col">Name</th>
+          <th scope = "col">Prev Classes</th>
+        </tr>
+      </thead>
+    <tbody id = "facultyTable">
+    {% for instructor in courseInstructors%}
+        <tr>
+          <td> {{instructor.firstName }} {{instructor.lastName}}</td>
+          <td>{{(', '.join(courseInstructors[instructor]))}}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="text-center">
+  <button type="button" class="btn btn-primary" disabled>Email all</button>
 </div>
 </div>
 {% endblock %}

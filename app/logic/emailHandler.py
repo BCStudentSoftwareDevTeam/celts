@@ -1,7 +1,7 @@
 from datetime import datetime
 from peewee import DoesNotExist, JOIN
 from flask_mail import Mail, Message
-from flask import g, session
+import os
 
 from app import app
 from app.models.programEvent import ProgramEvent
@@ -17,7 +17,7 @@ from app.models.programBan import ProgramBan
 from app.models.term import Term
 
 class EmailHandler:
-    def __init__(self, raw_form_data, url_domain, sender_object):
+    def __init__(self, raw_form_data, url_domain, sender_object, attachment_file=None):
         self.mail = Mail(app)
         self.raw_form_data = raw_form_data
         self.url_domain = url_domain
@@ -31,7 +31,8 @@ class EmailHandler:
         self.program_ids = None
         self.recipients = None
         self.sl_course_id = None
-
+        self.attachment_path = app.config['email']['attachment_path']
+        self.attachment_file = attachment_file
 
     def process_data(self):
         """ Processes raw data and stores it in class variables to be used by other methods """
@@ -68,7 +69,7 @@ class EmailHandler:
     def fetch_event_programs(self, program_id):
         """ Fetches all the programs of a particular event """
         # Non-student-led programs have "Unknown" as their id
-        if program_id == 'Unknown':
+        if program_id == 'Unknown' or program_id is None:
             programEvents = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event==self.event.id)
             return [program.program for program in programEvents.objects()]
         else:
@@ -93,7 +94,6 @@ class EmailHandler:
                 .join(Interest)
                 .join(Program, on=(Program.id==Interest.program))
                 .where(Program.id.in_([p.id for p in self.program_ids])))
-
         if recipients_category == "RSVP'd":
             recipients = (User.select()
                 .join(EventRsvp)
@@ -109,10 +109,9 @@ class EmailHandler:
             bannedUsers = ProgramBan.select(ProgramBan.user_id).where((ProgramBan.endDate > datetime.now()) | (ProgramBan.endDate is None), ProgramBan.program_id.in_([p.id for p in self.program_ids]))
             allVolunteer = Event.select().where(Event.isAllVolunteerTraining == True, Event.term.in_(sameYearTerms))
             recipients = User.select().join(EventParticipant).where(User.username.not_in(bannedUsers), EventParticipant.event.in_(allVolunteer))
-
         return [recipient for recipient in recipients]
 
-    def replace_general_template_placholders(self, email_body=None):
+    def replace_general_template_placeholders(self, email_body=None):
         """ Replaces all template placeholders except name """
         event_link = f"{self.url_domain}/eventsList/{self.event.id}/edit"
 
@@ -132,7 +131,7 @@ class EmailHandler:
         return new_body
 
     def retrieve_and_modify_email_template(self):
-        """ Retrieves email template based on idenitifer and calls replace_general_template_placholders"""
+        """ Retrieves email template based on idenitifer and calls replace_general_template_placeholders"""
 
         email_template = EmailTemplate.get(EmailTemplate.purpose==self.template_identifier) # --Q: should we keep purpose as the identifier?
         template_id = email_template.id
@@ -140,31 +139,57 @@ class EmailHandler:
         subject = self.subject if self.subject else email_template.subject
 
         body = self.body if self.body else email_template.body
-        new_body = self.replace_general_template_placholders(body)
+        new_body = self.replace_general_template_placeholders(body)
 
         self.reply_to = email_template.replyToAddress
         return (template_id, subject, new_body)
 
-    def attach_attachments(self):
-        # TODO for later
-        # retrieve attachments, attach it to the email
-        # Q: how would this work?
-        pass
+    def getAttachmentFullPath(self):
+        """
+        This creates the directory/path for the object from the "Choose File" input in the emailModal.html file.
+        :returns: directory path for attachment
+        """
+        try:
+            # tries to create the full path of the files location and passes if
+            # the directories already exist or there is no attachment
+            attachmentFullPath = os.path.join(self.attachment_path, self.attachment_file.filename)
+            os.mkdir(self.attachment_path)
+
+        except AttributeError:  # will pass if there is no attachment to save
+            pass
+        except FileExistsError:
+            pass
+
+        return attachmentFullPath
+
+    def saveAttachment(self):
+        """ Saves the attachment in the app/static/files/attachments/ directory """
+        try:
+            self.attachment_file.save(self.getAttachmentFullPath()) # saves attachment in directory
+        except AttributeError: # will pass if there is no attachment to save
+            pass
 
     def store_sent_email(self, subject, template_id):
         """ Stores sent email in the email log """
         date_sent = datetime.now()
+
+        attachmentName = ''
+        if self.attachment_file:
+            attachmentName = self.attachment_file.filename
+
         EmailLog.create(
-            event=self.event.id,
-            subject=subject,
-            templateUsed=template_id,
-            recipientsCategory=self.recipients_category,
-            recipients=", ".join(recipient.email for recipient in self.recipients),
-            dateSent=date_sent,
-            sender=self.sender)
+            event = self.event.id,
+            subject = subject,
+            templateUsed = template_id,
+            recipientsCategory = self.recipients_category,
+            recipients = ", ".join(recipient.email for recipient in self.recipients),
+            dateSent = date_sent,
+            sender = self.sender,
+            attachmentName = attachmentName)
 
     def build_email(self):
         # Most General Scenario
+        self.saveAttachment()
         self.process_data()
         template_id, subject, body = self.retrieve_and_modify_email_template()
         return (template_id, subject, body)
@@ -172,11 +197,13 @@ class EmailHandler:
     def send_email(self):
         defaultEmailInfo = {"senderName":"Sandesh", "replyTo":self.reply_to}
         template_id, subject, body = self.build_email()
+
         if len(self.program_ids) == 1:
             if self.program_ids[0].emailReplyTo:
                 defaultEmailInfo["replyTo"] = self.program_ids[0].emailReplyTo
             if self.program_ids[0].emailSenderName:
                 defaultEmailInfo["senderName"] = self.program_ids[0].emailSenderName
+
         try:
             with self.mail.connect() as conn:
                 for recipient in self.recipients:
@@ -188,7 +215,8 @@ class EmailHandler:
                         # [recipient.email],
                         [self.override_all_mail],
                         email_body,
-                        reply_to=defaultEmailInfo["replyTo"],
+                        file_attachment = self.getAttachmentFullPath(),
+                        reply_to = defaultEmailInfo["replyTo"],
                         sender = (defaultEmailInfo["senderName"], defaultEmailInfo["replyTo"])
                     ))
             self.store_sent_email(subject, template_id)

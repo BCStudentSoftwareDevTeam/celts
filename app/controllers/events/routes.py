@@ -24,12 +24,13 @@ def showUpcomingEvent():
 @events_bp.route('/email', methods=['POST'])
 def email():
     raw_form_data = request.form.copy()
+
     if "@" in raw_form_data['emailSender']:
         # when people are sending emails as themselves (using mailto) --- Q: are we still going with the mailto option?
         pass
     else:
         url_domain = urlparse(request.base_url).netloc
-        mail = EmailHandler(raw_form_data, url_domain, g.current_user)
+        mail = EmailHandler(raw_form_data, url_domain, g.current_user, attachment_file=request.files['attachmentObject'])
         mail_sent = mail.send_email()
 
         if mail_sent:

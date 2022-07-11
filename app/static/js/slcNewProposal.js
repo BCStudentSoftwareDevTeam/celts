@@ -20,12 +20,27 @@ function showTab(currentTab) {
   }
 
   if (currentTab == (allTabs.length - 1)) {
+    $("#approveButton").show();
     $("#nextButton").text("Submit");
   } else {
+    $("#approveButton").hide();
     $("#nextButton").text("Next");
   }
   fixStepIndicator(currentTab)
 }
+
+$("#approveButton").click(function(){
+  var data = $("form").serialize()
+  saveCourseInstructors()
+  $.ajax({
+    url: "/serviceLearning/approveCourse/",
+    type: "POST",
+    data: data,
+    success: function(response) {
+        window.location.replace("/manageServiceLearning")
+    }
+  });
+});
 
 $("#previousButton").on("click", function() {
   displayCorrectTab(-1);
@@ -43,11 +58,11 @@ function displayCorrectTab(navigateTab) {
   // This function will figure out which tab to display
   let allTabs = $(".tab");
   if (navigateTab == 1 && !validateForm()) return false;
-  
+
   $(allTabs[currentTab]).css("display", "none");
   // Increase or decrease the current tab by 1:
   currentTab = currentTab + navigateTab;
-  
+
   if (currentTab >= allTabs.length) {
     saveCourseInstructors().then(() => $("#slcNewProposal").submit());
     return false;
@@ -93,12 +108,12 @@ function fixStepIndicator(navigateTab) {
   steps[navigateTab].className += " active";
 }
 
-function callback() {
+function callback(selectedInstructor) {
   // JSON.parse is required to de-stringify the search results into a dictionary.
-  let data = JSON.parse($("#courseInstructor").val());
-  let instructor = (data["firstName"]+" "+data["lastName"]+" ("+data["username"]+")");
-  let username = data["username"];
-  let phone = data["phoneNumber"];
+  let instructor = (selectedInstructor["firstName"]+" "+selectedInstructor["lastName"]+" ("+selectedInstructor["username"]+")");
+  let username = selectedInstructor["username"];
+  let phone = selectedInstructor["phoneNumber"];
+
   let tableBody = $("#instructorTable").find("tbody");
   let lastRow = tableBody.find("tr:last");
   let newRow = lastRow.clone();
@@ -112,7 +127,7 @@ function callback() {
 
 $("#courseInstructor").on('input', function() {
   // To retrieve specific columns into a dict, create a [] list and put columns inside
-  searchUser("courseInstructor", callback, true, null, ["phoneNumber", "firstName", "lastName", "username"]);
+  searchUser("courseInstructor", callback, true, null, ["phoneNumber", "firstName", "lastName", "username"],"instructor");
 });
 
 $("#instructorTable").on("click", "#instructorPhoneUpdate", function() {
