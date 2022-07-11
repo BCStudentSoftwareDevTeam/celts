@@ -177,8 +177,13 @@
              {% if g.current_user.isCeltsAdmin %}
                 <td>
                     <select class="passedBackgroundCheck" id="{{bgType.id}}" data-id="{{bgType.id}}">
-                      <option value=0>No</option>
-                      <option value=1>Yes</option>
+                        {% if completedBackgroundCheck[bgType][0] == True %}
+                            <option value=1>Yes</option>
+                            <option value=0>No</option>
+                        {% else %}
+                            <option value=0>No</option>
+                            <option value=1>Yes</option>
+                        {% endif %}
                     </select>
                 </td>
                 <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" value="{{completedBackgroundCheck[bgType][1]}}" class="form-control"/></td>

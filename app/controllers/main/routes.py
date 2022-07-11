@@ -98,7 +98,7 @@ def viewVolunteersProfile(username):
         # creates data structure for background checks that are not currently completed
         for checkType in backgroundTypes:
             if checkType not in completedBackgroundCheck.keys():
-                completedBackgroundCheck[checkType] = [False, ""]
+                completedBackgroundCheck[checkType] = ["No", "Not Completed"]
 
         eligibilityTable = []
         for program in programs:
