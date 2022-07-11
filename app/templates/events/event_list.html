@@ -82,9 +82,9 @@
               {% if (event.isPast) %}
                 <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
               {% elif event.id in rsvpedEventsID %}
-                <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.program_id}}, {{event.id}})">Remove RSVP</button></td>
+                <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button></td>
               {% else %}
-                <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.program_id}}, {{event.id}})">RSVP</button></td>
+                <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button></td>
               {% endif %}
             {% endif %}
           </tr>
@@ -147,9 +147,9 @@
                           {% if event.isPast%}
                             <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
                           {% elif event.id in rsvpedEventsID %}
-                            <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{program.id}}, {{event.id}})">Remove RSVP</button></td>
+                            <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button></td>
                           {% else %}
-                            <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{program.id}}, {{event.id}})">RSVP</button></td>
+                            <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button></td>
                           {% endif %}
                         {% endif %}
                       </tr>
