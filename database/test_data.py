@@ -248,7 +248,7 @@ programs = [
     },
     {
         "id": 6,
-        "programName": "Habitat For Humanity",
+        "programName": "Habitat for Humanity",
         "isStudentLed": False,
         "isBonnerScholars": False,
         "emailReplyTo" :"test@email",
