@@ -59,7 +59,7 @@
         <th scope="col">Date</th>
         <th scope="col">Time</th>
         <th scope="col">Location</th>
-        <th scope="col">Invitation</th>
+        <th scope="col"></th>
       </tr>
     </thead>
     <tbody>
@@ -123,7 +123,7 @@
                     <th scope="col">Date</th>
                     <th scope="col">Time</th>
                     <th scope="col">Location</th>
-                    <th scope="col">Invitation</th>
+                    <th scope="col"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -140,7 +140,7 @@
                             {% endif %}
                             <button class="btn btn-primary"
                             onclick="showEmailModal({{event.id}}, {{program.id}}, {{selectedTerm}}, {{isPastEvent}})">
-                              <span class="bi bi-envelope-fill"> Email</span>
+                              <span class="bi bi-envelope-fill"> Invite</span>
                             </button>
                           </td>
                         {% else %}
