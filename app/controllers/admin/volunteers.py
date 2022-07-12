@@ -81,12 +81,20 @@ def updateVolunteerTable(eventID):
 @admin_bp.route('/addVolunteerToEvent/<volunteer>/<eventId>', methods = ['POST'])
 def addVolunteer(volunteer, eventId):
     volunteerList = volunteer.split(",")
+    successfullyAddedVolunteer = False
     for volunteerUsername in volunteerList:
-        print(volunteerUsername)
         user = User.get(User.username==volunteerUsername)
-        successfullyAddedVolunteer = addVolunteerToEventRsvp(user, eventId)
-        EventParticipant.create(user=user, event=eventId) # user is present
-    if successfullyAddedVolunteer:
+        if EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == eventId).exists():
+            print("-------------------------1")
+            print("-------------------------1")
+            successfullyAddedVolunteer == False
+        else:
+            print("-------------------------2")
+            print("-------------------------2")
+            addVolunteerToEventRsvp(user, eventId)
+            EventParticipant.create(user=user, event=eventId) # user is present
+            successfullyAddedVolunteer == True
+    if successfullyAddedVolunteer == True:
         flash("Volunteer successfully added!", "success")
     else:
         flash("Error when adding volunteer", "danger")

@@ -45,7 +45,11 @@ function callback(selected) {
   var user = $("#addVolunteerInput").val()
   if(userlist.includes(selected["username"]) == false){
       userlist.push(user)
-      $("#addVolunteerList").append("<li>"+ selected["firstName"]+ " " + selected["lastName"] +"</li>")
+      for(let i = 0; i< userlist.length; i++){
+
+          $("#addVolunteerList").append("<input  type=checkbox id= userlistCheckbox></input>")
+          $("#addVolunteerList").append("<label form>"+ selected["firstName"]+ " " + selected["lastName"] +"</label>")
+      }
   }
   else{
       msgFlash("User already selected.")
@@ -57,6 +61,10 @@ $("#selectVolunteerButton").prop('disabled', true)
 $("#addVolunteerInput").on("input", function() {
   searchUser("addVolunteerInput", callback, true, "addVolunteerModal");
 });
+
+$("#removeSelection").on("click",function(){
+    var userlist = []
+})
 
 $(".removeVolunteer").on("click", function() {
   let username =  $(this)[0].id;
