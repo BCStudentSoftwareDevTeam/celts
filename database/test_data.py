@@ -27,7 +27,6 @@ from app.models.backgroundCheck import BackgroundCheck
 from app.models.adminLogs import AdminLogs
 from app.models.emailLog import EmailLog
 
-
 print("Inserting data for demo and testing purposes.")
 users = [
     {
