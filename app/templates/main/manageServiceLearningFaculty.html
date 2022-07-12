@@ -80,7 +80,7 @@
         <th scope="col">Status</th>
         <th scope="col">Sent</th>
       </tr>
-    </thead> 
+    </thead>
     <tbody>
         {% for data in approvedCourses %}
         <tr>
@@ -105,8 +105,14 @@
 </div>
 <h2 class="text-center pt-1 pb-4">Service Learning Faculty</h2>
 <div id="wrapper">
-  <div style="text-align:right; width:100%; padding:0; margin-bottom: -42px;" >
-    <button type="button" id="emailAllButton" data-instructors = {{courseInstructors}}> Email all</button>
+  <div style="text-align:right; width:100%; padding:0; margin-bottom: -42px; display: inline-block" >
+      {% set instructorEmails = [] %}
+      {% for instructor in courseInstructors%}
+        {{ instructorEmails.append(instructor.email) or "" }}
+      {% endfor %}
+     <div>
+      <a  class="btn btn-primary" href="mailto:{{(';'.join(instructorEmails))}}"> Email all </a>
+     </div>
   </div>
   <div class ="container">
     <a class="skipContent" href="#backButton" tabindex="1" style="top:8%">Click to Skip</a>
