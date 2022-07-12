@@ -9,11 +9,8 @@ from app.models.term import Term
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.logic.volunteers import addVolunteerToEventRsvp
-from app.logic.participants import trainedParticipants
 from app.logic.volunteers import getEventLengthInHours, updateEventParticipants
-from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents
-from app.logic.participants import sendUserData
-from app.logic.participants import getEventParticipants
+from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, sendUserData, getEventParticipants, trainedParticipants, getUserParticipatedEvents
 from app.models.eventRsvp import EventRsvp
 
 @pytest.mark.integration
@@ -299,3 +296,15 @@ def test_getEventParticipantsWithWrongParticipant():
     event = Event.get_by_id(1)
     eventParticipantsDict = getEventParticipants(event)
     assert "agliullovak" not in eventParticipantsDict
+
+@pytest.mark.integration
+def test_getUserParticipatedEvents():
+    with mainDB.atomic() as transaction:
+        allProgramTrainings = Event.select().join(ProgramEvent).where(Event.isTraining == 1, ProgramEvent.program == Program.get_by_id(1))
+        listOfProgramTrainings = [programTraining for programTraining in programTrainings]
+        for event in listOfProgramTrainings:
+            EventParticipant.create(user = User.get_by_id("ramsayb2"), event = event)
+        programTrainings = getUserParticipatedEvents(Program.get_by_id(1))
+        for training, participated in programTrainings.items():
+            assert programTrainings[training] == 1
+        transaction.rollback()

@@ -22,7 +22,7 @@ from app.logic.volunteers import getEventLengthInHours, isProgramManagerForEvent
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.logic.courseManagement import pendingCourses, approvedCourses
-from app.logic.participants import getEventParticipants
+from app.logic.participants import getEventParticipants, getUserParticipatedEvents
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
@@ -155,24 +155,13 @@ def editOrViewEvent(eventId):
                                 userHasRSVPed = userHasRSVPed,
                                 isProgramManager = isProgramManager)
     else:
-        eventFacilitators = EventFacilitator.select().where(EventFacilitator.event == eventId)
+        eventFacilitators = EventFacilitator.select().where(EventFacilitator.event == event)
         eventFacilitatorNames = [eventFacilitator.user for eventFacilitator in eventFacilitators]
-        eventData['timeStart'] = datetime.strptime(eventData['timeStart'], "%H:%M").strftime("%I:%M %p")
-        eventData['timeEnd'] = datetime.strptime(eventData['timeEnd'], "%H:%M").strftime("%I:%M %p")
-        eventData["startDate"] = eventData["startDate"].strftime("%m/%d/%Y")
+        eventData['timeStart'] = event.timeStart.strftime("%I:%M %p")
+        eventData['timeEnd'] = event.timeEnd.strftime("%I:%M %p")
+        eventData["startDate"] = event.startDate.strftime("%m/%d/%Y")
         programManager = ProgramManager.get_or_none(program=program)
-        programTrainings = Event.select().join(ProgramEvent).where(Event.isTraining == 1, ProgramEvent.program == program)
-        listOfProgramTrainings = [programTraining for programTraining in programTrainings]
-        userParticipatedEvents = {}
-        for training in listOfProgramTrainings:
-            eventParticipants = getEventParticipants(training.id)
-            if training.startDate>date.today():
-                didParticipate = None
-            elif g.current_user.username in eventParticipants.keys():
-                didParticipate = True
-            else:
-                didParticipate = False
-            userParticipatedEvents[training.name] = didParticipate
+        userParticipatedEvents = getUserParticipatedEvents(program, g.current_user)
         return render_template("eventView.html",
                                 eventData = eventData,
                                 eventFacilitatorNames = eventFacilitatorNames,

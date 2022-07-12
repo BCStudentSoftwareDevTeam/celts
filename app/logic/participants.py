@@ -1,4 +1,5 @@
 from peewee import fn
+from datetime import date
 from app.models.user import User
 from app.models.event import Event
 from app.models.term import Term
@@ -99,3 +100,24 @@ def getEventParticipants(event):
         .where(EventParticipant.event==event))
 
     return {p.user.username: p.hoursEarned for p in eventParticipants}
+
+def getUserParticipatedEvents(program, user):
+    """
+    This function returns a dictionary of all trainings for a program and
+    whether the current user participated in them.
+
+    :returns: trainings for program and if the user participated
+    """
+    programTrainings = Event.select().join(ProgramEvent).where(Event.isTraining == 1, ProgramEvent.program == program)
+    listOfProgramTrainings = [programTraining for programTraining in programTrainings]
+    userParticipatedEvents = {}
+    for training in listOfProgramTrainings:
+        eventParticipants = getEventParticipants(training.id)
+        if training.startDate>date.today():
+            didParticipate = None
+        elif user.username in eventParticipants.keys():
+            didParticipate = True
+        else:
+            didParticipate = False
+        userParticipatedEvents[training.name] = didParticipate
+    return userParticipatedEvents
