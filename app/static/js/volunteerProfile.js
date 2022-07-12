@@ -87,23 +87,19 @@ $(document).ready(function(){
   });
 
   $(".savebtn").click(function () { // Updates the Background check of a volunteer in the database
-    let displayMsg = $("#displaySave")
     let bgCheckType = $(this).data("id")
     let bgDate = $("#" + bgCheckType + "_date").val()
     let checkPassed = $("[data-id=" + bgCheckType + "]").val()
 
     if (checkPassed == 0 && bgDate != '' ) {
-        displayMsg.html("Y/N<br>Empty!").addClass("text-danger")
-        setTimeout(function() {displayMsg.html("").removeClass("text-danger")}, 2000)
+        displayMessage("Y/N<br>Empty!", "danger")
         return
-    }else if(bgDate == '' && checkPassed != 0){
-        displayMsg.html("Date<br>Empty!").addClass("text-danger")
-        setTimeout(function() {displayMsg.html("").removeClass("text-danger")}, 2000)
+    } else if(bgDate == '' && checkPassed != 0) {
+        displayMessage("Date<br>Empty!", "danger")
         return
     }
-    else{
-    displayMsg.html("Saved!").addClass("text-success")
-    setTimeout(function() {displayMsg.html("").removeClass("text-success")}, 2000)
+    else {
+        displayMessage("Saved!", "success")
     }
     let data = {
         checkPassed: checkPassed,      // Expected to be either a 0 or a 1 volunteerProfile.js
@@ -123,6 +119,11 @@ $(document).ready(function(){
     })
   });
 });
+
+function displayMessage(message, color) {  // displays message for saving background check
+    $("#displaySave").html(message).addClass("text-"+ color)
+    setTimeout(function() {$("#displaySave").html("").removeClass("text-"+ color)}, 2000)
+}
 
 function updateManagers(el, volunteer_username ){// retrieve the data of the studnet staff and program id if the boxes are checked or not
   var program_id=$(el).attr('data-programid');
