@@ -1,3 +1,5 @@
+import searchUser from './searchUser.js'
+
 // updates max and min dates of the datepickers as the other datepicker changes
 function updateDate(obj) {
   // we need to replace "-" with "/" because firefox cannot turn a date with "-" to a datetime object
@@ -110,7 +112,7 @@ $(document).ready(function() {
           for (var event of recurringEvents){
             eventdate= new Date(event.date).toLocaleDateString()
             recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
-            }   
+            }
         },
         error: function(error){
           console.log(error)
@@ -127,4 +129,32 @@ $(document).ready(function() {
       $("#checkIsRequired").prop('disabled', false);
     }
   });
+
+  function callback(selectedFacilitator) {
+    // JSON.parse is required to de-stringify the search results into a dictionary.
+    let facilitator = (selectedFacilitator["firstName"]+" "+selectedFacilitator["lastName"]+" ("+selectedFacilitator["username"]+")");
+    let username = selectedFacilitator["username"];
+    let phone = selectedFacilitator["phoneNumber"];
+
+    let tableBody = $("#facilitatorTable").find("tbody");
+    let lastRow = tableBody.find("tr:last");
+    let newRow = lastRow.clone();
+    newRow.find("td:eq(0) p").text(facilitator);
+    newRow.find("td:eq(0) div input").val(phone);
+    newRow.find("td:eq(0) div button").attr("data-id", username);
+    newRow.find("td:eq(0) div input").attr("id", username);
+    newRow.prop("hidden", false);
+    lastRow.after(newRow);
+  }
+
+  $("#eventFacilitator").on('input', function() {
+    // To retrieve specific columns into a dict, create a [] list and put columns inside
+    searchUser("eventFacilitator", callback, true, null, ["phoneNumber", "firstName", "lastName", "username"],"facilitator");
+  });
+
+  $("#facilitatorTable").on("click", "#remove", function() {
+     $(this).closest("tr").remove();
+  });
+
+
 });

@@ -272,7 +272,7 @@ def preprocessEventData(eventData):
           (or use an empty list if no event)
         - times should exist be strings in 24 hour format example: 14:40
     """
-
+    # print(eventData)
     ## Process checkboxes
     eventCheckBoxes = ['isRsvpRequired', 'isService', 'isTraining', 'isRecurring', 'isAllVolunteerTraining']
 
