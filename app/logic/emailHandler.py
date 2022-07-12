@@ -1,7 +1,7 @@
 from datetime import datetime
 from peewee import DoesNotExist, JOIN
 from flask_mail import Mail, Message
-from flask import g, session
+import os
 
 from app import app
 from app.models.programEvent import ProgramEvent
@@ -17,7 +17,7 @@ from app.models.programBan import ProgramBan
 from app.models.term import Term
 
 class EmailHandler:
-    def __init__(self, raw_form_data, url_domain, sender_object):
+    def __init__(self, raw_form_data, url_domain, sender_object, attachment_file=None):
         self.mail = Mail(app)
         self.raw_form_data = raw_form_data
         self.url_domain = url_domain
@@ -31,7 +31,8 @@ class EmailHandler:
         self.program_ids = None
         self.recipients = None
         self.sl_course_id = None
-
+        self.attachment_path = app.config['email']['attachment_path']
+        self.attachment_file = attachment_file
 
     def process_data(self):
         """ Processes raw data and stores it in class variables to be used by other methods """
@@ -143,26 +144,52 @@ class EmailHandler:
         self.reply_to = email_template.replyToAddress
         return (template_id, subject, new_body)
 
-    def attach_attachments(self):
-        # TODO for later
-        # retrieve attachments, attach it to the email
-        # Q: how would this work?
-        pass
+    def getAttachmentFullPath(self):
+        """
+        This creates the directory/path for the object from the "Choose File" input in the emailModal.html file.
+        :returns: directory path for attachment
+        """
+        try:
+            # tries to create the full path of the files location and passes if
+            # the directories already exist or there is no attachment
+            attachmentFullPath = os.path.join(self.attachment_path, self.attachment_file.filename)
+            os.mkdir(self.attachment_path)
+
+        except AttributeError:  # will pass if there is no attachment to save
+            pass
+        except FileExistsError:
+            pass
+
+        return attachmentFullPath
+
+    def saveAttachment(self):
+        """ Saves the attachment in the app/static/files/attachments/ directory """
+        try:
+            self.attachment_file.save(self.getAttachmentFullPath()) # saves attachment in directory
+        except AttributeError: # will pass if there is no attachment to save
+            pass
 
     def store_sent_email(self, subject, template_id):
         """ Stores sent email in the email log """
         date_sent = datetime.now()
+
+        attachmentName = ''
+        if self.attachment_file:
+            attachmentName = self.attachment_file.filename
+
         EmailLog.create(
-            event=self.event.id,
-            subject=subject,
-            templateUsed=template_id,
-            recipientsCategory=self.recipients_category,
-            recipients=", ".join(recipient.email for recipient in self.recipients),
-            dateSent=date_sent,
-            sender=self.sender)
+            event = self.event.id,
+            subject = subject,
+            templateUsed = template_id,
+            recipientsCategory = self.recipients_category,
+            recipients = ", ".join(recipient.email for recipient in self.recipients),
+            dateSent = date_sent,
+            sender = self.sender,
+            attachmentName = attachmentName)
 
     def build_email(self):
         # Most General Scenario
+        self.saveAttachment()
         self.process_data()
         template_id, subject, body = self.retrieve_and_modify_email_template()
         return (template_id, subject, body)
@@ -170,11 +197,13 @@ class EmailHandler:
     def send_email(self):
         defaultEmailInfo = {"senderName":"Sandesh", "replyTo":self.reply_to}
         template_id, subject, body = self.build_email()
+
         if len(self.program_ids) == 1:
             if self.program_ids[0].emailReplyTo:
                 defaultEmailInfo["replyTo"] = self.program_ids[0].emailReplyTo
             if self.program_ids[0].emailSenderName:
                 defaultEmailInfo["senderName"] = self.program_ids[0].emailSenderName
+
         try:
             with self.mail.connect() as conn:
                 for recipient in self.recipients:
@@ -186,7 +215,8 @@ class EmailHandler:
                         # [recipient.email],
                         [self.override_all_mail],
                         email_body,
-                        reply_to=defaultEmailInfo["replyTo"],
+                        file_attachment = self.getAttachmentFullPath(),
+                        reply_to = defaultEmailInfo["replyTo"],
                         sender = (defaultEmailInfo["senderName"], defaultEmailInfo["replyTo"])
                     ))
             self.store_sent_email(subject, template_id)

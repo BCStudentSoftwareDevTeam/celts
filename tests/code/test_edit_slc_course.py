@@ -30,9 +30,7 @@ def test_update_course():
                                             serviceLearningDesignatedSections = "None",
                                             isPermanentlyDesignated = 0)
 
-            testingCourseInstructor = CourseInstructor.create(
-                                                                course=testingCourse,
-                                                                user="ramsayb2")
+            testingCourseInstructor = CourseInstructor.create( course=testingCourse, user="ramsayb2")
 
             courseDict = {
                             "courseName" : "Course Edited",
@@ -54,8 +52,6 @@ def test_update_course():
             instructorsDict = {"instructors": [testUser, testUser]}
             runUpdateCourse = updateCourse(courseDict, instructorsDict)
             updatedCourse = Course.get(Course.id == testingCourse.id)
-            updatedInstructors = CourseInstructor.select().where(CourseInstructor.course == updatedCourse.id)
-            instructors = [instructor for instructor in updatedInstructors]
 
             assert updatedCourse.courseName == "Course Edited"
             assert updatedCourse.courseAbbreviation == "EDIT"
@@ -65,5 +61,9 @@ def test_update_course():
             assert updatedCourse.isAllSectionsServiceLearning
             assert updatedCourse.serviceLearningDesignatedSections == "All"
             assert updatedCourse.isPermanentlyDesignated
-            assert len(instructors) == 2
+
+            updatedInstructors = CourseInstructor.select().where(CourseInstructor.course == updatedCourse.id)
+            instructors = [instructor for instructor in updatedInstructors]
+            assert len(instructors) == 1
+
             transaction.rollback()

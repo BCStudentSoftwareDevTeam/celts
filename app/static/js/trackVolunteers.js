@@ -38,7 +38,7 @@ $(document).ready(function() {
   });
 });
 
-function callback() {
+function callback(selected) {
   $("#selectVolunteerButton").prop('disabled', false);
 }
 

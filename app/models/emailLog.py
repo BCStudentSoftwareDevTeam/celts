@@ -1,6 +1,6 @@
-from app.models import*
-from app.models.emailTemplate import EmailTemplate
-from app.models.event import Event
+from app.models import *
+from app.models.emailTemplate import EmailTemplate 
+from app.models.event import Event 
 from app.models.user import User
 
 class EmailLog(baseModel):
@@ -11,3 +11,4 @@ class EmailLog(baseModel):
     recipients = CharField()
     dateSent = DateTimeField()
     sender = ForeignKeyField(User)
+    attachmentName = CharField(null=True)

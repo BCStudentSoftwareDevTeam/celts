@@ -59,6 +59,7 @@
         <th scope="col">Date</th>
         <th scope="col">Time</th>
         <th scope="col">Location</th>
+        <th> Event Program </th>
         <th scope="col">Invitation</th>
       </tr>
     </thead>
@@ -67,8 +68,15 @@
           <tr>
             <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
             <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
-            <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
+            <td>{{event.timeStart.strftime('%I:%M %p')}}-{{event.timeEnd.strftime('%I:%M %p')}}</td>
             <td>{{event.location}}</td>
+            {% if event.programEvents%}
+              {% for programEvent in event.programEvents%}
+              <td>{{programEvent.program.programName}}</td>
+              {% endfor %}
+            {% else %}
+              <td>This event does not belong to any program</td>
+            {% endif %}
             {% if user.isAdmin %}
               <td>
                 {% if event.isPast %}
@@ -123,7 +131,7 @@
                     <th scope="col">Date</th>
                     <th scope="col">Time</th>
                     <th scope="col">Location</th>
-                    <th scope="col">Invitation</th>
+                    <th scope="col"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -131,7 +139,7 @@
                       <tr>
                         <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
                         <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
-                        <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
+                        <td>{{event.timeStart.strftime('%I:%M %p')}}-{{event.timeEnd.strftime('%I:%M %p')}}</td>
                         <td>{{event.location}}</td>
                         {% if user.isAdmin %}
                           <td>
@@ -140,7 +148,7 @@
                             {% endif %}
                             <button class="btn btn-primary"
                             onclick="showEmailModal({{event.id}}, {{program.id}}, {{selectedTerm}}, {{isPastEvent}})">
-                              <span class="bi bi-envelope-fill"> Email</span>
+                              <span class="bi bi-envelope-fill"> Invite</span>
                             </button>
                           </td>
                         {% else %}

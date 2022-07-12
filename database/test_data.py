@@ -141,7 +141,20 @@ users = [
         "phoneNumber": "(859)985-5555",
         "isCeltsAdmin": False,
         "isFaculty": True,
-        "isCeltsStudentStaff": False
+        "isCeltsStudentStaff": False,
+        "isStaff": True
+    },
+     {
+        "username": "qasema",
+        "bnumber": "B00000000",
+        "email": "qasema@berea.edu",
+        "firstName": "Ala",
+        "lastName": "Qasem",
+        "phoneNumber": "8599723821",
+        "isCeltsAdmin": True,
+        "isFaculty": True,
+        "isCeltsStudentStaff": False,
+        "isStaff": True
     }
 ]
 
@@ -235,7 +248,7 @@ programs = [
     },
     {
         "id": 6,
-        "programName": "Habitat For Humanity",
+        "programName": "Habitat for Humanity",
         "isStudentLed": False,
         "isBonnerScholars": False,
         "emailReplyTo" :"test@email",
@@ -545,12 +558,15 @@ CourseStatus.insert_many(coursestatus).on_conflict_replace().execute()
 
 notes = [
     {
+    "id": 1,
     "createdBy": "ramsayb2",
     "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
     "noteContent": "I think the training is put in wrong",
     "isPrivate":False
     },
     {
+    "id": 2,
+    "createdBy": "ramsayb2",
     "createdBy": "mupotsal",
     "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
     "noteContent": "I agree with your comment on training",
