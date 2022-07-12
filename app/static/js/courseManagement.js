@@ -16,7 +16,7 @@ function reviewCourses(el) {
     data:{"course_id":courseID},
     success: function(modal_html) {
       $("#review-modal").html(modal_html)
-      $("#myReview").modal('show')
+      $("#proposal_view").modal('show')
     }
   })
 }
