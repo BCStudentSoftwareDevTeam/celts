@@ -1,4 +1,4 @@
-import collections
+import collections.abc as collections
 from peewee import DoesNotExist
 from app.models.term import Term
 from datetime import datetime
