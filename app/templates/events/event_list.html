@@ -67,7 +67,16 @@
           <tr>
             <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
             <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
-            <td>{{event.timeStart.strftime('%I:%M %p')}}-{{event.timeEnd.strftime('%I:%M %p')}}</td>
+            <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
+            {% set startTime = event.timeStart.strftime('%I:%M %p') %}
+            {% set endTime = event.timeEnd.strftime('%I:%M %p') %}
+            {% if startTime[0] == '0' %}
+                {% set startTime = startTime[1:] %}
+            {% endif %}
+            {% if endTime[0] == '0' %}
+                {% set endTime = endTime[1:] %}
+            {% endif %}
+            <td>{{startTime}} - {{endTime}}</td>
             <td>{{event.location}}</td>
             {% if user.isAdmin %}
               <td>
@@ -130,13 +139,16 @@
                     {% for event in events %}
                       <tr>
                         <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
-<<<<<<< HEAD
-                        <td>{{event.startDate.strftime('%m/%d/%Y')}}</td>
-                        <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
-=======
                         <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
-                        <td>{{event.timeStart.strftime('%I:%M %p')}}-{{event.timeEnd.strftime('%I:%M %p')}}</td>
->>>>>>> 6a3598703f954149164f1564e1afa33890cd2452
+                        {% set startTime = event.timeStart.strftime('%I:%M %p') %}
+                        {% set endTime = event.timeEnd.strftime('%I:%M %p') %}
+                        {% if startTime[0] == '0' %}
+                            {% set startTime = startTime[1:] %}
+                        {% endif %}
+                        {% if endTime[0] == '0' %}
+                            {% set endTime = endTime[1:] %}
+                        {% endif %}
+                        <td>{{startTime}} - {{endTime}}</td>
                         <td>{{event.location}}</td>
                         {% if user.isAdmin %}
                           <td>
