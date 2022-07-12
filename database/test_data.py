@@ -558,12 +558,15 @@ CourseStatus.insert_many(coursestatus).on_conflict_replace().execute()
 
 notes = [
     {
+    "id": 1,
     "createdBy": "ramsayb2",
     "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
     "noteContent": "I think the training is put in wrong",
     "isPrivate":False
     },
     {
+    "id": 2,
+    "createdBy": "ramsayb2",
     "createdBy": "mupotsal",
     "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
     "noteContent": "I agree with your comment on training",
