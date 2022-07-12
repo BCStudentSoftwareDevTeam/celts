@@ -87,15 +87,29 @@ $(document).ready(function(){
   });
 
   $(".savebtn").click(function () { // Updates the Background check of a volunteer in the database
-    let savedMsg = $("#displaySave")
-    savedMsg.html("Saved!").addClass("text-success")
-    setTimeout(function() {savedMsg.html("").removeClass("text-success")}, 2000)
-    bgCheckType = $(this).data("id")
+    let displayMsg = $("#displaySave")
+    let bgCheckType = $(this).data("id")
+    let bgDate = $("#" + bgCheckType + "_date").val()
+    let checkPassed = $("[data-id=" + bgCheckType + "]").val()
+
+    if (checkPassed == 0 && bgDate != '' ) {
+        displayMsg.html("Y/N<br>Empty!").addClass("text-danger")
+        setTimeout(function() {displayMsg.html("").removeClass("text-danger")}, 2000)
+        return
+    }else if(bgDate == '' && checkPassed != 0){
+        displayMsg.html("Date<br>Empty!").addClass("text-danger")
+        setTimeout(function() {displayMsg.html("").removeClass("text-danger")}, 2000)
+        return
+    }
+    else{
+    displayMsg.html("Saved!").addClass("text-success")
+    setTimeout(function() {displayMsg.html("").removeClass("text-success")}, 2000)
+    }
     let data = {
-        checkPassed: $("[data-id=" + bgCheckType + "]").val(),      // Expected to be either a 0 or a 1 volunteerProfile.js
+        checkPassed: checkPassed,      // Expected to be either a 0 or a 1 volunteerProfile.js
         user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
         bgType: $(this).attr("id"),       // Expected to be the ID of a background check in the database
-        bgDate: $("#" + bgCheckType + "_date").val()  // Expected to be the date of the background check completion
+        bgDate: bgDate  // Expected to be the date of the background check completion or '' if field is empty
     }
     $.ajax({
       url: "/updateBackgroundCheck",
