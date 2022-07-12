@@ -117,18 +117,18 @@ def test_banUser():
     program_id = 3
     note = "Banning user test"
     creator = "ramsayb2"
-    banEndDate = "2022-11-29"
-    # checkBan = banUser (program_id, username, note, banEndDate, creator)
-    if (ProgramBan.select().where(ProgramBan.user == username, ProgramBan.banNote == note, ProgramBan.program == program_id, ProgramBan.endDate > banEndDate).exists()):
+
+    # checkBan = banUser (program_id, username, note, creator)
+    if (ProgramBan.select().where(ProgramBan.user == username, ProgramBan.banNote == note, ProgramBan.program == program_id).exists()):
         assert True
     # assert checkBan
 
 
     #test for banning a user from a program with different program id
     program_id = 2
-    if (ProgramBan.select().where(ProgramBan.user == username, ProgramBan.banNote == note, ProgramBan.program == program_id, ProgramBan.endDate > banEndDate).exists()):
+    if (ProgramBan.select().where(ProgramBan.user == username, ProgramBan.banNote == note, ProgramBan.program == program_id).exists()):
         assert True
-    # status = banUser (program_id, username, note, banEndDate, creator)
+    # status = banUser (program_id, username, note, creator)
     # assert status == "Successfully banned the user"
 
     #test for exceptions when banning the user
@@ -136,9 +136,8 @@ def test_banUser():
     program_id = 100
     note = "Banning user test"
     creator = "ramsayb2"
-    banEndDate = "2022-11-29"
     with pytest.raises(Exception):
-        status = banUser (program_id, username, note, banEndDate, creator)
+        status = banUser (program_id, username, note, creator)
         assert status == False
 
 @pytest.mark.integration
@@ -166,7 +165,6 @@ def test_unbanUser():
     program_id = 100
     note = "Banning user test"
     creator = "ramsayb2"
-    banEndDate = "2022-11-29"
     with pytest.raises(Exception):
         status = unbanUser (program_id, username, note, creator)
         assert status == False
