@@ -65,7 +65,7 @@
     <tbody>
         {% for event in events %}
           <tr>
-              {% if user.isCeltsAdmin or user.isCeltsStudentStaff %}
+              {% if user.isCeltsAdmin or hasPrivilege(user, event.singleProgram)%}
                 <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
               {% else %}
                 <td> <a href="/eventsList/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
@@ -133,7 +133,7 @@
                 <tbody>
                     {% for event in events %}
                       <tr>
-                          {% if user.isCeltsAdmin or user.isCeltsStudentStaff %}
+                          {% if user.isCeltsAdmin or hasPrivilege(user, event.singleProgram) %}
                             <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
                           {% else %}
                             <td> <a href="/eventsList/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>

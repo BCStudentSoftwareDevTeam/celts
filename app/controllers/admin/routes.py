@@ -115,9 +115,9 @@ def createEvent(templateid, programid=None):
             allFacilitators = getAllFacilitators(),
             isProgramManager = isProgramManager)
 
-
+@admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
 @admin_bp.route('/eventsList/<eventId>/edit', methods=['GET','POST'])
-def editEvent(eventId):
+def editOrViewEvent(eventId):
     if request.method == "POST" and not (g.current_user.isCeltsAdmin or isProgramManagerForEvent(g.current_user, eventId)):
         abort(403)
 
@@ -143,61 +143,43 @@ def editEvent(eventId):
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     program = event.singleProgram
-    isProgramManager = hasPrivilege(g.current_user,program)
 
-    if (g.current_user.isStudent or g.current_user.isFaculty) and not isProgramManager:  # only formats to 12 hour time if user doesn't have access (for display purposes)
+    rule = request.url_rule
+    if 'edit' in rule.rule:
+        isProgramManager = hasPrivilege(g.current_user,program)
+        return render_template("admin/createSingleEvent.html",
+                                eventData = eventData,
+                                allFacilitators = getAllFacilitators(),
+                                futureTerms=futureTerms,
+                                isPastEvent = isPastEvent,
+                                userHasRSVPed = userHasRSVPed,
+                                isProgramManager = isProgramManager)
+    else:
+        eventFacilitators = EventFacilitator.select().where(EventFacilitator.event == eventId)
+        eventFacilitatorNames = [eventFacilitator.user for eventFacilitator in eventFacilitators]
         eventData['timeStart'] = datetime.strptime(eventData['timeStart'], "%H:%M").strftime("%I:%M %p")
         eventData['timeEnd'] = datetime.strptime(eventData['timeEnd'], "%H:%M").strftime("%I:%M %p")
-
-    return render_template("admin/createSingleEvent.html",
-                            eventData = eventData,
-                            allFacilitators = getAllFacilitators(),
-                            futureTerms=futureTerms,
-                            isPastEvent = isPastEvent,
-                            userHasRSVPed = userHasRSVPed,
-                            isProgramManager = isProgramManager)
-
-@admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
-def viewEvent(eventId):
-    # Validate given URL
-    try:
-        event = Event.get_by_id(eventId)
-    except DoesNotExist as e:
-        print(f"Unknown event: {eventId}")
-        abort(404)
-
-    eventData = model_to_dict(event, recurse=False)
-    preprocessEventData(eventData)
-    userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
-    program = event.singleProgram
-    eventFacilitators = EventFacilitator.select().where(EventFacilitator.event == eventId)
-    eventFacilitatorNames = [eventFacilitator.user for eventFacilitator in eventFacilitators]
-    programTrainings = Event.select().join(ProgramEvent).where(Event.isTraining == 1, ProgramEvent.program == program)
-    listOfProgramTrainings = [programTraining for programTraining in programTrainings]
-    programManager = ProgramManager.get_or_none(program=program)
-    userParticipatedEvents = {}
-    for training in listOfProgramTrainings:
-        eventParticipants = getEventParticipants(training.id)
-        if training.startDate>date.today():
-            didParticipate = None
-        elif g.current_user.username in eventParticipants.keys():
-            didParticipate = True
-        else:
-            didParticipate = False
-        userParticipatedEvents[training.name] = didParticipate
-    isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
-    eventData["startDate"] = eventData["startDate"].strftime("%m/%d/%Y")
-    eventData['timeStart'] = datetime.strptime(eventData['timeStart'], "%H:%M").strftime("%I:%M %p")
-    eventData['timeEnd'] = datetime.strptime(eventData['timeEnd'], "%H:%M").strftime("%I:%M %p")
-    return render_template("eventStudentView.html",
-                            eventData = eventData,
-                            eventFacilitatorNames = eventFacilitatorNames,
-                            isPastEvent = isPastEvent,
-                            userHasRSVPed = userHasRSVPed,
-                            programTrainings = userParticipatedEvents,
-                            programManager = programManager,
-                            currentUser = g.current_user)
-
+        eventData["startDate"] = eventData["startDate"].strftime("%m/%d/%Y")
+        programManager = ProgramManager.get_or_none(program=program)
+        programTrainings = Event.select().join(ProgramEvent).where(Event.isTraining == 1, ProgramEvent.program == program)
+        listOfProgramTrainings = [programTraining for programTraining in programTrainings]
+        userParticipatedEvents = {}
+        for training in listOfProgramTrainings:
+            eventParticipants = getEventParticipants(training.id)
+            if training.startDate>date.today():
+                didParticipate = None
+            elif g.current_user.username in eventParticipants.keys():
+                didParticipate = True
+            else:
+                didParticipate = False
+            userParticipatedEvents[training.name] = didParticipate
+        return render_template("eventView.html",
+                                eventData = eventData,
+                                eventFacilitatorNames = eventFacilitatorNames,
+                                isPastEvent = isPastEvent,
+                                userHasRSVPed = userHasRSVPed,
+                                programTrainings = userParticipatedEvents,
+                                programManager = programManager)
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
