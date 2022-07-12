@@ -24,27 +24,38 @@ $(document).ready(function() {
   $("#selectVolunteerButton").click(function(){
     let user = $("#addVolunteerInput").val()
     let eventId = $("#eventID").val()
-
+    console.log(userlist)
     $.ajax({
-      url: `/addVolunteerToEvent/${user}/${eventId}`,
+      url: `/addVolunteerToEvent/${userlist}/${eventId}`,
       type: "POST",
       success: function(s){
-        location.reload();
+          location.reload()
+
       },
       error: function(request, status, error){
-        location.reload();
+          location.reload()
       }
     });
   });
 });
 
+var userlist = []
 function callback(selected) {
   $("#selectVolunteerButton").prop('disabled', false);
+  var user = $("#addVolunteerInput").val()
+  if(userlist.includes(selected["username"]) == false){
+      userlist.push(user)
+      $("#addVolunteerList").append("<li>"+ selected["firstName"]+ " " + selected["lastName"] +"</li>")
+  }
+  else{
+      msgFlash("User already selected.")
+  }
 }
 
 $("#selectVolunteerButton").prop('disabled', true)
+
 $("#addVolunteerInput").on("input", function() {
-  searchUser("addVolunteerInput", callback, false, "addVolunteerModal");
+  searchUser("addVolunteerInput", callback, true, "addVolunteerModal");
 });
 
 $(".removeVolunteer").on("click", function() {

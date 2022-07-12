@@ -32,7 +32,7 @@ def trackVolunteersPage(eventID):
         abort(404)
 
     program = event.singleProgram
-    
+
     trainedParticipantsList = trainedParticipants(program, g.current_term)
     eventParticipants = getEventParticipants(event)
     isProgramManager = isProgramManagerForEvent(g.current_user, event)
@@ -80,10 +80,12 @@ def updateVolunteerTable(eventID):
 
 @admin_bp.route('/addVolunteerToEvent/<volunteer>/<eventId>', methods = ['POST'])
 def addVolunteer(volunteer, eventId):
-    username = volunteer.strip("()").split('(')[-1]
-    user = User.get(User.username==username)
-    successfullyAddedVolunteer = addVolunteerToEventRsvp(user, eventId)
-    EventParticipant.create(user=user, event=eventId) # user is present
+    volunteerList = volunteer.split(",")
+    for volunteerUsername in volunteerList:
+        print(volunteerUsername)
+        user = User.get(User.username==volunteerUsername)
+        successfullyAddedVolunteer = addVolunteerToEventRsvp(user, eventId)
+        EventParticipant.create(user=user, event=eventId) # user is present
     if successfullyAddedVolunteer:
         flash("Volunteer successfully added!", "success")
     else:
