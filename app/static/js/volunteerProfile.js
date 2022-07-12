@@ -89,7 +89,7 @@ $(document).ready(function(){
   $(".savebtn").click(function () { // Updates the Background check of a volunteer in the database
     let savedMsg = $("#displaySave")
     savedMsg.html("Saved!").addClass("text-success")
-    setTimeout(function() {savedVar.html("").removeClass("text-success")}, 2000)
+    setTimeout(function() {savedMsg.html("").removeClass("text-success")}, 2000)
     bgCheckType = $(this).data("id")
     let data = {
         checkPassed: $("[data-id=" + bgCheckType + "]").val(),      // Expected to be either a 0 or a 1 volunteerProfile.js
