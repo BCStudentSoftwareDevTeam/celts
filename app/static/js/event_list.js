@@ -1,6 +1,5 @@
-function rsvpForEvent(programID, eventID){
+function rsvpForEvent(eventID){
   rsvpInfo = {id: eventID,
-              programId: programID,
               from: 'ajax'}
 
   $.ajax({
@@ -16,10 +15,9 @@ function rsvpForEvent(programID, eventID){
   });
 }
 
-function removeRsvpForEvent(programID, eventID){
+function removeRsvpForEvent(eventID){
   removeRsvpInfo = {id: eventID,
-              programId: programID,
-              from: 'ajax'}
+                    from: 'ajax'}
 
   $.ajax({
     url: "/rsvpRemove",
