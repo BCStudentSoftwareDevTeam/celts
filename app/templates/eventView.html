@@ -11,12 +11,27 @@
 
 {% block app_content%}
     <div class="text-center mt-5 mb-3">
-        {% set page_title = eventData.name %}
-    <h1 id="title">{{page_title}}</h1>
+    {% set page_title = eventData.name %}
+        <h1 id="title">{{page_title}}</h1>
     {% if isPastEvent %}
-      <div class="alert alert-danger" role="alert">This event is in the past.</div>
+        <div class="alert alert-danger" role="alert">This event is in the past.</div>
     {% endif %}
     </div>
+    {% if g.current_user.isCeltsAdmin or isProgramManager %}
+        <div class="btn-group">
+          <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link active" href="#" role="tab" aria-selected="true">View Event</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" href="/eventsList/{{eventData.id}}/track_volunteers" role="tab" aria-selected="false">Track Volunteers</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" href="/eventsList/{{eventData.id}}/edit" role="tab" aria-selected="false">Edit Event</a>
+            </li>
+          </ul>
+         </div>
+    {% endif %}
     {% if isPastEvent %}
         <p><font size="+2"><b>{{eventData.name}}</b> took place on <b>{{eventData.startDate}}</b> from <b>{{eventData.timeStart}}</b> to <b>{{eventData.timeEnd}}</b> and was located in <b>{{eventData.location}}</b>.</font></p>
     {% else %}
