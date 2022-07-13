@@ -157,8 +157,8 @@ def editOrViewEvent(eventId):
     else:
         eventFacilitators = EventFacilitator.select().where(EventFacilitator.event == event)
         eventFacilitatorNames = [eventFacilitator.user for eventFacilitator in eventFacilitators]
-        eventData['timeStart'] = event.timeStart.strftime("%I:%M %p")
-        eventData['timeEnd'] = event.timeEnd.strftime("%I:%M %p")
+        eventData['timeStart'] = event.timeStart.strftime("%-I:%M %p")
+        eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
         eventData["startDate"] = event.startDate.strftime("%m/%d/%Y")
         programManager = ProgramManager.get_or_none(program=program)
         userParticipatedEvents = getUserParticipatedEvents(program, g.current_user)
