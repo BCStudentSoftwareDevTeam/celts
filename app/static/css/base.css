@@ -58,3 +58,7 @@
   font-size:1.2em;
   z-index:999;
 }
+
+.templateList a:last-child {
+    border-bottom: 5px solid #d7d7d7
+}

@@ -2,7 +2,7 @@ from flask import request, render_template, url_for, g, Flask, redirect, flash, 
 from peewee import DoesNotExist, fn
 from playhouse.shortcuts import model_to_dict, dict_to_model
 import json
-from datetime import datetime
+from datetime import datetime, date
 from dateutil import parser
 from app import app
 from app.models.program import Program
@@ -12,6 +12,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.term import Term
+from app.models.programManager import ProgramManager
 from app.models.eventTemplate import EventTemplate
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
@@ -21,10 +22,11 @@ from app.logic.volunteers import getEventLengthInHours, isProgramManagerForEvent
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.logic.courseManagement import pendingCourses, approvedCourses
+from app.logic.participants import getEventParticipants, getUserParticipatedEvents
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
-from app.logic.userManagement import hasPrivilege, getPrograms
+from app.logic.userManagement import getPrograms
 
 
 @admin_bp.route('/switch_user', methods=['POST'])
@@ -45,15 +47,13 @@ def templateSelect():
         allprograms = []
         if g.current_user.isCeltsStudentStaff:
             allprograms = getPrograms(g.current_user)
+            visibleTemplates = []
         else:
             allprograms = Program.select().order_by(Program.programName)
-
-        visibleTemplates = EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
-
+            visibleTemplates = EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
         return render_template("/events/template_selector.html",
-                    programs=allprograms,
-                    templates=visibleTemplates
-                )
+                                programs=allprograms,
+                                templates=visibleTemplates)
     else:
         abort(403)
 
@@ -61,7 +61,7 @@ def templateSelect():
 @admin_bp.route('/eventTemplates/<templateid>/create', methods=['GET','POST'])
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
 def createEvent(templateid, programid=None):
-    if not (g.current_user.isAdmin or hasPrivilege(g.current_user, programid)):
+    if not (g.current_user.isAdmin or g.current_user.isProgramManagerFor(programid)):
         abort(403)
 
     # Validate given URL
@@ -97,13 +97,14 @@ def createEvent(templateid, programid=None):
             noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
             eventId = Event.select(fn.MAX(Event.id)).scalar()
-            return redirect(url_for("admin.editEvent", eventId = eventId))
+            return redirect(url_for("admin.eventDisplay", eventId = eventId))
         else:
             flash(validationErrorMessage, 'warning')
 
     # make sure our data is the same regardless of GET or POST
     preprocessEventData(eventData)
-    isProgramManager = hasPrivilege(g.current_user,programid)
+    isProgramManager = g.current_user.isProgramManagerFor(programid)
+
     futureTerms = selectSurroundingTerms(g.current_term, prevTerms=0)
 
     return render_template(f"/admin/{template.templateFile}",
@@ -113,9 +114,9 @@ def createEvent(templateid, programid=None):
             allFacilitators = getAllFacilitators(),
             isProgramManager = isProgramManager)
 
-
+@admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
 @admin_bp.route('/eventsList/<eventId>/edit', methods=['GET','POST'])
-def editEvent(eventId):
+def eventDisplay(eventId):
     if request.method == "POST" and not (g.current_user.isCeltsAdmin or isProgramManagerForEvent(g.current_user, eventId)):
         abort(403)
 
@@ -132,7 +133,7 @@ def editEvent(eventId):
         saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
         if saveSuccess:
             flash("Event successfully updated!", "success")
-            return redirect(url_for("admin.editEvent", eventId = eventId))
+            return redirect(url_for("admin.eventDisplay", eventId = eventId))
         else:
             flash(validationErrorMessage, 'warning')
 
@@ -141,19 +142,31 @@ def editEvent(eventId):
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     program = event.singleProgram
-    isProgramManager = hasPrivilege(g.current_user,program)
-
-    if (g.current_user.isStudent or g.current_user.isFaculty) and not isProgramManager:  # only formats to 12 hour time if user doesn't have access (for display purposes)
-        eventData['timeStart'] = datetime.strptime(eventData['timeStart'], "%H:%M").strftime("%I:%M %p")
-        eventData['timeEnd'] = datetime.strptime(eventData['timeEnd'], "%H:%M").strftime("%I:%M %p")
-
-    return render_template("admin/createSingleEvent.html",
-                            eventData = eventData,
-                            allFacilitators = getAllFacilitators(),
-                            futureTerms = futureTerms,
-                            isPastEvent = isPastEvent,
-                            userHasRSVPed = userHasRSVPed,
-                            isProgramManager = isProgramManager)
+    rule = request.url_rule
+    if 'edit' in rule.rule:
+        isProgramManager = g.current_user.isProgramManagerFor(program)
+        return render_template("admin/createSingleEvent.html",
+                                eventData = eventData,
+                                allFacilitators = getAllFacilitators(),
+                                futureTerms=futureTerms,
+                                isPastEvent = isPastEvent,
+                                userHasRSVPed = userHasRSVPed,
+                                isProgramManager = isProgramManager)
+    else:
+        eventFacilitators = EventFacilitator.select().where(EventFacilitator.event == event)
+        eventFacilitatorNames = [eventFacilitator.user for eventFacilitator in eventFacilitators]
+        eventData['timeStart'] = event.timeStart.strftime("%-I:%M %p")
+        eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
+        eventData["startDate"] = event.startDate.strftime("%m/%d/%Y")
+        programManager = ProgramManager.get_or_none(program=program)
+        userParticipatedEvents = getUserParticipatedEvents(program, g.current_user)
+        return render_template("eventView.html",
+                                eventData = eventData,
+                                eventFacilitatorNames = eventFacilitatorNames,
+                                isPastEvent = isPastEvent,
+                                userHasRSVPed = userHasRSVPed,
+                                programTrainings = userParticipatedEvents,
+                                programManager = programManager)
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):

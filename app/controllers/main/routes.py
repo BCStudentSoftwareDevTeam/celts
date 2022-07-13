@@ -42,16 +42,16 @@ def events(selectedTerm):
     participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
     term = Term.get_by_id(currentTerm)
-    studentLedProgram = getStudentLedProgram(term)
-    trainingProgram = getTrainingProgram(term)
-    bonnerProgram = getBonnerProgram(term)
+    studentLedEvents = getStudentLedEvents(term)
+    trainingEvents = getTrainingEvents(term)
+    bonnerEvents = getBonnerEvents(term)
     nonProgramEvents = getNonProgramEvents(term)
 
     return render_template("/events/event_list.html",
         selectedTerm = term,
-        studentLedProgram = studentLedProgram,
-        trainingProgram = trainingProgram,
-        bonnerProgram = bonnerProgram,
+        studentLedEvents = studentLedEvents,
+        trainingEvents = trainingEvents,
+        bonnerEvents = bonnerEvents,
         nonProgramEvents = nonProgramEvents,
         listOfTerms = listOfTerms,
         rsvpedEventsID = rsvpedEventsID,
@@ -85,8 +85,20 @@ def viewVolunteersProfile(username):
         permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
         allUserEntries = BackgroundCheck.select().where(BackgroundCheck.user == volunteer)
-        completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
+
+        if g.current_user.isCeltsAdmin:
+            completedBackgroundCheck = {entry.type: [entry.passBackgroundCheck, entry.dateCompleted] for entry in allUserEntries}
+        else:
+            # sets the values to strings because student staff do not have access to input boxes
+            completedBackgroundCheck = {entry.type: ['Yes' if entry.passBackgroundCheck else 'No',
+                                                    'Not Completed' if entry.dateCompleted == None
+                                                    else entry.dateCompleted.strftime('%m/%d/%Y')] for entry in allUserEntries}
+
         backgroundTypes = list(BackgroundCheckType.select())
+        # creates data structure for background checks that are not currently completed
+        for checkType in backgroundTypes:
+            if checkType not in completedBackgroundCheck.keys():
+                completedBackgroundCheck[checkType] = ["No", "Not Completed"]
 
         eligibilityTable = []
         for program in programs:
@@ -99,6 +111,7 @@ def viewVolunteersProfile(username):
                                    "completedTraining" : (volunteer.username in trainedParticipants(program, g.current_term)),
                                    "isNotBanned" : True if not notes else False,
                                    "banNote": noteForDict})
+
         return render_template ("/main/volunteerProfile.html",
                 programs = programs,
                 programsInterested = programsInterested,
@@ -216,7 +229,7 @@ def volunteerRegister():
     if 'from' in eventData:
         if eventData['from'] == 'ajax':
             return ''
-    return redirect(url_for("admin.editEvent", eventId=event.id))
+    return redirect(url_for("admin.eventDisplay", eventId=event.id))
 
 
 @main_bp.route('/rsvpRemove', methods = ['POST'])
@@ -231,7 +244,7 @@ def RemoveRSVP():
     currentRsvpParticipant.delete_instance()
 
     flash("Successfully unregistered for event!", "success")
-    return redirect(url_for("admin.editEvent", eventId=event.id))
+    return redirect(url_for("admin.eventDisplay", eventId=event.id))
 
 @main_bp.route('/profile/<username>/serviceTranscript', methods = ['GET'])
 def serviceTranscript(username):
