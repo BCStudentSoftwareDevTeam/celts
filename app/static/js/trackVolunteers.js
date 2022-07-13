@@ -52,9 +52,10 @@ function callback(selected) {
   let user = $("#addVolunteerInput").val()
   if(userlist.includes(selected["username"]) == false){
       userlist.push(user)
+      $("#addVolunteerList").append("<table>")
       $("#addVolunteerList").append("<input  type=checkbox id= userlistCheckbox checked= checked value = " + user +" >  </input>")
       $("#addVolunteerList").append("<label form>"+ selected["firstName"]+ " " + selected["lastName"] +"</label>")
-
+      $("#addVolunteerList").append("</table>")
   }
   else{
       msgFlash("User already selected.")

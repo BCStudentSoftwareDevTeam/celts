@@ -82,19 +82,15 @@ def updateVolunteerTable(eventID):
 def addVolunteer(eventId):
     volunteerDict = request.form
     volunteerList = volunteerDict.getlist("volunteer[]")
-    successfullyAddedVolunteer = False
     for volunteerUsername in volunteerList:
+        successfullyAddedVolunteer = False
         user = User.get(User.username==volunteerUsername)
-        if EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == eventId):
-            print("-------------------------1")
-            print("-------------------------1")
-            successfullyAddedVolunteer == False
+        if EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == eventId).exists():
+            successfullyAddedVolunteer = False
         else:
-            print("-------------------------2")
-            print("-------------------------2")
             addVolunteerToEventRsvp(user, eventId)
             EventParticipant.create(user=user, event=eventId) # user is present
-            successfullyAddedVolunteer == True
+            successfullyAddedVolunteer = True
     if successfullyAddedVolunteer == True:
         flash("Volunteer successfully added!", "success")
     else:
