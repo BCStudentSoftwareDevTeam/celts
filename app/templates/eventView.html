@@ -1,12 +1,17 @@
 {% set title = eventData.name %}
-{% extends "base.html"%}
-
-{% block styles %}
-    {{super()}}
-{% endblock %}
+{% extends "base.html" %}
 
 {% block scripts %}
     {{super()}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="/static/js/event_list.js"></script>
+{% endblock %}
+
+{% block styles %}
+    {{super()}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.css" />
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 {% endblock %}
 
 {% block app_content%}
@@ -110,9 +115,9 @@
             <div class="text-center">
               {% if (not isPastEvent) and (not isNewEvent)%}
                   {% if userHasRSVPed %}
-                    <button type="submit" class="btn btn-danger"  formaction="/rsvpRemove">Remove RSVP</button>
+                    <button type="submit" class="btn btn-danger" value="{{eventData.id}}" id="removeRsvpBtn">Remove RSVP</button>
                   {%else%}
-                    <button type="submit" class="btn btn-primary"  formaction="/rsvpForEvent">RSVP</button>
+                    <button type="submit" class="btn btn-primary" value="{{eventData.id}}" id="rsvpBtn">RSVP</button>
                  {% endif %}
               {% endif %}
             </div>

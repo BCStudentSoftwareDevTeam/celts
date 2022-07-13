@@ -134,7 +134,7 @@ def editOrViewEvent(eventId):
         saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
         if saveSuccess:
             flash("Event successfully updated!", "success")
-            return redirect(url_for("admin.editEvent", eventId = eventId))
+            return redirect(url_for("admin.editOrViewEvent", eventId = eventId))
         else:
             flash(validationErrorMessage, 'warning')
 
