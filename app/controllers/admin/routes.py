@@ -99,7 +99,7 @@ def createEvent(templateid, programid=None):
             noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
             eventId = Event.select(fn.MAX(Event.id)).scalar()
-            return redirect(url_for("admin.editOrViewEvent", eventId = eventId))
+            return redirect(url_for("admin.eventDisplay", eventId = eventId))
         else:
             flash(validationErrorMessage, 'warning')
 
@@ -117,7 +117,7 @@ def createEvent(templateid, programid=None):
 
 @admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
 @admin_bp.route('/eventsList/<eventId>/edit', methods=['GET','POST'])
-def editOrViewEvent(eventId):
+def eventDisplay(eventId):
     if request.method == "POST" and not (g.current_user.isCeltsAdmin or isProgramManagerForEvent(g.current_user, eventId)):
         abort(403)
 
@@ -134,7 +134,7 @@ def editOrViewEvent(eventId):
         saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
         if saveSuccess:
             flash("Event successfully updated!", "success")
-            return redirect(url_for("admin.editOrViewEvent", eventId = eventId))
+            return redirect(url_for("admin.eventDisplay", eventId = eventId))
         else:
             flash(validationErrorMessage, 'warning')
 

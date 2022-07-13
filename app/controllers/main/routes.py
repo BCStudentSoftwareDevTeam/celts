@@ -43,16 +43,16 @@ def events(selectedTerm):
     participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
     term = Term.get_by_id(currentTerm)
-    studentLedProgram = getStudentLedProgram(term)
-    trainingProgram = getTrainingProgram(term)
-    bonnerProgram = getBonnerProgram(term)
+    studentLedEvents = getStudentLedEvents(term)
+    trainingEvents = getTrainingEvents(term)
+    bonnerEvents = getBonnerEvents(term)
     nonProgramEvents = getNonProgramEvents(term)
 
     return render_template("/events/event_list.html",
         selectedTerm = term,
-        studentLedProgram = studentLedProgram,
-        trainingProgram = trainingProgram,
-        bonnerProgram = bonnerProgram,
+        studentLedEvents = studentLedEvents,
+        trainingEvents = trainingEvents,
+        bonnerEvents = bonnerEvents,
         nonProgramEvents = nonProgramEvents,
         listOfTerms = listOfTerms,
         rsvpedEventsID = rsvpedEventsID,
@@ -217,8 +217,7 @@ def volunteerRegister():
     if 'from' in eventData:
         if eventData['from'] == 'ajax':
             return ''
-    return redirect(url_for("admin.editOrViewEvent", eventId=event.id))
-
+    return redirect(url_for("admin.eventDisplay", eventId=event.id))
 
 @main_bp.route('/rsvpRemove', methods = ['POST'])
 def RemoveRSVP():
@@ -232,7 +231,7 @@ def RemoveRSVP():
     currentRsvpParticipant.delete_instance()
 
     flash("Successfully unregistered for event!", "success")
-    return redirect(url_for("admin.editOrViewEvent", eventId=event.id))
+    return redirect(url_for("admin.eventDisplay", eventId=event.id))
 
 @main_bp.route('/profile/<username>/serviceTranscript', methods = ['GET'])
 def serviceTranscript(username):
