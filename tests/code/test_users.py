@@ -6,7 +6,7 @@ from app.models.program import Program
 from app.models.programBan import ProgramBan
 from app.models.note import Note
 from app.models.user import User
-from app.models.programBan import ProgramBan
+from app.models.programManager import ProgramManager
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
 from app.logic.users import isEligibleForProgram
 
@@ -170,3 +170,16 @@ def test_unbanUser():
     with pytest.raises(Exception):
         status = unbanUser (program_id, username, note, creator)
         assert status == False
+
+@pytest.mark.integration
+def test_userpriv():
+    user = User.get_by_id("khatts")
+    prg = Program.get_by_id(1)
+    assert user.isProgramManagerFor(prg)
+
+    user = User.get_by_id("mupotsal")
+    prg = Program.get_by_id(12)
+    assert not user.isProgramManagerFor(prg)
+    
+
+

@@ -56,13 +56,6 @@ def removeProgramManager(user,program):
     delQuery.execute()
     return (f'{user} removed from managers')
 
-def hasPrivilege(user, program):
-    user = User.get_by_id(user)
-    if ProgramManager.select().where(ProgramManager.user == user, ProgramManager.program == program).exists():
-        return True
-    else:
-        return False
-
 def addNextTerm():
     newSemesterMap = {"Spring":"Summer",
                     "Summer":"Fall",
