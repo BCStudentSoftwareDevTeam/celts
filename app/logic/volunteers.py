@@ -110,7 +110,7 @@ def isProgramManagerForEvent(user, event):
     Returns: bool whether the appropriate information is given.
     """
 
-    isProgramManager = hasPrivilege(user, event.singleProgram)
+    isProgramManager = user.isProgramManagerFor(event.singleProgram)
 
     return isProgramManager
 
