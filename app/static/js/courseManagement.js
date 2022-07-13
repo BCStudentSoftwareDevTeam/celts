@@ -9,7 +9,7 @@ function formSubmit(el) {
 };
 
 function reviewCourses(el) {
-  var courseID=$(el).attr('data-id');
+  let courseID=$(el).data('id');
   $.ajax({
     url:"/proposalReview/",
     type:"POST",
@@ -22,7 +22,7 @@ function reviewCourses(el) {
 }
 
 function approve_proposal(el){
-  var courseID=$(el).attr('course-id');
+  let courseID=$(el).data("id")
   $.ajax({
     url:'/serviceLearning/approveCourse/',
     type:"POST",
