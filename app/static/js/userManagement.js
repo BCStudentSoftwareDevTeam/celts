@@ -25,7 +25,7 @@ $(document).ready(function() {
 
   // add celts student staff
   $("#searchCeltsStudentStaffInput").on("input", function() {
-    searchUser("searchCeltsStudentStaffInput", callback);
+    searchUser("searchCeltsStudentStaffInput", callback, undefined, undefined, undefined, "students");
   });
 
   $("#addCeltsStudentStaff").on("click", function() {
@@ -43,7 +43,7 @@ $(document).ready(function() {
 
   // remove celts student staff
   $("#removeCeltsStudentStaffInput").on("input", function() {
-    searchUser("removeCeltsStudentStaffInput", callback);
+    searchUser("removeCeltsStudentStaffInput", callback, undefined, undefined, undefined, "stuStaff");
   });
 
   $("#removeCeltsStudentStaff").on("click", function() {

@@ -4,5 +4,5 @@ function callback(selected) {
 }
 
 $("#searchStudentsInput").on("input", function() {
-  searchUser("searchStudentsInput", callback);
+  searchUser("searchStudentsInput", callback, undefined, undefined, undefined,"students");
 });

@@ -15,8 +15,12 @@ def searchUsers(query, category=None):
             results = User.select().where( User.isFaculty & (User.firstName ** firstName | User.lastName ** firstName))
         elif category =="facilitator":
             results = User.select().where( (User.isFaculty | User.isAdmin) & (User.firstName ** firstName | User.lastName ** firstName))
-        else:
+        elif category =="students":
             results = User.select().where(User.isStudent & (User.firstName ** firstName | User.lastName ** firstName))
+        elif category =="stuStaff":
+            results = User.select().where(User.isCeltsStudentStaff & (User.firstName ** firstName | User.lastName ** firstName))
+        else:
+            results = User.select().where(User.firstName ** firstName | User.lastName ** firstName)
         for participant in results:
             if participant not in resultsDict:
                 resultsDict[participant.username]= model_to_dict(participant)
@@ -28,8 +32,12 @@ def searchUsers(query, category=None):
                     results = User.select().where( User.isFaculty & (User.firstName ** firstName & User.lastName ** lastName))
                 elif category =="facilitator":
                     results = User.select().where( (User.isFaculty | User.isAdmin) & (User.firstName ** firstName | User.lastName ** firstName))
+                elif category =="stuStaff":
+                    results = User.select().where(User.isCeltsStudentStaff & (User.firstName ** firstName | User.lastName ** firstName))
+                elif category =="students":
+                    results = User.select().where(User.isStudent & (User.firstName ** firstName | User.lastName ** firstName))
                 else:
-                    results = User.select().where(User.isStudent & (User.firstName ** firstName & User.lastName ** lastName))
+                    results = User.select().where((User.firstName ** firstName & User.lastName ** lastName))
                 for participant in results:
                     if participant not in resultsDict:
                         resultsDict[participant.username]=model_to_dict(participant)
