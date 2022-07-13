@@ -26,7 +26,7 @@ function approve_proposal(el){
   $.ajax({
     url:'/serviceLearning/approveCourse/',
     type:"POST",
-    data:{"course_id":courseID},
+    data:{"courseID":courseID},
     success: function(){
       location.reload()
     }  

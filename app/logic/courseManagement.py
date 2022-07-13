@@ -70,12 +70,14 @@ def createCourse(courseData, instructorsDict):
         )
     for instructor in instructorsDict["instructors"]:
         CourseInstructor.create(course=course, user=instructor.username)
+    return course
 
 def updateCourse(courseData, instructorsDict):
     """
         This function will take in courseData for the SLC proposal page and a dictionary
         of instuctors assigned to the course and update the information in the db.
     """
+    print("---------------------------------------")
 
     for toggler in ["regularOccurenceToggle", "slSectionsToggle", "permanentDesignation"]:
         courseData.setdefault(toggler, "off")
@@ -98,4 +100,5 @@ def updateCourse(courseData, instructorsDict):
     for instructor in instructorsDict["instructors"]:
         if not CourseInstructor.select().where(CourseInstructor.course==courseData["courseID"], CourseInstructor.user==instructor).exists():
             addInstructors = CourseInstructor.create(course=courseData["courseID"], user=instructor)
+            
        

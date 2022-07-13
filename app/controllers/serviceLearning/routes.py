@@ -1,3 +1,4 @@
+import re
 from flask import request, render_template, g, abort, json, redirect, jsonify, flash, session
 from app.models.user import User
 from app.models.term import Term
@@ -121,18 +122,17 @@ def approveCourse():
     This function updates and approves a Service Learning Course when using  the
         approve button.
     return: empty string because AJAX needs to receive something
-    """
-    try:
-        updateCourse(request.form.copy(), instructorsDict) # Updates database with the completed fields
-        # The next line creates the query to approve the course
-        course = Course.update(status = 2).where(Course.id == request.form['courseID'])
-        course.execute() # Executes the query and approves course in the database
-        flash("Course approved!", "success")
-    except:
-        courseID=request.form #has only the course id
-        if courseID: #if only approving a pending course
-            course = Course.update(status = 2).where(Course.id == courseID["course_id"])
-            course.execute() # Executes the query and approves course in the database
-        else:
-            flash("Course not approved", "warning")
+    """ 
+    if len(request.form)==1:
+        course_data = request.form['courseID'] # if only course is reviewed pass the course ID
+    else:
+        try:
+            course_data=createCourse(request.form.copy(), instructorsDict) # creat course first and get its ID to approve next 
+        except:
+            course_upate = updateCourse(request.form.copy(), instructorsDict) # if edit course, Updates database with the completed fields and get course ID
+            course_data=course_upate['courseID']
+
+    course = Course.update(status = 2).where(Course.id == course_data)
+    course.execute() # Executes the query and approves course in the database
+    flash("Course approved!", "success")        
     return ""
