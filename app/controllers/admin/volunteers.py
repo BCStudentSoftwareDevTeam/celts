@@ -73,10 +73,7 @@ def updateVolunteerTable(eventID):
         abort(404)
 
     program = event.singleProgram
-    # TODO: What do we do for no programs or multiple programs?
-    if not program:
-        return "TODO: What do we do for no programs or multiple programs?"
-
+    
     volunteerUpdated = updateEventParticipants(request.form)
     if volunteerUpdated:
         flash("Volunteer table succesfully updated", "success")
@@ -98,7 +95,7 @@ def addVolunteer(eventId, volunteer = None):
     eventParticipants = getEventParticipants(eventId)
     for user in usernameList:
         user = User.get(User.username==user)
-    
+
         if len(usernameList) == 0:
             noVolunteersSelectedMessage = "No volunteers selected, please select a volunteer."
             successfullyAddedVolunteer = False
