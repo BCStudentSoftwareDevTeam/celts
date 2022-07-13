@@ -85,7 +85,7 @@ def addVolunteer(eventId):
     successfullyAddedVolunteer = False
     for volunteerUsername in volunteerList:
         user = User.get(User.username==volunteerUsername)
-        if EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == eventId) == false:
+        if EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == eventId):
             print("-------------------------1")
             print("-------------------------1")
             successfullyAddedVolunteer == False
