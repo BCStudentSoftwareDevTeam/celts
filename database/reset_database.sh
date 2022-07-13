@@ -7,6 +7,7 @@ if [ "`hostname`" == 'celts.berea.edu' ]; then
 	exit 1
 fi
 
+cd database/
 ########### Process Arguments ############
 BACKUP=0
 TEST=1
@@ -52,7 +53,7 @@ rm -rf migrations.json
 ############ Add Data (if needed) ##############
 
 # Adding data we need in all environments, unless we are restoring from backup
-if [ $BACKUP -ne 1 ]; then 
+if [ $BACKUP -ne 1 ]; then
     python3 base_data.py
 else
     echo "You have imported the production DB backup."
@@ -61,6 +62,6 @@ fi
 # Adding fake data for non-prod, set up admins for prod
 if [ $PRODUCTION -eq 1 ]; then
 	FLASK_ENV=production python3 add_admins.py
-elif [ $BACKUP -ne 1 ]; then 
+elif [ $BACKUP -ne 1 ]; then
 	python3 test_data.py
 fi

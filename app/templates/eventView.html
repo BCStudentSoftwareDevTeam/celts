@@ -1,0 +1,95 @@
+{% set title = eventData.name %}
+{% extends "base.html"%}
+
+{% block styles %}
+    {{super()}}
+{% endblock %}
+
+{% block scripts %}
+    {{super()}}
+{% endblock %}
+
+{% block app_content%}
+    <div class="text-center mt-5 mb-3">
+        {% set page_title = eventData.name %}
+    <h1 id="title">{{page_title}}</h1>
+    {% if isPastEvent %}
+      <div class="alert alert-danger" role="alert">This event is in the past.</div>
+    {% endif %}
+    </div>
+    {% if isPastEvent %}
+        <p><font size="+2"><b>{{eventData.name}}</b> took place on <b>{{eventData.startDate}}</b> from <b>{{eventData.timeStart}}</b> to <b>{{eventData.timeEnd}}</b> and was located in <b>{{eventData.location}}</b>.</font></p>
+    {% else %}
+        <p><font size="+2"><b>{{eventData.name}}</b> will take place on <b>{{eventData.startDate}}</b> from <b>{{eventData.timeStart}}</b> to <b>{{eventData.timeEnd}}</b> and will be located in <b>{{eventData.location}}</b>.</font></p>
+    {% endif %}
+            <div>
+                <div>
+                    <font size="+2"><h3><br>Description:</h3>{{eventData.description}}<br><br>
+                    <div>
+                        {% if eventData.isService %}
+                            This event earns service hours.
+                        {% else %}
+                            This event does not earn service hours.
+                        {% endif %}
+                        {% if eventData.isRsvpRequired %}
+                            This event requires RSVP.
+                        {% else %}
+                            This event does not require RSVP.
+                        {% endif %}
+                        {% if eventData.recurringId %}
+                            This event is a recurring event.
+                        {% endif %}
+                        {% if eventData.isTraining %}
+                            This event is a training.
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+              <div class="row">
+                <div class="col-sm">
+                    <h3><br>Facilitators:</h3>
+                        {% if eventFacilitatorNames %}
+                            <ul>
+                                {% for facilitator in eventFacilitatorNames%}
+                                    <li>{{facilitator.firstName}} {{facilitator.lastName}}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <div>No facilitators.</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-sm">
+                        {% if programManager %}
+                            <div><h3><br>Program Manager:</h3></div>
+                                <div>
+                                    {{programManager.user.firstName}} {{programManager.user.lastName}}<br>
+                                    {{programManager.user.email}}
+                                </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="row">
+                      <div class="col-sm">
+                          {% if program != None %}
+                            <h3><br>Program Trainings:</h3>
+                                {% for training, participated in programTrainings.items() %}
+                                    {% if g.current_user.isCeltsAdmin %}
+                                      <div>{{training}}</div>
+                                    {% else %}
+                                        {% if participated == 1 %}
+                                            <div><b>{{training}}</b>: Attended</div>
+                                        {% elif participated == 0 %}
+                                            <div><b>{{training}}</b>: Not attended</div>
+                                        {% else %}
+                                            <div><b>{{training}}</b>: Upcoming</div>
+                                        {% endif%}
+                                    {% endif %}
+                                {% endfor %}
+                          {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+{% endblock %}
