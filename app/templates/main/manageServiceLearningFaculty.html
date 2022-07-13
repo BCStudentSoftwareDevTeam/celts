@@ -111,7 +111,7 @@
         {{ instructorEmails.append(instructor.email) or "" }}
       {% endfor %}
      <div>
-      <a  class="btn btn-primary" href="mailto:{{(';'.join(instructorEmails))}}"> Email all </a>
+      <a  class="btn btn-primary" href="mailto:{{(';'.join(instructorEmails))}}?subject=Renew Course Proposal"> Email All </a>
      </div>
   </div>
   <div class ="container">
