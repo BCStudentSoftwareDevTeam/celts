@@ -206,31 +206,26 @@ def test_isFutureTerm():
                                     academicYear = "1899-1900",
                                     isSummer = True,
                                     isCurrentTerm = True)
-        testCurrentTerm.save()
         sameYearFutureTerm = Term.create(description = "Fall 1900",
                                     year = 1900,
                                     academicYear = "1900-1901",
                                     isSummer = False,
                                     isCurrentTerm = False)
-        sameYearFutureTerm.save()
         sameYearPastTerm = Term.create(description = "Spring 1900",
                                     year = 1900,
                                     academicYear = "1899-1900",
                                     isSummer = False,
                                     isCurrentTerm = False)
-        sameYearPastTerm.save()
         futureYearTerm = Term.create(description = "Fall 1901",
                                     year = 1901,
                                     academicYear = "1901-1902",
                                     isSummer = False,
                                     isCurrentTerm = False)
-        futureYearTerm.save()
         pastYearTerm = Term.create(description = "Spring 1899",
                                     year = 1899,
                                     academicYear = "1899-1900",
                                     isSummer = False,
                                     isCurrentTerm = False)
-        pastYearTerm.save()
         # future term this year
         assert sameYearFutureTerm.isFutureTerm == True
         # future term in future year
