@@ -73,7 +73,6 @@ def userRsvpForEvent(user,  event):
     return isEligible
 
 
-
 def unattendedRequiredEvents(program, user):
 
     # Check for events that are prerequisite for program
