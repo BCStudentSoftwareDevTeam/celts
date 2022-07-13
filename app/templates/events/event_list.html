@@ -109,9 +109,9 @@
 {% endmacro %}
 <div class="tab-content" id="pills-tabContent">
   <div class="tab-pane fade show active" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
-    {% if studentLedProgram %}
+    {% if studentLedEvents %}
     <div class="accordion" id="categoryAccordion">
-      {% for program,events in studentLedProgram.items() %}
+      {% for program,events in studentLedEvents.items() %}
         <div class="accordion-item">
           <h2 class="accordion-header" id="accordion__header_{{program}}">
             <button class="accordion-button collapsed"
@@ -182,10 +182,10 @@
     {% endif %}
   </div>
   <div class="tab-pane fade show" id="pills-training" role="tabpanel" aria-labelledby="pills-training-tab">
-    {{createTable(trainingProgram)}}
+    {{createTable(trainingEvents)}}
   </div>
   <div class="tab-pane fade show" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="pills-bonner-scholars-tab">
-    {{createTable(bonnerProgram)}}
+    {{createTable(bonnerEvents)}}
   </div>
   <div class="tab-pane fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
     {{createTable(nonProgramEvents)}}

@@ -108,6 +108,7 @@ function fixStepIndicator(navigateTab) {
   steps[navigateTab].className += " active";
 }
 
+
 function callback(selectedInstructor) {
   // JSON.parse is required to de-stringify the search results into a dictionary.
   let instructor = (selectedInstructor["firstName"]+" "+selectedInstructor["lastName"]+" ("+selectedInstructor["username"]+")");
