@@ -80,7 +80,7 @@
         <th scope="col">Status</th>
         <th scope="col">Sent</th>
       </tr>
-    </thead> 
+    </thead>
     <tbody>
         {% for data in approvedCourses %}
         <tr>
@@ -98,11 +98,13 @@
     </tbody>
     </table>
 
-  <div class="float-end">
-    <button class="btn btn-primary"> Send to Registrar</button>
-  </div>
-  </div>
-</div>
+    {% if term.isCurrentTerm or term.isFutureTerm %}
+      <div class="float-end">
+        <button class="btn btn-primary">Send to Registrar</button>
+      </div>
+      {% endif %}
+      </div>
+    </div>
 
 <div id="wrapper">
     <h1 class="text-center pt-1 pb-4">Service Learning Faculty</h1>
@@ -128,7 +130,7 @@
 </div>
 
 <div class="text-center">
-  <button type="button" class="btn btn-primary" disabled> Email all</button>
+  <button type="button" class="btn btn-primary" disabled>Email all</button>
 </div>
 </div>
 {% endblock %}
