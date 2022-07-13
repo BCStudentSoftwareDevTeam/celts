@@ -146,7 +146,7 @@ def editOrViewEvent(eventId):
     isProgramManager = hasPrivilege(g.current_user,program)
     rule = request.url_rule
     if 'edit' in rule.rule:
-        if not g.current_user.isCeltsAdmin or isProgramManager:
+        if not (g.current_user.isCeltsAdmin or isProgramManager):
             abort(403)
         return render_template("admin/createEvent.html",
                                 eventData = eventData,
