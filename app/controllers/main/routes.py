@@ -218,7 +218,7 @@ def volunteerRegister():
     if 'from' in eventData:
         if eventData['from'] == 'ajax':
             return ''
-    return redirect(url_for("admin.editEvent", eventId=event.id))
+    return redirect(url_for("admin.eventDisplay", eventId=event.id))
 
 
 @main_bp.route('/rsvpRemove', methods = ['POST'])
@@ -233,7 +233,7 @@ def RemoveRSVP():
     currentRsvpParticipant.delete_instance()
 
     flash("Successfully unregistered for event!", "success")
-    return redirect(url_for("admin.editEvent", eventId=event.id))
+    return redirect(url_for("admin.eventDisplay", eventId=event.id))
 
 @main_bp.route('/profile/<username>/serviceTranscript', methods = ['GET'])
 def serviceTranscript(username):
