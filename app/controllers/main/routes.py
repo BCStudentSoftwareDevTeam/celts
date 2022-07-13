@@ -43,9 +43,9 @@ def events(selectedTerm):
     participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
     term = Term.get_by_id(currentTerm)
-    studentLedProgram = getStudentLedEvents(term)
-    trainingProgram = getTrainingEvents(term)
-    bonnerProgram = getBonnerEvents(term)
+    studentLedEvents = getStudentLedEvents(term)
+    trainingEvents = getTrainingEvents(term)
+    bonnerEvents = getBonnerEvents(term)
     nonProgramEvents = getNonProgramEvents(term)
 
     return render_template("/events/event_list.html",
