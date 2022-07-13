@@ -24,10 +24,17 @@ $(document).ready(function() {
   $("#selectVolunteerButton").click(function(){
     let user = $("#addVolunteerInput").val()
     let eventId = $("#eventID").val()
-    console.log(userlist)
+    let checkboxlist = $("#addVolunteerModal input[type=checkbox]")
+    let volunteerList = []
+        $.each(checkboxlist, function(index, value){
+            if(value["checked"] == true){
+                volunteerList.push(value["value"])
+            }
+        })
     $.ajax({
-      url: `/addVolunteerToEvent/${userlist}/${eventId}`,
+      url: `/addVolunteerToEvent/${eventId}`,
       type: "POST",
+      data: {"volunteer" :volunteerList},
       success: function(s){
           location.reload()
 
@@ -42,14 +49,12 @@ $(document).ready(function() {
 var userlist = []
 function callback(selected) {
   $("#selectVolunteerButton").prop('disabled', false);
-  var user = $("#addVolunteerInput").val()
+  let user = $("#addVolunteerInput").val()
   if(userlist.includes(selected["username"]) == false){
       userlist.push(user)
-      for(let i = 0; i< userlist.length; i++){
+      $("#addVolunteerList").append("<input  type=checkbox id= userlistCheckbox checked= checked value = " + user +" >  </input>")
+      $("#addVolunteerList").append("<label form>"+ selected["firstName"]+ " " + selected["lastName"] +"</label>")
 
-          $("#addVolunteerList").append("<input  type=checkbox id= userlistCheckbox></input>")
-          $("#addVolunteerList").append("<label form>"+ selected["firstName"]+ " " + selected["lastName"] +"</label>")
-      }
   }
   else{
       msgFlash("User already selected.")
@@ -62,9 +67,6 @@ $("#addVolunteerInput").on("input", function() {
   searchUser("addVolunteerInput", callback, true, "addVolunteerModal");
 });
 
-$("#removeSelection").on("click",function(){
-    var userlist = []
-})
 
 $(".removeVolunteer").on("click", function() {
   let username =  $(this)[0].id;

@@ -78,13 +78,14 @@ def updateVolunteerTable(eventID):
         flash("Error adding volunteer", "danger")
     return redirect(url_for("admin.trackVolunteersPage", eventID=eventID))
 
-@admin_bp.route('/addVolunteerToEvent/<volunteer>/<eventId>', methods = ['POST'])
-def addVolunteer(volunteer, eventId):
-    volunteerList = volunteer.split(",")
+@admin_bp.route('/addVolunteerToEvent/<eventId>', methods = ['POST'])
+def addVolunteer(eventId):
+    volunteerDict = request.form
+    volunteerList = volunteerDict.getlist("volunteer[]")
     successfullyAddedVolunteer = False
     for volunteerUsername in volunteerList:
         user = User.get(User.username==volunteerUsername)
-        if EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == eventId).exists():
+        if EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == eventId) == false:
             print("-------------------------1")
             print("-------------------------1")
             successfullyAddedVolunteer == False
