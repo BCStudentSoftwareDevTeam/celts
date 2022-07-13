@@ -66,7 +66,11 @@
     <tbody>
         {% for event in events %}
           <tr>
-            <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+              {% if user.isCeltsAdmin or hasPrivilege(user, event.singleProgram)%}
+                <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+              {% else %}
+                <td> <a href="/eventsList/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
+              {% endif %}
             <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
             <td>{{event.timeStart.strftime('%I:%M %p')}}-{{event.timeEnd.strftime('%I:%M %p')}}</td>
             <td>{{event.location}}</td>
@@ -90,9 +94,9 @@
               {% if (event.isPast) %}
                 <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
               {% elif event.id in rsvpedEventsID %}
-                <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.program_id}}, {{event.id}})">Remove RSVP</button></td>
+                <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button></td>
               {% else %}
-                <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.program_id}}, {{event.id}})">RSVP</button></td>
+                <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button></td>
               {% endif %}
             {% endif %}
           </tr>
@@ -105,9 +109,9 @@
 {% endmacro %}
 <div class="tab-content" id="pills-tabContent">
   <div class="tab-pane fade show active" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
-    {% if studentLedProgram %}
+    {% if studentLedEvents %}
     <div class="accordion" id="categoryAccordion">
-      {% for program,events in studentLedProgram.items() %}
+      {% for program,events in studentLedEvents.items() %}
         <div class="accordion-item">
           <h2 class="accordion-header" id="accordion__header_{{program}}">
             <button class="accordion-button collapsed"
@@ -137,7 +141,11 @@
                 <tbody>
                     {% for event in events %}
                       <tr>
-                        <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+                          {% if user.isCeltsAdmin or hasPrivilege(user, event.singleProgram) %}
+                            <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+                          {% else %}
+                            <td> <a href="/eventsList/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
+                          {% endif %}
                         <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
                         <td>{{event.timeStart.strftime('%I:%M %p')}}-{{event.timeEnd.strftime('%I:%M %p')}}</td>
                         <td>{{event.location}}</td>
@@ -155,9 +163,9 @@
                           {% if event.isPast%}
                             <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
                           {% elif event.id in rsvpedEventsID %}
-                            <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{program.id}}, {{event.id}})">Remove RSVP</button></td>
+                            <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button></td>
                           {% else %}
-                            <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{program.id}}, {{event.id}})">RSVP</button></td>
+                            <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button></td>
                           {% endif %}
                         {% endif %}
                       </tr>
@@ -174,10 +182,10 @@
     {% endif %}
   </div>
   <div class="tab-pane fade show" id="pills-training" role="tabpanel" aria-labelledby="pills-training-tab">
-    {{createTable(trainingProgram)}}
+    {{createTable(trainingEvents)}}
   </div>
   <div class="tab-pane fade show" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="pills-bonner-scholars-tab">
-    {{createTable(bonnerProgram)}}
+    {{createTable(bonnerEvents)}}
   </div>
   <div class="tab-pane fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
     {{createTable(nonProgramEvents)}}
