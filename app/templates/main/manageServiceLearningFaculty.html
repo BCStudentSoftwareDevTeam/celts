@@ -52,18 +52,18 @@
           </tr>
         </thead>
         <tbody>
-          {% for data in pendingCourses %}
+          {% for course in pendingCourses %}
           <tr>
-            <td>{{data.courseName}}</td>
+            <td>{{course.courseName}}</td>
             <td>
-              {% for instructor in data.courseInstructors %}
+              {% for instructor in course.courseInstructors %}
               {{ instructor.user.firstName }} {{ instructor.user.lastName }} <br>
               {% endfor %}
             </td>
-            <td>{{data.term.description}}</td>
-            <td>{{data.status.status}}</td>
-            <td><button type="button" data-id="{{data}}" onclick="reviewCourses(this)" class="btn {{'btn-primary' if data.status.status == 'Pending' else 'btn-warning'}} btn-sm">{{ "Review" if data.status.status == "Pending" else "In Progress" }}</button></td>
-            <td><a type="button" href="/serviceLearning/editProposal/{{data }}" class="btn btn-primary btn-sm">Edit</a></td>
+            <td>{{course.term.description}}</td>
+            <td>{{course.status.status}}</td>
+            <td><button type="button" data-id="{{course}}" onclick="reviewCourses(this)" class="btn {{'btn-primary' if course.status.status == 'Pending' else 'btn-warning'}} btn-sm">{{ "Review" if course.status.status == "Pending" else "In Progress" }}</button></td>
+            <td><a type="button" href="/serviceLearning/editProposal/{{course }}" class="btn btn-primary btn-sm">Edit</a></td>
           </tr>
           {% endfor %}
         </tbody>
@@ -81,16 +81,16 @@
       </tr>
     </thead> 
     <tbody>
-        {% for data in approvedCourses %}
+        {% for course in approvedCourses %}
         <tr>
-          <td>{{data.courseName}}</td>
+          <td>{{course.courseName}}</td>
           <td>
-            {% for instructor in data.courseInstructors %}
+            {% for instructor in course.courseInstructors %}
             {{ instructor.user.firstName }} {{ instructor.user.lastName }} <br>
             {% endfor %}
           </td>
-          <td>{{data.term.description}}</td>
-          <td>{{data.status.status}}</td>
+          <td>{{course.term.description}}</td>
+          <td>{{course.status.status}}</td>
           <td><i class="bi bi-check2"></i></td>
         </tr>
         {% endfor %}
