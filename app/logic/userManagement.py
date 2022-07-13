@@ -2,6 +2,7 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.programManager import ProgramManager
 from app.models.program import Program
+from app.models.eventTemplate import EventTemplate
 from flask import g, session
 from app.logic.adminLogs import createLog
 from playhouse.shortcuts import model_to_dict
@@ -88,4 +89,18 @@ def changeProgramInfo(newEmail, newSender, programId):
     return (f'Program email info updated')
 
 def getPrograms(currentUser):
-    return Program.select().join(ProgramManager).where(ProgramManager.user==currentUser).order_by(Program.programName)
+    """Returns a list of all visible programs depending on who the current user is."""
+
+    if g.current_user.isCeltsAdmin:
+        return Program.select().order_by(Program.programName)
+    else:
+        return Program.select().join(ProgramManager).where(ProgramManager.user==currentUser).order_by(Program.programName)
+
+
+
+def getTemplates(currentUser):
+    """Returns a list of all visible templates depending on who the current user is. If they are not an admin it should always be none."""
+    if g.current_user.isCeltsAdmin:
+        return EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
+    else:
+        return []
