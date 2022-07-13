@@ -87,8 +87,20 @@ def viewVolunteersProfile(username):
         permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
         allUserEntries = BackgroundCheck.select().where(BackgroundCheck.user == volunteer)
-        completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
+
+        if g.current_user.isCeltsAdmin:
+            completedBackgroundCheck = {entry.type: [entry.passBackgroundCheck, entry.dateCompleted] for entry in allUserEntries}
+        else:
+            # sets the values to strings because student staff do not have access to input boxes
+            completedBackgroundCheck = {entry.type: ['Yes' if entry.passBackgroundCheck else 'No',
+                                                    'Not Completed' if entry.dateCompleted == None
+                                                    else entry.dateCompleted.strftime('%m/%d/%Y')] for entry in allUserEntries}
+
         backgroundTypes = list(BackgroundCheckType.select())
+        # creates data structure for background checks that are not currently completed
+        for checkType in backgroundTypes:
+            if checkType not in completedBackgroundCheck.keys():
+                completedBackgroundCheck[checkType] = ["No", "Not Completed"]
 
         eligibilityTable = []
         for program in programs:
@@ -101,6 +113,7 @@ def viewVolunteersProfile(username):
                                    "completedTraining" : (volunteer.username in trainedParticipants(program, g.current_term)),
                                    "isNotBanned" : True if not notes else False,
                                    "banNote": noteForDict})
+
         return render_template ("/main/volunteerProfile.html",
                 programs = programs,
                 programsInterested = programsInterested,
