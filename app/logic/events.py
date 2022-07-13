@@ -231,7 +231,9 @@ def validateNewEventData(data):
     return (True, "All inputs are valid.")
 
 def calculateNewrecurringId():
-                 #gets the highest recurring Id so that a new recurring Id can be assigned
+    """
+    gets the highest recurring Id so that a new recurring Id can be assigned
+    """
     recurringId = Event.select(fn.MAX(Event.recurringId)).scalar()
     if recurringId:
         return recurringId + 1
