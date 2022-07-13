@@ -50,9 +50,9 @@ def events(selectedTerm):
 
     return render_template("/events/event_list.html",
         selectedTerm = term,
-        studentLedProgram = studentLedProgram,
-        trainingProgram = trainingProgram,
-        bonnerProgram = bonnerProgram,
+        studentLedEvents = studentLedEvents,
+        trainingEvents = trainingEvents,
+        bonnerEvents = bonnerEvents,
         nonProgramEvents = nonProgramEvents,
         listOfTerms = listOfTerms,
         rsvpedEventsID = rsvpedEventsID,
