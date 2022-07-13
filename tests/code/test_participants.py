@@ -6,6 +6,7 @@ from app.models import mainDB
 from app.models.user import User
 from app.models.event import Event
 from app.models.term import Term
+from app.models.program import Program
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.logic.volunteers import addVolunteerToEventRsvp
@@ -300,11 +301,55 @@ def test_getEventParticipantsWithWrongParticipant():
 @pytest.mark.integration
 def test_getUserParticipatedEvents():
     with mainDB.atomic() as transaction:
-        allProgramTrainings = Event.select().join(ProgramEvent).where(Event.isTraining == 1, ProgramEvent.program == Program.get_by_id(1))
-        listOfProgramTrainings = [programTraining for programTraining in programTrainings]
-        for event in listOfProgramTrainings:
-            EventParticipant.create(user = User.get_by_id("ramsayb2"), event = event)
-        programTrainings = getUserParticipatedEvents(Program.get_by_id(1))
-        for training, participated in programTrainings.items():
+        allProgramTrainings = Event.select().join(ProgramEvent).where(Event.isTraining == 1, ProgramEvent.program == Program.get_by_id(2))
+        listOfProgramTrainings = [programTraining for programTraining in allProgramTrainings]
+
+        # If the user has participated in every training, assert their participated status for that training == 1
+        for training in listOfProgramTrainings:
+            EventParticipant.create(user = User.get_by_id("ramsayb2"), event = training)
+        programTrainings = getUserParticipatedEvents(Program.get_by_id(2), User.get_by_id("ramsayb2"))
+        for training in programTrainings.keys():
             assert programTrainings[training] == 1
+        transaction.rollback()
+
+        # If the user "attended" the training, assert their participated status == 1, otherwise, assert participated status == 0
+        # only make the user a participant on even iterations
+        for counter, training in enumerate(listOfProgramTrainings):
+            if (counter % 2) == 0:
+                EventParticipant.create(user = User.get_by_id("ramsayb2"), event = training)
+
+        programTrainings = getUserParticipatedEvents(Program.get_by_id(2), User.get_by_id("ramsayb2"))
+        for counter, training in enumerate(programTrainings.keys()):
+            if (counter % 2) == 0:
+                assert programTrainings[training] == 1
+            else:
+                assert programTrainings[training] == 0
+        transaction.rollback()
+
+        # If the user has not participated in any trainings, assert their participated status for that training == 1
+        programTrainings = getUserParticipatedEvents(Program.get_by_id(2), User.get_by_id("ramsayb2"))
+        for training in programTrainings.keys():
+            assert programTrainings[training] == 0
+        transaction.rollback()
+
+        testingEvent = Event.create(name = "Testing delete event",
+                                      term = 4,
+                                      description= "This Event is Created to be Deleted.",
+                                      timeStart= "06:00 PM",
+                                      timeEnd= "09:00 PM",
+                                      location = "Your Mom's House",
+                                      isRsvpRequired = 0,
+                                      isTraining = 1,
+                                      isService = 0,
+                                      startDate= "2023-12-12",
+                                      recurringId = None)
+        ProgramEvent.create(program = Program.get_by_id(8),
+                            event = testingEvent)
+
+        # If the event has not occured yet, assert their participated status for that event == None
+        allProgramTrainings = Event.select().join(ProgramEvent).where(Event.isTraining == 1, ProgramEvent.program == Program.get_by_id(8))
+        listOfProgramTrainings = [programTraining for programTraining in allProgramTrainings]
+        programTrainings = getUserParticipatedEvents(Program.get_by_id(8), User.get_by_id("ramsayb2"))
+        for training in programTrainings.keys():
+            assert programTrainings[training] == None
         transaction.rollback()
