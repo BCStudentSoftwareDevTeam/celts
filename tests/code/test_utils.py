@@ -194,3 +194,46 @@ def test_getStartofCurrentAcademicYear():
         assert fallTerm.academicYear == "2020-2021"
 
         transaction.rollback()
+
+@pytest.mark.integration
+def test_isFutureTerm():
+    with mainDB.atomic() as transaction:
+        dbCurrentTerm = Term.select().where(Term.isCurrentTerm == True).get()
+        dbCurrentTerm.isCurrentTerm = False
+        dbCurrentTerm.save()
+        testCurrentTerm = Term.create(description = "Summer 1900",
+                                    year = 1900,
+                                    academicYear = "1899-1900",
+                                    isSummer = True,
+                                    isCurrentTerm = True)
+        sameYearFutureTerm = Term.create(description = "Fall 1900",
+                                    year = 1900,
+                                    academicYear = "1900-1901",
+                                    isSummer = False,
+                                    isCurrentTerm = False)
+        sameYearPastTerm = Term.create(description = "Spring 1900",
+                                    year = 1900,
+                                    academicYear = "1899-1900",
+                                    isSummer = False,
+                                    isCurrentTerm = False)
+        futureYearTerm = Term.create(description = "Fall 1901",
+                                    year = 1901,
+                                    academicYear = "1901-1902",
+                                    isSummer = False,
+                                    isCurrentTerm = False)
+        pastYearTerm = Term.create(description = "Spring 1899",
+                                    year = 1899,
+                                    academicYear = "1899-1900",
+                                    isSummer = False,
+                                    isCurrentTerm = False)
+        # future term this year
+        assert sameYearFutureTerm.isFutureTerm == True
+        # future term in future year
+        assert futureYearTerm.isFutureTerm == True
+        # past term this year
+        assert sameYearPastTerm.isFutureTerm == False
+        # past term previous year
+        assert pastYearTerm.isFutureTerm == False
+        # current term
+        assert testCurrentTerm.isFutureTerm == False
+        transaction.rollback()
