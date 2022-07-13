@@ -4,11 +4,11 @@
 {% block app_content %}
 <h1 class="text-center mt-5 mb-5">Choose Event Type</h1>
 <div class="card m-auto" style="width: 400px;">
-  {% for template in templates %}
-  <a href="/eventTemplates/{{template.id}}/create" class="list-group-item list-group-item-action">{{ template.name }}</a>
-  {% endfor %}
-
-  <div class="card-header bg-dark" style="padding:0.25rem"></div>
+    <div class="templateList">
+      {% for template in templates %}
+      <a href="/eventTemplates/{{template.id}}/create" class="list-group-item list-group-item-action">{{ template.name }}</a>
+      {% endfor %}
+    </div>
   {% for program in programs %}
   <a href="/eventTemplates/1/{{program.id}}/create" class="list-group-item list-group-item-action">{{ program.programName }}</a>
   {% endfor %}
