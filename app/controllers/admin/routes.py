@@ -26,7 +26,7 @@ from app.logic.participants import getEventParticipants, getUserParticipatedEven
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
-from app.logic.userManagement import hasPrivilege, getPrograms
+from app.logic.userManagement import getPrograms
 
 
 @admin_bp.route('/switch_user', methods=['POST'])
@@ -105,7 +105,8 @@ def createEvent(templateid, programid=None):
 
     # make sure our data is the same regardless of GET or POST
     preprocessEventData(eventData)
-    isProgramManager = hasPrivilege(g.current_user,programid)
+    isProgramManager = g.current_user.isProgramManagerFor(programid)
+   
     futureTerms = selectSurroundingTerms(g.current_term, prevTerms=0)
 
     return render_template(f"/admin/{template.templateFile}",
@@ -143,10 +144,9 @@ def eventDisplay(eventId):
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     program = event.singleProgram
-
     rule = request.url_rule
     if 'edit' in rule.rule:
-        isProgramManager = hasPrivilege(g.current_user,program)
+        isProgramManager = g.current_user.isProgramManagerFor(program)
         return render_template("admin/createSingleEvent.html",
                                 eventData = eventData,
                                 allFacilitators = getAllFacilitators(),
