@@ -99,7 +99,7 @@ def createEvent(templateid, programid=None):
             noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
             eventId = Event.select(fn.MAX(Event.id)).scalar()
-            return redirect(url_for("admin.editEvent", eventId = eventId))
+            return redirect(url_for("admin.editOrViewEvent", eventId = eventId))
         else:
             flash(validationErrorMessage, 'warning')
 
@@ -146,6 +146,8 @@ def editOrViewEvent(eventId):
     isProgramManager = hasPrivilege(g.current_user,program)
     rule = request.url_rule
     if 'edit' in rule.rule:
+        if not g.current_user.isCeltsAdmin or isProgramManager:
+            abort(403)
         return render_template("admin/createEvent.html",
                                 eventData = eventData,
                                 allFacilitators = getAllFacilitators(),
