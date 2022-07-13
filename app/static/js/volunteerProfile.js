@@ -33,8 +33,6 @@ $(document).ready(function(){
     }).attr('readonly','readonly');
   });
 
-
-
   $(".ban").click(function() {
     var banButton = $("#banButton")
     var banEndDateDiv = $("#banEndDate") // Div containing the datepicker in the ban modal
@@ -80,7 +78,6 @@ $(document).ready(function(){
              "endDate":$("#banEndDatepicker").val() //Expected to be a date in this format YYYY-MM-DD
             },
       success: function(response) {
-
         location.reload();
       }
     });
@@ -98,9 +95,7 @@ $(document).ready(function(){
         displayMessage("Date<br>Empty!", "danger")
         return
     }
-    else {
-        displayMessage("Saved!", "success")
-    }
+
     let data = {
         checkPassed: checkPassed,      // Expected to be either a 0 or a 1 volunteerProfile.js
         user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
@@ -112,6 +107,7 @@ $(document).ready(function(){
       type: "POST",
       data: data,
       success: function(s){
+          displayMessage("Saved!", "success")
       },
       error: function(error, status){
           console.log(error, status)
