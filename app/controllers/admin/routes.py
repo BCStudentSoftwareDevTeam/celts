@@ -147,7 +147,7 @@ def editOrViewEvent(eventId):
     rule = request.url_rule
     if 'edit' in rule.rule:
         isProgramManager = hasPrivilege(g.current_user,program)
-        return render_template("admin/createSingleEvent.html",
+        return render_template("admin/createEvent.html",
                                 eventData = eventData,
                                 allFacilitators = getAllFacilitators(),
                                 futureTerms=futureTerms,
