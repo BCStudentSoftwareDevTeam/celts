@@ -14,9 +14,6 @@
 {% endblock %}
 
 {% block app_content %}
-  {% set isAdmin = g.current_user.isCeltsAdmin or isProgramManager %}
-  <!-- Program manager isCeltsAdmin and they are a manager for the program  -->
-  {% set isEditable = isAdmin %}
   {% set isNewEvent = 'create' in request.path %}
 
   <div class="text-center mt-5 mb-3">
@@ -35,11 +32,11 @@
       {% endif %}
 
     <h1 id="title">{{page_title}}</h1>
-    {% if isEditable and isPastEvent %}
+    {% if isPastEvent %}
       <div class="alert alert-danger" role="alert">This event is in the past.</div>
     {% endif %}
   </div>
-  {% if isEditable and not isNewEvent %}
+  {% if not isNewEvent %}
   <div class="container">
     <div class="row align-items-start">
       <div class="btn-group col">
@@ -72,31 +69,19 @@
 
         <div class="form-group mb-4">
           <label class="form-label" for='inputEventName'><strong>Event Name</strong></label>
-          {% if isEditable %}
             <input class="form-control" id='inputEventName' value="{{eventData.name}}" placeholder="Enter event name" name="name" required>
-          {% else %}
-            <p>{{eventData.name}}</p>
-          {% endif %}
         </div>
         <div class="form-group mb-4">
           <label class="form-label" for='inputEventTerm'><strong>Term</strong></label>
-          {% if isEditable  %}
             <select class="form-select" name='term' id='inputEventTerm' required>
               {% for term in futureTerms %}
                 <option value='{{term}}' {{"selected" if term == eventData.term}}>{{term.description}}</option>
               {% endfor %}
             </select>
-          {% else %}
-            <p>{{ eventData.term.description if eventData.term }}</p>
-          {% endif %}
         </div>
         <div class="form-group mb-4">
           <label class="form-label" for='inputEventLocation'><strong>Location</strong></label>
-          {% if isEditable %}
             <input class="form-control" id='inputEventLocation' value="{{eventData.location}}" placeholder="Enter location" name="location" required>
-          {%else%}
-            <p>{{eventData.location}}</p>
-          {%endif%}
         </div>
         {% if isNewEvent %}
         <div class="form-check form-switch pb-1">
@@ -108,16 +93,12 @@
         <div class="row col-md-12">
           <div class="form-group col-md-6">
             <label class="form-label me-2" for="startDatePicker"><strong>Start Date</strong></label>
-            {% if  isEditable  %}
               <div class='input-group date' id="startDate">
                 <input autocomplete="off" type='text' class="form-control datePicker readonly" value="{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" name="startDate" placeholder="Pick a start date" onchange="updateDate(this)" id=startDatePicker required>
                 <div class="input-group-text" id="calendarIconStart">
                   <span><i class="bi bi-calendar-plus-fill"></i></span>
                 </div>
               </div>
-            {% else %}
-                <p>{{eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}</p>
-            {% endif %}
           </div>
           <div class="form-group col-md-6 d-none" id ="endDateStyle">
             <!--datePicker for End date-->
@@ -136,7 +117,6 @@
           <div class="row col-md-12" >
             <div class="form-group col-md-6">
               <label class="form-label me-2" for="startTime"><strong>Start Time</strong></label>
-              {% if isEditable %}
               <div class="input-group">
                 {% if eventData.timeStart %}
                   {%set start_time = eventData.timeStart %}
@@ -146,13 +126,9 @@
                 <input autocomplete="off" type="time" class="form-control timepicker readonly" value="{{start_time}}" name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time" onchange="update(this)" id=startTime required />
                 <span class="input-group-text timeIcons" id="timeIcon1" hidden><i class="bi bi-clock"></i></span>
               </div>
-              {% else %}
-                <p>{{eventData.timeStart}}</p>
-              {% endif %}
             </div>
             <div class='form-group col-md-6'>
               <label class="form-label me-2" for="pickEndTime"><strong>End Time</strong></label>
-              {% if isEditable %}
               <div class="input-group">
                 {% if eventData.timeEnd %}
                   {%set end_time = eventData.timeEnd%}
@@ -162,9 +138,6 @@
                   <input autocomplete="off" type="time" class="form-control timepicker readonly" value="{{end_time}}" name="timeEnd" aria-describedby="timeIcon2" placeholder="Pick an end time" onchange="update(this)" id=endTime required />
                   <span class="input-group-text timeIcons" id="timeIcon2" hidden><i class="bi bi-clock"></i></span>
               </div>
-              {% else %}
-                <p>{{eventData.timeEnd }}</p>
-              {% endif %}
             </div>
           </div>
         </div>
@@ -177,7 +150,7 @@
         </div>
       </div>
       <div class="col-md-6 form-group">
-        {% if isEditable and page_title != 'Create All Volunteer Training' %}
+        {% if page_title != 'Create All Volunteer Training' %}
           <div class="form-check form-switch">
             <label class="custom-control-label" for="checkIsTraining"><strong>This event is a training.</strong></label>
             <input class="form-check-input" type="checkbox" id="checkIsTraining" name="isTraining" {{"checked" if eventData.isTraining}}/>
@@ -190,27 +163,12 @@
             <label class="custom-control-label" for='earnServiceHours'><strong>This event earns service hours.</strong></label>
             <input class="form-check-input" type="checkbox" id="earnServiceHours" name="isService" {{"checked" if eventData.isService}}/>
           </div>
-          {% else %}
-            <div class="mb-4">
-            {% if eventData.isRsvpRequired %}
-              <label><strong>This event requires RSVP</strong></label><br>
-            {% endif %}
-            {% if eventData.isService %}
-              <label><strong>This event earns service hours.</strong></label><br>
-            {% endif %}
-            </div>
-          {% endif %}
           <div class="form-group mb-4">
             <label class="form-label" for='inputEventDescription'><strong>Description</strong></label>
-            {% if isEditable %}
               <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' placeholder="Enter event description" name="description" required>{{eventData.description}}</textarea>
-            {% else %}
-              <p>{{eventData.description}}</p>
-            {% endif %}
           </div>
           <div class='form-group'>
             <label class="form-label" for='inputEventFacilitators'><strong>Facilitators</strong></label>
-            {% if isEditable %}
               <select class="form-select" multiple id="inputEventFacilitators" name="facilitators" >
               <!-- make sure we show existing facilitators in case they aren't in the facilitators list anymore -->
               {% for ef in eventData.facilitators %}
@@ -222,18 +180,10 @@
               {% for f in allFacilitators %}
                 <option value="{{f.username}}" {{ "selected" if f in eventData.facilitators }}> {{f.firstName}} {{f.lastName}}</option>
               {% endfor %}
-            </select>
-          {% else %}
-              {% if not eventData.facilitators|count %}
-                <p>None</p>
-              {%endif%}
-
-              {% for f in eventData.facilitators %}
-                <p>{{f.firstName}} {{f.lastName}}</p>
-              {% endfor %}
-          {% endif %}
-        </div>
-      </div>
+             </select>
+          </div>
+         {% endif %}
+       </div>
       <div class="row justify-content-left mt-2">
           <div class="col-md-6 offset-md-3">
             <div class="text-center">
@@ -244,9 +194,7 @@
                     <button type="submit" class="btn btn-primary"  formaction="/rsvpForEvent">RSVP</button>
                  {% endif %}
               {% endif %}
-              {% if isEditable %}
               <button type="submit" id="saveEvent" class="btn btn-primary">Save</button>
-              {% endif %}
             </div>
           </div>
         </div>
