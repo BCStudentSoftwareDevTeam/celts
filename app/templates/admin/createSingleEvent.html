@@ -45,10 +45,10 @@
       <div class="btn-group col">
         <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
           <li class="nav-item" role="presentation">
-            <a class="nav-link active" href="#" role="tab" aria-selected="true">Edit Event</a>
+              <a class="nav-link" href="/eventsList/{{eventData.id}}/track_volunteers" role="tab" aria-selected="false">Track Volunteers</a>
           </li>
           <li class="nav-item" role="presentation">
-            <a class="nav-link" href="/eventsList/{{eventData.id}}/track_volunteers" role="tab" aria-selected="false">Track Volunteers</a>
+              <a class="nav-link active" href="#" role="tab" aria-selected="true">Edit Event</a>
           </li>
         </ul>
       </div>
@@ -138,7 +138,12 @@
               <label class="form-label me-2" for="startTime"><strong>Start Time</strong></label>
               {% if isEditable %}
               <div class="input-group">
-                <input autocomplete="off" type="time" class="form-control timepicker readonly" value="{{eventData.timeStart}}" name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time" onchange="update(this)" id=startTime required />
+                {% if eventData.timeStart %}
+                  {%set start_time = eventData.timeStart %}
+                {%else%}
+                  {%set start_time = "12:00" %}
+                {% endif %}
+                <input autocomplete="off" type="time" class="form-control timepicker readonly" value="{{start_time}}" name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time" onchange="update(this)" id=startTime required />
                 <span class="input-group-text timeIcons" id="timeIcon1" hidden><i class="bi bi-clock"></i></span>
               </div>
               {% else %}
@@ -149,8 +154,13 @@
               <label class="form-label me-2" for="pickEndTime"><strong>End Time</strong></label>
               {% if isEditable %}
               <div class="input-group">
-                <input autocomplete="off" type="time" class="form-control timepicker readonly" value="{{eventData.timeEnd}}" name="timeEnd" aria-describedby="timeIcon2" placeholder="Pick an end time" onchange="update(this)" id=endTime required />
-                <span class="input-group-text timeIcons" id="timeIcon2" hidden><i class="bi bi-clock"></i></span>
+                {% if eventData.timeEnd %}
+                  {%set end_time = eventData.timeEnd%}
+                {%else%}
+                  {%set end_time = "12:00" %}
+                {% endif %}
+                  <input autocomplete="off" type="time" class="form-control timepicker readonly" value="{{end_time}}" name="timeEnd" aria-describedby="timeIcon2" placeholder="Pick an end time" onchange="update(this)" id=endTime required />
+                  <span class="input-group-text timeIcons" id="timeIcon2" hidden><i class="bi bi-clock"></i></span>
               </div>
               {% else %}
                 <p>{{eventData.timeEnd }}</p>
