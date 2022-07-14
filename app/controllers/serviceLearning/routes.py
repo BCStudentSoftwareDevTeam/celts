@@ -118,7 +118,7 @@ def withdrawCourse(courseID):
 @serviceLearning_bp.route('/serviceLearning/approveCourse/', methods=['POST'])
 def approveCourse():
     """
-    This function updates and approves a Service Learning Course when using  the
+    This function updates and approves a Service-Learning Course when using  the
         approve button.
     return: empty string because AJAX needs to receive something
     """

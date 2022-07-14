@@ -1,4 +1,4 @@
-{% set title = "Manage Service Learning Faculty"%}
+{% set title = "Manage Service-Learning Faculty"%}
 {% extends "base.html" %}
 
 {% block scripts %}
@@ -98,22 +98,25 @@
     </tbody>
     </table>
 
-  <div class="float-end">
-    <button class="btn btn-primary"> Send to Registrar</button>
-  </div>
-  </div>
-</div>
-<h2 class="text-center pt-1 pb-4">Service Learning Faculty</h2>
+    {% if term.isCurrentTerm or term.isFutureTerm %}
+      <div class="float-end">
+        <button class="btn btn-primary">Send to Registrar</button>
+      </div>
+     {% endif %}
+      </div>
+    </div>
+
 <div id="wrapper">
-  <div style="text-align:right; width:100%; padding:0; margin-bottom: -42px; display: inline-block" >
+    <h1 class="text-center pt-1 pb-4">Service-Learning Faculty</h1>
+    <div style="text-align:right; width:100%; padding:0; margin-bottom: -42px; display: inline-block" >
       {% set instructorEmails = [] %}
       {% for instructor in courseInstructors%}
         {{ instructorEmails.append(instructor.email) or "" }}
       {% endfor %}
-     <div>
-      <a  class="btn btn-primary" href="mailto:{{(';'.join(instructorEmails))}}?subject=Renew Course Proposal"> Email All </a>
-     </div>
-  </div>
+      <div>
+        <a  class="btn btn-primary" href="mailto:{{(';'.join(instructorEmails))}}?subject=Renew Course Proposal"> Email All </a>
+      </div>
+    </div>
   <div class ="container">
     <a class="skipContent" href="#backButton" tabindex="1" style="top:8%">Click to Skip</a>
     <div class="contributors" align="center">

@@ -1,4 +1,3 @@
-import re
 from flask import request, render_template, redirect, url_for, request, flash, abort, g, json, jsonify
 from datetime import datetime
 from peewee import DoesNotExist
@@ -34,11 +33,6 @@ def trackVolunteersPage(eventID):
         abort(404)
 
     program = event.singleProgram
-
-    # TODO: What do we do for no programs or multiple programs?
-    if not program:
-        return "TODO: What do we do for no programs or multiple programs?"
-
     trainedParticipantsList = trainedParticipants(program, g.current_term)
     eventParticipants = getEventParticipants(event)
     isProgramManager = isProgramManagerForEvent(g.current_user, event)
@@ -78,9 +72,6 @@ def updateVolunteerTable(eventID):
         abort(404)
 
     program = event.singleProgram
-    # TODO: What do we do for no programs or multiple programs?
-    if not program:
-        return "TODO: What do we do for no programs or multiple programs?"
 
     volunteerUpdated = updateEventParticipants(request.form)
     if volunteerUpdated:
@@ -93,42 +84,33 @@ def updateVolunteerTable(eventID):
 @admin_bp.route('/addVolunteerToEvent/<eventId>/<volunteer>', methods = ['POST'])
 def addVolunteer(eventId, volunteer = None):
     successfullyAddedVolunteer = False
-    successfullyAddedRecurringVolunteer = False
+    usernameList = []
+    eventParticipants = getEventParticipants(eventId)
     if volunteer == None:
         usernameList = request.form.getlist("volunteer[]")
-        getRecurringId  = Event.select(Event.recurringId).where(Event.id == eventId).distinct()
-        eventParticipants = getEventParticipants(eventId)
-        for user in usernameList:
-            user = User.get(User.username==user)
 
-            if len(usernameList) == 0:
-                noVolunteersSelectedMessage = "No volunteers selected, please select a volunteer."
-                successfullyAddedRecurringVolunteer = False
-                noVolunteerSelected = True
-
-            if len(eventParticipants) == 0:
-                addVolunteerToEventRsvp(user, eventId)
-                EventParticipant.create(user = user, event = eventId)
-                successfullyAddedRecurringVolunteer = True
-
-            elif (EventRsvp.select().where(EventRsvp.user==user, EventRsvp.event_id == eventId) and
-                  EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event_id == eventId)):
-                duplicateVolunteerMessage = "This volunteer has already been added to this event."
-                successfullyAddedRecurringVolunteer = False
-
-
-            else:
-                addVolunteerToEventRsvp(user, eventId)
-                EventParticipant.create(user = user, event = eventId)
-                successfullyAddedRecurringVolunteer = True
     else:
         username = volunteer.strip("()").split('(')[-1]
-        user = User.get(User.username==username)
-        addVolunteerToEventRsvp(user, eventId)
-        EventParticipant.create(user=user, event=eventId)
-        successfullyAddedVolunteer = True
+        usernameList.append(username)
 
-    if (successfullyAddedRecurringVolunteer or successfullyAddedVolunteer == True) :
+    for user in usernameList:
+        user = User.get(User.username==user)
+
+        isVolunteerInEvent =  (EventRsvp.select().where(EventRsvp.user==user, EventRsvp.event_id == eventId).exists() and
+              EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event_id == eventId).exists())
+
+        if len(eventParticipants) == 0 or isVolunteerInEvent == False:
+            addVolunteerToEventRsvp(user, eventId)
+            EventParticipant.create(user = user, event = eventId)
+            successfullyAddedVolunteer = True
+        if isVolunteerInEvent:
+            successfullyAddedVolunteer = True
+
+    if len(usernameList) == 0:
+        successfullyAddedVolunteer = False
+
+    if (successfullyAddedVolunteer):
+        flash("Volunteer added successfully.", "success")
         return redirect(url_for('admin.trackVolunteersPage', eventID = eventId))
     else:
         flash("Error when adding volunteer to event." ,"danger")

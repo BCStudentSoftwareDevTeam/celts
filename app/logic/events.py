@@ -104,7 +104,7 @@ def saveEventToDb(newEventData):
 
     return eventRecords
 
-def getStudentLedProgram(term):
+def getStudentLedEvents(term):
 
     studentLedEvents = (Event.select(Event, Program.id.alias("program_id"))
                              .join(ProgramEvent)
@@ -118,7 +118,7 @@ def getStudentLedProgram(term):
 
     return programs
 
-def getTrainingProgram(term):
+def getTrainingEvents(term):
 
     """
         The allTrainingsEvent query is designed to select and count eventId's after grouping them
@@ -146,7 +146,7 @@ def getTrainingProgram(term):
 
     return list(trainingEvents)
 
-def getBonnerProgram(term):
+def getBonnerEvents(term):
 
     bonnerScholarsEvents = (Event.select(Event, Program.id.alias("program_id"))
                                  .join(ProgramEvent)
@@ -231,7 +231,9 @@ def validateNewEventData(data):
     return (True, "All inputs are valid.")
 
 def calculateNewrecurringId():
-                 #gets the highest recurring Id so that a new recurring Id can be assigned
+    """
+    Gets the highest recurring Id so that a new recurring Id can be assigned
+    """
     recurringId = Event.select(fn.MAX(Event.recurringId)).scalar()
     if recurringId:
         return recurringId + 1
@@ -239,7 +241,9 @@ def calculateNewrecurringId():
         return 1
 
 def getPreviousRecurringEventData(recurringId):
-    #joins the User db table and Event Participant db table so that we can get the information of a Particpant if they attended an event
+    """
+    Joins the User db table and Event Participant db table so that we can get the information of a Particpant if they attended an event
+    """
     previousEventVolunteers = User.select(User).join(EventParticipant).join(Event).where(Event.recurringId==recurringId).distinct()
     return previousEventVolunteers
 

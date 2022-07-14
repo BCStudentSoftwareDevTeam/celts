@@ -25,10 +25,13 @@
 <div class="btn-group">
   <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
     <li class="nav-item" role="presentation">
-      <a class="nav-link" href="/eventsList/{{event.id}}/edit" role="tab" aria-selected="false">Edit Event</a>
+        <a class="nav-link" href="/eventsList/{{event.id}}/view" role="tab" aria-selected="false">View Event</a>
     </li>
     <li class="nav-item" role="presentation">
-      <a class="nav-link active" href="#" role="tab" aria-selected="true">Track Volunteers</a>
+        <a class="nav-link active" href="#" role="tab" aria-selected="true">Track Volunteers</a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" href="/eventsList/{{event.id}}/edit" role="tab" aria-selected="false">Edit Event</a>
     </li>
   </ul>
 </div>
@@ -38,8 +41,11 @@
   <div class='form-group d-inline-flex'>
     <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add Volunteer</a>
     {% if event.isRecurring and not event.isFirstRecurringEvent%}
-      <a class="btn btn-success" id="pastVolunteers" role="button" data-bs-toggle="modal" data-bs-target= "#addPastVolunteerModal" style="margin:5px;">Add Past Volunteers</a>
-    {% endif %}
+        {% if recurringVolunteers | count == 0  %}
+            {% set disabled = "disabled" %}
+        {% endif %}
+        <button type="button" class="btn btn-success" id="pastVolunteers" data-bs-toggle="modal" data-bs-target= "#addPastVolunteerModal" style="margin:5px;" {{disabled}}>Add Past Volunteers</button> 
+    {%endif%}
     <a class="btn btn-warning" role="button" href= "/eventsList/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
   </div>
 </div>
@@ -157,15 +163,15 @@
               <div class="modal-body pl-5">
                   {%for participant in recurringVolunteers%}
                     <table>
-                      <input class="m-2" type="checkbox" name="volunteer[]" value= {{participant}} />
-                      <label class="form-check-label" for="PastVolunteers"> {{participant.firstName}} {{participant.lastName}}  </label>
+                      <input class="m-2" type="checkbox" id ="recurringVolunteerCheckbox_{{loop.index}}" name="volunteer[]" value= {{participant}} />
+                      <label class="form-check-label" for="recurringVolunteerCheckbox_{{loop.index}}"> {{participant.firstName}} {{participant.lastName}}  </label>
                     </table>
                   {% endfor %}
               </div>
           <div class="modal-footer" >
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close </button>
             <button type="button" id = "selectAllVolunteers" class="btn btn-secondary" >Select All</button>
-            <button id="AddPastVolunteerButton" type="submit" class="btn btn-primary" >Confirm Selection</button>
+            <button id="AddPastVolunteerButton" type="submit" class="btn btn-primary" >Add Volunteers</button>
           </div>
       </form>
     </div>

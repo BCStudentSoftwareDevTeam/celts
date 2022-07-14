@@ -50,13 +50,13 @@ $(document).ready(function() {
   });
 
   $(".removeVolunteer").on("click", function() {
-    let username =  $(this)[0].id;
+    let username =  this.id;
     let eventId = $('#eventID').val()
     $.ajax({
       url: `/removeVolunteerFromEvent/${username}/${eventId}`,
       type: "POST",
       success: function(s) {
-        location.reload();
+         location.reload();
       },
       error: function(request, status, error) {
       }
@@ -64,11 +64,11 @@ $(document).ready(function() {
   });
 
 $(".attendanceCheck").on("change", function() {
-    let username =  $(this)[0].name.substring(9) //get everything after the 9th character;
+    let username =  this.name.substring(9) //get everything after the 9th character;
     let inputFieldID = `inputHours_${username}`
 
 
-    if ($(this)[0].checked) {
+    if (this.checked) {
       $(`#${inputFieldID}`).prop('disabled', false);
       let eventLength = $("#eventLength").text();
       $(`#${inputFieldID}`).val(eventLength);
