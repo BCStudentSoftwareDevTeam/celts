@@ -7,7 +7,7 @@ from app.models.questionNote import QuestionNote
 from app.models.note import Note
 
 def getServiceLearningCoursesData(user):
-    """Returns dictionary with data used to populate service learning proposal table"""
+    """Returns dictionary with data used to populate Service-Learning proposal table"""
     courses = (Course.select()
                      .where(CourseInstructor.user==user)
                      .join(CourseInstructor)
