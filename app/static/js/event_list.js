@@ -1,3 +1,12 @@
+$(document).ready(function(){
+    $("#removeRsvpBtn").click(function(){
+        removeRsvpForEvent($("#removeRsvpBtn").val())
+    })
+    $("#rsvpBtn").click(function(){
+        rsvpForEvent($("#rsvpBtn").val())
+    })
+})
+
 function rsvpForEvent(eventID){
   rsvpInfo = {id: eventID,
               from: 'ajax'}
