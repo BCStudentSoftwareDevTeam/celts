@@ -134,17 +134,18 @@ $(document).ready(function() {
     // JSON.parse is required to de-stringify the search results into a dictionary.
     let facilitator = (selectedFacilitator["firstName"]+" "+selectedFacilitator["lastName"]+" ("+selectedFacilitator["username"]+")");
     let username = selectedFacilitator["username"];
-    let phone = selectedFacilitator["phoneNumber"];
-
-    let tableBody = $("#facilitatorTable").find("tbody");
-    let lastRow = tableBody.find("tr:last");
-    let newRow = lastRow.clone();
-    newRow.find("td:eq(0) p").text(facilitator);
-    newRow.find("td:eq(0) div input").val(phone);
-    newRow.find("td:eq(0) div button").attr("data-id", username);
-    newRow.find("td:eq(0) div input").attr("id", username);
-    newRow.prop("hidden", false);
-    lastRow.after(newRow);
+    if (!facilitatorArray.includes(username)){
+        facilitatorArray.push(username);
+        let tableBody = $("#facilitatorTable").find("tbody");
+        let lastRow = tableBody.find("tr:last");
+        let newRow = lastRow.clone();
+        newRow.find("td:eq(0) p").text(facilitator);
+        newRow.find("td:eq(0) div button").attr("data-id", username);
+        newRow.find("td:eq(0) div input").attr("id", username);
+        newRow.attr("id", username);
+        newRow.prop("hidden", false);
+        lastRow.after(newRow);
+    }
   }
 
   $("#eventFacilitator").on('input', function() {
@@ -153,6 +154,9 @@ $(document).ready(function() {
   });
 
   $("#facilitatorTable").on("click", "#remove", function() {
+     let username = $(this).closest("tr")[0].id
+     const index = facilitatorArray.indexOf(username)
+     facilitatorArray.splice(index, 1);
      $(this).closest("tr").remove();
   });
 
