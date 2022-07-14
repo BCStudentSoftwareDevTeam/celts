@@ -27,7 +27,6 @@ from app.models.backgroundCheck import BackgroundCheck
 from app.models.adminLogs import AdminLogs
 from app.models.emailLog import EmailLog
 
-
 print("Inserting data for demo and testing purposes.")
 users = [
     {
@@ -566,15 +565,14 @@ notes = [
     },
     {
     "id": 2,
-    "createdBy": "ramsayb2",
     "createdBy": "mupotsal",
     "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
     "noteContent": "I agree with your comment on training",
     "isPrivate":False
     }
 ]
-
 Note.insert_many(notes).on_conflict_replace().execute()
+
 courses = [
     {
         "id": 1,
