@@ -44,8 +44,8 @@ def switchUser():
 @admin_bp.route('/eventTemplates')
 def templateSelect():
     if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
-        allprograms = getPrograms(g.current_user)
-        visibleTemplates = getTemplates(g.current_user)
+        allprograms = getAllowedPrograms(g.current_user)
+        visibleTemplates = getAllowedTemplates(g.current_user)
         return render_template("/events/template_selector.html",
                                 programs=allprograms,
                                 templates=visibleTemplates)
