@@ -116,19 +116,18 @@ function callback(selectedInstructor) {
   let phone = selectedInstructor["phoneNumber"];
   let tableBody = $("#instructorTable").find("tbody");
   let isAdded=$("#instructorTable").prop('outerHTML');
-  if(!(isAdded).includes(instructor)){
-    let lastRow = tableBody.find("tr:last");
-    let newRow = lastRow.clone();
-    newRow.find("td:eq(0) p").text(instructor);
-    newRow.find("td:eq(0) div input").val(phone);
-    newRow.find("td:eq(0) div button").attr("data-id", username);
-    newRow.find("td:eq(0) div input").attr("id", username);
-    newRow.prop("hidden", false);
-    lastRow.after(newRow);
-  }
-  else{
+  if(isAdded.includes(instructor)){
     msgFlash("Instructor is already added", "danger")
+    return
   }
+  let lastRow = tableBody.find("tr:last");
+  let newRow = lastRow.clone();
+  newRow.find("td:eq(0) p").text(instructor);
+  newRow.find("td:eq(0) div input").val(phone);
+  newRow.find("td:eq(0) div button").attr("data-id", username);
+  newRow.find("td:eq(0) div input").attr("id", username);
+  newRow.prop("hidden", false);
+  lastRow.after(newRow);
 }
 
 $("#courseInstructor").on('input', function() {
