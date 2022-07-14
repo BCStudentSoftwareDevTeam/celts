@@ -15,7 +15,7 @@ from app.models.event import Event
 from app.models.eventParticipant import EventParticipant
 from app.models.programBan import ProgramBan
 from app.models.term import Term
-#
+
 class EmailHandler:
     def __init__(self, raw_form_data, url_domain, sender_object, attachment_file=None):
         self.mail = Mail(app)
