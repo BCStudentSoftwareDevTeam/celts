@@ -88,3 +88,50 @@ def test_updatedProgramManager():
     action3 = "remove"
     setProgramManager(user_name3, program_id3, action3)
     assert ProgramManager.get_or_none(ProgramManager.program==program_id3, ProgramManager.user == user_name3) is None
+
+@pytest.mark.integration
+def test_getAllowedPrograms():
+    with mainDB.atomic() as transaction:
+        # checks the length of all programs an admin has access to and compares that to total programs
+        allowedPrograms = len(getAllowedPrograms(User.get_by_id("ramsayb2")))
+        totalPrograms = Program.select().count()
+        assert allowedPrograms == totalPrograms
+
+        # creates program manager and checks the programs they can access
+        User.create(username = "bledsoef",
+                    bnumber = "B00775205",
+                    email = "bledsoef@berea.edu",
+                    phoneNumber = "(859)876-5309",
+                    firstName = "Fips",
+                    lastName = "Bledsoe",
+                    isStudent = True,
+                    isFaculty = False,
+                    isStaff = False,
+                    isCeltsAdmin = False,
+                    isCeltsStudentStaff = True)
+
+        ProgramManager.create(user = "bledsoef",
+                              program = Program.get_by_id(3))
+        ProgramManager.create(user = "bledsoef",
+                              program = Program.get_by_id(6))
+        ProgramManager.create(user = "bledsoef",
+                              program = Program.get_by_id(5))
+
+        allowedPrograms = len(getAllowedPrograms(User.get_by_id("bledsoef")))
+        assert allowedPrograms == 3
+
+        # checks to make sure users can't access any programs
+        allowedPrograms = len(getAllowedPrograms(User.get_by_id("partont")))
+        assert allowedPrograms == 0
+        transaction.rollback()
+
+
+@pytest.mark.integration
+def test_getAllowedTemplates():
+    # admin template check
+    allowedTemplates = len(getAllowedTemplates(User.get_by_id("ramsayb2")))
+    assert allowedTemplates == EventTemplate.select().where(EventTemplate.isVisible==True).count()
+
+    # other user template check, should always be 0
+    allowedTemplates = len(getAllowedTemplates(User.get_by_id("ayisie")))
+    assert allowedTemplates == 0
