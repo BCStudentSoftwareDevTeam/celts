@@ -26,7 +26,7 @@ from app.logic.participants import getEventParticipants, getUserParticipatedEven
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
-from app.logic.userManagement import hasPrivilege, getPrograms
+from app.logic.userManagement import getPrograms
 
 
 @admin_bp.route('/switch_user', methods=['POST'])
@@ -47,15 +47,13 @@ def templateSelect():
         allprograms = []
         if g.current_user.isCeltsStudentStaff:
             allprograms = getPrograms(g.current_user)
+            visibleTemplates = []
         else:
             allprograms = Program.select().order_by(Program.programName)
-
-        visibleTemplates = EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
-
+            visibleTemplates = EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
         return render_template("/events/template_selector.html",
-                    programs=allprograms,
-                    templates=visibleTemplates
-                )
+                                programs=allprograms,
+                                templates=visibleTemplates)
     else:
         abort(403)
 
@@ -63,7 +61,7 @@ def templateSelect():
 @admin_bp.route('/eventTemplates/<templateid>/create', methods=['GET','POST'])
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
 def createEvent(templateid, programid=None):
-    if not (g.current_user.isAdmin or hasPrivilege(g.current_user, programid)):
+    if not (g.current_user.isAdmin or g.current_user.isProgramManagerFor(programid)):
         abort(403)
 
     # Validate given URL
@@ -105,7 +103,8 @@ def createEvent(templateid, programid=None):
 
     # make sure our data is the same regardless of GET or POST
     preprocessEventData(eventData)
-    isProgramManager = hasPrivilege(g.current_user,programid)
+    isProgramManager = g.current_user.isProgramManagerFor(programid)
+
     futureTerms = selectSurroundingTerms(g.current_term, prevTerms=0)
 
     return render_template(f"/admin/{template.templateFile}",
@@ -143,10 +142,9 @@ def eventDisplay(eventId):
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     program = event.singleProgram
-
     rule = request.url_rule
     if 'edit' in rule.rule:
-        isProgramManager = hasPrivilege(g.current_user,program)
+        isProgramManager = g.current_user.isProgramManagerFor(program)
         return render_template("admin/createSingleEvent.html",
                                 eventData = eventData,
                                 allFacilitators = getAllFacilitators(),
