@@ -30,6 +30,11 @@ def withdrawProposal(courseID):
     CourseInstructor, Note"""
     course = Course.get(Course.id == courseID)
     questions = CourseQuestion.select().where(CourseQuestion.course == course)
-    notes = list(Note.select(Note.id).where(QuestionNote.question.in_(questions)).distinct().join(QuestionNote))
+    notes = list(Note.select(Note.id)
+                .where(QuestionNote.question
+                .in_(questions))
+                .distinct()
+                .join(QuestionNote))
     course.delete_instance(recursive=True)
-    Note.delete().where(Note.id.in_(notes)).execute()
+    for note in notes:
+        note.delete_instance(recursive=True)

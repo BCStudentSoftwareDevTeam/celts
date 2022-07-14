@@ -112,6 +112,7 @@ def withdrawCourse(courseID):
         else:
             flash("Unauthorized to perform this action", 'warning')
     except Exception as e:
+        print(e)
         flash("Withdrawal Unsuccessful", 'warning')
     return ""
 
