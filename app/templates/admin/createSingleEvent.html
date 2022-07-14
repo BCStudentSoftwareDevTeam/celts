@@ -10,38 +10,38 @@
 {% endblock %}
 
 {% block styles %}
-  {{super()}}
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
+{{super()}}
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
 {% endblock %}
 
 {% block app_content %}
-  {% set isAdmin = g.current_user.isCeltsAdmin or isProgramManager %}
-  <!-- Program manager isCeltsAdmin and they are a manager for the program  -->
-  {% set isEditable = isAdmin %}
-  {% set isNewEvent = 'create' in request.path %}
+{% set isAdmin = g.current_user.isCeltsAdmin or isProgramManager %}
+<!-- Program manager isCeltsAdmin and they are a manager for the program  -->
+{% set isEditable = isAdmin %}
+{% set isNewEvent = 'create' in request.path %}
 
-  <div class="text-center mt-5 mb-3">
-      {% if isNewEvent %}
-        {% if template.tag == 'single-program' %}
-          {% set page_title = 'Create Event for ' + eventData["program"].programName %}
-        {% elif template.tag == 'all-volunteer' %}
-          {% set page_title = 'Create All Volunteer Training' %}
-        {% elif template.tag == 'no-program' %}
-          {% set page_title = 'Create Non-program Event' %}
-        {% else %}
-          {% set page_title = 'Create ' + template.name + ' Event' %}
-        {% endif %}
+<div class="text-center mt-5 mb-3">
+    {% if isNewEvent %}
+      {% if template.tag == 'single-program' %}
+        {% set page_title = 'Create Event for ' + eventData["program"].programName %}
+      {% elif template.tag == 'all-volunteer' %}
+        {% set page_title = 'Create All Volunteer Training' %}
+      {% elif template.tag == 'no-program' %}
+        {% set page_title = 'Create Non-program Event' %}
+      {% else %}
+        {% set page_title = 'Create ' + template.name + ' Event' %}
+      {% endif %}
       {% else %}
         {% set page_title = eventData.name %}
       {% endif %}
 
     <h1 id="title">{{page_title}}</h1>
     {% if isEditable and isPastEvent %}
-      <div class="alert alert-danger" role="alert">This event is in the past.</div>
+    <div class="alert alert-danger" role="alert">This event is in the past.</div>
     {% endif %}
-  </div>
-  {% if isEditable and not isNewEvent %}
-  <div class="container">
+</div>
+{% if isEditable and not isNewEvent %}
+<div class="container">
     <div class="row align-items-start">
       <div class="btn-group col">
         <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
@@ -62,14 +62,15 @@
         </form>
       </div>
     </div>
-  </div>
-  {% endif %}
-  <form data-toggle="validator" role="form" action="{{request.path}}" method="POST">
+</div>
+{% endif %}
+<form data-toggle="validator" role="form" action="{{request.path}}" method="POST">
     <div class="row p-2">
-      <div class="col-md-6">
-        {% if eventData.id %}
-          <input type="hidden" name="id" value="{{eventData.id}}" >
-        {% endif %}
+        <div class="col-md-6">
+            {% if eventData.id %}
+            <input type="hidden" name="id" value="{{eventData.id}}">
+            {% endif %}
+
 
         <div class="form-group mb-4">
           <label class="form-label" for='inputEventName'><strong>Event Name</strong></label>
@@ -198,14 +199,81 @@
             {% if eventData.isService %}
               <label><strong>This event earns service hours.</strong></label><br>
             {% endif %}
+            <!-- Start and End Time -->
+            <div class="mb-4">
+                <div class="row col-md-12">
+                    <div class="form-group col-md-6">
+                        <label class="form-label me-2" for="startTime"><strong>Start Time</strong></label>
+                        {% if isEditable %}
+                        <div class="input-group">
+                            {% set startTime = eventData.timeStart.strftime("%I: %M %p") if eventData.timeStart and eventData.timeStart.strftime else eventData.timeStart%}
+                            <input type="time" class="form-control timepicker" id='startTime' value="{{startTime}}" name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time" required />
+                            <span class="input-group-text timeIcons" id="timeIcon1" hidden><i class="bi bi-clock"></i></span>
+                        </div>
+                        {% else %}
+                        <p>{{eventData.timeStart.strftime("%I: %M %p") if eventData.timeStart }}</p>
+                        {% endif %}
+                    </div>
+                    <div class='form-group col-md-6'>
+                        <label class="form-label me-2" for="pickEndTime"><strong>End Time</strong></label>
+                        {% if isEditable %}
+                        <div class="input-group">
+                            {% set endTime = eventData.timeEnd.strftime("%I: %M %p") if eventData.timeEnd and eventData.timeEnd.strftime else eventData.timeEnd%}
+                            <input type="time" class="form-control timepicker" id='endTime' value="{{endTime}}" name="timeEnd" aria-describedby="timeIcon2" placeholder="Pick an end time" required />
+                            <span class="input-group-text timeIcons" id="timeIcon2" hidden><i class="bi bi-clock"></i></span>
+                        </div>
+                        {% else %}
+                        <p>{{eventData.timeEnd.strftime("%I: %M %p") if eventData.timeEnd }}</p>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
-          {% endif %}
-          <div class="form-group mb-4">
-            <label class="form-label" for='inputEventDescription'><strong>Description</strong></label>
+            <!-- Start and End Datepickers -->
+            <div class="row col-md-12">
+                <div class="form-group col-md-6">
+                    <label class="form-label me-2" for="startDatePicker"><strong>Start Date</strong></label>
+                    {% if  isEditable  %}
+                    <div class='input-group date' id="startDate">
+                        <input type='text' class="form-control datePicker readonly" value="{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" name="startDate"
+                            placeholder="Pick a start date" onchange="updateDate(this)" id=startDatePicker required>
+                        <div class="input-group-text" id="calendarIconStart">
+                            <span><i class="bi bi-calendar-plus-fill"></i></span>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p>{{eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}</p>
+                    {% endif %}
+                </div>
+                <div class="form-group col-md-6 d-none" id="endDateStyle">
+                    <!--datePicker for End date-->
+                    <label class="form-label" for="endDatePicker"><strong>End Date</strong></label>
+                    <div class='input-group date' id="endDate">
+                        <input type='text' class="form-control datePicker readonly" id='endDatePicker' value="{{eventData.endDate.strftime('%m-%d-%Y') if eventData.endDate and eventData.endDate.strftime else eventData.endDate}}" name="endDate"
+                            placeholder="Pick an end date" onchange="updateDate(this)" {{"readonly" if not isEditable}}>
+                        <div class="input-group-text" id="calendarIconEnd">
+                            <span><i class="bi bi-calendar-plus-fill"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-none" id="recurringTableDiv">
+                <table class="table" id="recurringEventsTable" name="recurringEventsTable">
+                    <thead>
+                        <tr>
+                            <th>Event Name</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-6 form-group">
+            <label class="form-label" for='inputEventDescription'><strong> Description </strong></label>
             {% if isEditable %}
-              <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' placeholder="Enter event description" name="description" required>{{eventData.description}}</textarea>
+            <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' placeholder="Enter event description" name="description" required>{{eventData.description}}</textarea>
             {% else %}
-              <p>{{eventData.description}}</p>
+            <p>{{eventData.description}}</p>
             {% endif %}
           </div>
           <div class='form-group'>
@@ -264,31 +332,57 @@
           {% else %}
               {% if not eventData.facilitators|count %}
                 <p>None</p>
-              {%endif%}
+                {%endif%}
 
-              {% for f in eventData.facilitators %}
+                {% for f in eventData.facilitators %}
                 <p>{{f.firstName}} {{f.lastName}}</p>
-              {% endfor %}
-          {% endif %}
-        </div>
-      </div>
-      <div class="row justify-content-left mt-2">
-          <div class="col-md-6 offset-md-3">
-            <div class="text-center">
-              {% if (not isPastEvent) and (not isNewEvent)%}
-                  {% if userHasRSVPed %}
-                    <button type="submit" class="btn btn-danger"  formaction="/rsvpRemove">Remove RSVP</button>
-                  {%else%}
-                    <button type="submit" class="btn btn-primary"  formaction="/rsvpForEvent">RSVP</button>
-                 {% endif %}
-              {% endif %}
-              {% if isEditable %}
-              <button type="submit" id="saveEvent" class="btn btn-primary">Save</button>
-              {% endif %}
+                {% endfor %}
+                {% endif %}
+                <div class="mt-4 col-md-6 form-group">
+                    {% if isEditable and page_title != 'Create All Volunteer Training' %}
+                    <div class="form-check form-switch pt-4">
+                        <label class="custom-control-label" for="checkIsTraining"><strong> This event is a training. </strong></label>
+                        <input class="form-check-input" type="checkbox" id="checkIsTraining" name="isTraining" {{"checked" if eventData.isTraining}} />
+                    </div>
+                    <div class="form-check form-switch">
+                        <label class="custom-control-label" for='rsvp'><strong>This event requires RSVP.</strong></label>
+                        <input class="form-check-input" type="checkbox" id="rsvp" name="isRsvpRequired" {{"checked" if eventData.isRsvpRequired}} />
+                    </div>
+                    <div class="form-check form-switch mb-4">
+                        <label class="custom-control-label" for='earnServiceHours'><strong>This event earns service hours.</strong></label>
+                        <input class="form-check-input" type="checkbox" id="earnServiceHours" name="isService" {{"checked" if eventData.isService}} />
+                    </div>
+                    {% else %}
+                    <div class="mb-4">
+                        {% if eventData.isRsvpRequired %}
+                        <label><strong>This event requires RSVP</strong></label><br>
+                        {% endif %}
+                        {% if eventData.isService %}
+                        <label><strong>This event earns service hours.</strong></label><br>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
             </div>
-          </div>
         </div>
-      </div>
+
+        <div class="row justify-content-left mt-2">
+            <div class="col-md-6 offset-md-3">
+                <div class="text-center">
+                    {% if (not isPastEvent) and (not isNewEvent)%}
+                        {% if userHasRSVPed %}
+                           <button type="submit" class="btn btn-danger" formaction="/rsvpRemove">Remove RSVP</button>
+                        {%else%}
+                           <button type="submit" class="btn btn-primary" formaction="/rsvpForEvent">RSVP</button>
+                        {% endif %}
+                    {% endif %}
+                    {% if isEditable %}
+                    <button type="submit" id="saveEvent" class="btn btn-primary">Save</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 </form>
 
 {% endblock %}
