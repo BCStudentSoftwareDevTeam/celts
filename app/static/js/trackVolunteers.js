@@ -50,13 +50,13 @@ $(document).ready(function() {
   });
 
   $(".removeVolunteer").on("click", function() {
-    let username =  $(this)[0].id;
+    let username =  this.id;
     let eventId = $('#eventID').val()
     $.ajax({
       url: `/removeVolunteerFromEvent/${username}/${eventId}`,
       type: "POST",
       success: function(s) {
-        location.reload();
+         location.reload();
       },
       error: function(request, status, error) {
       }

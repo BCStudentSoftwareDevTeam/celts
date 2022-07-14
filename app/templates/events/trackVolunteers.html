@@ -157,8 +157,8 @@
               <div class="modal-body pl-5">
                   {%for participant in recurringVolunteers%}
                     <table>
-                      <input class="m-2" type="checkbox" id ="recurringVolunteerCheckbox" name="volunteer[]" value= {{participant}} />
-                      <label class="form-check-label" for="recurringVolunteerCheckbox"> {{participant.firstName}} {{participant.lastName}}  </label>
+                      <input class="m-2" type="checkbox" id ="recurringVolunteerCheckbox_{{loop.index}}" name="volunteer[]" value= {{participant}} />
+                      <label class="form-check-label" for="recurringVolunteerCheckbox_{{loop.index}}"> {{participant.firstName}} {{participant.lastName}}  </label>
                     </table>
                   {% endfor %}
               </div>
