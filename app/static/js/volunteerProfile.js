@@ -33,8 +33,6 @@ $(document).ready(function(){
     }).attr('readonly','readonly');
   });
 
-
-
   $(".ban").click(function() {
     var banButton = $("#banButton")
     var banEndDateDiv = $("#banEndDate") // Div containing the datepicker in the ban modal
@@ -80,28 +78,36 @@ $(document).ready(function(){
              "endDate":$("#banEndDatepicker").val() //Expected to be a date in this format YYYY-MM-DD
             },
       success: function(response) {
-
         location.reload();
       }
     });
   });
 
+  $(".savebtn").click(function () { // Updates the Background check of a volunteer in the database
+    let bgCheckType = $(this).data("id")
+    let bgDate = $("#" + bgCheckType + "_date").val()
+    let checkPassed = $("[data-id=" + bgCheckType + "]").val()
 
-  $(".backgroundCheck").change(function () { // Updates the Background check of a volunteer in the database
-    checkType = $(this).attr("id")
-    let data = {
-        checkPassed : $(this).val(),      // Expected to be either a 0 or a 1volunteerProfile.js
-
-        user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
-        bgType: checkType,       // Expected to be the ID of a background check in the database
-        bgDate: $("#" + checkType + "_date").val()  //Expected to be the date of the background check completion
+    if (checkPassed == 0 && bgDate != '' ) {
+        displayMessage("Y/N<br>Empty!", "danger")
+        return
+    } else if(bgDate == '' && checkPassed != 0) {
+        displayMessage("Date<br>Empty!", "danger")
+        return
     }
 
+    let data = {
+        checkPassed: checkPassed,      // Expected to be either a 0 or a 1 volunteerProfile.js
+        user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
+        bgType: $(this).attr("id"),       // Expected to be the ID of a background check in the database
+        bgDate: bgDate  // Expected to be the date of the background check completion or '' if field is empty
+    }
     $.ajax({
       url: "/updateBackgroundCheck",
       type: "POST",
       data: data,
       success: function(s){
+          displayMessage("Saved!", "success")
       },
       error: function(error, status){
           console.log(error, status)
@@ -110,16 +116,21 @@ $(document).ready(function(){
   });
 });
 
+function displayMessage(message, color) {  // displays message for saving background check
+    $("#displaySave").html(message).addClass("text-"+ color)
+    setTimeout(function() {$("#displaySave").html("").removeClass("text-"+ color)}, 2000)
+}
+
 function updateManagers(el, volunteer_username ){// retrieve the data of the studnet staff and program id if the boxes are checked or not
   var program_id=$(el).attr('data-programid');
   action= el.checked ? 'add' : 'remove';
-  
+
   $.ajax({
     method:"POST",
     url:"/updateProgramManager",
     data : {"user_name":volunteer_username, //student staff: user_name
             "program_id":program_id,       // program id
-            "action":action,          //action: add or remove 
-             },  
+            "action":action,          //action: add or remove
+             },
   })
 }

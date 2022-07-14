@@ -157,45 +157,50 @@
   </div>
 {% endif %}
   <!-- End Program Manager Selection -->
-
 <!-- Start Background Check Table -->
-
-<div class="row">
-  <h2>Background Check</h2>
-  <table class="table">
-     <thead>
-       <tr>
-         <th scope="col">Description</th>
-         <th scope="col">Date Completed</th>
-         <th scope="col">Completed</th>
-       </tr>
-     </thead>
-     <tbody>
-       {% for entry in backgroundTypes%}
-       <tr>
-         <td>{{entry.description}}</td>
-         <td> <input name="dateCompleted" type="date" id="{{entry.id}}_date" value="{{ entry.dateCompleted }}" class="form-control" /> </td>
-         <td>
-         {%if g.current_user.isCeltsAdmin%}
-             <select class="backgroundCheck" id="{{entry.id}}" data-username="{{volunteer.username}}" >
-               <option value=1>Yes</option>
-               <option value=0 {{"selected" if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False}}>No</option>
-             </select>
-        {% else %}
-           {% if entry.id not in completedBackgroundCheck or completedBackgroundCheck[entry.id] == False%}
-               No
-           {% else %}
-               Yes
-           {% endif%}
-        {% endif %}
-         </td>
-       </tr>
-       {%endfor%}
-     </tbody>
-  </table>
-</div>
+{% if g.current_user.isAdmin %}
+    <div class="row">
+      <h2>Background Check</h2>
+      <table class="table">
+         <thead>
+           <tr>
+             <th scope="col">Description</th>
+             <th scope="col">Completed</th>
+             <th scope="col">Date</th>
+             {% if g.current_user.isCeltsAdmin%}
+                <th class="" id="displaySave" scope="col"></th>
+             {% endif %}
+           </tr>
+         </thead>
+         <tbody>
+           {% for bgType in backgroundTypes %}
+           <tr>
+             <td>{{bgType.description}}</td>
+             {% if g.current_user.isCeltsAdmin %}
+                <td>
+                    <select class="passedBackgroundCheck" id="{{bgType.id}}" data-id="{{bgType.id}}">
+                        {% if completedBackgroundCheck[bgType][0] == True %}
+                            <option value=1>Yes</option>
+                            <option value=0>No</option>
+                        {% else %}
+                            <option value=0>No</option>
+                            <option value=1>Yes</option>
+                        {% endif %}
+                    </select>
+                </td>
+                <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" value="{{completedBackgroundCheck[bgType][1]}}" class="form-control"/></td>
+                <td><button type="button" class="savebtn btn btn-primary" id="{{bgType.id}}" data-id="{{bgType.id}}" data-username="{{volunteer.username}}">Save</button></td>
+            {% else %}
+                <td>{{completedBackgroundCheck[bgType][0]}}</td>
+                <td>{{completedBackgroundCheck[bgType][1]}}</td>
+            </tr>
+           {% endif %}
+          {%endfor%}
+         </tbody>
+      </table>
+    </div>
+{% endif %}
 <!-- End Background Check Table -->
-
 <!-- Ban or Unban Modal -->
 <div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
   <form onsubmit="return validate();">
