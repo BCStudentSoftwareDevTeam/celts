@@ -130,7 +130,6 @@ $(document).ready(function() {
     }
   });
 
-
   var facilitatorArray = []
   function callback(selectedFacilitator) {
     // JSON.parse is required to de-stringify the search results into a dictionary.
@@ -147,12 +146,13 @@ $(document).ready(function() {
         newRow.attr("id", username);
         newRow.prop("hidden", false);
         lastRow.after(newRow);
+        $("#test").attr("value", facilitatorArray);
     }
   }
 
   $("#eventFacilitator").on('input', function() {
     // To retrieve specific columns into a dict, create a [] list and put columns inside
-    searchUser("eventFacilitator", callback, true, null, ["phoneNumber", "firstName", "lastName", "username"]);
+    searchUser("eventFacilitator", callback, true, null, ["firstName", "lastName", "username"]);
   });
 
   $("#facilitatorTable").on("click", "#remove", function() {
