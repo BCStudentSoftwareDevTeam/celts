@@ -21,3 +21,26 @@ class Term(baseModel):
                 self._cache = self
 
         return self._cache
+
+    @property
+    def isFutureTerm(self):
+        """
+        checks to see if the term selected is a current Term.
+        If not, depending on the year and description, it determines whether it is a future term
+        """
+        if not self.isCurrentTerm:
+            currentTerm = Term.select().where(Term.isCurrentTerm == True).get()
+            if currentTerm.year < self.year:
+                return True
+            elif currentTerm.year > self.year:
+                return False
+            else:
+                if ("Fall" in currentTerm.description):
+                    return False
+                elif ("Summer" in currentTerm.description) & ("Fall" in self.description):
+                    return True
+                elif ("Summer" in currentTerm.description) & ("Spring" in self.description):
+                    return False
+                elif ("Spring" in currentTerm.description):
+                    return True
+        return False
