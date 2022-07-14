@@ -868,10 +868,6 @@ programManagerPrograms = [
     'program':2
     },
     {
-    'user':'ayisie',
-    'program':12
-    },
-    {
     'user':'neillz',
     'program':'1'
     },

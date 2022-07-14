@@ -88,19 +88,18 @@ def changeProgramInfo(newEmail, newSender, programId):
     updatedProgram.execute()
     return (f'Program email info updated')
 
-def getPrograms(currentUser):
+def getAllowedPrograms(currentUser):
     """Returns a list of all visible programs depending on who the current user is."""
-
-    if g.current_user.isCeltsAdmin:
+    if currentUser.isCeltsAdmin:
         return Program.select().order_by(Program.programName)
     else:
         return Program.select().join(ProgramManager).where(ProgramManager.user==currentUser).order_by(Program.programName)
 
 
 
-def getTemplates(currentUser):
+def getAllowedTemplates(currentUser):
     """Returns a list of all visible templates depending on who the current user is. If they are not an admin it should always be none."""
-    if g.current_user.isCeltsAdmin:
+    if currentUser.isCeltsAdmin:
         return EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
     else:
         return []
