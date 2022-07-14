@@ -53,8 +53,11 @@ function callback(selected) {
   if(userlist.includes(selected["username"]) == false){
       userlist.push(user)
       $("#addVolunteerList").append("<table>")
-      $("#addVolunteerList").append("<input  type=checkbox id= userlistCheckbox checked= checked value = " + user +" >  </input>")
-      $("#addVolunteerList").append("<label form>"+ selected["firstName"]+ " " + selected["lastName"] +"</label>")
+      for(let i = 0; i < 1 ; i++){
+          i += userlist.length;
+          $("#addVolunteerList").append("<input  type=checkbox id= userlistCheckbox"+i+" checked= checked value = " + user +" >  </input>")
+          $("#addVolunteerList").append("<label form for= userlistCheckbox"+i+">"+ selected["firstName"]+ " " + selected["lastName"] +"</label>")
+      }
       $("#addVolunteerList").append("</table>")
   }
   else{

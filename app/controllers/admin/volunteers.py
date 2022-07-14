@@ -91,7 +91,7 @@ def addVolunteer(eventId):
             addVolunteerToEventRsvp(user, eventId)
             EventParticipant.create(user=user, event=eventId) # user is present
             successfullyAddedVolunteer = True
-    if successfullyAddedVolunteer == True:
+    if successfullyAddedVolunteer:
         flash("Volunteer successfully added!", "success")
     else:
         flash("Error when adding volunteer", "danger")
