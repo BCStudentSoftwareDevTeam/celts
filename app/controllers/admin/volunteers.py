@@ -85,37 +85,32 @@ def updateVolunteerTable(eventID):
 def addVolunteer(eventId, volunteer = None):
     successfullyAddedVolunteer = False
     usernameList = []
+    eventParticipants = getEventParticipants(eventId)
     if volunteer == None:
         usernameList = request.form.getlist("volunteer[]")
+
     else:
         username = volunteer.strip("()").split('(')[-1]
-        user = User.get(User.username==username)
-        usernameList.append(user)
-    eventParticipants = getEventParticipants(eventId)
+        usernameList.append(username)
+
     for user in usernameList:
         user = User.get(User.username==user)
 
-        if len(usernameList) == 0:
-            noVolunteersSelectedMessage = "No volunteers selected, please select a volunteer."
-            successfullyAddedVolunteer = False
-            noVolunteerSelected = True
+        isVolunteerInEvent =  (EventRsvp.select().where(EventRsvp.user==user, EventRsvp.event_id == eventId).exists() and
+              EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event_id == eventId).exists())
 
-        if len(eventParticipants) == 0:
+        if len(eventParticipants) == 0 or isVolunteerInEvent == False:
             addVolunteerToEventRsvp(user, eventId)
             EventParticipant.create(user = user, event = eventId)
             successfullyAddedVolunteer = True
-
-        elif (EventRsvp.select().where(EventRsvp.user==user, EventRsvp.event_id == eventId) and
-              EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event_id == eventId)):
-            duplicateVolunteerMessage = "This volunteer has already been added to this event."
-            successfullyAddedVolunteer = False
-
-        else:
-            addVolunteerToEventRsvp(user, eventId)
-            EventParticipant.create(user = user, event = eventId)
+        if isVolunteerInEvent:
             successfullyAddedVolunteer = True
+
+    if len(usernameList) == 0:
+        successfullyAddedVolunteer = False
 
     if (successfullyAddedVolunteer):
+        flash("Volunteer added successfully.", "success")
         return redirect(url_for('admin.trackVolunteersPage', eventID = eventId))
     else:
         flash("Error when adding volunteer to event." ,"danger")
