@@ -1,4 +1,3 @@
-import re
 from flask import request, render_template, redirect, url_for, request, flash, abort, g, json, jsonify
 from datetime import datetime
 from peewee import DoesNotExist
@@ -73,7 +72,7 @@ def updateVolunteerTable(eventID):
         abort(404)
 
     program = event.singleProgram
-    
+
     volunteerUpdated = updateEventParticipants(request.form)
     if volunteerUpdated:
         flash("Volunteer table succesfully updated", "success")
