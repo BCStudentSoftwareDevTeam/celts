@@ -614,7 +614,7 @@ def test_getPreviousRecurringEventData():
                                                     event = testingEvent2.id,
                                                     hoursEarned = None)
 
-        val = getPreviousRecurringEventData(testingEvent3.recurringId, testingEvent3.startDate)
+        val = getPreviousRecurringEventData(testingEvent3.recurringId)
         assert val[0].username == "neillz"
         assert val[1].username == "ramsayb2"
         assert val[2].username == "khatts"
