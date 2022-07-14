@@ -47,15 +47,13 @@ def templateSelect():
         allprograms = []
         if g.current_user.isCeltsStudentStaff:
             allprograms = getPrograms(g.current_user)
+            visibleTemplates = []
         else:
             allprograms = Program.select().order_by(Program.programName)
-
-        visibleTemplates = EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
-
+            visibleTemplates = EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
         return render_template("/events/template_selector.html",
-                    programs=allprograms,
-                    templates=visibleTemplates
-                )
+                                programs=allprograms,
+                                templates=visibleTemplates)
     else:
         abort(403)
 
@@ -63,7 +61,7 @@ def templateSelect():
 @admin_bp.route('/eventTemplates/<templateid>/create', methods=['GET','POST'])
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
 def createEvent(templateid, programid=None):
-    if not (g.current_user.isAdmin or hasPrivilege(g.current_user, programid)):
+    if not (g.current_user.isAdmin or g.current_user.isProgramManagerFor(programid)):
         abort(403)
 
     # Validate given URL

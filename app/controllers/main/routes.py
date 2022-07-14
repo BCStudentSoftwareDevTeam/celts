@@ -19,7 +19,6 @@ from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
 from app.models.programManager import ProgramManager
 from app.controllers.main import main_bp
-from app.logic.userManagement import hasPrivilege
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
 from app.logic.events import *
@@ -57,8 +56,7 @@ def events(selectedTerm):
         listOfTerms = listOfTerms,
         rsvpedEventsID = rsvpedEventsID,
         currentTime = currentTime,
-        user = g.current_user,
-        hasPrivilege = hasPrivilege)
+        user = g.current_user)
 
 @main_bp.route('/profile/<username>', methods=['GET'])
 def viewVolunteersProfile(username):

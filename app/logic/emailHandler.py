@@ -62,7 +62,7 @@ class EmailHandler:
             self.recipients_category = self.raw_form_data['recipientsCategory']
             self.recipients = self.retrieve_recipients(self.recipients_category)
 
-        # Service Learning Course
+        # Service-Learning Course
         if 'slCourseId' in self.raw_form_data:
             self.sl_course_id = self.raw_form_data['slCourseId']
 
