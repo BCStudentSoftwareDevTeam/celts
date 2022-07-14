@@ -115,8 +115,8 @@ function callback(selectedInstructor) {
   let username = selectedInstructor["username"];
   let phone = selectedInstructor["phoneNumber"];
   let tableBody = $("#instructorTable").find("tbody");
-  let x=$("#instructorTable").prop('outerHTML');
-  if(!(x).includes(username)){
+  let isAdded=$("#instructorTable").prop('outerHTML');
+  if(!(isAdded).includes(instructor)){
     let lastRow = tableBody.find("tr:last");
     let newRow = lastRow.clone();
     newRow.find("td:eq(0) p").text(instructor);
