@@ -118,6 +118,8 @@ function callback(selectedInstructor) {
   let tableBody = $("#instructorTable").find("tbody");
   let lastRow = tableBody.find("tr:last");
   let newRow = lastRow.clone();
+
+
   newRow.find("td:eq(0) p").text(instructor);
   newRow.find("td:eq(0) div input").val(phone);
   newRow.find("td:eq(0) div button").attr("data-id", username);
