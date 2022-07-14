@@ -9,7 +9,7 @@ templates = [
         "name": "Single Program",
         "tag": "single-program",
         "templateJSON": "{}",
-        "templateFile": "createSingleEvent.html",
+        "templateFile": "createEvent.html",
         "isVisible": False
     },
     {
@@ -17,7 +17,7 @@ templates = [
         "name": "All Volunteer Training",
         "tag": "all-volunteer",
         "templateJSON": '{"name": "All Volunteer Training","description": "Training for all CELTS programs", "isTraining": true, "isService": false, "isRequired": true, "isAllVolunteerTraining": true}',
-        "templateFile": "createSingleEvent.html",
+        "templateFile": "createEvent.html",
         "isVisible": True
     },
     {
@@ -25,7 +25,7 @@ templates = [
         "name": "No Program Associated",
         "tag": "no-program",
         "templateJSON": "{}",
-        "templateFile": "createSingleEvent.html",
+        "templateFile": "createEvent.html",
         "isVisible": True
     },
 
