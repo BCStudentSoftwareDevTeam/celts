@@ -137,10 +137,12 @@ def eventDisplay(eventId):
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     program = event.singleProgram
+    isProgramManager = g.current_user.isProgramManagerFor(program)
     rule = request.url_rule
     if 'edit' in rule.rule:
-        isProgramManager = g.current_user.isProgramManagerFor(program)
-        return render_template("admin/createSingleEvent.html",
+        if not (g.current_user.isCeltsAdmin or isProgramManager):
+            abort(403)
+        return render_template("admin/createEvent.html",
                                 eventData = eventData,
                                 allFacilitators = getAllFacilitators(),
                                 futureTerms=futureTerms,
@@ -161,7 +163,8 @@ def eventDisplay(eventId):
                                 isPastEvent = isPastEvent,
                                 userHasRSVPed = userHasRSVPed,
                                 programTrainings = userParticipatedEvents,
-                                programManager = programManager)
+                                programManager = programManager,
+                                isProgramManager = isProgramManager)
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):

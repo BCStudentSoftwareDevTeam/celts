@@ -209,7 +209,6 @@ def volunteerRegister():
     for the event they have clicked register for.
     """
     eventData = request.form
-
     event = Event.get_by_id(eventData['id'])
 
     user = g.current_user
@@ -231,19 +230,20 @@ def volunteerRegister():
             return ''
     return redirect(url_for("admin.eventDisplay", eventId=event.id))
 
-
 @main_bp.route('/rsvpRemove', methods = ['POST'])
 def RemoveRSVP():
     """
-    This function deletes the user ID and event ID from database when RemoveRSVP  is clicked
+    This function deletes the user ID and event ID from database when RemoveRSVP is clicked
     """
     eventData = request.form
     event = Event.get_by_id(eventData['id'])
 
     currentRsvpParticipant = EventRsvp.get(EventRsvp.user == g.current_user, EventRsvp.event == event)
     currentRsvpParticipant.delete_instance()
-
     flash("Successfully unregistered for event!", "success")
+    if 'from' in eventData:
+        if eventData['from'] == 'ajax':
+            return ''
     return redirect(url_for("admin.eventDisplay", eventId=event.id))
 
 @main_bp.route('/profile/<username>/serviceTranscript', methods = ['GET'])
