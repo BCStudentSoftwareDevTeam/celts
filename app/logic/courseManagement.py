@@ -78,12 +78,12 @@ def updateCourse(courseData, instructorsDict):
         of instuctors assigned to the course and update the information in the db.
     """
     try:
-        coursebyid= Course.get_by_id(courseData['courseID'])
+        course= Course.get_by_id(courseData['courseID'])
         for toggler in ["regularOccurenceToggle", "slSectionsToggle", "permanentDesignation"]:
             courseData.setdefault(toggler, "off")
         
         status = CourseStatus.get(CourseStatus.status == "Pending")
-        course = Course.update(
+        Course.update(
             courseName=courseData["courseName"],
             courseAbbreviation=courseData["courseAbbreviation"],
             courseCredit=courseData["credit"],
@@ -103,6 +103,6 @@ def updateCourse(courseData, instructorsDict):
                 addInstructors = CourseInstructor.create(course=courseData["courseID"], user=instructor)
     except:
         flash("Course not approved!", "danger")  
-    return coursebyid
+    return course
             
        

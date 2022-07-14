@@ -1,5 +1,3 @@
-from itertools import count
-import re
 from flask import request, render_template, g, abort, json, redirect, jsonify, flash, session
 from app.models import course
 from app.models.user import User
