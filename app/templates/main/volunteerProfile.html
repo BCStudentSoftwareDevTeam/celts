@@ -82,7 +82,7 @@
             {% set checked = "checked" %}
         {% endif %}
           <tr>
-            <td id="programNameTable">{{row.program.programName}}</td>
+            <td><a href="{{row.program.url}}" id="programNameTable">{{row.program.programName}}</a></td>
             <td><input class="form-check-input" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>
             <td>
                 {% if row.completedTraining %}
