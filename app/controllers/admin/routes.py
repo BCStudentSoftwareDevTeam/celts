@@ -26,7 +26,7 @@ from app.logic.participants import getEventParticipants, getUserParticipatedEven
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
-from app.logic.userManagement import getPrograms
+from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 
 
 @admin_bp.route('/switch_user', methods=['POST'])
@@ -44,13 +44,8 @@ def switchUser():
 @admin_bp.route('/eventTemplates')
 def templateSelect():
     if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
-        allprograms = []
-        if g.current_user.isCeltsStudentStaff:
-            allprograms = getPrograms(g.current_user)
-            visibleTemplates = []
-        else:
-            allprograms = Program.select().order_by(Program.programName)
-            visibleTemplates = EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
+        allprograms = getAllowedPrograms(g.current_user)
+        visibleTemplates = getAllowedTemplates(g.current_user)
         return render_template("/events/template_selector.html",
                                 programs=allprograms,
                                 templates=visibleTemplates)
