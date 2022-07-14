@@ -286,10 +286,10 @@ def reviewProposal():
     this function gets the pending course id and returns the its data to the review proposal modal 
     """
     courseID=request.form
-    course_data=Course.get_by_id(courseID["course_id"])
-    instructors_data=course_data.courseInstructors
+    course=Course.get_by_id(courseID["course_id"])
+    instructors_data=course.courseInstructors
     return render_template('/main/reviewproposal.html',
-                            course_data=course_data,
+                            course=course,
                             instructors_data=instructors_data,
                             courseID=courseID["course_id"])
 @main_bp.route('/manageServiceLearning', methods = ['GET', 'POST'])
