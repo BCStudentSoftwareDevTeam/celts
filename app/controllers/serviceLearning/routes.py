@@ -1,5 +1,7 @@
+from itertools import count
 import re
 from flask import request, render_template, g, abort, json, redirect, jsonify, flash, session
+from app.models import course
 from app.models.user import User
 from app.models.term import Term
 from app.models.course import Course
@@ -124,15 +126,17 @@ def approveCourse():
     return: empty string because AJAX needs to receive something
     """ 
     if len(request.form)==1:
-        course_data = request.form['courseID'] # if only course is reviewed pass the course ID
+        course=Course.get_by_id(request.form['courseID']) # if only course is reviewed pass the course ID
+        
+    elif 'courseID' in request.form:
+        course = updateCourse(request.form.copy(), instructorsDict) # if edit course, Updates database with the completed fields and get course ID
+        
     else:
-        try:
-            course_data=createCourse(request.form.copy(), instructorsDict) # creat course first and get its ID to approve next 
-        except:
-            course_upate = updateCourse(request.form.copy(), instructorsDict) # if edit course, Updates database with the completed fields and get course ID
-            course_data=course_upate['courseID']
-
-    course = Course.update(status = 2).where(Course.id == course_data)
-    course.execute() # Executes the query and approves course in the database
-    flash("Course approved!", "success")        
+        course=createCourse(request.form.copy(), instructorsDict) # creat course first and get its ID to approve next
+    try:
+        course.status = 2
+        course.save() # saves the query and approves course in the database
+        flash("Course approved!", "success")        
+    except:
+        flash("Course not approved!", "danger")  
     return ""
