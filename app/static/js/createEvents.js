@@ -146,7 +146,7 @@ $(document).ready(function() {
         newRow.attr("id", username);
         newRow.prop("hidden", false);
         lastRow.after(newRow);
-        $("#test").attr("value", facilitatorArray);
+        $("#hiddenFacilitatorArray").attr("value", facilitatorArray);
     }
   }
 
@@ -159,7 +159,7 @@ $(document).ready(function() {
      let username = $(this).closest("tr")[0].id
      const index = facilitatorArray.indexOf(username)
      facilitatorArray.splice(index, 1);
-     $("#test").attr("value", facilitatorArray);
+     $("#hiddenFacilitatorArray").attr("value", facilitatorArray);
      $(this).closest("tr").remove();
   });
 

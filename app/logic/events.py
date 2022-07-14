@@ -272,7 +272,6 @@ def preprocessEventData(eventData):
           (or use an empty list if no event)
         - times should exist be strings in 24 hour format example: 14:40
     """
-    # print(eventData)
     ## Process checkboxes
     eventCheckBoxes = ['isRsvpRequired', 'isService', 'isTraining', 'isRecurring', 'isAllVolunteerTraining']
 
@@ -320,6 +319,17 @@ def preprocessEventData(eventData):
 
     return eventData
 
+def getFacilitatorsFromList(facilitatorList):
+    """
+    This function takes in a list with the usernames of facilitators and Returns
+        a list of facilitator objects that match the usernames in the list
+    facilitatorList: expected to be a list with facilitator usernames as strings
+    return: list of facilitator objects matching the usernames in facilitatorList
+    """
+    finalFacilitatorList = []
+    for i in facilitatorList:
+        finalFacilitatorList.append(User.select().where(User.username == i).get())
+    return finalFacilitatorList
 
 def getTomorrowsEvents():
     """Grabs each event that occurs tomorrow"""
