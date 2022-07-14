@@ -202,31 +202,7 @@
                 <p>{{f.firstName}} {{f.lastName}}</p>
                 {% endfor %}
             {% endif %}
-                <div class="mt-4 col-md-6 form-group">
-                    {% if isEditable and page_title != 'Create All Volunteer Training' %}
-                    <div class="form-check form-switch pt-4">
-                        <label class="custom-control-label" for="checkIsTraining"><strong> This event is a training. </strong></label>
-                        <input class="form-check-input" type="checkbox" id="checkIsTraining" name="isTraining" {{"checked" if eventData.isTraining}} />
-                    </div>
-                    <div class="form-check form-switch">
-                        <label class="custom-control-label" for='rsvp'><strong>This event requires RSVP.</strong></label>
-                        <input class="form-check-input" type="checkbox" id="rsvp" name="isRsvpRequired" {{"checked" if eventData.isRsvpRequired}} />
-                    </div>
-                    <div class="form-check form-switch mb-4">
-                        <label class="custom-control-label" for='earnServiceHours'><strong>This event earns service hours.</strong></label>
-                        <input class="form-check-input" type="checkbox" id="earnServiceHours" name="isService" {{"checked" if eventData.isService}} />
-                    </div>
-                    {% else %}
-                    <div class="mb-4">
-                        {% if eventData.isRsvpRequired %}
-                        <label><strong>This event requires RSVP</strong></label><br>
-                        {% endif %}
-                        {% if eventData.isService %}
-                        <label><strong>This event earns service hours.</strong></label><br>
-                        {% endif %}
-                    </div>
-                    {% endif %}
-                </div>
+
 
 
 
