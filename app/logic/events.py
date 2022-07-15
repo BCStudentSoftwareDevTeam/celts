@@ -231,15 +231,21 @@ def validateNewEventData(data):
     return (True, "All inputs are valid.")
 
 def calculateNewrecurringId():
+    """
+    Gets the highest recurring Id so that a new recurring Id can be assigned
+    """
     recurringId = Event.select(fn.MAX(Event.recurringId)).scalar()
     if recurringId:
         return recurringId + 1
     else:
         return 1
 
-def getPreviousRecurringEventData(recurringId, startDate):
-    return list(User.select(User.username).join(EventParticipant).join(Event)
-    .where(Event.recurringId==recurringId, Event.startDate<startDate))
+def getPreviousRecurringEventData(recurringId):
+    """
+    Joins the User db table and Event Participant db table so that we can get the information of a Particpant if they attended an event
+    """
+    previousEventVolunteers = User.select(User).join(EventParticipant).join(Event).where(Event.recurringId==recurringId).distinct()
+    return previousEventVolunteers
 
 def calculateRecurringEventFrequency(event):
     """
