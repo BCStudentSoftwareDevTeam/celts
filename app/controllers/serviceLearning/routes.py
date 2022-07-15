@@ -138,13 +138,19 @@ def approveCourse():
     This function updates and approves a Service-Learning Course when using  the
         approve button.
     return: empty string because AJAX needs to receive something
-    """
+    """ 
+    if len(request.form)==1:
+        course=Course.get_by_id(request.form['courseID']) # if only course is reviewed pass the course ID
+        
+    elif 'courseID' in request.form:
+        course = updateCourse(request.form.copy(), instructorsDict) # if edit course, Updates database with the completed fields and get course ID
+        
+    else:
+        course=createCourse(request.form.copy(), instructorsDict) # creat course first and get its ID to approve next
     try:
-        updateCourse(request.form.copy(), instructorsDict) # Updates database with the completed fields
-        # The next line creates the query to approve the course
-        course = Course.update(status = 2).where(Course.id == request.form['courseID'])
-        course.execute() # Executes the query and approves course in the database
-        flash("Course approved!", "success")
+        course.status = 2
+        course.save() # saves the query and approves course in the database
+        flash("Course approved!", "success")        
     except:
-        flash("Course not approved", "warning")
+        flash("Course not approved!", "danger")  
     return ""
