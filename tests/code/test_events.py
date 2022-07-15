@@ -306,7 +306,6 @@ def test_calculateRecurringEventFrequency():
     with pytest.raises(Exception):
         returnedEvents = calculateRecurringEventFrequency(eventInfo)
 
-
 @pytest.mark.integration
 def test_attemptSaveEvent():
     # This test duplicates some of the saving tests, but with raw data, like from a form
@@ -340,8 +339,6 @@ def test_attemptSaveEvent():
 
         finally:
             transaction.rollback() # undo our database changes
-
-
 
 @pytest.mark.integration
 def test_saveEventToDb_create():
@@ -618,4 +615,31 @@ def test_getPreviousRecurringEventData():
         assert val[0].username == "neillz"
         assert val[1].username == "ramsayb2"
         assert val[2].username == "khatts"
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_getFacilitatorsFromList():
+    with mainDB.atomic() as transaction:
+        testingUser1 = User.create(username = "userForTesting1",
+                                    bnumber = "Btesting1",
+                                    email = "test1@test.test",
+                                    phoneNumber = "0000000000",
+                                    firstName = "Test#1",
+                                    lastName = "Test#1.1")
+        testingUser2 = User.create(username = "userForTesting2",
+                                    bnumber = "Btesting2",
+                                    email = "test2@test.test",
+                                    phoneNumber = "0000000000",
+                                    firstName = "Test#2",
+                                    lastName = "Test#2.1")
+        listToAssert = getFacilitatorsFromList([])
+        assert listToAssert == []
+        listToAssert = getFacilitatorsFromList(["userForTesting1"])
+        assert listToAssert == [testingUser1]
+        listToAssert = getFacilitatorsFromList("userForTesting1")
+        assert listToAssert == [testingUser1]
+        listToAssert = getFacilitatorsFromList(["userForTesting1", "userForTesting2"])
+        assert listToAssert == [testingUser1, testingUser2]
+        listToAssert = getFacilitatorsFromList("userForTesting1,userForTesting2")
+        assert listToAssert == [testingUser1, testingUser2]
         transaction.rollback()
