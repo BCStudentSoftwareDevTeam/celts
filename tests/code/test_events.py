@@ -562,8 +562,8 @@ def test_getsCorrectUpcomingEvent():
 
         user = "ramsayb2"
         events = getUpcomingEventsForUser(user, asOf=testDate)
-        
-        assert len(events) == 2
+
+        assert len(events) == 4
         assert "Meet & Greet with Grandparent" == events[0].name
 
         transaction.rollback()
