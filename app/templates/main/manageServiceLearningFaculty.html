@@ -105,7 +105,7 @@
 </div>
 <h2 class="text-center pt-1 pb-4">Service Learning Faculty</h2>
 <div id="wrapper">
-  <div style="text-align:right; width:100%; padding:0; margin-bottom: -42px; display: inline-block" >
+  <div style="text-align:right; position:relative; top: 50px; z-index:1;" >
       {% set instructorEmails = [] %}
       {% for instructor in courseInstructors%}
         {{ instructorEmails.append(instructor.email) or "" }}
