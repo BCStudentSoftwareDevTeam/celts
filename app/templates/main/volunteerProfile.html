@@ -15,7 +15,17 @@
 <div>
     <h1 align="center">{{volunteer.firstName}} {{volunteer.lastName}}</h1>
     <h6 align="center">{{volunteer.email}}</h6>
-    <h6 align="center">{{volunteer.phoneNumber}}</h6>
+    <div align="center">
+      <tr>
+        <td>
+          {{volunteer.phoneNumber}}
+        </td>
+        <td>
+          <button class="bi-pincel">edit</button>
+        </td>
+    </tr>
+    </div>
+    
 </div>
 
 <div class="btn-group">
