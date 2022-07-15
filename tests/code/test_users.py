@@ -164,14 +164,11 @@ def test_unbanUser():
 
 @pytest.mark.integration
 def test_userpriv():
-    with mainDB.atomic() as transaction:
 
-        user = User.get_by_id("khatts")
-        prg = Program.get_by_id(1)
-        assert user.isProgramManagerFor(prg)
+    user = User.get_by_id("khatts")
+    prg = Program.get_by_id(1)
+    assert user.isProgramManagerFor(prg)
 
-        user = User.get_by_id("mupotsal")
-        prg = Program.get_by_id(12)
-        assert not user.isProgramManagerFor(prg)
-
-        transaction.rollback()
+    user = User.get_by_id("mupotsal")
+    prg = Program.get_by_id(12)
+    assert not user.isProgramManagerFor(prg)
