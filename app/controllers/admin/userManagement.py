@@ -70,15 +70,13 @@ def removeProgramManagers():
 def updateProgramInfo(programID):
     """Grabs info and then outputs it to logic function"""
     programInfo = request.form #grabs user inputs
-    print("------------------------------------")
-    print(programInfo)
-    print(programID)
     if g.current_user.isCeltsAdmin:
         try:
-            return changeProgramInfo(programInfo["Name"],  #calls logic function to add data to database
+            changeProgramInfo(programInfo["Name"],  #calls logic function to add data to database
                                     programInfo["Email"],
                                     programInfo["Sender"],
                                     programID)
+            flash('Program updated.','success')
         except Exception as e:
             print(e)
             flash('Error while updating program info.','warning')
