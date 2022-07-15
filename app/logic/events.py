@@ -315,26 +315,33 @@ def preprocessEventData(eventData):
         eventData['timeEnd'] = format24HourTime(eventData['timeEnd'])
 
     ## Get the facilitator objects from the list or from the event if there is a problem
-    try:
-        if type(eventData) == MultiDict and type(eventData['facilitators']) is not list:
-            eventData['facilitators'] = eventData.getlist('facilitators')
-        eventData['facilitators'] = [User.get_by_id(f) for f in eventData['facilitators']]
-    except Exception as e:
-        event = eventData.get('id', -1)
-        eventData['facilitators'] = list(User.select().join(EventFacilitator).where(EventFacilitator.event == event))
+    if 'facilitators' in eventData:
+        eventData['facilitators'] = getFacilitatorsFromList(eventData['facilitators'])
+    # try:
+    #     if type(eventData) == MultiDict and type(eventData['facilitators']) is not list:
+    #         eventData['facilitators'] = eventData.getlist('facilitators')
+    #     eventData['facilitators'] = [User.get_by_id(f) for f in eventData['facilitators']]
+    # except Exception as e:
+    #     event = eventData.get('id', -1)
+    #     eventData['facilitators'] = list(User.select().join(EventFacilitator).where(EventFacilitator.event == event))
 
     return eventData
 
 def getFacilitatorsFromList(facilitatorList):
     """
-    This function takes in a list with the usernames of facilitators and Returns
-        a list of facilitator objects that match the usernames in the list
+    This function takes in a list of usernames or a string with the usernames of
+        facilitators separated by commas (,) and returns a list of facilitator
+        objects that match the usernames in the list
     facilitatorList: expected to be a list with facilitator usernames as strings
     return: list of facilitator objects matching the usernames in facilitatorList
     """
+    if type(facilitatorList) == str:
+        facilitatorList = facilitatorList.split(',')
+
     finalFacilitatorList = []
     for i in facilitatorList:
-        finalFacilitatorList.append(User.select().where(User.username == i).get())
+        facilitatorToAdd = User.select().where(User.username == i).get()
+        finalFacilitatorList.append(facilitatorToAdd)
     return finalFacilitatorList
 
 def getTomorrowsEvents():
