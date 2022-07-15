@@ -138,13 +138,3 @@ function displayProgramInfo(){
   $("#emailSenderName").val($(programInfo).data("sendername"))
 
 }
-
-function editName(el){
-  id=($(el).attr("data-id"));
-  console.log(id);
-  if ($(el).attr("edit")=="false") {
-    $("#sprogramName_"+id).attr("hidden",false);
-    $("#nprogramName_"+id).hide()
-  }
-
-}
