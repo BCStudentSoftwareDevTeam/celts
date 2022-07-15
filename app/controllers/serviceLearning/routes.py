@@ -64,6 +64,16 @@ def slcEditProposal(courseID):
                                 isAllSectionsServiceLearning = isAllSectionsServiceLearning,
                                 isPermanentlyDesignated = isPermanentlyDesignated,
                                 courseID=courseID)
+@serviceLearning_bp.route('/serviceLearning/saveProposal', methods=['POST'])
+def slcSaveContinue():
+    courseExist = Course.get_or_none(Course.id == request.form.get('courseID'))
+    print("___________________________________")
+    print(courseExist)
+    if courseExist:
+        updateCourse(request.form.copy(), instructorsDict)
+    else:
+        createCourse(request.form.copy(), instructorsDict)
+    return ""
 
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcCreateOrEdit():
@@ -121,19 +131,19 @@ def approveCourse():
     This function updates and approves a Service-Learning Course when using  the
         approve button.
     return: empty string because AJAX needs to receive something
-    """ 
+    """
     if len(request.form)==1:
         course=Course.get_by_id(request.form['courseID']) # if only course is reviewed pass the course ID
-        
+
     elif 'courseID' in request.form:
         course = updateCourse(request.form.copy(), instructorsDict) # if edit course, Updates database with the completed fields and get course ID
-        
+
     else:
         course=createCourse(request.form.copy(), instructorsDict) # creat course first and get its ID to approve next
     try:
         course.status = 2
         course.save() # saves the query and approves course in the database
-        flash("Course approved!", "success")        
+        flash("Course approved!", "success")
     except:
-        flash("Course not approved!", "danger")  
+        flash("Course not approved!", "danger")
     return ""

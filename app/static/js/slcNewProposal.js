@@ -22,10 +22,16 @@ function showTab(currentTab) {
   if (currentTab == (allTabs.length - 1)) {
     $("#approveButton").show();
     $("#nextButton").text("Submit");
-  } else {
+    $("#nextButton").show();
+    $("#saveContinue").text("Save For Later");}
+  else if (currentTab == (allTabs.length - 2)){
+    $("#saveContinue").show();
+    $("#approveButton").hide();
+    $("#nextButton").hide();}
+  else {
     $("#approveButton").hide();
     $("#nextButton").text("Next");
-  }
+    $("#saveContinue").hide();}
   fixStepIndicator(currentTab)
 }
 
@@ -49,6 +55,23 @@ $("#previousButton").on("click", function() {
 $("#nextButton").on("click", function() {
   displayCorrectTab(1);
 });
+
+$("#saveContinue").on("click", function() {
+  var data = $("form").serialize()
+  
+  $.ajax({
+    url: "/serviceLearning/saveProposal",
+    type: "POST",
+    data: data,
+    success: function(response) {
+        displayCorrectTab(1);
+    },
+    error: function(request, status, error) {
+       msgFlash("Error saving new proposal", "danger")
+     }
+   });
+ });
+
 
 $("#cancelButton").on("click", function() {
   window.location.replace("/manageServiceLearning");
@@ -119,7 +142,7 @@ function callback(selectedInstructor) {
     msgFlash("Instructor is already added.", "danger");
     return;
   }
-  
+
   let lastRow = tableBody.find("tr:last");
   let newRow = lastRow.clone();
   newRow.find("td:eq(0) p").text(instructor);
