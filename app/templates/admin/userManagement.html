@@ -102,7 +102,7 @@
         <div class="programData" id="programSelect" form="programSettings">
             {% for program in programs %}
             <form action="/admin/updateProgramInfo/{{program.id}}" method="POST">
-                <tr>
+                <tr class="p-1"> 
                     <td> <input type="text" name="Name" value ="{{program.programName}}" id="programName_{{program.id}}"> </td>
                     <td><input type="text" name="Email" value="{{program.emailReplyTo}}"emailReplyTo_{{program.id}}" ></td>
                     <td><input type="text" name="Sender" value="{{program.emailSenderName}}" id=emailSenderName_{{program.id}}"></td>
