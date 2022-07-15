@@ -162,24 +162,19 @@ def getOtherEvents(term):
     :return: A list of Other Event objects
     """
     # Gets all events that are not associated with a program and are not trainings
-    nonProgramEvents = list(Event.select()
-                        .join(ProgramEvent, JOIN.LEFT_OUTER)
-                        .where(ProgramEvent.program == None,
-                        Event.isTraining == False,
-                        Event.isAllVolunteerTraining == False,
-                        Event.term == term))
-
     # Gets all events that have a program but don't fit anywhere
     otherEvents = list(Event.select(Event, Program)
-                        .join(ProgramEvent, JOIN.LEFT_OUTER)
-                        .join(Program, JOIN.LEFT_OUTER)
-                        .where(Program.isStudentLed == False,
-                        Program.isBonnerScholars == False,
-                        Event.isAllVolunteerTraining == False,
-                        Event.isTraining == False,
-                        Event.term==term))
+                    .join(ProgramEvent, JOIN.LEFT_OUTER)
+                    .join(Program, JOIN.LEFT_OUTER)
+                    .where(Event.term == term,
+                           Event.isTraining == False,
+                           Event.isAllVolunteerTraining == False,
+                           ((ProgramEvent.program == None) |
+                            (Program.isStudentLed == False) & 
+                            (Program.isBonnerScholars == False)))
+                    .order_by(Event.id)
+                  )
 
-    otherEvents = otherEvents + nonProgramEvents
     return otherEvents
 
 def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
