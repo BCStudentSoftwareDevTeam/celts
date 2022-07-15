@@ -115,11 +115,11 @@ function callback(selectedInstructor) {
   let username = selectedInstructor["username"];
   let phone = selectedInstructor["phoneNumber"];
   let tableBody = $("#instructorTable").find("tbody");
-  let isAdded=$("#instructorTable").prop('outerHTML');
-  if(isAdded.includes(instructor)){
-    msgFlash("Instructor is already added", "danger")
-    return
+  if(tableBody.prop('outerHTML').includes(instructor)){
+    msgFlash("Instructor is already added.", "danger");
+    return;
   }
+  
   let lastRow = tableBody.find("tr:last");
   let newRow = lastRow.clone();
   newRow.find("td:eq(0) p").text(instructor);
