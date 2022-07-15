@@ -103,9 +103,9 @@
             {% for program in programs %}
             <form action="/admin/updateProgramInfo/{{program.id}}" method="POST">
                 <tr>
-                    <td> <input type="text" name="Name" value ="{{program.programName}}" id="programName_{{program.id}}" data-replytoemail="{{program.emailReplyTo}}" data-sendername="{{program.emailSenderName}}"> </td>
-                    <td><input type="text" name="Email" value="{{program.emailReplyTo}} id="emailReplyTo_{{program.id}}" ></td>
-                    <td><input type="text" name="Sender" value="" id="emailSenderName_{{program.id}}"></td>
+                    <td> <input type="text" name="Name" value ="{{program.programName}}" id="programName_{{program.id}}"> </td>
+                    <td><input type="text" name="Email" value="{{program.emailReplyTo}}"emailReplyTo_{{program.id}}" ></td>
+                    <td><input type="text" name="Sender" value="{{program.emailSenderName}}" id=emailSenderName_{{program.id}}"></td>
                     <td><button type="submit" class="btn btn-success w-101" id="button_{{program.id}}" role ="button">Update</button> </td>
                 </tr>
                 </form>
