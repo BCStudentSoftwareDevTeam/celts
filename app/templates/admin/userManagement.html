@@ -105,12 +105,10 @@
             {% for program in programs %}
                 <tr>
                     <td> <button class="bi bi-pencil" type="button" for="programName_{{program.id}}"></button> </td>
-                    <td> <input type="text"  value ="{{program.id}}" id="programName_{{program.id}}" data-replytoemail="{{program.emailReplyTo}}" data-sendername="{{program.emailSenderName}}">{{program.programName}} </td>
+                    <td> <input type="text" value ="{{program.id}}" id="programName_{{program.id}}" data-replytoemail="{{program.emailReplyTo}}" data-sendername="{{program.emailSenderName}}">{{program.programName}} </td>
                     <td><input type="text" name="Email" id="emailReplyTo_{{program.id}}" ></td>
                     <td><input type="text" name="Sender" value="" id="emailSenderName_{{program.id}}"></td>
-                    <td>
-                        <button type="button" class="btn btn-success w-101" id="button_{{program.id}}" role ="button">Update</button>
-                    </td>
+                    <td><button type="button" class="btn btn-success w-101" id="button_{{program.id}}" role ="button">Update</button> </td>
                 </tr>
             {% endfor %}
               </div>
