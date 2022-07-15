@@ -2,73 +2,71 @@
 {% extends "base.html" %}
 
 {% block scripts %}
-{{super()}}
+  {{super()}}
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
   <script type="module" src="/static/js/manageServiceLearningFaculty.js"></script>
   <script src="/static/js/courseManagement.js"></script>
 {% endblock %}
 
 {% block styles %}
-    {{super()}}
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+  {{super()}}
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
 {% endblock %}
 
 {% block app_content %}
-
 <div id="content">
   <h1 class="text-center pt-1 pb-4">Course Proposal Management</h1>
   <div class="text-center">
     <form id="termSelector" action="" method="post">
       <select class="w-25" id="selectTerm" onchange="formSubmit(this.value)">
           {% for t in terms %}
-            <option value="{{t.id}}" {{ "selected" if t.id == term.id }}> {{ t.description }}</option>
+          <option value="{{t.id}}" {{ "selected" if t.id == term.id }}> {{ t.description }}</option>
           {% endfor %}
-      </select>
-    </form>
-  </div>
-  <div class="pt-4">
-    <div class="container">
-  <div class="row">
-    <div class="col">
-      <h2> Pending </h2>
+        </select>
+      </form>
     </div>
-    <div class="col">
-      <div class="float-end">
-        <button type="button" class="btn btn-primary btn-sm">Send To Faculty Fellow</button>
-        <a type="button" href="/serviceLearning/newProposal" class="btn btn-success btn-sm">Add Course</a>
+    <div class="pt-4">
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <h2> Pending </h2>
+          </div>
+          <div class="col">
+            <div class="float-end">
+              <button type="button" class="btn btn-primary btn-sm">Send To Faculty Fellow</button>
+              <a type="button" href="/serviceLearning/newProposal" class="btn btn-success btn-sm">Add Course</a>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</div>
-    <table class="table table-striped border">
-    <thead>
-      <tr>
-        <th scope="col">Courses</th>
-        <th scope="col">Faculty</th>
-        <th scope="col">Term</th>
-        <th scope="col">Status</th>
-        <th scope="col">Review</th>
-        <th scope="col">Edit</th>
-      </tr>
-    </thead>
-    <tbody>
-        {% for data in pendingCourses %}
-        <tr>
-          <td>{{data.courseName}}</td>
-          <td>
-            {% for instructor in data.courseInstructors %}
+      <table class="table table-striped border">
+        <thead>
+          <tr>
+            <th scope="col">Courses</th>
+            <th scope="col">Faculty</th>
+            <th scope="col">Term</th>
+            <th scope="col">Status</th>
+            <th scope="col">Review</th>
+            <th scope="col">Edit</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for course in pendingCourses %}
+          <tr>
+            <td>{{course.courseName}}</td>
+            <td>
+              {% for instructor in course.courseInstructors %}
               {{ instructor.user.firstName }} {{ instructor.user.lastName }} <br>
-            {% endfor %}
-          </td>
-          <td>{{data.term.description}}</td>
-          <td>{{data.status.status}}</td>
-          <td><button type="button" class="btn {{'btn-primary' if data.status.status == 'Pending' else 'btn-warning'}} btn-sm">{{ "Review" if data.status.status == "Pending" else "In Progress" }}</button></td>
-          <td><a type="button" href="/serviceLearning/editProposal/{{ data }}" class="btn btn-primary btn-sm">Edit</a></td>
-        </tr>
-        {% endfor %}
-    </tbody>
-    </table>
-  </div>
+              {% endfor %}
+            </td>
+            <td>{{course.term.description}}</td>
+            <td>{{course.status.status}}</td>
+            <td><button type="button" data-id="{{course}}" onclick="reviewCourses(this)" class="btn {{'btn-primary' if course.status.status == 'Pending' else 'btn-warning'}} btn-sm">{{ "Review" if course.status.status == "Pending" else "In Progress" }}</button></td>
+            <td><a type="button" href="/serviceLearning/editProposal/{{course }}" class="btn btn-primary btn-sm">Edit</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
   <div class="pb-5">
     <h2>Approved</h2>
     <table class="table table-striped border">
@@ -82,22 +80,21 @@
       </tr>
     </thead>
     <tbody>
-        {% for data in approvedCourses %}
+        {% for course in approvedCourses %}
         <tr>
-          <td>{{data.courseName}}</td>
+          <td>{{course.courseName}}</td>
           <td>
-            {% for instructor in data.courseInstructors %}
-              {{ instructor.user.firstName }} {{ instructor.user.lastName }} <br>
+            {% for instructor in course.courseInstructors %}
+            {{ instructor.user.firstName }} {{ instructor.user.lastName }} <br>
             {% endfor %}
           </td>
-          <td>{{data.term.description}}</td>
-          <td>{{data.status.status}}</td>
+          <td>{{course.term.description}}</td>
+          <td>{{course.status.status}}</td>
           <td><i class="bi bi-check2"></i></td>
         </tr>
         {% endfor %}
-    </tbody>
+      </tbody>
     </table>
-
     {% if term.isCurrentTerm or term.isFutureTerm %}
       <div class="float-end">
         <button class="btn btn-primary">Send to Registrar</button>
@@ -105,14 +102,9 @@
      {% endif %}
       </div>
     </div>
-
 <div id="wrapper">
-<<<<<<< HEAD
-  <div style="text-align:right; position:relative; top: 50px; z-index:1;" >
-=======
     <h1 class="text-center pt-1 pb-4">Service-Learning Faculty</h1>
-    <div style="text-align:right; width:100%; padding:0; margin-bottom: -42px; display: inline-block" >
->>>>>>> bac1b44d87cc8688a29755ab9018fcebb18de47d
+    <div style="text-align:right; position:relative; top: 50px; z-index:1;" >
       {% set instructorEmails = [] %}
       {% for instructor in courseInstructors%}
         {{ instructorEmails.append(instructor.email) or "" }}
@@ -143,4 +135,5 @@
 </div>
 
 </div>
+<div id="review-modal"></div>
 {% endblock %}
