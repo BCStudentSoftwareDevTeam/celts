@@ -75,27 +75,30 @@ function validateForm() {
   // TODO: Generalize form validation to include textareas and selects
   // This function deals with validation of the form fields
   let valid = true;
-  let allTabs = $(".tab");
-  let allInputs = $(allTabs[currentTab]).find("input");
-  for (let i = 0; i < allInputs.length; i++) {
-    if (allInputs[i].required) {
-      if (!allInputs[i].value){
-        allInputs[i].className += " invalid";
-        valid = false;
-      } else {
-        allInputs[i].className = "form-control";
+  var url = String(window.location.href);
+  if (!url.includes("view")){
+      let allTabs = $(".tab");
+      let allInputs = $(allTabs[currentTab]).find("input");
+      for (let i = 0; i < allInputs.length; i++) {
+        if (allInputs[i].required) {
+          if (!allInputs[i].value){
+            allInputs[i].className += " invalid";
+            valid = false;
+          } else {
+            allInputs[i].className = "form-control";
+          }
+        }
       }
-    }
-  }
 
-  if ($("table").find('td').length < 5 && currentTab ==1) { // checks if there are more than the default hidden 3 tds
-    valid = false;
-    $("#courseInstructor").addClass("invalid");
-  } else {
-    $("#courseInstructor").removeClass("invalid");
-  }
-  if (valid) {
-    $(".step")[currentTab].className += " finish";
+      if ($("table").find('td').length < 5 && currentTab ==1) { // checks if there are more than the default hidden 3 tds
+        valid = false;
+        $("#courseInstructor").addClass("invalid");
+      } else {
+        $("#courseInstructor").removeClass("invalid");
+      }
+      if (valid) {
+        $(".step")[currentTab].className += " finish";
+      }
   }
   return valid;
 };
