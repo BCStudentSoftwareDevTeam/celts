@@ -19,26 +19,25 @@ from app.logic.events import *
 
 @pytest.mark.integration
 def test_event_model():
-    with mainDB.atomic() as transaction:
-        # single program
-        event = Event.get_by_id(12)
-        assert event.singleProgram == Program.get_by_id(3)
+    
+    # single program
+    event = Event.get_by_id(12)
+    assert event.singleProgram == Program.get_by_id(3)
 
-        # no program
-        event = Event.get_by_id(13)
-        assert event.singleProgram == None
-        assert event.noProgram
+    # no program
+    event = Event.get_by_id(13)
+    assert event.singleProgram == None
+    assert event.noProgram
 
-        # multi program
-        event = Event.get_by_id(14)
-        assert event.singleProgram == None
-        assert not event.noProgram
+    # multi program
+    event = Event.get_by_id(14)
+    assert event.singleProgram == None
+    assert not event.noProgram
 
-        # program/event passed
-        event = Event.get_by_id(11)
-        assert event.isPast
+    # program/event passed
+    event = Event.get_by_id(11)
+    assert event.isPast
 
-        transaction.rollback()
 ######################################################################
 ## TODO event list doesn't show events without a program
 ## TODO facilitators didn't stay selected when there was a validation error
@@ -47,79 +46,70 @@ def test_event_model():
 
 @pytest.mark.integration
 def test_getAllEvents():
-    with mainDB.atomic() as transaction:
-        # No program is given, get all events
-        events = getEvents()
+
+    # No program is given, get all events
+    events = getEvents()
 
 
-        assert len(events) > 0
+    assert len(events) > 0
 
-        assert events[0].description == "Empty Bowls Spring 2021"
-        assert events[1].description == "Will donate Food to Community"
-        assert events[2].description == "Lecture on adoption"
-
-        transaction.rollback()
+    assert events[0].description == "Empty Bowls Spring 2021"
+    assert events[1].description == "Will donate Food to Community"
+    assert events[2].description == "Lecture on adoption"
 
 @pytest.mark.integration
 def test_getEventsWithProgram():
-    with mainDB.atomic() as transaction:
-        # Single program
-        events = getEvents(program_id=2)
+
+    # Single program
+    events = getEvents(program_id=2)
 
 
-        assert len(events) > 0
-        assert events[0].description == "Berea Buddies First Meetup"
-
-        transaction.rollback()
+    assert len(events) > 0
+    assert events[0].description == "Berea Buddies First Meetup"
 
 @pytest.mark.integration
 def test_getEventsInvalidProgram():
-    with mainDB.atomic() as transaction:
-        # Invalid program
-        with pytest.raises(DoesNotExist):
-            getEvents(program_id= "asdf")
 
-        transaction.rollback()
+    # Invalid program
+    with pytest.raises(DoesNotExist):
+        getEvents(program_id= "asdf")
 
 @pytest.mark.integration
 def test_eventTemplate_model():
-    with mainDB.atomic() as transaction:
-        template = EventTemplate(name="test", templateJSON='{"first entry":["number one", "number two"]}')
-        assert template.templateData == {"first entry": ["number one", "number two"]}
 
-        template.templateData = ["just", "an", "array"]
-        template.save()
+    template = EventTemplate(name="test", templateJSON='{"first entry":["number one", "number two"]}')
+    assert template.templateData == {"first entry": ["number one", "number two"]}
 
-        template = EventTemplate.get(name="test")
-        assert template.templateData == ["just", "an", "array"]
+    template.templateData = ["just", "an", "array"]
+    template.save()
 
-        template.delete_instance()
+    template = EventTemplate.get(name="test")
+    assert template.templateData == ["just", "an", "array"]
 
-        transaction.rollback()
+    template.delete_instance()
 
 @pytest.mark.integration
 def test_eventTemplate_fetch():
-    with mainDB.atomic() as transaction:
-        template = EventTemplate(name="test2")
-        template.templateData = {
-                    "first entry": "number one",
-                    "second entry": "number two",
-                    "fourth entry": "number four"
-                }
-        assert "number one" == template.fetch("first entry")
-        assert "number one" == template.fetch("first entry", "1")
 
-        assert None == template.fetch("third entry")
-        assert "3" == template.fetch("third entry", "3")
+    template = EventTemplate(name="test2")
+    template.templateData = {
+                "first entry": "number one",
+                "second entry": "number two",
+                "fourth entry": "number four"
+            }
+    assert "number one" == template.fetch("first entry")
+    assert "number one" == template.fetch("first entry", "1")
 
-        template.save()
-        template.delete_instance()
+    assert None == template.fetch("third entry")
+    assert "3" == template.fetch("third entry", "3")
 
-        transaction.rollback()
+    template.save()
+    template.delete_instance()
 
 @pytest.mark.integration
 def test_preprocessEventData_checkboxes():
     with mainDB.atomic() as transaction:
+
         # test that there is a return
         assert preprocessEventData({})
 
@@ -342,6 +332,7 @@ def test_calculateRecurringEventFrequency():
             returnedEvents = calculateRecurringEventFrequency(eventInfo)
 
         transaction.rollback()
+
 @pytest.mark.integration
 def test_attemptSaveEvent():
     with mainDB.atomic() as transaction2:
@@ -429,6 +420,7 @@ def test_saveEventToDb_create():
 def test_saveEventToDb_recurring():
     with mainDB.atomic() as transaction:
         with app.app_context():
+
             eventInfo =  {'isRsvpRequired':False, 'isService':False, 'isAllVolunteerTraining': True,
                           'isTraining':True, 'isRecurring': True, 'recurringId':1, 'startDate': parser.parse('12-12-2021'),
                            'endDate':parser.parse('01-18-2022'), 'location':"this is only a test",
@@ -442,6 +434,7 @@ def test_saveEventToDb_recurring():
             assert len(createdEvents) == 6
 
             transaction.rollback()
+
 @pytest.mark.integration
 def test_saveEventToDb_update():
     with mainDB.atomic() as transaction:
@@ -509,6 +502,7 @@ def test_saveEventToDb_update():
 @pytest.mark.integration
 def test_deleteEvent():
     with mainDB.atomic() as transaction:
+
         testingEvent = Event.create(name = "Testing delete event",
                                       term = 2,
                                       description= "This Event is Created to be Deleted.",
@@ -538,16 +532,14 @@ def test_deleteEvent():
 
 @pytest.mark.integration
 def test_getAllFacilitators():
-    with mainDB.atomic() as transaction:
 
-        userFacilitator = getAllFacilitators()
-        assert len(userFacilitator) >= 1
-        assert userFacilitator[1].username == 'khatts'
-        assert userFacilitator[1].isFaculty == False
-        assert userFacilitator[2].username == "lamichhanes2"
-        assert userFacilitator[2].isFaculty == True
+    userFacilitator = getAllFacilitators()
+    assert len(userFacilitator) >= 1
+    assert userFacilitator[1].username == 'khatts'
+    assert userFacilitator[1].isFaculty == False
+    assert userFacilitator[2].username == "lamichhanes2"
+    assert userFacilitator[2].isFaculty == True
 
-        transaction.rollback()
 
 @pytest.mark.integration
 def test_getsCorrectUpcomingEvent():
@@ -570,48 +562,43 @@ def test_getsCorrectUpcomingEvent():
 
 @pytest.mark.integration
 def test_userWithNoInterestedEvent():
-    with mainDB.atomic() as transaction:
 
-        user ="asdfasd" #invalid user
-        events = getUpcomingEventsForUser(user)
-        assert len(events) == 0
+    user ="asdfasd" #invalid user
+    events = getUpcomingEventsForUser(user)
+    assert len(events) == 0
 
-        user = "ayisie" #no interest selected
-        events = getUpcomingEventsForUser(user)
-        assert len(events) == 0
-        transaction.rollback()
+    user = "ayisie" #no interest selected
+    events = getUpcomingEventsForUser(user)
+    assert len(events) == 0
 
 @pytest.mark.integration
 def test_format24HourTime():
-    with mainDB.atomic() as transaction:
 
-        # tests valid "input times"
-        assert format24HourTime('08:00 AM') == "08:00"
-        assert format24HourTime('5:38 AM') == "05:38"
-        assert format24HourTime('05:00 PM') == "17:00"
-        assert format24HourTime('7:30 PM') == "19:30"
-        assert format24HourTime('12:32 PM') == "12:32"
-        assert format24HourTime('12:01 AM') == "00:01"
-        assert format24HourTime('12:32') == "12:32"
-        assert format24HourTime('00:01') == "00:01"
-        assert format24HourTime('17:07') == "17:07"
-        assert format24HourTime('23:59') == "23:59"
-        time = datetime.datetime(1900, 1, 1, 8, 30)
-        assert format24HourTime(time) == "08:30"
-        time = datetime.datetime(1900, 1, 1, 23, 59)
-        assert format24HourTime(time) == "23:59"
-        time = datetime.datetime(1900, 1, 1, 00, 1)
-        assert format24HourTime(time) == "00:01"
+    # tests valid "input times"
+    assert format24HourTime('08:00 AM') == "08:00"
+    assert format24HourTime('5:38 AM') == "05:38"
+    assert format24HourTime('05:00 PM') == "17:00"
+    assert format24HourTime('7:30 PM') == "19:30"
+    assert format24HourTime('12:32 PM') == "12:32"
+    assert format24HourTime('12:01 AM') == "00:01"
+    assert format24HourTime('12:32') == "12:32"
+    assert format24HourTime('00:01') == "00:01"
+    assert format24HourTime('17:07') == "17:07"
+    assert format24HourTime('23:59') == "23:59"
+    time = datetime.datetime(1900, 1, 1, 8, 30)
+    assert format24HourTime(time) == "08:30"
+    time = datetime.datetime(1900, 1, 1, 23, 59)
+    assert format24HourTime(time) == "23:59"
+    time = datetime.datetime(1900, 1, 1, 00, 1)
+    assert format24HourTime(time) == "00:01"
 
-        # tests "input times" that are not valid inputs
-        with pytest.raises(ValueError):
-            assert format24HourTime('13:30 PM')
-            assert format24HourTime('13:30 AM')
-            assert format24HourTime(':30')
-            assert format24HourTime('01:30:00 PM')
-            assert format24HourTime('Clever String')
-
-        transaction.rollback()
+    # tests "input times" that are not valid inputs
+    with pytest.raises(ValueError):
+        assert format24HourTime('13:30 PM')
+        assert format24HourTime('13:30 AM')
+        assert format24HourTime(':30')
+        assert format24HourTime('01:30:00 PM')
+        assert format24HourTime('Clever String')
 
 @pytest.mark.integration
 def test_calculateNewrecurringId():
@@ -629,6 +616,7 @@ def test_calculateNewrecurringId():
 @pytest.mark.integration
 def test_getPreviousRecurringEventData():
     with mainDB.atomic() as transaction:
+
         testingEvent1 = Event.create(name = "Testing delete event",
                                       term = 2,
                                       description= "This Event is Created to be Deleted.",
