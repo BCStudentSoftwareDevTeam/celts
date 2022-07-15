@@ -67,8 +67,8 @@
       <thead>
         <tr>
           <th scope="col">Program</th>
-          <th scope="col">Interested?</th>
-          <th scope="col">Completed Training</th>
+          <th scope="col">Notify</th>
+          <th scope="col">Training</th>
           {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff%}
             <th scope="col">Eligibility</th>
           {% endif %}
@@ -82,7 +82,7 @@
             {% set checked = "checked" %}
         {% endif %}
           <tr>
-            <td id="programNameTable">{{row.program.programName}}</td>
+            <td><a href="{{row.program.url}}" id="programNameTable">{{row.program.programName}}</a></td>
             <td><input class="form-check-input" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>
             <td>
                 {% if row.completedTraining %}
