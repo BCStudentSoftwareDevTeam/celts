@@ -3,7 +3,7 @@
 
 {% block scripts %}
   {{super()}}
-  <script type="module" src="/static/js/userManagement.js"></script>
+  <script src="/static/js/userManagement.js"></script>
 
 {% endblock %}
 {% block app_content %}
@@ -95,24 +95,22 @@
         <div class="accordion-body">
           <table>
             <tr>
-                <th></th>
               <th>Program Select</th>
               <th>Reply-To-Email</th>
               <th>Sender Name</th>
             </tr>
-            <form action="" id="programSettings">
         <div class="programData" id="programSelect" form="programSettings">
             {% for program in programs %}
+            <form action="/admin/updateProgramInfo/{{program.id}}" method="POST">
                 <tr>
-                    <td> <button class="bi bi-pencil" type="button" for="programName_{{program.id}}"></button> </td>
-                    <td> <input type="text" value ="{{program.id}}" id="programName_{{program.id}}" data-replytoemail="{{program.emailReplyTo}}" data-sendername="{{program.emailSenderName}}">{{program.programName}} </td>
-                    <td><input type="text" name="Email" id="emailReplyTo_{{program.id}}" ></td>
+                    <td> <input type="text" name="Name" value ="{{program.programName}}" id="programName_{{program.id}}" data-replytoemail="{{program.emailReplyTo}}" data-sendername="{{program.emailSenderName}}"> </td>
+                    <td><input type="text" name="Email" value="{{program.emailReplyTo}} id="emailReplyTo_{{program.id}}" ></td>
                     <td><input type="text" name="Sender" value="" id="emailSenderName_{{program.id}}"></td>
-                    <td><button type="button" class="btn btn-success w-101" id="button_{{program.id}}" role ="button">Update</button> </td>
+                    <td><button type="submit" class="btn btn-success w-101" id="button_{{program.id}}" role ="button">Update</button> </td>
                 </tr>
+                </form>
             {% endfor %}
               </div>
-            </form>
         </table>
       </div>
   </div>

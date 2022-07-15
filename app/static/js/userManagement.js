@@ -58,6 +58,7 @@ $(document).ready(function() {
     submitTerm();
   });
 });
+
 function clickTerm(term){
   $(".term-btn").removeClass("active");
   term.addClass('active');
@@ -133,5 +134,15 @@ function displayProgramInfo(){
   var programInfo = $("#programSelect option:selected")[0]
   $("#emailReplyTo").val($(programInfo).data("replytoemail"))
   $("#emailSenderName").val($(programInfo).data("sendername"))
+
+}
+
+function editName(el){
+  id=($(el).attr("data-id"));
+  console.log(id);
+  if ($(el).attr("edit")=="false"){
+    $("#sprogramName_"+id).attr("hidden",false);
+    $("#nprogramName_"+id).hide()
+  }
 
 }
