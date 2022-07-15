@@ -18,7 +18,7 @@ def getServiceLearningCoursesData(user):
     for course in courses:
         otherInstructors = (CourseInstructor.select().where(CourseInstructor.course==course))
         faculty = [f"{instructor.user.firstName} {instructor.user.lastName}" for instructor in otherInstructors]
-        courseDict[course.courseName] = {
+        courseDict[course.id] = {
         "id":course.id,
         "name":course.courseName,
         "faculty": faculty,
@@ -45,10 +45,12 @@ def renewProposal(courseID, term):
     course = Course.get(Course.id == courseID)
     oldTerm = course.term
     course.id = None
-    course.status = 1
     course.term = Term.get_by_id(term)
-    course.save()
     oldCourse = Course.get(courseName=course.courseName, term=oldTerm)
+    oldCourse.status=course.status
+    course.status = 3
+    course.save()
+    oldCourse.save()
     questions = list(CourseQuestion.select()
                     .join(Course)
                     .where(CourseQuestion.course==oldCourse.id,

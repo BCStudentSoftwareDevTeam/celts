@@ -20,12 +20,12 @@ from app.logic.manageSLFaculty import getCourseDict
 def test_getServiceLearningCoursesData():
     '''tests for the successful implementation of populating the proposal table'''
     courseDict = getServiceLearningCoursesData('ramsayb2')
-    assert 'Spanish Help' in courseDict
-    assert 'Brian Ramsay' in courseDict['Spanish Help']['faculty']
-    assert ['Brian Ramsay', 'Zach Neill'] == courseDict['Spanish Help']['faculty']
-    assert 'Approved' in courseDict['Spanish Help']['status']
-    assert 'Spring A 2021' in courseDict['Spanish Help']['term'].description
-    assert not 'Internship' in courseDict
+    assert 2 in courseDict
+    assert 'Brian Ramsay' in courseDict[2]['faculty']
+    assert ['Brian Ramsay', 'Zach Neill'] == courseDict[2]['faculty']
+    assert 'Approved' in courseDict[2]['status']
+    assert 'Spring A 2021' in courseDict[2]['term'].description
+    assert not 3 in courseDict
 
 @pytest.mark.integration
 def test_withdrawProposal():
