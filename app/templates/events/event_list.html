@@ -45,7 +45,7 @@
     data-bs-toggle="pill" data-bs-target="#pills-bonner-scholars" type="button" role="tab" aria-controls="pills-bonner-scholars" aria-selected="false">Bonner Scholars</button>
   </li>
   <li class="nav-item" role="presentation">
-    <button class="nav-link" id="nonProgramEvents"
+    <button class="nav-link" id="otherEvents"
     data-bs-toggle="pill" data-bs-target="#pills-one-time" type="button" role="tab" aria-controls="pills-one-time" aria-selected="false">Other Events</button>
   </li>
   </ul>
@@ -66,13 +66,13 @@
     <tbody>
         {% for event in events %}
           <tr>
-              {% if user.isCeltsAdmin or hasPrivilege(user, event.singleProgram)%}
+              {% if user.isCeltsAdmin or user.isProgramManagerFor(event.singleProgram)%}
                 <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
               {% else %}
                 <td> <a href="/eventsList/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
               {% endif %}
             <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
-            <td>{{event.timeStart.strftime('%I:%M %p')}}-{{event.timeEnd.strftime('%I:%M %p')}}</td>
+            <td>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
             <td>{{event.location}}</td>
             {% if event.programEvents%}
               {% for programEvent in event.programEvents%}
@@ -141,13 +141,13 @@
                 <tbody>
                     {% for event in events %}
                       <tr>
-                          {% if user.isCeltsAdmin or hasPrivilege(user, event.singleProgram) %}
+                          {% if user.isCeltsAdmin or user.isProgramManagerFor(event.singleProgram) %}
                             <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
                           {% else %}
                             <td> <a href="/eventsList/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
                           {% endif %}
                         <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
-                        <td>{{event.timeStart.strftime('%I:%M %p')}}-{{event.timeEnd.strftime('%I:%M %p')}}</td>
+                        <td>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
                         <td>{{event.location}}</td>
                         {% if user.isAdmin %}
                           <td>
@@ -188,7 +188,7 @@
     {{createTable(bonnerEvents)}}
   </div>
   <div class="tab-pane fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
-    {{createTable(nonProgramEvents)}}
+    {{createTable(otherEvents)}}
   </div>
 </div>
 {% include 'emailModal.html' %}
