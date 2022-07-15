@@ -19,7 +19,7 @@ from app.logic.events import *
 
 @pytest.mark.integration
 def test_event_model():
-    
+
     # single program
     event = Event.get_by_id(12)
     assert event.singleProgram == Program.get_by_id(3)
@@ -108,203 +108,187 @@ def test_eventTemplate_fetch():
 
 @pytest.mark.integration
 def test_preprocessEventData_checkboxes():
-    with mainDB.atomic() as transaction:
 
-        # test that there is a return
-        assert preprocessEventData({})
+    # test that there is a return
+    assert preprocessEventData({})
 
-        # tets for return type
-        assert type(preprocessEventData({}))== type({})
+    # tets for return type
+    assert type(preprocessEventData({}))== type({})
 
-        # test for no keys
-        eventData = {}
-        newData = preprocessEventData(eventData)
-        assert newData['isRsvpRequired'] == False
-        assert newData['isService'] == False
-        assert newData['isTraining'] == False
+    # test for no keys
+    eventData = {}
+    newData = preprocessEventData(eventData)
+    assert newData['isRsvpRequired'] == False
+    assert newData['isService'] == False
+    assert newData['isTraining'] == False
 
-        eventData = {'isRsvpRequired':'', 'isRecurring': 'on', 'isService':True }
-        newData = preprocessEventData(eventData)
-        assert newData['isTraining'] == False
-        assert newData['isRsvpRequired'] == False
-        assert newData['isService'] == True
-        assert newData['isRecurring'] == True
-
-        transaction.rollback()
+    eventData = {'isRsvpRequired':'', 'isRecurring': 'on', 'isService':True }
+    newData = preprocessEventData(eventData)
+    assert newData['isTraining'] == False
+    assert newData['isRsvpRequired'] == False
+    assert newData['isService'] == True
+    assert newData['isRecurring'] == True
 
 @pytest.mark.integration
 def test_preprocessEventData_dates():
-    with mainDB.atomic() as transaction:
 
-        eventData = {'startDate':''}
-        newData = preprocessEventData(eventData)
-        assert newData['startDate'] == ''
-        assert newData['endDate'] == ''
+    eventData = {'startDate':''}
+    newData = preprocessEventData(eventData)
+    assert newData['startDate'] == ''
+    assert newData['endDate'] == ''
 
-        eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08', 'isRecurring': 'on'}
-        newData = preprocessEventData(eventData)
-        assert newData['startDate'] == datetime.datetime.strptime("2021-09-07","%Y-%m-%d")
-        assert newData['endDate'] == datetime.datetime.strptime("2021-08-08","%Y-%m-%d")
+    eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08', 'isRecurring': 'on'}
+    newData = preprocessEventData(eventData)
+    assert newData['startDate'] == datetime.datetime.strptime("2021-09-07","%Y-%m-%d")
+    assert newData['endDate'] == datetime.datetime.strptime("2021-08-08","%Y-%m-%d")
 
-        # test different date formats
-        eventData = {'startDate':parser.parse('09/07/21'), 'endDate': 75, 'isRecurring': 'on'}
-        newData = preprocessEventData(eventData)
-        assert newData['startDate'] == datetime.datetime.strptime("2021-09-07","%Y-%m-%d")
-        assert newData['endDate'] == ''
+    # test different date formats
+    eventData = {'startDate':parser.parse('09/07/21'), 'endDate': 75, 'isRecurring': 'on'}
+    newData = preprocessEventData(eventData)
+    assert newData['startDate'] == datetime.datetime.strptime("2021-09-07","%Y-%m-%d")
+    assert newData['endDate'] == ''
 
-        # endDate should match startDate for non-recurring events
-        eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08'}
-        newData = preprocessEventData(eventData)
-        assert newData['startDate'] == newData['endDate']
+    # endDate should match startDate for non-recurring events
+    eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08'}
+    newData = preprocessEventData(eventData)
+    assert newData['startDate'] == newData['endDate']
 
-        eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08', 'isRecurring': 'on'}
-        newData = preprocessEventData(eventData)
-        assert newData['startDate'] != newData['endDate']
-
-        transaction.rollback()
+    eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08', 'isRecurring': 'on'}
+    newData = preprocessEventData(eventData)
+    assert newData['startDate'] != newData['endDate']
 
 @pytest.mark.integration
 def test_preprocessEventData_term():
-    with mainDB.atomic() as transaction:
 
-        eventData = {}
-        preprocessEventData(eventData)
-        assert 'term' not in eventData
+    eventData = {}
+    preprocessEventData(eventData)
+    assert 'term' not in eventData
 
-        eventData = {'term': 5}
-        preprocessEventData(eventData)
-        assert eventData['term'] == Term.get_by_id(5)
+    eventData = {'term': 5}
+    preprocessEventData(eventData)
+    assert eventData['term'] == Term.get_by_id(5)
 
-        eventData = {'term': 'asdf'}
-        preprocessEventData(eventData)
-        assert eventData['term'] == ''
+    eventData = {'term': 'asdf'}
+    preprocessEventData(eventData)
+    assert eventData['term'] == ''
 
-        transaction.rollback()
 
 @pytest.mark.integration
 def test_preprocessEventData_facilitators():
-    with mainDB.atomic() as transaction:
 
-        eventData = {}
-        preprocessEventData(eventData)
-        assert 'facilitators' in eventData
-        assert eventData['facilitators'] == []
+    eventData = {}
+    preprocessEventData(eventData)
+    assert 'facilitators' in eventData
+    assert eventData['facilitators'] == []
 
-        eventData = {'facilitators':'ramsayb2'}
-        preprocessEventData(eventData)
-        assert eventData['facilitators'] == []
+    eventData = {'facilitators':'ramsayb2'}
+    preprocessEventData(eventData)
+    assert eventData['facilitators'] == []
 
-        eventData = {'facilitators': []}
-        preprocessEventData(eventData)
-        assert eventData['facilitators'] == []
+    eventData = {'facilitators': []}
+    preprocessEventData(eventData)
+    assert eventData['facilitators'] == []
 
-        eventData = {'facilitators': ['ramsayb2']}
-        preprocessEventData(eventData)
-        assert eventData['facilitators'] == [User.get_by_id('ramsayb2')]
+    eventData = {'facilitators': ['ramsayb2']}
+    preprocessEventData(eventData)
+    assert eventData['facilitators'] == [User.get_by_id('ramsayb2')]
 
-        eventData = {'facilitators': ['ramsayb2','khatts']}
-        preprocessEventData(eventData)
-        assert eventData['facilitators'] == [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]
+    eventData = {'facilitators': ['ramsayb2','khatts']}
+    preprocessEventData(eventData)
+    assert eventData['facilitators'] == [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]
 
-        eventData = {'facilitators': ['ramsayb2','not an id', 'khatts']}
-        preprocessEventData(eventData)
-        assert eventData['facilitators'] == []
+    eventData = {'facilitators': ['ramsayb2','not an id', 'khatts']}
+    preprocessEventData(eventData)
+    assert eventData['facilitators'] == []
 
-        # form data comes back as a MultiDict. Make sure we handle that case
-        eventData = MultiDict([('facilitators', 'ramsayb2'),('facilitators','khatts')])
-        preprocessEventData(eventData)
-        assert eventData['facilitators'] == [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]
+    # form data comes back as a MultiDict. Make sure we handle that case
+    eventData = MultiDict([('facilitators', 'ramsayb2'),('facilitators','khatts')])
+    preprocessEventData(eventData)
+    assert eventData['facilitators'] == [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]
 
-        #####
-        # Testing with an existing event
-        #####
-        eventData = {'id': 1, 'facilitators': []}
-        preprocessEventData(eventData)
-        assert eventData['facilitators'] == []
+    #####
+    # Testing with an existing event
+    #####
+    eventData = {'id': 1, 'facilitators': []}
+    preprocessEventData(eventData)
+    assert eventData['facilitators'] == []
 
-        eventData = {'id': 1, 'facilitators': ['khatts']}
-        preprocessEventData(eventData)
-        assert eventData['facilitators'] == [User.get_by_id('khatts')]
+    eventData = {'id': 1, 'facilitators': ['khatts']}
+    preprocessEventData(eventData)
+    assert eventData['facilitators'] == [User.get_by_id('khatts')]
 
-        eventData = {'id': 1, 'facilitators': [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]}
-        preprocessEventData(eventData)
-        assert eventData['facilitators'] == [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]
+    eventData = {'id': 1, 'facilitators': [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]}
+    preprocessEventData(eventData)
+    assert eventData['facilitators'] == [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]
 
-        eventData = {'id': 1}
-        preprocessEventData(eventData)
-        assert eventData['facilitators'] == [User.get_by_id('ramsayb2')] # defaults to existing facilitators
+    eventData = {'id': 1}
+    preprocessEventData(eventData)
+    assert eventData['facilitators'] == [User.get_by_id('ramsayb2')] # defaults to existing facilitators
 
-        eventData = {'id': 1, 'facilitators':'khatts'}
-        preprocessEventData(eventData)
-        assert eventData['facilitators'] == [User.get_by_id('ramsayb2')] # defaults to existing facilitators
-
-        transaction.rollback()
+    eventData = {'id': 1, 'facilitators':'khatts'}
+    preprocessEventData(eventData)
+    assert eventData['facilitators'] == [User.get_by_id('ramsayb2')] # defaults to existing facilitators
 
 @pytest.mark.integration
 def test_correctValidateNewEventData():
-    with mainDB.atomic() as transaction:
 
-        eventData =  {'isRsvpRequired':False, 'isService':False,
-                      'isTraining':True, 'isRecurring':False, 'startDate': parser.parse('1999-12-12'),
-                      'endDate':parser.parse('2022-06-12'), 'programId':1, 'location':"a big room",
-                      'timeEnd':'04:00', 'timeStart':'06:00', 'description':"Empty Bowls Spring 2021",
-                      'name':'Empty Bowls Spring Event 1','term':1,'facilitators':"ramsayb2"}
+    eventData =  {'isRsvpRequired':False, 'isService':False,
+                  'isTraining':True, 'isRecurring':False, 'startDate': parser.parse('1999-12-12'),
+                  'endDate':parser.parse('2022-06-12'), 'programId':1, 'location':"a big room",
+                  'timeEnd':'04:00', 'timeStart':'06:00', 'description':"Empty Bowls Spring 2021",
+                  'name':'Empty Bowls Spring Event 1','term':1,'facilitators':"ramsayb2"}
 
-        isValid, eventErrorMessage = validateNewEventData(eventData)
-        assert isValid == True
-        assert eventErrorMessage == "All inputs are valid."
-
-        transaction.rollback()
+    isValid, eventErrorMessage = validateNewEventData(eventData)
+    assert isValid == True
+    assert eventErrorMessage == "All inputs are valid."
 
 @pytest.mark.integration
 def test_wrongValidateNewEventData():
-    with mainDB.atomic() as transaction:
 
-        eventData =  {'isRsvpRequired':False, 'isService':False,
-                      'isTraining':True, 'isRecurring':False, 'programId':1, 'location':"a big room",
-                      'timeEnd':'12:00', 'timeStart':'15:00', 'description':"Empty Bowls Spring 2021",
-                      'name':'Empty Bowls Spring Event 1','term':1,'facilitators':"ramsayb2"}
+    eventData =  {'isRsvpRequired':False, 'isService':False,
+                  'isTraining':True, 'isRecurring':False, 'programId':1, 'location':"a big room",
+                  'timeEnd':'12:00', 'timeStart':'15:00', 'description':"Empty Bowls Spring 2021",
+                  'name':'Empty Bowls Spring Event 1','term':1,'facilitators':"ramsayb2"}
 
-        eventData['isRecurring'] = True
-        eventData['startDate'] = parser.parse('2021-12-12')
-        eventData['endDate'] = parser.parse('2021-06-12')
+    eventData['isRecurring'] = True
+    eventData['startDate'] = parser.parse('2021-12-12')
+    eventData['endDate'] = parser.parse('2021-06-12')
+    isValid, eventErrorMessage = validateNewEventData(eventData)
+    assert isValid == False
+    assert eventErrorMessage == "Event start date is after event end date"
+
+    # testing checks for raw form data
+    eventData["startDate"] = parser.parse('2021-10-12')
+    eventData['endDate'] = parser.parse('2022-06-12')
+    for boolKey in ['isRsvpRequired', 'isTraining', 'isService', 'isRecurring']:
+        eventData[boolKey] = 'on'
         isValid, eventErrorMessage = validateNewEventData(eventData)
         assert isValid == False
-        assert eventErrorMessage == "Event start date is after event end date"
+        assert eventErrorMessage == "Raw form data passed to validate method. Preprocess first."
+        eventData[boolKey] = False
 
-        # testing checks for raw form data
-        eventData["startDate"] = parser.parse('2021-10-12')
-        eventData['endDate'] = parser.parse('2022-06-12')
-        for boolKey in ['isRsvpRequired', 'isTraining', 'isService', 'isRecurring']:
-            eventData[boolKey] = 'on'
-            isValid, eventErrorMessage = validateNewEventData(eventData)
-            assert isValid == False
-            assert eventErrorMessage == "Raw form data passed to validate method. Preprocess first."
-            eventData[boolKey] = False
+    eventData['isRecurring'] = True # needed to pass the event check
 
-        eventData['isRecurring'] = True # needed to pass the event check
+    # testing event starts after it ends.
+    eventData["startDate"] = parser.parse('2021-06-12')
+    eventData["endDate"] = parser.parse('2021-06-12')
+    eventData["timeStart"] =  '21:39'
+    isValid, eventErrorMessage = validateNewEventData(eventData)
+    assert isValid == False
+    assert eventErrorMessage == "Event start time is after event end time"
 
-        # testing event starts after it ends.
-        eventData["startDate"] = parser.parse('2021-06-12')
-        eventData["endDate"] = parser.parse('2021-06-12')
-        eventData["timeStart"] =  '21:39'
-        isValid, eventErrorMessage = validateNewEventData(eventData)
-        assert isValid == False
-        assert eventErrorMessage == "Event start time is after event end time"
+    # testing same event already exists if no event id
+    eventData["startDate"] = parser.parse('2021-10-12')
+    eventData['endDate'] = parser.parse('2022-06-12')
+    isValid, eventErrorMessage = validateNewEventData(eventData)
+    assert isValid == False
+    assert eventErrorMessage == "This event already exists"
 
-        # testing same event already exists if no event id
-        eventData["startDate"] = parser.parse('2021-10-12')
-        eventData['endDate'] = parser.parse('2022-06-12')
-        isValid, eventErrorMessage = validateNewEventData(eventData)
-        assert isValid == False
-        assert eventErrorMessage == "This event already exists"
+    # If we provide an event id, don't check for existence
+    eventData['id'] = 5
+    isValid, eventErrorMessage = validateNewEventData(eventData)
+    assert isValid
 
-        # If we provide an event id, don't check for existence
-        eventData['id'] = 5
-        isValid, eventErrorMessage = validateNewEventData(eventData)
-        assert isValid
-
-        transaction.rollback()
 
 @pytest.mark.integration
 def test_calculateRecurringEventFrequency():
