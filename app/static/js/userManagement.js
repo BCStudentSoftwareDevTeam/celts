@@ -1,10 +1,12 @@
 import searchUser from './searchUser.js'
-function callback(selected) {
-  $("#searchAdmin").submit();
-}
+
 
 $(document).ready(function() {
   // add celts admin
+  function callback(selected) {
+    $("#searchAdmin").submit();
+  }
+
   $("#searchCeltsAdminInput").on("input", function() {
     searchUser("searchCeltsAdminInput", callback);
   });
@@ -140,7 +142,7 @@ function displayProgramInfo(){
 function editName(el){
   id=($(el).attr("data-id"));
   console.log(id);
-  if ($(el).attr("edit")=="false"){
+  if ($(el).attr("edit")=="false") {
     $("#sprogramName_"+id).attr("hidden",false);
     $("#nprogramName_"+id).hide()
   }

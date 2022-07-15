@@ -1,3 +1,4 @@
+from imp import reload
 from flask import Flask, render_template,request, flash, g, json, abort, redirect, url_for
 import re
 from app.controllers.admin import admin_bp
@@ -76,7 +77,8 @@ def updateProgramInfo(programID):
                                     programInfo["Email"],
                                     programInfo["Sender"],
                                     programID)
-            flash('Program updated.','success')
+            flash("Program updated", "success")
+            return redirect(url_for("admin.userManagement"))     
         except Exception as e:
             print(e)
             flash('Error while updating program info.','warning')

@@ -85,7 +85,7 @@ def changeProgramInfo(newName,newEmail, newSender, programId):
     """Updates the program info with a new sender and email."""
     updatedProgram = Program.update({Program.programName:newName,Program.emailReplyTo: newEmail, Program.emailSenderName:newSender}).where(Program.id==programId)
     updatedProgram.execute()
-    # return (f'Program email info updated')
+    return (f'Program email info updated')
 
 def getPrograms(currentUser):
     return Program.select().join(ProgramManager).where(ProgramManager.user==currentUser).order_by(Program.programName)
