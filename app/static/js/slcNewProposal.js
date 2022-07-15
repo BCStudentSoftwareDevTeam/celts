@@ -47,7 +47,7 @@ $("#approveButton").click(function(){
   });
 });
 
-$("#saveContinue").click(function(){
+$("#saveContinue").on("click", function(){
   var data = $("form").serialize()
   saveCourseInstructors()
   $.ajax({

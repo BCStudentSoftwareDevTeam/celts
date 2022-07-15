@@ -70,6 +70,8 @@ def slcSaveContinue():
     courseExist = Course.get_or_none(Course.id == request.form.get('courseID'))
     if courseExist:
         updateCourse(request.form.copy(), instructorsDict)
+    else:
+        createCourse(request.form.copy(), instructorsDict)
     return ""
 
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
@@ -78,6 +80,8 @@ def slcCreateOrEdit():
         courseExist = Course.get_or_none(Course.id == request.form.get('courseID'))
         if courseExist:
             updateCourse(request.form.copy(), instructorsDict)
+        else:
+            createCourse(request.form.copy(), instructorsDict)
         if getRedirectTarget(False):
             return redirect('' + getRedirectTarget(True) + '')
         return redirect('/serviceLearning/courseManagement')
