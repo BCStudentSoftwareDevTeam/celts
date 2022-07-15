@@ -9,7 +9,7 @@ from app.models.programManager import ProgramManager
 from datetime import datetime, date
 from app.logic.adminLogs import createLog
 from app.logic.events import getEvents
-from app.logic.userManagement import hasPrivilege
+
 
 
 
@@ -110,7 +110,7 @@ def isProgramManagerForEvent(user, event):
     Returns: bool whether the appropriate information is given.
     """
 
-    isProgramManager = hasPrivilege(user, event.singleProgram)
+    isProgramManager = user.isProgramManagerFor(event.singleProgram)
 
     return isProgramManager
 

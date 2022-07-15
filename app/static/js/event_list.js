@@ -1,6 +1,14 @@
-function rsvpForEvent(programID, eventID){
+$(document).ready(function(){
+    $("#removeRsvpBtn").click(function(){
+        removeRsvpForEvent($("#removeRsvpBtn").val())
+    })
+    $("#rsvpBtn").click(function(){
+        rsvpForEvent($("#rsvpBtn").val())
+    })
+})
+
+function rsvpForEvent(eventID){
   rsvpInfo = {id: eventID,
-              programId: programID,
               from: 'ajax'}
 
   $.ajax({
@@ -16,10 +24,9 @@ function rsvpForEvent(programID, eventID){
   });
 }
 
-function removeRsvpForEvent(programID, eventID){
+function removeRsvpForEvent(eventID){
   removeRsvpInfo = {id: eventID,
-              programId: programID,
-              from: 'ajax'}
+                    from: 'ajax'}
 
   $.ajax({
     url: "/rsvpRemove",
