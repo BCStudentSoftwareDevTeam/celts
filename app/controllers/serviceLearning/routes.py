@@ -10,7 +10,8 @@ from app.logic.utils import selectSurroundingTerms
 
 from app.controllers.serviceLearning import serviceLearning_bp
 from app.logic.searchUsers import searchUsers
-from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal
+from app.logic.utils import selectSurroundingTerms
+from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal, renewProposal
 from app.logic.courseManagement import updateCourse, createCourse
 
 from app.controllers.main.routes import getRedirectTarget, setRedirectTarget
@@ -26,9 +27,11 @@ def serviceCourseManagement(username=None):
         setRedirectTarget("/serviceLearning/courseManagement")
         user = User.get(User.username==username) if username else g.current_user
         courseDict = getServiceLearningCoursesData(user)
+        termList = selectSurroundingTerms(g.current_term, prevTerms=0)
         return render_template('serviceLearning/slcManagment.html',
             user=user,
-            courseDict=courseDict)
+            courseDict=courseDict,
+            termList=termList)
     else:
         flash("Unauthorized to view page", 'warning')
         return redirect(url_for('main.events', selectedTerm=g.current_term))
@@ -114,6 +117,19 @@ def withdrawCourse(courseID):
     except Exception as e:
         print(e)
         flash("Withdrawal Unsuccessful", 'warning')
+    return ""
+
+@serviceLearning_bp.route('/serviceLearning/renew/<courseID>/<termID>/', methods = ['POST'])
+def renewCourse(courseID, termID):
+    try:
+        if g.current_user.isAdmin or g.current_user.isFaculty:
+            renewProposal(courseID, termID)
+            flash("Course successfully renewed", 'success')
+        else:
+            flash("Unauthorized to perform this action", 'warning')
+    except Exception as e:
+        print(e)
+        flash("Renewal Unsuccessful", 'warning')
     return ""
 
 @serviceLearning_bp.route('/serviceLearning/approveCourse/', methods=['POST'])

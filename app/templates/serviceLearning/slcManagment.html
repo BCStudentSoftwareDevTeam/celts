@@ -77,15 +77,13 @@
       </div>
       <div class="modal-body">
         <input id="courseID" type="hidden" value="">
-        <p>What term would you like to renew this proposal for?<br><br></p>
-            <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Select Term
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="#"></a> <!--Jinja Dropdown tags will go here for terms. Change the class names of this as these are default bootstrap-->
-                </div>                                      <!--Loop index for each term-->
-            </div>
+        <p>What term would you like to renew this course for?<br><br></p>
+        <select class="form-select courseRenewal" id="renewCourse">
+          <option value="---" disabled selected>Select Action</option>
+          {% for term in termList %}
+          <option id="termSelect" value="{{term}}">{{term.description}}</option>
+          {% endfor %}
+        </select>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
