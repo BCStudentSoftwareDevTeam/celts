@@ -5,6 +5,7 @@ let currentTab = 0; // Current tab is set to be the first tab (0)
 $(document).ready(function(e) {
   $("#cancelButton").hide();
   showTab(currentTab); // Display the current tab
+  viewProposal()
 })
 
 function showTab(currentTab) {
@@ -119,7 +120,7 @@ function callback(selectedInstructor) {
     msgFlash("Instructor is already added.", "danger");
     return;
   }
-  
+
   let lastRow = tableBody.find("tr:last");
   let newRow = lastRow.clone();
   newRow.find("td:eq(0) p").text(instructor);
@@ -168,4 +169,15 @@ async function saveCourseInstructors() {
     contentType: "application/json",
     success: function () {}
   });
+}
+
+function viewProposal(){
+    var url = String(window.location.href);
+    if (url.includes("view")){
+        $("input").prop("disabled", true);
+        $("select").prop("disabled", true);
+        $("textarea").prop("disabled", true);
+        $(".view").prop("disabled", true);
+
+    }
 }
