@@ -65,14 +65,19 @@ def slcEditProposal(courseID):
                                 isPermanentlyDesignated = isPermanentlyDesignated,
                                 courseID=courseID)
 
+@serviceLearning_bp.route('/serviceLearning/saveCourse/', methods=['POST'])
+def slcSaveContinue():
+    courseExist = Course.get_or_none(Course.id == request.form.get('courseID'))
+    if courseExist:
+        updateCourse(request.form.copy(), instructorsDict)
+    return ""
+
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcCreateOrEdit():
     if request.method == "POST":
         courseExist = Course.get_or_none(Course.id == request.form.get('courseID'))
         if courseExist:
             updateCourse(request.form.copy(), instructorsDict)
-        else:
-            createCourse(request.form.copy(), instructorsDict)
         if getRedirectTarget(False):
             return redirect('' + getRedirectTarget(True) + '')
         return redirect('/serviceLearning/courseManagement')

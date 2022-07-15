@@ -21,9 +21,14 @@ function showTab(currentTab) {
 
   if (currentTab == (allTabs.length - 1)) {
     $("#approveButton").show();
+    $("#saveContinue").show();
     $("#nextButton").text("Submit");
+} else if (currentTab == (allTabs.length - 2)) {
+    $("#saveContinue").show();
+    $("#nextButton").hide(");
   } else {
     $("#approveButton").hide();
+    $("#saveContinue").hide();
     $("#nextButton").text("Next");
   }
   fixStepIndicator(currentTab)
@@ -38,6 +43,19 @@ $("#approveButton").click(function(){
     data: data,
     success: function(response) {
         window.location.replace("/manageServiceLearning")
+    }
+  });
+});
+
+$("#saveContinue").click(function(){
+  var data = $("form").serialize()
+  saveCourseInstructors()
+  $.ajax({
+    url: "/serviceLearning/saveCourse/",
+    type: "POST",
+    data: data,
+    success: function(response) {
+        displayCorrectTab(1);
     }
   });
 });
