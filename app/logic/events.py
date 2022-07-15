@@ -170,7 +170,7 @@ def getOtherEvents(term):
                            Event.isTraining == False,
                            Event.isAllVolunteerTraining == False,
                            ((ProgramEvent.program == None) |
-                            (Program.isStudentLed == False) & 
+                            (Program.isStudentLed == False) &
                             (Program.isBonnerScholars == False)))
                     .order_by(Event.id)
                   )
@@ -189,9 +189,9 @@ def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
     events = (Event.select(Event)
                             .join(ProgramEvent)
                             .join(Interest, on=(ProgramEvent.program == Interest.program))
-                            .where(Interest.user == user)
-                            .where(Event.startDate >= asOf)
-                            .where(Event.timeStart > asOf.time())
+                            .where(Interest.user == user,
+                            Event.startDate >= asOf,
+                            Event.timeStart > asOf.time())
                             .distinct() # necessary because of multiple programs
                             .order_by(Event.startDate, Event.name) # keeps the order of events the same when the dates are the same
                             )

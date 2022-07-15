@@ -294,7 +294,7 @@ def contributors():
 @main_bp.route('/proposalReview/', methods = ['GET', 'POST'])
 def reviewProposal():
     """
-    this function gets the pending course id and returns the its data to the review proposal modal 
+    this function gets the pending course id and returns the its data to the review proposal modal
     """
     courseID=request.form
     course=Course.get_by_id(courseID["course_id"])
