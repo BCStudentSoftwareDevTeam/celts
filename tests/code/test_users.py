@@ -12,38 +12,33 @@ from app.logic.users import isEligibleForProgram
 
 @pytest.mark.integration
 def test_user_model():
-    with mainDB.atomic() as transaction:
 
-        user = User.get_by_id("ramsayb2")
-        assert user.isCeltsAdmin
-        assert not user.isCeltsStudentStaff
-        assert user.isAdmin
+    user = User.get_by_id("ramsayb2")
+    assert user.isCeltsAdmin
+    assert not user.isCeltsStudentStaff
+    assert user.isAdmin
 
-        user = User.get_by_id("partont")
-        assert not user.isCeltsAdmin
-        assert not user.isCeltsStudentStaff
-        assert not user.isAdmin
+    user = User.get_by_id("partont")
+    assert not user.isCeltsAdmin
+    assert not user.isCeltsStudentStaff
+    assert not user.isAdmin
 
-        transaction.rollback()
 
 @pytest.mark.integration
 def test_isEligibleForProgram():
-    with mainDB.atomic() as transaction:
 
-        # user has attended all required events
-        user = User.get(User.username == "lamichhanes2")
-        program = Program.get(Program.id == 2)
+    # user has attended all required events
+    user = User.get(User.username == "lamichhanes2")
+    program = Program.get(Program.id == 2)
 
-        eligible = isEligibleForProgram(2, "lamichhanes2")
-        assert eligible
-        eligible = isEligibleForProgram(program, user)
-        assert eligible
+    eligible = isEligibleForProgram(2, "lamichhanes2")
+    assert eligible
+    eligible = isEligibleForProgram(program, user)
+    assert eligible
 
-        # there are no required events
-        eligible = isEligibleForProgram(4, "ayisie")
-        assert eligible
-
-        transaction.rollback()
+    # there are no required events
+    eligible = isEligibleForProgram(4, "ayisie")
+    assert eligible
 
 @pytest.mark.integration
 def test_addUserInterest():

@@ -292,30 +292,28 @@ def test_wrongValidateNewEventData():
 
 @pytest.mark.integration
 def test_calculateRecurringEventFrequency():
-    with mainDB.atomic() as transaction:
 
-        eventInfo = {'name':"testEvent",
-                     'startDate': parser.parse("02/22/2023"),
-                     'endDate': parser.parse("03/9/2023")}
+    eventInfo = {'name':"testEvent",
+                 'startDate': parser.parse("02/22/2023"),
+                 'endDate': parser.parse("03/9/2023")}
 
-        # test correct response
+    # test correct response
+    returnedEvents = calculateRecurringEventFrequency(eventInfo)
+    assert returnedEvents[0] == {'name': 'testEvent Week 1', 'date': parser.parse('02/22/2023'), 'week': 1}
+    assert returnedEvents[1] == {'name': 'testEvent Week 2', 'date': parser.parse('03/01/2023'), 'week': 2}
+    assert returnedEvents[2] == {'name': 'testEvent Week 3', 'date': parser.parse('03/08/2023'), 'week': 3}
+
+    # test non-datetime
+    eventInfo["startDate"] = '2021/06/07'
+    with pytest.raises(Exception):
         returnedEvents = calculateRecurringEventFrequency(eventInfo)
-        assert returnedEvents[0] == {'name': 'testEvent Week 1', 'date': parser.parse('02/22/2023'), 'week': 1}
-        assert returnedEvents[1] == {'name': 'testEvent Week 2', 'date': parser.parse('03/01/2023'), 'week': 2}
-        assert returnedEvents[2] == {'name': 'testEvent Week 3', 'date': parser.parse('03/08/2023'), 'week': 3}
 
-        # test non-datetime
-        eventInfo["startDate"] = '2021/06/07'
-        with pytest.raises(Exception):
-            returnedEvents = calculateRecurringEventFrequency(eventInfo)
+    # test non-recurring
+    eventInfo["startDate"] = '2021/06/07'
+    eventInfo["endDate"] = '2021/06/07'
+    with pytest.raises(Exception):
+        returnedEvents = calculateRecurringEventFrequency(eventInfo)
 
-        # test non-recurring
-        eventInfo["startDate"] = '2021/06/07'
-        eventInfo["endDate"] = '2021/06/07'
-        with pytest.raises(Exception):
-            returnedEvents = calculateRecurringEventFrequency(eventInfo)
-
-        transaction.rollback()
 
 @pytest.mark.integration
 def test_attemptSaveEvent():
@@ -357,48 +355,45 @@ def test_attemptSaveEvent():
 
 @pytest.mark.integration
 def test_saveEventToDb_create():
-    with mainDB.atomic() as transaction2:
 
-        eventInfo =  {'isRsvpRequired':False, 'isService':False,
-                      'isTraining':True, 'isRecurring':False,'isAllVolunteerTraining': True, 'recurringId':None, 'startDate': parser.parse('2021-12-12'),
-                       'endDate':parser.parse('2022-06-12'), 'location':"a big room",
-                       'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
-                       'name':'Empty Bowls Spring','term':1,'facilitators':[User.get_by_id("ramsayb2")]}
-        eventInfo['program'] = Program.get_by_id(1)
+    eventInfo =  {'isRsvpRequired':False, 'isService':False,
+                  'isTraining':True, 'isRecurring':False,'isAllVolunteerTraining': True, 'recurringId':None, 'startDate': parser.parse('2021-12-12'),
+                   'endDate':parser.parse('2022-06-12'), 'location':"a big room",
+                   'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
+                   'name':'Empty Bowls Spring','term':1,'facilitators':[User.get_by_id("ramsayb2")]}
+    eventInfo['program'] = Program.get_by_id(1)
 
-        # if valid is not added to the dict
-        with pytest.raises(Exception):
-            with app.app_context():
-                g.current_user = User.get_by_id("ramsayb2")
-                saveEventToDb(eventInfo)
-
-        # if 'valid' is not True
-        eventInfo['valid'] = False
-        with pytest.raises(Exception):
-            with app.app_context():
-                g.current_user = User.get_by_id("ramsayb2")
-                saveEventToDb(eventInfo)
-
-        #test that the event and facilitators are added successfully
-        with mainDB.atomic() as transaction:
-            eventInfo['valid'] = True
-            with app.app_context():
-                g.current_user = User.get_by_id("ramsayb2")
-                createdEvents = saveEventToDb(eventInfo)
-            assert len(createdEvents) == 1
-            assert createdEvents[0].singleProgram.id == 1
-
-            createdEventFacilitator = EventFacilitator.get(event=createdEvents[0])
-            assert createdEventFacilitator # kind of redundant, as the previous line will throw an exception
-
-            transaction.rollback()
-
-        # test bad username for facilitator (user does not exist)
-        eventInfo["facilitators"] = "jarjug"
-        with pytest.raises(IntegrityError):
+    # if valid is not added to the dict
+    with pytest.raises(Exception):
+        with app.app_context():
+            g.current_user = User.get_by_id("ramsayb2")
             saveEventToDb(eventInfo)
 
-        transaction2.rollback()
+    # if 'valid' is not True
+    eventInfo['valid'] = False
+    with pytest.raises(Exception):
+        with app.app_context():
+            g.current_user = User.get_by_id("ramsayb2")
+            saveEventToDb(eventInfo)
+
+    #test that the event and facilitators are added successfully
+    with mainDB.atomic() as transaction:
+        eventInfo['valid'] = True
+        with app.app_context():
+            g.current_user = User.get_by_id("ramsayb2")
+            createdEvents = saveEventToDb(eventInfo)
+        assert len(createdEvents) == 1
+        assert createdEvents[0].singleProgram.id == 1
+
+        createdEventFacilitator = EventFacilitator.get(event=createdEvents[0])
+        assert createdEventFacilitator # kind of redundant, as the previous line will throw an exception
+
+        transaction.rollback()
+
+    # test bad username for facilitator (user does not exist)
+    eventInfo["facilitators"] = "jarjug"
+    with pytest.raises(IntegrityError):
+        saveEventToDb(eventInfo)
 
 @pytest.mark.integration
 def test_saveEventToDb_recurring():
@@ -527,22 +522,19 @@ def test_getAllFacilitators():
 
 @pytest.mark.integration
 def test_getsCorrectUpcomingEvent():
-    with mainDB.atomic() as transaction:
 
-        testDate = datetime.datetime.strptime("2021-08-01 5:00","%Y-%m-%d %H:%M")
+    testDate = datetime.datetime.strptime("2021-08-01 5:00","%Y-%m-%d %H:%M")
 
-        user = "khatts"
-        events = getUpcomingEventsForUser(user, asOf=testDate)
-        assert len(events) == 3
-        assert "Empty Bowls Spring Event 1" == events[0].name
+    user = "khatts"
+    events = getUpcomingEventsForUser(user, asOf=testDate)
+    assert len(events) == 3
+    assert "Empty Bowls Spring Event 1" == events[0].name
 
-        user = "ramsayb2"
-        events = getUpcomingEventsForUser(user, asOf=testDate)
+    user = "ramsayb2"
+    events = getUpcomingEventsForUser(user, asOf=testDate)
 
-        assert len(events) == 4
-        assert "Meet & Greet with Grandparent" == events[0].name
-
-        transaction.rollback()
+    assert len(events) == 4
+    assert "Meet & Greet with Grandparent" == events[0].name
 
 @pytest.mark.integration
 def test_userWithNoInterestedEvent():
@@ -586,16 +578,13 @@ def test_format24HourTime():
 
 @pytest.mark.integration
 def test_calculateNewrecurringId():
-    with mainDB.atomic() as transaction:
 
-        maxRecurringId = Event.select(fn.MAX(Event.recurringId)).scalar()
-        if maxRecurringId == None:
-            maxRecurringId = 1
-        else:
-            maxRecurringId += 1
-        assert calculateNewrecurringId() == maxRecurringId
-
-        transaction.rollback()
+    maxRecurringId = Event.select(fn.MAX(Event.recurringId)).scalar()
+    if maxRecurringId == None:
+        maxRecurringId = 1
+    else:
+        maxRecurringId += 1
+    assert calculateNewrecurringId() == maxRecurringId
 
 @pytest.mark.integration
 def test_getPreviousRecurringEventData():
