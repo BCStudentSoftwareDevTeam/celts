@@ -12,66 +12,73 @@ $(document).ready(function() {
   });
 
   $('[data-toggle="tooltip"]').tooltip();
-// Search functionalities from the volunteer table in the UI
-  $("#trackVolunteersInput").on("keyup", function() {
-    var value = $(this).val().toLowerCase();
-    $("#volunteerTable tr").filter(function() {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+
+  // Search functionalities from the volunteer table in the UI
+    $("#trackVolunteersInput").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#volunteerTable tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
     });
+
+    // Adding the new volunteer to the user database table
+    $("#selectVolunteerButton").click(function(){
+      let user = $("#addVolunteerInput").val()
+      let eventId = $("#eventID").val()
+
+      $.ajax({
+        url: `/addVolunteerToEvent/${eventId}/${user}`,
+        type: "POST",
+        success: function(response){
+          console.log(response)
+          location.reload();
+        },
+        error: function(request, status, error){
+          location.reload();
+        }
+      });
+    });
+
+  function callback() {
+    $("#selectVolunteerButton").prop('disabled', false);
+  }
+
+  $("#selectVolunteerButton").prop('disabled', true);
+
+  $("#addVolunteerInput").on("input", function() {
+    searchUser("addVolunteerInput", callback, false, "addVolunteerModal");
   });
 
-  // Adding the new volunteer to the user database table
-  $("#selectVolunteerButton").click(function(){
-    let user = $("#addVolunteerInput").val()
-    let eventId = $("#eventID").val()
-
+  $(".removeVolunteer").on("click", function() {
+    let username =  this.id;
+    let eventId = $('#eventID').val()
     $.ajax({
-      url: `/addVolunteerToEvent/${user}/${eventId}`,
+      url: `/removeVolunteerFromEvent/${username}/${eventId}`,
       type: "POST",
-      success: function(s){
-        location.reload();
+      success: function(s) {
+         location.reload();
       },
-      error: function(request, status, error){
-        location.reload();
+      error: function(request, status, error) {
       }
     });
   });
-});
-
-function callback(selected) {
-  $("#selectVolunteerButton").prop('disabled', false);
-}
-
-$("#selectVolunteerButton").prop('disabled', true)
-$("#addVolunteerInput").on("input", function() {
-  searchUser("addVolunteerInput", callback, false, "addVolunteerModal", undefined, "stduents");
-});
-
-$(".removeVolunteer").on("click", function() {
-  let username =  $(this)[0].id;
-  let eventId = $('#eventID').val()
-  $.ajax({
-    url: `/removeVolunteerFromEvent/${username}/${eventId}`,
-    type: "POST",
-    success: function(s) {
-      location.reload();
-    },
-    error: function(request, status, error) {
-    }
-  });
-});
 
 $(".attendanceCheck").on("change", function() {
-  let username =  $(this)[0].name.substring(9) //get everything after the 9th character;
-  let inputFieldID = `inputHours_${username}`
+    let username =  this.name.substring(9) //get everything after the 9th character;
+    let inputFieldID = `inputHours_${username}`
 
-  if ($(this)[0].checked) {
-    $(`#${inputFieldID}`).prop('disabled', false);
-    let eventLength = $("#eventLength").text();
-    $(`#${inputFieldID}`).val(eventLength);
+    if (this.checked) {
+      $(`#${inputFieldID}`).prop('disabled', false);
+      let eventLength = $("#eventLength").text();
+      $(`#${inputFieldID}`).val(eventLength);
 
-  } else {
-    $(`#${inputFieldID}`).prop('disabled', true);
-    $(`#${inputFieldID}`).val(null);
-  }
+    } else {
+      $(`#${inputFieldID}`).prop('disabled', true);
+      $(`#${inputFieldID}`).val(null);
+    }
+  });
+
+  $("#selectAllVolunteers").click(function(){
+      $("#addPastVolunteerModal input[type=checkbox]").prop('checked', true)
+  });
 });

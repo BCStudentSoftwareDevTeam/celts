@@ -29,8 +29,6 @@ $("#volunteerInput").autocomplete({
     }
   });
 };
-
-
 function removeRow(e) {
   $(e).parent().parent().remove();
 }
