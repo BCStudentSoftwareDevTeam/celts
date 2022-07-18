@@ -14,19 +14,19 @@ $(document).ready(function() {
 function changeAction(action){
   courseID = action.id;
   // decides what to do based on selection
-  if (action.value=="Renew"){
+  if (action.value == "Renew"){
     $('#courseID').val(courseID);
     $("#renewModal").modal('show')
-  } else if (action.value=="View"){
+  } else if (action.value == "View"){
     location = '/serviceLearning/viewProposal/' + courseID
-  } else if (action.value=="Withdraw"){
+  } else if (action.value == "Withdraw"){
     $('#courseID').val(courseID);
     $('#withdrawModal').modal('show');
-  } else if(action.value=="Edit"){
+  } else if(action.value == "Edit"){
     location = '/serviceLearning/editProposal/' + courseID;
   }
 }
-function renew(course, term){
+function renew(){
     courseID = $("#courseID").val();
     termID = $('#renewCourse').find(":selected").val()
     $.ajax({

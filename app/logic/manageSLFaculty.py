@@ -8,7 +8,7 @@ def getCourseDict():
     courseInstructors = CourseInstructor.select()
     course_dict = {}
 
-    for counter, instructor in enumerate(courseInstructors):
+    for instructor in courseInstructors:
         course_dict.setdefault(instructor.user, [])
         if instructor.course.courseName not in course_dict[instructor.user]:
             course_dict[instructor.user].append(instructor.course.courseName)

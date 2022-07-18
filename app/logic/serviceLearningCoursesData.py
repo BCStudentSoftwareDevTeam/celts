@@ -1,4 +1,3 @@
-from copy import copy
 from app.models.course import Course
 from app.models.user import User
 from app.models.term import Term
@@ -33,10 +32,9 @@ def withdrawProposal(courseID):
     course = Course.get(Course.id == courseID)
     questions = CourseQuestion.select().where(CourseQuestion.course == course)
     notes = list(Note.select(Note.id)
-                .where(QuestionNote.question
-                .in_(questions))
-                .distinct()
-                .join(QuestionNote))
+                .join(QuestionNote)
+                .where(QuestionNote.question.in_(questions))
+                .distinct())
     course.delete_instance(recursive=True)
     for note in notes:
         note.delete_instance()
@@ -51,7 +49,7 @@ def renewProposal(courseID, term):
     course.status = 3
     course.save()
     oldCourse.save()
-    questions = list(CourseQuestion.select()
+    questions = (CourseQuestion.select()
                     .join(Course)
                     .where(CourseQuestion.course==oldCourse.id,
                     Course.term==oldTerm,
@@ -60,11 +58,7 @@ def renewProposal(courseID, term):
         CourseQuestion.create(course=course.id,
                               questionContent=question.questionContent,
                               questionNumber=question.questionNumber)
-    instructors = list(CourseInstructor.select()
-                      .join(Course)
-                      .where(CourseInstructor.course==oldCourse.id,
-                      Course.term==oldTerm,
-                      Course.courseName==course.courseName))
+    instructors = CourseInstructor.select()
     for instructor in instructors:
         CourseInstructor.create(course=course.id,
                                 user=instructor.user)

@@ -123,7 +123,7 @@ def withdrawCourse(courseID):
 @serviceLearning_bp.route('/serviceLearning/renew/<courseID>/<termID>/', methods = ['POST'])
 def renewCourse(courseID, termID):
     try:
-        if g.current_user.isAdmin or g.current_user.isFaculty:
+        if g.current_user.isCeltsAdmin:
             renewProposal(courseID, termID)
             flash("Course successfully renewed", 'success')
         else:
@@ -140,12 +140,18 @@ def approveCourse():
         approve button.
     return: empty string because AJAX needs to receive something
     """
+    if len(request.form)==1:
+        course=Course.get_by_id(request.form['courseID']) # if only course is reviewed pass the course ID
+
+    elif 'courseID' in request.form:
+        course = updateCourse(request.form.copy(), instructorsDict) # if edit course, Updates database with the completed fields and get course ID
+
+    else:
+        course=createCourse(request.form.copy(), instructorsDict) # creat course first and get its ID to approve next
     try:
-        updateCourse(request.form.copy(), instructorsDict) # Updates database with the completed fields
-        # The next line creates the query to approve the course
-        course = Course.update(status = 2).where(Course.id == request.form['courseID'])
-        course.execute() # Executes the query and approves course in the database
+        course.status = 2
+        course.save() # saves the query and approves course in the database
         flash("Course approved!", "success")
     except:
-        flash("Course not approved", "warning")
+        flash("Course not approved!", "danger")
     return ""
