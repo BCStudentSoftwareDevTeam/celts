@@ -108,13 +108,18 @@ function fixStepIndicator(navigateTab) {
   steps[navigateTab].className += " active";
 }
 
+
 function callback(selectedInstructor) {
   // JSON.parse is required to de-stringify the search results into a dictionary.
   let instructor = (selectedInstructor["firstName"]+" "+selectedInstructor["lastName"]+" ("+selectedInstructor["username"]+")");
   let username = selectedInstructor["username"];
   let phone = selectedInstructor["phoneNumber"];
-
   let tableBody = $("#instructorTable").find("tbody");
+  if(tableBody.prop('outerHTML').includes(instructor)){
+    msgFlash("Instructor is already added.", "danger");
+    return;
+  }
+  
   let lastRow = tableBody.find("tr:last");
   let newRow = lastRow.clone();
   newRow.find("td:eq(0) p").text(instructor);

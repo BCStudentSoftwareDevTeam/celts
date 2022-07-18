@@ -45,7 +45,7 @@
     data-bs-toggle="pill" data-bs-target="#pills-bonner-scholars" type="button" role="tab" aria-controls="pills-bonner-scholars" aria-selected="false">Bonner Scholars</button>
   </li>
   <li class="nav-item" role="presentation">
-    <button class="nav-link" id="nonProgramEvents"
+    <button class="nav-link" id="otherEvents"
     data-bs-toggle="pill" data-bs-target="#pills-one-time" type="button" role="tab" aria-controls="pills-one-time" aria-selected="false">Other Events</button>
   </li>
   </ul>
@@ -59,16 +59,28 @@
         <th scope="col">Date</th>
         <th scope="col">Time</th>
         <th scope="col">Location</th>
+        <th> Event Program </th>
         <th scope="col">Invitation</th>
       </tr>
     </thead>
     <tbody>
         {% for event in events %}
           <tr>
-            <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+              {% if user.isCeltsAdmin or user.isProgramManagerFor(event.singleProgram)%}
+                <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+              {% else %}
+                <td> <a href="/eventsList/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
+              {% endif %}
             <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
-            <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
+            <td>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
             <td>{{event.location}}</td>
+            {% if event.programEvents%}
+              {% for programEvent in event.programEvents%}
+              <td>{{programEvent.program.programName}}</td>
+              {% endfor %}
+            {% else %}
+              <td>This event does not belong to any program</td>
+            {% endif %}
             {% if user.isAdmin %}
               <td>
                 {% if event.isPast %}
@@ -82,9 +94,9 @@
               {% if (event.isPast) %}
                 <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
               {% elif event.id in rsvpedEventsID %}
-                <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.program_id}}, {{event.id}})">Remove RSVP</button></td>
+                <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button></td>
               {% else %}
-                <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.program_id}}, {{event.id}})">RSVP</button></td>
+                <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button></td>
               {% endif %}
             {% endif %}
           </tr>
@@ -97,9 +109,9 @@
 {% endmacro %}
 <div class="tab-content" id="pills-tabContent">
   <div class="tab-pane fade show active" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
-    {% if studentLedProgram %}
+    {% if studentLedEvents %}
     <div class="accordion" id="categoryAccordion">
-      {% for program,events in studentLedProgram.items() %}
+      {% for program,events in studentLedEvents.items() %}
         <div class="accordion-item">
           <h2 class="accordion-header" id="accordion__header_{{program}}">
             <button class="accordion-button collapsed"
@@ -123,15 +135,19 @@
                     <th scope="col">Date</th>
                     <th scope="col">Time</th>
                     <th scope="col">Location</th>
-                    <th scope="col">Invitation</th>
+                    <th scope="col"></th>
                   </tr>
                 </thead>
                 <tbody>
                     {% for event in events %}
                       <tr>
-                        <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+                          {% if user.isCeltsAdmin or user.isProgramManagerFor(event.singleProgram) %}
+                            <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+                          {% else %}
+                            <td> <a href="/eventsList/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
+                          {% endif %}
                         <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
-                        <td>{{event.timeStart.strftime('%I:%M %p')}}</td>
+                        <td>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
                         <td>{{event.location}}</td>
                         {% if user.isAdmin %}
                           <td>
@@ -140,16 +156,16 @@
                             {% endif %}
                             <button class="btn btn-primary"
                             onclick="showEmailModal({{event.id}}, {{program.id}}, {{selectedTerm}}, {{isPastEvent}})">
-                              <span class="bi bi-envelope-fill"> Email</span>
+                              <span class="bi bi-envelope-fill"> Invite</span>
                             </button>
                           </td>
                         {% else %}
                           {% if event.isPast%}
                             <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
                           {% elif event.id in rsvpedEventsID %}
-                            <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{program.id}}, {{event.id}})">Remove RSVP</button></td>
+                            <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button></td>
                           {% else %}
-                            <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{program.id}}, {{event.id}})">RSVP</button></td>
+                            <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button></td>
                           {% endif %}
                         {% endif %}
                       </tr>
@@ -166,13 +182,13 @@
     {% endif %}
   </div>
   <div class="tab-pane fade show" id="pills-training" role="tabpanel" aria-labelledby="pills-training-tab">
-    {{createTable(trainingProgram)}}
+    {{createTable(trainingEvents)}}
   </div>
   <div class="tab-pane fade show" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="pills-bonner-scholars-tab">
-    {{createTable(bonnerProgram)}}
+    {{createTable(bonnerEvents)}}
   </div>
   <div class="tab-pane fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
-    {{createTable(nonProgramEvents)}}
+    {{createTable(otherEvents)}}
   </div>
 </div>
 {% include 'emailModal.html' %}

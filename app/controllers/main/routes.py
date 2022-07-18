@@ -27,6 +27,7 @@ from app.logic.transcript import *
 from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import pendingCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
+from app.models.courseInstructor import CourseInstructor
 
 @main_bp.route('/', methods=['GET'])
 def redirectToEventsList():
@@ -42,17 +43,17 @@ def events(selectedTerm):
     participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
     term = Term.get_by_id(currentTerm)
-    studentLedProgram = getStudentLedProgram(term)
-    trainingProgram = getTrainingProgram(term)
-    bonnerProgram = getBonnerProgram(term)
-    nonProgramEvents = getNonProgramEvents(term)
+    studentLedEvents = getStudentLedEvents(term)
+    trainingEvents = getTrainingEvents(term)
+    bonnerEvents = getBonnerEvents(term)
+    otherEvents = getOtherEvents(term)
 
     return render_template("/events/event_list.html",
         selectedTerm = term,
-        studentLedProgram = studentLedProgram,
-        trainingProgram = trainingProgram,
-        bonnerProgram = bonnerProgram,
-        nonProgramEvents = nonProgramEvents,
+        studentLedEvents = studentLedEvents,
+        trainingEvents = trainingEvents,
+        bonnerEvents = bonnerEvents,
+        otherEvents = otherEvents,
         listOfTerms = listOfTerms,
         rsvpedEventsID = rsvpedEventsID,
         currentTime = currentTime,
@@ -85,8 +86,20 @@ def viewVolunteersProfile(username):
         permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
         allUserEntries = BackgroundCheck.select().where(BackgroundCheck.user == volunteer)
-        completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
+
+        if g.current_user.isCeltsAdmin:
+            completedBackgroundCheck = {entry.type: [entry.passBackgroundCheck, entry.dateCompleted] for entry in allUserEntries}
+        else:
+            # sets the values to strings because student staff do not have access to input boxes
+            completedBackgroundCheck = {entry.type: ['Yes' if entry.passBackgroundCheck else 'No',
+                                                    'Not Completed' if entry.dateCompleted == None
+                                                    else entry.dateCompleted.strftime('%m/%d/%Y')] for entry in allUserEntries}
+
         backgroundTypes = list(BackgroundCheckType.select())
+        # creates data structure for background checks that are not currently completed
+        for checkType in backgroundTypes:
+            if checkType not in completedBackgroundCheck.keys():
+                completedBackgroundCheck[checkType] = ["No", "Not Completed"]
 
         eligibilityTable = []
         for program in programs:
@@ -99,6 +112,7 @@ def viewVolunteersProfile(username):
                                    "completedTraining" : (volunteer.username in trainedParticipants(program, g.current_term)),
                                    "isNotBanned" : True if not notes else False,
                                    "banNote": noteForDict})
+
         return render_template ("/main/volunteerProfile.html",
                 programs = programs,
                 programsInterested = programsInterested,
@@ -196,7 +210,6 @@ def volunteerRegister():
     for the event they have clicked register for.
     """
     eventData = request.form
-
     event = Event.get_by_id(eventData['id'])
 
     user = g.current_user
@@ -216,22 +229,23 @@ def volunteerRegister():
     if 'from' in eventData:
         if eventData['from'] == 'ajax':
             return ''
-    return redirect(url_for("admin.editEvent", eventId=event.id))
-
+    return redirect(url_for("admin.eventDisplay", eventId=event.id))
 
 @main_bp.route('/rsvpRemove', methods = ['POST'])
 def RemoveRSVP():
     """
-    This function deletes the user ID and event ID from database when RemoveRSVP  is clicked
+    This function deletes the user ID and event ID from database when RemoveRSVP is clicked
     """
     eventData = request.form
     event = Event.get_by_id(eventData['id'])
 
     currentRsvpParticipant = EventRsvp.get(EventRsvp.user == g.current_user, EventRsvp.event == event)
     currentRsvpParticipant.delete_instance()
-
     flash("Successfully unregistered for event!", "success")
-    return redirect(url_for("admin.editEvent", eventId=event.id))
+    if 'from' in eventData:
+        if eventData['from'] == 'ajax':
+            return ''
+    return redirect(url_for("admin.eventDisplay", eventId=event.id))
 
 @main_bp.route('/profile/<username>/serviceTranscript', methods = ['GET'])
 def serviceTranscript(username):
@@ -277,6 +291,17 @@ def searchUser(query):
 def contributors():
     return render_template("/contributors.html")
 
+@main_bp.route('/proposalReview/', methods = ['GET', 'POST'])
+def reviewProposal():
+    """
+    this function gets the pending course id and returns the its data to the review proposal modal 
+    """
+    courseID=request.form
+    course=Course.get_by_id(courseID["course_id"])
+    instructors_data=course.courseInstructors
+    return render_template('/main/reviewproposal.html',
+                            course=course,
+                            instructors_data=instructors_data)
 @main_bp.route('/manageServiceLearning', methods = ['GET', 'POST'])
 @main_bp.route('/manageServiceLearning/<term>', methods = ['GET', 'POST'])
 def getAllCourseIntructors(term=None):

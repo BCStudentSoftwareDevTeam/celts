@@ -36,7 +36,7 @@ def removeUserInterest(program_id, username):
     username: username of the user showing disinterest
 
     """
-    interestToDelete = Interest.get(Interest.program == program_id, Interest.user == username)
+    interestToDelete = Interest.get_or_none(Interest.program == program_id, Interest.user == username)
     if interestToDelete:
         interestToDelete.delete_instance()
     return True

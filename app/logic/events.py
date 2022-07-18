@@ -104,7 +104,7 @@ def saveEventToDb(newEventData):
 
     return eventRecords
 
-def getStudentLedProgram(term):
+def getStudentLedEvents(term):
 
     studentLedEvents = (Event.select(Event, Program.id.alias("program_id"))
                              .join(ProgramEvent)
@@ -118,7 +118,7 @@ def getStudentLedProgram(term):
 
     return programs
 
-def getTrainingProgram(term):
+def getTrainingEvents(term):
 
     """
         The allTrainingsEvent query is designed to select and count eventId's after grouping them
@@ -146,7 +146,7 @@ def getTrainingProgram(term):
 
     return list(trainingEvents)
 
-def getBonnerProgram(term):
+def getBonnerEvents(term):
 
     bonnerScholarsEvents = (Event.select(Event, Program.id.alias("program_id"))
                                  .join(ProgramEvent)
@@ -155,18 +155,27 @@ def getBonnerProgram(term):
                                         Event.term == term))
     return list(bonnerScholarsEvents)
 
-def getNonProgramEvents(term):
+def getOtherEvents(term):
     """
-    Get the list of the one-time events to be displayed in the Other Events section
-    of the Events List page.
-    :return: A list of One Time Events objects
+    Get the list of the events not caught by other functions to be displayed in
+    the Other Events section of the Events List page.
+    :return: A list of Other Event objects
     """
-    nonProgramEvents = (Event.select()
-                        .join(ProgramEvent, JOIN.LEFT_OUTER)
-                        .where(ProgramEvent.program == None,
-                        Event.isTraining == False))
+    # Gets all events that are not associated with a program and are not trainings
+    # Gets all events that have a program but don't fit anywhere
+    otherEvents = list(Event.select(Event, Program)
+                    .join(ProgramEvent, JOIN.LEFT_OUTER)
+                    .join(Program, JOIN.LEFT_OUTER)
+                    .where(Event.term == term,
+                           Event.isTraining == False,
+                           Event.isAllVolunteerTraining == False,
+                           ((ProgramEvent.program == None) |
+                            (Program.isStudentLed == False) & 
+                            (Program.isBonnerScholars == False)))
+                    .order_by(Event.id)
+                  )
 
-    return list(nonProgramEvents)
+    return otherEvents
 
 def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
     """
@@ -231,15 +240,21 @@ def validateNewEventData(data):
     return (True, "All inputs are valid.")
 
 def calculateNewrecurringId():
+    """
+    Gets the highest recurring Id so that a new recurring Id can be assigned
+    """
     recurringId = Event.select(fn.MAX(Event.recurringId)).scalar()
     if recurringId:
         return recurringId + 1
     else:
         return 1
 
-def getPreviousRecurringEventData(recurringId, startDate):
-    return list(User.select(User.username).join(EventParticipant).join(Event)
-    .where(Event.recurringId==recurringId, Event.startDate<startDate))
+def getPreviousRecurringEventData(recurringId):
+    """
+    Joins the User db table and Event Participant db table so that we can get the information of a Particpant if they attended an event
+    """
+    previousEventVolunteers = User.select(User).join(EventParticipant).join(Event).where(Event.recurringId==recurringId).distinct()
+    return previousEventVolunteers
 
 def calculateRecurringEventFrequency(event):
     """
