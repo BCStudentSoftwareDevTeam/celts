@@ -1,105 +1,74 @@
 import pyodbc
+from app import app
 from app.models.user import User
-import peewee as exc
+from app.logic.utils import getUsernameFromEmail
+import peewee
 
 def main():
     """
     This function runs the updateRecords function once the script is run.
     """
-    updateRecords()
+    print("Don't forget to put the correct Tracy password in app/config/local-override.yml")
 
-def updateRecords():
-    """
-    Sets up a connection with an external database and creates new entries for both
-    students and faculty in the Users table of the Celts database.
-    Currently pulling from Tracy, might need to be update in the future.
-    """
+    addToDb(getFacultyStaffData())
+    addToDb(getStudentData())
+
+def getCursor():
     details = {
-        "user": "ute_limited",
-        "password": "VB6PlU$WcbDBqZ3m0IDX",
-        "server": "timemachine1sql.berea.edu",
-        "db": "UTE"
+        "user": app.config["tracy"]["user"],
+        "password": app.config["tracy"]["password"],
+        "host": app.config["tracy"]["host"],
+        "db": app.config["tracy"]["name"]
     }
-    getFacultyUserData(details) # TODO: make it so function updates entries based on bnumber
-    getStudentUserData(details) # TODO: make it so function updates entries based on bnumber
-
-def getFacultyUserData(details):
-    """
-    This function pulls all the faculty data from another database and creates new users
-    in the Celts user table.
-    Currently pulling data from the Tracy database.
-    """
-    pyodbc_uri = 'DRIVER=FreeTDS;SERVER={};PORT=1433;DATABASE={};UID={};PWD={};TDS_Version=8.0;'.format(details['server'],details['db'],details['user'],details['password'])
+    pyodbc_uri = 'DRIVER=FreeTDS;SERVER={};PORT=1433;DATABASE={};UID={};PWD={};TDS_Version=8.0;'.format(details['host'],details['db'],details['user'],details['password'])
 
     pyconn = pyodbc.connect(pyodbc_uri)  # connects a tcp based client socket to a tcp based server socket
-    c = pyconn.cursor()  # allows python to execute sql database commands
+    return pyconn.cursor()  # allows python to execute sql database commands
 
-    for row in c.execute('select * from STUSTAFF'):
+def addToDb(userList):
+    for user in userList:
         try:
-            user = {"username": getUsernameFromEmail(row[4]), #Tracy does not have this information
-                    "bnumber": row[1],
-                    "email": row[4],
-                    "phoneNumber": None, # None currently as Tracy does not have phone #'s in database
-                    "firstName": row[2],
-                    "lastName": row[3],
-                    "isStudent": False,
-                    "isFaculty": True,
-                    "isCeltsAdmin":False,
-                    "isCeltsStudentStaff": False
-            }
             User.insert(user).execute()
+        except peewee.IntegrityError as e:
+            print(e, "Duplicate entry exceptions are expected.")
         except Exception as e:
-            if exc.IntegrityError:
-                # Duplicate entry exceptions are expected due to user data already being
-                # in the User table of the Celts database
-                print(e, "Duplicate entry exceptions are expected.")
-            else:
-                print(e)
+            print(e)
 
-def getStudentUserData(details):
+def getFacultyStaffData():
     """
-    This function pulls all the student data from another database and creates new users
-    in the Celts user table.
-    Currently pulling data from the Tracy database.
+    This function pulls all the faculty and staff data from Tracy and formats for our table
     """
-    pyodbc_uri = 'DRIVER=FreeTDS;SERVER={};PORT=1433;DATABASE={};UID={};PWD={};TDS_Version=8.0;'.format(details['server'],details['db'],details['user'],details['password'])
-    pyconn = pyodbc.connect(pyodbc_uri)
-    c = pyconn.cursor()
+    c = getCursor()
+    return [
+          { "username": getUsernameFromEmail(row[4]),
+            "bnumber": row[1],
+            "email": row[4],
+            "phoneNumber": None, 
+            "firstName": row[2],
+            "lastName": row[3],
+            "isStudent": False,
+            "isFaculty": True,
+            "isStaff": False,
+          }
+        for row in c.execute('select * from STUSTAFF')
+    ]
 
-    for row in c.execute('select * from STUDATA'):
-        try:
-            user = {"username": getUsernameFromEmail(row[9]),
-                    "bnumber": row[1],
-                    "email": row[9],
-                    "phoneNumber": None,
-                    "firstName": row[2],
-                    "lastName": row[3],
-                    "isStudent": True,
-                    "isFaculty": False,
-                    "isCeltsAdmin":False,
-                    "isCeltsStudentStaff": False
-            }
-            User.insert(user).execute()
-        except Exception as e:
-            if exc.IntegrityError:
-                # Duplicate entry exceptions are expected due to user data already being
-                # in the User table of the Celts database
-                print(e, " Duplicate entry exceptions are expected.")
-            else:
-                print(e)
-
-def getUsernameFromEmail(emailStr):
+def getStudentData():
     """
-    This function loops through a users email until the index is an "@" and creates the
-    username.
-    This function will most likely not be needed once we access data from another DB.
+    This function pulls all the student data from Tracy and formats for our table
     """
-    username = ''
-    for i in emailStr:
-        if i != '@':
-            username += i
-        else:
-            return username
+    c = getCursor()
+    return [
+          { "username": getUsernameFromEmail(row[9]),
+            "bnumber": row[1],
+            "email": row[9],
+            "phoneNumber": None, 
+            "firstName": row[2],
+            "lastName": row[3],
+            "isStudent": True,
+          }
+        for row in c.execute('select * from STUDATA')
+    ]
 
 if __name__ == '__main__':
     main()

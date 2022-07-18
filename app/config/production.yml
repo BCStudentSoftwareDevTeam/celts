@@ -1,4 +1,2 @@
 use_shibboleth: True
-use_tracy: True
-use_banner: True
 show_queries: False
