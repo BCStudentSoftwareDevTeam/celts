@@ -66,9 +66,9 @@ def slcEditProposal(courseID):
                                 courseID=courseID)
 @serviceLearning_bp.route('/serviceLearning/saveProposal', methods=['POST'])
 def slcSaveContinue():
+    print("paw ________________________________________________________")
+    print(instructorsDict)
     courseExist = Course.get_or_none(Course.id == request.form.get('courseID'))
-    print("___________________________________")
-    print(courseExist)
     if courseExist:
         updateCourse(request.form.copy(), instructorsDict)
     else:

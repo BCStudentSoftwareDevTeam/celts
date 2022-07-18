@@ -21,17 +21,17 @@ function showTab(currentTab) {
 
   if (currentTab == (allTabs.length - 1)) {
     $("#approveButton").show();
-    $("#nextButton").text("Submit");
+    $("#nextButton").text("Submit");  //last page
     $("#nextButton").show();
     $("#saveContinue").text("Save For Later");}
-  else if (currentTab == (allTabs.length - 2)){
+  else if (currentTab == (allTabs.length - 2)){    //middle page
     $("#saveContinue").show();
     $("#approveButton").hide();
     $("#nextButton").hide();}
   else {
     $("#approveButton").hide();
     $("#nextButton").text("Next");
-    $("#saveContinue").hide();}
+    $("#saveContinue").hide();}         //first page
   fixStepIndicator(currentTab)
 }
 
@@ -56,9 +56,9 @@ $("#nextButton").on("click", function() {
   displayCorrectTab(1);
 });
 
-$("#saveContinue").on("click", function() {
+$("#saveContinue").one("click", function() {
   var data = $("form").serialize()
-  
+  saveCourseInstructors()
   $.ajax({
     url: "/serviceLearning/saveProposal",
     type: "POST",
