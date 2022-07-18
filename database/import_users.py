@@ -10,8 +10,8 @@ def main():
     """
     print("Don't forget to put the correct Tracy password in app/config/local-override.yml")
 
-    addToDb(getFacultyStaffData())
     addToDb(getStudentData())
+    addToDb(getFacultyStaffData())
 
 def getCursor():
     details = {
@@ -29,8 +29,14 @@ def addToDb(userList):
     for user in userList:
         try:
             User.insert(user).execute()
+
         except peewee.IntegrityError as e:
-            print(e, "Duplicate entry exceptions are expected.")
+            if user['username']:
+                (User.update(firstName = user['firstName'], lastName = user['lastName'], email = user['email'])
+                     .where(user['bnumber'] == User.bnumber)).execute()
+            else:
+                print(f"No username for {user['bnumber']}!", user)
+
         except Exception as e:
             print(e)
 
