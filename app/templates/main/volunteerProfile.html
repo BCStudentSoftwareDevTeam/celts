@@ -35,12 +35,12 @@
    <table class="table">
      {% if upcomingEvents|length > 0 %}
        <thead class="tableHeader">
-         <th scope="col"><h4><strong>Program</strong></h4>
-         <th scope="col"><h4><strong>Event Name</strong></h4>
-         <th scope="col"><h4><strong>Event Date</strong></h4>
-         <th scope="col"><h4><strong>Time</strong></h4>
-         <th scope="col"><h4><strong>Location</strong></h4>
-         <th scope="col"><h4><strong>RSVP Status</strong></h4>
+         <th scope="col">Program</th>
+         <th scope="col">Event Name</th>
+         <th scope="col">Event Date</th>
+         <th scope="col">Time</th>
+         <th scope="col">Location</th>
+         <th scope="col">RSVP Status</th>
        </thead>
        {% for event in upcomingEvents %}
            <tr>
@@ -53,14 +53,11 @@
            </tr>
        {% endfor %}
      {% else %}
+       <h2><p class="text-dark" align="center"> No upcoming events. </p></h2>
        <h2><p class="text-dark" align="center">Choose interests below to be notified about upcoming events.</p><h2>
      {% endif %}
    </table>
  </div>
- <br>
- <br>
- <br>
-
  <!-- Start Program Eligibility Table -->
  <div class="row">
    <table class="table banTable">
