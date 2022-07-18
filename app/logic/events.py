@@ -155,18 +155,27 @@ def getBonnerEvents(term):
                                         Event.term == term))
     return list(bonnerScholarsEvents)
 
-def getNonProgramEvents(term):
+def getOtherEvents(term):
     """
-    Get the list of the one-time events to be displayed in the Other Events section
-    of the Events List page.
-    :return: A list of One Time Events objects
+    Get the list of the events not caught by other functions to be displayed in
+    the Other Events section of the Events List page.
+    :return: A list of Other Event objects
     """
-    nonProgramEvents = (Event.select()
-                        .join(ProgramEvent, JOIN.LEFT_OUTER)
-                        .where(ProgramEvent.program == None,
-                        Event.isTraining == False))
+    # Gets all events that are not associated with a program and are not trainings
+    # Gets all events that have a program but don't fit anywhere
+    otherEvents = list(Event.select(Event, Program)
+                    .join(ProgramEvent, JOIN.LEFT_OUTER)
+                    .join(Program, JOIN.LEFT_OUTER)
+                    .where(Event.term == term,
+                           Event.isTraining == False,
+                           Event.isAllVolunteerTraining == False,
+                           ((ProgramEvent.program == None) |
+                            (Program.isStudentLed == False) & 
+                            (Program.isBonnerScholars == False)))
+                    .order_by(Event.id)
+                  )
 
-    return list(nonProgramEvents)
+    return otherEvents
 
 def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
     """
