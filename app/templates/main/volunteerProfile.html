@@ -147,7 +147,17 @@
   <div class="row">
     <h2><br>{{volunteer.firstName}} {{volunteer.lastName}} is the manager of:</h2>
     <div>
-      <table class="table">
+        <h5><br><u>Program(s)</u></h5>
+        <ul>
+        {% for program in programs %}
+          {% set status = '' %}
+            {% if program.id in permissionPrograms %}
+               <li>{{program.programName}}</li>
+            {% else %}
+            {% endif %}
+        {% endfor %}
+        </ul>
+      <!-- <table class="table">
           <thead>
              <tr>
                <th scope="col">Program</th>
@@ -164,7 +174,7 @@
           </tr>
           {% endfor %}
           </tbody>
-       </table>
+       </table> -->
     </div>
   </div>
 <br>
