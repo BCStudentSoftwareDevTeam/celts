@@ -115,13 +115,13 @@ $(document).ready(function(){
     })
   });
   $("#updatePhone").click(function(){
-    user=$(this).data("username") 
-    phonNo=$("#newinput").val()
+    userName=$(this).data("username") 
+    phoneNumber=$("#newinput").val()
     $.ajax({
       method:"POST",
       url:"/updatePhone",
-      data:{"user_name":user,
-            "phoneNumber":phonNo}
+      data:{"username":userName,
+            "phoneNumber":phoneNumber}
     })
   })
 });
