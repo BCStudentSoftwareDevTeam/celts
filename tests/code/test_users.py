@@ -172,3 +172,19 @@ def test_userpriv():
     user = User.get_by_id("mupotsal")
     prg = Program.get_by_id(12)
     assert not user.isProgramManagerFor(prg)
+
+@pytest.mark.integration
+def test_addProgramManager():
+    with mainDB.atomic() as transaction:
+        user = User.get_by_id("mupotsal")
+        prg = Program.get_by_id(1)
+        newPM = user.addProgramManager(prg)
+
+        PMsWithNewPM = list(User.select(User.username).join(ProgramManager).where(ProgramManager.program_id == 1))
+
+        # Check that the return statement is what we expect it to be.
+        assert newPM == (f' {user} added as manager')
+        # Check that the user is made manager of program 1
+        assert user in PMsWithNewPM
+
+        transaction.rollback()

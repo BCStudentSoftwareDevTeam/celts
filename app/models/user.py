@@ -17,11 +17,14 @@ class User(baseModel):
     @property
     def isAdmin(self):
         return (self.isCeltsAdmin or self.isCeltsStudentStaff)
-    
+
+    def addProgramManager(self, program):
+        # makes a user a Program Manager
+        from app.models.programManager import ProgramManager
+        addManager = ProgramManager.create(user = self, program = program)
+        return (f' {self} added as manager')
+
     def isProgramManagerFor(self, program):
+        # Looks to see who is the Program Manager for a program
         from app.models.programManager import ProgramManager  # Must defer import until now to avoid circular reference
         return ProgramManager.select().where(ProgramManager.user == self, ProgramManager.program == program).exists()
-    
-
- 
-
