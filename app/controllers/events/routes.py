@@ -24,7 +24,12 @@ def showUpcomingEvent():
 @events_bp.route('/email', methods=['POST'])
 def email():
     raw_form_data = request.form.copy()
-
+    attachments = request.files['attachmentObject']
+    print(attachments)
+    print(attachments)
+    print(attachments)
+    print(attachments)
+    print(attachments)
     if "@" in raw_form_data['emailSender']:
         # when people are sending emails as themselves (using mailto) --- Q: are we still going with the mailto option?
         pass
