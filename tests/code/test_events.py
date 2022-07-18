@@ -632,6 +632,14 @@ def test_getFacilitatorsFromList():
                                     phoneNumber = "0000000000",
                                     firstName = "Test#2",
                                     lastName = "Test#2.1")
+        listToAssert = getFacilitatorsFromList("")
+        assert listToAssert == []
+        listToAssert = getFacilitatorsFromList([""])
+        assert listToAssert == []
+        listToAssert = getFacilitatorsFromList(",userForTesting1,")
+        assert listToAssert == [testingUser1]
+        listToAssert = getFacilitatorsFromList(["userForTesting2", ""])
+        assert listToAssert == [testingUser2]
         listToAssert = getFacilitatorsFromList([])
         assert listToAssert == []
         listToAssert = getFacilitatorsFromList(["userForTesting1"])
