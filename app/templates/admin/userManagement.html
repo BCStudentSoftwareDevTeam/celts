@@ -92,14 +92,13 @@
         </button>
       </h3>
       <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#adminManagement">
-        <div class="accordion-body">
+        <div id="programSelect" form="programSettings" class="accordion-body programData">
           <table>
             <tr>
               <th>Program Select</th>
               <th>Reply-To-Email</th>
               <th>Sender Name</th>
             </tr>
-        <div class="programData" id="programSelect" form="programSettings">
             {% for program in programs %}
             <form action="/admin/updateProgramInfo/{{program.id}}" method="POST">
                 <tr class="p-1"> 
@@ -110,7 +109,6 @@
                 </tr>
                 </form>
             {% endfor %}
-              </div>
         </table>
       </div>
   </div>
