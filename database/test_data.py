@@ -18,14 +18,14 @@ from app.models.eventParticipant import EventParticipant
 from app.models.courseQuestion import CourseQuestion
 from app.models.questionNote import QuestionNote
 from app.models.interest import Interest
-from app.models.facilitator import Facilitator
+from app.models.eventFacilitator import EventFacilitator
 from app.models.note import Note
-from app.models.studentManager import StudentManager
+from app.models.programManager import ProgramManager
 from app.models.emailTemplate import EmailTemplate
 from app.models.backgroundCheck import BackgroundCheck
 # from app.models.backgroundCheckType import BackgroundCheckType
 from app.models.adminLogs import AdminLogs
-
+from app.models.emailLog import EmailLog
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -33,7 +33,7 @@ users = [
         "username": "ramsayb2",
         "bnumber": "B00173723",
         "email": "ramsayb2@berea.edu",
-        "phoneNumber": "555-555-5555",
+        "phoneNumber": "(555)555-5555",
         "firstName": "Brian",
         "lastName": "Ramsay",
         "isStudent": False,
@@ -45,7 +45,7 @@ users = [
         "username" : "khatts",
         "bnumber" : "B00759107",
         "email": "khatts@berea.edu",
-        "phoneNumber": "555-555-5555",
+        "phoneNumber": "(555)555-5555",
         "firstName" : "Sreynit",
         "lastName" : "Khatt",
         "isStudent": True,
@@ -57,7 +57,7 @@ users = [
         "username": "neillz",
         "bnumber": "B00751864",
         "email": "neillz@berea.edu",
-        "phoneNumber": "555-985-1234",
+        "phoneNumber": "(555)985-1234",
         "firstName": "Zach",
         "lastName": "Neill",
         "isStudent": True,
@@ -70,7 +70,7 @@ users = [
         "username" : "lamichhanes2",
         "bnumber": "B00733993",
         "email": "lamichhanes2@berea.edu",
-        "phoneNumber": "555-555-5555",
+        "phoneNumber": "(555)555-5555",
         "firstName": "Sandesh",
         "lastName":"Lamichhane",
         "isStudent": True,
@@ -82,7 +82,7 @@ users = [
         "username" : "ayisie",
         "bnumber": "B00739736",
         "email": "ayisie@berea.edu",
-        "phoneNumber": "192202903939",
+        "phoneNumber": "(220)290-3939",
         "firstName": "Ebenezer",
         "lastName":"Ayisi",
         "isStudent": True,
@@ -95,7 +95,7 @@ users = [
         "username": "agliullovak",
         "bnumber": "B00759117",
         "email": "agliullovak@berea.edu",
-        "phoneNumber": "555-555-5555",
+        "phoneNumber": "(555)555-5555",
         "firstName": "Karina",
         "lastName": "Agliullova",
         "isStudent": True,
@@ -107,7 +107,7 @@ users = [
         "username": "bryanta",
         "bnumber": "B00708826",
         "email": "bryanta@berea.edu",
-        "phoneNumber": "85943311598",
+        "phoneNumber": "(859)433-1159",
         "firstName": "Alex",
         "lastName": "Bryant",
         "isStudent": True,
@@ -119,7 +119,7 @@ users = [
         "firstName": "Tyler",
         "lastName": "Parton",
         "isStudent": True,
-        "phoneNumber": "9119119111"
+        "phoneNumber": "(859)433-1559"
     },
     {
         "username": "mupotsal",
@@ -128,7 +128,7 @@ users = [
         "firstName": "Liberty",
         "lastName": "Mupotsa",
         "isStudent": True,
-        "phoneNumber": "8599858594",
+        "phoneNumber": "(859)463-1159",
         "isCeltsStudentStaff": True
     },
     {
@@ -137,10 +137,23 @@ users = [
         "email": "heggens@berea.edu",
         "firstName": "Scott",
         "lastName": "Heggen",
-        "phoneNumber": "8599855555",
+        "phoneNumber": "(859)985-5555",
         "isCeltsAdmin": False,
         "isFaculty": True,
-        "isCeltsStudentStaff": False
+        "isCeltsStudentStaff": False,
+        "isStaff": True
+    },
+     {
+        "username": "qasema",
+        "bnumber": "B00000000",
+        "email": "qasema@berea.edu",
+        "firstName": "Ala",
+        "lastName": "Qasem",
+        "phoneNumber": "8599723821",
+        "isCeltsAdmin": True,
+        "isFaculty": True,
+        "isCeltsStudentStaff": False,
+        "isStaff": True
     }
 ]
 
@@ -205,60 +218,80 @@ programs = [
         "programName": "Empty Bowls",
         "isStudentLed": False,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 2,
         "programName": "Berea Buddies",
         "isStudentLed": True,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 3,
         "programName": "Adopt A Grandparent",
         "isStudentLed": True,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 5,
         "programName": "Bonners Scholars",
         "isStudentLed": False,
         "isBonnerScholars": True,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 6,
-        "programName": "Habitat For Humanity",
+        "programName": "Habitat for Humanity",
         "isStudentLed": False,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 7,
         "programName": "Berea Teen Mentoring",
         "isStudentLed": True,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 8,
         "programName": "Hispanic Outreach Program",
         "isStudentLed": True,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 9,
         "programName": "People Who Care",
         "isStudentLed": True,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 10,
         "programName": "Food Drive",
         "isStudentLed": False,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     },
     {
         "id": 12,
         "programName": "Berea Tutoring",
         "isStudentLed": False,
         "isBonnerScholars": False,
+        "emailReplyTo" :"test@email",
+        "emailSenderName" : "testName"
     }
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
@@ -427,6 +460,7 @@ events = [
         "name": "All Volunteer Training",
         "description": "testing multiple programs",
         "isTraining": True,
+        "isAllVolunteerTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Woods-Penniman",
@@ -523,20 +557,22 @@ CourseStatus.insert_many(coursestatus).on_conflict_replace().execute()
 
 notes = [
     {
+    "id": 1,
     "createdBy": "ramsayb2",
     "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
     "noteContent": "I think the training is put in wrong",
     "isPrivate":False
     },
     {
+    "id": 2,
     "createdBy": "mupotsal",
     "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
     "noteContent": "I agree with your comment on training",
     "isPrivate":False
     }
 ]
-
 Note.insert_many(notes).on_conflict_replace().execute()
+
 courses = [
     {
         "id": 1,
@@ -818,9 +854,9 @@ facilitators = [
     'event': 1
     }
 ]
-Facilitator.insert_many(facilitators).on_conflict_replace().execute()
+EventFacilitator.insert_many(facilitators).on_conflict_replace().execute()
 
-studentManagerPrograms = [
+programManagerPrograms = [
     {
     'user':'khatts',
     'program':1
@@ -828,10 +864,6 @@ studentManagerPrograms = [
     {
     'user':'mupotsal',
     'program':2
-    },
-    {
-    'user':'ayisie',
-    'program':12
     },
     {
     'user':'neillz',
@@ -843,10 +875,11 @@ studentManagerPrograms = [
     }
 ]
 
-StudentManager.insert_many(studentManagerPrograms).on_conflict_replace().execute()
+ProgramManager.insert_many(programManagerPrograms).on_conflict_replace().execute()
 
 emailTemplates = [
     {
+    #'id': 1,
     'subject': 'Test Email',
     'body': 'Hello {name}, This is a test event named {event_name} located in {location}. Other info: {start_date}-{end_date} and this {start_time}-{end_time}.',
     'action': 'sent',
@@ -854,28 +887,86 @@ emailTemplates = [
     'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
     },
     {
+    #'id': 2,
     'subject': 'Test Email 2',
     'body': 'Hello {name}, This is another test event named {event_name} located in {location}. Other info: {start_date}-{end_date} and this {start_time}-{end_time}. The link is {event_link}',
     'action': 'sent',
     'purpose': 'Test2',
+    'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
+    },
+    {
+    'subject': 'Event Reminder',
+    'body': 'Hello! This is a reminder that you have an event coming up tomorrow, {start_date}. The event is {event_name} and it will be taking place at {location} from {start_time}-{end_time}. The link is {event_link}.',
+    'action': 'sent',
+    'purpose': 'Reminder',
     'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
     }
 ]
 
 EmailTemplate.insert_many(emailTemplates).on_conflict_replace().execute()
 
+emailLogs = [
+    {
+    'event': 5,
+    'subject': 'Location Change for {event_name}',
+    'templateUsed': 2,
+    'recipientsCategory': "RSVP'd",
+    'recipients': 'neillz',
+    'dateSent': datetime.strptime("2022 5 7","%Y %m %d"),
+    'sender': "neillz"
+    },
+    {
+    'event': 5,
+    'subject': 'Time Change for {event_name}',
+    'templateUsed': 2,
+    'recipientsCategory': "RSVP'd",
+    'recipients': 'ramsayb2',
+    'dateSent': datetime.strptime("2022 6 5","%Y %m %d"),
+    'sender': "neillz"
+    },
+    {
+    'event': 5,
+    'subject': 'Time Change for {event_name}',
+    'templateUsed': 2,
+    'recipientsCategory': "RSVP'd",
+    'recipients': 'ramsayb2',
+    'dateSent': datetime.strptime("2022 5 4","%Y %m %d"),
+    'sender': "neillz"
+    },
+    {
+    'event': 4,
+    'subject': 'Time Change for {event_name}',
+    'templateUsed': 2,
+    'recipientsCategory': "RSVP'd",
+    'recipients': 'neillz',
+    'dateSent': datetime.strptime("2022 5 2","%Y %m %d"),
+    'sender': "ramsayb2"
+    },
+    {
+    'event': 3,
+    'subject': 'Location Change for {event_name}',
+    'templateUsed': 1,
+    'recipientsCategory': "Interested",
+    'recipients': 'neillz',
+    'dateSent': datetime.strptime("2022 6 6","%Y %m %d"),
+    'sender': "ramsayb2"
+    }
+]
+
+EmailLog.insert_many(emailLogs).on_conflict_replace().execute()
+
 background = [
     {
     "user": "khatts",
     "type": "CAN",
     "passBackgroundCheck": False,
-    "datePassed": datetime.strptime("2021 10 12","%Y %m %d")
+    "dateCompleted": datetime.strptime("2021 10 12","%Y %m %d")
     },
     {
     "user":"mupotsal",
     "type": "SHS",
     "passBackgroundCheck":True,
-    "datePassed": datetime.strptime("2021 10 12","%Y %m %d")
+    "dateCompleted": datetime.strptime("2021 10 12","%Y %m %d")
     },
 ]
 BackgroundCheck.insert_many(background).on_conflict_replace().execute()

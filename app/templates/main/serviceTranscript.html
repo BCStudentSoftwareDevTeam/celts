@@ -2,7 +2,7 @@
 {% extends "base.html"%}
 
 {% block app_content %}
-
+<div class="w-100 d-print-inline-block">
 <h1 class="text-center mt-5 mb-3">{{userData.firstName}} {{userData.lastName}}</h1>
 <div class="btn-group d-print-none">
   <ul class="nav nav-tabs" role="tab-list">
@@ -19,7 +19,7 @@
   <h2 class="m-1">Programs</h2>
   <table class="table table-bordered table-striped">
     <tr>
-      <th>Program</th>
+      <th>Program Name</th>
       <th>Term</th>
       <th>Accrued Hours</th>
     </tr>
@@ -53,11 +53,11 @@
 {% endif %}
 
 {% if slCourses.exists() %}
-  <h2 class="m-1">Service Learning Courses</h2>
+  <h2 class="m-1">Service-Learning Courses</h2>
   <table class="table table-bordered table-striped">
     <tr>
       <th>Course Name</th>
-      <th>Semester</th>
+      <th>Term</th>
       <th>Instructor</th>
       <th class="w-25">Accrued Hours</th>
     </tr>
@@ -109,5 +109,7 @@
 <div class="d-print-none pt-5">
   <p>If there are any corrections that need to be made, contact <a href="mailto:cochranea@berea.edu">Ashley Cochrane</a></p>
 </div>
+</div>
+
 
 {% endblock %}

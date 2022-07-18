@@ -20,7 +20,11 @@ function showEmailModal(eventID, programID, selectedTerm, isPastEvent) {
   $(".modal-body #eventID").val(eventID);
   $(".modal-body #programID").val(programID);
   $(".modal-body #selectedTerm").val(selectedTerm);
-
+  if (programID != "Unknown") {
+    fetchProgramSender();  //adds another option for the from field if the event has a program
+  } else{
+    $("#emailSender option[value=optional]").hide();
+  }
   if (isPastEvent) {
     $(".pastEventWarning").prop("hidden", false);
   } else {
@@ -44,12 +48,29 @@ async function fetchEmailLogData() {
         $('#emailLastSent').attr('hidden', true);
       }
       else {
-        log = `Email was last sent to ${emailLog['recipients']} on ${emailLog['dateSent']}`
-        $('#emailLastSent').text(log);
+        $('#emailLastSent').text(emailLog['last_log']);
+        $('#emailLastSentSubject').text(emailLog['last_log2']);
         $('#emailLastSent').attr('hidden', false);
       }
     }
   })
+}
+
+function fetchProgramSender() { // gets the sender name based on what is in the database
+  var programInfo = {programId:$(".modal-body #programID").val()};
+  $.ajax({
+
+   url: "/getProgramSender/",
+   type: "GET",
+   data: programInfo,
+   success: function(s) {
+     var selectEmail = $("#senderEmail")
+     selectEmail.html(s);
+   },
+   error: function(error, status){
+       console.log(error, status);
+   }
+ });
 }
 
 function replaceEmailBodyAndSubject() {

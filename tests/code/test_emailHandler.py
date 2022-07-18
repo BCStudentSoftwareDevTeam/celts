@@ -1,14 +1,23 @@
 import pytest
 from flask_mail import Message
 from urllib.parse import urlparse
-from flask import request
-from datetime import datetime
+from flask import request, g
+from datetime import datetime, date
+from dateutil import parser
 import time
+
 from app import app
 from app.models.emailTemplate import EmailTemplate
 from app.models.emailLog import EmailLog
 from app.models.eventRsvp import EventRsvp
+from app.models.user import User
 from app.models import mainDB
+from app.models.user import User
+from app.models.event import Event
+from app.models.programEvent import ProgramEvent
+from app.models.eventParticipant import EventParticipant
+from app.models.programBan import ProgramBan
+from app.models.term import Term
 from app.logic.emailHandler import EmailHandler
 
 @pytest.mark.integration
@@ -30,7 +39,7 @@ def test_send_email_using_modal():
                 "eventID":"1",
                 "recipientsCategory": "Interested"}
 
-            email = EmailHandler(raw_form_data, url_domain)
+            email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
 
             with email.mail.record_messages() as outbox:
                 email_sent = email.send_email()
@@ -54,7 +63,7 @@ def test_sending_automated_email():
                 "eventID":"1",
                 "recipientsCategory": "Interested"}
 
-            email = EmailHandler(raw_form_data, url_domain)
+            email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
 
             with email.mail.record_messages() as outbox:
                 email_sent = email.send_email()
@@ -77,7 +86,7 @@ def test_update_email_template():
                 "body":"Hello {name}, Regards",
                 "replyTo": "test.email@gmail.comm"}
 
-            email = EmailHandler(raw_form_data, url_domain)
+            email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
             email.update_email_template()
 
             new_email_template = EmailTemplate.get(EmailTemplate.purpose==raw_form_data['templateIdentifier'])
@@ -97,9 +106,10 @@ def test_email_log():
             raw_form_data = {"templateIdentifier": "Test",
                 "programID":"1",
                 "eventID":"1",
-                "recipientsCategory": "RSVP'd"}
+                "recipientsCategory": "RSVP'd",
+                "sender": User.get_by_id("ramsayb2")}
 
-            email = EmailHandler(raw_form_data, url_domain)
+            email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
 
             with email.mail.record_messages() as outbox:
                 email_sent = email.send_email()
@@ -114,5 +124,112 @@ def test_email_log():
 
             rsvp_users = EventRsvp.select().where(EventRsvp.event_id==1)
             assert emailLog.recipients == ", ".join(user.user.email for user in rsvp_users)
+            assert emailLog.sender == User.get_by_id("ramsayb2")
+            transaction.rollback()
+
+@pytest.mark.integration
+def test_recipients_eligible_students():
+    with app.test_request_context():
+        with mainDB.atomic() as transaction:
+            url_domain = urlparse(request.base_url).netloc
+            raw_form_data = {"templateIdentifier": "Test",
+                "programID":"3",
+                "eventID":"1",
+                "recipientsCategory": "Eligible Students"}
+
+            testSender = User.get_by_id('ramsayb2')
+
+            email = EmailHandler(raw_form_data, url_domain, testSender)
+            email.process_data()
+            assert email.recipients == []
+
+            # Add partont to All Volunteer Training event: NOT banned and IS trained
+            newTrainedStudent = EventParticipant.create(user = "partont", event = 14)
+            email.process_data()
+            assert email.recipients == [User.get_by_id("partont")]
+
+            # Add ayisie to a non-all volunteer training event: NOT banned and NOT trained
+            newTrainedStudent = EventParticipant.create(user = "ayisie", event = 5)
+            email.process_data()
+            assert email.recipients ==  [User.get_by_id("partont")]
+
+            # Train ayisie so they show up in the results: NOT banned and IS trained
+            newTrainedStudent = EventParticipant.create(user = "ayisie", event = 14)
+            email.process_data()
+            assert email.recipients ==  [User.get_by_id("partont"),User.get_by_id("ayisie")]
+            newTrainedStudent.delete_instance()
+
+            # Add khatts to All Volunteer Training event: IS banned and IS trained
+            newTrainedStudent = EventParticipant.create(user = "khatts", event = 14)
+            email.process_data()
+            assert email.recipients == [User.get_by_id("partont")]
+            newTrainedStudent.delete_instance()
+
+            # Unban khatts while they have All Volunteer Training: NOT banned IS trained
+            ProgramBan.update(endDate = parser.parser("2022-6-23")).where(ProgramBan.user == "khatts").execute()
+            newTrainedStudent = EventParticipant.create(user = "khatts", event = 14)
+            email.process_data()
+            assert email.recipients == [User.get_by_id("partont"), User.get_by_id("khatts")]
+            newTrainedStudent.delete_instance()
+
+            # clearing data for the next test
+            transaction.rollback()
+
+            # Test a program that should have nothing in banned users and nothing in All Volunteer:
+            raw_form_data = {"templateIdentifier": "Test",
+                "programID":"9",
+                "eventID":"1",
+                "recipientsCategory": "Eligible Students"}
+
+            testSender = User.get_by_id('ramsayb2')
+
+            email = EmailHandler(raw_form_data, url_domain, testSender)
+            email.process_data()
+            assert email.recipients == []
+
+            # clearing data for the next test
+            transaction.rollback()
+
+            # Changed current term to next academic year while making training
+            # occur in the previous academic year
+            allVolunteerEvent = Event.get_by_id(14)
+            newTrainedStudent = EventParticipant.create(user = "partont", event = allVolunteerEvent)
+
+            raw_form_data = {"templateIdentifier": "Test",
+                "programID":"3",
+                "eventID":"1",
+                "recipientsCategory": "Eligible Students"}
+
+            testSender = User.get_by_id('ramsayb2')
+
+            email = EmailHandler(raw_form_data, url_domain, testSender)
+            email.process_data()
+            assert email.recipients == [User.get_by_id("partont")]
+
+            # Change the term that the All Volunteer Training takes place so that
+            # it is in the past
+            firstTerm = Term.select().order_by(Term.id).get()
+            allVolunteerEvent.term = firstTerm
+            allVolunteerEvent.save()
+
+            # Update the current term in the database so that it is in the next
+            # academic year
+            Term.update(isCurrentTerm = False).where(Term.isCurrentTerm == True).execute()
+            Term.update(isCurrentTerm = True).where(Term.id == 6).execute()
+
+            email.process_data()
+            assert email.recipients == []
 
             transaction.rollback()
+
+@pytest.mark.integration
+def test_get_last_email():
+    last_email = EmailHandler.retrieve_last_email(5)
+    assert last_email.sender.username == "neillz"
+    assert last_email.subject == "Time Change for {event_name}"
+    assert last_email.templateUsed.subject == "Test Email 2"
+    assert last_email.recipientsCategory == "RSVP'd"
+    assert last_email.recipients == "ramsayb2"
+
+    last_email = EmailHandler.retrieve_last_email(37)
+    assert last_email is None

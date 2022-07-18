@@ -1,6 +1,7 @@
-from flask import request, render_template, g, abort, flash, redirect, url_for
+from flask import request, render_template, g, abort, flash, redirect, url_for, session
 import datetime
 import json
+from http import cookies
 
 from app import app
 from app.models.program import Program
@@ -16,7 +17,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
-from app.models.studentManager import StudentManager
+from app.models.programManager import ProgramManager
 from app.controllers.main import main_bp
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
@@ -26,7 +27,7 @@ from app.logic.transcript import *
 from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import pendingCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
-
+from app.models.courseInstructor import CourseInstructor
 
 @main_bp.route('/', methods=['GET'])
 def redirectToEventsList():
@@ -42,17 +43,17 @@ def events(selectedTerm):
     participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
     term = Term.get_by_id(currentTerm)
-    studentLedProgram = getStudentLedProgram(term)
-    trainingProgram = getTrainingProgram(term)
-    bonnerProgram = getBonnerProgram(term)
-    oneTimeEvents = getOneTimeEvents(term)
+    studentLedEvents = getStudentLedEvents(term)
+    trainingEvents = getTrainingEvents(term)
+    bonnerEvents = getBonnerEvents(term)
+    otherEvents = getOtherEvents(term)
 
     return render_template("/events/event_list.html",
         selectedTerm = term,
-        studentLedProgram = studentLedProgram,
-        trainingProgram = trainingProgram,
-        bonnerProgram = bonnerProgram,
-        oneTimeEvents = oneTimeEvents,
+        studentLedEvents = studentLedEvents,
+        trainingEvents = trainingEvents,
+        bonnerEvents = bonnerEvents,
+        otherEvents = otherEvents,
         listOfTerms = listOfTerms,
         rsvpedEventsID = rsvpedEventsID,
         currentTime = currentTime,
@@ -66,7 +67,11 @@ def viewVolunteersProfile(username):
     try:
         volunteer = User.get(User.username == username)
     except Exception as e:
-        return "User does not exist", 404
+        if g.current_user.isAdmin:
+            flash(f"{username} does not exist! ", category='danger')
+            return redirect(url_for('admin.studentSearchPage'))
+        else:
+            abort(403)  # Error 403 if non admin/student-staff user trys to access via url
 
     if (g.current_user == volunteer) or g.current_user.isAdmin:
         upcomingEvents = getUpcomingEventsForUser(volunteer)
@@ -77,12 +82,24 @@ def viewVolunteersProfile(username):
         rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == volunteer)
         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
 
-        studentManagerPrograms = list(StudentManager.select().where(StudentManager.user == volunteer))
-        permissionPrograms = [entry.program.id for entry in studentManagerPrograms]
+        programManagerPrograms = ProgramManager.select().where(ProgramManager.user == volunteer)
+        permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
-        allUserEntries = list(BackgroundCheck.select().where(BackgroundCheck.user == volunteer))
-        completedBackgroundCheck = {entry.type.id: entry.passBackgroundCheck for entry in allUserEntries}
+        allUserEntries = BackgroundCheck.select().where(BackgroundCheck.user == volunteer)
+
+        if g.current_user.isCeltsAdmin:
+            completedBackgroundCheck = {entry.type: [entry.passBackgroundCheck, entry.dateCompleted] for entry in allUserEntries}
+        else:
+            # sets the values to strings because student staff do not have access to input boxes
+            completedBackgroundCheck = {entry.type: ['Yes' if entry.passBackgroundCheck else 'No',
+                                                    'Not Completed' if entry.dateCompleted == None
+                                                    else entry.dateCompleted.strftime('%m/%d/%Y')] for entry in allUserEntries}
+
         backgroundTypes = list(BackgroundCheckType.select())
+        # creates data structure for background checks that are not currently completed
+        for checkType in backgroundTypes:
+            if checkType not in completedBackgroundCheck.keys():
+                completedBackgroundCheck[checkType] = ["No", "Not Completed"]
 
         eligibilityTable = []
         for program in programs:
@@ -90,11 +107,12 @@ def viewVolunteersProfile(username):
                                               ProgramBan.program == program,
                                               ProgramBan.endDate > datetime.datetime.now())
 
-            noteForDict = list(notes)[-1].banNote.noteContent if list(notes) else ""
+            noteForDict = notes[-1].banNote.noteContent if notes else ""
             eligibilityTable.append({"program" : program,
                                    "completedTraining" : (volunteer.username in trainedParticipants(program, g.current_term)),
-                                   "isNotBanned" : isEligibleForProgram(program, volunteer),
+                                   "isNotBanned" : True if not notes else False,
                                    "banNote": noteForDict})
+
         return render_template ("/main/volunteerProfile.html",
                 programs = programs,
                 programsInterested = programsInterested,
@@ -192,7 +210,6 @@ def volunteerRegister():
     for the event they have clicked register for.
     """
     eventData = request.form
-
     event = Event.get_by_id(eventData['id'])
 
     user = g.current_user
@@ -212,22 +229,23 @@ def volunteerRegister():
     if 'from' in eventData:
         if eventData['from'] == 'ajax':
             return ''
-    return redirect(url_for("admin.editEvent", eventId=event.id))
-
+    return redirect(url_for("admin.eventDisplay", eventId=event.id))
 
 @main_bp.route('/rsvpRemove', methods = ['POST'])
 def RemoveRSVP():
     """
-    This function deletes the user ID and event ID from database when RemoveRSVP  is clicked
+    This function deletes the user ID and event ID from database when RemoveRSVP is clicked
     """
     eventData = request.form
     event = Event.get_by_id(eventData['id'])
 
     currentRsvpParticipant = EventRsvp.get(EventRsvp.user == g.current_user, EventRsvp.event == event)
     currentRsvpParticipant.delete_instance()
-
     flash("Successfully unregistered for event!", "success")
-    return redirect(url_for("admin.editEvent", eventId=event.id))
+    if 'from' in eventData:
+        if eventData['from'] == 'ajax':
+            return ''
+    return redirect(url_for("admin.eventDisplay", eventId=event.id))
 
 @main_bp.route('/profile/<username>/serviceTranscript', methods = ['GET'])
 def serviceTranscript(username):
@@ -255,12 +273,15 @@ def serviceTranscript(username):
 
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
 def searchUser(query):
+
+    category= request.args.get("category")
+
     '''Accepts user input and queries the database returning results that matches user search'''
     try:
         query = query.strip()
         search = query.upper()
         splitSearch = search.split()
-        searchResults = searchUsers(query)
+        searchResults = searchUsers(query,category)
         return searchResults
     except Exception as e:
         print(e)
@@ -270,14 +291,27 @@ def searchUser(query):
 def contributors():
     return render_template("/contributors.html")
 
-
+@main_bp.route('/proposalReview/', methods = ['GET', 'POST'])
+def reviewProposal():
+    """
+    this function gets the pending course id and returns the its data to the review proposal modal 
+    """
+    courseID=request.form
+    course=Course.get_by_id(courseID["course_id"])
+    instructors_data=course.courseInstructors
+    return render_template('/main/reviewproposal.html',
+                            course=course,
+                            instructors_data=instructors_data)
 @main_bp.route('/manageServiceLearning', methods = ['GET', 'POST'])
 @main_bp.route('/manageServiceLearning/<term>', methods = ['GET', 'POST'])
 def getAllCourseIntructors(term=None):
     """
     This function selects all the Intructors Name and the previous courses
     """
+    for i in session:
+        print(i)
     if g.current_user.isCeltsAdmin:
+        setRedirectTarget("/manageServiceLearning")
         courseDict = getCourseDict()
 
         term = Term.get_or_none(Term.id == term)
@@ -296,3 +330,27 @@ def getAllCourseIntructors(term=None):
                                 term = term)
     else:
         abort(403)
+
+def getRedirectTarget(popTarget):
+    """
+    This function returns a string with the URL or route to a page in the Application
+        saved with setRedirectTarget() and is able to pop the value from the session
+        to make it an empty value
+    popTarget: expects a bool value to determine whether or not to reset
+                redirectTarget to an emtpy value
+    return: a string with the URL or route to a page in the application that was
+            saved in setRedirectTarget()
+    """
+    target = session["redirectTarget"]
+    if popTarget:
+        session.pop("redirectTarget")
+    return target
+
+def setRedirectTarget(target):
+    """
+    This function saves the target URL in the session for future redirection
+        to said page
+    target: expects a string that is a URL or a route to a page in the application
+    return: None
+    """
+    session["redirectTarget"] = target

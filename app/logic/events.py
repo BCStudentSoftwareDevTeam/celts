@@ -1,11 +1,13 @@
-from peewee import DoesNotExist, fn
+from peewee import DoesNotExist, fn, JOIN
 from dateutil import parser
+from datetime import timedelta, date
 import datetime
 from werkzeug.datastructures import MultiDict
 from app.models import mainDB
 from app.models.user import User
 from app.models.event import Event
-from app.models.facilitator import Facilitator
+from app.models.eventParticipant import EventParticipant
+from app.models.eventFacilitator import EventFacilitator
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.models.term import Term
@@ -14,14 +16,14 @@ from app.models.interest import Interest
 from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
 from app.logic.adminLogs import createLog
-
+from app.logic.utils import format24HourTime
 
 def getEvents(program_id=None):
 
     if program_id:
         Program.get_by_id(program_id) # raises an exception if program doesn't exist
         return (Event.select(Event).join(ProgramEvent)
-                     .where(ProgramEvent.program == program_id).distinct())
+                    .where(ProgramEvent.program == program_id).distinct())
     else:
         return Event.select()
 
@@ -50,19 +52,21 @@ def attemptSaveEvent(eventData):
         return False, e
 
 def saveEventToDb(newEventData):
+
     if not newEventData.get('valid', False):
         raise Exception("Unvalidated data passed to saveEventToDb")
 
     isNewEvent = ('id' not in newEventData)
 
     eventsToCreate = []
+    recurringSeriesId = None
     if isNewEvent and newEventData['isRecurring']:
         eventsToCreate = calculateRecurringEventFrequency(newEventData)
+        recurringSeriesId = calculateNewrecurringId()
     else:
         eventsToCreate.append({'name': f"{newEventData['name']}",
                                 'date':newEventData['startDate'],
                                 "week":1})
-
     eventRecords = []
     for eventInstance in eventsToCreate:
         with mainDB.atomic():
@@ -73,11 +77,12 @@ def saveEventToDb(newEventData):
                     "timeStart": newEventData['timeStart'],
                     "timeEnd": newEventData['timeEnd'],
                     "location": newEventData['location'],
-                    "isRecurring": newEventData['isRecurring'],
+                    "recurringId": recurringSeriesId,
                     "isTraining": newEventData['isTraining'],
                     "isRsvpRequired": newEventData['isRsvpRequired'],
                     "isService": newEventData['isService'],
                     "startDate": eventInstance['date'],
+                    "isAllVolunteerTraining": newEventData['isAllVolunteerTraining'],
                     "endDate": eventInstance['date']
             }
 
@@ -91,15 +96,15 @@ def saveEventToDb(newEventData):
                 eventRecord = Event.get_by_id(newEventData['id'])
                 Event.update(**eventData).where(Event.id == eventRecord).execute()
 
-            Facilitator.delete().where(Facilitator.event == eventRecord).execute()
+            EventFacilitator.delete().where(EventFacilitator.event == eventRecord).execute()
             for f in newEventData['facilitators']:
-                Facilitator.create(user=f, event=eventRecord)
+                EventFacilitator.create(user=f, event=eventRecord)
 
             eventRecords.append(eventRecord)
 
     return eventRecords
 
-def getStudentLedProgram(term):
+def getStudentLedEvents(term):
 
     studentLedEvents = (Event.select(Event, Program.id.alias("program_id"))
                              .join(ProgramEvent)
@@ -113,7 +118,7 @@ def getStudentLedProgram(term):
 
     return programs
 
-def getTrainingProgram(term):
+def getTrainingEvents(term):
 
     """
         The allTrainingsEvent query is designed to select and count eventId's after grouping them
@@ -121,36 +126,56 @@ def getTrainingProgram(term):
         with the most programs (highest count) by doing this we can ensure that the event being
         returned is the All Trainings Event.
     """
+    try:
+        allTrainingsEvent = ((ProgramEvent.select(ProgramEvent.event, fn.COUNT(1).alias('num_programs'))
+                                            .join(Event)
+                                            .group_by(ProgramEvent.event)
+                                            .order_by(fn.COUNT(1).desc()))
+                                            .where(Event.term == term).get())
 
-    allTrainingsEvent = ((ProgramEvent.select(ProgramEvent.event, fn.COUNT(1).alias('num_programs'))
-                                        .join(Event)
-                                        .group_by(ProgramEvent.event)
-                                        .order_by(fn.COUNT(1).desc()))
-                                        .where(Event.term == term).get())
+        trainingEvents = (Event.select(Event)
+    			               .order_by((Event.id == allTrainingsEvent.event.id).desc(), Event.startDate.desc())
+                               .where(Event.isTraining,
+                                      Event.term == term))
 
-    trainingEvents = ((Event.select(Event)
-			               .order_by((Event.id == allTrainingsEvent.event.id).desc(), Event.startDate.desc())
-                           .where(Event.isTraining,
-                                  Event.term == term)))
+    except DoesNotExist:
+        trainingEvents = (Event.select(Event)
+    			               .order_by( Event.startDate.desc())
+                               .where(Event.isTraining,
+                                      Event.term == term))
 
+    return list(trainingEvents)
 
-    return trainingEvents
-def getBonnerProgram(term):
+def getBonnerEvents(term):
 
     bonnerScholarsEvents = (Event.select(Event, Program.id.alias("program_id"))
                                  .join(ProgramEvent)
                                  .join(Program)
                                  .where(Program.isBonnerScholars,
                                         Event.term == term))
-    return bonnerScholarsEvents
-def getOneTimeEvents(term):
-    oneTimeEvents = (Event.select(Event, Program.id.alias("program_id"))
-                          .join(ProgramEvent)
-                          .join(Program)
-                          .where(Program.isStudentLed == False,
-                                 Program.isBonnerScholars == False,
-                                 Event.term == term))
-    return oneTimeEvents
+    return list(bonnerScholarsEvents)
+
+def getOtherEvents(term):
+    """
+    Get the list of the events not caught by other functions to be displayed in
+    the Other Events section of the Events List page.
+    :return: A list of Other Event objects
+    """
+    # Gets all events that are not associated with a program and are not trainings
+    # Gets all events that have a program but don't fit anywhere
+    otherEvents = list(Event.select(Event, Program)
+                    .join(ProgramEvent, JOIN.LEFT_OUTER)
+                    .join(Program, JOIN.LEFT_OUTER)
+                    .where(Event.term == term,
+                           Event.isTraining == False,
+                           Event.isAllVolunteerTraining == False,
+                           ((ProgramEvent.program == None) |
+                            (Program.isStudentLed == False) & 
+                            (Program.isBonnerScholars == False)))
+                    .order_by(Event.id)
+                  )
+
+    return otherEvents
 
 def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
     """
@@ -193,7 +218,7 @@ def validateNewEventData(data):
     if data['isRecurring'] and data['endDate']  <  data['startDate']:
         return (False, "Event start date is after event end date")
 
-    if data['endDate'] ==  data['startDate'] and data['timeEnd'] <=  data['timeStart']:
+    if data['endDate'] ==  data['startDate'] and data['timeEnd'] <= data['timeStart']:
         return (False, "Event start time is after event end time")
 
     # Validation if we are inserting a new event
@@ -212,8 +237,24 @@ def validateNewEventData(data):
             return (False, "This event already exists")
 
     data['valid'] = True
-
     return (True, "All inputs are valid.")
+
+def calculateNewrecurringId():
+    """
+    Gets the highest recurring Id so that a new recurring Id can be assigned
+    """
+    recurringId = Event.select(fn.MAX(Event.recurringId)).scalar()
+    if recurringId:
+        return recurringId + 1
+    else:
+        return 1
+
+def getPreviousRecurringEventData(recurringId):
+    """
+    Joins the User db table and Event Participant db table so that we can get the information of a Particpant if they attended an event
+    """
+    previousEventVolunteers = User.select(User).join(EventParticipant).join(Event).where(Event.recurringId==recurringId).distinct()
+    return previousEventVolunteers
 
 def calculateRecurringEventFrequency(event):
     """
@@ -229,9 +270,8 @@ def calculateRecurringEventFrequency(event):
 
     if event['endDate'] == event['startDate']:
         raise Exception("This event is not a recurring event")
-
     return [ {'name': f"{event['name']} Week {counter+1}",
-              'date': (event['startDate'] + datetime.timedelta(days=7*counter)).strftime("%m/%d/%Y"),
+              'date': event['startDate'] + datetime.timedelta(days=7*counter),
               "week": counter+1}
             for counter in range(0, ((event['endDate']-event['startDate']).days//7)+1)]
 
@@ -245,10 +285,11 @@ def preprocessEventData(eventData):
         - facilitators should be a list of objects. Use the given list of usernames if possible
           (and check for a MultiDict with getlist), or else get it from the existing event
           (or use an empty list if no event)
+        - times should exist be strings in 24 hour format example: 14:40
     """
 
     ## Process checkboxes
-    eventCheckBoxes = ['isRsvpRequired', 'isService', 'isTraining', 'isRecurring']
+    eventCheckBoxes = ['isRsvpRequired', 'isService', 'isTraining', 'isRecurring', 'isAllVolunteerTraining']
 
     for checkBox in eventCheckBoxes:
         if checkBox not in eventData:
@@ -277,6 +318,12 @@ def preprocessEventData(eventData):
         except DoesNotExist:
             eventData['term'] = ''
 
+    if 'timeStart' in eventData:
+        eventData['timeStart'] = format24HourTime(eventData['timeStart'])
+
+    if 'timeEnd' in eventData:
+        eventData['timeEnd'] = format24HourTime(eventData['timeEnd'])
+
     ## Get the facilitator objects from the list or from the event if there is a problem
     try:
         if type(eventData) == MultiDict and type(eventData['facilitators']) is not list:
@@ -284,6 +331,13 @@ def preprocessEventData(eventData):
         eventData['facilitators'] = [User.get_by_id(f) for f in eventData['facilitators']]
     except Exception as e:
         event = eventData.get('id', -1)
-        eventData['facilitators'] = list(User.select().join(Facilitator).where(Facilitator.event == event))
+        eventData['facilitators'] = list(User.select().join(EventFacilitator).where(EventFacilitator.event == event))
 
     return eventData
+
+
+def getTomorrowsEvents():
+    """Grabs each event that occurs tomorrow"""
+    tomorrowDate = date.today() + timedelta(days=1)
+    events = list(Event.select().where(Event.startDate==tomorrowDate))
+    return events

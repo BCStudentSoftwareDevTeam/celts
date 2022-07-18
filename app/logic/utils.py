@@ -1,6 +1,7 @@
-import collections
+import collections.abc as collections
 from peewee import DoesNotExist
 from app.models.term import Term
+from datetime import datetime
 
 def selectSurroundingTerms(currentTerm, prevTerms=2):
     """
@@ -42,3 +43,21 @@ def getStartofCurrentAcademicYear(currentTerm):
         fallTerm = Term.select().where(Term.year==currentTerm.year-1, Term.description == f"Fall {currentTerm.year-1}").get()
         return fallTerm
     return currentTerm
+
+def format24HourTime(unformattedTime):
+    """
+    Turns a time string or datetime object into a string with a time in 24 hour format
+    unformattedTime: expects a string with format HH:mm AM/PM or HH:mm OR a datetime object
+    returns: a string in 24 hour format HH:mm
+    """
+    if type(unformattedTime) == str:
+        try:
+            formattedTime = datetime.strptime(unformattedTime, "%I:%M %p").strftime("%H:%M") # Converts string to datetime then back to string and formats correctly
+            return formattedTime
+        except ValueError:
+            #  calling strptime here to explicitly raise an exception if it wasn't properly in 24 hour format
+            formattedTime = datetime.strptime(unformattedTime, "%H:%M")
+            return unformattedTime
+    else:
+        formattedTime = unformattedTime.strftime("%H:%M")
+        return formattedTime

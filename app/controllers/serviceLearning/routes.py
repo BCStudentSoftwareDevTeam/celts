@@ -1,5 +1,4 @@
-from flask import request, render_template, g, abort, json, redirect, jsonify, flash
-
+from flask import request, render_template, g, abort, json, redirect, jsonify, flash, session
 from app.models.user import User
 from app.models.term import Term
 from app.models.course import Course
@@ -14,12 +13,17 @@ from app.logic.searchUsers import searchUsers
 from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal
 from app.logic.courseManagement import updateCourse, createCourse
 
+from app.controllers.main.routes import getRedirectTarget, setRedirectTarget
+
 @serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
 @serviceLearning_bp.route('/serviceLearning/courseManagement/<username>', methods = ['GET'])
 def serviceCourseManagement(username=None):
     """This is a Temporary Page for the Service Course Managment Screen."""
     # TODO: How to make accessing other user's interfaces more userfriendly?
+    if g.current_user.isStudent:
+        abort(403)
     if g.current_user.isCeltsAdmin or g.current_user.isFaculty:
+        setRedirectTarget("/serviceLearning/courseManagement")
         user = User.get(User.username==username) if username else g.current_user
         courseDict = getServiceLearningCoursesData(user)
         return render_template('serviceLearning/slcManagment.html',
@@ -69,6 +73,8 @@ def slcCreateOrEdit():
             updateCourse(request.form.copy(), instructorsDict)
         else:
             createCourse(request.form.copy(), instructorsDict)
+        if getRedirectTarget(False):
+            return redirect('' + getRedirectTarget(True) + '')
         return redirect('/serviceLearning/courseManagement')
     terms = Term.select().where(Term.year >= g.current_term.year)
     courseData = None
@@ -107,4 +113,27 @@ def withdrawCourse(courseID):
             flash("Unauthorized to perform this action", 'warning')
     except Exception as e:
         flash("Withdrawal Unsuccessful", 'warning')
+    return ""
+
+@serviceLearning_bp.route('/serviceLearning/approveCourse/', methods=['POST'])
+def approveCourse():
+    """
+    This function updates and approves a Service-Learning Course when using  the
+        approve button.
+    return: empty string because AJAX needs to receive something
+    """ 
+    if len(request.form)==1:
+        course=Course.get_by_id(request.form['courseID']) # if only course is reviewed pass the course ID
+        
+    elif 'courseID' in request.form:
+        course = updateCourse(request.form.copy(), instructorsDict) # if edit course, Updates database with the completed fields and get course ID
+        
+    else:
+        course=createCourse(request.form.copy(), instructorsDict) # creat course first and get its ID to approve next
+    try:
+        course.status = 2
+        course.save() # saves the query and approves course in the database
+        flash("Course approved!", "success")        
+    except:
+        flash("Course not approved!", "danger")  
     return ""
