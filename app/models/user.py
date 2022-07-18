@@ -22,7 +22,12 @@ class User(baseModel):
         # makes a user a Program Manager
         from app.models.programManager import ProgramManager
         addManager = ProgramManager.create(user = self, program = program)
-        return (f' {self} added as manager')
+        return (f' {self} added as Program Manager')
+
+    def removeProgramManager(self, program):
+        from app.models.programManager import ProgramManager
+        removeManager = ProgramManager.delete().where(ProgramManager.user == self, ProgramManager.program == program).execute()
+        return (f'{self} removed from Program Manager')
 
     def isProgramManagerFor(self, program):
         # Looks to see who is the Program Manager for a program

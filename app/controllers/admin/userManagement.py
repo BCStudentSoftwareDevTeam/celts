@@ -3,7 +3,7 @@ import re
 from app.controllers.admin import admin_bp
 from app.models.user import User
 from app.models.program import Program
-from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff, removeProgramManager
+from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff
 from app.logic.userManagement import changeCurrentTerm
 from app.logic.userManagement import changeProgramInfo
 from app.logic.utils import selectSurroundingTerms
