@@ -6,9 +6,6 @@ $(document).ready(function() {
   $("#withdrawBtn").on("click", function() {
     withdraw();
   });
-  $('#renewBtn').click(function() {
-    renew()
-  });
 });
 
 function changeAction(action){
@@ -16,7 +13,7 @@ function changeAction(action){
   // decides what to do based on selection
   if (action.value == "Renew"){
     $('#courseID').val(courseID);
-    $("#renewModal").modal('show')
+    $("#course-" + courseID).modal('show')
   } else if (action.value == "View"){
     location = '/serviceLearning/viewProposal/' + courseID
   } else if (action.value == "Withdraw"){
@@ -28,7 +25,7 @@ function changeAction(action){
 }
 function renew(){
     courseID = $("#courseID").val();
-    termID = $('#renewCourse').find(":selected").val()
+    termID = $('#renewCourse-'+courseID).find(":selected").val()
     $.ajax({
       url: `/serviceLearning/renew/${courseID}/${termID}/`,
       type: "POST",

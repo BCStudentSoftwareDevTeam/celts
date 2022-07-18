@@ -3,19 +3,24 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseParticipant import CourseParticipant
+from app.models.courseStatus import CourseStatus
 from app.models.courseQuestion import CourseQuestion
 from app.models.questionNote import QuestionNote
 from app.models.note import Note
+from app.models.term import Term
+
 
 def getServiceLearningCoursesData(user):
     """Returns dictionary with data used to populate Service-Learning proposal table"""
-    courses = (Course.select()
+    courses = (Course.select(Course, Term, CourseStatus)
+                     .join(CourseInstructor).switch()
+                     .join(Term).switch()
+                     .join(CourseStatus)
                      .where(CourseInstructor.user==user)
-                     .join(CourseInstructor)
                      .order_by(Course.id))
     courseDict = {}
     for course in courses:
-        otherInstructors = (CourseInstructor.select().where(CourseInstructor.course==course))
+        otherInstructors = (CourseInstructor.select(CourseInstructor, User).join(User).where(CourseInstructor.course==course))
         faculty = [f"{instructor.user.firstName} {instructor.user.lastName}" for instructor in otherInstructors]
         courseDict[course.id] = {
         "id":course.id,
@@ -49,7 +54,7 @@ def renewProposal(courseID, term):
     course.status = 3
     course.save()
     oldCourse.save()
-    questions = (CourseQuestion.select()
+    questions = (CourseQuestion.select(CourseQuestion, Course)
                     .join(Course)
                     .where(CourseQuestion.course==oldCourse.id,
                     Course.term==oldTerm,
@@ -58,7 +63,8 @@ def renewProposal(courseID, term):
         CourseQuestion.create(course=course.id,
                               questionContent=question.questionContent,
                               questionNumber=question.questionNumber)
-    instructors = CourseInstructor.select()
+    instructors = (CourseInstructor.select()
+                                   .where(CourseInstructor.course==oldCourse.id))
     for instructor in instructors:
         CourseInstructor.create(course=course.id,
                                 user=instructor.user)
