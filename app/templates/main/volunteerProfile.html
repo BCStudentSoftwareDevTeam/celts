@@ -143,11 +143,10 @@
       <br>
     {% endif %}
 
-{% elif g.current_user.isCeltsStudentStaff %}
+{% elif volunteer.isCeltsStudentStaff %}
   <div class="row">
     <h2><br>{{volunteer.firstName}} {{volunteer.lastName}} is the manager of:</h2>
     <div>
-        <h5><br><u>Program(s)</u></h5>
         <ul>
         {% for program in programs %}
           {% set status = '' %}
