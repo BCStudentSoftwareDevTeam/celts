@@ -189,7 +189,6 @@ def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
 
     return list(events)
 
-
 def getAllFacilitators():
     facilitators = User.select(User).where((User.isFaculty == 1) | (User.isCeltsAdmin == 1) | (User.isCeltsStudentStaff == 1)).order_by(User.username) # ordered because of the tests
     return facilitators
@@ -337,11 +336,16 @@ def getFacilitatorsFromList(facilitatorList):
     """
     if type(facilitatorList) == str:
         facilitatorList = facilitatorList.split(',')
-
+    print(facilitatorList)
     finalFacilitatorList = []
     for i in facilitatorList:
-        facilitatorToAdd = User.select().where(User.username == i).get()
-        finalFacilitatorList.append(facilitatorToAdd)
+        if i:
+            facilitatorToAdd = User.select().where(User.username == i).get()
+            finalFacilitatorList.append(facilitatorToAdd)
+        # except User.DoesNotExist:
+        #     print("Error: user \"", i, "\" does not exist in the database.\n" +
+        #         "If there is nothing inside the quotes, then no facilitator was submitted " +
+        #         "and this error is expected.")
     return finalFacilitatorList
 
 def getTomorrowsEvents():
