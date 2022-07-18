@@ -1,4 +1,3 @@
-from imp import reload
 from flask import Flask, render_template,request, flash, g, json, abort, redirect, url_for
 import re
 from app.controllers.admin import admin_bp
@@ -84,7 +83,6 @@ def updateProgramInfo(programID):
             flash('Error while updating program info.','warning')
             abort(500,'Error while updating program.')
     abort(403)
-    return ""
 
 @admin_bp.route('/admin', methods = ['GET'])
 def userManagement():
