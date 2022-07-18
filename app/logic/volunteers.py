@@ -100,20 +100,6 @@ def setUserBackgroundCheck(user,bgType, checkPassed, dateCompleted):
     update = BackgroundCheck.create(user=user, type=bgType, passBackgroundCheck=checkPassed, dateCompleted=dateCompleted)
     createLog(f"Updated {user.firstName} {user.lastName}'s background check for {bgType} to {bool(checkPassed)}.")
 
-
-def isProgramManagerForEvent(user, event):
-    """
-    This function checks to see if a user is a program manager for a program.
-    NOTE: this function needs the event parameter to work
-    user: expects a user peewee object
-    event: expects an event peewee object
-    Returns: bool whether the appropriate information is given.
-    """
-
-    isProgramManager = user.isProgramManagerFor(event.singleProgram)
-
-    return isProgramManager
-
 def setProgramManager(user_name, program_id, action):
     '''
     adds and removes the studentstaff from program that makes them  student manager.

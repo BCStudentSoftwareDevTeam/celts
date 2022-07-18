@@ -7,6 +7,8 @@ from app.models.programBan import ProgramBan
 from app.models.note import Note
 from app.models.user import User
 from app.models.programManager import ProgramManager
+from app.models.event import Event
+from app.models.programEvent import ProgramEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
 from app.logic.users import isEligibleForProgram
 
@@ -192,6 +194,7 @@ def test_addProgramManager():
 
 @pytest.mark.integration
 def test_removeProgramManager():
+    with mainDB.atomic() as transaction:
 
         user = User.get_by_id("mupotsal")
         prg = Program.get_by_id(2)
@@ -204,3 +207,106 @@ def test_removeProgramManager():
         assert removePM == (f'{user} removed from Program Manager')
         # Check that the Program Manager is actually removed from the Program Manager table
         assert user not in noPM
+
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_getStudentManagerForEvent():
+    with mainDB.atomic() as transaction:
+
+        #Test data for creating a program
+        testProgramData = [
+        {
+        "id":13,
+        "programName":"testProgram",
+        "isStudentLed": False,
+        "isBonnerScholars":False,
+        }
+        ]
+
+        #Inserts new row into Program table
+        Program.insert_many(testProgramData).on_conflict_replace().execute()
+
+        #Test data for creating an event
+        testEvent = [
+        {
+        "id": 16,
+        "term": 2,
+        "name": "testEvent",
+        "description": "testEvent",
+        "isTraining": True,
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+        "location": "Seabury Center",
+        "startDate": datetime.strptime("2021 10 12","%Y %m %d"),
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
+        }
+        ]
+
+        Event.insert_many(testEvent).on_conflict_replace().execute() #Inserts new row into Event table
+
+        #Test data for creating a new row in ProgramEvent table
+        testProgramEvent = [
+        {
+        "program_id":13,
+        "event_id":16,
+        }
+        ]
+
+        #Inserts new row into ProgramEvent table
+        ProgramEvent.insert_many(testProgramEvent).on_conflict_replace().execute()
+
+        #Test data for test users, inserted in User table
+        testUserData = [
+        {#This user is not a program manager
+        "username": "testUser",
+        "bnumber": "B00724094",
+        "email": "martinj2@berea.edu",
+        "phoneNumber": "555-555-5555",
+        "firstName": "Joey",
+        "lastName": "Martin",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": False
+
+        },
+        {#This user is a program manager
+        "username": "testUser2",
+        "bnumber": "B00762158",
+        "email": "studentmanagertest@berea.edu",
+        "phoneNumber": "555-555-5555",
+        "firstName": "Paw",
+        "lastName": "Thaw",
+        "isStudent": True,
+        "isFaculty": False,
+        "isCeltsAdmin": False,
+        "isCeltsStudentStaff": True
+        }
+        ]
+
+        #Insert new row into User table
+        User.insert_many(testUserData).on_conflict_replace().execute()
+
+        #Test data for StudentManager table, inserted in to StudentManager table
+        testProgramManagerData = [
+        {
+        'user': 'testUser2',
+        'program': 13
+        }
+        ]
+
+        #Insert new row into StudentManager table
+        ProgramManager.insert_many(testProgramManagerData).on_conflict_replace().execute()
+
+        test_program = 13 #programID is passed in  as an int
+        test_event = Event.get_by_id(16) #gets event object
+        student = User.get_by_id("testUser") #This test user is not a program manager
+        programManager = User.get_by_id("testUser2") ##This user is a program manager
+
+        ## user is manager of program
+        assert programManager.isProgramManagerForEvent(test_event) == True
+        ## user is not manager of program
+        assert student.isProgramManagerForEvent(test_event) == False
+
+        transaction.rollback()
