@@ -146,3 +146,8 @@ def updateProgramManager():
         return ""
     else:
         abort(403)
+@admin_bp.route("/updatePhone", methods=["POST"])
+def updatePhone():
+    newinfo=request.form
+    User.update(phoneNumber=newinfo["phoneNumber"]).where(User.username==newinfo["user_name"]).execute()
+    return ""

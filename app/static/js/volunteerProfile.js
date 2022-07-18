@@ -114,6 +114,16 @@ $(document).ready(function(){
       }
     })
   });
+  $("#updatePhone").click(function(){
+    user=$(this).data("username") 
+    phonNo=$("#newinput").val()
+    $.ajax({
+      method:"POST",
+      url:"/updatePhone",
+      data:{"user_name":user,
+            "phoneNumber":phonNo}
+    })
+  })
 });
 
 function displayMessage(message, color) {  // displays message for saving background check
