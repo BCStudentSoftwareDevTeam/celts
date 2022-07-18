@@ -44,7 +44,7 @@
         {% if recurringVolunteers | count == 0  %}
             {% set disabled = "disabled" %}
         {% endif %}
-        <button type="button" class="btn btn-success" id="pastVolunteers" data-bs-toggle="modal" data-bs-target= "#addPastVolunteerModal" style="margin:5px;" {{disabled}}>Add Past Volunteers</button> 
+        <button type="button" class="btn btn-success" id="pastVolunteers" data-bs-toggle="modal" data-bs-target= "#addPastVolunteerModal" style="margin:5px;" {{disabled}}>Add Past Volunteers</button>
     {%endif%}
     <a class="btn btn-warning" role="button" href= "/eventsList/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
   </div>
@@ -146,6 +146,7 @@
         <br>
         <h5>Selected Volunteers</h5>
         <ul id= "addVolunteerList">
+            
         </ul>
       </div>
       <div class="modal-footer">
