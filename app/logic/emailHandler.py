@@ -18,6 +18,8 @@ from app.models.term import Term
 
 class EmailHandler:
     def __init__(self, raw_form_data, url_domain, sender_object, attachment_file=None):
+        
+        print(len(attachment_file))
         self.mail = Mail(app)
         self.raw_form_data = raw_form_data
         self.url_domain = url_domain
@@ -149,6 +151,8 @@ class EmailHandler:
         This creates the directory/path for the object from the "Choose File" input in the emailModal.html file.
         :returns: directory path for attachment
         """
+        print("__________________________________________")
+        print("__________________________________________")
         try:
             # tries to create the full path of the files location and passes if
             # the directories already exist or there is no attachment
