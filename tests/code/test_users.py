@@ -197,10 +197,8 @@ def test_removeProgramManager():
         prg = Program.get_by_id(2)
         removePM = user.removeProgramManager(prg)
 
-        # Should be an empty list since mupotsal is the only Program Manager for Program 2
         noPM = list(User.select(User.username).join(ProgramManager).where(ProgramManager.program_id == 2))
 
-        print(noPM)
 
         # Make sure what is expected is returned
         assert removePM == (f'{user} removed from Program Manager')

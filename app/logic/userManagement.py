@@ -45,12 +45,6 @@ def changeCurrentTerm(term):
     session["current_term"] = model_to_dict(newCurrentTerm)
     createLog(f"Changed Current Term from {oldCurrentTerm.description} to {newCurrentTerm.description}")
 
-# def removeProgramManager(user,program):
-#     user = User.get_by_id(user)
-#     delQuery = ProgramManager.delete().where(ProgramManager.user == user,ProgramManager.program == program)
-#     delQuery.execute()
-#     return (f'{user} removed from managers')
-
 def addNextTerm():
     newSemesterMap = {"Spring":"Summer",
                     "Summer":"Fall",
