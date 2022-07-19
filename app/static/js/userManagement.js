@@ -6,11 +6,11 @@ function callback(selected) {
 $(document).ready(function() {
   // Admin Management
   var searchElements = [
-    // Search Input ID,       Button ID,       Category
-    ['searchCeltsAdminInput', 'addCeltsAdmin', 'instructor'],
-    ['searchCeltsStudentStaffInput', 'addCeltsStudentStaff', 'student'],
-    ['removeCeltsAdminInput','removeCeltsAdmin', 'admin'],
-    ['removeCeltsStudentStaffInput', 'removeCeltsStudentStaff', 'studentstaff']
+    // Search Input ID               Button ID                 Category
+    ['searchCeltsAdminInput',       'addCeltsAdmin',          'instructor'],
+    ['searchCeltsStudentStaffInput','addCeltsStudentStaff',   'student'],
+    ['removeCeltsAdminInput',       'removeCeltsAdmin',       'admin'],
+    ['removeCeltsStudentStaffInput','removeCeltsStudentStaff','studentstaff']
   ];
   $.each(searchElements, function(i,arr) {
       let [inputId, btnId, category] = arr
