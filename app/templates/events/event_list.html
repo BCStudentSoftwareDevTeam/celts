@@ -71,7 +71,7 @@
               {% else %}
                 <td> <a href="/eventsList/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
               {% endif %}
-            <td nowrap>{{event.startDate.strftime('%m-%d-%Y')}}</td>
+            <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
             <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
             <td>{{event.location}}</td>
             {% if event.programEvents%}
@@ -146,7 +146,7 @@
                           {% else %}
                             <td> <a href="/eventsList/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
                           {% endif %}
-                        <td nowrap>{{event.startDate.strftime('%m-%d-%Y')}}</td>
+                        <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
                         <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
                         <td>{{event.location}}</td>
                         {% if user.isAdmin %}
