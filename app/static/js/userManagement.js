@@ -6,6 +6,7 @@ function callback(selected) {
 $(document).ready(function() {
   // Admin Management
   var searchElements = [
+    // Search Input ID,       Button ID,       Category
     ['searchCeltsAdminInput', 'addCeltsAdmin', 'instructor'],
     ['searchCeltsStudentStaffInput', 'addCeltsStudentStaff', 'student'],
     ['removeCeltsAdminInput','removeCeltsAdmin', 'admin'],
