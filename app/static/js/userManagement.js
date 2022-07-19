@@ -15,7 +15,7 @@ $(document).ready(function() {
   $.each(searchElements, function(i,arr) {
       let [inputId, btnId, category] = arr
       $("#"+inputId).on("input", () => searchUser(inputId, callback, false, null, category))
-      $("#"+btnId).on("click", () => submitRequest(btnId, "#"+inputId))
+      $("#"+btnId).on("click", () => submitRequest(btnId, "#"+inputId, ''))
   });
 
   $("#addNewTerm").on("click",function(){
@@ -27,6 +27,13 @@ $(document).ready(function() {
   $("#programSelect").on("change",function(){
     displayProgramInfo();
   });
+  $(".removeAdmin").on("click",function(){
+    submitRequest("removeCeltsAdmin", ($(this).val()), 'button');
+  });
+  $(".removeStudentStaff").on("click",function(){
+    submitRequest("removeCeltsStudentStaff", ($(this).val()), 'button');
+  });
+
 
   for (var i=1; i<=$('#currentTermList .term-btn').length; i++){
     $("#termFormID_"+i).on("click", function() {
@@ -39,13 +46,28 @@ $(document).ready(function() {
   });
 });
 
-function submitRequest(method,identifier) {
+function submitRequest(method, identifier, from) {
+  if (from == "button") {
+      console.log("beeeeeea")
+      let data = {
+          method: method,
+          user: identifier,
+          from: "ajax"
+      }
+  } else {
+      console.log("beeeeeep")
+      let data = {
+          method: method,
+          user: $(identifier).html(),
+          from: "ajax"
+      }
+  }
   let data = {
-      method : method,
-      user : $(identifier).val(),
+      method: method,
+      user: identifier,
       from: "ajax"
   }
-
+  console.log(data)
   $.ajax({
     url: "/admin/manageUsers",
     type: "POST",
