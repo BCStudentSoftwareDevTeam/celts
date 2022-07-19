@@ -46,8 +46,8 @@
            <tr>
              <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
              <td><a href= '/eventsList/{{event.id}}/edit' class="link-primary">{{event.name}}</a></td>
-             <td>{{event.startDate.strftime('%m/%d/%Y')}}</td>
-             <td>{{event.timeStart.strftime('%-I:%M %p')}}</td>
+             <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
+             <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}}</td>
              <td>{{event.location}}</td>
               <td>{{"RSVP'ed" if event.id in rsvpedEvents else "Not RSVP'ed"}}</td>
            </tr>
@@ -196,7 +196,7 @@
                 <td><button type="button" class="savebtn btn btn-primary" id="{{bgType.id}}" data-id="{{bgType.id}}" data-username="{{volunteer.username}}">Save</button></td>
             {% else %}
                 <td>{{completedBackgroundCheck[bgType][0]}}</td>
-                <td>{{completedBackgroundCheck[bgType][1]}}</td>
+                <td nowrap>{{completedBackgroundCheck[bgType][1]}}</td>
             </tr>
            {% endif %}
           {%endfor%}

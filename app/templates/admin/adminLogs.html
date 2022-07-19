@@ -28,7 +28,7 @@
   <tr>
     {% set sortDate = entry.createdOn.strftime("%Y/%m/%d/%H/%M")%}
     {% set displayDate = entry.createdOn.strftime('%m/%d/%Y %I:%M %p')%}
-    <td data-sort="{{sortDate}}">{{displayDate}}</td>
+    <td data-sort="{{sortDate}}" nowrap>{{displayDate}}</td>
     <td>{{entry.createdBy.firstName+ " "+ entry.createdBy.lastName}}</td>
     <td>{{entry.logContent}}</td>
 

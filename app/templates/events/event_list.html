@@ -59,7 +59,7 @@
         <th scope="col">Date</th>
         <th scope="col">Time</th>
         <th scope="col">Location</th>
-        <th> Event Program </th>
+        <th>Event Program</th>
         <th scope="col">Invitation</th>
       </tr>
     </thead>
@@ -71,8 +71,8 @@
               {% else %}
                 <td> <a href="/eventsList/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
               {% endif %}
-            <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
-            <td>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
+            <td nowrap>{{event.startDate.strftime('%m-%d-%Y')}}</td>
+            <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
             <td>{{event.location}}</td>
             {% if event.programEvents%}
               {% for programEvent in event.programEvents%}
@@ -146,8 +146,8 @@
                           {% else %}
                             <td> <a href="/eventsList/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
                           {% endif %}
-                        <td>{{event.startDate.strftime('%m-%d-%Y')}}</td>
-                        <td>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
+                        <td nowrap>{{event.startDate.strftime('%m-%d-%Y')}}</td>
+                        <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
                         <td>{{event.location}}</td>
                         {% if user.isAdmin %}
                           <td>
