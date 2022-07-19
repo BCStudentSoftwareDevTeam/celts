@@ -52,7 +52,7 @@ def test_searchUser_categories():
     assert len(searchResults) == 0
 
     # tests that the search categories include properly
-    searchResults = searchUsers('sco', 'instructor') #faculty
+    searchResults = searchUsers('sco', 'instructor') # faculty
     assert searchResults['heggens'] == model_to_dict(User.get_by_id('heggens'))
     searchResults = searchUsers('bri', 'instructor') # staff
     assert searchResults['ramsayb2'] == model_to_dict(User.get_by_id('ramsayb2'))
