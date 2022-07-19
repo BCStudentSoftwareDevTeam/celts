@@ -2,7 +2,7 @@
     min-height: 100vh;
     margin-bottom: -80px;
     width:95%;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
 }
 
 .spacer {
