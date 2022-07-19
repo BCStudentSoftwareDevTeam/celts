@@ -73,8 +73,11 @@ def createEvent(templateid, programid=None):
     # Get the data for the form, from the template or the form submission
     eventData = template.templateData
     if request.method == "POST":
+        print("++++++++++++++++++++++++++++++++++")
+        attachmentFiles = request.files.getlist("attachmentObject")
         eventData = request.form.copy()
-
+        print(eventData)
+        print(attachmentFiles)
     if program:
         # TODO need to handle the multiple programs case
         eventData["program"] = program
@@ -82,7 +85,7 @@ def createEvent(templateid, programid=None):
     # Try to save the form
     if request.method == "POST":
         try:
-            saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
+            saveSuccess, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
         except Exception as e:
             print("Error saving event:", e)
             saveSuccess = False
@@ -125,7 +128,7 @@ def eventDisplay(eventId):
     eventData = model_to_dict(event, recurse=False)
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
-        saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
+        saveSuccess, validationErrorMessage = attemptSaveEvent(eventData, attemptSaveEvent)
         if saveSuccess:
             flash("Event successfully updated!", "success")
             return redirect(url_for("admin.eventDisplay", eventId = eventId))

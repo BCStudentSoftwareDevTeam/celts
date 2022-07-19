@@ -15,6 +15,7 @@ from app.models.programBan import ProgramBan
 from app.models.interest import Interest
 from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
+from app.models.eventFile import EventFile
 from app.logic.adminLogs import createLog
 from app.logic.utils import format24HourTime
 
@@ -35,8 +36,8 @@ def deleteEvent(eventId):
         if event.startDate:
             createLog(f"Deleted event: {event.name}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
 
-def attemptSaveEvent(eventData):
-
+def attemptSaveEvent(eventData, attachmentFiles):
+    getAttachmentPaths = eventData.getlist("attachmentObject")
     newEventData = preprocessEventData(eventData)
 
     isValid, validationErrorMessage = validateNewEventData(newEventData)
@@ -46,6 +47,8 @@ def attemptSaveEvent(eventData):
 
     try:
         events = saveEventToDb(newEventData)
+        for event in events:
+            addAttachment(event.id, attachmentFiles)
         return True, ""
     except Exception as e:
         print(e)
@@ -170,7 +173,7 @@ def getOtherEvents(term):
                            Event.isTraining == False,
                            Event.isAllVolunteerTraining == False,
                            ((ProgramEvent.program == None) |
-                            (Program.isStudentLed == False) & 
+                            (Program.isStudentLed == False) &
                             (Program.isBonnerScholars == False)))
                     .order_by(Event.id)
                   )
@@ -341,3 +344,7 @@ def getTomorrowsEvents():
     tomorrowDate = date.today() + timedelta(days=1)
     events = list(Event.select().where(Event.startDate==tomorrowDate))
     return events
+
+def addAttachment(eventId, attachments):
+    for attachment in attachments:
+        EventFile.create(event = eventId, fileName = attachment.filename)

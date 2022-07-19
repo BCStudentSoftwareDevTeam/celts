@@ -58,7 +58,7 @@
      </div>
 </div>
 {% endif %}
-<form data-toggle="validator" role="form" action="{{request.path}}" method="POST">
+<form enctype="multipart/form-data" data-toggle="validator" role="form" action="{{request.path}}" method="POST">
     <div class="row p-2">
         <div class="col-md-6">
             {% if eventData.id %}
@@ -178,6 +178,10 @@
                 <input class="form-check-input" type="checkbox" id="earnServiceHours" name="isService" {{"checked" if eventData.isService}}/>
               </div>
            {% endif %}
+            <div class="form-group mb-5">
+                <label class="form-label" for='attachmentObject'><strong>Add Files</strong></label>
+                <input type="file" id="attachmentObject" name="attachmentObject" class="form-control col-sm-6 mt-4 mb-2" multiple/>
+            </div>
           </div>
         </div>
     <div class="row justify-content-left mt-2">
