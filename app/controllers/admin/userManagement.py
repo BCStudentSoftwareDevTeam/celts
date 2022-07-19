@@ -19,29 +19,35 @@ def manageUsers():
     user = User.get_by_id(username)
 
     if method == "addCeltsAdmin":
-        if user.isCeltsAdmin:
-            flash(username+ " is already a Celts Admin", 'danger')
+        if user.isStudent:
+            flash(username + " cannot be added as a Celts admin", 'danger')
         else:
-            addCeltsAdmin(user)
-            flash(user.firstName + " "+ user.lastName + " has been added as a Celts Admin", 'success')
+            if user.isCeltsAdmin:
+                flash(username + " is already a Celts Admin", 'danger')
+            else:
+                addCeltsAdmin(user)
+                flash(user.firstName + " " + user.lastName + " has been added as a Celts Admin", 'success')
     elif method == "addCeltsStudentStaff":
-        if user.isCeltsStudentStaff:
-            flash(username+ " is already a Celts Student Staff", 'danger')
+        if not user.isStudent:
+            flash(username + " cannot be added as Celts Student Staff", 'danger')
         else:
-            addCeltsStudentStaff(user)
-            flash(username+ " has been added as a Celts Student Staff", 'success')
+            if user.isCeltsStudentStaff:
+                flash(username + " is already a Celts Student Staff", 'danger')
+            else:
+                addCeltsStudentStaff(user)
+                flash(username + " has been added as a Celts Student Staff", 'success')
     elif method == "removeCeltsAdmin":
         if not user.isCeltsAdmin:
-            flash(username+ " is not a Celts Admin ", 'danger')
+            flash(username + " is not a Celts Admin ", 'danger')
         else:
             removeCeltsAdmin(user)
-            flash(username+ " is no longer a Celts Admin ", 'success')
+            flash(username + " is no longer a Celts Admin ", 'success')
     elif method == "removeCeltsStudentStaff":
         if not user.isCeltsStudentStaff:
-            flash(username+ " is not a Celts Student Staff ", 'danger')
+            flash(username + " is not a Celts Student Staff ", 'danger')
         else:
             removeCeltsStudentStaff(user)
-            flash(username+ " is no longer a Celts Student Staff", 'success')
+            flash(username + " is no longer a Celts Student Staff", 'success')
     return ("success")
 
 @admin_bp.route('/addProgramManagers', methods=['POST'])
