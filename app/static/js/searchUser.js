@@ -1,4 +1,5 @@
-export default function searchUser(inputId, callback, clear=false, parentElementId=null, columnRequested=null, category = null){
+export default function searchUser(inputId, callback, clear=false, parentElementId=null, category = null)
+{
   var query = $(`#${inputId}`).val()
   let columnDict={};
   $(`#${inputId}`).autocomplete({

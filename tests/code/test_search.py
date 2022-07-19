@@ -41,20 +41,29 @@ def test_searchUsers():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_searchCategories():
+def test_searchUser_categories():
 
     # tests that the search categories exclude properly
     searchResults = searchUsers('za', 'instructor')
     assert len(searchResults) == 0
+    searchResults = searchUsers('scott', 'admin')
+    assert len(searchResults) == 0
+    searchResults = searchUsers('sreyn', 'studentstaff')
+    assert len(searchResults) == 0
 
     # tests that the search categories include properly
-    # faculty
-    searchResults = searchUsers('sco', 'instructor')
+    searchResults = searchUsers('sco', 'instructor') #faculty
     assert searchResults['heggens'] == model_to_dict(User.get_by_id('heggens'))
-    # staff
-    searchResults = searchUsers('sco', 'instructor')
-    assert searchResults['heggens'] == model_to_dict(User.get_by_id('heggens'))
+    searchResults = searchUsers('bri', 'instructor') # staff
+    assert searchResults['ramsayb2'] == model_to_dict(User.get_by_id('ramsayb2'))
 
+    searchResults = searchUsers('brian', 'admin')
+    assert searchResults['ramsayb2'] == model_to_dict(User.get_by_id('ramsayb2'))
+
+    searchResults = searchUsers('zach', 'studentstaff')
+    assert searchResults['neillz'] == model_to_dict(User.get_by_id('neillz'))
+
+    # Make sure we are getting into these cases for a non-default category
     # test for first and last name
     searchResults = searchUsers('brian r', 'instructor')
     assert searchResults['ramsayb2'] == model_to_dict(User.get_by_id('ramsayb2'))

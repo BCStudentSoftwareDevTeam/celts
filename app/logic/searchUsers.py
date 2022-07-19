@@ -19,9 +19,14 @@ def searchUsers(query, category=None):
 
     if category == "instructor":
         userWhere = (User.isFaculty | User.isStaff)
-    else:
+    elif category == "admin":
+        userWhere = (User.isCeltsAdmin)
+    elif category == "studentstaff":
+        userWhere = (User.isCeltsStudentStaff)
+    else: 
         userWhere = (User.isStudent)
 
+    # Combine into query
     searchResults = User.select().where(searchWhere, userWhere)
 
     return { user.username : model_to_dict(user) for user in searchResults }
