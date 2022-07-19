@@ -5,7 +5,7 @@ class User(baseModel):
     username = CharField(primary_key=True)
     bnumber = CharField(unique=True)
     email = CharField()
-    phoneNumber = CharField()
+    phoneNumber = CharField(null=True)
     firstName = CharField()
     lastName  = CharField()
     isStudent = BooleanField(default=False)
