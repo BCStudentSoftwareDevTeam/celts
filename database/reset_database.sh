@@ -10,14 +10,19 @@ fi
 cd database/
 ########### Process Arguments ############
 BACKUP=0
+BASE=0
 TEST=1
 if [ "$1" == "real" ]; then
 	BACKUP=1
+	TEST=0
+elif [ "$1" == "base" ]; then
+	BASE=1
+	TEST=0
 elif [ "$1" == "test" ]; then
-	BACKUP=0
+	:
 else
     echo "You must specify which data set you want to restore"
-    echo "Usage: ./reset_database.sh [real|test]"
+    echo "Usage: ./reset_database.sh [real|base|test]"
     exit;
 fi
 
@@ -49,7 +54,6 @@ rm -rf migrations
 rm -rf migrations.json
 
 
-
 ############ Add Data (if needed) ##############
 
 # Adding data we need in all environments, unless we are restoring from backup
@@ -63,5 +67,7 @@ fi
 if [ $PRODUCTION -eq 1 ]; then
 	FLASK_ENV=production python3 add_admins.py
 elif [ $BACKUP -ne 1 ]; then
-	python3 test_data.py
+    if [ $TEST -eq 1 ]; then
+	    python3 test_data.py
+    fi
 fi

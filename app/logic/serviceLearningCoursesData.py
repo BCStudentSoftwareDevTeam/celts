@@ -5,23 +5,28 @@ from app.models.courseParticipant import CourseParticipant
 from app.models.courseQuestion import CourseQuestion
 from app.models.questionNote import QuestionNote
 from app.models.note import Note
+from app.models.term import Term
+from app.models.courseStatus import CourseStatus
 
 def getServiceLearningCoursesData(user):
     """Returns dictionary with data used to populate Service-Learning proposal table"""
-    courses = (Course.select()
+    courses = (Course.select(Course, Term, CourseStatus)
+                     .join(CourseInstructor).switch()
+                     .join(Term).switch()
+                     .join(CourseStatus)
                      .where(CourseInstructor.user==user)
-                     .join(CourseInstructor)
                      .order_by(Course.id))
+
     courseDict = {}
     for course in courses:
-        otherInstructors = (CourseInstructor.select().where(CourseInstructor.course==course))
+        otherInstructors = CourseInstructor.select(CourseInstructor, User).join(User).where(CourseInstructor.course==course)
         faculty = [f"{instructor.user.firstName} {instructor.user.lastName}" for instructor in otherInstructors]
         courseDict[course.courseName] = {
-        "id":course.id,
-        "name":course.courseName,
+        "id": course.id,
+        "name": course.courseName,
         "faculty": faculty,
-        "term":course.term,
-        "status":course.status.status}
+        "term": course.term,
+        "status": course.status.status}
     return courseDict
 
 def withdrawProposal(courseID):

@@ -10,16 +10,16 @@ from app.logic.userManagement import addCeltsAdmin, removeCeltsAdmin,addCeltsStu
 @pytest.mark.integration
 def test_selectSurroundingTerms():
     listOfTerms = selectSurroundingTerms(Term.get_by_id(3))
-    assert [1,2,3,4,5,6] == [t.id for t in listOfTerms]
+    assert 9 == len(listOfTerms)
 
     listOfTerms = selectSurroundingTerms(Term.get_by_id(3), prevTerms=0)
-    assert [3,4,5,6] == [t.id for t in listOfTerms]
+    assert [3,4,5,6,7,8,9] == [t.id for t in listOfTerms]
 
     listOfTerms = selectSurroundingTerms(Term.get_by_id(3), prevTerms=1)
-    assert [2,3,4,5,6] == [t.id for t in listOfTerms]
+    assert [2,3,4,5,6,7,8,9] == [t.id for t in listOfTerms]
 
     listOfTerms = selectSurroundingTerms(Term.get_by_id(3), prevTerms=-1)
-    assert [4,5,6] == [t.id for t in listOfTerms]
+    assert [4,5,6,7,8,9] == [t.id for t in listOfTerms]
 
 @pytest.mark.unit
 def test_deepUpdate_empty():
