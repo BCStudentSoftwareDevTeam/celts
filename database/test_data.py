@@ -38,6 +38,7 @@ users = [
         "lastName": "Ramsay",
         "isStudent": False,
         "isFaculty": False,
+        "isStaff": True,
         "isCeltsAdmin": True,
         "isCeltsStudentStaff": False
     },
