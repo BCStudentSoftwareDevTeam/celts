@@ -4,13 +4,18 @@ function callback(selected) {
 }
 
 $(document).ready(function() {
-  // add celts admin
-  $("#searchCeltsAdminInput").on("input", function() {
-    searchUser("searchCeltsAdminInput", callback);
-  });
-
-  $("#addCeltsAdmin").on("click", function() {
-    submitRequest("addCeltsAdmin","#searchCeltsAdminInput")
+  // Admin Management
+  var searchElements = [
+    // Search Input ID               Button ID                 Category
+    ['searchCeltsAdminInput',       'addCeltsAdmin',          'instructor'],
+    ['searchCeltsStudentStaffInput','addCeltsStudentStaff',   'student'],
+    ['removeCeltsAdminInput',       'removeCeltsAdmin',       'admin'],
+    ['removeCeltsStudentStaffInput','removeCeltsStudentStaff','studentstaff']
+  ];
+  $.each(searchElements, function(i,arr) {
+      let [inputId, btnId, category] = arr
+      $("#"+inputId).on("input", () => searchUser(inputId, callback, false, null, category))
+      $("#"+btnId).on("click", () => submitRequest(btnId, "#"+inputId))
   });
 
   $("#addNewTerm").on("click",function(){
@@ -23,47 +28,18 @@ $(document).ready(function() {
     displayProgramInfo();
   });
 
-  // add celts student staff
-  $("#searchCeltsStudentStaffInput").on("input", function() {
-    searchUser("searchCeltsStudentStaffInput", callback, undefined, undefined, undefined, "students");
-  });
-
-  $("#addCeltsStudentStaff").on("click", function() {
-    submitRequest("addCeltsStudentStaff","#searchCeltsStudentStaffInput")
-  });
-
-  // remove celts admin
-  $("#removeCeltsAdminInput").on("input", function() {
-    searchUser("removeCeltsAdminInput", callback);
-  });
-
-  $("#removeCeltsAdmin").on("click", function() {
-    submitRequest("removeCeltsAdmin","#removeCeltsAdminInput")
-  });
-
-  // remove celts student staff
-  $("#removeCeltsStudentStaffInput").on("input", function() {
-    searchUser("removeCeltsStudentStaffInput", callback, undefined, undefined, undefined, "stuStaff");
-  });
-
-  $("#removeCeltsStudentStaff").on("click", function() {
-    submitRequest("removeCeltsStudentStaff", "#removeCeltsStudentStaffInput")
-  });
   for (var i=1; i<=$('#currentTermList .term-btn').length; i++){
     $("#termFormID_"+i).on("click", function() {
-      clickTerm($(this))
+      $(".term-btn").removeClass("active");
+      $(this).addClass('active');
     });
   };
   $("#submitButton").on("click", function() {
     submitTerm();
   });
 });
-function clickTerm(term){
-  $(".term-btn").removeClass("active");
-  term.addClass('active');
-}
 
-function submitRequest(method,identifier){
+function submitRequest(method,identifier) {
   let data = {
       method : method,
       user : $(identifier).val(),
@@ -84,7 +60,7 @@ function submitRequest(method,identifier){
   })
 }
 
-function submitTerm(){
+function submitTerm() {
   var termInfo = {id: $("#currentTermList .active").val()};
   $.ajax({
     url: "/admin/changeTerm",
@@ -99,7 +75,7 @@ function submitTerm(){
   })
 }
 
-function addNewTerm(){
+function addNewTerm() {
   $.ajax({
     url: "/admin/addNewTerm",
     type: "POST",
@@ -112,7 +88,7 @@ function addNewTerm(){
   })
 }
 
-function addNewProgramInfo(){
+function addNewProgramInfo() {
   var programInfo = {emailSenderName: $("#emailSenderName").val(),
                     emailReplyTo: $("#emailReplyTo").val(),
                     programId: $("#programSelect").val()};
