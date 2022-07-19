@@ -28,6 +28,7 @@ def test_modifyCeltsAdmin():
         with pytest.raises(DoesNotExist):
             addCeltsAdmin("ksgvoidsid;")
 
+@pytest.mark.integration
 def test_modifyCeltsStudentStaff():
     user = "mupotsal"
     userInTest = User.get(User.username == user)
@@ -37,6 +38,7 @@ def test_modifyCeltsStudentStaff():
         addCeltsStudentStaff(userInTest)
     userInTest = User.get(User.username == user)
     assert userInTest.isCeltsStudentStaff == True
+
     with app.app_context():
         g.current_user = "ramsayb2"
         removeCeltsStudentStaff(userInTest)
@@ -66,28 +68,29 @@ def test_changeProgramInfo():
 
 @pytest.mark.integration
 def test_updatedProgramManager():
+    with mainDB.atomic() as transaction:
+        # Try to add a student who isnt Student Staff into a Program Manager: They should not be added.
+        user = User.get_by_id("mupotsal")
+        user.isCeltsStudentStaff = False
+        user.save()
+        program = Program.get_by_id(1)
 
-    #checking if the user is being updated when added to programs
-    user_name = "mupotsal"
-    program_id = 1
-    action = "add"
-    setProgramManager(user_name, program_id, action)
-    assert ProgramManager.get_or_none(ProgramManager.program == program_id, ProgramManager.user == user_name) is not None
+        setProgramManager(user, program, "add")
+        assert ProgramManager.get_or_none(program = program, user = user) is None
 
+        # Make the previous student into a Student Staff then try to make them
+        # a Program Manager again: They should be added to Program Managers.
+        user.isCeltsStudentStaff = True
+        user.save()
+        
+        setProgramManager(user, program, "add")
+        assert ProgramManager.get_or_none(program = program, user = user) is not None
 
-    # Not a student staff, should not be added as a program manager
-    user_name2 = "ramsayb2"
-    program_id2 = 1
-    action2 = "add"
-    setProgramManager(user_name2, program_id2, action2)
-    assert ProgramManager.get_or_none(ProgramManager.program==program_id2, ProgramManager.user == user_name2) is None
+        # Remove the user that was added as a Program Manager
+        setProgramManager(user, program, "remove")
+        assert ProgramManager.get_or_none(program = program, user = user) is None
 
-    # if action remove, user should be removed from the table
-    user_name3 = "mupotsal"
-    program_id3 = 1
-    action3 = "remove"
-    setProgramManager(user_name3, program_id3, action3)
-    assert ProgramManager.get_or_none(ProgramManager.program==program_id3, ProgramManager.user == user_name3) is None
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_getAllowedPrograms():
