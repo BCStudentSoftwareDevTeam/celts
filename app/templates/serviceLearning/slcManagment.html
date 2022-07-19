@@ -67,8 +67,8 @@
     </div>
   </div>
 </div>
-<!-- Renew Modal -->
-<div class="modal fade" id="renewModal" tabindex="-1" aria-labelledby="renewModalLabel" aria-hidden="true">
+{% for course in courseDict %}
+<div class="modal fade" id="course-{{courseDict[course]['id']}}" tabindex="-1" aria-labelledby="renewModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -76,22 +76,39 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+          <table class="table table-striped ml-4" id="myTable">
+            <tbody id="facultyTable">
+              <tr>
+                <td class="fw-bold">Course Name</td>
+                <td> {{courseDict[course]['name']}}</td>
+              </tr>
+              <tr>
+                <td class="fw-bold"> Instructor(s)</td>
+                <td>
+                  {{courseDict[course]['faculty']|join(", ")}}
+                </td>
+              </tr>
+              <tr>
+                <td class="fw-bold">Status</td>
+                <td>{{courseDict[course]['status']}}</td>
+              </tr>
+            </tbody>
+          </table>
         <input id="courseID" type="hidden" value="">
-        <p>What term would you like to renew this proposal for?<br><br></p>
-            <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Select Term
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="#"></a> <!--Jinja Dropdown tags will go here for terms. Change the class names of this as these are default bootstrap-->
-                </div>                                      <!--Loop index for each term-->
-            </div>
+        <p>Choose a term for the new course:<br><br></p>
+        <select class="form-select courseRenewal" id="renewCourse-{{courseDict[course]['id']}}">
+          <option value="---" disabled selected>Select Action</option>
+          {% for term in termList %}
+          <option id="termSelect" value="{{term}}">{{term.description}}</option>
+          {% endfor %}
+        </select>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary" id="renewBtn">Renew</button>
+        <button type="button" class="btn btn-primary" onclick="renew()">Renew</button>
       </div>
     </div>
   </div>
 </div>
+{% endfor %}
 {% endblock %}
