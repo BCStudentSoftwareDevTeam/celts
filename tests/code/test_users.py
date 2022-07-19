@@ -175,41 +175,6 @@ def test_userpriv():
     prg = Program.get_by_id(12)
     assert not user.isProgramManagerFor(prg)
 
-# @pytest.mark.integration
-# def test_addProgramManager():
-#     with mainDB.atomic() as transaction:
-#
-#         user = User.get_by_id("mupotsal")
-#         prg = Program.get_by_id(1)
-#         newPM = user.addProgramManager(prg)
-#
-#         PMsWithNewPM = list(User.select(User.username).join(ProgramManager).where(ProgramManager.program_id == 1))
-#
-#         # Make sure what is expected is returned
-#         assert newPM == (f' {user} added as Program Manager')
-#         # Check that the user is made manager of program 1
-#         assert user in PMsWithNewPM
-#
-#         transaction.rollback()
-#
-# @pytest.mark.integration
-# def test_removeProgramManager():
-#     with mainDB.atomic() as transaction:
-#
-#         user = User.get_by_id("mupotsal")
-#         prg = Program.get_by_id(2)
-#         removePM = user.removeProgramManager(prg)
-#
-#         noPM = list(User.select(User.username).join(ProgramManager).where(ProgramManager.program_id == 2))
-#
-#
-#         # Make sure what is expected is returned
-#         assert removePM == (f'{user} removed from Program Manager')
-#         # Check that the Program Manager is actually removed from the Program Manager table
-#         assert user not in noPM
-#
-#         transaction.rollback()
-
 @pytest.mark.integration
 def test_Add_Remove_ProgramManager():
     with mainDB.atomic() as transaction:
