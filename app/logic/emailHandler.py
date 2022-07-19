@@ -175,9 +175,9 @@ class EmailHandler:
         """ Stores sent email in the email log """
         date_sent = datetime.now()
 
-        attachmentName = ''
-        if self.attachment_file:
-            attachmentName = self.attachment_file.filename
+        attachmentName = []
+        for file in self.attachment_file:
+            attachmentName.append(file.filename)
 
         EmailLog.create(
             event = self.event.id,
@@ -206,6 +206,7 @@ class EmailHandler:
             if self.program_ids[0].emailSenderName:
                 defaultEmailInfo["senderName"] = self.program_ids[0].emailSenderName
 
+        self.store_sent_email(subject, template_id)
         try:
             with self.mail.connect() as conn:
                 for recipient in self.recipients:
@@ -221,7 +222,6 @@ class EmailHandler:
                         reply_to = defaultEmailInfo["replyTo"],
                         sender = (defaultEmailInfo["senderName"], defaultEmailInfo["replyTo"])
                     ))
-            self.store_sent_email(subject, template_id)
             return True
         except Exception as e:
             print("Error on sending email: ", e)
