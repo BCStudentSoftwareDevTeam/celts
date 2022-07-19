@@ -12,9 +12,7 @@ $(document).ready(function() {
     ['removeCeltsStudentStaffInput', 'removeCeltsStudentStaff', 'studentstaff']
   ];
   $.each(searchElements, function(i,arr) {
-      let inputId = arr[0]
-      let btnId = arr[1]
-      let category = arr[2]
+      let [inputId, btnId, category] = arr
       $("#"+inputId).on("input", () => searchUser(inputId, callback, false, null, category))
       $("#"+btnId).on("click", () => submitRequest(btnId, "#"+inputId))
   });
