@@ -11,18 +11,32 @@ $(document).ready(function() {
 function changeAction(action){
   courseID = action.id;
   // decides what to do based on selection
-  if (action.value=="Renew"){
-    // Renew
-  } else if (action.value=="View"){
-    // View
-  } else if (action.value=="Withdraw"){
+  if (action.value == "Renew"){
+    $('#courseID').val(courseID);
+    $("#course-" + courseID).modal('show')
+  } else if (action.value == "View"){
+    location = '/serviceLearning/viewProposal/' + courseID
+  } else if (action.value == "Withdraw"){
     $('#courseID').val(courseID);
     $('#withdrawModal').modal('show');
-  } else if(action.value=="Edit"){
+  } else if(action.value == "Edit"){
     location = '/serviceLearning/editProposal/' + courseID;
   }
 }
-
+function renew(){
+    courseID = $("#courseID").val();
+    termID = $('#renewCourse-'+courseID).find(":selected").val()
+    $.ajax({
+      url: `/serviceLearning/renew/${courseID}/${termID}/`,
+      type: "POST",
+      success: function(s){
+        location.reload();
+      },
+      error: function(request, status, error) {
+          console.log(status,error);
+      }
+    })
+}
 function withdraw(){
   // uses hidden label to withdraw course
   courseID = $("#courseID").val();

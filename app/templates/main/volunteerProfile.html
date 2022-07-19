@@ -59,7 +59,6 @@
  </div>
  <br>
  <br>
- <br>
 
  <!-- Start Program Eligibility Table -->
  <div class="row">
@@ -117,6 +116,7 @@
 <div>
     <small><a href="https://www.berea.edu/celts/community-service-programs/volunteer-opportunities/">For more information about CELTS opportunities, click here.</a></small>
 </div>
+<br>
 <!-- End Program Eligibility Table -->
 
 <!-- Program Manager Selection -->
@@ -140,21 +140,25 @@
           {% endfor %}
         </div>
       </div>
+      <br>
     {% endif %}
 
-{% elif g.current_user.isCeltsStudentStaff %}
+{% elif volunteer.isCeltsStudentStaff %}
   <div class="row">
-    <h2>{{volunteer.firstName}} {{volunteer.lastName}} is a manager for the following programs</h2>
+    <h2><br>{{volunteer.firstName}} {{volunteer.lastName}} is the manager of:</h2>
     <div>
-      {% for program in programs %}
-        {% set status = '' %}
-          {% if program.id in permissionPrograms %}
-            <p  style="padding-right:50px;">{{program.programName}}</p>
-          {% else %}
-          {% endif %}
-      {% endfor %}
+        <ul>
+        {% for program in programs %}
+          {% set status = '' %}
+            {% if program.id in permissionPrograms %}
+               <li>{{program.programName}}</li>
+            {% else %}
+            {% endif %}
+        {% endfor %}
+        </ul>
     </div>
   </div>
+<br>
 {% endif %}
   <!-- End Program Manager Selection -->
 <!-- Start Background Check Table -->
