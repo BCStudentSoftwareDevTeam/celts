@@ -10,16 +10,16 @@ from app.logic.userManagement import addCeltsAdmin, removeCeltsAdmin,addCeltsStu
 @pytest.mark.integration
 def test_selectSurroundingTerms():
     listOfTerms = selectSurroundingTerms(Term.get_by_id(3))
-    assert [1,2,3,4,5,6] == [t.id for t in listOfTerms]
+    assert 9 == len(listOfTerms)
 
     listOfTerms = selectSurroundingTerms(Term.get_by_id(3), prevTerms=0)
-    assert [3,4,5,6] == [t.id for t in listOfTerms]
+    assert [3,4,5,6,7,8,9] == [t.id for t in listOfTerms]
 
     listOfTerms = selectSurroundingTerms(Term.get_by_id(3), prevTerms=1)
-    assert [2,3,4,5,6] == [t.id for t in listOfTerms]
+    assert [2,3,4,5,6,7,8,9] == [t.id for t in listOfTerms]
 
     listOfTerms = selectSurroundingTerms(Term.get_by_id(3), prevTerms=-1)
-    assert [4,5,6] == [t.id for t in listOfTerms]
+    assert [4,5,6,7,8,9] == [t.id for t in listOfTerms]
 
 @pytest.mark.unit
 def test_deepUpdate_empty():
@@ -170,30 +170,34 @@ def test_addNextTerm():
 
 @pytest.mark.integration
 def test_getStartofCurrentAcademicYear():
-    with mainDB.atomic() as transaction:
-        # Case1: current term is Fall 2020
-        currentTerm = Term.get_by_id(1)
-        fallTerm = currentTerm.academicYearStartingTerm
-        assert fallTerm.year == 2020
-        assert fallTerm.description == "Fall 2020"
-        assert fallTerm.academicYear == "2020-2021"
+    # Case1: current term is Fall 2020
+    currentTerm = Term.get_by_id(1)
+    fallTerm = currentTerm.academicYearStartingTerm
+    assert fallTerm.year == 2020
+    assert fallTerm.description == "Fall 2020"
+    assert fallTerm.academicYear == "2020-2021"
 
-        # Case2: current term is Spring 2021
-        currentTerm = Term.get_by_id(2)
-        fallTerm = currentTerm.academicYearStartingTerm
-        assert fallTerm.year == 2020
-        assert fallTerm.description == "Fall 2020"
-        assert fallTerm.academicYear == "2020-2021"
+    # Case2: current term is Spring 2021
+    currentTerm = Term.get_by_id(2)
+    fallTerm = currentTerm.academicYearStartingTerm
+    assert fallTerm.year == 2020
+    assert fallTerm.description == "Fall 2020"
+    assert fallTerm.academicYear == "2020-2021"
 
-        # Case3: current term is Summer 2021
-        currentTerm = Term.get_by_id(4)
-        fallTerm = currentTerm.academicYearStartingTerm
+    # Case3: current term is Summer 2021
+    currentTerm = Term.get_by_id(4)
+    fallTerm = currentTerm.academicYearStartingTerm
 
-        assert fallTerm.year == 2020
-        assert fallTerm.description == "Fall 2020"
-        assert fallTerm.academicYear == "2020-2021"
+    assert fallTerm.year == 2020
+    assert fallTerm.description == "Fall 2020"
+    assert fallTerm.academicYear == "2020-2021"
+    
+    # Case4: current term has no earlier term, just return itself
+    newTerm = Term.create(description="Summer 2020", year=2020, academicYear="2019-2020",isSummer=1,isCurrentTerm=0)
+    testTerm = newTerm.academicYearStartingTerm
 
-        transaction.rollback()
+    assert testTerm == newTerm
+    newTerm.delete_instance()
 
 @pytest.mark.integration
 def test_isFutureTerm():
