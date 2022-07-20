@@ -64,8 +64,10 @@ function displayCorrectTab(navigateTab) {
   // This function will figure out which tab to display
   let allTabs = $(".tab");
   if (navigateTab == 1 && !validateForm()) return false;
+  if(currentTab != (allTabs.length - 1)){
+      $(allTabs[currentTab]).css("display", "none");
+  }
 
-  $(allTabs[currentTab]).css("display", "none");
   // Increase or decrease the current tab by 1:
   currentTab = currentTab + navigateTab;
 
