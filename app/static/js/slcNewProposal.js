@@ -57,7 +57,7 @@ $("#nextButton").on("click", function() {
 });
 
 $("#cancelButton").on("click", function() {
-  window.location.replace("/manageServiceLearning");
+        window.location.replace("/serviceLearning/courseManagement");
 });
 
 function displayCorrectTab(navigateTab) {
