@@ -118,55 +118,79 @@ function fixStepIndicator(navigateTab) {
   }
   steps[navigateTab].className += " active";
 }
-
-
-function callback(selectedInstructor) {
+function getRowUsername(element) {
+    return $(element).closest("tr").data("username")
+}
+function focusHandler(event) {
+    var username=getRowUsername(this)
+    $("#editButton-" + username).html('Save');
+}
+function blurHandler(event) {
+    var username=getRowUsername(this)
+    var editBtn = $("#editButton-" + username)
+    if($(event.relatedTarget).attr("id") != editBtn.attr("id")) {
+        editBtn.html('Edit');
+    }
+}
+function createNewRow(selectedInstructor) {
   // JSON.parse is required to de-stringify the search results into a dictionary.
   let instructor = (selectedInstructor["firstName"]+" "+selectedInstructor["lastName"]+" ("+selectedInstructor["username"]+")");
   let username = selectedInstructor["username"];
   let phone = selectedInstructor["phoneNumber"];
+  // let uniqueId = selectedInstructor[""];
   let tableBody = $("#instructorTable").find("tbody");
   if(tableBody.prop('outerHTML').includes(instructor)){
     msgFlash("Instructor is already added.", "danger");
     return;
   }
-
+  // Create new table row and update necessary attributes
   let lastRow = tableBody.find("tr:last");
   let newRow = lastRow.clone();
-  newRow.find("td:eq(0) p").text(instructor);
-  newRow.find("td:eq(0) div input").val(phone);
-  newRow.find("td:eq(0) div button").attr("data-id", username);
-  newRow.find("td:eq(0) div input").attr("id", username);
+  let instructorName = newRow.find("td:eq(0) p")
+  instructorName.text(instructor);
+  let phoneInput = newRow.find("td:eq(0) input")
+  phoneInput.val(phone);
+  phoneInput.attr("id",  username);
+  $(phoneInput).focus(focusHandler);
+  $(phoneInput).focusout(blurHandler);
+  let removeButton = newRow.find("td:eq(0) button")
+  let editLink = newRow.find("td:eq(1) a")
+  editLink.attr("id", "editButton-" + username);
+  newRow.attr("data-username", username)
   newRow.prop("hidden", false);
   lastRow.after(newRow);
 }
-
 $("#courseInstructor").on('input', function() {
-  // To retrieve specific columns into a dict, create a [] list and put columns inside
-  searchUser("courseInstructor", callback, true, null, "instructor");
+  searchUser("courseInstructor", createNewRow, true, null, "instructor");
 });
-
-$("#instructorTable").on("click", "#instructorPhoneUpdate", function() {
-   var inputId = $(this).attr("data-id")
-   var instructorData = [inputId, $("#" + inputId).val()]
-   $.ajax({
-     url: "/updateInstructorPhone",
-     data: JSON.stringify(instructorData),
-     type: "POST",
-     contentType: "application/json",
-     success: function(response) {
-         msgFlash("Instructor's phone number updated", "success")
-     },
-     error: function(request, status, error) {
-       msgFlash("Error updating phone number", "danger")
-     }
-   });
+$("input[name=courseInstructorPhone]").focus(focusHandler);
+$("input[name=courseInstructorPhone]").focusout(blurHandler);
+$('#instructorTable').on('click', ".editButton", function() {
+    if ($(this).html() === 'Edit') {
+        var username=getRowUsername(this)
+        $(this).html('Save')
+        $("#"+username).focus()
+    } else {
+        $(this).html('Edit');
+        var inputId = $(this).data("id")
+        var instructorData = [inputId, $("#" + inputId).val()]
+        $.ajax({
+          url: "/updateInstructorPhone",
+          data: JSON.stringify(instructorData),
+          type: "POST",
+          contentType: "application/json",
+          success: function(response) {
+              msgFlash("Instructor's phone number updated", "success")
+          },
+          error: function(request, status, error) {
+            msgFlash("Error updating phone number", "danger")
+          }
+        });
+    }
 });
-
 $("#instructorTable").on("click", "#remove", function() {
    $(this).closest("tr").remove();
 });
-
 let courseInstructors = []
 async function saveCourseInstructors() {
   $("#instructorTable tr").each(function(a, b) {
@@ -180,7 +204,6 @@ async function saveCourseInstructors() {
     success: function () {}
   });
 }
-
 function viewProposal(){
     var url = String(window.location.href);
     if (url.includes("view")){
