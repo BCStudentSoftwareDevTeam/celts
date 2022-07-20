@@ -56,21 +56,21 @@ $("#nextButton").on("click", function() {
   displayCorrectTab(1);
 });
 
-$("#saveContinue").one("click", function() {
-  var data = $("form").serialize()
-  saveCourseInstructors()
-  $.ajax({
-    url: "/serviceLearning/saveProposal",
-    type: "POST",
-    data: data,
-    success: function(response) {
-        displayCorrectTab(1);
-    },
-    error: function(request, status, error) {
-       msgFlash("Error saving new proposal", "danger")
-     }
-   });
- });
+// $("#saveContinue").one("click", function() {
+//   var data = $("form").serialize()
+//   saveCourseInstructors()
+//   $.ajax({
+//     url: "/serviceLearning/saveProposal",
+//     type: "POST",
+//     data: data,
+//     success: function(response) {
+//         displayCorrectTab(1);
+//     },
+//     error: function(request, status, error) {
+//        msgFlash("Error saving new proposal", "danger")
+//      }
+//    });
+//  });
 
 
 $("#cancelButton").on("click", function() {
