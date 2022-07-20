@@ -5,7 +5,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.program import Program
 from app.models.event import Event
 from app.models.event import Term
-from app.logic.events import getStudentLedEvents,  getTrainingEvents, getBonnerEvents, getNonProgramEvents
+from app.logic.events import getStudentLedEvents,  getTrainingEvents, getBonnerEvents, getOtherEvents
 
 @pytest.mark.integration
 @pytest.fixture
@@ -46,13 +46,14 @@ def special_bonner():
 
 @pytest.mark.integration
 @pytest.fixture
-def special_nonProgram():
+def special_otherEvents():
         nonProgramEvent = Event.create(name = "Test for nonProgram",
-                                term = 2,
+                                term = 4,
                                 description = "Special event test for nonProgram",
                                 timeStart = "19:00:00",
                                 timeEnd = "22:00:00",
                                 location = "moon",
+                                isTraining = False,
                                 startDate = 2021-12-12,
                                 endDate = 2021-12-13)
 
@@ -81,8 +82,8 @@ def test_bonner_events(special_bonner):
     assert allBonnerProgram == getBonnerEvents(2)
 
 @pytest.mark.integration
-def test_nonProgram_events(special_nonProgram):
-    nonProgram = special_nonProgram
-    allNonProgram = [Event.get_by_id(11), Event.get_by_id(13), nonProgram]
+def test_getOtherEvents(special_otherEvents):
+    otherEvent = special_otherEvents
+    otherEvents = [Event.get_by_id(7), Event.get_by_id(11), otherEvent]
 
-    assert allNonProgram == getNonProgramEvents(2)
+    assert otherEvents == getOtherEvents(4)

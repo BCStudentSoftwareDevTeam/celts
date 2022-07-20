@@ -1,0 +1,50 @@
+  <div class="modal fade" tabindex="-1" id="proposal_view">
+    <div class="modal-dialog">
+      <div class=" modal-content">
+        <div class=" modal-header">
+          <h5  class="col-11 modal-title text-center">Review Course Proposal </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <table class="table table-striped ml-4" id="myTable">
+
+            <tbody id="facultyTable">
+              <tr>
+                <td class="fw-bold">Course Name</td>
+                <td> {{course.courseName}}</td>
+
+              </tr>
+              <tr>
+                <td class="fw-bold"> Instructor(s)</td>
+                <td>
+                  {% for instructor in instructors_data %}
+                  <table>{{instructor.user.firstName}} {{instructor.user.lastName}}</table>
+                  {% endfor%}
+                </td>
+              </tr>
+              <tr>
+                <td class="fw-bold">Course Abbreviation</td>
+                <td> {{course.courseAbbreviation}}</td>
+              </tr>
+              <tr>
+                <td class="fw-bold">Course Credit</td>
+                <td> {{course.courseCredit}}</td>
+              </tr>
+              <tr>
+                <td class="fw-bold">Term</td>
+                <td> {{course.term.description}}</td>
+              </tr>
+              <tr>
+                <td class="fw-bold">Status</td>
+                <td> {{course.status.status}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <a type="button" href="/serviceLearning/editProposal/{{course.id }}"  class="btn btn-secondary">  Edit  </a>
+          <button type="button" class="btn btn-primary" data-id="{{course.id}}" id="approveButton" onclick="approve_proposal(this)">Approve</button>
+        </div>
+      </div>
+    </div>
+  </div>

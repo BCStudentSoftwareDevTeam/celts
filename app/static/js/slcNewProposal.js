@@ -5,6 +5,7 @@ let currentTab = 0; // Current tab is set to be the first tab (0)
 $(document).ready(function(e) {
   $("#cancelButton").hide();
   showTab(currentTab); // Display the current tab
+  viewProposal()
 })
 
 function showTab(currentTab) {
@@ -20,16 +21,21 @@ function showTab(currentTab) {
   }
 
   if (currentTab == (allTabs.length - 1)) {
-    $("#approveButton").show();
     $("#nextButton").text("Submit");
+    if ($("input").is(":disabled")) {
+        $("#nextButton").hide()
+    }
+    else {
+        $("#saveAndApproveButton").show();
+    }
   } else {
-    $("#approveButton").hide();
+    $("#saveAndApproveButton").hide();
     $("#nextButton").text("Next");
   }
   fixStepIndicator(currentTab)
 }
 
-$("#approveButton").click(function(){
+$("#saveAndApproveButton").click(function(){
   var data = $("form").serialize()
   saveCourseInstructors()
   $.ajax({
@@ -58,8 +64,10 @@ function displayCorrectTab(navigateTab) {
   // This function will figure out which tab to display
   let allTabs = $(".tab");
   if (navigateTab == 1 && !validateForm()) return false;
+  if(currentTab != (allTabs.length - 1)){
+      $(allTabs[currentTab]).css("display", "none");
+  }
 
-  $(allTabs[currentTab]).css("display", "none");
   // Increase or decrease the current tab by 1:
   currentTab = currentTab + navigateTab;
 
@@ -74,27 +82,30 @@ function validateForm() {
   // TODO: Generalize form validation to include textareas and selects
   // This function deals with validation of the form fields
   let valid = true;
-  let allTabs = $(".tab");
-  let allInputs = $(allTabs[currentTab]).find("input");
-  for (let i = 0; i < allInputs.length; i++) {
-    if (allInputs[i].required) {
-      if (!allInputs[i].value){
-        allInputs[i].className += " invalid";
-        valid = false;
-      } else {
-        allInputs[i].className = "form-control";
+  var url = String(window.location.href);
+  if (!url.includes("view")){
+      let allTabs = $(".tab");
+      let allInputs = $(allTabs[currentTab]).find("input");
+      for (let i = 0; i < allInputs.length; i++) {
+        if (allInputs[i].required) {
+          if (!allInputs[i].value){
+            allInputs[i].className += " invalid";
+            valid = false;
+          } else {
+            allInputs[i].className = "form-control";
+          }
+        }
       }
-    }
-  }
 
-  if ($("table").find('td').length < 5 && currentTab ==1) { // checks if there are more than the default hidden 3 tds
-    valid = false;
-    $("#courseInstructor").addClass("invalid");
-  } else {
-    $("#courseInstructor").removeClass("invalid");
-  }
-  if (valid) {
-    $(".step")[currentTab].className += " finish";
+      if ($("table").find('td').length < 5 && currentTab ==1) { // checks if there are more than the default hidden 3 tds
+        valid = false;
+        $("#courseInstructor").addClass("invalid");
+      } else {
+        $("#courseInstructor").removeClass("invalid");
+      }
+      if (valid) {
+        $(".step")[currentTab].className += " finish";
+      }
   }
   return valid;
 };
@@ -114,8 +125,12 @@ function callback(selectedInstructor) {
   let instructor = (selectedInstructor["firstName"]+" "+selectedInstructor["lastName"]+" ("+selectedInstructor["username"]+")");
   let username = selectedInstructor["username"];
   let phone = selectedInstructor["phoneNumber"];
-
   let tableBody = $("#instructorTable").find("tbody");
+  if(tableBody.prop('outerHTML').includes(instructor)){
+    msgFlash("Instructor is already added.", "danger");
+    return;
+  }
+
   let lastRow = tableBody.find("tr:last");
   let newRow = lastRow.clone();
   newRow.find("td:eq(0) p").text(instructor);
@@ -128,7 +143,7 @@ function callback(selectedInstructor) {
 
 $("#courseInstructor").on('input', function() {
   // To retrieve specific columns into a dict, create a [] list and put columns inside
-  searchUser("courseInstructor", callback, true, null, ["phoneNumber", "firstName", "lastName", "username"],"instructor");
+  searchUser("courseInstructor", callback, true, null, "instructor");
 });
 
 $("#instructorTable").on("click", "#instructorPhoneUpdate", function() {
@@ -164,4 +179,15 @@ async function saveCourseInstructors() {
     contentType: "application/json",
     success: function () {}
   });
+}
+
+function viewProposal(){
+    var url = String(window.location.href);
+    if (url.includes("view")){
+        $("input").prop("disabled", true);
+        $("select").prop("disabled", true);
+        $("textarea").prop("disabled", true);
+        $(".view").prop("disabled", true);
+        $("#saveAndApproveButton").hide();
+    }
 }
