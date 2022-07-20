@@ -1,6 +1,9 @@
 import searchUser from './searchUser.js'
-function callback(selected) {
-  $("#searchAdmin").submit();
+function callbackAdmin(selected) {
+    submitRequest("addCeltsAdmin", selected.username)
+}
+function callbackStudentStaff(selected) {
+    submitRequest("addCeltsStudentStaff", selected.username)
 }
 
 $(document).ready(function() {
@@ -14,8 +17,11 @@ $(document).ready(function() {
   ];
   $.each(searchElements, function(i,arr) {
       let [inputId, btnId, category] = arr
-      $("#"+inputId).on("input", () => searchUser(inputId, callback, false, null, category))
-      $("#"+btnId).on("click", () => submitRequest(btnId, $("#"+inputId).val()))
+      if (inputId == "searchCeltsAdminInput") {
+        $("#"+inputId).on("input", () => searchUser(inputId, callbackAdmin, false, null, category))
+    } else {
+        $("#"+inputId).on("input", () => searchUser(inputId, callbackStudentStaff, false, null, category))
+    }
   });
 
   $("#addNewTerm").on("click",function(){
@@ -32,6 +38,16 @@ $(document).ready(function() {
   });
   $(".removeStudentStaff").on("click",function(){
     submitRequest("removeCeltsStudentStaff", $(this).data("username"));
+  });
+  $('#searchCeltsAdminInput').keydown(function(e) {
+      if (e.key === "Enter") {
+          submitRequest("addCeltsAdmin", $(this).val())
+      }
+  });
+  $('#searchCeltsStudentStaffInput').keydown(function(e) {
+      if (e.key === "Enter") {
+          submitRequest("addCeltsStudentStaff", $(this).val())
+      }
   });
 
 

@@ -20,10 +20,10 @@ def manageUsers():
 
     if method == "addCeltsAdmin":
         if user.isStudent:
-            flash(username + " cannot be added as a Celts admin", 'danger')
+            flash(user.firstName + " " + user.lastName + " cannot be added as a Celts admin", 'danger')
         else:
             if user.isCeltsAdmin:
-                flash(username + " is already a Celts Admin", 'danger')
+                flash(user.firstName + " " + user.lastName + " is already a Celts Admin", 'danger')
             else:
                 addCeltsAdmin(user)
                 flash(user.firstName + " " + user.lastName + " has been added as a Celts Admin", 'success')
@@ -32,16 +32,16 @@ def manageUsers():
             flash(username + " cannot be added as Celts Student Staff", 'danger')
         else:
             if user.isCeltsStudentStaff:
-                flash(username + " is already a Celts Student Staff", 'danger')
+                flash(user.firstName + " " + user.lastName + " is already a Celts Student Staff", 'danger')
             else:
                 addCeltsStudentStaff(user)
-                flash(username + " has been added as a Celts Student Staff", 'success')
+                flash(user.firstName + " " + user.lastName + " has been added as a Celts Student Staff", 'success')
     elif method == "removeCeltsAdmin":
         removeCeltsAdmin(user)
-        flash(username + " is no longer a Celts Admin ", 'success')
+        flash(user.firstName + " " + user.lastName + " is no longer a Celts Admin ", 'success')
     elif method == "removeCeltsStudentStaff":
         removeCeltsStudentStaff(user)
-        flash(username + " is no longer a Celts Student Staff", 'success')
+        flash(user.firstName + " " + user.lastName + " is no longer a Celts Student Staff", 'success')
     return ("success")
 
 @admin_bp.route('/addProgramManagers', methods=['POST'])
