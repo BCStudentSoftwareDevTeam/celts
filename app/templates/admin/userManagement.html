@@ -43,7 +43,7 @@
                       {% for admin in currentAdmins %}
                          <tr>
                             <td id="{{admin.username}}">{{admin.firstName}} {{admin.lastName}}</td>
-                            <td><button value="{{admin.username}}" type="button" class="btn btn-danger view removeAdmin" val="{{admin.username}}">Remove</button></td>
+                            <td><button data-username="{{admin.username}}" type="button" class="btn btn-danger view removeAdmin">Remove</button></td>
                          </tr>
                       {% endfor %}
                   </tbody>
@@ -63,7 +63,7 @@
                     {% for studentStaff in currentStudentStaff %}
                        <tr>
                           <td id="{{studentStaff.username}}">{{studentStaff.firstName}} {{studentStaff.lastName}}</td>
-                          <td><button value="{{studentStaff.username}}" type="button" class="btn btn-danger view removeStudentStaff">Remove</button></td>
+                          <td><button data-username="{{studentStaff.username}}" type="button" class="btn btn-danger view removeStudentStaff">Remove</button></td>
                        </tr>
                     {% endfor %}
                   </tbody>
@@ -125,21 +125,19 @@
               <th>Sender Name</th>
             </tr>
             <form action="" id="programSettings">
-                <div>
-                    <tr>
-                        <td>
-                            <select class="form-select programData" id="programSelect" form="programSettings">
-                                <option selected disabled>--Choose a Program--</option>
-                                {% for program in programs %}
-                                <option value ="{{program.id}}" data-replytoemail="{{program.emailReplyTo}}" data-sendername="{{program.emailSenderName}}">{{program.programName}}</option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                        <td><input type="text" name="Email" id="emailReplyTo" value=""></td>
-                        <td><input type="text" name="Sender" value="" id="emailSenderName"></td>
-                        <td><button type="button" class="btn btn-success w-101" id="addNewProgramInfo" role ="button">Update</button></td>
-                    </tr>
-                </div>
+                <tr>
+                    <td>
+                        <select class="form-select programData" id="programSelect" form="programSettings">
+                            <option selected disabled>--Choose a Program--</option>
+                            {% for program in programs %}
+                            <option value ="{{program.id}}" data-replytoemail="{{program.emailReplyTo}}" data-sendername="{{program.emailSenderName}}">{{program.programName}}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td><input type="text" name="Email" id="emailReplyTo" value=""></td>
+                    <td><input type="text" name="Sender" value="" id="emailSenderName"></td>
+                    <td><button type="button" class="btn btn-success w-101" id="addNewProgramInfo" role ="button">Update</button></td>
+                </tr>
             </form>
          </table>
       </div>

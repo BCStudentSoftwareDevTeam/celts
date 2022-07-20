@@ -15,7 +15,7 @@ $(document).ready(function() {
   $.each(searchElements, function(i,arr) {
       let [inputId, btnId, category] = arr
       $("#"+inputId).on("input", () => searchUser(inputId, callback, false, null, category))
-      $("#"+btnId).on("click", () => submitRequest(btnId, "#"+inputId, ''))
+      $("#"+btnId).on("click", () => submitRequest(btnId, $("#"+inputId).val()))
   });
 
   $("#addNewTerm").on("click",function(){
@@ -28,10 +28,10 @@ $(document).ready(function() {
     displayProgramInfo();
   });
   $(".removeAdmin").on("click",function(){
-    submitRequest("removeCeltsAdmin", ($(this).val()), 'button');
+    submitRequest("removeCeltsAdmin", $(this).data("username"));
   });
   $(".removeStudentStaff").on("click",function(){
-    submitRequest("removeCeltsStudentStaff", ($(this).val()), 'button');
+    submitRequest("removeCeltsStudentStaff", $(this).data("username"));
   });
 
 
@@ -46,20 +46,11 @@ $(document).ready(function() {
   });
 });
 
-function submitRequest(method, identifier, from) {
-  var data = {}
-  if (from == "button") {
-      data = {
-          method: method,
-          user: identifier,
-          from: "ajax"
-      }
-  } else {
-      data = {
-          method: method,
-          user: $(identifier).val(),
-          from: "ajax"
-      }
+function submitRequest(method, username) {
+  let data = {
+      method: method,
+      user: username,
+      from: "ajax"
   }
   $.ajax({
     url: "/admin/manageUsers",
