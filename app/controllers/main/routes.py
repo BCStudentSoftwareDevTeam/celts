@@ -294,7 +294,7 @@ def contributors():
 @main_bp.route('/proposalReview/', methods = ['GET', 'POST'])
 def reviewProposal():
     """
-    this function gets the pending course id and returns the its data to the review proposal modal 
+    this function gets the pending course id and returns the its data to the review proposal modal
     """
     courseID=request.form
     course=Course.get_by_id(courseID["course_id"])
@@ -304,7 +304,7 @@ def reviewProposal():
                             instructors_data=instructors_data)
 @main_bp.route('/manageServiceLearning', methods = ['GET', 'POST'])
 @main_bp.route('/manageServiceLearning/<term>', methods = ['GET', 'POST'])
-def getAllCourseIntructors(term=None):
+def getAllCourseInstructors(term=None):
     """
     This function selects all the Intructors Name and the previous courses
     """

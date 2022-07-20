@@ -85,5 +85,5 @@ def test_bonner_events(special_bonner):
 def test_getOtherEvents(special_otherEvents):
     otherEvent = special_otherEvents
     otherEvents = [Event.get_by_id(7), Event.get_by_id(11), otherEvent]
-    
+
     assert otherEvents == getOtherEvents(4)

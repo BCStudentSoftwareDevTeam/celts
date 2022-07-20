@@ -16,7 +16,11 @@ class Term(baseModel):
         """
         if self._cache is None:
             if ("Summer" in self.description) or ("Spring" in self.description):
-                self._cache = Term.select().where(Term.year==self.year-1, Term.description == f"Fall {self.year-1}").get()
+                try:
+                    self._cache = Term.select().where(Term.year==self.year-1, Term.description == f"Fall {self.year-1}").get()
+                except DoesNotExist:
+                    self._cache = self
+
             else:
                 self._cache = self
 
