@@ -3,12 +3,7 @@
 
 {% block scripts %}
   {{super()}}
-<<<<<<< HEAD
-  <script src="/static/js/userManagement.js"></script>
-
-=======
   <script type="module" src="/static/js/userManagement.js"></script>
->>>>>>> origin/development
 {% endblock %}
 
 {% block app_content %}
@@ -121,7 +116,10 @@
         Program Settings
         </button>
       </h3>
-      <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#adminManagement">
+      {% if programID %}
+        {% set show= "show" %}
+      {% endif %}
+      <div id="collapseThree" class="accordion-collapse collapse {{show}}" aria-labelledby="headingThree" data-bs-parent="#adminManagement">
         <div class="accordion-body programData">
           <table>
             <tr>
@@ -129,7 +127,6 @@
               <th>Reply-To-Email</th>
               <th>Sender Name</th>
             </tr>
-<<<<<<< HEAD
             {% for program in programs %}
             <form action="/admin/updateProgramInfo/{{program.id}}" method="POST">
                 <tr class="p-1"> 
@@ -141,24 +138,6 @@
                 </form>
             {% endfor %}
         </table>
-=======
-            <form action="" id="programSettings">
-                <tr>
-                    <td>
-                        <select class="form-select programData" id="programSelect" form="programSettings">
-                            <option selected disabled>--Choose a Program--</option>
-                            {% for program in programs %}
-                            <option value ="{{program.id}}" data-replytoemail="{{program.emailReplyTo}}" data-sendername="{{program.emailSenderName}}">{{program.programName}}</option>
-                            {% endfor %}
-                        </select>
-                    </td>
-                    <td><input type="text" name="Email" id="emailReplyTo" value=""></td>
-                    <td><input type="text" name="Sender" value="" id="emailSenderName"></td>
-                    <td><button type="button" class="btn btn-success w-101" id="addNewProgramInfo" role ="button">Update</button></td>
-                </tr>
-            </form>
-         </table>
->>>>>>> origin/development
       </div>
     </div>
   </div>
