@@ -181,7 +181,10 @@ def addInterest(program_id, username):
     try:
         success = addUserInterest(program_id, username)
         if success:
+            flash("Successfully added " + Program.get_by_id(program_id).programName + " as an interest", "success")
             return ""
+        else:
+            flash("Was unable to remove " + Program.get_by_id(program_id).programName + " as an interest.", "danger")
 
     except Exception as e:
         print(e)
@@ -197,8 +200,10 @@ def removeInterest(program_id, username):
     try:
         removed = removeUserInterest(program_id, username)
         if removed:
+            flash("Successfully removed " + Program.get_by_id(program_id).programName + " as an interest.", "success")
             return ""
-
+        else:
+            flash("Was unable to remove " + Program.get_by_id(program_id).programName + " as an interest.", "danger")
     except Exception as e:
         print(e)
         return "Error Updating Interest", 500
