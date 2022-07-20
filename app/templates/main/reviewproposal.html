@@ -11,7 +11,7 @@
             <tbody id="facultyTable">
               <tr>
                 <td class="fw-bold">Course Name</td>
-                <td> {{course.courseName}}</td>
+                <td>{{course.courseName}}</td>
 
               </tr>
               <tr>
@@ -24,26 +24,26 @@
               </tr>
               <tr>
                 <td class="fw-bold">Course Abbreviation</td>
-                <td> {{course.courseAbbreviation}}</td>
+                <td>{{course.courseAbbreviation}}</td>
               </tr>
               <tr>
                 <td class="fw-bold">Course Credit</td>
-                <td> {{course.courseCredit}}</td>
+                <td>{{course.courseCredit}}</td>
               </tr>
               <tr>
                 <td class="fw-bold">Term</td>
-                <td> {{course.term.description}}</td>
+                <td>{{course.term.description}}</td>
               </tr>
               <tr>
                 <td class="fw-bold">Status</td>
-                <td> {{course.status.status}}</td>
+                <td>{{course.status.status}}</td>
               </tr>
             </tbody>
           </table>
         </div>
         <div class="modal-footer">
           <a type="button" href="/serviceLearning/editProposal/{{course.id }}"  class="btn btn-secondary">  Edit  </a>
-          <button type="button" class="btn btn-primary" data-id="{{course.id}}" id="approveButton" onclick="approve_proposal(this)">Approve</button>
+          <button type="button" class="btn btn-primary" data-id="{{course.id}}" id="approveButton" onclick="approveProposal(this)">Approve</button>
         </div>
       </div>
     </div>

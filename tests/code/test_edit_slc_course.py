@@ -4,6 +4,7 @@ from app.models import mainDB
 from app.models.course import Course
 from app.models.courseInstructor import CourseInstructor
 from app.models.user import User
+from app.models.courseStatus import CourseStatus
 from app.logic.courseManagement import updateCourse
 
 @pytest.mark.integration
@@ -24,7 +25,7 @@ def test_update_course():
                                             courseCredit = 2,
                                             isRegularlyOccuring = 0,
                                             term = 3,
-                                            status = 2,
+                                            status = CourseStatus.SUBMITTED,
                                             createdBy = testUser,
                                             isAllSectionsServiceLearning = 0,
                                             serviceLearningDesignatedSections = "None",
@@ -57,7 +58,7 @@ def test_update_course():
             assert updatedCourse.courseAbbreviation == "EDIT"
             assert updatedCourse.courseCredit == 1.5
             assert updatedCourse.isRegularlyOccuring
-            assert updatedCourse.status.status == "Pending"
+            assert updatedCourse.status.id == CourseStatus.SUBMITTED
             assert updatedCourse.isAllSectionsServiceLearning
             assert updatedCourse.serviceLearningDesignatedSections == "All"
             assert updatedCourse.isPermanentlyDesignated
