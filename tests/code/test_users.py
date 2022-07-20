@@ -101,23 +101,14 @@ def test_banUser():
     with mainDB.atomic() as transaction:
 
         #test for banning a user from a program
-        username = "khatts"
-        program_id = 3
+        username = User.get_by_id("khatts")
+        program_id = 2
         note = "Banning user test"
         creator = "ramsayb2"
         banEndDate = "2022-11-29"
-        # checkBan = banUser (program_id, username, note, banEndDate, creator)
-        if (ProgramBan.select().where(ProgramBan.user == username, ProgramBan.banNote == note, ProgramBan.program == program_id, ProgramBan.endDate > banEndDate).exists()):
-            assert True
-        # assert checkBan
-
-
-        #test for banning a user from a program with different program id
-        program_id = 2
-        if (ProgramBan.select().where(ProgramBan.user == username, ProgramBan.banNote == note, ProgramBan.program == program_id, ProgramBan.endDate > banEndDate).exists()):
-            assert True
-        # status = banUser (program_id, username, note, banEndDate, creator)
-        # assert status == "Successfully banned the user"
+        banUser(program_id, username, note, banEndDate, creator)
+        prg2BannedUsers = list(User.select().join(ProgramBan).where(ProgramBan.program == program_id))
+        assert username in prg2BannedUsers
 
         #test for exceptions when banning the user
         username = "khatts"
@@ -136,21 +127,13 @@ def test_unbanUser():
     with mainDB.atomic() as transaction:
 
         #test for unbanning a user from a program
-        username = "khatts"
+        username = User.get_by_id("khatts")
         program_id = 2
         note = "unbanning user test"
         creator = "ramsayb2"
-        if (ProgramBan.select().where(ProgramBan.user == username, ProgramBan.banNote == note, ProgramBan.program == program_id).exists()):
-            assert True
-        # status = unbanUser (program_id, username, note, creator)
-        # assert status == "Successfully unbanned the user"
-
-        #test for unbanning a user from a program with different program
-        program_id = 3
-        if (ProgramBan.select().where(ProgramBan.user == username, ProgramBan.banNote == note, ProgramBan.program == program_id).exists()):
-            assert True
-        # status = unbanUser (program_id, username, note, creator)
-        # assert status == "Successfully unbanned the user"
+        unbanUser(program_id, username, note, creator)
+        prg2BannedUsers = list(User.select().join(ProgramBan).where(ProgramBan.program == program_id))
+        assert username not in prg2BannedUsers
 
         #test for exceptions when unbanning the user
         username = "ramsayb2"
