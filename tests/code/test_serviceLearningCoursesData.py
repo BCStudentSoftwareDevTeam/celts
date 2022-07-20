@@ -8,6 +8,7 @@ from app.models import mainDB
 from app.models.term import Term
 from app.models.user import User
 from app.models.course import Course
+from app.models.course import CourseStatus
 from app.models.courseParticipant import CourseParticipant
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseQuestion import CourseQuestion
@@ -23,7 +24,7 @@ def test_getServiceLearningCoursesData():
     assert 2 in courseDict
     assert 'Brian Ramsay' in courseDict[2]['faculty']
     assert ['Brian Ramsay', 'Zach Neill'] == courseDict[2]['faculty']
-    assert 'Approved' in courseDict[2]['status']
+    assert "Submitted" == courseDict[2]['status']
     assert 'Spring A 2021' in courseDict[2]['term'].description
     assert not 3 in courseDict
 
