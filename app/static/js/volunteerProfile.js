@@ -123,7 +123,8 @@ $(document).ready(function(){
       data:{"username":userName,
             "phoneNumber":phoneNumber}
     })
-  })
+  });
+  $('#newinput').inputmask('(999)-999-9999'); 
 });
 
 function displayMessage(message, color) {  // displays message for saving background check
