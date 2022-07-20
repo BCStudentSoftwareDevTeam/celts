@@ -337,13 +337,10 @@ def getFacilitatorsFromList(facilitatorList):
                         or a string of usernames separated by commas (,)
     return: list of facilitator objects matching the usernames in facilitatorList
     """
-    if type(facilitatorList) == str:
+    if facilitatorList and type(facilitatorList) == str:
         facilitatorList = facilitatorList.split(',')
     finalFacilitatorList = []
-    for i in facilitatorList:
-        if i:
-            facilitatorToAdd = User.get_by_id(i)
-            finalFacilitatorList.append(facilitatorToAdd)
+    finalFacilitatorList = [User.get_by_id(facilitator) for facilitator in facilitatorList if facilitator]
     return finalFacilitatorList
 
 def getTomorrowsEvents():
