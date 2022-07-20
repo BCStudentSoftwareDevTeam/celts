@@ -172,63 +172,6 @@ def test_preprocessEventData_term():
     preprocessEventData(eventData)
     assert eventData['term'] == ''
 
-
-@pytest.mark.integration
-def test_preprocessEventData_facilitators():
-
-    eventData = {}
-    preprocessEventData(eventData)
-    assert 'facilitators' in eventData
-    assert eventData['facilitators'] == []
-
-    eventData = {'facilitators':'ramsayb2'}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == []
-
-    eventData = {'facilitators': []}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == []
-
-    eventData = {'facilitators': ['ramsayb2']}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == [User.get_by_id('ramsayb2')]
-
-    eventData = {'facilitators': ['ramsayb2','khatts']}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]
-
-    eventData = {'facilitators': ['ramsayb2','not an id', 'khatts']}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == []
-
-    # form data comes back as a MultiDict. Make sure we handle that case
-    eventData = MultiDict([('facilitators', 'ramsayb2'),('facilitators','khatts')])
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]
-
-    #####
-    # Testing with an existing event
-    #####
-    eventData = {'id': 1, 'facilitators': []}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == []
-
-    eventData = {'id': 1, 'facilitators': ['khatts']}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == [User.get_by_id('khatts')]
-
-    eventData = {'id': 1, 'facilitators': [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]
-
-    eventData = {'id': 1}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == [User.get_by_id('ramsayb2')] # defaults to existing facilitators
-
-    eventData = {'id': 1, 'facilitators':'khatts'}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == [User.get_by_id('ramsayb2')] # defaults to existing facilitators
-
 @pytest.mark.integration
 def test_correctValidateNewEventData():
 
@@ -288,7 +231,6 @@ def test_wrongValidateNewEventData():
     eventData['id'] = 5
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid
-
 
 @pytest.mark.integration
 def test_calculateRecurringEventFrequency():

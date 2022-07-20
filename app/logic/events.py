@@ -325,13 +325,6 @@ def preprocessEventData(eventData):
     ## Get the facilitator objects from the list or from the event if there is a problem
     if 'facilitators' in eventData:
         eventData['facilitators'] = getFacilitatorsFromList(eventData['facilitators'])
-    # try:
-    #     if type(eventData) == MultiDict and type(eventData['facilitators']) is not list:
-    #         eventData['facilitators'] = eventData.getlist('facilitators')
-    #     eventData['facilitators'] = [User.get_by_id(f) for f in eventData['facilitators']]
-    # except Exception as e:
-    #     event = eventData.get('id', -1)
-    #     eventData['facilitators'] = list(User.select().join(EventFacilitator).where(EventFacilitator.event == event))
 
     return eventData
 
@@ -341,20 +334,16 @@ def getFacilitatorsFromList(facilitatorList):
         facilitators separated by commas (,) and returns a list of facilitator
         objects that match the usernames in the list
     facilitatorList: expected to be a list with facilitator usernames as strings
+                        or a string of usernames separated by commas (,)
     return: list of facilitator objects matching the usernames in facilitatorList
     """
     if type(facilitatorList) == str:
         facilitatorList = facilitatorList.split(',')
-    print(facilitatorList)
     finalFacilitatorList = []
     for i in facilitatorList:
         if i:
-            facilitatorToAdd = User.select().where(User.username == i).get()
+            facilitatorToAdd = User.get_by_id(i)
             finalFacilitatorList.append(facilitatorToAdd)
-        # except User.DoesNotExist:
-        #     print("Error: user \"", i, "\" does not exist in the database.\n" +
-        #         "If there is nothing inside the quotes, then no facilitator was submitted " +
-        #         "and this error is expected.")
     return finalFacilitatorList
 
 def getTomorrowsEvents():

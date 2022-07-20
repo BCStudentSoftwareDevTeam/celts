@@ -13,8 +13,8 @@
 {% endblock %}
 
 {% block app_content %}
-{% set isAdmin = g.current_user.isCeltsAdmin or isProgramManager %}
-{% set isEditable = isAdmin %}
+
+
 {% set isNewEvent = 'create' in request.path %}
 <!-- Program manager isCeltsAdmin and they are a manager for the program  -->
 <div class="text-center mt-5 mb-3">
@@ -164,10 +164,7 @@
               type="search"
               placeholder="Search facilitator"
               value="" />
-            <table
-              class="table mb-3"
-              id="facilitatorTable"
-              name="facilitatorTable">
+            <table class="table mb-3" id="facilitatorTable" name="facilitatorTable">
               <thead>
                 <tr>
                   <th scope="col">Facilitator</th>

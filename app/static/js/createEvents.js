@@ -152,7 +152,7 @@ $(document).ready(function() {
 
   $("#eventFacilitator").on('input', function() {
     // To retrieve specific columns into a dict, create a [] list and put columns inside
-    searchUser("eventFacilitator", callback, true, null, ["firstName", "lastName", "username"]);
+    searchUser("eventFacilitator", callback, true, undefined, "instructor");
   });
 
   $("#facilitatorTable").on("click", "#remove", function() {
