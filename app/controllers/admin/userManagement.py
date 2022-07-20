@@ -16,7 +16,6 @@ def manageUsers():
     user = eventData['user']
     method = eventData['method']
     username = re.sub("[()]","", (user.split())[-1])
-    print(username)
     user = User.get_by_id(username)
 
     if method == "addCeltsAdmin":

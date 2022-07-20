@@ -47,27 +47,20 @@ $(document).ready(function() {
 });
 
 function submitRequest(method, identifier, from) {
+  var data = {}
   if (from == "button") {
-      console.log("beeeeeea")
-      let data = {
+      data = {
           method: method,
           user: identifier,
           from: "ajax"
       }
   } else {
-      console.log("beeeeeep")
-      let data = {
+      data = {
           method: method,
-          user: $(identifier).html(),
+          user: $(identifier).val(),
           from: "ajax"
       }
   }
-  let data = {
-      method: method,
-      user: identifier,
-      from: "ajax"
-  }
-  console.log(data)
   $.ajax({
     url: "/admin/manageUsers",
     type: "POST",

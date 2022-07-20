@@ -4,10 +4,9 @@
 {% block scripts %}
   {{super()}}
   <script type="module" src="/static/js/userManagement.js"></script>
-
 {% endblock %}
-{% block app_content %}
 
+{% block app_content %}
 {% macro createInputsButtons(inputId, buttonId, buttonName, buttonClass, labelName) %}
 <label class="form-label col-md-10" for="{{inputId}}"><strong>{{labelName}}</strong></label>
   <div class="input-group">
@@ -18,7 +17,6 @@
 {% endmacro %}
 
 <h1 class="text-center mt-5 mb-5">Admin Management</h1>
-
 <div class="accordion" id="adminManagement">
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingOne">
@@ -127,25 +125,24 @@
               <th>Sender Name</th>
             </tr>
             <form action="" id="programSettings">
-                    <div>
-            <tr>
-                <td>
-                  <select class="form-select programData" id="programSelect" form="programSettings">
-                    <option selected disabled>--Choose a Program--</option>
-                    {% for program in programs %}
-                    <option value ="{{program.id}}" data-replytoemail="{{program.emailReplyTo}}" data-sendername="{{program.emailSenderName}}">{{program.programName}}</option>
-                    {% endfor %}
-                  </select>
-                </td>
-                <td><input type="text" name="Email" id="emailReplyTo" value=""></td>
-                <td><input type="text" name="Sender" value="" id="emailSenderName"></td>
-                <td>
-                  <button type="button" class="btn btn-success w-101" id="addNewProgramInfo" role ="button">Update</button>
-                </td>
-              </div>
+                <div>
+                    <tr>
+                        <td>
+                            <select class="form-select programData" id="programSelect" form="programSettings">
+                                <option selected disabled>--Choose a Program--</option>
+                                {% for program in programs %}
+                                <option value ="{{program.id}}" data-replytoemail="{{program.emailReplyTo}}" data-sendername="{{program.emailSenderName}}">{{program.programName}}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td><input type="text" name="Email" id="emailReplyTo" value=""></td>
+                        <td><input type="text" name="Sender" value="" id="emailSenderName"></td>
+                        <td><button type="button" class="btn btn-success w-101" id="addNewProgramInfo" role ="button">Update</button></td>
+                    </tr>
+                </div>
             </form>
-        </table>
+         </table>
       </div>
     </div>
-</div>
+  </div>
 {% endblock %}
