@@ -15,7 +15,10 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventFacilitator import EventFacilitator
 from app.models.interest import Interest
+from app.models.eventRsvp import EventRsvp
 from app.logic.events import *
+from app.logic.volunteers import addVolunteerToEventRsvp
+from app.logic.users import addUserInterest, removeUserInterest
 
 @pytest.mark.integration
 def test_event_model():
@@ -519,33 +522,64 @@ def test_getAllFacilitators():
     assert userFacilitator[2].username == "lamichhanes2"
     assert userFacilitator[2].isFaculty == True
 
-
 @pytest.mark.integration
-def test_getsCorrectUpcomingEvent():
+def test_upcomingEvents():
+    with mainDB.atomic() as transaction:
+        testDate = datetime.datetime.strptime("2021-08-01 05:00","%Y-%m-%d %H:%M")
 
-    testDate = datetime.datetime.strptime("2021-08-01 5:00","%Y-%m-%d %H:%M")
+        user = User.create(username = 'usrtst',
+                              firstName = 'Test',
+                              lastName = 'User',
+                              bnumber = '03522492',
+                              email = 'usert@berea.deu',
+                              isStudent = True)
 
-    user = "khatts"
-    events = getUpcomingEventsForUser(user, asOf=testDate)
-    assert len(events) == 3
-    assert "Empty Bowls Spring Event 1" == events[0].name
+        noProgram = Event.create(name = "Upcoming event with no program",
+                                term = 2,
+                                description = "Test upcoming no program event.",
+                                timeStart = "18:00:00",
+                                timeEnd = "21:00:00",
+                                location = "The moon",
+                                startDate = "2021-12-12",
+                                endDate = "2021-12-13")
 
-    user = "ramsayb2"
-    events = getUpcomingEventsForUser(user, asOf=testDate)
+        program_id = 2
 
-    assert len(events) == 4
-    assert "Meet & Greet with Grandparent" == events[0].name
+        # User has not RSVPd and is Interested
+        addInterest = addUserInterest(program_id, user)
 
-@pytest.mark.integration
-def test_userWithNoInterestedEvent():
+        # int = list(ProgramEvent.select().join(Interest).where(Interest.user == user))
+        # print(int)
 
-    user ="asdfasd" #invalid user
-    events = getUpcomingEventsForUser(user)
-    assert len(events) == 0
+        events = getUpcomingEventsForUser(user, asOf = testDate)
+        print(events)
 
-    user = "ayisie" #no interest selected
-    events = getUpcomingEventsForUser(user)
-    assert len(events) == 0
+        events = list(ProgramEvent.select().join(Program).where(Program.id == 2))
+        print(events)
+
+        # # user has RSVPd and is Interested
+        # addUserRsvp = addVolunteerToEventRsvp(user, noProgram.id)
+        # addInterest = addUserInterest(program_id, user)
+        #
+        # bla = list(EventRsvp.select().where(EventRsvp.user == user))
+        # print(bla)
+        #
+        # int = list(Interest.select().where(Interest.user == user))
+        # print(int)
+        #
+        # events = getUpcomingEventsForUser(user, asOf = testDate)
+        # print(events)
+        #
+        # # User has RSVPd and is not Interested
+        # removeInterest = removeUserInterest(program_id, user)
+        #
+        # int2 = list(Interest.select().where(Interest.user == user))
+        # print(int2)
+        #
+        # events = getUpcomingEventsForUser(user, asOf = testDate)
+        # print(events)
+
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_format24HourTime():
