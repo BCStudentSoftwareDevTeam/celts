@@ -73,7 +73,6 @@ $("#saveContinue").on("click", function() {
    });
  });
 
-
 $("#cancelButton").on("click", function() {
   window.location.replace("/manageServiceLearning");
 });
