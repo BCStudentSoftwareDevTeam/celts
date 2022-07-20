@@ -4,10 +4,9 @@
 {% block scripts %}
   {{super()}}
   <script type="module" src="/static/js/userManagement.js"></script>
-
 {% endblock %}
-{% block app_content %}
 
+{% block app_content %}
 {% macro createInputsButtons(inputId, buttonId, buttonName, buttonClass, labelName) %}
 <label class="form-label col-md-10" for="{{inputId}}"><strong>{{labelName}}</strong></label>
   <div class="input-group">
@@ -18,7 +17,6 @@
 {% endmacro %}
 
 <h1 class="text-center mt-5 mb-5">Admin Management</h1>
-
 <div class="accordion" id="adminManagement">
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingOne">
@@ -31,24 +29,51 @@
           <div class="container-fluid col-10">
             <div class="row d-flex justify-content-center mb-3">
               <div class="col-md-6 mb-3">
-                {{createInputsButtons("searchCeltsAdminInput","addCeltsAdmin","Add","success", "Add Celts Admin")}}
-              </div>
-              <div class="col-md-6">
-                {{createInputsButtons("searchCeltsStudentStaffInput","addCeltsStudentStaff","Add","success", "Add Celts Student Staff")}}
-              </div>
+                <div>
+                    {{createInputsButtons("searchCeltsAdminInput","addCeltsAdmin","Add","success", "Add Celts Admin")}}<br>
+                </div>
+                <table class="table mb-3">
+                  <thead>
+                      <tr>
+                        <th scope="col">Current Admin</th>
+                        <th scope="col"></th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for admin in currentAdmins %}
+                         <tr>
+                            <td id="{{admin.username}}">{{admin.firstName}} {{admin.lastName}}</td>
+                            <td><button data-username="{{admin.username}}" type="button" class="btn btn-danger view removeAdmin">Remove</button></td>
+                         </tr>
+                      {% endfor %}
+                  </tbody>
+                </table>
             </div>
-            <div class="row d-flex justify-content-center">
-              <div class="col-md-6 mb-3">
-                {{createInputsButtons("removeCeltsAdminInput","removeCeltsAdmin","Remove","danger","Remove Celts Admin")}}
-              </div>
-              <div class="col-md-6">
-                {{createInputsButtons("removeCeltsStudentStaffInput","removeCeltsStudentStaff","Remove","danger", "Remove Celts Student Staff")}}
+            <div class="col-md-6 mb-3">
+                <div>
+                  {{createInputsButtons("searchCeltsStudentStaffInput","addCeltsStudentStaff","Add","success", "Add Celts Student Staff")}}<br>
+                </div>
+                <table class="table mb-3">
+                  <thead>
+                    <tr>
+                      <th colspan="2" scope="col">Current Student Staff</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for studentStaff in currentStudentStaff %}
+                       <tr>
+                          <td id="{{studentStaff.username}}">{{studentStaff.firstName}} {{studentStaff.lastName}}</td>
+                          <td><button data-username="{{studentStaff.username}}" type="button" class="btn btn-danger view removeStudentStaff">Remove</button></td>
+                       </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
         </div>
       </div>
-  </div>
+    </div>
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingTwo">
       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
@@ -100,26 +125,22 @@
               <th>Sender Name</th>
             </tr>
             <form action="" id="programSettings">
-                    <div>
-            <tr>
-                <td>
-                  <select class="form-select programData" id="programSelect" form="programSettings">
-                    <option selected disabled>--Choose a Program--</option>
-                    {% for program in programs %}
-                    <option value ="{{program.id}}" data-replytoemail="{{program.emailReplyTo}}" data-sendername="{{program.emailSenderName}}">{{program.programName}}</option>
-                    {% endfor %}
-                  </select>
-                </td>
-                <td><input type="text" name="Email" id="emailReplyTo" value=""></td>
-                <td><input type="text" name="Sender" value="" id="emailSenderName"></td>
-                <td>
-                  <button type="button" class="btn btn-success w-101" id="addNewProgramInfo" role ="button">Update</button>
-                </td>
-              </div>
+                <tr>
+                    <td>
+                        <select class="form-select programData" id="programSelect" form="programSettings">
+                            <option selected disabled>--Choose a Program--</option>
+                            {% for program in programs %}
+                            <option value ="{{program.id}}" data-replytoemail="{{program.emailReplyTo}}" data-sendername="{{program.emailSenderName}}">{{program.programName}}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td><input type="text" name="Email" id="emailReplyTo" value=""></td>
+                    <td><input type="text" name="Sender" value="" id="emailSenderName"></td>
+                    <td><button type="button" class="btn btn-success w-101" id="addNewProgramInfo" role ="button">Update</button></td>
+                </tr>
             </form>
-          </tr>
-        </table>
+         </table>
       </div>
+    </div>
   </div>
-</div>
 {% endblock %}
