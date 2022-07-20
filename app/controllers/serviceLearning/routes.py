@@ -19,7 +19,7 @@ from app.controllers.main.routes import getRedirectTarget, setRedirectTarget
 @serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
 @serviceLearning_bp.route('/serviceLearning/courseManagement/<username>', methods = ['GET'])
 def serviceCourseManagement(username=None):
-    """This is a Temporary Page for the Service Course Managment Screen."""
+    """This is a Temporary Page for the Service Course Management Screen."""
     # TODO: How to make accessing other user's interfaces more userfriendly?
     if g.current_user.isStudent:
         abort(403)
@@ -28,7 +28,7 @@ def serviceCourseManagement(username=None):
         user = User.get(User.username==username) if username else g.current_user
         courseDict = getServiceLearningCoursesData(user)
         termList = selectSurroundingTerms(g.current_term, prevTerms=0)
-        return render_template('serviceLearning/slcManagment.html',
+        return render_template('serviceLearning/slcManagement.html',
             user=user,
             courseDict=courseDict,
             termList=termList)
