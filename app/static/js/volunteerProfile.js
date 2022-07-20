@@ -68,6 +68,7 @@ $(document).ready(function(){
   });
 
   $("#banButton").click(function (){
+     $("#banButton").prop("disabled", true)
     var username = $(this).data("username") //Expected to be the unique username of a user in the database
     var route = ($(this).data("banOrUnban")).toLowerCase() //Expected to be "ban" or "unban"
     var program = $(this).data("programID") //Expected to be a program's primary ID
