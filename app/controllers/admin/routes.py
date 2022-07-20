@@ -112,7 +112,7 @@ def createEvent(templateid, programid=None):
 @admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
 @admin_bp.route('/eventsList/<eventId>/edit', methods=['GET','POST'])
 def eventDisplay(eventId):
-    if request.method == "POST" and not (g.current_user.isCeltsAdmin or isProgramManagerForEvent(g.current_user, eventId)):
+    if request.method == "POST" and not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(eventId)):
         abort(403)
 
     # Validate given URL

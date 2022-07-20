@@ -15,7 +15,7 @@ $(document).ready(function() {
   $.each(searchElements, function(i,arr) {
       let [inputId, btnId, category] = arr
       $("#"+inputId).on("input", () => searchUser(inputId, callback, false, null, category))
-      $("#"+btnId).on("click", () => submitRequest(btnId, "#"+inputId))
+      $("#"+btnId).on("click", () => submitRequest(btnId, $("#"+inputId).val()))
   });
 
   $("#addNewTerm").on("click",function(){
@@ -27,6 +27,13 @@ $(document).ready(function() {
   $("#programSelect").on("change",function(){
     displayProgramInfo();
   });
+  $(".removeAdmin").on("click",function(){
+    submitRequest("removeCeltsAdmin", $(this).data("username"));
+  });
+  $(".removeStudentStaff").on("click",function(){
+    submitRequest("removeCeltsStudentStaff", $(this).data("username"));
+  });
+
 
   for (var i=1; i<=$('#currentTermList .term-btn').length; i++){
     $("#termFormID_"+i).on("click", function() {
@@ -34,18 +41,17 @@ $(document).ready(function() {
       $(this).addClass('active');
     });
   };
-  $("#submitButton").on("click", function() {
+  $(".term-btn").on("click", function() {
     submitTerm();
   });
 });
 
-function submitRequest(method,identifier) {
+function submitRequest(method, username) {
   let data = {
-      method : method,
-      user : $(identifier).val(),
+      method: method,
+      user: username,
       from: "ajax"
   }
-
   $.ajax({
     url: "/admin/manageUsers",
     type: "POST",
@@ -61,15 +67,17 @@ function submitRequest(method,identifier) {
 }
 
 function submitTerm() {
-  var termInfo = {id: $("#currentTermList .active").val()};
+  var selectedTerm = $("#currentTermList .active")
+  var termInfo = {id: selectedTerm.val()};
   $.ajax({
     url: "/admin/changeTerm",
     type: "POST",
     data: termInfo,
     success: function(s){
-      location.reload()
+      msgFlash("Current term successfully changed to " + selectedTerm.html(), "success")
     },
     error: function(error, status){
+        msgFlash("Current term was not changed. Please try again.", "warning")
         console.log(error, status)
     }
   })
