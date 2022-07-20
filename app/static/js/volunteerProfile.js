@@ -11,13 +11,11 @@ $(document).ready(function(){
       method: "POST",
       url: interestUrl,
       success: function(response) {
-          msgFlash("Your interest has been updated", "success");
-          location.reload(true);  //  Reloading page after user clicks on the show interest checkbox
+          location.reload();  //  Reloading page after user clicks on the show interest checkbox
       },
       error: function(request, status, error) {
         console.log(status,error);
-        msgFlash("Error Updating Interest", "danger");
-        location.reload(true);
+        location.reload();
       }
     });
   });
