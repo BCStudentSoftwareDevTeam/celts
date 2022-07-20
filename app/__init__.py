@@ -1,10 +1,10 @@
 import os
+import pprint
 
 from flask import Flask, render_template
 from flask.helpers import get_env
 from playhouse.shortcuts import model_to_dict, dict_to_model
 
-from config2.config import config
 import yaml
 
 # Initialize our application
@@ -26,15 +26,16 @@ app = Flask(__name__, template_folder="templates")
 
 # ensure ENV matches flask environment (for config2)
 os.environ["ENV"] = get_env()
+from config2.config import config as config2 # import after setting environment
 
 # Update application config from config2
-app.config.update(config.get())
+app.config.update(config2.get()['__config_data__']) # getting only the data, not all of config2 metadata
 
 # Override configuration with our local instance configuration
 from app.logic.utils import deep_update
-with open("app/config/" + config.override_file, 'r') as ymlfile:
+with open("app/config/" + app.config['override_file'], 'r') as ymlfile:
     try:
-        deep_update(app.config, yaml.load(ymlfile, Loader=yaml.FullLoader))
+        app.config.update(deep_update(app.config, yaml.load(ymlfile, Loader=yaml.FullLoader)))
     except TypeError:
         print(f"There was an error loading the override config file {config.override_file}. It might just be empty.")
 
