@@ -64,7 +64,7 @@
                       <div class="card-header"><strong>Select the Current Term</strong></div>
                         <ul class="list-group" name="currentTermList" id="currentTermList">
                         {% for term in terms %}
-                        <li class="term-btn list-group-item list-group-item-action {{ 'active' if g.current_term == term }}"
+                        <li class="term-btn list-group-item list-group-item-action {{'active' if g.current_term == term}}"
                             id="termFormID_{{ loop.index }}"
                             aria-label="{{'Current term' if g.current_term == term}}"
                             value='{{ term.id }}'
@@ -77,11 +77,10 @@
                         <div class="card-footer">
                           <button class="btn btn-success w-100" id="addNewTerm" role ="button">Add New Term</button>
                         </div>
-                      </div>
-                      <button class="btn btn-primary my-2 float-end" id="submitButton" role="button">Make Current Term</button>
                     </div>
-              </div>
-            </div>
+                 </div>
+               </div>
+             </div>
           </div>
         </div>
   </div>

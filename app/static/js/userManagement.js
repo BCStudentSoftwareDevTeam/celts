@@ -34,7 +34,7 @@ $(document).ready(function() {
       $(this).addClass('active');
     });
   };
-  $("#submitButton").on("click", function() {
+  $(".term-btn").on("click", function() {
     submitTerm();
   });
 });
@@ -61,15 +61,17 @@ function submitRequest(method,identifier) {
 }
 
 function submitTerm() {
-  var termInfo = {id: $("#currentTermList .active").val()};
+  var selectedTerm = $("#currentTermList .active")
+  var termInfo = {id: selectedTerm.val()};
   $.ajax({
     url: "/admin/changeTerm",
     type: "POST",
     data: termInfo,
     success: function(s){
-      location.reload()
+      msgFlash("Current term successfully changed to " + selectedTerm.html(), "success")
     },
     error: function(error, status){
+        msgFlash("Current term was not changed. Please try again.", "warning")
         console.log(error, status)
     }
   })

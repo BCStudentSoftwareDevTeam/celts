@@ -99,13 +99,9 @@ def userManagement():
 
 @admin_bp.route('/admin/changeTerm', methods=['POST'])
 def changeTerm():
-    try:
-        termData = request.form
-        term = int(termData["id"])
-        changeCurrentTerm(term)
-        flash(f'Current term successfully changed to {g.current_term.description}.', 'success')
-    except:
-        flash('Current term was not changed. Please try again.', 'warning')
+    termData = request.form
+    term = int(termData["id"])
+    changeCurrentTerm(term)
     return ""
 
 @admin_bp.route('/admin/addNewTerm', methods = ['POST'])
