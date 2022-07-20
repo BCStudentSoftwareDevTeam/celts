@@ -56,7 +56,8 @@ $("#nextButton").on("click", function() {
   displayCorrectTab(1);
 });
 
-$("#saveContinue").one("click", function() {
+$("#saveContinue").on("click", function() {
+  //this will save the change from the current page and move to the next page
   var data = $("form").serialize()
   saveCourseInstructors()
   $.ajax({
@@ -67,7 +68,7 @@ $("#saveContinue").one("click", function() {
         displayCorrectTab(1);
     },
     error: function(request, status, error) {
-       msgFlash("Error saving new proposal", "danger")
+       msgFlash("Error saving changes!", "danger")
      }
    });
  });

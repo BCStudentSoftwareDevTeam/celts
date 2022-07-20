@@ -66,21 +66,24 @@ def slcEditProposal(courseID):
                                 courseID=courseID)
 @serviceLearning_bp.route('/serviceLearning/saveProposal', methods=['POST'])
 def slcSaveContinue():
+    """Will update the the course proposal and return an empty string since ajax request needs a response"""
     courseExist = Course.get_or_none(Course.id == request.form.get('courseID'))
     if courseExist:
         updateCourse(request.form.copy(), instructorsDict)
-    else:
-        createCourse(request.form.copy(), instructorsDict)
     return ""
 
 @serviceLearning_bp.route('/serviceLearning/createCourse/', methods=['POST'])
 def slcCreateCourse():
+    """will give a new course ID so that it can redirect to an edit page"""
     status = CourseStatus.get(CourseStatus.status == "Pending")
     courseID = Course.create(
         status=status)
     id = Course.get_by_id(courseID)
     for i in range(1, 7):
-        CourseQuestion.create(course=courseID)
+        CourseQuestion.create(
+            course=courseID,
+            questionNumber=i
+        )
     return redirect(url_for('serviceLearning.slcEditProposal', courseID = id))
 
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
