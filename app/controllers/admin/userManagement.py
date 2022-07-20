@@ -16,7 +16,13 @@ def manageUsers():
     user = eventData['user']
     method = eventData['method']
     username = re.sub("[()]","", (user.split())[-1])
-    user = User.get_by_id(username)
+
+    try:
+        user = User.get_by_id(username)
+    except Exception as e:
+        print(e)
+        flash(username + " is an invalid user.", "danger")
+        return ("danger")
 
     if method == "addCeltsAdmin":
         if user.isStudent:

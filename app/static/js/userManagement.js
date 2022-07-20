@@ -8,21 +8,9 @@ function callbackStudentStaff(selected) {
 
 $(document).ready(function() {
   // Admin Management
-  var searchElements = [
-    // Search Input ID               Button ID                 Category
-    ['searchCeltsAdminInput',       'addCeltsAdmin',          'instructor'],
-    ['searchCeltsStudentStaffInput','addCeltsStudentStaff',   'student'],
-    ['removeCeltsAdminInput',       'removeCeltsAdmin',       'admin'],
-    ['removeCeltsStudentStaffInput','removeCeltsStudentStaff','studentstaff']
-  ];
-  $.each(searchElements, function(i,arr) {
-      let [inputId, btnId, category] = arr
-      if (inputId == "searchCeltsAdminInput") {
-        $("#"+inputId).on("input", () => searchUser(inputId, callbackAdmin, false, null, category))
-    } else {
-        $("#"+inputId).on("input", () => searchUser(inputId, callbackStudentStaff, false, null, category))
-    }
-  });
+  $("#searchCeltsAdminInput").on("input", () => searchUser("searchCeltsAdminInput", callbackAdmin, false, null, 'instructor'))
+  $("#searchCeltsStudentStaffInput").on("input", () => searchUser("searchCeltsStudentStaffInput", callbackStudentStaff, false, null, "student"))
+
 
   $("#addNewTerm").on("click",function(){
     addNewTerm();
@@ -49,7 +37,6 @@ $(document).ready(function() {
           submitRequest("addCeltsStudentStaff", $(this).val())
       }
   });
-
 
   for (var i=1; i<=$('#currentTermList .term-btn').length; i++){
     $("#termFormID_"+i).on("click", function() {
