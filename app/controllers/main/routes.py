@@ -18,6 +18,7 @@ from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
 from app.models.programManager import ProgramManager
+from app.models.courseStatus import CourseStatus
 from app.controllers.main import main_bp
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
@@ -25,7 +26,7 @@ from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
 from app.logic.manageSLFaculty import getCourseDict
-from app.logic.courseManagement import pendingCourses, approvedCourses
+from app.logic.courseManagement import submittedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
 from app.models.courseInstructor import CourseInstructor
 
@@ -294,7 +295,7 @@ def contributors():
 @main_bp.route('/proposalReview/', methods = ['GET', 'POST'])
 def reviewProposal():
     """
-    this function gets the pending course id and returns the its data to the review proposal modal
+    this function gets the submitted course id and returns the its data to the review proposal modal
     """
     courseID=request.form
     course=Course.get_by_id(courseID["course_id"])
@@ -318,16 +319,17 @@ def getAllCourseInstructors(term=None):
         if not term:
             term = g.current_term
 
-        pending = pendingCourses(term)
+        submitted = submittedCourses(term)
         approved = approvedCourses(term)
         terms = selectSurroundingTerms(g.current_term)
 
         return render_template('/main/manageServiceLearningFaculty.html',
                                 courseInstructors = courseDict,
-                                pendingCourses = pending,
+                                submittedCourses = submitted,
                                 approvedCourses = approved,
                                 terms = terms,
-                                term = term)
+                                term = term,
+                                CourseStatus = CourseStatus)
     else:
         abort(403)
 

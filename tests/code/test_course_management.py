@@ -10,40 +10,40 @@ def test_course_management():
     with mainDB.atomic() as transaction:
         testingCourse = Course.create(courseName = "Testing Approved",
                                         term = 3,
-                                        status = 2,
+                                        status = CourseStatus.APPROVED,
                                         courseCredit = "7",
                                         createdBy = "Mayjue",
                                         isAllSectionsServiceLearning = 0,
                                         isPermanentlyDesignated = 0)
 
-        testingCourse = Course.create(courseName = "Testing Pending",
+        testingCourse = Course.create(courseName = "Testing Submitted",
                                         term = 3,
-                                        status = 3,
+                                        status = CourseStatus.SUBMITTED,
                                         courseCredit = "12",
                                         createdBy = "Tyler Parton",
                                         isAllSectionsServiceLearning = 0,
                                         isPermanentlyDesignated = 0)
 
-        getPendingTestId = Course.get(Course.courseName == "Testing Pending")
+        getSubmittedTestId = Course.get(Course.courseName == "Testing Submitted")
         getApprovedTestId = Course.get(Course.courseName == "Testing Approved")
 
-        pendingCourseInstructor = CourseInstructor.create(course = getPendingTestId.id,
+        submittedCourseInstructor = CourseInstructor.create(course = getSubmittedTestId.id,
                                                     user = 'ramsayb2')
         approvedCourseInstructor = CourseInstructor.create(course = getApprovedTestId.id,
                                                     user = 'ramsayb2')
 
         termId = 3
-        pending = pendingCourses(termId)
+        submitted = submittedCourses(termId)
         approved = approvedCourses(termId)
-        pendingCourse = []
+        submittedCourse = []
         approvedCourse = []
-        for courses in pending:
-            pendingCourse.append(courses.courseName)
+        for courses in submitted:
+            submittedCourse.append(courses.courseName)
         for courses in approved:
             approvedCourse.append(courses.courseName)
 
 
         assert "Testing Approved" in approvedCourse
-        assert "Testing Pending" in pendingCourse
+        assert "Testing Submitted" in submittedCourse
 
         transaction.rollback()
