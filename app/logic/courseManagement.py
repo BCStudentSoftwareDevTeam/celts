@@ -8,8 +8,7 @@ from app.models.term import Term
 
 def submittedCourses(termId):
     '''
-    Queries the database to get all the neccessary information for
-    non approved and non submitted courses.
+    Queries the database to get all the neccessary information for submitted courses.
     '''
 
     submittedCourses = (Course.select(Course, Term)

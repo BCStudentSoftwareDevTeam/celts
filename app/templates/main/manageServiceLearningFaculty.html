@@ -61,7 +61,7 @@
             </td>
             <td>{{course.term.description}}</td>
             <td>{{course.status.status}}</td>
-            <td><button type="button" data-id="{{course}}" onclick="reviewCourses(this)" class="btn btn-primary btn-sm">{{ "Review" if course.status == CourseStatus.SUBMITTED else "Review" }}</button></td>
+            <td><button type="button" data-id="{{course}}" onclick="reviewCourses(this)" class="btn btn-primary btn-sm">{{ "Review"}}</button></td>
             <td><a type="button" href="/serviceLearning/editProposal/{{course }}" class="btn btn-primary btn-sm">Edit</a></td>
           </tr>
           {% endfor %}
