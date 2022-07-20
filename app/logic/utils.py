@@ -61,3 +61,6 @@ def format24HourTime(unformattedTime):
     else:
         formattedTime = unformattedTime.strftime("%H:%M")
         return formattedTime
+
+def getUsernameFromEmail(email):
+    return email.split("@")[0]
