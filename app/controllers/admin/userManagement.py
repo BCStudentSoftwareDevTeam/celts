@@ -1,4 +1,3 @@
-from this import d
 from flask import Flask, make_response, render_template,request, flash, g, json, abort, redirect, url_for
 import re
 from app.controllers.admin import admin_bp
@@ -76,7 +75,7 @@ def updateProgramInfo(programID):
                                     programInfo["Sender"],
                                     programID)
             flash("Program updated", "success")
-            return redirect(url_for("admin.userManagement", programID=programID)) 
+            return redirect(url_for("admin.userManagement", showSettingsPane="program"))
         except Exception as e:
             print(e)
             flash('Error while updating program info.','warning')
@@ -85,7 +84,7 @@ def updateProgramInfo(programID):
 
 @admin_bp.route('/admin', methods = ['GET'])
 def userManagement():
-    programID=request.args.get('programID')
+    showSettingsPane=request.args.get('showSettingsPane')
     terms = selectSurroundingTerms(g.current_term)
     current_programs = Program.select()
     currentAdmins = list(User.select().where(User.isCeltsAdmin))
@@ -96,7 +95,7 @@ def userManagement():
                                 programs = list(current_programs),
                                 currentAdmins = currentAdmins,
                                 currentStudentStaff = currentStudentStaff,
-                                programID=programID
+                                showSettingsPane=showSettingsPane
                                 )
     abort(403)
 
