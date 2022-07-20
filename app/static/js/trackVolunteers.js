@@ -53,9 +53,9 @@ $(document).ready(function() {
       if(userlist.includes(selected["username"]) == false){
           userlist.push(user)
           let i = userlist.length;
-          $("#addVolunteerList").append("<li id= addVolunteerElements"+i+"> </li>")
-          $("#addVolunteerElements"+i+"").append("<input  type=checkbox id= userlistCheckbox"+i+" checked= checked value = " + user +" >  </input>")
-          $("#addVolunteerElements"+i+"").append("<label form for= userlistCheckbox"+i+">"+ selected["firstName"]+ " " + selected["lastName"] +"</label>")
+          $("#addVolunteerList").append("<li class id= 'addVolunteerElements"+i+"'> </li>")
+          $("#addVolunteerElements"+i+"").append("<input  type='checkbox' id= 'userlistCheckbox"+i+"' checked value='" + user +"' >  </input>")
+          $("#addVolunteerElements"+i+"").append("<label form for= 'userlistCheckbox"+i+"'>"+ selected["firstName"]+ " " + selected["lastName"] +"</label>")
       }
       else{
           msgFlash("User already selected.")
