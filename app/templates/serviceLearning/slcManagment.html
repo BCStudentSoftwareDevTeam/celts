@@ -8,11 +8,13 @@
 {% block app_content %}
 <input id="username" type="hidden" value='{{user.username}}'>
 <h1 class="text-center mt-5 mb-2">{{user.firstName}} {{user.lastName}}'s SLC Proposals</h1>
-<div align="right">
-  <a class="btn btn-primary" href="/serviceLearning/newProposal" role="button">Create Course Proposal</a>
+<div class =newCourse align="right">
+  <form method="post" action="/serviceLearning/createCourse/" >
+    <button class="btn btn-primary" type = 'Submit'>Create Course Proposal</button>
+  </form>
 </div>
 <div id="proposalTable">
-  <table class="table table-striped">
+  <table class="table table-striped"> 
     <thead>
       <tr>
         <th scope="col">Courses</th>

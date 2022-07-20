@@ -1,4 +1,4 @@
-from flask import request, render_template, g, abort, json, redirect, jsonify, flash, session
+from flask import request, render_template, g, url_for, abort, json, redirect, jsonify, flash, session
 from app.models.user import User
 from app.models.term import Term
 from app.models.course import Course
@@ -66,14 +66,22 @@ def slcEditProposal(courseID):
                                 courseID=courseID)
 @serviceLearning_bp.route('/serviceLearning/saveProposal', methods=['POST'])
 def slcSaveContinue():
-    print("paw ________________________________________________________")
-    print(instructorsDict)
     courseExist = Course.get_or_none(Course.id == request.form.get('courseID'))
     if courseExist:
         updateCourse(request.form.copy(), instructorsDict)
     else:
         createCourse(request.form.copy(), instructorsDict)
     return ""
+
+@serviceLearning_bp.route('/serviceLearning/createCourse/', methods=['POST'])
+def slcCreateCourse():
+    status = CourseStatus.get(CourseStatus.status == "Pending")
+    courseID = Course.create(
+        status=status)
+    id = Course.get_by_id(courseID)
+    for i in range(1, 7):
+        CourseQuestion.create(course=courseID)
+    return redirect(url_for('serviceLearning.slcEditProposal', courseID = id))
 
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcCreateOrEdit():
