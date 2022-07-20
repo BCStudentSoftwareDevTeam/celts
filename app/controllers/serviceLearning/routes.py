@@ -10,7 +10,8 @@ from app.logic.utils import selectSurroundingTerms
 
 from app.controllers.serviceLearning import serviceLearning_bp
 from app.logic.searchUsers import searchUsers
-from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal
+from app.logic.utils import selectSurroundingTerms
+from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal, renewProposal
 from app.logic.courseManagement import updateCourse, createCourse
 
 from app.controllers.main.routes import getRedirectTarget, setRedirectTarget
@@ -18,7 +19,7 @@ from app.controllers.main.routes import getRedirectTarget, setRedirectTarget
 @serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
 @serviceLearning_bp.route('/serviceLearning/courseManagement/<username>', methods = ['GET'])
 def serviceCourseManagement(username=None):
-    """This is a Temporary Page for the Service Course Managment Screen."""
+    """This is a Temporary Page for the Service Course Management Screen."""
     # TODO: How to make accessing other user's interfaces more userfriendly?
     if g.current_user.isStudent:
         abort(403)
@@ -26,13 +27,16 @@ def serviceCourseManagement(username=None):
         setRedirectTarget("/serviceLearning/courseManagement")
         user = User.get(User.username==username) if username else g.current_user
         courseDict = getServiceLearningCoursesData(user)
-        return render_template('serviceLearning/slcManagment.html',
+        termList = selectSurroundingTerms(g.current_term, prevTerms=0)
+        return render_template('serviceLearning/slcManagement.html',
             user=user,
-            courseDict=courseDict)
+            courseDict=courseDict,
+            termList=termList)
     else:
         flash("Unauthorized to view page", 'warning')
         return redirect(url_for('main.events', selectedTerm=g.current_term))
 
+@serviceLearning_bp.route('/serviceLearning/viewProposal/<courseID>', methods=['GET'])
 @serviceLearning_bp.route('/serviceLearning/editProposal/<courseID>', methods=['GET', 'POST'])
 def slcEditProposal(courseID):
     """
@@ -133,7 +137,30 @@ def withdrawCourse(courseID):
         else:
             flash("Unauthorized to perform this action", 'warning')
     except Exception as e:
+        print(e)
         flash("Withdrawal Unsuccessful", 'warning')
+    return ""
+
+@serviceLearning_bp.route('/serviceLearning/renew/<courseID>/<termID>/', methods = ['POST'])
+def renewCourse(courseID, termID):
+    """
+    This function checks to see if the user is a CELTS admin or is
+        an instructor of a course (faculty) and allows courses to be renewed.
+    :return: empty string because AJAX needs to receive something
+    """
+    instructors = list(CourseInstructor.select()
+                                   .where(CourseInstructor.course==courseID))
+    courseInstructors = [instructor.user for instructor in instructors]
+
+    try:
+        if g.current_user.isCeltsAdmin or g.current_user in courseInstructors:
+            renewProposal(courseID, termID)
+            flash("Course successfully renewed", 'success')
+        else:
+            flash("Unauthorized to perform this action", 'warning')
+    except Exception as e:
+        print(e)
+        flash("Renewal Unsuccessful", 'warning')
     return ""
 
 @serviceLearning_bp.route('/serviceLearning/approveCourse/', methods=['POST'])

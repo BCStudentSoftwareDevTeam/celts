@@ -32,18 +32,6 @@ def approvedCourses(termId):
 
     return approvedCourses
 
-def getinstructorData(courseIds):
-    """
-    Gets and instructor object for the course id's given.
-    """
-    instructorDict = {}
-    instructor = CourseInstructor.select().where(CourseInstructor.course << courseIds)
-
-    for i in instructor:
-        instructorDict.setdefault(i.course.id, []).append(i.user.firstName + " " + i.user.lastName)
-
-    return instructorDict
-
 def createCourse(courseData, instructorsDict):
     """This function will create a course given a form."""
     term = Term.get(Term.id==courseData["term"])
@@ -81,7 +69,7 @@ def updateCourse(courseData, instructorsDict):
         course= Course.get_by_id(courseData['courseID'])
         for toggler in ["regularOccurenceToggle", "slSectionsToggle", "permanentDesignation"]:
             courseData.setdefault(toggler, "off")
-        
+
         status = CourseStatus.get(CourseStatus.status == "Pending")
         Course.update(
             courseName=courseData["courseName"],
@@ -102,7 +90,7 @@ def updateCourse(courseData, instructorsDict):
             if not CourseInstructor.select().where(CourseInstructor.course==courseData["courseID"], CourseInstructor.user==instructor).exists():
                 addInstructors = CourseInstructor.create(course=courseData["courseID"], user=instructor)
     except:
-        flash("Course not approved!", "danger")  
+        flash("Course not approved!", "danger")
     return course
             
     

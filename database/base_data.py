@@ -1,6 +1,35 @@
 from app.models.eventTemplate import EventTemplate
 # from app.models.backgroundCheck import BackgroundCheck
+from app.models.term import Term
 from app.models.backgroundCheckType import BackgroundCheckType
+
+terms = [
+    {
+        "id": 7,
+        "description": "Summer 2022",
+        "year": 2022,
+        "academicYear": "2021-2022",
+        "isSummer": True,
+        "isCurrentTerm": False
+    },
+    {
+        "id": 8,
+        "description": "Fall 2022",
+        "year": 2022,
+        "academicYear": "2022-2023",
+        "isSummer": False,
+        "isCurrentTerm": False
+    },
+    {
+        "id": 9,
+        "description": "Spring 2023",
+        "year": 2023,
+        "academicYear": "2022-2023",
+        "isSummer": False,
+        "isCurrentTerm": False
+    },
+]
+Term.insert_many(terms).on_conflict_replace().execute()
 
 print("Inserting base data needed in all environments.")
 templates = [

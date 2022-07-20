@@ -27,10 +27,10 @@
               <p class="instructorName" required></p>
               <div class="input-group mb-3 pt-3">
                 <input type="text" class="form-control-sm mb-3" id="" name="courseInstructorPhone" aria-label="Instructor's Phone Number." />
-                <button class="btn btn-primary mb-3" data-id='' aria-label="Button updates Instructor's phone number." type="button" id="instructorPhoneUpdate">Update</button>
+                <button class="btn btn-primary mb-3 view" data-id='' aria-label="Button updates Instructor's phone number." type="button" id="instructorPhoneUpdate">Update</button>
               </div>
             </td>
-            <td><button id="remove" type="button" class="btn btn-danger">Remove</button></td>
+            <td><button id="remove" type="button" class="btn btn-danger view">Remove</button></td>
             <td class="phone"></td>
 
           </tr>
@@ -40,11 +40,11 @@
               <p class="instructorName">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user}})</p>
               <div class="input-group mb-3 pt-3">
                 <input type="text" class="form-control-sm mb-3" id="{{instructor.user}}" name="" aria-label="Recipient's username" aria-describedby="button-addon2" value="{{instructor.user.phoneNumber}}"/>
-                <button class="btn btn-primary mb-3" data-id="{{instructor.user}}" type="button" id="instructorPhoneUpdate">Update</button>
+                <button class="btn btn-primary mb-3 view" data-id="{{instructor.user}}" type="button" id="instructorPhoneUpdate">Update</button>
               </div>
             </td>
             <td>
-              <button id="remove" type="button" class="btn btn-danger">Remove</button>
+              <button id="remove" type="button" class="btn btn-danger view">Remove</button>
             </td>
 
           </tr>

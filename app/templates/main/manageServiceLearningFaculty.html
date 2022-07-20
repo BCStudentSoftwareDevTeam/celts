@@ -105,11 +105,20 @@
       <div class="float-end">
         <button class="btn btn-primary">Send to Registrar</button>
       </div>
-      {% endif %}
+     {% endif %}
       </div>
     </div>
 <div id="wrapper">
     <h1 class="text-center pt-1 pb-4">Service-Learning Faculty</h1>
+    <div style="text-align:right; position:relative; top: 38px; z-index:1;" >
+      {% set instructorEmails = [] %}
+      {% for instructor in courseInstructors%}
+        {{ instructorEmails.append(instructor.email) or "" }}
+      {% endfor %}
+      <div>
+        <a  class="btn btn-primary" href="mailto:{{(';'.join(instructorEmails))}}?subject=Renew Course Proposal"> Email All </a>
+      </div>
+    </div>
   <div class ="container">
     <a class="skipContent" href="#backButton" tabindex="1" style="top:8%">Click to Skip</a>
     <div class="contributors" align="center">
@@ -131,9 +140,6 @@
   </table>
 </div>
 
-<div class="text-center">
-  <button type="button" class="btn btn-primary" disabled>Email all</button>
-</div>
 </div>
 <div id="review-modal"></div>
 {% endblock %}
