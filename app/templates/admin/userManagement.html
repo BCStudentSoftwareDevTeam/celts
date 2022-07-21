@@ -7,12 +7,11 @@
 {% endblock %}
 
 {% block app_content %}
-{% macro createInputsButtons(inputId, buttonId, buttonName, buttonClass, labelName) %}
+{% macro createInputsButtons(inputId, labelName) %}
 <label class="form-label col-md-10" for="{{inputId}}"><strong>{{labelName}}</strong></label>
   <div class="input-group">
   <input type="input" id="{{inputId}}" name="{{inputId}}" class="form-control" placeholder="Search" autocomplete="off" style="width:50%;"/>
   <span class="input-group-text me-1"><span class="bi bi-search"></span></span>
-  <button type="button" class="btn btn-{{buttonClass}} btn-md" id="{{buttonId}}">{{buttonName}}</button>
 </div>
 {% endmacro %}
 
@@ -30,7 +29,7 @@
             <div class="row d-flex justify-content-center mb-3">
               <div class="col-md-6 mb-3">
                 <div>
-                    {{createInputsButtons("searchCeltsAdminInput","addCeltsAdmin","Add","success", "Add Celts Admin")}}<br>
+                    {{createInputsButtons("searchCeltsAdminInput", "Add Celts Admin")}}<br>
                 </div>
                 <table class="table mb-3">
                   <thead>
@@ -51,7 +50,7 @@
             </div>
             <div class="col-md-6 mb-3">
                 <div>
-                  {{createInputsButtons("searchCeltsStudentStaffInput","addCeltsStudentStaff","Add","success", "Add Celts Student Staff")}}<br>
+                  {{createInputsButtons("searchCeltsStudentStaffInput", "Add Celts Student Staff")}}<br>
                 </div>
                 <table class="table mb-3">
                   <thead>
