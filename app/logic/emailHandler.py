@@ -157,7 +157,7 @@ class EmailHandler:
 
         except AttributeError:  # will pass if there is no attachment to save
             pass
-        except FileExistsError:
+        except FileExistsError: # will pass if the file already exists
             pass
 
         return attachmentFullPath
@@ -167,6 +167,8 @@ class EmailHandler:
         try:
             self.attachment_file.save(self.getAttachmentFullPath()) # saves attachment in directory
         except AttributeError: # will pass if there is no attachment to save
+            pass
+        except IsADirectoryError: # will pass if we try to handle a directory as a file
             pass
 
     def store_sent_email(self, subject, template_id):
