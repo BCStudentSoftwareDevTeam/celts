@@ -121,7 +121,7 @@ $(document).ready(function(){
       sanitize: false,
       html: true,
       content: function() {
-                     return $(this).attr('data-content');
+            return $(this).attr('data-content');
         }
     });
   });

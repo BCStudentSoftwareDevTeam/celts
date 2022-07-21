@@ -16,23 +16,23 @@ def trainedParticipants(programID, currentTerm):
     event and adds them to a list that will not flag them when tracking hours.
     """
 
-    ayStart = currentTerm.academicYearStartingTerm
+    academicYear = currentTerm.academicYear
 
     # Reset program eligibility each term for all other trainings
 
-    otherTrainingEvents = (Event.select(Event.id).join(ProgramEvent)
+    otherTrainingEvents = (Event.select(Event.id)
+            .join(ProgramEvent).switch()
+            .join(Term)
             .where(
                 ProgramEvent.program == programID,
-                Event.isTraining == True,
-                (((Event.name == "All Celts Training") | (Event.name == "All Volunteer Training")) & (Event.term == ayStart)) | (Event.term == currentTerm))
+                (Event.isTraining | Event.isAllVolunteerTraining),
+                Event.term.academicYear == academicYear)
             )
 
     allTrainingEvents = set(otherTrainingEvents)
-
     eventTrainingDataList = [participant.user.username for participant in (
         EventParticipant.select().where(EventParticipant.event.in_(allTrainingEvents))
         )]
-
     attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(allTrainingEvents), eventTrainingDataList)))
     return attendedTraining
 
@@ -107,15 +107,16 @@ def getUserParticipatedEvents(program, user, currentTerm):
 
     :returns: trainings for program and if the user participated
     """
-    ayStart = currentTerm.academicYearStartingTerm
+    academicYear = currentTerm.academicYear
 
     programTrainings = (Event.select()
-                               .join(ProgramEvent)
-                               .where(Event.isTraining == True,
+                               .join(ProgramEvent).switch()
+                               .join(Term)
+                               .where((Event.isTraining | Event.isAllVolunteerTraining),
                                       ProgramEvent.program == program,
-                                      (Event.term == ayStart) | (Event.term == currentTerm))
+                                      Event.term.academicYear == academicYear)
                         )
-                        
+
     listOfProgramTrainings = [programTraining for programTraining in programTrainings]
     userParticipatedEvents = {}
     for training in listOfProgramTrainings:

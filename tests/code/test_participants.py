@@ -109,7 +109,7 @@ def test_trainedParticipants():
 
     # Case2: test for an event in a past term
     attendedPreq = trainedParticipants(1, currentTerm)
-    assert attendedPreq == []
+    assert attendedPreq == ['neillz', 'khatts', 'ayisie']
 
     # Case3: test for when user changes current term
     currentTerm = Term.get_by_id(2)
@@ -302,17 +302,32 @@ def test_getEventParticipantsWithWrongParticipant():
 def test_getUserParticipatedEvents():
     with mainDB.atomic() as transaction:
         currentTerm = Term.get_by_id(3)
-        ayStart = currentTerm.academicYearStartingTerm
+        academicYear = currentTerm.academicYear
+
+        testingEvent = Event.create(name = "Testing delete event",
+                                      term = 2,
+                                      description= "This Event is Created to be Deleted.",
+                                      timeStart= "06:00 PM",
+                                      timeEnd= "09:00 PM",
+                                      location = "Your Father's House",
+                                      isRsvpRequired = 0,
+                                      isTraining = 1,
+                                      isService = 0,
+                                      startDate= "2021-12-12",
+                                      recurringId = None)
+        ProgramEvent.create(program = Program.get_by_id(8),
+                            event = testingEvent)
 
         allProgramTrainings = (Event.select()
-                                   .join(ProgramEvent)
+                                   .join(ProgramEvent).switch()
+                                   .join(Term)
                                    .where(Event.isTraining == True,
                                           ProgramEvent.program == Program.get_by_id(2),
-                                          (Event.term == ayStart) | (Event.term == currentTerm))
+                                          Event.term.academicYear == academicYear)
                               )
         listOfProgramTrainings = [programTraining for programTraining in allProgramTrainings]
         for training in listOfProgramTrainings:
-            assert training.term == currentTerm or currentTerm.academicYearStartingTerm
+            assert training.term.academicYear == currentTerm.academicYear
 
         # If the user has participated in every training, assert their participated status for that training == 1
         for training in listOfProgramTrainings:
@@ -347,7 +362,7 @@ def test_getUserParticipatedEvents():
                                       description= "This Event is Created to be Deleted.",
                                       timeStart= "06:00 PM",
                                       timeEnd= "09:00 PM",
-                                      location = "Your Mom's House",
+                                      location = "Your Mother's House",
                                       isRsvpRequired = 0,
                                       isTraining = 1,
                                       isService = 0,
