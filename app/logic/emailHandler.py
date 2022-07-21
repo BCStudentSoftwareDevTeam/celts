@@ -32,7 +32,7 @@ class EmailHandler:
         self.program_ids = None
         self.recipients = None
         self.sl_course_id = None
-        self.attachment_path = app.config['email']['attachment_path']
+        self.attachment_path = app.config['email']['email_attachment_path']
         self.attachment_file = attachment_file
 
     def process_data(self):

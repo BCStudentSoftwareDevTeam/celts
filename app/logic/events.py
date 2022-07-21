@@ -18,6 +18,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.eventFile import EventFile
 from app.logic.adminLogs import createLog
 from app.logic.utils import format24HourTime
+from app.logic.fileHandler import FileHandler
 
 def getEvents(program_id=None):
 
@@ -47,8 +48,11 @@ def attemptSaveEvent(eventData, attachmentFiles):
 
     try:
         events = saveEventToDb(newEventData)
-        for event in events:
-            addAttachment(event.id, attachmentFiles)
+        if attachmentFiles:
+            for event in events:
+                addAttachment(event.id, attachmentFiles)
+            addfile= FileHandler(attachmentFiles)
+            addfile.saveAttachment()
         return True, ""
     except Exception as e:
         print(e)
