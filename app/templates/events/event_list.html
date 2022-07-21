@@ -52,6 +52,7 @@
 </div>
 {% macro createTable(events) %}
 {% if events|count %}
+<div class="table-responsive">
   <table class="table table-striped">
     <thead>
       <tr>
@@ -101,8 +102,9 @@
             {% endif %}
           </tr>
         {% endfor %}
-    </tbody>
-  </table>
+     </tbody>
+   </table>
+ </div>
 {% else %}
   <p>No upcoming events for this term</p>
 {% endif %}
@@ -127,7 +129,7 @@
                 class="accordion-collapse collapse"
                 aria-labelledby="accordion__header_{{program}}"
                 data-bs-parent="#categoryAccordion">
-            <div class="accordion-body">
+            <div class="accordion-body table-responsive">
               <table class="table table-striped">
                 <thead>
                   <tr>
