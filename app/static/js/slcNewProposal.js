@@ -57,14 +57,14 @@ $("#nextButton").on("click", function() {
 });
 
 $("#cancelButton").on("click", function() {
-  window.location.replace("/manageServiceLearning");
+        window.location.replace("/serviceLearning/courseManagement");
 });
 
 function displayCorrectTab(navigateTab) {
   // This function will figure out which tab to display
   let allTabs = $(".tab");
   if (navigateTab == 1 && !validateForm()) return false;
-  if(currentTab != (allTabs.length - 1)){
+  if(currentTab != (allTabs.length - 1) || (navigateTab == -1)){
       $(allTabs[currentTab]).css("display", "none");
   }
 

@@ -21,7 +21,6 @@ from app.models.adminLogs import AdminLogs
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
-from app.logic.courseManagement import pendingCourses, approvedCourses
 from app.logic.participants import getEventParticipants, getUserParticipatedEvents
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
@@ -193,7 +192,7 @@ def volunteerProfile():
 @admin_bp.route('/search_student', methods=['GET'])
 def studentSearchPage():
     if g.current_user.isAdmin:
-        return render_template("/searchStudentPage.html")
+        return render_template("/admin/searchStudentPage.html")
     abort(403)
 
 @admin_bp.route('/addParticipants', methods = ['GET'])
