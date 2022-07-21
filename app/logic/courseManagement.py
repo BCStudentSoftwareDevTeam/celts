@@ -6,18 +6,17 @@ from app.models.course import Course
 from app.models.term import Term
 
 
-def pendingCourses(termId):
+def submittedCourses(termId):
     '''
-    Queries the database to get all the neccessary information for
-    non approved and non completed courses.
+    Queries the database to get all the neccessary information for submitted courses.
     '''
 
-    pendingCourses = (Course.select(Course, Term)
+    submittedCourses = (Course.select(Course, Term)
                     .join(CourseStatus)
                     .switch(Course)
-                    .join(Term).where(Term.id == termId, Course.status.status != "Approved", Course.status.status != "Completed").distinct())
+                    .join(Term).where(Term.id == termId, Course.status == CourseStatus.SUBMITTED).distinct())
 
-    return pendingCourses
+    return submittedCourses
 
 def approvedCourses(termId):
     '''
@@ -28,14 +27,14 @@ def approvedCourses(termId):
     approvedCourses = (Course.select(Course, Term)
                         .join(CourseStatus)
                         .switch(Course)
-                        .join(Term).where(Term.id == termId, Course.status.status == "Approved").distinct())
+                        .join(Term).where(Term.id == termId, Course.status == CourseStatus.APPROVED).distinct())
 
     return approvedCourses
 
 def createCourse(courseData, instructorsDict):
     """This function will create a course given a form."""
     term = Term.get(Term.id==courseData["term"])
-    status = CourseStatus.get(CourseStatus.status == "Pending")
+    status = CourseStatus.get_by_id(CourseStatus.SUBMITTED)
     for toggler in ["regularOccurenceToggle", "slSectionsToggle", "permanentDesignation"]:
         courseData.setdefault(toggler, "off")
     course = Course.create(
@@ -70,7 +69,7 @@ def updateCourse(courseData, instructorsDict):
         for toggler in ["regularOccurenceToggle", "slSectionsToggle", "permanentDesignation"]:
             courseData.setdefault(toggler, "off")
 
-        status = CourseStatus.get(CourseStatus.status == "Pending")
+        status = CourseStatus.get_by_id(CourseStatus.SUBMITTED)
         Course.update(
             courseName=courseData["courseName"],
             courseAbbreviation=courseData["courseAbbreviation"],

@@ -1,6 +1,7 @@
 from app.models.eventTemplate import EventTemplate
 # from app.models.backgroundCheck import BackgroundCheck
 from app.models.term import Term
+from app.models.courseStatus import CourseStatus
 from app.models.backgroundCheckType import BackgroundCheckType
 
 terms = [
@@ -77,3 +78,19 @@ backgroundTypes = [
 
 ]
 BackgroundCheckType.insert_many(backgroundTypes).on_conflict_replace().execute()
+
+coursestatus = [
+    {
+        "id": 1,
+        "status": "Incomplete"
+    },
+    {
+        "id": 2,
+        "status": "Submitted"
+    },
+    {
+        "id": 3,
+        "status": "Approved"
+    }
+]
+CourseStatus.insert_many(coursestatus).on_conflict_replace().execute()
