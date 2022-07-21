@@ -175,63 +175,6 @@ def test_preprocessEventData_term():
     preprocessEventData(eventData)
     assert eventData['term'] == ''
 
-
-@pytest.mark.integration
-def test_preprocessEventData_facilitators():
-
-    eventData = {}
-    preprocessEventData(eventData)
-    assert 'facilitators' in eventData
-    assert eventData['facilitators'] == []
-
-    eventData = {'facilitators':'ramsayb2'}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == []
-
-    eventData = {'facilitators': []}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == []
-
-    eventData = {'facilitators': ['ramsayb2']}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == [User.get_by_id('ramsayb2')]
-
-    eventData = {'facilitators': ['ramsayb2','khatts']}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]
-
-    eventData = {'facilitators': ['ramsayb2','not an id', 'khatts']}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == []
-
-    # form data comes back as a MultiDict. Make sure we handle that case
-    eventData = MultiDict([('facilitators', 'ramsayb2'),('facilitators','khatts')])
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]
-
-    #####
-    # Testing with an existing event
-    #####
-    eventData = {'id': 1, 'facilitators': []}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == []
-
-    eventData = {'id': 1, 'facilitators': ['khatts']}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == [User.get_by_id('khatts')]
-
-    eventData = {'id': 1, 'facilitators': [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]
-
-    eventData = {'id': 1}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == [User.get_by_id('ramsayb2')] # defaults to existing facilitators
-
-    eventData = {'id': 1, 'facilitators':'khatts'}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == [User.get_by_id('ramsayb2')] # defaults to existing facilitators
-
 @pytest.mark.integration
 def test_correctValidateNewEventData():
 
@@ -292,7 +235,6 @@ def test_wrongValidateNewEventData():
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid
 
-
 @pytest.mark.integration
 def test_calculateRecurringEventFrequency():
 
@@ -317,11 +259,9 @@ def test_calculateRecurringEventFrequency():
     with pytest.raises(Exception):
         returnedEvents = calculateRecurringEventFrequency(eventInfo)
 
-
 @pytest.mark.integration
 def test_attemptSaveEvent():
     with mainDB.atomic() as transaction2:
-
         # This test duplicates some of the saving tests, but with raw data, like from a form
         eventData =  {'isRsvpRequired':False, 'isService':False,
                       'isTraining':True, 'isRecurring':True, 'recurringId':0, 'startDate': '2021-12-12',
@@ -683,4 +623,39 @@ def test_getPreviousRecurringEventData():
         assert val[0].username == "neillz"
         assert val[1].username == "ramsayb2"
         assert val[2].username == "khatts"
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_getFacilitatorsFromList():
+    with mainDB.atomic() as transaction:
+        testingUser1 = User.create(username = "userForTesting1",
+                                    bnumber = "Btesting1",
+                                    email = "test1@test.test",
+                                    phoneNumber = "0000000000",
+                                    firstName = "Test#1",
+                                    lastName = "Test#1.1")
+        testingUser2 = User.create(username = "userForTesting2",
+                                    bnumber = "Btesting2",
+                                    email = "test2@test.test",
+                                    phoneNumber = "0000000000",
+                                    firstName = "Test#2",
+                                    lastName = "Test#2.1")
+        listToAssert = getFacilitatorsFromList("")
+        assert listToAssert == []
+        listToAssert = getFacilitatorsFromList([""])
+        assert listToAssert == []
+        listToAssert = getFacilitatorsFromList(",userForTesting1,")
+        assert listToAssert == [testingUser1]
+        listToAssert = getFacilitatorsFromList(["userForTesting2", ""])
+        assert listToAssert == [testingUser2]
+        listToAssert = getFacilitatorsFromList([])
+        assert listToAssert == []
+        listToAssert = getFacilitatorsFromList(["userForTesting1"])
+        assert listToAssert == [testingUser1]
+        listToAssert = getFacilitatorsFromList("userForTesting1")
+        assert listToAssert == [testingUser1]
+        listToAssert = getFacilitatorsFromList(["userForTesting1", "userForTesting2"])
+        assert listToAssert == [testingUser1, testingUser2]
+        listToAssert = getFacilitatorsFromList("userForTesting1,userForTesting2")
+        assert listToAssert == [testingUser1, testingUser2]
         transaction.rollback()

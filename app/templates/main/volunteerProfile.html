@@ -188,7 +188,11 @@
                         {% endif %}
                     </select>
                 </td>
-                <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" value="{{completedBackgroundCheck[bgType][1]}}" class="form-control"/></td>
+                {% if completedBackgroundCheck[bgType][1] %}
+                    <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" value="{{completedBackgroundCheck[bgType][1]}}" class="form-control"/></td>
+                {% else %}
+                    <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" class="form-control"/></td>
+                {% endif %}
                 <td><button type="button" class="savebtn btn btn-primary" id="{{bgType.id}}" data-id="{{bgType.id}}" data-username="{{volunteer.username}}">Save</button></td>
             {% else %}
                 <td>{{completedBackgroundCheck[bgType][0]}}</td>
