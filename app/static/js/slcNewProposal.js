@@ -36,14 +36,15 @@ function showTab(currentTab) {
 }
 
 $("#saveAndApproveButton").click(function(){
-  var data = $("form").serialize()
-  saveCourseInstructors()
-  $.ajax({
-    url: "/serviceLearning/approveCourse/",
-    type: "POST",
-    data: data,
-    success: function(response) {
-        window.location.replace("/manageServiceLearning")
+    $("#saveAndApproveButton").prop("disabled", true)
+    var data = $("form").serialize()
+    saveCourseInstructors()
+    $.ajax({
+        url: "/serviceLearning/approveCourse/",
+        type: "POST",
+        data: data,
+        success: function(response) {
+            window.location.replace("/manageServiceLearning")
     }
   });
 });
@@ -72,8 +73,9 @@ function displayCorrectTab(navigateTab) {
   currentTab = currentTab + navigateTab;
 
   if (currentTab >= allTabs.length) {
-    saveCourseInstructors().then(() => $("#slcNewProposal").submit());
-    return false;
+      $("#nextButton").prop("disabled", true)
+      saveCourseInstructors().then(() => $("#slcNewProposal").submit());
+      return false;
   }
   showTab(currentTab);
 }
