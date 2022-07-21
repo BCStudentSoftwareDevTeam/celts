@@ -116,7 +116,7 @@ $(document).ready(function(){
   });
   $("#updatePhone").click(function(){
     userName=$(this).data("username") 
-    phoneNumber=$("#newinput").val()
+    phoneNumber=$("#phoneInput").val()
     let isvalid =(phoneNumber.replace(/\D/g,"").length)===10
     if (isvalid ==true){
       $.ajax({
@@ -134,7 +134,7 @@ $(document).ready(function(){
       msgFlash("Invalid Phone number", "danger")
     }
   });
-  $('#newinput').inputmask('(999)-999-9999'); 
+  $('#phoneInput').inputmask('(999)-999-9999'); 
 });
 
 function displayMessage(message, color) {  // displays message for saving background check
