@@ -20,6 +20,7 @@ from app.models.note import Note
 from app.models.programManager import ProgramManager
 from app.models.courseStatus import CourseStatus
 from app.controllers.main import main_bp
+from app.logic.loginManager import logout
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
 from app.logic.events import *
@@ -29,6 +30,10 @@ from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import submittedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
 from app.models.courseInstructor import CourseInstructor
+
+@main_bp.route('/logout', methods=['GET'])
+def redirectToLogout():
+    return redirect(logout())
 
 @main_bp.route('/', methods=['GET'])
 def redirectToEventsList():
