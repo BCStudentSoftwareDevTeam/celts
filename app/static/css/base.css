@@ -63,3 +63,7 @@
 .templateList a:last-child {
     border-bottom: 5px solid #d7d7d7
 }
+
+.sidebar-icon {
+    z-index: 1049;
+}

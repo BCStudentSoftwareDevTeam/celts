@@ -31,7 +31,7 @@
    </ul>
  </div>
 
- <div class="row">
+ <div class="row table-responsive">
    <table class="table">
      {% if upcomingEvents|length > 0 %}
        <thead class="tableHeader">
@@ -59,7 +59,7 @@
    </table>
  </div>
  <!-- Start Program Eligibility Table -->
- <div class="row">
+ <div class="row table-responsive">
    <table class="table banTable">
       <thead>
         <tr>
@@ -129,10 +129,12 @@
                   {% set action = "remove" %}
                   {% set checked = "checked" %}
             {% endif %}
+            <div class="table-responsive">
               <table>
                     <input  type="checkbox" id="mgr-{{ program.id }}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}')">
                     <label  style="padding-left: 15px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
               </table>
+            </div>
           {% endfor %}
         </div>
       </div>
@@ -159,7 +161,7 @@
   <!-- End Program Manager Selection -->
 <!-- Start Background Check Table -->
 {% if g.current_user.isAdmin %}
-    <div class="row">
+    <div class="row table-responsive">
       <h2>Background Check</h2>
       <table class="table">
          <thead>
