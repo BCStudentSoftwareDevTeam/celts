@@ -553,59 +553,39 @@ def test_upcomingEvents():
                                 timeStart = "18:00:00",
                                 timeEnd = "21:00:00",
                                 location = "The sun",
-                                startDate = 2021-12-12,
-                                endDate = 2021-12-13)
+                                startDate = "2021-12-12",
+                                endDate = "2021-12-13")
 
         # Create a new Program to create the new Program Event off of so the
         # user can mark interest for it
-        ProgramForInterest = Program.create(id = 13,
+        programForInterest = Program.create(id = 13,
                                             programName = "BOO",
                                             isStudentLed = False,
                                             isBonnerScholars = False,
                                             emailReplyTo = "test@email",
                                             emailSenderName = "testName")
 
-        ProgramEventForInterest = ProgramEvent.create(program = 13, event = newProgramEvent)
-
-        program_id = 13
+        ProgramEvent.create(program = programForInterest, event = newProgramEvent)
 
         # User has not RSVPd and is Interested
-        addInterest = addUserInterest(program_id, user)
+        addInterest = addUserInterest(programForInterest.id, user)
         eventsInUserInterestedProgram = getUpcomingEventsForUser(user, asOf = testDate)
 
-        eventsInProgram = list((Event.select()
-                                     .join(ProgramEvent)
-                                     .join(Program)
-                                     .where(Event.startDate >= testDate,
-                                            ProgramEvent.event_id == Event.id,
-                                            ProgramEvent.program_id == 13)))
-
-        assert eventsInUserInterestedProgram == eventsInProgram
+        assert eventsInUserInterestedProgram == [newProgramEvent]
 
         # user has RSVPd and is Interested
         addUserRsvp = addVolunteerToEventRsvp(user, noProgram.id)
         eventsInUserInterestAndRsvp = getUpcomingEventsForUser(user, asOf = testDate)
 
-        eventsInProgramAndRsvp = list((Event.select()
-                                        .join(ProgramEvent, JOIN.LEFT_OUTER)
-                                        .join(Interest, JOIN.LEFT_OUTER, on=(ProgramEvent.program == Interest.program))
-                                        .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
-                                        .where(Event.startDate >= testDate,
-                                              (Interest.user == user) | (EventRsvp.user == user))))
+        interestAndRsvp = [[newProgramEvent] + [noProgram]]
 
-
-        assert eventsInUserInterestAndRsvp == eventsInProgramAndRsvp
+        assert eventsInUserInterestAndRsvp in interestAndRsvp
 
         # User has RSVPd and is not Interested
-        removeInterest = removeUserInterest(program_id, user)
+        removeInterest = removeUserInterest(programForInterest.id, user)
         eventsInUserRsvp = getUpcomingEventsForUser(user, asOf = testDate)
 
-        eventsInRsvp = list((Event.select()
-                                 .join(EventRsvp)
-                                 .where(Event.startDate >= testDate,
-                                        EventRsvp.user == user, Event.id == EventRsvp.event_id)))
-
-        assert eventsInUserRsvp == eventsInRsvp
+        assert eventsInUserRsvp == [noProgram]
 
         transaction.rollback()
 
