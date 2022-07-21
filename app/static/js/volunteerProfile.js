@@ -114,11 +114,11 @@ $(document).ready(function(){
       }
     })
   });
-  $("#updatePhone").click(function(){
-    userName=$(this).data("username") 
-    phoneNumber=$("#phoneInput").val()
-    let isvalid =(phoneNumber.replace(/\D/g,"").length)===10
-    if (isvalid ==true){
+  $("#updatePhone").click(function() {
+    userName = $(this).data("username") 
+    phoneNumber = $("#phoneInput").val()
+    let isvalid = phoneNumber.replace(/\D/g,"").length === 10;
+    if (isvalid == true){
       $.ajax({
         method:"POST",
         url:"/updatePhone",
@@ -126,11 +126,9 @@ $(document).ready(function(){
               "phoneNumber":phoneNumber},
         success: function(s){
           msgFlash("Phone Number is updated", "success")
-      },
+        },
       })
-        
-    }
-    else{
+    } else {
       msgFlash("Invalid Phone number", "danger")
     }
   });
