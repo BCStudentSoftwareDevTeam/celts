@@ -15,7 +15,9 @@ db:
     password: "password"
 
 email:
-  attachment_path: 'app/static/files/attachments'
+  email_attachment_path: 'app/static/files/emailattachments'
+event:
+  event_attachment_path: 'app/static/files/eventattachments'
 
 MAIL_ENABLED: True
 MAIL_SERVER: "smtp.gmail.com" # use smtp.gmail.com for gmail, mail.berea.edu for Berea

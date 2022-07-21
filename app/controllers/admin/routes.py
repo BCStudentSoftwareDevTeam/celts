@@ -128,13 +128,13 @@ def eventDisplay(eventId):
     eventData = model_to_dict(event, recurse=False)
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
-        saveSuccess, validationErrorMessage = attemptSaveEvent(eventData, attemptSaveEvent)
+        attachmentFiles = request.files.getlist("attachmentObject")
+        saveSuccess, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
         if saveSuccess:
             flash("Event successfully updated!", "success")
             return redirect(url_for("admin.eventDisplay", eventId = eventId))
         else:
             flash(validationErrorMessage, 'warning')
-
     preprocessEventData(eventData)
     futureTerms = selectSurroundingTerms(g.current_term)
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
