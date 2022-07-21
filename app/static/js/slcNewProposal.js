@@ -146,16 +146,20 @@ function createNewRow(selectedInstructor) {
   // Create new table row and update necessary attributes
   let lastRow = tableBody.find("tr:last");
   let newRow = lastRow.clone();
+
   let instructorName = newRow.find("td:eq(0) p")
   instructorName.text(instructor);
+
   let phoneInput = newRow.find("td:eq(0) input")
   phoneInput.val(phone);
   phoneInput.attr("id",  username);
   $(phoneInput).focus(focusHandler);
   $(phoneInput).focusout(blurHandler);
+
   let removeButton = newRow.find("td:eq(0) button")
   let editLink = newRow.find("td:eq(1) a")
   editLink.attr("id", "editButton-" + username);
+  editLink.attr("data-id", username);
   newRow.attr("data-username", username)
   newRow.prop("hidden", false);
   lastRow.after(newRow);
@@ -172,11 +176,12 @@ $('#instructorTable').on('click', ".editButton", function() {
         $("#"+username).focus()
     } else {
         $(this).html('Edit');
-        var inputId = $(this).data("id")
+        var inputId = $(this).data("id");
         var instructorData = [inputId, $("#" + inputId).val()]
         $.ajax({
           url: "/updateInstructorPhone",
           data: JSON.stringify(instructorData),
+
           type: "POST",
           contentType: "application/json",
           success: function(response) {
