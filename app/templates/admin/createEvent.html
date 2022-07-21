@@ -154,9 +154,6 @@
           </div>
           <div class='form-group'>
             <label class="form-label" for='inputEventFacilitators'><strong>Facilitators</strong></label>
-
-
-            {% if isEditable %}
             <input class="form-control" type="text" id="hiddenFacilitatorArray" name="facilitators" value="" hidden>
             <input
               id="eventFacilitator"
@@ -191,18 +188,6 @@
                 {% endfor %}
               </tbody>
             </table>
-            {% else %}
-              {% if not eventData.facilitators|count %}
-                <p>None</p>
-                {%endif%}
-                {% for f in eventData.facilitators %}
-                <p>{{f.firstName}} {{f.lastName}}</p>
-                {% endfor %}
-            {% endif %}
-
-
-
-
            </div>
             {% if page_title != 'Create All Volunteer Training' %}
               <div class="form-check form-switch pt-4">

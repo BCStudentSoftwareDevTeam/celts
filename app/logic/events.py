@@ -339,7 +339,6 @@ def getFacilitatorsFromList(facilitatorList):
     """
     if facilitatorList and type(facilitatorList) == str:
         facilitatorList = facilitatorList.split(',')
-    finalFacilitatorList = []
     # for each facilitator in facilitatorList, if it is not a blank string of null
     # add a user object matching said facilitator to finalFacilitatorList
     finalFacilitatorList = [User.get_by_id(facilitator) for facilitator in facilitatorList if facilitator]
