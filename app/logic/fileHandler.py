@@ -11,10 +11,6 @@ class FileHandler:
 
 
 
-
-
-
-
     def getAttachmentFullPath(self, newfile=None):
         """
         This creates the directory/path for the object from the "Choose File" input in the create event and edit event.
@@ -33,10 +29,19 @@ class FileHandler:
         return attachmentFullPath
 
     def saveAttachment(self):
-        """ Saves the attachment in the app/static/files/attachments/ directory """
+        """ Saves the attachment in the app/static/files/eventattachments/ directory """
         try:
             for file in self.attachment_file:
-
                 file.save(self.getAttachmentFullPath(file)) # saves attachment in directory
         except AttributeError: # will pass if there is no attachment to save
-            pass 
+            pass
+
+    def deleteAttachment(self):
+        """
+        Deletes attachmant from the app/static/files/eventattachments/ directory
+        """
+        try:
+            for file in self.attachment_file:
+                os.remove(self.getAttachmentFullPath(file))
+        except AttributeError: #passes if no attachment is selected.
+            pass

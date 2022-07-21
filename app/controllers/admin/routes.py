@@ -18,10 +18,12 @@ from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.models.adminLogs import AdminLogs
+from app.models.eventFile import EventFile
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.logic.participants import getEventParticipants, getUserParticipatedEvents
+from app.logic.fileHandler import FileHandler
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
@@ -139,6 +141,11 @@ def eventDisplay(eventId):
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     program = event.singleProgram
+    associatedAttachments = EventFile.select().where(EventFile.event == eventId)
+    print("++++++++++++++++++++++++++++++++++++++++++++++++++")
+    for file in associatedAttachments:
+
+        print(file.fileName)
     isProgramManager = g.current_user.isProgramManagerFor(program)
     rule = request.url_rule
     if 'edit' in rule.rule:
@@ -150,7 +157,8 @@ def eventDisplay(eventId):
                                 futureTerms=futureTerms,
                                 isPastEvent = isPastEvent,
                                 userHasRSVPed = userHasRSVPed,
-                                isProgramManager = isProgramManager)
+                                isProgramManager = isProgramManager,
+                                associatedAttachments = associatedAttachments)
     else:
         eventFacilitators = EventFacilitator.select().where(EventFacilitator.event == event)
         eventFacilitatorNames = [eventFacilitator.user for eventFacilitator in eventFacilitators]
