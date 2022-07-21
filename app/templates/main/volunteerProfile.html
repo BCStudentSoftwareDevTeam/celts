@@ -75,21 +75,25 @@
       <tbody>
       {% for row in eligibilityTable %}
       {% set trainingList = row['trainingList'] %}
-      {% macro trainingListView() -%}
-        {%- for trainings, participated in trainingList.items() -%}
-            {% if g.current_user.isCeltsAdmin %}
-              <li>{{trainings}}</li>
-            {% else %}
-                {% if participated == 1 %}
-                    <li><b>{{trainings}}</b>: Attended</li>
-                {% elif participated == 0 %}
-                    <li><b>{{trainings}}</b>: Not attended</li>
+      {% macro trainingListView() %}
+        {% if trainingList %}
+            {% for trainings, participated in trainingList.items() %}
+                {% if g.current_user.isCeltsAdmin %}
+                  <li>{{trainings}}</li>
                 {% else %}
-                    <li><b>{{trainings}}</b>: Upcoming</li>
-                {% endif%}
-            {% endif %}
-        {%- endfor -%}
-      {% endmacro -%}
+                    {% if participated == 1 %}
+                        <p><b>{{trainings}}</b>: <br>Attended</p>
+                    {% elif participated == 0 %}
+                        <p><b>{{trainings}}</b>: <br>Not attended</p>
+                    {% else %}
+                        <p><b>{{trainings}}</b>: <br>Upcoming</p>
+                    {% endif%}
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <p>No trainings for this program.</p>
+        {% endif %}
+      {% endmacro %}
         {% set checked = "" %}
         {% if row.program in programsInterested %}
             {% set checked = "checked" %}
@@ -98,10 +102,11 @@
             <td><a href="{{row.program.url}}" id="programNameTable">{{row.program.programName}}</a></td>
             <td><input class="form-check-input" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>
             <td>
-                {% if row.completedTraining %}
-                    <i class="bi bi-check-lg"></i>
+                {% if row.completedTraining or not trainingList %}
+                    <i class="bi bi-check-lg"></i> &nbsp&nbsp
+                    <a class="trainingPopover" id="{{row.program.id}}" href="#" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
                 {% else %}
-                    <i class="bi bi-x-lg"></i>
+                    <i class="bi bi-x-lg"></i> &nbsp&nbsp
                     <a class="trainingPopover" id="{{row.program.id}}" href="#" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
                 {% endif %}
             </td>

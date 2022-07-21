@@ -22,9 +22,9 @@ def trainedParticipants(programID, currentTerm):
 
     otherTrainingEvents = (Event.select(Event.id).join(ProgramEvent)
             .where(
-                ProgramEvent.program==programID,
-                Event.isTraining==True,
-                (((Event.name == "All Celts Training") | (Event.name == "All Volunteer Training")) & (Event.term == ayStart)) | (Event.term==currentTerm))
+                ProgramEvent.program == programID,
+                Event.isTraining == True,
+                (((Event.name == "All Celts Training") | (Event.name == "All Volunteer Training")) & (Event.term == ayStart)) | (Event.term == currentTerm))
             )
 
     allTrainingEvents = set(otherTrainingEvents)
@@ -44,7 +44,7 @@ def sendUserData(bnumber, eventId, programid):
     if not isEligibleForProgram(programid, signedInUser):
         userStatus = "banned"
     elif ((EventParticipant.select(EventParticipant.user)
-       .where(EventParticipant.user==signedInUser, EventParticipant.event==eventId))
+       .where(EventParticipant.user == signedInUser, EventParticipant.event==eventId))
        .exists()):
         userStatus = "already in"
     else:
@@ -96,23 +96,31 @@ def unattendedRequiredEvents(program, user):
 def getEventParticipants(event):
     eventParticipants = (EventParticipant
         .select()
-        .where(EventParticipant.event==event))
+        .where(EventParticipant.event == event))
 
     return {p.user.username: p.hoursEarned for p in eventParticipants}
 
-def getUserParticipatedEvents(program, user):
+def getUserParticipatedEvents(program, user, currentTerm):
     """
     This function returns a dictionary of all trainings for a program and
     whether the current user participated in them.
 
     :returns: trainings for program and if the user participated
     """
-    programTrainings = Event.select().join(ProgramEvent).where(Event.isTraining == 1, ProgramEvent.program == program)
+    ayStart = currentTerm.academicYearStartingTerm
+
+    programTrainings = (Event.select()
+                               .join(ProgramEvent)
+                               .where(Event.isTraining == True,
+                                      ProgramEvent.program == program,
+                                      (Event.term == ayStart) | (Event.term == currentTerm))
+                        )
+                        
     listOfProgramTrainings = [programTraining for programTraining in programTrainings]
     userParticipatedEvents = {}
     for training in listOfProgramTrainings:
         eventParticipants = getEventParticipants(training.id)
-        if training.startDate>date.today():
+        if training.startDate > date.today():
             didParticipate = None
         elif user.username in eventParticipants.keys():
             didParticipate = True
