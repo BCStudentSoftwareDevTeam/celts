@@ -312,7 +312,7 @@ def test_getUserParticipatedEvents():
                               )
         listOfProgramTrainings = [programTraining for programTraining in allProgramTrainings]
         for training in listOfProgramTrainings:
-            assert training.term == currentTerm
+            assert training.term == currentTerm or currentTerm.academicYearStartingTerm
 
         # If the user has participated in every training, assert their participated status for that training == 1
         for training in listOfProgramTrainings:
