@@ -21,7 +21,6 @@ from app.models.adminLogs import AdminLogs
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
-from app.logic.courseManagement import pendingCourses, approvedCourses
 from app.logic.participants import getEventParticipants, getUserParticipatedEvents
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
@@ -115,7 +114,7 @@ def createEvent(templateid, programid=None):
 @admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
 @admin_bp.route('/eventsList/<eventId>/edit', methods=['GET','POST'])
 def eventDisplay(eventId):
-    if request.method == "POST" and not (g.current_user.isCeltsAdmin or isProgramManagerForEvent(g.current_user, eventId)):
+    if request.method == "POST" and not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(eventId)):
         abort(403)
 
     # Validate given URL
@@ -196,7 +195,7 @@ def volunteerProfile():
 @admin_bp.route('/search_student', methods=['GET'])
 def studentSearchPage():
     if g.current_user.isAdmin:
-        return render_template("/searchStudentPage.html")
+        return render_template("/admin/searchStudentPage.html")
     abort(403)
 
 @admin_bp.route('/addParticipants', methods = ['GET'])

@@ -10,7 +10,6 @@ from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck, setProgramManager
 from app.logic.participants import trainedParticipants, getEventParticipants
 from app.logic.events import getPreviousRecurringEventData
-from app.models.user import User
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.programManager import ProgramManager
@@ -35,7 +34,7 @@ def trackVolunteersPage(eventID):
     program = event.singleProgram
     trainedParticipantsList = trainedParticipants(program, g.current_term)
     eventParticipants = getEventParticipants(event)
-    isProgramManager = isProgramManagerForEvent(g.current_user, event)
+    isProgramManager = g.current_user.isProgramManagerForEvent(event)
 
     if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
         abort(403)
@@ -80,22 +79,17 @@ def updateVolunteerTable(eventID):
         flash("Error adding volunteer", "danger")
     return redirect(url_for("admin.trackVolunteersPage", eventID=eventID))
 
+
 @admin_bp.route('/addVolunteersToEvent/<eventId>', methods = ['POST'])
-@admin_bp.route('/addVolunteerToEvent/<eventId>/<volunteer>', methods = ['POST'])
-def addVolunteer(eventId, volunteer = None):
+def addVolunteer(eventId):
+    event = Event.get_by_id(eventId)
     successfullyAddedVolunteer = False
     usernameList = []
     eventParticipants = getEventParticipants(eventId)
-    if volunteer == None:
-        usernameList = request.form.getlist("volunteer[]")
-
-    else:
-        username = volunteer.strip("()").split('(')[-1]
-        usernameList.append(username)
+    usernameList = request.form.getlist("volunteer[]")
 
     for user in usernameList:
         user = User.get(User.username==user)
-
         isVolunteerInEvent =  (EventRsvp.select().where(EventRsvp.user==user, EventRsvp.event_id == eventId).exists() and
               EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event_id == eventId).exists())
 
@@ -111,10 +105,13 @@ def addVolunteer(eventId, volunteer = None):
 
     if (successfullyAddedVolunteer):
         flash("Volunteer added successfully.", "success")
-        return redirect(url_for('admin.trackVolunteersPage', eventID = eventId))
     else:
         flash("Error when adding volunteer to event." ,"danger")
-        return redirect(url_for('admin.trackVolunteersPage', eventID = eventId))
+
+    if 'ajax' in request.form and request.form['ajax']:
+        return ''
+
+    return redirect(url_for('admin.trackVolunteersPage', eventID = eventId))
 
 
 @admin_bp.route('/removeVolunteerFromEvent/<user>/<eventID>', methods = ['POST'])

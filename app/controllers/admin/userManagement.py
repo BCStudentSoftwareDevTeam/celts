@@ -37,22 +37,15 @@ def manageUsers():
                 addCeltsStudentStaff(user)
                 flash(username + " has been added as a Celts Student Staff", 'success')
     elif method == "removeCeltsAdmin":
-        if not user.isCeltsAdmin:
-            flash(username + " is not a Celts Admin ", 'danger')
-        else:
-            removeCeltsAdmin(user)
-            flash(username + " is no longer a Celts Admin ", 'success')
+        removeCeltsAdmin(user)
+        flash(username + " is no longer a Celts Admin ", 'success')
     elif method == "removeCeltsStudentStaff":
-        if not user.isCeltsStudentStaff:
-            flash(username + " is not a Celts Student Staff ", 'danger')
-        else:
-            removeCeltsStudentStaff(user)
-            flash(username + " is no longer a Celts Student Staff", 'success')
+        removeCeltsStudentStaff(user)
+        flash(username + " is no longer a Celts Student Staff", 'success')
     return ("success")
 
 @admin_bp.route('/addProgramManagers', methods=['POST'])
 def addProgramManagers():
-
     eventData = request.form
     try:
         return addProgramManager(eventData['username'],int(eventData['programID']))
@@ -63,7 +56,6 @@ def addProgramManagers():
 
 @admin_bp.route('/removeProgramManagers', methods=['POST'])
 def removeProgramManagers():
-
     eventData = request.form
     try:
         return removeProgramManager(eventData['username'],int(eventData['programID']))
@@ -91,21 +83,21 @@ def updateProgramInfo():
 def userManagement():
     terms = selectSurroundingTerms(g.current_term)
     current_programs = Program.select()
+    currentAdmins = list(User.select().where(User.isCeltsAdmin))
+    currentStudentStaff = list(User.select().where(User.isCeltsStudentStaff))
     if g.current_user.isCeltsAdmin:
         return render_template('admin/userManagement.html',
-                                terms=terms,
-                                programs=list(current_programs))
+                                terms = terms,
+                                programs = list(current_programs),
+                                currentAdmins = currentAdmins,
+                                currentStudentStaff = currentStudentStaff)
     abort(403)
 
 @admin_bp.route('/admin/changeTerm', methods=['POST'])
 def changeTerm():
-    try:
-        termData = request.form
-        term = int(termData["id"])
-        changeCurrentTerm(term)
-        flash(f'Current term successfully changed to {g.current_term.description}.', 'success')
-    except:
-        flash('Current term was not changed. Please try again.', 'warning')
+    termData = request.form
+    term = int(termData["id"])
+    changeCurrentTerm(term)
     return ""
 
 @admin_bp.route('/admin/addNewTerm', methods = ['POST'])

@@ -29,7 +29,7 @@
       <div class="container">
         <div class="row">
           <div class="col">
-            <h2> Pending </h2>
+            <h2> Submitted </h2>
           </div>
           <div class="col">
             <div class="float-end">
@@ -46,12 +46,12 @@
             <th scope="col">Faculty</th>
             <th scope="col">Term</th>
             <th scope="col">Status</th>
-            <th scope="col">Review</th>
+            <th scope="col"></th>
             <th scope="col">Edit</th>
           </tr>
         </thead>
         <tbody>
-          {% for course in pendingCourses %}
+          {% for course in submittedCourses %}
           <tr>
             <td>{{course.courseName}}</td>
             <td>
@@ -61,7 +61,7 @@
             </td>
             <td>{{course.term.description}}</td>
             <td>{{course.status.status}}</td>
-            <td><button type="button" data-id="{{course}}" onclick="reviewCourses(this)" class="btn {{'btn-primary' if course.status.status == 'Pending' else 'btn-warning'}} btn-sm">{{ "Review" if course.status.status == "Pending" else "In Progress" }}</button></td>
+            <td><button type="button" data-id="{{course}}" onclick="reviewCourses(this)" class="btn btn-primary btn-sm">{{ "Review"}}</button></td>
             <td><a type="button" href="/serviceLearning/editProposal/{{course }}" class="btn btn-primary btn-sm">Edit</a></td>
           </tr>
           {% endfor %}
