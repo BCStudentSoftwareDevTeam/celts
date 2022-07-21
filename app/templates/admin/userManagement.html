@@ -24,7 +24,11 @@
         User Management
         </button>
       </h3>
-      <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#adminManagement">
+      {%set collapse="show" %}
+      {% if showSettingsPane %}
+        {% set collapse= "" %}
+      {% endif %}
+      <div id="collapseOne" class="accordion-collapse collapse {{collapse}}" aria-labelledby="headingOne" data-bs-parent="#adminManagement">
         <div class="accordion-body">
           <div class="container-fluid col-10">
             <div class="row d-flex justify-content-center mb-3">
