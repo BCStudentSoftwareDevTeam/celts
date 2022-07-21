@@ -67,7 +67,8 @@ def slcEditProposal(courseID):
                                 isRegularlyOccuring = isRegularlyOccuring,
                                 isAllSectionsServiceLearning = isAllSectionsServiceLearning,
                                 isPermanentlyDesignated = isPermanentlyDesignated,
-                                courseID=courseID)
+                                courseID=courseID,
+                                redirectTarget = getRedirectTarget(True))
 
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcCreateOrEdit():
@@ -82,7 +83,7 @@ def slcCreateOrEdit():
         return redirect('/serviceLearning/courseManagement')
     terms = Term.select().where(Term.year >= g.current_term.year)
     courseData = None
-    return render_template('serviceLearning/slcNewProposal.html', terms=terms, courseData = courseData)
+    return render_template('serviceLearning/slcNewProposal.html', terms=terms, courseData = courseData, redirectTarget = getRedirectTarget(True))
 
 instructorsDict = {}
 @serviceLearning_bp.route('/courseInstructors', methods=['POST'])
