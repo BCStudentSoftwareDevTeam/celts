@@ -74,6 +74,22 @@
       </thead>
       <tbody>
       {% for row in eligibilityTable %}
+      {% set trainingList = row['trainingList'] %}
+      {% macro trainingListView() -%}
+        {%- for trainings, participated in trainingList.items() -%}
+            {% if g.current_user.isCeltsAdmin %}
+              <li>{{trainings}}</li>
+            {% else %}
+                {% if participated == 1 %}
+                    <li><b>{{trainings}}</b>: Attended</li>
+                {% elif participated == 0 %}
+                    <li><b>{{trainings}}</b>: Not attended</li>
+                {% else %}
+                    <li><b>{{trainings}}</b>: Upcoming</li>
+                {% endif%}
+            {% endif %}
+        {%- endfor -%}
+      {% endmacro -%}
         {% set checked = "" %}
         {% if row.program in programsInterested %}
             {% set checked = "checked" %}
@@ -86,6 +102,7 @@
                     <i class="bi bi-check-lg"></i>
                 {% else %}
                     <i class="bi bi-x-lg"></i>
+                    <a class="trainingPopover" id="{{row.program.id}}" href="#" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
                 {% endif %}
             </td>
           {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
