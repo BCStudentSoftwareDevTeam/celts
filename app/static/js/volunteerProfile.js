@@ -117,15 +117,18 @@ $(document).ready(function(){
   $("#updatePhone").click(function(){
     userName=$(this).data("username") 
     phoneNumber=$("#newinput").val()
-    let isvalid =phoneNumber.replace(/\D/g,"").length
-    if (isvalid ===10){
+    let isvalid =(phoneNumber.replace(/\D/g,"").length)===10
+    if (isvalid ==true){
       $.ajax({
         method:"POST",
         url:"/updatePhone",
         data:{"username":userName,
-              "phoneNumber":phoneNumber}
+              "phoneNumber":phoneNumber},
+        success: function(s){
+          msgFlash("Phone Number is updated", "success")
+      },
       })
-      msgFlash("Phone Number is updated", "success")  
+        
     }
     else{
       msgFlash("Invalid Phone number", "danger")
