@@ -117,12 +117,19 @@ $(document).ready(function(){
   $("#updatePhone").click(function(){
     userName=$(this).data("username") 
     phoneNumber=$("#newinput").val()
-    $.ajax({
-      method:"POST",
-      url:"/updatePhone",
-      data:{"username":userName,
-            "phoneNumber":phoneNumber}
-    })
+    let isvalid =phoneNumber.replace(/\D/g,"").length
+    if (isvalid ===10){
+      $.ajax({
+        method:"POST",
+        url:"/updatePhone",
+        data:{"username":userName,
+              "phoneNumber":phoneNumber}
+      })
+      msgFlash("Phone Number is updated", "success")  
+    }
+    else{
+      msgFlash("Invalid Phone number", "danger")
+    }
   });
   $('#newinput').inputmask('(999)-999-9999'); 
 });
