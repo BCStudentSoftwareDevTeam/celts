@@ -527,6 +527,7 @@ def test_upcomingEvents():
     with mainDB.atomic() as transaction:
         testDate = datetime.datetime.strptime("2021-08-01 05:00","%Y-%m-%d %H:%M")
 
+        # Create a user to run the tests with
         user = User.create(username = 'usrtst',
                               firstName = 'Test',
                               lastName = 'User',
@@ -534,6 +535,7 @@ def test_upcomingEvents():
                               email = 'usert@berea.deu',
                               isStudent = True)
 
+        # Create an event that is not a part of a program the user can RSVP to
         noProgram = Event.create(name = "Upcoming event with no program",
                                 term = 2,
                                 description = "Test upcoming no program event.",
@@ -543,41 +545,67 @@ def test_upcomingEvents():
                                 startDate = "2021-12-12",
                                 endDate = "2021-12-13")
 
-        program_id = 2
+        # Create a Program Event to show up when the user marks interest in a
+        # new program
+        newProgramEvent = Event.create(name = "Upcoming event with  program",
+                                term = 2,
+                                description = "Test upcoming program event.",
+                                timeStart = "18:00:00",
+                                timeEnd = "21:00:00",
+                                location = "The sun",
+                                startDate = 2021-12-12,
+                                endDate = 2021-12-13)
+
+        # Create a new Program to create the new Program Event off of so the
+        # user can mark interest for it
+        ProgramForInterest = Program.create(id = 13,
+                                            programName = "BOO",
+                                            isStudentLed = False,
+                                            isBonnerScholars = False,
+                                            emailReplyTo = "test@email",
+                                            emailSenderName = "testName")
+
+        ProgramEventForInterest = ProgramEvent.create(program = 13, event = newProgramEvent)
+
+        program_id = 13
 
         # User has not RSVPd and is Interested
         addInterest = addUserInterest(program_id, user)
+        eventsInUserInterestedProgram = getUpcomingEventsForUser(user, asOf = testDate)
 
-        # int = list(ProgramEvent.select().join(Interest).where(Interest.user == user))
-        # print(int)
+        eventsInProgram = list((Event.select()
+                                     .join(ProgramEvent)
+                                     .join(Program)
+                                     .where(Event.startDate >= testDate,
+                                            ProgramEvent.event_id == Event.id,
+                                            ProgramEvent.program_id == 13)))
 
-        events = getUpcomingEventsForUser(user, asOf = testDate)
-        print(events)
+        assert eventsInUserInterestedProgram == eventsInProgram
 
-        events = list(ProgramEvent.select().join(Program).where(Program.id == 2))
-        print(events)
+        # user has RSVPd and is Interested
+        addUserRsvp = addVolunteerToEventRsvp(user, noProgram.id)
+        eventsInUserInterestAndRsvp = getUpcomingEventsForUser(user, asOf = testDate)
 
-        # # user has RSVPd and is Interested
-        # addUserRsvp = addVolunteerToEventRsvp(user, noProgram.id)
-        # addInterest = addUserInterest(program_id, user)
-        #
-        # bla = list(EventRsvp.select().where(EventRsvp.user == user))
-        # print(bla)
-        #
-        # int = list(Interest.select().where(Interest.user == user))
-        # print(int)
-        #
-        # events = getUpcomingEventsForUser(user, asOf = testDate)
-        # print(events)
-        #
-        # # User has RSVPd and is not Interested
-        # removeInterest = removeUserInterest(program_id, user)
-        #
-        # int2 = list(Interest.select().where(Interest.user == user))
-        # print(int2)
-        #
-        # events = getUpcomingEventsForUser(user, asOf = testDate)
-        # print(events)
+        eventsInProgramAndRsvp = list((Event.select()
+                                        .join(ProgramEvent, JOIN.LEFT_OUTER)
+                                        .join(Interest, JOIN.LEFT_OUTER, on=(ProgramEvent.program == Interest.program))
+                                        .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
+                                        .where(Event.startDate >= testDate,
+                                              (Interest.user == user) | (EventRsvp.user == user))))
+
+
+        assert eventsInUserInterestAndRsvp == eventsInProgramAndRsvp
+
+        # User has RSVPd and is not Interested
+        removeInterest = removeUserInterest(program_id, user)
+        eventsInUserRsvp = getUpcomingEventsForUser(user, asOf = testDate)
+
+        eventsInRsvp = list((Event.select()
+                                 .join(EventRsvp)
+                                 .where(Event.startDate >= testDate,
+                                        EventRsvp.user == user, Event.id == EventRsvp.event_id)))
+
+        assert eventsInUserRsvp == eventsInRsvp
 
         transaction.rollback()
 
