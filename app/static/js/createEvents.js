@@ -35,6 +35,11 @@ function format24to12HourTime(timeStr){
  * Run when the webpage is ready for javascript
  */
 $(document).ready(function() {
+  // Disable button when we are ready to submit
+  $("#saveEvent").on('submit',function(event) {
+      $(this).find("input[type=submit]").prop("disabled", true)
+  });
+
   $("#checkIsRecurring").click(function() {
     var recurringStatus = $("input[name='isRecurring']:checked").val()
     if (recurringStatus == 'on') {
@@ -110,7 +115,7 @@ $(document).ready(function() {
           for (var event of recurringEvents){
             eventdate= new Date(event.date).toLocaleDateString()
             recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
-            }   
+            }
         },
         error: function(error){
           console.log(error)
