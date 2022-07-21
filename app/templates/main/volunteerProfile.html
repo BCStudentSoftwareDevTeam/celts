@@ -4,6 +4,7 @@
 {% block scripts %}
   {{super()}}
   <script type="text/javascript" src="{{url_for('static', filename='js/volunteerProfile.js') }}?u={{lastStaticUpdate}}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>  
 {% endblock %}
 
 {% block styles %}
@@ -15,9 +16,11 @@
 <div>
     <h1 align="center">{{volunteer.firstName}} {{volunteer.lastName}}</h1>
     <h6 align="center">{{volunteer.email}}</h6>
-    <h6 align="center">{{volunteer.phoneNumber}}</h6>
+    <div align="center">
+          <input size="14" id="phoneInput" type="text"  class="bfh-phone" value="{{volunteer.phoneNumber}}">
+          <button class=" btn-success btn-sm" id="updatePhone" data-username="{{volunteer.username}}">Update</button>
+    </div>  
 </div>
-
 <div class="btn-group">
    <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="tabs-tab" role="tablist">
      <li class="nav-item" role="presentation">
