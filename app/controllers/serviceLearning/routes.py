@@ -7,14 +7,13 @@ from app.models.courseInstructor import CourseInstructor
 from app.models.courseQuestion import CourseQuestion
 from app.models.courseParticipant import CourseParticipant
 from app.logic.utils import selectSurroundingTerms
-
-from app.controllers.serviceLearning import serviceLearning_bp
 from app.logic.searchUsers import searchUsers
 from app.logic.utils import selectSurroundingTerms
 from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal, renewProposal
 from app.logic.courseManagement import updateCourse, createCourse
-
 from app.controllers.main.routes import getRedirectTarget, setRedirectTarget
+from app.controllers.serviceLearning import serviceLearning_bp
+
 
 @serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
 @serviceLearning_bp.route('/serviceLearning/courseManagement/<username>', methods = ['GET'])
@@ -71,21 +70,26 @@ def slcEditProposal(courseID):
 @serviceLearning_bp.route('/serviceLearning/saveProposal', methods=['POST'])
 def slcSaveContinue():
     """Will update the the course proposal and return an empty string since ajax request needs a response"""
-    courseExist = Course.get_or_none(Course.id == request.form.get('courseID'))
-    if courseExist:
-        updateCourse(request.form.copy(), instructorsDict)
+    course = Course.get_by_id(request.form.get('courseID'))
+    updateCourse(request.form.copy(), instructorsDict)
+    if len(request.form) == 1:
+        try:
+            course.status = CourseStatus.INCOMPLETE
+            course.save() # saves the query and approves course in the database
+            flash("Course incomplete!", "success")
+        except:
+            flash("Course not incomplete!", "danger")
     return ""
 
 @serviceLearning_bp.route('/serviceLearning/createCourse/', methods=['POST'])
 def slcCreateCourse():
     """will give a new course ID so that it can redirect to an edit page"""
-    status = CourseStatus.get(CourseStatus.status == "Pending")
-    courseID = Course.create(
-        status=status)
-    id = Course.get_by_id(courseID)
+    course = Course.create(
+        status=CourseStatus.INCOMPLETE)
+    id = Course.get_by_id(course)
     for i in range(1, 7):
         CourseQuestion.create(
-            course=courseID,
+            course=course,
             questionNumber=i
         )
     return redirect(url_for('serviceLearning.slcEditProposal', courseID = id))
@@ -170,16 +174,16 @@ def approveCourse():
         approve button.
     return: empty string because AJAX needs to receive something
     """
-    if len(request.form)==1:
-        course=Course.get_by_id(request.form['courseID']) # if only course is reviewed pass the course ID
+    if len(request.form) == 1:
+        course = Course.get_by_id(request.form['courseID']) # if only course is reviewed pass the course ID
 
     elif 'courseID' in request.form:
         course = updateCourse(request.form.copy(), instructorsDict) # if edit course, Updates database with the completed fields and get course ID
 
     else:
-        course=createCourse(request.form.copy(), instructorsDict) # creat course first and get its ID to approve next
+        course = createCourse(request.form.copy(), instructorsDict) # creat course first and get its ID to approve next
     try:
-        course.status = 2
+        course.status = CourseStatus.APPROVED
         course.save() # saves the query and approves course in the database
         flash("Course approved!", "success")
     except:
