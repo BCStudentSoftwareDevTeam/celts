@@ -121,7 +121,7 @@
   {% if volunteer.isCeltsStudentStaff%}
       <div class="row">
         <h2>Which programs do you want to make {{volunteer.firstName}} {{volunteer.lastName}} manager for?</h2>
-        <div>
+        <ul class="list-unstyled">
           {% for program in programs %}
             {% set action = "add" %}
             {% set checked = "" %}
@@ -129,14 +129,12 @@
                   {% set action = "remove" %}
                   {% set checked = "checked" %}
             {% endif %}
-            <div class="table-responsive">
-              <table>
-                    <input  type="checkbox" id="mgr-{{ program.id }}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}')">
-                    <label  style="padding-left: 15px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
-              </table>
-            </div>
+            <li>
+                <input  type="checkbox" id="mgr-{{ program.id }}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}')">
+                <label  style="padding-left: 15px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
+            </li>
           {% endfor %}
-        </div>
+      </ul>
       </div>
       <br>
     {% endif %}
