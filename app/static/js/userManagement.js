@@ -1,17 +1,19 @@
 import searchUser from './searchUser.js'
-function callbackAdmin(selected) {
+function callbackAdmin(selected){
     submitRequest("addCeltsAdmin", selected.username)
 }
-function callbackStudentStaff(selected) {
+function callbackStudentStaff(selected){
     submitRequest("addCeltsStudentStaff", selected.username)
 }
 
-$(document).ready(function() {
+$(document).ready(function(){
   // Admin Management
-  $("#searchCeltsAdminInput").on("input", () => searchUser("searchCeltsAdminInput", callbackAdmin, false, null, 'instructor'))
-  $("#searchCeltsStudentStaffInput").on("input", () => searchUser("searchCeltsStudentStaffInput", callbackStudentStaff, false, null, "student"))
-
-
+  $("#searchCeltsAdminInput").on("input", function(){
+      searchUser("searchCeltsAdminInput", callbackAdmin, false, null, "instructor")
+  });
+  $("#searchCeltsStudentStaffInput").on("input", function(){
+      searchUser("searchCeltsStudentStaffInput", callbackStudentStaff, false, null, "student")
+  });
   $("#addNewTerm").on("click",function(){
     addNewTerm();
   });
@@ -27,29 +29,29 @@ $(document).ready(function() {
   $(".removeStudentStaff").on("click",function(){
     submitRequest("removeCeltsStudentStaff", $(this).data("username"));
   });
-  $('#searchCeltsAdminInput').keydown(function(e) {
-      if (e.key === "Enter") {
+  $('#searchCeltsAdminInput').keydown(function(e){
+      if (e.key === "Enter"){
           submitRequest("addCeltsAdmin", $(this).val())
       }
   });
-  $('#searchCeltsStudentStaffInput').keydown(function(e) {
-      if (e.key === "Enter") {
+  $('#searchCeltsStudentStaffInput').keydown(function(e){
+      if (e.key === "Enter"){
           submitRequest("addCeltsStudentStaff", $(this).val())
       }
   });
 
-  for (var i=1; i<=$('#currentTermList .term-btn').length; i++){
-    $("#termFormID_"+i).on("click", function() {
+  for (var i = 1; i <= $('#currentTermList .term-btn').length; i++){
+    $("#termFormID_" + i).on("click", function(){
       $(".term-btn").removeClass("active");
       $(this).addClass('active');
     });
   };
-  $(".term-btn").on("click", function() {
+  $(".term-btn").on("click", function(){
     submitTerm();
   });
 });
 
-function submitRequest(method, username) {
+function submitRequest(method, username){
   let data = {
       method: method,
       user: username,
@@ -69,7 +71,7 @@ function submitRequest(method, username) {
   })
 }
 
-function submitTerm() {
+function submitTerm(){
   var selectedTerm = $("#currentTermList .active")
   var termInfo = {id: selectedTerm.val()};
   $.ajax({
@@ -86,7 +88,7 @@ function submitTerm() {
   })
 }
 
-function addNewTerm() {
+function addNewTerm(){
   $.ajax({
     url: "/admin/addNewTerm",
     type: "POST",
@@ -99,7 +101,7 @@ function addNewTerm() {
   })
 }
 
-function addNewProgramInfo() {
+function addNewProgramInfo(){
   var programInfo = {emailSenderName: $("#emailSenderName").val(),
                     emailReplyTo: $("#emailReplyTo").val(),
                     programId: $("#programSelect").val()};

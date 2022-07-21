@@ -22,7 +22,7 @@ def manageUsers():
     except Exception as e:
         print(e)
         flash(username + " is an invalid user.", "danger")
-        return ("danger")
+        return ("danger", 500)
 
     if method == "addCeltsAdmin":
         if user.isStudent:
