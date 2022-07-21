@@ -162,12 +162,16 @@
               placeholder="Search facilitator"
               value="" />
             <table class="table mb-3" id="facilitatorTable" name="facilitatorTable">
+              <thead>
+                <tr>
+                </tr>
+              </thead>
               <tbody>
                 <tr hidden>
                   <td>
-                    <p class="facilitatorName" required></p>
+                    <p class="facilitatorName mt-3" required></p>
                   </td>
-                  <td><button id="remove" type="button" class="btn btn-danger">Remove</button></td>
+                  <td><button id="remove" type="button" class="mt-3 btn btn-danger">Remove</button></td>
 
                 </tr>
                 {% for instructor in courseInstructor %}
