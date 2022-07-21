@@ -35,9 +35,9 @@ function format24to12HourTime(timeStr){
  * Run when the webpage is ready for javascript
  */
 $(document).ready(function() {
-  $("#saveEventBtn").click(function() {
-      $("#saveEvent").submit()
-      $("#saveEventBtn").prop("disabled", true)
+  // Disable button when we are ready to submit
+  $("#saveEvent").on('submit',function(event) {
+      $(this).find("input[type=submit]").prop("disabled", true)
   });
 
   $("#checkIsRecurring").click(function() {
