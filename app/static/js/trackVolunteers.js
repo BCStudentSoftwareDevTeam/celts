@@ -76,6 +76,7 @@ $(document).ready(function() {
       url: `/removeVolunteerFromEvent/${username}/${eventId}`,
       type: "POST",
       success: function(s) {
+         $("#selectVolunteerButton").prop("disabled", true)
          location.reload();
       },
       error: function(request, status, error) {
