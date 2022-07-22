@@ -7,12 +7,11 @@
 {% endblock %}
 
 {% block app_content %}
-{% macro createInputsButtons(inputId, buttonId, buttonName, buttonClass, labelName) %}
+{% macro createInputsButtons(inputId, labelName) %}
 <label class="form-label col-md-10" for="{{inputId}}"><strong>{{labelName}}</strong></label>
   <div class="input-group">
   <input type="input" id="{{inputId}}" name="{{inputId}}" class="form-control" placeholder="Search" autocomplete="off" style="width:50%;"/>
   <span class="input-group-text me-1"><span class="bi bi-search"></span></span>
-  <button type="button" class="btn btn-{{buttonClass}} btn-md" id="{{buttonId}}">{{buttonName}}</button>
 </div>
 {% endmacro %}
 
@@ -34,7 +33,7 @@
             <div class="row d-flex justify-content-center mb-3">
               <div class="col-md-6 mb-3">
                 <div>
-                    {{createInputsButtons("searchCeltsAdminInput","addCeltsAdmin","Add","success", "Add Celts Admin")}}<br>
+                    {{createInputsButtons("searchCeltsAdminInput", "Add Celts Admin")}}<br>
                 </div>
                 <table class="table mb-3">
                   <thead>
@@ -55,7 +54,7 @@
             </div>
             <div class="col-md-6 mb-3">
                 <div>
-                  {{createInputsButtons("searchCeltsStudentStaffInput","addCeltsStudentStaff","Add","success", "Add Celts Student Staff")}}<br>
+                  {{createInputsButtons("searchCeltsStudentStaffInput", "Add Celts Student Staff")}}<br>
                 </div>
                 <table class="table mb-3">
                   <thead>
@@ -81,7 +80,7 @@
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingTwo">
       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-          Term Management Settings
+          Term Management
         </button>
         </h3>
         <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#adminManagement">
@@ -93,7 +92,7 @@
                       <div class="card-header"><strong>Select the Current Term</strong></div>
                         <ul class="list-group" name="currentTermList" id="currentTermList">
                         {% for term in terms %}
-                        <li class="term-btn list-group-item list-group-item-action {{ 'active' if g.current_term == term }}"
+                        <li class="term-btn list-group-item list-group-item-action {{'active' if g.current_term == term}}"
                             id="termFormID_{{ loop.index }}"
                             aria-label="{{'Current term' if g.current_term == term}}"
                             value='{{ term.id }}'
@@ -106,18 +105,17 @@
                         <div class="card-footer">
                           <button class="btn btn-success w-100" id="addNewTerm" role ="button">Add New Term</button>
                         </div>
-                      </div>
-                      <button class="btn btn-primary my-2 float-end" id="submitButton" role="button">Make Current Term</button>
                     </div>
-              </div>
-            </div>
+                 </div>
+               </div>
+             </div>
           </div>
         </div>
   </div>
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingThree">
       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-        Program Settings
+        Program Management
         </button>
       </h3>
       {% if showSettingsPane %}

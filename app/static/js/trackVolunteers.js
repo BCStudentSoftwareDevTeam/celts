@@ -21,32 +21,50 @@ $(document).ready(function() {
       });
     });
 
-    // Adding the new volunteer to the user database table
+
+  // Adding the new volunteer to the user database table
     $("#selectVolunteerButton").click(function(){
+        let user = $("#addVolunteerInput").val()
+        let eventId = $("#eventID").val()
+        let checkboxlist = $("#addVolunteerModal input[type=checkbox]")
+        let volunteerList = []
+        $.each(checkboxlist, function(index, checkbox){
+            if(checkbox["checked"] == true){
+                volunteerList.push(checkbox["value"])
+            }
+        })
+        $.ajax({
+          url: `/addVolunteersToEvent/${eventId}`,
+          type: "POST",
+          data: {"volunteer" :volunteerList, "ajax": true},
+          success: function(s){
+              location.reload()
+          },
+          error: function(request, status, error){
+              location.reload()
+          }
+      })
+    })
+
+    var userlist = []
+    function callback(selected) {
+      $("#selectVolunteerButton").prop('disabled', false);
       let user = $("#addVolunteerInput").val()
-      let eventId = $("#eventID").val()
-
-      $.ajax({
-        url: `/addVolunteerToEvent/${eventId}/${user}`,
-        type: "POST",
-        success: function(response){
-          console.log(response)
-          location.reload();
-        },
-        error: function(request, status, error){
-          location.reload();
-        }
-      });
-    });
-
-  function callback() {
-    $("#selectVolunteerButton").prop('disabled', false);
-  }
-
+      if(userlist.includes(selected["username"]) == false){
+          userlist.push(user)
+          let i = userlist.length;
+          $("#addVolunteerList").append("<li class id= 'addVolunteerElements"+i+"'> </li>")
+          $("#addVolunteerElements"+i+"").append("<input  type='checkbox' id= 'userlistCheckbox"+i+"' checked value='" + user +"' >  </input>")
+          $("#addVolunteerElements"+i+"").append("<label form for= 'userlistCheckbox"+i+"'>"+ selected["firstName"]+ " " + selected["lastName"] +"</label>")
+      }
+      else{
+          msgFlash("User already selected.")
+      }
+    }
   $("#selectVolunteerButton").prop('disabled', true);
 
   $("#addVolunteerInput").on("input", function() {
-    searchUser("addVolunteerInput", callback, false, "addVolunteerModal");
+    searchUser("addVolunteerInput", callback, true, "addVolunteerModal");
   });
 
   $(".removeVolunteer").on("click", function() {
@@ -63,10 +81,10 @@ $(document).ready(function() {
     });
   });
 
+
 $(".attendanceCheck").on("change", function() {
     let username =  this.name.substring(9) //get everything after the 9th character;
     let inputFieldID = `inputHours_${username}`
-
 
     if (this.checked) {
       $(`#${inputFieldID}`).prop('disabled', false);

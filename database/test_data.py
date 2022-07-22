@@ -540,22 +540,6 @@ program_events = [
 ]
 ProgramEvent.insert_many(program_events).on_conflict_replace().execute()
 
-coursestatus = [
-    {
-        "status": "Completed"
-    },
-    {
-        "status": "Approved"
-    },
-    {
-        "status": "Pending"
-    },
-    {
-        "status": "Requires Edit"
-    }
-]
-CourseStatus.insert_many(coursestatus).on_conflict_replace().execute()
-
 notes = [
     {
     "id": 1,

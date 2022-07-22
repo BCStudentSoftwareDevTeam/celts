@@ -18,16 +18,22 @@ from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
 from app.models.programManager import ProgramManager
+from app.models.courseStatus import CourseStatus
 from app.controllers.main import main_bp
+from app.logic.loginManager import logout
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
 from app.logic.manageSLFaculty import getCourseDict
-from app.logic.courseManagement import pendingCourses, approvedCourses
+from app.logic.courseManagement import submittedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
 from app.models.courseInstructor import CourseInstructor
+
+@main_bp.route('/logout', methods=['GET'])
+def redirectToLogout():
+    return redirect(logout())
 
 @main_bp.route('/', methods=['GET'])
 def redirectToEventsList():
@@ -92,14 +98,14 @@ def viewVolunteersProfile(username):
         else:
             # sets the values to strings because student staff do not have access to input boxes
             completedBackgroundCheck = {entry.type: ['Yes' if entry.passBackgroundCheck else 'No',
-                                                    'Not Completed' if entry.dateCompleted == None
+                                                    '' if entry.dateCompleted == None
                                                     else entry.dateCompleted.strftime('%m/%d/%Y')] for entry in allUserEntries}
 
         backgroundTypes = list(BackgroundCheckType.select())
         # creates data structure for background checks that are not currently completed
         for checkType in backgroundTypes:
             if checkType not in completedBackgroundCheck.keys():
-                completedBackgroundCheck[checkType] = ["No", "Not Completed"]
+                completedBackgroundCheck[checkType] = ["No"]
 
         eligibilityTable = []
         for program in programs:
@@ -181,7 +187,10 @@ def addInterest(program_id, username):
     try:
         success = addUserInterest(program_id, username)
         if success:
+            flash("Successfully added " + Program.get_by_id(program_id).programName + " as an interest", "success")
             return ""
+        else:
+            flash("Was unable to remove " + Program.get_by_id(program_id).programName + " as an interest.", "danger")
 
     except Exception as e:
         print(e)
@@ -197,8 +206,10 @@ def removeInterest(program_id, username):
     try:
         removed = removeUserInterest(program_id, username)
         if removed:
+            flash("Successfully removed " + Program.get_by_id(program_id).programName + " as an interest.", "success")
             return ""
-
+        else:
+            flash("Was unable to remove " + Program.get_by_id(program_id).programName + " as an interest.", "danger")
     except Exception as e:
         print(e)
         return "Error Updating Interest", 500
@@ -294,7 +305,7 @@ def contributors():
 @main_bp.route('/proposalReview/', methods = ['GET', 'POST'])
 def reviewProposal():
     """
-    this function gets the pending course id and returns the its data to the review proposal modal
+    this function gets the submitted course id and returns the its data to the review proposal modal
     """
     courseID=request.form
     course=Course.get_by_id(courseID["course_id"])
@@ -318,16 +329,17 @@ def getAllCourseInstructors(term=None):
         if not term:
             term = g.current_term
 
-        pending = pendingCourses(term)
+        submitted = submittedCourses(term)
         approved = approvedCourses(term)
         terms = selectSurroundingTerms(g.current_term)
 
         return render_template('/main/manageServiceLearningFaculty.html',
                                 courseInstructors = courseDict,
-                                pendingCourses = pending,
+                                submittedCourses = submitted,
                                 approvedCourses = approved,
                                 terms = terms,
-                                term = term)
+                                term = term,
+                                CourseStatus = CourseStatus)
     else:
         abort(403)
 

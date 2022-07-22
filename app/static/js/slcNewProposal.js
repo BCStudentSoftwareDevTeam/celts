@@ -36,14 +36,15 @@ function showTab(currentTab) {
 }
 
 $("#saveAndApproveButton").click(function(){
-  var data = $("form").serialize()
-  saveCourseInstructors()
-  $.ajax({
-    url: "/serviceLearning/approveCourse/",
-    type: "POST",
-    data: data,
-    success: function(response) {
-        window.location.replace("/manageServiceLearning")
+    $("#saveAndApproveButton").prop("disabled", true)
+    var data = $("form").serialize()
+    saveCourseInstructors()
+    $.ajax({
+        url: "/serviceLearning/approveCourse/",
+        type: "POST",
+        data: data,
+        success: function(response) {
+            window.location.replace("/manageServiceLearning")
     }
   });
 });
@@ -57,14 +58,14 @@ $("#nextButton").on("click", function() {
 });
 
 $("#cancelButton").on("click", function() {
-  window.location.replace("/manageServiceLearning");
+        window.location.replace("/serviceLearning/courseManagement");
 });
 
 function displayCorrectTab(navigateTab) {
   // This function will figure out which tab to display
   let allTabs = $(".tab");
   if (navigateTab == 1 && !validateForm()) return false;
-  if(currentTab != (allTabs.length - 1)){
+  if(currentTab != (allTabs.length - 1) || (navigateTab == -1)){
       $(allTabs[currentTab]).css("display", "none");
   }
 
@@ -72,8 +73,9 @@ function displayCorrectTab(navigateTab) {
   currentTab = currentTab + navigateTab;
 
   if (currentTab >= allTabs.length) {
-    saveCourseInstructors().then(() => $("#slcNewProposal").submit());
-    return false;
+      $("#nextButton").prop("disabled", true)
+      saveCourseInstructors().then(() => $("#slcNewProposal").submit());
+      return false;
   }
   showTab(currentTab);
 }
