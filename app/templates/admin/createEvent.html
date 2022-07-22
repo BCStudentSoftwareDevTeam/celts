@@ -80,6 +80,10 @@
             {% if eventData.id %}
                 <input type="hidden" name="id" value="{{eventData.id}}">
             {% endif %}
+        {% for path in paths %}
+          <a href="{{path}}" target="_blank">here</a>
+  
+        {% endfor %}
         <div class="form-group mb-4">
           <label class="form-label" for='inputEventName'><strong>Event Name</strong></label>
           <input class="form-control" id='inputEventName' value="{{eventData.name}}" placeholder="Enter event name" name="name" required>

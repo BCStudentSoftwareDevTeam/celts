@@ -1,4 +1,6 @@
 import os
+
+from flask import redirect, url_for
 from app import app
 
 
@@ -45,3 +47,8 @@ class FileHandler:
                 os.remove(self.getAttachmentFullPath(file))
         except AttributeError: #passes if no attachment is selected.
             pass
+    def retrievePath(self):
+        pathlist=[]
+        for file in self.attachment_file:
+            pathlist.append((self.attachment_path+"/"+file.fileName)[3:])
+        return pathlist

@@ -74,11 +74,8 @@ def createEvent(templateid, programid=None):
     # Get the data for the form, from the template or the form submission
     eventData = template.templateData
     if request.method == "POST":
-        print("++++++++++++++++++++++++++++++++++")
         attachmentFiles = request.files.getlist("attachmentObject")
         eventData = request.form.copy()
-        print(eventData)
-        print(attachmentFiles)
     if program:
         # TODO need to handle the multiple programs case
         eventData["program"] = program
@@ -142,10 +139,8 @@ def eventDisplay(eventId):
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     program = event.singleProgram
     associatedAttachments = EventFile.select().where(EventFile.event == eventId)
-    print("++++++++++++++++++++++++++++++++++++++++++++++++++")
-    for file in associatedAttachments:
-
-        print(file.fileName)
+    eventfiles=FileHandler(associatedAttachments)
+    paths=eventfiles.retrievePath()
     isProgramManager = g.current_user.isProgramManagerFor(program)
     rule = request.url_rule
     if 'edit' in rule.rule:
@@ -158,7 +153,7 @@ def eventDisplay(eventId):
                                 isPastEvent = isPastEvent,
                                 userHasRSVPed = userHasRSVPed,
                                 isProgramManager = isProgramManager,
-                                associatedAttachments = associatedAttachments)
+                                paths = paths)
     else:
         eventFacilitators = EventFacilitator.select().where(EventFacilitator.event == event)
         eventFacilitatorNames = [eventFacilitator.user for eventFacilitator in eventFacilitators]
