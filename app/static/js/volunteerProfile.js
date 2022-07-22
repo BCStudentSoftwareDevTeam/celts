@@ -113,18 +113,17 @@ $(document).ready(function(){
       }
     })
   });
+
   // Popover functionalitie
-  $(function(){
     var requiredTraining = $(".trainingPopover");
     requiredTraining.popover({
-      trigger: "hover",
-      sanitize: false,
-      html: true,
-      content: function() {
+       trigger: "hover",
+       sanitize: false,
+       html: true,
+       content: function() {
             return $(this).attr('data-content');
         }
     });
-  });
 });
 
 function displayMessage(message, color) {  // displays message for saving background check
