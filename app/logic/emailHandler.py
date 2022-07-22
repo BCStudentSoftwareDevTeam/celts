@@ -153,6 +153,8 @@ class EmailHandler:
             # tries to create the full path of the files location and passes if
             # the directories already exist or there is no attachment
             attachmentFullPath = os.path.join(self.attachment_path, self.attachment_file.filename)
+            if attachmentFullPath[:-1] == self.attachment_path:
+                return None
             os.mkdir(self.attachment_path)
 
         except AttributeError:  # will pass if there is no attachment to save
@@ -165,10 +167,10 @@ class EmailHandler:
     def saveAttachment(self):
         """ Saves the attachment in the app/static/files/attachments/ directory """
         try:
-            self.attachment_file.save(self.getAttachmentFullPath()) # saves attachment in directory
+            attachmentFullPath = self.getAttachmentFullPath()
+            if attachmentFullPath:
+                self.attachment_file.save(attachmentFullPath) # saves attachment in directory
         except AttributeError: # will pass if there is no attachment to save
-            pass
-        except IsADirectoryError: # will pass if we try to handle a directory as a file
             pass
 
     def store_sent_email(self, subject, template_id):
