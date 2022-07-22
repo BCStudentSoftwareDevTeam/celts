@@ -72,7 +72,7 @@ def createEvent(templateid, programid=None):
     # Get the data for the form, from the template or the form submission
     eventData = template.templateData
     if request.method == "POST":
-        eventData = request.form.copy()
+        eventData.update(request.form.copy())
 
     if program:
         # TODO need to handle the multiple programs case
