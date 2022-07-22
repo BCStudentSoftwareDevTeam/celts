@@ -72,13 +72,12 @@ def slcSaveContinue():
     """Will update the the course proposal and return an empty string since ajax request needs a response"""
     course = Course.get_by_id(request.form.get('courseID'))
     updateCourse(request.form.copy(), instructorsDict)
-    if len(request.form) == 1:
-        try:
-            course.status = CourseStatus.INCOMPLETE
-            course.save() # saves the query and approves course in the database
-            flash("Course incomplete!", "success")
-        except:
-            flash("Course not incomplete!", "danger")
+    try:
+        course.status = CourseStatus.INCOMPLETE
+        course.save() # saves the query and approves course in the database
+        flash("Course incomplete!", "success")
+    except:
+        flash("Course not incomplete!", "danger")
     return ""
 
 @serviceLearning_bp.route('/serviceLearning/createCourse/', methods=['POST'])
@@ -183,6 +182,7 @@ def approveCourse():
     else:
         course = createCourse(request.form.copy(), instructorsDict) # creat course first and get its ID to approve next
     try:
+        course = updateCourse(request.form.copy(), instructorsDict)
         course.status = CourseStatus.APPROVED
         course.save() # saves the query and approves course in the database
         flash("Course approved!", "success")

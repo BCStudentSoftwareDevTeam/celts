@@ -36,7 +36,7 @@ function showTab(currentTab) {
   fixStepIndicator(currentTab)
 }
 
-$("#saveAndApproveButton").click(function(){
+$("approveButton").click(function(){
   var data = $("form").serialize()
   saveCourseInstructors()
   $.ajax({
@@ -55,19 +55,27 @@ $("#previousButton").on("click", function() {
 
 $("#nextButton").on("click", function() {
   displayCorrectTab(1);
+  // if($(this).html == 'Submit'){
+  //   saveCourseInstructors().then(() => $("#slcNewProposal").submit());
+  // }
 });
-
 $("#saveContinue").on("click", function() {
   //this will save the change from the current page and move to the next page
   var data = $("form").serialize()
+  var save = document.getElementById("saveContinue");
   saveCourseInstructors()
   $.ajax({
     url: "/serviceLearning/saveProposal",
     type: "POST",
     data: data,
     success: function(response) {
-        displayCorrectTab(1);
-    },
+      if (currentTab == (allTabs.length - 2)) {
+        save.addEventListener("click", displayCorrectTab(-1));
+      }
+      else if (currentTab == (allTabs.length - 1)){
+        save.addEventListener("click", window.location.replace("/serviceLearning/courseManagement"));
+      }
+  },
     error: function(request, status, error) {
        msgFlash("Error saving changes!", "danger")
      }
@@ -206,6 +214,6 @@ function viewProposal(){
         $("select").prop("disabled", true);
         $("textarea").prop("disabled", true);
         $(".view").prop("disabled", true);
-        $("#saveAndApproveButton").hide();
+        $("#approveButton").hide();
     }
 }
