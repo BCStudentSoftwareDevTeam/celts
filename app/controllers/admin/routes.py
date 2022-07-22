@@ -155,7 +155,7 @@ def eventDisplay(eventId):
         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
         eventData["startDate"] = event.startDate.strftime("%m/%d/%Y")
         programManager = ProgramManager.get_or_none(program=program)
-        userParticipatedEvents = getUserParticipatedEvents(program, g.current_user)
+        userParticipatedEvents = getUserParticipatedEvents(program, g.current_user, g.current_term)
         return render_template("eventView.html",
                                 eventData = eventData,
                                 eventFacilitatorNames = eventFacilitatorNames,
