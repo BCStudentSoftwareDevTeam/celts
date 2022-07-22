@@ -69,22 +69,19 @@ def slcEditProposal(courseID):
                                 courseID=courseID)
 @serviceLearning_bp.route('/serviceLearning/saveProposal', methods=['POST'])
 def slcSaveContinue():
-    """Will update the the course proposal and return an empty string since ajax request needs a response"""
-    course = Course.get_by_id(request.form.get('courseID'))
+    """Will update the the course proposal and return an empty string since ajax request needs a response
+    Also, it updates the course status as 'Incomplete'"""
     updateCourse(request.form.copy(), instructorsDict)
-    try:
-        course.status = CourseStatus.INCOMPLETE
-        course.save() # saves the query and approves course in the database
-        flash("Course incomplete!", "success")
-    except:
-        flash("Course not incomplete!", "danger")
+    course = Course.get_by_id(request.form.get('courseID'))
+    course.status = CourseStatus.INCOMPLETE
+    course.save() 
     return ""
 
 @serviceLearning_bp.route('/serviceLearning/createCourse/', methods=['POST'])
 def slcCreateCourse():
     """will give a new course ID so that it can redirect to an edit page"""
     course = Course.create(
-        status=CourseStatus.INCOMPLETE)
+        status=CourseStatus.SUBMITTED)
     id = Course.get_by_id(course)
     for i in range(1, 7):
         CourseQuestion.create(

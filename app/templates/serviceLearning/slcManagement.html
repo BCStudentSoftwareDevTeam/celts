@@ -8,7 +8,7 @@
 {% block app_content %}
 <input id="username" type="hidden" value='{{user.username}}'>
 <h1 class="text-center mt-5 mb-2">{{user.firstName}} {{user.lastName}}'s SLC Proposals</h1>
-<div class =newCourse align="right">
+<div align="right">
   <form method="post" action="/serviceLearning/createCourse/" >
     <button class="btn btn-primary" type = 'Submit'>Create Course Proposal</button>
   </form>

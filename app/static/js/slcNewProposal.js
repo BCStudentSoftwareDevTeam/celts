@@ -5,7 +5,58 @@ let currentTab = 0; // Current tab is set to be the first tab (0)
 $(document).ready(function(e) {
   $("#cancelButton").hide();
   showTab(currentTab); // Display the current tab
-  viewProposal()
+  viewProposal();
+
+  $("#approveButton").click(function(){
+    console.log('hhhhhh')
+    var data = $("form").serialize()
+    saveCourseInstructors()
+    $.ajax({
+      url: "/serviceLearning/approveCourse/",
+      type: "POST",
+      data: data,
+      success: function(response) {
+          window.location.replace("/manageServiceLearning")
+      }
+    });
+  });
+  
+  $("#previousButton").on("click", function() {
+    displayCorrectTab(-1);
+  });
+  
+  $("#nextButton").on("click", function() {
+    displayCorrectTab(1);
+  });
+  
+  $("#saveContinue").on("click", function() {
+    //this will save the change from the current page and move to the next page
+    var save = document.getElementById("saveContinue");
+    let allTabs = $(".tab");
+    var data = $("form").serialize()
+    saveCourseInstructors()
+    $.ajax({
+      url: "/serviceLearning/saveProposal",
+      type: "POST",
+      data: data,
+      success: function(response) {
+        if (currentTab == (allTabs.length - 2)) {
+          save.addEventListener("click", displayCorrectTab(1));
+        }
+        else if (currentTab == (allTabs.length - 1)){
+          save.addEventListener("click", window.location.replace("/serviceLearning/courseManagement"));
+        }
+        msgFlash("Changes saved!", "success")
+    },
+      error: function(request, status, error) {
+         msgFlash("Error saving changes!", "danger")
+       }
+     });
+   });
+  
+  $("#cancelButton").on("click", function() {
+          window.location.replace("/serviceLearning/courseManagement");
+  });
 })
 
 function showTab(currentTab) {
@@ -36,55 +87,6 @@ function showTab(currentTab) {
   fixStepIndicator(currentTab)
 }
 
-$("approveButton").click(function(){
-  var data = $("form").serialize()
-  saveCourseInstructors()
-  $.ajax({
-    url: "/serviceLearning/approveCourse/",
-    type: "POST",
-    data: data,
-    success: function(response) {
-        window.location.replace("/manageServiceLearning")
-    }
-  });
-});
-
-$("#previousButton").on("click", function() {
-  displayCorrectTab(-1);
-});
-
-$("#nextButton").on("click", function() {
-  displayCorrectTab(1);
-  // if($(this).html == 'Submit'){
-  //   saveCourseInstructors().then(() => $("#slcNewProposal").submit());
-  // }
-});
-$("#saveContinue").on("click", function() {
-  //this will save the change from the current page and move to the next page
-  var data = $("form").serialize()
-  var save = document.getElementById("saveContinue");
-  saveCourseInstructors()
-  $.ajax({
-    url: "/serviceLearning/saveProposal",
-    type: "POST",
-    data: data,
-    success: function(response) {
-      if (currentTab == (allTabs.length - 2)) {
-        save.addEventListener("click", displayCorrectTab(-1));
-      }
-      else if (currentTab == (allTabs.length - 1)){
-        save.addEventListener("click", window.location.replace("/serviceLearning/courseManagement"));
-      }
-  },
-    error: function(request, status, error) {
-       msgFlash("Error saving changes!", "danger")
-     }
-   });
- });
-
-$("#cancelButton").on("click", function() {
-        window.location.replace("/serviceLearning/courseManagement");
-});
 
 function displayCorrectTab(navigateTab) {
   // This function will figure out which tab to display
