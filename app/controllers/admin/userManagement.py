@@ -1,4 +1,4 @@
-from flask import Flask, render_template,request, flash, g, json, abort, redirect, url_for
+from flask import Flask, make_response, render_template,request, flash, g, json, abort, redirect, url_for
 import re
 from app.controllers.admin import admin_bp
 from app.models.user import User
@@ -16,14 +16,20 @@ def manageUsers():
     user = eventData['user']
     method = eventData['method']
     username = re.sub("[()]","", (user.split())[-1])
-    user = User.get_by_id(username)
+
+    try:
+        user = User.get_by_id(username)
+    except Exception as e:
+        print(e)
+        flash(username + " is an invalid user.", "danger")
+        return ("danger", 500)
 
     if method == "addCeltsAdmin":
         if user.isStudent:
-            flash(username + " cannot be added as a Celts admin", 'danger')
+            flash(user.firstName + " " + user.lastName + " cannot be added as a Celts admin", 'danger')
         else:
             if user.isCeltsAdmin:
-                flash(username + " is already a Celts Admin", 'danger')
+                flash(user.firstName + " " + user.lastName + " is already a Celts Admin", 'danger')
             else:
                 addCeltsAdmin(user)
                 flash(user.firstName + " " + user.lastName + " has been added as a Celts Admin", 'success')
@@ -32,16 +38,16 @@ def manageUsers():
             flash(username + " cannot be added as Celts Student Staff", 'danger')
         else:
             if user.isCeltsStudentStaff:
-                flash(username + " is already a Celts Student Staff", 'danger')
+                flash(user.firstName + " " + user.lastName + " is already a Celts Student Staff", 'danger')
             else:
                 addCeltsStudentStaff(user)
-                flash(username + " has been added as a Celts Student Staff", 'success')
+                flash(user.firstName + " " + user.lastName + " has been added as a Celts Student Staff", 'success')
     elif method == "removeCeltsAdmin":
         removeCeltsAdmin(user)
-        flash(username + " is no longer a Celts Admin ", 'success')
+        flash(user.firstName + " " + user.lastName + " is no longer a Celts Admin ", 'success')
     elif method == "removeCeltsStudentStaff":
         removeCeltsStudentStaff(user)
-        flash(username + " is no longer a Celts Student Staff", 'success')
+        flash(user.firstName + " " + user.lastName + " is no longer a Celts Student Staff", 'success')
     return ("success")
 
 @admin_bp.route('/addProgramManagers', methods=['POST'])
@@ -64,15 +70,18 @@ def removeProgramManagers():
         flash('Error while removing a manager.','warning')
         abort(500,"Error while trying to remove a manager.")
 
-@admin_bp.route('/admin/updateProgramInfo', methods=['POST'])
-def updateProgramInfo():
+@admin_bp.route('/admin/updateProgramInfo/<programID>', methods=['POST'])
+def updateProgramInfo(programID):
     """Grabs info and then outputs it to logic function"""
     programInfo = request.form #grabs user inputs
     if g.current_user.isCeltsAdmin:
         try:
-            return changeProgramInfo(programInfo["emailReplyTo"],  #calls logic function to add data to database
-                                    programInfo["emailSenderName"],
-                                    programInfo["programId"])
+            changeProgramInfo(programInfo["Name"],  #calls logic function to add data to database
+                                    programInfo["Email"],
+                                    programInfo["Sender"],
+                                    programID)
+            flash("Program updated", "success")
+            return redirect(url_for("admin.userManagement", showSettingsPane="program"))
         except Exception as e:
             print(e)
             flash('Error while updating program info.','warning')
@@ -81,6 +90,7 @@ def updateProgramInfo():
 
 @admin_bp.route('/admin', methods = ['GET'])
 def userManagement():
+    showSettingsPane=request.args.get('showSettingsPane')
     terms = selectSurroundingTerms(g.current_term)
     current_programs = Program.select()
     currentAdmins = list(User.select().where(User.isCeltsAdmin))
@@ -90,7 +100,9 @@ def userManagement():
                                 terms = terms,
                                 programs = list(current_programs),
                                 currentAdmins = currentAdmins,
-                                currentStudentStaff = currentStudentStaff)
+                                currentStudentStaff = currentStudentStaff,
+                                showSettingsPane=showSettingsPane
+                                )
     abort(403)
 
 @admin_bp.route('/admin/changeTerm', methods=['POST'])

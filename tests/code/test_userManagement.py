@@ -54,16 +54,24 @@ def test_modifyCeltsStudentStaff():
 @pytest.mark.integration
 def test_changeProgramInfo():
     with mainDB.atomic() as transaction:
+
         programId = 3
+        eventName = "Test Event Name"
         emailSenderName = "New Test Name"
         emailReplyTo = 'newtest@email'
         currentProgramInfo = Program.get_by_id(programId)
+
+        assert currentProgramInfo.programName == "Adopt A Grandparent"
         assert currentProgramInfo.emailSenderName == "testName"
         assert currentProgramInfo.emailReplyTo == "test@email"
-        changeProgramInfo(emailReplyTo, emailSenderName, programId)
+
+        changeProgramInfo(eventName, emailReplyTo, emailSenderName, programId)
         currentProgramInfo = Program.select().where(Program.id==programId).get()
+
+        assert currentProgramInfo.programName == eventName
         assert currentProgramInfo.emailSenderName == emailSenderName
         assert currentProgramInfo.emailReplyTo == emailReplyTo
+
         transaction.rollback()
 
 @pytest.mark.integration
@@ -82,7 +90,7 @@ def test_updatedProgramManager():
         # a Program Manager again: They should be added to Program Managers.
         user.isCeltsStudentStaff = True
         user.save()
-        
+
         setProgramManager(user, program, "add")
         assert ProgramManager.get_or_none(program = program, user = user) is not None
 

@@ -87,6 +87,31 @@ function showTab(currentTab) {
   fixStepIndicator(currentTab)
 }
 
+$("#approveButton").click(function(){
+    $("#approveButton").prop("disabled", true)
+    var data = $("form").serialize()
+    saveCourseInstructors()
+    $.ajax({
+        url: "/serviceLearning/approveCourse/",
+        type: "POST",
+        data: data,
+        success: function(response) {
+            window.location.replace("/manageServiceLearning")
+    }
+  });
+});
+
+$("#previousButton").on("click", function() {
+  displayCorrectTab(-1);
+});
+
+$("#nextButton").on("click", function() {
+  displayCorrectTab(1);
+});
+
+$("#cancelButton").on("click", function() {
+        window.location.replace($(this).val());
+});
 
 function displayCorrectTab(navigateTab) {
   // This function will figure out which tab to display
@@ -100,8 +125,9 @@ function displayCorrectTab(navigateTab) {
   currentTab = currentTab + navigateTab;
 
   if (currentTab >= allTabs.length) {
-    saveCourseInstructors().then(() => $("#slcNewProposal").submit());
-    return false;
+      $("#nextButton").prop("disabled", true)
+      saveCourseInstructors().then(() => $("#slcNewProposal").submit());
+      return false;
   }
   showTab(currentTab);
 }

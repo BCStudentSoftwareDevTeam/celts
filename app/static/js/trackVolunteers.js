@@ -86,7 +86,6 @@ $(".attendanceCheck").on("change", function() {
     let username =  this.name.substring(9) //get everything after the 9th character;
     let inputFieldID = `inputHours_${username}`
 
-
     if (this.checked) {
       $(`#${inputFieldID}`).prop('disabled', false);
       let eventLength = $("#eventLength").text();

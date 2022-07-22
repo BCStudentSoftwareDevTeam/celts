@@ -19,8 +19,8 @@ def training_events():
                             timeEnd = "21:00:00",
                             location = "basement",
                             isTraining = True,
-                            startDate = 2021-12-12,
-                            endDate = 2021-12-13)
+                            startDate = "2021-12-12",
+                            endDate = "2021-12-13")
 
     testProgramEvent = ProgramEvent.create(program = 2 , event = testEvent)
 
@@ -36,8 +36,8 @@ def special_bonner():
                             timeStart = "19:00:00",
                             timeEnd = "22:00:00",
                             location = "moon",
-                            startDate = 2021-12-12,
-                            endDate = 2021-12-13)
+                            startDate = "2021-12-12",
+                            endDate = "2021-12-13")
 
     specialForBonner = ProgramEvent.create(program = 5, event = bonnerEvent)
 
@@ -54,8 +54,8 @@ def special_otherEvents():
                                 timeEnd = "22:00:00",
                                 location = "moon",
                                 isTraining = False,
-                                startDate = 2021-12-12,
-                                endDate = 2021-12-13)
+                                startDate = "2021-12-12",
+                                endDate = "2021-12-13")
 
         yield nonProgramEvent
         nonProgramEvent.delete_instance()

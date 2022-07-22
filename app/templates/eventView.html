@@ -30,13 +30,13 @@
          </div>
     {% endif %}
     {% if isPastEvent %}
-        <p><font size="+2"><b>{{eventData.name}}</b> took place on <b>{{eventData.startDate}}</b> from <b>{{eventData.timeStart}}</b> to <b>{{eventData.timeEnd}}</b> and was located in <b>{{eventData.location}}</b>.</font></p>
+        <p class="heading-size"><b>{{eventData.name}}</b> took place on <b>{{eventData.startDate}}</b> from <b>{{eventData.timeStart}}</b> to <b>{{eventData.timeEnd}}</b> and was located in <b>{{eventData.location}}</b>.</p>
     {% else %}
-        <p><font size="+2"><b>{{eventData.name}}</b> will take place on <b>{{eventData.startDate}}</b> from <b>{{eventData.timeStart}}</b> to <b>{{eventData.timeEnd}}</b> and will be located in <b>{{eventData.location}}</b>.</font></p>
+        <p class="heading-size"><b>{{eventData.name}}</b> will take place on <b>{{eventData.startDate}}</b> from <b>{{eventData.timeStart}}</b> to <b>{{eventData.timeEnd}}</b> and will be located in <b>{{eventData.location}}</b>.</p>
     {% endif %}
             <div>
                 <div>
-                    <font size="+2"><h3><br>Description:</h3>{{eventData.description}}<br><br>
+                    <h3><br>Description:</h3>{{eventData.description}}<br><br>
                     <div>
                         {% if eventData.isService %}
                             This event earns service hours.
@@ -84,7 +84,7 @@
                 <div>
                     <div class="row">
                       <div class="col-sm">
-                          {% if program != None %}
+                          {% if program or not eventData.isAllVolunteerTraining %}
                             <h3><br>Program Trainings:</h3>
                                 {% for training, participated in programTrainings.items() %}
                                     {% if g.current_user.isCeltsAdmin %}

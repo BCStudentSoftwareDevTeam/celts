@@ -4,6 +4,7 @@
 {% block scripts %}
   {{super()}}
   <script type="text/javascript" src="{{url_for('static', filename='js/volunteerProfile.js') }}?u={{lastStaticUpdate}}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
 {% endblock %}
 
 {% block styles %}
@@ -15,9 +16,11 @@
 <div>
     <h1 align="center">{{volunteer.firstName}} {{volunteer.lastName}}</h1>
     <h6 align="center">{{volunteer.email}}</h6>
-    <h6 align="center">{{volunteer.phoneNumber}}</h6>
+    <div align="center">
+          <input size="14" id="phoneInput" type="text"  class="bfh-phone" value="{{volunteer.phoneNumber}}">
+          <button class=" btn-success btn-sm" id="updatePhone" data-username="{{volunteer.username}}">Update</button>
+    </div>
 </div>
-
 <div class="btn-group">
    <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="tabs-tab" role="tablist">
      <li class="nav-item" role="presentation">
@@ -31,7 +34,7 @@
    </ul>
  </div>
 
- <div class="row">
+ <div class="row table-responsive">
    <table class="table">
      {% if upcomingEvents|length > 0 %}
        <thead class="tableHeader">
@@ -59,7 +62,7 @@
    </table>
  </div>
  <!-- Start Program Eligibility Table -->
- <div class="row">
+ <div class="row table-responsive">
    <table class="table banTable">
       <thead>
         <tr>
@@ -74,6 +77,26 @@
       </thead>
       <tbody>
       {% for row in eligibilityTable %}
+      {% set trainingList = row['trainingList'] %}
+      {% macro trainingListView() %}
+        {% if trainingList %}
+            {% for trainings, participated in trainingList.items() %}
+                {% if g.current_user.isCeltsAdmin %}
+                  <li>{{trainings}}</li>
+                {% else %}
+                    {% if participated == 1 %}
+                        <p><b>{{trainings}}</b>: <br>Attended</p>
+                    {% elif participated == 0 %}
+                        <p><b>{{trainings}}</b>: <br>Not attended</p>
+                    {% elif not participated[0] %}
+                        <p><b>{{trainings}}</b>: <br>Takes place on {{participated[1]}}</p>
+                    {% endif%}
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <p>No trainings for this program.</p>
+        {% endif %}
+      {% endmacro %}
         {% set checked = "" %}
         {% if row.program in programsInterested %}
             {% set checked = "checked" %}
@@ -82,10 +105,12 @@
             <td><a href="{{row.program.url}}" id="programNameTable">{{row.program.programName}}</a></td>
             <td><input class="form-check-input" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>
             <td>
-                {% if row.completedTraining %}
-                    <i class="bi bi-check-lg"></i>
+                {% if row.completedTraining or not trainingList %}
+                    <i class="bi bi-check-lg"></i> &nbsp&nbsp
+                    <a class="trainingPopover" id="{{row.program.id}}" href="#" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
                 {% else %}
-                    <i class="bi bi-x-lg"></i>
+                    <i class="bi bi-x-lg"></i> &nbsp&nbsp
+                    <a class="trainingPopover" id="{{row.program.id}}" href="#" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
                 {% endif %}
             </td>
           {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
@@ -110,7 +135,7 @@
     {% endfor %}
     </tbody>
 </table>
-<small><a href="https://www.berea.edu/celts/community-service-programs/volunteer-opportunities/">For more information about CELTS opportunities, click here.</a></small>
+<a href="https://www.berea.edu/celts/community-service-programs/volunteer-opportunities/">For more information about CELTS opportunities, click here.</a>
 </div>
 <br>
 <!-- End Program Eligibility Table -->
@@ -121,7 +146,7 @@
   {% if volunteer.isCeltsStudentStaff%}
       <div class="row">
         <h2>Which programs do you want to make {{volunteer.firstName}} {{volunteer.lastName}} manager for?</h2>
-        <div>
+        <ul class="list-unstyled">
           {% for program in programs %}
             {% set action = "add" %}
             {% set checked = "" %}
@@ -129,12 +154,12 @@
                   {% set action = "remove" %}
                   {% set checked = "checked" %}
             {% endif %}
-              <table>
-                    <input  type="checkbox" id="mgr-{{ program.id }}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}')">
-                    <label  style="padding-left: 15px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
-              </table>
+            <li>
+                <input  type="checkbox" id="mgr-{{ program.id }}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}')">
+                <label  style="padding-left: 15px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
+            </li>
           {% endfor %}
-        </div>
+      </ul>
       </div>
       <br>
     {% endif %}
@@ -159,7 +184,7 @@
   <!-- End Program Manager Selection -->
 <!-- Start Background Check Table -->
 {% if g.current_user.isAdmin %}
-    <div class="row">
+    <div class="row table-responsive">
       <h2>Background Check</h2>
       <table class="table">
          <thead>
@@ -188,7 +213,11 @@
                         {% endif %}
                     </select>
                 </td>
-                <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" value="{{completedBackgroundCheck[bgType][1]}}" class="form-control"/></td>
+                {% if completedBackgroundCheck[bgType][1] %}
+                    <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" value="{{completedBackgroundCheck[bgType][1]}}" class="form-control"/></td>
+                {% else %}
+                    <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" class="form-control"/></td>
+                {% endif %}
                 <td><button type="button" class="savebtn btn btn-primary" id="{{bgType.id}}" data-id="{{bgType.id}}" data-username="{{volunteer.username}}">Save</button></td>
             {% else %}
                 <td>{{completedBackgroundCheck[bgType][0]}}</td>
