@@ -36,7 +36,7 @@
     {% endif %}
             <div>
                 <div>
-                    <h3 class="heading-size"><br>Description:</h3>{{eventData.description}}<br><br>
+                    <h3><br>Description:</h3>{{eventData.description}}<br><br>
                     <div>
                         {% if eventData.isService %}
                             This event earns service hours.
@@ -60,7 +60,7 @@
             <div class="container">
               <div class="row">
                 <div class="col-sm">
-                    <h3 class="heading-size"><br>Facilitators:</h3>
+                    <h3><br>Facilitators:</h3>
                         {% if eventFacilitatorNames %}
                             <ul>
                                 {% for facilitator in eventFacilitatorNames%}
@@ -85,7 +85,7 @@
                     <div class="row">
                       <div class="col-sm">
                           {% if program or not eventData.isAllVolunteerTraining %}
-                            <h3 class="heading-size"><br>Program Trainings:</h3>
+                            <h3><br>Program Trainings:</h3>
                                 {% for training, participated in programTrainings.items() %}
                                     {% if g.current_user.isCeltsAdmin %}
                                       <div>{{training}}</div>
