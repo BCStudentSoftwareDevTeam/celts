@@ -24,6 +24,7 @@ $(document).ready(function() {
 
   // Adding the new volunteer to the user database table
     $("#selectVolunteerButton").click(function(){
+        $("#selectVolunteerButton").prop("disabled", true)
         let user = $("#addVolunteerInput").val()
         let eventId = $("#eventID").val()
         let checkboxlist = $("#addVolunteerModal input[type=checkbox]")
@@ -68,12 +69,14 @@ $(document).ready(function() {
   });
 
   $(".removeVolunteer").on("click", function() {
+    $(".removeVolunteer").prop("disabled", true)
     let username =  this.id;
     let eventId = $('#eventID').val()
     $.ajax({
       url: `/removeVolunteerFromEvent/${username}/${eventId}`,
       type: "POST",
       success: function(s) {
+         $("#selectVolunteerButton").prop("disabled", true)
          location.reload();
       },
       error: function(request, status, error) {
