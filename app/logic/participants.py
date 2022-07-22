@@ -16,23 +16,23 @@ def trainedParticipants(programID, currentTerm):
     event and adds them to a list that will not flag them when tracking hours.
     """
 
-    ayStart = currentTerm.academicYearStartingTerm
+    academicYear = currentTerm.academicYear
 
     # Reset program eligibility each term for all other trainings
 
-    otherTrainingEvents = (Event.select(Event.id).join(ProgramEvent)
+    otherTrainingEvents = (Event.select(Event.id)
+            .join(ProgramEvent).switch()
+            .join(Term)
             .where(
-                ProgramEvent.program==programID,
-                Event.isTraining==True,
-                (((Event.name == "All Celts Training") | (Event.name == "All Volunteer Training")) & (Event.term == ayStart)) | (Event.term==currentTerm))
+                ProgramEvent.program == programID,
+                (Event.isTraining | Event.isAllVolunteerTraining),
+                Event.term.academicYear == academicYear)
             )
 
     allTrainingEvents = set(otherTrainingEvents)
-
     eventTrainingDataList = [participant.user.username for participant in (
         EventParticipant.select().where(EventParticipant.event.in_(allTrainingEvents))
         )]
-
     attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(allTrainingEvents), eventTrainingDataList)))
     return attendedTraining
 
@@ -44,7 +44,7 @@ def sendUserData(bnumber, eventId, programid):
     if not isEligibleForProgram(programid, signedInUser):
         userStatus = "banned"
     elif ((EventParticipant.select(EventParticipant.user)
-       .where(EventParticipant.user==signedInUser, EventParticipant.event==eventId))
+       .where(EventParticipant.user == signedInUser, EventParticipant.event==eventId))
        .exists()):
         userStatus = "already in"
     else:
@@ -96,24 +96,33 @@ def unattendedRequiredEvents(program, user):
 def getEventParticipants(event):
     eventParticipants = (EventParticipant
         .select()
-        .where(EventParticipant.event==event))
+        .where(EventParticipant.event == event))
 
     return {p.user.username: p.hoursEarned for p in eventParticipants}
 
-def getUserParticipatedEvents(program, user):
+def getUserParticipatedEvents(program, user, currentTerm):
     """
     This function returns a dictionary of all trainings for a program and
     whether the current user participated in them.
 
     :returns: trainings for program and if the user participated
     """
-    programTrainings = Event.select().join(ProgramEvent).where(Event.isTraining == 1, ProgramEvent.program == program)
+    academicYear = currentTerm.academicYear
+
+    programTrainings = (Event.select()
+                               .join(ProgramEvent).switch()
+                               .join(Term)
+                               .where((Event.isTraining | Event.isAllVolunteerTraining),
+                                      ProgramEvent.program == program,
+                                      Event.term.academicYear == academicYear)
+                        )
+
     listOfProgramTrainings = [programTraining for programTraining in programTrainings]
     userParticipatedEvents = {}
     for training in listOfProgramTrainings:
         eventParticipants = getEventParticipants(training.id)
-        if training.startDate>date.today():
-            didParticipate = None
+        if training.startDate > date.today():
+            didParticipate = [None, training.startDate.strftime("%m/%d/%Y")]
         elif user.username in eventParticipants.keys():
             didParticipate = True
         else:

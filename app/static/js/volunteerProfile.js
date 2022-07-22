@@ -113,8 +113,20 @@ $(document).ready(function(){
       }
     })
   });
+
+  // Popover functionalitie
+    var requiredTraining = $(".trainingPopover");
+    requiredTraining.popover({
+       trigger: "hover",
+       sanitize: false,
+       html: true,
+       content: function() {
+            return $(this).attr('data-content');
+        }
+    });
+
   $("#updatePhone").click(function() {
-    userName = $(this).data("username") 
+    userName = $(this).data("username")
     phoneNumber = $("#phoneInput").val()
     let isvalid = phoneNumber.replace(/\D/g,"").length === 10;
     if (isvalid == true){
@@ -131,7 +143,7 @@ $(document).ready(function(){
       msgFlash("Invalid Phone number", "danger")
     }
   });
-  $('#phoneInput').inputmask('(999)-999-9999'); 
+  $('#phoneInput').inputmask('(999)-999-9999');
 });
 
 function displayMessage(message, color) {  // displays message for saving background check
