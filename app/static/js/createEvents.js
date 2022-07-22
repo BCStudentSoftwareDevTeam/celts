@@ -169,5 +169,20 @@ $(document).ready(function() {
      $(this).closest("tr").remove();
   });
 
-
+  $(".removeAttachment").on("click", function(){
+      let fileData = {filePath : this.value}
+      $('.attachmentRow_').remove()
+      // $.ajax({
+      //   type:"POST",
+      //   url: "/deleteEventAttachment",
+      //   data: fileData, //get the startDate, endDate and name as a dictionary
+      //   success: function(){
+      //       msgFlash("Attachment removed successfully")
+      //
+      //   },
+      //       error: function(error){
+      //           console.log(error)
+      //   }
+      //   });
+    });
 });
