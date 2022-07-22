@@ -377,5 +377,5 @@ def test_getUserParticipatedEvents():
         programTrainings = getUserParticipatedEvents(Program.get_by_id(8), User.get_by_id("ramsayb2"), currentTerm)
         for training in programTrainings.keys():
             assert programTrainings[training][0] == None
-            assert programTraining[training][1] == testingEvent[startDate]
+            assert programTrainings[training][1] == datetime.strptime(testingEvent.startDate, "%Y-%m-%d").strftime("%m/%d/%Y")
         transaction.rollback()
