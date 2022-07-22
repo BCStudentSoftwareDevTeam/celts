@@ -13,6 +13,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.programBan import ProgramBan
 from app.models.interest import Interest
+from app.models.eventRsvp import EventRsvp
 from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
 from app.logic.adminLogs import createLog
@@ -177,7 +178,7 @@ def getOtherEvents(term):
 
     return otherEvents
 
-def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
+def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
     """
         Get the list of upcoming events that the user is interested in.
         :param user: a username or User object
@@ -186,15 +187,16 @@ def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
         :return: A list of Event objects
     """
 
-    events = (Event.select(Event)
-                            .join(ProgramEvent)
-                            .join(Interest, on=(ProgramEvent.program == Interest.program))
-                            .where(Interest.user == user,
-                                   Event.startDate >= asOf,
-                                   Event.timeStart > asOf.time())
-                            .distinct() # necessary because of multiple programs
-                            .order_by(Event.startDate, Event.name) # keeps the order of events the same when the dates are the same
-                            )
+    events = (Event.select()
+                    .join(ProgramEvent, JOIN.LEFT_OUTER)
+                    .join(Interest, JOIN.LEFT_OUTER, on=(ProgramEvent.program == Interest.program))
+                    .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
+                    .where(Event.startDate >= asOf,
+                            Event.timeStart > asOf.time(),
+                            (Interest.user == user) | (EventRsvp.user == user))
+                    .distinct() # necessary because of multiple programs
+                    .order_by(Event.startDate, Event.name) # keeps the order of events the same when the dates are the same
+                    )
 
     return list(events)
 
