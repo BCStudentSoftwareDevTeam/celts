@@ -27,38 +27,29 @@
         </thead>
         <tbody>
             <tr data-username="" hidden>
-              <td >
-                <p class="instructorName"></p>
-                  <input type="text" style="border: none" class="form-control-sm mb-3 " id="" name="courseInstructorPhone" aria-label="Recipient's username" aria-describedby="button-addon2" value=""/>
-              </td>
-              <td>
-                <button id="remove" type="button" class="btn btn-danger">Remove</button>
-                <br>
-                <div class="container">
-                  <div class="vertical-center">
-                      <a class="text-decoration-none primary editButton" tabindex="0" data-id=""  id="editButton-"  type="button">Edit</a>
-                  </div>
-                </div>
-              </td>
+                <td >
+                  <p class="instructorName"></p>
+                    <input type="text" style="border: none" class="form-control-sm mb-3 " id="" name="courseInstructorPhone" aria-label="Recipient's username" aria-describedby="button-addon2" value=""/>
+                    <a class="text-decoration-none primary editButton" tabindex="0" data-id=""  id=""  type="button">Edit</a>
+                </td>
+                <td>
+                    <button id="remove" type="button" class="btn btn-danger">Remove</button>
+                </td>
+
             </tr>
             {% for instructor in courseInstructor %}
             <tr data-username="{{instructor.user.username}}">
               <td >
                 <p class="instructorName">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user}})</p>
-                  <input type="text" style="border: none" class="form-control-sm mb-3 " id="{{instructor.user}}" name="courseInstructorPhone" aria-label="Recipient's username" aria-describedby="button-addon2" value="{{instructor.user.phoneNumber}}"/>
+                  <input type="text" style="border: none" class="form-control-sm mb-3 " id="inputPhoneNumber-{{instructor.user}}" name="courseInstructorPhone" aria-label="Recipient's username" aria-describedby="button-addon2" value="{{instructor.user.phoneNumber}}"/>
+                  <a class="text-decoration-none primary editButton" tabindex="0" data-id="{{instructor.user}}"  id="editButton-{{instructor.user}}"  type="button">Edit</a>
               </td>
               <td>
-                <button id="remove" type="button" class="btn btn-danger">Remove</button>
-                <br>
-                <div class="container">
-                  <div class="vertical-center">
-                      <a class="text-decoration-none primary editButton" tabindex="0" data-id="{{instructor.user}}"  id="editButton-{{instructor.user}}"  type="button">Edit</a>
-                  </div>
-                </div>
+                  <button id="remove" type="button" class="btn btn-danger">Remove</button>
               </td>
+
             </tr>
             {% endfor %}
-
         </tbody>
 
       </table>

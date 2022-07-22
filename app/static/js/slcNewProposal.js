@@ -135,11 +135,9 @@ function blurHandler(event) {
     }
 }
 function createNewRow(selectedInstructor) {
-  // JSON.parse is required to de-stringify the search results into a dictionary.
   let instructor = (selectedInstructor["firstName"]+" "+selectedInstructor["lastName"]+" ("+selectedInstructor["username"]+")");
   let username = selectedInstructor["username"];
   let phone = selectedInstructor["phoneNumber"];
-  // let uniqueId = selectedInstructor[""];
   let tableBody = $("#instructorTable").find("tbody");
   if(tableBody.prop('outerHTML').includes(instructor)){
     msgFlash("Instructor is already added.", "danger");
@@ -154,14 +152,13 @@ function createNewRow(selectedInstructor) {
 
   let phoneInput = newRow.find("td:eq(0) input")
   phoneInput.val(phone);
-  phoneInput.attr("id",  username);
+  phoneInput.attr("id", "inputPhoneNumber-" +username);
   $(phoneInput).focus(focusHandler);
   $(phoneInput).focusout(blurHandler);
 
-  let removeButton = newRow.find("td:eq(0) button")
-  let editLink = newRow.find("td:eq(1) a")
+  let removeButton = newRow.find("td:eq(1) button")
+  let editLink = newRow.find("td:eq(0) a")
   editLink.attr("id", "editButton-" + username);
-  editLink.attr("data-id", username);
   newRow.attr("data-username", username)
   newRow.prop("hidden", false);
   lastRow.after(newRow);
@@ -172,14 +169,13 @@ $("#courseInstructor").on('input', function() {
 $("input[name=courseInstructorPhone]").focus(focusHandler);
 $("input[name=courseInstructorPhone]").focusout(blurHandler);
 $('#instructorTable').on('click', ".editButton", function() {
+    var username=getRowUsername(this)
     if ($(this).html() === 'Edit') {
-        var username=getRowUsername(this)
         $(this).html('Save')
-        $("#"+username).focus()
+        $("#inputPhoneNumber-"+ username).focus()
     } else {
         $(this).html('Edit');
-        var inputId = $(this).data("id");
-        var instructorData = [inputId, $("#" + inputId).val()]
+        var instructorData = [username, $("#inputPhoneNumber-" + username).val()]
         $.ajax({
           url: "/updateInstructorPhone",
           data: JSON.stringify(instructorData),
