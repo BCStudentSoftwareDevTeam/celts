@@ -4,7 +4,7 @@
 {% block scripts %}
   {{super()}}
   <script type="text/javascript" src="{{url_for('static', filename='js/volunteerProfile.js') }}?u={{lastStaticUpdate}}"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
 {% endblock %}
 
 {% block styles %}
@@ -19,7 +19,7 @@
     <div align="center">
           <input size="14" id="phoneInput" type="text"  class="bfh-phone" value="{{volunteer.phoneNumber}}">
           <button class=" btn-success btn-sm" id="updatePhone" data-username="{{volunteer.username}}">Update</button>
-    </div>  
+    </div>
 </div>
 <div class="btn-group">
    <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="tabs-tab" role="tablist">
@@ -48,7 +48,7 @@
        {% for event in upcomingEvents %}
            <tr>
              <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
-             <td><a href= '/eventsList/{{event.id}}/edit' class="link-primary">{{event.name}}</a></td>
+             <td><a href= '/eventsList/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
              <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
              <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}}</td>
              <td>{{event.location}}</td>
