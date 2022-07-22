@@ -98,14 +98,14 @@ def viewVolunteersProfile(username):
         else:
             # sets the values to strings because student staff do not have access to input boxes
             completedBackgroundCheck = {entry.type: ['Yes' if entry.passBackgroundCheck else 'No',
-                                                    'Not Completed' if entry.dateCompleted == None
+                                                    '' if entry.dateCompleted == None
                                                     else entry.dateCompleted.strftime('%m/%d/%Y')] for entry in allUserEntries}
 
         backgroundTypes = list(BackgroundCheckType.select())
         # creates data structure for background checks that are not currently completed
         for checkType in backgroundTypes:
             if checkType not in completedBackgroundCheck.keys():
-                completedBackgroundCheck[checkType] = ["No", "Not Completed"]
+                completedBackgroundCheck[checkType] = ["No"]
 
         eligibilityTable = []
         for program in programs:

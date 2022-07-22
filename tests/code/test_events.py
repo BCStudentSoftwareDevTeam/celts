@@ -15,7 +15,10 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventFacilitator import EventFacilitator
 from app.models.interest import Interest
+from app.models.eventRsvp import EventRsvp
 from app.logic.events import *
+from app.logic.volunteers import addVolunteerToEventRsvp
+from app.logic.users import addUserInterest, removeUserInterest
 
 @pytest.mark.integration
 def test_event_model():
@@ -172,63 +175,6 @@ def test_preprocessEventData_term():
     preprocessEventData(eventData)
     assert eventData['term'] == ''
 
-
-@pytest.mark.integration
-def test_preprocessEventData_facilitators():
-
-    eventData = {}
-    preprocessEventData(eventData)
-    assert 'facilitators' in eventData
-    assert eventData['facilitators'] == []
-
-    eventData = {'facilitators':'ramsayb2'}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == []
-
-    eventData = {'facilitators': []}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == []
-
-    eventData = {'facilitators': ['ramsayb2']}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == [User.get_by_id('ramsayb2')]
-
-    eventData = {'facilitators': ['ramsayb2','khatts']}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]
-
-    eventData = {'facilitators': ['ramsayb2','not an id', 'khatts']}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == []
-
-    # form data comes back as a MultiDict. Make sure we handle that case
-    eventData = MultiDict([('facilitators', 'ramsayb2'),('facilitators','khatts')])
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]
-
-    #####
-    # Testing with an existing event
-    #####
-    eventData = {'id': 1, 'facilitators': []}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == []
-
-    eventData = {'id': 1, 'facilitators': ['khatts']}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == [User.get_by_id('khatts')]
-
-    eventData = {'id': 1, 'facilitators': [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == [User.get_by_id('ramsayb2'), User.get_by_id('khatts')]
-
-    eventData = {'id': 1}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == [User.get_by_id('ramsayb2')] # defaults to existing facilitators
-
-    eventData = {'id': 1, 'facilitators':'khatts'}
-    preprocessEventData(eventData)
-    assert eventData['facilitators'] == [User.get_by_id('ramsayb2')] # defaults to existing facilitators
-
 @pytest.mark.integration
 def test_correctValidateNewEventData():
 
@@ -289,7 +235,6 @@ def test_wrongValidateNewEventData():
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid
 
-
 @pytest.mark.integration
 def test_calculateRecurringEventFrequency():
 
@@ -314,11 +259,9 @@ def test_calculateRecurringEventFrequency():
     with pytest.raises(Exception):
         returnedEvents = calculateRecurringEventFrequency(eventInfo)
 
-
 @pytest.mark.integration
 def test_attemptSaveEvent():
     with mainDB.atomic() as transaction2:
-
         # This test duplicates some of the saving tests, but with raw data, like from a form
         eventData =  {'isRsvpRequired':False, 'isService':False,
                       'isTraining':True, 'isRecurring':True, 'recurringId':0, 'startDate': '2021-12-12',
@@ -519,33 +462,72 @@ def test_getAllFacilitators():
     assert userFacilitator[2].username == "lamichhanes2"
     assert userFacilitator[2].isFaculty == True
 
-
 @pytest.mark.integration
-def test_getsCorrectUpcomingEvent():
+def test_upcomingEvents():
+    with mainDB.atomic() as transaction:
+        testDate = datetime.datetime.strptime("2021-08-01 05:00","%Y-%m-%d %H:%M")
 
-    testDate = datetime.datetime.strptime("2021-08-01 5:00","%Y-%m-%d %H:%M")
+        # Create a user to run the tests with
+        user = User.create(username = 'usrtst',
+                              firstName = 'Test',
+                              lastName = 'User',
+                              bnumber = '03522492',
+                              email = 'usert@berea.deu',
+                              isStudent = True)
 
-    user = "khatts"
-    events = getUpcomingEventsForUser(user, asOf=testDate)
-    assert len(events) == 3
-    assert "Empty Bowls Spring Event 1" == events[0].name
+        # Create an event that is not a part of a program the user can RSVP to
+        noProgram = Event.create(name = "Upcoming event with no program",
+                                term = 2,
+                                description = "Test upcoming no program event.",
+                                timeStart = "18:00:00",
+                                timeEnd = "21:00:00",
+                                location = "The moon",
+                                startDate = "2021-12-12",
+                                endDate = "2021-12-13")
 
-    user = "ramsayb2"
-    events = getUpcomingEventsForUser(user, asOf=testDate)
+        # Create a Program Event to show up when the user marks interest in a
+        # new program
+        newProgramEvent = Event.create(name = "Upcoming event with  program",
+                                term = 2,
+                                description = "Test upcoming program event.",
+                                timeStart = "18:00:00",
+                                timeEnd = "21:00:00",
+                                location = "The sun",
+                                startDate = "2021-12-12",
+                                endDate = "2021-12-13")
 
-    assert len(events) == 4
-    assert "Meet & Greet with Grandparent" == events[0].name
+        # Create a new Program to create the new Program Event off of so the
+        # user can mark interest for it
+        programForInterest = Program.create(id = 13,
+                                            programName = "BOO",
+                                            isStudentLed = False,
+                                            isBonnerScholars = False,
+                                            emailReplyTo = "test@email",
+                                            emailSenderName = "testName")
 
-@pytest.mark.integration
-def test_userWithNoInterestedEvent():
+        ProgramEvent.create(program = programForInterest, event = newProgramEvent)
 
-    user ="asdfasd" #invalid user
-    events = getUpcomingEventsForUser(user)
-    assert len(events) == 0
+        # User has not RSVPd and is Interested
+        addInterest = addUserInterest(programForInterest.id, user)
+        eventsInUserInterestedProgram = getUpcomingEventsForUser(user, asOf = testDate)
 
-    user = "ayisie" #no interest selected
-    events = getUpcomingEventsForUser(user)
-    assert len(events) == 0
+        assert eventsInUserInterestedProgram == [newProgramEvent]
+
+        # user has RSVPd and is Interested
+        addUserRsvp = addVolunteerToEventRsvp(user, noProgram.id)
+        eventsInUserInterestAndRsvp = getUpcomingEventsForUser(user, asOf = testDate)
+
+        interestAndRsvp = [[newProgramEvent] + [noProgram]]
+
+        assert eventsInUserInterestAndRsvp in interestAndRsvp
+
+        # User has RSVPd and is not Interested
+        removeInterest = removeUserInterest(programForInterest.id, user)
+        eventsInUserRsvp = getUpcomingEventsForUser(user, asOf = testDate)
+
+        assert eventsInUserRsvp == [noProgram]
+
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_format24HourTime():
@@ -641,4 +623,39 @@ def test_getPreviousRecurringEventData():
         assert val[0].username == "neillz"
         assert val[1].username == "ramsayb2"
         assert val[2].username == "khatts"
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_getFacilitatorsFromList():
+    with mainDB.atomic() as transaction:
+        testingUser1 = User.create(username = "userForTesting1",
+                                    bnumber = "Btesting1",
+                                    email = "test1@test.test",
+                                    phoneNumber = "0000000000",
+                                    firstName = "Test#1",
+                                    lastName = "Test#1.1")
+        testingUser2 = User.create(username = "userForTesting2",
+                                    bnumber = "Btesting2",
+                                    email = "test2@test.test",
+                                    phoneNumber = "0000000000",
+                                    firstName = "Test#2",
+                                    lastName = "Test#2.1")
+        listToAssert = getFacilitatorsFromList("")
+        assert listToAssert == []
+        listToAssert = getFacilitatorsFromList([""])
+        assert listToAssert == []
+        listToAssert = getFacilitatorsFromList(",userForTesting1,")
+        assert listToAssert == [testingUser1]
+        listToAssert = getFacilitatorsFromList(["userForTesting2", ""])
+        assert listToAssert == [testingUser2]
+        listToAssert = getFacilitatorsFromList([])
+        assert listToAssert == []
+        listToAssert = getFacilitatorsFromList(["userForTesting1"])
+        assert listToAssert == [testingUser1]
+        listToAssert = getFacilitatorsFromList("userForTesting1")
+        assert listToAssert == [testingUser1]
+        listToAssert = getFacilitatorsFromList(["userForTesting1", "userForTesting2"])
+        assert listToAssert == [testingUser1, testingUser2]
+        listToAssert = getFacilitatorsFromList("userForTesting1,userForTesting2")
+        assert listToAssert == [testingUser1, testingUser2]
         transaction.rollback()
