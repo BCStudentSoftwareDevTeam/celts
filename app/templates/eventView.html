@@ -84,7 +84,7 @@
                 <div>
                     <div class="row">
                       <div class="col-sm">
-                          {% if program != None %}
+                          {% if program or not eventData.isAllVolunteerTraining %}
                             <h3><br>Program Trainings:</h3>
                                 {% for training, participated in programTrainings.items() %}
                                     {% if g.current_user.isCeltsAdmin %}

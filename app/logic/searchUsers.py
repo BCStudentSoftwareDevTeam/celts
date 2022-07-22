@@ -7,7 +7,7 @@ def searchUsers(query, category=None):
         MySQL LIKE is case insensitive
     '''
 
-    # add wildcards to each piece of the query 
+    # add wildcards to each piece of the query
     splitSearch = query.strip().split()
     firstName = splitSearch[0] + "%"
     lastName = " ".join(splitSearch[1:]) +"%"
@@ -23,7 +23,7 @@ def searchUsers(query, category=None):
         userWhere = (User.isCeltsAdmin)
     elif category == "studentstaff":
         userWhere = (User.isCeltsStudentStaff)
-    else: 
+    else:
         userWhere = (User.isStudent)
 
     # Combine into query
