@@ -4,7 +4,7 @@
 {% block scripts %}
   {{super()}}
   <script type="text/javascript" src="{{url_for('static', filename='js/volunteerProfile.js') }}?u={{lastStaticUpdate}}"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
 {% endblock %}
 
 {% block styles %}
@@ -19,7 +19,7 @@
     <div align="center">
           <input size="14" id="phoneInput" type="text"  class="bfh-phone" value="{{volunteer.phoneNumber}}">
           <button class=" btn-success btn-sm" id="updatePhone" data-username="{{volunteer.username}}">Update</button>
-    </div>  
+    </div>
 </div>
 <div class="btn-group">
    <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="tabs-tab" role="tablist">
@@ -77,6 +77,26 @@
       </thead>
       <tbody>
       {% for row in eligibilityTable %}
+      {% set trainingList = row['trainingList'] %}
+      {% macro trainingListView() %}
+        {% if trainingList %}
+            {% for trainings, participated in trainingList.items() %}
+                {% if g.current_user.isCeltsAdmin %}
+                  <li>{{trainings}}</li>
+                {% else %}
+                    {% if participated == 1 %}
+                        <p><b>{{trainings}}</b>: <br>Attended</p>
+                    {% elif participated == 0 %}
+                        <p><b>{{trainings}}</b>: <br>Not attended</p>
+                    {% elif not participated[0] %}
+                        <p><b>{{trainings}}</b>: <br>Takes place on {{participated[1]}}</p>
+                    {% endif%}
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <p>No trainings for this program.</p>
+        {% endif %}
+      {% endmacro %}
         {% set checked = "" %}
         {% if row.program in programsInterested %}
             {% set checked = "checked" %}
@@ -85,10 +105,12 @@
             <td><a href="{{row.program.url}}" id="programNameTable">{{row.program.programName}}</a></td>
             <td><input class="form-check-input" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>
             <td>
-                {% if row.completedTraining %}
-                    <i class="bi bi-check-lg"></i>
+                {% if row.completedTraining or not trainingList %}
+                    <i class="bi bi-check-lg"></i> &nbsp&nbsp
+                    <a class="trainingPopover" id="{{row.program.id}}" href="#" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
                 {% else %}
-                    <i class="bi bi-x-lg"></i>
+                    <i class="bi bi-x-lg"></i> &nbsp&nbsp
+                    <a class="trainingPopover" id="{{row.program.id}}" href="#" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
                 {% endif %}
             </td>
           {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
