@@ -124,7 +124,7 @@ $(document).ready(function(){
             return $(this).attr('data-content');
         }
     });
-    
+
   $("#updatePhone").click(function() {
     userName = $(this).data("username")
     phoneNumber = $("#phoneInput").val()

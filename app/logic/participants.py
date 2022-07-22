@@ -122,7 +122,7 @@ def getUserParticipatedEvents(program, user, currentTerm):
     for training in listOfProgramTrainings:
         eventParticipants = getEventParticipants(training.id)
         if training.startDate > date.today():
-            didParticipate = None
+            didParticipate = [None, training.startDate.strftime("%m/%d/%Y")]
         elif user.username in eventParticipants.keys():
             didParticipate = True
         else:

@@ -376,5 +376,6 @@ def test_getUserParticipatedEvents():
         listOfProgramTrainings = [programTraining for programTraining in allProgramTrainings]
         programTrainings = getUserParticipatedEvents(Program.get_by_id(8), User.get_by_id("ramsayb2"), currentTerm)
         for training in programTrainings.keys():
-            assert programTrainings[training] == None
+            assert programTrainings[training][0] == None
+            assert programTraining[training][1] == testingEvent[startDate]
         transaction.rollback()
