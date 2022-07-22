@@ -1,3 +1,5 @@
+import searchUser from './searchUser.js'
+
 // updates max and min dates of the datepickers as the other datepicker changes
 function updateDate(obj) {
   // we need to replace "-" with "/" because firefox cannot turn a date with "-" to a datetime object
@@ -35,9 +37,12 @@ function format24to12HourTime(timeStr){
  * Run when the webpage is ready for javascript
  */
 $(document).ready(function() {
-    $("#attachmentObject").fileinput({
-        overwriteInitial: "false",
-    });
+    $("#attachmentObject").fileinput()
+  // Disable button when we are ready to submit
+  $("#saveEvent").on('submit',function(event) {
+      $(this).find("input[type=submit]").prop("disabled", true)
+  });
+
   $("#checkIsRecurring").click(function() {
     var recurringStatus = $("input[name='isRecurring']:checked").val()
     if (recurringStatus == 'on') {
@@ -130,4 +135,39 @@ $(document).ready(function() {
       $("#checkIsRequired").prop('disabled', false);
     }
   });
+
+  var facilitatorArray = []
+  function callback(selectedFacilitator) {
+    // JSON.parse is required to de-stringify the search results into a dictionary.
+    let facilitator = (selectedFacilitator["firstName"]+" "+selectedFacilitator["lastName"]+" ("+selectedFacilitator["username"]+")");
+    let username = selectedFacilitator["username"];
+    if (!facilitatorArray.includes(username)){
+        facilitatorArray.push(username);
+        let tableBody = $("#facilitatorTable").find("tbody");
+        let lastRow = tableBody.find("tr:last");
+        let newRow = lastRow.clone();
+        newRow.find("td:eq(0) p").text(facilitator);
+        newRow.find("td:eq(0) div button").attr("data-id", username);
+        newRow.find("td:eq(0) div input").attr("id", username);
+        newRow.attr("id", username);
+        newRow.prop("hidden", false);
+        lastRow.after(newRow);
+        $("#hiddenFacilitatorArray").attr("value", facilitatorArray);
+    }
+  }
+
+  $("#eventFacilitator").on('input', function() {
+    // To retrieve specific columns into a dict, create a [] list and put columns inside
+    searchUser("eventFacilitator", callback, true, undefined, "instructor");
+  });
+
+  $("#facilitatorTable").on("click", "#remove", function() {
+     let username = $(this).closest("tr")[0].id
+     const index = facilitatorArray.indexOf(username)
+     facilitatorArray.splice(index, 1);
+     $("#hiddenFacilitatorArray").attr("value", facilitatorArray);
+     $(this).closest("tr").remove();
+  });
+
+
 });

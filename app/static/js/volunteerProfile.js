@@ -113,6 +113,25 @@ $(document).ready(function(){
       }
     })
   });
+  $("#updatePhone").click(function() {
+    userName = $(this).data("username") 
+    phoneNumber = $("#phoneInput").val()
+    let isvalid = phoneNumber.replace(/\D/g,"").length === 10;
+    if (isvalid == true){
+      $.ajax({
+        method:"POST",
+        url:"/updatePhone",
+        data:{"username":userName,
+              "phoneNumber":phoneNumber},
+        success: function(s){
+          msgFlash("Phone Number is updated", "success")
+        },
+      })
+    } else {
+      msgFlash("Invalid Phone number", "danger")
+    }
+  });
+  $('#phoneInput').inputmask('(999)-999-9999'); 
 });
 
 function displayMessage(message, color) {  // displays message for saving background check
