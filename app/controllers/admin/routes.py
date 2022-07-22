@@ -98,14 +98,13 @@ def createEvent(templateid, programid=None):
     # make sure our data is the same regardless of GET or POST
     preprocessEventData(eventData)
     isProgramManager = g.current_user.isProgramManagerFor(programid)
-
     futureTerms = selectSurroundingTerms(g.current_term, prevTerms=0)
-
+    # eventFacilitators = EventFacilitator.select().where(EventFacilitator.event == event)
     return render_template(f"/admin/{template.templateFile}",
             template = template,
             eventData = eventData,
             futureTerms = futureTerms,
-            allFacilitators = getAllFacilitators(),
+            # eventFacilitators = getAllFacilitators(),
             isProgramManager = isProgramManager)
 
 @admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
@@ -137,13 +136,14 @@ def eventDisplay(eventId):
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     program = event.singleProgram
     isProgramManager = g.current_user.isProgramManagerFor(program)
+    eventFacilitators = EventFacilitator.select().where(EventFacilitator.event == event)
     rule = request.url_rule
     if 'edit' in rule.rule:
         if not (g.current_user.isCeltsAdmin or isProgramManager):
             abort(403)
         return render_template("admin/createEvent.html",
                                 eventData = eventData,
-                                allFacilitators = getAllFacilitators(),
+                                eventFacilitators = eventFacilitators,
                                 futureTerms=futureTerms,
                                 isPastEvent = isPastEvent,
                                 userHasRSVPed = userHasRSVPed,

@@ -172,12 +172,11 @@
                     <p class="facilitatorName mt-3" required></p>
                   </td>
                   <td><button id="remove" type="button" class="mt-3 btn btn-danger">Remove</button></td>
-
                 </tr>
-                {% for instructor in courseInstructor %}
-                <tr>
+                {% for facilitator in eventFacilitators %}
+                <tr id="{{facilitator.user}}">
                   <td>
-                    <p class="facilitatorName">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user}})</p>
+                    <p class="facilitatorName">{{facilitator.user.firstName}} {{facilitator.user.lastName}} ({{facilitator.user}})</p>
                   </td>
                   <td>
                     <button id="remove" type="button" class="btn btn-danger">Remove</button>

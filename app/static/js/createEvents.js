@@ -1,5 +1,5 @@
 import searchUser from './searchUser.js'
-
+var facilitatorArray = []
 // updates max and min dates of the datepickers as the other datepicker changes
 function updateDate(obj) {
   // we need to replace "-" with "/" because firefox cannot turn a date with "-" to a datetime object
@@ -33,6 +33,16 @@ function format24to12HourTime(timeStr){
     }
     return formattedTime;
   }
+
+    function parseFacilitatorTable(){
+        var table = $("#facilitatorTable tbody")
+        var size = table.find("tr").length;
+
+        table.find("tr").each(function(index, element){
+            facilitatorArray.push(element.id);
+        });
+        $("#hiddenFacilitatorArray").attr("value", facilitatorArray);
+    }
 /*
  * Run when the webpage is ready for javascript
  */
@@ -135,7 +145,7 @@ $(document).ready(function() {
     }
   });
 
-  var facilitatorArray = []
+
   function callback(selectedFacilitator) {
     // JSON.parse is required to de-stringify the search results into a dictionary.
     let facilitator = (selectedFacilitator["firstName"]+" "+selectedFacilitator["lastName"]+" ("+selectedFacilitator["username"]+")");
@@ -167,6 +177,8 @@ $(document).ready(function() {
      $("#hiddenFacilitatorArray").attr("value", facilitatorArray);
      $(this).closest("tr").remove();
   });
+
+  parseFacilitatorTable();
 
 
 });
