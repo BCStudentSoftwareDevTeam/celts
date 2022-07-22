@@ -1,11 +1,7 @@
 import searchUser from './searchUser.js'
-function callbackAdmin(selected){
-    submitRequest("addCeltsAdmin", selected.username)
-}
 function callbackStudentStaff(selected){
     submitRequest("addCeltsStudentStaff", selected.username)
 }
-
 $(document).ready(function(){
   // Admin Management
   $("#searchCeltsAdminInput").on("input", function(){
@@ -16,9 +12,6 @@ $(document).ready(function(){
   });
   $("#addNewTerm").on("click",function(){
     addNewTerm();
-  });
-  $("#addNewProgramInfo").on("click",function(){
-    addNewProgramInfo();
   });
   $("#programSelect").on("change",function(){
     displayProgramInfo();
@@ -50,7 +43,6 @@ $(document).ready(function(){
     submitTerm();
   });
 });
-
 function submitRequest(method, username){
   let data = {
       method: method,
@@ -100,7 +92,6 @@ function addNewTerm(){
     }
   })
 }
-
 function addNewProgramInfo(){
   var programInfo = {emailSenderName: $("#emailSenderName").val(),
                     emailReplyTo: $("#emailReplyTo").val(),
@@ -117,7 +108,6 @@ function addNewProgramInfo(){
     }
   })
 }
-
 function displayProgramInfo(){
   var programInfo = $("#programSelect option:selected")[0]
   $("#emailReplyTo").val($(programInfo).data("replytoemail"))
