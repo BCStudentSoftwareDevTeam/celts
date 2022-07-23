@@ -39,7 +39,7 @@
             {% for instructor in courseInstructor %}
             <tr data-username="{{instructor.user.username}}">
               <td>
-                <p class="instructorName">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user}})</p>
+                <p class="instructorName">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user.email}})</p>
                   <input type="text" style="border: none" size="12" class="form-control-sm" id="inputPhoneNumber-{{instructor.user}}" name="courseInstructorPhone" aria-label="Instructor Phone" value="{{instructor.user.phoneNumber}}" placeholder="Phone Number" />
                   <a class="text-decoration-none primary editButton" tabindex="0" data-id="{{instructor.user}}"  id="editButton-{{instructor.user}}"  type="button">Edit</a>
               </td>

@@ -137,7 +137,7 @@ function blurHandler(event) {
     }
 }
 function createNewRow(selectedInstructor) {
-  let instructor = (selectedInstructor["firstName"]+" "+selectedInstructor["lastName"]+" ("+selectedInstructor["username"]+")");
+  let instructor = (selectedInstructor["firstName"]+" "+selectedInstructor["lastName"]+" ("+selectedInstructor["email"]+")");
   let username = selectedInstructor["username"];
   let phone = selectedInstructor["phoneNumber"];
   let tableBody = $("#instructorTable").find("tbody");
@@ -161,6 +161,7 @@ function createNewRow(selectedInstructor) {
   let removeButton = newRow.find("td:eq(1) button")
   let editLink = newRow.find("td:eq(0) a")
   editLink.attr("id", "editButton-" + username);
+
   newRow.attr("data-username", username)
   newRow.prop("hidden", false);
   lastRow.after(newRow);
