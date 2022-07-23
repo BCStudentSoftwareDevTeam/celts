@@ -75,7 +75,7 @@ function displayCorrectTab(navigateTab) {
   currentTab = currentTab + navigateTab;
 
   if (currentTab >= allTabs.length) {
-      //$("#nextButton").prop("disabled", true)
+      $("#nextButton").prop("disabled", true)
       addInstructorsToForm()
       $("#slcNewProposal").submit();
       return false;
