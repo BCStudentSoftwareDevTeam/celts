@@ -8,7 +8,7 @@ class Course(baseModel):
     courseAbbreviation = CharField()
     courseCredit = FloatField()
     isRegularlyOccuring = BooleanField(default=False)
-    term = ForeignKeyField(Term)
+    term = ForeignKeyField(Term, null = True)
     status = ForeignKeyField(CourseStatus)
     createdBy = CharField()
     isAllSectionsServiceLearning = BooleanField(default=False)

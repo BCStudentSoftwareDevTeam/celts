@@ -91,3 +91,5 @@ def updateCourse(courseData, instructorsDict):
     except:
         flash("Course not approved!", "danger")
     return course
+            
+    

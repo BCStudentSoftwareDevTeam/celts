@@ -1,4 +1,4 @@
-from flask import request, render_template, g, abort, json, redirect, jsonify, flash, session
+from flask import request, render_template, g, url_for, abort, json, redirect, jsonify, flash, session
 from app.models.user import User
 from app.models.term import Term
 from app.models.course import Course
@@ -66,8 +66,30 @@ def slcEditProposal(courseID):
                                 isRegularlyOccuring = isRegularlyOccuring,
                                 isAllSectionsServiceLearning = isAllSectionsServiceLearning,
                                 isPermanentlyDesignated = isPermanentlyDesignated,
-                                courseID=courseID,
-                                redirectTarget = getRedirectTarget(True))
+                                courseID=courseID)
+@serviceLearning_bp.route('/serviceLearning/saveProposal', methods=['POST'])
+def slcSaveContinue():
+    """Will update the the course proposal and return an empty string since ajax request needs a response
+    Also, it updates the course status as 'Incomplete'"""
+    updateCourse(request.form.copy(), instructorsDict)
+    course = Course.get_by_id(request.form.get('courseID'))
+    course.status = CourseStatus.INCOMPLETE
+    course.save() 
+    return ""
+
+@serviceLearning_bp.route('/serviceLearning/createCourse/', methods=['POST'])
+def slcCreateCourse():
+    """will give a new course ID so that it can redirect to an edit page"""
+    course = Course.create(
+        status=CourseStatus.SUBMITTED)
+    id = Course.get_by_id(course)
+    for i in range(1, 7):
+        CourseQuestion.create(
+            course=course,
+            questionNumber=i
+        )
+    return redirect(url_for('serviceLearning.slcEditProposal', courseID = id))
+
 
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcCreateOrEdit():
@@ -158,6 +180,7 @@ def approveCourse():
     else:
         course = createCourse(request.form.copy(), instructorsDict) # creat course first and get its ID to approve next
     try:
+        course = updateCourse(request.form.copy(), instructorsDict)
         course.status = CourseStatus.APPROVED
         course.save() # saves the query and approves course in the database
         flash("Course approved!", "success")
