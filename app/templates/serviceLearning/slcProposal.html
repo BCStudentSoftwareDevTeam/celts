@@ -27,7 +27,7 @@
         <tbody>
             <tr data-username="" hidden>
                 <td>
-                  <p class="instructorName"></p>
+                  <p class="mb-0"></p>
                     <input type="text" style="border: none" size="12" class="form-control-sm" id="" name="courseInstructorPhone" aria-label="Instructor Phone" value="" placeholder="Phone Number" />
                     <a class="text-decoration-none primary editButton" tabindex="0" data-id=""  id=""  type="button">Edit</a>
                 </td>
@@ -39,7 +39,7 @@
             {% for instructor in courseInstructor %}
             <tr data-username="{{instructor.user.username}}">
               <td>
-                <p class="instructorName">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user.email}})</p>
+                <p class="mb-0">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user.email}})</p>
                   <input type="text" style="border: none" size="12" class="form-control-sm" id="inputPhoneNumber-{{instructor.user}}" name="courseInstructorPhone" aria-label="Instructor Phone" value="{{instructor.user.phoneNumber}}" placeholder="Phone Number" />
                   <a class="text-decoration-none primary editButton" tabindex="0" data-id="{{instructor.user}}"  id="editButton-{{instructor.user}}"  type="button">Edit</a>
               </td>

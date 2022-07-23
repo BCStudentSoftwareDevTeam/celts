@@ -39,15 +39,15 @@ function showTab(currentTab) {
 
 $("#saveAndApproveButton").click(function(){
     $("#saveAndApproveButton").prop("disabled", true)
-    var data = $("form").serialize()
-    saveCourseInstructors()
+    var formdata = $("form").serialize()
+    var instructordata = $.param({"instructor":getCourseInstructors()})
     $.ajax({
         url: "/serviceLearning/approveCourse/",
         type: "POST",
-        data: data,
+        data: formdata + "&" + instructordata,
         success: function(response) {
             window.location.replace("/manageServiceLearning")
-    }
+        }
   });
 });
 
@@ -75,11 +75,19 @@ function displayCorrectTab(navigateTab) {
   currentTab = currentTab + navigateTab;
 
   if (currentTab >= allTabs.length) {
-      $("#nextButton").prop("disabled", true)
-      saveCourseInstructors().then(() => $("#slcNewProposal").submit());
+      //$("#nextButton").prop("disabled", true)
+      addInstructorsToForm()
+      $("#slcNewProposal").submit();
       return false;
   }
   showTab(currentTab);
+}
+
+function addInstructorsToForm() {
+    var form = $("#slcNewProposal");
+    $.each(getCourseInstructors(), function(idx,username) {
+        form.append($("<input type='hidden' name='instructor[]' value='" + username + "'>"));
+    });
 }
 
 function validateForm() {
@@ -101,7 +109,8 @@ function validateForm() {
         }
       }
 
-      if ($("table").find('td').length < 5 && currentTab ==1) { // checks if there are more than the default hidden 3 tds
+      var instructors = getCourseInstructors()
+      if (!instructors.length && currentTab == 1) {
         valid = false;
         $("#courseInstructor").addClass("invalid");
       } else {
@@ -207,19 +216,14 @@ $('#instructorTable').on('click', ".editButton", function() {
 $("#instructorTable").on("click", "#remove", function() {
    $(this).closest("tr").remove();
 });
-let courseInstructors = []
-async function saveCourseInstructors() {
-  $("#instructorTable tr").each(function(a, b) {
-    courseInstructors.push($('.instructorName', b).text());
-  });
-  return await $.ajax({
-    url: "/courseInstructors",
-    data: JSON.stringify(courseInstructors),
-    type: "POST",
-    contentType: "application/json",
-    success: function () {}
-  });
+
+function getCourseInstructors() {
+  // get usernames out of the row
+  return $("#instructorTable tr")
+                .map((i,el) => $(el).data('username')).get()
+                .filter(val => (val))
 }
+
 function viewProposal(){
     var url = String(window.location.href);
     if (url.includes("view")){
