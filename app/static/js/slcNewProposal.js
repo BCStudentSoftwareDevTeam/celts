@@ -3,6 +3,8 @@ import searchUser from './searchUser.js'
 let currentTab = 0; // Current tab is set to be the first tab (0)
 
 $(document).ready(function(e) {
+  $("input[name=courseInstructorPhone]").inputmask('(999)-999-9999');
+
   $("#cancelButton").hide();
   showTab(currentTab); // Display the current tab
   viewProposal()
@@ -37,15 +39,15 @@ function showTab(currentTab) {
 
 $("#saveAndApproveButton").click(function(){
     $("#saveAndApproveButton").prop("disabled", true)
-    var data = $("form").serialize()
-    saveCourseInstructors()
+    var formdata = $("form").serialize()
+    var instructordata = $.param({"instructor":getCourseInstructors()})
     $.ajax({
         url: "/serviceLearning/approveCourse/",
         type: "POST",
-        data: data,
+        data: formdata + "&" + instructordata,
         success: function(response) {
             window.location.replace("/manageServiceLearning")
-    }
+        }
   });
 });
 
@@ -74,10 +76,18 @@ function displayCorrectTab(navigateTab) {
 
   if (currentTab >= allTabs.length) {
       $("#nextButton").prop("disabled", true)
-      saveCourseInstructors().then(() => $("#slcNewProposal").submit());
+      addInstructorsToForm()
+      $("#slcNewProposal").submit();
       return false;
   }
   showTab(currentTab);
+}
+
+function addInstructorsToForm() {
+    var form = $("#slcNewProposal");
+    $.each(getCourseInstructors(), function(idx,username) {
+        form.append($("<input type='hidden' name='instructor[]' value='" + username + "'>"));
+    });
 }
 
 function validateForm() {
@@ -99,7 +109,8 @@ function validateForm() {
         }
       }
 
-      if ($("table").find('td').length < 5 && currentTab ==1) { // checks if there are more than the default hidden 3 tds
+      var instructors = getCourseInstructors()
+      if (!instructors.length && currentTab == 1) {
         valid = false;
         $("#courseInstructor").addClass("invalid");
       } else {
@@ -120,11 +131,22 @@ function fixStepIndicator(navigateTab) {
   }
   steps[navigateTab].className += " active";
 }
-
-
-function callback(selectedInstructor) {
-  // JSON.parse is required to de-stringify the search results into a dictionary.
-  let instructor = (selectedInstructor["firstName"]+" "+selectedInstructor["lastName"]+" ("+selectedInstructor["username"]+")");
+function getRowUsername(element) {
+    return $(element).closest("tr").data("username")
+}
+function focusHandler(event) {
+    var username=getRowUsername(this)
+    $("#editButton-" + username).html('Save');
+}
+function blurHandler(event) {
+    var username=getRowUsername(this)
+    var editBtn = $("#editButton-" + username)
+    if($(event.relatedTarget).attr("id") != editBtn.attr("id")) {
+        editBtn.html('Edit');
+    }
+}
+function createNewRow(selectedInstructor) {
+  let instructor = (selectedInstructor["firstName"]+" "+selectedInstructor["lastName"]+" ("+selectedInstructor["email"]+")");
   let username = selectedInstructor["username"];
   let phone = selectedInstructor["phoneNumber"];
   let tableBody = $("#instructorTable").find("tbody");
@@ -132,55 +154,74 @@ function callback(selectedInstructor) {
     msgFlash("Instructor is already added.", "danger");
     return;
   }
-
+  // Create new table row and update necessary attributes
   let lastRow = tableBody.find("tr:last");
   let newRow = lastRow.clone();
-  newRow.find("td:eq(0) p").text(instructor);
-  newRow.find("td:eq(0) div input").val(phone);
-  newRow.find("td:eq(0) div button").attr("data-id", username);
-  newRow.find("td:eq(0) div input").attr("id", username);
+
+  let instructorName = newRow.find("td:eq(0) p")
+  instructorName.text(instructor);
+
+  let phoneInput = newRow.find("td:eq(0) input")
+  phoneInput.val(phone);
+  phoneInput.attr("id", "inputPhoneNumber-" +username);
+  $(phoneInput).focus(focusHandler);
+  $(phoneInput).focusout(blurHandler);
+
+  let removeButton = newRow.find("td:eq(1) button")
+  let editLink = newRow.find("td:eq(0) a")
+  editLink.attr("id", "editButton-" + username);
+
+  newRow.attr("data-username", username)
   newRow.prop("hidden", false);
   lastRow.after(newRow);
 }
-
 $("#courseInstructor").on('input', function() {
-  // To retrieve specific columns into a dict, create a [] list and put columns inside
-  searchUser("courseInstructor", callback, true, null, "instructor");
+  searchUser("courseInstructor", createNewRow, true, null, "instructor");
 });
+$("input[name=courseInstructorPhone]").focus(focusHandler);
+$("input[name=courseInstructorPhone]").focusout(blurHandler);
+$('#instructorTable').on('click', ".editButton", function() {
+    var username=getRowUsername(this)
+    if ($(this).html() === 'Edit') {
+        $(this).html('Save')
+        $("#inputPhoneNumber-"+ username).focus()
+    } else {
+        // Save the phone number
+        var phoneInput = $("#inputPhoneNumber-" + username);
+        let isvalid = phoneInput.val().replace(/\D/g,"").length === 10;
+        let isempty = phoneInput.val().replace(/\D/g,"").length === 0;
+        if (!(isvalid || isempty)) {
+            phoneInput.addClass("invalid");
+            window.setTimeout(() => phoneInput.removeClass("invalid"), 1000);
+            return false;
+        }
 
-$("#instructorTable").on("click", "#instructorPhoneUpdate", function() {
-   var inputId = $(this).attr("data-id")
-   var instructorData = [inputId, $("#" + inputId).val()]
-   $.ajax({
-     url: "/updateInstructorPhone",
-     data: JSON.stringify(instructorData),
-     type: "POST",
-     contentType: "application/json",
-     success: function(response) {
-         msgFlash("Instructor's phone number updated", "success")
-     },
-     error: function(request, status, error) {
-       msgFlash("Error updating phone number", "danger")
-     }
-   });
+        $(this).html('Edit');
+        var instructorData = [username, phoneInput.val()]
+        $.ajax({
+          url: "/updateInstructorPhone",
+          data: JSON.stringify(instructorData),
+
+          type: "POST",
+          contentType: "application/json",
+          success: function(response) {
+              msgFlash("Instructor's phone number updated", "success")
+          },
+          error: function(request, status, error) {
+            msgFlash("Error updating phone number", "danger")
+          }
+        });
+    }
 });
-
 $("#instructorTable").on("click", "#remove", function() {
    $(this).closest("tr").remove();
 });
 
-let courseInstructors = []
-async function saveCourseInstructors() {
-  $("#instructorTable tr").each(function(a, b) {
-    courseInstructors.push($('.instructorName', b).text());
-  });
-  return await $.ajax({
-    url: "/courseInstructors",
-    data: JSON.stringify(courseInstructors),
-    type: "POST",
-    contentType: "application/json",
-    success: function () {}
-  });
+function getCourseInstructors() {
+  // get usernames out of the row
+  return $("#instructorTable tr")
+                .map((i,el) => $(el).data('username')).get()
+                .filter(val => (val))
 }
 
 function viewProposal(){
