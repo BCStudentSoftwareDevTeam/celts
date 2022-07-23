@@ -31,3 +31,7 @@ input.invalid {
 .step.finish {
   background-color: #0d6efd;
 }
+
+.instructorName {
+    margin-bottom: 0px;
+}

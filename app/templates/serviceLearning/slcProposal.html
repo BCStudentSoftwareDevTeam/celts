@@ -1,4 +1,3 @@
-{%set title ="SLC Proposal"%}
 <h2 class="text-center pt-4 pb-2"> New Proposal For Service-Learning Course</h2>
 {% if courseID%}
     <p class="text-center fw-bold"> Please review the <a href="/serviceLearning/editProposal/{{courseID}}">service-learning course guidelines</a> before completing this form </p>
@@ -27,24 +26,24 @@
         </thead>
         <tbody>
             <tr data-username="" hidden>
-                <td >
+                <td>
                   <p class="instructorName"></p>
-                    <input type="text" style="border: none" class="form-control-sm mb-3 " id="" name="courseInstructorPhone" aria-label="Recipient's username" aria-describedby="button-addon2" value=""/>
+                    <input type="text" style="border: none" size="12" class="form-control-sm" id="" name="courseInstructorPhone" aria-label="Instructor Phone" value="" placeholder="Phone Number" />
                     <a class="text-decoration-none primary editButton" tabindex="0" data-id=""  id=""  type="button">Edit</a>
                 </td>
-                <td>
+                <td class="align-middle">
                     <button id="remove" type="button" class="btn btn-danger">Remove</button>
                 </td>
 
             </tr>
             {% for instructor in courseInstructor %}
             <tr data-username="{{instructor.user.username}}">
-              <td >
+              <td>
                 <p class="instructorName">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user}})</p>
-                  <input type="text" style="border: none" class="form-control-sm mb-3 " id="inputPhoneNumber-{{instructor.user}}" name="courseInstructorPhone" aria-label="Recipient's username" aria-describedby="button-addon2" value="{{instructor.user.phoneNumber}}"/>
+                  <input type="text" style="border: none" size="12" class="form-control-sm" id="inputPhoneNumber-{{instructor.user}}" name="courseInstructorPhone" aria-label="Instructor Phone" value="{{instructor.user.phoneNumber}}" placeholder="Phone Number" />
                   <a class="text-decoration-none primary editButton" tabindex="0" data-id="{{instructor.user}}"  id="editButton-{{instructor.user}}"  type="button">Edit</a>
               </td>
-              <td>
+              <td class="align-middle">
                   <button id="remove" type="button" class="btn btn-danger">Remove</button>
               </td>
 

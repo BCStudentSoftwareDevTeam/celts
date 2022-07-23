@@ -3,6 +3,8 @@ import searchUser from './searchUser.js'
 let currentTab = 0; // Current tab is set to be the first tab (0)
 
 $(document).ready(function(e) {
+  $("input[name=courseInstructorPhone]").inputmask('(999)-999-9999');
+
   $("#cancelButton").hide();
   showTab(currentTab); // Display the current tab
   viewProposal()
@@ -174,8 +176,18 @@ $('#instructorTable').on('click', ".editButton", function() {
         $(this).html('Save')
         $("#inputPhoneNumber-"+ username).focus()
     } else {
+        // Save the phone number
+        var phoneInput = $("#inputPhoneNumber-" + username);
+        let isvalid = phoneInput.val().replace(/\D/g,"").length === 10;
+        let isempty = phoneInput.val().replace(/\D/g,"").length === 0;
+        if (!(isvalid || isempty)) {
+            phoneInput.addClass("invalid");
+            window.setTimeout(() => phoneInput.removeClass("invalid"), 1000);
+            return false;
+        }
+
         $(this).html('Edit');
-        var instructorData = [username, $("#inputPhoneNumber-" + username).val()]
+        var instructorData = [username, phoneInput.val()]
         $.ajax({
           url: "/updateInstructorPhone",
           data: JSON.stringify(instructorData),
