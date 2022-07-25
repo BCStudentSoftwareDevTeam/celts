@@ -1,28 +1,17 @@
 import searchUser from './searchUser.js'
-function callback(selected) {
-  $("#searchAdmin").submit();
+function callbackStudentStaff(selected){
+    submitRequest("addCeltsStudentStaff", selected.username)
 }
-
-$(document).ready(function() {
+$(document).ready(function(){
   // Admin Management
-  var searchElements = [
-    // Search Input ID               Button ID                 Category
-    ['searchCeltsAdminInput',       'addCeltsAdmin',          'instructor'],
-    ['searchCeltsStudentStaffInput','addCeltsStudentStaff',   'student'],
-    ['removeCeltsAdminInput',       'removeCeltsAdmin',       'admin'],
-    ['removeCeltsStudentStaffInput','removeCeltsStudentStaff','studentstaff']
-  ];
-  $.each(searchElements, function(i,arr) {
-      let [inputId, btnId, category] = arr
-      $("#"+inputId).on("input", () => searchUser(inputId, callback, false, null, category))
-      $("#"+btnId).on("click", () => submitRequest(btnId, $("#"+inputId).val()))
+  $("#searchCeltsAdminInput").on("input", function(){
+      searchUser("searchCeltsAdminInput", callbackAdmin, false, null, "instructor")
   });
-
+  $("#searchCeltsStudentStaffInput").on("input", function(){
+      searchUser("searchCeltsStudentStaffInput", callbackStudentStaff, false, null, "student")
+  });
   $("#addNewTerm").on("click",function(){
     addNewTerm();
-  });
-  $("#addNewProgramInfo").on("click",function(){
-    addNewProgramInfo();
   });
   $("#programSelect").on("change",function(){
     displayProgramInfo();
@@ -33,20 +22,28 @@ $(document).ready(function() {
   $(".removeStudentStaff").on("click",function(){
     submitRequest("removeCeltsStudentStaff", $(this).data("username"));
   });
+  $('#searchCeltsAdminInput').keydown(function(e){
+      if (e.key === "Enter"){
+          submitRequest("addCeltsAdmin", $(this).val())
+      }
+  });
+  $('#searchCeltsStudentStaffInput').keydown(function(e){
+      if (e.key === "Enter"){
+          submitRequest("addCeltsStudentStaff", $(this).val())
+      }
+  });
 
-
-  for (var i=1; i<=$('#currentTermList .term-btn').length; i++){
-    $("#termFormID_"+i).on("click", function() {
+  for (var i = 1; i <= $('#currentTermList .term-btn').length; i++){
+    $("#termFormID_" + i).on("click", function(){
       $(".term-btn").removeClass("active");
       $(this).addClass('active');
     });
   };
-  $(".term-btn").on("click", function() {
+  $(".term-btn").on("click", function(){
     submitTerm();
   });
 });
-
-function submitRequest(method, username) {
+function submitRequest(method, username){
   let data = {
       method: method,
       user: username,
@@ -66,7 +63,7 @@ function submitRequest(method, username) {
   })
 }
 
-function submitTerm() {
+function submitTerm(){
   var selectedTerm = $("#currentTermList .active")
   var termInfo = {id: selectedTerm.val()};
   $.ajax({
@@ -83,7 +80,7 @@ function submitTerm() {
   })
 }
 
-function addNewTerm() {
+function addNewTerm(){
   $.ajax({
     url: "/admin/addNewTerm",
     type: "POST",
@@ -95,8 +92,7 @@ function addNewTerm() {
     }
   })
 }
-
-function addNewProgramInfo() {
+function addNewProgramInfo(){
   var programInfo = {emailSenderName: $("#emailSenderName").val(),
                     emailReplyTo: $("#emailReplyTo").val(),
                     programId: $("#programSelect").val()};
@@ -112,7 +108,6 @@ function addNewProgramInfo() {
     }
   })
 }
-
 function displayProgramInfo(){
   var programInfo = $("#programSelect option:selected")[0]
   $("#emailReplyTo").val($(programInfo).data("replytoemail"))

@@ -11,13 +11,11 @@ $(document).ready(function(){
       method: "POST",
       url: interestUrl,
       success: function(response) {
-          msgFlash("Your interest has been updated", "success");
-          location.reload(true);  //  Reloading page after user clicks on the show interest checkbox
+          location.reload();  //  Reloading page after user clicks on the show interest checkbox
       },
       error: function(request, status, error) {
         console.log(status,error);
-        msgFlash("Error Updating Interest", "danger");
-        location.reload(true);
+        location.reload();
       }
     });
   });
@@ -68,6 +66,7 @@ $(document).ready(function(){
   });
 
   $("#banButton").click(function (){
+     $("#banButton").prop("disabled", true)
     var username = $(this).data("username") //Expected to be the unique username of a user in the database
     var route = ($(this).data("banOrUnban")).toLowerCase() //Expected to be "ban" or "unban"
     var program = $(this).data("programID") //Expected to be a program's primary ID
@@ -114,6 +113,37 @@ $(document).ready(function(){
       }
     })
   });
+
+  // Popover functionalitie
+    var requiredTraining = $(".trainingPopover");
+    requiredTraining.popover({
+       trigger: "hover",
+       sanitize: false,
+       html: true,
+       content: function() {
+            return $(this).attr('data-content');
+        }
+    });
+
+  $("#updatePhone").click(function() {
+    userName = $(this).data("username")
+    phoneNumber = $("#phoneInput").val()
+    let isvalid = phoneNumber.replace(/\D/g,"").length === 10;
+    if (isvalid == true){
+      $.ajax({
+        method:"POST",
+        url:"/updatePhone",
+        data:{"username":userName,
+              "phoneNumber":phoneNumber},
+        success: function(s){
+          msgFlash("Phone Number is updated", "success")
+        },
+      })
+    } else {
+      msgFlash("Invalid Phone number", "danger")
+    }
+  });
+  $('#phoneInput').inputmask('(999)-999-9999');
 });
 
 function displayMessage(message, color) {  // displays message for saving background check

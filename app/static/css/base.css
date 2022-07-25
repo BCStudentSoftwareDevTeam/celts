@@ -42,6 +42,9 @@
   overflow:hidden;
   z-index:0;
 }
+.heading-size{
+    font-size: 1.5em;
+}
 
 .skipContent:focus, .skipContent:active {
   color: #fff;
@@ -62,4 +65,8 @@
 
 .templateList a:last-child {
     border-bottom: 5px solid #d7d7d7
+}
+
+.sidebar-icon {
+    z-index: 1049;
 }

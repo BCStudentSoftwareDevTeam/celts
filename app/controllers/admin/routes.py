@@ -21,7 +21,6 @@ from app.models.adminLogs import AdminLogs
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
-from app.logic.courseManagement import pendingCourses, approvedCourses
 from app.logic.participants import getEventParticipants, getUserParticipatedEvents
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
@@ -73,7 +72,7 @@ def createEvent(templateid, programid=None):
     # Get the data for the form, from the template or the form submission
     eventData = template.templateData
     if request.method == "POST":
-        eventData = request.form.copy()
+        eventData.update(request.form.copy())
 
     if program:
         # TODO need to handle the multiple programs case
@@ -156,7 +155,7 @@ def eventDisplay(eventId):
         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
         eventData["startDate"] = event.startDate.strftime("%m/%d/%Y")
         programManager = ProgramManager.get_or_none(program=program)
-        userParticipatedEvents = getUserParticipatedEvents(program, g.current_user)
+        userParticipatedEvents = getUserParticipatedEvents(program, g.current_user, g.current_term)
         return render_template("eventView.html",
                                 eventData = eventData,
                                 eventFacilitatorNames = eventFacilitatorNames,
@@ -193,7 +192,7 @@ def volunteerProfile():
 @admin_bp.route('/search_student', methods=['GET'])
 def studentSearchPage():
     if g.current_user.isAdmin:
-        return render_template("/searchStudentPage.html")
+        return render_template("/admin/searchStudentPage.html")
     abort(403)
 
 @admin_bp.route('/addParticipants', methods = ['GET'])
