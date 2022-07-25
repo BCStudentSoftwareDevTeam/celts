@@ -38,10 +38,10 @@ def deleteEvent(eventId):
         if event.startDate:
             createLog(f"Deleted event: {event.name}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
 
-def attemptSaveEvent(eventData, attachmentFiles):
+def attemptSaveEvent(eventData, attachmentFiles = None):
     getAttachmentPaths = eventData.getlist("attachmentObject")
     newEventData = preprocessEventData(eventData)
-
+    addfile= FileHandler(attachmentFiles)
     isValid, validationErrorMessage = validateNewEventData(newEventData)
 
     if not isValid:
@@ -50,10 +50,10 @@ def attemptSaveEvent(eventData, attachmentFiles):
     try:
         events = saveEventToDb(newEventData)
         if attachmentFiles:
+            print(attachmentFiles)
             for event in events:
-                addAttachment(event.id, attachmentFiles)
-            addfile= FileHandler(attachmentFiles)
-            addfile.saveAttachment()
+                print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+                addfile.saveAttachment(event.id)
         return True, ""
     except Exception as e:
         print(e)
@@ -358,7 +358,3 @@ def getTomorrowsEvents():
     tomorrowDate = date.today() + timedelta(days=1)
     events = list(Event.select().where(Event.startDate==tomorrowDate))
     return events
-
-def addAttachment(eventId, attachments):
-    for attachment in attachments:
-        EventFile.create(event = eventId, fileName = attachment.filename)
