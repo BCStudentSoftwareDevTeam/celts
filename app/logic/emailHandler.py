@@ -18,7 +18,7 @@ from app.models.term import Term
 
 class EmailHandler:
     def __init__(self, raw_form_data, url_domain, sender_object, attachment_file=None):
-        
+
         self.mail = Mail(app)
         self.raw_form_data = raw_form_data
         self.url_domain = url_domain
@@ -153,12 +153,15 @@ class EmailHandler:
         try:
             # tries to create the full path of the files location and passes if
             # the directories already exist or there is no attachment
-            attachmentFullPath=(os.path.join(self.attachment_path, newfile.filename))
+            attachmentFullPath = os.path.join(self.attachment_path, self.attachment_file.filename)
+            if attachmentFullPath[:-1] == self.attachment_path:
+                return None
+
             os.mkdir(self.attachment_path)
 
         except AttributeError:  # will pass if there is no attachment to save
             pass
-        except FileExistsError:
+        except FileExistsError: # will pass if the file already exists
             pass
         return attachmentFullPath
 
@@ -166,8 +169,10 @@ class EmailHandler:
         """ Saves the attachment in the app/static/files/attachments/ directory """
         try:
             for file in self.attachment_file:
+                attachmentFullPath = self.getAttachmentFullPath(file)
+                if attachmentFullPath:
+                    file.save(AttachmentFullPath) # saves attachment in directory
 
-                file.save(self.getAttachmentFullPath(file)) # saves attachment in directory
         except AttributeError: # will pass if there is no attachment to save
             pass
 
@@ -218,7 +223,7 @@ class EmailHandler:
                         # [recipient.email],
                         [self.override_all_mail],
                         email_body,
-                        file_attachment = self.getAttachmentFullPath(), #needs to be modified later 
+                        file_attachment = self.getAttachmentFullPath(), #needs to be modified later
                         reply_to = defaultEmailInfo["replyTo"],
                         sender = (defaultEmailInfo["senderName"], defaultEmailInfo["replyTo"])
                     ))

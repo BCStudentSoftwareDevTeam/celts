@@ -199,8 +199,7 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
                     .join(Interest, JOIN.LEFT_OUTER, on=(ProgramEvent.program == Interest.program))
                     .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
                     .where(Event.startDate >= asOf,
-                            Event.timeStart > asOf.time(),
-                            (Interest.user == user) | (EventRsvp.user == user))
+                           (Interest.user == user) | (EventRsvp.user == user))
                     .distinct() # necessary because of multiple programs
                     .order_by(Event.startDate, Event.name) # keeps the order of events the same when the dates are the same
                     )
