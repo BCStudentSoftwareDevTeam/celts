@@ -18,6 +18,7 @@
     <thead>
       <tr>
         <th scope="col">Courses</th>
+        <th scope="col">Created By</th>
         <th scope="col">Faculty</th>
         <th scope="col">Term</th>
         <th scope="col">Status</th>
@@ -28,6 +29,7 @@
       {% for course in courseDict %}
         <tr>
           <td>{{courseDict[course]['name']}}</td>
+          <td>{{courseDict[course]['creator']}}</td>
           <td>{{courseDict[course]['faculty']|join(", ")}}</td>
           <td>{{courseDict[course]['term'].description}}</td>
           <td>{{courseDict[course]['status']}}</td>
