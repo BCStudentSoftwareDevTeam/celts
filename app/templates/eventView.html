@@ -30,18 +30,18 @@
          </div>
     {% endif %}
             <div class="row">
-                    <div style="padding-right:150px;"class="col-md-6">
+                    <div class="col-md-6">
                     <h3><br>Description</h3>
                     {% if isPastEvent %}
                         <p class="heading-size"><b>{{eventData.name}}</b> took place on <b>{{eventData.startDate}}</b> from <b>{{eventData.timeStart}}</b> to <b>{{eventData.timeEnd}}</b> and was located in <b>{{eventData.location}}</b>.</p>
                     {% else %}
                         <p class="heading-size"><b>{{eventData.name}}</b> will take place on <b>{{eventData.startDate}}</b> from <b>{{eventData.timeStart}}</b> to <b>{{eventData.timeEnd}}</b> and will be located in <b>{{eventData.location}}</b>.</p>
                     {% endif %}
-                    <p class="size">
+                    <p class="font-size">
                         {{eventData.description}}<br><br>
                     </p>
 
-                    <div class="size">
+                    <div class="font-size">
                         {% if eventData.isService %}
                             This event earns service hours.
                             <br />
@@ -67,17 +67,17 @@
                     </div>
                 </div>
 
-                <div class=" col-md-6">
-                  <div class=" col-md-6">
+                <div class="col-md-6">
+                  <div class="col-md-6">
                       <h3><br>Facilitators</h3>
                               {% if eventFacilitatorNames %}
                                       {% for facilitator in eventFacilitatorNames%}
-                                          <p class="size">
+                                          <p class="font-size">
                                               {{facilitator.firstName}} {{facilitator.lastName}}
                                           </p>
                                       {% endfor %}
                               {% else %}
-                                  <div class="size">No facilitators.</div>
+                                  <div class="font-size">No facilitators.</div>
                               {% endif %}
                       </div>
                       <div>
@@ -85,11 +85,11 @@
                             <div>
                                 {% if program or not eventData.isAllVolunteerTraining %}
                                   <h3><br>Program Trainings</h3>
-                                  <p class="size">
+                                  <p class="font-sizes">
                                       {% for training, participated in programTrainings.items() %}
                                           {% if g.current_user.isCeltsAdmin %}
                                   </p>
-                                            <div class="size">{{training}}</div>
+                                            <div class="font-size">{{training}}</div>
                                           {% else %}
                                               {% if participated == 1 %}
                                                   <div><b>{{training}}</b>: Attended</div>
