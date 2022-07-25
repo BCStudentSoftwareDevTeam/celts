@@ -168,9 +168,10 @@ class EmailHandler:
         """ Saves the attachment in the app/static/files/attachments/ directory """
         try:
             for file in self.attachment_file:
-                attachmentFullPath = self.getAttachmentFullPath()
+                attachmentFullPath = self.getAttachmentFullPath(file)
                 if attachmentFullPath:
-                    file.save(self.getAttachmentFullPath(file)) # saves attachment in directory
+                    file.save(AttachmentFullPath) # saves attachment in directory
+
         except AttributeError: # will pass if there is no attachment to save
             pass
 
