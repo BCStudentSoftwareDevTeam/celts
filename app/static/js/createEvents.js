@@ -170,19 +170,22 @@ $(document).ready(function() {
   });
 
   $(".removeAttachment").on("click", function(){
-      let fileData = {filePath : this.value}
-      $('.attachmentRow_').remove()
-      // $.ajax({
-      //   type:"POST",
-      //   url: "/deleteEventAttachment",
-      //   data: fileData, //get the startDate, endDate and name as a dictionary
-      //   success: function(){
-      //       msgFlash("Attachment removed successfully")
-      //
-      //   },
-      //       error: function(error){
-      //           console.log(error)
-      //   }
-      //   });
+
+    let coursn=  $(this).data("id")
+    console.log("#attachment_"+coursn)
+      let fileData = {filePath : this.id}
+      $("#attachment_"+coursn).remove()
+      $.ajax({
+        type:"POST",
+        url: "/deleteFile",
+        data: fileData, //get the startDate, endDate and name as a dictionary
+        success: function(){
+            msgFlash("Attachment removed successfully")
+      
+        },
+            error: function(error){
+                console.log(error)
+        }
+        });
     });
 });

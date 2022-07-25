@@ -216,3 +216,10 @@ def adminLogs():
                                 allLogs = allLogs)
     else:
         abort(403)
+
+@admin_bp.route("/deleteFile", methods=["POST"])
+def deleteFIle():
+    fileData= request.form
+    print(fileData["filePath"])
+
+    return ""

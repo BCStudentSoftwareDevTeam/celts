@@ -50,5 +50,6 @@ class FileHandler:
     def retrievePath(self):
         pathDict={}
         for file in self.attachment_file:
-            pathDict[file.fileName] = ((self.attachment_path+"/"+file.fileName)[3:])
+            pathDict[file.fileName] = ((self.attachment_path+"/"+file.fileName)[3:], file)
+
         return pathDict
