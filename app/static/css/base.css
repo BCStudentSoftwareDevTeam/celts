@@ -31,6 +31,11 @@
 
 .footerlink {
   font-weight: bold;
+
+}
+
+.size{
+    font-size: 1.2em;
 }
 
 .skipContent {
