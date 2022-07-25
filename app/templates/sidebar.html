@@ -18,7 +18,7 @@
         </a>
       </li>
 
-      {% if g.current_user.isFaculty %}
+      {% if g.current_user.isFaculty and not g.current_user.isAdmin%}
       <li>
         <a href="/serviceLearning/courseManagement" class="nav-link text-white {{'active' if request.path =='/serviceLearning/courseManagement'}}" {{"aria-current='page'" if request.path =='/serviceLearning/courseManagement'}}>
           Course Proposals
@@ -85,6 +85,6 @@
           </select>
         </form>
     {% endif %}
-    <button type="button" class="btn btn-secondary btn-secondary">Log out</button>
+    <a type="button" href='/logout' class="btn btn-secondary btn-secondary">Log out</a>
   </div>
 </div>

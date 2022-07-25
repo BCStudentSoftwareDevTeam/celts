@@ -66,45 +66,33 @@ def slcEditProposal(courseID):
                                 isRegularlyOccuring = isRegularlyOccuring,
                                 isAllSectionsServiceLearning = isAllSectionsServiceLearning,
                                 isPermanentlyDesignated = isPermanentlyDesignated,
-                                courseID=courseID)
+                                courseID=courseID,
+                                redirectTarget = getRedirectTarget(True))
 
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcCreateOrEdit():
     if request.method == "POST":
         courseExist = Course.get_or_none(Course.id == request.form.get('courseID'))
         if courseExist:
-            updateCourse(request.form.copy(), instructorsDict)
+            updateCourse(request.form.copy())
         else:
-            createCourse(request.form.copy(), instructorsDict)
+            createCourse(request.form.copy(), g.current_user)
         if getRedirectTarget(False):
             return redirect('' + getRedirectTarget(True) + '')
         return redirect('/serviceLearning/courseManagement')
     terms = Term.select().where(Term.year >= g.current_term.year)
     courseData = None
-    return render_template('serviceLearning/slcNewProposal.html', terms=terms, courseData = courseData)
-
-instructorsDict = {}
-@serviceLearning_bp.route('/courseInstructors', methods=['POST'])
-def getInstructors():
-    instructorObjectList = []
-    instructorsList = request.get_json()
-    for rawInstructor in instructorsList:
-        if rawInstructor != "":
-            username = rawInstructor.strip("()").split('(')[-1]
-            instructor = User.get(User.username==username)
-            instructorObjectList.append(instructor)
-    instructorsDict["instructors"] = instructorObjectList
-    return jsonify({"Success": True}), 200
+    return render_template('serviceLearning/slcNewProposal.html', 
+                terms = terms, 
+                courseData = courseData, 
+                redirectTarget = getRedirectTarget(True))
 
 @serviceLearning_bp.route('/updateInstructorPhone', methods=['POST'])
 def updateInstructorPhone():
-    try:
-        instructorData = request.get_json()
-        updateInstructorPhone = User.update(phoneNumber=instructorData[1]).where(User.username == instructorData[0]).execute()
-        return "success"
-    except Exception as e:
-        print(e)
-        return e
+    instructorData = request.get_json()
+    (User.update(phoneNumber=instructorData[1])
+        .where(User.username == instructorData[0])).execute()
+    return "success"
 
 @serviceLearning_bp.route('/serviceLearning/withdraw/<courseID>', methods = ['POST'])
 def withdrawCourse(courseID):
@@ -126,8 +114,7 @@ def renewCourse(courseID, termID):
         an instructor of a course (faculty) and allows courses to be renewed.
     :return: empty string because AJAX needs to receive something
     """
-    instructors = list(CourseInstructor.select()
-                                   .where(CourseInstructor.course==courseID))
+    instructors = CourseInstructor.select().where(CourseInstructor.course==courseID)
     courseInstructors = [instructor.user for instructor in instructors]
 
     try:
@@ -152,10 +139,9 @@ def approveCourse():
         course = Course.get_by_id(request.form['courseID']) # if only course is reviewed pass the course ID
 
     elif 'courseID' in request.form:
-        course = updateCourse(request.form.copy(), instructorsDict) # if edit course, Updates database with the completed fields and get course ID
-
+        course = updateCourse(request.form.copy()) # if edit course, Updates database with the completed fields and get course ID
     else:
-        course = createCourse(request.form.copy(), instructorsDict) # creat course first and get its ID to approve next
+        course = createCourse(request.form.copy(), g.current_user) # creat course first and get its ID to approve next
     try:
         course.status = CourseStatus.APPROVED
         course.save() # saves the query and approves course in the database

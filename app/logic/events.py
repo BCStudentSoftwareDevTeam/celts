@@ -13,6 +13,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.programBan import ProgramBan
 from app.models.interest import Interest
+from app.models.eventRsvp import EventRsvp
 from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
 from app.logic.adminLogs import createLog
@@ -177,7 +178,7 @@ def getOtherEvents(term):
 
     return otherEvents
 
-def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
+def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
     """
         Get the list of upcoming events that the user is interested in.
         :param user: a username or User object
@@ -186,18 +187,17 @@ def getUpcomingEventsForUser(user,asOf=datetime.datetime.now()):
         :return: A list of Event objects
     """
 
-    events = (Event.select(Event)
-                            .join(ProgramEvent)
-                            .join(Interest, on=(ProgramEvent.program == Interest.program))
-                            .where(Interest.user == user,
-                                   Event.startDate >= asOf,
-                                   Event.timeStart > asOf.time())
-                            .distinct() # necessary because of multiple programs
-                            .order_by(Event.startDate, Event.name) # keeps the order of events the same when the dates are the same
-                            )
+    events = (Event.select()
+                    .join(ProgramEvent, JOIN.LEFT_OUTER)
+                    .join(Interest, JOIN.LEFT_OUTER, on=(ProgramEvent.program == Interest.program))
+                    .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
+                    .where(Event.startDate >= asOf,
+                           (Interest.user == user) | (EventRsvp.user == user))
+                    .distinct() # necessary because of multiple programs
+                    .order_by(Event.startDate, Event.name) # keeps the order of events the same when the dates are the same
+                    )
 
     return list(events)
-
 
 def getAllFacilitators():
     facilitators = User.select(User).where((User.isFaculty == 1) | (User.isCeltsAdmin == 1) | (User.isCeltsStudentStaff == 1)).order_by(User.username) # ordered because of the tests
@@ -287,7 +287,6 @@ def preprocessEventData(eventData):
           (or use an empty list if no event)
         - times should exist be strings in 24 hour format example: 14:40
     """
-
     ## Process checkboxes
     eventCheckBoxes = ['isRsvpRequired', 'isService', 'isTraining', 'isRecurring', 'isAllVolunteerTraining']
 
@@ -325,16 +324,26 @@ def preprocessEventData(eventData):
         eventData['timeEnd'] = format24HourTime(eventData['timeEnd'])
 
     ## Get the facilitator objects from the list or from the event if there is a problem
-    try:
-        if type(eventData) == MultiDict and type(eventData['facilitators']) is not list:
-            eventData['facilitators'] = eventData.getlist('facilitators')
-        eventData['facilitators'] = [User.get_by_id(f) for f in eventData['facilitators']]
-    except Exception as e:
-        event = eventData.get('id', -1)
-        eventData['facilitators'] = list(User.select().join(EventFacilitator).where(EventFacilitator.event == event))
+    if 'facilitators' in eventData:
+        eventData['facilitators'] = getFacilitatorsFromList(eventData['facilitators'])
 
     return eventData
 
+def getFacilitatorsFromList(facilitatorList):
+    """
+    This function takes in a list of usernames or a string with the usernames of
+        facilitators separated by commas (,) and returns a list of facilitator
+        objects that match the usernames in the list
+    facilitatorList: expected to be a list with facilitator usernames as strings
+                        or a string of usernames separated by commas (,)
+    return: list of facilitator objects matching the usernames in facilitatorList
+    """
+    if facilitatorList and type(facilitatorList) == str:
+        facilitatorList = facilitatorList.split(',')
+    # for each facilitator in facilitatorList, if it is not a blank string of null
+    # add a user object matching said facilitator to finalFacilitatorList
+    finalFacilitatorList = [User.get_by_id(facilitator) for facilitator in facilitatorList if facilitator]
+    return finalFacilitatorList
 
 def getTomorrowsEvents():
     """Grabs each event that occurs tomorrow"""

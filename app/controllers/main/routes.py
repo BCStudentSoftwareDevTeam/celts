@@ -20,8 +20,9 @@ from app.models.note import Note
 from app.models.programManager import ProgramManager
 from app.models.courseStatus import CourseStatus
 from app.controllers.main import main_bp
+from app.logic.loginManager import logout
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
-from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
+from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants, getUserParticipatedEvents
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
@@ -29,6 +30,10 @@ from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import submittedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
 from app.models.courseInstructor import CourseInstructor
+
+@main_bp.route('/logout', methods=['GET'])
+def redirectToLogout():
+    return redirect(logout())
 
 @main_bp.route('/', methods=['GET'])
 def redirectToEventsList():
@@ -93,14 +98,14 @@ def viewVolunteersProfile(username):
         else:
             # sets the values to strings because student staff do not have access to input boxes
             completedBackgroundCheck = {entry.type: ['Yes' if entry.passBackgroundCheck else 'No',
-                                                    'Not Completed' if entry.dateCompleted == None
+                                                    '' if entry.dateCompleted == None
                                                     else entry.dateCompleted.strftime('%m/%d/%Y')] for entry in allUserEntries}
 
         backgroundTypes = list(BackgroundCheckType.select())
         # creates data structure for background checks that are not currently completed
         for checkType in backgroundTypes:
             if checkType not in completedBackgroundCheck.keys():
-                completedBackgroundCheck[checkType] = ["No", "Not Completed"]
+                completedBackgroundCheck[checkType] = ["No"]
 
         eligibilityTable = []
         for program in programs:
@@ -108,12 +113,13 @@ def viewVolunteersProfile(username):
                                               ProgramBan.program == program,
                                               ProgramBan.endDate > datetime.datetime.now())
 
+            userParticipatedEvents = getUserParticipatedEvents(program, g.current_user, g.current_term)
             noteForDict = notes[-1].banNote.noteContent if notes else ""
-            eligibilityTable.append({"program" : program,
-                                   "completedTraining" : (volunteer.username in trainedParticipants(program, g.current_term)),
-                                   "isNotBanned" : True if not notes else False,
+            eligibilityTable.append({"program": program,
+                                   "completedTraining": (volunteer.username in trainedParticipants(program, g.current_term)),
+                                   "trainingList": userParticipatedEvents,
+                                   "isNotBanned": True if not notes else False,
                                    "banNote": noteForDict})
-
         return render_template ("/main/volunteerProfile.html",
                 programs = programs,
                 programsInterested = programsInterested,
@@ -348,6 +354,9 @@ def getRedirectTarget(popTarget):
     return: a string with the URL or route to a page in the application that was
             saved in setRedirectTarget()
     """
+    if "redirectTarget" not in session:
+        return ''
+
     target = session["redirectTarget"]
     if popTarget:
         session.pop("redirectTarget")
