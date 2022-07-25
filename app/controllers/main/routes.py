@@ -22,7 +22,7 @@ from app.models.courseStatus import CourseStatus
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
-from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants
+from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants, getUserParticipatedEvents
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
@@ -113,12 +113,13 @@ def viewVolunteersProfile(username):
                                               ProgramBan.program == program,
                                               ProgramBan.endDate > datetime.datetime.now())
 
+            userParticipatedEvents = getUserParticipatedEvents(program, g.current_user, g.current_term)
             noteForDict = notes[-1].banNote.noteContent if notes else ""
-            eligibilityTable.append({"program" : program,
-                                   "completedTraining" : (volunteer.username in trainedParticipants(program, g.current_term)),
-                                   "isNotBanned" : True if not notes else False,
+            eligibilityTable.append({"program": program,
+                                   "completedTraining": (volunteer.username in trainedParticipants(program, g.current_term)),
+                                   "trainingList": userParticipatedEvents,
+                                   "isNotBanned": True if not notes else False,
                                    "banNote": noteForDict})
-
         return render_template ("/main/volunteerProfile.html",
                 programs = programs,
                 programsInterested = programsInterested,
@@ -353,6 +354,9 @@ def getRedirectTarget(popTarget):
     return: a string with the URL or route to a page in the application that was
             saved in setRedirectTarget()
     """
+    if "redirectTarget" not in session:
+        return ''
+
     target = session["redirectTarget"]
     if popTarget:
         session.pop("redirectTarget")
