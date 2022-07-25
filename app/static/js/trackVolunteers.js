@@ -69,14 +69,13 @@ $(document).ready(function() {
   });
 
   $(".removeVolunteer").on("click", function() {
-    $(".removeVolunteer").prop("disabled", true)
     let username =  this.id;
     let eventId = $('#eventID').val()
     $.ajax({
       url: `/removeVolunteerFromEvent/${username}/${eventId}`,
       type: "POST",
       success: function(s) {
-         $("#selectVolunteerButton").prop("disabled", true)
+         $(".removeVolunteer").prop("disabled", true)
          location.reload();
       },
       error: function(request, status, error) {
