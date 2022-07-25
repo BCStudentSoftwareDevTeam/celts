@@ -104,7 +104,6 @@ def createEvent(templateid, programid=None):
             template = template,
             eventData = eventData,
             futureTerms = futureTerms,
-            # eventFacilitators = getAllFacilitators(),
             isProgramManager = isProgramManager)
 
 @admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
