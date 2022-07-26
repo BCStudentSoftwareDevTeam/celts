@@ -39,7 +39,6 @@ def deleteEvent(eventId):
             createLog(f"Deleted event: {event.name}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
 
 def attemptSaveEvent(eventData, attachmentFiles = None):
-    getAttachmentPaths = eventData.getlist("attachmentObject")
     newEventData = preprocessEventData(eventData)
     addfile= FileHandler(attachmentFiles)
     isValid, validationErrorMessage = validateNewEventData(newEventData)

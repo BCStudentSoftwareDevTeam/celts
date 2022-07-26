@@ -23,6 +23,10 @@ def test_saveFile():
 @pytest.mark.integration
 def test_retrievePath():
     pass
+    # eventfiles= EventFile.select().where(EventFile.event == 15)
+    # paths = handledFile.retrievePath(eventfiles)
+    # pathFileId = paths[""]
+    # # assert paths=={"file.pdf":('/static/files/eventattachments/15/file.pdf',12)}
 
 @pytest.mark.integration
 def test_deleteFile():

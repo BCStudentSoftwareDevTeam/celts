@@ -140,8 +140,8 @@ def eventDisplay(eventId):
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     program = event.singleProgram
     associatedAttachments = EventFile.select().where(EventFile.event == eventId)
-    eventfiles=FileHandler(associatedAttachments)
-    paths=eventfiles.retrievePath()
+    eventfiles=FileHandler()
+    paths=eventfiles.retrievePath(associatedAttachments)
     isProgramManager = g.current_user.isProgramManagerFor(program)
     rule = request.url_rule
     if 'edit' in rule.rule:

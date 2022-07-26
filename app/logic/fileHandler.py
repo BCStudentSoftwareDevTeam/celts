@@ -55,9 +55,8 @@ class FileHandler:
         except AttributeError: #passes if no attachment is selected.
             pass
 
-    def retrievePath(self):
+    def retrievePath(self,files):
         pathDict={}
-        for file in self.files:
+        for file in files:
             pathDict[file.fileName] = ((self.path+"/"+file.fileName)[3:], file)
-        print(pathDict)
         return pathDict
