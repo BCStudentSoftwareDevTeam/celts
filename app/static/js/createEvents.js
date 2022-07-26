@@ -168,5 +168,8 @@ $(document).ready(function() {
      $(this).closest("tr").remove();
   });
 
+  $('#deleteEventModal').on('click', function() {
+      $("#deleteWarning").modal("show")
+  })
 
 });
