@@ -221,6 +221,9 @@ def adminLogs():
 @admin_bp.route("/deleteFile", methods=["POST"])
 def deleteFIle():
     fileData= request.form
-    print(fileData["filePath"])
+    eventfile=FileHandler()
+    eventfile.deleteAttachment(fileData["fileId"],fileData["eventId"])
+    print(fileData["fileId"])
+    print(fileData["eventId"])
 
     return ""

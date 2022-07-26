@@ -171,10 +171,10 @@ $(document).ready(function() {
 
   $(".removeAttachment").on("click", function(){
 
-    let coursn=  $(this).data("id")
-    console.log("#attachment_"+coursn)
-      let fileData = {filePath : this.id}
-      $("#attachment_"+coursn).remove()
+    let fileId=  $(this).data("id")
+      let fileData = {fileId : fileId,
+                      eventId:this.id}
+      $("#attachment_"+fileId).remove()
       $.ajax({
         type:"POST",
         url: "/deleteFile",
@@ -184,7 +184,7 @@ $(document).ready(function() {
       
         },
             error: function(error){
-                console.log(error)
+                msgFlash(error)
         }
         });
     });

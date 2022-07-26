@@ -5,7 +5,7 @@ from app import app
 from app.models.eventFile import EventFile
 
 class FileHandler:
-    def __init__(self,attachments):
+    def __init__(self,attachments=None):
         self.attachment_files=attachments
         self.attachment_path= app.config['event']['event_attachment_path']
 
@@ -13,7 +13,7 @@ class FileHandler:
 
 
 
-    def getAttachmentFullPath(self, eventId=None, newfile = None):
+    def getAttachmentFullPath(self, eventId, newfile = None):
         """
         This creates the directory/path for the object from the "Choose File" input in the create event and edit event.
         :returns: directory path for attachment
@@ -34,23 +34,21 @@ class FileHandler:
         """ Saves the attachment in the app/static/files/eventattachments/ directory """
 
         try:
-            print("TryTryTryTryTryTryTry")
-            print(self.attachment_files)
             for file in self.attachment_files:
 
                 EventFile.create(event = eventId, fileName = file.filename)
-                print("pass Table Creation")
                 file.save(self.getAttachmentFullPath(eventId, file)) # saves attachment in directory
         except AttributeError: # will pass if there is no attachment to save
-            print("AttributeError")
             pass
-    def deleteAttachment(self):
+    def deleteAttachment(self, fileId, eventId):
         """
         Deletes attachmant from the app/static/files/eventattachments/ directory
         """
         try:
-            for file in self.attachment_files:
-                os.remove(self.getAttachmentFullPath(file))
+            File = EventFile.get_by_id(fileId)
+            path = os.path.join( self.attachment_path,eventId, File.fileName)
+            os.remove(path)
+            File.delete_instance()
         except AttributeError: #passes if no attachment is selected.
             pass
     def retrievePath(self):

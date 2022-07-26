@@ -50,9 +50,7 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
     try:
         events = saveEventToDb(newEventData)
         if attachmentFiles:
-            print(attachmentFiles)
             for event in events:
-                print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
                 addfile.saveAttachment(event.id)
         return True, ""
     except Exception as e:
