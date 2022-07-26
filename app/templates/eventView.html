@@ -50,6 +50,8 @@
                         {% endif %}
                         {% if eventData.recurringId %}
                             This event is a recurring event.
+                            The next event in the series occurs on {{eventData.nextRecurringEvent.startDate.strftime("%m/%d/%Y")}}.
+                            <a href="/eventsList/{{eventData.nextRecurringEvent.id}}/view">Click here for more information.</a>
                         {% endif %}
                         {% if eventData.isTraining %}
                             This event is a training.
