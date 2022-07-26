@@ -126,15 +126,15 @@
           <table>
             <tr>
               <th>Program Name</th>
-              <th>Reply-To-Email</th>
-              <th>Sender Name</th>
+              <th>Contact Email</th>
+              <th>Contact Name</th>
             </tr>
             {% for program in programs %}
             <form action="/admin/updateProgramInfo/{{program.id}}" method="POST">
                 <tr class="p-1">
-                    <td> <input type="text" name="Name" value ="{{program.programName}}" required> </td>
-                    <td><input type="text" name="Email" value="{{program.emailReplyTo}}" required></td>
-                    <td><input type="text" name="Sender" value="{{program.emailSenderName}}" required></td>
+                    <td> <input type="text" name="programName" value ="{{program.programName}}" required> </td>
+                    <td><input type="text" name="contactEmail" value="{{program.contactEmail}}" required></td>
+                    <td><input type="text" name="contactName" value="{{program.contactName}}" required></td>
                     <td><button type="submit" class="btn btn-success w-101" role ="button">Update</button> </td>
                 </tr>
                 </form>

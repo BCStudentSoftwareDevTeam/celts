@@ -7,7 +7,6 @@ from app.models import mainDB
 from app.models.user import User
 from app.models.event import Event
 from app.models.eventParticipant import EventParticipant
-from app.models.eventFacilitator import EventFacilitator
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.models.term import Term
@@ -84,7 +83,9 @@ def saveEventToDb(newEventData):
                     "isService": newEventData['isService'],
                     "startDate": eventInstance['date'],
                     "isAllVolunteerTraining": newEventData['isAllVolunteerTraining'],
-                    "endDate": eventInstance['date']
+                    "endDate": eventInstance['date'],
+                    'contactEmail': newEventData['contactEmail'],
+                    'contactName': newEventData['contactName']
             }
 
             # Create or update the event
@@ -97,9 +98,6 @@ def saveEventToDb(newEventData):
                 eventRecord = Event.get_by_id(newEventData['id'])
                 Event.update(**eventData).where(Event.id == eventRecord).execute()
 
-            EventFacilitator.delete().where(EventFacilitator.event == eventRecord).execute()
-            for f in newEventData['facilitators']:
-                EventFacilitator.create(user=f, event=eventRecord)
 
             eventRecords.append(eventRecord)
 
@@ -199,10 +197,6 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
 
     return list(events)
 
-def getAllFacilitators():
-    facilitators = User.select(User).where((User.isFaculty == 1) | (User.isCeltsAdmin == 1) | (User.isCeltsStudentStaff == 1)).order_by(User.username) # ordered because of the tests
-    return facilitators
-
 def validateNewEventData(data):
     """
         Confirm that the provided data is valid for an event.
@@ -282,9 +276,6 @@ def preprocessEventData(eventData):
         - dates should exist and be date objects if there is a value
         - checkbaxes should be True or False
         - if term is given, convert it to a model object
-        - facilitators should be a list of objects. Use the given list of usernames if possible
-          (and check for a MultiDict with getlist), or else get it from the existing event
-          (or use an empty list if no event)
         - times should exist be strings in 24 hour format example: 14:40
     """
     ## Process checkboxes
@@ -323,27 +314,7 @@ def preprocessEventData(eventData):
     if 'timeEnd' in eventData:
         eventData['timeEnd'] = format24HourTime(eventData['timeEnd'])
 
-    ## Get the facilitator objects from the list or from the event if there is a problem
-    if 'facilitators' in eventData:
-        eventData['facilitators'] = getFacilitatorsFromList(eventData['facilitators'])
-
     return eventData
-
-def getFacilitatorsFromList(facilitatorList):
-    """
-    This function takes in a list of usernames or a string with the usernames of
-        facilitators separated by commas (,) and returns a list of facilitator
-        objects that match the usernames in the list
-    facilitatorList: expected to be a list with facilitator usernames as strings
-                        or a string of usernames separated by commas (,)
-    return: list of facilitator objects matching the usernames in facilitatorList
-    """
-    if facilitatorList and type(facilitatorList) == str:
-        facilitatorList = facilitatorList.split(',')
-    # for each facilitator in facilitatorList, if it is not a blank string of null
-    # add a user object matching said facilitator to finalFacilitatorList
-    finalFacilitatorList = [User.get_by_id(facilitator) for facilitator in facilitatorList if facilitator]
-    return finalFacilitatorList
 
 def getTomorrowsEvents():
     """Grabs each event that occurs tomorrow"""

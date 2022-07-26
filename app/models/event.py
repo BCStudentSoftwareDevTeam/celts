@@ -17,6 +17,8 @@ class Event(baseModel):
     startDate = DateField()
     endDate = DateField(null=True)
     recurringId = IntegerField(null=True)
+    contactEmail = CharField()
+    contactName = CharField()
 
     def __str__(self):
         return f"{self.id}: {self.description}"
