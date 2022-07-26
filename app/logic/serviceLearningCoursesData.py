@@ -14,20 +14,19 @@ def getServiceLearningCoursesData(user):
     courses = (Course.select(Course, Term, User, CourseStatus)
                      .join(CourseInstructor).switch()
                      .join(Term).switch()
+                     .join(CourseStatus).switch()
                      .join(User)
-                     .join(CourseStatus)
-                     .where(CourseInstructor.user==user|User.username == Course.createdBy_id)
+                     .where((CourseInstructor.user==user)|(User.username==Course.createdBy))
                      .order_by(Course.id))
-
     courseDict = {}
     for course in courses:
         otherInstructors = (CourseInstructor.select(CourseInstructor, User).join(User).where(CourseInstructor.course==course))
         faculty = [f"{instructor.user.firstName} {instructor.user.lastName}" for instructor in otherInstructors]
-        creators= (Course.select(Course, User).join(User).where(Course.createdBy==User.username))
-        creatorInfo = [f"{creator.user.firstName} {creator.user.lastName}" for instructor in otherInstructors]
+
+
         courseDict[course.id] = {
         "id":course.id,
-        "creator": creatorInfo,
+        "creator":f"{course.createdBy.firstName} {course.createdBy.lastName}",
         "name":course.courseName,
         "faculty": faculty,
         "term": course.term,
