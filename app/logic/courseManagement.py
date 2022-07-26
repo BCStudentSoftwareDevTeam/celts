@@ -32,7 +32,7 @@ def approvedCourses(termId):
 
     return approvedCourses
 
-def createCourse(courseData, createdBy):
+def createCourse():
     """ Create an empty, incomplete course """
     course = Course.create(status=CourseStatus.INCOMPLETE)
     for i in range(1, 7):
