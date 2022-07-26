@@ -149,6 +149,7 @@ class EmailHandler:
         This creates the directory/path for the object from the "Choose File" input in the emailModal.html file.
         :returns: directory path for attachment
         """
+        attachmentFullPath = None
         try:
             # tries to create the full path of the files location and passes if
             # the directories already exist or there is no attachment
@@ -203,10 +204,10 @@ class EmailHandler:
         template_id, subject, body = self.build_email()
 
         if len(self.program_ids) == 1:
-            if self.program_ids[0].emailReplyTo:
-                defaultEmailInfo["replyTo"] = self.program_ids[0].emailReplyTo
-            if self.program_ids[0].emailSenderName:
-                defaultEmailInfo["senderName"] = self.program_ids[0].emailSenderName
+            if self.program_ids[0].contactEmail:
+                defaultEmailInfo["replyTo"] = self.program_ids[0].contactEmail
+            if self.program_ids[0].contactName:
+                defaultEmailInfo["senderName"] = self.program_ids[0].contactName
 
         try:
             with self.mail.connect() as conn:

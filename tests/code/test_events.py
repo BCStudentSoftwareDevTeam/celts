@@ -319,9 +319,6 @@ def test_saveEventToDb_create():
 
         transaction.rollback()
 
-    with pytest.raises(IntegrityError):
-        saveEventToDb(eventInfo)
-
 @pytest.mark.integration
 def test_saveEventToDb_recurring():
     with mainDB.atomic() as transaction:
@@ -478,8 +475,8 @@ def test_upcomingEvents():
                                             programName = "BOO",
                                             isStudentLed = False,
                                             isBonnerScholars = False,
-                                            emailReplyTo = "test@email",
-                                            emailSenderName = "testName")
+                                            contactEmail = "test@email",
+                                            contactName = "testName")
 
         ProgramEvent.create(program = programForInterest, event = newProgramEvent)
 

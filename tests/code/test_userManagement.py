@@ -57,20 +57,20 @@ def test_changeProgramInfo():
 
         programId = 3
         eventName = "Test Event Name"
-        emailSenderName = "New Test Name"
-        emailReplyTo = 'newtest@email'
+        contactName = "New Test Name"
+        contactEmail = 'newtest@email'
         currentProgramInfo = Program.get_by_id(programId)
 
         assert currentProgramInfo.programName == "Adopt A Grandparent"
-        assert currentProgramInfo.emailSenderName == "testName"
-        assert currentProgramInfo.emailReplyTo == "test@email"
+        assert currentProgramInfo.contactName == "testName"
+        assert currentProgramInfo.contactEmail == "test@email"
 
-        changeProgramInfo(eventName, emailReplyTo, emailSenderName, programId)
+        changeProgramInfo(eventName, contactEmail, contactName, programId)
         currentProgramInfo = Program.select().where(Program.id==programId).get()
 
         assert currentProgramInfo.programName == eventName
-        assert currentProgramInfo.emailSenderName == emailSenderName
-        assert currentProgramInfo.emailReplyTo == emailReplyTo
+        assert currentProgramInfo.contactName == contactName
+        assert currentProgramInfo.contactEmail == contactEmail
 
         transaction.rollback()
 
