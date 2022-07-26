@@ -141,7 +141,7 @@ def eventDisplay(eventId):
     program = event.singleProgram
     associatedAttachments = EventFile.select().where(EventFile.event == eventId)
     eventfiles=FileHandler()
-    paths=eventfiles.retrievePath(associatedAttachments)
+    paths=eventfiles.retrievePath(associatedAttachments, eventId)
     isProgramManager = g.current_user.isProgramManagerFor(program)
     rule = request.url_rule
     if 'edit' in rule.rule:

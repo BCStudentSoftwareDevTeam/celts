@@ -18,16 +18,22 @@ def test_getFileFullPath():
 
 @pytest.mark.integration
 def test_saveFile():
-    fileNameList= handledFile.saveFile(15)
+    handledFile.saveFile(15)
     assert EventFile.select().where( EventFile.event == 15, EventFile.fileName == 'file.pdf').exists()
+
 @pytest.mark.integration
 def test_retrievePath():
-    pass
-    # eventfiles= EventFile.select().where(EventFile.event == 15)
-    # paths = handledFile.retrievePath(eventfiles)
-    # pathFileId = paths[""]
-    # # assert paths=={"file.pdf":('/static/files/eventattachments/15/file.pdf',12)}
+    eventfiles= EventFile.select().where(EventFile.event == 15)
+    paths = handledFile.retrievePath(eventfiles, 15)
+    path = paths["file.pdf"][0]
+    print(path)
+    assert path =='/static/files/eventattachments/15/file.pdf'
 
 @pytest.mark.integration
 def test_deleteFile():
+    pathDictionary = handledFile.retrievePath(eventfiles, 15)
+    fileId = pathDictionary["file.pdf"][1]
+    path = pathDictionary["file.pdf"][0]
+    handledFile.deleteFile(fileId, 15)
+    # print(os.path.exists(path))
     pass

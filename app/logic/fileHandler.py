@@ -43,7 +43,13 @@ class FileHandler:
             return False
             pass
 
-    def deleteFile(self,fileId, eventId):
+    def retrievePath(self,files, eventId = None):
+        pathDict={}
+        for file in files:
+            pathDict[file.fileName] = ((self.path+"/"+ str(eventId) +"/"+ file.fileName)[3:], file)
+        return pathDict
+
+    def deleteFile(self, fileId, eventId):
         """
         Deletes attachmant from the app/static/files/eventattachments/ directory
         """
@@ -54,9 +60,3 @@ class FileHandler:
             File.delete_instance()
         except AttributeError: #passes if no attachment is selected.
             pass
-
-    def retrievePath(self,files):
-        pathDict={}
-        for file in files:
-            pathDict[file.fileName] = ((self.path+"/"+file.fileName)[3:], file)
-        return pathDict
