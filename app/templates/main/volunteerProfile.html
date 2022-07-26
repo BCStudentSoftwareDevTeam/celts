@@ -21,19 +21,6 @@
           <button class=" btn-success btn-sm" id="updatePhone" data-username="{{volunteer.username}}">Update</button>
     </div>
 </div>
-<div class="btn-group">
-   <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="tabs-tab" role="tablist">
-     <li class="nav-item" role="presentation">
-       <a class="nav-link active" aria-current="page" href="#">Your Upcoming Events</a>
-     </li>
-     {% if g.current_user.isCeltsAdmin or g.current_user.username == volunteer.username %}
-     <li class="nav-item">
-       <a class="nav-link" href="/profile/{{volunteer.username}}/serviceTranscript">Service Transcript</a>
-     </li>
-     {% endif %}
-   </ul>
- </div>
-
  <div class="row table-responsive">
    <table class="table">
      {% if upcomingEvents|length > 0 %}
@@ -56,13 +43,17 @@
            </tr>
        {% endfor %}
      {% else %}
-       <h4><p class="text-dark">You have no upcoming events. </p></h4>
-       <h4><p class="text-dark">Choose interests below to be notified about your upcoming events.</p><h4>
+     <div class="row">
+       <h4 class="col-sm-10"><p>Upcoming Events: </p></h4>
+       <a class="col-sm-2 nav-link float-end" href="/profile/{{volunteer.username}}/serviceTranscript">View Service Transcript</a>
+     </div>
+       <h5><p>You have no upcoming events.</p></h5>
      {% endif %}
    </table>
  </div>
  <!-- Start Program Eligibility Table -->
  <div class="row table-responsive">
+  <caption><h5>Choose interests below to be notified about your upcoming events:</h5></caption>
    <table class="table banTable">
       <thead>
         <tr>
