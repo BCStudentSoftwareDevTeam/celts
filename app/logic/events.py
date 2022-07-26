@@ -43,12 +43,8 @@ def deleteEvent(eventId):
                     recurringEventWeekIndex = eventWeek + 1
             for recurringEvent in recurringEvents[(recurringEventWeekIndex):]:
                 if recurringWeek[recurringEvent.name] >= recurringEventWeekIndex:
-                    recurringEvent.name = recurringEvent.name.replace("Week " + str(recurringWeek[recurringEvent.name]), "Week " + str(recurringWeek[recurringEvent.name] - 1))
-                    Event.update({Event.name:recurringEvent.name}).where(Event.id==recurringEvent.id)
+                    Event.update({Event.name:recurringEvent.name.replace("Week " + str(recurringWeek[recurringEvent.name]), "Week " + str(recurringWeek[recurringEvent.name] - 1))}).where(Event.id==recurringEvent.id).execute()
         event.delete_instance(recursive = True, delete_nullable = True)
-        recurringEvents = list(Event.select().where(Event.recurringId==event.recurringId).order_by(Event.recurringId))
-        for i in recurringEvents:
-            print(i.name)
         if event.startDate:
             createLog(f"Deleted event: {event.name}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
 

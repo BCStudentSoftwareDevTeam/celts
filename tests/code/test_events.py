@@ -451,20 +451,32 @@ def test_deleteEvent():
             deletingEvent = deleteEvent(eventId)
         assert Event.get_or_none(Event.id == eventId) is None
         transaction.rollback()
+
         # test deleting a recurring event
         eventInfo =  {'isRsvpRequired': False, 'isService': False, 'isAllVolunteerTraining': True,
                       'isTraining': True, 'isRecurring': True, 'recurringId': 20, 'startDate': parser.parse('12-12-2021'),
                        'endDate': parser.parse('01-18-2022'), 'location': "Your pet rubber ducks little pond",
                        'timeEnd': '09:00 PM', 'timeStart': '06:00 PM', 'description': "Empty Bowls Spring 2021",
                        'name': 'Empty Bowls Spring','term': 1,'facilitators': [User.get_by_id("ramsayb2")]}
+
         eventInfo['valid'] = True
         eventInfo['program'] = Program.get_by_id(1)
-
         createdEvents = saveEventToDb(eventInfo)
+        event = Event.get_by_id(createdEvents[0].id)
+        recurringId = createdEvents[0].recurringId
+        recurringEventsBefore = list(Event.select().where(Event.recurringId==event.recurringId).order_by(Event.recurringId))
+        for counter, recurring in enumerate(recurringEventsBefore):
+            assert recurring.name == "Empty Bowls Spring Week " + str(counter + 1)\
+
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
             deletingEvent = deleteEvent(createdEvents[0])
-        transaction.rollback()
+            
+        recurringEventsAfter = list(Event.select().where(Event.recurringId==event.recurringId).order_by(Event.recurringId))
+        for counter, recurring in enumerate(recurringEventsAfter):
+            assert recurring.name == "Empty Bowls Spring Week " + str(counter + 1)
+        assert (len(recurringEventsBefore)-1) == len(recurringEventsAfter)
+    transaction.rollback()
 
 
 @pytest.mark.integration
