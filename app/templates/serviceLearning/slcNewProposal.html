@@ -3,6 +3,7 @@
 {% block scripts %}
   {{super()}}
   <script type="module" src="{{url_for('static', filename ='js/slcNewProposal.js') }}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
 {% endblock %}
 
 {% block styles %}
@@ -35,7 +36,7 @@
       <button class="btn btn-primary" type="button" id="saveContinue">Save and Continue</button>
       <button class="btn btn-primary" type="button" id="nextButton">Next</button>
       {% if g.current_user.isCeltsAdmin %}
-        <button class="btn btn-success" type="button" id="approveButton">Submit and Approve</button>
+        <button class="btn btn-success" type="button" id="submitAndApproveButton">Submit and Approve</button>
       {% endif %}
     </div>
   </div>

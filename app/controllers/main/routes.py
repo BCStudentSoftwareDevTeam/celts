@@ -354,6 +354,9 @@ def getRedirectTarget(popTarget):
     return: a string with the URL or route to a page in the application that was
             saved in setRedirectTarget()
     """
+    if "redirectTarget" not in session:
+        return ''
+
     target = session["redirectTarget"]
     if popTarget:
         session.pop("redirectTarget")

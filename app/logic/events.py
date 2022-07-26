@@ -127,23 +127,10 @@ def getTrainingEvents(term):
         with the most programs (highest count) by doing this we can ensure that the event being
         returned is the All Trainings Event.
     """
-    try:
-        allTrainingsEvent = ((ProgramEvent.select(ProgramEvent.event, fn.COUNT(1).alias('num_programs'))
-                                            .join(Event)
-                                            .group_by(ProgramEvent.event)
-                                            .order_by(fn.COUNT(1).desc()))
-                                            .where(Event.term == term).get())
-
-        trainingEvents = (Event.select(Event)
-    			               .order_by((Event.id == allTrainingsEvent.event.id).desc(), Event.startDate.desc())
-                               .where(Event.isTraining,
-                                      Event.term == term))
-
-    except DoesNotExist:
-        trainingEvents = (Event.select(Event)
-    			               .order_by( Event.startDate.desc())
-                               .where(Event.isTraining,
-                                      Event.term == term))
+    trainingEvents = (Event.select(Event)
+                           .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate)
+                           .where(Event.isTraining,
+                                  Event.term == term))
 
     return list(trainingEvents)
 
@@ -192,8 +179,7 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
                     .join(Interest, JOIN.LEFT_OUTER, on=(ProgramEvent.program == Interest.program))
                     .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
                     .where(Event.startDate >= asOf,
-                            Event.timeStart > asOf.time(),
-                            (Interest.user == user) | (EventRsvp.user == user))
+                           (Interest.user == user) | (EventRsvp.user == user))
                     .distinct() # necessary because of multiple programs
                     .order_by(Event.startDate, Event.name) # keeps the order of events the same when the dates are the same
                     )

@@ -48,7 +48,7 @@
        {% for event in upcomingEvents %}
            <tr>
              <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
-             <td><a href= '/eventsList/{{event.id}}/edit' class="link-primary">{{event.name}}</a></td>
+             <td><a href= '/eventsList/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
              <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
              <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}}</td>
              <td>{{event.location}}</td>
@@ -126,7 +126,7 @@
             </td>
             <td>
             {% if g.current_user.isCeltsAdmin %}
-                <button type="button" class="ban btn btn-link" data-programid="{{row.program.id}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}">Edit</button>
+                <button type="button" class="ban btn btn-primary" data-programid="{{row.program.id}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}">Edit</button>
             {% endif %}
             </td>
           {% endif %}
