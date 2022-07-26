@@ -61,7 +61,7 @@ class FileHandler:
 
     def retrievePath(self):
         pathDict={}
-        for file in selfsaveFile:
+        for file in self.files:
             pathDict[file.fileName] = ((self.path+"/"+file.fileName)[3:], file)
 
         return pathDict
