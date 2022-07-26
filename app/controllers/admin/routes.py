@@ -222,7 +222,7 @@ def adminLogs():
 def deleteFIle():
     fileData= request.form
     eventfile=FileHandler()
-    eventfile.deleteAttachment(fileData["fileId"],fileData["eventId"])
+    eventfile.deleteFile(fileData["fileId"],fileData["eventId"])
     print(fileData["fileId"])
     print(fileData["eventId"])
 
