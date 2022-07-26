@@ -36,15 +36,9 @@ class FileHandler:
     def saveFile(self, eventId):
         """ Saves the attachment in the app/static/files/eventattachments/ directory """
         try:
-            fileNameList = []
             for file in self.files:
-                print("++++++++++++++++++++++++")
-                print(fileNameList)
-                print("++++++++++++++++++++++++")
                 EventFile.create(event = eventId, fileName = file.filename)
                 file.save(self.getFileFullPath(eventId, file)) # saves attachment in directory
-                fileNameList.append(file.filename)
-            return fileNameList
         except AttributeError: # will pass if there is no attachment to save
             return False
             pass
