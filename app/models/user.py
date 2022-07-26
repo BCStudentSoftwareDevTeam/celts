@@ -13,7 +13,7 @@ class User(baseModel):
     isStaff = BooleanField(default = False)
     isCeltsAdmin = BooleanField(default  =False)
     isCeltsStudentStaff = BooleanField(default = False)
-    isBonnerScholars = BooleanField(default = False)
+    isBonnerScholar = BooleanField(default = False)
 
     @property
     def isAdmin(self):
