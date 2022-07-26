@@ -33,36 +33,11 @@ def approvedCourses(termId):
     return approvedCourses
 
 def createCourse(courseData, createdBy):
-    """This function will create a course given a form."""
-    term = Term.get(Term.id==courseData["term"])
-    status = CourseStatus.get_by_id(CourseStatus.SUBMITTED)
-    for toggler in ["regularOccurenceToggle", "slSectionsToggle", "permanentDesignation"]:
-        courseData.setdefault(toggler, "off")
-    course = Course.create(
-        courseName=courseData["courseName"],
-        courseAbbreviation=courseData["courseAbbreviation"],
-        courseCredit=courseData["credit"],
-        isRegularlyOccuring=("on" in courseData["regularOccurenceToggle"]),
-        term=term,
-        status=status,
-        createdBy=createdBy,
-        isAllSectionsServiceLearning=("on" in courseData["slSectionsToggle"]),
-        serviceLearningDesignatedSections=courseData["slDesignation"],
-        isPermanentlyDesignated=("on" in courseData["permanentDesignation"]),
-    )
+    """ Create an empty, incomplete course """
+    course = Course.create(status=CourseStatus.INCOMPLETE)
     for i in range(1, 7):
-        CourseQuestion.create(
-            course=course,
-            questionContent=courseData[f"{i}"],
-            questionNumber=i
-        )
+        CourseQuestion.create( course=course, questionNumber=i)
 
-    instructorList = []
-    if 'instructor[]' in courseData: 
-        instructorList = courseData.getlist('instructor[]')
-
-    for instructor in instructorList:
-        CourseInstructor.create(course=course, user=instructor)
     return course
 
 def updateCourse(courseData):

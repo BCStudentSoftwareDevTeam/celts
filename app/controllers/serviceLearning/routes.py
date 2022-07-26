@@ -36,7 +36,7 @@ def serviceCourseManagement(username=None):
         return redirect(url_for('main.events', selectedTerm=g.current_term))
 
 @serviceLearning_bp.route('/serviceLearning/viewProposal/<courseID>', methods=['GET'])
-@serviceLearning_bp.route('/serviceLearning/editProposal/<courseID>', methods=['GET', 'POST'])
+@serviceLearning_bp.route('/serviceLearning/editProposal/<courseID>', methods=['GET'])
 def slcEditProposal(courseID):
     """
         Route for editing proposals, it will fill the form with the data found in the database
@@ -66,6 +66,15 @@ def slcEditProposal(courseID):
                                 isRegularlyOccuring = isRegularlyOccuring,
                                 isAllSectionsServiceLearning = isAllSectionsServiceLearning,
                                 isPermanentlyDesignated = isPermanentlyDesignated)
+
+@serviceLearning_bp.route('/serviceLearning/createCourse/', methods=['POST'])
+def slcCreateCourse():
+    """will give a new course ID so that it can redirect to an edit page"""
+    course = createCourse()
+
+    return redirect(url_for('serviceLearning.slcEditProposal', courseID = course.id))
+
+
 @serviceLearning_bp.route('/serviceLearning/saveProposal', methods=['POST'])
 def slcSaveContinue():
     """Will update the the course proposal and return an empty string since ajax request needs a response
@@ -76,27 +85,14 @@ def slcSaveContinue():
 
     return ""
 
-@serviceLearning_bp.route('/serviceLearning/createCourse/', methods=['POST'])
-def slcCreateCourse():
-    """will give a new course ID so that it can redirect to an edit page"""
-    course = Course.create(status=CourseStatus.SUBMITTED)
-    for i in range(1, 7):
-        CourseQuestion.create( course=course, questionNumber=i)
-
-    return redirect(url_for('serviceLearning.slcEditProposal', courseID = course.id))
-
-
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcCreateOrEdit():
     if request.method == "POST":
-        courseExist = Course.get_or_none(Course.id == request.form.get('courseID'))
-        if courseExist:
-            updateCourse(request.form.copy())
-        else:
-            createCourse(request.form.copy(), g.current_user)
+        course = updateCourse(request.form.copy())
         if getRedirectTarget(False):
             return redirect('' + getRedirectTarget(True) + '')
         return redirect('/serviceLearning/courseManagement')
+
     terms = Term.select().where(Term.year >= g.current_term.year)
     courseData = None
     return render_template('serviceLearning/slcNewProposal.html', 
@@ -104,6 +100,31 @@ def slcCreateOrEdit():
                 courseData = courseData, 
                 redirectTarget = getRedirectTarget(True))
 
+@serviceLearning_bp.route('/serviceLearning/approveCourse/', methods=['POST'])
+def approveCourse():
+    """
+    This function updates and approves a Service-Learning Course when using  the
+        approve button.
+    return: empty string because AJAX needs to receive something
+    """
+
+    try:
+        # We are only approving, and not updating
+        if len(request.form) == 1:
+            course = Course.get_by_id(request.form['courseID']) 
+
+        # We have data and need to update the course first
+        else:
+            course = updateCourse(request.form.copy())
+
+        course.status = CourseStatus.APPROVED
+        course.save()
+        flash("Course approved!", "success")
+
+    except Exception as e:
+        print(e)
+        flash("Course not approved!", "danger")
+    return ""
 @serviceLearning_bp.route('/updateInstructorPhone', methods=['POST'])
 def updateInstructorPhone():
     instructorData = request.get_json()
@@ -145,28 +166,3 @@ def renewCourse(courseID, termID):
         flash("Renewal Unsuccessful", 'warning')
     return ""
 
-@serviceLearning_bp.route('/serviceLearning/approveCourse/', methods=['POST'])
-def approveCourse():
-    """
-    This function updates and approves a Service-Learning Course when using  the
-        approve button.
-    return: empty string because AJAX needs to receive something
-    """
-
-    try:
-        # We are only approving, and not updating
-        if len(request.form) == 1:
-            course = Course.get_by_id(request.form['courseID']) 
-
-        # We have data and need to update the course first
-        else:
-            course = updateCourse(request.form.copy())
-
-        course.status = CourseStatus.APPROVED
-        course.save()
-        flash("Course approved!", "success")
-
-    except Exception as e:
-        print(e)
-        flash("Course not approved!", "danger")
-    return ""
