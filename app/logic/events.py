@@ -29,21 +29,30 @@ def getEvents(program_id=None):
         return Event.select()
 
 def deleteEvent(eventId):
-
+    """
+    Deletes an event, if it is a recurring event, rename all following events
+    to make sure there is no gap in weeks.
+    """
     event = Event.get_or_none(Event.id == eventId)
     if event:
         if event.recurringId:
             recurringId = event.recurringId
             recurringEventWeekIndex = None
             recurringWeek = {}
-            recurringEvents = list(Event.select().where(Event.recurringId==event.recurringId).order_by(Event.recurringId))
+            recurringEvents = list(Event.select().where(Event.recurringId==event.recurringId).order_by(Event.recurringId)) # orders for tests
+
+            # create dictionary with an recurring event and its corresponding week
             for eventWeek in range(len(recurringEvents)):
                 recurringWeek[recurringEvents[eventWeek].name] = eventWeek + 1
                 if ("Week " + str(eventWeek + 1)) in event.name:
                     recurringEventWeekIndex = eventWeek + 1
+
+            # iterates over all events later than the one being deleted and changes them accordingly
             for recurringEvent in recurringEvents[(recurringEventWeekIndex):]:
                 if recurringWeek[recurringEvent.name] >= recurringEventWeekIndex:
-                    Event.update({Event.name:recurringEvent.name.replace("Week " + str(recurringWeek[recurringEvent.name]), "Week " + str(recurringWeek[recurringEvent.name] - 1))}).where(Event.id==recurringEvent.id).execute()
+                    (Event.update({Event.name:recurringEvent.name.replace("Week " + str(recurringWeek[recurringEvent.name]), "Week " + str(recurringWeek[recurringEvent.name] - 1))})
+                         .where(Event.id==recurringEvent.id).execute())
+
         event.delete_instance(recursive = True, delete_nullable = True)
         if event.startDate:
             createLog(f"Deleted event: {event.name}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
@@ -132,7 +141,6 @@ def getStudentLedEvents(term):
     return programs
 
 def getTrainingEvents(term):
-
     """
         The allTrainingsEvent query is designed to select and count eventId's after grouping them
         together by id's of similiar value. The query will then return the event that is associated
