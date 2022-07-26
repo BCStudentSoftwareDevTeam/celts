@@ -32,7 +32,23 @@ def deleteEvent(eventId):
 
     event = Event.get_or_none(Event.id == eventId)
     if event:
+        if event.recurringId:
+            recurringId = event.recurringId
+            recurringEventWeekIndex = None
+            recurringWeek = {}
+            recurringEvents = list(Event.select().where(Event.recurringId==event.recurringId).order_by(Event.recurringId))
+            for eventWeek in range(len(recurringEvents)):
+                recurringWeek[recurringEvents[eventWeek].name] = eventWeek + 1
+                if ("Week " + str(eventWeek + 1)) in event.name:
+                    recurringEventWeekIndex = eventWeek + 1
+            for recurringEvent in recurringEvents[(recurringEventWeekIndex):]:
+                if recurringWeek[recurringEvent.name] >= recurringEventWeekIndex:
+                    recurringEvent.name = recurringEvent.name.replace("Week " + str(recurringWeek[recurringEvent.name]), "Week " + str(recurringWeek[recurringEvent.name] - 1))
+                    Event.update({Event.name:recurringEvent.name}).where(Event.id==recurringEvent.id)
         event.delete_instance(recursive = True, delete_nullable = True)
+        recurringEvents = list(Event.select().where(Event.recurringId==event.recurringId).order_by(Event.recurringId))
+        for i in recurringEvents:
+            print(i.name)
         if event.startDate:
             createLog(f"Deleted event: {event.name}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
 
@@ -251,7 +267,7 @@ def calculateNewrecurringId():
 
 def getPreviousRecurringEventData(recurringId):
     """
-    Joins the User db table and Event Participant db table so that we can get the information of a Particpant if they attended an event
+    Joins the User db table and Event Participant db table so that we can get the information of a participant if they attended an event
     """
     previousEventVolunteers = User.select(User).join(EventParticipant).join(Event).where(Event.recurringId==recurringId).distinct()
     return previousEventVolunteers
