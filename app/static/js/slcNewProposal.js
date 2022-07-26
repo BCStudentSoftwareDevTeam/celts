@@ -14,9 +14,19 @@ $(document).ready(function(e) {
     // set up phone numbers
     $("input[name=courseInstructorPhone]").inputmask('(999)-999-9999');
 
-
     // Add button event handlers
     // -----------------------------------------
+    $("a.guidelines").on("click", function() {
+        let allTabs = $(".tab");
+        if (currentTab == (allTabs.length - 2)) {
+          displayCorrectTab(-1);
+        }
+        else if (currentTab == (allTabs.length - 1)){
+          displayCorrectTab(-2);
+        }
+        return false;
+    });
+
     $("#previousButton").on("click", function() {
         displayCorrectTab(-1);
     });
@@ -109,20 +119,50 @@ $(document).ready(function(e) {
     }
 })
 
-function saveCourseData(url, successCallback) {
-    if (!validateForm()) return false;
+// display functions
+// --------------------------------
 
-    var formdata = $("form").serialize()
-    var instructordata = $.param({"instructor":getCourseInstructors()})
-    $.ajax({
-        url: url,
-        type: "POST",
-        data: formdata + "&" + instructordata,
-        success: successCallback,
-        error: function(request, status, error) {
-         msgFlash("Error saving changes!", "danger")
-       }
-  });
+function disableInput() {
+    $("input").prop("disabled", true);
+    $("select").prop("disabled", true);
+    $("textarea").prop("disabled", true);
+    $(".view").prop("disabled", true);
+    $("#submitAndApproveButton").hide();
+    $(".editButton").hide()
+    $(".removeButton").hide()
+}
+
+function readOnly() {
+    return window.location.href.includes("view");
+}
+
+function fixStepIndicator(navigateTab) {
+  // This function updates the active step indicator
+  let steps = $(".step");
+  steps.each((i, step) => $(step).removeClass("active"));
+  $(steps[navigateTab]).addClass("active")
+}
+
+function displayCorrectTab(navigateTab) {
+  // This function will figure out which tab to display
+  let allTabs = $(".tab");
+  if (navigateTab == 1 && !validateForm()) return false;
+
+  // hide the current display
+  if(currentTab != (allTabs.length - 1) || (navigateTab < 0)){
+      $(allTabs[currentTab]).css("display", "none");
+  }
+
+  // Increase or decrease the current tab:
+  currentTab = currentTab + navigateTab;
+
+  if (currentTab >= allTabs.length) {
+      $("#nextButton").prop("disabled", true)
+      addInstructorsToForm()
+      $("#slcNewProposal").submit();
+      return false;
+  }
+  showTab(currentTab);
 }
 
 function showTab(currentTab) {
@@ -136,6 +176,7 @@ function showTab(currentTab) {
         $("#previousButton").hide();
         $("#submitAndApproveButton").hide();
         $("#nextButton").text("Next");
+        $("#nextButton").show();
         $("#saveContinue").hide();
         break;
     case 1: // Second page
@@ -168,38 +209,23 @@ function showTab(currentTab) {
   fixStepIndicator(currentTab)
 }
 
-function fixStepIndicator(navigateTab) {
-  // This function updates the active step indicator
-  let steps = $(".step");
-  steps.each((i, step) => $(step).removeClass("active"));
-  $(steps[navigateTab]).addClass("active")
-}
+// Form Submission Functions
+// --------------------------------------------------
 
-function displayCorrectTab(navigateTab) {
-  // This function will figure out which tab to display
-  let allTabs = $(".tab");
-  if (navigateTab == 1 && !validateForm()) return false;
-  if(currentTab != (allTabs.length - 1) || (navigateTab == -1)){
-      $(allTabs[currentTab]).css("display", "none");
-  }
+function saveCourseData(url, successCallback) {
+    if (!validateForm()) return false;
 
-  // Increase or decrease the current tab by 1:
-  currentTab = currentTab + navigateTab;
-
-  if (currentTab >= allTabs.length) {
-      $("#nextButton").prop("disabled", true)
-      addInstructorsToForm()
-      $("#slcNewProposal").submit();
-      return false;
-  }
-  showTab(currentTab);
-}
-
-function addInstructorsToForm() {
-    var form = $("#slcNewProposal");
-    $.each(getCourseInstructors(), function(idx,username) {
-        form.append($("<input type='hidden' name='instructor[]' value='" + username + "'>"));
-    });
+    var formdata = $("form").serialize()
+    var instructordata = $.param({"instructor":getCourseInstructors()})
+    $.ajax({
+        url: url,
+        type: "POST",
+        data: formdata + "&" + instructordata,
+        success: successCallback,
+        error: function(request, status, error) {
+         msgFlash("Error saving changes!", "danger")
+       }
+  });
 }
 
 function validateForm() {
@@ -239,6 +265,16 @@ function validateForm() {
 
   return valid;
 };
+
+// Instructor manipulation functions
+// -------------------------------------
+//
+function addInstructorsToForm() {
+    var form = $("#slcNewProposal");
+    $.each(getCourseInstructors(), function(idx,username) {
+        form.append($("<input type='hidden' name='instructor[]' value='" + username + "'>"));
+    });
+}
 
 function getRowUsername(element) {
     return $(element).closest("tr").data("username")
@@ -289,22 +325,8 @@ function createNewRow(selectedInstructor) {
 }
 
 function getCourseInstructors() {
-  // get usernames out of the row
+  // get usernames out of the table rows into an array
   return $("#instructorTable tr")
                 .map((i,el) => $(el).data('username')).get()
                 .filter(val => (val))
-}
-
-function disableInput() {
-    $("input").prop("disabled", true);
-    $("select").prop("disabled", true);
-    $("textarea").prop("disabled", true);
-    $(".view").prop("disabled", true);
-    $("#submitAndApproveButton").hide();
-    $(".editButton").hide()
-    $(".removeButton").hide()
-}
-
-function readOnly() {
-    return window.location.href.includes("view");
 }

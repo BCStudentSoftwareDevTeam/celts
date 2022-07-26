@@ -1,4 +1,4 @@
-from flask import request, render_template, g, url_for, abort, json, redirect, jsonify, flash, session
+from flask import request, render_template, g, url_for, abort, redirect, flash, session
 from app.models.user import User
 from app.models.term import Term
 from app.models.course import Course
@@ -65,7 +65,8 @@ def slcEditProposal(courseID):
                                 courseInstructor = courseInstructor,
                                 isRegularlyOccuring = isRegularlyOccuring,
                                 isAllSectionsServiceLearning = isAllSectionsServiceLearning,
-                                isPermanentlyDesignated = isPermanentlyDesignated)
+                                isPermanentlyDesignated = isPermanentlyDesignated, 
+                                redirectTarget=getRedirectTarget())
 
 @serviceLearning_bp.route('/serviceLearning/createCourse/', methods=['POST'])
 def slcCreateCourse():
@@ -125,6 +126,7 @@ def approveCourse():
         print(e)
         flash("Course not approved!", "danger")
     return ""
+
 @serviceLearning_bp.route('/updateInstructorPhone', methods=['POST'])
 def updateInstructorPhone():
     instructorData = request.get_json()
