@@ -16,7 +16,7 @@ def getServiceLearningCoursesData(user):
                      .join(Term).switch()
                      .join(CourseStatus).switch()
                      .join(User)
-                     .where((CourseInstructor.user==user)|(User.username==Course.createdBy))
+                     .where((CourseInstructor.user==user)|(Course.createdBy==user))
                      .order_by(Course.id))
     courseDict = {}
     for course in courses:

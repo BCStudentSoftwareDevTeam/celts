@@ -26,11 +26,6 @@ def serviceCourseManagement(username=None):
         setRedirectTarget("/serviceLearning/courseManagement")
         user = User.get(User.username==username) if username else g.current_user
         courseDict = getServiceLearningCoursesData(user)
-        creator = Course.select().join(User).where(Course.createdBy == User.username)
-        print(“______________________“)
-        print(creator)
-        course_id = Course.get_by_id(‘1’)
-        # print(courseDict[course_id: 1][‘creator’])
         termList = selectSurroundingTerms(g.current_term, prevTerms=0)
         return render_template('serviceLearning/slcManagement.html',
             user=user,
