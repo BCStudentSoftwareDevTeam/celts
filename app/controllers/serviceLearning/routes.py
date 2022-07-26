@@ -70,10 +70,10 @@ def slcEditProposal(courseID):
 def slcSaveContinue():
     """Will update the the course proposal and return an empty string since ajax request needs a response
     Also, it updates the course status as 'Incomplete'"""
-    updateCourse(request.form.copy(), instructorsDict)
-    course = Course.get_by_id(request.form.get('courseID'))
+    course = updateCourse(request.form.copy())
     course.status = CourseStatus.INCOMPLETE
     course.save() 
+
     return ""
 
 @serviceLearning_bp.route('/serviceLearning/createCourse/', methods=['POST'])
@@ -82,6 +82,7 @@ def slcCreateCourse():
     course = Course.create(status=CourseStatus.SUBMITTED)
     for i in range(1, 7):
         CourseQuestion.create( course=course, questionNumber=i)
+
     return redirect(url_for('serviceLearning.slcEditProposal', courseID = course.id))
 
 
@@ -151,18 +152,21 @@ def approveCourse():
         approve button.
     return: empty string because AJAX needs to receive something
     """
-    if len(request.form) == 1:
-        course = Course.get_by_id(request.form['courseID']) # if only course is reviewed pass the course ID
 
-    elif 'courseID' in request.form:
-        course = updateCourse(request.form.copy()) # if edit course, Updates database with the completed fields and get course ID
-    else:
-        course = createCourse(request.form.copy(), g.current_user) # creat course first and get its ID to approve next
     try:
-        course = updateCourse(request.form.copy(), instructorsDict)
+        # We are only approving, and not updating
+        if len(request.form) == 1:
+            course = Course.get_by_id(request.form['courseID']) 
+
+        # We have data and need to update the course first
+        else:
+            course = updateCourse(request.form.copy())
+
         course.status = CourseStatus.APPROVED
-        course.save() # saves the query and approves course in the database
+        course.save()
         flash("Course approved!", "success")
-    except:
+
+    except Exception as e:
+        print(e)
         flash("Course not approved!", "danger")
     return ""
