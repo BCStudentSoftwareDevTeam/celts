@@ -5,7 +5,7 @@ from app import app
 from app.models.eventFile import EventFile
 
 class FileHandler:
-    def __init__(self,files):
+    def __init__(self,files=None):
         self.files=files
         self.path= app.config['event']['event_attachment_path']
 
@@ -43,13 +43,15 @@ class FileHandler:
             return False
             pass
 
-    def deleteFile(self):
+    def deleteFile(self,fileId, eventId):
         """
         Deletes attachmant from the app/static/files/eventattachments/ directory
         """
         try:
-            for file in self.files:
-                os.remove(self.getFileFullPath(file))
+            File = EventFile.get_by_id(fileId)
+            path = os.path.join(self.path,eventId, File.fileName)
+            os.remove(path)
+            File.delete_instance()
         except AttributeError: #passes if no attachment is selected.
             pass
 
@@ -57,5 +59,5 @@ class FileHandler:
         pathDict={}
         for file in self.files:
             pathDict[file.fileName] = ((self.path+"/"+file.fileName)[3:], file)
-
+        print(pathDict)
         return pathDict
