@@ -1,5 +1,114 @@
 import searchUser from './searchUser.js'
 
+var currentTab = 0; // Current tab is set to be the first tab (0)
+
+$(document).ready(function(e) {
+    // set up the current tab and button state
+    showTab(currentTab); 
+
+    // Update display if we are viewing only
+    if (readOnly()){
+        disableInput()
+    }
+
+    // set up phone numbers
+    $("input[name=courseInstructorPhone]").inputmask('(999)-999-9999');
+
+
+    // Add button event handlers
+    // -----------------------------------------
+    $("#previousButton").on("click", function() {
+        displayCorrectTab(-1);
+    });
+
+    $("#nextButton").on("click", function() {
+        displayCorrectTab(1);
+    });
+
+    $("#cancelButton").on("click", function() {
+        window.location.replace($(this).val());
+    });
+  
+    $("#saveContinue").on("click", function() {
+        if(readOnly()) {
+            let allTabs = $(".tab");
+            displayCorrectTab(1) 
+            if (currentTab == (allTabs.length - 2)) {
+              displayCorrectTab(1);
+            }
+            else if (currentTab == (allTabs.length - 1)){
+                // TODO nothing?
+            }
+        }
+
+        //this will save the change from the current page and move to the next page
+        saveCourseData("/serviceLearning/saveProposal", function() {
+            let allTabs = $(".tab");
+            if (currentTab == (allTabs.length - 2)) {
+              displayCorrectTab(1);
+            }
+            else if (currentTab == (allTabs.length - 1)){
+              window.location.replace("/serviceLearning/courseManagement");
+            }
+            msgFlash("Changes saved!", "success")
+        });
+    });
+
+    if(!readOnly()) {
+        $("#submitAndApproveButton").click(function(){
+            $("#submitAndApproveButton").prop("disabled", true)
+            saveCourseData("/serviceLearning/approveCourse", function(response) {
+                window.location.replace("/manageServiceLearning")
+            })
+        });
+
+    // Add course instructor event handlers
+    // -----------------------------------------
+        $("#instructorTable").on("click", "#remove", function() {
+            $(this).closest("tr").remove();
+        });
+        $("#courseInstructor").on('input', function() {
+            searchUser("courseInstructor", createNewRow, true, null, "instructor");
+        });
+        $("input[name=courseInstructorPhone]").focus(focusHandler);
+        $("input[name=courseInstructorPhone]").focusout(blurHandler);
+        $('#instructorTable').on('click', ".editButton", function() {
+            var username=getRowUsername(this)
+            if ($(this).html() === 'Edit') {
+                $(this).html('Save')
+                $("#inputPhoneNumber-"+ username).focus()
+            } else {
+                // Save the phone number
+                var phoneInput = $("#inputPhoneNumber-" + username);
+                let isvalid = phoneInput.val().replace(/\D/g,"").length === 10;
+                let isempty = phoneInput.val().replace(/\D/g,"").length === 0;
+                if (!(isvalid || isempty)) {
+                    phoneInput.addClass("invalid");
+                    window.setTimeout(() => phoneInput.removeClass("invalid"), 1000);
+                    phoneInput.focus()
+                    return false;
+                }
+
+                $(this).html('Edit');
+                var instructorData = [username, phoneInput.val()]
+                $.ajax({
+                  url: "/updateInstructorPhone",
+                  data: JSON.stringify(instructorData),
+
+                  type: "POST",
+                  contentType: "application/json",
+                  success: function(response) {
+                      msgFlash("Instructor's phone number updated", "success")
+                  },
+                  error: function(request, status, error) {
+                    msgFlash("Error updating phone number", "danger")
+                  }
+                });
+            }
+        });
+    }
+})
+
 function saveCourseData(url, successCallback) {
     if (!validateForm()) return false;
 
@@ -24,25 +133,35 @@ function showTab(currentTab) {
   switch(currentTab) {
     case 0: // First page
         $("#cancelButton").show();
-        $("#previousButton").css("display", "none");
-        $("#approveButton").hide();
+        $("#previousButton").hide();
+        $("#submitAndApproveButton").hide();
         $("#nextButton").text("Next");
         $("#saveContinue").hide();
         break;
     case 1: // Second page
         $("#cancelButton").hide();
-        $("#previousButton").css("display", "inline");
-        $("#approveButton").hide();
+        $("#previousButton").show();
+        $("#submitAndApproveButton").hide();
         $("#nextButton").hide();
         $("#saveContinue").show();
+        if(readOnly()) {
+            $("#nextButton").show();
+            $("#saveContinue").hide();
+        }
         break;
     case 2: // Third page
         $("#cancelButton").hide();
-        $("#previousButton").css("display", "inline");
-        $("#approveButton").show();
+        $("#previousButton").show();
+        $("#submitAndApproveButton").show();
         $("#nextButton").text("Submit");
         $("#nextButton").show();
         $("#saveContinue").text("Save For Later");
+        if(readOnly()) {
+            $("#nextButton").text("Next");
+            $("#nextButton").hide();
+            $("#saveContinue").hide();
+            $("#submitAndApproveButton").hide();
+        }
         break;
     }
 
@@ -84,41 +203,48 @@ function addInstructorsToForm() {
 }
 
 function validateForm() {
-  // TODO: Generalize form validation to include textareas and selects
-  // This function deals with validation of the form fields
-  let valid = true;
-  var url = String(window.location.href);
-  if (!url.includes("view")){
-      let allTabs = $(".tab");
-      let allInputs = $(allTabs[currentTab]).find("input");
-      for (let i = 0; i < allInputs.length; i++) {
-        if (allInputs[i].required) {
-          if (!allInputs[i].value){
-            allInputs[i].className += " invalid";
-            valid = false;
-          } else {
-            allInputs[i].className = "form-control";
-          }
-        }
-      }
+    // This function ensures our form fields are valid
+    // Returns true if we are just viewing a form
+    // TODO: Generalize form validation to include textareas and selects
 
-      var instructors = getCourseInstructors()
-      if (!instructors.length && currentTab == 1) {
+    if (readOnly())
+        return true;
+
+  let valid = true;
+
+  let allTabs = $(".tab");
+  let allInputs = $(allTabs[currentTab]).find("input");
+  for (let i = 0; i < allInputs.length; i++) {
+    if (allInputs[i].required) {
+      if (!allInputs[i].value){
+        $(allInputs[i]).addClass("invalid");
         valid = false;
-        $("#courseInstructor").addClass("invalid");
       } else {
-        $("#courseInstructor").removeClass("invalid");
+        $(allInputs[i]).addClass("form-control");
       }
-      if (valid) {
-        $(".step")[currentTab].className += " finish";
-      }
+    }
   }
+
+  var instructors = getCourseInstructors()
+  if (!instructors.length && currentTab == 1) {
+    valid = false;
+    $("#courseInstructor").addClass("invalid");
+  } else {
+    $("#courseInstructor").removeClass("invalid");
+  }
+
+  if (valid) {
+    $($(".step")[currentTab]).addClass("finish");
+  }
+
   return valid;
 };
 
 function getRowUsername(element) {
     return $(element).closest("tr").data("username")
 }
+
+// Event handler callback definitions
 function focusHandler(event) {
     var username=getRowUsername(this)
     $("#editButton-" + username).html('Save');
@@ -174,100 +300,11 @@ function disableInput() {
     $("select").prop("disabled", true);
     $("textarea").prop("disabled", true);
     $(".view").prop("disabled", true);
-    $("#approveButton").hide();
+    $("#submitAndApproveButton").hide();
+    $(".editButton").hide()
+    $(".removeButton").hide()
 }
 
-var currentTab = 0; // Current tab is set to be the first tab (0)
-
-$(document).ready(function(e) {
-    // set up the current tab and button state
-    showTab(currentTab); 
-
-    // Update display if we are viewing only
-    if (window.location.href.includes("view")){
-        disableInput()
-    }
-
-    // set up phone numbers
-    $("input[name=courseInstructorPhone]").inputmask('(999)-999-9999');
-
-
-    // Add button event handlers
-    // -----------------------------------------
-    $("#previousButton").on("click", function() {
-        displayCorrectTab(-1);
-    });
-
-    $("#nextButton").on("click", function() {
-        displayCorrectTab(1);
-    });
-
-    $("#cancelButton").on("click", function() {
-        window.location.replace($(this).val());
-    });
-  
-    $("#saveContinue").on("click", function() {
-        //this will save the change from the current page and move to the next page
-        saveCourseData("/serviceLearning/saveProposal", function() {
-            let allTabs = $(".tab");
-            if (currentTab == (allTabs.length - 2)) {
-              displayCorrectTab(1);
-            }
-            else if (currentTab == (allTabs.length - 1)){
-              window.location.replace("/serviceLearning/courseManagement");
-            }
-            msgFlash("Changes saved!", "success")
-        });
-    });
-
-    $("#submitAndApproveButton").click(function(){
-        $("#submitAndApproveButton").prop("disabled", true)
-        saveCourseData("/serviceLearning/approveCourse", function(response) {
-            window.location.replace("/manageServiceLearning")
-        })
-    });
-
-    // Add course instructor event handlers
-    // -----------------------------------------
-    $("#instructorTable").on("click", "#remove", function() {
-        $(this).closest("tr").remove();
-    });
-    $("#courseInstructor").on('input', function() {
-        searchUser("courseInstructor", createNewRow, true, null, "instructor");
-    });
-    $("input[name=courseInstructorPhone]").focus(focusHandler);
-    $("input[name=courseInstructorPhone]").focusout(blurHandler);
-    $('#instructorTable').on('click', ".editButton", function() {
-        var username=getRowUsername(this)
-        if ($(this).html() === 'Edit') {
-            $(this).html('Save')
-            $("#inputPhoneNumber-"+ username).focus()
-        } else {
-            // Save the phone number
-            var phoneInput = $("#inputPhoneNumber-" + username);
-            let isvalid = phoneInput.val().replace(/\D/g,"").length === 10;
-            let isempty = phoneInput.val().replace(/\D/g,"").length === 0;
-            if (!(isvalid || isempty)) {
-                phoneInput.addClass("invalid");
-                window.setTimeout(() => phoneInput.removeClass("invalid"), 1000);
-                return false;
-            }
-
-            $(this).html('Edit');
-            var instructorData = [username, phoneInput.val()]
-            $.ajax({
-              url: "/updateInstructorPhone",
-              data: JSON.stringify(instructorData),
-
-              type: "POST",
-              contentType: "application/json",
-              success: function(response) {
-                  msgFlash("Instructor's phone number updated", "success")
-              },
-              error: function(request, status, error) {
-                msgFlash("Error updating phone number", "danger")
-              }
-            });
-        }
-    });
-})
+function readOnly() {
+    return window.location.href.includes("view");
+}
