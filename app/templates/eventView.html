@@ -61,16 +61,7 @@
               <div class="row">
                 <div class="col-sm">
                     <h3><br>Contact Information:</h3>
-                        <div>.</div>
-                    </div>
-                    <div class="col-sm">
-                        {% if programManager %}
-                            <div><h3><br>Program Manager:</h3></div>
-                                <div>
-                                    {{programManager.user.firstName}} {{programManager.user.lastName}}<br>
-                                    {{programManager.user.email}}
-                                </div>
-                        {% endif %}
+                        <div>{{contactInfo.contactName}} - {{contactInfo.contactEmail}}</div>
                     </div>
                 </div>
                 <div>

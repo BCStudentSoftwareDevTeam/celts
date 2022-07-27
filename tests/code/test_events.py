@@ -46,7 +46,6 @@ def test_getAllEvents():
     # No program is given, get all events
     events = getEvents()
 
-
     assert len(events) > 0
 
     assert events[0].description == "Empty Bowls Spring 2021"
@@ -57,8 +56,7 @@ def test_getAllEvents():
 def test_getEventsWithProgram():
 
     # Single program
-    events = getEvents(program_id=2)
-
+    events = getEvents(program_id = 2)
 
     assert len(events) > 0
     assert events[0].description == "Berea Buddies First Meetup"
@@ -68,7 +66,7 @@ def test_getEventsInvalidProgram():
 
     # Invalid program
     with pytest.raises(DoesNotExist):
-        getEvents(program_id= "asdf")
+        getEvents(program_id="asdf")
 
 @pytest.mark.integration
 def test_eventTemplate_model():
@@ -171,11 +169,11 @@ def test_preprocessEventData_term():
 @pytest.mark.integration
 def test_correctValidateNewEventData():
 
-    eventData =  {'isRsvpRequired':False, 'isService':False,
-                  'isTraining':True, 'isRecurring':False, 'startDate': parser.parse('1999-12-12'),
-                  'endDate':parser.parse('2022-06-12'), 'programId':1, 'location':"a big room",
-                  'timeEnd':'04:00', 'timeStart':'06:00', 'description':"Empty Bowls Spring 2021",
-                  'name':'Empty Bowls Spring Event 1','term':1,'contactName':"Kaidou of the Beast", 'contactEmail': 'beastpirates@gmail.com'}
+    eventData =  {'isRsvpRequired': False, 'isService': False,
+                  'isTraining': True,'isRecurring': False,'startDate': parser.parse('1999-12-12'),
+                  'endDate': parser.parse('2022-06-12'),'programId': 1,'location': "a big room",
+                  'timeEnd': '04:00', 'timeStart': '06:00','description': "Empty Bowls Spring 2021",
+                  'name': 'Empty Bowls Spring Event 1','term': 1,'contactName': "Kaidou of the Beast",'contactEmail': 'beastpirates@gmail.com'}
 
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid == True
@@ -187,7 +185,7 @@ def test_wrongValidateNewEventData():
     eventData =  {'isRsvpRequired':False, 'isService':False,
                   'isTraining':True, 'isRecurring':False, 'programId':1, 'location':"a big room",
                   'timeEnd':'12:00', 'timeStart':'15:00', 'description':"Empty Bowls Spring 2021",
-                  'name':'Empty Bowls Spring Event 1','term':1,'contactName':"Big Mom", 'contactEmail': 'weeeDDDINgCAKKe@gmail.com'}
+                  'name':'Empty Bowls Spring Event 1','term':1,'contactName': "Big Mom", 'contactEmail': 'weeeDDDINgCAKKe@gmail.com'}
 
     eventData['isRecurring'] = True
     eventData['startDate'] = parser.parse('2021-12-12')
@@ -292,7 +290,7 @@ def test_saveEventToDb_create():
                   'isTraining':True, 'isRecurring':False,'isAllVolunteerTraining': True, 'recurringId':None, 'startDate': parser.parse('2021-12-12'),
                    'endDate':parser.parse('2022-06-12'), 'location':"a big room",
                    'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
-                   'name':'Empty Bowls Spring','term':1,'contactName':"Finn D. Bledsoe", 'contactEmail': 'finninmanBledsoe@pigeoncarrier.com'}
+                   'name':'Empty Bowls Spring','term':1,'contactName':"Finn D. Bledsoe", 'contactEmail': 'finnimanBledsoe@pigeoncarrier.com'}
     eventInfo['program'] = Program.get_by_id(1)
 
     # if valid is not added to the dict
