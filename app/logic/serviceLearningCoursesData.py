@@ -18,6 +18,7 @@ def getServiceLearningCoursesData(user):
                      .join(User)
                      .where((CourseInstructor.user==user)|(Course.createdBy==user))
                      .order_by(Course.id))
+    
     courseDict = {}
     for course in courses:
         otherInstructors = (CourseInstructor.select(CourseInstructor, User).join(User).where(CourseInstructor.course==course))

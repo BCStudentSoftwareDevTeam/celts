@@ -5,6 +5,7 @@ from app.models.courseQuestion import CourseQuestion
 from app.models.courseStatus import CourseStatus
 from app.models.course import Course
 from app.models.term import Term
+from app.models.user import User
 
 
 def submittedCourses(termId):
@@ -32,9 +33,9 @@ def approvedCourses(termId):
 
     return approvedCourses
 
-def createCourse():
+def createCourse(creator="No user provided"):
     """ Create an empty, incomplete course """
-    course = Course.create(status=CourseStatus.INCOMPLETE)
+    course = Course.create(status=CourseStatus.INCOMPLETE, createdBy=creator)
     for i in range(1, 7):
         CourseQuestion.create( course=course, questionNumber=i)
 
@@ -63,11 +64,11 @@ def updateCourse(courseData):
 
     for i in range(1, 7):
         (CourseQuestion.update(questionContent=courseData[f"{i}"])
-                    .where((CourseQuestion.questionNumber == i) & 
+                    .where((CourseQuestion.questionNumber == i) &
                            (CourseQuestion.course==course)).execute())
 
     instructorList = []
-    if 'instructor[]' in courseData: 
+    if 'instructor[]' in courseData:
         instructorList = courseData.getlist('instructor[]')
 
     CourseInstructor.delete().where(CourseInstructor.course == course).execute()
@@ -75,5 +76,3 @@ def updateCourse(courseData):
         CourseInstructor.create(course=course, user=instructor)
 
     return Course.get_by_id(course.id)
-            
-    
