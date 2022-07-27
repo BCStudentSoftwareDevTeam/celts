@@ -3,8 +3,8 @@
 
 {% block scripts %}
   {{super()}}
-  <script type="module" src="/static/js/createEvents.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+  <script type="module" src="/static/js/createEvents.js"></script>
 {% endblock %}
 
 {% block styles %}
@@ -93,7 +93,7 @@
             <div class="form-group col-md-6">
                 <label class="form-label me-2" for="startDatePicker"><strong>Start Date</strong></label>
                 <div class='input-group date' id="startDate">
-                    <input autocomplete="off" type='text' class="form-control datePicker readonly" value="{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" name="startDate" placeholder="Pick a start date" onchange="updateDate(this)" id=startDatePicker required>
+                    <input autocomplete="off" type='text' class="form-control datePicker readonly" value="{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" name="startDate" placeholder="Pick a start date" id=startDatePicker required>
                     <div class="input-group-text" id="calendarIconStart">
                         <span><i class="bi bi-calendar-plus-fill"></i></span>
                     </div>
@@ -103,7 +103,7 @@
             <!--datePicker for End date-->
                 <label class="form-label" for="endDatePicker"><strong>End Date</strong></label>
                 <div class='input-group date' id="endDate">
-                  <input autocomplete="off" type='text' class="form-control datePicker readonly" id='endDatePicker' value="{{eventData.endDate.strftime('%m-%d-%Y') if eventData.endDate and eventData.endDate.strftime else eventData.endDate}}" name="endDate" placeholder="Pick an end date" onchange="updateDate(this)" {{"readonly" if not isEditable}}>
+                  <input autocomplete="off" type='text' class="form-control datePicker readonly" id='endDatePicker' value="{{eventData.endDate.strftime('%m-%d-%Y') if eventData.endDate and eventData.endDate.strftime else eventData.endDate}}" name="endDate" placeholder="Pick an end date" {{"readonly" if not isEditable}}>
                   <div class="input-group-text" id="calendarIconEnd">
                     <span><i class="bi bi-calendar-plus-fill"></i></span>
                   </div>
