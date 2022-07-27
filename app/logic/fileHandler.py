@@ -55,7 +55,7 @@ class FileHandler:
         """
         try:
             File = EventFile.get_by_id(fileId)
-            path = os.path.join(self.path,eventId, File.fileName)
+            path = os.path.join(self.path,str(eventId), File.fileName)
             os.remove(path)
             File.delete_instance()
         except AttributeError: #passes if no attachment is selected.
