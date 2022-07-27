@@ -37,25 +37,26 @@ def deleteEvent(eventId):
     if event:
         if event.recurringId:
             recurringId = event.recurringId
-            recurringEventWeekIndex = None
             recurringWeek = {}
-            recurringEvents = list(Event.select().where(Event.recurringId==event.recurringId).order_by(Event.recurringId)) # orders for tests
-
+            recurringEvents = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.recurringId)) # orders for tests
+            eventDeleted = False
             # create dictionary with an recurring event and its corresponding week
-            for eventWeek in range(len(recurringEvents)):
-                recurringWeek[recurringEvents[eventWeek].name] = eventWeek + 1
-                if ("Week " + str(eventWeek + 1)) in event.name:
-                    recurringEventWeekIndex = eventWeek + 1
+            for recurringEvent in recurringEvents:
+                if eventDeleted:
+                    Event.update({Event.name:newEventName}).where(Event.id==recurringEvent.id).execute()
+                    newEventName = recurringEvent.name
 
-            # iterates over all events later than the one being deleted and changes them accordingly
-            for recurringEvent in recurringEvents[(recurringEventWeekIndex):]:
-                if recurringWeek[recurringEvent.name] >= recurringEventWeekIndex:
-                    (Event.update({Event.name:recurringEvent.name.replace("Week " + str(recurringWeek[recurringEvent.name]), "Week " + str(recurringWeek[recurringEvent.name] - 1))})
-                         .where(Event.id==recurringEvent.id).execute())
+                if recurringEvent == event:
+                    newEventName = recurringEvent.name
+                    event.delete_instance(recursive = True, delete_nullable = True)
+                    eventDeleted = True
 
-        event.delete_instance(recursive = True, delete_nullable = True)
-        if event.startDate:
-            createLog(f"Deleted event: {event.name}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
+            if event.startDate:
+                createLog(f"Deleted event: {event.name}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
+        else:
+            event.delete_instance(recursive = True, delete_nullable = True)
+            if event.startDate:
+                createLog(f"Deleted event: {event.name}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
 
 def attemptSaveEvent(eventData):
 

@@ -263,7 +263,7 @@ def test_calculateRecurringEventFrequency():
 def test_attemptSaveEvent():
     # This test duplicates some of the saving tests, but with raw data, like from a form
     eventData =  {'isRsvpRequired':False, 'isService':False,
-                  'isTraining':True, 'isRecurring':True, 'recurringId':0, 
+                  'isTraining':True, 'isRecurring':True, 'recurringId':0,
                   'startDate': '2021-12-12',
                   'endDate': '2021-06-12', 'programId':1, 'location':"a big room",
                   'timeEnd':'09:00 PM', 'timeStart':'06:00 PM',
@@ -467,29 +467,31 @@ def test_deleteEvent():
                       'timeEnd': '09:00 PM',
                       'timeStart': '06:00 PM',
                       'description': "Empty Bowls Spring 2021",
-                      'name': 'Not Empty Bowls Spring','term': 1,'facilitators': [User.get_by_id("ramsayb2")]}
+                      'name': 'Not Empty Bowls Spring',
+                      'term': 1,
+                      'facilitators': [User.get_by_id("ramsayb2")]}
 
         eventInfo['valid'] = True
         eventInfo['program'] = Program.get_by_id(1)
         createdEvents = saveEventToDb(eventInfo)
         event = Event.get_by_id(createdEvents[0].id)
-        recurringId = createdEvents[0].recurringId
+        recurringId = event.recurringId
 
         # check how many events exist before event deletion
-        recurringEventsBefore = list(Event.select().where(Event.recurringId==event.recurringId).order_by(Event.recurringId))
+        recurringEventsBefore = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.recurringId))
         for counter, recurring in enumerate(recurringEventsBefore):
-            assert recurring.name == "Not Empty Bowls Spring Week " + str(counter + 1)
+            assert recurring.name == ("Not Empty Bowls Spring Week " + str(counter + 1))
 
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
             deletingEvent = deleteEvent(createdEvents[0])
 
         # check how many events exist after event deletion and make sure they are linear
-        recurringEventsAfter = list(Event.select().where(Event.recurringId==event.recurringId).order_by(Event.recurringId))
-        for counter, recurring in enumerate(recurringEventsAfter):
-            assert recurring.name == "Not Empty Bowls Spring Week " + str(counter + 1)
+        recurringEventsAfter = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.recurringId))
+        for count, recurring in enumerate(recurringEventsAfter):
+            assert recurring.name == ("Not Empty Bowls Spring Week " + str(count + 1))
         assert (len(recurringEventsBefore)-1) == len(recurringEventsAfter)
-    transaction.rollback()
+        transaction.rollback()
 
 
 @pytest.mark.integration
