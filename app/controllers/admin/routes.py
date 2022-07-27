@@ -11,7 +11,6 @@ from app.models.eventParticipant import EventParticipant
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.term import Term
-from app.models.programManager import ProgramManager
 from app.models.eventTemplate import EventTemplate
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
@@ -157,7 +156,6 @@ def eventDisplay(eventId):
         eventData['timeStart'] = event.timeStart.strftime("%-I:%M %p")
         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
         eventData["startDate"] = event.startDate.strftime("%m/%d/%Y")
-        programManager = ProgramManager.get_or_none(program=program)
         userParticipatedEvents = getUserParticipatedEvents(program, g.current_user, g.current_term)
         return render_template("eventView.html",
                                 eventData = eventData,
@@ -165,7 +163,6 @@ def eventDisplay(eventId):
                                 isPastEvent = isPastEvent,
                                 userHasRSVPed = userHasRSVPed,
                                 programTrainings = userParticipatedEvents,
-                                programManager = programManager,
                                 isProgramManager = isProgramManager)
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])

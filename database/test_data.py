@@ -583,6 +583,13 @@ notes = [
     "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
     "noteContent": "I agree with your comment on training",
     "isPrivate":False
+    },
+    {
+    "id": 3,
+    "createdBy": "mupotsal",
+    "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
+    "noteContent": "tells bad jokes",
+    "isPrivate": True
     }
 ]
 Note.insert_many(notes).on_conflict_replace().execute()
@@ -855,7 +862,7 @@ bannedUser = [
         "user": "ayisie",
         "program": 1,
         "endDate": datetime.now() + timedelta(days=150),
-        "banNote": 2,
+        "banNote": 3,
     }
 ]
 
