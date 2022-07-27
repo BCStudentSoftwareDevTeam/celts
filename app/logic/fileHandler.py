@@ -35,10 +35,13 @@ class FileHandler:
 
     def saveFile(self, eventId):
         """ Saves the attachment in the app/static/files/eventattachments/ directory """
+
+
         try:
             for file in self.files:
-                EventFile.create(event = eventId, fileName = file.filename)
-                file.save(self.getFileFullPath(eventId, file)) # saves attachment in directory
+                if not EventFile.select().where(EventFile.event == eventId, EventFile.fileName == file.filename).exists():
+                    EventFile.create(event = eventId, fileName = file.filename)
+                    file.save(self.getFileFullPath(eventId, file)) # saves attachment in directory
         except AttributeError: # will pass if there is no attachment to save
             return False
             pass
