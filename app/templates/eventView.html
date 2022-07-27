@@ -39,28 +39,36 @@
                     <h3><br>Description</h3>
                     {{eventData.description}}<br><br>
                     <div>
-                        {% if eventData.isService %}
-                            This event earns service hours.
-                            <br />
-                        {% else %}
-                            This event does not earn service hours.
-                            <br />
-                        {% endif %}
-                        {% if eventData.isRsvpRequired %}
-                            This event requires RSVP.
-                            <br />
-                        {% else %}
-                            This event does not require RSVP.
-                            <br />
-                        {% endif %}
+                        <p>
+                            {% if eventData.isService %}
+                                This event earns service hours.
+                        </p>
+                        <p>
+                            {% else %}
+                                This event does not earn service hours.
+                                {% endif %}
+                        </p>
+                        <p>
+                            {% if eventData.isRsvpRequired %}
+                                This event requires RSVP.
+                        </p>
+                        <p>
+                            {% else %}
+                                This event does not require RSVP.
+                                {% endif %}
+                        </p>
+                        <p>
                         {% if eventData.recurringId %}
                             This event is a recurring event.
-                             <br />
-                        {% endif %}
-                        {% if eventData.isTraining %}
-                            This event is a training.
-                            <br />
-                        {% endif %}
+                                {% endif %}
+                        </p>
+                        <p>
+                            {% if eventData.isTraining %}
+                                This event is a training.
+                            {% endif %}
+                        </p>
+
+
                     </div>
                 </div>
 
@@ -99,7 +107,7 @@
                       </div>
                       <div class="col-sm">
                           {% if programManager %}
-                              <div><h3><br>Program Manager</h3></div>
+                              <h3><br>Program Manager</h3>
                                   <div>
                                       {{programManager.user.firstName}} {{programManager.user.lastName}}<br>
                                       {{programManager.user.email}}
@@ -109,7 +117,7 @@
                   </div>
             </div>
 
-            <div style="padding-top:100px;"class="text-center">
+            <div class="rsvp-btn text-center">
               {% if (not isPastEvent) and (not isNewEvent)%}
                   {% if userHasRSVPed %}
                     <button type="submit" class="btn btn-danger" value="{{eventData.id}}" id="removeRsvpBtn">Remove RSVP</button>
