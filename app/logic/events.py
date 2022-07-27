@@ -29,12 +29,30 @@ def getEvents(program_id=None):
         return Event.select()
 
 def deleteEvent(eventId):
-
+    """
+    Deletes an event, if it is a recurring event, rename all following events
+    to make sure there is no gap in weeks.
+    """
     event = Event.get_or_none(Event.id == eventId)
     if event:
+        if event.recurringId:
+            recurringId = event.recurringId
+            recurringEvents = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.id)) # orders for tests
+            eventDeleted = False
+
+            # once the deleted event is detected, change all other names to the previous event's name
+            for recurringEvent in recurringEvents:
+                if eventDeleted:
+                    Event.update({Event.name:newEventName}).where(Event.id==recurringEvent.id).execute()
+                    newEventName = recurringEvent.name
+
+                if recurringEvent == event:
+                    newEventName = recurringEvent.name
+                    eventDeleted = True
+
         event.delete_instance(recursive = True, delete_nullable = True)
-        if event.startDate:
-            createLog(f"Deleted event: {event.name}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
+
+        createLog(f"Deleted event: {event.name}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
 
 def attemptSaveEvent(eventData):
 
@@ -120,7 +138,6 @@ def getStudentLedEvents(term):
     return programs
 
 def getTrainingEvents(term):
-
     """
         The allTrainingsEvent query is designed to select and count eventId's after grouping them
         together by id's of similiar value. The query will then return the event that is associated
@@ -238,7 +255,7 @@ def calculateNewrecurringId():
 
 def getPreviousRecurringEventData(recurringId):
     """
-    Joins the User db table and Event Participant db table so that we can get the information of a Particpant if they attended an event
+    Joins the User db table and Event Participant db table so that we can get the information of a participant if they attended an event
     """
     previousEventVolunteers = User.select(User).join(EventParticipant).join(Event).where(Event.recurringId==recurringId).distinct()
     return previousEventVolunteers

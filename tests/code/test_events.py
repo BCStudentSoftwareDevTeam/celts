@@ -178,11 +178,11 @@ def test_preprocessEventData_term():
 @pytest.mark.integration
 def test_correctValidateNewEventData():
 
-    eventData =  {'isRsvpRequired':False, 'isService':False,
-                  'isTraining':True, 'isRecurring':False, 'startDate': parser.parse('1999-12-12'),
-                  'endDate':parser.parse('2022-06-12'), 'programId':1, 'location':"a big room",
-                  'timeEnd':'04:00', 'timeStart':'06:00', 'description':"Empty Bowls Spring 2021",
-                  'name':'Empty Bowls Spring Event 1','term':1,'facilitators':"ramsayb2"}
+    eventData =  {'isRsvpRequired': False, 'isService': False,
+                  'isTraining': True, 'isRecurring': False, 'startDate': parser.parse('1999-12-12'),
+                  'endDate': parser.parse('2022-06-12'), 'programId': 1, 'location': "a big room",
+                  'timeEnd': '04:00', 'timeStart': '06:00', 'description': "Empty Bowls Spring 2021",
+                  'name': 'Empty Bowls Spring Event 1','term': 1,'facilitators': "ramsayb2"}
 
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid == True
@@ -191,10 +191,10 @@ def test_correctValidateNewEventData():
 @pytest.mark.integration
 def test_wrongValidateNewEventData():
 
-    eventData =  {'isRsvpRequired':False, 'isService':False,
-                  'isTraining':True, 'isRecurring':False, 'programId':1, 'location':"a big room",
-                  'timeEnd':'12:00', 'timeStart':'15:00', 'description':"Empty Bowls Spring 2021",
-                  'name':'Empty Bowls Spring Event 1','term':1,'facilitators':"ramsayb2"}
+    eventData =  {'isRsvpRequired': False, 'isService': False,
+                  'isTraining': True, 'isRecurring': False, 'programId': 1, 'location': "a big room",
+                  'timeEnd': '12:00', 'timeStart': '15:00', 'description': "Empty Bowls Spring 2021",
+                  'name': 'Empty Bowls Spring Event 1','term': 1,'facilitators': "ramsayb2"}
 
     eventData['isRecurring'] = True
     eventData['startDate'] = parser.parse('2021-12-12')
@@ -238,7 +238,7 @@ def test_wrongValidateNewEventData():
 @pytest.mark.integration
 def test_calculateRecurringEventFrequency():
 
-    eventInfo = {'name':"testEvent",
+    eventInfo = {'name': "testEvent",
                  'startDate': parser.parse("02/22/2023"),
                  'endDate': parser.parse("03/9/2023")}
 
@@ -263,16 +263,16 @@ def test_calculateRecurringEventFrequency():
 def test_attemptSaveEvent():
     # This test duplicates some of the saving tests, but with raw data, like from a form
     eventData =  {'isRsvpRequired':False, 'isService':False,
-                  'isTraining':True, 'isRecurring':True, 'recurringId':0, 
+                  'isTraining':True, 'isRecurring':True, 'recurringId':0,
                   'startDate': '2021-12-12',
                   'endDate': '2021-06-12', 'programId':1, 'location':"a big room",
-                  'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 
+                  'timeEnd':'09:00 PM', 'timeStart':'06:00 PM',
                   'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring','term':1,'facilitators':["ramsayb2"]}
-    eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'recurringId':None, 
+    eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'recurringId':None,
                    'startDate': '2021-12-12',
                    'endDate':'2022-06-12', 'location':"a big room",
-                   'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 
+                   'timeEnd':'09:00 PM', 'timeStart':'06:00 PM',
                    'description':"Empty Bowls Spring 2021",
                    'name':'Attempt Save Test','term':1,'facilitators':["ramsayb2"]}
     eventInfo['program'] = Program.get_by_id(1)
@@ -300,11 +300,11 @@ def test_attemptSaveEvent():
 @pytest.mark.integration
 def test_saveEventToDb_create():
 
-    eventInfo =  {'isRsvpRequired':False, 'isService':False,
-                  'isTraining':True, 'isRecurring':False,'isAllVolunteerTraining': True, 'recurringId':None, 'startDate': parser.parse('2021-12-12'),
-                   'endDate':parser.parse('2022-06-12'), 'location':"a big room",
-                   'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
-                   'name':'Empty Bowls Spring','term':1,'facilitators':[User.get_by_id("ramsayb2")]}
+    eventInfo =  {'isRsvpRequired': False, 'isService': False,
+                  'isTraining': True, 'isRecurring': False,'isAllVolunteerTraining': True, 'recurringId': None, 'startDate': parser.parse('2021-12-12'),
+                   'endDate': parser.parse('2022-06-12'), 'location': "a big room",
+                   'timeEnd': '09:00 PM', 'timeStart': '06:00 PM', 'description': "Empty Bowls Spring 2021",
+                   'name': 'Empty Bowls Spring','term': 1,'facilitators': [User.get_by_id("ramsayb2")]}
     eventInfo['program'] = Program.get_by_id(1)
 
     # if valid is not added to the dict
@@ -344,11 +344,11 @@ def test_saveEventToDb_recurring():
     with mainDB.atomic() as transaction:
         with app.app_context():
 
-            eventInfo =  {'isRsvpRequired':False, 'isService':False, 'isAllVolunteerTraining': True,
-                          'isTraining':True, 'isRecurring': True, 'recurringId':1, 'startDate': parser.parse('12-12-2021'),
-                           'endDate':parser.parse('01-18-2022'), 'location':"this is only a test",
-                           'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
-                           'name':'Empty Bowls Spring','term':1,'facilitators':[User.get_by_id("ramsayb2")]}
+            eventInfo =  {'isRsvpRequired': False, 'isService': False, 'isAllVolunteerTraining': True,
+                          'isTraining': True, 'isRecurring': True, 'recurringId': 1, 'startDate': parser.parse('12-12-2021'),
+                           'endDate': parser.parse('01-18-2022'), 'location': "this is only a test",
+                           'timeEnd': '09:00 PM', 'timeStart': '06:00 PM', 'description': "Empty Bowls Spring 2021",
+                           'name': 'Empty Bowls Spring','term':1,'facilitators': [User.get_by_id("ramsayb2")]}
             eventInfo['valid'] = True
             eventInfo['program'] = Program.get_by_id(1)
 
@@ -425,23 +425,24 @@ def test_saveEventToDb_update():
 @pytest.mark.integration
 def test_deleteEvent():
     with mainDB.atomic() as transaction:
-
+        # creates non recurring event
         testingEvent = Event.create(name = "Testing delete event",
                                       term = 2,
-                                      description= "This Event is Created to be Deleted.",
-                                      timeStart= "06:00 PM",
-                                      timeEnd= "09:00 PM",
+                                      description = "This Event is Created to be Deleted.",
+                                      timeStart = "06:00 PM",
+                                      timeEnd = "09:00 PM",
                                       location = "No Where",
                                       isRsvpRequired = 0,
                                       isTraining = 0,
                                       isService = 0,
-                                      startDate= "2021-12-12",
-                                      endDate= "2022-6-12",
+                                      startDate = "2021-12-12",
+                                      endDate = "2022-6-12",
                                       recurringId = None)
 
         testingEvent = Event.get(Event.name == "Testing delete event")
-
         eventId = testingEvent.id
+
+        # tests deletion of standard event
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
             deletingEvent = deleteEvent(eventId)
@@ -452,6 +453,48 @@ def test_deleteEvent():
             deletingEvent = deleteEvent(eventId)
         assert Event.get_or_none(Event.id == eventId) is None
         transaction.rollback()
+
+        # creates a recurring event
+        eventInfo =  {'isRsvpRequired': False,
+                      'isService': False,
+                      'isAllVolunteerTraining': True,
+                      'isTraining': True,
+                      'isRecurring': True,
+                      'recurringId': 20,
+                      'startDate': parser.parse('12-12-2021'),
+                      'endDate': parser.parse('01-18-2022'),
+                      'location': "Your pet rubber ducks little pond",
+                      'timeEnd': '09:00 PM',
+                      'timeStart': '06:00 PM',
+                      'description': "Empty Bowls Spring 2021",
+                      'name': 'Not Empty Bowls Spring',
+                      'term': 1,
+                      'facilitators': [User.get_by_id("ramsayb2")]}
+
+        eventInfo['valid'] = True
+        eventInfo['program'] = Program.get_by_id(1)
+        createdEvents = saveEventToDb(eventInfo)
+        event = Event.get_by_id(createdEvents[0].id)
+        recurringId = event.recurringId
+
+        # check how many events exist before event deletion
+        recurringEventsBefore = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.recurringId))
+        for counter, recurring in enumerate(recurringEventsBefore):
+            assert recurring.name == ("Not Empty Bowls Spring Week " + str(counter + 1))
+
+        with app.app_context():
+            g.current_user = User.get_by_id("ramsayb2")
+            deletingEvent = deleteEvent(createdEvents[0])
+
+        # check how many events exist after event deletion and make sure they are linear
+        recurringEventsAfter = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.recurringId))
+        
+        for count, recurring in enumerate(recurringEventsAfter):
+            assert recurring.name == ("Not Empty Bowls Spring Week " + str(count + 1))
+        assert (len(recurringEventsBefore)-1) == len(recurringEventsAfter)
+
+        transaction.rollback()
+
 
 @pytest.mark.integration
 def test_getAllFacilitators():
@@ -575,39 +618,39 @@ def test_getPreviousRecurringEventData():
 
         testingEvent1 = Event.create(name = "Testing delete event",
                                       term = 2,
-                                      description= "This Event is Created to be Deleted.",
-                                      timeStart= "6:00 pm",
-                                      timeEnd= "9:00 pm",
+                                      description = "This Event is Created to be Deleted.",
+                                      timeStart = "6:00 pm",
+                                      timeEnd = "9:00 pm",
                                       location = "No Where",
                                       isRsvpRequired = 0,
                                       isTraining = 0,
                                       isService = 0,
-                                      startDate= "2021-12-5",
-                                      endDate= "2022-12-5",
+                                      startDate = "2021-12-5",
+                                      endDate = "2022-12-5",
                                       recurringId = 3)
         testingEvent2 = Event.create(name = "Testing delete event",
                                       term = 2,
-                                      description= "This Event is Created to be Deleted.",
-                                      timeStart= "6:00 pm",
-                                      timeEnd= "9:00 pm",
+                                      description = "This Event is Created to be Deleted.",
+                                      timeStart = "6:00 pm",
+                                      timeEnd = "9:00 pm",
                                       location = "No Where",
                                       isRsvpRequired = 0,
                                       isTraining = 0,
                                       isService = 0,
-                                      startDate= "2022-12-12",
-                                      endDate= "2022-12-12",
+                                      startDate = "2022-12-12",
+                                      endDate = "2022-12-12",
                                       recurringId = 3)
         testingEvent3 = Event.create(name = "Testing delete event",
                                       term = 2,
-                                      description= "This Event is Created to be Deleted.",
-                                      timeStart= "6:00 pm",
-                                      timeEnd= "9:00 pm",
+                                      description = "This Event is Created to be Deleted.",
+                                      timeStart = "6:00 pm",
+                                      timeEnd = "9:00 pm",
                                       location = "No Where",
                                       isRsvpRequired = 0,
                                       isTraining = 0,
                                       isService = 0,
-                                      startDate= "2022-12-19",
-                                      endDate= "2022-12-19",
+                                      startDate = "2022-12-19",
+                                      endDate = "2022-12-19",
                                       recurringId = 3)
 
         testingParticipant1 = EventParticipant.create(user = User.get_by_id("neillz"),
