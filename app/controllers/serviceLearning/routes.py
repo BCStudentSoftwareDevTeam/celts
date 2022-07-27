@@ -101,7 +101,7 @@ def slcCreateOrEdit():
                 courseData = courseData, 
                 redirectTarget = getRedirectTarget(True))
 
-@serviceLearning_bp.route('/serviceLearning/approveCourse/', methods=['POST'])
+@serviceLearning_bp.route('/serviceLearning/approveCourse', methods=['POST'])
 def approveCourse():
     """
     This function updates and approves a Service-Learning Course when using  the

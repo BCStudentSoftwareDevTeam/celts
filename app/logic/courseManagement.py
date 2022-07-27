@@ -60,6 +60,7 @@ def updateCourse(courseData):
         serviceLearningDesignatedSections=courseData["slDesignation"],
         isPermanentlyDesignated=("on" in courseData["permanentDesignation"]),
     ).where(Course.id == course.id).execute()
+
     for i in range(1, 7):
         (CourseQuestion.update(questionContent=courseData[f"{i}"])
                     .where((CourseQuestion.questionNumber == i) & 
@@ -73,6 +74,6 @@ def updateCourse(courseData):
     for instructor in instructorList:
         CourseInstructor.create(course=course, user=instructor)
 
-    return course
+    return Course.get_by_id(course.id)
             
     
