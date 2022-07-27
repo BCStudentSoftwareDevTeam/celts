@@ -185,6 +185,7 @@ function showTab(currentTab) {
         $("#submitAndApproveButton").hide();
         $("#nextButton").hide();
         $("#saveContinue").show();
+        $("#saveContinue").text("Save and Continue");
         if(readOnly()) {
             $("#nextButton").show();
             $("#saveContinue").hide();
@@ -196,7 +197,7 @@ function showTab(currentTab) {
         $("#submitAndApproveButton").show();
         $("#nextButton").text("Submit");
         $("#nextButton").show();
-        $("#saveContinue").text("Save For Later");
+        $("#saveContinue").text("Save for Later");
         if(readOnly()) {
             $("#nextButton").text("Next");
             $("#nextButton").hide();
