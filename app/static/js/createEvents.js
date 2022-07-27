@@ -115,7 +115,7 @@ $(document).ready(function() {
           $("#recurringEventsTable tbody tr").remove();
 
           for (var event of recurringEvents){
-            eventdate= new Date(event.date).toLocaleDateString()
+            var eventdate = new Date(event.date).toLocaleDateString()
             recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
             }
         },
@@ -168,4 +168,11 @@ $(document).ready(function() {
      $(this).closest("tr").remove();
   });
 
+ $("#endDatePicker").change(function(){
+     updateDate(this)
+ });
+
+ $("#startDatePicker").change(function(){
+     updateDate(this)
+ });
 });

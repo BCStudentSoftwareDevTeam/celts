@@ -1,4 +1,4 @@
-from flask import request, render_template, g, abort, json, redirect, jsonify, flash, session
+from flask import request, render_template, g, url_for, abort, redirect, flash, session
 from app.models.user import User
 from app.models.term import Term
 from app.models.course import Course
@@ -36,56 +36,96 @@ def serviceCourseManagement(username=None):
         return redirect(url_for('main.events', selectedTerm=g.current_term))
 
 @serviceLearning_bp.route('/serviceLearning/viewProposal/<courseID>', methods=['GET'])
-@serviceLearning_bp.route('/serviceLearning/editProposal/<courseID>', methods=['GET', 'POST'])
+@serviceLearning_bp.route('/serviceLearning/editProposal/<courseID>', methods=['GET'])
 def slcEditProposal(courseID):
     """
         Route for editing proposals, it will fill the form with the data found in the database
         given a courseID.
     """
-    questionData = CourseQuestion.select().where(CourseQuestion.course == courseID)
+    course = Course.get_by_id(courseID)
+    questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
     questionanswers = [question.questionContent for question in questionData]
-    courseData = questionData[0]
     courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
 
     isRegularlyOccuring = ""
     isAllSectionsServiceLearning = ""
     isPermanentlyDesignated = ""
 
-    if courseData.course.isRegularlyOccuring:
+    if course.isRegularlyOccuring:
         isRegularlyOccuring = True
-    if courseData.course.isAllSectionsServiceLearning:
+    if course.isAllSectionsServiceLearning:
         isAllSectionsServiceLearning = True
-    if courseData.course.isPermanentlyDesignated:
+    if course.isPermanentlyDesignated:
         isPermanentlyDesignated = True
     terms = selectSurroundingTerms(g.current_term, 0)
     return render_template('serviceLearning/slcNewProposal.html',
-                                courseData = courseData,
+                                course = course,
                                 questionanswers = questionanswers,
                                 terms = terms,
                                 courseInstructor = courseInstructor,
                                 isRegularlyOccuring = isRegularlyOccuring,
                                 isAllSectionsServiceLearning = isAllSectionsServiceLearning,
-                                isPermanentlyDesignated = isPermanentlyDesignated,
-                                courseID=courseID,
-                                redirectTarget = getRedirectTarget(True))
+                                isPermanentlyDesignated = isPermanentlyDesignated, 
+                                redirectTarget=getRedirectTarget())
+
+@serviceLearning_bp.route('/serviceLearning/createCourse/', methods=['POST'])
+def slcCreateCourse():
+    """will give a new course ID so that it can redirect to an edit page"""
+    course = createCourse()
+
+    return redirect(url_for('serviceLearning.slcEditProposal', courseID = course.id))
+
+
+@serviceLearning_bp.route('/serviceLearning/saveProposal', methods=['POST'])
+def slcSaveContinue():
+    """Will update the the course proposal and return an empty string since ajax request needs a response
+    Also, it updates the course status as 'Incomplete'"""
+    course = updateCourse(request.form.copy())
+    course.status = CourseStatus.INCOMPLETE
+    course.save() 
+
+    return ""
 
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcCreateOrEdit():
     if request.method == "POST":
-        courseExist = Course.get_or_none(Course.id == request.form.get('courseID'))
-        if courseExist:
-            updateCourse(request.form.copy())
-        else:
-            createCourse(request.form.copy(), g.current_user)
+        course = updateCourse(request.form.copy())
         if getRedirectTarget(False):
             return redirect('' + getRedirectTarget(True) + '')
         return redirect('/serviceLearning/courseManagement')
+
     terms = Term.select().where(Term.year >= g.current_term.year)
     courseData = None
     return render_template('serviceLearning/slcNewProposal.html', 
                 terms = terms, 
                 courseData = courseData, 
                 redirectTarget = getRedirectTarget(True))
+
+@serviceLearning_bp.route('/serviceLearning/approveCourse/', methods=['POST'])
+def approveCourse():
+    """
+    This function updates and approves a Service-Learning Course when using  the
+        approve button.
+    return: empty string because AJAX needs to receive something
+    """
+
+    try:
+        # We are only approving, and not updating
+        if len(request.form) == 1:
+            course = Course.get_by_id(request.form['courseID']) 
+
+        # We have data and need to update the course first
+        else:
+            course = updateCourse(request.form.copy())
+
+        course.status = CourseStatus.APPROVED
+        course.save()
+        flash("Course approved!", "success")
+
+    except Exception as e:
+        print(e)
+        flash("Course not approved!", "danger")
+    return ""
 
 @serviceLearning_bp.route('/updateInstructorPhone', methods=['POST'])
 def updateInstructorPhone():
@@ -128,24 +168,3 @@ def renewCourse(courseID, termID):
         flash("Renewal Unsuccessful", 'warning')
     return ""
 
-@serviceLearning_bp.route('/serviceLearning/approveCourse/', methods=['POST'])
-def approveCourse():
-    """
-    This function updates and approves a Service-Learning Course when using  the
-        approve button.
-    return: empty string because AJAX needs to receive something
-    """
-    if len(request.form) == 1:
-        course = Course.get_by_id(request.form['courseID']) # if only course is reviewed pass the course ID
-
-    elif 'courseID' in request.form:
-        course = updateCourse(request.form.copy()) # if edit course, Updates database with the completed fields and get course ID
-    else:
-        course = createCourse(request.form.copy(), g.current_user) # creat course first and get its ID to approve next
-    try:
-        course.status = CourseStatus.APPROVED
-        course.save() # saves the query and approves course in the database
-        flash("Course approved!", "success")
-    except:
-        flash("Course not approved!", "danger")
-    return ""
