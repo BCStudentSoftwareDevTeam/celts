@@ -37,11 +37,10 @@ def deleteEvent(eventId):
     if event:
         if event.recurringId:
             recurringId = event.recurringId
-            recurringWeek = {}
-            recurringEvents = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.recurringId)) # orders for tests
+            recurringEvents = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.id)) # orders for tests
             eventDeleted = False
 
-            # once a deleted event is detected, change all other names to the previous event's name
+            # once the deleted event is detected, change all other names to the previous event's name
             for recurringEvent in recurringEvents:
                 if eventDeleted:
                     Event.update({Event.name:newEventName}).where(Event.id==recurringEvent.id).execute()
@@ -49,15 +48,11 @@ def deleteEvent(eventId):
 
                 if recurringEvent == event:
                     newEventName = recurringEvent.name
-                    event.delete_instance(recursive = True, delete_nullable = True)
                     eventDeleted = True
 
-            if event.startDate:
-                createLog(f"Deleted event: {event.name}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
-        else:
-            event.delete_instance(recursive = True, delete_nullable = True)
-            if event.startDate:
-                createLog(f"Deleted event: {event.name}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
+        event.delete_instance(recursive = True, delete_nullable = True)
+
+        createLog(f"Deleted event: {event.name}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
 
 def attemptSaveEvent(eventData):
 

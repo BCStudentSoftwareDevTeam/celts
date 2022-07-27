@@ -488,9 +488,11 @@ def test_deleteEvent():
 
         # check how many events exist after event deletion and make sure they are linear
         recurringEventsAfter = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.recurringId))
+        
         for count, recurring in enumerate(recurringEventsAfter):
             assert recurring.name == ("Not Empty Bowls Spring Week " + str(count + 1))
         assert (len(recurringEventsBefore)-1) == len(recurringEventsAfter)
+
         transaction.rollback()
 
 
