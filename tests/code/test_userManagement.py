@@ -62,8 +62,8 @@ def test_changeProgramInfo():
         currentProgramInfo = Program.get_by_id(programId)
 
         assert currentProgramInfo.programName == "Adopt A Grandparent"
-        assert currentProgramInfo.contactName == "testName"
-        assert currentProgramInfo.contactEmail == "test@email"
+        assert currentProgramInfo.contactName == ""
+        assert currentProgramInfo.contactEmail == ""
 
         changeProgramInfo(eventName, contactEmail, contactName, programId)
         currentProgramInfo = Program.select().where(Program.id==programId).get()

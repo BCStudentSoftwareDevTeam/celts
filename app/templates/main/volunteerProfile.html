@@ -21,19 +21,10 @@
           <button class=" btn-success btn-sm" id="updatePhone" data-username="{{volunteer.username}}">Update</button>
     </div>
 </div>
-<div class="btn-group">
-   <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="tabs-tab" role="tablist">
-     <li class="nav-item" role="presentation">
-       <a class="nav-link active" aria-current="page" href="#">Your Upcoming Events</a>
-     </li>
-     {% if g.current_user.isCeltsAdmin or g.current_user.username == volunteer.username %}
-     <li class="nav-item">
-       <a class="nav-link" href="/profile/{{volunteer.username}}/serviceTranscript">Service Transcript</a>
-     </li>
-     {% endif %}
-   </ul>
- </div>
-
+<div class="row">
+  <h4 class="col-sm-9"><p>Upcoming Events: </p></h4>
+  <a class="text-nowrap col-sm-3 float-end" href="/profile/{{volunteer.username}}/serviceTranscript">View Service Transcript</a>
+</div>
  <div class="row table-responsive">
    <table class="table">
      {% if upcomingEvents|length > 0 %}
@@ -52,17 +43,17 @@
              <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
              <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}}</td>
              <td>{{event.location}}</td>
-              <td>{{"RSVP'ed" if event.id in rsvpedEvents else "Not RSVP'ed"}}</td>
+             <td>{{"RSVP'ed" if event.id in rsvpedEvents else "Not RSVP'ed"}}</td>
            </tr>
        {% endfor %}
      {% else %}
-       <h4><p class="text-dark">You have no upcoming events. </p></h4>
-       <h4><p class="text-dark">Choose interests below to be notified about your upcoming events.</p><h4>
+       <h5>You have no upcoming events.</h5>
      {% endif %}
    </table>
  </div>
  <!-- Start Program Eligibility Table -->
- <div class="row table-responsive">
+ <div class="table-responsive">
+  <h5>Choose interests below to be notified about your upcoming events:</h5>
    <table class="table banTable">
       <thead>
         <tr>
@@ -184,7 +175,7 @@
   <!-- End Program Manager Selection -->
 <!-- Start Background Check Table -->
 {% if g.current_user.isAdmin %}
-    <div class="row table-responsive">
+    <div class="table-responsive">
       <h2>Background Check</h2>
       <table class="table">
          <thead>

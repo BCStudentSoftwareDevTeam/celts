@@ -115,7 +115,7 @@ $(document).ready(function() {
           $("#recurringEventsTable tbody tr").remove();
 
           for (var event of recurringEvents){
-            eventdate= new Date(event.date).toLocaleDateString()
+            var eventdate = new Date(event.date).toLocaleDateString()
             recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
             }
         },
@@ -134,4 +134,45 @@ $(document).ready(function() {
       $("#checkIsRequired").prop('disabled', false);
     }
   });
+
+  var facilitatorArray = []
+  function callback(selectedFacilitator) {
+    // JSON.parse is required to de-stringify the search results into a dictionary.
+    let facilitator = (selectedFacilitator["firstName"]+" "+selectedFacilitator["lastName"]+" ("+selectedFacilitator["username"]+")");
+    let username = selectedFacilitator["username"];
+    if (!facilitatorArray.includes(username)){
+        facilitatorArray.push(username);
+        let tableBody = $("#facilitatorTable").find("tbody");
+        let lastRow = tableBody.find("tr:last");
+        let newRow = lastRow.clone();
+        newRow.find("td:eq(0) p").text(facilitator);
+        newRow.find("td:eq(0) div button").attr("data-id", username);
+        newRow.find("td:eq(0) div input").attr("id", username);
+        newRow.attr("id", username);
+        newRow.prop("hidden", false);
+        lastRow.after(newRow);
+        $("#hiddenFacilitatorArray").attr("value", facilitatorArray);
+    }
+  }
+
+  $("#eventFacilitator").on('input', function() {
+    // To retrieve specific columns into a dict, create a [] list and put columns inside
+    searchUser("eventFacilitator", callback, true, undefined, "instructor");
+  });
+
+  $("#facilitatorTable").on("click", "#remove", function() {
+     let username = $(this).closest("tr")[0].id
+     const index = facilitatorArray.indexOf(username)
+     facilitatorArray.splice(index, 1);
+     $("#hiddenFacilitatorArray").attr("value", facilitatorArray);
+     $(this).closest("tr").remove();
+  });
+
+ $("#endDatePicker").change(function(){
+     updateDate(this)
+ });
+
+ $("#startDatePicker").change(function(){
+     updateDate(this)
+ });
 });

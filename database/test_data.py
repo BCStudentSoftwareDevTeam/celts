@@ -218,80 +218,81 @@ programs = [
         "programName": "Empty Bowls",
         "isStudentLed": False,
         "isBonnerScholars": False,
-        "contactEmail" :"test@email",
-        "contactName" : "testName"
+        "contactEmail": "",
+        "contactName": ""
     },
     {
         "id": 2,
         "programName": "Berea Buddies",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "contactEmail" :"test@email",
-        "contactName" : "testName"
+        "contactEmail": "",
+        "contactName": ""
+
     },
     {
         "id": 3,
         "programName": "Adopt A Grandparent",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "contactEmail" :"test@email",
-        "contactName" : "testName"
+        "contactEmail": "",
+        "contactName": ""
     },
     {
         "id": 5,
         "programName": "Bonners Scholars",
         "isStudentLed": False,
         "isBonnerScholars": True,
-        "contactEmail" :"test@email",
-        "contactName" : "testName"
+        "contactEmail": "",
+        "contactName": ""
     },
     {
         "id": 6,
         "programName": "Habitat for Humanity",
         "isStudentLed": False,
         "isBonnerScholars": False,
-        "contactEmail" :"test@email",
-        "contactName" : "testName"
+        "contactEmail": "",
+        "contactName": ""
     },
     {
         "id": 7,
         "programName": "Berea Teen Mentoring",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "contactEmail" :"test@email",
-        "contactName" : "testName"
+        "contactEmail": "",
+        "contactName": ""
     },
     {
         "id": 8,
         "programName": "Hispanic Outreach Program",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "contactEmail" :"test@email",
-        "contactName" : "testName"
+        "contactEmail": "",
+        "contactName": ""
     },
     {
         "id": 9,
         "programName": "People Who Care",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "contactEmail" :"test@email",
-        "contactName" : "testName"
+        "contactEmail": "",
+        "contactName": ""
     },
     {
         "id": 10,
         "programName": "Food Drive",
         "isStudentLed": False,
         "isBonnerScholars": False,
-        "contactEmail" :"test@email",
-        "contactName" : "testName"
+        "contactEmail": "",
+        "contactName": ""
     },
     {
         "id": 12,
         "programName": "Berea Tutoring",
         "isStudentLed": False,
         "isBonnerScholars": False,
-        "contactEmail" :"test@email",
-        "contactName" : "testName"
+        "contactEmail": "",
+        "contactName": ""
     }
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
