@@ -219,80 +219,80 @@ programs = [
         "programName": "Empty Bowls",
         "isStudentLed": False,
         "isBonnerScholars": False,
-        "emailReplyTo" :"test@email",
-        "emailSenderName" : "testName"
+        "emailReplyTo" :"",
+        "emailSenderName" : ""
     },
     {
         "id": 2,
         "programName": "Berea Buddies",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "emailReplyTo" :"test@email",
-        "emailSenderName" : "testName"
+        "emailReplyTo" :"",
+        "emailSenderName" : ""
     },
     {
         "id": 3,
         "programName": "Adopt A Grandparent",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "emailReplyTo" :"test@email",
-        "emailSenderName" : "testName"
+        "emailReplyTo" :"",
+        "emailSenderName" : ""
     },
     {
         "id": 5,
         "programName": "Bonners Scholars",
         "isStudentLed": False,
         "isBonnerScholars": True,
-        "emailReplyTo" :"test@email",
-        "emailSenderName" : "testName"
+        "emailReplyTo" :"",
+        "emailSenderName" : ""
     },
     {
         "id": 6,
         "programName": "Habitat for Humanity",
         "isStudentLed": False,
         "isBonnerScholars": False,
-        "emailReplyTo" :"test@email",
-        "emailSenderName" : "testName"
+        "emailReplyTo" :"",
+        "emailSenderName" : ""
     },
     {
         "id": 7,
         "programName": "Berea Teen Mentoring",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "emailReplyTo" :"test@email",
-        "emailSenderName" : "testName"
+        "emailReplyTo" :"",
+        "emailSenderName" : ""
     },
     {
         "id": 8,
         "programName": "Hispanic Outreach Program",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "emailReplyTo" :"test@email",
-        "emailSenderName" : "testName"
+        "emailReplyTo" :"",
+        "emailSenderName" : ""
     },
     {
         "id": 9,
         "programName": "People Who Care",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "emailReplyTo" :"test@email",
-        "emailSenderName" : "testName"
+        "emailReplyTo" :"",
+        "emailSenderName" : ""
     },
     {
         "id": 10,
         "programName": "Food Drive",
         "isStudentLed": False,
         "isBonnerScholars": False,
-        "emailReplyTo" :"test@email",
-        "emailSenderName" : "testName"
+        "emailReplyTo" :"",
+        "emailSenderName" : ""
     },
     {
         "id": 12,
         "programName": "Berea Tutoring",
         "isStudentLed": False,
         "isBonnerScholars": False,
-        "emailReplyTo" :"test@email",
-        "emailSenderName" : "testName"
+        "emailReplyTo" :"",
+        "emailSenderName" : ""
     }
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
@@ -554,6 +554,13 @@ notes = [
     "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
     "noteContent": "I agree with your comment on training",
     "isPrivate":False
+    },
+    {
+    "id": 3,
+    "createdBy": "mupotsal",
+    "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
+    "noteContent": "tells bad jokes",
+    "isPrivate": True
     }
 ]
 Note.insert_many(notes).on_conflict_replace().execute()
@@ -826,7 +833,7 @@ bannedUser = [
         "user": "ayisie",
         "program": 1,
         "endDate": datetime.now() + timedelta(days=150),
-        "banNote": 2,
+        "banNote": 3,
     }
 ]
 
