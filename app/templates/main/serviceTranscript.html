@@ -5,22 +5,21 @@
 <div class="w-100 d-print-inline-block">
 <h1 class="text-center mt-5 mb-3">{{userData.firstName}} {{userData.lastName}}</h1>
 <button type="button" class="btn btn-primary float-end d-print-none" onclick="window.print()"><span class="bi bi-printer d-print-none"></span> Print</button>
-{% if programs.exists() %}
-  <h2 class="m-1">Programs</h2>
-  <table class="table table-bordered table-striped">
-    <tr>
-      <th>Program Name</th>
-      <th>Term</th>
-      <th>Accrued Hours</th>
-    </tr>
+{% if programs %}
+<div class="card-group">
     {% for program in programs %}
-    <tr>
-      <td> {{program.program.programName}}</td>
-      <td> {{program.event.term.description}}</td>
-      <td class="w-25"> {{program.hoursEarned}}</td>
-    </tr>
+    <div class="card mt-1" style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title">{{program.programName}}</h5>
+        {% for item in programs[program] %}
+            <h6 class="card-subtitle mb-2 text-muted"> {{item[0]}} - {{item[1]}} hour(s)</h6>
+        {% endfor %}
+        <p class="card-text">{{program.description}}</p>
+        <a href="{{program.url}}" class="card-link">More Information</a>
+      </div>
+    </div>
     {% endfor %}
-  </table>
+</div>
 {% endif %}
 
 {% if bonnerData.exists() %}
@@ -48,42 +47,19 @@
     <tr>
       <th>Course Name</th>
       <th>Term</th>
-      <th>Instructor</th>
       <th class="w-25">Accrued Hours</th>
     </tr>
     {% for slcourse in slCourses %}
     <tr>
       <td> {{ slcourse.courseName }}</td>
       <td> {{ slcourse.term.description }}</td>
-
-      <td>
-        {% for instructor in slcourse.courseInstructors %}
-          {{ instructor.user.firstName }} {{ instructor.user.lastName }} <br>
-        {% endfor %}
-      </td>
       <td class="w-25">{{ slcourse.hoursEarned }}</td>
     </tr>
     {% endfor %}
   </table>
 {% endif %}
 
-{% if trainingData.exists() %}
-  <h2 class="m-1">Trainings</h2>
-  <table class="table table-bordered table-striped">
-    <tr>
-      <th>Training Name</th>
-      <th>Term</th>
-      <th>Accrued Hours</th>
-    </tr>
-    {% for data in trainingData %}
-    <tr>
-      <td>{{ data.event.name }}</td>
-      <td>{{ data.event.term.description }}</td>
-      <td class= "w-25"> {{ data.hoursEarned }}</td>
-    </tr>
-    {% endfor %}
-  </table>
-{% endif %}
+
 
 <div class="pt-4">
   {% if startDate == "N/A" %}

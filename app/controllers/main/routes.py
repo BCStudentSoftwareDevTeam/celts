@@ -269,7 +269,6 @@ def serviceTranscript(username):
 
     programs = getProgramTranscript(username)
     slCourses = getSlCourseTranscript(username)
-    trainingData = getTrainingTranscript(username)
     bonnerData = getBonnerScholarEvents(username)
     totalHours = getTotalHours(username)
     startDate = getStartYear(username)
@@ -277,7 +276,6 @@ def serviceTranscript(username):
     return render_template('main/serviceTranscript.html',
                             programs = programs,
                             slCourses = slCourses.objects(),
-                            trainingData = trainingData,
                             bonnerData = bonnerData,
                             totalHours = totalHours,
                             startDate = startDate,

@@ -16,7 +16,6 @@ def getProgramTranscript(username):
     Returns a Program query object containing all the programs for
     current user.
     """
-
     # Add up hours earned in a term for each program they've participated in
     programData = (ProgramEvent
         .select(Program, Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
@@ -24,9 +23,17 @@ def getProgramTranscript(username):
         .switch(ProgramEvent)
         .join(Event)
         .join(EventParticipant)
-        .where(EventParticipant.user == username, Event.isTraining == False, Program.isBonnerScholars == False))
+        .where(EventParticipant.user == username, Program.isBonnerScholars == False)
+        .group_by(Program, Event.term))
 
-    return programData
+    transcriptData = {}
+    for program in programData:
+        if program.program in transcriptData:
+            transcriptData[program.program].append([program.event.term.description, program.hoursEarned])
+        else:
+            transcriptData[program.program] = [[program.event.term.description, program.hoursEarned]]
+    print(transcriptData)
+    return transcriptData
 
 def getBonnerScholarEvents(username):
     """
@@ -48,30 +55,18 @@ def getSlCourseTranscript(username):
     Returns a SLCourse query object containing all the training events for
     current user.
     """
+
     slCourses = (Course
         .select(CourseParticipant.hoursEarned, Course)
         .join(CourseParticipant, on=(Course.id == CourseParticipant.course))
-        .where(CourseParticipant.user == username).distinct())
+        .where(CourseParticipant.user == username))
 
     return slCourses
-
-def getTrainingTranscript(username):
-    """
-    Returns a Training query object containing all the training event information for
-    current user.
-    """
-    trainingData = (EventParticipant.select(EventParticipant.event, EventParticipant.hoursEarned)
-                                    .join(Event)
-                                    .where(EventParticipant.user == username, Event.isTraining))
-
-    return trainingData
 
 def getTotalHours(username):
     """
     Get the toal hours from events and courses combined.
-
     """
-
     eventHours = EventParticipant.select(fn.SUM(EventParticipant.hoursEarned)).where(EventParticipant.user == username).scalar()
     courseHours =  CourseParticipant.select(fn.SUM(CourseParticipant.hoursEarned)).where(CourseParticipant.user == username).scalar()
 
