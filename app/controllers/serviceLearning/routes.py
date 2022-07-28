@@ -96,9 +96,9 @@ def slcCreateOrEdit():
 
     terms = Term.select().where(Term.year >= g.current_term.year)
     courseData = None
-    return render_template('serviceLearning/slcNewProposal.html', 
-                terms = terms, 
-                courseData = courseData, 
+    return render_template('serviceLearning/slcNewProposal.html',
+                terms = terms,
+                courseData = courseData,
                 redirectTarget = getRedirectTarget(True))
 
 @serviceLearning_bp.route('/serviceLearning/approveCourse/', methods=['POST'])
