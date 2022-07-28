@@ -18,6 +18,7 @@ from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.models.adminLogs import AdminLogs
+from app.logic.adminLogs import createLog
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
@@ -82,6 +83,7 @@ def createEvent(templateid, programid=None):
     if request.method == "POST":
         try:
             saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
+            createLog(f"Created event: {eventData['name']}, which had a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}")
         except Exception as e:
             print("Error saving event:", e)
             saveSuccess = False
