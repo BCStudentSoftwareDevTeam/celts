@@ -31,6 +31,7 @@
 
 .footerlink {
   font-weight: bold;
+
 }
 
 .skipContent {
@@ -43,7 +44,7 @@
   z-index:0;
 }
 .heading-size{
-    font-size: 1.5em;
+    font-size: 1.2em;
 }
 
 .skipContent:focus, .skipContent:active {
@@ -69,4 +70,8 @@
 
 .sidebar-icon {
     z-index: 1049;
+}
+
+.rsvp-btn{
+    padding-top: 4em;
 }
