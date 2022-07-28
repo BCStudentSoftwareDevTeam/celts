@@ -316,14 +316,13 @@ def reviewProposal():
     return render_template('/main/reviewproposal.html',
                             course=course,
                             instructors_data=instructors_data)
+
 @main_bp.route('/manageServiceLearning', methods = ['GET', 'POST'])
 @main_bp.route('/manageServiceLearning/<term>', methods = ['GET', 'POST'])
 def getAllCourseInstructors(term=None):
     """
-    This function selects all the Intructors Name and the previous courses
+    This function selects all the Instructors Name and the previous courses
     """
-    for i in session:
-        print(i)
     if g.current_user.isCeltsAdmin:
         setRedirectTarget("/manageServiceLearning")
         courseDict = getCourseDict()
@@ -346,7 +345,7 @@ def getAllCourseInstructors(term=None):
     else:
         abort(403)
 
-def getRedirectTarget(popTarget):
+def getRedirectTarget(popTarget=False):
     """
     This function returns a string with the URL or route to a page in the Application
         saved with setRedirectTarget() and is able to pop the value from the session

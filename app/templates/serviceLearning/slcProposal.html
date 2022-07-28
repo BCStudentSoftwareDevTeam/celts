@@ -1,9 +1,5 @@
 <h2 class="text-center pt-4 pb-2"> New Proposal For Service-Learning Course</h2>
-{% if courseID%}
-    <p class="text-center fw-bold"> Please review the <a href="/serviceLearning/editProposal/{{courseID}}">service-learning course guidelines</a> before completing this form </p>
-{% else %}
-    <p class="text-center fw-bold"> Please review the <a href="/serviceLearning/newProposal">service-learning course guidelines</a> before completing this form </p>
-{% endif %}
+<p class="text-center fw-bold"> Please review the <a class="guidelines" href="#">service-learning course guidelines</a> before completing this form </p>
 <div class="container-fluid">
   <div class="row">
     <div class="p-2 col-md-6">
@@ -32,7 +28,7 @@
                     <a class="text-decoration-none primary editButton" tabindex="0" data-id=""  id=""  type="button">Edit</a>
                 </td>
                 <td class="align-middle">
-                    <button id="remove" type="button" class="btn btn-danger">Remove</button>
+                    <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
                 </td>
 
             </tr>
@@ -44,7 +40,7 @@
                   <a class="text-decoration-none primary editButton" tabindex="0" data-id="{{instructor.user}}"  id="editButton-{{instructor.user}}"  type="button">Edit</a>
               </td>
               <td class="align-middle">
-                  <button id="remove" type="button" class="btn btn-danger">Remove</button>
+                  <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
               </td>
 
             </tr>
@@ -55,25 +51,24 @@
       <label for="courseName" class="pt-3">Course Name</label>
       <input
         class="form-control"
-        id="coursName"
         name="courseName"
         type="text"
-        value="{{courseData.course.courseName if courseData != None }}"
+        value="{{course.courseName}}"
         required/>
       <label for="courseAbbreviation">Course Abbreviation</label>
       <input
         class="form-control"
         id="courseAbbreviation"
         name="courseAbbreviation"
-        value="{{courseData.course.courseAbbreviation if courseData != None}}"
+        value="{{course.courseAbbreviation}}"
         type="text"
-        required/>
+        />
       <label for="credit">Credit</label>
       <input
         class="form-control"
         id="credit"
         name="credit"
-        value="{{courseData.course.courseCredit if courseData != None}}"
+        value="{{course.courseCredit}}"
         type="number"
         min="0"
         required/>
@@ -90,10 +85,10 @@
       <select
         class="dropdown form-control mb-3"
         id="inputCourseInstructor"
-        value="{{courseData.course.term.description if courseData != None}}"
+        value="{{course.term.description}}"
         name="term">
         {% for term in terms %}
-          <option value="{{ term.id }}" {{ "selected" if courseData != None and courseData.course.term == term }}> {{ term.description }}</option>
+          <option value="{{ term.id }}" {{ "selected" if course.term == term }}> {{ term.description }}</option>
         {% endfor %}
       </select>
       <span>Are all sections SL?</span>
@@ -108,7 +103,7 @@
         class="form-control"
         id="slDesignation"
         name="slDesignation"
-        rows="3">{{courseData.course.serviceLearningDesignatedSections if courseData != None}}
+        rows="3">{{course.serviceLearningDesignatedSections}}
       </textarea>
       <div class="form-check form-switch">
         <label class="form-label" for="permanentDesignation"><strong>Will this course be a permanently designated service-learning course?</strong></label>
@@ -121,5 +116,5 @@
       </div>
     </div>
   </div>
-  <input value={{courseID}} name="courseID" hidden/>
+  <input value={{course.id}} name="courseID" hidden/>
 </div>
