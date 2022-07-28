@@ -68,7 +68,7 @@ def slcEditProposal(courseID):
                                 isPermanentlyDesignated = isPermanentlyDesignated,
                                 redirectTarget=getRedirectTarget())
 
-@serviceLearning_bp.route('/serviceLearning/createCourse/', methods=['POST'])
+@serviceLearning_bp.route('/serviceLearning/createCourse', methods=['POST'])
 def slcCreateCourse():
     """will give a new course ID so that it can redirect to an edit page"""
     course = createCourse(g.current_user)
