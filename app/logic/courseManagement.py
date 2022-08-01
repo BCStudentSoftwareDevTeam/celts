@@ -13,7 +13,7 @@ def submittedCourses(termId):
     Queries the database to get all the neccessary information for submitted courses.
     '''
 
-    submittedCourses = (Course.select(Course, Term)
+    submittedCourses = (Course.select(Course, Term, CourseStatus)
                     .join(CourseStatus)
                     .switch(Course)
                     .join(Term).where(Term.id == termId, Course.status == CourseStatus.SUBMITTED).distinct())
