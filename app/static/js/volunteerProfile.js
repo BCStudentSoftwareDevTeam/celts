@@ -87,6 +87,10 @@ $(document).ready(function(){
     let bgDate = $("#" + bgCheckType + "_date").val()
     let checkPassed = $("[data-id=" + bgCheckType + "]").val()
 
+    if (checkPassed == '' && bgDate != '') {
+        displayMessage("Passed<br>Empty!", "danger")
+        return
+    }
     if (checkPassed && bgDate == '' ) {
         displayMessage("Date<br>Empty!", "danger")
         return
