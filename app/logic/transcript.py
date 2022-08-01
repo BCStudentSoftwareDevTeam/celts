@@ -32,7 +32,7 @@ def getProgramTranscript(username):
             transcriptData[program.program].append([program.event.term.description, program.hoursEarned])
         else:
             transcriptData[program.program] = [[program.event.term.description, program.hoursEarned]]
-    print(transcriptData)
+
     return transcriptData
 
 def getBonnerScholarEvents(username):

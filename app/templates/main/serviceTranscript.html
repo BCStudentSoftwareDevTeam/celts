@@ -4,22 +4,21 @@
 {% block app_content %}
 <div class="w-100 d-print-inline-block">
 <h1 class="text-center mt-5 mb-3">{{userData.firstName}} {{userData.lastName}}</h1>
-<button type="button" class="btn btn-primary float-end d-print-none" onclick="window.print()"><span class="bi bi-printer d-print-none"></span> Print</button>
 {% if programs %}
-<div class="card-group">
     {% for program in programs %}
-    <div class="card mt-1" style="width: 18rem;">
-      <div class="card-body">
-        <h5 class="card-title">{{program.programName}}</h5>
-        {% for item in programs[program] %}
-            <h6 class="card-subtitle mb-2 text-muted"> {{item[0]}} - {{item[1]}} hour(s)</h6>
-        {% endfor %}
-        <p class="card-text">{{program.description}}</p>
-        <a href="{{program.url}}" class="card-link">More Information</a>
-      </div>
-    </div>
+        {% if not (programs[program][0][1] == None and programs[program]|length == 1) %}
+          <div class="card-body">
+            <h5 class="card-title">{{program.programName}}</h5>
+            {% for item in programs[program] %}
+                {% if item[1] != None%}
+                    <h6 class="card-subtitle mb-2 text-muted"> {{item[0]}} - {{item[1]|round(2)}} hour(s)</h6>
+                {% endif %}
+            {% endfor %}
+            <p class="card-text">{{program.description}}</p>
+            <a class="d-print-none" href="{{program.url}}" class="card-link">More Information</a>
+          </div>
+        {% endif %}
     {% endfor %}
-</div>
 {% endif %}
 
 {% if bonnerData.exists() %}
@@ -42,7 +41,7 @@
 {% endif %}
 
 {% if slCourses.exists() %}
-  <h2 class="m-1">Service-Learning Courses</h2>
+  <br><h2 class="m-1">Service-Learning Courses</h2>
   <table class="table table-bordered table-striped">
     <tr>
       <th>Course Name</th>
@@ -69,8 +68,9 @@
   {% endif %}
 </div>
 <div class="float-end">
+  <button type="button" class="btn btn-primary d-print-none" onclick="window.print()"><span class="bi bi-printer d-print-none"></span> Print</button>
   <p class="fw-bold pb-3 d-inline">Total Hours:</p>
-  <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours }}</p>
+  <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours|round(2) }}</p>
 </div>
 <div class="d-print-none pt-5">
   <p>If there are any corrections that need to be made, contact <a href="mailto:cochranea@berea.edu">Ashley Cochrane</a></p>
