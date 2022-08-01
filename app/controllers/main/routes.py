@@ -27,7 +27,7 @@ from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
 from app.logic.manageSLFaculty import getCourseDict
-from app.logic.courseManagement import submittedCourses, approvedCourses
+from app.logic.courseManagement import unapprovedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
 from app.models.courseInstructor import CourseInstructor
 
@@ -82,6 +82,8 @@ def viewVolunteersProfile(username):
     if (g.current_user == volunteer) or g.current_user.isAdmin:
         upcomingEvents = getUpcomingEventsForUser(volunteer)
         programs = Program.select()
+        if not g.current_user.isBonnerScholar and not g.current_user.isAdmin:
+            programs = programs.where(Program.isBonnerScholars == False)
         interests = Interest.select().where(Interest.user == volunteer)
         programsInterested = [interest.program for interest in interests]
 
@@ -314,29 +316,26 @@ def reviewProposal():
     return render_template('/main/reviewproposal.html',
                             course=course,
                             instructors_data=instructors_data)
+
 @main_bp.route('/manageServiceLearning', methods = ['GET', 'POST'])
 @main_bp.route('/manageServiceLearning/<term>', methods = ['GET', 'POST'])
 def getAllCourseInstructors(term=None):
     """
-    This function selects all the Intructors Name and the previous courses
+    This function selects all the Instructors Name and the previous courses
     """
-    for i in session:
-        print(i)
     if g.current_user.isCeltsAdmin:
         setRedirectTarget("/manageServiceLearning")
         courseDict = getCourseDict()
 
-        term = Term.get_or_none(Term.id == term)
-        if not term:
-            term = g.current_term
+        term = Term.get_or_none(Term.id == term) or g.current_term
 
-        submitted = submittedCourses(term)
+        unapproved = unapprovedCourses(term)
         approved = approvedCourses(term)
         terms = selectSurroundingTerms(g.current_term)
 
         return render_template('/main/manageServiceLearningFaculty.html',
                                 courseInstructors = courseDict,
-                                submittedCourses = submitted,
+                                unapprovedCourses = unapproved,
                                 approvedCourses = approved,
                                 terms = terms,
                                 term = term,
@@ -344,7 +343,7 @@ def getAllCourseInstructors(term=None):
     else:
         abort(403)
 
-def getRedirectTarget(popTarget):
+def getRedirectTarget(popTarget=False):
     """
     This function returns a string with the URL or route to a page in the Application
         saved with setRedirectTarget() and is able to pop the value from the session
