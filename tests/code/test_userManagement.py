@@ -61,7 +61,7 @@ def test_changeProgramInfo():
         emailReplyTo = 'newtest@email'
         currentProgramInfo = Program.get_by_id(programId)
 
-        assert currentProgramInfo.programName == "Adopt A Grandparent"
+        assert currentProgramInfo.programName == "Adopt-a-Grandparent"
         assert currentProgramInfo.emailSenderName == ""
         assert currentProgramInfo.emailReplyTo == ""
 
