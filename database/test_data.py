@@ -602,7 +602,7 @@ courses = [
         "term": 3,
         "status": 1,
         "courseCredit": "",
-        "createdBy": "",
+        "createdBy": "ramsayb2",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
 
@@ -613,7 +613,7 @@ courses = [
         "term": 2,
         "status": 2,
         "courseCredit": "",
-        "createdBy": "",
+        "createdBy": "heggens",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
 
@@ -624,18 +624,18 @@ courses = [
         "term": 4,
         "status": 3,
         "courseCredit": "",
-        "createdBy": "",
+        "createdBy": "ramsayb2",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
 
     },
     {
-        "id": 3,
-        "courseName": "French Help",
-        "term": 4,
-        "status": 3,
+        "id": 4,
+        "courseName": "Testing",
+        "term": 2,
+        "status": 1,
         "courseCredit": "",
-        "createdBy": "",
+        "createdBy": "heggens",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
 
@@ -663,6 +663,16 @@ courseInstructorRecords = [
         "id": 4,
         "course": 3,
         "user": "heggens"
+    },
+    {
+        "id": 5,
+        "course": 4,
+        "user": "ramsayb2"
+    },
+    {
+        "id": 6,
+        "course": 4,
+        "user": "qasema"
     }
 
 ]

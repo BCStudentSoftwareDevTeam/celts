@@ -54,7 +54,6 @@ def deleteEvent(eventId):
         createLog(f"Deleted event: {event.name}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
 
 def attemptSaveEvent(eventData):
-
     newEventData = preprocessEventData(eventData)
 
     isValid, validationErrorMessage = validateNewEventData(newEventData)

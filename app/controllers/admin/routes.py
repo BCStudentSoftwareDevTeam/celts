@@ -58,13 +58,10 @@ def createEvent(templateid, programid=None):
 
     # Validate given URL
     program = None
-    contactInfo = {}
     try:
         template = EventTemplate.get_by_id(templateid)
         if programid:
             program = Program.get_by_id(programid)
-            contactInfo["contactName"] = program.contactName
-            contactInfo["contactEmail"] = program.contactEmail
     except DoesNotExist as e:
         print("Invalid template or program id:", e)
         flash("There was an error with your selection. Please try again or contact Systems Support.", "danger")
@@ -78,7 +75,6 @@ def createEvent(templateid, programid=None):
     if program:
         # TODO need to handle the multiple programs case
         eventData["program"] = program
-
     # Try to save the form
     if request.method == "POST":
         try:
@@ -106,7 +102,6 @@ def createEvent(templateid, programid=None):
             template = template,
             eventData = eventData,
             futureTerms = futureTerms,
-            contactInfo = contactInfo,
             isProgramManager = isProgramManager)
 
 @admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
@@ -124,7 +119,6 @@ def eventDisplay(eventId):
     eventData = model_to_dict(event, recurse=False)
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
-        print(eventData)
         saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
         if saveSuccess:
             flash("Event successfully updated!", "success")
@@ -132,14 +126,15 @@ def eventDisplay(eventId):
         else:
             flash(validationErrorMessage, 'warning')
 
-    contactInfo = {'contactEmail': event.contactEmail,
-                   'contactName': event.contactName}
+
 
     preprocessEventData(eventData)
     futureTerms = selectSurroundingTerms(g.current_term)
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     program = event.singleProgram
+    eventData['contactEmail'] = event.contactEmail
+    eventData['contactName'] = event.contactName
     isProgramManager = g.current_user.isProgramManagerFor(program)
     rule = request.url_rule
     if 'edit' in rule.rule:
@@ -147,7 +142,6 @@ def eventDisplay(eventId):
             abort(403)
         return render_template("admin/createEvent.html",
                                 eventData = eventData,
-                                contactInfo = contactInfo,
                                 futureTerms=futureTerms,
                                 isPastEvent = isPastEvent,
                                 userHasRSVPed = userHasRSVPed,
@@ -159,7 +153,6 @@ def eventDisplay(eventId):
         userParticipatedEvents = getUserParticipatedEvents(program, g.current_user, g.current_term)
         return render_template("eventView.html",
                                 eventData = eventData,
-                                contactInfo = contactInfo,
                                 isPastEvent = isPastEvent,
                                 userHasRSVPed = userHasRSVPed,
                                 programTrainings = userParticipatedEvents,
