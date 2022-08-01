@@ -232,7 +232,7 @@ programs = [
     },
     {
         "id": 3,
-        "programName": "Adopt A Grandparent",
+        "programName": "Adopt-a-Grandparent",
         "isStudentLed": True,
         "isBonnerScholars": False,
         "emailReplyTo" :"",
