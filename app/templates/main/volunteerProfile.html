@@ -181,7 +181,7 @@
          <thead>
            <tr>
              <th scope="col">Description</th>
-             <th scope="col">Completed</th>
+             <th scope="col">Passed</th>
              <th scope="col">Date</th>
              {% if g.current_user.isCeltsAdmin%}
                 <th class="" id="displaySave" scope="col"></th>
@@ -198,9 +198,11 @@
                         {% if completedBackgroundCheck[bgType][0] == True %}
                             <option value=1>Yes</option>
                             <option value=0>No</option>
+                            <option value=''></option>
                         {% else %}
-                            <option value=0>No</option>
+                            <option value=''></option>
                             <option value=1>Yes</option>
+                            <option value=0>No</option>
                         {% endif %}
                     </select>
                 </td>
