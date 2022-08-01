@@ -179,9 +179,9 @@ class EmailHandler:
         """ Stores sent email in the email log """
         date_sent = datetime.now()
 
-        attachmentName = []
+        attachmentNames = []
         for file in self.attachment_file:
-            attachmentName.append(file.filename)
+            attachmentNames.append(file.filename)
 
         EmailLog.create(
             event = self.event.id,
@@ -191,7 +191,7 @@ class EmailHandler:
             recipients = ", ".join(recipient.email for recipient in self.recipients),
             dateSent = date_sent,
             sender = self.sender,
-            attachmentName = attachmentName)
+            attachmentNames = attachmentNames)
 
     def build_email(self):
         # Most General Scenario

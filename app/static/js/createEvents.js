@@ -174,13 +174,13 @@ $(document).ready(function() {
     let fileId=  $(this).data("id")
       let fileData = {fileId : fileId,
                       eventId:this.id}
-      $("#attachment_"+fileId).remove()
       $.ajax({
         type:"POST",
         url: "/deleteFile",
         data: fileData, //get the startDate, endDate and name as a dictionary
         success: function(){
             msgFlash("Attachment removed successfully")
+            $("#attachment_"+fileId).remove()
       
         },
             error: function(error){

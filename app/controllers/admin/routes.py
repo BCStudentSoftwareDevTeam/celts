@@ -141,7 +141,7 @@ def eventDisplay(eventId):
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     program = event.singleProgram
     eventfiles=FileHandler()
-    paths=eventfiles.retrievePath(associatedAttachments, eventId)
+    filepaths =eventfiles.retrievePath(associatedAttachments, eventId)
     isProgramManager = g.current_user.isProgramManagerFor(program)
     rule = request.url_rule
     if 'edit' in rule.rule:
@@ -154,7 +154,7 @@ def eventDisplay(eventId):
                                 isPastEvent = isPastEvent,
                                 userHasRSVPed = userHasRSVPed,
                                 isProgramManager = isProgramManager,
-                                paths = paths)
+                                filepaths = filepaths)
     else:
         eventFacilitators = EventFacilitator.select().where(EventFacilitator.event == event)
         eventFacilitatorNames = [eventFacilitator.user for eventFacilitator in eventFacilitators]
