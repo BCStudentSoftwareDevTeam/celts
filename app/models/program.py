@@ -14,7 +14,7 @@ class Program(baseModel):
     @property
     def url(self):
         baseUrl = "https://www.berea.edu/celts/community-service-programs/"
-        urls = {1: baseUrl + "hunger-initiatives/empty-bowls-project/",
+        urls = {1: baseUrl + "hunger-initiatives/",
                 2: baseUrl + "volunteer-opportunities/berea-buddies-program/" ,
                 3: baseUrl + "volunteer-opportunities/adopt-a-grandparent-program/",
                 5: "https://www.berea.edu/celts/bonner-scholars-program/",
@@ -22,6 +22,5 @@ class Program(baseModel):
                 7: baseUrl + "volunteer-opportunities/teen-mentoring-program/",
                 8: baseUrl + "volunteer-opportunities/hispanic-outreach-project/",
                 9: baseUrl + "volunteer-opportunities/people-who-care-program/",
-                10: baseUrl + "hunger-initiatives/hunger-hurts-food-drive/",
                 12: baseUrl + "volunteer-opportunities/berea-tutoring-program/"}
         return urls[self.id]
