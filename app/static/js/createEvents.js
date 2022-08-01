@@ -171,7 +171,7 @@ $(document).ready(function() {
   $(".removeAttachment").on("click", function(){
 
     let fileId=  $(this).data("id")
-      let fileData = {fileId : fileId,
+    let fileData = {fileId : fileId,
                       eventId:this.id}
       $.ajax({
         type:"POST",
@@ -180,7 +180,7 @@ $(document).ready(function() {
         success: function(){
             msgFlash("Attachment removed successfully")
             $("#attachment_"+fileId).remove()
-      
+
         },
             error: function(error){
                 msgFlash(error)

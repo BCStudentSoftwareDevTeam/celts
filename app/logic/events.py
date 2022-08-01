@@ -68,7 +68,7 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
         events = saveEventToDb(newEventData)
         if attachmentFiles:
             for event in events:
-                addfile.saveFile(event.id)
+                addfile.saveFilesForEvent(event.id)
         return True, ""
     except Exception as e:
         print(e)

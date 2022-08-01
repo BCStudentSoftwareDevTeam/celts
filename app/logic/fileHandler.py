@@ -8,10 +8,6 @@ class FileHandler:
         self.files=files
         self.path= app.config['files']['event_attachment_path']
 
-
-
-
-
     def getFileFullPath(self, eventId=None, newfile = None):
         """
         This creates the directory/path for the object from the "Choose File" input in the create event and edit event.
@@ -33,13 +29,14 @@ class FileHandler:
             pass
         return filePath
 
-    def saveFile(self, eventId):
+    def saveFilesForEvent(self, eventId):
         """ Saves the attachment in the app/static/files/eventattachments/ directory """
         try:
             for file in self.files:
-                if not EventFile.select().where(EventFile.event == eventId, EventFile.fileName == file.filename).exists():
+                isFileInEvent = EventFile.select().where(EventFile.event == eventId, EventFile.fileName == file.filename).exists()
+                if not isFileInEvent:
                     EventFile.create(event = eventId, fileName = file.filename)
-                    file.save(self.getFileFullPath(eventId, file)) # saves attachment in directory
+                    file.save(self.getFileFullPath(eventId = eventId, newfile = file)) # saves attachment in directory
         except AttributeError: # will pass if there is no attachment to save
             return False
             pass
@@ -50,14 +47,14 @@ class FileHandler:
             pathDict[file.fileName] = ((self.path+"/"+ str(eventId) +"/"+ file.fileName)[3:], file)
         return pathDict
 
-    def deleteFile(self, fileId, eventId):
+    def deleteEventFile(self, fileId, eventId):
         """
         Deletes attachmant from the app/static/files/eventattachments/ directory
         """
         try:
-            File = EventFile.get_by_id(fileId)
-            path = os.path.join(self.path,str(eventId), File.fileName)
+            file = EventFile.get_by_id(fileId)
+            path = os.path.join(self.path,str(eventId), file.fileName)
             os.remove(path)
-            File.delete_instance()
+            file.delete_instance()
         except AttributeError: #passes if no attachment is selected.
             pass

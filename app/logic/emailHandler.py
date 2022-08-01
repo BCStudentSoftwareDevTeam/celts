@@ -210,8 +210,6 @@ class EmailHandler:
                 defaultEmailInfo["replyTo"] = self.program_ids[0].emailReplyTo
             if self.program_ids[0].emailSenderName:
                 defaultEmailInfo["senderName"] = self.program_ids[0].emailSenderName
-
-        self.store_sent_email(subject, template_id)
         try:
             with self.mail.connect() as conn:
                 for recipient in self.recipients:
@@ -227,6 +225,7 @@ class EmailHandler:
                         reply_to = defaultEmailInfo["replyTo"],
                         sender = (defaultEmailInfo["senderName"], defaultEmailInfo["replyTo"])
                     ))
+            self.store_sent_email(subject, template_id)
             return True
         except Exception as e:
             print("Error on sending email: ", e)

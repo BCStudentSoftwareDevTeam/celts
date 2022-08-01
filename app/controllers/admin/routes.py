@@ -75,7 +75,7 @@ def createEvent(templateid, programid=None):
     eventData = template.templateData
     if request.method == "POST":
         attachmentFiles = request.files.getlist("attachmentObject")
-        eventData.update(request.form.copy())    
+        eventData.update(request.form.copy())
     if program:
         # TODO need to handle the multiple programs case
         eventData["program"] = program
@@ -222,5 +222,5 @@ def adminLogs():
 def deleteFIle():
     fileData= request.form
     eventfile=FileHandler()
-    eventfile.deleteFile(fileData["fileId"],fileData["eventId"])
+    eventfile.deleteEventFile(fileData["fileId"],fileData["eventId"])
     return ""
