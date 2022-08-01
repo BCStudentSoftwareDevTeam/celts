@@ -10,7 +10,33 @@ from app.models.event import Event
 from peewee import DoesNotExist, fn
 
 
-#FIXME: Needs to break hours down by program and term, not just program
+def getOtherEventsTranscript(username):
+    """
+    Returns a Other Events query object containing all the non-program
+    events for the current user.
+    """
+
+    otherEventsData = list(EventParticipant.select(EventParticipant, Event, Program, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
+                    .join(Event)
+                    .join(ProgramEvent)
+                    .join(Program)
+                    .where(EventParticipant.user == username,
+                           Event.isTraining == False,
+                           Event.isAllVolunteerTraining == False,
+                           ((ProgramEvent.program == None) |
+                            (Program.isStudentLed == False) &
+                            (Program.isBonnerScholars == False)))
+                    .group_by(Event.term)
+                  )
+
+    otherEvents = []
+
+    for term in otherEventsData:
+        otherEvents.append([term.event.term.description, term.hoursEarned])
+
+
+    return otherEvents
+
 def getProgramTranscript(username):
     """
     Returns a Program query object containing all the programs for

@@ -21,6 +21,17 @@
     {% endfor %}
 {% endif %}
 
+{% if otherData %}
+  <div class="card-body">
+    <h5 class="card-title">Other Celts Sponsored Events</h5>
+    {% for term in otherData %}
+        <h6 class="card-subtitle mb-2 text-muted"> {{term[0]}} - {{term[1]}} hour(s)</h6>
+    {% endfor %}
+    <p class="card-text">Blah</p>
+    <a class="d-print-none" href="#" class="card-link">More Information</a>
+  </div>
+{% endif %}
+
 {% if bonnerData.exists() %}
   <h2 class="m-1">Bonner Scholar Events</h2>
   <table class="table table-bordered table-striped">
