@@ -12,7 +12,7 @@ def test_course_management():
                                         term = 3,
                                         status = CourseStatus.APPROVED,
                                         courseCredit = "7",
-                                        createdBy = "Mayjue",
+                                        createdBy = "ramsayb2",
                                         isAllSectionsServiceLearning = 0,
                                         isPermanentlyDesignated = 0)
 
@@ -20,7 +20,7 @@ def test_course_management():
                                         term = 3,
                                         status = CourseStatus.SUBMITTED,
                                         courseCredit = "12",
-                                        createdBy = "Tyler Parton",
+                                        createdBy = "heggens",
                                         isAllSectionsServiceLearning = 0,
                                         isPermanentlyDesignated = 0)
 

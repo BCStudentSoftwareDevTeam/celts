@@ -34,10 +34,10 @@
           </div>
           <div class="col">
             <div class="float-end">
-              <button type="button" class="btn btn-primary btn-sm">Send To Faculty Fellow</button>
+              <button type="button" class="btn btn-primary btn-sm" disabled>Send To Faculty Fellow</button>
             </div>
             <div align="right">
-              <form method="post" action="/serviceLearning/createCourse/" >
+              <form method="post" action="/serviceLearning/createCourse" >
                 <button class="btn btn-success btn-sm mr" type = 'Submit' >Add Course </button>
               </form>
             </div>
@@ -102,7 +102,7 @@
     </table>
     {% if term.isCurrentTerm or term.isFutureTerm %}
       <div class="float-end">
-        <button class="btn btn-primary">Send to Registrar</button>
+        <button class="btn btn-primary" disabled>Send to Registrar</button>
       </div>
      {% endif %}
       </div>
