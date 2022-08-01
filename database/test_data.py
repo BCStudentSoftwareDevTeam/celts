@@ -216,7 +216,7 @@ Term.insert_many(terms).on_conflict_replace().execute()
 programs = [
     {
         "id": 1,
-        "programName": "Empty Bowls",
+        "programName": "Hunger Initiatives",
         "isStudentLed": False,
         "isBonnerScholars": False,
         "emailReplyTo" :"",
@@ -274,14 +274,6 @@ programs = [
         "id": 9,
         "programName": "People Who Care",
         "isStudentLed": True,
-        "isBonnerScholars": False,
-        "emailReplyTo" :"",
-        "emailSenderName" : ""
-    },
-    {
-        "id": 10,
-        "programName": "Food Drive",
-        "isStudentLed": False,
         "isBonnerScholars": False,
         "emailReplyTo" :"",
         "emailSenderName" : ""
