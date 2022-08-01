@@ -4,36 +4,36 @@
     width:95%;
     overflow-wrap: break-word;
 }
-
+.flash_container{
+    top: 0;
+    right: 0;
+    width: 40%;
+    margin-right: 15px;
+    position: absolute;
+    z-index: 10;
+}
 .spacer {
     height: 100px; /* 80px + whatever spacing above the footer we want (in this case 20px) */
 }
-
 .scroll-container {
     max-height: 100vh;
 }
-
 .bi-list {
     font-size: 2rem;
 }
-
 .bi-x {
     font-size: 2rem;
 }
-
 .footer {
-  background-color: #e9ebec;
+  background-color: #E9EBEC;
   color:#1e2433;
   text-align: center !important;
   height: 80px;
   line-height: 80px; /* Vertically center the text */
 }
-
 .footerlink {
   font-weight: bold;
-
 }
-
 .skipContent {
   left:0px;
   position:absolute;
@@ -46,11 +46,10 @@
 .heading-size{
     font-size: 1.2em;
 }
-
 .skipContent:focus, .skipContent:active {
   color: #fff;
-  background-color: #337ab7;
-  border-color: #2e6da4;
+  background-color: #337AB7;
+  border-color: #2E6DA4;
   left: -34%;
   top: -1%;
   width: 12%;
@@ -63,15 +62,24 @@
   font-size:1.2em;
   z-index:999;
 }
-
 .templateList a:last-child {
-    border-bottom: 5px solid #d7d7d7
+    border-bottom: 5px solid #D7D7D7
 }
-
 .sidebar-icon {
     z-index: 1049;
 }
-
 .rsvp-btn{
     padding-top: 4em;
 }
+
+
+
+
+
+
+
+
+
+
+
+Message Fleur Gahimbare
