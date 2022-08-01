@@ -91,7 +91,7 @@ $(document).ready(function(){
         displayMessage("Passed<br>Empty!", "danger")
         return
     }
-    if (checkPassed && bgDate == '' ) {
+    if (checkPassed != '' && bgDate == '' ) {
         displayMessage("Date<br>Empty!", "danger")
         return
     }
