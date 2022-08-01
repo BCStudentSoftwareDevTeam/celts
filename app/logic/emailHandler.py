@@ -32,7 +32,7 @@ class EmailHandler:
         self.program_ids = None
         self.recipients = None
         self.sl_course_id = None
-        self.attachment_path = app.config['email']['email_attachment_path']
+        self.attachment_path = app.config['files']['email_attachment_path']
         self.attachment_file = attachment_file
 
     def process_data(self):
@@ -153,7 +153,7 @@ class EmailHandler:
         try:
             # tries to create the full path of the files location and passes if
             # the directories already exist or there is no attachment
-            attachmentFullPath = os.path.join(self.attachment_path, newfile.attachment_file.filename)
+            attachmentFullPath = os.path.join(self.attachment_path, newfile.filename)
             if attachmentFullPath[:-1] == self.attachment_path:
                 return None
             os.mkdir(self.attachment_path)
@@ -168,9 +168,9 @@ class EmailHandler:
         """ Saves the attachment in the app/static/files/attachments/ directory """
         try:
             for file in self.attachment_file:
-                attachmentFullPath = self.getAttachmentFullPath(file)
+                attachmentFullPath = self.getAttachmentFullPath(newfile = file)
                 if attachmentFullPath:
-                    file.save(AttachmentFullPath) # saves attachment in directory
+                    file.save(attachmentFullPath) # saves attachment in directory
 
         except AttributeError: # will pass if there is no attachment to save
             pass

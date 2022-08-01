@@ -125,6 +125,7 @@ def eventDisplay(eventId):
         abort(404)
 
     eventData = model_to_dict(event, recurse=False)
+    associatedAttachments = EventFile.select().where(EventFile.event == eventId)
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
         attachmentFiles = request.files.getlist("attachmentObject")
@@ -139,7 +140,6 @@ def eventDisplay(eventId):
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     program = event.singleProgram
-    associatedAttachments = EventFile.select().where(EventFile.event == eventId)
     eventfiles=FileHandler()
     paths=eventfiles.retrievePath(associatedAttachments, eventId)
     isProgramManager = g.current_user.isProgramManagerFor(program)
@@ -170,7 +170,8 @@ def eventDisplay(eventId):
                                 userHasRSVPed = userHasRSVPed,
                                 programTrainings = userParticipatedEvents,
                                 programManager = programManager,
-                                isProgramManager = isProgramManager)
+                                isProgramManager = isProgramManager,
+                                paths = paths)
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
@@ -223,7 +224,4 @@ def deleteFIle():
     fileData= request.form
     eventfile=FileHandler()
     eventfile.deleteFile(fileData["fileId"],fileData["eventId"])
-    print(fileData["fileId"])
-    print(fileData["eventId"])
-
     return ""

@@ -18,9 +18,8 @@ tracy:
     user: "ute_limited"
     password: "password"
 
-email:
+files:
   email_attachment_path: 'app/static/files/emailattachments'
-event:
   event_attachment_path: 'app/static/files/eventattachments'
 
 MAIL_ENABLED: True

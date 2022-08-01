@@ -34,6 +34,7 @@
     {% else %}
         <p class="heading-size"><b>{{eventData.name}}</b> will take place on <b>{{eventData.startDate}}</b> from <b>{{eventData.timeStart}}</b> to <b>{{eventData.timeEnd}}</b> and will be located in <b>{{eventData.location}}</b>.</p>
     {% endif %}
+
             <div>
                 <div>
                     <h3><br>Description:</h3>{{eventData.description}}<br><br>
@@ -104,6 +105,18 @@
                     </div>
                 </div>
             </div>
+            <div class="form-group mb-5">
+                <label class="mb-2" for= "eventAttachments"><strong>Event Attachments</strong></label>
+                <table>
+                    {% for key, value in paths.items() %}
+                        <tr id="attachment_{{value[1]}}" class="attachmentRow_{{key}}" data-id= "{{key}}">
+                            <td class="pr-5">
+                                <a class="mr-5" href="{{value[0]}}" target="_blank">{{key}}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+              </div>
             <div class="text-center">
               {% if (not isPastEvent) and (not isNewEvent)%}
                   {% if userHasRSVPed %}

@@ -7,7 +7,7 @@ from app.models.eventFile import EventFile
 class FileHandler:
     def __init__(self,files=None):
         self.files=files
-        self.path= app.config['event']['event_attachment_path']
+        self.path= app.config['files']['event_attachment_path']
 
 
 
