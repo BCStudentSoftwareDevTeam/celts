@@ -8,17 +8,20 @@ from app.models.term import Term
 from app.models.user import User
 
 
-def submittedCourses(termId):
+def unapprovedCourses(termId):
     '''
     Queries the database to get all the neccessary information for submitted courses.
     '''
 
-    submittedCourses = (Course.select(Course, Term, CourseStatus)
-                    .join(CourseStatus)
-                    .switch(Course)
-                    .join(Term).where(Term.id == termId, Course.status == CourseStatus.SUBMITTED).distinct())
-
-    return submittedCourses
+    return (Course.select(Course, Term)
+                  .join(CourseStatus)
+                  .switch(Course)
+                  .join(Term)
+                  .where(Term.id == termId,
+                         Course.status.in_([CourseStatus.SUBMITTED,
+                                            CourseStatus.INCOMPLETE]))
+                  .distinct()
+                  .order_by(Course.status))
 
 def approvedCourses(termId):
     '''
