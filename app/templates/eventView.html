@@ -57,9 +57,11 @@
                 </div>
                 <div class="col-md-6">
                     <div class="col-sm">
-                        <h3><br>Contact Information:</h3>
-                            <div>{{contactInfo.contactName}} - {{contactInfo.contactEmail}}</div>
-                            {% if program or not eventData.isAllVolunteerTraining %}
+                        {% if eventData.contactName and eventData.contactEmail %}
+                            <br><h3>Contact Information:</h3>
+                                <div>{{eventData.contactName}} - {{eventData.contactEmail}}</div>
+                        {% endif %}
+                        {% if program or not eventData.isAllVolunteerTraining %}
                             <h3><br>Program Trainings</h3>
                                   {% for training, participated in programTrainings.items() %}
                                       {% if g.current_user.isCeltsAdmin %}
@@ -74,9 +76,9 @@
                                           {% endif%}
                                       {% endif %}
                                   {% endfor %}
-                                {% endif %}
+                            {% endif %}
+                          </div>
                       </div>
-                  </div>
             </div>
             <div class="rsvp-btn text-center">
               {% if (not isPastEvent) and (not isNewEvent)%}

@@ -73,8 +73,18 @@ def createEvent(templateid, programid=None):
         eventData.update(request.form.copy())
 
     if program:
-        # TODO need to handle the multiple programs case
         eventData["program"] = program
+
+        if program.contactName and  program.contactEmail:
+            # TODO need to handle the multiple programs case
+            eventData['contactName'] = program.contactName
+            eventData['contactEmail'] = program.contactEmail
+
+        else:
+            # sets contact name and email to CELTS director (admin) if there is none set
+            eventData['contactName'] = 'Ashley Cochrane'
+            eventData['contactEmail'] = 'ashley_cochrane@berea.edu'
+
     # Try to save the form
     if request.method == "POST":
         try:

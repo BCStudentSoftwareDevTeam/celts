@@ -27,7 +27,7 @@ from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
 from app.logic.manageSLFaculty import getCourseDict
-from app.logic.courseManagement import submittedCourses, approvedCourses
+from app.logic.courseManagement import unapprovedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
 from app.models.courseInstructor import CourseInstructor
 
@@ -327,17 +327,15 @@ def getAllCourseInstructors(term=None):
         setRedirectTarget("/manageServiceLearning")
         courseDict = getCourseDict()
 
-        term = Term.get_or_none(Term.id == term)
-        if not term:
-            term = g.current_term
+        term = Term.get_or_none(Term.id == term) or g.current_term
 
-        submitted = submittedCourses(term)
+        unapproved = unapprovedCourses(term)
         approved = approvedCourses(term)
         terms = selectSurroundingTerms(g.current_term)
 
         return render_template('/main/manageServiceLearningFaculty.html',
                                 courseInstructors = courseDict,
-                                submittedCourses = submitted,
+                                unapprovedCourses = unapproved,
                                 approvedCourses = approved,
                                 terms = terms,
                                 term = term,
