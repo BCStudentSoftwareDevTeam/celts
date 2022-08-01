@@ -1,4 +1,5 @@
 from flask import flash
+from peewee import fn
 
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseQuestion import CourseQuestion
