@@ -3,14 +3,14 @@
     margin-bottom: -80px;
     width:95%;
     overflow-wrap: break-word;
+    position: relative;
 }
 .flash_container{
-    top: 0;
-    right: 0;
-    width: 40%;
-    margin-right: 15px;
+    width: 80%;
+    margin: -40px 10% 0 10%;
     position: absolute;
     z-index: 10;
+    opacity: .9;
 }
 
 .spacer {
