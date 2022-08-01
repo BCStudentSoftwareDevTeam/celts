@@ -3,6 +3,7 @@ from flask import flash
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseQuestion import CourseQuestion
 from app.models.courseStatus import CourseStatus
+from app.logic.adminLogs import createLog
 from app.models.course import Course
 from app.models.term import Term
 
@@ -58,12 +59,14 @@ def createCourse(courseData, createdBy):
         )
 
     instructorList = []
-    if 'instructor[]' in courseData: 
+    if 'instructor[]' in courseData:
         instructorList = courseData.getlist('instructor[]')
 
     for instructor in instructorList:
         CourseInstructor.create(course=course, user=instructor)
+    createLog(f"Created SLC proposal: {courseData['courseName']}")
     return course
+
 
 def updateCourse(courseData):
     """
@@ -88,16 +91,17 @@ def updateCourse(courseData):
         ).where(Course.id == course.id).execute()
         for i in range(1, 7):
             (CourseQuestion.update(questionContent=courseData[f"{i}"])
-                        .where((CourseQuestion.questionNumber == i) & 
+                        .where((CourseQuestion.questionNumber == i) &
                                (CourseQuestion.course==course)).execute())
 
         instructorList = []
-        if 'instructor[]' in courseData: 
+        if 'instructor[]' in courseData:
             instructorList = courseData.getlist('instructor[]')
 
         CourseInstructor.delete().where(CourseInstructor.course == course).execute()
         for instructor in instructorList:
             CourseInstructor.create(course=course, user=instructor)
+        createLog(f"Edited SLC proposal: {courseData['courseName']}")
     except:
         return False;
 
