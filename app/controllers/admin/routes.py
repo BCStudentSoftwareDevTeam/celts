@@ -75,8 +75,7 @@ def createEvent(templateid, programid=None):
     eventData = template.templateData
     if request.method == "POST":
         attachmentFiles = request.files.getlist("attachmentObject")
-        eventData = request.form.copy()
-        eventData.update(request.form.copy())
+        eventData.update(request.form.copy())    
     if program:
         # TODO need to handle the multiple programs case
         eventData["program"] = program
@@ -171,7 +170,7 @@ def eventDisplay(eventId):
                                 programTrainings = userParticipatedEvents,
                                 programManager = programManager,
                                 isProgramManager = isProgramManager,
-                                paths = paths)
+                                filepaths = filepaths)
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):

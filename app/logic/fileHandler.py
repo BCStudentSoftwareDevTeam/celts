@@ -1,5 +1,4 @@
 import os
-
 from flask import redirect, url_for
 from app import app
 from app.models.eventFile import EventFile
@@ -23,10 +22,11 @@ class FileHandler:
             # the directories already exist or there is no attachment
             if eventId:
                 filePath=(os.path.join(self.path, str(eventId), newfile.filename))
-                os.mkdir(self.path+"/"+ str(eventId))
+                os.makedirs(self.path +"/"+ str(eventId))
+
             else:
                 filePath=(os.path.join(self.path, newfile.filename))
-                os.mkdir(self.path+"/"+ str(eventId))
+                os.makedirs(self.path+"/"+ str(eventId))
         except AttributeError:  # will pass if there is no attachment to save
             pass
         except FileExistsError:
@@ -35,8 +35,6 @@ class FileHandler:
 
     def saveFile(self, eventId):
         """ Saves the attachment in the app/static/files/eventattachments/ directory """
-
-
         try:
             for file in self.files:
                 if not EventFile.select().where(EventFile.event == eventId, EventFile.fileName == file.filename).exists():
