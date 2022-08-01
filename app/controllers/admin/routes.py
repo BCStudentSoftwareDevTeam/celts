@@ -72,18 +72,18 @@ def createEvent(templateid, programid=None):
     if request.method == "POST":
         eventData.update(request.form.copy())
 
-    if program:
+    if program and request.method == "GET":
         eventData["program"] = program
 
-        if program.contactName and  program.contactEmail:
+        if program.contactName and program.contactEmail:
             # TODO need to handle the multiple programs case
             eventData['contactName'] = program.contactName
             eventData['contactEmail'] = program.contactEmail
 
         else:
             # sets contact name and email to CELTS director (admin) if there is none set
-            eventData['contactName'] = 'Ashley Cochrane'
-            eventData['contactEmail'] = 'ashley_cochrane@berea.edu'
+            eventData['contactName'] = "CELTS"
+            eventData['contactEmail'] = app.config['celts_admin_contact']
 
     # Try to save the form
     if request.method == "POST":
@@ -143,8 +143,6 @@ def eventDisplay(eventId):
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     program = event.singleProgram
-    eventData['contactEmail'] = event.contactEmail
-    eventData['contactName'] = event.contactName
     isProgramManager = g.current_user.isProgramManagerFor(program)
     rule = request.url_rule
     if 'edit' in rule.rule:
