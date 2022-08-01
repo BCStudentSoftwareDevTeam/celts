@@ -84,7 +84,6 @@
           <tr>
             <th scope="col">Courses</th>
             <th scope="col">Faculty</th>
-            <th scope="col">Term</th>
             <th scope="col">Status</th>
             <th scope="col">Sent</th>
           </tr>
@@ -98,7 +97,6 @@
                 {{ instructor.user.firstName }} {{ instructor.user.lastName }} <br>
                 {% endfor %}
               </td>
-              <td>{{course.term.description}}</td>
               <td>{{course.status.status}}</td>
               <td><i class="bi bi-check2"></i></td>
             </tr>
