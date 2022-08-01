@@ -11,6 +11,7 @@
 {% block styles %}
   {{super()}}
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+  <link rel="stylesheet" href="{{url_for('static', filename ='css/manageServiceLearningFaculty.css')}}">
 {% endblock %}
 
 {% block app_content %}
@@ -29,75 +30,84 @@
       <div class="container">
         <div class="row">
           <div class="col">
-            <h2> Submitted </h2>
+            <h2>Unapproved</h2>
           </div>
           <div class="col">
             <div class="float-end">
-              <button type="button" class="btn btn-primary btn-sm">Send to Faculty Fellow</button>
-              <a type="button" href="/serviceLearning/newProposal" class="btn btn-success btn-sm">Add Course</a>
+              <button type="button" class="btn btn-primary btn-sm" disabled>Send To Faculty Fellow</button>
+            </div>
+            <div align="right">
+              <form method="post" action="/serviceLearning/createCourse" >
+                <button class="btn btn-success btn-sm mr" type = 'Submit' >Add Course </button>
+              </form>
             </div>
           </div>
         </div>
       </div>
-      <table class="table table-striped border">
+      {% if unapprovedCourses | length == 0 %}
+        <h5 class="ms-3">There are no unapproved courses for {{ term.description }}.</h5>
+      {% else %}
+          <table class="table table-striped border">
+            <thead>
+              <tr>
+                <th scope="col">Courses</th>
+                <th scope="col">Faculty</th>
+                <th scope="col">Status</th>
+                <th scope="col"></th>
+                <th scope="col">Edit</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for course in unapprovedCourses %}
+              <tr>
+                <td>{{course.courseName}}</td>
+                <td>
+                  {% for instructor in course.courseInstructors %}
+                  {{ instructor.user.firstName }} {{ instructor.user.lastName }} <br>
+                  {% endfor %}
+                </td>
+                <td>{{course.status.status}}</td>
+                <td><button type="button" data-id="{{course}}" onclick="reviewCourses(this)" class="btn btn-primary btn-sm">{{ "Review"}}</button></td>
+                <td><a type="button" href="/serviceLearning/editProposal/{{course }}" class="btn btn-primary btn-sm">Edit</a></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+      {% endif %}
+  <div class="pb-5">
+    <h2>Approved</h2>
+      {% if approvedCourses | length == 0 %}
+        <h5 class="ms-3">There are no approved courses for {{ term.description }}.</h5>
+      {% else %}
+        <table class="table table-striped border">
         <thead>
           <tr>
             <th scope="col">Courses</th>
             <th scope="col">Faculty</th>
-            <th scope="col">Term</th>
             <th scope="col">Status</th>
-            <th scope="col"></th>
-            <th scope="col">Edit</th>
+            <th scope="col">Sent</th>
           </tr>
         </thead>
         <tbody>
-          {% for course in submittedCourses %}
-          <tr>
-            <td>{{course.courseName}}</td>
-            <td>
-              {% for instructor in course.courseInstructors %}
-              {{ instructor.user.firstName }} {{ instructor.user.lastName }} <br>
-              {% endfor %}
-            </td>
-            <td>{{course.term.description}}</td>
-            <td>{{course.status.status}}</td>
-            <td><button type="button" data-id="{{course}}" onclick="reviewCourses(this)" class="btn btn-primary btn-sm">{{ "Review"}}</button></td>
-            <td><a type="button" href="/serviceLearning/editProposal/{{course }}" class="btn btn-primary btn-sm">Edit</a></td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-  <div class="pb-5">
-    <h2>Approved</h2>
-    <table class="table table-striped border">
-    <thead>
-      <tr>
-        <th scope="col">Courses</th>
-        <th scope="col">Faculty</th>
-        <th scope="col">Term</th>
-        <th scope="col">Status</th>
-        <th scope="col">Sent</th>
-      </tr>
-    </thead>
-    <tbody>
-        {% for course in approvedCourses %}
-        <tr>
-          <td>{{course.courseName}}</td>
-          <td>
-            {% for instructor in course.courseInstructors %}
-            {{ instructor.user.firstName }} {{ instructor.user.lastName }} <br>
+            {% for course in approvedCourses %}
+            <tr>
+              <td>{{course.courseName}}</td>
+              <td>
+                {% for instructor in course.courseInstructors %}
+                {{ instructor.user.firstName }} {{ instructor.user.lastName }} <br>
+                {% endfor %}
+              </td>
+              <td>{{course.status.status}}</td>
+              <td><i class="bi bi-check2"></i></td>
+            </tr>
             {% endfor %}
-          </td>
-          <td>{{course.term.description}}</td>
-          <td>{{course.status.status}}</td>
-          <td><i class="bi bi-check2"></i></td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+          </tbody>
+        </table>
+      {% endif %}
+
     {% if term.isCurrentTerm or term.isFutureTerm %}
       <div class="float-end">
-        <button class="btn btn-primary">Send to Registrar</button>
+        <button class="btn btn-primary" disabled>Send to Registrar</button>
       </div>
      {% endif %}
       </div>
