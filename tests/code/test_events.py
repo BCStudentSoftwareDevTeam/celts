@@ -13,7 +13,6 @@ from app.models.eventTemplate import EventTemplate
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.models.term import Term
-from app.models.eventFacilitator import EventFacilitator
 from app.models.interest import Interest
 from app.models.eventRsvp import EventRsvp
 from app.logic.events import *
@@ -41,18 +40,11 @@ def test_event_model():
     event = Event.get_by_id(11)
     assert event.isPast
 
-######################################################################
-## TODO event list doesn't show events without a program
-## TODO facilitators didn't stay selected when there was a validation error
-##
-######################################################################
-
 @pytest.mark.integration
 def test_getAllEvents():
 
     # No program is given, get all events
     events = getEvents()
-
 
     assert len(events) > 0
 
@@ -64,8 +56,7 @@ def test_getAllEvents():
 def test_getEventsWithProgram():
 
     # Single program
-    events = getEvents(program_id=2)
-
+    events = getEvents(program_id = 2)
 
     assert len(events) > 0
     assert events[0].description == "Berea Buddies First Meetup"
@@ -75,7 +66,7 @@ def test_getEventsInvalidProgram():
 
     # Invalid program
     with pytest.raises(DoesNotExist):
-        getEvents(program_id= "asdf")
+        getEvents(program_id="asdf")
 
 @pytest.mark.integration
 def test_eventTemplate_model():
@@ -179,10 +170,10 @@ def test_preprocessEventData_term():
 def test_correctValidateNewEventData():
 
     eventData =  {'isRsvpRequired': False, 'isService': False,
-                  'isTraining': True, 'isRecurring': False, 'startDate': parser.parse('1999-12-12'),
-                  'endDate': parser.parse('2022-06-12'), 'programId': 1, 'location': "a big room",
-                  'timeEnd': '04:00', 'timeStart': '06:00', 'description': "Empty Bowls Spring 2021",
-                  'name': 'Empty Bowls Spring Event 1','term': 1,'facilitators': "ramsayb2"}
+                  'isTraining': True,'isRecurring': False,'startDate': parser.parse('1999-12-12'),
+                  'endDate': parser.parse('2022-06-12'),'programId': 1,'location': "a big room",
+                  'timeEnd': '04:00', 'timeStart': '06:00','description': "Empty Bowls Spring 2021",
+                  'name': 'Empty Bowls Spring Event 1','term': 1,'contactName': "Kaidou of the Beast",'contactEmail': 'beastpirates@gmail.com'}
 
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid == True
@@ -190,11 +181,10 @@ def test_correctValidateNewEventData():
 
 @pytest.mark.integration
 def test_wrongValidateNewEventData():
-
-    eventData =  {'isRsvpRequired': False, 'isService': False,
-                  'isTraining': True, 'isRecurring': False, 'programId': 1, 'location': "a big room",
-                  'timeEnd': '12:00', 'timeStart': '15:00', 'description': "Empty Bowls Spring 2021",
-                  'name': 'Empty Bowls Spring Event 1','term': 1,'facilitators': "ramsayb2"}
+    eventData =  {'isRsvpRequired':False, 'isService':False,
+                  'isTraining':True, 'isRecurring':False, 'programId':1, 'location':"a big room",
+                  'timeEnd':'12:00', 'timeStart':'15:00', 'description':"Empty Bowls Spring 2021",
+                  'name':'Empty Bowls Spring Event 1','term':1,'contactName': "Big Mom", 'contactEmail': 'weeeDDDINgCAKKe@gmail.com'}
 
     eventData['isRecurring'] = True
     eventData['startDate'] = parser.parse('2021-12-12')
@@ -268,13 +258,15 @@ def test_attemptSaveEvent():
                   'endDate': '2021-06-12', 'programId':1, 'location':"a big room",
                   'timeEnd':'09:00 PM', 'timeStart':'06:00 PM',
                   'description':"Empty Bowls Spring 2021",
-                  'name':'Empty Bowls Spring','term':1,'facilitators':["ramsayb2"]}
+                  'name':'Empty Bowls Spring','term':1,'contactName':"Monkey D. Luffy",
+                  'contactEmail': 'strawhats@hotmail.com'}
     eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'recurringId':None,
                    'startDate': '2021-12-12',
                    'endDate':'2022-06-12', 'location':"a big room",
                    'timeEnd':'09:00 PM', 'timeStart':'06:00 PM',
                    'description':"Empty Bowls Spring 2021",
-                   'name':'Attempt Save Test','term':1,'facilitators':["ramsayb2"]}
+                   'name':'Attempt Save Test','term':1,'contactName':"Garrett D. Clark",
+                   'contactEmail': 'boorclark@gmail.com'}
     eventInfo['program'] = Program.get_by_id(1)
 
     with mainDB.atomic() as transaction:
@@ -286,10 +278,6 @@ def test_attemptSaveEvent():
 
         try:
             event = Event.get(name="Attempt Save Test")
-            facilitator = EventFacilitator.get(event=event)
-
-            # Redundant, as the previous lines will throw exceptions, but I like asserting something
-            assert facilitator
 
         except Exception as e:
             pytest.fail(str(e))
@@ -300,11 +288,11 @@ def test_attemptSaveEvent():
 @pytest.mark.integration
 def test_saveEventToDb_create():
 
-    eventInfo =  {'isRsvpRequired': False, 'isService': False,
-                  'isTraining': True, 'isRecurring': False,'isAllVolunteerTraining': True, 'recurringId': None, 'startDate': parser.parse('2021-12-12'),
-                   'endDate': parser.parse('2022-06-12'), 'location': "a big room",
-                   'timeEnd': '09:00 PM', 'timeStart': '06:00 PM', 'description': "Empty Bowls Spring 2021",
-                   'name': 'Empty Bowls Spring','term': 1,'facilitators': [User.get_by_id("ramsayb2")]}
+    eventInfo =  {'isRsvpRequired':False, 'isService':False,
+                  'isTraining':True, 'isRecurring':False,'isAllVolunteerTraining': True, 'recurringId':None, 'startDate': parser.parse('2021-12-12'),
+                   'endDate':parser.parse('2022-06-12'), 'location':"a big room",
+                   'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
+                   'name':'Empty Bowls Spring','term':1,'contactName':"Finn D. Bledsoe", 'contactEmail': 'finnimanBledsoe@pigeoncarrier.com'}
     eventInfo['program'] = Program.get_by_id(1)
 
     # if valid is not added to the dict
@@ -320,7 +308,7 @@ def test_saveEventToDb_create():
             g.current_user = User.get_by_id("ramsayb2")
             saveEventToDb(eventInfo)
 
-    #test that the event and facilitators are added successfully
+    #test that the event is added successfully
     with mainDB.atomic() as transaction:
         eventInfo['valid'] = True
         with app.app_context():
@@ -329,26 +317,18 @@ def test_saveEventToDb_create():
         assert len(createdEvents) == 1
         assert createdEvents[0].singleProgram.id == 1
 
-        createdEventFacilitator = EventFacilitator.get(event=createdEvents[0])
-        assert createdEventFacilitator # kind of redundant, as the previous line will throw an exception
-
         transaction.rollback()
-
-    # test bad username for facilitator (user does not exist)
-    eventInfo["facilitators"] = "jarjug"
-    with pytest.raises(IntegrityError):
-        saveEventToDb(eventInfo)
 
 @pytest.mark.integration
 def test_saveEventToDb_recurring():
     with mainDB.atomic() as transaction:
         with app.app_context():
+            eventInfo =  {'isRsvpRequired':False, 'isService':False, 'isAllVolunteerTraining': True,
+                          'isTraining':True, 'isRecurring': True, 'recurringId':1, 'startDate': parser.parse('12-12-2021'),
+                           'endDate':parser.parse('01-18-2022'), 'location':"this is only a test",
+                           'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
+                           'name':'Empty Bowls Spring','term':1,'contactName':"Brianblius Ramsablius", 'contactEmail': 'ramsayBlius@gmail.com'}
 
-            eventInfo =  {'isRsvpRequired': False, 'isService': False, 'isAllVolunteerTraining': True,
-                          'isTraining': True, 'isRecurring': True, 'recurringId': 1, 'startDate': parser.parse('12-12-2021'),
-                           'endDate': parser.parse('01-18-2022'), 'location': "this is only a test",
-                           'timeEnd': '09:00 PM', 'timeStart': '06:00 PM', 'description': "Empty Bowls Spring 2021",
-                           'name': 'Empty Bowls Spring','term':1,'facilitators': [User.get_by_id("ramsayb2")]}
             eventInfo['valid'] = True
             eventInfo['program'] = Program.get_by_id(1)
 
@@ -383,7 +363,8 @@ def test_saveEventToDb_update():
                         'isService': False,
                         "startDate": "2021-12-12",
                         "endDate": "2022-6-12",
-                        "facilitators": [User.get_by_id('ramsayb2')],
+                        "contactName": "Monkey D. Luffy",
+                        "contactEmail": "goatpiece@berea.edu",
                         "valid": True
                     }
         with app.app_context():
@@ -410,7 +391,8 @@ def test_saveEventToDb_update():
                         'isService': 5,
                         "startDate": "2021-12-12",
                         "endDate": "2022-6-12",
-                        "facilitators": [User.get_by_id('ramsayb2')],
+                        "contactName": "Monkey D. Luffy",
+                        "contactEmail": "goatpiece@berea.edu",
                         "valid": True
                     }
         with app.app_context():
@@ -469,7 +451,8 @@ def test_deleteEvent():
                       'description': "Empty Bowls Spring 2021",
                       'name': 'Not Empty Bowls Spring',
                       'term': 1,
-                      'facilitators': [User.get_by_id("ramsayb2")]}
+                      'contactEmail': '',
+                      'contactName': ''}
 
         eventInfo['valid'] = True
         eventInfo['program'] = Program.get_by_id(1)
@@ -488,23 +471,13 @@ def test_deleteEvent():
 
         # check how many events exist after event deletion and make sure they are linear
         recurringEventsAfter = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.recurringId))
-        
+
         for count, recurring in enumerate(recurringEventsAfter):
             assert recurring.name == ("Not Empty Bowls Spring Week " + str(count + 1))
         assert (len(recurringEventsBefore)-1) == len(recurringEventsAfter)
 
         transaction.rollback()
 
-
-@pytest.mark.integration
-def test_getAllFacilitators():
-
-    userFacilitator = getAllFacilitators()
-    assert len(userFacilitator) >= 1
-    assert userFacilitator[1].username == 'khatts'
-    assert userFacilitator[1].isFaculty == False
-    assert userFacilitator[2].username == "lamichhanes2"
-    assert userFacilitator[2].isFaculty == True
 
 @pytest.mark.integration
 def test_upcomingEvents():
@@ -546,8 +519,8 @@ def test_upcomingEvents():
                                             programName = "BOO",
                                             isStudentLed = False,
                                             isBonnerScholars = False,
-                                            emailReplyTo = "test@email",
-                                            emailSenderName = "testName")
+                                            contactEmail = "test@email",
+                                            contactName = "testName")
 
         ProgramEvent.create(program = programForInterest, event = newProgramEvent)
 
@@ -667,39 +640,4 @@ def test_getPreviousRecurringEventData():
         assert val[0].username == "neillz"
         assert val[1].username == "ramsayb2"
         assert val[2].username == "khatts"
-        transaction.rollback()
-
-@pytest.mark.integration
-def test_getFacilitatorsFromList():
-    with mainDB.atomic() as transaction:
-        testingUser1 = User.create(username = "userForTesting1",
-                                    bnumber = "Btesting1",
-                                    email = "test1@test.test",
-                                    phoneNumber = "0000000000",
-                                    firstName = "Test#1",
-                                    lastName = "Test#1.1")
-        testingUser2 = User.create(username = "userForTesting2",
-                                    bnumber = "Btesting2",
-                                    email = "test2@test.test",
-                                    phoneNumber = "0000000000",
-                                    firstName = "Test#2",
-                                    lastName = "Test#2.1")
-        listToAssert = getFacilitatorsFromList("")
-        assert listToAssert == []
-        listToAssert = getFacilitatorsFromList([""])
-        assert listToAssert == []
-        listToAssert = getFacilitatorsFromList(",userForTesting1,")
-        assert listToAssert == [testingUser1]
-        listToAssert = getFacilitatorsFromList(["userForTesting2", ""])
-        assert listToAssert == [testingUser2]
-        listToAssert = getFacilitatorsFromList([])
-        assert listToAssert == []
-        listToAssert = getFacilitatorsFromList(["userForTesting1"])
-        assert listToAssert == [testingUser1]
-        listToAssert = getFacilitatorsFromList("userForTesting1")
-        assert listToAssert == [testingUser1]
-        listToAssert = getFacilitatorsFromList(["userForTesting1", "userForTesting2"])
-        assert listToAssert == [testingUser1, testingUser2]
-        listToAssert = getFacilitatorsFromList("userForTesting1,userForTesting2")
-        assert listToAssert == [testingUser1, testingUser2]
         transaction.rollback()

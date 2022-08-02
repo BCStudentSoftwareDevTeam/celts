@@ -9,7 +9,6 @@ pem add app.models.emailTemplate.EmailTemplate
 pem add app.models.event.Event
 pem add app.models.eventTemplate.EventTemplate
 pem add app.models.eventParticipant.EventParticipant
-pem add app.models.eventFacilitator.EventFacilitator
 pem add app.models.interest.Interest
 pem add app.models.note.Note
 pem add app.models.outsideParticipant.OutsideParticipant
@@ -27,6 +26,7 @@ pem add app.models.emailLog.EmailLog
 pem add app.models.backgroundCheck.BackgroundCheck
 pem add app.models.backgroundCheckType.BackgroundCheckType
 pem add app.models.adminLogs.AdminLogs
+pem add app.models.eventFile.EventFile
 
 
 pem watch
