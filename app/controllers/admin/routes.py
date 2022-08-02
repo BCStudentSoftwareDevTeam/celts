@@ -74,16 +74,13 @@ def createEvent(templateid, programid=None):
 
     if program and request.method == "GET":
         eventData["program"] = program
+        eventData['contactName'] = "CELTS Admin"
+        eventData['contactEmail'] = app.config['celts_admin_contact']
 
         if program.contactName and program.contactEmail:
             # TODO need to handle the multiple programs case
             eventData['contactName'] = program.contactName
             eventData['contactEmail'] = program.contactEmail
-
-        else:
-            # sets contact name and email to CELTS director (admin) if there is none set
-            eventData['contactName'] = "CELTS"
-            eventData['contactEmail'] = app.config['celts_admin_contact']
 
     # Try to save the form
     if request.method == "POST":
