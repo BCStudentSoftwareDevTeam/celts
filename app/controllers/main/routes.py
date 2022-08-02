@@ -269,15 +269,14 @@ def serviceTranscript(username):
     if user != g.current_user and not g.current_user.isAdmin:
         abort(403)
 
-    programs = getProgramTranscript(username)
     slCourses = getSlCourseTranscript(username)
     totalHours = getTotalHours(username)
+    allEventTranscript = getAllEventTranscript(username)
     startDate = getStartYear(username)
-    otherData = getOtherEventsTranscript(username)
+
     return render_template('main/serviceTranscript.html',
-                            programs = programs,
+                            allEventTranscript = allEventTranscript,
                             slCourses = slCourses.objects(),
-                            otherData = otherData,
                             totalHours = totalHours,
                             startDate = startDate,
                             userData = user)

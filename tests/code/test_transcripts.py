@@ -103,6 +103,20 @@ def setup_module():
 
     programEvent = ProgramEvent.create(program=1, event=newProgramEvent)
 
+    newNonProgramEvent = Event.create(name = "Test Non-Program Event",
+                              term = 3,
+                              description= "Event for testing",
+                              timeStart = "18:00:00",
+                              timeEnd = "21:00:00",
+                              location = "The testing lab",
+                              isRsvpRequired = 0,
+                              isPrerequisiteForProgram = 0,
+                              isTraining = 0,
+                              isService = 0,
+                              startDate =  "2021-12-12",
+                              endDate =  "2021-12-13",
+                              recurringId = None)
+
     testingTrainingEvent = Event.get(Event.name == "Test Training Event")
     trainingpart = EventParticipant.create(user = "namet",
                                             event = testingTrainingEvent.id,
@@ -118,6 +132,12 @@ def setup_module():
     testingProgramEvent = Event.get(Event.name == "Test Program Event")
     trainingpart = EventParticipant.create(user = "namet",
                                             event = testingProgramEvent.id,
+                                            attended = True,
+                                            hoursEarned = 2)
+
+    testingNonProgramEvent = Event.get(Event.name == "Test Non-Program Event")
+    trainingpart = EventParticipant.create(user = "namet",
+                                            event = testingNonProgramEvent.id,
                                             attended = True,
                                             hoursEarned = 2)
 
@@ -142,14 +162,50 @@ def testingProgram():
 
     username = "namet"
     adminName = "ramsayb2"
-    testingProgramExist = getProgramTranscript(username)
-    testingProgramNotExist = getProgramTranscript(adminName)
+    programDict = getProgramTranscript(username)
+    emptyProgramDict = getProgramTranscript(adminName)
     # check that bonners events are caught
     checkingProgram = Program.get_by_id(5)
 
-    assert not testingProgramNotExist
-    assert testingProgramExist
-    assert checkingProgram in [t for t in testingProgramExist]
+    assert not emptyProgramDict
+    assert programDict
+    assert checkingProgram in [t for t in programDict]
+
+@pytest.mark.integration
+def testingOtherEventsTranscript():
+
+    username = "namet"
+    adminName = "ramsayb2"
+    otherDict = getOtherEventsTranscript(username)
+    emptyOtherDict = getOtherEventsTranscript(adminName)
+
+    checkingOtherEvent = Event.get(Event.name == "Test Non-Program Event")
+    participatedEvent = EventParticipant.get(user=username, event=checkingOtherEvent)
+    termInfo = [checkingOtherEvent.term.description, participatedEvent.hoursEarned]
+
+
+    assert not emptyOtherDict
+    assert otherDict
+    assert termInfo in [t for t in otherDict]
+
+@pytest.mark.integration
+def testingGetAllEventTranscript():
+
+    username = "namet"
+    adminName = "ramsayb2"
+    allEventDict = getAllEventTranscript(username)
+    emptyAllEventDict = getAllEventTranscript(adminName)
+    # check that bonners events are caught
+    checkingProgram = Program.get_by_id(5)
+
+    checkingOtherEvent = Event.get(Event.name == "Test Non-Program Event")
+    participatedEvent = EventParticipant.get(user=username, event=checkingOtherEvent)
+    termInfo = [checkingOtherEvent.term.description, participatedEvent.hoursEarned]
+
+    # ensures the results of both child function appear in the same dictionary
+    assert not emptyAllEventDict
+    assert allEventDict
+    assert checkingProgram in [t for t in allEventDict] and termInfo in allEventDict["CELTS Sponsored Events"]
 
 
 @pytest.mark.integration
@@ -157,8 +213,8 @@ def testingTotalHours():
 
     totalHours = getTotalHours("namet")
     assert totalHours["totalCourseHours"] == 3
-    assert totalHours["totalEventHours"] == 6
-    assert totalHours["totalHours"] == 9
+    assert totalHours["totalEventHours"] == 8
+    assert totalHours["totalHours"] == 11
 
 @pytest.mark.integration
 def teardown_module():

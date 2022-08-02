@@ -7,7 +7,7 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.eventParticipant import EventParticipant
 from app.models.event import Event
-from peewee import DoesNotExist, fn
+from peewee import DoesNotExist, fn, JOIN
 
 
 def getOtherEventsTranscript(username):
@@ -16,16 +16,13 @@ def getOtherEventsTranscript(username):
     events for the current user.
     """
 
-    otherEventsData = list(EventParticipant.select(EventParticipant, Event, Program, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
+    otherEventsData = list(EventParticipant.select(Event, Term, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
                     .join(Event)
-                    .join(ProgramEvent)
-                    .join(Program)
-                    .where(EventParticipant.user == username,
-                           Event.isTraining == False,
-                           Event.isAllVolunteerTraining == False,
-                           ((ProgramEvent.program == None) |
-                            (Program.isStudentLed == False) &
-                            (Program.isBonnerScholars == False)))
+                    .join(ProgramEvent, JOIN.LEFT_OUTER)
+                    .join(Program, JOIN.LEFT_OUTER).switch(Event)
+                    .join(Term)
+                    .where(EventParticipant.user==username,
+                    ProgramEvent.program == None)
                     .group_by(Event.term)
                   )
 
@@ -33,7 +30,6 @@ def getOtherEventsTranscript(username):
 
     for term in otherEventsData:
         otherEvents.append([term.event.term.description, term.hoursEarned])
-
 
     return otherEvents
 
@@ -61,6 +57,19 @@ def getProgramTranscript(username):
             transcriptData[program.program] = [[program.event.term.description, program.hoursEarned]]
 
     return transcriptData
+
+def getAllEventTranscript(username):
+    """
+    Combines the program transcript and other events transcript into one dict
+    for easier display.
+    """
+    programDict = getProgramTranscript(username)
+    allEventsDict = programDict
+    otherList = getOtherEventsTranscript(username)
+    if otherList:
+        allEventsDict["CELTS Sponsored Events"] = otherList
+    return allEventsDict
+
 
 def getSlCourseTranscript(username):
     """
