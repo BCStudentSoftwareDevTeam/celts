@@ -3,10 +3,6 @@
   display: none;
 }
 
-input.invalid {
-  background-color: #ffdddd;
-}
-
 .stepsIndicator {
   text-align:center;
 }

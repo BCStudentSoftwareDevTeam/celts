@@ -4,7 +4,7 @@ var currentTab = 0; // Current tab is set to be the first tab (0)
 
 $(document).ready(function(e) {
     // set up the current tab and button state
-    showTab(currentTab); 
+    showTab(currentTab);
 
     // Update display if we are viewing only
     if (readOnly()){
@@ -38,11 +38,11 @@ $(document).ready(function(e) {
     $("#cancelButton").on("click", function() {
         window.location.replace($(this).val());
     });
-  
+
     $("#saveContinue").on("click", function() {
         if(readOnly()) {
             let allTabs = $(".tab");
-            displayCorrectTab(1) 
+            displayCorrectTab(1)
             if (currentTab == (allTabs.length - 2)) {
               displayCorrectTab(1);
             }
@@ -84,37 +84,9 @@ $(document).ready(function(e) {
         $("input[name=courseInstructorPhone]").focusout(blurHandler);
         $('#instructorTable').on('click', ".editButton", function() {
             var username=getRowUsername(this)
-            if ($(this).html() === 'Edit') {
-                $(this).html('Save')
-                $("#inputPhoneNumber-"+ username).focus()
-            } else {
-                // Save the phone number
-                var phoneInput = $("#inputPhoneNumber-" + username);
-                let isvalid = phoneInput.val().replace(/\D/g,"").length === 10;
-                let isempty = phoneInput.val().replace(/\D/g,"").length === 0;
-                if (!(isvalid || isempty)) {
-                    phoneInput.addClass("invalid");
-                    window.setTimeout(() => phoneInput.removeClass("invalid"), 1000);
-                    phoneInput.focus()
-                    return false;
-                }
+            var phoneInput = "#inputPhoneNumber-" + username
+            validatePhoneNumber(this, phoneInput, username)
 
-                $(this).html('Edit');
-                var instructorData = [username, phoneInput.val()]
-                $.ajax({
-                  url: "/updateInstructorPhone",
-                  data: JSON.stringify(instructorData),
-
-                  type: "POST",
-                  contentType: "application/json",
-                  success: function(response) {
-                      msgFlash("Instructor's phone number updated", "success")
-                  },
-                  error: function(request, status, error) {
-                    msgFlash("Error updating phone number", "danger")
-                  }
-                });
-            }
         });
     }
 })
