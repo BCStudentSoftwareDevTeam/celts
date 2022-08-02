@@ -75,7 +75,7 @@ def changeProgramInfo(newProgramName, newContactEmail, newContactName, programId
     program = Program.get_by_id(programId)
     updatedProgram = Program.update({Program.programName:newProgramName,Program.contactEmail: newContactEmail, Program.contactName:newContactName}).where(Program.id==programId)
     updatedProgram.execute()
-    createLog(f"{program.programName}'s settings changed to: Name: {newName}; Reply-to-email: {newEmail}; Sender name: {newSender}.")
+    createLog(f"{program.programName}'s settings changed to: Name: {newProgramName}; Reply-to-email: {newContactEmail}; Sender name: {newContactName}.")
 
     return (f'Program email info updated')
 
