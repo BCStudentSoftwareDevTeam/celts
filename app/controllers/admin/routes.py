@@ -4,6 +4,7 @@ from playhouse.shortcuts import model_to_dict, dict_to_model
 import json
 from datetime import datetime, date
 from dateutil import parser
+
 from app import app
 from app.models.program import Program
 from app.models.event import Event
@@ -17,6 +18,9 @@ from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.models.adminLogs import AdminLogs
 from app.models.eventFile import EventFile
+
+from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
+from app.logic.adminLogs import createLog
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
@@ -25,7 +29,6 @@ from app.logic.fileHandler import FileHandler
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
-from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 
 
 @admin_bp.route('/switch_user', methods=['POST'])
@@ -89,6 +92,8 @@ def createEvent(templateid, programid=None):
     if request.method == "POST":
         try:
             saveSuccess, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
+            createLog(f"Created event: {eventData['name']}, which had a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}")
+
         except Exception as e:
             print("Error saving event:", e)
             saveSuccess = False
