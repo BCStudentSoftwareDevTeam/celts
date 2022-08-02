@@ -8,8 +8,8 @@ class Program(baseModel):
     partner = ForeignKeyField(Partner, null=True)
     isStudentLed = BooleanField(default=False)
     isBonnerScholars = BooleanField(default=False)
-    contactName = CharField()
-    contactEmail = CharField()
+    contactName = CharField(null=True,default='')
+    contactEmail = CharField(null=True,default='')
 
     @property
     def url(self):
