@@ -156,8 +156,9 @@ def eventDisplay(eventId):
         eventData["startDate"] = event.startDate.strftime("%m/%d/%Y")
         # List below is to identify the last event in the series
         eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId))
-        if event.recurringId and not eventSeriesList[-1] == event:
-            eventData["nextRecurringEvent"] = Event.select().where(Event.id > event.id, Event.recurringId == event.recurringId).get()
+        eventIndex = eventSeriesList.index(event)
+        if event.recurringId and len(eventSeriesList) != (eventIndex + 1):
+            eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
         programManager = ProgramManager.get_or_none(program=program)
         userParticipatedEvents = getUserParticipatedEvents(program, g.current_user, g.current_term)
         return render_template("eventView.html",
