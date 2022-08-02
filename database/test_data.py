@@ -271,15 +271,7 @@ programs = [
         "emailSenderName" : ""
     },
     {
-        "id": 9,
-        "programName": "People Who Care",
-        "isStudentLed": True,
-        "isBonnerScholars": False,
-        "emailReplyTo" :"",
-        "emailSenderName" : ""
-    },
-    {
-        "id": 12,
+        "id": 10,
         "programName": "Berea Tutoring",
         "isStudentLed": False,
         "isBonnerScholars": False,
@@ -865,7 +857,7 @@ programManagerPrograms = [
     },
     {
     'user':'neillz',
-    'program':12
+    'program':10
     }
 ]
 
