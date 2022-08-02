@@ -31,4 +31,4 @@ def sendAutomatedEmail(events):
 def main():
     sendAutomatedEmail(getTomorrowsEvents())
 
-main()
+# main()

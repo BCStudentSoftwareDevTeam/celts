@@ -13,9 +13,6 @@ $(document).ready(function(){
   $("#addNewTerm").on("click",function(){
     addNewTerm();
   });
-  $("#programSelect").on("change",function(){
-    displayProgramInfo();
-  });
   $(".removeAdmin").on("click",function(){
     submitRequest("removeCeltsAdmin", $(this).data("username"));
   });
@@ -91,26 +88,4 @@ function addNewTerm(){
         console.log(error, status)
     }
   })
-}
-function addNewProgramInfo(){
-  var programInfo = {emailSenderName: $("#emailSenderName").val(),
-                    emailReplyTo: $("#emailReplyTo").val(),
-                    programId: $("#programSelect").val()};
-  $.ajax({   // sends ajax request to controller with programInfo containing user input
-    url: "/admin/updateProgramInfo",
-    type: "POST",
-    data: programInfo,
-    success: function(s){
-      msgFlash("Successfully updated program info", "success")
-    },
-    error: function(error, status){
-        console.log(error, status);
-    }
-  })
-}
-function displayProgramInfo(){
-  var programInfo = $("#programSelect option:selected")[0]
-  $("#emailReplyTo").val($(programInfo).data("replytoemail"))
-  $("#emailSenderName").val($(programInfo).data("sendername"))
-
 }
