@@ -72,8 +72,11 @@ def addNextTerm():
 
 def changeProgramInfo(newName, newEmail, newSender, programId):
     """Updates the program info with a new sender and email."""
+    program = Program.get_by_id(programId)
     updatedProgram = Program.update({Program.programName:newName,Program.emailReplyTo: newEmail, Program.emailSenderName:newSender}).where(Program.id==programId)
     updatedProgram.execute()
+    createLog(f"{program.programName}'s settings changed to: Name: {newName}; Reply-to-email: {newEmail}; Sender name: {newSender}.")
+
     return (f'Program email info updated')
 
 def getAllowedPrograms(currentUser):
