@@ -52,7 +52,7 @@ templates = [
     },
     {
         "id": 3,
-        "name": "No Program Associated",
+        "name": "CELTS-Sponsored Event",
         "tag": "no-program",
         "templateJSON": "{}",
         "templateFile": "createEvent.html",

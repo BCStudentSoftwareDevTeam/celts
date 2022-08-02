@@ -216,7 +216,7 @@ Term.insert_many(terms).on_conflict_replace().execute()
 programs = [
     {
         "id": 1,
-        "programName": "Empty Bowls",
+        "programName": "Hunger Initiatives",
         "isStudentLed": False,
         "isBonnerScholars": False,
         "emailReplyTo" :"",
@@ -232,7 +232,7 @@ programs = [
     },
     {
         "id": 3,
-        "programName": "Adopt A Grandparent",
+        "programName": "Adopt-a-Grandparent",
         "isStudentLed": True,
         "isBonnerScholars": False,
         "emailReplyTo" :"",
@@ -274,14 +274,6 @@ programs = [
         "id": 9,
         "programName": "People Who Care",
         "isStudentLed": True,
-        "isBonnerScholars": False,
-        "emailReplyTo" :"",
-        "emailSenderName" : ""
-    },
-    {
-        "id": 10,
-        "programName": "Food Drive",
-        "isStudentLed": False,
         "isBonnerScholars": False,
         "emailReplyTo" :"",
         "emailSenderName" : ""
@@ -572,7 +564,7 @@ courses = [
         "term": 3,
         "status": 1,
         "courseCredit": "",
-        "createdBy": "",
+        "createdBy": "ramsayb2",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
 
@@ -583,7 +575,7 @@ courses = [
         "term": 2,
         "status": 2,
         "courseCredit": "",
-        "createdBy": "",
+        "createdBy": "heggens",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
 
@@ -594,18 +586,18 @@ courses = [
         "term": 4,
         "status": 3,
         "courseCredit": "",
-        "createdBy": "",
+        "createdBy": "ramsayb2",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
 
     },
     {
-        "id": 3,
-        "courseName": "French Help",
-        "term": 4,
-        "status": 3,
+        "id": 4,
+        "courseName": "Testing",
+        "term": 2,
+        "status": 1,
         "courseCredit": "",
-        "createdBy": "",
+        "createdBy": "heggens",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
 
@@ -633,6 +625,16 @@ courseInstructorRecords = [
         "id": 4,
         "course": 3,
         "user": "heggens"
+    },
+    {
+        "id": 5,
+        "course": 4,
+        "user": "ramsayb2"
+    },
+    {
+        "id": 6,
+        "course": 4,
+        "user": "qasema"
     }
 
 ]

@@ -87,10 +87,11 @@ $(document).ready(function(){
     let bgDate = $("#" + bgCheckType + "_date").val()
     let checkPassed = $("[data-id=" + bgCheckType + "]").val()
 
-    if (checkPassed == 0 && bgDate != '' ) {
-        displayMessage("Y/N<br>Empty!", "danger")
+    if (checkPassed == '' && bgDate != '') {
+        displayMessage("Passed<br>Empty!", "danger")
         return
-    } else if(bgDate == '' && checkPassed != 0) {
+    }
+    if (checkPassed != '' && bgDate == '' ) {
         displayMessage("Date<br>Empty!", "danger")
         return
     }

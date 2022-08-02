@@ -65,13 +65,13 @@ def slcEditProposal(courseID):
                                 courseInstructor = courseInstructor,
                                 isRegularlyOccuring = isRegularlyOccuring,
                                 isAllSectionsServiceLearning = isAllSectionsServiceLearning,
-                                isPermanentlyDesignated = isPermanentlyDesignated, 
+                                isPermanentlyDesignated = isPermanentlyDesignated,
                                 redirectTarget=getRedirectTarget())
 
-@serviceLearning_bp.route('/serviceLearning/createCourse/', methods=['POST'])
+@serviceLearning_bp.route('/serviceLearning/createCourse', methods=['POST'])
 def slcCreateCourse():
     """will give a new course ID so that it can redirect to an edit page"""
-    course = createCourse()
+    course = createCourse(g.current_user)
 
     return redirect(url_for('serviceLearning.slcEditProposal', courseID = course.id))
 
@@ -82,7 +82,7 @@ def slcSaveContinue():
     Also, it updates the course status as 'Incomplete'"""
     course = updateCourse(request.form.copy())
     course.status = CourseStatus.INCOMPLETE
-    course.save() 
+    course.save()
 
     return ""
 
@@ -96,12 +96,12 @@ def slcCreateOrEdit():
 
     terms = Term.select().where(Term.year >= g.current_term.year)
     courseData = None
-    return render_template('serviceLearning/slcNewProposal.html', 
-                terms = terms, 
-                courseData = courseData, 
+    return render_template('serviceLearning/slcNewProposal.html',
+                terms = terms,
+                courseData = courseData,
                 redirectTarget = getRedirectTarget(True))
 
-@serviceLearning_bp.route('/serviceLearning/approveCourse/', methods=['POST'])
+@serviceLearning_bp.route('/serviceLearning/approveCourse', methods=['POST'])
 def approveCourse():
     """
     This function updates and approves a Service-Learning Course when using  the
@@ -112,7 +112,7 @@ def approveCourse():
     try:
         # We are only approving, and not updating
         if len(request.form) == 1:
-            course = Course.get_by_id(request.form['courseID']) 
+            course = Course.get_by_id(request.form['courseID'])
 
         # We have data and need to update the course first
         else:
@@ -167,4 +167,3 @@ def renewCourse(courseID, termID):
         print(e)
         flash("Renewal Unsuccessful", 'warning')
     return ""
-

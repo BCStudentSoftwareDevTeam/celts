@@ -3,6 +3,14 @@
     margin-bottom: -80px;
     width:95%;
     overflow-wrap: break-word;
+    position: relative;
+}
+.flash_container{
+    width: 80%;
+    margin: -40px 10% 0 10%;
+    position: absolute;
+    z-index: 10;
+    opacity: .9;
 }
 
 .spacer {
@@ -31,6 +39,7 @@
 
 .footerlink {
   font-weight: bold;
+
 }
 
 .skipContent {
@@ -43,7 +52,7 @@
   z-index:0;
 }
 .heading-size{
-    font-size: 1.5em;
+    font-size: 1.2em;
 }
 
 .skipContent:focus, .skipContent:active {
@@ -69,4 +78,8 @@
 
 .sidebar-icon {
     z-index: 1049;
+}
+
+.rsvp-btn{
+    padding-top: 4em;
 }
