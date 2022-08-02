@@ -14,7 +14,7 @@ def unapprovedCourses(termId):
     Queries the database to get all the neccessary information for submitted courses.
     '''
 
-    return (Course.select(Course, Term)
+    unapprovedCourses = list((Course.select(Course, Term, CourseStatus)
                   .join(CourseStatus)
                   .switch(Course)
                   .join(Term)
@@ -23,18 +23,23 @@ def unapprovedCourses(termId):
                                             CourseStatus.INCOMPLETE]))
                   .distinct()
                   .order_by(Course.status))
-
+)
+    print(unapprovedCourses)
+    return unapprovedCourses
 def approvedCourses(termId):
     '''
     Queries the database to get all the neccessary information for
     approved courses.
     '''
 
-    approvedCourses = (Course.select(Course, Term)
+    approvedCourses = list((Course.select(Course, Term, CourseStatus)
                         .join(CourseStatus)
                         .switch(Course)
-                        .join(Term).where(Term.id == termId, Course.status == CourseStatus.APPROVED).distinct())
+                        .join(Term)
+                        .where(Term.id == termId, Course.status == CourseStatus.APPROVED)
+                        .distinct()))
 
+    print(approvedCourses)
     return approvedCourses
 
 def createCourse(creator="No user provided"):
