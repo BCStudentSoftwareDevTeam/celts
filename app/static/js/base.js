@@ -38,10 +38,10 @@ function validatePhoneNumber(editButtonId, phoneInputId, username) {
             data:{"username":username,
                   "phoneNumber":phoneInput.val()},
             success: function(s){
-				msgFlash("Phone number is updated.", "success")
+                msgFlash("Phone number is updated.", "success")
             },
             error: function(request, status, error) {
-				msgFlash("Phone number not updated.", "danger")
+                msgFlash("Phone number not updated.", "danger")
             }
           })
         $(editButtonId).html('Edit');
