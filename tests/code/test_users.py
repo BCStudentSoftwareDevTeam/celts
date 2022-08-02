@@ -155,7 +155,7 @@ def test_userpriv():
     assert user.isProgramManagerFor(prg)
 
     user = User.get_by_id("mupotsal")
-    prg = Program.get_by_id(12)
+    prg = Program.get_by_id(10)
     assert not user.isProgramManagerFor(prg)
 
 @pytest.mark.integration
