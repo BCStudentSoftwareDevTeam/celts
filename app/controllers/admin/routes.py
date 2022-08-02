@@ -16,10 +16,12 @@ from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.models.adminLogs import AdminLogs
+from app.models.eventFile import EventFile
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.logic.participants import getEventParticipants, getUserParticipatedEvents
+from app.logic.fileHandler import FileHandler
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
@@ -70,8 +72,8 @@ def createEvent(templateid, programid=None):
     # Get the data for the form, from the template or the form submission
     eventData = template.templateData
     if request.method == "POST":
+        attachmentFiles = request.files.getlist("attachmentObject")
         eventData.update(request.form.copy())
-
     if program:
         eventData["program"] = program
 
@@ -86,7 +88,7 @@ def createEvent(templateid, programid=None):
     # Try to save the form
     if request.method == "POST":
         try:
-            saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
+            saveSuccess, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
         except Exception as e:
             print("Error saving event:", e)
             saveSuccess = False
@@ -125,22 +127,24 @@ def eventDisplay(eventId):
         print(f"Unknown event: {eventId}")
         abort(404)
     eventData = model_to_dict(event, recurse=False)
+    associatedAttachments = EventFile.select().where(EventFile.event == eventId)
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
-        saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
+        attachmentFiles = request.files.getlist("attachmentObject")
+        saveSuccess, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
         if saveSuccess:
             flash("Event successfully updated!", "success")
             return redirect(url_for("admin.eventDisplay", eventId = eventId))
         else:
             flash(validationErrorMessage, 'warning')
 
-
-
     preprocessEventData(eventData)
     futureTerms = selectSurroundingTerms(g.current_term)
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     program = event.singleProgram
+    eventfiles=FileHandler()
+    filepaths =eventfiles.retrievePath(associatedAttachments, eventId)
     isProgramManager = g.current_user.isProgramManagerFor(program)
     rule = request.url_rule
     if 'edit' in rule.rule:
@@ -151,7 +155,8 @@ def eventDisplay(eventId):
                                 futureTerms=futureTerms,
                                 isPastEvent = isPastEvent,
                                 userHasRSVPed = userHasRSVPed,
-                                isProgramManager = isProgramManager)
+                                isProgramManager = isProgramManager,
+                                filepaths = filepaths)
     else:
         eventData['timeStart'] = event.timeStart.strftime("%-I:%M %p")
         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
@@ -168,7 +173,13 @@ def eventDisplay(eventId):
                                 isPastEvent = isPastEvent,
                                 userHasRSVPed = userHasRSVPed,
                                 programTrainings = userParticipatedEvents,
+<<<<<<< HEAD
                                 isProgramManager = isProgramManager)
+=======
+                                programManager = programManager,
+                                isProgramManager = isProgramManager,
+                                filepaths = filepaths)
+>>>>>>> d23f0881b1c464e2f2dd981dd19e303684f4a70d
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
@@ -215,3 +226,10 @@ def adminLogs():
                                 allLogs = allLogs)
     else:
         abort(403)
+
+@admin_bp.route("/deleteFile", methods=["POST"])
+def deleteFIle():
+    fileData= request.form
+    eventfile=FileHandler()
+    eventfile.deleteEventFile(fileData["fileId"],fileData["eventId"])
+    return ""

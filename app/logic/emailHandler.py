@@ -18,6 +18,7 @@ from app.models.term import Term
 
 class EmailHandler:
     def __init__(self, raw_form_data, url_domain, sender_object, attachment_file=None):
+
         self.mail = Mail(app)
         self.raw_form_data = raw_form_data
         self.url_domain = url_domain
@@ -31,7 +32,7 @@ class EmailHandler:
         self.program_ids = None
         self.recipients = None
         self.sl_course_id = None
-        self.attachment_path = app.config['email']['attachment_path']
+        self.attachment_path = app.config['files']['email_attachment_path']
         self.attachment_file = attachment_file
 
     def process_data(self):
@@ -144,7 +145,7 @@ class EmailHandler:
         self.reply_to = email_template.replyToAddress
         return (template_id, subject, new_body)
 
-    def getAttachmentFullPath(self):
+    def getAttachmentFullPath(self, newfile=None):
         """
         This creates the directory/path for the object from the "Choose File" input in the emailModal.html file.
         :returns: directory path for attachment
@@ -153,7 +154,7 @@ class EmailHandler:
         try:
             # tries to create the full path of the files location and passes if
             # the directories already exist or there is no attachment
-            attachmentFullPath = os.path.join(self.attachment_path, self.attachment_file.filename)
+            attachmentFullPath = os.path.join(self.attachment_path, newfile.filename)
             if attachmentFullPath[:-1] == self.attachment_path:
                 return None
             os.mkdir(self.attachment_path)
@@ -162,15 +163,16 @@ class EmailHandler:
             pass
         except FileExistsError: # will pass if the file already exists
             pass
-
         return attachmentFullPath
 
     def saveAttachment(self):
         """ Saves the attachment in the app/static/files/attachments/ directory """
         try:
-            attachmentFullPath = self.getAttachmentFullPath()
-            if attachmentFullPath:
-                self.attachment_file.save(attachmentFullPath) # saves attachment in directory
+            for file in self.attachment_file:
+                attachmentFullPath = self.getAttachmentFullPath(newfile = file)
+                if attachmentFullPath:
+                    file.save(attachmentFullPath) # saves attachment in directory
+
         except AttributeError: # will pass if there is no attachment to save
             pass
 
@@ -178,9 +180,9 @@ class EmailHandler:
         """ Stores sent email in the email log """
         date_sent = datetime.now()
 
-        attachmentName = ''
-        if self.attachment_file:
-            attachmentName = self.attachment_file.filename
+        attachmentNames = []
+        for file in self.attachment_file:
+            attachmentNames.append(file.filename)
 
         EmailLog.create(
             event = self.event.id,
@@ -190,7 +192,7 @@ class EmailHandler:
             recipients = ", ".join(recipient.email for recipient in self.recipients),
             dateSent = date_sent,
             sender = self.sender,
-            attachmentName = attachmentName)
+            attachmentNames = attachmentNames)
 
     def build_email(self):
         # Most General Scenario
@@ -220,7 +222,7 @@ class EmailHandler:
                         # [recipient.email],
                         [self.override_all_mail],
                         email_body,
-                        file_attachment = self.getAttachmentFullPath(),
+                        file_attachment = self.getAttachmentFullPath(), #needs to be modified later
                         reply_to = defaultEmailInfo["replyTo"],
                         sender = (defaultEmailInfo["senderName"], defaultEmailInfo["replyTo"])
                     ))

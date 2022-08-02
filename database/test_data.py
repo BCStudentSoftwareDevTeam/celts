@@ -25,6 +25,7 @@ from app.models.backgroundCheck import BackgroundCheck
 # from app.models.backgroundCheckType import BackgroundCheckType
 from app.models.adminLogs import AdminLogs
 from app.models.emailLog import EmailLog
+from app.models.eventFile import EventFile
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -991,3 +992,14 @@ logs = [
    }
 ]
 AdminLogs.insert_many(logs).on_conflict_replace().execute()
+
+files = [
+    {
+    "event": 16,
+    "fileName":"Map1.pdf"
+    },
+    {"event": 99999,
+    "fileName" : "adfsfdhqwre_;ldgfk####l;kgfdg.jpg"
+    }
+]
+EventFile.insert_many(files).on_conflict_replace().execute
