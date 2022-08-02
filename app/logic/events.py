@@ -16,8 +16,10 @@ from app.models.interest import Interest
 from app.models.eventRsvp import EventRsvp
 from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
+from app.models.eventFile import EventFile
 from app.logic.adminLogs import createLog
 from app.logic.utils import format24HourTime
+from app.logic.fileHandler import FileHandler
 
 def getEvents(program_id=None):
 
@@ -54,10 +56,9 @@ def deleteEvent(eventId):
 
         createLog(f"Deleted event: {event.name}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
 
-def attemptSaveEvent(eventData):
-
+def attemptSaveEvent(eventData, attachmentFiles = None):
     newEventData = preprocessEventData(eventData)
-
+    addfile= FileHandler(attachmentFiles)
     isValid, validationErrorMessage = validateNewEventData(newEventData)
 
     if not isValid:
@@ -65,6 +66,9 @@ def attemptSaveEvent(eventData):
 
     try:
         events = saveEventToDb(newEventData)
+        if attachmentFiles:
+            for event in events:
+                addfile.saveFilesForEvent(event.id)
         return True, ""
     except Exception as e:
         print(e)
