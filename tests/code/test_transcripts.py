@@ -122,39 +122,6 @@ def setup_module():
                                             hoursEarned = 2)
 
 @pytest.mark.integration
-def testingTrainings():
-
-    username = "namet"
-    adminName = "ramsayb2"
-
-    checkingTrainingEvent = Event.get(name="Test Training Event")
-
-    testingTrainingsExist = getTrainingTranscript(username)
-    testingTrainingNotExist = getTrainingTranscript(adminName)
-
-
-    assert not testingTrainingNotExist.exists()
-    assert testingTrainingsExist.exists()
-    assert checkingTrainingEvent in [t.event for t in testingTrainingsExist]
-
-
-@pytest.mark.integration
-def testingBonner():
-
-    username = "namet"
-    adminName = "ramsayb2"
-
-    testingBonnerExist = getBonnerScholarEvents(username)
-    testingBonnerNotExist = getBonnerScholarEvents(adminName)
-
-    checkingBonnerEvent = Event.get(name="Test Bonner Event")
-
-    assert not testingBonnerNotExist.exists()
-    assert testingBonnerExist.exists()
-    assert checkingBonnerEvent in [t.event for t in testingBonnerExist]
-
-
-@pytest.mark.integration
 def testingSLCourses():
 
     username = "namet"
@@ -177,20 +144,21 @@ def testingProgram():
     adminName = "ramsayb2"
     testingProgramExist = getProgramTranscript(username)
     testingProgramNotExist = getProgramTranscript(adminName)
+    # check that bonners events are caught
+    checkingProgram = Program.get_by_id(5)
 
-    checkingProgramEvent = Event.get(name="Test Program Event")
-
-    assert not testingProgramNotExist.exists()
-    assert testingProgramExist.exists()
-    assert checkingProgramEvent in [t.event for t in testingProgramExist]
+    assert not testingProgramNotExist
+    assert testingProgramExist
+    assert checkingProgram in [t for t in testingProgramExist]
 
 
 @pytest.mark.integration
 def testingTotalHours():
 
     totalHours = getTotalHours("namet")
-
-    assert totalHours == 9
+    assert totalHours["totalCourseHours"] == 3
+    assert totalHours["totalEventHours"] == 6
+    assert totalHours["totalHours"] == 9
 
 @pytest.mark.integration
 def teardown_module():

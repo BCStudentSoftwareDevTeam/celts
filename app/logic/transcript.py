@@ -49,8 +49,9 @@ def getProgramTranscript(username):
         .switch(ProgramEvent)
         .join(Event)
         .join(EventParticipant)
-        .where(EventParticipant.user == username, Program.isBonnerScholars == False)
-        .group_by(Program, Event.term))
+        .where(EventParticipant.user == username)
+        .group_by(Program, Event.term)
+        .order_by(Event.term))
 
     transcriptData = {}
     for program in programData:
@@ -60,21 +61,6 @@ def getProgramTranscript(username):
             transcriptData[program.program] = [[program.event.term.description, program.hoursEarned]]
 
     return transcriptData
-
-def getBonnerScholarEvents(username):
-    """
-    Returns a bonnerData query object containing all the Bonner events for
-    current user.
-    """
-    bonnerData = (EventParticipant
-        .select(Program, ProgramEvent, EventParticipant.event,  EventParticipant.hoursEarned)
-        .join(ProgramEvent, on=(EventParticipant.event == ProgramEvent.event))
-        .join(Program)
-        .switch(EventParticipant)
-        .join(Event)
-        .where(EventParticipant.user == username,  Event.isTraining == False, Program.isBonnerScholars == True))
-
-    return bonnerData
 
 def getSlCourseTranscript(username):
     """
@@ -96,7 +82,10 @@ def getTotalHours(username):
     eventHours = EventParticipant.select(fn.SUM(EventParticipant.hoursEarned)).where(EventParticipant.user == username).scalar()
     courseHours =  CourseParticipant.select(fn.SUM(CourseParticipant.hoursEarned)).where(CourseParticipant.user == username).scalar()
 
-    return (eventHours or 0) + (courseHours or 0)
+    allHours = {"totalEventHours": (eventHours or 0),
+                "totalCourseHours": (courseHours or 0),
+                "totalHours": (eventHours or 0) + (courseHours or 0)}
+    return allHours
 
 def getStartYear(username):
     """
