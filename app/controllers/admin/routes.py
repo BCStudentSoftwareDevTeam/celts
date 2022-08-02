@@ -72,15 +72,16 @@ def createEvent(templateid, programid=None):
     if request.method == "POST":
         eventData.update(request.form.copy())
 
-    if program and request.method == "GET":
-        eventData["program"] = program
+    if request.method == "GET":
         eventData['contactName'] = "CELTS Admin"
         eventData['contactEmail'] = app.config['celts_admin_contact']
+        if program:
+            eventData["program"] = program
 
-        if program.contactName and program.contactEmail:
-            # TODO need to handle the multiple programs case
-            eventData['contactName'] = program.contactName
-            eventData['contactEmail'] = program.contactEmail
+            if program.contactName and program.contactEmail:
+                # TODO need to handle the multiple programs case
+                eventData['contactName'] = program.contactName
+                eventData['contactEmail'] = program.contactEmail
 
     # Try to save the form
     if request.method == "POST":
