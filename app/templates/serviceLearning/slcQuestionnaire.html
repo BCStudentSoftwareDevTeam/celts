@@ -1,10 +1,6 @@
 {%set title = "SLC Questionnaire"%}
 <h2 class="text-center pt-4">New Service-Learning Course</h2>
-{% if courseID%}
-    <p class="text-center fw-bold"> Please review the <a href="/serviceLearning/editProposal/{{courseID}}">service-learning course guidelines</a> before completing this form </p>
-{% else %}
-    <p class="text-center fw-bold"> Please review the <a href="/serviceLearning/newProposal">service-learning course guidelines</a> before completing this form </p>
-{% endif %}
+  <p class="text-center fw-bold"> Please review the <a class="guidelines" href="#">service-learning course guidelines</a> before completing this form </p>
 <div class="pt-4">
   <label>
     1. Indicate the specific course learning objective(s) that will be addressed by the service-learning component

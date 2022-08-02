@@ -149,6 +149,7 @@ class EmailHandler:
         This creates the directory/path for the object from the "Choose File" input in the emailModal.html file.
         :returns: directory path for attachment
         """
+        attachmentFullPath = None
         try:
             # tries to create the full path of the files location and passes if
             # the directories already exist or there is no attachment
