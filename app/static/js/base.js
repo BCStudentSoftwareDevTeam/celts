@@ -30,7 +30,6 @@ function validatePhoneNumber(editButtonId, phoneInputId, username) {
             phoneInput.addClass("invalid");
             window.setTimeout(() => phoneInput.removeClass("invalid"), 1000);
             phoneInput.focus()
-            msgFlash("Invalid Phone number", "danger")
             return isvalid;
         }
           $.ajax({
@@ -39,10 +38,10 @@ function validatePhoneNumber(editButtonId, phoneInputId, username) {
             data:{"username":username,
                   "phoneNumber":phoneInput.val()},
             success: function(s){
-              msgFlash("Phone Number is updated", "success")
+				msgFlash("Phone number is updated.", "success")
             },
             error: function(request, status, error) {
-              msgFlash("Error updating phone number", "danger")
+				msgFlash("Phone number not updated.", "danger")
             }
           })
         $(editButtonId).html('Edit');
