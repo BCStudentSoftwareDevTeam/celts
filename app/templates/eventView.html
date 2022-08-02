@@ -51,7 +51,7 @@
                     {% if eventData.recurringId %}
                         <p>This event is a recurring event.
                             {% if eventData.nextRecurringEvent %}
-                            The next event in the series occurs on <b>{{eventData.nextRecurringEvent.startDate.strftime("%B %d")}}</b>.
+                            The next event in the series occurs on <b>{{eventData.nextRecurringEvent.startDate.strftime("%B %-d")}}</b>.
                             <a href="/eventsList/{{eventData.nextRecurringEvent.id}}/view">Click here for more information.</a>
                             {% else %}
                             <b>However, this is the last event in the series.</b>
