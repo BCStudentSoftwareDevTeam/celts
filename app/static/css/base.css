@@ -7,11 +7,15 @@
 }
 .flash_container{
     width: 80%;
-    margin: -40px 10% 0 10%;
+    margin: 0px 10% 0 10%;
     position: absolute;
     z-index: 10;
     opacity: .9;
 }
+input.invalid {
+  background-color: #ffdddd;
+}
+
 
 .spacer {
     height: 100px; /* 80px + whatever spacing above the footer we want (in this case 20px) */
