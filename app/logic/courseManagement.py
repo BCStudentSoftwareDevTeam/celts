@@ -82,4 +82,4 @@ def updateCourse(courseData):
     except:
         return False;
 
-    return course
+    return Course.get_by_id(course.id)
