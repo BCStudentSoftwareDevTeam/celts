@@ -14,13 +14,20 @@ class Program(baseModel):
     @property
     def url(self):
         baseUrl = "https://www.berea.edu/celts/community-service-programs/"
-        urls = {1: baseUrl + "hunger-initiatives/",
+        # These are the production id mappings. Don't change
+        urls = {
+                1: baseUrl + "volunteer-opportunities/adopt-a-grandparent-program/",
                 2: baseUrl + "volunteer-opportunities/berea-buddies-program/" ,
-                3: baseUrl + "volunteer-opportunities/adopt-a-grandparent-program/",
-                5: "https://www.berea.edu/celts/bonner-scholars-program/",
-                6: baseUrl + "volunteer-opportunities/habitat-for-humanity-program/",
-                7: baseUrl + "volunteer-opportunities/teen-mentoring-program/",
-                8: baseUrl + "volunteer-opportunities/hispanic-outreach-project/",
-                9: baseUrl + "volunteer-opportunities/people-who-care-program/",
-                12: baseUrl + "volunteer-opportunities/berea-tutoring-program/"}
+                3: baseUrl + "volunteer-opportunities/teen-mentoring-program/",
+                4: baseUrl + "volunteer-opportunities/berea-tutoring-program/",
+                5: baseUrl + "volunteer-opportunities/habitat-for-humanity-program/",
+                6: baseUrl + "volunteer-opportunities/hispanic-outreach-project/",
+                7: baseUrl + "volunteer-opportunities/people-who-care-program/",
+                8: baseUrl + "hunger-initiatives/",
+                10: "https://www.berea.edu/celts/bonner-scholars-program/",
+               }
+        if self.id > 10:
+            print("We have programs without a URL! It's time to fix this code.")
+            return baseUrl
+
         return urls[self.id]

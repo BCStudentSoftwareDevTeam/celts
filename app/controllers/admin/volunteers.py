@@ -126,7 +126,7 @@ def updateBackgroundCheck():
     if g.current_user.isCeltsAdmin:
         eventData = request.form
         user = eventData['user']
-        checkPassed = int(eventData['checkPassed'])
+        checkPassed = eventData['checkPassed']
         type = eventData['bgType']
         dateCompleted = eventData['bgDate']
         setUserBackgroundCheck(user,type, checkPassed, dateCompleted)
@@ -143,6 +143,7 @@ def updateProgramManager():
         return ""
     else:
         abort(403)
+
 @admin_bp.route("/updatePhone", methods=["POST"])
 def updatePhone():
     newinfo=request.form

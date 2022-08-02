@@ -155,6 +155,12 @@ def eventDisplay(eventId):
         eventData['timeStart'] = event.timeStart.strftime("%-I:%M %p")
         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
         eventData["startDate"] = event.startDate.strftime("%m/%d/%Y")
+        # List below is to identify the next event in the series
+        eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId))
+        eventIndex = eventSeriesList.index(event)
+        if event.recurringId and len(eventSeriesList) != (eventIndex + 1):
+            eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
+        programManager = ProgramManager.get_or_none(program=program)
         userParticipatedEvents = getUserParticipatedEvents(program, g.current_user, g.current_term)
         return render_template("eventView.html",
                                 eventData = eventData,
