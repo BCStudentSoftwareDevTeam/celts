@@ -62,9 +62,7 @@
               <tr>
                 <td>{{course.courseName}}</td>
                 <td>
-                  {% for instructor in course.courseInstructors %}
-                  {{ instructor.user.firstName }} {{ instructor.user.lastName }} <br>
-                  {% endfor %}
+                  {{ course.instructors }} <br>
                 </td>
                 <td>{{course.status.status}}</td>
                 <td><button type="button" data-id="{{course}}" onclick="reviewCourses(this)" class="btn btn-primary btn-sm">{{ "Review"}}</button></td>
@@ -93,9 +91,7 @@
             <tr>
               <td>{{course.courseName}}</td>
               <td>
-                {% for instructor in course.courseInstructors %}
-                {{ instructor.user.firstName }} {{ instructor.user.lastName }} <br>
-                {% endfor %}
+                {{ course.instructors }} <br>
               </td>
               <td>{{course.status.status}}</td>
               <td><i class="bi bi-check2"></i></td>
