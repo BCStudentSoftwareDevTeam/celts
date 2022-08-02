@@ -106,7 +106,7 @@
               {% if (not isPastEvent) and (not isNewEvent)%}
                   {% if userHasRSVPed %}
                     <button type="submit" class="btn btn-danger" value="{{eventData.id}}" id="removeRsvpBtn">Remove RSVP</button>
-                  {%else%}
+                  {% elif (not isPastEvent) and (eventData.isRsvpRequired) %}
                     <button type="submit" class="btn btn-primary" value="{{eventData.id}}" id="rsvpBtn">RSVP</button>
                  {% endif %}
               {% endif %}
