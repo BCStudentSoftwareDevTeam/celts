@@ -173,13 +173,8 @@ def eventDisplay(eventId):
                                 isPastEvent = isPastEvent,
                                 userHasRSVPed = userHasRSVPed,
                                 programTrainings = userParticipatedEvents,
-<<<<<<< HEAD
-                                isProgramManager = isProgramManager)
-=======
-                                programManager = programManager,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths)
->>>>>>> d23f0881b1c464e2f2dd981dd19e303684f4a70d
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
