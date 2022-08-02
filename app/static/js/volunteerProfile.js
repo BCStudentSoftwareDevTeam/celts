@@ -1,4 +1,5 @@
 $(document).ready(function(){
+  $("#phoneInput").inputmask('(999)-999-9999');
   $(".form-check-input").click(function updateInterest(){
     var programID = $(this).data("programid");
     var username = $(this).data('username');

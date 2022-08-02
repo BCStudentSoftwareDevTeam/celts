@@ -18,23 +18,21 @@ $(document).ready(function() {
 });
 
 function validatePhoneNumber(editButtonId, phoneInputId, username) {
-    var isvalid = null
     if ($(editButtonId).html() === 'Edit') {
         $(editButtonId).html("Save");
         $(phoneInputId).focus();
     } else {
         // Save the phone number
         var phoneInput = $(phoneInputId);
-        isvalid = phoneInput.val().replace(/\D/g,"").length === 10;
+        var isvalid = phoneInput.val().replace(/\D/g,"").length === 10;
         let isempty = phoneInput.val().replace(/\D/g,"").length === 0;
-        if (!(isvalid || isempty)) {
+        if (!(isvalid || isempty)) { // allows phone number input to be empty
             phoneInput.addClass("invalid");
             window.setTimeout(() => phoneInput.removeClass("invalid"), 1000);
             phoneInput.focus()
-            isvalid = false;
+            msgFlash("Invalid Phone number", "danger")
             return isvalid;
         }
-        if (isvalid == true){
           $.ajax({
             method:"POST",
             url:"/updatePhone",
@@ -47,13 +45,8 @@ function validatePhoneNumber(editButtonId, phoneInputId, username) {
               msgFlash("Error updating phone number", "danger")
             }
           })
-      } else if (isvalid == false){
-          msgFlash("Invalid Phone number", "danger")
-        }
-
-        $('#phoneInput').inputmask('(999)-999-9999');
         $(editButtonId).html('Edit');
-    }
 
 
+}
 }
