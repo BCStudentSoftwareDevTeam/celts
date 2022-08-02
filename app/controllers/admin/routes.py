@@ -154,7 +154,7 @@ def eventDisplay(eventId):
         eventData['timeStart'] = event.timeStart.strftime("%-I:%M %p")
         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
         eventData["startDate"] = event.startDate.strftime("%m/%d/%Y")
-        # List below is to identify the last event in the series
+        # List below is to identify the next event in the series
         eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId))
         eventIndex = eventSeriesList.index(event)
         if event.recurringId and len(eventSeriesList) != (eventIndex + 1):
