@@ -271,15 +271,7 @@ programs = [
         "contactName": ""
     },
     {
-        "id": 9,
-        "programName": "People Who Care",
-        "isStudentLed": True,
-        "isBonnerScholars": False,
-        "contactEmail": "",
-        "contactName": ""
-    },
-    {
-        "id": 12,
+        "id": 10,
         "programName": "Berea Tutoring",
         "isStudentLed": False,
         "isBonnerScholars": False,
