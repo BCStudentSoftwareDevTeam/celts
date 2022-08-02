@@ -99,13 +99,16 @@ def setUserBackgroundCheck(user, bgType, checkPassed, dateCompleted):
     user = User.get_by_id(user)
     deleteInstance = BackgroundCheck.delete().where(BackgroundCheck.user==user, BackgroundCheck.type==bgType)
     deleteInstance.execute()
-    if not dateCompleted:
-        dateCompleted = None
-    update = BackgroundCheck.create(user=user, type=bgType, passBackgroundCheck=checkPassed, dateCompleted=dateCompleted)
-    if bool(checkPassed):
-        createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as completed.")
+    if checkPassed == '' and dateCompleted == '':
+        createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as incomplete.")
     else:
-        createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as incompleted.")
+        if not dateCompleted:
+            dateCompleted = None
+        update = BackgroundCheck.create(user=user, type=bgType, passBackgroundCheck=int(checkPassed), dateCompleted=dateCompleted)
+        if bool(checkPassed):
+            createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as passed.")
+        else:
+            createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as not passed.")
 
 
 def setProgramManager(username, program_id, action):
