@@ -90,15 +90,26 @@ def addVolunteerToEventRsvp(user, volunteerEventID):
     except Exception as e:
         return False
 
-def setUserBackgroundCheck(user,bgType, checkPassed, dateCompleted):
+def setUserBackgroundCheck(user, bgType, checkPassed, dateCompleted):
+    """
+    Changes the status of a users background check depending on what was marked
+    on their volunteer profile.
+    """
     today = date.today()
     user = User.get_by_id(user)
-    deleteInstance = BackgroundCheck.delete().where(BackgroundCheck.user == user, BackgroundCheck.type == bgType)
+    deleteInstance = BackgroundCheck.delete().where(BackgroundCheck.user==user, BackgroundCheck.type==bgType)
     deleteInstance.execute()
-    if not dateCompleted:
-        dateCompleted = None
-    update = BackgroundCheck.create(user=user, type=bgType, passBackgroundCheck=checkPassed, dateCompleted=dateCompleted)
-    createLog(f"Updated {user.firstName} {user.lastName}'s background check for {bgType} to {bool(checkPassed)}.")
+    if checkPassed == '' and dateCompleted == '':
+        createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as incomplete.")
+    else:
+        if not dateCompleted:
+            dateCompleted = None
+        update = BackgroundCheck.create(user=user, type=bgType, passBackgroundCheck=int(checkPassed), dateCompleted=dateCompleted)
+        if bool(checkPassed):
+            createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as passed.")
+        else:
+            createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as not passed.")
+
 
 def setProgramManager(username, program_id, action):
     '''
@@ -109,8 +120,8 @@ def setProgramManager(username, program_id, action):
            action: add, remove
 
     '''
-    studentstaff=User.get(User.username== username)
+    studentstaff=User.get(User.username==username)
     if action == "add" and studentstaff.isCeltsStudentStaff==True:
         studentstaff.addProgramManager(program_id)
-    elif action =="remove":
+    elif action == "remove":
         studentstaff.removeProgramManager(program_id)

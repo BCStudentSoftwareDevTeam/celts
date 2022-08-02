@@ -24,7 +24,7 @@ function reviewCourses(el) {
 function approveProposal(el){
   let courseID = $(el).data("id")
   $.ajax({
-    url: '/serviceLearning/approveCourse/',
+    url: '/serviceLearning/approveCourse',
     type: "POST",
     data: {"courseID":courseID},
     success: function(){

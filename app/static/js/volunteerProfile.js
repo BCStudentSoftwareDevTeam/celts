@@ -1,4 +1,5 @@
 $(document).ready(function(){
+  $("#phoneInput").inputmask('(999)-999-9999');
   $(".form-check-input").click(function updateInterest(){
     var programID = $(this).data("programid");
     var username = $(this).data('username');
@@ -87,10 +88,11 @@ $(document).ready(function(){
     let bgDate = $("#" + bgCheckType + "_date").val()
     let checkPassed = $("[data-id=" + bgCheckType + "]").val()
 
-    if (checkPassed == 0 && bgDate != '' ) {
-        displayMessage("Y/N<br>Empty!", "danger")
+    if (checkPassed == '' && bgDate != '') {
+        displayMessage("Passed<br>Empty!", "danger")
         return
-    } else if(bgDate == '' && checkPassed != 0) {
+    }
+    if (checkPassed != '' && bgDate == '' ) {
         displayMessage("Date<br>Empty!", "danger")
         return
     }
@@ -125,27 +127,11 @@ $(document).ready(function(){
         }
     });
 
-  $("#updatePhone").click(function() {
-    userName = $(this).data("username")
-    phoneNumber = $("#phoneInput").val()
-    let isvalid = phoneNumber.replace(/\D/g,"").length === 10;
-    if (isvalid == true){
-      $.ajax({
-        method:"POST",
-        url:"/updatePhone",
-        data:{"username":userName,
-              "phoneNumber":phoneNumber},
-        success: function(s){
-          msgFlash("Phone Number is updated", "success")
-        },
-      })
-    } else {
-      msgFlash("Invalid Phone number", "danger")
-    }
+  $("#updatePhone").on('click', function() {
+    var username = $(this).data("username")
+    validatePhoneNumber(this, "#phoneInput", username)
   });
-  $('#phoneInput').inputmask('(999)-999-9999');
-});
-
+})
 function displayMessage(message, color) {  // displays message for saving background check
     $("#displaySave").html(message).addClass("text-"+ color)
     setTimeout(function() {$("#displaySave").html("").removeClass("text-"+ color)}, 2000)

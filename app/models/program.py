@@ -23,8 +23,7 @@ class Program(baseModel):
                 5: baseUrl + "volunteer-opportunities/habitat-for-humanity-program/",
                 6: baseUrl + "volunteer-opportunities/hispanic-outreach-project/",
                 7: baseUrl + "volunteer-opportunities/people-who-care-program/",
-                8: baseUrl + "hunger-initiatives/empty-bowls-project/",
-                9: baseUrl + "hunger-initiatives/hunger-hurts-food-drive/",
+                8: baseUrl + "hunger-initiatives/",
                 10: "https://www.berea.edu/celts/bonner-scholars-program/",
                }
         if self.id > 10:

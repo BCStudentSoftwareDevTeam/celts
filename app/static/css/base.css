@@ -3,7 +3,19 @@
     margin-bottom: -80px;
     width:95%;
     overflow-wrap: break-word;
+    position: relative;
 }
+.flash_container{
+    width: 80%;
+    margin: 0px 10% 0 10%;
+    position: absolute;
+    z-index: 10;
+    opacity: .9;
+}
+input.invalid {
+  background-color: #ffdddd;
+}
+
 
 .spacer {
     height: 100px; /* 80px + whatever spacing above the footer we want (in this case 20px) */
@@ -31,6 +43,7 @@
 
 .footerlink {
   font-weight: bold;
+
 }
 
 .skipContent {
@@ -43,7 +56,7 @@
   z-index:0;
 }
 .heading-size{
-    font-size: 1.5em;
+    font-size: 1.2em;
 }
 
 .skipContent:focus, .skipContent:active {
@@ -69,4 +82,8 @@
 
 .sidebar-icon {
     z-index: 1049;
+}
+
+.rsvp-btn{
+    padding-top: 4em;
 }

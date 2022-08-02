@@ -27,84 +27,89 @@
                 <a class="nav-link" href="/eventsList/{{eventData.id}}/edit" role="tab" aria-selected="false">Edit Event</a>
             </li>
           </ul>
-         </div>
+         </div> <br />
     {% endif %}
     {% if isPastEvent %}
         <p class="heading-size"><b>{{eventData.name}}</b> took place on <b>{{eventData.startDate}}</b> from <b>{{eventData.timeStart}}</b> to <b>{{eventData.timeEnd}}</b> and was located in <b>{{eventData.location}}</b>.</p>
     {% else %}
         <p class="heading-size"><b>{{eventData.name}}</b> will take place on <b>{{eventData.startDate}}</b> from <b>{{eventData.timeStart}}</b> to <b>{{eventData.timeEnd}}</b> and will be located in <b>{{eventData.location}}</b>.</p>
     {% endif %}
-            <div>
-                <div>
-                    <h3><br>Description:</h3>{{eventData.description}}<br><br>
-                    <div>
-                        {% if eventData.isService %}
-                            This event earns service hours.
-                        {% else %}
-                            This event does not earn service hours.
-                        {% endif %}
-                        {% if eventData.isRsvpRequired %}
-                            This event requires RSVP.
-                        {% else %}
-                            This event does not require RSVP.
-                        {% endif %}
-                        {% if eventData.recurringId %}
-                            This event is a recurring event.
-                        {% endif %}
-                        {% if eventData.isTraining %}
-                            This event is a training.
-                        {% endif %}
-                    </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <h3><br>Description</h3>
+                    <p>{{eventData.description}}</p>
+                    {% if eventData.isService %}
+                        <p>This event earns service hours.</p>
+                    {% else %}
+                        <p>This event does not earn service hours.</p>
+                    {% endif %}
+                    {% if eventData.isRsvpRequired %}
+                        <p>This event requires RSVP.</p>
+                    {% else %}
+                        <p>This event does not require RSVP.</p>
+                    {% endif %}
+                    {% if eventData.recurringId %}
+                        <p>This event is a recurring event.
+                            {% if eventData.nextRecurringEvent %}
+                            The next event in the series occurs on <b>{{eventData.nextRecurringEvent.startDate.strftime("%B %-d")}}</b>.
+                            <a href="/eventsList/{{eventData.nextRecurringEvent.id}}/view">Click here for more information.</a>
+                            {% else %}
+                            <b>However, this is the last event in the series.</b>
+                            {% endif %}
+                        </p>
+                    {% endif %}
+                    {% if eventData.isTraining %}
+                        <p>This event is a training.</p>
+                    {% endif %}
                 </div>
-            </div>
-            <div class="container">
-              <div class="row">
-                <div class="col-sm">
-                    <h3><br>Facilitators:</h3>
-                        {% if eventFacilitatorNames %}
-                            <ul>
-                                {% for facilitator in eventFacilitatorNames%}
-                                    <li>{{facilitator.firstName}} {{facilitator.lastName}}</li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <div>No facilitators.</div>
-                        {% endif %}
-                    </div>
+                <div class="col-md-6">
                     <div class="col-sm">
-                        {% if programManager %}
-                            <div><h3><br>Program Manager:</h3></div>
-                                <div>
-                                    {{programManager.user.firstName}} {{programManager.user.lastName}}<br>
-                                    {{programManager.user.email}}
-                                </div>
-                        {% endif %}
+                        <h3><br>Program Manager</h3>
+                      {% if programManager %}
+                      <p>
+                          {{programManager.user.firstName}} {{programManager.user.lastName}}<br>
+                          {{programManager.user.email}}
+                      </p>
+                      {% else %}
+                      <p>This event has not program manager.</p>
+                      {% endif %}
                     </div>
-                </div>
-                <div>
-                    <div class="row">
-                      <div class="col-sm">
-                          {% if program or not eventData.isAllVolunteerTraining %}
-                            <h3><br>Program Trainings:</h3>
-                                {% for training, participated in programTrainings.items() %}
-                                    {% if g.current_user.isCeltsAdmin %}
-                                      <div>{{training}}</div>
-                                    {% else %}
-                                        {% if participated == 1 %}
-                                            <div><b>{{training}}</b>: Attended</div>
-                                        {% elif participated == 0 %}
-                                            <div><b>{{training}}</b>: Not attended</div>
-                                        {% else %}
-                                            <div><b>{{training}}</b>: Upcoming</div>
-                                        {% endif%}
-                                    {% endif %}
-                                {% endfor %}
-                          {% endif %}
+                  <div class="col-md-6">
+                      <h3>Facilitators</h3>
+                              {% if eventFacilitatorNames %}
+                              <ul>
+                                    {% for facilitator in eventFacilitatorNames%}
+                                    <li>{{facilitator.firstName}} {{facilitator.lastName}}</li>
+                                    {% endfor %}
+                              </ul>
+                              {% else %}
+                                  <p>This event has no facilitators.</p>
+                              {% endif %}
+                    </div>
+                    <div>
+                        <div>
+                            {% if program or not eventData.isAllVolunteerTraining %}
+                            <h3>Program Trainings</h3>
+                                      {% for training, participated in programTrainings.items() %}
+                                          {% if g.current_user.isCeltsAdmin %}
+                                            <p>{{training}}</p>
+                                          {% else %}
+                                          {% if participated == 1 %}
+                                                  <p><b>{{training}}</b>: Attended</p>
+                                              {% elif participated == 0 %}
+                                                  <p><b>{{training}}</b>: Not attended</p>
+                                              {% else %}
+                                                  <p><b>{{training}}</b>: Upcoming</p>
+                                              {% endif%}
+                                          {% endif %}
+                                      {% endfor %}
+                                {% endif %}
                         </div>
-                    </div>
-                </div>
+                      </div>
+
+                  </div>
             </div>
-            <div class="text-center">
+            <div class="rsvp-btn text-center">
               {% if (not isPastEvent) and (not isNewEvent)%}
                   {% if userHasRSVPed %}
                     <button type="submit" class="btn btn-danger" value="{{eventData.id}}" id="removeRsvpBtn">Remove RSVP</button>

@@ -216,83 +216,67 @@ Term.insert_many(terms).on_conflict_replace().execute()
 programs = [
     {
         "id": 1,
-        "programName": "Empty Bowls",
+        "programName": "Hunger Initiatives",
         "isStudentLed": False,
         "isBonnerScholars": False,
-        "emailReplyTo" :"test@email",
-        "emailSenderName" : "testName"
+        "emailReplyTo" :"",
+        "emailSenderName" : ""
     },
     {
         "id": 2,
         "programName": "Berea Buddies",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "emailReplyTo" :"test@email",
-        "emailSenderName" : "testName"
+        "emailReplyTo" :"",
+        "emailSenderName" : ""
     },
     {
         "id": 3,
-        "programName": "Adopt A Grandparent",
+        "programName": "Adopt-a-Grandparent",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "emailReplyTo" :"test@email",
-        "emailSenderName" : "testName"
+        "emailReplyTo" :"",
+        "emailSenderName" : ""
     },
     {
         "id": 5,
         "programName": "Bonners Scholars",
         "isStudentLed": False,
         "isBonnerScholars": True,
-        "emailReplyTo" :"test@email",
-        "emailSenderName" : "testName"
+        "emailReplyTo" :"",
+        "emailSenderName" : ""
     },
     {
         "id": 6,
         "programName": "Habitat for Humanity",
         "isStudentLed": False,
         "isBonnerScholars": False,
-        "emailReplyTo" :"test@email",
-        "emailSenderName" : "testName"
+        "emailReplyTo" :"",
+        "emailSenderName" : ""
     },
     {
         "id": 7,
         "programName": "Berea Teen Mentoring",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "emailReplyTo" :"test@email",
-        "emailSenderName" : "testName"
+        "emailReplyTo" :"",
+        "emailSenderName" : ""
     },
     {
         "id": 8,
         "programName": "Hispanic Outreach Program",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "emailReplyTo" :"test@email",
-        "emailSenderName" : "testName"
-    },
-    {
-        "id": 9,
-        "programName": "People Who Care",
-        "isStudentLed": True,
-        "isBonnerScholars": False,
-        "emailReplyTo" :"test@email",
-        "emailSenderName" : "testName"
+        "emailReplyTo" :"",
+        "emailSenderName" : ""
     },
     {
         "id": 10,
-        "programName": "Food Drive",
-        "isStudentLed": False,
-        "isBonnerScholars": False,
-        "emailReplyTo" :"test@email",
-        "emailSenderName" : "testName"
-    },
-    {
-        "id": 12,
         "programName": "Berea Tutoring",
         "isStudentLed": False,
         "isBonnerScholars": False,
-        "emailReplyTo" :"test@email",
-        "emailSenderName" : "testName"
+        "emailReplyTo" :"",
+        "emailSenderName" : ""
     }
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
@@ -554,6 +538,13 @@ notes = [
     "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
     "noteContent": "I agree with your comment on training",
     "isPrivate":False
+    },
+    {
+    "id": 3,
+    "createdBy": "mupotsal",
+    "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
+    "noteContent": "tells bad jokes",
+    "isPrivate": True
     }
 ]
 Note.insert_many(notes).on_conflict_replace().execute()
@@ -565,7 +556,7 @@ courses = [
         "term": 3,
         "status": 1,
         "courseCredit": "",
-        "createdBy": "",
+        "createdBy": "ramsayb2",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
 
@@ -576,7 +567,7 @@ courses = [
         "term": 2,
         "status": 2,
         "courseCredit": "",
-        "createdBy": "",
+        "createdBy": "heggens",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
 
@@ -587,18 +578,18 @@ courses = [
         "term": 4,
         "status": 3,
         "courseCredit": "",
-        "createdBy": "",
+        "createdBy": "ramsayb2",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
 
     },
     {
-        "id": 3,
-        "courseName": "French Help",
-        "term": 4,
-        "status": 3,
+        "id": 4,
+        "courseName": "Testing",
+        "term": 2,
+        "status": 1,
         "courseCredit": "",
-        "createdBy": "",
+        "createdBy": "heggens",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
 
@@ -626,6 +617,16 @@ courseInstructorRecords = [
         "id": 4,
         "course": 3,
         "user": "heggens"
+    },
+    {
+        "id": 5,
+        "course": 4,
+        "user": "ramsayb2"
+    },
+    {
+        "id": 6,
+        "course": 4,
+        "user": "qasema"
     }
 
 ]
@@ -826,7 +827,7 @@ bannedUser = [
         "user": "ayisie",
         "program": 1,
         "endDate": datetime.now() + timedelta(days=150),
-        "banNote": 2,
+        "banNote": 3,
     }
 ]
 
@@ -856,7 +857,7 @@ programManagerPrograms = [
     },
     {
     'user':'neillz',
-    'program':12
+    'program':10
     }
 ]
 
