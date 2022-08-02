@@ -29,46 +29,48 @@
     {% endfor %}
 {% endif %}
 
-<div class="float-end">
-    <p class="fw-bold pb-3 d-inline">Total Event Hours:</p>
-    <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours["totalEventHours"]|round(2) }}</p>
-</div>
-{% if slCourses.exists() %}
-  <br><h2 class="m-1">Service-Learning Courses</h2>
-  <table class="table table-bordered table-striped">
-    <tr>
-      <th>Course Name</th>
-      <th>Term</th>
-      <th class="w-25">Accrued Service Hours</th>
-    </tr>
-    {% for slcourse in slCourses %}
-    <tr>
-      <td> {{ slcourse.courseName }}</td>
-      <td> {{ slcourse.term.description }}</td>
-      <td class="w-25">{{ slcourse.hoursEarned }}</td>
-    </tr>
-    {% endfor %}
-  </table>
-{% endif %}
-
-
-
-<div class="pt-4">
+{% if totalHours["totalHours"] > 0%}
     <div class="float-end">
-        <p class="fw-bold pb-3 d-inline">Total Service Hours:</p>
-        <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours["totalCourseHours"]|round(2) }}</p>
+        <p class="fw-bold pb-3 d-inline">Total Event Hours:</p>
+        <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours["totalEventHours"]|round(2) }}</p>
     </div>
-  {% if startDate == "N/A" %}
-    <p>No Volunteer Record</p>
-  {% else %}
-    <p>*Volunteering since {{ startDate }}</p>
-  {% endif %}
-</div>
-<div class="float-end">
-  <button type="button" class="btn btn-primary d-print-none m-4" onclick="window.print()"><span class="bi bi-printer d-print-none"></span>Print</button>
-  <p class="fw-bold pb-3 d-inline">Total Hours:</p>
-  <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours["totalHours"]|round(2) }}</p>
-</div>
+    {% if slCourses.exists() %}
+      <br><h2 class="m-1">Service-Learning Courses</h2>
+      <table class="table table-bordered table-striped">
+        <tr>
+          <th>Course Name</th>
+          <th>Term</th>
+          <th class="w-25">Accrued Service Hours</th>
+        </tr>
+        {% for slcourse in slCourses %}
+        <tr>
+          <td> {{ slcourse.courseName }}</td>
+          <td> {{ slcourse.term.description }}</td>
+          <td class="w-25">{{ slcourse.hoursEarned }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    {% endif %}
+
+
+
+    <div class="pt-4">
+        <div class="float-end">
+            <p class="fw-bold pb-3 d-inline">Total Service Hours:</p>
+            <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours["totalCourseHours"]|round(2) }}</p>
+        </div>
+    </div>
+    <div class="float-end">
+      <button type="button" class="btn btn-primary d-print-none m-4" onclick="window.print()"><span class="bi bi-printer d-print-none"></span>Print</button>
+      <p class="fw-bold pb-3 d-inline">Total Hours:</p>
+      <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours["totalHours"]|round(2) }}</p>
+    </div>
+{% endif %}
+{% if startDate == "N/A" %}
+  <h5>No Volunteer Record</h5>
+{% else %}
+  <p>*Volunteering since {{ startDate }}</p>
+{% endif %}
 <div class="d-print-none pt-5">
   <br><p>If there are any corrections that need to be made, contact <a href="mailto:cochranea@berea.edu">Ashley Cochrane</a></p>
 </div>
