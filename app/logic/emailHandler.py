@@ -206,10 +206,11 @@ class EmailHandler:
         template_id, subject, body = self.build_email()
 
         if len(self.program_ids) == 1:
-            if self.program_ids[0].emailReplyTo:
-                defaultEmailInfo["replyTo"] = self.program_ids[0].emailReplyTo
-            if self.program_ids[0].emailSenderName:
-                defaultEmailInfo["senderName"] = self.program_ids[0].emailSenderName
+            if self.program_ids[0].contactEmail:
+                defaultEmailInfo["replyTo"] = self.program_ids[0].contactEmail
+            if self.program_ids[0].contactName:
+                defaultEmailInfo["senderName"] = self.program_ids[0].contactName
+
         try:
             with self.mail.connect() as conn:
                 for recipient in self.recipients:
