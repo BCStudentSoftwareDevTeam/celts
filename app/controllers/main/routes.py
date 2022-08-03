@@ -22,7 +22,7 @@ from app.models.courseStatus import CourseStatus
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
-from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants, getUserParticipatedEvents
+from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants, getUserParticipatedEvents, checkUserAddedToEvent
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
@@ -227,19 +227,25 @@ def volunteerRegister():
     event = Event.get_by_id(eventData['id'])
 
     user = g.current_user
-    isEligible = userRsvpForEvent(user, event.id)
-    listOfRequirements = unattendedRequiredEvents(event.singleProgram, user)
+    isAdded = checkUserAddedToEvent(user, event)
+    if isAdded:
+        isEligible = userRsvpForEvent(user, event.id)
+        listOfRequirements = unattendedRequiredEvents(event.singleProgram, user)
 
-    if not isEligible: # if they are banned
-        flash(f"Cannot RSVP. Contact CELTS administrators: {app.config['celts_admin_contact']}.", "danger")
+        if not isEligible: # if they are banned
+            flash(f"Cannot RSVP. Contact CELTS administrators: {app.config['celts_admin_contact']}.", "danger")
 
-    elif listOfRequirements:
-        reqListToString = ', '.join(listOfRequirements)
-        flash(f"{user.firstName} {user.lastName} successfully registered. However, the following training may be required: {reqListToString}.", "success")
+        elif listOfRequirements:
+            reqListToString = ', '.join(listOfRequirements)
+            flash(f"{user.firstName} {user.lastName} successfully registered. However, the following training may be required: {reqListToString}.", "success")
 
-    #if they are eligible
+        #if they are eligible
+        else:
+            flash("Successfully registered for event!","success")
+
     else:
-        flash("Successfully registered for event!","success")
+        flash("You have already been added to this event.", "warning")
+
     if 'from' in eventData:
         if eventData['from'] == 'ajax':
             return ''

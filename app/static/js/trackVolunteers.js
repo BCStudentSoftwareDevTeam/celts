@@ -52,6 +52,7 @@ $(document).ready(function() {
       $("#selectVolunteerButton").prop('disabled', false);
       let user = $("#addVolunteerInput").val()
       if(userlist.includes(selected["username"]) == false){
+          userlist.push(user)
           let i = userlist.length;
           $("#addVolunteerList").append("<li class id= 'addVolunteerElements"+i+"'> </li>")
           $("#addVolunteerElements"+i).append("<input  type='checkbox' id= 'userlistCheckbox"+i+"' checked value='" + user +"' >  </input>")

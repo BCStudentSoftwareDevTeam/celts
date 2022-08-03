@@ -75,6 +75,15 @@ def userRsvpForEvent(user,  event):
         return newParticipant
     return isEligible
 
+def checkUserAddedToEvent(user,  event):
+    """
+    Checks if a user has already been added to an event.
+    """
+    addedUser = User.get_by_id(user)
+    addedEvent = Event.get_by_id(event)
+    participantExists = EventParticipant.get_or_none(user = addedUser, event = addedEvent)
+    rsvpExists = EventRsvp.get_or_none(user = addedUser, event = addedEvent)
+    return bool(participantExists or rsvpExists)
 
 def unattendedRequiredEvents(program, user):
 

@@ -8,7 +8,7 @@ from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, getEventLengthInHours,setUserBackgroundCheck, setProgramManager
-from app.logic.participants import trainedParticipants, getEventParticipants
+from app.logic.participants import trainedParticipants, getEventParticipants, checkUserAddedToEvent
 from app.logic.events import getPreviousRecurringEventData
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
@@ -99,20 +99,18 @@ def addVolunteer(eventId):
         user = User.get(User.username==user)
         isVolunteerInEvent =  (EventRsvp.select().where(EventRsvp.user==user, EventRsvp.event_id == eventId).exists() and
               EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event_id == eventId).exists())
-
+        userAdded = EventRsvp.get_or_none(user = user, event = eventId)
         if len(eventParticipants) == 0 or isVolunteerInEvent == False:
             if event.isPast:
                 eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
-                volunteerExists = EventParticipant.get_or_none(user = user, event = eventId, hoursEarned = eventHours)
-                if not volunteerExists:
+                if not (userAdded):
                     EventParticipant.create(user = user, event = eventId, hoursEarned = eventHours)
                 else:
                     flash("Volunteer already exists." ,"danger")
                     return ""
 
             else:
-                volunteerExists = EventParticipant.get_or_none(user = user, event = eventId, hoursEarned = eventHours)
-                if not volunteerExists:
+                if not (userAdded):
                     EventParticipant.create(user = user, event = eventId)
                 else:
                     flash("Volunteer already exists.", "danger")

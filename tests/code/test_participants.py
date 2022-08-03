@@ -10,8 +10,9 @@ from app.models.program import Program
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.logic.volunteers import getEventLengthInHours, updateEventParticipants
-from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, sendUserData, getEventParticipants, trainedParticipants, getUserParticipatedEvents
+from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, sendUserData, getEventParticipants, trainedParticipants, getUserParticipatedEvents, checkUserAddedToEvent
 from app.models.eventRsvp import EventRsvp
+from dateutil import parser
 
 @pytest.mark.integration
 def test_getEventLengthInHours():
@@ -49,6 +50,33 @@ def test_getEventLengthInHours():
     eventDate = "2021-07-20"
     with pytest.raises(TypeError):
         eventLength = getEventLengthInHours(startTime, endTime, eventDate)
+
+@pytest.mark.integration
+def test_checkUserAddedToEvent():
+    with mainDB.atomic() as transaction:
+        newEvent = Event.create(name = "Test event 1234",
+                      term = 2,
+                      description= "This Event is Created to be Deleted.",
+                      timeStart= "6:00 pm",
+                      timeEnd= "9:00 pm",
+                      location = "No Where",
+                      isRsvpRequired = 0,
+                      isTraining = 0,
+                      isService = 0,
+                      startDate=  "2022-12-19",
+                      endDate= "2022-12-19",
+                      recurringId = 0)
+                      
+        user = User.get_by_id("ramsayb2")
+        event = Event.get(name="Test event 1234", term=2)
+        userAdded = checkUserAddedToEvent(user, event)
+        assert userAdded == False
+
+        EventRsvp.create(event=event, user=user)
+        userAdded = checkUserAddedToEvent(user, event)
+        assert userAdded == True
+
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_updateEventParticipants():
