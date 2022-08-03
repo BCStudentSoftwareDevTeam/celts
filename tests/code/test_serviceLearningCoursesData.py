@@ -3,7 +3,6 @@ import pytest
 from flask import Flask, g
 from datetime import datetime
 from peewee import DoesNotExist
-from app import app
 
 from app.models import mainDB
 from app.models.term import Term
@@ -49,51 +48,50 @@ def test_getServiceLearningCoursesData():
 def test_withdrawProposal():
     '''creates a test course with all foreign key fields. tests if they can
     be deleted'''
-    with app.app_context():
-        if 99 in Course.select(Course.id):
-            withdrawProposal(99)
-        course = Course.create(
-                id= 99,
-                courseName= "Test",
-                term=2,
-                status= 1,
-                courseCredit= "",
-                createdBy= 'ramsayb2',
-                isAllSectionsServiceLearning= True,
-                isPermanentlyDesignated= False,
-                )
-        question = CourseQuestion.create(
-            id = 99,
-            course=99,
-            questionContent="Why must I create so much for just one test?",
-            questionNumber=1
-        )
-        note = Note.create(
-            id = 99,
-            createdBy = 'neillz',
-            createdOn = "2021-10-12 00:00:00",
-            noteContent = "This is a test note.",
-            isPrivate = False
-        )
-        qnote = QuestionNote.create(
-        id = 99,
-        question = 99,
-        note = 99
-        )
-        instructor = CourseInstructor.create(
-            id= 99,
-            course= 99,
-            user= 'ramsayb2'
-        )
-        participant = CourseParticipant.create(
-            course= 99,
-            user= 'neillz',
-            hoursEarned= 2.0
-        )
-
+    if 99 in Course.select(Course.id):
         withdrawProposal(99)
-        with pytest.raises(DoesNotExist):
-            Course.get_by_id(99)
+    course = Course.create(
+            id= 99,
+            courseName= "Test",
+            term=2,
+            status= 1,
+            courseCredit= "",
+            createdBy= 'ramsayb2',
+            isAllSectionsServiceLearning= True,
+            isPermanentlyDesignated= False,
+            )
+    question = CourseQuestion.create(
+        id = 99,
+        course=99,
+        questionContent="Why must I create so much for just one test?",
+        questionNumber=1
+    )
+    note = Note.create(
+        id = 99,
+        createdBy = 'neillz',
+        createdOn = "2021-10-12 00:00:00",
+        noteContent = "This is a test note.",
+        isPrivate = False
+    )
+    qnote = QuestionNote.create(
+    id = 99,
+    question = 99,
+    note = 99
+    )
+    instructor = CourseInstructor.create(
+        id= 99,
+        course= 99,
+        user= 'ramsayb2'
+    )
+    participant = CourseParticipant.create(
+        course= 99,
+        user= 'neillz',
+        hoursEarned= 2.0
+    )
+
+    withdrawProposal(99)
+    with pytest.raises(DoesNotExist):
+        Course.get_by_id(99)
 
 @pytest.mark.integration
 def test_renewProposal():
