@@ -18,7 +18,6 @@ from app.models.eventParticipant import EventParticipant
 from app.models.courseQuestion import CourseQuestion
 from app.models.questionNote import QuestionNote
 from app.models.interest import Interest
-from app.models.eventFacilitator import EventFacilitator
 from app.models.note import Note
 from app.models.programManager import ProgramManager
 from app.models.emailTemplate import EmailTemplate
@@ -26,6 +25,7 @@ from app.models.backgroundCheck import BackgroundCheck
 # from app.models.backgroundCheckType import BackgroundCheckType
 from app.models.adminLogs import AdminLogs
 from app.models.emailLog import EmailLog
+from app.models.eventFile import EventFile
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -216,83 +216,68 @@ Term.insert_many(terms).on_conflict_replace().execute()
 programs = [
     {
         "id": 1,
-        "programName": "Empty Bowls",
+        "programName": "Hunger Initiatives",
         "isStudentLed": False,
         "isBonnerScholars": False,
-        "emailReplyTo" :"",
-        "emailSenderName" : ""
+        "contactEmail": "",
+        "contactName": ""
     },
     {
         "id": 2,
         "programName": "Berea Buddies",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "emailReplyTo" :"",
-        "emailSenderName" : ""
+        "contactEmail": "",
+        "contactName": ""
+
     },
     {
         "id": 3,
-        "programName": "Adopt A Grandparent",
+        "programName": "Adopt-a-Grandparent",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "emailReplyTo" :"",
-        "emailSenderName" : ""
+        "contactEmail": "",
+        "contactName": ""
     },
     {
         "id": 5,
         "programName": "Bonners Scholars",
         "isStudentLed": False,
         "isBonnerScholars": True,
-        "emailReplyTo" :"",
-        "emailSenderName" : ""
+        "contactEmail": "",
+        "contactName": ""
     },
     {
         "id": 6,
         "programName": "Habitat for Humanity",
         "isStudentLed": False,
         "isBonnerScholars": False,
-        "emailReplyTo" :"",
-        "emailSenderName" : ""
+        "contactEmail": "",
+        "contactName": ""
     },
     {
         "id": 7,
         "programName": "Berea Teen Mentoring",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "emailReplyTo" :"",
-        "emailSenderName" : ""
+        "contactEmail": "",
+        "contactName": ""
     },
     {
         "id": 8,
         "programName": "Hispanic Outreach Program",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "emailReplyTo" :"",
-        "emailSenderName" : ""
-    },
-    {
-        "id": 9,
-        "programName": "People Who Care",
-        "isStudentLed": True,
-        "isBonnerScholars": False,
-        "emailReplyTo" :"",
-        "emailSenderName" : ""
+        "contactEmail": "",
+        "contactName": ""
     },
     {
         "id": 10,
-        "programName": "Food Drive",
-        "isStudentLed": False,
-        "isBonnerScholars": False,
-        "emailReplyTo" :"",
-        "emailSenderName" : ""
-    },
-    {
-        "id": 12,
         "programName": "Berea Tutoring",
         "isStudentLed": False,
         "isBonnerScholars": False,
-        "emailReplyTo" :"",
-        "emailSenderName" : ""
+        "contactEmail": "",
+        "contactName": ""
     }
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
@@ -308,7 +293,9 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Seabury Center",
         "startDate": datetime.strptime("2021 10 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
+        "contactEmail": "testEmail",
+        "contactName": "testName"
     },
     {
         "id": 2,
@@ -320,7 +307,9 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Berea Community School",
         "startDate": datetime.strptime("2021 11 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
+        "contactEmail": "testEmail",
+        "contactName": "testName"
     },
     {
         "id": 3,
@@ -332,7 +321,9 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Alumni Patio",
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
+        "contactEmail": "testEmail",
+        "contactName": "testName"
     },
     {
         "id": 4,
@@ -344,7 +335,9 @@ events = [
         "timeEnd": datetime.strptime("9:00 am", "%I:%M %p"),
         "location": "Stephenson Building",
         "startDate": datetime.strptime("2021 6 25","%Y %m %d"),
-        "endDate": datetime.strptime("2021 6 25","%Y %m %d")
+        "endDate": datetime.strptime("2021 6 25","%Y %m %d"),
+        "contactEmail": "testEmail",
+        "contactName": "testName"
     },
     {
         "id": 5,
@@ -356,7 +349,9 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Woodspen",
         "startDate": datetime.strptime("2021 6 18","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
+        "contactEmail": "testEmail",
+        "contactName": "testName"
     },
     {
         "id": 6,
@@ -368,7 +363,9 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Woods-Penniman",
         "startDate": datetime.strptime("2021 08 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 9 12","%Y %m %d")
+        "endDate": datetime.strptime("2021 9 12","%Y %m %d"),
+        "contactEmail": "testEmail",
+        "contactName": "testName"
     },
     {
         "id": 7,
@@ -380,7 +377,9 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Berea Community Park",
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
+        "contactEmail": "testEmail",
+        "contactName": "testName"
     },
     {
         "id": 8,
@@ -392,7 +391,9 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Stephenson Building",
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
+        "contactEmail": "testEmail",
+        "contactName": "testName"
     },
     {
         "id": 9,
@@ -404,7 +405,9 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Berea Farm",
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
+        "contactEmail": "testEmail",
+        "contactName": "testName"
 
     },
     {
@@ -417,7 +420,9 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Stephenson Building",
         "startDate": datetime.strptime("2021 1 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 6 12","%Y %m %d")
+        "endDate": datetime.strptime("2021 6 12","%Y %m %d"),
+        "contactEmail": "testEmail",
+        "contactName": "testName"
     },
     {
         "id": 11,
@@ -429,7 +434,9 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Stephenson Building",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 7 12","%Y %m %d")
+        "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
+        "contactEmail": "testEmail",
+        "contactName": "testName"
     },
     {
         "id": 12,
@@ -441,7 +448,9 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Boone Tavern",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 7 12","%Y %m %d")
+        "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
+        "contactEmail": "testEmail",
+        "contactName": "testName"
     },
     {
         "id": 13,
@@ -453,7 +462,9 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Berea Community Park",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 7 12","%Y %m %d")
+        "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
+        "contactEmail": "testEmail",
+        "contactName": "testName"
     },
     {
         "id": 14,
@@ -466,7 +477,9 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Woods-Penniman",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 7 12","%Y %m %d")
+        "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
+        "contactEmail": "testEmail",
+        "contactName": "testName"
     },
     {
         "id": 15,
@@ -478,7 +491,9 @@ events = [
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Alumni Building",
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
-        "endDate": datetime.strptime("2021 7 12","%Y %m %d")
+        "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
+        "contactEmail": "testEmail",
+        "contactName": "testName"
     },
 ]
 Event.insert_many(events).on_conflict_replace().execute()
@@ -572,7 +587,7 @@ courses = [
         "term": 3,
         "status": 1,
         "courseCredit": "",
-        "createdBy": "",
+        "createdBy": "ramsayb2",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
 
@@ -583,7 +598,7 @@ courses = [
         "term": 2,
         "status": 2,
         "courseCredit": "",
-        "createdBy": "",
+        "createdBy": "heggens",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
 
@@ -594,18 +609,18 @@ courses = [
         "term": 4,
         "status": 3,
         "courseCredit": "",
-        "createdBy": "",
+        "createdBy": "ramsayb2",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
 
     },
     {
-        "id": 3,
-        "courseName": "French Help",
-        "term": 4,
-        "status": 3,
+        "id": 4,
+        "courseName": "Testing",
+        "term": 2,
+        "status": 1,
         "courseCredit": "",
-        "createdBy": "",
+        "createdBy": "heggens",
         "isAllSectionsServiceLearning": True,
         "isPermanentlyDesignated": False,
 
@@ -633,6 +648,16 @@ courseInstructorRecords = [
         "id": 4,
         "course": 3,
         "user": "heggens"
+    },
+    {
+        "id": 5,
+        "course": 4,
+        "user": "ramsayb2"
+    },
+    {
+        "id": 6,
+        "course": 4,
+        "user": "qasema"
     }
 
 ]
@@ -839,15 +864,6 @@ bannedUser = [
 
 ProgramBan.insert_many(bannedUser).on_conflict_replace().execute()
 
-facilitators = [
-
-    {
-    'user': 'ramsayb2',
-    'event': 1
-    }
-]
-EventFacilitator.insert_many(facilitators).on_conflict_replace().execute()
-
 programManagerPrograms = [
     {
     'user':'khatts',
@@ -863,7 +879,7 @@ programManagerPrograms = [
     },
     {
     'user':'neillz',
-    'program':12
+    'program':10
     }
 ]
 
@@ -976,3 +992,14 @@ logs = [
    }
 ]
 AdminLogs.insert_many(logs).on_conflict_replace().execute()
+
+files = [
+    {
+    "event": 16,
+    "fileName":"Map1.pdf"
+    },
+    {"event": 99999,
+    "fileName" : "adfsfdhqwre_;ldgfk####l;kgfdg.jpg"
+    }
+]
+EventFile.insert_many(files).on_conflict_replace().execute

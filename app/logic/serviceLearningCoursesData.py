@@ -8,22 +8,27 @@ from app.models.courseQuestion import CourseQuestion
 from app.models.questionNote import QuestionNote
 from app.models.note import Note
 from app.models.term import Term
+from app.logic.adminLogs import createLog
 
 def getServiceLearningCoursesData(user):
     """Returns dictionary with data used to populate Service-Learning proposal table"""
-    courses = (Course.select(Course, Term, CourseStatus)
+    courses = (Course.select(Course, Term, User, CourseStatus)
                      .join(CourseInstructor).switch()
                      .join(Term).switch()
-                     .join(CourseStatus)
-                     .where(CourseInstructor.user==user)
-                     .order_by(Course.id))
-
+                     .join(CourseStatus).switch()
+                     .join(User)
+                     .where((CourseInstructor.user==user)|(Course.createdBy==user))
+                     .order_by(Course.term.desc(), Course.status))
+    
     courseDict = {}
     for course in courses:
         otherInstructors = (CourseInstructor.select(CourseInstructor, User).join(User).where(CourseInstructor.course==course))
         faculty = [f"{instructor.user.firstName} {instructor.user.lastName}" for instructor in otherInstructors]
+
+
         courseDict[course.id] = {
         "id":course.id,
+        "creator":f"{course.createdBy.firstName} {course.createdBy.lastName}",
         "name":course.courseName,
         "faculty": faculty,
         "term": course.term,
@@ -35,6 +40,7 @@ def withdrawProposal(courseID):
     Key Dependencies: QuestionNote, CourseQuestion, CourseParticipant,
     CourseInstructor, Note"""
     course = Course.get(Course.id == courseID)
+    courseName = course.courseName
     questions = CourseQuestion.select().where(CourseQuestion.course == course)
     notes = list(Note.select(Note.id)
                 .join(QuestionNote)
@@ -43,6 +49,7 @@ def withdrawProposal(courseID):
     course.delete_instance(recursive=True)
     for note in notes:
         note.delete_instance()
+    createLog(f"Withdrew SLC proposal: {courseName}")
 
 def renewProposal(courseID, term):
     """

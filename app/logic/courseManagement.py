@@ -3,21 +3,26 @@ from flask import flash
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseQuestion import CourseQuestion
 from app.models.courseStatus import CourseStatus
+from app.logic.adminLogs import createLog
 from app.models.course import Course
 from app.models.term import Term
+from app.models.user import User
 
 
-def submittedCourses(termId):
+def unapprovedCourses(termId):
     '''
     Queries the database to get all the neccessary information for submitted courses.
     '''
 
-    submittedCourses = (Course.select(Course, Term)
-                    .join(CourseStatus)
-                    .switch(Course)
-                    .join(Term).where(Term.id == termId, Course.status == CourseStatus.SUBMITTED).distinct())
-
-    return submittedCourses
+    return (Course.select(Course, Term)
+                  .join(CourseStatus)
+                  .switch(Course)
+                  .join(Term)
+                  .where(Term.id == termId,
+                         Course.status.in_([CourseStatus.SUBMITTED,
+                                            CourseStatus.INCOMPLETE]))
+                  .distinct()
+                  .order_by(Course.status))
 
 def approvedCourses(termId):
     '''
@@ -48,7 +53,6 @@ def updateCourse(courseData):
     course= Course.get_by_id(courseData['courseID'])
     for toggler in ["regularOccurenceToggle", "slSectionsToggle", "permanentDesignation"]:
         courseData.setdefault(toggler, "off")
-
     Course.update(
         courseName=courseData["courseName"],
         courseAbbreviation=courseData["courseAbbreviation"],
@@ -62,17 +66,13 @@ def updateCourse(courseData):
     ).where(Course.id == course.id).execute()
     for i in range(1, 7):
         (CourseQuestion.update(questionContent=courseData[f"{i}"])
-                    .where((CourseQuestion.questionNumber == i) & 
+                    .where((CourseQuestion.questionNumber == i) &
                            (CourseQuestion.course==course)).execute())
-
     instructorList = []
-    if 'instructor[]' in courseData: 
+    if 'instructor[]' in courseData:
         instructorList = courseData.getlist('instructor[]')
-
     CourseInstructor.delete().where(CourseInstructor.course == course).execute()
     for instructor in instructorList:
         CourseInstructor.create(course=course, user=instructor)
-
-    return course
-            
-    
+    createLog(f"Created SLC proposal: {courseData['courseName']}")
+    return Course.get_by_id(course.id)

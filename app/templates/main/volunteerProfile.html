@@ -17,8 +17,8 @@
     <h1 align="center">{{volunteer.firstName}} {{volunteer.lastName}}</h1>
     <h6 align="center">{{volunteer.email}}</h6>
     <div align="center">
-          <input size="14" id="phoneInput" type="text"  class="bfh-phone" value="{{volunteer.phoneNumber}}">
-          <button class=" btn-success btn-sm" id="updatePhone" data-username="{{volunteer.username}}">Update</button>
+          <input type="text" style="border: none" size="12" class="form-control-sm bfh-phone"  id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
+          <a class="text-decoration-none primary editButton" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
     </div>
 </div>
 <div class="row">
@@ -181,7 +181,7 @@
          <thead>
            <tr>
              <th scope="col">Description</th>
-             <th scope="col">Completed</th>
+             <th scope="col">Passed</th>
              <th scope="col">Date</th>
              {% if g.current_user.isCeltsAdmin%}
                 <th class="" id="displaySave" scope="col"></th>
@@ -198,9 +198,11 @@
                         {% if completedBackgroundCheck[bgType][0] == True %}
                             <option value=1>Yes</option>
                             <option value=0>No</option>
+                            <option value=''></option>
                         {% else %}
-                            <option value=0>No</option>
+                            <option value=''></option>
                             <option value=1>Yes</option>
+                            <option value=0>No</option>
                         {% endif %}
                     </select>
                 </td>
