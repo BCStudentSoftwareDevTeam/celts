@@ -56,7 +56,7 @@ def test_withdrawProposal():
             term=2,
             status= 1,
             courseCredit= "",
-            createdBy= 'ramsayb2',
+            createdBy= "ramsayb2",
             isAllSectionsServiceLearning= True,
             isPermanentlyDesignated= False,
             )
@@ -68,7 +68,7 @@ def test_withdrawProposal():
     )
     note = Note.create(
         id = 99,
-        createdBy = 'neillz',
+        createdBy = "neillz",
         createdOn = "2021-10-12 00:00:00",
         noteContent = "This is a test note.",
         isPrivate = False
@@ -81,11 +81,11 @@ def test_withdrawProposal():
     instructor = CourseInstructor.create(
         id= 99,
         course= 99,
-        user= 'ramsayb2'
+        user= "ramsayb2"
     )
     participant = CourseParticipant.create(
         course= 99,
-        user= 'neillz',
+        user= "neillz",
         hoursEarned= 2.0
     )
 
