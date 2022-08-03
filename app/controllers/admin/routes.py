@@ -75,7 +75,6 @@ def createEvent(templateid, programid=None):
     # Get the data for the form, from the template or the form submission
     eventData = template.templateData
     if request.method == "POST":
-        attachmentFiles = request.files.getlist("attachmentObject")
         eventData.update(request.form.copy())
     if program:
         eventData["program"] = program
@@ -91,6 +90,7 @@ def createEvent(templateid, programid=None):
     # Try to save the form
     if request.method == "POST":
         try:
+            attachmentFiles = request.files.getlist("attachmentObject")
             saveSuccess, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
             createLog(f"Created event: {eventData['name']}, which had a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}")
 
@@ -171,7 +171,7 @@ def eventDisplay(eventId):
         eventIndex = eventSeriesList.index(event)
         if event.recurringId and len(eventSeriesList) != (eventIndex + 1):
             eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
-        programManager = ProgramManager.get_or_none(program=program)
+
         userParticipatedEvents = getUserParticipatedEvents(program, g.current_user, g.current_term)
         return render_template("eventView.html",
                                 eventData = eventData,
