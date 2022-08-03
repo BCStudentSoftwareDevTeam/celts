@@ -8,6 +8,7 @@ from app.models.courseQuestion import CourseQuestion
 from app.models.questionNote import QuestionNote
 from app.models.note import Note
 from app.models.term import Term
+from app.logic.adminLogs import createLog
 
 def getServiceLearningCoursesData(user):
     """Returns dictionary with data used to populate Service-Learning proposal table"""
@@ -39,6 +40,7 @@ def withdrawProposal(courseID):
     Key Dependencies: QuestionNote, CourseQuestion, CourseParticipant,
     CourseInstructor, Note"""
     course = Course.get(Course.id == courseID)
+    courseName = course.courseName
     questions = CourseQuestion.select().where(CourseQuestion.course == course)
     notes = list(Note.select(Note.id)
                 .join(QuestionNote)
@@ -47,6 +49,7 @@ def withdrawProposal(courseID):
     course.delete_instance(recursive=True)
     for note in notes:
         note.delete_instance()
+    createLog(f"Withdrew SLC proposal: {courseName}")
 
 def renewProposal(courseID, term):
     """

@@ -16,3 +16,36 @@ $(document).ready(function() {
         $("#userSelectForm").submit();
     });
 });
+
+function validatePhoneNumber(editButtonId, phoneInputId, username) {
+    if ($(editButtonId).html() === 'Edit') {
+        $(editButtonId).html("Save");
+        $(phoneInputId).focus();
+    } else {
+        // Save the phone number
+        var phoneInput = $(phoneInputId);
+        var isvalid = phoneInput.val().replace(/\D/g,"").length === 10;
+        let isempty = phoneInput.val().replace(/\D/g,"").length === 0;
+        if (!(isvalid || isempty)) { // allows phone number input to be empty
+            phoneInput.addClass("invalid");
+            window.setTimeout(() => phoneInput.removeClass("invalid"), 1000);
+            phoneInput.focus()
+            return isvalid;
+        }
+          $.ajax({
+            method:"POST",
+            url:"/updatePhone",
+            data:{"username":username,
+                  "phoneNumber":phoneInput.val()},
+            success: function(s){
+                msgFlash("Phone number is updated.", "success")
+            },
+            error: function(request, status, error) {
+                msgFlash("Phone number not updated.", "danger")
+            }
+          })
+        $(editButtonId).html('Edit');
+
+
+}
+}

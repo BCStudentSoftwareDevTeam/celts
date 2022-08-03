@@ -9,7 +9,6 @@ pem add app.models.emailTemplate.EmailTemplate
 pem add app.models.event.Event
 pem add app.models.eventTemplate.EventTemplate
 pem add app.models.eventParticipant.EventParticipant
-pem add app.models.eventFacilitator.EventFacilitator
 pem add app.models.interest.Interest
 pem add app.models.note.Note
 pem add app.models.outsideParticipant.OutsideParticipant

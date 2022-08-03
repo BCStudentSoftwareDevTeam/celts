@@ -49,7 +49,14 @@
                         <p>This event does not require RSVP.</p>
                     {% endif %}
                     {% if eventData.recurringId %}
-                        <p>This event is a recurring event.</p>
+                        <p>This event is a recurring event.
+                            {% if eventData.nextRecurringEvent %}
+                            The next event in the series occurs on <b>{{eventData.nextRecurringEvent.startDate.strftime("%B %-d")}}</b>.
+                            <a href="/eventsList/{{eventData.nextRecurringEvent.id}}/view">Click here for more information.</a>
+                            {% else %}
+                            <b>However, this is the last event in the series.</b>
+                            {% endif %}
+                        </p>
                     {% endif %}
                     {% if eventData.isTraining %}
                         <p>This event is a training.</p>
@@ -57,50 +64,28 @@
                 </div>
                 <div class="col-md-6">
                     <div class="col-sm">
-                        <h3><br>Program Manager</h3>
-                      {% if programManager %}
-                      <p>
-                          {{programManager.user.firstName}} {{programManager.user.lastName}}<br>
-                          {{programManager.user.email}}
-                      </p>
-                      {% else %}
-                      <p>This event has not program manager.</p>
-                      {% endif %}
-                    </div>
-                  <div class="col-md-6">
-                      <h3>Facilitators</h3>
-                              {% if eventFacilitatorNames %}
-                              <ul>
-                                    {% for facilitator in eventFacilitatorNames%}
-                                    <li>{{facilitator.firstName}} {{facilitator.lastName}}</li>
-                                    {% endfor %}
-                              </ul>
-                              {% else %}
-                                  <p>This event has no facilitators.</p>
-                              {% endif %}
-                    </div>
-                    <div>
-                        <div>
-                            {% if program or not eventData.isAllVolunteerTraining %}
-                            <h3>Program Trainings</h3>
-                                      {% for training, participated in programTrainings.items() %}
-                                          {% if g.current_user.isCeltsAdmin %}
-                                            <p>{{training}}</p>
+                        {% if eventData.contactName and eventData.contactEmail %}
+                            <br><h3>Contact Information:</h3>
+                                <div>{{eventData.contactName}} - {{eventData.contactEmail}}</div>
+                        {% endif %}
+                        {% if program or not eventData.isAllVolunteerTraining %}
+                            <h3><br>Program Trainings</h3>
+                                  {% for training, participated in programTrainings.items() %}
+                                      {% if g.current_user.isCeltsAdmin %}
+                                        <p>{{training}}</p>
+                                      {% else %}
+                                      {% if participated == 1 %}
+                                              <p><b>{{training}}</b>: Attended</p>
+                                          {% elif participated == 0 %}
+                                              <p><b>{{training}}</b>: Not attended</p>
                                           {% else %}
-                                          {% if participated == 1 %}
-                                                  <p><b>{{training}}</b>: Attended</p>
-                                              {% elif participated == 0 %}
-                                                  <p><b>{{training}}</b>: Not attended</p>
-                                              {% else %}
-                                                  <p><b>{{training}}</b>: Upcoming</p>
-                                              {% endif%}
-                                          {% endif %}
-                                      {% endfor %}
-                                {% endif %}
-                        </div>
+                                              <p><b>{{training}}</b>: Upcoming</p>
+                                          {% endif%}
+                                      {% endif %}
+                                  {% endfor %}
+                            {% endif %}
+                          </div>
                       </div>
-
-                  </div>
             </div>
             <div class="form-group mb-5">
                 <label class="mb-2" for= "eventAttachments"><strong>Event Attachments</strong></label>

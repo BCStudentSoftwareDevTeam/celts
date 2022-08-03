@@ -73,12 +73,12 @@ def removeProgramManagers():
 @admin_bp.route('/admin/updateProgramInfo/<programID>', methods=['POST'])
 def updateProgramInfo(programID):
     """Grabs info and then outputs it to logic function"""
-    programInfo = request.form #grabs user inputs
+    programInfo = request.form # grabs user inputs
     if g.current_user.isCeltsAdmin:
         try:
-            changeProgramInfo(programInfo["Name"],  #calls logic function to add data to database
-                                    programInfo["Email"],
-                                    programInfo["Sender"],
+            changeProgramInfo(programInfo["programName"],  #calls logic function to add data to database
+                                    programInfo["contactEmail"],
+                                    programInfo["contactName"],
                                     programID)
             flash("Program updated", "success")
             return redirect(url_for("admin.userManagement", showSettingsPane="program"))
