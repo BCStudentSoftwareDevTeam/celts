@@ -65,7 +65,8 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
 
     try:
         events = saveEventToDb(newEventData)
-        if attachmentFiles:
+        filesExist = attachmentFiles[0].content_type == "application/octet-stream"
+        if not filesExist:
             for event in events:
                 addfile.saveFilesForEvent(event.id)
         return True, ""
