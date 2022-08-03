@@ -12,7 +12,6 @@ from app.models.programEvent import ProgramEvent
 from app.logic.volunteers import getEventLengthInHours, updateEventParticipants
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, sendUserData, getEventParticipants, trainedParticipants, getUserParticipatedEvents, checkUserAddedToEvent
 from app.models.eventRsvp import EventRsvp
-from dateutil import parser
 
 @pytest.mark.integration
 def test_getEventLengthInHours():
@@ -66,7 +65,7 @@ def test_checkUserAddedToEvent():
                       startDate=  "2022-12-19",
                       endDate= "2022-12-19",
                       recurringId = 0)
-                      
+
         user = User.get_by_id("ramsayb2")
         event = Event.get(name="Test event 1234", term=2)
         userAdded = checkUserAddedToEvent(user, event)

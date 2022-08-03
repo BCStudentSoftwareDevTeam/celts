@@ -47,8 +47,7 @@ def trackVolunteersPage(eventID):
         .select()
         .where(EventParticipant.event==event))
 
-    eventVolunteerData = (eventRsvpData + list(set(eventParticipantData) - set(eventRsvpData)))
-    print([volunteer.user for volunteer in eventVolunteerData])
+    eventVolunteerData = (eventParticipantData + eventRsvpData)
 
     eventLengthInHours = getEventLengthInHours(
         event.timeStart,
@@ -99,19 +98,19 @@ def addVolunteer(eventId):
         user = User.get(User.username==user)
         isVolunteerInEvent =  (EventRsvp.select().where(EventRsvp.user==user, EventRsvp.event_id == eventId).exists() and
               EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event_id == eventId).exists())
-        userAdded = EventRsvp.get_or_none(user = user, event = eventId)
+        rsvpExists = checkUserAddedToEvent(user, event)
         if len(eventParticipants) == 0 or isVolunteerInEvent == False:
             if event.isPast:
                 eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
-                if not (userAdded):
+                if not rsvpExists:
                     EventParticipant.create(user = user, event = eventId, hoursEarned = eventHours)
                 else:
                     flash("Volunteer already exists." ,"danger")
                     return ""
 
             else:
-                if not (userAdded):
-                    EventParticipant.create(user = user, event = eventId)
+                if not rsvpExists:
+                    EventRsvp.create(user = user, event = eventId)
                 else:
                     flash("Volunteer already exists.", "danger")
                     return ""

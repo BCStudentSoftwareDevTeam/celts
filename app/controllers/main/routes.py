@@ -228,7 +228,7 @@ def volunteerRegister():
 
     user = g.current_user
     isAdded = checkUserAddedToEvent(user, event)
-    if isAdded:
+    if not isAdded:
         isEligible = userRsvpForEvent(user, event.id)
         listOfRequirements = unattendedRequiredEvents(event.singleProgram, user)
 
@@ -242,9 +242,6 @@ def volunteerRegister():
         #if they are eligible
         else:
             flash("Successfully registered for event!","success")
-
-    else:
-        flash("You have already been added to this event.", "warning")
 
     if 'from' in eventData:
         if eventData['from'] == 'ajax':
