@@ -8,7 +8,6 @@ from app.models.user import User
 from app.models.courseParticipant import CourseParticipant
 from app.models.event import Event
 from app.models.programEvent import ProgramEvent
-from app.models.eventFacilitator import EventFacilitator
 from app.logic.events import deleteEvent
 
 @pytest.mark.integration
@@ -44,8 +43,6 @@ def setup_module():
 
     programEvent = ProgramEvent.create(program=2, event=newTrainingEvent)
 
-    facilitatorEntry = EventFacilitator.create(user = 'ramsayb2',event = newTrainingEvent)
-
     newBonnerEvent = Event.create(name = "Test Bonner Event",
                               term = 1,
                               description= "Event for testing",
@@ -61,8 +58,6 @@ def setup_module():
                               recurringId = None)
 
     programEvent = ProgramEvent.create(program=5, event=newBonnerEvent)
-
-    facilitatorEntry = EventFacilitator.create(user = 'ramsayb2',event = newBonnerEvent)
 
     username = "namet"
     adminName = "ramsayb2"

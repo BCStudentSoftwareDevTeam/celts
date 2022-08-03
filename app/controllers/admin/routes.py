@@ -4,28 +4,31 @@ from playhouse.shortcuts import model_to_dict, dict_to_model
 import json
 from datetime import datetime, date
 from dateutil import parser
+
 from app import app
 from app.models.program import Program
 from app.models.event import Event
-from app.models.facilitator import EventFacilitator
 from app.models.eventParticipant import EventParticipant
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.term import Term
-from app.models.programManager import ProgramManager
 from app.models.eventTemplate import EventTemplate
 from app.models.outsideParticipant import OutsideParticipant
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.models.adminLogs import AdminLogs
+from app.models.eventFile import EventFile
+
+from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
+from app.logic.adminLogs import createLog
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
-from app.logic.events import deleteEvent, getAllFacilitators, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
+from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.logic.participants import getEventParticipants, getUserParticipatedEvents
+from app.logic.fileHandler import FileHandler
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
-from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 
 
 @admin_bp.route('/switch_user', methods=['POST'])
@@ -72,16 +75,25 @@ def createEvent(templateid, programid=None):
     # Get the data for the form, from the template or the form submission
     eventData = template.templateData
     if request.method == "POST":
+        attachmentFiles = request.files.getlist("attachmentObject")
         eventData.update(request.form.copy())
-
     if program:
-        # TODO need to handle the multiple programs case
         eventData["program"] = program
+
+    if request.method == "GET":
+        eventData['contactName'] = "CELTS Admin"
+        eventData['contactEmail'] = app.config['celts_admin_contact']
+        if program:
+            if program.contactName and program.contactEmail:
+                eventData['contactName'] = program.contactName
+                eventData['contactEmail'] = program.contactEmail
 
     # Try to save the form
     if request.method == "POST":
         try:
-            saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
+            saveSuccess, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
+            createLog(f"Created event: {eventData['name']}, which had a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}")
+
         except Exception as e:
             print("Error saving event:", e)
             saveSuccess = False
@@ -105,7 +117,6 @@ def createEvent(templateid, programid=None):
             template = template,
             eventData = eventData,
             futureTerms = futureTerms,
-            allFacilitators = getAllFacilitators(),
             isProgramManager = isProgramManager)
 
 @admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
@@ -120,11 +131,12 @@ def eventDisplay(eventId):
     except DoesNotExist as e:
         print(f"Unknown event: {eventId}")
         abort(404)
-
     eventData = model_to_dict(event, recurse=False)
+    associatedAttachments = EventFile.select().where(EventFile.event == eventId)
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
-        saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
+        attachmentFiles = request.files.getlist("attachmentObject")
+        saveSuccess, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
         if saveSuccess:
             flash("Event successfully updated!", "success")
             return redirect(url_for("admin.eventDisplay", eventId = eventId))
@@ -136,6 +148,8 @@ def eventDisplay(eventId):
     userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
     isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
     program = event.singleProgram
+    eventfiles=FileHandler()
+    filepaths =eventfiles.retrievePath(associatedAttachments, eventId)
     isProgramManager = g.current_user.isProgramManagerFor(program)
     rule = request.url_rule
     if 'edit' in rule.rule:
@@ -143,27 +157,29 @@ def eventDisplay(eventId):
             abort(403)
         return render_template("admin/createEvent.html",
                                 eventData = eventData,
-                                allFacilitators = getAllFacilitators(),
                                 futureTerms=futureTerms,
                                 isPastEvent = isPastEvent,
                                 userHasRSVPed = userHasRSVPed,
-                                isProgramManager = isProgramManager)
+                                isProgramManager = isProgramManager,
+                                filepaths = filepaths)
     else:
-        eventFacilitators = EventFacilitator.select().where(EventFacilitator.event == event)
-        eventFacilitatorNames = [eventFacilitator.user for eventFacilitator in eventFacilitators]
         eventData['timeStart'] = event.timeStart.strftime("%-I:%M %p")
         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
         eventData["startDate"] = event.startDate.strftime("%m/%d/%Y")
+        # List below is to identify the next event in the series
+        eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId))
+        eventIndex = eventSeriesList.index(event)
+        if event.recurringId and len(eventSeriesList) != (eventIndex + 1):
+            eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
         programManager = ProgramManager.get_or_none(program=program)
         userParticipatedEvents = getUserParticipatedEvents(program, g.current_user, g.current_term)
         return render_template("eventView.html",
                                 eventData = eventData,
-                                eventFacilitatorNames = eventFacilitatorNames,
                                 isPastEvent = isPastEvent,
                                 userHasRSVPed = userHasRSVPed,
                                 programTrainings = userParticipatedEvents,
-                                programManager = programManager,
-                                isProgramManager = isProgramManager)
+                                isProgramManager = isProgramManager,
+                                filepaths = filepaths)
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
@@ -210,3 +226,10 @@ def adminLogs():
                                 allLogs = allLogs)
     else:
         abort(403)
+
+@admin_bp.route("/deleteFile", methods=["POST"])
+def deleteFIle():
+    fileData= request.form
+    eventfile=FileHandler()
+    eventfile.deleteEventFile(fileData["fileId"],fileData["eventId"])
+    return ""
