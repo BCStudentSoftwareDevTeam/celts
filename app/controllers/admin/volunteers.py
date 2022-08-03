@@ -7,7 +7,7 @@ from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
-from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck, setProgramManager
+from app.logic.volunteers import updateEventParticipants, getEventLengthInHours,setUserBackgroundCheck, setProgramManager
 from app.logic.participants import trainedParticipants, getEventParticipants
 from app.logic.events import getPreviousRecurringEventData
 from app.models.eventRsvp import EventRsvp
@@ -96,10 +96,8 @@ def addVolunteer(eventId):
         if len(eventParticipants) == 0 or isVolunteerInEvent == False:
             if event.isPast:
                 eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
-                addVolunteerToEventRsvp(user, eventId)
                 EventParticipant.create(user = user, event = eventId, hoursEarned = eventHours)
             else:
-                addVolunteerToEventRsvp(user, eventId)
                 EventParticipant.create(user = user, event = eventId)
             successfullyAddedVolunteer = True
         if isVolunteerInEvent:
