@@ -15,8 +15,8 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.interest import Interest
 from app.models.eventRsvp import EventRsvp
+from app.logic.participants import userRsvpForEvent
 from app.logic.events import *
-from app.logic.volunteers import addVolunteerToEventRsvp
 from app.logic.users import addUserInterest, removeUserInterest
 
 @pytest.mark.integration
@@ -531,7 +531,7 @@ def test_upcomingEvents():
         assert eventsInUserInterestedProgram == [newProgramEvent]
 
         # user has RSVPd and is Interested
-        addUserRsvp = addVolunteerToEventRsvp(user, noProgram.id)
+        addUserRsvp = userRsvpForEvent(user, noProgram.id)
         eventsInUserInterestAndRsvp = getUpcomingEventsForUser(user, asOf = testDate)
 
         interestAndRsvp = [[newProgramEvent] + [noProgram]]

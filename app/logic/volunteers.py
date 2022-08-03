@@ -1,5 +1,4 @@
 from app.models.eventParticipant import EventParticipant
-from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.event import Event
 from app.models.program import Program
