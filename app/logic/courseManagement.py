@@ -17,17 +17,15 @@ def unapprovedCourses(termId):
 
     unapprovedCourses = (Course.select(Course, Term, CourseStatus, fn.GROUP_CONCAT(" " ,User.firstName, " ", User.lastName).alias('instructors'))
                   .join(CourseInstructor, JOIN.LEFT_OUTER)
-                  .join(User, JOIN.LEFT_OUTER)
-                  .switch(Course)
-                  .join(CourseStatus)
-                  .switch(Course)
+                  .join(User, JOIN.LEFT_OUTER).switch(Course)
+                  .join(CourseStatus).switch(Course)
                   .join(Term)
                   .where(Term.id == termId,
                          Course.status.in_([CourseStatus.SUBMITTED,
                                             CourseStatus.INCOMPLETE]))
                   .group_by(Course, Term, CourseStatus)
                   .order_by(Course.status))
-                  
+
     return unapprovedCourses
 def approvedCourses(termId):
     '''
@@ -37,13 +35,10 @@ def approvedCourses(termId):
 
     approvedCourses = (Course.select(Course, Term, CourseStatus, fn.GROUP_CONCAT(" " ,User.firstName, " ", User.lastName).alias('instructors'))
                         .join(CourseInstructor, JOIN.LEFT_OUTER)
-                        .join(User, JOIN.LEFT_OUTER)
-                        .switch(Course)
-                        .join(CourseStatus)
-                        .switch(Course)
+                        .join(User, JOIN.LEFT_OUTER).switch(Course)
+                        .join(CourseStatus).switch(Course)
                         .join(Term)
                         .where(Term.id == termId, Course.status == CourseStatus.APPROVED)
-                        .distinct()
                         .group_by(Course, Term, CourseStatus))
 
     return approvedCourses

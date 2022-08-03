@@ -1,6 +1,5 @@
 from app.models.user import User
 from app.models.courseInstructor import CourseInstructor
-from app.models.user import User
 from app.models.course import Course
 
 def getCourseDict():
