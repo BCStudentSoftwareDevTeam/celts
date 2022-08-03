@@ -26,12 +26,7 @@ def getOtherEventsTranscript(username):
                     .group_by(Event.term)
                   )
 
-    otherEvents = []
-
-    for term in otherEventsData:
-        otherEvents.append([term.event.term.description, term.hoursEarned])
-
-    return otherEvents
+    return [[row.event.term.description, row.hoursEarned] for row in otherEventsData]
 
 def getProgramTranscript(username):
     """
@@ -78,9 +73,10 @@ def getSlCourseTranscript(username):
     """
 
     slCourses = (Course
-        .select(CourseParticipant.hoursEarned, Course)
+        .select(fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned"), Course)
         .join(CourseParticipant, on=(Course.id == CourseParticipant.course))
-        .where(CourseParticipant.user == username))
+        .where(CourseParticipant.user == username)
+        .group_by(Course.courseName, Course.term))
 
     return slCourses
 
