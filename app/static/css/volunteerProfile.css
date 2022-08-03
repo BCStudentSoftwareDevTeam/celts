@@ -6,11 +6,8 @@
     margin-top: .5rem;
 }
 
-.today-event{
-        font-weight: bold;
-}
+
 
 .ongoing-event{
-
-    background-color: aquamarine;
+    opacity:0.6;
 }
