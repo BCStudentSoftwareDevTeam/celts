@@ -36,7 +36,7 @@
     {% endif %}
             <div>
                 <div>
-                    <h3><br>Description:</h3>{{eventData.description}}<br><br>
+                    <h3><br>Description:</h3><p>{{eventData.description|urlize}}</p><br><br>
                     <div>
                         {% if eventData.isService %}
                             This event earns service hours.
