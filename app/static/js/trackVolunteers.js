@@ -37,7 +37,7 @@ $(document).ready(function() {
         $.ajax({
           url: `/addVolunteersToEvent/${eventId}`,
           type: "POST",
-          data: {"volunteer" :volunteerList, "ajax": true},
+          data: {"volunteer": volunteerList, "ajax": true},
           success: function(s){
               location.reload()
           },

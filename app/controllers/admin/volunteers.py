@@ -94,8 +94,13 @@ def addVolunteer(eventId):
               EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event_id == eventId).exists())
 
         if len(eventParticipants) == 0 or isVolunteerInEvent == False:
-            addVolunteerToEventRsvp(user, eventId)
-            EventParticipant.create(user = user, event = eventId)
+            if event.isPast:
+                eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
+                addVolunteerToEventRsvp(user, eventId)
+                EventParticipant.create(user = user, event = eventId, hoursEarned = eventHours)
+            else:
+                addVolunteerToEventRsvp(user, eventId)
+                EventParticipant.create(user = user, event = eventId)
             successfullyAddedVolunteer = True
         if isVolunteerInEvent:
             successfullyAddedVolunteer = True
