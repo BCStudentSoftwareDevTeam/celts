@@ -65,6 +65,7 @@
         {% if type != "bonner" %}
             <th>Event Program</th>
         {% endif %}
+        <th scope="col"></th>
       </tr>
     </thead>
     <tbody>
@@ -97,12 +98,14 @@
                 </button>
               </td>
             {% else %}
+             <td>
               {% if event.id in rsvpedEventsID %}
-                <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button></td>
+                <button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button>
               {% elif (not event.isPast) and (event.isRsvpRequired) %}
-                <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button></td>
+                <button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button>
               {% endif %}
             {% endif %}
+             </td>
           </tr>
         {% endfor %}
      </tbody>
@@ -165,12 +168,14 @@
                             </button>
                           </td>
                         {% else %}
+                         <td>
                           {% if event.id in rsvpedEventsID %}
-                            <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button></td>
+                            <button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button>
                           {% elif (not event.isPast) and (event.isRsvpRequired) %}
-                            <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button></td>
+                            <button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button>
                           {% endif %}
                         {% endif %}
+                         </td>
                       </tr>
                     {% endfor %}
                 </tbody>
