@@ -6,7 +6,6 @@ def searchUsers(query, category=None):
 
         MySQL LIKE is case insensitive
     '''
-    print("AAAAAAAAAAAAAAA", query)
     # add wildcards to each piece of the query
     splitSearch = query.strip().split()
     firstName = splitSearch[0] + "%"
