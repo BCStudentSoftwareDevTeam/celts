@@ -64,9 +64,11 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
         return False, validationErrorMessage
 
     try:
-        events = saveEventToDb(newEventData)
-        filesExist = attachmentFiles[0].content_type != "application/octet-stream"
-        if filesExist:
+        if  attachmentFiles == None:
+            saveEventToDb(newEventData)
+            return True, ""
+        else:
+            events = saveEventToDb(newEventData)
             for event in events:
                 addfile.saveFilesForEvent(event.id)
         return True, ""

@@ -76,6 +76,7 @@ def createEvent(templateid, programid=None):
     eventData = template.templateData
     if request.method == "POST":
         attachmentFiles = request.files.getlist("attachmentObject")
+        fileDoesNotExist = attachmentFiles[0].content_type == "application/octet-stream"
         eventData.update(request.form.copy())
     if program:
         eventData["program"] = program
@@ -91,7 +92,10 @@ def createEvent(templateid, programid=None):
     # Try to save the form
     if request.method == "POST":
         try:
-            saveSuccess, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
+            if fileDoesNotExist:
+                saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
+            else:
+                saveSuccess, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
             createLog(f"Created event: {eventData['name']}, which had a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}")
 
         except Exception as e:
