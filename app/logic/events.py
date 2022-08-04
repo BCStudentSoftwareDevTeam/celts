@@ -1,3 +1,4 @@
+from flask import g
 from peewee import DoesNotExist, fn, JOIN
 from dateutil import parser
 from datetime import timedelta, date
@@ -146,10 +147,19 @@ def getTrainingEvents(term):
         with the most programs (highest count) by doing this we can ensure that the event being
         returned is the All Trainings Event.
     """
-    trainingEvents = (Event.select(Event)
-                           .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate)
-                           .where(Event.isTraining,
-                                  Event.term == term))
+    if (g.current_user.isStudent and not g.current_user.isBonnerScholar) or g.current_user.isFaculty:
+        trainingEvents = (Event.select(Event)
+                                .join(ProgramEvent)
+                                .join(Program)
+                                .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate)
+                                .where(Event.isTraining,
+                                        Event.term == term,
+                                        not Program.isBonnerScholars))
+    else:
+        trainingEvents = (Event.select(Event)
+                               .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate)
+                               .where(Event.isTraining,
+                                      Event.term == term))
 
     return list(trainingEvents)
 
