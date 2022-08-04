@@ -7,6 +7,7 @@ from dateutil import parser
 
 from app import app
 from app.models.program import Program
+from app.models.programManager import ProgramManager
 from app.models.event import Event
 from app.models.eventParticipant import EventParticipant
 from app.models.eventRsvp import EventRsvp
