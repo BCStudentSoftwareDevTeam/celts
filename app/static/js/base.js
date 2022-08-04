@@ -1,3 +1,6 @@
+const demoId = document.getElementById('paw');
+console.log(demoId);
+
 function msgFlash(flash_message, status){
     if (status === "success") {
         category = "success";
@@ -15,7 +18,10 @@ $(document).ready(function() {
     $("#userSelect").on('change', function() {
         $("#userSelectForm").submit();
     });
+    $("#flashes").delay(5000).fadeOut();
+
 });
+
 
 function validatePhoneNumber(editButtonId, phoneInputId, username) {
     if ($(editButtonId).html() === 'Edit') {
