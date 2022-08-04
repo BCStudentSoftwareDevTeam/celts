@@ -34,6 +34,8 @@ def test_course_management():
 
         CourseInstructor.create(course = submittedCourse.id,
                                                     user = 'ramsayb2')
+        CourseInstructor.create(course = submittedCourse.id,
+                                                    user = 'neillz')
         CourseInstructor.create(course = approvedCourse.id,
                                                     user = 'ramsayb2')
 
@@ -42,6 +44,6 @@ def test_course_management():
         assert approvedCourse in approvedCourses(termId)
         assert submittedCourse in unapprovedCourses(termId)
         assert incompleteCourse in unapprovedCourses(termId), "unapprovedCourses doesn't include INCOMPLETE proposals"
-        assert CourseInstructor.select(CourseInstructor, Course).join(Course).where(Course.id == 2) == ["Brian Ramsay, Zach Neill"]
+        assert CourseInstructor.select(CourseInstructor, User, Course).join(User).switch().join(Course).where(Course.id == submittedCourse.id) in unapprovedCourses(termId)
 
         transaction.rollback()
