@@ -93,9 +93,8 @@ def createEvent(templateid, programid=None):
     if request.method == "POST":
         try:
             if fileDoesNotExist:
-                saveSuccess, validationErrorMessage = attemptSaveEvent(eventData)
-            else:
-                saveSuccess, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
+                attachmentFiles = None
+            saveSuccess, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
             createLog(f"Created event: {eventData['name']}, which had a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}")
 
         except Exception as e:

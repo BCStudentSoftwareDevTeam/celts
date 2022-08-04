@@ -64,11 +64,8 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
         return False, validationErrorMessage
 
     try:
-        if  attachmentFiles == None:
-            saveEventToDb(newEventData)
-            return True, ""
-        else:
-            events = saveEventToDb(newEventData)
+        events = saveEventToDb(newEventData)
+        if  attachmentFiles != None:
             for event in events:
                 addfile.saveFilesForEvent(event.id)
         return True, ""
