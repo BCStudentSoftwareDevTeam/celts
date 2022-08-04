@@ -90,21 +90,19 @@ def addVolunteerToEventRsvp(user, volunteerEventID):
     except Exception as e:
         return False
 
-def setUserBackgroundCheck(user, bgType, checkPassed, dateCompleted):
+def addUserBackgroundCheck(user, bgType, checkPassed, dateCompleted):
     """
     Changes the status of a users background check depending on what was marked
     on their volunteer profile.
     """
     today = date.today()
     user = User.get_by_id(user)
-    deleteInstance = BackgroundCheck.delete().where(BackgroundCheck.user==user, BackgroundCheck.type==bgType)
-    deleteInstance.execute()
     if checkPassed == '' and dateCompleted == '':
         createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as incomplete.")
     else:
         if not dateCompleted:
             dateCompleted = None
-        update = BackgroundCheck.create(user=user, type=bgType, passBackgroundCheck=int(checkPassed), dateCompleted=dateCompleted)
+        update = BackgroundCheck.create(user=user, type=bgType, backgroundCheckStatus=checkPassed, dateCompleted=dateCompleted)
         if bool(checkPassed):
             createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as passed.")
         else:

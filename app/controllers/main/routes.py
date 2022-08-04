@@ -93,21 +93,14 @@ def viewVolunteersProfile(username):
         programManagerPrograms = ProgramManager.select().where(ProgramManager.user == volunteer)
         permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
-        allUserEntries = BackgroundCheck.select().where(BackgroundCheck.user == volunteer)
-
-        if g.current_user.isCeltsAdmin:
-            completedBackgroundCheck = {entry.type: [entry.passBackgroundCheck, entry.dateCompleted] for entry in allUserEntries}
-        else:
-            # sets the values to strings because student staff do not have access to input boxes
-            completedBackgroundCheck = {entry.type: ['Yes' if entry.passBackgroundCheck else 'No',
-                                                    '' if entry.dateCompleted == None
-                                                    else entry.dateCompleted.strftime('%m/%d/%Y')] for entry in allUserEntries}
-
+        allEntries = {}
         backgroundTypes = list(BackgroundCheckType.select())
-        # creates data structure for background checks that are not currently completed
-        for checkType in backgroundTypes:
-            if checkType not in completedBackgroundCheck.keys():
-                completedBackgroundCheck[checkType] = ["No"]
+        for type in backgroundTypes:
+            allBackgroundChecks = list(BackgroundCheck.select()
+                                                   .where(BackgroundCheck.user == volunteer,
+                                                          BackgroundCheck.type == type.id)
+                                                   .order_by(BackgroundCheck.dateCompleted.desc()))
+            allEntries[type.id] = [[allBackgroundCheck.backgroundCheckStatus, allBackgroundCheck.dateCompleted.strftime("%m/%d/%Y")] for allBackgroundCheck in allBackgroundChecks]
 
         eligibilityTable = []
         for program in programs:
@@ -131,7 +124,7 @@ def viewVolunteersProfile(username):
                 eligibilityTable = eligibilityTable,
                 volunteer = volunteer,
                 backgroundTypes = backgroundTypes,
-                completedBackgroundCheck = completedBackgroundCheck
+                allEntries = allEntries
             )
     abort(403)
 

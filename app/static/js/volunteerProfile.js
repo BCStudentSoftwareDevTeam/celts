@@ -20,7 +20,6 @@ $(document).ready(function(){
       }
     });
   });
-
   // This function is to disable all the dates before current date in the ban modal End Date picker
   $(function(){
     var banEndDatepicker = $("#banEndDatepicker");
@@ -87,6 +86,7 @@ $(document).ready(function(){
     let bgCheckType = $(this).data("id")
     let bgDate = $("#" + bgCheckType + "_date").val()
     let checkPassed = $("[data-id=" + bgCheckType + "]").val()
+    console.log(checkPassed)
 
     if (checkPassed == '' && bgDate != '') {
         displayMessage("Passed<br>Empty!", "danger")
