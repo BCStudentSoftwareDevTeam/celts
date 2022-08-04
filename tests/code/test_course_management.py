@@ -41,9 +41,13 @@ def test_course_management():
 
         termId = 3
 
+        unapprovedList = list(unapprovedCourses(termId))
+        courseindex = unapprovedList.index(submittedCourse)
+
         assert approvedCourse in approvedCourses(termId)
         assert submittedCourse in unapprovedCourses(termId)
         assert incompleteCourse in unapprovedCourses(termId), "unapprovedCourses doesn't include INCOMPLETE proposals"
-        assert CourseInstructor.select(CourseInstructor, User, Course).join(User).switch().join(Course).where(Course.id == submittedCourse.id) in unapprovedCourses(termId)
+        assert unapprovedList[courseindex].instructors == " Brian Ramsay, Zach Neill"
+
 
         transaction.rollback()
