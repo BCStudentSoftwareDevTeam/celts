@@ -37,7 +37,7 @@
          <th scope="col">RSVP Status</th>
        </thead>
        {% for event in upcomingEvents %}
-           <tr>
+       <tr class="{% if event.startDate == currentDateTime.date() and event.timeStart < currentDateTime.time() %} ongoing-event {% endif %}{% if event.startDate == currentDateTime.date() and not event.timeStart < currentDateTime.time() %} bg-info {% endif %}">
              <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
              <td><a href= '/eventsList/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
              <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
