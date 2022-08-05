@@ -131,7 +131,8 @@ def viewVolunteersProfile(username):
                 eligibilityTable = eligibilityTable,
                 volunteer = volunteer,
                 backgroundTypes = backgroundTypes,
-                completedBackgroundCheck = completedBackgroundCheck
+                completedBackgroundCheck = completedBackgroundCheck,
+                currentDateTime = datetime.datetime.now()
             )
     abort(403)
 
@@ -272,18 +273,14 @@ def serviceTranscript(username):
     if user != g.current_user and not g.current_user.isAdmin:
         abort(403)
 
-    programs = getProgramTranscript(username)
     slCourses = getSlCourseTranscript(username)
-    trainingData = getTrainingTranscript(username)
-    bonnerData = getBonnerScholarEvents(username)
     totalHours = getTotalHours(username)
+    allEventTranscript = getAllEventTranscript(username)
     startDate = getStartYear(username)
 
     return render_template('main/serviceTranscript.html',
-                            programs = programs,
+                            allEventTranscript = allEventTranscript,
                             slCourses = slCourses.objects(),
-                            trainingData = trainingData,
-                            bonnerData = bonnerData,
                             totalHours = totalHours,
                             startDate = startDate,
                             userData = user)
