@@ -108,35 +108,48 @@ def test_training_events(training_events):
                                             endDate = "1919-12-13")
         testBonnerProgramEvent = ProgramEvent.create(program = testBonnerProgram.id, event = testBonnerTraining)
         testNotBonnerProgramEvent = ProgramEvent.create(program = testNotBonnerProgram.id, event = testNotBonnerTraining)
-        userNotBonner = User.create(username = "TestNotBonner",
-                            bnumber = "B000000000",
-                            email = "test@test.com",
-                            phoneNumber = "Null",
-                            firstName = "TestFirst",
-                            lastName = "TestLast",
-                            isStudent = False,
-                            isFaculty = True,
-                            isStaff = False,
-                            isCeltsAdmin = False,
-                            isCeltsStudentStaff = False,
-                            isBonnerScholar = False)
-        userBonner = User.create(username = "TestBonner",
-                            bnumber = "B0000000000",
-                            email = "test@test.com",
-                            phoneNumber = "Null",
-                            firstName = "TestFirst",
-                            lastName = "TestLast",
-                            isStudent = False,
-                            isFaculty = False,
-                            isStaff = False,
-                            isCeltsAdmin = False,
-                            isCeltsStudentStaff = False,
-                            isBonnerScholar = False)
+        userFaculty = User.create(username = "TestNotBonner",
+                                    bnumber = "B000000000",
+                                    email = "test@test.com",
+                                    phoneNumber = "Null",
+                                    firstName = "TestFirst",
+                                    lastName = "TestLast",
+                                    isStudent = False,
+                                    isFaculty = True,
+                                    isStaff = False,
+                                    isCeltsAdmin = False,
+                                    isCeltsStudentStaff = False,
+                                    isBonnerScholar = False)
+        userBonnerScholar = User.create(username = "TestBonnerScholar",
+                                        bnumber = "B0000000000",
+                                        email = "test@test.com",
+                                        phoneNumber = "Null",
+                                        firstName = "TestFirst",
+                                        lastName = "TestLast",
+                                        isStudent = True,
+                                        isFaculty = False,
+                                        isStaff = False,
+                                        isCeltsAdmin = False,
+                                        isCeltsStudentStaff = False,
+                                        isBonnerScholar = True)
+        userNotBonnerScholar = User.create(username = "TestNotBonnerScholar",
+                                            bnumber = "B00000000001",
+                                            email = "test@test.com",
+                                            phoneNumber = "Null",
+                                            firstName = "TestFirst",
+                                            lastName = "TestLast",
+                                            isStudent = True,
+                                            isFaculty = False,
+                                            isStaff = False,
+                                            isCeltsAdmin = False,
+                                            isCeltsStudentStaff = False,
+                                            isBonnerScholar = False)
         notBonnerList = [testNotBonnerTraining]
         bonnerList = [testNotBonnerTraining, testBonnerTraining]
 
-        assert notBonnerList == getTrainingEvents(testTerm, userNotBonner)
-        assert bonnerList == getTrainingEvents(testTerm, userBonner)
+        assert notBonnerList == getTrainingEvents(testTerm, userFaculty)
+        assert notBonnerList == getTrainingEvents(testTerm, userNotBonnerScholar)
+        assert bonnerList == getTrainingEvents(testTerm, userBonnerScholar)
 
         transaction.rollback()
 
