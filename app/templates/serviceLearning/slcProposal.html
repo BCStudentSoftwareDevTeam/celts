@@ -84,7 +84,7 @@
           <option value="{{ term.id }}" {{ "selected" if course.term == term }}> {{ term.description }}</option>
         {% endfor %}
       </select>
-      <label for="regularOccurenceToggle">How often will this course occur?</label>
+      <label for="courseOccurrence">How often will this course recur?</label>
       <div class="pb-2">
           <input
             value="{{course.courseOccurrence}}"

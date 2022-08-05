@@ -189,7 +189,6 @@ function saveCourseData(url, successCallback) {
     if (!validateForm()) return false;
 
     var formdata = $("form").serialize()
-    console.log(formdata)
     var instructordata = $.param({"instructor":getCourseInstructors()})
     $.ajax({
         url: url,
