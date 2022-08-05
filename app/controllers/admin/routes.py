@@ -7,6 +7,7 @@ from dateutil import parser
 
 from app import app
 from app.models.program import Program
+from app.models.programManager import ProgramManager
 from app.models.event import Event
 from app.models.eventParticipant import EventParticipant
 from app.models.eventRsvp import EventRsvp
@@ -76,6 +77,9 @@ def createEvent(templateid, programid=None):
     eventData = template.templateData
     if request.method == "POST":
         attachmentFiles = request.files.getlist("attachmentObject")
+        fileDoesNotExist = attachmentFiles[0].content_type == "application/octet-stream"
+        if fileDoesNotExist:
+            attachmentFiles = None
         eventData.update(request.form.copy())
     if program:
         eventData["program"] = program
