@@ -16,7 +16,7 @@ $(document).ready(function() {
     $("#userSelect").on('change', function() {
         $("#userSelectForm").submit();
     });
-    $("#flash_container").delay(5000).fadeOut();
+    $(".alert").delay(5000).fadeOut();
 
 });
 
