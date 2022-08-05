@@ -1,4 +1,3 @@
-from flask import g
 from peewee import DoesNotExist, fn, JOIN
 from dateutil import parser
 from datetime import timedelta, date
@@ -140,14 +139,17 @@ def getStudentLedEvents(term):
 
     return programs
 
-def getTrainingEvents(term):
+def getTrainingEvents(term, user):
     """
         The allTrainingsEvent query is designed to select and count eventId's after grouping them
         together by id's of similiar value. The query will then return the event that is associated
         with the most programs (highest count) by doing this we can ensure that the event being
         returned is the All Trainings Event.
+        term: expected to be the ID of a term
+        user: expected to be the current user
+        return: a list of all trainings the user can view
     """
-    if (g.current_user.isStudent and not g.current_user.isBonnerScholar) or g.current_user.isFaculty:
+    if (user.isStudent and not user.isBonnerScholar) or user.isFaculty:
         trainingEvents = (Event.select(Event)
                                 .join(ProgramEvent)
                                 .join(Program)

@@ -69,10 +69,14 @@ def test_studentled_events(training_events):
 
 @pytest.mark.integration
 def test_training_events(training_events):
+    user = {"isStudent" : 0,
+            "isBonnerScholar" : 0,
+            "isFaculty" : 0}
     training = training_events
     allTrainingPrograms = [Event.get_by_id(1), training.event]
 
-    assert allTrainingPrograms == getTrainingEvents(2)
+    assert allTrainingPrograms == getTrainingEvents(2, user)
+
 
 @pytest.mark.integration
 def test_bonner_events(special_bonner):
