@@ -34,13 +34,20 @@ def test_course_management():
 
         CourseInstructor.create(course = submittedCourse.id,
                                                     user = 'ramsayb2')
+        CourseInstructor.create(course = submittedCourse.id,
+                                                    user = 'neillz')
         CourseInstructor.create(course = approvedCourse.id,
                                                     user = 'ramsayb2')
 
         termId = 3
 
+        unapprovedList = list(unapprovedCourses(termId))
+        courseindex = unapprovedList.index(submittedCourse)
+
         assert approvedCourse in approvedCourses(termId)
         assert submittedCourse in unapprovedCourses(termId)
         assert incompleteCourse in unapprovedCourses(termId), "unapprovedCourses doesn't include INCOMPLETE proposals"
+        assert unapprovedList[courseindex].instructors == " Brian Ramsay, Zach Neill"
+
 
         transaction.rollback()

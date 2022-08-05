@@ -26,7 +26,7 @@ class Program(baseModel):
                 8: baseUrl + "hunger-initiatives/",
                 10: "https://www.berea.edu/celts/bonner-scholars-program/",
                }
-        if self.id > 10:
+        if self.id not in urls:
             print("We have programs without a URL! It's time to fix this code.")
             return baseUrl
 
