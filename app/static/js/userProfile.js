@@ -98,7 +98,7 @@ $(document).ready(function(){
     }
 
     let data = {
-        checkPassed: checkPassed,      // Expected to be either a 0 or a 1 volunteerProfile.js
+        checkPassed: checkPassed,      // Expected to be either a 0 or a 1 userProfile.js
         user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
         bgType: $(this).attr("id"),       // Expected to be the ID of a background check in the database
         bgDate: bgDate  // Expected to be the date of the background check completion or '' if field is empty
@@ -132,10 +132,11 @@ $(document).ready(function(){
     validatePhoneNumber(this, "#phoneInput", username)
   });
 });
+
 function showHistory(bgType){
-    console.log("#" + bgType.id)
     $("#historyModal" + bgType.id).modal("toggle")
 }
+
 function displayMessage(message, color) {  // displays message for saving background check
     $("#displaySave").html(message).addClass("text-"+ color)
     setTimeout(function() {$("#displaySave").html("").removeClass("text-"+ color)}, 2000)

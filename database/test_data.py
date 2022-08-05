@@ -971,7 +971,7 @@ background = [
     "dateCompleted": datetime.strptime("2021 10 12","%Y %m %d")
     },
     {
-    "user":"mupotsal",
+    "user": "mupotsal",
     "type": "SHS",
     "backgroundCheckStatus": "Submitted",
     "dateCompleted": datetime.strptime("2021 10 12","%Y %m %d")

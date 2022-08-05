@@ -66,7 +66,7 @@ def events(selectedTerm):
         user = g.current_user)
 
 @main_bp.route('/profile/<username>', methods=['GET'])
-def viewVolunteersProfile(username):
+def viewUsersProfile(username):
     """
     This function displays the information of a volunteer to the user
     """
@@ -99,7 +99,7 @@ def viewVolunteersProfile(username):
             allBackgroundChecks = list(BackgroundCheck.select()
                                                    .where(BackgroundCheck.user == volunteer,
                                                           BackgroundCheck.type == type.id)
-                                                   .order_by(BackgroundCheck.dateCompleted.desc()))
+                                                   .order_by(BackgroundCheck.dateCompleted.desc()).group_by(BackgroundCheck.backgroundCheckStatus, BackgroundCheck.dateCompleted))
             allEntries[type.id] = [[allBackgroundCheck.backgroundCheckStatus, allBackgroundCheck.dateCompleted.strftime("%m/%d/%Y")] for allBackgroundCheck in allBackgroundChecks]
 
         eligibilityTable = []
@@ -115,7 +115,7 @@ def viewVolunteersProfile(username):
                                    "trainingList": userParticipatedEvents,
                                    "isNotBanned": True if not notes else False,
                                    "banNote": noteForDict})
-        return render_template ("/main/volunteerProfile.html",
+        return render_template ("/main/userProfile.html",
                 programs = programs,
                 programsInterested = programsInterested,
                 upcomingEvents = upcomingEvents,
