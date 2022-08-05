@@ -1,3 +1,7 @@
 .banTable tr {
   vertical-align: middle;
 }
+
+.ongoing-event{
+    opacity:0.6;
+}
