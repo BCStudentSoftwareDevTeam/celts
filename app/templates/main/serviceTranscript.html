@@ -6,26 +6,22 @@
 <h1 class="text-center mt-5 mb-3">{{userData.firstName}} {{userData.lastName}}</h1>
 {% if allEventTranscript %}
     {% for program in allEventTranscript %}
-      {% set hours = allEventTranscript[program][0][1] %}
-      {% set terms = allEventTranscript[program] %}
-        {% if not (hours == None and terms|length == 1) %}
-          <div class="card-body">
-            {% if program == "CELTS Sponsored Events" %}
-                <h5 class="card-title">{{program}}</h5>
-            {% else %}
-                <h5 class="card-title">{{program.programName}}</h5>
-            {% endif %}
-            {% for item in terms %}
-                {% if item[1] != None%}
-                    <h6 class="card-subtitle mb-2 text-muted"> {{item[0]}} - {{item[1]|round(2)}} hour(s)</h6>
-                {% endif %}
-            {% endfor %}
-            {% if program != "CELTS Sponsored Events" %}
-                <p class="card-text">{{program.description}}</p>
-                <a class="d-print-none" href="{{program.url}}" class="card-link">More Information</a>
-            {% endif %}
-          </div>
+        {% set programTitle = program.programName %}
+        {% if not programTitle %}
+            {% set programTitle = program %}
         {% endif %}
+      <div class="card-body">
+            <h5 class="card-title">{{programTitle}}</h5>
+        {% for item in allEventTranscript[program] %}
+            {% if item[1] != None %}
+                <h6 class="card-subtitle mb-2 text-muted"> {{item[0]}} - {{item[1]|round(2)}} hour(s)</h6>
+            {% endif %}
+        {% endfor %}
+        {% if programTitle != "CELTS Sponsored Events" %}
+            <p class="card-text">{{program.description}}</p>
+            <a class="d-print-none" href="{{program.url}}" class="card-link">More Information</a>
+        {% endif %}
+      </div>
     {% endfor %}
 {% endif %}
 
@@ -57,17 +53,14 @@
             <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours["totalCourseHours"]|round(2) }}</p>
         </div>
     </div>
-
-{% endif %}
-{% if startDate == "N/A" %}
-  <h5>No Volunteer Record</h5>
+    <p>*Volunteering since {{ startDate }}</p>
+    <div class="float-end">
+      <button type="button" class="btn btn-primary d-print-none m-4" onclick="window.print()"><span class="bi bi-printer d-print-none"></span>Print</button>
+      <p class="fw-bold pb-3 d-inline">Total Hours:</p>
+      <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours["totalHours"]|round(2) }}</p>
+    </div>
 {% else %}
-  <p>*Volunteering since {{ startDate }}</p>
-  <div class="float-end">
-    <button type="button" class="btn btn-primary d-print-none m-4" onclick="window.print()"><span class="bi bi-printer d-print-none"></span>Print</button>
-    <p class="fw-bold pb-3 d-inline">Total Hours:</p>
-    <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours["totalHours"]|round(2) }}</p>
-  </div>
+    <h5>No Volunteer Record</h5>
 {% endif %}
 <div class="d-print-none pt-5">
   <br><p>If there are any corrections that need to be made, contact <a href="mailto:cochranea@berea.edu">Ashley Cochrane</a></p>

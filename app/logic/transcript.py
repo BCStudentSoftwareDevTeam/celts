@@ -42,8 +42,8 @@ def getProgramTranscript(username):
         .join(EventParticipant)
         .where(EventParticipant.user == username)
         .group_by(Program, Event.term)
-        .order_by(Event.term))
-
+        .order_by(Event.term)
+        .having(fn.SUM(EventParticipant.hoursEarned > 0)))
     transcriptData = {}
     for program in programData:
         if program.program in transcriptData:
