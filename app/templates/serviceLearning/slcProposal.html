@@ -87,7 +87,7 @@
       <label for="courseOccurrence">How often will this course recur?</label>
       <div class="pb-2">
           <input
-            value="{{course.courseOccurrence}}"
+            value="{{course.courseOccurrence or ''}}"
             class="form-control"
             name="courseOccurrence"
             type="text"/>
