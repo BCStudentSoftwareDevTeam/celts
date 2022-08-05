@@ -1,5 +1,3 @@
-const demoId = document.getElementById('paw');
-console.log(demoId);
 
 function msgFlash(flash_message, status){
     if (status === "success") {
@@ -18,7 +16,7 @@ $(document).ready(function() {
     $("#userSelect").on('change', function() {
         $("#userSelectForm").submit();
     });
-    $("#flashes").delay(5000).fadeOut();
+    $("#flash_container").delay(5000).fadeOut();
 
 });
 
