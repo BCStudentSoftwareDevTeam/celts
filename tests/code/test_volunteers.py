@@ -1,7 +1,7 @@
 import pytest
 from flask import g
 from app import app
-from app.logic.volunteers import getEventLengthInHours, updateEventParticipants, setUserBackgroundCheck
+from app.logic.volunteers import getEventLengthInHours, updateEventParticipants, addUserBackgroundCheck
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.event import Event

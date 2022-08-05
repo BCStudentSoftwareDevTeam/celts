@@ -17,7 +17,7 @@
     <h1 align="center">{{volunteer.firstName}} {{volunteer.lastName}}</h1>
     <h6 align="center">{{volunteer.email}}</h6>
     <div align="center">
-          <input type="text" style="border: none" size="12" class="form-control-sm bfh-phone"  id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
+          <input type="text" style="border: none" size="14" class="form-control-sm bfh-phone"  id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
           <a class="text-decoration-none primary editButton" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
     </div>
 </div>
@@ -37,7 +37,7 @@
          <th scope="col">RSVP Status</th>
        </thead>
        {% for event in upcomingEvents %}
-           <tr>
+       <tr class="{% if event.startDate == currentDateTime.date() and event.timeStart < currentDateTime.time() %} ongoing-event {% endif %}{% if event.startDate == currentDateTime.date() and not event.timeStart < currentDateTime.time() %} bg-info {% endif %}">
              <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
              <td><a href= '/eventsList/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
              <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
@@ -195,7 +195,7 @@
                  <h6>{{bgType.description}}</h6>
                  <div>
                      {% if allEntries[bgType.id][0] %}
-                        Status: {{allEntries[bgType.id][0][0]}} as of {{allEntries[bgType.id][0][1]}} &nbsp&nbsp<a type='button' data-bs-toggle="modal" data-bs-target="#historyModal_{{bgType.id}}" href="#">History</a>
+                        Status: {{allEntries[bgType.id][0][0]}} as of {{allEntries[bgType.id][0][1]}} &nbsp&nbsp<a id="-{{bgType.id}}" type='button' onclick="showHistory(this)" href="#">History</a>
                      {% else %}
                         Not Submitted
                      {% endif %}
@@ -254,10 +254,9 @@
     </div>
   </form>
 </div>
-{% endblock %}
 <!-- End Ban or Unban Modal -->
 {% for type in backgroundTypes %}
-    <div class="modal" id="historyModal_{{type.id}}" tabindex="-1">
+    <div class="modal fade" id="historyModal-{{type.id}}" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -276,10 +275,10 @@
                    {% for bgType in backgroundTypes %}
                    <tr>
                      <td>
-                        {{allEntries[bgType.id][0][0]}}
+                        {{allEntries[type.id][0]}}
                      </td>
                      <td>
-                         {{allEntries[bgType.id][0][1]}}
+                         {{allEntries[type.id][0]}}
                      </td>
                     </tr>
                   {% endfor %}
@@ -293,3 +292,4 @@
       </div>
     </div>
 {% endfor %}
+{% endblock %}

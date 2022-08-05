@@ -124,7 +124,9 @@ def viewVolunteersProfile(username):
                 eligibilityTable = eligibilityTable,
                 volunteer = volunteer,
                 backgroundTypes = backgroundTypes,
-                allEntries = allEntries
+                allEntries = allEntries,
+                currentDateTime = datetime.datetime.now()
+
             )
     abort(403)
 

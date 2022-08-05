@@ -131,7 +131,11 @@ $(document).ready(function(){
     var username = $(this).data("username")
     validatePhoneNumber(this, "#phoneInput", username)
   });
-})
+});
+function showHistory(bgType){
+    console.log("#" + bgType.id)
+    $("#historyModal" + bgType.id).modal("toggle")
+}
 function displayMessage(message, color) {  // displays message for saving background check
     $("#displaySave").html(message).addClass("text-"+ color)
     setTimeout(function() {$("#displaySave").html("").removeClass("text-"+ color)}, 2000)
