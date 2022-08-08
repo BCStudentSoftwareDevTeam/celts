@@ -120,6 +120,30 @@ def test_training_events(training_events):
                                     isCeltsAdmin = False,
                                     isCeltsStudentStaff = False,
                                     isBonnerScholar = False)
+        userStaff = User.create(username = "TestisStaff",
+                                            bnumber = "B00000000002",
+                                            email = "test@test.com",
+                                            phoneNumber = "Null",
+                                            firstName = "TestFirst",
+                                            lastName = "TestLast",
+                                            isStudent = False,
+                                            isFaculty = False,
+                                            isStaff = True,
+                                            isCeltsAdmin = False,
+                                            isCeltsStudentStaff = False,
+                                            isBonnerScholar = False)
+        userCeltsAdmin = User.create(username = "TestisCeltsAdmin",
+                                            bnumber = "B00000000003",
+                                            email = "test@test.com",
+                                            phoneNumber = "Null",
+                                            firstName = "TestFirst",
+                                            lastName = "TestLast",
+                                            isStudent = False,
+                                            isFaculty = False,
+                                            isStaff = False,
+                                            isCeltsAdmin = True,
+                                            isCeltsStudentStaff = False,
+                                            isBonnerScholar = False)
         userBonnerScholar = User.create(username = "TestBonnerScholar",
                                         bnumber = "B0000000000",
                                         email = "test@test.com",
@@ -144,11 +168,14 @@ def test_training_events(training_events):
                                             isCeltsAdmin = False,
                                             isCeltsStudentStaff = False,
                                             isBonnerScholar = False)
+
         notBonnerList = [testNotBonnerTraining]
         bonnerList = [testNotBonnerTraining, testBonnerTraining]
 
         assert notBonnerList == getTrainingEvents(testTerm, userFaculty)
         assert notBonnerList == getTrainingEvents(testTerm, userNotBonnerScholar)
+        assert notBonnerList == getTrainingEvents(testTerm, userStaff)
+        assert bonnerList == getTrainingEvents(testTerm, userCeltsAdmin)
         assert bonnerList == getTrainingEvents(testTerm, userBonnerScholar)
 
         transaction.rollback()
