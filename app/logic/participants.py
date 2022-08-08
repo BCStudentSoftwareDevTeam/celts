@@ -1,4 +1,4 @@
-from peewee import fn
+from peewee import fn, JOIN
 from datetime import date
 from app.models.user import User
 from app.models.event import Event
@@ -109,18 +109,22 @@ def getUserParticipatedEvents(program, user, currentTerm):
     """
     academicYear = currentTerm.academicYear
 
-    programTrainings = list(Event.select()
+    programTrainings = list(Event.select(Event, ProgramEvent, Term, EventParticipant)
+                               .join(EventParticipant, JOIN.LEFT_OUTER).switch()
                                .join(ProgramEvent).switch()
                                .join(Term)
                                .where((Event.isTraining | Event.isAllVolunteerTraining),
                                       ProgramEvent.program == program,
-                                      Event.term.academicYear == academicYear).execute())
+                                      Event.term.academicYear == academicYear,
+                                      EventParticipant.user.is_null(True) | (EventParticipant.user == user)).execute())
+
+    bla = {EventParticipant.user: EventParticipant.hoursEarned for p in programTrainings}
+    print(bla)
     userParticipatedEvents = {}
     for training in programTrainings:
-        eventParticipants = getEventParticipants(training.id)
         if training.startDate > date.today():
             didParticipate = [None, training.startDate.strftime("%m/%d/%Y")]
-        elif user in eventParticipants.keys():
+        elif user in bla.keys():
             didParticipate = True
         else:
             didParticipate = False
