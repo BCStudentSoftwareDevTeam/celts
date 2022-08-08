@@ -30,7 +30,7 @@ def trainedParticipants(programID, currentTerm):
             )
 
     allTrainingEvents = set(otherTrainingEvents)
-    eventTrainingDataList = [participant.user.username for participant in (
+    eventTrainingDataList = [participant.user for participant in (
         EventParticipant.select().where(EventParticipant.event.in_(allTrainingEvents))
         )]
     attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(allTrainingEvents), eventTrainingDataList)))
@@ -115,7 +115,6 @@ def getUserParticipatedEvents(program, user, currentTerm):
                                       ProgramEvent.program == program,
                                       Event.term.academicYear == academicYear)
                         )
-
     listOfProgramTrainings = [programTraining for programTraining in programTrainings]
     userParticipatedEvents = {}
     for training in listOfProgramTrainings:

@@ -22,7 +22,7 @@ from app.models.courseStatus import CourseStatus
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
-from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants, getUserParticipatedEvents
+from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, getUserParticipatedEvents
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
@@ -111,13 +111,14 @@ def viewVolunteersProfile(username):
 
         eligibilityTable = []
         for program in programs:
-            notes = ProgramBan.select().where(ProgramBan.user == volunteer,
+            notes = list(ProgramBan.select(ProgramBan, Note)
+                                    .join(Note, on=(ProgramBan.banNote == Note.id))
+                                    .where(ProgramBan.user == volunteer,
                                               ProgramBan.program == program,
-                                              ProgramBan.endDate > datetime.datetime.now())
+                                              ProgramBan.endDate > datetime.datetime.now()).execute())
 
             userParticipatedEvents = getUserParticipatedEvents(program, g.current_user, g.current_term)
             allTrainingsComplete = not len([event for event in userParticipatedEvents.values() if event != True])
-
             noteForDict = notes[-1].banNote.noteContent if notes else ""
             eligibilityTable.append({"program": program,
                                    "completedTraining": allTrainingsComplete,
