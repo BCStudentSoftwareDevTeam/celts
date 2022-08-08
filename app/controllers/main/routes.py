@@ -87,10 +87,10 @@ def viewVolunteersProfile(username):
         interests = Interest.select().where(Interest.user == volunteer)
         programsInterested = [interest.program for interest in interests]
 
-        rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == volunteer)
+        rsvpedEventsList = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == volunteer)
         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
 
-        programManagerPrograms = ProgramManager.select().where(ProgramManager.user == volunteer)
+        programManagerPrograms = ProgramManager.select(ProgramManager, Program).join(Program).where(ProgramManager.user == volunteer)
         permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
         allUserEntries = BackgroundCheck.select().where(BackgroundCheck.user == volunteer)

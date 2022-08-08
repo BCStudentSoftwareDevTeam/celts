@@ -193,17 +193,17 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
         :return: A list of Event objects
     """
 
-    events = (Event.select()
+    events = list(Event.select()
                     .join(ProgramEvent, JOIN.LEFT_OUTER)
                     .join(Interest, JOIN.LEFT_OUTER, on=(ProgramEvent.program == Interest.program))
                     .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
                     .where(Event.startDate >= asOf,
                            (Interest.user == user) | (EventRsvp.user == user))
                     .distinct() # necessary because of multiple programs
-                    .order_by(Event.startDate, Event.name) # keeps the order of events the same when the dates are the same
+                    .order_by(Event.startDate, Event.name).execute() # keeps the order of events the same when the dates are the same
                     )
 
-    return list(events)
+    return events
 
 def validateNewEventData(data):
     """

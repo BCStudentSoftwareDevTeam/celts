@@ -94,7 +94,8 @@ def unattendedRequiredEvents(program, user):
 
 
 def getEventParticipants(event):
-    eventParticipants = (EventParticipant.select()
+    eventParticipants = (EventParticipant.select(EventParticipant, User)
+                                         .join(User)
                                          .where(EventParticipant.event == event))
 
     return {p.user: p.hoursEarned for p in eventParticipants}
@@ -108,16 +109,14 @@ def getUserParticipatedEvents(program, user, currentTerm):
     """
     academicYear = currentTerm.academicYear
 
-    programTrainings = (Event.select()
+    programTrainings = list(Event.select()
                                .join(ProgramEvent).switch()
                                .join(Term)
                                .where((Event.isTraining | Event.isAllVolunteerTraining),
                                       ProgramEvent.program == program,
-                                      Event.term.academicYear == academicYear)
-                        )
-    listOfProgramTrainings = [programTraining for programTraining in programTrainings]
+                                      Event.term.academicYear == academicYear).execute())
     userParticipatedEvents = {}
-    for training in listOfProgramTrainings:
+    for training in programTrainings:
         eventParticipants = getEventParticipants(training.id)
         if training.startDate > date.today():
             didParticipate = [None, training.startDate.strftime("%m/%d/%Y")]
