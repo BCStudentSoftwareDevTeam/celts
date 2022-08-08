@@ -94,11 +94,10 @@ def unattendedRequiredEvents(program, user):
 
 
 def getEventParticipants(event):
-    eventParticipants = (EventParticipant
-        .select()
-        .where(EventParticipant.event == event))
+    eventParticipants = (EventParticipant.select()
+                                         .where(EventParticipant.event == event))
 
-    return {p.user.username: p.hoursEarned for p in eventParticipants}
+    return {p.user: p.hoursEarned for p in eventParticipants}
 
 def getUserParticipatedEvents(program, user, currentTerm):
     """
@@ -123,7 +122,7 @@ def getUserParticipatedEvents(program, user, currentTerm):
         eventParticipants = getEventParticipants(training.id)
         if training.startDate > date.today():
             didParticipate = [None, training.startDate.strftime("%m/%d/%Y")]
-        elif user.username in eventParticipants.keys():
+        elif user in eventParticipants.keys():
             didParticipate = True
         else:
             didParticipate = False

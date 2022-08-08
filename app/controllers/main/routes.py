@@ -116,12 +116,15 @@ def viewVolunteersProfile(username):
                                               ProgramBan.endDate > datetime.datetime.now())
 
             userParticipatedEvents = getUserParticipatedEvents(program, g.current_user, g.current_term)
+            allTrainingsComplete = not len([event for event in userParticipatedEvents.values() if event != True])
+
             noteForDict = notes[-1].banNote.noteContent if notes else ""
             eligibilityTable.append({"program": program,
-                                   "completedTraining": (volunteer.username in trainedParticipants(program, g.current_term)),
+                                   "completedTraining": allTrainingsComplete,
                                    "trainingList": userParticipatedEvents,
                                    "isNotBanned": True if not notes else False,
                                    "banNote": noteForDict})
+
         return render_template ("/main/volunteerProfile.html",
                 programs = programs,
                 programsInterested = programsInterested,
