@@ -22,22 +22,21 @@ def test_update_course():
                                         courseName = "Testing Course",
                                         courseAbbreviation = "TC",
                                         courseCredit = 2,
-                                        isRegularlyOccuring = 0,
+                                        courseOccurrence = "this event is ALL THE TIME",
                                         term = 3,
                                         status = CourseStatus.SUBMITTED,
                                         createdBy = testUser,
                                         isAllSectionsServiceLearning = 0,
                                         serviceLearningDesignatedSections = "None",
                                         isPermanentlyDesignated = 0)
-
         testingCourseInstructor = CourseInstructor.create( course=testingCourse, user="ramsayb2")
 
         courseDict = MultiDict({
-                        "courseName" : "Course Edited",
+                        "courseName": "Course Edited",
                         "courseID": testingCourse,
                         "courseAbbreviation": "EDIT",
                         "credit": 1.5,
-                        "regularOccurenceToggle": "on",
+                        "courseOccurrence": "NEVER",
                         "term": 2,
                         "slSectionsToggle": "on",
                         "slDesignation": "All",
@@ -52,14 +51,13 @@ def test_update_course():
         courseDict.update(MultiDict([
                             ("instructor[]",testUser.username),
                             ("instructor[]",testingCourseInstructor.user.username)]))
-
         updateCourse(courseDict)
 
         updatedCourse = Course.get_by_id(testingCourse.id)
         assert updatedCourse.courseName == "Course Edited"
         assert updatedCourse.courseAbbreviation == "EDIT"
         assert updatedCourse.courseCredit == 1.5
-        assert updatedCourse.isRegularlyOccuring
+        assert updatedCourse.courseOccurrence == "NEVER"
         assert updatedCourse.status.id == CourseStatus.SUBMITTED
         assert updatedCourse.isAllSectionsServiceLearning
         assert updatedCourse.serviceLearningDesignatedSections == "All"
