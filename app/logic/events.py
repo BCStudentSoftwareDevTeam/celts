@@ -149,19 +149,19 @@ def getTrainingEvents(term, user):
         user: expected to be the current user
         return: a list of all trainings the user can view
     """
-    if (user.isStudent and not user.isBonnerScholar) or user.isFaculty:
+    if (user.isAdmin) or (user.isStudent and user.isBonnerScholar):
+        trainingEvents = (Event.select(Event)
+                               .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate)
+                               .where(Event.isTraining,
+                                      Event.term == term))
+    else:
         trainingEvents = (Event.select(Event)
                                 .join(ProgramEvent)
                                 .join(Program)
                                 .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate)
                                 .where(Event.isTraining,
                                         Event.term == term,
-                                        not Program.isBonnerScholars))
-    else:
-        trainingEvents = (Event.select(Event)
-                               .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate)
-                               .where(Event.isTraining,
-                                      Event.term == term))
+                                        Program.isBonnerScholars == False))
 
     return list(trainingEvents)
 
