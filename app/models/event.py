@@ -33,6 +33,7 @@ class Event(baseModel):
             return self.programEvents.get().program
         else:
             return None
+
     @property
     def isPast(self):
         currentTime = datetime.now()
