@@ -109,22 +109,20 @@ def getUserParticipatedEvents(program, user, currentTerm):
     """
     academicYear = currentTerm.academicYear
 
-    programTrainings = list(Event.select(Event, ProgramEvent, Term, EventParticipant)
+    programTrainings = (Event.select(Event, ProgramEvent, Term, EventParticipant)
                                .join(EventParticipant, JOIN.LEFT_OUTER).switch()
                                .join(ProgramEvent).switch()
                                .join(Term)
                                .where((Event.isTraining | Event.isAllVolunteerTraining),
                                       ProgramEvent.program == program,
                                       Event.term.academicYear == academicYear,
-                                      EventParticipant.user.is_null(True) | (EventParticipant.user == user)).execute())
+                                      EventParticipant.user.is_null(True) | (EventParticipant.user == user)))
 
-    bla = {EventParticipant.user: EventParticipant.hoursEarned for p in programTrainings}
-    print(bla)
     userParticipatedEvents = {}
-    for training in programTrainings:
+    for training in programTrainings.objects():
         if training.startDate > date.today():
             didParticipate = [None, training.startDate.strftime("%m/%d/%Y")]
-        elif user in bla.keys():
+        elif training.user:
             didParticipate = True
         else:
             didParticipate = False
