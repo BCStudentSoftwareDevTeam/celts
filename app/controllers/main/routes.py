@@ -84,7 +84,7 @@ def viewVolunteersProfile(username):
         programs = Program.select()
         if not g.current_user.isBonnerScholar and not g.current_user.isAdmin:
             programs = programs.where(Program.isBonnerScholars == False)
-        interests = Interest.select().where(Interest.user == volunteer)
+        interests = Interest.select(Interest, Program).join(Program).where(Interest.user == volunteer)
         programsInterested = [interest.program for interest in interests]
 
         rsvpedEventsList = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == volunteer)
