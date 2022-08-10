@@ -19,12 +19,13 @@ def test_user_model():
     assert user.isCeltsAdmin
     assert not user.isCeltsStudentStaff
     assert user.isAdmin
+    assert user.fullName == "Brian Ramsay"
 
     user = User.get_by_id("partont")
     assert not user.isCeltsAdmin
     assert not user.isCeltsStudentStaff
     assert not user.isAdmin
-
+    assert user.fullName == "Tyler Parton"
 
 @pytest.mark.integration
 def test_isEligibleForProgram():

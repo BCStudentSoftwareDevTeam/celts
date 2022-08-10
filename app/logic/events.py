@@ -82,6 +82,10 @@ def saveEventToDb(newEventData):
 
     eventsToCreate = []
     recurringSeriesId = None
+    if newEventData['isRecurring']:
+        print(recurringSeriesId)
+        recurringSeriesId = newEventData['recurringId']
+
     if isNewEvent and newEventData['isRecurring']:
         eventsToCreate = calculateRecurringEventFrequency(newEventData)
         recurringSeriesId = calculateNewrecurringId()

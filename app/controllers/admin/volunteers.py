@@ -8,7 +8,7 @@ from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, getEventLengthInHours,setUserBackgroundCheck, setProgramManager
-from app.logic.participants import trainedParticipants, getEventParticipants, checkUserAddedToEvent
+from app.logic.participants import trainedParticipants, getEventParticipants, addPersonToEvent
 from app.logic.events import getPreviousRecurringEventData
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
@@ -39,24 +39,16 @@ def trackVolunteersPage(eventID):
     if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
         abort(403)
 
-    eventRsvpData = list(EventRsvp
-        .select()
-        .where(EventRsvp.event==event))
-
-    eventParticipantData = list(EventParticipant
-        .select()
-        .where(EventParticipant.event==event))
-
+    eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event))
+    eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
     eventVolunteerData = (eventParticipantData + eventRsvpData)
 
-    eventLengthInHours = getEventLengthInHours(
-        event.timeStart,
-        event.timeEnd,
-        event.startDate)
+    eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
     recurringEventID = event.recurringId # query Event Table to get recurringId using Event ID.
     recurringEventStartDate = event.startDate
     recurringVolunteers = getPreviousRecurringEventData(recurringEventID)
+
     return render_template("/events/trackVolunteers.html",
         eventVolunteerData = eventVolunteerData,
         eventParticipants = eventParticipants,
@@ -94,37 +86,15 @@ def addVolunteer(eventId):
     eventParticipants = getEventParticipants(eventId)
     usernameList = request.form.getlist("volunteer[]")
 
+    successfullyAddedVolunteer = False
     for user in usernameList:
-        user = User.get(User.username==user)
-        isVolunteerInEvent =  (EventRsvp.select().where(EventRsvp.user==user, EventRsvp.event_id == eventId).exists() and
-              EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event_id == eventId).exists())
-        rsvpExists = checkUserAddedToEvent(user, event)
-        if len(eventParticipants) == 0 or isVolunteerInEvent == False:
-            if event.isPast:
-                eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
-                if not rsvpExists:
-                    EventParticipant.create(user = user, event = eventId, hoursEarned = eventHours)
-                else:
-                    flash("Volunteer already exists." ,"danger")
-                    return ""
+        userObj = User.get_by_id(user)
+        successfullyAddedVolunteer = addPersonToEvent(userObj, event)
 
-            else:
-                if not rsvpExists:
-                    EventRsvp.create(user = user, event = eventId)
-                else:
-                    flash("Volunteer already exists.", "danger")
-                    return ""
-            successfullyAddedVolunteer = True
-        if isVolunteerInEvent:
-            successfullyAddedVolunteer = True
-
-    if len(usernameList) == 0:
-        successfullyAddedVolunteer = False
-
-    if (successfullyAddedVolunteer):
-        flash("Volunteer added successfully.", "success")
-    else:
-        flash("Error when adding volunteer to event." ,"danger")
+        if successfullyAddedVolunteer:
+            flash(f"{userObj.fullName} added successfully.", "success")
+        else:
+            flash(f"Error when adding {userObj.fullName} to event." ,"danger")
 
     if 'ajax' in request.form and request.form['ajax']:
         return ''

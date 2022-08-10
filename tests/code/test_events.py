@@ -15,7 +15,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.interest import Interest
 from app.models.eventRsvp import EventRsvp
-from app.logic.participants import userRsvpForEvent
+from app.logic.participants import addPersonToEvent
 from app.logic.events import *
 from app.logic.users import addUserInterest, removeUserInterest
 
@@ -496,22 +496,18 @@ def test_upcomingEvents():
         noProgram = Event.create(name = "Upcoming event with no program",
                                 term = 2,
                                 description = "Test upcoming no program event.",
-                                timeStart = "18:00:00",
-                                timeEnd = "21:00:00",
                                 location = "The moon",
-                                startDate = "2021-12-12",
-                                endDate = "2021-12-13")
+                                startDate = datetime.date(2021,12,12),
+                                endDate = datetime.date(2021,12,13))
 
         # Create a Program Event to show up when the user marks interest in a
         # new program
         newProgramEvent = Event.create(name = "Upcoming event with  program",
                                 term = 2,
                                 description = "Test upcoming program event.",
-                                timeStart = "18:00:00",
-                                timeEnd = "21:00:00",
                                 location = "The sun",
-                                startDate = "2021-12-12",
-                                endDate = "2021-12-13")
+                                startDate = datetime.date(2021,12,12),
+                                endDate = datetime.date(2021,12,13))
 
         # Create a new Program to create the new Program Event off of so the
         # user can mark interest for it
@@ -525,13 +521,13 @@ def test_upcomingEvents():
         ProgramEvent.create(program = programForInterest, event = newProgramEvent)
 
         # User has not RSVPd and is Interested
-        addInterest = addUserInterest(programForInterest.id, user)
+        addUserInterest(programForInterest.id, user)
         eventsInUserInterestedProgram = getUpcomingEventsForUser(user, asOf = testDate)
 
         assert eventsInUserInterestedProgram == [newProgramEvent]
 
         # user has RSVPd and is Interested
-        addUserRsvp = userRsvpForEvent(user, noProgram.id)
+        EventRsvp.create(event=noProgram, user=user)
         eventsInUserInterestAndRsvp = getUpcomingEventsForUser(user, asOf = testDate)
 
         interestAndRsvp = [[newProgramEvent] + [noProgram]]
@@ -539,7 +535,7 @@ def test_upcomingEvents():
         assert eventsInUserInterestAndRsvp in interestAndRsvp
 
         # User has RSVPd and is not Interested
-        removeInterest = removeUserInterest(programForInterest.id, user)
+        removeUserInterest(programForInterest.id, user)
         eventsInUserRsvp = getUpcomingEventsForUser(user, asOf = testDate)
 
         assert eventsInUserRsvp == [noProgram]

@@ -22,7 +22,7 @@ from app.models.courseStatus import CourseStatus
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
-from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants, getUserParticipatedEvents, checkUserAddedToEvent
+from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getUserParticipatedEvents, checkUserRsvp, addPersonToEvent
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
@@ -224,28 +224,30 @@ def volunteerRegister():
     This function selects the user ID and event ID and registers the user
     for the event they have clicked register for.
     """
-    eventData = request.form
-    event = Event.get_by_id(eventData['id'])
-
+    event = Event.get_by_id(request.form['id'])
+    program = event.singleProgram
     user = g.current_user
-    isAdded = checkUserAddedToEvent(user, event)
-    if not isAdded:
-        isEligible = userRsvpForEvent(user, event.id)
-        listOfRequirements = unattendedRequiredEvents(event.singleProgram, user)
 
-        if not isEligible: # if they are banned
-            flash(f"Cannot RSVP. Contact CELTS administrators: {app.config['celts_admin_contact']}.", "danger")
+    isAdded = checkUserRsvp(user, event)
+    isEligible = isEligibleForProgram(program, user)
+    listOfRequirements = unattendedRequiredEvents(program, user)
 
-        elif listOfRequirements:
+    personAdded = False
+    if isEligible: 
+        personAdded = addPersonToEvent(user, event)
+        if personAdded and listOfRequirements:
             reqListToString = ', '.join(listOfRequirements)
             flash(f"{user.firstName} {user.lastName} successfully registered. However, the following training may be required: {reqListToString}.", "success")
-
-        #if they are eligible
-        else:
+        elif personAdded:
             flash("Successfully registered for event!","success")
+        else:
+            flash(f"RSVP Failed due to an unknown error.", "danger")
+    else:
+        flash(f"Cannot RSVP. Contact CELTS administrators: {app.config['celts_admin_contact']}.", "danger")
 
-    if 'from' in eventData:
-        if eventData['from'] == 'ajax':
+
+    if 'from' in request.form:
+        if request.form['from'] == 'ajax':
             return ''
     return redirect(url_for("admin.eventDisplay", eventId=event.id))
 

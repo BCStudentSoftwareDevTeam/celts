@@ -19,6 +19,10 @@ class User(baseModel):
     def isAdmin(self):
         return (self.isCeltsAdmin or self.isCeltsStudentStaff)
 
+    @property
+    def fullName(self):
+        return f"{self.firstName} {self.lastName}"
+
     def addProgramManager(self, program):
         # Makes a user a Program Manager
         from app.models.programManager import ProgramManager

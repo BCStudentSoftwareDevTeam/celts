@@ -25,7 +25,7 @@ from app.logic.adminLogs import createLog
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
-from app.logic.participants import getEventParticipants, getUserParticipatedEvents
+from app.logic.participants import getEventParticipants, getUserParticipatedEvents, checkUserRsvp, checkUserVolunteer
 from app.logic.fileHandler import FileHandler
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
@@ -149,10 +149,10 @@ def eventDisplay(eventId):
 
     preprocessEventData(eventData)
     futureTerms = selectSurroundingTerms(g.current_term)
-    userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
-    isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
-    program = event.singleProgram
+    userHasRSVPed = checkUserRsvp(g.current_user, event)
+    isPastEvent = event.isPast
     eventfiles=FileHandler()
+    program=event.singleProgram
     filepaths =eventfiles.retrievePath(associatedAttachments, eventId)
     isProgramManager = g.current_user.isProgramManagerFor(program)
     rule = request.url_rule
