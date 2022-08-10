@@ -29,7 +29,10 @@ class Event(baseModel):
 
     @property
     def singleProgram(self):
-        if self.programEvents.count() == 1:
+        # select pe then count the listed slect
+        from app.models.programEvent import ProgramEvent
+        countPE = ProgramEvent.select()
+        if countPE.count() == 1:
             return self.programEvents.get().program
         else:
             return None
