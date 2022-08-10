@@ -15,6 +15,8 @@ class User(baseModel):
     isCeltsStudentStaff = BooleanField(default = False)
     isBonnerScholar = BooleanField(default = False)
 
+    _cache = None
+
     @property
     def isAdmin(self):
         return (self.isCeltsAdmin or self.isCeltsStudentStaff)
@@ -36,7 +38,13 @@ class User(baseModel):
     def isProgramManagerFor(self, program):
         # Looks to see who is the Program Manager for a program
         from app.models.programManager import ProgramManager  # Must defer import until now to avoid circular reference
-        return ProgramManager.select().where(ProgramManager.user == self, ProgramManager.program == program).exists()
+        if self._cache is None:
+            try:
+                self._cache = ProgramManager.select().where(ProgramManager.user == self, ProgramManager.program == program).exists()
+            except DoesNotExist:
+                self._cache = self
+
+        return self._cache
 
     def isProgramManagerForEvent(self, event):
         # Looks to see who the Program Manager for a specific event is
