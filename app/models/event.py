@@ -20,7 +20,6 @@ class Event(baseModel):
     contactEmail = CharField(null=True)
     contactName = CharField(null=True)
 
-
     _spCache = "Empty"
 
     def __str__(self):
