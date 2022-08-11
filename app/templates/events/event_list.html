@@ -79,10 +79,8 @@
             <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
             <td>{{event.location}}</td>
             {% if type != "bonner" %}
-                {% if event.programEvents%}
-                  {% for programEvent in event.programEvents%}
-                  <td>{{programEvent.program.programName}}</td>
-                  {% endfor %}
+                {% if event.singleProgram%}
+                  <td>{{event.singleProgram.programName}}</td>
                 {% else %}
                   <td>This event does not belong to any program</td>
                 {% endif %}

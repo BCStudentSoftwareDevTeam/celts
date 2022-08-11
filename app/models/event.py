@@ -20,6 +20,9 @@ class Event(baseModel):
     contactEmail = CharField(null=True)
     contactName = CharField(null=True)
 
+
+    _spCache = "Empty"
+    
     def __str__(self):
         return f"{self.id}: {self.description}"
 
@@ -30,11 +33,17 @@ class Event(baseModel):
     @property
     def singleProgram(self):
         from app.models.programEvent import ProgramEvent
-        countPE = list(self.programEvents)
-        if len(countPE) == 1:
-            return countPE[0].program
-        else:
-            return None
+        if self._spCache is "Empty":
+            try:
+                countPE = list(self.programEvents.select(ProgramEvent, Program).join(Program))
+                if len(countPE) == 1:
+                    self._spCache = countPE[0].program
+                else:
+                    self._spCache = None
+            except DoesNotExist:
+                self._spCache = self
+
+        return self._spCache
 
     @property
     def isPast(self):
