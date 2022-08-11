@@ -30,7 +30,7 @@ function renew(){
       url: `/serviceLearning/renew/${courseID}/${termID}/`,
       type: "POST",
       success: function(s){
-        location.reload();
+        location = '/serviceLearning/editProposal/' +courseID;
       },
       error: function(request, status, error) {
           console.log(status,error);
