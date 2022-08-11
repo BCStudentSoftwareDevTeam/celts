@@ -22,7 +22,7 @@ class Event(baseModel):
 
 
     _spCache = "Empty"
-    
+
     def __str__(self):
         return f"{self.id}: {self.description}"
 
