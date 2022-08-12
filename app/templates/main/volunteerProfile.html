@@ -64,11 +64,11 @@
           <th scope="col">Event Date</th>
         </thead>
         {% for event in participatedEvents %}
-        <tr class="{% if event.startDate == currentDateTime.date() and event.timeStart < currentDateTime.time() %} ongoing-event {% endif %}{% if event.startDate == currentDateTime.date() and not event.timeStart < currentDateTime.time() %} bg-info {% endif %}">
-              <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
-              <td><a href= '/eventsList/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
-              <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
-            </tr>
+        <tr>
+          <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
+          <td><a href= '/eventsList/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
+          <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
+        </tr>
         {% endfor %}
       {% else %}
         <h5>You have not participated in any events.</h5>

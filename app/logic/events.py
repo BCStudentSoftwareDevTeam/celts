@@ -215,15 +215,21 @@ def getParticipatedEventsForUser(user):
         :return: A list of Event objects
     """
 
-    participatedEvents = list(Event.select(Event, EventParticipant, ProgramEvent, Program)
+    participatedEvents = (Event.select(Event, Program.programName)
                                .join(ProgramEvent)
                                .join(Program).switch()
                                .join(EventParticipant)
                                .where(EventParticipant.event_id == Event.id,
-                                      EventParticipant.user == user)
-                               .order_by(Event.startDate, Event.name).execute())
+                                      EventParticipant.user == user,
+                                      Event.isAllVolunteerTraining == False)
+                               .order_by(Event.startDate, Event.name))
 
-    return participatedEvents
+    allVolunteer = (Event.select(Event, "").where(Event.isAllVolunteerTraining == True))
+    
+    union = participatedEvents.union_all(allVolunteer)
+    unionParticipationWithVolunteer = (union.select_from(union.c.id, union.c.programName, union.c.startDate, union.c.name).order_by(union.c.startDate, union.c.name))
+
+    return unionParticipationWithVolunteer
 
 def validateNewEventData(data):
     """
