@@ -216,18 +216,16 @@ def getParticipatedEventsForUser(user):
     """
 
     participatedEvents = (Event.select(Event, Program.programName)
-                               .join(ProgramEvent)
-                               .join(Program).switch()
+                               .join(ProgramEvent, JOIN.LEFT_OUTER)
+                               .join(Program, JOIN.LEFT_OUTER).switch()
                                .join(EventParticipant)
-                               .where(EventParticipant.event_id == Event.id,
-                                      EventParticipant.user == user,
+                               .where(EventParticipant.user == user,
                                       Event.isAllVolunteerTraining == False)
                                .order_by(Event.startDate, Event.name))
 
-    allVolunteer = (Event.select(Event, "").where(Event.isAllVolunteerTraining == True))
-
+    allVolunteer = (Event.select(Event, "").join(EventParticipant).where(Event.isAllVolunteerTraining == True, EventParticipant.user == user))
     union = participatedEvents.union_all(allVolunteer)
-    unionParticipationWithVolunteer = (union.select_from(union.c.id, union.c.programName, union.c.startDate, union.c.name).order_by(union.c.startDate, union.c.name))
+    unionParticipationWithVolunteer = list(union.select_from(union.c.id, union.c.programName, union.c.startDate, union.c.name).order_by(union.c.startDate, union.c.name))
 
     return unionParticipationWithVolunteer
 
