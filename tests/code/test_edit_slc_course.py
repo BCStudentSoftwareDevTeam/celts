@@ -1,6 +1,8 @@
 import pytest
+from flask import g
 from werkzeug.datastructures import MultiDict
 
+from app import app
 from app.models import mainDB
 from app.models.course import Course
 from app.models.courseInstructor import CourseInstructor
@@ -51,7 +53,10 @@ def test_update_course():
         courseDict.update(MultiDict([
                             ("instructor[]",testUser.username),
                             ("instructor[]",testingCourseInstructor.user.username)]))
-        updateCourse(courseDict)
+
+        with app.test_request_context():
+            g.current_user = "ramsayb2"
+            updateCourse(courseDict)
 
         updatedCourse = Course.get_by_id(testingCourse.id)
         assert updatedCourse.courseName == "Course Edited"
