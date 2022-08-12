@@ -178,8 +178,8 @@ def getOtherEvents(term):
                                Event.isTraining == False,
                                Event.isAllVolunteerTraining == False,
                                ((ProgramEvent.program == None) |
-                                (Program.isStudentLed == False) &
-                                (Program.isBonnerScholars == False)))
+                                ((Program.isStudentLed == False) &
+                                (Program.isBonnerScholars == False))))
                         .order_by(Event.id).execute()
                       )
 
