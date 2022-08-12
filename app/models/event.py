@@ -33,14 +33,11 @@ class Event(baseModel):
     def singleProgram(self):
         from app.models.programEvent import ProgramEvent
         if self._spCache is "Empty":
-            try:
-                countPE = list(self.programEvents.select(ProgramEvent, Program).join(Program))
-                if len(countPE) == 1:
-                    self._spCache = countPE[0].program
-                else:
-                    self._spCache = None
-            except DoesNotExist:
-                self._spCache = self
+            countPE = list(self.programEvents.select(ProgramEvent, Program).join(Program).execute())
+            if len(countPE) == 1:
+                self._spCache = countPE[0].program
+            else:
+                self._spCache = None
 
         return self._spCache
 

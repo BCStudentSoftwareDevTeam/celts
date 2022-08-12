@@ -225,7 +225,7 @@ def getParticipatedEventsForUser(user):
                                .order_by(Event.startDate, Event.name))
 
     allVolunteer = (Event.select(Event, "").where(Event.isAllVolunteerTraining == True))
-    
+
     union = participatedEvents.union_all(allVolunteer)
     unionParticipationWithVolunteer = (union.select_from(union.c.id, union.c.programName, union.c.startDate, union.c.name).order_by(union.c.startDate, union.c.name))
 

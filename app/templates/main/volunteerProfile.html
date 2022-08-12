@@ -65,7 +65,7 @@
         </thead>
         {% for event in participatedEvents %}
         <tr>
-          <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
+          <td>{{event.programName}}</td>
           <td><a href= '/eventsList/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
           <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
         </tr>
