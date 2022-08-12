@@ -599,6 +599,9 @@ def test_volunteerHistory():
         EventParticipant.create(user = user, event = participatedEvent.id)
         assert participatedEvent in getParticipatedEventsForUser(user)
 
+        # Make sure an event that is not supposed to be returned isnt
+        assert Event.get_by_id(1) not in getParticipatedEventsForUser(user)
+
         transaction.rollback()
 
 @pytest.mark.integration
