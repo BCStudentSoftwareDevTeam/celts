@@ -16,6 +16,7 @@ from app.models.eventRsvp import EventRsvp
 from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
 from app.models.eventFile import EventFile
+
 from app.logic.adminLogs import createLog
 from app.logic.utils import format24HourTime
 from app.logic.fileHandler import FileHandler
@@ -171,16 +172,16 @@ def getOtherEvents(term):
     # Gets all events that are not associated with a program and are not trainings
     # Gets all events that have a program but don't fit anywhere
     otherEvents = list(Event.select(Event, Program)
-                    .join(ProgramEvent, JOIN.LEFT_OUTER)
-                    .join(Program, JOIN.LEFT_OUTER)
-                    .where(Event.term == term,
-                           Event.isTraining == False,
-                           Event.isAllVolunteerTraining == False,
-                           ((ProgramEvent.program == None) |
-                            (Program.isStudentLed == False) &
-                            (Program.isBonnerScholars == False)))
-                    .order_by(Event.id)
-                  )
+                        .join(ProgramEvent, JOIN.LEFT_OUTER)
+                        .join(Program, JOIN.LEFT_OUTER)
+                        .where(Event.term == term,
+                               Event.isTraining == False,
+                               Event.isAllVolunteerTraining == False,
+                               ((ProgramEvent.program == None) |
+                                (Program.isStudentLed == False) &
+                                (Program.isBonnerScholars == False)))
+                        .order_by(Event.id).execute()
+                      )
 
     return otherEvents
 
@@ -193,7 +194,7 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
         :return: A list of Event objects
     """
 
-    events = list(Event.select()
+    events =  list(Event.select(Event, ProgramEvent, Interest, EventRsvp)
                     .join(ProgramEvent, JOIN.LEFT_OUTER)
                     .join(Interest, JOIN.LEFT_OUTER, on=(ProgramEvent.program == Interest.program))
                     .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
@@ -204,6 +205,23 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
                     )
 
     return events
+
+def getParticipatedEventsForUser(user):
+    """
+        Get the list of upcoming events that the user is interested in.
+        :param user: a username or User object
+        :param asOf: The date to use when determining future and past events.
+                      Used in testing, defaults to the current timestamp.
+        :return: A list of Event objects
+    """
+
+    participatedEvents = list(Event.select(Event, EventParticipant)
+                               .join(EventParticipant)
+                               .where(EventParticipant.event_id == Event.id,
+                                      EventParticipant.user == user)
+                               .order_by(Event.startDate, Event.name))
+
+    return participatedEvents
 
 def validateNewEventData(data):
     """

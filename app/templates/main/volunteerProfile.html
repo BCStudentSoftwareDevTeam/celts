@@ -51,6 +51,32 @@
      {% endif %}
    </table>
  </div>
+ <!-- Start Program History -->
+ <div class="row">
+   <h4 class="col-sm-9"><p>Participation History: </p></h4>
+ </div>
+  <div class="row table-responsive">
+    <table class="table">
+      {% if participatedEvents|length > 0 %}
+        <thead class="tableHeader">
+          <th scope="col">Program</th>
+          <th scope="col">Event Name</th>
+          <th scope="col">Event Date</th>
+        </thead>
+        {% for event in participatedEvents %}
+        <tr class="{% if event.startDate == currentDateTime.date() and event.timeStart < currentDateTime.time() %} ongoing-event {% endif %}{% if event.startDate == currentDateTime.date() and not event.timeStart < currentDateTime.time() %} bg-info {% endif %}">
+              <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
+              <td><a href= '/eventsList/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
+              <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
+            </tr>
+        {% endfor %}
+      {% else %}
+        <h5>You have not participated in any events.</h5>
+      {% endif %}
+    </table>
+  </div>
+ <!-- End Program History -->
+
  <!-- Start Program Eligibility Table -->
  <div class="table-responsive">
   <h5>Choose interests below to be notified about your upcoming events:</h5>
