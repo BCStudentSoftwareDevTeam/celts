@@ -208,7 +208,7 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
 
 def getParticipatedEventsForUser(user):
     """
-        Get the list of upcoming events that the user is interested in.
+        Get all the events a user has participated in.
         :param user: a username or User object
         :param asOf: The date to use when determining future and past events.
                       Used in testing, defaults to the current timestamp.
