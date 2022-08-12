@@ -215,11 +215,13 @@ def getParticipatedEventsForUser(user):
         :return: A list of Event objects
     """
 
-    participatedEvents = list(Event.select(Event, EventParticipant)
+    participatedEvents = list(Event.select(Event, EventParticipant, ProgramEvent, Program)
+                               .join(ProgramEvent)
+                               .join(Program).switch()
                                .join(EventParticipant)
                                .where(EventParticipant.event_id == Event.id,
                                       EventParticipant.user == user)
-                               .order_by(Event.startDate, Event.name))
+                               .order_by(Event.startDate, Event.name).execute())
 
     return participatedEvents
 
