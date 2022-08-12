@@ -127,15 +127,15 @@ def saveEventToDb(newEventData):
 
 def getStudentLedEvents(term):
 
-    studentLedEvents = (Event.select(Event, Program.id.alias("program_id"))
-                             .join(ProgramEvent)
+    studentLedEvents = list(Event.select(Event, Program, ProgramEvent)
+                             .join(ProgramEvent, attr = 'programEvent')
                              .join(Program)
                              .where(Program.isStudentLed,
-                                    Event.term == term))
+                                    Event.term == term).execute())
     programs = {}
 
-    for event in studentLedEvents.objects():
-        programs.setdefault(Program.get_by_id(event.program_id), []).append(event)
+    for event in studentLedEvents:
+        programs.setdefault(event.programEvent.program, []).append(event)
 
     return programs
 
@@ -146,21 +146,21 @@ def getTrainingEvents(term):
         with the most programs (highest count) by doing this we can ensure that the event being
         returned is the All Trainings Event.
     """
-    trainingEvents = (Event.select(Event)
+    trainingEvents = list(Event.select(Event)
+                           .where(Event.isTraining, Event.term == term)
                            .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate)
-                           .where(Event.isTraining,
-                                  Event.term == term))
+                           .execute())
 
-    return list(trainingEvents)
+    return trainingEvents
 
 def getBonnerEvents(term):
 
-    bonnerScholarsEvents = (Event.select(Event, Program.id.alias("program_id"))
+    bonnerScholarsEvents = list(Event.select(Event,ProgramEvent, Program.id.alias("program_id"))
                                  .join(ProgramEvent)
                                  .join(Program)
                                  .where(Program.isBonnerScholars,
-                                        Event.term == term))
-    return list(bonnerScholarsEvents)
+                                        Event.term == term).execute())
+    return bonnerScholarsEvents
 
 def getOtherEvents(term):
     """
@@ -179,7 +179,7 @@ def getOtherEvents(term):
                            ((ProgramEvent.program == None) |
                             (Program.isStudentLed == False) &
                             (Program.isBonnerScholars == False)))
-                    .order_by(Event.id)
+                    .order_by(Event.id).execute()
                   )
 
     return otherEvents

@@ -65,7 +65,10 @@ def test_changeProgramInfo():
         assert currentProgramInfo.contactName == ""
         assert currentProgramInfo.contactEmail == ""
 
-        changeProgramInfo(eventName, contactEmail, contactName, programId)
+        with app.test_request_context():
+            g.current_user = "ramsayb2"
+            changeProgramInfo(eventName, contactEmail, contactName, programId)
+
         currentProgramInfo = Program.select().where(Program.id==programId).get()
 
         assert currentProgramInfo.programName == eventName

@@ -46,7 +46,7 @@ def events(selectedTerm):
         currentTerm = selectedTerm
     currentTime = datetime.datetime.now()
     listOfTerms = Term.select()
-    participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
+    participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
     term = Term.get_by_id(currentTerm)
     studentLedEvents = getStudentLedEvents(term)
