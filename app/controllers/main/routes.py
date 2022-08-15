@@ -22,7 +22,7 @@ from app.models.courseStatus import CourseStatus
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
-from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, trainedParticipants, getUserParticipatedEvents
+from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, getUserParticipatedEvents
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
@@ -46,7 +46,7 @@ def events(selectedTerm):
         currentTerm = selectedTerm
     currentTime = datetime.datetime.now()
     listOfTerms = Term.select()
-    participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
+    participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
     term = Term.get_by_id(currentTerm)
     studentLedEvents = getStudentLedEvents(term)
@@ -84,13 +84,13 @@ def viewUsersProfile(username):
         programs = Program.select()
         if not g.current_user.isBonnerScholar and not g.current_user.isAdmin:
             programs = programs.where(Program.isBonnerScholars == False)
-        interests = Interest.select().where(Interest.user == volunteer)
+        interests = Interest.select(Interest, Program).join(Program).where(Interest.user == volunteer)
         programsInterested = [interest.program for interest in interests]
 
-        rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == volunteer)
+        rsvpedEventsList = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == volunteer)
         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
 
-        programManagerPrograms = ProgramManager.select().where(ProgramManager.user == volunteer)
+        programManagerPrograms = ProgramManager.select(ProgramManager, Program).join(Program).where(ProgramManager.user == volunteer)
         permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
         allEntries = {}
@@ -104,18 +104,22 @@ def viewUsersProfile(username):
 
         eligibilityTable = []
         for program in programs:
-            notes = ProgramBan.select().where(ProgramBan.user == volunteer,
+            notes = list(ProgramBan.select(ProgramBan, Note)
+                                    .join(Note, on=(ProgramBan.banNote == Note.id))
+                                    .where(ProgramBan.user == volunteer,
                                               ProgramBan.program == program,
-                                              ProgramBan.endDate > datetime.datetime.now())
+                                              ProgramBan.endDate > datetime.datetime.now()).execute())
 
             userParticipatedEvents = getUserParticipatedEvents(program, g.current_user, g.current_term)
+            allTrainingsComplete = not len([event for event in userParticipatedEvents.values() if event != True])
             noteForDict = notes[-1].banNote.noteContent if notes else ""
             eligibilityTable.append({"program": program,
-                                   "completedTraining": (volunteer.username in trainedParticipants(program, g.current_term)),
+                                   "completedTraining": allTrainingsComplete,
                                    "trainingList": userParticipatedEvents,
                                    "isNotBanned": True if not notes else False,
                                    "banNote": noteForDict})
-        return render_template ("/main/userProfile.html",
+
+        return render_template ("/main/volunteerProfile.html",
                 programs = programs,
                 programsInterested = programsInterested,
                 upcomingEvents = upcomingEvents,
@@ -264,18 +268,14 @@ def serviceTranscript(username):
     if user != g.current_user and not g.current_user.isAdmin:
         abort(403)
 
-    programs = getProgramTranscript(username)
     slCourses = getSlCourseTranscript(username)
-    trainingData = getTrainingTranscript(username)
-    bonnerData = getBonnerScholarEvents(username)
     totalHours = getTotalHours(username)
+    allEventTranscript = getAllEventTranscript(username)
     startDate = getStartYear(username)
 
     return render_template('main/serviceTranscript.html',
-                            programs = programs,
+                            allEventTranscript = allEventTranscript,
                             slCourses = slCourses.objects(),
-                            trainingData = trainingData,
-                            bonnerData = bonnerData,
                             totalHours = totalHours,
                             startDate = startDate,
                             userData = user)

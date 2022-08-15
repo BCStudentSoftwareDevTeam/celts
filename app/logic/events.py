@@ -65,7 +65,7 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
 
     try:
         events = saveEventToDb(newEventData)
-        if attachmentFiles:
+        if  attachmentFiles:
             for event in events:
                 addfile.saveFilesForEvent(event.id)
         return True, ""
@@ -127,15 +127,15 @@ def saveEventToDb(newEventData):
 
 def getStudentLedEvents(term):
 
-    studentLedEvents = (Event.select(Event, Program.id.alias("program_id"))
-                             .join(ProgramEvent)
+    studentLedEvents = list(Event.select(Event, Program, ProgramEvent)
+                             .join(ProgramEvent, attr = 'programEvent')
                              .join(Program)
                              .where(Program.isStudentLed,
-                                    Event.term == term))
+                                    Event.term == term).execute())
     programs = {}
 
-    for event in studentLedEvents.objects():
-        programs.setdefault(Program.get_by_id(event.program_id), []).append(event)
+    for event in studentLedEvents:
+        programs.setdefault(event.programEvent.program, []).append(event)
 
     return programs
 
@@ -146,21 +146,21 @@ def getTrainingEvents(term):
         with the most programs (highest count) by doing this we can ensure that the event being
         returned is the All Trainings Event.
     """
-    trainingEvents = (Event.select(Event)
+    trainingEvents = list(Event.select(Event)
+                           .where(Event.isTraining, Event.term == term)
                            .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate)
-                           .where(Event.isTraining,
-                                  Event.term == term))
+                           .execute())
 
-    return list(trainingEvents)
+    return trainingEvents
 
 def getBonnerEvents(term):
 
-    bonnerScholarsEvents = (Event.select(Event, Program.id.alias("program_id"))
+    bonnerScholarsEvents = list(Event.select(Event,ProgramEvent, Program.id.alias("program_id"))
                                  .join(ProgramEvent)
                                  .join(Program)
                                  .where(Program.isBonnerScholars,
-                                        Event.term == term))
-    return list(bonnerScholarsEvents)
+                                        Event.term == term).execute())
+    return bonnerScholarsEvents
 
 def getOtherEvents(term):
     """
@@ -179,7 +179,7 @@ def getOtherEvents(term):
                            ((ProgramEvent.program == None) |
                             (Program.isStudentLed == False) &
                             (Program.isBonnerScholars == False)))
-                    .order_by(Event.id)
+                    .order_by(Event.id).execute()
                   )
 
     return otherEvents
@@ -193,17 +193,17 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
         :return: A list of Event objects
     """
 
-    events = (Event.select()
+    events = list(Event.select()
                     .join(ProgramEvent, JOIN.LEFT_OUTER)
                     .join(Interest, JOIN.LEFT_OUTER, on=(ProgramEvent.program == Interest.program))
                     .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
                     .where(Event.startDate >= asOf,
                            (Interest.user == user) | (EventRsvp.user == user))
                     .distinct() # necessary because of multiple programs
-                    .order_by(Event.startDate, Event.name) # keeps the order of events the same when the dates are the same
+                    .order_by(Event.startDate, Event.name).execute() # keeps the order of events the same when the dates are the same
                     )
 
-    return list(events)
+    return events
 
 def validateNewEventData(data):
     """

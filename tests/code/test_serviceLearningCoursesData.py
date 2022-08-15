@@ -4,6 +4,7 @@ from flask import Flask, g
 from datetime import datetime
 from peewee import DoesNotExist
 
+from app import app
 from app.models import mainDB
 from app.models.term import Term
 from app.models.user import User
@@ -89,7 +90,10 @@ def test_withdrawProposal():
         hoursEarned= 2.0
     )
 
-    withdrawProposal(99)
+    with app.test_request_context():
+        g.current_user = "ramsayb2"
+        withdrawProposal(99)
+
     with pytest.raises(DoesNotExist):
         Course.get_by_id(99)
 
@@ -116,7 +120,9 @@ def test_renewProposal():
             course= 100,
             user= "ramsayb2"
         )
+        
         renewProposal(course.id, 4)
+
         # test and make sure a new course with a different id was created
         duplicateCourse = list(Course.select().where(Course.courseName==course.courseName,
                                 Course.courseCredit==course.courseCredit,

@@ -47,12 +47,9 @@ def slcEditProposal(courseID):
     questionanswers = [question.questionContent for question in questionData]
     courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
 
-    isRegularlyOccuring = ""
     isAllSectionsServiceLearning = ""
     isPermanentlyDesignated = ""
 
-    if course.isRegularlyOccuring:
-        isRegularlyOccuring = True
     if course.isAllSectionsServiceLearning:
         isAllSectionsServiceLearning = True
     if course.isPermanentlyDesignated:
@@ -63,7 +60,6 @@ def slcEditProposal(courseID):
                                 questionanswers = questionanswers,
                                 terms = terms,
                                 courseInstructor = courseInstructor,
-                                isRegularlyOccuring = isRegularlyOccuring,
                                 isAllSectionsServiceLearning = isAllSectionsServiceLearning,
                                 isPermanentlyDesignated = isPermanentlyDesignated,
                                 redirectTarget=getRedirectTarget())
