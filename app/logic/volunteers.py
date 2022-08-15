@@ -10,10 +10,6 @@ from datetime import datetime, date
 from app.logic.adminLogs import createLog
 from app.logic.events import getEvents
 
-
-
-
-
 def getEventLengthInHours(startTime, endTime, eventDate):
     """
     Converts the event length hours into decimal

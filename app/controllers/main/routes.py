@@ -21,7 +21,7 @@ from app.models.programManager import ProgramManager
 from app.models.courseStatus import CourseStatus
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, getUserParticipatedEvents
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
@@ -93,14 +93,10 @@ def viewUsersProfile(username):
         programManagerPrograms = ProgramManager.select(ProgramManager, Program).join(Program).where(ProgramManager.user == volunteer)
         permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
-        allEntries = {}
+
+        allEntries = getUserBGCheckHistory(volunteer)
         backgroundTypes = list(BackgroundCheckType.select())
-        for type in backgroundTypes:
-            allBackgroundChecks = list(BackgroundCheck.select()
-                                                   .where(BackgroundCheck.user == volunteer,
-                                                          BackgroundCheck.type == type.id)
-                                                   .order_by(BackgroundCheck.dateCompleted.desc()).group_by(BackgroundCheck.backgroundCheckStatus, BackgroundCheck.dateCompleted))
-            allEntries[type.id] = [[allBackgroundCheck.backgroundCheckStatus, allBackgroundCheck.dateCompleted.strftime("%m/%d/%Y")] for allBackgroundCheck in allBackgroundChecks]
+
 
         eligibilityTable = []
         for program in programs:
@@ -119,7 +115,7 @@ def viewUsersProfile(username):
                                    "isNotBanned": True if not notes else False,
                                    "banNote": noteForDict})
 
-        return render_template ("/main/volunteerProfile.html",
+        return render_template ("/main/userProfile.html",
                 programs = programs,
                 programsInterested = programsInterested,
                 upcomingEvents = upcomingEvents,

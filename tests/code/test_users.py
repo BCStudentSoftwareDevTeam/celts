@@ -1,6 +1,10 @@
 import pytest
 from peewee import *
 from datetime import datetime
+from dateutil import parser
+from app import app
+from flask import g
+
 from app.models import mainDB
 from app.models.program import Program
 from app.models.programBan import ProgramBan
@@ -9,8 +13,9 @@ from app.models.user import User
 from app.models.programManager import ProgramManager
 from app.models.event import Event
 from app.models.programEvent import ProgramEvent
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory
 from app.logic.users import isEligibleForProgram
+from app.logic.volunteers import addUserBackgroundCheck
 
 @pytest.mark.integration
 def test_user_model():
@@ -282,5 +287,40 @@ def test_getStudentManagerForEvent():
         assert programManager.isProgramManagerForEvent(test_event) == True
         ## user is not manager of program
         assert student.isProgramManagerForEvent(test_event) == False
+
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_getUserBGCheckHistory():
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+            g.current_user = "ramsayb2"
+
+            # Create a test user to run background checks on
+            testusr = User.create(username = 'usrtst',
+                                  firstName = 'Test',
+                                  lastName = 'User',
+                                  bnumber = '03522492',
+                                  email = 'usert@berea.deu',
+                                  isStudent = True)
+
+            # Add background checks to the user
+            addUserBackgroundCheck("usrtst","CAN", "Submitted", parser.parse("2020-07-20"))
+            addUserBackgroundCheck("usrtst","SHS", "Submitted", parser.parse("2020-07-20"))
+            # check that all the users background checks have been submitted
+            print(getUserBGCheckHistory(testusr))
+
+            # addUserBackgroundCheck("usrtst","CAN", "Failed", parser.parse("2020-08-20"))
+            # # Check that the useres background check is updated now that they have
+            # # failed a check
+            #
+            # # assert
+            #
+            # addUserBackgroundCheck("usrtst","SHS", "Passed", parser.parse("2020-10-20"))
+            # addUserBackgroundCheck("usrtst","CAN", "Passed", parser.parse("2020-10-20"))
+            # Check that the useres background check is updated now that they have
+            # passed the last two checks
+
+            #assert
 
         transaction.rollback()

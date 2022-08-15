@@ -1,6 +1,8 @@
 from app.models.programBan import ProgramBan
 from app.models.interest import Interest
 from app.models.note import Note
+from app.models.backgroundCheck import BackgroundCheck
+from app.models.backgroundCheckType import BackgroundCheckType
 import datetime
 
 def isEligibleForProgram(program, user):
@@ -81,3 +83,16 @@ def unbanUser(program_id, username, note, creator):
                       unbanNote = noteForDb).where(ProgramBan.program == program_id,
                                                    ProgramBan.user == username,
                                                    ProgramBan.endDate >  datetime.datetime.now()).execute()
+
+def getUserBGCheckHistory(username):
+    """
+    Get a users background check history
+    """
+    bghistory = {}
+    allBackgroundChecks = (BackgroundCheck.select(BackgroundCheck, BackgroundCheckType)
+                                              .join(BackgroundCheckType)
+                                              .where(BackgroundCheck.user == username)
+                                              .order_by(BackgroundCheck.dateCompleted.desc())
+                                              .group_by(BackgroundCheck.backgroundCheckStatus, BackgroundCheck.dateCompleted))
+
+    bghistory[BackgroundCheckType.id] = [[allBackgroundCheck.backgroundCheckStatus, allBackgroundCheck.dateCompleted.strftime("%m/%d/%Y")] for allBackgroundCheck in allBackgroundChecks]
