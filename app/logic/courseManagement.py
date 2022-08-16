@@ -80,5 +80,5 @@ def updateCourse(courseData):
     CourseInstructor.delete().where(CourseInstructor.course == course).execute()
     for instructor in instructorList:
         CourseInstructor.create(course=course, user=instructor)
-    createLog(f"Created SLC proposal: {courseData['courseName']}")
+    createLog(f"Saved SLC proposal: {courseData['courseName']}")
     return Course.get_by_id(course.id)

@@ -127,15 +127,15 @@ def saveEventToDb(newEventData):
 
 def getStudentLedEvents(term):
 
-    studentLedEvents = (Event.select(Event, Program.id.alias("program_id"))
-                             .join(ProgramEvent)
+    studentLedEvents = list(Event.select(Event, Program, ProgramEvent)
+                             .join(ProgramEvent, attr = 'programEvent')
                              .join(Program)
                              .where(Program.isStudentLed,
-                                    Event.term == term))
+                                    Event.term == term).execute())
     programs = {}
 
-    for event in studentLedEvents.objects():
-        programs.setdefault(Program.get_by_id(event.program_id), []).append(event)
+    for event in studentLedEvents:
+        programs.setdefault(event.programEvent.program, []).append(event)
 
     return programs
 
@@ -149,30 +149,25 @@ def getTrainingEvents(term, user):
         user: expected to be the current user
         return: a list of all trainings the user can view
     """
-    if (user.isAdmin) or (user.isStudent and user.isBonnerScholar):
-        trainingEvents = (Event.select(Event)
-                               .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate)
-                               .where(Event.isTraining,
-                                      Event.term == term))
-    else:
-        trainingEvents = (Event.select(Event)
-                                .join(ProgramEvent)
-                                .join(Program)
-                                .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate)
-                                .where(Event.isTraining,
-                                        Event.term == term,
-                                        Program.isBonnerScholars == False))
+    trainingQuery = (Event.select(Event)
+                           .join(ProgramEvent)
+                           .join(Program)
+                           .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate)
+                           .where(Event.isTraining, Event.term == term))
+    hideBonner = (not user.isAdmin) and not (user.isStudent and user.isBonnerScholar)
+    if hideBonner:
+        trainingQuery = trainingQuery.where(Program.isBonnerScholars == False)
 
-    return list(trainingEvents)
+    return list(trainingQuery.distinct().execute())
 
 def getBonnerEvents(term):
 
-    bonnerScholarsEvents = (Event.select(Event, Program.id.alias("program_id"))
+    bonnerScholarsEvents = list(Event.select(Event,ProgramEvent, Program.id.alias("program_id"))
                                  .join(ProgramEvent)
                                  .join(Program)
                                  .where(Program.isBonnerScholars,
-                                        Event.term == term))
-    return list(bonnerScholarsEvents)
+                                        Event.term == term).execute())
+    return bonnerScholarsEvents
 
 def getOtherEvents(term):
     """
@@ -191,7 +186,7 @@ def getOtherEvents(term):
                            ((ProgramEvent.program == None) |
                             (Program.isStudentLed == False) &
                             (Program.isBonnerScholars == False)))
-                    .order_by(Event.id)
+                    .order_by(Event.id).execute()
                   )
 
     return otherEvents
@@ -205,17 +200,17 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
         :return: A list of Event objects
     """
 
-    events = (Event.select()
+    events = list(Event.select()
                     .join(ProgramEvent, JOIN.LEFT_OUTER)
                     .join(Interest, JOIN.LEFT_OUTER, on=(ProgramEvent.program == Interest.program))
                     .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
                     .where(Event.startDate >= asOf,
                            (Interest.user == user) | (EventRsvp.user == user))
                     .distinct() # necessary because of multiple programs
-                    .order_by(Event.startDate, Event.name) # keeps the order of events the same when the dates are the same
+                    .order_by(Event.startDate, Event.name).execute() # keeps the order of events the same when the dates are the same
                     )
 
-    return list(events)
+    return events
 
 def validateNewEventData(data):
     """

@@ -99,15 +99,17 @@ def test_training_events(training_events):
                                             endDate = "1919-12-14")
         testNotBonnerTraining = Event.create(name = "Bonner Test Training",
                                             term = testTerm,
-                                            description = "Bonner Test Training",
+                                            description = "Not Bonner",
                                             timeStart = "18:00:00",
                                             timeEnd = "21:00:00",
                                             location = "basement",
                                             isTraining = True,
                                             startDate = "1919-12-12",
                                             endDate = "1919-12-13")
-        testBonnerProgramEvent = ProgramEvent.create(program = testBonnerProgram.id, event = testBonnerTraining)
-        testNotBonnerProgramEvent = ProgramEvent.create(program = testNotBonnerProgram.id, event = testNotBonnerTraining)
+        ProgramEvent.create(program = testBonnerProgram.id, event = testBonnerTraining)
+        ProgramEvent.create(program = testNotBonnerProgram.id, event = testNotBonnerTraining)
+        ProgramEvent.create(program = 1, event = testNotBonnerTraining)
+
         userFaculty = User.create(username = "TestNotBonner",
                                     bnumber = "B000000000",
                                     email = "test@test.com",
