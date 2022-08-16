@@ -11,6 +11,7 @@ from app.models.programBan import ProgramBan
 from app.models.note import Note
 from app.models.user import User
 from app.models.programManager import ProgramManager
+from app.models.backgroundCheck import BackgroundCheck
 from app.models.event import Event
 from app.models.programEvent import ProgramEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory
@@ -305,22 +306,17 @@ def test_getUserBGCheckHistory():
                                   isStudent = True)
 
             # Add background checks to the user
-            addUserBackgroundCheck("usrtst","CAN", "Submitted", parser.parse("2020-07-20"))
-            addUserBackgroundCheck("usrtst","SHS", "Submitted", parser.parse("2020-07-20"))
-            # check that all the users background checks have been submitted
+            addUserBackgroundCheck("usrtst","CAN", "Submitted", parser.parse("2020-9-20"))
+            addUserBackgroundCheck("usrtst","SHS", "Submitted", parser.parse("2020-10-20"))
+            addUserBackgroundCheck("usrtst","SHS", "Passed", parser.parse("2020-12-20"))
+            # Check that all the users background checks have been submitted and
+            # they are returned correctly. Also make sure that the background check
+            # that has not been given anything is returend as empty
             print(getUserBGCheckHistory(testusr))
+            
+            # Update one of the background Checks and make sure that the updated
+            # check is returned and the original check is still returned as well
+            # assert
 
-            # addUserBackgroundCheck("usrtst","CAN", "Failed", parser.parse("2020-08-20"))
-            # # Check that the useres background check is updated now that they have
-            # # failed a check
-            #
-            # # assert
-            #
-            # addUserBackgroundCheck("usrtst","SHS", "Passed", parser.parse("2020-10-20"))
-            # addUserBackgroundCheck("usrtst","CAN", "Passed", parser.parse("2020-10-20"))
-            # Check that the useres background check is updated now that they have
-            # passed the last two checks
-
-            #assert
 
         transaction.rollback()

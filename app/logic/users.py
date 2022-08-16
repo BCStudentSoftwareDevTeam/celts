@@ -3,7 +3,11 @@ from app.models.interest import Interest
 from app.models.note import Note
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.backgroundCheckType import BackgroundCheckType
+from app.logic.volunteers import addUserBackgroundCheck
 import datetime
+from peewee import JOIN
+from dateutil import parser
+
 
 def isEligibleForProgram(program, user):
     """
@@ -88,11 +92,15 @@ def getUserBGCheckHistory(username):
     """
     Get a users background check history
     """
-    bghistory = {}
-    allBackgroundChecks = (BackgroundCheck.select(BackgroundCheck, BackgroundCheckType)
-                                              .join(BackgroundCheckType)
-                                              .where(BackgroundCheck.user == username)
-                                              .order_by(BackgroundCheck.dateCompleted.desc())
-                                              .group_by(BackgroundCheck.backgroundCheckStatus, BackgroundCheck.dateCompleted))
+    bgHistory = {'CAN': [], 'FBI': [], 'SHS': []}
 
-    bghistory[BackgroundCheckType.id] = [[allBackgroundCheck.backgroundCheckStatus, allBackgroundCheck.dateCompleted.strftime("%m/%d/%Y")] for allBackgroundCheck in allBackgroundChecks]
+    allBackgroundChecks = (BackgroundCheck.select(BackgroundCheck, BackgroundCheckType)
+                                                  .join(BackgroundCheckType)
+                                                  .where(BackgroundCheck.user == username)
+                                                  .group_by(BackgroundCheck.backgroundCheckStatus, BackgroundCheck.dateCompleted)
+                                                  .order_by(BackgroundCheck.dateCompleted.desc()))
+    for row in allBackgroundChecks:
+        bgHistory[row.type_id].append(row.backgroundCheckStatus + ": " + row.dateCompleted.strftime("%m/%d/%Y"))
+
+
+    return bgHistory
