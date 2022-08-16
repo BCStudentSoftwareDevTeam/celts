@@ -5,8 +5,5 @@ from app.models.backgroundCheckType import BackgroundCheckType
 class BackgroundCheck(baseModel):
     user = ForeignKeyField(User)
     type = ForeignKeyField(BackgroundCheckType)
-    passBackgroundCheck = BooleanField(default=False)
+    backgroundCheckStatus = CharField()
     dateCompleted = DateField(null=True)
-
-    class Meta:
-        primary_key=CompositeKey('user', 'type')

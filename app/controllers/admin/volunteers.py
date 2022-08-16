@@ -7,7 +7,7 @@ from app.models.event import Event
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
-from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours,setUserBackgroundCheck, setProgramManager
+from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours, addUserBackgroundCheck, setProgramManager
 from app.logic.participants import trainedParticipants, getEventParticipants
 from app.logic.events import getPreviousRecurringEventData
 from app.models.eventRsvp import EventRsvp
@@ -129,7 +129,7 @@ def updateBackgroundCheck():
         checkPassed = eventData['checkPassed']
         type = eventData['bgType']
         dateCompleted = eventData['bgDate']
-        setUserBackgroundCheck(user,type, checkPassed, dateCompleted)
+        addUserBackgroundCheck(user, type, checkPassed, dateCompleted)
         return " "
 
 @admin_bp.route('/updateProgramManager', methods=["POST"])

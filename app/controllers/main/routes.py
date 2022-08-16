@@ -22,7 +22,7 @@ from app.models.courseInstructor import CourseInstructor
 
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory
 from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, getUserParticipatedEvents
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
@@ -66,7 +66,7 @@ def events(selectedTerm):
         user = g.current_user)
 
 @main_bp.route('/profile/<username>', methods=['GET'])
-def viewVolunteersProfile(username):
+def viewUsersProfile(username):
     """
     This function displays the information of a volunteer to the user
     """
@@ -94,21 +94,10 @@ def viewVolunteersProfile(username):
         programManagerPrograms = ProgramManager.select(ProgramManager, Program).join(Program).where(ProgramManager.user == volunteer)
         permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
-        allUserEntries = BackgroundCheck.select().where(BackgroundCheck.user == volunteer)
 
-        if g.current_user.isCeltsAdmin:
-            completedBackgroundCheck = {entry.type: [entry.passBackgroundCheck, entry.dateCompleted] for entry in allUserEntries}
-        else:
-            # sets the values to strings because student staff do not have access to input boxes
-            completedBackgroundCheck = {entry.type: ['Yes' if entry.passBackgroundCheck else 'No',
-                                                    '' if entry.dateCompleted == None
-                                                    else entry.dateCompleted.strftime('%m/%d/%Y')] for entry in allUserEntries}
-
+        allEntries = getUserBGCheckHistory(volunteer)
         backgroundTypes = list(BackgroundCheckType.select())
-        # creates data structure for background checks that are not currently completed
-        for checkType in backgroundTypes:
-            if checkType not in completedBackgroundCheck.keys():
-                completedBackgroundCheck[checkType] = ["No"]
+
 
         eligibilityTable = []
         for program in programs:
@@ -127,7 +116,7 @@ def viewVolunteersProfile(username):
                                    "isNotBanned": True if not notes else False,
                                    "banNote": noteForDict})
 
-        return render_template ("/main/volunteerProfile.html",
+        return render_template ("/main/userProfile.html",
                 programs = programs,
                 programsInterested = programsInterested,
                 upcomingEvents = upcomingEvents,
@@ -137,8 +126,9 @@ def viewVolunteersProfile(username):
                 eligibilityTable = eligibilityTable,
                 volunteer = volunteer,
                 backgroundTypes = backgroundTypes,
-                completedBackgroundCheck = completedBackgroundCheck,
+                allEntries = allEntries,
                 currentDateTime = datetime.datetime.now()
+
             )
     abort(403)
 
