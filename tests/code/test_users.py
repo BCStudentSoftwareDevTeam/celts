@@ -308,15 +308,16 @@ def test_getUserBGCheckHistory():
             # Add background checks to the user
             addUserBackgroundCheck("usrtst","CAN", "Submitted", parser.parse("2020-9-20"))
             addUserBackgroundCheck("usrtst","SHS", "Submitted", parser.parse("2020-10-20"))
-            addUserBackgroundCheck("usrtst","SHS", "Passed", parser.parse("2020-12-20"))
+
             # Check that all the users background checks have been submitted and
             # they are returned correctly. Also make sure that the background check
             # that has not been given anything is returend as empty
-            print(getUserBGCheckHistory(testusr))
-            
+            assert {'CAN': ['Submitted: 09/20/2020'], 'FBI': [], 'SHS': ['Submitted: 10/20/2020']} == getUserBGCheckHistory(testusr)
+
             # Update one of the background Checks and make sure that the updated
             # check is returned and the original check is still returned as well
-            # assert
+            addUserBackgroundCheck("usrtst","SHS", "Passed", parser.parse("2020-12-20"))
+            assert {'CAN': ['Submitted: 09/20/2020'], 'FBI': [], 'SHS': ['Passed: 12/20/2020', 'Submitted: 10/20/2020']} == getUserBGCheckHistory(testusr)
 
 
         transaction.rollback()
