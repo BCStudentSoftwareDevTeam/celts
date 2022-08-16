@@ -74,10 +74,10 @@
     </h3>
     <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#userProfile">
       <div class="accordioin-body">
-        <div class="row table-responsive">
-          <table class="table">
+        <div class="table-responsive">
+          <table class="table banTable">
             {% if participatedEvents|length > 0 %}
-              <thead class="tableHeader">
+              <thead>
                 <th scope="col">Program</th>
                 <th scope="col">Event Name</th>
                 <th scope="col">Event Date</th>
@@ -108,7 +108,6 @@
     <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#userProfile">
       <div class="accordioin-body">
         <div class="table-responsive">
-         <h5>Choose interests below to be notified about your upcoming events:</h5>
           <table class="table banTable">
              <thead>
                <tr>
@@ -299,8 +298,7 @@
     </div>
     {% endif %}
     <!-- End Background Check Table -->
-  </div>
-
+</div>
 <!-- Ban or Unban Modal -->
 {% for type in backgroundTypes %}
     <div class="modal fade" id="historyModal-{{type.id}}" tabindex="-1" aria-hidden="true">
