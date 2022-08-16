@@ -50,7 +50,7 @@ def events(selectedTerm):
     rsvpedEventsID = [event.event.id for event in participantRSVP]
     term = Term.get_by_id(currentTerm)
     studentLedEvents = getStudentLedEvents(term)
-    trainingEvents = getTrainingEvents(term)
+    trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
 
