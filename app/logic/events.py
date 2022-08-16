@@ -194,7 +194,7 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
         :return: A list of Event objects
     """
 
-    events =  list(Event.select(Event, ProgramEvent, Interest, EventRsvp)
+    events =  list(Event.select()
                     .join(ProgramEvent, JOIN.LEFT_OUTER)
                     .join(Interest, JOIN.LEFT_OUTER, on=(ProgramEvent.program == Interest.program))
                     .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
