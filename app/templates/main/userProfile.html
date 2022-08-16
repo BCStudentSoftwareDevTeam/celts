@@ -192,43 +192,31 @@
       </h3>
       <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#userProfile">
         <div class="accordion-body">
-          {% if g.current_user.isCeltsAdmin%}
           <!-- This makes sure that the CeltsAdmins can make someone program manager or not.  -->
-            {% if volunteer.isCeltsStudentStaff%}
-                <div>
-                  <h2>Which programs do you want to make {{volunteer.firstName}} {{volunteer.lastName}} manager for?</h2>
-                  <ul class="list-unstyled">
-                    {% for program in programs %}
-                      {% set action = "add" %}
-                      {% set checked = "" %}
-                      {% if program.id in permissionPrograms %}
-                            {% set action = "remove" %}
-                            {% set checked = "checked" %}
-                      {% endif %}
-                      <li>
-                          <input  type="checkbox" id="mgr-{{ program.id }}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}')">
-                          <label  style="padding-left: 15px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
-                      </li>
-                    {% endfor %}
-                </ul>
-                </div>
-              {% endif %}
-          {% elif volunteer.isCeltsStudentStaff %}
-            <div class="row">
-              <h5><br>{{volunteer.firstName}} {{volunteer.lastName}} is the manager of:</h5>
-              <div>
-                  <ul>
-                  {% for program in programs %}
-                    {% set status = '' %}
-                      {% if program.id in permissionPrograms %}
-                         <li>{{program.programName}}</li>
-                      {% else %}
-                      {% endif %}
-                  {% endfor %}
-                  </ul>
-              </div>
-            </div>
+          {% if g.current_user.isCeltsAdmin %}
+            <h5>Which programs do you want to make {{volunteer.firstName}} {{volunteer.lastName}} manager for?</h5>
+          {% else %}
+            <h5>{{volunteer.firstName}} {{volunteer.lastName}} is the manager of:</h5>
           {% endif %}
+          <ul class="list-unstyled">
+            {% for program in programs %}
+              {% set action = "add" %}
+              {% set checked = "" %}
+              {% if program.id in permissionPrograms %}
+                {% set action = "remove" %}
+                {% set checked = "checked" %}
+                {% if not g.current_user.isCeltsAdmin%}
+                  <li>{{program.programName}}</li>
+                {% endif %}
+              {% endif %}
+              {% if g.current_user.isCeltsAdmin%}
+                <li>
+                  <input  type="checkbox" id="mgr-{{ program.id }}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}')">
+                  <label  style="padding-left: 15px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
+                </li>
+              {% endif %}
+            {% endfor %}
+           </ul>
         </div>
       </div>
     </div>
