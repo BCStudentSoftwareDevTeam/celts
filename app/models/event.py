@@ -44,10 +44,7 @@ class Event(baseModel):
 
     @property
     def isPast(self):
-        currentTime = datetime.now()
-        startDatePassed = self.startDate < currentTime.date()
-        startTimePassed = self.timeStart < currentTime.time() and self.startDate == currentTime.date()
-        return startDatePassed or startTimePassed
+        return datetime.now() >= datetime.combine(self.startDate, self.timeStart)
 
     @property
     def isRecurring(self):
@@ -55,5 +52,5 @@ class Event(baseModel):
 
     @property
     def isFirstRecurringEvent(self):
-        firstRecurringEvent = Event.select().where(Event.recurringId==self.recurringId).order_by(Event.startDate).get()
+        firstRecurringEvent = Event.select().where(Event.recurringId==self.recurringId).order_by(Event.id).get()
         return firstRecurringEvent.id == self.id

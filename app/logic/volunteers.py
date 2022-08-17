@@ -1,5 +1,4 @@
 from app.models.eventParticipant import EventParticipant
-from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.event import Event
 from app.models.program import Program
@@ -46,16 +45,10 @@ def updateEventParticipants(participantData):
                         if eventParticipant:
                             ((EventParticipant
                                 .update({EventParticipant.hoursEarned: hoursEarned})
-                                .where(
-                                    EventParticipant.event==event.id,
-                                    EventParticipant.user==userObject.username))
+                                .where(EventParticipant.event==event.id, EventParticipant.user==userObject.username))
                                 .execute())
                         else:
-                            (EventParticipant
-                                .create(
-                                    user=userObject,
-                                    event=event,
-                                    hoursEarned=hoursEarned))
+                            EventParticipant.create(user=userObject, event=event, hoursEarned=hoursEarned)
                 except (KeyError):
                     if eventParticipant:
                         ((EventParticipant.delete()

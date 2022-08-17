@@ -54,25 +54,37 @@ def sendUserData(bnumber, eventId, programid):
         EventParticipant.create (user=signedInUser, event=eventId, hoursEarned=totalHours)
     return signedInUser, userStatus
 
-def userRsvpForEvent(user,  event):
+def checkUserRsvp(user,  event):
+    return EventRsvp.select().where(EventRsvp.user==user, EventRsvp.event == event).exists()
+
+def checkUserVolunteer(user,  event):
+    return EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event).exists()
+
+def addPersonToEvent(user, event):
     """
-    Lets the user RSVP for an event if they are eligible and creates an entry for them in the EventParticipant table.
+        Add a user to an event. 
+        If the event is in the past, add the user as a volunteer (EventParticipant) including hours worked.
+        If the event is in the future, rsvp for the user (EventRsvp)
 
-    :param user: accepts a User object or username
-    :param event: accepts an Event object or a valid event ID
-    :return: eventParticipant entry for the given user and event; otherwise raise an exception
+        Returns True if the operation was successful, false otherwise
     """
+    try:
+        volunteerExists = checkUserVolunteer(user, event)
+        rsvpExists = checkUserRsvp(user, event)
 
-    rsvpUser = User.get_by_id(user)
-    rsvpEvent = Event.get_by_id(event)
-    program = Program.select(Program).join(ProgramEvent).where(ProgramEvent.event == event).get()
+        if event.isPast:
+            if not volunteerExists:
+                eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
+                EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
+        else:
+            if not rsvpExists:
+                EventRsvp.create(user = user, event = event)
 
-    isEligible = isEligibleForProgram(program, user)
-    if isEligible:
-        newParticipant = EventRsvp.get_or_create(user = rsvpUser, event = rsvpEvent)[0]
-        return newParticipant
-    return isEligible
+    except Exception as e:
+        print(e)
+        return False
 
+    return True
 
 def unattendedRequiredEvents(program, user):
 
