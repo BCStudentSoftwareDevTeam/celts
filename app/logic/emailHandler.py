@@ -17,13 +17,13 @@ from app.models.programBan import ProgramBan
 from app.models.term import Term
 
 class EmailHandler:
-    def __init__(self, raw_form_data, url_domain, sender_object, attachment_file=None):
+    def __init__(self, raw_form_data, url_domain, sender_name, attachment_file=[]):
 
         self.mail = Mail(app)
         self.raw_form_data = raw_form_data
         self.url_domain = url_domain
         self.override_all_mail = app.config['MAIL_OVERRIDE_ALL']
-        self.sender = sender_object
+        self.sender = sender_name
         self.template_identifier = None
         self.subject = None
         self.body = None

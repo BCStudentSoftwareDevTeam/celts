@@ -39,7 +39,7 @@ def test_send_email_using_modal():
                 "eventID":"1",
                 "recipientsCategory": "Interested"}
 
-            email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
+            email = EmailHandler(raw_form_data, url_domain, "neillz")
 
             with email.mail.record_messages() as outbox:
                 email_sent = email.send_email()
@@ -63,7 +63,7 @@ def test_sending_automated_email():
                 "eventID":"1",
                 "recipientsCategory": "Interested"}
 
-            email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
+            email = EmailHandler(raw_form_data, url_domain, "neillz")
 
             with email.mail.record_messages() as outbox:
                 email_sent = email.send_email()
@@ -86,7 +86,7 @@ def test_update_email_template():
                 "body":"Hello {name}, Regards",
                 "replyTo": "test.email@gmail.comm"}
 
-            email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
+            email = EmailHandler(raw_form_data, url_domain, "neillz")
             email.update_email_template()
 
             new_email_template = EmailTemplate.get(EmailTemplate.purpose==raw_form_data['templateIdentifier'])
@@ -107,9 +107,9 @@ def test_email_log():
                 "programID":"1",
                 "eventID":"1",
                 "recipientsCategory": "RSVP'd",
-                "sender": User.get_by_id("ramsayb2")}
+                "sender": "ramsayb2"}
 
-            email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
+            email = EmailHandler(raw_form_data, url_domain, "neillz")
 
             with email.mail.record_messages() as outbox:
                 email_sent = email.send_email()
@@ -124,7 +124,7 @@ def test_email_log():
 
             rsvp_users = EventRsvp.select().where(EventRsvp.event_id==1)
             assert emailLog.recipients == ", ".join(user.user.email for user in rsvp_users)
-            assert emailLog.sender == User.get_by_id("ramsayb2")
+            assert emailLog.sender == "ramsayb2"
             transaction.rollback()
 
 @pytest.mark.integration
@@ -137,9 +137,7 @@ def test_recipients_eligible_students():
                 "eventID":"1",
                 "recipientsCategory": "Eligible Students"}
 
-            testSender = User.get_by_id('ramsayb2')
-
-            email = EmailHandler(raw_form_data, url_domain, testSender)
+            email = EmailHandler(raw_form_data, url_domain, 'ramsayb2')
             email.process_data()
             assert email.recipients == []
 
@@ -225,7 +223,7 @@ def test_recipients_eligible_students():
 @pytest.mark.integration
 def test_get_last_email():
     last_email = EmailHandler.retrieve_last_email(5)
-    assert last_email.sender.username == "neillz"
+    assert last_email.sender == "neillz"
     assert last_email.subject == "Time Change for {event_name}"
     assert last_email.templateUsed.subject == "Test Email 2"
     assert last_email.recipientsCategory == "RSVP'd"
