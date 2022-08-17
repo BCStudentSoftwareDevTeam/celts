@@ -204,14 +204,14 @@
              </td>
              {% if g.current_user.isCeltsAdmin %}
                 <td>
-                    <select class="passedBackgroundCheck" id="{{bgType.id}}" data-id="{{bgType.id}}" style="width: 12rem; height: 2rem;">
+                    <select class="passedBackgroundCheck form-select" id="{{bgType.id}}" data-id="{{bgType.id}}">
                         <option value=''></option>
                         <option value="Submitted">Submitted</option>
                         <option value="Passed">Passed</option>
                         <option value="Failed">Failed</option>
                     </select>
                 </td>
-                <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" class="form-control" style="width: 12rem; height: 2rem;"/></td>
+                <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" class="form-control"/></td>
                 <td><button type="button" class="savebtn btn btn-primary" id="{{bgType.id}}" data-id="{{bgType.id}}" data-username="{{volunteer.username}}">Save</button></td>
             {% endif %}
             </tr>
