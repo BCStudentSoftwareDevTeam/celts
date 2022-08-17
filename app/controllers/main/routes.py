@@ -11,7 +11,6 @@ from app.models.backgroundCheckType import BackgroundCheckType
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
-from app.models.event import Event
 from app.models.programBan import ProgramBan
 from app.models.programEvent import ProgramEvent
 from app.models.term import Term
@@ -19,6 +18,8 @@ from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
 from app.models.programManager import ProgramManager
 from app.models.courseStatus import CourseStatus
+from app.models.courseInstructor import CourseInstructor
+
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory
@@ -29,7 +30,6 @@ from app.logic.transcript import *
 from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import unapprovedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
-from app.models.courseInstructor import CourseInstructor
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
@@ -81,6 +81,7 @@ def viewUsersProfile(username):
 
     if (g.current_user == volunteer) or g.current_user.isAdmin:
         upcomingEvents = getUpcomingEventsForUser(volunteer)
+        participatedEvents = getParticipatedEventsForUser(volunteer)
         programs = Program.select()
         if not g.current_user.isBonnerScholar and not g.current_user.isAdmin:
             programs = programs.where(Program.isBonnerScholars == False)
@@ -119,6 +120,7 @@ def viewUsersProfile(username):
                 programs = programs,
                 programsInterested = programsInterested,
                 upcomingEvents = upcomingEvents,
+                participatedEvents = participatedEvents,
                 rsvpedEvents = rsvpedEvents,
                 permissionPrograms = permissionPrograms,
                 eligibilityTable = eligibilityTable,
