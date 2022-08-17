@@ -6,5 +6,6 @@ venv/
 *.swp
 *.swo
 old/
+eventattachments/
 local-override.yml
 geckodriver.log
