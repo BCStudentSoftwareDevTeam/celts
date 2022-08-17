@@ -19,7 +19,7 @@ def getServiceLearningCoursesData(user):
                      .join(User)
                      .where((CourseInstructor.user==user)|(Course.createdBy==user))
                      .order_by(Course.term.desc(), Course.status))
-    
+
     courseDict = {}
     for course in courses:
         otherInstructors = (CourseInstructor.select(CourseInstructor, User).join(User).where(CourseInstructor.course==course))
@@ -72,3 +72,5 @@ def renewProposal(courseID, term):
     for instructor in instructors:
         CourseInstructor.create(course=newCourse.id,
                                 user=instructor.user)
+
+    return newCourse
