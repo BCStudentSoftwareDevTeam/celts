@@ -12,7 +12,7 @@ $(document).ready(function(){
       method: "POST",
       url: interestUrl,
       success: function(response) {
-          location.reload();  //  Reloading page after user clicks on the show interest checkbox
+          location.replace(window.href "?accordion=interest");  //  Reloading page after user clicks on the show interest checkbox
       },
       error: function(request, status, error) {
         console.log(status,error);
