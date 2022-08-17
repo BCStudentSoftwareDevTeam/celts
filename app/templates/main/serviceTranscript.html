@@ -3,7 +3,7 @@
 
 {% block app_content %}
 <div class="w-100 d-print-inline-block">
-<h1 class="text-center mt-5 mb-3">{{userData.firstName}} {{userData.lastName}}</h1>
+<h1 class="text-center mb-3">{{userData.firstName}} {{userData.lastName}}</h1>
 {% if allEventTranscript %}
     {% for program in allEventTranscript %}
         {% set programTitle = program.programName %}
