@@ -140,19 +140,26 @@ def getStudentLedEvents(term):
 
     return programs
 
-def getTrainingEvents(term):
+def getTrainingEvents(term, user):
     """
         The allTrainingsEvent query is designed to select and count eventId's after grouping them
         together by id's of similiar value. The query will then return the event that is associated
         with the most programs (highest count) by doing this we can ensure that the event being
         returned is the All Trainings Event.
+        term: expected to be the ID of a term
+        user: expected to be the current user
+        return: a list of all trainings the user can view
     """
-    trainingEvents = list(Event.select(Event)
-                           .where(Event.isTraining, Event.term == term)
+    trainingQuery = (Event.select(Event)
+                           .join(ProgramEvent)
+                           .join(Program)
                            .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate)
-                           .execute())
+                           .where(Event.isTraining, Event.term == term))
+    hideBonner = (not user.isAdmin) and not (user.isStudent and user.isBonnerScholar)
+    if hideBonner:
+        trainingQuery = trainingQuery.where(Program.isBonnerScholars == False)
 
-    return trainingEvents
+    return list(trainingQuery.distinct().execute())
 
 def getBonnerEvents(term):
 

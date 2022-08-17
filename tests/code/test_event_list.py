@@ -4,7 +4,8 @@ from app.models import mainDB
 from app.models.programEvent import ProgramEvent
 from app.models.program import Program
 from app.models.event import Event
-from app.models.event import Term
+from app.models.term import Term
+from app.models.user import User
 from app.logic.events import getStudentLedEvents,  getTrainingEvents, getBonnerEvents, getOtherEvents
 
 @pytest.mark.integration
@@ -69,10 +70,117 @@ def test_studentled_events(training_events):
 
 @pytest.mark.integration
 def test_training_events(training_events):
-    training = training_events
-    allTrainingPrograms = [Event.get_by_id(1), training.event]
+    with mainDB.atomic() as transaction:
+        testTerm = Term.create(description = "Test Term",
+                                year = 1919,
+                                academicYear = "1919-1920",
+                                isSummer = False,
+                                isCurrentTerm = False)
+        testBonnerProgram = Program.create(programName = "Test Bonner",
+                                            partner = None,
+                                            isStudentLed = False,
+                                            isBonnerScholars = True,
+                                            contactName = "Jesus Christ",
+                                            contactEmail = "christj@test.com")
+        testNotBonnerProgram = Program.create(programName = "Test Not Bonner",
+                                                partner = None,
+                                                isStudentLed = False,
+                                                isBonnerScholars = False,
+                                                contactName = "Jesus Christ",
+                                                contactEmail = "christj@test.com")
+        testBonnerTraining = Event.create(name = "Bonner Test Training",
+                                            term = testTerm,
+                                            description = "Bonner Test Training",
+                                            timeStart = "18:00:00",
+                                            timeEnd = "21:00:00",
+                                            location = "basement",
+                                            isTraining = True,
+                                            startDate = "1919-12-13",
+                                            endDate = "1919-12-14")
+        testNotBonnerTraining = Event.create(name = "Bonner Test Training",
+                                            term = testTerm,
+                                            description = "Not Bonner",
+                                            timeStart = "18:00:00",
+                                            timeEnd = "21:00:00",
+                                            location = "basement",
+                                            isTraining = True,
+                                            startDate = "1919-12-12",
+                                            endDate = "1919-12-13")
+        ProgramEvent.create(program = testBonnerProgram.id, event = testBonnerTraining)
+        ProgramEvent.create(program = testNotBonnerProgram.id, event = testNotBonnerTraining)
+        ProgramEvent.create(program = 1, event = testNotBonnerTraining)
 
-    assert allTrainingPrograms == getTrainingEvents(2)
+        userFaculty = User.create(username = "TestNotBonner",
+                                    bnumber = "B000000000",
+                                    email = "test@test.com",
+                                    phoneNumber = "Null",
+                                    firstName = "TestFirst",
+                                    lastName = "TestLast",
+                                    isStudent = False,
+                                    isFaculty = True,
+                                    isStaff = False,
+                                    isCeltsAdmin = False,
+                                    isCeltsStudentStaff = False,
+                                    isBonnerScholar = False)
+        userStaff = User.create(username = "TestisStaff",
+                                            bnumber = "B00000000002",
+                                            email = "test@test.com",
+                                            phoneNumber = "Null",
+                                            firstName = "TestFirst",
+                                            lastName = "TestLast",
+                                            isStudent = False,
+                                            isFaculty = False,
+                                            isStaff = True,
+                                            isCeltsAdmin = False,
+                                            isCeltsStudentStaff = False,
+                                            isBonnerScholar = False)
+        userCeltsAdmin = User.create(username = "TestisCeltsAdmin",
+                                            bnumber = "B00000000003",
+                                            email = "test@test.com",
+                                            phoneNumber = "Null",
+                                            firstName = "TestFirst",
+                                            lastName = "TestLast",
+                                            isStudent = False,
+                                            isFaculty = False,
+                                            isStaff = False,
+                                            isCeltsAdmin = True,
+                                            isCeltsStudentStaff = False,
+                                            isBonnerScholar = False)
+        userBonnerScholar = User.create(username = "TestBonnerScholar",
+                                        bnumber = "B0000000000",
+                                        email = "test@test.com",
+                                        phoneNumber = "Null",
+                                        firstName = "TestFirst",
+                                        lastName = "TestLast",
+                                        isStudent = True,
+                                        isFaculty = False,
+                                        isStaff = False,
+                                        isCeltsAdmin = False,
+                                        isCeltsStudentStaff = False,
+                                        isBonnerScholar = True)
+        userNotBonnerScholar = User.create(username = "TestNotBonnerScholar",
+                                            bnumber = "B00000000001",
+                                            email = "test@test.com",
+                                            phoneNumber = "Null",
+                                            firstName = "TestFirst",
+                                            lastName = "TestLast",
+                                            isStudent = True,
+                                            isFaculty = False,
+                                            isStaff = False,
+                                            isCeltsAdmin = False,
+                                            isCeltsStudentStaff = False,
+                                            isBonnerScholar = False)
+
+        notBonnerList = [testNotBonnerTraining]
+        bonnerList = [testNotBonnerTraining, testBonnerTraining]
+
+        assert notBonnerList == getTrainingEvents(testTerm, userFaculty)
+        assert notBonnerList == getTrainingEvents(testTerm, userNotBonnerScholar)
+        assert notBonnerList == getTrainingEvents(testTerm, userStaff)
+        assert bonnerList == getTrainingEvents(testTerm, userCeltsAdmin)
+        assert bonnerList == getTrainingEvents(testTerm, userBonnerScholar)
+
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_bonner_events(special_bonner):
