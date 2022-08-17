@@ -4,6 +4,7 @@
     width:95%;
     overflow-wrap: break-word;
     position: relative;
+    padding-top: 3rem;
 }
 .flash_container{
     width: 80%;
@@ -11,6 +12,7 @@
     position: absolute;
     z-index: 10;
     opacity: .9;
+    margin-top:-50px;
 }
 input.invalid {
   background-color: #ffdddd;
