@@ -94,7 +94,7 @@ def viewUsersProfile(username):
         permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
 
-        allEntries = getUserBGCheckHistory(volunteer)
+        allBackgroundHistory = getUserBGCheckHistory(volunteer)
         backgroundTypes = list(BackgroundCheckType.select())
 
 
@@ -124,7 +124,7 @@ def viewUsersProfile(username):
                 eligibilityTable = eligibilityTable,
                 volunteer = volunteer,
                 backgroundTypes = backgroundTypes,
-                allEntries = allEntries,
+                allBackgroundHistory = allBackgroundHistory,
                 currentDateTime = datetime.datetime.now()
 
             )
