@@ -1,7 +1,7 @@
 import pytest
 from flask import g
 from app import app
-from app.logic.volunteers import getEventLengthInHours, updateEventParticipants, setUserBackgroundCheck
+from app.logic.volunteers import getEventLengthInHours, updateEventParticipants, addUserBackgroundCheck
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.event import Event
@@ -122,30 +122,39 @@ def test_updateEventParticipants():
 
 @pytest.mark.integration
 def test_backgroundCheck():
-    with app.app_context():
-        g.current_user = "ramsayb2"
-        updatebackground = setUserBackgroundCheck("khatts","CAN",False,parser.parse("2020-07-20"))
-        updatedModel = BackgroundCheck.get(user="khatts", type = "CAN")
-        assert updatedModel.passBackgroundCheck == False
-        assert updatedModel.dateCompleted.strftime("%Y-%m-%d") == "2020-07-20"
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+            g.current_user = "ramsayb2"
+            # tests the model created in tests_data and the one that is created (multiple entries)
+            updatebackground = addUserBackgroundCheck("khatts","CAN","Submitted",parser.parse("2020-07-20"))
+            updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "khatts", BackgroundCheck.type == "CAN"))
+            assert updatedModel[0].backgroundCheckStatus == "Passed"
+            assert updatedModel[1].backgroundCheckStatus == "Submitted"
+            assert updatedModel[0].dateCompleted.strftime("%Y-%m-%d") == "2021-10-12"
+            assert updatedModel[1].dateCompleted.strftime("%Y-%m-%d") == "2020-07-20"
 
-        updatebackground = setUserBackgroundCheck("khatts","FBI",True,parser.parse("1999-07-20"))
-        updatedModel = BackgroundCheck.get(user =  "khatts", type = "FBI")
-        assert updatedModel.passBackgroundCheck == True
-        assert updatedModel.dateCompleted.strftime("%Y-%m-%d") == "1999-07-20"
+            updatebackground = addUserBackgroundCheck("mupotsal","SHS","Failed",parser.parse("2021-07-20"))
+            updatedModel = list(BackgroundCheck.select().where(BackgroundCheck.user == "mupotsal", BackgroundCheck.type == "SHS"))
+            assert updatedModel[0].backgroundCheckStatus == "Submitted"
+            assert updatedModel[1].backgroundCheckStatus == "Failed"
+            assert updatedModel[0].dateCompleted.strftime("%Y-%m-%d") == "2021-10-12"
+            assert updatedModel[1].dateCompleted.strftime("%Y-%m-%d") == "2021-07-20"
+
+            # tests the creation of adding a new background check where one does not exist yet
+            updatebackground = addUserBackgroundCheck("khatts","FBI","Passed",parser.parse("1999-07-20"))
+            updatedModel = BackgroundCheck.get(user =  "khatts", type = "FBI")
+            assert updatedModel.backgroundCheckStatus == "Passed"
+            assert updatedModel.dateCompleted.strftime("%Y-%m-%d") == "1999-07-20"
 
 
-        updatebackground = setUserBackgroundCheck("khatts","SHS",False,parser.parse("2019-07-20"))
-        updatedModel = BackgroundCheck.get(user = "khatts", type = "SHS")
-        assert updatedModel.passBackgroundCheck == False
-        assert updatedModel.dateCompleted.strftime("%Y-%m-%d") == "2019-07-20"
+            updatebackground = addUserBackgroundCheck("khatts","SHS","Submitted",parser.parse("2019-07-20"))
+            updatedModel = BackgroundCheck.get(user = "khatts", type = "SHS")
+            assert updatedModel.backgroundCheckStatus == "Submitted"
+            assert updatedModel.dateCompleted.strftime("%Y-%m-%d") == "2019-07-20"
 
-        updatebackground = setUserBackgroundCheck("neillz", "FBI",False,parser.parse("2009-07-20"))
-        updatedModel = BackgroundCheck.get(user =  "neillz", type = "FBI")
-        assert updatedModel.passBackgroundCheck == False
-        assert updatedModel.dateCompleted.strftime("%Y-%m-%d") == "2009-07-20"
+            updatebackground = addUserBackgroundCheck("neillz", "FBI","Passed",parser.parse("2009-07-20"))
+            updatedModel = BackgroundCheck.get(user =  "neillz", type = "FBI")
+            assert updatedModel.backgroundCheckStatus == "Passed"
+            assert updatedModel.dateCompleted.strftime("%Y-%m-%d") == "2009-07-20"
 
-        updatebackground = setUserBackgroundCheck("mupotsal","SHS",True,parser.parse("2021-07-20"))
-        updatedModel = BackgroundCheck.get(user = "mupotsal", type = "SHS")
-        assert updatedModel.passBackgroundCheck == True
-        assert updatedModel.dateCompleted.strftime("%Y-%m-%d") == "2021-07-20"
+        transaction.rollback()

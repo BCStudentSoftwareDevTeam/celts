@@ -202,12 +202,12 @@ def addRecurringEvents():
     return json.dumps(recurringEvents, default=str)
 
 
-@admin_bp.route('/volunteerProfile', methods=['POST'])
-def volunteerProfile():
+@admin_bp.route('/userProfile', methods=['POST'])
+def userProfile():
     volunteerName= request.form.copy()
     username = volunteerName['searchStudentsInput'].strip("()")
     user=username.split('(')[-1]
-    return redirect(url_for('main.viewVolunteersProfile', username=user))
+    return redirect(url_for('main.viewUsersProfile', username=user))
 
 @admin_bp.route('/search_student', methods=['GET'])
 def studentSearchPage():
