@@ -8,7 +8,7 @@ from app.models.term import Term
 from app.models.user import User
 from app.models.emailTemplate import EmailTemplate
 
-def sendAutomatedEmail(events):
+def sendEventReminderEmail(events):
     """Function that sends an email for every event occuring the next day"""
     if not len(events):
         return 0
@@ -30,11 +30,11 @@ def sendAutomatedEmail(events):
                         "body":templateBody}
         sendEmail = EmailHandler(emailData, gethost(), "Reminder Automation")
         sendEmail.send_email()
-        counter+=1
+        counter += 1
     return counter
 
 def main():
-    sendAutomatedEmail(getTomorrowsEvents())
+    sendEventReminderEmail(getTomorrowsEvents())
 
 def gethost():
     host = "localhost:8080"

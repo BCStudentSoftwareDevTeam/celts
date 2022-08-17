@@ -4,13 +4,13 @@ from datetime import date, datetime, timedelta
 from app.models import mainDB
 from app.models.event import Event
 from app.logic.events import getTomorrowsEvents
-from app.scripts.sendEventReminderEmails import sendAutomatedEmail
+from app.scripts.send_event_reminder_emails import sendEventReminderEmail
 
 @pytest.mark.integration
-def test_sendAutomatedEmail():
+def test_sendEventReminderEmail():
     with mainDB.atomic() as transaction:
         tomorrow = date.today() + timedelta(days=1)
-        emailsSent = sendAutomatedEmail([])
+        emailsSent = sendEventReminderEmail([])
         assert emailsSent == 0
 
         newEvent = Event.create(name = "Test event",
@@ -26,7 +26,7 @@ def test_sendAutomatedEmail():
                       endDate= "2022-12-19",
                       recurringId = 0)
         tomorrowEvents = getTomorrowsEvents()
-        emailsSent = sendAutomatedEmail(tomorrowEvents)
+        emailsSent = sendEventReminderEmail(tomorrowEvents)
         assert emailsSent == 1
         assert len(tomorrowEvents) == 1
         newEvent = Event.create(name = "Testing event",
@@ -42,7 +42,7 @@ def test_sendAutomatedEmail():
                       endDate= "2022-12-19",
                       recurringId = 0)
         tomorrowEvents = getTomorrowsEvents()
-        emailsSent = sendAutomatedEmail(tomorrowEvents)
+        emailsSent = sendEventReminderEmail(tomorrowEvents)
         assert emailsSent == 2
         assert len(tomorrowEvents) == 2
 
