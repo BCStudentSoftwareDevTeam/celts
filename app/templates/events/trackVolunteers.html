@@ -59,13 +59,15 @@
         <th>Email</th>
         <th>Phone Number</th>
         <th class="noSort">Completed Trainings?</th>
+    {% if event.isPast %}
         <th class="noSort">Total Hours</th>
-        <th class="noSort">Present</th>
+        <th class="noSort">Attended</th>
+    {% endif %}
         <th class="noSort">Remove Volunteer</th>
       </tr>
     </thead>
     <tbody class="align-middle" id="volunteerTable">
-      {% for participant in eventRsvpData%}
+      {% for participant in eventVolunteerData %}
           <tr>
             <td>
               <input
@@ -85,6 +87,7 @@
                 <span class="bi bi-check-lg" aria-label="Completed all trainings."></span>
               {% endif %}
             </td>
+            {% if event.isPast %}
             <td>
               <input
                 class="form-control number-only form-control input-sm"
@@ -94,21 +97,25 @@
                 type ="number"
                 min="0"
                 step="0.01"
-                {% if participant.user.username in eventParticipants and eventParticipants[participant.user.username] == None %}
-                  value="{{eventLength}}"
-                {% elif participant.user.username in eventParticipants %}
-                  value="{{eventParticipants[participant.user.username]}}"
-                {% else %} disabled {% endif %} />
+                    {% if participant.user.username in eventParticipants and eventParticipants[participant.user.username] == None %}
+                      value="{{eventLength}}"
+                    {% elif participant.user.username in eventParticipants %}
+                      value="{{eventParticipants[participant.user.username]}}"
+                    {% else %} disabled {% endif %}
+                />
             </td>
             <td style="text-align:center">
               <input
                 type="checkbox"
                 class='attendanceCheck'
                 name="checkbox_{{participant.user.username}}"
-                {% if participant.user.username in eventParticipants %}
-                  checked
+                {% if event.isPast %}
+                    {% if participant.user.username in eventParticipants %}
+                      checked
+                    {% endif %}
                 {% endif %} />
             </td>
+            {% endif %} {# end hiding the hours and attended inputs #}
             <td style="text-align:center">
               <button
                 type="button"

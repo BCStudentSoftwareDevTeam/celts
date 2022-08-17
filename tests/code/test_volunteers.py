@@ -9,7 +9,6 @@ from app.models.program import Program
 from app.models.programManager import ProgramManager
 from app.models.programEvent import ProgramEvent
 from app.models import mainDB
-from app.controllers.admin.volunteers import addVolunteerToEventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 from datetime import datetime
 from peewee import DoesNotExist
@@ -52,34 +51,6 @@ def test_getEventLengthInHours():
     eventDate = "2021-07-20"
     with pytest.raises(TypeError):
         eventLength = getEventLengthInHours(startTime, endTime, eventDate)
-
-
-
-@pytest.mark.integration
-def test_addVolunteerToEventRsvp():
-    user = "khatts"
-    volunteerEventID = 5
-    #test that volunteer is already registered for the event
-    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID)
-    assert volunteerToEvent == True
-
-    #test for adding user as a participant to the event
-    user = "agliullovak"
-    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID)
-    assert volunteerToEvent == True
-    (EventParticipant.delete().where(EventParticipant.user==user, EventParticipant.event==volunteerEventID)).execute()
-
-    # test for username that is not in the database
-    user = "jarjug"
-    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID)
-    assert volunteerToEvent == False
-
-    # test for event that does not exsit
-    user = "agliullovak"
-    volunteerEventID = 5006
-    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID)
-    assert volunteerToEvent == False
-
 
 @pytest.mark.integration
 def test_updateEventParticipants():
