@@ -1,15 +1,15 @@
-{%set title ="Volunteer Profile"%}
+{%set title ="User Profile"%}
 {% extends "base.html"%}
 
 {% block scripts %}
   {{super()}}
-  <script type="text/javascript" src="{{url_for('static', filename='js/volunteerProfile.js') }}?u={{lastStaticUpdate}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/userProfile.js') }}?u={{lastStaticUpdate}}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
 {% endblock %}
 
 {% block styles %}
   {{super()}}
-  <link rel="stylesheet" href="{{url_for('static', filename ='css/volunteerProfile.css') }}?u={{lastStaticUpdate}}">
+  <link rel="stylesheet" href="{{url_for('static', filename ='css/userProfile.css') }}?u={{lastStaticUpdate}}">
 {% endblock %}
 
 {% block app_content %}
@@ -51,6 +51,32 @@
      {% endif %}
    </table>
  </div>
+ <!-- Start Program History -->
+ <div class="row">
+   <h4 class="col-sm-9"><p>Participation History: </p></h4>
+ </div>
+  <div class="row table-responsive">
+    <table class="table">
+      {% if participatedEvents|length > 0 %}
+        <thead class="tableHeader">
+          <th scope="col">Program</th>
+          <th scope="col">Event Name</th>
+          <th scope="col">Event Date</th>
+        </thead>
+        {% for event in participatedEvents %}
+        <tr>
+          <td>{{event.programName}}</td>
+          <td><a href= '/eventsList/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
+          <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
+        </tr>
+        {% endfor %}
+      {% else %}
+        <h5>You have not participated in any events.</h5>
+      {% endif %}
+    </table>
+  </div>
+ <!-- End Program History -->
+
  <!-- Start Program Eligibility Table -->
  <div class="table-responsive">
   <h5>Choose interests below to be notified about your upcoming events:</h5>
@@ -181,9 +207,9 @@
          <thead>
            <tr>
              <th scope="col">Description</th>
-             <th scope="col">Passed</th>
-             <th scope="col">Date</th>
              {% if g.current_user.isCeltsAdmin%}
+             <th scope="col">Status</th>
+             <th scope="col">Date</th>
                 <th class="" id="displaySave" scope="col"></th>
              {% endif %}
            </tr>
@@ -191,32 +217,30 @@
          <tbody>
            {% for bgType in backgroundTypes %}
            <tr>
-             <td>{{bgType.description}}</td>
+             <td>
+                 <h6>{{bgType.description}}</h6>
+                 <div>
+                     {% if allBackgroundHistory[bgType.id][0] %}
+                      {% for bgStatus in allBackgroundHistory[bgType.id] %}
+                        {{bgStatus}}
+                        <br>
+                      {% endfor %}
+                     {% endif %}
+                 </div>
+             </td>
              {% if g.current_user.isCeltsAdmin %}
                 <td>
-                    <select class="passedBackgroundCheck" id="{{bgType.id}}" data-id="{{bgType.id}}">
-                        {% if completedBackgroundCheck[bgType][0] == True %}
-                            <option value=1>Yes</option>
-                            <option value=0>No</option>
-                            <option value=''></option>
-                        {% else %}
-                            <option value=''></option>
-                            <option value=1>Yes</option>
-                            <option value=0>No</option>
-                        {% endif %}
+                    <select class="passedBackgroundCheck form-select" id="{{bgType.id}}" data-id="{{bgType.id}}">
+                        <option value=''></option>
+                        <option value="Submitted">Submitted</option>
+                        <option value="Passed">Passed</option>
+                        <option value="Failed">Failed</option>
                     </select>
                 </td>
-                {% if completedBackgroundCheck[bgType][1] %}
-                    <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" value="{{completedBackgroundCheck[bgType][1]}}" class="form-control"/></td>
-                {% else %}
-                    <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" class="form-control"/></td>
-                {% endif %}
+                <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" class="form-control"/></td>
                 <td><button type="button" class="savebtn btn btn-primary" id="{{bgType.id}}" data-id="{{bgType.id}}" data-username="{{volunteer.username}}">Save</button></td>
-            {% else %}
-                <td>{{completedBackgroundCheck[bgType][0]}}</td>
-                <td nowrap>{{completedBackgroundCheck[bgType][1]}}</td>
+            {% endif %}
             </tr>
-           {% endif %}
           {%endfor%}
          </tbody>
       </table>
@@ -257,5 +281,5 @@
     </div>
   </form>
 </div>
-{% endblock %}
 <!-- End Ban or Unban Modal -->
+{% endblock %}

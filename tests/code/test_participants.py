@@ -132,18 +132,22 @@ def test_updateEventParticipants():
 @pytest.mark.integration
 def test_trainedParticipants():
     currentTerm = Term.get(Term.isCurrentTerm==1)
+    #User object to be compared in assert statements
+    khatts = User.get_by_id('khatts')
+    neillz = User.get_by_id('neillz')
+    ayisie = User.get_by_id('ayisie')
     # Case1: test for an event in the current term
     attendedPreq = trainedParticipants(3, currentTerm)
-    assert attendedPreq == ["khatts"]
+    assert attendedPreq == [khatts]
 
     # Case2: test for an event in a past term
     attendedPreq = trainedParticipants(1, currentTerm)
-    assert attendedPreq == ['neillz', 'khatts', 'ayisie']
+    assert attendedPreq == [neillz, khatts, ayisie]
 
     # Case3: test for when user changes current term
     currentTerm = Term.get_by_id(2)
     attendedPreq = trainedParticipants(1, currentTerm)
-    assert attendedPreq == ['neillz', 'khatts', 'ayisie']
+    assert attendedPreq == [neillz, khatts, ayisie]
 
     # Case4: test for program with no prerequisite
     attendedPreq = trainedParticipants(4, currentTerm)
@@ -157,19 +161,19 @@ def test_trainedParticipants():
     # AY is 2020-2021
     currentTerm = Term.get_by_id(1) # Fall 2020
     attendedPreq = trainedParticipants(3, currentTerm)
-    assert attendedPreq == ["khatts"]
+    assert attendedPreq == [khatts]
 
     currentTerm = Term.get_by_id(2) # Spring A 2021
     attendedPreq = trainedParticipants(3, currentTerm)
-    assert attendedPreq == ["khatts"]
+    assert attendedPreq == [khatts]
 
     currentTerm = Term.get_by_id(3) # Spring B 2021
     attendedPreq = trainedParticipants(3, currentTerm)
-    assert attendedPreq == ["khatts"]
+    assert attendedPreq == [khatts]
 
     currentTerm = Term.get_by_id(4) # Summer 2021
     attendedPreq = trainedParticipants(3, currentTerm)
-    assert attendedPreq == ["khatts"]
+    assert attendedPreq == [khatts]
 
     with mainDB.atomic() as transaction:
         ProgramEvent.create(program = 3, event=14) # require AVT
@@ -178,7 +182,7 @@ def test_trainedParticipants():
 
         EventParticipant.create(user="khatts", event=14)
         attendedPreq = trainedParticipants(3, currentTerm)
-        assert attendedPreq == ["khatts"]   # "khatts" has completed both AVT and ACT for program 3
+        assert attendedPreq == [khatts]   # "khatts" has completed both AVT and ACT for program 3
 
         transaction.rollback()
 
@@ -266,9 +270,12 @@ def test_sendUserData():
 @pytest.mark.integration
 def test_getEventParticipants():
     event = Event.get_by_id(1)
+
+    khatts = User.get_by_id('khatts')
+
     eventParticipantsDict = getEventParticipants(event)
-    assert "khatts" in eventParticipantsDict
-    assert eventParticipantsDict["khatts"] == 2
+    assert khatts in eventParticipantsDict
+    assert eventParticipantsDict[khatts] == 2
 
 @pytest.mark.integration
 def test_getEventParticipantsWithWrongParticipant():

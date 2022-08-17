@@ -7,7 +7,6 @@
         </div>
         <div class="modal-body">
           <table class="table table-striped ml-4" id="myTable">
-
             <tbody id="facultyTable">
               <tr>
                 <td class="fw-bold">Course Name</td>
@@ -34,6 +33,12 @@
                 <td class="fw-bold">Term</td>
                 <td>{{course.term.description}}</td>
               </tr>
+              {% if course.courseOccurrence %}
+                  <tr>
+                      <td class="fw-bold">Occurrence</td>
+                      <td>{{course.courseOccurrence}}</td>
+                  </tr>
+              {% endif %}
               <tr>
                 <td class="fw-bold">Status</td>
                 <td>{{course.status.status}}</td>

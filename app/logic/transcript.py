@@ -73,7 +73,7 @@ def getSlCourseTranscript(username):
     """
 
     slCourses = (Course
-        .select(fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned"), Course)
+        .select(Course, fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned"))
         .join(CourseParticipant, on=(Course.id == CourseParticipant.course))
         .where(CourseParticipant.user == username)
         .group_by(Course.courseName, Course.term))

@@ -4,7 +4,7 @@ fi
 
 BASE_URL=http://localhost:8080
 SENSITIVE_URL=http://celts.berea.edu
-VERBOSE="--verbose "
+#VERBOSE="--verbose "
 VERBOSE=""
 FLASK_ENV="testing"
 

@@ -64,6 +64,10 @@ $(document).ready(function() {
     }
   $("#selectVolunteerButton").prop('disabled', true);
 
+  $("#addVolunteerModal").on("shown.bs.modal", function() {
+      $('#addVolunteerInput').focus();
+  });
+
   $("#addVolunteerInput").on("input", function() {
     searchUser("addVolunteerInput", callback, true, "addVolunteerModal");
   });

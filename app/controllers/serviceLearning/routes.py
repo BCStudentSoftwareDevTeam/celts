@@ -47,12 +47,9 @@ def slcEditProposal(courseID):
     questionanswers = [question.questionContent for question in questionData]
     courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
 
-    isRegularlyOccuring = ""
     isAllSectionsServiceLearning = ""
     isPermanentlyDesignated = ""
 
-    if course.isRegularlyOccuring:
-        isRegularlyOccuring = True
     if course.isAllSectionsServiceLearning:
         isAllSectionsServiceLearning = True
     if course.isPermanentlyDesignated:
@@ -63,7 +60,6 @@ def slcEditProposal(courseID):
                                 questionanswers = questionanswers,
                                 terms = terms,
                                 courseInstructor = courseInstructor,
-                                isRegularlyOccuring = isRegularlyOccuring,
                                 isAllSectionsServiceLearning = isAllSectionsServiceLearning,
                                 isPermanentlyDesignated = isPermanentlyDesignated,
                                 redirectTarget=getRedirectTarget())
@@ -156,14 +152,15 @@ def renewCourse(courseID, termID):
     """
     instructors = CourseInstructor.select().where(CourseInstructor.course==courseID)
     courseInstructors = [instructor.user for instructor in instructors]
-
     try:
         if g.current_user.isCeltsAdmin or g.current_user in courseInstructors:
-            renewProposal(courseID, termID)
+            renewedProposal = renewProposal(courseID, termID)
             flash("Course successfully renewed", 'success')
+            return str(renewedProposal.id)
         else:
             flash("Unauthorized to perform this action", 'warning')
     except Exception as e:
         print(e)
         flash("Renewal Unsuccessful", 'warning')
-    return ""
+
+    return "", 500

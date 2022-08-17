@@ -11,7 +11,6 @@ from app.models.backgroundCheckType import BackgroundCheckType
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
-from app.models.event import Event
 from app.models.programBan import ProgramBan
 from app.models.programEvent import ProgramEvent
 from app.models.term import Term
@@ -19,9 +18,11 @@ from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
 from app.models.programManager import ProgramManager
 from app.models.courseStatus import CourseStatus
+from app.models.courseInstructor import CourseInstructor
+
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory
 from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getUserParticipatedEvents, checkUserRsvp, addPersonToEvent
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
@@ -29,7 +30,6 @@ from app.logic.transcript import *
 from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import unapprovedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
-from app.models.courseInstructor import CourseInstructor
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
@@ -46,11 +46,11 @@ def events(selectedTerm):
         currentTerm = selectedTerm
     currentTime = datetime.datetime.now()
     listOfTerms = Term.select()
-    participantRSVP = EventRsvp.select().where(EventRsvp.user == g.current_user)
+    participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
     term = Term.get_by_id(currentTerm)
     studentLedEvents = getStudentLedEvents(term)
-    trainingEvents = getTrainingEvents(term)
+    trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
 
@@ -66,7 +66,7 @@ def events(selectedTerm):
         user = g.current_user)
 
 @main_bp.route('/profile/<username>', methods=['GET'])
-def viewVolunteersProfile(username):
+def viewUsersProfile(username):
     """
     This function displays the information of a volunteer to the user
     """
@@ -81,58 +81,54 @@ def viewVolunteersProfile(username):
 
     if (g.current_user == volunteer) or g.current_user.isAdmin:
         upcomingEvents = getUpcomingEventsForUser(volunteer)
+        participatedEvents = getParticipatedEventsForUser(volunteer)
         programs = Program.select()
         if not g.current_user.isBonnerScholar and not g.current_user.isAdmin:
             programs = programs.where(Program.isBonnerScholars == False)
-        interests = Interest.select().where(Interest.user == volunteer)
+        interests = Interest.select(Interest, Program).join(Program).where(Interest.user == volunteer)
         programsInterested = [interest.program for interest in interests]
 
-        rsvpedEventsList = EventRsvp.select().where(EventRsvp.user == volunteer)
+        rsvpedEventsList = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == volunteer)
         rsvpedEvents = [event.event.id for event in rsvpedEventsList]
 
-        programManagerPrograms = ProgramManager.select().where(ProgramManager.user == volunteer)
+        programManagerPrograms = ProgramManager.select(ProgramManager, Program).join(Program).where(ProgramManager.user == volunteer)
         permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
-        allUserEntries = BackgroundCheck.select().where(BackgroundCheck.user == volunteer)
 
-        if g.current_user.isCeltsAdmin:
-            completedBackgroundCheck = {entry.type: [entry.passBackgroundCheck, entry.dateCompleted] for entry in allUserEntries}
-        else:
-            # sets the values to strings because student staff do not have access to input boxes
-            completedBackgroundCheck = {entry.type: ['Yes' if entry.passBackgroundCheck else 'No',
-                                                    '' if entry.dateCompleted == None
-                                                    else entry.dateCompleted.strftime('%m/%d/%Y')] for entry in allUserEntries}
-
+        allBackgroundHistory = getUserBGCheckHistory(volunteer)
         backgroundTypes = list(BackgroundCheckType.select())
-        # creates data structure for background checks that are not currently completed
-        for checkType in backgroundTypes:
-            if checkType not in completedBackgroundCheck.keys():
-                completedBackgroundCheck[checkType] = ["No"]
+
 
         eligibilityTable = []
         for program in programs:
-            notes = ProgramBan.select().where(ProgramBan.user == volunteer,
+            notes = list(ProgramBan.select(ProgramBan, Note)
+                                    .join(Note, on=(ProgramBan.banNote == Note.id))
+                                    .where(ProgramBan.user == volunteer,
                                               ProgramBan.program == program,
-                                              ProgramBan.endDate > datetime.datetime.now())
+                                              ProgramBan.endDate > datetime.datetime.now()).execute())
 
             userParticipatedEvents = getUserParticipatedEvents(program, g.current_user, g.current_term)
+            allTrainingsComplete = not len([event for event in userParticipatedEvents.values() if event != True])
             noteForDict = notes[-1].banNote.noteContent if notes else ""
             eligibilityTable.append({"program": program,
-                                   "completedTraining": (volunteer.username in trainedParticipants(program, g.current_term)),
+                                   "completedTraining": allTrainingsComplete,
                                    "trainingList": userParticipatedEvents,
                                    "isNotBanned": True if not notes else False,
                                    "banNote": noteForDict})
-        return render_template ("/main/volunteerProfile.html",
+
+        return render_template ("/main/userProfile.html",
                 programs = programs,
                 programsInterested = programsInterested,
                 upcomingEvents = upcomingEvents,
+                participatedEvents = participatedEvents,
                 rsvpedEvents = rsvpedEvents,
                 permissionPrograms = permissionPrograms,
                 eligibilityTable = eligibilityTable,
                 volunteer = volunteer,
                 backgroundTypes = backgroundTypes,
-                completedBackgroundCheck = completedBackgroundCheck,
+                allBackgroundHistory = allBackgroundHistory,
                 currentDateTime = datetime.datetime.now()
+
             )
     abort(403)
 

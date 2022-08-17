@@ -9,10 +9,6 @@ from datetime import datetime, date
 from app.logic.adminLogs import createLog
 from app.logic.events import getEvents
 
-
-
-
-
 def getEventLengthInHours(startTime, endTime, eventDate):
     """
     Converts the event length hours into decimal
@@ -66,21 +62,36 @@ def updateEventParticipants(participantData):
             break
     return True
 
-def setUserBackgroundCheck(user, bgType, checkPassed, dateCompleted):
+
+def addVolunteerToEventRsvp(user, volunteerEventID):
+    '''
+    Adds a volunteer to event rsvp table when a user rsvps and when they are
+    added through the track volunteer page by an admin.
+
+    param: user - a string containing username
+           volunteerEventID - id of the event the volunteer is being registered for
+    '''
+    try:
+        if not EventRsvp.get_or_none(user=user, event=volunteerEventID):
+            EventRsvp.create(user=user, event=volunteerEventID)
+        return True
+
+    except Exception as e:
+        return False
+
+def addUserBackgroundCheck(user, bgType, checkPassed, dateCompleted):
     """
     Changes the status of a users background check depending on what was marked
     on their volunteer profile.
     """
     today = date.today()
     user = User.get_by_id(user)
-    deleteInstance = BackgroundCheck.delete().where(BackgroundCheck.user==user, BackgroundCheck.type==bgType)
-    deleteInstance.execute()
     if checkPassed == '' and dateCompleted == '':
         createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as incomplete.")
     else:
         if not dateCompleted:
             dateCompleted = None
-        update = BackgroundCheck.create(user=user, type=bgType, passBackgroundCheck=int(checkPassed), dateCompleted=dateCompleted)
+        update = BackgroundCheck.create(user=user, type=bgType, backgroundCheckStatus=checkPassed, dateCompleted=dateCompleted)
         if bool(checkPassed):
             createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as passed.")
         else:

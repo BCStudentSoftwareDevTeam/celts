@@ -29,8 +29,8 @@ function renew(){
     $.ajax({
       url: `/serviceLearning/renew/${courseID}/${termID}/`,
       type: "POST",
-      success: function(s){
-        location.reload();
+      success: function(newID){
+        location = '/serviceLearning/editProposal/' + newID;
       },
       error: function(request, status, error) {
           console.log(status,error);
