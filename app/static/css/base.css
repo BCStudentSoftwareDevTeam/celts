@@ -39,6 +39,8 @@ input.invalid {
   text-align: center !important;
   height: 80px;
   line-height: 80px; /* Vertically center the text */
+  position:relative;
+  z-index:10
 }
 
 .footerlink {
