@@ -196,11 +196,9 @@
                  <div>
                      {% if allBackgroundHistory[bgType.id][0] %}
                       {% for bgStatus in allBackgroundHistory[bgType.id] %}
-                        {{bgStatus}} &nbsp&nbsp<a id="-{{bgType.id}}" type='button' onclick="showHistory(this)" href="#">History</a>
+                        {{bgStatus}}
                         <br>
                       {% endfor %}
-                     {% else %}
-                        Not Submitted
                      {% endif %}
                  </div>
              </td>
@@ -258,50 +256,4 @@
   </form>
 </div>
 <!-- End Ban or Unban Modal -->
-{% for type in backgroundTypes %}
-    <div class="modal fade" id="historyModal-{{type.id}}" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Background Check History for </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              <table class="table">
-                 <thead>
-                   <tr>
-                     <th scope="col">Status</th>
-                     <th scope="col">Date</th>
-                   </tr>
-                 </thead>
-                 <tbody>
-                   {% for entry in allBackgroundHistory[type.id] %}
-                   <tr>
-                     <td>
-                        {% if loop.index == 1%}
-                            <h6>{{entry[0]}}</h6>
-                        {% else %}
-                            {{entry[0]}}
-                        {% endif %}
-
-                     </td>
-                     <td>
-                         {% if loop.index == 1%}
-                            <h6>{{entry[1]}}</h6>
-                         {% else %}
-                            {{entry[1]}}
-                         {% endif %}
-                     </td>
-                    </tr>
-                  {% endfor %}
-                 </tbody>
-              </table>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
-{% endfor %}
 {% endblock %}
