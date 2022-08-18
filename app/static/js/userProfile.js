@@ -12,7 +12,14 @@ $(document).ready(function(){
       method: "POST",
       url: interestUrl,
       success: function(response) {
-          location.replace(window.href "?accordion=interest");  //  Reloading page after user clicks on the show interest checkbox
+          // console.log(window.location.href)
+          var origin = window.location.href;
+
+          if (origin.includes("?")){
+            origin = origin.slice(0, origin.indexOf("?"));
+          }
+
+          location.replace(origin + "?accordion=interest");  //  Reloading page after user clicks on the show interest checkbox
       },
       error: function(request, status, error) {
         console.log(status,error);
@@ -108,6 +115,7 @@ $(document).ready(function(){
       data: data,
       success: function(s){
           displayMessage("Saved!", "success")
+          // get the list and insert new list item with desired text
       },
       error: function(error, status){
           console.log(error, status)
@@ -133,7 +141,7 @@ $(document).ready(function(){
 });
 
 function showHistory(bgType){
-    $("#historyModal" + bgType.id).modal("toggle")
+    $("#historyModal" + bgType.id)
 }
 
 function displayMessage(message, color) {  // displays message for saving background check

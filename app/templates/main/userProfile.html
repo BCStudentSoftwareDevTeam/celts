@@ -242,9 +242,9 @@
                 <tr>
                   <th scope="col">Description</th>
                    {% if g.current_user.isCeltsAdmin%}
-                   <th scope="col">Status</th>
-                   <th scope="col">Date</th>
-                      <th class="" id="displaySave" scope="col"></th>
+                     <th scope="col">Status</th>
+                     <th scope="col">Date</th>
+                     <th class="" id="displaySave" scope="col"></th>
                    {% endif %}
                  </tr>
                </thead>
@@ -253,14 +253,13 @@
                  <tr>
                    <td>
                        <h6>{{bgType.description}}</h6>
-                       <div>
+                       <ul class="mb-0" >
                          {% if allBackgroundHistory[bgType.id][0] %}
                           {% for bgStatus in allBackgroundHistory[bgType.id] %}
-                           {{bgStatus}}
-                           <br>
+                           <li>{{bgStatus}}</li>
                           {% endfor %}
                          {% endif %}
-                       </div>
+                       </ul>
                    </td>
                    {% if g.current_user.isCeltsAdmin %}
                       <td>
