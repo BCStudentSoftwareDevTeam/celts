@@ -12,7 +12,6 @@ $(document).ready(function(){
       method: "POST",
       url: interestUrl,
       success: function(response) {
-          // console.log(window.location.href)
           var origin = window.location.href;
 
           if (origin.includes("?")){
@@ -115,10 +114,9 @@ $(document).ready(function(){
       data: data,
       success: function(s){
           displayMessage("Saved!", "success")
-          $("#bgHistory" + data.bgType).append(`<li> ${data.bgStatus}: ${data.bgDate} </li>`);  // get the list
-          // dt = (data.bgStatus + data.bgDate) // desired text wrong format
+          var date = new Date(`${data.bgDate}`).toLocaleDateString()
+          $("#bgHistory" + data.bgType).append(`<li> ${data.bgStatus}: ${date} </li>`);
 
-          // and insert new list item with desired text
       },
       error: function(error, status){
           console.log(error, status)
@@ -144,7 +142,7 @@ $(document).ready(function(){
 });
 
 function showHistory(bgType){
-  
+
 }
 
 function displayMessage(message, color) {  // displays message for saving background check
