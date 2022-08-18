@@ -23,10 +23,7 @@
         User Management
         </button>
       </h3>
-      {%set collapse="show" %}
-      {% if visibleAccordion %}
-        {% set collapse= "" %}
-      {% endif %}
+      {% set collapse = "show" if visibleAccordion == "user" else ""%}
       <div id="collapseOne" class="accordion-collapse collapse {{collapse}}" aria-labelledby="headingOne" data-bs-parent="#adminManagement">
         <div class="accordion-body">
           <div class="container-fluid col-10">
@@ -83,7 +80,8 @@
           Term Management
         </button>
         </h3>
-        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#adminManagement">
+        {% set show = "show" if visibleAccordion == "term" else "" %}
+        <div id="collapseTwo" class="accordion-collapse collapse {{show}}" aria-labelledby="headingTwo" data-bs-parent="#adminManagement">
           <div class="accordion-body">
               <div class="row">
                 <div class="container-fluid mt-5 col-md-4">

@@ -112,7 +112,7 @@ def load_currentTerm():
 from flask import request
 @app.context_processor
 def load_visibleAccordion():
-    # gets the current accoridon and assigns it to g.visibleAccordion
+    # 
     acc = request.args.get("accordion", default = False)
     return {"visibleAccordion": acc}
 """
