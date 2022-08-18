@@ -25,11 +25,13 @@
 <div class="accordion" id="userProfile">
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingOne">
-      <button class="accordion-button " type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+      {% set focus = "open" if not visibleAccordion or visibleAccordion == "upcoming" else "collapsed" %}
+      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
         Upcoming Events
       </button>
     </h3>
-    <div id="collapseOne" class="accordion-collapse show " aria-labelledby="headingOne" data-bs-parent="#userProfile">
+    {% set show = "show" if not visibleAccordion or visibleAccordion == "upcoming" %}
+    <div id="collapseOne" class="accordion-collapse collapse {{show}} " aria-labelledby="headingOne" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="row table-responsive">
           <table class="table">
@@ -64,11 +66,13 @@
   <!-- Start Program History -->
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingTwo">
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+      {% set focus = "open" if visibleAccordion == "history" else "collapsed" %}
+      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
           Participation History
       </button>
     </h3>
-    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#userProfile">
+    {% set show = "show" if visibleAccordion == "history" else "" %}
+    <div id="collapseTwo" class="accordion-collapse collapse {{show}}" aria-labelledby="headingTwo" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="table-responsive">
           <table class="table banTable">
@@ -97,15 +101,13 @@
   <!-- Start Program Eligibility Table -->
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingThree">
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+      {% set focus = "open" if visibleAccordion == "interest" else "collapsed" %}
+      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
           Interests
       </button>
     </h3>
-    {% set collapse="" %}
-    {% if visibleAccordion == "interest" %}
-      {% set collapse = "show" %}
-    {% endif %}
-    <div id="collapseThree" class="accordion-collapse collapse {{collapse}}" aria-labelledby="headingThree" data-bs-parent="#userProfile">
+    {% set show = "show" if visibleAccordion == "interest" else "" %}
+    <div id="collapseThree" class="accordion-collapse collapse {{show}}" aria-labelledby="headingThree" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="table-responsive">
           <table class="table banTable">
@@ -189,11 +191,13 @@
   {% if volunteer.isCeltsStudentStaff %}
     <div class="accordion-item">
       <h3 class="accordion-header" id="headingFour">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+        {% set focus = "open" if visibleAccordion == "manager" else "collapsed" %}
+        <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
             Program Manager
         </button>
       </h3>
-      <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#userProfile">
+      {% set show = "show" if visibleAccordion == "manager" else "" %}
+      <div id="collapseFour" class="accordion-collapse collapse {{show}}" aria-labelledby="headingFour" data-bs-parent="#userProfile">
         <div class="accordion-body">
           <!-- This makes sure that the CeltsAdmins can make someone program manager or not.  -->
           {% if g.current_user.isCeltsAdmin %}
@@ -229,11 +233,13 @@
     {% if g.current_user.isAdmin %}
     <div class="accordion-item">
       <h3 class="accordion-header" id="headingFive">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+        {% set focus = "open" if visibleAccordion == "background" else "collapsed" %}
+        <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
             Background Check
         </button>
       </h3>
-      <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#userProfile">
+      {% set show = "show" if visibleAccordion == "background" else "" %}
+      <div id="collapseFive" class="accordion-collapse collapse {{show}}" aria-labelledby="headingFive" data-bs-parent="#userProfile">
         <div class="accordion-body">
           <div class="table-responsive">
             <table class="table">
