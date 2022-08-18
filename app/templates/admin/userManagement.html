@@ -24,7 +24,7 @@
         </button>
       </h3>
       {%set collapse="show" %}
-      {% if visible_accordion %}
+      {% if visibleAccordion %}
         {% set collapse= "" %}
       {% endif %}
       <div id="collapseOne" class="accordion-collapse collapse {{collapse}}" aria-labelledby="headingOne" data-bs-parent="#adminManagement">
@@ -118,7 +118,7 @@
         Program Management
         </button>
       </h3>
-      {% set show = "show" if visible_accordion == "program" else "" %}
+      {% set show = "show" if visibleAccordion == "program" else "" %}
       <div id="collapseThree" class="accordion-collapse collapse {{show}}" aria-labelledby="headingThree" data-bs-parent="#adminManagement">
         <div class="accordion-body programData">
           <table>

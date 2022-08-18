@@ -112,9 +112,9 @@ def load_currentTerm():
 from flask import request
 @app.context_processor
 def load_visibleAccordion():
-    # gets the current accoridon and assigns it to g.visible_accordion
+    # gets the current accoridon and assigns it to g.visibleAccordion
     acc = request.args.get("accordion", default = False)
-    return {"visible_accordion": acc}
+    return {"visibleAccordion": acc}
 """
 Error handling for all 403, 404, 500 errors. Works by rendering a customm html
 file located at templates/errors. All abort calls are automatically routed here
