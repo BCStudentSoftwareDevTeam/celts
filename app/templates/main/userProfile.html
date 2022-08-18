@@ -253,7 +253,7 @@
                  <tr>
                    <td>
                        <h6>{{bgType.description}}</h6>
-                       <ul class="mb-0" >
+                       <ul class="mb-0" id="bgHistory{{bgType.id}}" >
                          {% if allBackgroundHistory[bgType.id][0] %}
                           {% for bgStatus in allBackgroundHistory[bgType.id] %}
                            <li>{{bgStatus}}</li>

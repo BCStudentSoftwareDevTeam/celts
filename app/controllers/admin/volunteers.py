@@ -114,10 +114,10 @@ def updateBackgroundCheck():
     if g.current_user.isCeltsAdmin:
         eventData = request.form
         user = eventData['user']
-        checkPassed = eventData['checkPassed']
+        bgStatus = eventData['bgStatus']
         type = eventData['bgType']
         dateCompleted = eventData['bgDate']
-        addUserBackgroundCheck(user, type, checkPassed, dateCompleted)
+        addUserBackgroundCheck(user, type, bgStatus, dateCompleted)
         return " "
 
 @admin_bp.route('/updateProgramManager', methods=["POST"])

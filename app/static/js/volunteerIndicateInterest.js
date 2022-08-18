@@ -26,9 +26,9 @@ $(document).ready(function() {
 });
 
 function updateBackgroundCheck(user,bgType){
-  let checkPassed = $( "#"+bgType).val();
+  let bgStatus = $( "#"+bgType).val();
   let data = {
-      checkPassed : checkPassed,
+      bgStatus : bgStatus,
       user: user.id,
       bgType: bgType
   }

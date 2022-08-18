@@ -92,19 +92,19 @@ $(document).ready(function(){
   $(".savebtn").click(function () { // Updates the Background check of a volunteer in the database
     let bgCheckType = $(this).data("id")
     let bgDate = $("#" + bgCheckType + "_date").val()
-    let checkPassed = $("[data-id=" + bgCheckType + "]").val()
+    let bgStatus = $("[data-id=" + bgCheckType + "]").val()
 
-    if (checkPassed == '' && bgDate != '') {
+    if (bgStatus == '' && bgDate != '') {
         displayMessage("Passed<br>Empty!", "danger")
         return
     }
-    if (checkPassed != '' && bgDate == '' ) {
+    if (bgStatus != '' && bgDate == '' ) {
         displayMessage("Date<br>Empty!", "danger")
         return
     }
 
     let data = {
-        checkPassed: checkPassed,      // Expected to be either a 0 or a 1 userProfile.js
+        bgStatus: bgStatus,      // Expected to be one of the three background check statuses
         user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
         bgType: $(this).attr("id"),       // Expected to be the ID of a background check in the database
         bgDate: bgDate  // Expected to be the date of the background check completion or '' if field is empty
@@ -115,7 +115,10 @@ $(document).ready(function(){
       data: data,
       success: function(s){
           displayMessage("Saved!", "success")
-          // get the list and insert new list item with desired text
+          $("#bgHistory" + data.bgType).append(`<li> ${data.bgStatus}: ${data.bgDate} </li>`);  // get the list
+          // dt = (data.bgStatus + data.bgDate) // desired text wrong format
+
+          // and insert new list item with desired text
       },
       error: function(error, status){
           console.log(error, status)
@@ -141,7 +144,7 @@ $(document).ready(function(){
 });
 
 function showHistory(bgType){
-    $("#historyModal" + bgType.id)
+  
 }
 
 function displayMessage(message, color) {  // displays message for saving background check
