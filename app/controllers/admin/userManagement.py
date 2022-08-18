@@ -113,4 +113,4 @@ def changeTerm():
 @admin_bp.route('/admin/addNewTerm', methods = ['POST'])
 def addNewTerm():
     addNextTerm()
-    return redirect(url_for("admin.userManagement", accordion="term"))
+    return ""
