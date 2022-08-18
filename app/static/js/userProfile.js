@@ -141,10 +141,6 @@ $(document).ready(function(){
   });
 });
 
-function showHistory(bgType){
-
-}
-
 function displayMessage(message, color) {  // displays message for saving background check
     $("#displaySave").html(message).addClass("text-"+ color)
     setTimeout(function() {$("#displaySave").html("").removeClass("text-"+ color)}, 2000)
