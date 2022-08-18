@@ -115,7 +115,7 @@ $(document).ready(function(){
       success: function(s){
           displayMessage("Saved!", "success")
           var date = new Date(`${data.bgDate}`).toLocaleDateString()
-          $("#bgHistory" + data.bgType).append(`<li> ${data.bgStatus}: ${date} </li>`);
+          $("#bgHistory" + data.bgType).prepend(`<li> ${data.bgStatus}: ${date} </li>`);
 
       },
       error: function(error, status){
