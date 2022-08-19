@@ -1,5 +1,4 @@
 from app.models.eventParticipant import EventParticipant
-from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 from app.models.event import Event
 from app.models.program import Program
@@ -9,10 +8,6 @@ from app.models.programManager import ProgramManager
 from datetime import datetime, date
 from app.logic.adminLogs import createLog
 from app.logic.events import getEvents
-
-
-
-
 
 def getEventLengthInHours(startTime, endTime, eventDate):
     """
@@ -50,16 +45,10 @@ def updateEventParticipants(participantData):
                         if eventParticipant:
                             ((EventParticipant
                                 .update({EventParticipant.hoursEarned: hoursEarned})
-                                .where(
-                                    EventParticipant.event==event.id,
-                                    EventParticipant.user==userObject.username))
+                                .where(EventParticipant.event==event.id, EventParticipant.user==userObject.username))
                                 .execute())
                         else:
-                            (EventParticipant
-                                .create(
-                                    user=userObject,
-                                    event=event,
-                                    hoursEarned=hoursEarned))
+                            EventParticipant.create(user=userObject, event=event, hoursEarned=hoursEarned)
                 except (KeyError):
                     if eventParticipant:
                         ((EventParticipant.delete()
@@ -90,22 +79,20 @@ def addVolunteerToEventRsvp(user, volunteerEventID):
     except Exception as e:
         return False
 
-def setUserBackgroundCheck(user, bgType, checkPassed, dateCompleted):
+def addUserBackgroundCheck(user, bgType, bgStatus, dateCompleted):
     """
     Changes the status of a users background check depending on what was marked
     on their volunteer profile.
     """
     today = date.today()
     user = User.get_by_id(user)
-    deleteInstance = BackgroundCheck.delete().where(BackgroundCheck.user==user, BackgroundCheck.type==bgType)
-    deleteInstance.execute()
-    if checkPassed == '' and dateCompleted == '':
+    if bgStatus == '' and dateCompleted == '':
         createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as incomplete.")
     else:
         if not dateCompleted:
             dateCompleted = None
-        update = BackgroundCheck.create(user=user, type=bgType, passBackgroundCheck=int(checkPassed), dateCompleted=dateCompleted)
-        if bool(checkPassed):
+        update = BackgroundCheck.create(user=user, type=bgType, backgroundCheckStatus=bgStatus, dateCompleted=dateCompleted)
+        if bool(bgStatus):
             createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as passed.")
         else:
             createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as not passed.")

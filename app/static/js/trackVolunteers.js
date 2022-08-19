@@ -37,7 +37,7 @@ $(document).ready(function() {
         $.ajax({
           url: `/addVolunteersToEvent/${eventId}`,
           type: "POST",
-          data: {"volunteer" :volunteerList, "ajax": true},
+          data: {"volunteer": volunteerList, "ajax": true},
           success: function(s){
               location.reload()
           },
@@ -55,14 +55,18 @@ $(document).ready(function() {
           userlist.push(user)
           let i = userlist.length;
           $("#addVolunteerList").append("<li class id= 'addVolunteerElements"+i+"'> </li>")
-          $("#addVolunteerElements"+i+"").append("<input  type='checkbox' id= 'userlistCheckbox"+i+"' checked value='" + user +"' >  </input>")
-          $("#addVolunteerElements"+i+"").append("<label form for= 'userlistCheckbox"+i+"'>"+ selected["firstName"]+ " " + selected["lastName"] +"</label>")
+          $("#addVolunteerElements"+i).append("<input  type='checkbox' id= 'userlistCheckbox"+i+"' checked value='" + user +"' >  </input>")
+          $("#addVolunteerElements"+i).append("<label form for= 'userlistCheckbox"+i+"'>"+ selected["firstName"]+ " " + selected["lastName"] +"</label>")
       }
       else{
           msgFlash("User already selected.")
       }
     }
   $("#selectVolunteerButton").prop('disabled', true);
+
+  $("#addVolunteerModal").on("shown.bs.modal", function() {
+      $('#addVolunteerInput').focus();
+  });
 
   $("#addVolunteerInput").on("input", function() {
     searchUser("addVolunteerInput", callback, true, "addVolunteerModal");

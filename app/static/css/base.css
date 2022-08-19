@@ -4,6 +4,7 @@
     width:95%;
     overflow-wrap: break-word;
     position: relative;
+    padding-top: 3rem;
 }
 .flash_container{
     width: 80%;
@@ -11,6 +12,7 @@
     position: absolute;
     z-index: 10;
     opacity: .9;
+    margin-top:-50px;
 }
 input.invalid {
   background-color: #ffdddd;
@@ -39,6 +41,8 @@ input.invalid {
   text-align: center !important;
   height: 80px;
   line-height: 80px; /* Vertically center the text */
+  position:relative;
+  z-index:10
 }
 
 .footerlink {

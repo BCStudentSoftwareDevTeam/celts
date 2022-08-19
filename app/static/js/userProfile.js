@@ -12,7 +12,7 @@ $(document).ready(function(){
       method: "POST",
       url: interestUrl,
       success: function(response) {
-          location.reload();  //  Reloading page after user clicks on the show interest checkbox
+          reloadWithAccordion("interest")  //  Reloading page after user clicks on the show interest checkbox
       },
       error: function(request, status, error) {
         console.log(status,error);
@@ -20,7 +20,6 @@ $(document).ready(function(){
       }
     });
   });
-
   // This function is to disable all the dates before current date in the ban modal End Date picker
   $(function(){
     var banEndDatepicker = $("#banEndDatepicker");
@@ -86,19 +85,19 @@ $(document).ready(function(){
   $(".savebtn").click(function () { // Updates the Background check of a volunteer in the database
     let bgCheckType = $(this).data("id")
     let bgDate = $("#" + bgCheckType + "_date").val()
-    let checkPassed = $("[data-id=" + bgCheckType + "]").val()
+    let bgStatus = $("[data-id=" + bgCheckType + "]").val()
 
-    if (checkPassed == '' && bgDate != '') {
+    if (bgStatus == '' && bgDate != '') {
         displayMessage("Passed<br>Empty!", "danger")
         return
     }
-    if (checkPassed != '' && bgDate == '' ) {
+    if (bgStatus != '' && bgDate == '' ) {
         displayMessage("Date<br>Empty!", "danger")
         return
     }
 
     let data = {
-        checkPassed: checkPassed,      // Expected to be either a 0 or a 1 volunteerProfile.js
+        bgStatus: bgStatus,      // Expected to be one of the three background check statuses
         user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
         bgType: $(this).attr("id"),       // Expected to be the ID of a background check in the database
         bgDate: bgDate  // Expected to be the date of the background check completion or '' if field is empty
@@ -109,6 +108,9 @@ $(document).ready(function(){
       data: data,
       success: function(s){
           displayMessage("Saved!", "success")
+          var date = new Date(data.bgDate).toLocaleDateString()
+          $("#bgHistory" + data.bgType).prepend(`<li> ${data.bgStatus}: ${date} </li>`);
+
       },
       error: function(error, status){
           console.log(error, status)
@@ -131,7 +133,8 @@ $(document).ready(function(){
     var username = $(this).data("username")
     validatePhoneNumber(this, "#phoneInput", username)
   });
-})
+});
+
 function displayMessage(message, color) {  // displays message for saving background check
     $("#displaySave").html(message).addClass("text-"+ color)
     setTimeout(function() {$("#displaySave").html("").removeClass("text-"+ color)}, 2000)

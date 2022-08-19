@@ -5,7 +5,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script src="/static/js/event_list.js"></script>
-  <script src="/static/js/emailModal.js"></script>
 {% endblock %}
 {% block styles %}
   {{super()}}
@@ -13,7 +12,7 @@
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 {% endblock %}
 {% block app_content %}
-<h1 class="text-center mt-5">Events List for {{selectedTerm.description}}</h1>
+<h1 class="text-center">Events List for {{selectedTerm.description}}</h1>
 <div class="container-fluid px-1 py-3">
   <div class="row d-flex align-items-baseline p-3">
     <div class="col-md-1 ps-1 ms-auto">
@@ -65,7 +64,7 @@
         {% if type != "bonner" %}
             <th>Event Program</th>
         {% endif %}
-        <th scope="col">Invitation</th>
+        <th scope="col"></th>
       </tr>
     </thead>
     <tbody>
@@ -80,10 +79,8 @@
             <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
             <td>{{event.location}}</td>
             {% if type != "bonner" %}
-                {% if event.programEvents%}
-                  {% for programEvent in event.programEvents%}
-                  <td>{{programEvent.program.programName}}</td>
-                  {% endfor %}
+                {% if event.singleProgram%}
+                  <td>{{event.singleProgram.programName}}</td>
                 {% else %}
                   <td>This event does not belong to any program</td>
                 {% endif %}
@@ -98,14 +95,14 @@
                 </button>
               </td>
             {% else %}
-              {% if (event.isPast) %}
-                <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
-              {% elif event.id in rsvpedEventsID %}
-                <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button></td>
-              {% else %}
-                <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button></td>
+             <td>
+              {% if event.id in rsvpedEventsID %}
+                <button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button>
+              {% elif (not event.isPast) and (event.isRsvpRequired) %}
+                <button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button>
               {% endif %}
             {% endif %}
+             </td>
           </tr>
         {% endfor %}
      </tbody>
@@ -168,14 +165,14 @@
                             </button>
                           </td>
                         {% else %}
-                          {% if event.isPast%}
-                            <td><button type="button" class="btn btn-primary" disabled>RSVP</button></td>
-                          {% elif event.id in rsvpedEventsID %}
-                            <td><button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button></td>
-                          {% else %}
-                            <td><button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button></td>
+                         <td>
+                          {% if event.id in rsvpedEventsID %}
+                            <button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button>
+                          {% elif (not event.isPast) and (event.isRsvpRequired) %}
+                            <button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button>
                           {% endif %}
                         {% endif %}
+                         </td>
                       </tr>
                     {% endfor %}
                 </tbody>

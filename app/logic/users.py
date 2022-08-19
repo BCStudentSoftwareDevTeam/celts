@@ -1,7 +1,13 @@
 from app.models.programBan import ProgramBan
 from app.models.interest import Interest
 from app.models.note import Note
+from app.models.backgroundCheck import BackgroundCheck
+from app.models.backgroundCheckType import BackgroundCheckType
+from app.logic.volunteers import addUserBackgroundCheck
 import datetime
+from peewee import JOIN
+from dateutil import parser
+
 
 def isEligibleForProgram(program, user):
     """
@@ -81,3 +87,19 @@ def unbanUser(program_id, username, note, creator):
                       unbanNote = noteForDb).where(ProgramBan.program == program_id,
                                                    ProgramBan.user == username,
                                                    ProgramBan.endDate >  datetime.datetime.now()).execute()
+
+def getUserBGCheckHistory(username):
+    """
+    Get a users background check history
+    """
+    bgHistory = {'CAN': [], 'FBI': [], 'SHS': []}
+
+    allBackgroundChecks = (BackgroundCheck.select(BackgroundCheck, BackgroundCheckType)
+                                                  .join(BackgroundCheckType)
+                                                  .where(BackgroundCheck.user == username)
+                                                  .order_by(BackgroundCheck.dateCompleted.desc()))
+    for row in allBackgroundChecks:
+        bgHistory[row.type_id].append(row.backgroundCheckStatus + ": " + row.dateCompleted.strftime("%m/%d/%Y"))
+
+
+    return bgHistory

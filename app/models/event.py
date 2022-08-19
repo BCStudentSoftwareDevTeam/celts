@@ -20,6 +20,8 @@ class Event(baseModel):
     contactEmail = CharField(null=True)
     contactName = CharField(null=True)
 
+    _spCache = "Empty"
+
     def __str__(self):
         return f"{self.id}: {self.description}"
 
@@ -29,16 +31,20 @@ class Event(baseModel):
 
     @property
     def singleProgram(self):
-        if self.programEvents.count() == 1:
-            return self.programEvents.get().program
-        else:
-            return None
+        from app.models.programEvent import ProgramEvent
+
+        if self._spCache == "Empty":
+            countPE = list(self.programEvents.select(ProgramEvent, Program).join(Program).execute())
+            if len(countPE) == 1:
+                self._spCache = countPE[0].program
+            else:
+                self._spCache = None
+
+        return self._spCache
+
     @property
     def isPast(self):
-        currentTime = datetime.now()
-        startDatePassed = self.startDate < currentTime.date()
-        startTimePassed = self.timeStart < currentTime.time() and self.startDate == currentTime.date()
-        return startDatePassed or startTimePassed
+        return datetime.now() >= datetime.combine(self.startDate, self.timeStart)
 
     @property
     def isRecurring(self):
@@ -46,5 +52,5 @@ class Event(baseModel):
 
     @property
     def isFirstRecurringEvent(self):
-        firstRecurringEvent = Event.select().where(Event.recurringId==self.recurringId).order_by(Event.startDate).get()
+        firstRecurringEvent = Event.select().where(Event.recurringId==self.recurringId).order_by(Event.id).get()
         return firstRecurringEvent.id == self.id

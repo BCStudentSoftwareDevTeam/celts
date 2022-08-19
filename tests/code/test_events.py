@@ -15,8 +15,10 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.interest import Interest
 from app.models.eventRsvp import EventRsvp
+
 from app.logic.events import *
-from app.logic.volunteers import addVolunteerToEventRsvp
+from app.logic.volunteers import addVolunteerToEventRsvp, updateEventParticipants
+from app.logic.participants import addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest
 
 @pytest.mark.integration
@@ -496,22 +498,18 @@ def test_upcomingEvents():
         noProgram = Event.create(name = "Upcoming event with no program",
                                 term = 2,
                                 description = "Test upcoming no program event.",
-                                timeStart = "18:00:00",
-                                timeEnd = "21:00:00",
                                 location = "The moon",
-                                startDate = "2021-12-12",
-                                endDate = "2021-12-13")
+                                startDate = datetime.date(2021,12,12),
+                                endDate = datetime.date(2021,12,13))
 
         # Create a Program Event to show up when the user marks interest in a
         # new program
         newProgramEvent = Event.create(name = "Upcoming event with  program",
                                 term = 2,
                                 description = "Test upcoming program event.",
-                                timeStart = "18:00:00",
-                                timeEnd = "21:00:00",
                                 location = "The sun",
-                                startDate = "2021-12-12",
-                                endDate = "2021-12-13")
+                                startDate = datetime.date(2021,12,12),
+                                endDate = datetime.date(2021,12,13))
 
         # Create a new Program to create the new Program Event off of so the
         # user can mark interest for it
@@ -525,13 +523,13 @@ def test_upcomingEvents():
         ProgramEvent.create(program = programForInterest, event = newProgramEvent)
 
         # User has not RSVPd and is Interested
-        addInterest = addUserInterest(programForInterest.id, user)
+        addUserInterest(programForInterest.id, user)
         eventsInUserInterestedProgram = getUpcomingEventsForUser(user, asOf = testDate)
 
         assert eventsInUserInterestedProgram == [newProgramEvent]
 
         # user has RSVPd and is Interested
-        addUserRsvp = addVolunteerToEventRsvp(user, noProgram.id)
+        EventRsvp.create(event=noProgram, user=user)
         eventsInUserInterestAndRsvp = getUpcomingEventsForUser(user, asOf = testDate)
 
         interestAndRsvp = [[newProgramEvent] + [noProgram]]
@@ -539,10 +537,67 @@ def test_upcomingEvents():
         assert eventsInUserInterestAndRsvp in interestAndRsvp
 
         # User has RSVPd and is not Interested
-        removeInterest = removeUserInterest(programForInterest.id, user)
+        removeUserInterest(programForInterest.id, user)
         eventsInUserRsvp = getUpcomingEventsForUser(user, asOf = testDate)
 
         assert eventsInUserRsvp == [noProgram]
+
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_volunteerHistory():
+    with mainDB.atomic() as transaction:
+
+        # Create a user to run the tests with
+        user = User.create(username = 'usrtst',
+                              firstName = 'Test',
+                              lastName = 'User',
+                              bnumber = '03522492',
+                              email = 'usert@berea.deu',
+                              isStudent = True)
+
+        # Create a program event in the past that the test user will have
+        # participated in
+        participatedProgramEvent = Event.create(name = "Attended program event",
+                                term = 2,
+                                description = "Test attended program event.",
+                                timeStart = "18:00:00",
+                                timeEnd = "21:00:00",
+                                location = "The moon",
+                                startDate = "2021-12-12",
+                                endDate = "2021-12-13",
+                                isAllVolunteerTraining = False)
+        # Create a non-program event in the past that the test user will have
+        # participated in
+        participatedEvent = Event.create(name = "Attended event",
+                                term = 2,
+                                description = "Test attended event.",
+                                timeStart = "18:00:00",
+                                timeEnd = "21:00:00",
+                                location = "The moon",
+                                startDate = "2021-12-12",
+                                endDate = "2021-12-13",
+                                isAllVolunteerTraining = False)
+        # Create a program that will have the program event created off of it
+        participatedProgram = Program.create(id = 13,
+                                            programName = "BOO",
+                                            isStudentLed = False,
+                                            isBonnerScholars = False,
+                                            contactEmail = "test@email",
+                                            contactName = "testName")
+
+        ProgramEvent.create(program = participatedProgram, event = participatedProgramEvent)
+
+        # Add the created user as a participnt to the created program event
+        EventParticipant.create(user = user , event = participatedProgramEvent.id)
+        assert participatedProgramEvent in getParticipatedEventsForUser(user)
+
+        # Add the created user as a participant to the create non-program event
+        EventParticipant.create(user = user, event = participatedEvent.id)
+        assert participatedEvent in getParticipatedEventsForUser(user)
+
+        # Make sure an event that is not supposed to be returned isnt
+        assert Event.get_by_id(1) not in getParticipatedEventsForUser(user)
 
         transaction.rollback()
 

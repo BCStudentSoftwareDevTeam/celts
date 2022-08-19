@@ -71,3 +71,6 @@ elif [ $BACKUP -ne 1 ]; then
 	    python3 test_data.py
     fi
 fi
+
+# NOW we can re-run our tests
+touch ../setup.sh

@@ -1,4 +1,4 @@
-from peewee import fn
+from peewee import fn, JOIN
 from datetime import date
 from app.models.user import User
 from app.models.event import Event
@@ -30,7 +30,7 @@ def trainedParticipants(programID, currentTerm):
             )
 
     allTrainingEvents = set(otherTrainingEvents)
-    eventTrainingDataList = [participant.user.username for participant in (
+    eventTrainingDataList = [participant.user for participant in (
         EventParticipant.select().where(EventParticipant.event.in_(allTrainingEvents))
         )]
     attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(allTrainingEvents), eventTrainingDataList)))
@@ -54,25 +54,37 @@ def sendUserData(bnumber, eventId, programid):
         EventParticipant.create (user=signedInUser, event=eventId, hoursEarned=totalHours)
     return signedInUser, userStatus
 
-def userRsvpForEvent(user,  event):
+def checkUserRsvp(user,  event):
+    return EventRsvp.select().where(EventRsvp.user==user, EventRsvp.event == event).exists()
+
+def checkUserVolunteer(user,  event):
+    return EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event).exists()
+
+def addPersonToEvent(user, event):
     """
-    Lets the user RSVP for an event if they are eligible and creates an entry for them in the EventParticipant table.
+        Add a user to an event. 
+        If the event is in the past, add the user as a volunteer (EventParticipant) including hours worked.
+        If the event is in the future, rsvp for the user (EventRsvp)
 
-    :param user: accepts a User object or username
-    :param event: accepts an Event object or a valid event ID
-    :return: eventParticipant entry for the given user and event; otherwise raise an exception
+        Returns True if the operation was successful, false otherwise
     """
+    try:
+        volunteerExists = checkUserVolunteer(user, event)
+        rsvpExists = checkUserRsvp(user, event)
 
-    rsvpUser = User.get_by_id(user)
-    rsvpEvent = Event.get_by_id(event)
-    program = Program.select(Program).join(ProgramEvent).where(ProgramEvent.event == event).get()
+        if event.isPast:
+            if not volunteerExists:
+                eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
+                EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
+        else:
+            if not rsvpExists:
+                EventRsvp.create(user = user, event = event)
 
-    isEligible = isEligibleForProgram(program, user)
-    if isEligible:
-        newParticipant = EventRsvp.get_or_create(user = rsvpUser, event = rsvpEvent)[0]
-        return newParticipant
-    return isEligible
+    except Exception as e:
+        print(e)
+        return False
 
+    return True
 
 def unattendedRequiredEvents(program, user):
 
@@ -94,11 +106,11 @@ def unattendedRequiredEvents(program, user):
 
 
 def getEventParticipants(event):
-    eventParticipants = (EventParticipant
-        .select()
-        .where(EventParticipant.event == event))
+    eventParticipants = (EventParticipant.select(EventParticipant, User)
+                                         .join(User)
+                                         .where(EventParticipant.event == event))
 
-    return {p.user.username: p.hoursEarned for p in eventParticipants}
+    return {p.user: p.hoursEarned for p in eventParticipants}
 
 def getUserParticipatedEvents(program, user, currentTerm):
     """
@@ -109,21 +121,20 @@ def getUserParticipatedEvents(program, user, currentTerm):
     """
     academicYear = currentTerm.academicYear
 
-    programTrainings = (Event.select()
+    programTrainings = (Event.select(Event, ProgramEvent, Term, EventParticipant)
+                               .join(EventParticipant, JOIN.LEFT_OUTER).switch()
                                .join(ProgramEvent).switch()
                                .join(Term)
                                .where((Event.isTraining | Event.isAllVolunteerTraining),
                                       ProgramEvent.program == program,
-                                      Event.term.academicYear == academicYear)
-                        )
+                                      Event.term.academicYear == academicYear,
+                                      EventParticipant.user.is_null(True) | (EventParticipant.user == user)))
 
-    listOfProgramTrainings = [programTraining for programTraining in programTrainings]
     userParticipatedEvents = {}
-    for training in listOfProgramTrainings:
-        eventParticipants = getEventParticipants(training.id)
+    for training in programTrainings.objects():
         if training.startDate > date.today():
             didParticipate = [None, training.startDate.strftime("%m/%d/%Y")]
-        elif user.username in eventParticipants.keys():
+        elif training.user:
             didParticipate = True
         else:
             didParticipate = False

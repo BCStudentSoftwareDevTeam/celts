@@ -7,6 +7,7 @@ from dateutil import parser
 
 from app import app
 from app.models.program import Program
+from app.models.programManager import ProgramManager
 from app.models.event import Event
 from app.models.eventParticipant import EventParticipant
 from app.models.eventRsvp import EventRsvp
@@ -24,7 +25,7 @@ from app.logic.adminLogs import createLog
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
-from app.logic.participants import getEventParticipants, getUserParticipatedEvents
+from app.logic.participants import getEventParticipants, getUserParticipatedEvents, checkUserRsvp, checkUserVolunteer
 from app.logic.fileHandler import FileHandler
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
@@ -75,6 +76,10 @@ def createEvent(templateid, programid=None):
     # Get the data for the form, from the template or the form submission
     eventData = template.templateData
     if request.method == "POST":
+        attachmentFiles = request.files.getlist("attachmentObject")
+        fileDoesNotExist = attachmentFiles[0].content_type == "application/octet-stream"
+        if fileDoesNotExist:
+            attachmentFiles = None
         eventData.update(request.form.copy())
     if program:
         eventData["program"] = program
@@ -145,10 +150,10 @@ def eventDisplay(eventId):
 
     preprocessEventData(eventData)
     futureTerms = selectSurroundingTerms(g.current_term)
-    userHasRSVPed = EventRsvp.get_or_none(EventRsvp.user == g.current_user, EventRsvp.event == event)
-    isPastEvent = (datetime.now() >= datetime.combine(event.startDate, event.timeStart))
-    program = event.singleProgram
+    userHasRSVPed = checkUserRsvp(g.current_user, event)
+    isPastEvent = event.isPast
     eventfiles=FileHandler()
+    program=event.singleProgram
     filepaths =eventfiles.retrievePath(associatedAttachments, eventId)
     isProgramManager = g.current_user.isProgramManagerFor(program)
     rule = request.url_rule
@@ -198,12 +203,12 @@ def addRecurringEvents():
     return json.dumps(recurringEvents, default=str)
 
 
-@admin_bp.route('/volunteerProfile', methods=['POST'])
-def volunteerProfile():
+@admin_bp.route('/userProfile', methods=['POST'])
+def userProfile():
     volunteerName= request.form.copy()
     username = volunteerName['searchStudentsInput'].strip("()")
     user=username.split('(')[-1]
-    return redirect(url_for('main.viewVolunteersProfile', username=user))
+    return redirect(url_for('main.viewUsersProfile', username=user))
 
 @admin_bp.route('/search_student', methods=['GET'])
 def studentSearchPage():

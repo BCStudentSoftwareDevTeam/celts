@@ -1,16 +1,22 @@
 import pytest
 from peewee import *
 from datetime import datetime
+from dateutil import parser
+from app import app
+from flask import g
+
 from app.models import mainDB
 from app.models.program import Program
 from app.models.programBan import ProgramBan
 from app.models.note import Note
 from app.models.user import User
 from app.models.programManager import ProgramManager
+from app.models.backgroundCheck import BackgroundCheck
 from app.models.event import Event
 from app.models.programEvent import ProgramEvent
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory
 from app.logic.users import isEligibleForProgram
+from app.logic.volunteers import addUserBackgroundCheck
 
 @pytest.mark.integration
 def test_user_model():
@@ -19,12 +25,13 @@ def test_user_model():
     assert user.isCeltsAdmin
     assert not user.isCeltsStudentStaff
     assert user.isAdmin
+    assert user.fullName == "Brian Ramsay"
 
     user = User.get_by_id("partont")
     assert not user.isCeltsAdmin
     assert not user.isCeltsStudentStaff
     assert not user.isAdmin
-
+    assert user.fullName == "Tyler Parton"
 
 @pytest.mark.integration
 def test_isEligibleForProgram():
@@ -282,5 +289,36 @@ def test_getStudentManagerForEvent():
         assert programManager.isProgramManagerForEvent(test_event) == True
         ## user is not manager of program
         assert student.isProgramManagerForEvent(test_event) == False
+
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_getUserBGCheckHistory():
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+            g.current_user = "ramsayb2"
+
+            # Create a test user to run background checks on
+            testusr = User.create(username = 'usrtst',
+                                  firstName = 'Test',
+                                  lastName = 'User',
+                                  bnumber = '03522492',
+                                  email = 'usert@berea.deu',
+                                  isStudent = True)
+
+            # Add background checks to the user
+            addUserBackgroundCheck("usrtst","CAN", "Submitted", parser.parse("2020-9-20"))
+            addUserBackgroundCheck("usrtst","SHS", "Submitted", parser.parse("2020-10-20"))
+
+            # Check that all the users background checks have been submitted and
+            # they are returned correctly. Also make sure that the background check
+            # that has not been given anything is returend as empty
+            assert {'CAN': ['Submitted: 09/20/2020'], 'FBI': [], 'SHS': ['Submitted: 10/20/2020']} == getUserBGCheckHistory(testusr)
+
+            # Update one of the background Checks and make sure that the updated
+            # check is returned and the original check is still returned as well
+            addUserBackgroundCheck("usrtst","SHS", "Passed", parser.parse("2020-12-20"))
+            assert {'CAN': ['Submitted: 09/20/2020'], 'FBI': [], 'SHS': ['Passed: 12/20/2020', 'Submitted: 10/20/2020']} == getUserBGCheckHistory(testusr)
+
 
         transaction.rollback()

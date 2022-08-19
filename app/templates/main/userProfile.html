@@ -1,0 +1,329 @@
+{%set title ="User Profile"%}
+{% extends "base.html"%}
+
+{% block scripts %}
+  {{super()}}
+  <script type="text/javascript" src="{{url_for('static', filename='js/userProfile.js') }}?u={{lastStaticUpdate}}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
+{% endblock %}
+
+{% block styles %}
+  {{super()}}
+  <link rel="stylesheet" href="{{url_for('static', filename ='css/userProfile.css') }}?u={{lastStaticUpdate}}">
+{% endblock %}
+
+{% block app_content %}
+<div>
+    <h1 align="center">{{volunteer.firstName}} {{volunteer.lastName}}</h1>
+    <h6 align="center">{{volunteer.email}}</h6>
+    <div align="center">
+          <input type="text" style="border: none" size="14" class="form-control-sm bfh-phone"  id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
+          <a class="text-decoration-none primary editButton" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
+          <div align="right">
+            <a class="text-nowrap col-sm-3 float-end" href="/profile/{{volunteer.username}}/serviceTranscript">View Service Transcript</a>
+            <br>
+          </div>
+    </div>
+</div>
+<!-- Start Upcoming Events -->
+<div class="accordion" id="userProfile">
+  <div class="accordion-item">
+    <h3 class="accordion-header" id="headingOne">
+      {% set focus = "open" if not visibleAccordion or visibleAccordion == "upcoming" else "collapsed" %}
+      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        Upcoming Events
+      </button>
+    </h3>
+    {% set show = "show" if not visibleAccordion or visibleAccordion == "upcoming" %}
+    <div id="collapseOne" class="accordion-collapse collapse {{show}} " aria-labelledby="headingOne" data-bs-parent="#userProfile">
+      <div class="accordion-body">
+        <div class="row table-responsive">
+          <table class="table">
+            {% if upcomingEvents|length > 0 %}
+              <thead class="tableHeader">
+                <th scope="col">Program</th>
+                <th scope="col">Event Name</th>
+                <th scope="col">Event Date</th>
+                <th scope="col">Time</th>
+                <th scope="col">Location</th>
+                <th scope="col">RSVP Status</th>
+              </thead>
+              {% for event in upcomingEvents %}
+              <tr class="{% if event.startDate == currentDateTime.date() and event.timeStart < currentDateTime.time() %} ongoing-event {% endif %}{% if event.startDate == currentDateTime.date() and not event.timeStart < currentDateTime.time() %} bg-info {% endif %}">
+                    <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
+                    <td><a href= '/eventsList/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
+                    <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
+                    <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}}</td>
+                    <td>{{event.location}}</td>
+                    <td>{{"RSVP'ed" if event.id in rsvpedEvents else "Not RSVP'ed"}}</td>
+                  </tr>
+              {% endfor %}
+            {% else %}
+              <h5>You have no upcoming events.</h5>
+            {% endif %}
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Upcoming Events -->
+  <!-- Start Program History -->
+  <div class="accordion-item">
+    <h3 class="accordion-header" id="headingTwo">
+      {% set focus = "open" if visibleAccordion == "history" else "collapsed" %}
+      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          Participation History
+      </button>
+    </h3>
+    {% set show = "show" if visibleAccordion == "history" else "" %}
+    <div id="collapseTwo" class="accordion-collapse collapse {{show}}" aria-labelledby="headingTwo" data-bs-parent="#userProfile">
+      <div class="accordion-body">
+        <div class="table-responsive">
+          <table class="table banTable">
+            {% if participatedEvents|length > 0 %}
+              <thead>
+                <th scope="col">Program</th>
+                <th scope="col">Event Name</th>
+                <th scope="col">Event Date</th>
+              </thead>
+              {% for event in participatedEvents %}
+              <tr>
+                <td>{{event.programName}}</td>
+                <td><a href= '/eventsList/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
+                <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <h5>You have not participated in any events.</h5>
+            {% endif %}
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Program History -->
+  <!-- Start Program Eligibility Table -->
+  <div class="accordion-item">
+    <h3 class="accordion-header" id="headingThree">
+      {% set focus = "open" if visibleAccordion == "interest" else "collapsed" %}
+      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          Interests
+      </button>
+    </h3>
+    {% set show = "show" if visibleAccordion == "interest" else "" %}
+    <div id="collapseThree" class="accordion-collapse collapse {{show}}" aria-labelledby="headingThree" data-bs-parent="#userProfile">
+      <div class="accordion-body">
+        <div class="table-responsive">
+          <table class="table banTable">
+             <thead>
+               <tr>
+                 <th scope="col">Program</th>
+                 <th scope="col">Notify</th>
+                 <th scope="col">Training</th>
+                 {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff%}
+                   <th scope="col">Eligibility</th>
+                 {% endif %}
+                 <th scope="col"></th>
+               </tr>
+             </thead>
+             <tbody>
+             {% for row in eligibilityTable %}
+             {% set trainingList = row['trainingList'] %}
+             {% macro trainingListView() %}
+               {% if trainingList %}
+                   {% for trainings, participated in trainingList.items() %}
+                       {% if g.current_user.isCeltsAdmin %}
+                         <li>{{trainings}}</li>
+                       {% else %}
+                           {% if participated == 1 %}
+                               <p><b>{{trainings}}</b>: <br>Attended</p>
+                           {% elif participated == 0 %}
+                               <p><b>{{trainings}}</b>: <br>Not attended</p>
+                           {% elif not participated[0] %}
+                               <p><b>{{trainings}}</b>: <br>Takes place on {{participated[1]}}</p>
+                           {% endif%}
+                       {% endif %}
+                   {% endfor %}
+               {% else %}
+                   <p>No trainings for this program.</p>
+               {% endif %}
+             {% endmacro %}
+               {% set checked = "" %}
+               {% if row.program in programsInterested %}
+                   {% set checked = "checked" %}
+               {% endif %}
+                 <tr>
+                   <td><a href="{{row.program.url}}" id="programNameTable">{{row.program.programName}}</a></td>
+                   <td><input class="form-check-input" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>
+                   <td>
+                       {% if row.completedTraining or not trainingList %}
+                           <i class="bi bi-check-lg"></i> &nbsp&nbsp
+                           <a class="trainingPopover" id="{{row.program.id}}" href="#" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
+                       {% else %}
+                           <i class="bi bi-x-lg"></i> &nbsp&nbsp
+                           <a class="trainingPopover" id="{{row.program.id}}" href="#" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
+                       {% endif %}
+                   </td>
+                 {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
+                     {% if row.isNotBanned %}
+                       <td class="programBan">
+                         {% set label = "Ban" %}
+                         Eligible
+                     {% else %}
+                       <td class="programBan text-danger">
+                         {% set label = "Unban" %}
+                           Banned
+                     {% endif %}
+                   </td>
+                   <td>
+                   {% if g.current_user.isCeltsAdmin %}
+                       <button type="button" class="ban btn btn-primary" data-programid="{{row.program.id}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}">Edit</button>
+                   {% endif %}
+                   </td>
+                 {% endif %}
+             </tr>
+           {% endfor %}
+           </tbody>
+       </table>
+       <a href="https://www.berea.edu/celts/community-service-programs/volunteer-opportunities/">For more information about CELTS opportunities, click here.</a>
+       </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Program Eligibility Table -->
+  <!-- Start Program Manager section -->
+  {% if volunteer.isCeltsStudentStaff %}
+    <div class="accordion-item">
+      <h3 class="accordion-header" id="headingFour">
+        {% set focus = "open" if visibleAccordion == "manager" else "collapsed" %}
+        <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+            Program Manager
+        </button>
+      </h3>
+      {% set show = "show" if visibleAccordion == "manager" else "" %}
+      <div id="collapseFour" class="accordion-collapse collapse {{show}}" aria-labelledby="headingFour" data-bs-parent="#userProfile">
+        <div class="accordion-body">
+          <!-- This makes sure that the CeltsAdmins can make someone program manager or not.  -->
+          {% if g.current_user.isCeltsAdmin %}
+            <h5>Which programs do you want to make {{volunteer.firstName}} {{volunteer.lastName}} manager for?</h5>
+          {% else %}
+            <h5>{{volunteer.firstName}} {{volunteer.lastName}} is the manager of:</h5>
+          {% endif %}
+          <ul class="list-unstyled">
+            {% for program in programs %}
+              {% set action = "add" %}
+              {% set checked = "" %}
+              {% if program.id in permissionPrograms %}
+                {% set action = "remove" %}
+                {% set checked = "checked" %}
+                {% if not g.current_user.isCeltsAdmin%}
+                  <li>{{program.programName}}</li>
+                {% endif %}
+              {% endif %}
+              {% if g.current_user.isCeltsAdmin%}
+                <li>
+                  <input  type="checkbox" id="mgr-{{ program.id }}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}')">
+                  <label  style="padding-left: 15px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
+                </li>
+              {% endif %}
+            {% endfor %}
+           </ul>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    <!-- End Program Manager section -->
+    <!-- Start Background Check Table -->
+    {% if g.current_user.isAdmin %}
+    <div class="accordion-item">
+      <h3 class="accordion-header" id="headingFive">
+        {% set focus = "open" if visibleAccordion == "background" else "collapsed" %}
+        <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+            Background Check
+        </button>
+      </h3>
+      {% set show = "show" if visibleAccordion == "background" else "" %}
+      <div id="collapseFive" class="accordion-collapse collapse {{show}}" aria-labelledby="headingFive" data-bs-parent="#userProfile">
+        <div class="accordion-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Description</th>
+                   {% if g.current_user.isCeltsAdmin%}
+                     <th scope="col">Status</th>
+                     <th scope="col">Date</th>
+                     <th class="" id="displaySave" scope="col"></th>
+                   {% endif %}
+                 </tr>
+               </thead>
+               <tbody>
+                 {% for bgType in backgroundTypes %}
+                 <tr>
+                   <td>
+                       <h6>{{bgType.description}}</h6>
+                       <ul class="mb-0" id="bgHistory{{bgType.id}}" >
+                          {% for bgStatus in allBackgroundHistory[bgType.id] %}
+                           <li>{{bgStatus}}</li>
+                          {% endfor %}
+                       </ul>
+                   </td>
+                   {% if g.current_user.isCeltsAdmin %}
+                      <td>
+                          <select class="passedBackgroundCheck form-select" id="{{bgType.id}}" data-id="{{bgType.id}}">
+                              <option value=''></option>
+                              <option value="Submitted">Submitted</option>
+                              <option value="Passed">Passed</option>
+                              <option value="Failed">Failed</option>
+                          </select>
+                      </td>
+                      <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" class="form-control"/></td>
+                      <td><button type="button" class="savebtn btn btn-primary" id="{{bgType.id}}" data-id="{{bgType.id}}" data-username="{{volunteer.username}}">Save</button></td>
+                  {% endif %}
+                  </tr>
+                {%endfor%}
+               </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    <!-- End Background Check Table -->
+</div>
+<!-- Ban or Unban Modal -->
+<div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
+  <form onsubmit="return validate();">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Ban Volunteer</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" style="align=center">
+          <h6 align="left">Full Name: {{volunteer.firstName}} {{volunteer.lastName}} </h6>
+          <h6 align="left">Email Address: {{volunteer.email}}</h6>
+          <h6 align="left">Phone Number: <a href="tel:{{volunteer.phoneNumber}}">{{volunteer.phoneNumber}}</a></h6>
+          <div id="banNoteDiv">
+            <h6 align="left">Reason for ban:</h6>
+            <p align="left" id="banNote">Why the student was banned</p>
+          </div>
+          <div id="banEndDate">
+            <h6 align="left" class="d-inline-flex" id="unbanVolunteerEndDate">End Date: &nbsp<input id="banEndDatepicker" type="date"></h6>
+          </div>
+          <div class="input-group">
+            <div class="form-group input-group-x form-outline ui-widget col-xs-10">
+              <textarea name="name" rows="8" cols="80" type="input" id="banNoteTxtArea" class="form-control" placeholder="Please add a note for this change" ></textarea>
+            </div>
+          </div>
+        </div>
+  		  <div class="modal-footer justify-content-between">
+    			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    			<button id="banButton" type="button" class="btn btn-danger" data-banOrUnban="" >Ban/Unban Volunteer</button>
+  		  </div>
+      </div>
+    </div>
+  </form>
+</div>
+<!-- End Ban or Unban Modal -->
+{% endblock %}

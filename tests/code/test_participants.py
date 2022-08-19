@@ -1,5 +1,5 @@
 import pytest
-from datetime import datetime
+from datetime import datetime, timedelta
 from peewee import IntegrityError, DoesNotExist
 
 from app.models import mainDB
@@ -9,9 +9,8 @@ from app.models.term import Term
 from app.models.program import Program
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
-from app.logic.volunteers import addVolunteerToEventRsvp
 from app.logic.volunteers import getEventLengthInHours, updateEventParticipants
-from app.logic.participants import userRsvpForEvent, unattendedRequiredEvents, sendUserData, getEventParticipants, trainedParticipants, getUserParticipatedEvents
+from app.logic.participants import unattendedRequiredEvents, sendUserData, getEventParticipants, trainedParticipants, getUserParticipatedEvents, checkUserRsvp, checkUserVolunteer, addPersonToEvent
 from app.models.eventRsvp import EventRsvp
 
 @pytest.mark.integration
@@ -51,34 +50,64 @@ def test_getEventLengthInHours():
     with pytest.raises(TypeError):
         eventLength = getEventLengthInHours(startTime, endTime, eventDate)
 
+@pytest.mark.integration
+def test_checkUserRsvp():
+    with mainDB.atomic() as transaction:
+        newEvent = Event.create(term = 2)
+        user = User.get_by_id("ramsayb2")
 
+        rsvpExists = checkUserRsvp(user, newEvent)
+        assert rsvpExists == False
+
+        EventRsvp.create(event=newEvent, user=user)
+        rsvpExists = checkUserRsvp(user, newEvent)
+        assert rsvpExists == True
+
+        transaction.rollback()
 
 @pytest.mark.integration
-def test_addVolunteerToEventRsvp():
-    user = "khatts"
-    volunteerEventID = 5
-    eventLengthInHours = 67
-    #test that volunteer is already registered for the event
-    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID)
-    assert volunteerToEvent == True
+def test_checkUserVolunteer():
+    with mainDB.atomic() as transaction:
+        newEvent = Event.create(term = 2)
+        user = User.get_by_id("ramsayb2")
 
-    #test for adding user as a participant to the event
-    user = "agliullovak"
-    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID)
-    assert volunteerToEvent == True
-    (EventParticipant.delete().where(EventParticipant.user == user, EventParticipant.event == volunteerEventID)).execute()
+        rsvpExists = checkUserRsvp(user, newEvent)
+        assert rsvpExists == False
 
-    # test for username that is not in the database
-    user = "jarjug"
-    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID)
-    assert volunteerToEvent == False
+        EventRsvp.create(event=newEvent, user=user)
+        rsvpExists = checkUserRsvp(user, newEvent)
+        assert rsvpExists == True
 
-    # test for event that does not exsit
-    user = "agliullovak"
-    volunteerEventID = 5006
-    volunteerToEvent = addVolunteerToEventRsvp(user, volunteerEventID)
-    assert volunteerToEvent == False
+        transaction.rollback()
 
+@pytest.mark.integration
+def test_addPersonToEvent():
+    with mainDB.atomic() as transaction:
+        yesterday = datetime.today() - timedelta(days=1)
+        newEvent = Event.create(name = "Test event 1234", term = 2,
+                                startDate=yesterday.date(),
+                                endDate=yesterday.date())
+        newEvent = Event.get(name="Test event 1234")
+
+        user = User.get_by_id("ramsayb2")
+        userAdded = addPersonToEvent(user, newEvent)
+        assert userAdded == True, "User was not added"
+        assert checkUserVolunteer(user, newEvent), "No Volunteer record was added"
+        assert not checkUserRsvp(user, newEvent), "An RSVP record was added instead"
+        transaction.rollback()
+
+        tomorrow = datetime.today() + timedelta(days=1)
+        newEvent = Event.create(name = "Test event 1234", term = 2,
+                                startDate=tomorrow.date(),
+                                endDate=tomorrow.date())
+        newEvent = Event.get(name="Test event 1234")
+
+        userAdded = addPersonToEvent(user, newEvent)
+        assert userAdded == True, "User was not added"
+        assert checkUserRsvp(user, newEvent), "No RSVP record was added"
+        assert not checkUserVolunteer(user, newEvent), "A Volunteer record was added instead"
+
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_updateEventParticipants():
@@ -103,18 +132,22 @@ def test_updateEventParticipants():
 @pytest.mark.integration
 def test_trainedParticipants():
     currentTerm = Term.get(Term.isCurrentTerm==1)
+    #User object to be compared in assert statements
+    khatts = User.get_by_id('khatts')
+    neillz = User.get_by_id('neillz')
+    ayisie = User.get_by_id('ayisie')
     # Case1: test for an event in the current term
     attendedPreq = trainedParticipants(3, currentTerm)
-    assert attendedPreq == ["khatts"]
+    assert attendedPreq == [khatts]
 
     # Case2: test for an event in a past term
     attendedPreq = trainedParticipants(1, currentTerm)
-    assert attendedPreq == ['neillz', 'khatts', 'ayisie']
+    assert attendedPreq == [neillz, khatts, ayisie]
 
     # Case3: test for when user changes current term
     currentTerm = Term.get_by_id(2)
     attendedPreq = trainedParticipants(1, currentTerm)
-    assert attendedPreq == ['neillz', 'khatts', 'ayisie']
+    assert attendedPreq == [neillz, khatts, ayisie]
 
     # Case4: test for program with no prerequisite
     attendedPreq = trainedParticipants(4, currentTerm)
@@ -128,19 +161,19 @@ def test_trainedParticipants():
     # AY is 2020-2021
     currentTerm = Term.get_by_id(1) # Fall 2020
     attendedPreq = trainedParticipants(3, currentTerm)
-    assert attendedPreq == ["khatts"]
+    assert attendedPreq == [khatts]
 
     currentTerm = Term.get_by_id(2) # Spring A 2021
     attendedPreq = trainedParticipants(3, currentTerm)
-    assert attendedPreq == ["khatts"]
+    assert attendedPreq == [khatts]
 
     currentTerm = Term.get_by_id(3) # Spring B 2021
     attendedPreq = trainedParticipants(3, currentTerm)
-    assert attendedPreq == ["khatts"]
+    assert attendedPreq == [khatts]
 
     currentTerm = Term.get_by_id(4) # Summer 2021
     attendedPreq = trainedParticipants(3, currentTerm)
-    assert attendedPreq == ["khatts"]
+    assert attendedPreq == [khatts]
 
     with mainDB.atomic() as transaction:
         ProgramEvent.create(program = 3, event=14) # require AVT
@@ -149,7 +182,7 @@ def test_trainedParticipants():
 
         EventParticipant.create(user="khatts", event=14)
         attendedPreq = trainedParticipants(3, currentTerm)
-        assert attendedPreq == ["khatts"]   # "khatts" has completed both AVT and ACT for program 3
+        assert attendedPreq == [khatts]   # "khatts" has completed both AVT and ACT for program 3
 
         transaction.rollback()
 
@@ -158,57 +191,6 @@ def test_trainedParticipants():
     attendedPreq = trainedParticipants(4, currentTerm)
     assert attendedPreq == []
 
-@pytest.mark.integration
-def test_notUserRsvpForEvent():
-
-    with pytest.raises(DoesNotExist):
-        volunteer = userRsvpForEvent("asdkl", 1)
-
-    with pytest.raises(DoesNotExist):
-        volunteer = userRsvpForEvent(132546, 1)
-
-@pytest.mark.integration
-def test_noEventUserRsvpForEvent():
-
-    with pytest.raises(DoesNotExist):
-        volunteer = userRsvpForEvent("khatts", 1500)
-
-    with pytest.raises(DoesNotExist):
-        volunteer = userRsvpForEvent("khatts", "Event")
-
-    with pytest.raises(DoesNotExist):
-        volunteer = userRsvpForEvent("khatts", -1)
-
-    with pytest.raises(DoesNotExist):
-        volunteer = userRsvpForEvent("khatts", 0)
-
-
-@pytest.mark.integration
-def test_userRsvpForEvent():
-
-    volunteer = userRsvpForEvent("agliullovak", 10)
-    assert volunteer.user.username == "agliullovak"
-    assert volunteer.event.id == 10
-
-
-    # the user has already registered for the event
-    volunteer = userRsvpForEvent("agliullovak", 10)
-    assert volunteer.event.id == 10
-    assert volunteer
-
-    (EventParticipant.delete().where(EventParticipant.user == 'agliullovak', EventParticipant.event == 11)).execute()
-
-    # the user is not eligible to register (reason: user is banned)
-    volunteer = userRsvpForEvent("khatts", 3)
-    assert volunteer != True
-
-    # User does not exist
-    with pytest.raises(DoesNotExist):
-        volunteer = userRsvpForEvent("jarjug", 2)
-
-    #program does not exist
-    with pytest.raises(DoesNotExist):
-        volunteer = userRsvpForEvent("agliullovak", 500)
 
 # tests for unattendedRequiredEvents
 @pytest.mark.integration
@@ -288,9 +270,12 @@ def test_sendUserData():
 @pytest.mark.integration
 def test_getEventParticipants():
     event = Event.get_by_id(1)
+
+    khatts = User.get_by_id('khatts')
+
     eventParticipantsDict = getEventParticipants(event)
-    assert "khatts" in eventParticipantsDict
-    assert eventParticipantsDict["khatts"] == 2
+    assert khatts in eventParticipantsDict
+    assert eventParticipantsDict[khatts] == 2
 
 @pytest.mark.integration
 def test_getEventParticipantsWithWrongParticipant():

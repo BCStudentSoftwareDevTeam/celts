@@ -1,3 +1,4 @@
+
 function msgFlash(flash_message, status){
     if (status === "success") {
         category = "success";
@@ -15,7 +16,10 @@ $(document).ready(function() {
     $("#userSelect").on('change', function() {
         $("#userSelectForm").submit();
     });
+    $(".alert").delay(5000).fadeOut();
+
 });
+
 
 function validatePhoneNumber(editButtonId, phoneInputId, username) {
     if ($(editButtonId).html() === 'Edit') {
@@ -45,7 +49,15 @@ function validatePhoneNumber(editButtonId, phoneInputId, username) {
             }
           })
         $(editButtonId).html('Edit');
-
-
+      }
 }
+
+function reloadWithAccordion(accordionName) {
+  var origin = window.location.href;
+
+  if (origin.includes("?")){
+    origin = origin.slice(0, origin.indexOf("?"));
+  }
+
+  location.replace(origin + "?accordion=" + accordionName);
 }

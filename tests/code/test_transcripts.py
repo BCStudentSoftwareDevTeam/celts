@@ -10,11 +10,9 @@ from app.models.event import Event
 from app.models.programEvent import ProgramEvent
 from app.logic.events import deleteEvent
 
-@pytest.mark.integration
-def setup_module():
-    with app.app_context():
-        g.current_user = User.get_by_id("ramsayb2")
-    user = User.create(
+@pytest.fixture(autouse=True)
+def setup():
+    testUser = User.create(
                         username = "namet",
                         bnumber = "B001234567",
                         email = "namet@berea.edu",
@@ -40,8 +38,12 @@ def setup_module():
                               startDate =  "2021-12-12",
                               endDate =  "2021-12-13",
                               recurringId = None)
+    ProgramEvent.create(program=2, event=newTrainingEvent)
+    EventParticipant.create(user = testUser,
+                            event = newTrainingEvent,
+                            attended = True,
+                            hoursEarned = 2)
 
-    programEvent = ProgramEvent.create(program=2, event=newTrainingEvent)
 
     newBonnerEvent = Event.create(name = "Test Bonner Event",
                               term = 1,
@@ -57,9 +59,13 @@ def setup_module():
                               endDate =  "2021-12-13",
                               recurringId = None)
 
-    programEvent = ProgramEvent.create(program=5, event=newBonnerEvent)
+    ProgramEvent.create(program=5, event=newBonnerEvent)
+    EventParticipant.create(user = testUser,
+                            event = newBonnerEvent,
+                            attended = True,
+                            hoursEarned = 2)
 
-    username = "namet"
+
     adminName = "ramsayb2"
 
     newCourse = Course.create(courseName = "Test Course",
@@ -69,18 +75,15 @@ def setup_module():
                                 createdBy = "ramsayb2",
                                 isAllSectionsServiceLearning = 0,
                                 isPermanentlyDesignated = 0,
-                                sectionBQuestion1 = "CharField()",
-                                sectionBQuestion2 = "CharField()",
-                                sectionBQuestion3 = "CharField()",
-                                sectionBQuestion4 = "CharField()",
-                                sectionBQuestion5 = "CharField()",
-                                sectionBQuestion6 = "CharField()")
+                                sectionBQuestion1 = "",
+                                sectionBQuestion2 = "",
+                                sectionBQuestion3 = "",
+                                sectionBQuestion4 = "",
+                                sectionBQuestion5 = "",
+                                sectionBQuestion6 = "")
 
-    testingCourse = Course.get(Course.courseName == "Test Course")
-    instructor = CourseInstructor.create(course = testingCourse.id, user = adminName)
-    courseParticipant = CourseParticipant.create(course = testingCourse.id,
-                                                    user = username,
-                                                    hoursEarned = 3.0)
+    CourseInstructor.create(course = newCourse, user = adminName)
+    CourseParticipant.create(course = newCourse, user = testUser, hoursEarned = 3.0)
 
     newProgramEvent = Event.create(name = "Test Program Event",
                               term = 1,
@@ -95,59 +98,57 @@ def setup_module():
                               startDate =  "2021-12-12",
                               endDate =  "2021-12-13",
                               recurringId = None)
+    ProgramEvent.create(program=1, event=newProgramEvent)
+    EventParticipant.create(user = testUser,
+                            event = newProgramEvent,
+                            attended = True,
+                            hoursEarned = 2)
 
-    programEvent = ProgramEvent.create(program=1, event=newProgramEvent)
+
+    newNonProgramEvent = Event.create(name = "Test Non-Program Event",
+                              term = 3,
+                              description= "Event for testing",
+                              timeStart = "18:00:00",
+                              timeEnd = "21:00:00",
+                              location = "The testing lab",
+                              isRsvpRequired = 0,
+                              isPrerequisiteForProgram = 0,
+                              isTraining = 0,
+                              isService = 0,
+                              startDate =  "2021-12-12",
+                              endDate =  "2021-12-13",
+                              recurringId = None)
+    EventParticipant.create(user = testUser,
+                            event = newNonProgramEvent,
+                            attended = True,
+                            hoursEarned = 2)
+
+@pytest.fixture(autouse=True)
+def teardown():
+    yield
 
     testingTrainingEvent = Event.get(Event.name == "Test Training Event")
-    trainingpart = EventParticipant.create(user = "namet",
-                                            event = testingTrainingEvent.id,
-                                            attended = True,
-                                            hoursEarned = 2)
+    testingTrainingEvent.delete_instance(recursive=True, delete_nullable=True)
 
+    # delete bonner
     testingBonnerEvent = Event.get(Event.name == "Test Bonner Event")
-    trainingpart = EventParticipant.create(user = "namet",
-                                            event = testingBonnerEvent.id,
-                                            attended = True,
-                                            hoursEarned = 2)
+    testingBonnerEvent.delete_instance(recursive=True, delete_nullable=True)
 
-    testingProgramEvent = Event.get(Event.name == "Test Program Event")
-    trainingpart = EventParticipant.create(user = "namet",
-                                            event = testingProgramEvent.id,
-                                            attended = True,
-                                            hoursEarned = 2)
+    # delete courses
+    testingCourse = Course.get(Course.courseName == "Test Course")
+    testingCourse.delete_instance(recursive=True, delete_nullable=True)
 
-@pytest.mark.integration
-def testingTrainings():
+    # delete program
+    testingProgramEvent = Event.get(Event.name == "Test program Event")
+    testingProgramEvent.delete_instance(recursive=True, delete_nullable=True)
 
-    username = "namet"
-    adminName = "ramsayb2"
+    # delete program
+    testingProgramEvent = Event.get(Event.name == "Test Non-Program Event")
+    testingProgramEvent.delete_instance(recursive=True, delete_nullable=True)
 
-    checkingTrainingEvent = Event.get(name="Test Training Event")
-
-    testingTrainingsExist = getTrainingTranscript(username)
-    testingTrainingNotExist = getTrainingTranscript(adminName)
-
-
-    assert not testingTrainingNotExist.exists()
-    assert testingTrainingsExist.exists()
-    assert checkingTrainingEvent in [t.event for t in testingTrainingsExist]
-
-
-@pytest.mark.integration
-def testingBonner():
-
-    username = "namet"
-    adminName = "ramsayb2"
-
-    testingBonnerExist = getBonnerScholarEvents(username)
-    testingBonnerNotExist = getBonnerScholarEvents(adminName)
-
-    checkingBonnerEvent = Event.get(name="Test Bonner Event")
-
-    assert not testingBonnerNotExist.exists()
-    assert testingBonnerExist.exists()
-    assert checkingBonnerEvent in [t.event for t in testingBonnerExist]
-
+    # delete user
+    user = User.get(User.username == "namet")
+    user.delete_instance(recursive=True, delete_nullable=True)
 
 @pytest.mark.integration
 def testingSLCourses():
@@ -158,7 +159,7 @@ def testingSLCourses():
     testingSLCExist= getSlCourseTranscript(username)
     testingSLCNotExist = getSlCourseTranscript(adminName)
 
-    checkingNewCourse = Course.get(courseName = "Test Course")
+    checkingNewCourse = Course.get(Course.courseName == "Test Course")
 
     assert not testingSLCNotExist.exists()
     assert testingSLCExist.exists()
@@ -170,43 +171,56 @@ def testingProgram():
 
     username = "namet"
     adminName = "ramsayb2"
-    testingProgramExist = getProgramTranscript(username)
-    testingProgramNotExist = getProgramTranscript(adminName)
+    programDict = getProgramTranscript(username)
+    emptyProgramDict = getProgramTranscript(adminName)
+    # check that bonners events are caught
+    checkingProgram = Program.get_by_id(5)
 
-    checkingProgramEvent = Event.get(name="Test Program Event")
+    assert not emptyProgramDict
+    assert programDict
+    assert checkingProgram in [t for t in programDict]
 
-    assert not testingProgramNotExist.exists()
-    assert testingProgramExist.exists()
-    assert checkingProgramEvent in [t.event for t in testingProgramExist]
+@pytest.mark.integration
+def testingOtherEventsTranscript():
+
+    username = "namet"
+    adminName = "ramsayb2"
+    otherDict = getOtherEventsTranscript(username)
+    emptyOtherDict = getOtherEventsTranscript(adminName)
+
+    checkingOtherEvent = Event.get(Event.name == "Test Non-Program Event")
+    participatedEvent = EventParticipant.get(EventParticipant.user == username, EventParticipant.event == checkingOtherEvent)
+    termInfo = [checkingOtherEvent.term.description, participatedEvent.hoursEarned]
+
+
+    assert not emptyOtherDict
+    assert otherDict
+    assert termInfo in [t for t in otherDict]
+
+@pytest.mark.integration
+def testingGetAllEventTranscript():
+
+    username = "namet"
+    adminName = "ramsayb2"
+    allEventDict = getAllEventTranscript(username)
+    emptyAllEventDict = getAllEventTranscript(adminName)
+    # check that bonners events are caught
+    checkingProgram = Program.get_by_id(5)
+
+    checkingOtherEvent = Event.get(Event.name == "Test Non-Program Event")
+    participatedEvent = EventParticipant.get(EventParticipant.user == username, EventParticipant.event == checkingOtherEvent)
+    termInfo = [checkingOtherEvent.term.description, participatedEvent.hoursEarned]
+
+    # ensures the results of both child function appear in the same dictionary
+    assert not emptyAllEventDict
+    assert allEventDict
+    assert checkingProgram in [t for t in allEventDict] and termInfo in allEventDict["CELTS Sponsored Events"]
 
 
 @pytest.mark.integration
 def testingTotalHours():
 
     totalHours = getTotalHours("namet")
-
-    assert totalHours == 9
-
-@pytest.mark.integration
-def teardown_module():
-    with app.app_context():
-        g.current_user = User.get_by_id("ramsayb2")
-        testingTrainingEvent = Event.get(Event.name == "Test Training Event")
-        deleteEvent(testingTrainingEvent)
-        assert Event.get_or_none(Event.id == testingTrainingEvent) is None
-        # delete bonner
-        testingBonnerEvent = Event.get(Event.name == "Test Bonner Event")
-        deleteEvent(testingBonnerEvent)
-        assert Event.get_or_none(Event.id == testingBonnerEvent) is None
-        # delete courses
-        testingCourse = Course.get(Course.courseName == "Test Course")
-        testingCourse.delete_instance(recursive = True, delete_nullable = True)
-        assert Course.get_or_none(Course.id == testingCourse.id) is None
-        # delete program
-        testingProgramEvent = Event.get(Event.name == "Test program Event")
-        deleteEvent(testingProgramEvent)
-        assert Event.get_or_none(Event.id == testingProgramEvent) is None
-        # delete user
-        user = User.get(User.username == "namet")
-        user.delete_instance(recursive = True, delete_nullable = True)
-        assert User.get_or_none(User.username == "namet") is None
+    assert totalHours["totalCourseHours"] == 3
+    assert totalHours["totalEventHours"] == 8
+    assert totalHours["totalHours"] == 11

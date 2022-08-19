@@ -967,13 +967,13 @@ background = [
     {
     "user": "khatts",
     "type": "CAN",
-    "passBackgroundCheck": False,
+    "backgroundCheckStatus": "Passed",
     "dateCompleted": datetime.strptime("2021 10 12","%Y %m %d")
     },
     {
-    "user":"mupotsal",
+    "user": "mupotsal",
     "type": "SHS",
-    "passBackgroundCheck":True,
+    "backgroundCheckStatus": "Submitted",
     "dateCompleted": datetime.strptime("2021 10 12","%Y %m %d")
     },
 ]
