@@ -49,7 +49,15 @@ function validatePhoneNumber(editButtonId, phoneInputId, username) {
             }
           })
         $(editButtonId).html('Edit');
-
-
+      }
 }
+
+function reloadWithAccordion(accordionName) {
+  var origin = window.location.href;
+
+  if (origin.includes("?")){
+    origin = origin.slice(0, origin.indexOf("?"));
+  }
+
+  location.replace(origin + "?accordion=" + accordionName);
 }

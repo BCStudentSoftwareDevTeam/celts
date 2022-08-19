@@ -82,7 +82,7 @@ function addNewTerm(){
     url: "/admin/addNewTerm",
     type: "POST",
     success: function(s){
-      location.reload()
+      reloadWithAccordion("term")
     },
     error: function(error, status){
         console.log(error, status)
