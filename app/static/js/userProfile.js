@@ -12,13 +12,7 @@ $(document).ready(function(){
       method: "POST",
       url: interestUrl,
       success: function(response) {
-          var origin = window.location.href;
-
-          if (origin.includes("?")){
-            origin = origin.slice(0, origin.indexOf("?"));
-          }
-
-          location.replace(origin + "?accordion=interest");  //  Reloading page after user clicks on the show interest checkbox
+          reloadWithAccordion("interest")  //  Reloading page after user clicks on the show interest checkbox
       },
       error: function(request, status, error) {
         console.log(status,error);

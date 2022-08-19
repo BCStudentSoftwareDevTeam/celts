@@ -82,13 +82,7 @@ function addNewTerm(){
     url: "/admin/addNewTerm",
     type: "POST",
     success: function(s){
-      var origin = window.location.href;
-
-      if (origin.includes("?")){
-        origin = origin.slice(0, origin.indexOf("?"));
-      }
-
-      location.replace(origin + "?accordion=term")
+      reloadWithAccordion("term")
     },
     error: function(error, status){
         console.log(error, status)
