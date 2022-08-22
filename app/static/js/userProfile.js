@@ -12,7 +12,7 @@ $(document).ready(function(){
       method: "POST",
       url: interestUrl,
       success: function(response) {
-          reloadWithAccordion("interest")  //  Reloading page after user clicks on the show interest checkbox
+          reloadWithAccordion("programTable")  //  Reloading page after user clicks on the show interest checkbox
       },
       error: function(request, status, error) {
         console.log(status,error);
