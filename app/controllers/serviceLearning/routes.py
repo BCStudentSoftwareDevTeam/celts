@@ -18,8 +18,6 @@ from app.controllers.serviceLearning import serviceLearning_bp
 @serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
 @serviceLearning_bp.route('/serviceLearning/courseManagement/<username>', methods = ['GET'])
 def serviceCourseManagement(username=None):
-    """This is a Temporary Page for the Service Course Management Screen."""
-    # TODO: How to make accessing other user's interfaces more userfriendly?
     if g.current_user.isStudent:
         abort(403)
     if g.current_user.isCeltsAdmin or g.current_user.isFaculty:
