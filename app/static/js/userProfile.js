@@ -142,6 +142,8 @@ function displayMessage(message, color) {  // displays message for saving backgr
 
 function updateManagers(el, volunteer_username ){// retrieve the data of the studnet staff and program id if the boxes are checked or not
   var program_id=$(el).attr('data-programid');
+  let programName = $(el).attr('data-programName')
+  let name = $(el).attr('data-name')
   action= el.checked ? 'add' : 'remove';
 
   $.ajax({
@@ -151,5 +153,18 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
             "program_id":program_id,       // program id
             "action":action,          //action: add or remove
              },
+             
+     success: function(s){
+         if(action == "add"){
+         msgFlash(name + " is now the manager of " + programName, "success")
+         }
+         
+         if(action == 'remove'){
+         msgFlash(name + " is no longer the manager of " + programName, "success")
+         }      
+      },
+      error: function(error, status){
+          console.log(error, status)
+      }
   })
 }
