@@ -158,10 +158,10 @@
                    <td>
                        {% if row.completedTraining or not trainingList %}
                            <i class="bi bi-check-lg"></i> &nbsp&nbsp
-                           <a class="trainingPopover" id="{{row.program.id}}" href="#" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
+                           <a class="trainingPopover" id="{{row.program.id}}" href="#!" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
                        {% else %}
                            <i class="bi bi-x-lg"></i> &nbsp&nbsp
-                           <a class="trainingPopover" id="{{row.program.id}}" href="#" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
+                           <a class="trainingPopover" id="{{row.program.id}}" href="#!" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
                        {% endif %}
                    </td>
                  {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
