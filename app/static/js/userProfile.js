@@ -128,7 +128,13 @@ $(document).ready(function(){
             return $(this).attr('data-content');
         }
     });
-
+  $("#phoneInput").on('click', function() {
+    if ($("#updatePhone").html() == "Save") {
+        $("#updatePhone").html('Edit');
+    } else {
+        $("#updatePhone").html('Save');
+    }
+  });
   $("#updatePhone").on('click', function() {
     var username = $(this).data("username")
     validatePhoneNumber(this, "#phoneInput", username)
