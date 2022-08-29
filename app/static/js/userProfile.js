@@ -140,11 +140,11 @@ function displayMessage(message, color) {  // displays message for saving backgr
     setTimeout(function() {$("#displaySave").html("").removeClass("text-"+ color)}, 2000)
 }
 
-function updateManagers(el, volunteer_username ){// retrieve the data of the studnet staff and program id if the boxes are checked or not
-  var program_id=$(el).attr('data-programid');
+function updateManagers(el, volunteer_username ){// retrieve the data of the student staff and program id if the boxes are checked or not
+  let program_id=$(el).attr('data-programid');
   let programName = $(el).attr('data-programName')
   let name = $(el).attr('data-name')
-  action= el.checked ? 'add' : 'remove';
+  let action= el.checked ? 'add' : 'remove';
 
   $.ajax({
     method:"POST",
@@ -153,15 +153,17 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
             "program_id":program_id,       // program id
             "action":action,          //action: add or remove
              },
-             
+
      success: function(s){
          if(action == "add"){
-         msgFlash(name + " is now the manager of " + programName, "success")
+             let addMesage =  (name + " is now the manager of " + programName, "success")
+             $("#toast")
          }
-         
+
          if(action == 'remove'){
-         msgFlash(name + " is no longer the manager of " + programName, "success")
-         }      
+             let removeMessage = (name + " is no longer the manager of " + programName, "success")
+
+         }
       },
       error: function(error, status){
           console.log(error, status)
