@@ -77,7 +77,7 @@
           <label class="form-label" for='inputEventLocation'><strong>Location</strong></label>
           <input class="form-control" id='inputEventLocation' value="{{eventData.location}}" placeholder="Enter location" name="location" required>
         </div>
-        {% if isNewEvent %}
+        {% if isNewEvent and template.tag != 'all-volunteer' %}
         <div class="form-check form-switch pb-1">
           <label class="custom-control-label" for='checkIsRecurring'><strong>This is a recurring event.</strong></label>
           <input class="form-check-input" type="checkbox" id="checkIsRecurring" name="isRecurring"/>
