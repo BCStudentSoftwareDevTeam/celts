@@ -328,14 +328,14 @@
 <!-- End Ban or Unban Modal -->
 {% for program in programs %}
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-    <div id="toast_{{program.programName}}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div id="toast_{{program.programName|replace(' ','_')}}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">
             <img src="..." class="rounded me-2" alt="...">
             <strong class="me-auto">Program Manager Change</strong>
             <small>Just now</small>
             <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
-        <div id="toast-body_{{program.programName}}">
+        <div id="toast-body_{{program.programName|replace(' ','_')}}">
         </div>
     </div>
 </div>

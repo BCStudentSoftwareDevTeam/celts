@@ -141,14 +141,17 @@ function displayMessage(message, color) {  // displays message for saving backgr
     setTimeout(function() {$("#displaySave").html("").removeClass("text-"+ color)}, 2000)
 }
 
-var toastElList = [].slice.call(document.querySelectorAll('.toast'))
-var toastList = toastElList.map(function (toastEl) {
-    return new bootstrap.Toast(toastEl)
-})
+$(function() {
+     toastElList = [].slice.call(document.querySelectorAll('.toast'))
+     toastList = toastElList.map(function (toastEl) {
+        return new bootstrap.Toast(toastEl)
+    })
 
+    console.log(toastElList)
+    console.log(toastList)
 
-console.log(toastElList)
-console.log(toastList)
+});
+
 
 function updateManagers(el, volunteer_username ){// retrieve the data of the student staff and program id if the boxes are checked or not
   let program_id=$(el).attr('data-programid');
