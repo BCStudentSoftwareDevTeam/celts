@@ -36,6 +36,8 @@ def deleteEvent(eventId):
     to make sure there is no gap in weeks.
     """
     event = Event.get_or_none(Event.id == eventId)
+    program = event.singleProgram
+    
     if event:
         if event.recurringId:
             recurringId = event.recurringId
@@ -54,7 +56,7 @@ def deleteEvent(eventId):
 
         event.delete_instance(recursive = True, delete_nullable = True)
 
-        createLog(f"Deleted event: {event.name}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
+        createLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
 
 def attemptSaveEvent(eventData, attachmentFiles = None):
     newEventData = preprocessEventData(eventData)
