@@ -96,7 +96,7 @@ def createEvent(templateid, programid=None):
     if request.method == "POST":
         try:
             saveSuccess, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
-            createLog(f"Created event: {eventData['name']}, which had a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}")
+            createLog(f"Created \"{eventData['name']}\" for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}")
 
         except Exception as e:
             print("Error saving event:", e)
