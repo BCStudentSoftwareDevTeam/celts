@@ -511,6 +511,30 @@ def test_upcomingEvents():
                                 startDate = datetime.date(2021,12,12),
                                 endDate = datetime.date(2021,12,13))
 
+        newRecurringEvent = Event.create(name = "Recurring Event Test",
+                                term = 2,
+                                description = "Test upcoming program event.",
+                                location = "The sun",
+                                startDate = datetime.date(2021,12,12),
+                                endDate = datetime.date(2021,12,14),
+                                recurringId = 1)
+
+        newRecurringSecond = Event.create(name = "Recurring second event",
+                                term = 2,
+                                description = "Test upcoming program event.",
+                                location = "The sun",
+                                startDate = datetime.date(2021,12,13),
+                                endDate = datetime.date(2021,12,15),
+                                recurringId = 1)
+
+        newRecurringDifferentId = Event.create(name = "Recurring different Id",
+                                term = 2,
+                                description = "Test upcoming program event.",
+                                location = "The sun",
+                                startDate = datetime.date(2021,12,12),
+                                endDate = datetime.date(2021,12,13),
+                                recurringId = 2)
+
         # Create a new Program to create the new Program Event off of so the
         # user can mark interest for it
         programForInterest = Program.create(id = 13,
@@ -520,19 +544,27 @@ def test_upcomingEvents():
                                             contactEmail = "test@email",
                                             contactName = "testName")
 
+        ProgramEvent.create(program = programForInterest, event = newRecurringEvent)
+        ProgramEvent.create(program = programForInterest, event = newRecurringSecond)
+        ProgramEvent.create(program = programForInterest, event = newRecurringDifferentId)
         ProgramEvent.create(program = programForInterest, event = newProgramEvent)
+
 
         # User has not RSVPd and is Interested
         addUserInterest(programForInterest.id, user)
         eventsInUserInterestedProgram = getUpcomingEventsForUser(user, asOf = testDate)
 
-        assert eventsInUserInterestedProgram == [newProgramEvent]
+        assert newProgramEvent in eventsInUserInterestedProgram
+        assert newRecurringDifferentId in eventsInUserInterestedProgram
+        assert newRecurringEvent in eventsInUserInterestedProgram
+        assert newRecurringSecond not in eventsInUserInterestedProgram
+
 
         # user has RSVPd and is Interested
         EventRsvp.create(event=noProgram, user=user)
         eventsInUserInterestAndRsvp = getUpcomingEventsForUser(user, asOf = testDate)
 
-        interestAndRsvp = [[newProgramEvent] + [noProgram]]
+        interestAndRsvp = [eventsInUserInterestedProgram + [noProgram]]
 
         assert eventsInUserInterestAndRsvp in interestAndRsvp
 
