@@ -211,19 +211,6 @@
           {% endif %}
           <ul class="list-unstyled">
             {% for program in programs %}
-            <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-                <div id="toast_{{program.programName}}" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
-                    <div class="toast-header">
-                        <img src="..." class="rounded me-2" alt="...">
-                        <strong class="me-auto">Program Manager Change</strong>
-                        <small>Just now</small>
-                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                    </div>
-                    <div class="toast-body">
-                        
-                    </div>
-                </div>
-            </div>
               {% set action = "add" %}
               {% set checked = "" %}
               {% if program.id in permissionPrograms %}
@@ -339,4 +326,18 @@
   </form>
 </div>
 <!-- End Ban or Unban Modal -->
+{% for program in programs %}
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="toast_{{program.programName}}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <img src="..." class="rounded me-2" alt="...">
+            <strong class="me-auto">Program Manager Change</strong>
+            <small>Just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div id="toast-body_{{program.programName}}">
+        </div>
+    </div>
+</div>
+{%endfor%}
 {% endblock %}

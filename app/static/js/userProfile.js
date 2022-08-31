@@ -1,4 +1,5 @@
 $(document).ready(function(){
+
   $("#phoneInput").inputmask('(999)-999-9999');
   $(".form-check-input").click(function updateInterest(){
     var programID = $(this).data("programid");
@@ -140,12 +141,20 @@ function displayMessage(message, color) {  // displays message for saving backgr
     setTimeout(function() {$("#displaySave").html("").removeClass("text-"+ color)}, 2000)
 }
 
+var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+var toastList = toastElList.map(function (toastEl) {
+    return new bootstrap.Toast(toastEl)
+})
+
+
+console.log(toastElList)
+console.log(toastList)
+
 function updateManagers(el, volunteer_username ){// retrieve the data of the student staff and program id if the boxes are checked or not
   let program_id=$(el).attr('data-programid');
   let programName = $(el).attr('data-programName')
   let name = $(el).attr('data-name')
   let action= el.checked ? 'add' : 'remove';
-
   $.ajax({
     method:"POST",
     url:"/updateProgramManager",
@@ -156,8 +165,9 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
 
      success: function(s){
          if(action == "add"){
-             let addMesage =  (name + " is now the manager of " + programName, "success")
-             $("#toast")
+             let addMessage =  (name + " is now the manager of " + programName, "success")
+             $("#toast-body_"+programName).append(addMessage)
+             $("#toast_"+programName)
          }
 
          if(action == 'remove'){
