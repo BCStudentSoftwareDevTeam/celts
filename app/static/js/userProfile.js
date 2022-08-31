@@ -158,6 +158,7 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
   let programName = $(el).attr('data-programName')
   let name = $(el).attr('data-name')
   let action= el.checked ? 'add' : 'remove';
+  let toast = $("#toastDiv").html()
   $.ajax({
     method:"POST",
     url:"/updateProgramManager",

@@ -327,7 +327,7 @@
 </div>
 <!-- End Ban or Unban Modal -->
 {% for program in programs %}
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+<div id="toastDiv" class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
     <div id="toast_{{program.programName|replace(' ','_')}}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">
             <img src="..." class="rounded me-2" alt="...">
