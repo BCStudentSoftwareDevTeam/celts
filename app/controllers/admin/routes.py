@@ -99,7 +99,10 @@ def createEvent(templateid, programid=None):
             if not program:
                 createLog(f"Created a non-program event: \"{eventData['name']}\", with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}")
             else:
-                createLog(f"Created \"{eventData['name']}\" for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}")
+                if eventData['isRecurring']:
+                    createLog(f"Created a recurring event, \"{eventData['name']}\", for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(eventData['endDate'], '%m/%d/%Y')}.")
+                else:
+                    createLog(f"Created \"{eventData['name']}\" for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}")
 
         except Exception as e:
             print("Error saving event:", e)
