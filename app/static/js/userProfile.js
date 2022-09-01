@@ -158,7 +158,19 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
   let programName = $(el).attr('data-programName')
   let name = $(el).attr('data-name')
   let action= el.checked ? 'add' : 'remove';
-  let toast = $("#toastDiv").html()
+  // const elementArray= ["<div class= ""toast"" role=""alert" "aria-live= ""assertive" "aria-atomic=true>",
+  //                               "<div class=""toast-header>",
+  //                                   "<img src="..." class=""rounded me-2" "alt="...">",
+  //                                   "<strong class=""me-auto"">Program Manager Change</strong>",
+  //                                   "<small>Just now</small>",
+  //                                   "<button type=""button" "class=""btn-close" "data-bs-dismiss=""toast" "aria-label=""Close></button>",
+  //                               "</div>",
+  //                           '<div id="toast-body">',
+  //
+  //                           "</div>",
+  //                       "</div>"
+  //                   ]
+  $("#toastDiv").html()
   $.ajax({
     method:"POST",
     url:"/updateProgramManager",
