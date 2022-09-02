@@ -158,19 +158,9 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
   let programName = $(el).attr('data-programName')
   let name = $(el).attr('data-name')
   let action= el.checked ? 'add' : 'remove';
-  // const elementArray= ["<div class= ""toast"" role=""alert" "aria-live= ""assertive" "aria-atomic=true>",
-  //                               "<div class=""toast-header>",
-  //                                   "<img src="..." class=""rounded me-2" "alt="...">",
-  //                                   "<strong class=""me-auto"">Program Manager Change</strong>",
-  //                                   "<small>Just now</small>",
-  //                                   "<button type=""button" "class=""btn-close" "data-bs-dismiss=""toast" "aria-label=""Close></button>",
-  //                               "</div>",
-  //                           '<div id="toast-body">',
-  //
-  //                           "</div>",
-  //                       "</div>"
-  //                   ]
-  $("#toastDiv").html()
+  let removeMessage = (name + " is no longer the manager of " + programName + "]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]")
+  let addMessage =  (name + " is now the manager of " + programName  + "]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]")
+
   $.ajax({
     method:"POST",
     url:"/updateProgramManager",
@@ -181,13 +171,13 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
 
      success: function(s){
          if(action == "add"){
-             let addMessage =  (name + " is now the manager of " + programName, "success")
-             $("#toast-body_"+programName).append(addMessage)
-             $("#toast_"+programName)
+             $("#toast-body").html(addMessage)
+             toastList[0].show()
          }
 
          if(action == 'remove'){
-             let removeMessage = (name + " is no longer the manager of " + programName, "success")
+             $("#toast-body").html(removeMessage)
+             toastList[0].show()
 
          }
       },
