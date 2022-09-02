@@ -523,7 +523,7 @@ def test_upcomingEvents():
                                 term = 2,
                                 description = "Test upcoming program event.",
                                 location = "The sun",
-                                startDate = datetime.date(2021,12,13),
+                                startDate = datetime.date(2021,12,14),
                                 endDate = datetime.date(2021,12,15),
                                 recurringId = 1)
 
@@ -531,7 +531,7 @@ def test_upcomingEvents():
                                 term = 2,
                                 description = "Test upcoming program event.",
                                 location = "The sun",
-                                startDate = datetime.date(2021,12,12),
+                                startDate = datetime.date(2021,12,13),
                                 endDate = datetime.date(2021,12,13),
                                 recurringId = 2)
 
@@ -564,9 +564,9 @@ def test_upcomingEvents():
         EventRsvp.create(event=noProgram, user=user)
         eventsInUserInterestAndRsvp = getUpcomingEventsForUser(user, asOf = testDate)
 
-        interestAndRsvp = [eventsInUserInterestedProgram + [noProgram]]
-
-        assert eventsInUserInterestAndRsvp in interestAndRsvp
+        interestAndRsvp = eventsInUserInterestedProgram + [noProgram]
+        for event in eventsInUserInterestedProgram:
+            assert event in interestAndRsvp
 
         # User has RSVPd and is not Interested
         removeUserInterest(programForInterest.id, user)
