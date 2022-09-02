@@ -95,25 +95,26 @@ def createEvent(templateid, programid=None):
     # Try to save the form
     if request.method == "POST":
         try:
-            saveSuccess, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
-            if not program:
-                createLog(f"Created a non-program event: \"{eventData['name']}\", with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}")
-            else:
-                if eventData['isRecurring']:
-                    createLog(f"Created a recurring event, \"{eventData['name']}\", for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(eventData['endDate'], '%m/%d/%Y')}.")
-                else:
-                    createLog(f"Created \"{eventData['name']}\" for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}")
-
+            savedEvents, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
         except Exception as e:
             print("Error saving event:", e)
-            saveSuccess = False
+            savedEvents = False
             validationErrorMessage = "Unknown Error Saving Event. Please try again"
 
-        if saveSuccess:
+        if savedEvents:
+
             noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
-            eventId = Event.select(fn.MAX(Event.id)).scalar()
-            return redirect(url_for("admin.eventDisplay", eventId = eventId))
+
+            if not program:
+                createLog(f"Created a non-program event: \"{savedEvents[0].name}\", with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}")
+            else:
+                if len(savedEvents) > 1:
+                    createLog(f"Created a recurring event, \"{savedEvents[0].name}\", for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
+                else:
+                    createLog(f"Created \"{savedEvents[0].name}\" for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}")
+
+            return redirect(url_for("admin.eventDisplay", eventId = savedEvents[0].id))
         else:
             flash(validationErrorMessage, 'warning')
 
@@ -146,8 +147,8 @@ def eventDisplay(eventId):
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
         attachmentFiles = request.files.getlist("attachmentObject")
-        saveSuccess, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
-        if saveSuccess:
+        savedEvents, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
+        if savedEvents:
             flash("Event successfully updated!", "success")
             return redirect(url_for("admin.eventDisplay", eventId = eventId))
         else:

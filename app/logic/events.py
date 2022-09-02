@@ -63,6 +63,15 @@ def deleteEvent(eventId):
             createLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
 
 def attemptSaveEvent(eventData, attachmentFiles = None):
+    """
+    Tries to save an event to the database:
+    Checks that the event data is valid and if it is it continus to saves the new
+    event to the database and adds files if there are any.
+    If it is not valid it will return a validation error.
+
+    Returns:
+    Created events and an error message.
+    """
     newEventData = preprocessEventData(eventData)
     addfile= FileHandler(attachmentFiles)
     isValid, validationErrorMessage = validateNewEventData(newEventData)
@@ -75,7 +84,7 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
         if  attachmentFiles:
             for event in events:
                 addfile.saveFilesForEvent(event.id)
-        return True, ""
+        return events, ""
     except Exception as e:
         print(e)
         return False, e
