@@ -74,7 +74,7 @@ function submitData(hitEnter = false){
         } else {
           message = result.user + " Successfully Signed In!"
         }
-        eventFlasher(message, result.status);
+        eventFlasher(message, flasherStatus);
         $("#submitScannerData").val("").blur();
         $('#submitScannerData').focus();
       },
