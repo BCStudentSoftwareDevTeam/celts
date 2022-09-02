@@ -57,16 +57,10 @@ def signinEvent():
             return "", 500
     try:
         kioskUser, userStatus = sendUserData(bnumber, eventid, programid)
-        if userStatus == "banned":
-            return "", 500
-
-        elif userStatus == "already in":
-            flasherMessage = f"{kioskUser.firstName} {kioskUser.lastName} Already Signed In!"
-            return flasherMessage
-
+        if kioskUser:
+            return {"user": f"{kioskUser.firstName} {kioskUser.lastName}", "status": userStatus}
         else:
-            flasherMessage = f"{kioskUser.firstName} {kioskUser.lastName} Successfully Signed In!"
-            return flasherMessage
+            return {"user": None, "status": userStatus}
 
     except Exception as e:
         print("Error in Main Page", e)
