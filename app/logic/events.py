@@ -55,10 +55,10 @@ def deleteEvent(eventId):
 
         program = event.singleProgram
 
-        if not program:
-            createLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
-        else:
+        if program:
             createLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+        else:
+            createLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
 
         event.delete_instance(recursive = True, delete_nullable = True)
 
