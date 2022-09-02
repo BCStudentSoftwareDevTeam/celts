@@ -13,7 +13,10 @@ from app.logic.events import getPreviousRecurringEventData
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.programManager import ProgramManager
+from app.models.program import Program
+from app.models.programEvent import ProgramEvent
 from app.logic.adminLogs import createLog
+from app.logic.users import isEligibleForProgram
 
 
 
@@ -101,6 +104,19 @@ def addVolunteer(eventId):
 
     return redirect(url_for('admin.trackVolunteersPage', eventID = eventId))
 
+@admin_bp.route('/addVolunteersToEvent/<username>/<eventId>/isBanned', methods = ['GET'])
+def isVolunteerBanned(username, eventId):
+    programEvent = ProgramEvent.select().where(ProgramEvent.event_id == int(eventId))
+    user = User.select().where(User.username == username)
+
+    # I'm trying to get the program associated with the event
+
+    print(f'\n\nHERE WE GO \n\n')
+    program2 = [program.program for program in programEvent]
+    user2 = [user3.id for user3 in user]
+    print(user2[0])
+    print(":)))))))))")
+    return not isEligibleForProgram(user2[0], program2[0])
 
 @admin_bp.route('/removeVolunteerFromEvent/<user>/<eventID>', methods = ['POST'])
 def removeVolunteerFromEvent(user, eventID):
