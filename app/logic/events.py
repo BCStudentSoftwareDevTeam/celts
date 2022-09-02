@@ -211,7 +211,21 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
                     .order_by(Event.startDate, Event.name).execute() # keeps the order of events the same when the dates are the same
                     )
 
-    return events
+
+    events_list = []
+    shown_recurring_event_list = []
+
+    # removes all recurring events except for the next upcoming one
+    for event in events:
+        if event.recurringId:
+            if event.recurringId not in shown_recurring_event_list:
+                events_list.append(event)
+                shown_recurring_event_list.append(event.recurringId)
+
+        else:
+            events_list.append(event)
+
+    return events_list
 
 def getParticipatedEventsForUser(user):
     """

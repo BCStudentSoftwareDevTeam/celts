@@ -106,7 +106,10 @@ def createEvent(templateid, programid=None):
         if saveSuccess:
             noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
-            eventId = Event.select(fn.MAX(Event.id)).scalar()
+            eventId = Event.select(fn.MAX(Event.id)).scalar() #gets the last created event
+            if eventData['isRecurring']: 
+                lastEventInSeries = Event.get(Event.id == eventId)
+                eventId = Event.get(Event.recurringId == lastEventInSeries.recurringId)
             return redirect(url_for("admin.eventDisplay", eventId = eventId))
         else:
             flash(validationErrorMessage, 'warning')
