@@ -62,23 +62,19 @@ function submitData(hitEnter = false){
         "bNumber": $("#submitScannerData").val()
       },
       success: function(result) {
-        if (result.user){
-          user = result.user
-        }
-        status = result.status
         flasherStatus = "success"
         if (status === "already in") {
-          message = user + " Already Signed In!"
+          message = result.user + " Already Signed In!"
         } else if (status === "banned") {
-          message = user + " is Banned!"
+          message = result.user + " is Banned."
           flasherStatus = "danger"
         } else if (status === "does not exist") {
           message = "User does not exist"
           flasherStatus = "danger"
         } else {
-          message = user + " Successfully Signed In!"
+          message = result.user + " Successfully Signed In!"
         }
-        eventFlasher(message, flasherStatus);
+        eventFlasher(message, result.status);
         $("#submitScannerData").val("").blur();
         $('#submitScannerData').focus();
       },
