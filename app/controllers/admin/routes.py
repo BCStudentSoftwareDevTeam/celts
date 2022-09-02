@@ -107,7 +107,7 @@ def createEvent(templateid, programid=None):
             noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
             eventId = Event.select(fn.MAX(Event.id)).scalar() #gets the last created event
-            if eventData['isRecurring']: 
+            if eventData['isRecurring']:
                 lastEventInSeries = Event.get(Event.id == eventId)
                 eventId = Event.get(Event.recurringId == lastEventInSeries.recurringId)
             return redirect(url_for("admin.eventDisplay", eventId = eventId))
@@ -173,6 +173,8 @@ def eventDisplay(eventId):
         eventData['timeStart'] = event.timeStart.strftime("%-I:%M %p")
         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
         eventData["startDate"] = event.startDate.strftime("%m/%d/%Y")
+        program=event.singleProgram
+        temp = EventTemplate.select().where((EventTemplate.id == 2)|(EventTemplate.id == 3))
         # List below is to identify the next event in the series
         eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId))
         eventIndex = eventSeriesList.index(event)
@@ -186,6 +188,8 @@ def eventDisplay(eventId):
                                 userHasRSVPed = userHasRSVPed,
                                 programTrainings = userParticipatedEvents,
                                 isProgramManager = isProgramManager,
+                                program=program,
+                                temp=temp,
                                 filepaths = filepaths)
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
