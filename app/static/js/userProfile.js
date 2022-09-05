@@ -158,8 +158,8 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
   let programName = $(el).attr('data-programName')
   let name = $(el).attr('data-name')
   let action= el.checked ? 'add' : 'remove';
-  let removeMessage = (name + " is no longer the manager of " + programName + "]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]")
-  let addMessage =  (name + " is now the manager of " + programName  + "]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]")
+  let removeMessage = (name + " is no longer the manager of " + programName)
+  let addMessage =  (name + " is now the manager of " + programName)
 
   $.ajax({
     method:"POST",
