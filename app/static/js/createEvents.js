@@ -56,7 +56,7 @@ $(document).ready(function() {
   // everything except Chrome
   if (navigator.userAgent.indexOf("Chrome") == -1) {
     $('input.timepicker').timepicker({
-             timeFormat : 'hh:mm p',
+             timeFormat : 'h:mm p',
              scrollbar: true,
              dropdown: true,
              dynamic: true,
