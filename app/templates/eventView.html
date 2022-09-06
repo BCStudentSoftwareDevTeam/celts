@@ -10,13 +10,7 @@
     <div class="text-center mb-3">
     {% set page_title = eventData.name %}
         <h1 id="title">{{page_title}}</h1>
-    {% if {{temp}} = 2 %}
-        <h2>A All Volunteer Training Event</h2>
-    {% elif {{temp}} = 3%}
-        <h2>A CELTS-Sponsored Event</h2>
-    {% else %}
-        <h2>A {{program.programName}} event</h2>
-    {% endif %}
+        <h3> A {{program.programName}} Event</h3>
     {% if isPastEvent %}
         <div class="alert alert-danger" role="alert">This event is in the past.</div>
     {% endif %}

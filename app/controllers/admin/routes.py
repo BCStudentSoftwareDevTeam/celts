@@ -156,6 +156,9 @@ def eventDisplay(eventId):
     isPastEvent = event.isPast
     eventfiles=FileHandler()
     program=event.singleProgram
+    # programName = program.programName
+    # vowels = ('a','e','i','o','u','A','E','I','O','U')
+    # isVowel = programName.startswith(vowels)
     filepaths =eventfiles.retrievePath(associatedAttachments, eventId)
     isProgramManager = g.current_user.isProgramManagerFor(program)
     rule = request.url_rule
@@ -167,14 +170,14 @@ def eventDisplay(eventId):
                                 futureTerms=futureTerms,
                                 isPastEvent = isPastEvent,
                                 userHasRSVPed = userHasRSVPed,
+                                # isVowel = isVowel,
+                                # program=program,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths)
     else:
         eventData['timeStart'] = event.timeStart.strftime("%-I:%M %p")
         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
         eventData["startDate"] = event.startDate.strftime("%m/%d/%Y")
-        program=event.singleProgram
-        temp = EventTemplate.select().where((EventTemplate.id == 2)|(EventTemplate.id == 3))
         # List below is to identify the next event in the series
         eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId))
         eventIndex = eventSeriesList.index(event)
@@ -188,8 +191,8 @@ def eventDisplay(eventId):
                                 userHasRSVPed = userHasRSVPed,
                                 programTrainings = userParticipatedEvents,
                                 isProgramManager = isProgramManager,
+                                # isVowel = isVowel,
                                 program=program,
-                                temp=temp,
                                 filepaths = filepaths)
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
