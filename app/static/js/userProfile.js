@@ -142,13 +142,12 @@ function displayMessage(message, color) {  // displays message for saving backgr
 }
 
 $(function() {
-     toastElList = [].slice.call(document.querySelectorAll('.toast'))
-     toastList = toastElList.map(function (toastEl) {
+     toastElementList = [].slice.call(document.querySelectorAll('.toast'))
+     toastList = toastElementList.map(function (toastEl) {
         return new bootstrap.Toast(toastEl)
     })
 
-    console.log(toastElList)
-    console.log(toastList)
+
 
 });
 
