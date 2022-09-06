@@ -29,12 +29,12 @@
 <div class="accordion" id="userProfile">
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingOne">
-      {% set focus = "open" if not visibleAccordion or visibleAccordion == "upcoming" else "collapsed" %}
+      {% set focus = "open" if visibleAccordion == "upcoming" or volunteer.username == g.current_user.username and not visibleAccordion =="programTable" else "collapsed" %}
       <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
         Upcoming Events
       </button>
     </h3>
-    {% set show = "show" if not visibleAccordion or visibleAccordion == "upcoming" %}
+    {% set show = "show" if visibleAccordion == "upcoming" or volunteer.username == g.current_user.username and not visibleAccordion =="programTable" else ""%}
     <div id="collapseOne" class="accordion-collapse collapse {{show}} " aria-labelledby="headingOne" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="row table-responsive">
@@ -105,12 +105,12 @@
   <!-- Start Program Eligibility Table -->
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingThree">
-      {% set focus = "open" if visibleAccordion == "programTable" else "collapsed" %}
+      {% set focus = "open" if visibleAccordion == "programTable" or volunteer.username != g.current_user.username else "collapsed" %}
       <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
           Programs
       </button>
     </h3>
-    {% set show = "show" if visibleAccordion == "programTable" else "" %}
+    {% set show = "show" if visibleAccordion == "programTable" or volunteer.username != g.current_user.username else "" %}
     <div id="collapseThree" class="accordion-collapse collapse {{show}}" aria-labelledby="headingThree" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="table-responsive">
