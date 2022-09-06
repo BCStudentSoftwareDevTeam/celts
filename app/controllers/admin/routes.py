@@ -156,9 +156,7 @@ def eventDisplay(eventId):
     isPastEvent = event.isPast
     eventfiles=FileHandler()
     program=event.singleProgram
-    # programName = program.programName
-    # vowels = ('a','e','i','o','u','A','E','I','O','U')
-    # isVowel = programName.startswith(vowels)
+    print("Single Program", program)
     filepaths =eventfiles.retrievePath(associatedAttachments, eventId)
     isProgramManager = g.current_user.isProgramManagerFor(program)
     rule = request.url_rule
@@ -170,8 +168,6 @@ def eventDisplay(eventId):
                                 futureTerms=futureTerms,
                                 isPastEvent = isPastEvent,
                                 userHasRSVPed = userHasRSVPed,
-                                # isVowel = isVowel,
-                                # program=program,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths)
     else:
@@ -191,7 +187,6 @@ def eventDisplay(eventId):
                                 userHasRSVPed = userHasRSVPed,
                                 programTrainings = userParticipatedEvents,
                                 isProgramManager = isProgramManager,
-                                # isVowel = isVowel,
                                 program=program,
                                 filepaths = filepaths)
 

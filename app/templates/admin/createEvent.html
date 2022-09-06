@@ -32,10 +32,9 @@
     {% endif %}
     {% else %}
       {% set page_title = eventData.name %}
-      {% set program_name = eventData["program"].programName %}
     {% endif %}
     <h1 id="title">{{page_title}}</h1>
-    <h3>{{program_name}}</h3>
+    <h3>A {{program.programName}} Event</h3>
     {% if isPastEvent %}
       <div class="alert alert-danger" role="alert">This event is in the past.</div>
     {% endif %}
