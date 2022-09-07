@@ -29,7 +29,7 @@
 <div class="accordion" id="userProfile">
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingOne">
-      {% set focus = "open" if not visibleAccordion or visibleAccordion == "upcoming" else "collapsed" %}
+       {% set focus = "open" if visibleAccordion == "upcoming" or volunteer.username == g.current_user.username and not visibleAccordion =="programTable" else "collapsed" %}
       <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
         Upcoming Events
       </button>
