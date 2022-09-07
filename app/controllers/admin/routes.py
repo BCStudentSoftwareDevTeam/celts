@@ -169,6 +169,7 @@ def eventDisplay(eventId):
                                 isPastEvent = isPastEvent,
                                 userHasRSVPed = userHasRSVPed,
                                 isProgramManager = isProgramManager,
+                                program = program,
                                 filepaths = filepaths)
     else:
         eventData['timeStart'] = event.timeStart.strftime("%-I:%M %p")
