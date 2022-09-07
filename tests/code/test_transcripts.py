@@ -10,118 +10,123 @@ from app.models.event import Event
 from app.models.programEvent import ProgramEvent
 from app.logic.events import deleteEvent
 
+
 @pytest.fixture(autouse=True)
 def setup():
     testUser = User.create(
-                        username = "namet",
-                        bnumber = "B001234567",
-                        email = "namet@berea.edu",
-                        phoneNumber = "555-123-1234",
-                        firstName = "Test",
-                        lastName  = "Name",
-                        isStudent = 1,
-                        isFaculty = 0,
-                        isCeltsAdmin = 0,
-                        isCeltsStudentStaff = 0,
-                        )
+        username="namet",
+        bnumber="B001234567",
+        email="namet@berea.edu",
+        phoneNumber="555-123-1234",
+        firstName="Test",
+        lastName="Name",
+        isStudent=1,
+        isFaculty=0,
+        isCeltsAdmin=0,
+        isCeltsStudentStaff=0,
+    )
 
-    newTrainingEvent = Event.create(name = "Test Training Event",
-                              term = 1,
-                              description= "Event for testing",
-                              timeStart = "18:00:00",
-                              timeEnd = "21:00:00",
-                              location = "The testing lab",
-                              isRsvpRequired = 0,
-                              isPrerequisiteForProgram = 0,
-                              isTraining = 1,
-                              isService = 0,
-                              startDate =  "2021-12-12",
-                              endDate =  "2021-12-13",
-                              recurringId = None)
+    newTrainingEvent = Event.create(
+        name="Test Training Event",
+        term=1,
+        description="Event for testing",
+        timeStart="18:00:00",
+        timeEnd="21:00:00",
+        location="The testing lab",
+        isRsvpRequired=0,
+        isPrerequisiteForProgram=0,
+        isTraining=1,
+        isService=0,
+        startDate="2021-12-12",
+        endDate="2021-12-13",
+        recurringId=None,
+    )
     ProgramEvent.create(program=2, event=newTrainingEvent)
-    EventParticipant.create(user = testUser,
-                            event = newTrainingEvent,
-                            attended = True,
-                            hoursEarned = 2)
+    EventParticipant.create(
+        user=testUser, event=newTrainingEvent, attended=True, hoursEarned=2
+    )
 
-
-    newBonnerEvent = Event.create(name = "Test Bonner Event",
-                              term = 1,
-                              description= "Event for testing",
-                              timeStart = "18:00:00",
-                              timeEnd = "21:00:00",
-                              location = "The testing lab",
-                              isRsvpRequired = 0,
-                              isPrerequisiteForProgram = 0,
-                              isTraining = 0,
-                              isService = 0,
-                              startDate =  "2021-12-12",
-                              endDate =  "2021-12-13",
-                              recurringId = None)
+    newBonnerEvent = Event.create(
+        name="Test Bonner Event",
+        term=1,
+        description="Event for testing",
+        timeStart="18:00:00",
+        timeEnd="21:00:00",
+        location="The testing lab",
+        isRsvpRequired=0,
+        isPrerequisiteForProgram=0,
+        isTraining=0,
+        isService=0,
+        startDate="2021-12-12",
+        endDate="2021-12-13",
+        recurringId=None,
+    )
 
     ProgramEvent.create(program=5, event=newBonnerEvent)
-    EventParticipant.create(user = testUser,
-                            event = newBonnerEvent,
-                            attended = True,
-                            hoursEarned = 2)
-
+    EventParticipant.create(
+        user=testUser, event=newBonnerEvent, attended=True, hoursEarned=2
+    )
 
     adminName = "ramsayb2"
 
-    newCourse = Course.create(courseName = "Test Course",
-                                term = 1,
-                                status = 1,
-                                courseCredit = "45",
-                                createdBy = "ramsayb2",
-                                isAllSectionsServiceLearning = 0,
-                                isPermanentlyDesignated = 0,
-                                sectionBQuestion1 = "",
-                                sectionBQuestion2 = "",
-                                sectionBQuestion3 = "",
-                                sectionBQuestion4 = "",
-                                sectionBQuestion5 = "",
-                                sectionBQuestion6 = "")
+    newCourse = Course.create(
+        courseName="Test Course",
+        term=1,
+        status=1,
+        courseCredit="45",
+        createdBy="ramsayb2",
+        isAllSectionsServiceLearning=0,
+        isPermanentlyDesignated=0,
+        sectionBQuestion1="",
+        sectionBQuestion2="",
+        sectionBQuestion3="",
+        sectionBQuestion4="",
+        sectionBQuestion5="",
+        sectionBQuestion6="",
+    )
 
-    CourseInstructor.create(course = newCourse, user = adminName)
-    CourseParticipant.create(course = newCourse, user = testUser, hoursEarned = 3.0)
+    CourseInstructor.create(course=newCourse, user=adminName)
+    CourseParticipant.create(course=newCourse, user=testUser, hoursEarned=3.0)
 
-    newProgramEvent = Event.create(name = "Test Program Event",
-                              term = 1,
-                              description= "Event for testing",
-                              timeStart = "18:00:00",
-                              timeEnd = "21:00:00",
-                              location = "The testing lab",
-                              isRsvpRequired = 0,
-                              isPrerequisiteForProgram = 0,
-                              isTraining = 0,
-                              isService = 0,
-                              startDate =  "2021-12-12",
-                              endDate =  "2021-12-13",
-                              recurringId = None)
+    newProgramEvent = Event.create(
+        name="Test Program Event",
+        term=1,
+        description="Event for testing",
+        timeStart="18:00:00",
+        timeEnd="21:00:00",
+        location="The testing lab",
+        isRsvpRequired=0,
+        isPrerequisiteForProgram=0,
+        isTraining=0,
+        isService=0,
+        startDate="2021-12-12",
+        endDate="2021-12-13",
+        recurringId=None,
+    )
     ProgramEvent.create(program=1, event=newProgramEvent)
-    EventParticipant.create(user = testUser,
-                            event = newProgramEvent,
-                            attended = True,
-                            hoursEarned = 2)
+    EventParticipant.create(
+        user=testUser, event=newProgramEvent, attended=True, hoursEarned=2
+    )
 
+    newNonProgramEvent = Event.create(
+        name="Test Non-Program Event",
+        term=3,
+        description="Event for testing",
+        timeStart="18:00:00",
+        timeEnd="21:00:00",
+        location="The testing lab",
+        isRsvpRequired=0,
+        isPrerequisiteForProgram=0,
+        isTraining=0,
+        isService=0,
+        startDate="2021-12-12",
+        endDate="2021-12-13",
+        recurringId=None,
+    )
+    EventParticipant.create(
+        user=testUser, event=newNonProgramEvent, attended=True, hoursEarned=2
+    )
 
-    newNonProgramEvent = Event.create(name = "Test Non-Program Event",
-                              term = 3,
-                              description= "Event for testing",
-                              timeStart = "18:00:00",
-                              timeEnd = "21:00:00",
-                              location = "The testing lab",
-                              isRsvpRequired = 0,
-                              isPrerequisiteForProgram = 0,
-                              isTraining = 0,
-                              isService = 0,
-                              startDate =  "2021-12-12",
-                              endDate =  "2021-12-13",
-                              recurringId = None)
-    EventParticipant.create(user = testUser,
-                            event = newNonProgramEvent,
-                            attended = True,
-                            hoursEarned = 2)
 
 @pytest.fixture(autouse=True)
 def teardown():
@@ -150,13 +155,14 @@ def teardown():
     user = User.get(User.username == "namet")
     user.delete_instance(recursive=True, delete_nullable=True)
 
+
 @pytest.mark.integration
 def testingSLCourses():
 
     username = "namet"
     adminName = "ramsayb2"
 
-    testingSLCExist= getSlCourseTranscript(username)
+    testingSLCExist = getSlCourseTranscript(username)
     testingSLCNotExist = getSlCourseTranscript(adminName)
 
     checkingNewCourse = Course.get(Course.courseName == "Test Course")
@@ -180,6 +186,7 @@ def testingProgram():
     assert programDict
     assert checkingProgram in [t for t in programDict]
 
+
 @pytest.mark.integration
 def testingOtherEventsTranscript():
 
@@ -189,13 +196,15 @@ def testingOtherEventsTranscript():
     emptyOtherDict = getOtherEventsTranscript(adminName)
 
     checkingOtherEvent = Event.get(Event.name == "Test Non-Program Event")
-    participatedEvent = EventParticipant.get(EventParticipant.user == username, EventParticipant.event == checkingOtherEvent)
+    participatedEvent = EventParticipant.get(
+        EventParticipant.user == username, EventParticipant.event == checkingOtherEvent
+    )
     termInfo = [checkingOtherEvent.term.description, participatedEvent.hoursEarned]
-
 
     assert not emptyOtherDict
     assert otherDict
     assert termInfo in [t for t in otherDict]
+
 
 @pytest.mark.integration
 def testingGetAllEventTranscript():
@@ -208,13 +217,18 @@ def testingGetAllEventTranscript():
     checkingProgram = Program.get_by_id(5)
 
     checkingOtherEvent = Event.get(Event.name == "Test Non-Program Event")
-    participatedEvent = EventParticipant.get(EventParticipant.user == username, EventParticipant.event == checkingOtherEvent)
+    participatedEvent = EventParticipant.get(
+        EventParticipant.user == username, EventParticipant.event == checkingOtherEvent
+    )
     termInfo = [checkingOtherEvent.term.description, participatedEvent.hoursEarned]
 
     # ensures the results of both child function appear in the same dictionary
     assert not emptyAllEventDict
     assert allEventDict
-    assert checkingProgram in [t for t in allEventDict] and termInfo in allEventDict["CELTS Sponsored Events"]
+    assert (
+        checkingProgram in [t for t in allEventDict]
+        and termInfo in allEventDict["CELTS Sponsored Events"]
+    )
 
 
 @pytest.mark.integration

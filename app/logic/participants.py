@@ -10,6 +10,7 @@ from app.models.eventParticipant import EventParticipant
 from app.logic.users import isEligibleForProgram
 from app.logic.volunteers import getEventLengthInHours
 
+
 def trainedParticipants(programID, currentTerm):
     """
     This function tracks the users who have attended every Prerequisite
@@ -20,21 +21,38 @@ def trainedParticipants(programID, currentTerm):
 
     # Reset program eligibility each term for all other trainings
 
-    otherTrainingEvents = (Event.select(Event.id)
-            .join(ProgramEvent).switch()
-            .join(Term)
-            .where(
-                ProgramEvent.program == programID,
-                (Event.isTraining | Event.isAllVolunteerTraining),
-                Event.term.academicYear == academicYear)
-            )
+    otherTrainingEvents = (
+        Event.select(Event.id)
+        .join(ProgramEvent)
+        .switch()
+        .join(Term)
+        .where(
+            ProgramEvent.program == programID,
+            (Event.isTraining | Event.isAllVolunteerTraining),
+            Event.term.academicYear == academicYear,
+        )
+    )
 
     allTrainingEvents = set(otherTrainingEvents)
-    eventTrainingDataList = [participant.user for participant in (
-        EventParticipant.select().where(EventParticipant.event.in_(allTrainingEvents))
-        )]
-    attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(allTrainingEvents), eventTrainingDataList)))
+    eventTrainingDataList = [
+        participant.user
+        for participant in (
+            EventParticipant.select().where(
+                EventParticipant.event.in_(allTrainingEvents)
+            )
+        )
+    ]
+    attendedTraining = list(
+        dict.fromkeys(
+            filter(
+                lambda user: eventTrainingDataList.count(user)
+                == len(allTrainingEvents),
+                eventTrainingDataList,
+            )
+        )
+    )
     return attendedTraining
+
 
 def sendUserData(bnumber, eventId, programid):
     """Accepts scan input and signs in the user. If user exists or is already
@@ -43,30 +61,47 @@ def sendUserData(bnumber, eventId, programid):
     event = Event.get_by_id(eventId)
     if not isEligibleForProgram(programid, signedInUser):
         userStatus = "banned"
-    elif ((EventParticipant.select(EventParticipant.user)
-       .where(EventParticipant.user == signedInUser, EventParticipant.event==eventId))
-       .exists()):
+    elif (
+        EventParticipant.select(EventParticipant.user).where(
+            EventParticipant.user == signedInUser, EventParticipant.event == eventId
+        )
+    ).exists():
         userStatus = "already in"
     else:
         userStatus = "success"
-        totalHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
+        totalHours = getEventLengthInHours(
+            event.timeStart, event.timeEnd, event.startDate
+        )
         EventRsvp.create(user=signedInUser, event=eventId)
-        EventParticipant.create (user=signedInUser, event=eventId, hoursEarned=totalHours)
+        EventParticipant.create(
+            user=signedInUser, event=eventId, hoursEarned=totalHours
+        )
     return signedInUser, userStatus
 
-def checkUserRsvp(user,  event):
-    return EventRsvp.select().where(EventRsvp.user==user, EventRsvp.event == event).exists()
 
-def checkUserVolunteer(user,  event):
-    return EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event).exists()
+def checkUserRsvp(user, event):
+    return (
+        EventRsvp.select()
+        .where(EventRsvp.user == user, EventRsvp.event == event)
+        .exists()
+    )
+
+
+def checkUserVolunteer(user, event):
+    return (
+        EventParticipant.select()
+        .where(EventParticipant.user == user, EventParticipant.event == event)
+        .exists()
+    )
+
 
 def addPersonToEvent(user, event):
     """
-        Add a user to an event. 
-        If the event is in the past, add the user as a volunteer (EventParticipant) including hours worked.
-        If the event is in the future, rsvp for the user (EventRsvp)
+    Add a user to an event.
+    If the event is in the past, add the user as a volunteer (EventParticipant) including hours worked.
+    If the event is in the future, rsvp for the user (EventRsvp)
 
-        Returns True if the operation was successful, false otherwise
+    Returns True if the operation was successful, false otherwise
     """
     try:
         volunteerExists = checkUserVolunteer(user, event)
@@ -74,11 +109,13 @@ def addPersonToEvent(user, event):
 
         if event.isPast:
             if not volunteerExists:
-                eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
-                EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
+                eventHours = getEventLengthInHours(
+                    event.timeStart, event.timeEnd, event.startDate
+                )
+                EventParticipant.create(user=user, event=event, hoursEarned=eventHours)
         else:
             if not rsvpExists:
-                EventRsvp.create(user = user, event = event)
+                EventRsvp.create(user=user, event=event)
 
     except Exception as e:
         print(e)
@@ -86,17 +123,22 @@ def addPersonToEvent(user, event):
 
     return True
 
+
 def unattendedRequiredEvents(program, user):
 
     # Check for events that are prerequisite for program
-    requiredEvents = (Event.select(Event)
-                           .join(ProgramEvent)
-                           .where(Event.isTraining == True, ProgramEvent.program == program))
+    requiredEvents = (
+        Event.select(Event)
+        .join(ProgramEvent)
+        .where(Event.isTraining == True, ProgramEvent.program == program)
+    )
 
     if requiredEvents:
         attendedRequiredEventsList = []
         for event in requiredEvents:
-            attendedRequirement = (EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event))
+            attendedRequirement = EventParticipant.select().where(
+                EventParticipant.user == user, EventParticipant.event == event
+            )
             if not attendedRequirement:
                 attendedRequiredEventsList.append(event.name)
         if attendedRequiredEventsList is not None:
@@ -106,11 +148,14 @@ def unattendedRequiredEvents(program, user):
 
 
 def getEventParticipants(event):
-    eventParticipants = (EventParticipant.select(EventParticipant, User)
-                                         .join(User)
-                                         .where(EventParticipant.event == event))
+    eventParticipants = (
+        EventParticipant.select(EventParticipant, User)
+        .join(User)
+        .where(EventParticipant.event == event)
+    )
 
     return {p.user: p.hoursEarned for p in eventParticipants}
+
 
 def getUserParticipatedEvents(program, user, currentTerm):
     """
@@ -121,14 +166,20 @@ def getUserParticipatedEvents(program, user, currentTerm):
     """
     academicYear = currentTerm.academicYear
 
-    programTrainings = (Event.select(Event, ProgramEvent, Term, EventParticipant)
-                               .join(EventParticipant, JOIN.LEFT_OUTER).switch()
-                               .join(ProgramEvent).switch()
-                               .join(Term)
-                               .where((Event.isTraining | Event.isAllVolunteerTraining),
-                                      ProgramEvent.program == program,
-                                      Event.term.academicYear == academicYear,
-                                      EventParticipant.user.is_null(True) | (EventParticipant.user == user)))
+    programTrainings = (
+        Event.select(Event, ProgramEvent, Term, EventParticipant)
+        .join(EventParticipant, JOIN.LEFT_OUTER)
+        .switch()
+        .join(ProgramEvent)
+        .switch()
+        .join(Term)
+        .where(
+            (Event.isTraining | Event.isAllVolunteerTraining),
+            ProgramEvent.program == program,
+            Event.term.academicYear == academicYear,
+            EventParticipant.user.is_null(True) | (EventParticipant.user == user),
+        )
+    )
 
     userParticipatedEvents = {}
     for training in programTrainings.objects():

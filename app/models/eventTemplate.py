@@ -2,6 +2,7 @@ import json
 
 from app.models import *
 
+
 class EventTemplate(baseModel):
     name = CharField()
     tag = CharField()
@@ -11,7 +12,7 @@ class EventTemplate(baseModel):
 
     def fetch(self, key, default=None):
         """
-            Get a key from the template data. Return the provided default value if the key is not found.
+        Get a key from the template data. Return the provided default value if the key is not found.
         """
         return self.templateData.get(key, default)
 

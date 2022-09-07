@@ -9,6 +9,7 @@ from app.logic.volunteers import setProgramManager
 from peewee import DoesNotExist
 from app.models import mainDB
 
+
 @pytest.mark.integration
 def test_modifyCeltsAdmin():
     user = "agliullovak"
@@ -27,6 +28,7 @@ def test_modifyCeltsAdmin():
             addCeltsAdmin("blahbah")
         with pytest.raises(DoesNotExist):
             addCeltsAdmin("ksgvoidsid;")
+
 
 @pytest.mark.integration
 def test_modifyCeltsStudentStaff():
@@ -51,6 +53,7 @@ def test_modifyCeltsStudentStaff():
         with pytest.raises(DoesNotExist):
             removeCeltsStudentStaff("1234")
 
+
 @pytest.mark.integration
 def test_changeProgramInfo():
     with mainDB.atomic() as transaction:
@@ -58,7 +61,7 @@ def test_changeProgramInfo():
         programId = 3
         eventName = "Test Event Name"
         contactName = "New Test Name"
-        contactEmail = 'newtest@email'
+        contactEmail = "newtest@email"
         currentProgramInfo = Program.get_by_id(programId)
 
         assert currentProgramInfo.programName == "Adopt-a-Grandparent"
@@ -69,13 +72,14 @@ def test_changeProgramInfo():
             g.current_user = "ramsayb2"
             changeProgramInfo(eventName, contactEmail, contactName, programId)
 
-        currentProgramInfo = Program.select().where(Program.id==programId).get()
+        currentProgramInfo = Program.select().where(Program.id == programId).get()
 
         assert currentProgramInfo.programName == eventName
         assert currentProgramInfo.contactName == contactName
         assert currentProgramInfo.contactEmail == contactEmail
 
         transaction.rollback()
+
 
 @pytest.mark.integration
 def test_updatedProgramManager():
@@ -87,7 +91,7 @@ def test_updatedProgramManager():
         program = Program.get_by_id(1)
 
         setProgramManager(user, program, "add")
-        assert ProgramManager.get_or_none(program = program, user = user) is None
+        assert ProgramManager.get_or_none(program=program, user=user) is None
 
         # Make the previous student into a Student Staff then try to make them
         # a Program Manager again: They should be added to Program Managers.
@@ -95,13 +99,14 @@ def test_updatedProgramManager():
         user.save()
 
         setProgramManager(user, program, "add")
-        assert ProgramManager.get_or_none(program = program, user = user) is not None
+        assert ProgramManager.get_or_none(program=program, user=user) is not None
 
         # Remove the user that was added as a Program Manager
         setProgramManager(user, program, "remove")
-        assert ProgramManager.get_or_none(program = program, user = user) is None
+        assert ProgramManager.get_or_none(program=program, user=user) is None
 
         transaction.rollback()
+
 
 @pytest.mark.integration
 def test_getAllowedPrograms():
@@ -112,24 +117,23 @@ def test_getAllowedPrograms():
         assert allowedPrograms == totalPrograms
 
         # creates program manager and checks the programs they can access
-        User.create(username = "bledsoef",
-                    bnumber = "B00775205",
-                    email = "bledsoef@berea.edu",
-                    phoneNumber = "(859)876-5309",
-                    firstName = "Fips",
-                    lastName = "Bledsoe",
-                    isStudent = True,
-                    isFaculty = False,
-                    isStaff = False,
-                    isCeltsAdmin = False,
-                    isCeltsStudentStaff = True)
+        User.create(
+            username="bledsoef",
+            bnumber="B00775205",
+            email="bledsoef@berea.edu",
+            phoneNumber="(859)876-5309",
+            firstName="Fips",
+            lastName="Bledsoe",
+            isStudent=True,
+            isFaculty=False,
+            isStaff=False,
+            isCeltsAdmin=False,
+            isCeltsStudentStaff=True,
+        )
 
-        ProgramManager.create(user = "bledsoef",
-                              program = Program.get_by_id(3))
-        ProgramManager.create(user = "bledsoef",
-                              program = Program.get_by_id(6))
-        ProgramManager.create(user = "bledsoef",
-                              program = Program.get_by_id(5))
+        ProgramManager.create(user="bledsoef", program=Program.get_by_id(3))
+        ProgramManager.create(user="bledsoef", program=Program.get_by_id(6))
+        ProgramManager.create(user="bledsoef", program=Program.get_by_id(5))
 
         allowedPrograms = len(getAllowedPrograms(User.get_by_id("bledsoef")))
         assert allowedPrograms == 3
@@ -144,7 +148,10 @@ def test_getAllowedPrograms():
 def test_getAllowedTemplates():
     # admin template check
     allowedTemplates = len(getAllowedTemplates(User.get_by_id("ramsayb2")))
-    assert allowedTemplates == EventTemplate.select().where(EventTemplate.isVisible==True).count()
+    assert (
+        allowedTemplates
+        == EventTemplate.select().where(EventTemplate.isVisible == True).count()
+    )
 
     # other user template check, should always be 0
     allowedTemplates = len(getAllowedTemplates(User.get_by_id("ayisie")))

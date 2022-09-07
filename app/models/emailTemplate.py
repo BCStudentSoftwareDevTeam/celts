@@ -1,4 +1,5 @@
-from app.models import*
+from app.models import *
+
 
 class EmailTemplate(baseModel):
     subject = CharField()

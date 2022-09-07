@@ -20,24 +20,25 @@ from app.models.programBan import ProgramBan
 from app.models.term import Term
 from app.logic.emailHandler import EmailHandler
 
+
 @pytest.mark.integration
 @pytest.mark.skip(reason="Authentication issues")
 def test_send_email_using_modal():
-    pass # For now we are skipping the email tests
+    pass  # For now we are skipping the email tests
     with app.test_request_context():
 
-        app.config.update(
-            MAIL_SUPRESS_SEND = True
-        )
+        app.config.update(MAIL_SUPRESS_SEND=True)
         with mainDB.atomic() as transaction:
             # Case 1: Send email with subject and body -- as if email is sent using a modal
             url_domain = urlparse(request.base_url).netloc
-            raw_form_data = {"templateIdentifier": "Test",
+            raw_form_data = {
+                "templateIdentifier": "Test",
                 "subject": "Test Email",
                 "body": "Hello {name}",
-                "programID":"1",
-                "eventID":"1",
-                "recipientsCategory": "Interested"}
+                "programID": "1",
+                "eventID": "1",
+                "recipientsCategory": "Interested",
+            }
 
             email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
 
@@ -51,6 +52,7 @@ def test_send_email_using_modal():
 
                 transaction.rollback()
 
+
 @pytest.mark.integration
 @pytest.mark.skip(reason="Authentication issues")
 def test_sending_automated_email():
@@ -58,10 +60,12 @@ def test_sending_automated_email():
         with mainDB.atomic() as transaction:
             # Case 2: Send email without subject and body -- as if email is sent automatically
             url_domain = urlparse(request.base_url).netloc
-            raw_form_data = {"templateIdentifier": "Test",
-                "programID":"1",
-                "eventID":"1",
-                "recipientsCategory": "Interested"}
+            raw_form_data = {
+                "templateIdentifier": "Test",
+                "programID": "1",
+                "eventID": "1",
+                "recipientsCategory": "Interested",
+            }
 
             email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
 
@@ -71,9 +75,13 @@ def test_sending_automated_email():
 
                 assert len(outbox) == 2
                 assert outbox[0].subject == "Test Email"
-                assert outbox[0].body == "Hello Sreynit Khatt, This is a test event named Empty Bowls Spring Event 1 located in Seabury Center. Other info: 10/12/2021-06/12/2022 and this 06:00-09:00."
+                assert (
+                    outbox[0].body
+                    == "Hello Sreynit Khatt, This is a test event named Empty Bowls Spring Event 1 located in Seabury Center. Other info: 10/12/2021-06/12/2022 and this 06:00-09:00."
+                )
 
                 transaction.rollback()
+
 
 @pytest.mark.integration
 @pytest.mark.skip(reason="Authentication issues")
@@ -81,21 +89,26 @@ def test_update_email_template():
     with app.test_request_context():
         with mainDB.atomic() as transaction:
             url_domain = urlparse(request.base_url).netloc
-            raw_form_data = {"templateIdentifier": "Test2",
-                "subject":"This is only a test",
-                "body":"Hello {name}, Regards",
-                "replyTo": "test.email@gmail.comm"}
+            raw_form_data = {
+                "templateIdentifier": "Test2",
+                "subject": "This is only a test",
+                "body": "Hello {name}, Regards",
+                "replyTo": "test.email@gmail.comm",
+            }
 
             email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
             email.update_email_template()
 
-            new_email_template = EmailTemplate.get(EmailTemplate.purpose==raw_form_data['templateIdentifier'])
+            new_email_template = EmailTemplate.get(
+                EmailTemplate.purpose == raw_form_data["templateIdentifier"]
+            )
 
-            assert new_email_template.subject == raw_form_data['subject']
-            assert new_email_template.body == raw_form_data['body']
-            assert new_email_template.replyToAddress == raw_form_data['replyTo']
+            assert new_email_template.subject == raw_form_data["subject"]
+            assert new_email_template.body == raw_form_data["body"]
+            assert new_email_template.replyToAddress == raw_form_data["replyTo"]
 
             transaction.rollback()
+
 
 @pytest.mark.integration
 @pytest.mark.skip(reason="Authentication issues")
@@ -103,11 +116,13 @@ def test_email_log():
     with app.test_request_context():
         with mainDB.atomic() as transaction:
             url_domain = urlparse(request.base_url).netloc
-            raw_form_data = {"templateIdentifier": "Test",
-                "programID":"1",
-                "eventID":"1",
+            raw_form_data = {
+                "templateIdentifier": "Test",
+                "programID": "1",
+                "eventID": "1",
                 "recipientsCategory": "RSVP'd",
-                "sender": User.get_by_id("ramsayb2")}
+                "sender": User.get_by_id("ramsayb2"),
+            }
 
             email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
 
@@ -115,73 +130,90 @@ def test_email_log():
                 email_sent = email.send_email()
                 assert email_sent == True
 
-            emailLog = EmailLog.get(EmailLog.event_id==1)
+            emailLog = EmailLog.get(EmailLog.event_id == 1)
             assert emailLog.subject == "Test Email"
             assert emailLog.templateUsed_id == 1
             assert emailLog.recipientsCategory == "RSVP'd"
-            time.sleep(.5) # Let's make sure that there is some separation in the times
+            time.sleep(
+                0.5
+            )  # Let's make sure that there is some separation in the times
             assert emailLog.dateSent <= datetime.now()
 
-            rsvp_users = EventRsvp.select().where(EventRsvp.event_id==1)
-            assert emailLog.recipients == ", ".join(user.user.email for user in rsvp_users)
+            rsvp_users = EventRsvp.select().where(EventRsvp.event_id == 1)
+            assert emailLog.recipients == ", ".join(
+                user.user.email for user in rsvp_users
+            )
             assert emailLog.sender == User.get_by_id("ramsayb2")
             transaction.rollback()
+
 
 @pytest.mark.integration
 def test_recipients_eligible_students():
     with app.test_request_context():
         with mainDB.atomic() as transaction:
             url_domain = urlparse(request.base_url).netloc
-            raw_form_data = {"templateIdentifier": "Test",
-                "programID":"3",
-                "eventID":"1",
-                "recipientsCategory": "Eligible Students"}
+            raw_form_data = {
+                "templateIdentifier": "Test",
+                "programID": "3",
+                "eventID": "1",
+                "recipientsCategory": "Eligible Students",
+            }
 
-            testSender = User.get_by_id('ramsayb2')
+            testSender = User.get_by_id("ramsayb2")
 
             email = EmailHandler(raw_form_data, url_domain, testSender)
             email.process_data()
             assert email.recipients == []
 
             # Add partont to All Volunteer Training event: NOT banned and IS trained
-            newTrainedStudent = EventParticipant.create(user = "partont", event = 14)
+            newTrainedStudent = EventParticipant.create(user="partont", event=14)
             email.process_data()
             assert email.recipients == [User.get_by_id("partont")]
 
             # Add ayisie to a non-all volunteer training event: NOT banned and NOT trained
-            newTrainedStudent = EventParticipant.create(user = "ayisie", event = 5)
+            newTrainedStudent = EventParticipant.create(user="ayisie", event=5)
             email.process_data()
-            assert email.recipients ==  [User.get_by_id("partont")]
+            assert email.recipients == [User.get_by_id("partont")]
 
             # Train ayisie so they show up in the results: NOT banned and IS trained
-            newTrainedStudent = EventParticipant.create(user = "ayisie", event = 14)
+            newTrainedStudent = EventParticipant.create(user="ayisie", event=14)
             email.process_data()
-            assert email.recipients ==  [User.get_by_id("partont"),User.get_by_id("ayisie")]
+            assert email.recipients == [
+                User.get_by_id("partont"),
+                User.get_by_id("ayisie"),
+            ]
             newTrainedStudent.delete_instance()
 
             # Add khatts to All Volunteer Training event: IS banned and IS trained
-            newTrainedStudent = EventParticipant.create(user = "khatts", event = 14)
+            newTrainedStudent = EventParticipant.create(user="khatts", event=14)
             email.process_data()
             assert email.recipients == [User.get_by_id("partont")]
             newTrainedStudent.delete_instance()
 
             # Unban khatts while they have All Volunteer Training: NOT banned IS trained
-            ProgramBan.update(endDate = parser.parser("2022-6-23")).where(ProgramBan.user == "khatts").execute()
-            newTrainedStudent = EventParticipant.create(user = "khatts", event = 14)
+            ProgramBan.update(endDate=parser.parser("2022-6-23")).where(
+                ProgramBan.user == "khatts"
+            ).execute()
+            newTrainedStudent = EventParticipant.create(user="khatts", event=14)
             email.process_data()
-            assert email.recipients == [User.get_by_id("partont"), User.get_by_id("khatts")]
+            assert email.recipients == [
+                User.get_by_id("partont"),
+                User.get_by_id("khatts"),
+            ]
             newTrainedStudent.delete_instance()
 
             # clearing data for the next test
             transaction.rollback()
 
             # Test a program that should have nothing in banned users and nothing in All Volunteer:
-            raw_form_data = {"templateIdentifier": "Test",
-                "programID":"10",
-                "eventID":"1",
-                "recipientsCategory": "Eligible Students"}
+            raw_form_data = {
+                "templateIdentifier": "Test",
+                "programID": "10",
+                "eventID": "1",
+                "recipientsCategory": "Eligible Students",
+            }
 
-            testSender = User.get_by_id('ramsayb2')
+            testSender = User.get_by_id("ramsayb2")
 
             email = EmailHandler(raw_form_data, url_domain, testSender)
             email.process_data()
@@ -193,14 +225,18 @@ def test_recipients_eligible_students():
             # Changed current term to next academic year while making training
             # occur in the previous academic year
             allVolunteerEvent = Event.get_by_id(14)
-            newTrainedStudent = EventParticipant.create(user = "partont", event = allVolunteerEvent)
+            newTrainedStudent = EventParticipant.create(
+                user="partont", event=allVolunteerEvent
+            )
 
-            raw_form_data = {"templateIdentifier": "Test",
-                "programID":"3",
-                "eventID":"1",
-                "recipientsCategory": "Eligible Students"}
+            raw_form_data = {
+                "templateIdentifier": "Test",
+                "programID": "3",
+                "eventID": "1",
+                "recipientsCategory": "Eligible Students",
+            }
 
-            testSender = User.get_by_id('ramsayb2')
+            testSender = User.get_by_id("ramsayb2")
 
             email = EmailHandler(raw_form_data, url_domain, testSender)
             email.process_data()
@@ -214,13 +250,14 @@ def test_recipients_eligible_students():
 
             # Update the current term in the database so that it is in the next
             # academic year
-            Term.update(isCurrentTerm = False).where(Term.isCurrentTerm == True).execute()
-            Term.update(isCurrentTerm = True).where(Term.id == 6).execute()
+            Term.update(isCurrentTerm=False).where(Term.isCurrentTerm == True).execute()
+            Term.update(isCurrentTerm=True).where(Term.id == 6).execute()
 
             email.process_data()
             assert email.recipients == []
 
             transaction.rollback()
+
 
 @pytest.mark.integration
 def test_get_last_email():

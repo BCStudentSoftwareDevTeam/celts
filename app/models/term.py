@@ -1,4 +1,6 @@
 from app.models import *
+
+
 class Term(baseModel):
     description = CharField()
     year = IntegerField()
@@ -17,7 +19,14 @@ class Term(baseModel):
         if self._cache is None:
             if ("Summer" in self.description) or ("Spring" in self.description):
                 try:
-                    self._cache = Term.select().where(Term.year==self.year-1, Term.description == f"Fall {self.year-1}").get()
+                    self._cache = (
+                        Term.select()
+                        .where(
+                            Term.year == self.year - 1,
+                            Term.description == f"Fall {self.year-1}",
+                        )
+                        .get()
+                    )
                 except DoesNotExist:
                     self._cache = self
 
@@ -39,12 +48,16 @@ class Term(baseModel):
             elif currentTerm.year > self.year:
                 return False
             else:
-                if ("Fall" in currentTerm.description):
+                if "Fall" in currentTerm.description:
                     return False
-                elif ("Summer" in currentTerm.description) & ("Fall" in self.description):
+                elif ("Summer" in currentTerm.description) & (
+                    "Fall" in self.description
+                ):
                     return True
-                elif ("Summer" in currentTerm.description) & ("Spring" in self.description):
+                elif ("Summer" in currentTerm.description) & (
+                    "Spring" in self.description
+                ):
                     return False
-                elif ("Spring" in currentTerm.description):
+                elif "Spring" in currentTerm.description:
                     return True
         return False

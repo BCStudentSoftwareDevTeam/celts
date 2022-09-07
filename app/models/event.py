@@ -1,7 +1,8 @@
-from app.models import*
+from app.models import *
 from app.models.term import Term
 from app.models.program import Program
 from datetime import datetime
+
 
 class Event(baseModel):
     name = CharField()
@@ -34,7 +35,9 @@ class Event(baseModel):
         from app.models.programEvent import ProgramEvent
 
         if self._spCache == "Empty":
-            countPE = list(self.programEvents.select(ProgramEvent, Program).join(Program).execute())
+            countPE = list(
+                self.programEvents.select(ProgramEvent, Program).join(Program).execute()
+            )
             if len(countPE) == 1:
                 self._spCache = countPE[0].program
             else:
@@ -52,5 +55,10 @@ class Event(baseModel):
 
     @property
     def isFirstRecurringEvent(self):
-        firstRecurringEvent = Event.select().where(Event.recurringId==self.recurringId).order_by(Event.id).get()
+        firstRecurringEvent = (
+            Event.select()
+            .where(Event.recurringId == self.recurringId)
+            .order_by(Event.id)
+            .get()
+        )
         return firstRecurringEvent.id == self.id

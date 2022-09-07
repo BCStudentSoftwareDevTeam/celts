@@ -7,32 +7,35 @@ from flask import g, session
 from app.logic.adminLogs import createLog
 from playhouse.shortcuts import model_to_dict
 
+
 def addCeltsAdmin(user):
     user = User.get_by_id(user)
     user.isCeltsAdmin = True
     user.save()
-    createLog(f'Made {user.firstName} {user.lastName} a CELTS admin member.')
+    createLog(f"Made {user.firstName} {user.lastName} a CELTS admin member.")
 
 
 def addCeltsStudentStaff(user):
     user = User.get_by_id(user)
     user.isCeltsStudentStaff = True
     user.save()
-    createLog(f'Made {user.firstName} {user.lastName} a CELTS student staff member.')
+    createLog(f"Made {user.firstName} {user.lastName} a CELTS student staff member.")
 
 
 def removeCeltsAdmin(user):
     user = User.get_by_id(user)
     user.isCeltsAdmin = False
     user.save()
-    createLog(f'Removed {user.firstName} {user.lastName} from CELTS admins.')
+    createLog(f"Removed {user.firstName} {user.lastName} from CELTS admins.")
 
 
 def removeCeltsStudentStaff(user):
     user = User.get_by_id(user)
     user.isCeltsStudentStaff = False
     user.save()
-    createLog(f'Removed {user.firstName} {user.lastName} from a CELTS student staff member.')
+    createLog(
+        f"Removed {user.firstName} {user.lastName} from a CELTS student staff member."
+    )
 
 
 def changeCurrentTerm(term):
@@ -43,12 +46,13 @@ def changeCurrentTerm(term):
     newCurrentTerm.isCurrentTerm = True
     newCurrentTerm.save()
     session["current_term"] = model_to_dict(newCurrentTerm)
-    createLog(f"Changed Current Term from {oldCurrentTerm.description} to {newCurrentTerm.description}")
+    createLog(
+        f"Changed Current Term from {oldCurrentTerm.description} to {newCurrentTerm.description}"
+    )
+
 
 def addNextTerm():
-    newSemesterMap = {"Spring":"Summer",
-                    "Summer":"Fall",
-                    "Fall":"Spring"}
+    newSemesterMap = {"Spring": "Summer", "Summer": "Fall", "Fall": "Spring"}
     terms = list(Term.select().order_by(Term.id))
     prevTerm = terms[-1]
     prevSemester, prevYear = prevTerm.description.split()
@@ -57,40 +61,61 @@ def addNextTerm():
     newDescription = newSemesterMap[prevSemester] + " " + str(newYear)
     newAY = prevTerm.academicYear
 
-    if prevSemester == "Summer": # we only change academic year when the latest term in the table is Summer
+    if (
+        prevSemester == "Summer"
+    ):  # we only change academic year when the latest term in the table is Summer
         year1, year2 = prevTerm.academicYear.split("-")
-        newAY = year2 + "-" + str(int(year2)+1)
+        newAY = year2 + "-" + str(int(year2) + 1)
 
     newTerm = Term.create(
-            description=newDescription,
-            year=newYear,
-            academicYear=newAY,
-            isSummer="Summer" in newDescription.split())
+        description=newDescription,
+        year=newYear,
+        academicYear=newAY,
+        isSummer="Summer" in newDescription.split(),
+    )
     newTerm.save()
 
     return newTerm
 
+
 def changeProgramInfo(newProgramName, newContactEmail, newContactName, programId):
     """Updates the program info with a new sender and email."""
     program = Program.get_by_id(programId)
-    updatedProgram = Program.update({Program.programName:newProgramName,Program.contactEmail: newContactEmail, Program.contactName:newContactName}).where(Program.id==programId)
+    updatedProgram = Program.update(
+        {
+            Program.programName: newProgramName,
+            Program.contactEmail: newContactEmail,
+            Program.contactName: newContactName,
+        }
+    ).where(Program.id == programId)
     updatedProgram.execute()
-    createLog(f"{program.programName}'s settings changed to: Name: {newProgramName}; Reply-to-email: {newContactEmail}; Sender name: {newContactName}.")
+    createLog(
+        f"{program.programName}'s settings changed to: Name: {newProgramName}; Reply-to-email: {newContactEmail}; Sender name: {newContactName}."
+    )
 
-    return (f'Program email info updated')
+    return f"Program email info updated"
+
 
 def getAllowedPrograms(currentUser):
     """Returns a list of all visible programs depending on who the current user is."""
     if currentUser.isCeltsAdmin:
         return Program.select().order_by(Program.programName)
     else:
-        return Program.select().join(ProgramManager).where(ProgramManager.user==currentUser).order_by(Program.programName)
-
+        return (
+            Program.select()
+            .join(ProgramManager)
+            .where(ProgramManager.user == currentUser)
+            .order_by(Program.programName)
+        )
 
 
 def getAllowedTemplates(currentUser):
     """Returns a list of all visible templates depending on who the current user is. If they are not an admin it should always be none."""
     if currentUser.isCeltsAdmin:
-        return EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
+        return (
+            EventTemplate.select()
+            .where(EventTemplate.isVisible == True)
+            .order_by(EventTemplate.name)
+        )
     else:
         return []

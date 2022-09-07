@@ -19,10 +19,19 @@ def isEligibleForProgram(program, user):
     :return: True if the user is not banned and meets the requirements, and False otherwise
     """
     now = datetime.datetime.now()
-    if (ProgramBan.select().where(ProgramBan.user == user, ProgramBan.program == program, ProgramBan.endDate > now).exists()):
+    if (
+        ProgramBan.select()
+        .where(
+            ProgramBan.user == user,
+            ProgramBan.program == program,
+            ProgramBan.endDate > now,
+        )
+        .exists()
+    ):
         return False
 
     return True
+
 
 def addUserInterest(program_id, username):
     """
@@ -31,8 +40,9 @@ def addUserInterest(program_id, username):
     program_id: id of the program the user is interested in
     username: username of the user showing interest
     """
-    Interest.get_or_create(program = program_id, user = username)
+    Interest.get_or_create(program=program_id, user=username)
     return True
+
 
 def removeUserInterest(program_id, username):
     """
@@ -42,7 +52,9 @@ def removeUserInterest(program_id, username):
     username: username of the user showing disinterest
 
     """
-    interestToDelete = Interest.get_or_none(Interest.program == program_id, Interest.user == username)
+    interestToDelete = Interest.get_or_none(
+        Interest.program == program_id, Interest.user == username
+    )
     if interestToDelete:
         interestToDelete.delete_instance()
     return True
@@ -59,15 +71,17 @@ def banUser(program_id, username, note, banEndDate, creator):
     banEndDate: date when the ban will end
     creator: the admin or person with authority who created the ban
     """
-    noteForDb = Note.create(createdBy = creator,
-                             createdOn = datetime.datetime.now(),
-                             noteContent = note,
-                             isPrivate = 0)
+    noteForDb = Note.create(
+        createdBy=creator,
+        createdOn=datetime.datetime.now(),
+        noteContent=note,
+        isPrivate=0,
+    )
 
-    ProgramBan.create(program = program_id,
-                      user = username,
-                      endDate = banEndDate,
-                      banNote = noteForDb)
+    ProgramBan.create(
+        program=program_id, user=username, endDate=banEndDate, banNote=noteForDb
+    )
+
 
 def unbanUser(program_id, username, note, creator):
     """
@@ -79,27 +93,34 @@ def unbanUser(program_id, username, note, creator):
     note: note left about the ban, expected to be a reason why the change is needed
     creator: the admin or person with authority who removed the ban
     """
-    noteForDb = Note.create(createdBy = creator,
-                             createdOn = datetime.datetime.now(),
-                             noteContent = note,
-                             isPrivate = 0)
-    ProgramBan.update(endDate = datetime.datetime.now(),
-                      unbanNote = noteForDb).where(ProgramBan.program == program_id,
-                                                   ProgramBan.user == username,
-                                                   ProgramBan.endDate >  datetime.datetime.now()).execute()
+    noteForDb = Note.create(
+        createdBy=creator,
+        createdOn=datetime.datetime.now(),
+        noteContent=note,
+        isPrivate=0,
+    )
+    ProgramBan.update(endDate=datetime.datetime.now(), unbanNote=noteForDb).where(
+        ProgramBan.program == program_id,
+        ProgramBan.user == username,
+        ProgramBan.endDate > datetime.datetime.now(),
+    ).execute()
+
 
 def getUserBGCheckHistory(username):
     """
     Get a users background check history
     """
-    bgHistory = {'CAN': [], 'FBI': [], 'SHS': []}
+    bgHistory = {"CAN": [], "FBI": [], "SHS": []}
 
-    allBackgroundChecks = (BackgroundCheck.select(BackgroundCheck, BackgroundCheckType)
-                                                  .join(BackgroundCheckType)
-                                                  .where(BackgroundCheck.user == username)
-                                                  .order_by(BackgroundCheck.dateCompleted.desc()))
+    allBackgroundChecks = (
+        BackgroundCheck.select(BackgroundCheck, BackgroundCheckType)
+        .join(BackgroundCheckType)
+        .where(BackgroundCheck.user == username)
+        .order_by(BackgroundCheck.dateCompleted.desc())
+    )
     for row in allBackgroundChecks:
-        bgHistory[row.type_id].append(row.backgroundCheckStatus + ": " + row.dateCompleted.strftime("%m/%d/%Y"))
-
+        bgHistory[row.type_id].append(
+            row.backgroundCheckStatus + ": " + row.dateCompleted.strftime("%m/%d/%Y")
+        )
 
     return bgHistory

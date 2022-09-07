@@ -16,17 +16,21 @@ def getOtherEventsTranscript(username):
     events for the current user.
     """
 
-    otherEventsData = list(EventParticipant.select(Event, Term, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
-                    .join(Event)
-                    .join(ProgramEvent, JOIN.LEFT_OUTER)
-                    .join(Program, JOIN.LEFT_OUTER).switch(Event)
-                    .join(Term)
-                    .where(EventParticipant.user==username,
-                    ProgramEvent.program == None)
-                    .group_by(Event.term)
-                  )
+    otherEventsData = list(
+        EventParticipant.select(
+            Event, Term, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned")
+        )
+        .join(Event)
+        .join(ProgramEvent, JOIN.LEFT_OUTER)
+        .join(Program, JOIN.LEFT_OUTER)
+        .switch(Event)
+        .join(Term)
+        .where(EventParticipant.user == username, ProgramEvent.program == None)
+        .group_by(Event.term)
+    )
 
     return [[row.event.term.description, row.hoursEarned] for row in otherEventsData]
+
 
 def getProgramTranscript(username):
     """
@@ -34,8 +38,10 @@ def getProgramTranscript(username):
     current user.
     """
     # Add up hours earned in a term for each program they've participated in
-    programData = (ProgramEvent
-        .select(Program, Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
+    programData = (
+        ProgramEvent.select(
+            Program, Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned")
+        )
         .join(Program)
         .switch(ProgramEvent)
         .join(Event)
@@ -43,15 +49,21 @@ def getProgramTranscript(username):
         .where(EventParticipant.user == username)
         .group_by(Program, Event.term)
         .order_by(Event.term)
-        .having(fn.SUM(EventParticipant.hoursEarned > 0)))
+        .having(fn.SUM(EventParticipant.hoursEarned > 0))
+    )
     transcriptData = {}
     for program in programData:
         if program.program in transcriptData:
-            transcriptData[program.program].append([program.event.term.description, program.hoursEarned])
+            transcriptData[program.program].append(
+                [program.event.term.description, program.hoursEarned]
+            )
         else:
-            transcriptData[program.program] = [[program.event.term.description, program.hoursEarned]]
+            transcriptData[program.program] = [
+                [program.event.term.description, program.hoursEarned]
+            ]
 
     return transcriptData
+
 
 def getAllEventTranscript(username):
     """
@@ -72,37 +84,56 @@ def getSlCourseTranscript(username):
     current user.
     """
 
-    slCourses = (Course
-        .select(Course, fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned"))
+    slCourses = (
+        Course.select(
+            Course, fn.SUM(CourseParticipant.hoursEarned).alias("hoursEarned")
+        )
         .join(CourseParticipant, on=(Course.id == CourseParticipant.course))
         .where(CourseParticipant.user == username)
-        .group_by(Course.courseName, Course.term))
+        .group_by(Course.courseName, Course.term)
+    )
 
     return slCourses
+
 
 def getTotalHours(username):
     """
     Get the toal hours from events and courses combined.
     """
-    eventHours = EventParticipant.select(fn.SUM(EventParticipant.hoursEarned)).where(EventParticipant.user == username).scalar()
-    courseHours =  CourseParticipant.select(fn.SUM(CourseParticipant.hoursEarned)).where(CourseParticipant.user == username).scalar()
+    eventHours = (
+        EventParticipant.select(fn.SUM(EventParticipant.hoursEarned))
+        .where(EventParticipant.user == username)
+        .scalar()
+    )
+    courseHours = (
+        CourseParticipant.select(fn.SUM(CourseParticipant.hoursEarned))
+        .where(CourseParticipant.user == username)
+        .scalar()
+    )
 
-    allHours = {"totalEventHours": (eventHours or 0),
-                "totalCourseHours": (courseHours or 0),
-                "totalHours": (eventHours or 0) + (courseHours or 0)}
+    allHours = {
+        "totalEventHours": (eventHours or 0),
+        "totalCourseHours": (courseHours or 0),
+        "totalHours": (eventHours or 0) + (courseHours or 0),
+    }
     return allHours
+
 
 def getStartYear(username):
     """
     Returns the users start term for participation in the CELTS organization
     """
 
-    startDate = (EventParticipant.select(Term.year)
-                    .join(Event)
-                    .join(Term).where(EventParticipant.user == username)
-                + CourseParticipant.select(Term.year)
-                    .join(Course)
-                    .join(Term).where(CourseParticipant.user == username)).order_by(Event.term.year)
+    startDate = (
+        EventParticipant.select(Term.year)
+        .join(Event)
+        .join(Term)
+        .where(EventParticipant.user == username)
+        + CourseParticipant.select(Term.year)
+        .join(Course)
+        .join(Term)
+        .where(CourseParticipant.user == username)
+    ).order_by(Event.term.year)
 
     startDate = startDate.first()
     if startDate:

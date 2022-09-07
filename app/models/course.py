@@ -4,12 +4,13 @@ from app.models.courseStatus import CourseStatus
 from app.models.note import Note
 from app.models.user import User
 
+
 class Course(baseModel):
     courseName = CharField()
     courseAbbreviation = CharField()
     courseCredit = FloatField()
     courseOccurrence = CharField(null=True)
-    term = ForeignKeyField(Term, null = True)
+    term = ForeignKeyField(Term, null=True)
     status = ForeignKeyField(CourseStatus)
     createdBy = ForeignKeyField(User)
     isAllSectionsServiceLearning = BooleanField(default=False)
