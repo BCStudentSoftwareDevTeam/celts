@@ -133,9 +133,7 @@ def updateProgramInfo(programID):
     if g.current_user.isCeltsAdmin:
         try:
             changeProgramInfo(
-                programInfo[
-                    "programName"
-                ],  # calls logic function to add data to database
+                programInfo["programName"],
                 programInfo["contactEmail"],
                 programInfo["contactName"],
                 programID,
