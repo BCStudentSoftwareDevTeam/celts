@@ -31,10 +31,21 @@
       {% set page_title = 'Create ' + template.name + ' Event' %}
     {% endif %}
     {% else %}
-      {% set page_title = eventData.name %}
-    {% endif %}
-    <h1 id="title">{{page_title}}</h1>
+      {% set chicken = eventData["program"].programName %}
+      {% if eventData.name == 'All Volunteer Training' and program == None %}
+        <h1>{{eventData.name}}</h1>
+        <h3> An All Volunteer Training Event</h3>
+      {% elif eventData.program != None %}
+        <h1>{{eventData.name}}</h1>
+        <h3>A {{chicken}} Event</h3>
+      {% else %}
+        <h1>{{eventData.name}}</h1>
+        <h3> A CELTS-Sponsored Event</h3>
+      {% endif %}
 
+    {% endif %}
+
+    <h1 id="title">{{page_title}}</h1>
 
     {% if isPastEvent %}
       <div class="alert alert-danger" role="alert">This event is in the past.</div>

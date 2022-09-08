@@ -156,7 +156,7 @@ def eventDisplay(eventId):
     isPastEvent = event.isPast
     eventfiles=FileHandler()
     program=event.singleProgram
-    print("Single Program", program)
+    eventData["program"] = program
     filepaths =eventfiles.retrievePath(associatedAttachments, eventId)
     isProgramManager = g.current_user.isProgramManagerFor(program)
     rule = request.url_rule
