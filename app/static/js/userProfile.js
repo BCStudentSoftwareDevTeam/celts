@@ -142,7 +142,7 @@ function displayMessage(message, color) {  // displays message for saving backgr
 }
 
 $(function() {
-    $("#liveToast").clone().appendTo("#toastDiv2")
+
      toastElementList = [].slice.call(document.querySelectorAll('.toast'))
      toastList = toastElementList.map(function (toastEl) {
         return new bootstrap.Toast(toastEl)
@@ -171,14 +171,48 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
 
      success: function(s){
          if(action == "add"){
+             if ($("#liveToast").is(":visible") == true && toastList.length == 1){
+                 $("#toastDiv2").empty()
+                 $("#liveToast").clone().appendTo("#toastDiv2")
+                 toastElementList = [].slice.call(document.querySelectorAll('.toast'))
+                 toastList = toastElementList.map(function (toastEl) {
+                    return new bootstrap.Toast(toastEl)
+                })
+                 $("#toastDiv2").find("#toast-body").html(addMessage)
+                 toastList[1].show()
+             }
+             else if ($("#liveToast").is(":visible") == false && toastList.length == 2) {
+                 toastElementList = [].slice.call(document.querySelectorAll('.toast'))
+                 toastList = toastElementList.map(function (toastEl) {
+                    return new bootstrap.Toast(toastEl)
+                })
+                 $("#toastDiv2").empty()
+             }
              $("#toast-body").html(addMessage)
              toastList[0].show()
+             console.log(toastList.length)
          }
 
          if(action == 'remove'){
-             $("#toastDiv2").find("#toast-body").html(removeMessage)
-             // toastList[1].children[1].html(removeMessage)
-             toastList[1].show()
+             if ($("#liveToast").is(":visible") == true && toastList.length == 1){
+                 $("#toastDiv2").empty()
+                 $("#liveToast").clone().appendTo("#toastDiv2")
+                 toastElementList = [].slice.call(document.querySelectorAll('.toast'))
+                 toastList = toastElementList.map(function (toastEl) {
+                    return new bootstrap.Toast(toastEl)
+                })
+                 $("#toastDiv2").find("#toast-body").html(removeMessage)
+                 toastList[1].show()
+             }
+             else if ($("#liveToast").is(":visible") == false && toastList.length == 2) {
+                 toastElementList = [].slice.call(document.querySelectorAll('.toast'))
+                 toastList = toastElementList.map(function (toastEl) {
+                    return new bootstrap.Toast(toastEl)
+                })
+                 $("#toastDiv2").empty()
+             }
+             $("#toast-body").html(removeMessage)
+             toastList[0].show()
 
          }
       },
