@@ -142,6 +142,7 @@ function displayMessage(message, color) {  // displays message for saving backgr
 }
 
 $(function() {
+    $("#liveToast").clone().appendTo("#toastDiv2")
      toastElementList = [].slice.call(document.querySelectorAll('.toast'))
      toastList = toastElementList.map(function (toastEl) {
         return new bootstrap.Toast(toastEl)
@@ -175,8 +176,9 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
          }
 
          if(action == 'remove'){
-             $("#toast-body").html(removeMessage)
-             toastList[0].show()
+             $("#toastDiv2").find("#toast-body").html(removeMessage)
+             // toastList[1].children[1].html(removeMessage)
+             toastList[1].show()
 
          }
       },
