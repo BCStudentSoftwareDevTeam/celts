@@ -1,4 +1,6 @@
+from app.models.user import User
 from app.models.programBan import ProgramBan
+from app.models.programEvent import ProgramEvent
 from app.models.interest import Interest
 from app.models.note import Note
 from app.models.backgroundCheck import BackgroundCheck
@@ -47,6 +49,20 @@ def removeUserInterest(program_id, username):
         interestToDelete.delete_instance()
     return True
 
+def getBannedUsers(program):
+    """
+    This function returns users banned from a program.
+    """
+    users = ProgramBan.select().where(ProgramBan.program == program)
+    return users
+
+def isBannedFromEvent(username, eventId):
+    """
+    This function returns whether the user is banned from the program associated with an event.
+    """
+    program = ProgramEvent.get(ProgramEvent.event_id == eventId).program
+    user = User.get(User.username == username)
+    return not isEligibleForProgram(program, user)
 
 def banUser(program_id, username, note, banEndDate, creator):
     """

@@ -16,7 +16,7 @@ from app.models.programManager import ProgramManager
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.logic.adminLogs import createLog
-from app.logic.users import isEligibleForProgram
+from app.logic.users import isEligibleForProgram, getBannedUsers, isBannedFromEvent
 
 
 
@@ -38,7 +38,7 @@ def trackVolunteersPage(eventID):
     trainedParticipantsList = trainedParticipants(program, g.current_term)
     eventParticipants = getEventParticipants(event)
     isProgramManager = g.current_user.isProgramManagerForEvent(event)
-
+    bannedUsers = [row.user for row in getBannedUsers(program)]
     if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
         abort(403)
 
@@ -61,6 +61,7 @@ def trackVolunteersPage(eventID):
         recurringEventID = recurringEventID,
         recurringEventStartDate = recurringEventStartDate,
         recurringVolunteers = recurringVolunteers,
+        bannedUsers = bannedUsers,
         trainedParticipantsList = trainedParticipantsList)
 
 @admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['POST'])
@@ -106,17 +107,7 @@ def addVolunteer(eventId):
 
 @admin_bp.route('/addVolunteersToEvent/<username>/<eventId>/isBanned', methods = ['GET'])
 def isVolunteerBanned(username, eventId):
-    programEvent = ProgramEvent.select().where(ProgramEvent.event_id == int(eventId))
-    user = User.select().where(User.username == username)
-
-    # I'm trying to get the program associated with the event
-
-    print(f'\n\nHERE WE GO \n\n')
-    program2 = [program.program for program in programEvent]
-    user2 = [user3.id for user3 in user]
-    print(user2[0])
-    print(":)))))))))")
-    return not isEligibleForProgram(user2[0], program2[0])
+    return "banned" if isBannedFromEvent(username, eventId) else "not banned"
 
 @admin_bp.route('/removeVolunteerFromEvent/<user>/<eventID>', methods = ['POST'])
 def removeVolunteerFromEvent(user, eventID):

@@ -59,6 +59,7 @@
         <th>Email</th>
         <th>Phone Number</th>
         <th class="noSort">Completed Trainings?</th>
+        <th class="noSort">Eligible/Not Banned?</th>
     {% if event.isPast %}
         <th class="noSort">Total Hours</th>
         <th class="noSort">Attended</th>
@@ -85,6 +86,13 @@
                 <span class="bi bi-x-lg" aria-label="Did not complete all trainings."></span>
               {% else %}
                 <span class="bi bi-check-lg" aria-label="Completed all trainings."></span>
+              {% endif %}
+            </td>
+            <td style="text-align:center">
+              {% if participant.user in bannedUsers %}
+                <span class="bi bi-x-lg" aria-label="Banned."></span>
+              {% else %}
+                <span class="bi bi-check-lg" aria-label="Not banned."></span>
               {% endif %}
             </td>
             {% if event.isPast %}

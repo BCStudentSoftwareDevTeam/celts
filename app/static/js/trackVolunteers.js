@@ -57,9 +57,7 @@ $(document).ready(function() {
           $("#addVolunteerList").append("<li class id= 'addVolunteerElements"+i+"'> </li>")
           $("#addVolunteerElements"+i).append("<input  type='checkbox' id= 'userlistCheckbox"+i+"' checked value='" + user +"' >  </input>")
           $("#addVolunteerElements"+i).append("<label form for= 'userlistCheckbox"+i+"'>"+ selected["firstName"]+ " " + selected["lastName"] +"</label>")
-          if (isBanned(selected["username"], $("#eventID").val())){
-            $("#addVolunteerElements"+i).append("<label form for= 'userlistCheckbox"+i+"'>BANNED</label>")
-          }
+          handleBanned(selected["username"], $("#eventID").val(), i)
       }
       else {
           msgFlash("User already selected.")
@@ -92,7 +90,7 @@ $(document).ready(function() {
   });
 
 
-$(".attendanceCheck").on("change", function() {
+  $(".attendanceCheck").on("change", function() {
     let username =  this.name.substring(9) //get everything after the 9th character;
     let inputFieldID = `inputHours_${username}`
 
@@ -111,17 +109,18 @@ $(".attendanceCheck").on("change", function() {
       $("#addPastVolunteerModal input[type=checkbox]").prop('checked', true)
   });
 
-  function isBanned(username, eventId){
-    console.log(eventId)
+  function handleBanned(username, eventId, index){
     $.ajax({
       url: `/addVolunteersToEvent/${username}/${eventId}/isBanned`,
       type: "GET",
       success: function(isBanned){
-          return isBanned ? true : false
+        if (isBanned === "banned"){
+          $("#addVolunteerElements"+index).append("<span class='ms-1 text-danger bi bi-slash-circle-fill'></span>")
+        }
       },
       error: function(request, status, error){
           return error
       }
-  })
+    })
   }
 });
