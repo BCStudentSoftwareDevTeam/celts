@@ -119,7 +119,7 @@ $(document).ready(function() {
         }
       },
       error: function(request, status, error){
-          return error
+          console.log(status, error)
       }
     })
   }

@@ -53,8 +53,7 @@ def getBannedUsers(program):
     """
     This function returns users banned from a program.
     """
-    users = ProgramBan.select().where(ProgramBan.program == program)
-    return users
+    return ProgramBan.select().where(ProgramBan.program == program)
 
 def isBannedFromEvent(username, eventId):
     """
