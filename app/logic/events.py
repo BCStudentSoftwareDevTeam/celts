@@ -166,15 +166,16 @@ def getTrainingEvents(term, user):
         return: a list of all trainings the user can view
     """
     trainingQuery = (Event.select(Event)
-                           .join(ProgramEvent)
-                           .join(Program)
-                           .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate)
-                           .where(Event.isTraining, Event.term == term))
+                           .join(ProgramEvent, JOIN.LEFT_OUTER)
+                           .join(Program, JOIN.LEFT_OUTER)
+                           .where(Event.isTraining == True, Event.term == term)
+                           .order_by(Event.startDate).distinct())
+
     hideBonner = (not user.isAdmin) and not (user.isStudent and user.isBonnerScholar)
     if hideBonner:
         trainingQuery = trainingQuery.where(Program.isBonnerScholars == False)
 
-    return list(trainingQuery.distinct().execute())
+    return list(trainingQuery.execute())
 
 def getBonnerEvents(term):
 
