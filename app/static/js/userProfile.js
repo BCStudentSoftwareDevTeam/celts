@@ -158,8 +158,9 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
   let programName = $(el).attr('data-programName')
   let name = $(el).attr('data-name')
   let action= el.checked ? 'add' : 'remove';
-  let removeMessage = (name + " is no longer the manager of " + programName)
-  let addMessage =  (name + " is now the manager of " + programName)
+  let removeMessage = (name + " is no longer the manager of " + programName + ".")
+  let addMessage =  (name + " is now the manager of " + programName + ".")
+  let notification = $("#liveToast").clone()
 
   $.ajax({
     method:"POST",
@@ -172,21 +173,32 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
      success: function(s){
          if(action == "add"){
              if ($("#liveToast").is(":visible") == true){
-                 $("#toastDiv").find("#toast-body").html(addMessage)
-                 
                  toastList[0].hide()
+                 $("#toastDiv").empty()
+                 notification.appendTo("#toastDiv")
+                 toastElementList = [].slice.call(document.querySelectorAll('.toast'))
+                 toastList = toastElementList.map(function (toastEl) {
+                    return new bootstrap.Toast(toastEl)
+                })
              }
              $("#toast-body").html(addMessage)
              toastList[0].show()
+             console.log(toastList.length)
          }
 
          if(action == 'remove'){
              if ($("#liveToast").is(":visible") == true){
-                 $("#toastDiv").find("#toast-body").html(removeMessage)
                  toastList[0].hide()
+                 $("#toastDiv").empty()
+                 notification.appendTo("#toastDiv")
+                 toastElementList = [].slice.call(document.querySelectorAll('.toast'))
+                 toastList = toastElementList.map(function (toastEl) {
+                    return new bootstrap.Toast(toastEl)
+                })
              }
              $("#toast-body").html(removeMessage)
              toastList[0].show()
+
          }
       },
       error: function(error, status){
