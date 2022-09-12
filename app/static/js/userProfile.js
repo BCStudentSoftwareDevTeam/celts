@@ -12,7 +12,7 @@ $(document).ready(function(){
       method: "POST",
       url: interestUrl,
       success: function(response) {
-          reloadWithAccordion("interest")  //  Reloading page after user clicks on the show interest checkbox
+          reloadWithAccordion("programTable")  //  Reloading page after user clicks on the show interest checkbox
       },
       error: function(request, status, error) {
         console.log(status,error);
@@ -88,7 +88,7 @@ $(document).ready(function(){
     let bgStatus = $("[data-id=" + bgCheckType + "]").val()
 
     if (bgStatus == '' && bgDate != '') {
-        displayMessage("Passed<br>Empty!", "danger")
+        displayMessage("Status<br>Empty!", "danger")
         return
     }
     if (bgStatus != '' && bgDate == '' ) {

@@ -77,7 +77,7 @@
           <label class="form-label" for='inputEventLocation'><strong>Location</strong></label>
           <input class="form-control" id='inputEventLocation' value="{{eventData.location}}" placeholder="Enter location" name="location" required>
         </div>
-        {% if isNewEvent %}
+        {% if isNewEvent and template.tag != 'all-volunteer' %}
         <div class="form-check form-switch pb-1">
           <label class="custom-control-label" for='checkIsRecurring'><strong>This is a recurring event.</strong></label>
           <input class="form-check-input" type="checkbox" id="checkIsRecurring" name="isRecurring"/>
@@ -117,7 +117,7 @@
                 {%else%}
                   {%set start_time = "12:00" %}
                 {% endif %}
-                <input autocomplete="off" type="time" class="form-control timepicker readonly" value="{{start_time}}" name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time" onchange="update(this)" id=startTime required />
+                <input autocomplete="off" type="time" class="form-control timepicker" value="{{start_time}}" name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time" onchange="update(this)" id=startTime required />
                 <span class="input-group-text timeIcons" id="timeIcon1" hidden><i class="bi bi-clock"></i></span>
               </div>
             </div>
@@ -129,7 +129,7 @@
                 {%else%}
                   {%set end_time = "12:00" %}
                 {% endif %}
-                  <input autocomplete="off" type="time" class="form-control timepicker readonly" value="{{end_time}}" name="timeEnd" aria-describedby="timeIcon2" placeholder="Pick an end time" onchange="update(this)" id=endTime required />
+                  <input autocomplete="off" type="time" class="form-control timepicker" value="{{end_time}}" name="timeEnd" aria-describedby="timeIcon2" placeholder="Pick an end time" onchange="update(this)" id=endTime required />
                   <span class="input-group-text timeIcons" id="timeIcon2" hidden><i class="bi bi-clock"></i></span>
               </div>
             </div>
@@ -141,7 +141,7 @@
             <tbody></tbody>
           </table>
         </div>
-        
+
     </div>
         <div class="col-md-6 form-group">
           <div class="form-group mb-4">

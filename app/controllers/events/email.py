@@ -28,4 +28,4 @@ def fetchEmailLogData(eventId):
 @main_bp.route("/getProgramSender/", methods=['GET'])
 def getProgramSender():
     programId = request.args.get("programId")
-    return Program.get_by_id(programId).emailSenderName
+    return Program.get_by_id(programId).contactName
