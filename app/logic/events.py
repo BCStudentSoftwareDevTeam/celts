@@ -169,7 +169,7 @@ def getTrainingEvents(term, user):
                            .join(ProgramEvent, JOIN.LEFT_OUTER)
                            .join(Program, JOIN.LEFT_OUTER)
                            .where(Event.isTraining == True, Event.term == term)
-                           .order_by(Event.startDate).distinct())
+                           .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate).distinct())
 
     hideBonner = (not user.isAdmin) and not (user.isStudent and user.isBonnerScholar)
     if hideBonner:
