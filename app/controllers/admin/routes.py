@@ -96,6 +96,7 @@ def createEvent(templateid, programid=None):
     if request.method == "POST":
         try:
             savedEvents, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
+
         except Exception as e:
             print("Error saving event:", e)
             savedEvents = False
@@ -182,7 +183,7 @@ def eventDisplay(eventId):
         eventIndex = eventSeriesList.index(event)
         if event.recurringId and len(eventSeriesList) != (eventIndex + 1):
             eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
-        programManager = ProgramManager.get_or_none(program=program)
+
         userParticipatedEvents = getUserParticipatedEvents(program, g.current_user, g.current_term)
         return render_template("eventView.html",
                                 eventData = eventData,
