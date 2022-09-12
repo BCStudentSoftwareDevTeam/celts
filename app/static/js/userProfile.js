@@ -171,49 +171,22 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
 
      success: function(s){
          if(action == "add"){
-             if ($("#liveToast").is(":visible") == true && toastList.length == 1){
-                 $("#toastDiv2").empty()
-                 $("#liveToast").clone().appendTo("#toastDiv2")
-                 toastElementList = [].slice.call(document.querySelectorAll('.toast'))
-                 toastList = toastElementList.map(function (toastEl) {
-                    return new bootstrap.Toast(toastEl)
-                })
-                 $("#toastDiv2").find("#toast-body").html(addMessage)
-                 toastList[1].show()
-             }
-             else if ($("#liveToast").is(":visible") == false && toastList.length == 2) {
-                 toastElementList = [].slice.call(document.querySelectorAll('.toast'))
-                 toastList = toastElementList.map(function (toastEl) {
-                    return new bootstrap.Toast(toastEl)
-                })
-                 $("#toastDiv2").empty()
+             if ($("#liveToast").is(":visible") == true){
+                 $("#toastDiv").find("#toast-body").html(addMessage)
+                 
+                 toastList[0].hide()
              }
              $("#toast-body").html(addMessage)
              toastList[0].show()
-             console.log(toastList.length)
          }
 
          if(action == 'remove'){
-             if ($("#liveToast").is(":visible") == true && toastList.length == 1){
-                 $("#toastDiv2").empty()
-                 $("#liveToast").clone().appendTo("#toastDiv2")
-                 toastElementList = [].slice.call(document.querySelectorAll('.toast'))
-                 toastList = toastElementList.map(function (toastEl) {
-                    return new bootstrap.Toast(toastEl)
-                })
-                 $("#toastDiv2").find("#toast-body").html(removeMessage)
-                 toastList[1].show()
-             }
-             else if ($("#liveToast").is(":visible") == false && toastList.length == 2) {
-                 toastElementList = [].slice.call(document.querySelectorAll('.toast'))
-                 toastList = toastElementList.map(function (toastEl) {
-                    return new bootstrap.Toast(toastEl)
-                })
-                 $("#toastDiv2").empty()
+             if ($("#liveToast").is(":visible") == true){
+                 $("#toastDiv").find("#toast-body").html(removeMessage)
+                 toastList[0].hide()
              }
              $("#toast-body").html(removeMessage)
              toastList[0].show()
-
          }
       },
       error: function(error, status){
