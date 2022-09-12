@@ -10,12 +10,10 @@
     <div class="text-center mb-3">
     {% set page_title = eventData.name %}
         <h1 id="title">{{page_title}}</h1>
-        {% if eventData.name == 'All Volunteer Training' and program == None%}
-          <h3> An All Volunteer Training Event</h3>
-        {% elif program != None%}
-          <h3> A {{program.programName}} Event</h3>
-        {% else %}
-          <h3> A CELTS-Sponsored Event</h3>
+        {% if eventData.name != 'All Volunteer Training' and program == None%}
+          <h3>CELTS-Sponsored Event</h3>
+        {% elif program != None %}
+          <h3>{{program.programName}} Event</h3>
         {%endif%}
     {% if isPastEvent %}
         <div class="alert alert-danger" role="alert">This event is in the past.</div>

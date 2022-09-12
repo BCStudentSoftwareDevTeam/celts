@@ -20,7 +20,7 @@
 {% set isNewEvent = 'create' in request.path %}
 <!-- Program manager isCeltsAdmin and they are a manager for the program  -->
 <div class="text-center mb-3">
-  {% if isNewEvent %}
+{% if isNewEvent %}
     {% if template.tag == 'single-program' %}
       {% set page_title = 'Create Event for ' + eventData["program"].programName %}
     {% elif template.tag == 'all-volunteer' %}
@@ -30,20 +30,19 @@
     {% else %}
       {% set page_title = 'Create ' + template.name + ' Event' %}
     {% endif %}
-    {% else %}
-      {% set programNameforEvent = eventData["program"].programName %}
-      {% if eventData.name == 'All Volunteer Training' and program == None %}
+{% else %}
+     {% set programNameforEvent = eventData["program"].programName %}
+     {% if eventData.name == 'All Volunteer Training' and program == None %}
         <h1>{{eventData.name}}</h1>
-        <h3> An All Volunteer Training Event</h3>
-      {% elif eventData.program != None %}
+     {% elif eventData.program != None %}
         <h1>{{eventData.name}}</h1>
-        <h3>A {{programNameforEvent}} Event</h3>
-      {% else %}
+        <h3>{{programNameforEvent}} Event</h3>
+     {% else %}
         <h1>{{eventData.name}}</h1>
-        <h3> A CELTS-Sponsored Event</h3>
-      {% endif %}
+        <h3>CELTS-Sponsored Event</h3>
+     {% endif %}
 
-    {% endif %}
+{% endif %}
 
     <h1 id="title">{{page_title}}</h1>
 
