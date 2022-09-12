@@ -227,11 +227,16 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        {% if eventData.recurringId != None %}
+        <form action="/event/{{eventData.id}}/delete" method='post'>
+            <input type="submit" class="btn btn-warning" value="Delete All Recurring"/>
+        {% endif %}
         <form action="/event/{{eventData.id}}/delete" method='post'>
             <input type="submit" class="btn btn-danger" value="Delete Event"/>
           <div>
             <input type="hidden" value="{{eventData.id}}" name="id">
           </div>
+
        </form>
       </div>
     </div>

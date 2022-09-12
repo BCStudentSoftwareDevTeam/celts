@@ -159,16 +159,21 @@ def eventDisplay(eventId):
     futureTerms = selectSurroundingTerms(g.current_term)
     userHasRSVPed = checkUserRsvp(g.current_user, event)
     isPastEvent = event.isPast
-    eventfiles=FileHandler()
-    program=event.singleProgram
-    filepaths =eventfiles.retrievePath(associatedAttachments, eventId)
+    eventfiles = FileHandler()
+    program = event.singleProgram
+    filepaths = eventfiles.retrievePath(associatedAttachments, eventId)
     isProgramManager = g.current_user.isProgramManagerFor(program)
+    if event.isRecurring:
+        eventRecurringId = event.recurringId
+    recurringEvents = Event.select().where(Event.recurringId == eventRecurringId)
+    print("THIS IS A LIST OF RECURRING EVENTS", list(recurringEvents))
     rule = request.url_rule
     if 'edit' in rule.rule:
         if not (g.current_user.isCeltsAdmin or isProgramManager):
             abort(403)
         return render_template("admin/createEvent.html",
                                 eventData = eventData,
+                                recurringEvents = recurringEvents,
                                 futureTerms=futureTerms,
                                 isPastEvent = isPastEvent,
                                 userHasRSVPed = userHasRSVPed,
