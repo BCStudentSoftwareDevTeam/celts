@@ -183,7 +183,6 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
              }
              $("#toast-body").html(addMessage)
              toastList[0].show()
-             console.log(toastList.length)
          }
 
          if(action == 'remove'){
