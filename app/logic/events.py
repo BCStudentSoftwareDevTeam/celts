@@ -62,6 +62,21 @@ def deleteEvent(eventId):
 
         event.delete_instance(recursive = True, delete_nullable = True)
 
+def deleteAllRecurringEvents(eventId):
+        """
+        Deletes all recurring events. Checks events that are in series of a recurring event.
+        """
+        event = Event.get_or_none(Event.id == eventId)
+
+        if event:
+            if event.recurringId:
+                recurringId = event.recurringId
+                recurringEvents = list(Event.select().where(Event.recurringId == recurringId)) # orders for tests
+        print("This is list of all recurring events", recurringEvents)
+
+        event.delete_instance(recursive = True)
+
+        return ""
 def attemptSaveEvent(eventData, attachmentFiles = None):
     """
     Tries to save an event to the database:

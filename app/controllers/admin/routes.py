@@ -24,7 +24,7 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.adminLogs import createLog
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
-from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
+from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteAllRecurringEvents
 from app.logic.participants import getEventParticipants, getUserParticipatedEvents, checkUserRsvp, checkUserVolunteer
 from app.logic.fileHandler import FileHandler
 from app.controllers.admin import admin_bp
@@ -208,7 +208,16 @@ def deleteRoute(eventId):
     except Exception as e:
         print('Error while canceling event:', e)
         return "", 500
+@admin_bp.route('/event/<eventId>/deleteRecurring', methods=['POST'])
+def deleteRecurringRoute(eventId):
+    try:
+        deleteAllRecurringEventsEvent(eventId)
+        flash("Event successfully deleted.", "success")
+        return redirect(url_for("main.events", selectedTerm=g.current_term))
 
+    except Exception as e:
+        print('Error while canceling event:', e)
+        return "", 500
 @admin_bp.route('/makeRecurringEvents', methods=['POST'])
 def addRecurringEvents():
     recurringEvents = calculateRecurringEventFrequency(preprocessEventData(request.form.copy()))
