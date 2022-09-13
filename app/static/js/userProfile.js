@@ -89,7 +89,7 @@ $(document).ready(function(){
     let bgStatus = $("[data-id=" + bgCheckType + "]").val()
 
     if (bgStatus == '' && bgDate != '') {
-        displayMessage("Passed<br>Empty!", "danger")
+        displayMessage("Status<br>Empty!", "danger")
         return
     }
     if (bgStatus != '' && bgDate == '' ) {
