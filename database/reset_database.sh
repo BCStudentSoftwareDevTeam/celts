@@ -1,10 +1,10 @@
 #!/bin/bash
 
 PRODUCTION=0
-if [ "`hostname`" == 'celts.berea.edu' ]; then
+if [ "`hostname`" == 'CS-CELTS' ]; then
 	echo "DO NOT RUN THIS SCRIPT ON PRODUCTION UNLESS YOU REALLY REALLY KNOW WHAT YOU ARE DOING"
 	PRODUCTION=1
-	exit 1
+	exit 1;
 fi
 
 cd database/
@@ -50,8 +50,10 @@ else
 fi
 
 # remove so we do a fresh migration next time
-rm -rf migrations
-rm -rf migrations.json
+if [ $PRODUCTION -ne 1 ]; then
+    rm -rf migrations
+    rm -rf migrations.json
+fi
 
 
 ############ Add Data (if needed) ##############
@@ -65,6 +67,7 @@ fi
 
 # Adding fake data for non-prod, set up admins for prod
 if [ $PRODUCTION -eq 1 ]; then
+	FLASK_ENV=production python3 import_users.py
 	FLASK_ENV=production python3 add_admins.py
 elif [ $BACKUP -ne 1 ]; then
     if [ $TEST -eq 1 ]; then

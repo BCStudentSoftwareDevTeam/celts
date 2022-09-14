@@ -298,10 +298,11 @@ def validateNewEventData(data):
 
     # Validation if we are inserting a new event
     if 'id' not in data:
-        # Check for a pre-existing event with Event name, Description and Event Start date
+        
         event = Event.select().where((Event.name == data['name']) &
-                                 (Event.description == data['description']) &
-                                 (Event.startDate == data['startDate']))
+                                     (Event.location == data['location']) &
+                                     (Event.startDate == data['startDate']) &
+                                     (Event.timeStart == data['timeStart']))
 
         try:
             Term.get_by_id(data['term'])
