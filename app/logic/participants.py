@@ -50,7 +50,6 @@ def sendUserData(bnumber, eventId, programid):
     else:
         userStatus = "success"
         totalHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
-        EventRsvp.create(user=signedInUser, event=eventId)
         EventParticipant.create (user=signedInUser, event=eventId, hoursEarned=totalHours)
     return signedInUser, userStatus
 
@@ -62,7 +61,7 @@ def checkUserVolunteer(user,  event):
 
 def addPersonToEvent(user, event):
     """
-        Add a user to an event. 
+        Add a user to an event.
         If the event is in the past, add the user as a volunteer (EventParticipant) including hours worked.
         If the event is in the future, rsvp for the user (EventRsvp)
 
