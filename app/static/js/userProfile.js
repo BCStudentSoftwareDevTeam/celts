@@ -108,7 +108,7 @@ $(document).ready(function(){
       data: data,
       success: function(s){
           displayMessage("Saved!", "success")
-          var date = new Date(data.bgDate).toLocaleDateString()
+          var date = new Date(data.bgDate + " 12:00").toLocaleDateString()
           $("#bgHistory" + data.bgType).prepend(`<li> ${data.bgStatus}: ${date} </li>`);
 
       },
