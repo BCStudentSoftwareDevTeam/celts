@@ -49,7 +49,7 @@ def getFacultyStaffData():
     print("Retrieving Faculty data from Tracy...",end="")
     c = getCursor()
     return [
-          { "username": getUsernameFromEmail(row[4]),
+          { "username": getUsernameFromEmail(row[4].strip()),
             "bnumber": row[1].strip(),
             "email": row[4].strip(),
             "phoneNumber": None, 
@@ -69,7 +69,7 @@ def getStudentData():
     print("Retrieving Student data from Tracy...",end="")
     c = getCursor()
     return [
-          { "username": getUsernameFromEmail(row[9]),
+          { "username": getUsernameFromEmail(row[9].strip()),
             "bnumber": row[1].strip(),
             "email": row[9].strip(),
             "phoneNumber": None, 
