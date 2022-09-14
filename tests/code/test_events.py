@@ -479,9 +479,25 @@ def test_deleteEvent():
         for count, recurring in enumerate(recurringEventsAfter):
             assert recurring.name == ("Not Empty Bowls Spring Week " + str(count + 1))
         assert (len(recurringEventsBefore)-1) == len(recurringEventsAfter)
-
         transaction.rollback()
 
+        #creating recurring event again to test def deleteAllRecurringEvents()
+        eventInfo['valid'] = True
+        eventInfo['program'] = Program.get_by_id(1)
+        recurringEvents = saveEventToDb(eventInfo)
+        event = Event.get_by_id(recurringEvents[1].id)
+        recurringId = event.recurringId
+
+        totalRecurringEvents = len(Event.select().where(Event.recurringId == recurringId))
+        #checks the number of all recurring events that will take place after a recurring event plus the event itself.
+        eventPlusAllRecurringEventsAfter = len(Event.select().where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)))
+
+        with app.app_context():
+            g.current_user = User.get_by_id("ramsayb2")
+            deletingEvent = deleteAllRecurringEvents(recurringEvents[1])
+            totalRecurringEventsAfter = len(Event.select().where(Event.recurringId == recurringId))
+        assert (totalRecurringEvents - eventPlusAllRecurringEventsAfter) == totalRecurringEventsAfter
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_upcomingEvents():

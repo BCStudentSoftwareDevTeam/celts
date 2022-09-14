@@ -70,7 +70,7 @@ def deleteAllRecurringEvents(eventId):
         if event:
             if event.recurringId:
                 recurringId = event.recurringId
-                recurringEvents = list(Event.select().where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate))) # orders for tests
+                recurringEvents = list(Event.select().where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate))) 
         for seriesEvent in recurringEvents:
             seriesEvent.delete_instance(recursive = True)
 
@@ -298,7 +298,7 @@ def validateNewEventData(data):
 
     # Validation if we are inserting a new event
     if 'id' not in data:
-        
+
         event = Event.select().where((Event.name == data['name']) &
                                      (Event.location == data['location']) &
                                      (Event.startDate == data['startDate']) &
