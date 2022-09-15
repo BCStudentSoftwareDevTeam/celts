@@ -217,7 +217,9 @@ def test_wrongValidateNewEventData():
 
     # testing same event already exists if no event id
     eventData["startDate"] = parser.parse('2021-10-12')
-    eventData['endDate'] = parser.parse('2022-06-12')
+    eventData["endDate"] = parser.parse('2022-06-12')
+    eventData["location"] = "Seabury Center"
+    eventData["timeStart"] = '18:00'
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid == False
     assert eventErrorMessage == "This event already exists"
