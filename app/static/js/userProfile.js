@@ -95,7 +95,10 @@ $(document).ready(function(){
         displayMessage("Date<br>Empty!", "danger")
         return
     }
-
+    if (bgStatus == '' && bgDate == '' ) {
+        displayMessage("Both Fields<br>Empty!", "danger")
+        return
+    }
     let data = {
         bgStatus: bgStatus,      // Expected to be one of the three background check statuses
         user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
