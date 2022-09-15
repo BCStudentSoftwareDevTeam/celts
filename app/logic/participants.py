@@ -111,6 +111,7 @@ def getEventParticipants(event):
 
     return {p.user: p.hoursEarned for p in eventParticipants}
 
+
 def getUserParticipatedEvents(program, user, currentTerm):
     """
     This function returns a dictionary of all trainings for a program and
