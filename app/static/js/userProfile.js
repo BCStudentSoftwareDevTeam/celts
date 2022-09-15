@@ -176,8 +176,8 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
                  toastList[0].hide()
                  $("#toastDiv").empty()
                  notification.appendTo("#toastDiv")
-                 toastElementList = [].slice.call(document.querySelectorAll('.toast'))
-                 toastList = toastElementList.map(function (toastEl) {
+                 programManagerToastElements = [].slice.call(document.querySelectorAll('.toast'))
+                 programManagerToastList = programManagerToastElements.map(function (toastEl) {
                     return new bootstrap.Toast(toastEl)
                 })
              }
@@ -190,8 +190,8 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
                  toastList[0].hide()
                  $("#toastDiv").empty()
                  notification.appendTo("#toastDiv")
-                 toastElementList = [].slice.call(document.querySelectorAll('.toast'))
-                 toastList = toastElementList.map(function (toastEl) {
+                 programManagerToastElements = [].slice.call(document.querySelectorAll('.toast'))
+                 programManagerToastList = programManagerToastElements.map(function (toastEl) {
                     return new bootstrap.Toast(toastEl)
                 })
              }
