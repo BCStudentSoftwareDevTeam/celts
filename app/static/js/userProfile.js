@@ -83,6 +83,7 @@ $(document).ready(function(){
   });
 
   $(".savebtn").click(function () { // Updates the Background check of a volunteer in the database
+    $(this).prop("disabled", true);
     let bgCheckType = $(this).data("id")
     let bgDate = $("#" + bgCheckType + "_date").val()
     let bgStatus = $("[data-id=" + bgCheckType + "]").val()
@@ -110,6 +111,7 @@ $(document).ready(function(){
           displayMessage("Saved!", "success")
           var date = new Date(data.bgDate + " 12:00").toLocaleDateString()
           $("#bgHistory" + data.bgType).prepend(`<li> ${data.bgStatus}: ${date} </li>`);
+          $(".savebtn").attr('disabled', false);
 
       },
       error: function(error, status){
