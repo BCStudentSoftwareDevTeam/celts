@@ -1,0 +1,86 @@
+{% set title = "Bonner Management" %}
+{% extends "base.html" %}
+
+{% block scripts %}
+  {{super()}}
+  <script type="module" src="/static/js/bonnerManagement.js"></script>
+{% endblock %}
+
+{% block app_content %}
+
+<h1 class="text-center mb-5">Bonner Management</h1>
+
+<div class="accordion" id="bonnerManagement">
+  <div class="accordion-item">
+    <h3 class="accordion-header" id="headingOne">
+      {% set focus = "open" if not visibleAccordion or visibleAccordion == "cohort" else "collapsed" %}
+      <button class="accordion-button {{focus}} " type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"> Cohort Management </button>
+    </h3>
+    {% set show = "show" if not visibleAccordion or visibleAccordion == "cohort" %}
+    <div id="collapseOne" class="accordion-collapse collapse {{show}}" aria-labelledby="headingOne" data-bs-parent="#bonnerManagement">
+        <div class="accordion-body">
+
+            <!---------------- Cohort management ---------------->
+            <div class="d-flex align-items-start">
+                <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    <button class="nav-link active" id="v-pills-all-tab" data-bs-toggle="pill" data-bs-target="#v-pills-all" type="button" role="tab" aria-controls="v-pills-all" aria-selected="false">All</button>
+                {% for year in cohorts.keys()|reverse %}
+                    <button class="nav-link" id="v-pills-{{year}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{year}}" type="button" role="tab" aria-controls="v-pills-{{year}}" aria-selected="true">{{year}} - {{year + 1}}</button>
+                {% endfor %}
+                </div>
+                <div class="tab-content" id="v-pills-tabContent">
+                    <div class="tab-pane fade show active" id="v-pills-all" role="tabpanel" aria-labelledby="v-pills-all-tab">
+                    {% for year, users in cohorts.items() %}
+                        <h5>{{year}} - {{year + 1}}</h5>
+                        <ul class="list-unstyled">
+                        {% for user in users %}
+                            <li>{{user.fullName}}</li>
+                        {% endfor %}
+                        </ul>
+                    {% endfor %}
+                    </div>
+                    {% for year, users in cohorts.items() %}
+                        {% set searchId = "search-" + year|string %}
+                    <div class="tab-pane fade" id="v-pills-{{year}}" role="tabpanel" aria-labelledby="v-pills-{{year}}-tab">
+                        <h5>{{year}} - {{year + 1}}</h5>
+                        <div>
+                            <div class="input-group">
+                                <input type="search" id="{{searchId}}" name="{{searchId}}" class="form-control" data-year="{{year}}" placeholder="Search" autocomplete="off" style="width:50%" />
+                                <span class="input-group-text me-1"><span class="bi bi-search"></span></span>
+                            </div>
+                                <ul class="list-unstyled">
+                                {% for user in users %}
+                                    <li id="{{user.username}}">
+                                        {{user.firstName}} {{user.lastName}}
+                                        <button data-username="{{user.username}}" data-year="{{year}}" type="button" class="btn btn-danger view removeBonner">Remove</button>
+                                    </li>
+                                {% endfor %}
+                                </ul>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-------------------- End cohort management --------------------->
+        </div>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <h3 class="accordion-header" id="headingTwo">
+      {% set focus = "open" if visibleAccordion == "events" else "collapsed" %}
+      <button class="accordion-button {{focus}} " type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"> Requirements </button>
+    </h3>
+    {% set show = "show" if visibleAccordion == "events" else "" %}
+    <div id="collapseTwo" class="accordion-collapse collapse {{show}}" aria-labelledby="headingTwo" data-bs-parent="#bonnerManagement">
+        <div class="accordion-body">
+            <!-------------------- Requirements --------------------->
+            <h3>Coming Soon</h3>
+            <!-------------------- End Requirements --------------------->
+        </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
