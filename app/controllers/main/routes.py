@@ -97,6 +97,10 @@ def viewUsersProfile(username):
         allBackgroundHistory = getUserBGCheckHistory(volunteer)
         backgroundTypes = list(BackgroundCheckType.select())
 
+        bloo = list(BackgroundCheck.select().join(User).where(BackgroundCheck.user == User.user, BackgroundCheck.id == ))
+        print("AAAAAAAAAAAAAA")
+        print(bloo)
+        print("AAAAAAAAAAAAAA")
         eligibilityTable = []
         for program in programs:
             notes = list(ProgramBan.select(ProgramBan, Note)
@@ -227,7 +231,7 @@ def volunteerRegister():
     listOfRequirements = unattendedRequiredEvents(program, user)
 
     personAdded = False
-    if isEligible: 
+    if isEligible:
         personAdded = addPersonToEvent(user, event)
         if personAdded and listOfRequirements:
             reqListToString = ', '.join(listOfRequirements)

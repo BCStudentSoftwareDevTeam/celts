@@ -104,15 +104,14 @@ $(document).ready(function(){
         bgDate: bgDate  // Expected to be the date of the background check completion or '' if field is empty
     }
     $.ajax({
-      url: "/updateBackgroundCheck",
+      url: "/addBackgroundCheck",
       type: "POST",
       data: data,
       success: function(s){
-          displayMessage("Saved!", "success")
-          var date = new Date(data.bgDate + " 12:00").toLocaleDateString()
-          $("#bgHistory" + data.bgType).prepend(`<li> ${data.bgStatus}: ${date} </li>`);
-          $(".savebtn").attr('disabled', false);
-
+        displayMessage("Saved!", "success")
+        var date = new Date(data.bgDate + " 12:00").toLocaleDateString()
+        $("#bgHistory" + data.bgType).prepend(`<li> ${data.bgStatus}: ${date} </li>`);
+        reloadWithAccordion("background")
       },
       error: function(error, status){
           console.log(error, status)
@@ -120,6 +119,21 @@ $(document).ready(function(){
     })
   });
 
+  $("#bgHistoryTable").on("click", "#deleteBgHistory", function() {
+    $(this).closest("li").remove();
+
+    $.ajax({
+      url: "/deleteBackgroundCheck",
+      type: "POST",
+      data: data,
+      success: function(s){
+        reloadWithAccordion("background")
+      },
+      error: function(error, status){
+        console.log(error,status)
+      }
+    })
+  });
   // Popover functionalitie
     var requiredTraining = $(".trainingPopover");
     requiredTraining.popover({
