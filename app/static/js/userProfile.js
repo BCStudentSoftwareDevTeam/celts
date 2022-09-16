@@ -171,34 +171,23 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
              },
 
      success: function(s){
+         if ($("#liveToast").is(":visible") == true){
+             toastList[0].hide()
+             $("#toastDiv").empty()
+             notification.appendTo("#toastDiv")
+             programManagerToastElements = [].slice.call(document.querySelectorAll('.toast'))
+             programManagerToastList = programManagerToastElements.map(function (toastEl) {
+                 return new bootstrap.Toast(toastEl)
+             })
+         }
+
          if(action == "add"){
-             if ($("#liveToast").is(":visible") == true){
-                 toastList[0].hide()
-                 $("#toastDiv").empty()
-                 notification.appendTo("#toastDiv")
-                 programManagerToastElements = [].slice.call(document.querySelectorAll('.toast'))
-                 programManagerToastList = programManagerToastElements.map(function (toastEl) {
-                    return new bootstrap.Toast(toastEl)
-                })
-             }
              $("#toast-body").html(addMessage)
-             toastList[0].show()
          }
-
-         if(action == 'remove'){
-             if ($("#liveToast").is(":visible") == true){
-                 toastList[0].hide()
-                 $("#toastDiv").empty()
-                 notification.appendTo("#toastDiv")
-                 programManagerToastElements = [].slice.call(document.querySelectorAll('.toast'))
-                 programManagerToastList = programManagerToastElements.map(function (toastEl) {
-                    return new bootstrap.Toast(toastEl)
-                })
-             }
+         else if(action == 'remove'){
              $("#toast-body").html(removeMessage)
-             toastList[0].show()
-
          }
+         toastList[0].show()
       },
       error: function(error, status){
           console.log(error, status)
