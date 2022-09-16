@@ -42,8 +42,15 @@ def trackVolunteersPage(eventID):
 
     eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event))
     eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
+    print(f"eventRsvpData: {eventRsvpData}")
+    print(f"eventParticipantData: {eventParticipantData}")
     eventVolunteerData = (eventParticipantData + eventRsvpData)
-
+    volunteerList = []
+    volunteerUser = []
+    for volunteer in eventVolunteerData:
+        if volunteer.user not in volunteerUser:
+            volunteerList.append(volunteer)
+            volunteerUser.append(volunteer.user)
     eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
     recurringEventID = event.recurringId # query Event Table to get recurringId using Event ID.
@@ -51,7 +58,7 @@ def trackVolunteersPage(eventID):
     recurringVolunteers = getPreviousRecurringEventData(recurringEventID)
 
     return render_template("/events/trackVolunteers.html",
-        eventVolunteerData = eventVolunteerData,
+        eventVolunteerData = volunteerList,
         eventParticipants = eventParticipants,
         eventLength = eventLengthInHours,
         program = program,
