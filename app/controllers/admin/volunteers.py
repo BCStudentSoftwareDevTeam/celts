@@ -42,8 +42,6 @@ def trackVolunteersPage(eventID):
 
     eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event))
     eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
-    print(f"eventRsvpData: {eventRsvpData}")
-    print(f"eventParticipantData: {eventParticipantData}")
     eventVolunteerData = (eventParticipantData + eventRsvpData)
     volunteerList = []
     volunteerUser = []
