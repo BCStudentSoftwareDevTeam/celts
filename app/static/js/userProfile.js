@@ -87,7 +87,7 @@ $(document).ready(function(){
     $(this).prop("disabled", true);
     let bgCheckType = $(this).data("id")
     let bgDate = $("#" + bgCheckType + "_date").val()
-    let bgStatus = $("[data-id=" + bgCheckType + "]").val()
+    let bgStatus = $("#" + bgCheckType).val()
 
     if (bgStatus == '' && bgDate != '') {
         displayMessage("Status<br>Empty!", "danger")
@@ -95,8 +95,8 @@ $(document).ready(function(){
     }
 
     if (bgStatus == '' && bgDate == '' ) {
-    displayMessage("Both Fields<br>Empty!", "danger")
-    return
+      displayMessage("Both Fields<br>Empty!", "danger")
+      return
     }
 
     if (bgStatus != '' && bgDate == '' ) {
@@ -132,7 +132,7 @@ $(document).ready(function(){
     $.ajax({
       url: "/deleteBackgroundCheck",
       type: "POST",
-      data: data,
+      data: ,
       success: function(s){
         reloadWithAccordion("background")
       },

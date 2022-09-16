@@ -95,7 +95,6 @@ def viewUsersProfile(username):
         permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
         allBackgroundHistory = getUserBGCheckHistory(volunteer)
-
         backgroundTypes = list(BackgroundCheckType.select())
 
         eligibilityTable = []

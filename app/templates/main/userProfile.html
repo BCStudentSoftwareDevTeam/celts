@@ -102,15 +102,15 @@
     </div>
   </div>
   <!-- End Program History -->
-  <!-- Start Program Eligibility Table -->
+  <!-- Start Program Table -->
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingThree">
-      {% set focus = "open" if visibleAccordion == "programTable" or volunteer.username != g.current_user.username else "collapsed" %}
+      {% set focus = "open" if visibleAccordion == "programTable" or volunteer.username != g.current_user.username and not visibleAccordion =="background" else "collapsed" %}
       <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
           Programs
       </button>
     </h3>
-    {% set show = "show" if visibleAccordion == "programTable" or volunteer.username != g.current_user.username else "" %}
+    {% set show = "show" if visibleAccordion == "programTable" or volunteer.username != g.current_user.username and not visibleAccordion =="background" else "" %}
     <div id="collapseThree" class="accordion-collapse collapse {{show}}" aria-labelledby="headingThree" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="table-responsive">
@@ -190,7 +190,7 @@
       </div>
     </div>
   </div>
-  <!-- End Program Eligibility Table -->
+  <!-- End Program Table -->
   <!-- Start Program Manager section -->
   {% if volunteer.isCeltsStudentStaff %}
     <div class="accordion-item">
@@ -264,8 +264,9 @@
                        <h6>{{bgType.description}}</h6>
                        <ul class="mb-0" id="bgHistory{{bgType.id}}" >
                           {% for bgStatus in allBackgroundHistory[bgType.id] %}
-                           <li>{{bgStatus}}
-                           <button class="bg-transparent border-0 text-danger" id="deleteBgHistory" data-id="{{bgType.id}}">X</button>
+                           <li>
+                             {{bgStatus.backgroundCheckStatus}}: {{bgStatus.dateCompleted}}
+                             <button class="bg-transparent border-0 text-danger" id="deleteBgHistory" data-id="{{bgType.id}}">X</button>
                            </li>
                           {% endfor %}
                        </ul>

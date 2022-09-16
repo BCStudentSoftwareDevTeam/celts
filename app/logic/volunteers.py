@@ -91,7 +91,7 @@ def addUserBackgroundCheck(user, bgType, bgStatus, dateCompleted):
     else:
         if not dateCompleted:
             dateCompleted = None
-        BackgroundCheck.create(user=user, type=bgType, backgroundCheckStatus=bgStatus, dateCompleted=dateCompleted)
+        update = BackgroundCheck.create(user=user, type=bgType, backgroundCheckStatus=bgStatus, dateCompleted=dateCompleted)
         if bgStatus == 'Submitted':
             createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as submitted.")
         elif bgStatus == 'Passed':
