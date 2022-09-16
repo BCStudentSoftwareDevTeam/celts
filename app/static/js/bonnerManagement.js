@@ -9,6 +9,10 @@ $(document).ready(function(){
     let year = $(this).data('year')
     submitRequest(year, "remove", $(this).data("username"));
   });
+
+  if(visible_tab != "none") {
+    $(`#v-pills-${visible_tab}-tab`).trigger("click");
+  }
 });
 
 function submitRequest(year, method, username){
@@ -16,7 +20,7 @@ function submitRequest(year, method, username){
     url: `/bonner/${year}/${method}/${username}`,
     type: "POST",
     success: function(s){
-        location.reload()
+        reloadWithAccordion("cohort-" + year)
     },
     error: function(error, status){
       console.log(error, status)

@@ -24,8 +24,11 @@ class User(baseModel):
     @property
     def isBonnerScholar(self):
         from app.models.bonnerYear import BonnerYear
-        # TODO should we exclude users who are banned from Bonner here?
-        return BonnerYear.select().where(BonnerYear.user == self).exists()
+        if self._bsCache is None:
+            # TODO should we exclude users who are banned from Bonner here?
+            self._bsCache = BonnerYear.select().where(BonnerYear.user == self).exists()
+        
+        return self._bsCache
 
     @property
     def fullName(self):

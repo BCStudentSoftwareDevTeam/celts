@@ -1,5 +1,5 @@
 from flask import request, render_template, url_for, g, Flask, redirect, flash, abort, json, jsonify, session
-from peewee import DoesNotExist, fn
+from peewee import DoesNotExist, fn, IntegrityError
 from playhouse.shortcuts import model_to_dict, dict_to_model
 import json
 from datetime import datetime, date
@@ -19,6 +19,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.models.adminLogs import AdminLogs
 from app.models.eventFile import EventFile
+from app.models.bonnerYear import BonnerYear
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.adminLogs import createLog
@@ -27,6 +28,7 @@ from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.logic.participants import getEventParticipants, getUserParticipatedEvents, checkUserRsvp, checkUserVolunteer
 from app.logic.fileHandler import FileHandler
+from app.logic.bonner import getBonnerCohorts
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
@@ -240,8 +242,34 @@ def adminLogs():
         abort(403)
 
 @admin_bp.route("/deleteFile", methods=["POST"])
-def deleteFIle():
+def deleteFile():
     fileData= request.form
     eventfile=FileHandler()
     eventfile.deleteEventFile(fileData["fileId"],fileData["eventId"])
+    return ""
+
+@admin_bp.route("/manageBonner")
+def manageBonner():
+    cohorts = getBonnerCohorts()
+    return render_template("/admin/bonnerManagement.html", 
+                           cohorts=cohorts)
+
+@admin_bp.route("/bonner/<year>/<method>/<username>", methods=["POST"])
+def updatecohort(year, method, username):
+    try:
+        user = User.get_by_id(username)
+    except:
+        abort(500)
+
+    if method == "add":
+        try: 
+            BonnerYear.create(year=year, user=user)
+        except IntegrityError as e:
+            # if they already exist, ignore the error
+            pass
+    elif method == "remove":
+        BonnerYear.delete().where(BonnerYear.user == user, BonnerYear.year == year).execute()
+    else:
+        abort(500)
+
     return ""

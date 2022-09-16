@@ -13,10 +13,10 @@
 <div class="accordion" id="bonnerManagement">
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingOne">
-      {% set focus = "open" if not visibleAccordion or visibleAccordion == "cohort" else "collapsed" %}
+      {% set focus = "open" if not visibleAccordion or "cohort" in visibleAccordion else "collapsed" %}
       <button class="accordion-button {{focus}} " type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"> Cohort Management </button>
     </h3>
-    {% set show = "show" if not visibleAccordion or visibleAccordion == "cohort" %}
+    {% set show = "show" if not visibleAccordion or "cohort" in visibleAccordion %}
     <div id="collapseOne" class="accordion-collapse collapse {{show}}" aria-labelledby="headingOne" data-bs-parent="#bonnerManagement">
         <div class="accordion-body">
 
@@ -30,7 +30,7 @@
                 </div>
                 <div class="tab-content" id="v-pills-tabContent">
                     <div class="tab-pane fade show active" id="v-pills-all" role="tabpanel" aria-labelledby="v-pills-all-tab">
-                    {% for year, users in cohorts.items() %}
+                    {% for year, users in cohorts.items()|reverse %}
                         <h5>{{year}} - {{year + 1}}</h5>
                         <ul class="list-unstyled">
                         {% for user in users %}
@@ -50,9 +50,9 @@
                             </div>
                                 <ul class="list-unstyled">
                                 {% for user in users %}
-                                    <li id="{{user.username}}">
+                                    <li id="{{user.username}}" class="clearfix">
                                         {{user.firstName}} {{user.lastName}}
-                                        <button data-username="{{user.username}}" data-year="{{year}}" type="button" class="btn btn-danger view removeBonner">Remove</button>
+                                        <button data-username="{{user.username}}" data-year="{{year}}" type="button" class="btn btn-danger float-end removeBonner">Remove</button>
                                     </li>
                                 {% endfor %}
                                 </ul>
@@ -82,5 +82,11 @@
   </div>
 </div>
 
+<script>
+    {# remove 'cohort-' from our visibleAccordion variable to get the tab required #}
+    {% set visibleAccordion = visibleAccordion[7:] if "cohort-" in visibleAccordion else visibleAccordion %}
+    {% set visible_tab = visibleAccordion if visibleAccordion == "all" or visibleAccordion|int != 0 else "none" %}
+    var visible_tab = "{{ visible_tab }}";
+</script>
 
 {% endblock %}
