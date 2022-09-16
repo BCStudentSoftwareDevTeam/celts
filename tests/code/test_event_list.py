@@ -4,6 +4,7 @@ from app.models import mainDB
 from app.models.programEvent import ProgramEvent
 from app.models.program import Program
 from app.models.event import Event
+from app.models.bonnerYear import BonnerYear
 from app.models.term import Term
 from app.models.user import User
 from app.logic.events import getStudentLedEvents,  getTrainingEvents, getBonnerEvents, getOtherEvents
@@ -120,8 +121,7 @@ def test_training_events(training_events):
                                     isFaculty = True,
                                     isStaff = False,
                                     isCeltsAdmin = False,
-                                    isCeltsStudentStaff = False,
-                                    isBonnerScholar = False)
+                                    isCeltsStudentStaff = False)
         userStaff = User.create(username = "TestisStaff",
                                             bnumber = "B00000000002",
                                             email = "test@test.com",
@@ -132,8 +132,7 @@ def test_training_events(training_events):
                                             isFaculty = False,
                                             isStaff = True,
                                             isCeltsAdmin = False,
-                                            isCeltsStudentStaff = False,
-                                            isBonnerScholar = False)
+                                            isCeltsStudentStaff = False)
         userCeltsAdmin = User.create(username = "TestisCeltsAdmin",
                                             bnumber = "B00000000003",
                                             email = "test@test.com",
@@ -144,8 +143,7 @@ def test_training_events(training_events):
                                             isFaculty = False,
                                             isStaff = False,
                                             isCeltsAdmin = True,
-                                            isCeltsStudentStaff = False,
-                                            isBonnerScholar = False)
+                                            isCeltsStudentStaff = False)
         userBonnerScholar = User.create(username = "TestBonnerScholar",
                                         bnumber = "B0000000000",
                                         email = "test@test.com",
@@ -156,8 +154,9 @@ def test_training_events(training_events):
                                         isFaculty = False,
                                         isStaff = False,
                                         isCeltsAdmin = False,
-                                        isCeltsStudentStaff = False,
-                                        isBonnerScholar = True)
+                                        isCeltsStudentStaff = False)
+        BonnerYear.create(user=userBonnerScholar, year=2020)
+
         userNotBonnerScholar = User.create(username = "TestNotBonnerScholar",
                                             bnumber = "B00000000001",
                                             email = "test@test.com",
@@ -168,8 +167,7 @@ def test_training_events(training_events):
                                             isFaculty = False,
                                             isStaff = False,
                                             isCeltsAdmin = False,
-                                            isCeltsStudentStaff = False,
-                                            isBonnerScholar = False)
+                                            isCeltsStudentStaff = False)
 
         notBonnerList = [testNotBonnerTraining]
         bonnerList = [testNotBonnerTraining, testBonnerTraining]

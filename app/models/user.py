@@ -13,13 +13,19 @@ class User(baseModel):
     isStaff = BooleanField(default = False)
     isCeltsAdmin = BooleanField(default  =False)
     isCeltsStudentStaff = BooleanField(default = False)
-    isBonnerScholar = BooleanField(default = False)
 
     _pmCache = None
+    _bsCache = None
 
     @property
     def isAdmin(self):
         return (self.isCeltsAdmin or self.isCeltsStudentStaff)
+
+    @property
+    def isBonnerScholar(self):
+        from app.models.bonnerYear import BonnerYear
+        # TODO should we exclude users who are banned from Bonner here?
+        return BonnerYear.select().where(BonnerYear.user == self).exists()
 
     @property
     def fullName(self):
