@@ -14,10 +14,8 @@ from app.logic.events import getPreviousRecurringEventData
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.programManager import ProgramManager
-from app.models.program import Program
-from app.models.programEvent import ProgramEvent
 from app.logic.adminLogs import createLog
-from app.logic.users import isEligibleForProgram, getBannedUsers, isBannedFromEvent
+from app.logic.users import getBannedUsers, isBannedFromEvent
 
 
 

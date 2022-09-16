@@ -63,12 +63,12 @@ function submitData(hitEnter = false){
       },
       success: function(result) {
         flasherStatus = "success"
-        if (status === "already in") {
+        if (result.status == "already in") {
           message = result.user + " Already Signed In!"
-        } else if (status === "banned") {
+        } else if (result.status === "banned") {
           message = result.user + " is Banned."
           flasherStatus = "danger"
-        } else if (status === "does not exist") {
+        } else if (result.status === "does not exist") {
           message = "User does not exist"
           flasherStatus = "danger"
         } else {

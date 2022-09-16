@@ -14,8 +14,7 @@ from app.models.programManager import ProgramManager
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.event import Event
 from app.models.programEvent import ProgramEvent
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory
-from app.logic.users import isEligibleForProgram
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, isEligibleForProgram, getBannedUsers, isBannedFromEvent
 from app.logic.volunteers import addUserBackgroundCheck
 
 @pytest.mark.integration
@@ -322,3 +321,27 @@ def test_getUserBGCheckHistory():
 
 
         transaction.rollback()
+
+@pytest.mark.integration
+def test_getBannedUsers():
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+
+            # Create test user
+            testusr = User.create(username = 'usrtst',
+                                  firstName = 'Test',
+                                  lastName = 'User',
+                                  bnumber = '03522492',
+                                  email = 'usert@berea.deu',
+                                  isStudent = True)
+            # Ban user from program 1
+            banUser(1, User.get_by_id("usrtst"), "nope", "2022-11-29", "ramsayb2")
+            # Test banned user
+            assert testusr in [user.user for user in getBannedUsers(1)]
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_isBannedFromEvent():
+    with mainDB.atomic() as transaction:
+        assert isBannedFromEvent("khatts", 3)
+    transaction.rollback()
