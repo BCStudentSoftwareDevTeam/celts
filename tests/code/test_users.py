@@ -325,23 +325,28 @@ def test_getUserBGCheckHistory():
 @pytest.mark.integration
 def test_getBannedUsers():
     with mainDB.atomic() as transaction:
-        with app.app_context():
-
-            # Create test user
-            testusr = User.create(username = 'usrtst',
-                                  firstName = 'Test',
-                                  lastName = 'User',
-                                  bnumber = '03522492',
-                                  email = 'usert@berea.deu',
-                                  isStudent = True)
-            # Ban user from program 1
-            banUser(1, User.get_by_id("usrtst"), "nope", "2022-11-29", "ramsayb2")
-            # Test banned user
-            assert testusr in [user.user for user in getBannedUsers(1)]
+        # Create test user
+        testusr = User.create(username = 'usrtst',
+                              firstName = 'Test',
+                              lastName = 'User',
+                              bnumber = '03522492',
+                              email = 'usert@berea.deu',
+                              isStudent = True)
+        # Ban user from program 1
+        banUser(1, User.get_by_id("usrtst"), "nope", "2022-11-29", "ramsayb2")
+        # Test banned user
+        assert testusr in [user.user for user in getBannedUsers(1)]
         transaction.rollback()
 
 @pytest.mark.integration
 def test_isBannedFromEvent():
     with mainDB.atomic() as transaction:
-        assert isBannedFromEvent("khatts", 3)
-    transaction.rollback()
+        testusr = User.create(username = 'usrtst',
+                              firstName = 'Test',
+                              lastName = 'User',
+                              bnumber = '03522492',
+                              email = 'usert@berea.deu',
+                              isStudent = True)
+        banUser(1, User.get_by_id("usrtst"), "nope", "2050-11-29", "ramsayb2")
+        assert isBannedFromEvent("usrtst", 1)
+        transaction.rollback()

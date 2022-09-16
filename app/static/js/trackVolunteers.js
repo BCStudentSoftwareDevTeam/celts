@@ -113,8 +113,8 @@ $(document).ready(function() {
     $.ajax({
       url: `/addVolunteersToEvent/${username}/${eventId}/isBanned`,
       type: "GET",
-      success: function(isBanned){
-        if (isBanned === "banned"){
+      success: function(response){
+        if (response.banned){
           $("#addVolunteerElements"+index).append("<span class='ms-1 text-danger bi bi-slash-circle-fill'></span>")
         }
       },

@@ -106,7 +106,7 @@ def addVolunteer(eventId):
 
 @admin_bp.route('/addVolunteersToEvent/<username>/<eventId>/isBanned', methods = ['GET'])
 def isVolunteerBanned(username, eventId):
-    return "banned" if isBannedFromEvent(username, eventId) else "not banned"
+    return {"banned":1} if isBannedFromEvent(username, eventId) else {"banned":1}
 
 @admin_bp.route('/removeVolunteerFromEvent/<user>/<eventID>', methods = ['POST'])
 def removeVolunteerFromEvent(user, eventID):
