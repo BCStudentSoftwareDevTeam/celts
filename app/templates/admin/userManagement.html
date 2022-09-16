@@ -132,8 +132,8 @@
             <form action="/admin/updateProgramInfo/{{program.id}}" method="POST">
                 <tr class="p-1">
                     <td> <input type="text" name="programName" value ="{{program.programName}}" required> </td>
-                    <td><input type="text" name="contactEmail" value="{{program.contactEmail}}"></td>
-                    <td><input type="text" name="contactName" value="{{program.contactName}}"></td>
+                    <td><input type="text" name="contactEmail" value="{{program.contactEmail or ""}}"></td>
+                    <td><input type="text" name="contactName" value="{{program.contactName or ""}}"></td>
                     <td><button type="submit" class="btn btn-success w-101" role ="button">Update</button> </td>
                 </tr>
                 </form>

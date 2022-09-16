@@ -155,6 +155,19 @@ users = [
         "isFaculty": True,
         "isCeltsStudentStaff": False,
         "isStaff": True
+    },
+    {
+        "username": "stettnera2",
+        "bnumber": "B00719955",
+        "email": "stettnera2@berea.edu",
+        "phoneNumber": "(555)555-5555",
+        "firstName": "Anderson",
+        "lastName": "Stettner",
+        "isStudent": False,
+        "isFaculty": False,
+        "isStaff": True,
+        "isCeltsAdmin": True,
+        "isCeltsStudentStaff": False
     }
 ]
 

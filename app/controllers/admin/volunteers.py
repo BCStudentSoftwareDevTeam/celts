@@ -4,6 +4,7 @@ from peewee import DoesNotExist
 from playhouse.shortcuts import model_to_dict
 from app.controllers.admin import admin_bp
 from app.models.event import Event
+from app.models.program import Program
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
@@ -132,9 +133,9 @@ def updateProgramManager():
     if g.current_user.isCeltsAdmin:
         data =request.form
         username = User.get(User.username == data["user_name"])
-        event =Event.get_by_id(data['program_id'])
+        program = Program.get_by_id(data['program_id'])
         setProgramManager(data["user_name"], data["program_id"], data["action"])
-        createLog(f'{username.firstName} has been {data["action"]}ed as a Program Manager for {event.name}')
+        createLog(f'{username.firstName} has been {data["action"]}ed as a Program Manager for {program.programName}')
         return ""
     else:
         abort(403)

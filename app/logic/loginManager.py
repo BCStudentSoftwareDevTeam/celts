@@ -1,4 +1,4 @@
-from flask import request, session
+from flask import request, session, abort
 from peewee import DoesNotExist
 
 from app import app

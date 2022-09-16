@@ -54,7 +54,6 @@ def sendUserData(bnumber, eventId, programid):
     else:
         userStatus = "success"
         totalHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
-        EventRsvp.create(user=signedInUser, event=eventId)
         EventParticipant.create (user=signedInUser, event=eventId, hoursEarned=totalHours)
     return signedInUser, userStatus
 
