@@ -95,12 +95,9 @@ def viewUsersProfile(username):
         permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
         allBackgroundHistory = getUserBGCheckHistory(volunteer)
+
         backgroundTypes = list(BackgroundCheckType.select())
 
-        bloo = list(BackgroundCheck.select().join(User).where(BackgroundCheck.user == User.user, BackgroundCheck.id == ))
-        print("AAAAAAAAAAAAAA")
-        print(bloo)
-        print("AAAAAAAAAAAAAA")
         eligibilityTable = []
         for program in programs:
             notes = list(ProgramBan.select(ProgramBan, Note)

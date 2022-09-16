@@ -265,7 +265,7 @@
                        <ul class="mb-0" id="bgHistory{{bgType.id}}" >
                           {% for bgStatus in allBackgroundHistory[bgType.id] %}
                            <li>{{bgStatus}}
-                           <button class="bg-transparent border-0 text-danger" id="deleteBgHistory">X</button>
+                           <button class="bg-transparent border-0 text-danger" id="deleteBgHistory" data-id="{{bgType.id}}">X</button>
                            </li>
                           {% endfor %}
                        </ul>

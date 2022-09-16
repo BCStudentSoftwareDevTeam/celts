@@ -93,6 +93,12 @@ $(document).ready(function(){
         displayMessage("Status<br>Empty!", "danger")
         return
     }
+
+    if (bgStatus == '' && bgDate == '' ) {
+    displayMessage("Both Fields<br>Empty!", "danger")
+    return
+    }
+
     if (bgStatus != '' && bgDate == '' ) {
         displayMessage("Date<br>Empty!", "danger")
         return

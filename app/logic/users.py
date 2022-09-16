@@ -99,7 +99,6 @@ def getUserBGCheckHistory(username):
                                                   .where(BackgroundCheck.user == username)
                                                   .order_by(BackgroundCheck.dateCompleted.desc()))
     for row in allBackgroundChecks:
-        bgHistory[row.type_id].append(row.backgroundCheckStatus + ": " + row.dateCompleted.strftime("%m/%d/%Y"))
-
+        bgHistory[row.type_id].append(row)
 
     return bgHistory
