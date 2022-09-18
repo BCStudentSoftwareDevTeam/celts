@@ -14,7 +14,7 @@ from app.models.programManager import ProgramManager
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.event import Event
 from app.models.programEvent import ProgramEvent
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, isEligibleForProgram, getBannedUsers, isBannedFromEvent
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, getBannedUsers, isBannedFromEvent
 from app.logic.volunteers import addUserBackgroundCheck
 
 @pytest.mark.integration
@@ -325,23 +325,31 @@ def test_getUserBGCheckHistory():
 @pytest.mark.integration
 def test_getBannedUsers():
     with mainDB.atomic() as transaction:
-        # Create test user
-        testusr = User.create(username = 'usrtst',
+        bannedUser = User.create(username = 'usrtst', # Test banned user
                               firstName = 'Test',
                               lastName = 'User',
                               bnumber = '03522492',
                               email = 'usert@berea.deu',
                               isStudent = True)
-        # Ban user from program 1
         banUser(1, User.get_by_id("usrtst"), "nope", "2022-11-29", "ramsayb2")
-        # Test banned user
-        assert testusr in [user.user for user in getBannedUsers(1)]
+        assert bannedUser in [user.user for user in getBannedUsers(1)]
+
+        unbanUser(1, User.get_by_id("usrtst"), "yep", "ramsayb2")  # Test eligible but previously banned user
+        assert bannedUser not in [user.user for user in getBannedUsers(1)]
+
+        notBannedUser = User.create(username = 'usrtst2', # Test eligible user
+                              firstName = 'Test',
+                              lastName = 'User 2',
+                              bnumber = '03522493',
+                              email = 'usert2@berea.deu',
+                              isStudent = True)
+        assert notBannedUser not in [user.user for user in getBannedUsers(1)]
         transaction.rollback()
 
 @pytest.mark.integration
 def test_isBannedFromEvent():
     with mainDB.atomic() as transaction:
-        testusr = User.create(username = 'usrtst',
+        bannedUser = User.create(username = 'usrtst', # Test banned user
                               firstName = 'Test',
                               lastName = 'User',
                               bnumber = '03522492',
@@ -349,4 +357,15 @@ def test_isBannedFromEvent():
                               isStudent = True)
         banUser(1, User.get_by_id("usrtst"), "nope", "2050-11-29", "ramsayb2")
         assert isBannedFromEvent("usrtst", 1)
+
+        unbanUser(1, 'usrtst', "yep", "ramsayb2") # Test eligible but previously banned user
+        assert not isBannedFromEvent("usrtst", 1)
+
+        notBannedUser = User.create(username = 'usrtst2', # Test eligible user
+                              firstName = 'Test',
+                              lastName = 'User 2',
+                              bnumber = '03522493',
+                              email = 'usert2@berea.deu',
+                              isStudent = True)
+        assert not isBannedFromEvent("usrtst2", 1)
         transaction.rollback()

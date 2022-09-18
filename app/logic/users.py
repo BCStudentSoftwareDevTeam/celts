@@ -1,7 +1,6 @@
 from app.models.user import User
 from app.models.event import Event
 from app.models.programBan import ProgramBan
-from app.models.programEvent import ProgramEvent
 from app.models.interest import Interest
 from app.models.note import Note
 from app.models.backgroundCheck import BackgroundCheck
