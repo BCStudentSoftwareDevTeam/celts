@@ -138,7 +138,7 @@ $(document).ready(function(){
       type: "POST",
       data: data,
       success: function(s){
-        reloadWithAccordion("background")
+        msgToast("Background Check", "Successfully removed background check.")
       },
       error: function(error, status){
         console.log(error,status)

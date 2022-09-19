@@ -127,7 +127,6 @@ def deleteBackgroundCheck():
         eventData = request.form
         bgId = BackgroundCheck.get_by_id(eventData['bgID'])
         BackgroundCheck.delete().where(BackgroundCheck.id == bgId).execute()
-        flash("Background check successfully deleted.", "success")
         return ""
 
 @admin_bp.route('/updateProgramManager', methods=["POST"])
