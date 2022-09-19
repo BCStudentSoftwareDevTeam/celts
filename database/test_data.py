@@ -291,6 +291,14 @@ programs = [
         "isBonnerScholars": False,
         "contactEmail": "",
         "contactName": ""
+    },
+    {
+        "id": 11,
+        "programName": "Other Celts Sponsored Events",
+        "isStudentLed": False,
+        "isBonnerScholars": False,
+        "contactEmail": "",
+        "contactName": ""
     }
 ]
 Program.insert_many(programs).on_conflict_replace().execute()
@@ -308,7 +316,8 @@ events = [
         "startDate": datetime.strptime("2021 10 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 1
     },
     {
         "id": 2,
@@ -322,7 +331,8 @@ events = [
         "startDate": datetime.strptime("2021 11 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 1
     },
     {
         "id": 3,
@@ -336,7 +346,8 @@ events = [
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 3
     },
     {
         "id": 4,
@@ -350,7 +361,8 @@ events = [
         "startDate": datetime.strptime("2021 6 25","%Y %m %d"),
         "endDate": datetime.strptime("2021 6 25","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 2
     },
     {
         "id": 5,
@@ -364,7 +376,9 @@ events = [
         "startDate": datetime.strptime("2021 6 18","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 10
+
     },
     {
         "id": 6,
@@ -378,7 +392,8 @@ events = [
         "startDate": datetime.strptime("2021 08 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 9 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program":  3
     },
     {
         "id": 7,
@@ -392,7 +407,8 @@ events = [
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 1
     },
     {
         "id": 8,
@@ -406,7 +422,8 @@ events = [
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 2
     },
     {
         "id": 9,
@@ -420,8 +437,8 @@ events = [
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
-
+        "contactName": "testName",
+        "program": 2
     },
     {
         "id": 10,
@@ -435,7 +452,8 @@ events = [
         "startDate": datetime.strptime("2021 1 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 11
     },
     {
         "id": 11,
@@ -449,7 +467,8 @@ events = [
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 11
     },
     {
         "id": 12,
@@ -463,7 +482,8 @@ events = [
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 3
     },
     {
         "id": 13,
@@ -477,7 +497,8 @@ events = [
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 11
     },
     {
         "id": 14,
@@ -492,7 +513,8 @@ events = [
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 11
     },
     {
         "id": 15,
@@ -506,7 +528,8 @@ events = [
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 11
     },
 ]
 Event.insert_many(events).on_conflict_replace().execute()
