@@ -1,4 +1,5 @@
 $(document).ready(function(){
+
   $("#phoneInput").inputmask('(999)-999-9999');
   $(".form-check-input").click(function updateInterest(){
     var programID = $(this).data("programid");
@@ -140,9 +141,26 @@ function displayMessage(message, color) {  // displays message for saving backgr
     setTimeout(function() {$("#displaySave").html("").removeClass("text-"+ color)}, 2000)
 }
 
-function updateManagers(el, volunteer_username ){// retrieve the data of the studnet staff and program id if the boxes are checked or not
-  var program_id=$(el).attr('data-programid');
-  action= el.checked ? 'add' : 'remove';
+$(function() {
+
+     toastElementList = [].slice.call(document.querySelectorAll('.toast'))
+     toastList = toastElementList.map(function (toastEl) {
+        return new bootstrap.Toast(toastEl)
+    })
+
+
+
+});
+
+
+function updateManagers(el, volunteer_username ){// retrieve the data of the student staff and program id if the boxes are checked or not
+  let program_id=$(el).attr('data-programid');
+  let programName = $(el).attr('data-programName')
+  let name = $(el).attr('data-name')
+  let action= el.checked ? 'add' : 'remove';
+  let removeMessage = (name + " is no longer the manager of " + programName + ".")
+  let addMessage =  (name + " is now the manager of " + programName + ".")
+  let notification = $("#liveToast").clone()
 
   $.ajax({
     method:"POST",
@@ -151,5 +169,28 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
             "program_id":program_id,       // program id
             "action":action,          //action: add or remove
              },
+
+     success: function(s){
+         if ($("#liveToast").is(":visible") == true){
+             toastList[0].hide()
+             $("#toastDiv").empty()
+             notification.appendTo("#toastDiv")
+             programManagerToastElements = [].slice.call(document.querySelectorAll('.toast'))
+             programManagerToastList = programManagerToastElements.map(function (toastEl) {
+                 return new bootstrap.Toast(toastEl)
+             })
+         }
+
+         if(action == "add"){
+             $("#toast-body").html(addMessage)
+         }
+         else if(action == 'remove'){
+             $("#toast-body").html(removeMessage)
+         }
+         toastList[0].show()
+      },
+      error: function(error, status){
+          console.log(error, status)
+      }
   })
 }
