@@ -127,12 +127,15 @@ $(document).ready(function(){
   });
 
   $("#bgHistoryTable").on("click", "#deleteBgHistory", function() {
+    let data = {
+        bgID: $(this).data("id"),       // Expected to be the ID of a background check in the database
+    }
     $(this).closest("li").remove();
 
     $.ajax({
       url: "/deleteBackgroundCheck",
       type: "POST",
-      data: ,
+      data: data,
       success: function(s){
         reloadWithAccordion("background")
       },

@@ -121,11 +121,13 @@ def addBackgroundCheck():
         addUserBackgroundCheck(user, type, bgStatus, dateCompleted)
         return " "
 
-@admin_bp.route('/deleteBackgroundCheck/<bgID>', methods = ['POST'])
-def deleteBackgroundCheck(bgID):
+@admin_bp.route('/deleteBackgroundCheck', methods = ['POST'])
+def deleteBackgroundCheck():
     if g.current_user.isCeltsAdmin:
-        BackgroundCheck.delete().where(BackgroundCheck.id == bgID)
-        flash("Hello there", "success")
+        eventData = request.form
+        bgId = BackgroundCheck.get_by_id(eventData['bgID'])
+        BackgroundCheck.delete().where(BackgroundCheck.id == bgId).execute()
+        flash("Background check successfully deleted.", "success")
         return ""
 
 @admin_bp.route('/updateProgramManager', methods=["POST"])

@@ -266,7 +266,7 @@
                           {% for bgStatus in allBackgroundHistory[bgType.id] %}
                            <li>
                              {{bgStatus.backgroundCheckStatus}}: {{bgStatus.dateCompleted}}
-                             <button class="bg-transparent border-0 text-danger" id="deleteBgHistory" data-id="{{bgType.id}}">X</button>
+                             <button class="bg-transparent border-0 text-danger" id="deleteBgHistory" data-id="{{bgStatus.id}}">X</button>
                            </li>
                           {% endfor %}
                        </ul>
