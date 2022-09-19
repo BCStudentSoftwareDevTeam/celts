@@ -481,7 +481,7 @@ def test_deleteEvent():
         assert (len(recurringEventsBefore)-1) == len(recurringEventsAfter)
         transaction.rollback()
 
-        #creating recurring event again to test def deleteAllRecurringEvents()
+        #creating recurring event again to test def deleteRecurringSeries()
         eventInfo['valid'] = True
         eventInfo['program'] = Program.get_by_id(1)
         recurringEvents = saveEventToDb(eventInfo)
@@ -494,7 +494,7 @@ def test_deleteEvent():
 
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
-            deletingEvent = deleteAllRecurringEvents(recurringEvents[1])
+            deletingEvent = deleteEventAndAllFollowing(recurringEvents[1])
             totalRecurringEventsAfter = len(Event.select().where(Event.recurringId == recurringId))
         assert (totalRecurringEvents - eventPlusAllRecurringEventsAfter) == totalRecurringEventsAfter
         transaction.rollback()
