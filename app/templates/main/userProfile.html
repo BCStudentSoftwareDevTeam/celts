@@ -265,7 +265,7 @@
                        <ul class="mb-0" id="bgHistory{{bgType.id}}" >
                           {% for bgStatus in allBackgroundHistory[bgType.id] %}
                            <li>
-                             {{bgStatus.backgroundCheckStatus}}: {{bgStatus.dateCompleted}}
+                             {{bgStatus.backgroundCheckStatus}}: {{bgStatus.dateCompleted.strftime("%m/%d/%Y")}}
                              <button class="bg-transparent border-0 text-danger" id="deleteBgHistory" data-id="{{bgStatus.id}}">X</button>
                            </li>
                           {% endfor %}
@@ -280,7 +280,7 @@
                               <option value="Failed">Failed</option>
                           </select>
                       </td>
-                      <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" class="form-control"/></td>
+                      <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" class="form-control"></td>
                       <td><button type="button" class="savebtn btn btn-primary" id="{{bgType.id}}" data-id="{{bgType.id}}" data-username="{{volunteer.username}}">Save</button></td>
                   {% endif %}
                   </tr>

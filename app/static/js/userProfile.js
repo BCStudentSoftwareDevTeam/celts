@@ -89,19 +89,20 @@ $(document).ready(function(){
     let bgDate = $("#" + bgCheckType + "_date").val()
     let bgStatus = $("#" + bgCheckType).val()
 
-    if (bgStatus == '' && bgDate != '') {
-        displayMessage("Status<br>Empty!", "danger")
-        return
+    if (bgStatus == '') {
+      $("#" + bgCheckType).addClass("invalid");
+      window.setTimeout(() => $("#" + bgCheckType).removeClass("invalid"), 1000);
+      $("#" + bgCheckType).focus()
+      $(this).prop("disabled", false);
+      return false
     }
 
-    if (bgStatus == '' && bgDate == '' ) {
-      displayMessage("Both Fields<br>Empty!", "danger")
-      return
-    }
-
-    if (bgStatus != '' && bgDate == '' ) {
-        displayMessage("Date<br>Empty!", "danger")
-        return
+    if (bgDate == ''){
+      $("#" + bgCheckType + "_date").addClass("invalid");
+      window.setTimeout(() => $("#" + bgCheckType + "_date").removeClass("invalid"), 1000);
+      $("#" + bgCheckType + "_date").focus()
+      $(this).prop("disabled", false);
+      return false
     }
 
     let data = {
