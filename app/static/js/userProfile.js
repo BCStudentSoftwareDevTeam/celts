@@ -118,7 +118,6 @@ $(document).ready(function(){
       success: function(s){
         displayMessage("Saved!", "success")
         var date = new Date(data.bgDate + " 12:00").toLocaleDateString()
-        $("#bgHistory" + data.bgType).prepend(`<li> ${data.bgStatus}: ${date} </li>`);
         reloadWithAccordion("background")
       },
       error: function(error, status){
@@ -138,7 +137,7 @@ $(document).ready(function(){
       type: "POST",
       data: data,
       success: function(s){
-        msgToast("Background Check", "Successfully removed background check.")
+        msgToast("Background Check", "Successfully deleted background check.")
       },
       error: function(error, status){
         console.log(error,status)
