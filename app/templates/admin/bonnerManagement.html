@@ -30,32 +30,42 @@
                 </div>
                 <div class="tab-content" id="v-pills-tabContent">
                     <div class="tab-pane fade show active" id="v-pills-all" role="tabpanel" aria-labelledby="v-pills-all-tab">
+                    <a href="#" class="float-end" style="margin-right: -150px">
+                        <img class="mx-auto d-block" src="static/xls-icon-3379.png" height="32" width="32"/>
+                        <span>Export</span>
+                    </a>
                     {% for year, users in cohorts.items()|reverse %}
-                        <h5>{{year}} - {{year + 1}}</h5>
-                        <ul class="list-unstyled">
-                        {% for user in users %}
-                            <li>{{user.fullName}}</li>
-                        {% endfor %}
-                        </ul>
-                    {% endfor %}
+                        <div class="p-1" style="width:150%;background-color: {{ "white" if year % 2 else "#f0f0f0" }}">
+                            <h5 class="pt-2 text-center">{{year}} - {{year + 1}}</h5>
+                            <ul class="mb-0 list-unstyled fs-5">
+                            {% for user in users %}
+                                <li>{{user.fullName}}</li>
+                            {% endfor %}
+                            </ul>
+                        </div>
+                    {%- endfor %}
                     </div>
                     {% for year, users in cohorts.items() %}
                         {% set searchId = "search-" + year|string %}
                     <div class="tab-pane fade" id="v-pills-{{year}}" role="tabpanel" aria-labelledby="v-pills-{{year}}-tab">
-                        <h5>{{year}} - {{year + 1}}</h5>
+                        <h5 class="text-center">{{year}} - {{year + 1}}</h5>
                         <div>
-                            <div class="input-group">
-                                <input type="search" id="{{searchId}}" name="{{searchId}}" class="form-control" data-year="{{year}}" placeholder="Search" autocomplete="off" style="width:50%" />
+                            <div class="input-group mb-3">
+                                <input type="search" id="{{searchId}}" name="{{searchId}}" class="form-control" data-year="{{year}}" placeholder="Add Student" autocomplete="off" style="width:50%" />
                                 <span class="input-group-text me-1"><span class="bi bi-search"></span></span>
                             </div>
-                                <ul class="list-unstyled">
-                                {% for user in users %}
-                                    <li id="{{user.username}}" class="clearfix">
-                                        {{user.firstName}} {{user.lastName}}
-                                        <button data-username="{{user.username}}" data-year="{{year}}" type="button" class="btn btn-danger float-end removeBonner">Remove</button>
-                                    </li>
-                                {% endfor %}
-                                </ul>
+                            <table class="w-100 table table-striped">
+                            {% if users|count == 0 %}
+                                <tr><td>No students added.</td></tr>
+                            {% endif %}
+
+                            {% for user in users %}
+                                <tr>
+                                    <td id="{{user.username}}" class="align-middle">{{user.firstName}} {{user.lastName}}</td>
+                                    <td class="w-25"><button data-username="{{user.username}}" data-year="{{year}}" type="button" class="btn btn-danger removeBonner">Remove</button></td>
+                                </tr>
+                            {% endfor %}
+                            </table>
                         </div>
                     </div>
                     {% endfor %}

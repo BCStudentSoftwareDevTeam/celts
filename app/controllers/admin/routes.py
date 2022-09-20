@@ -273,3 +273,10 @@ def updatecohort(year, method, username):
         abort(500)
 
     return ""
+
+@admin_bp.route("/bonnerxls")
+def bonnerxls():
+    cohorts = getBonnerCohorts()
+    return render_template("/admin/bonnerManagement.html", 
+                           cohorts=cohorts)
+
