@@ -1,6 +1,11 @@
 {% set title = "Bonner Management" %}
 {% extends "base.html" %}
 
+{% block styles %}
+    {{super()}}
+    <link rel="stylesheet" href="{{url_for('static', filename ='css/bonner.css') }}?u={{lastStaticUpdate}}">
+{% endblock %}
+
 {% block scripts %}
   {{super()}}
   <script type="module" src="/static/js/bonnerManagement.js"></script>
@@ -28,18 +33,18 @@
                     <button class="nav-link" id="v-pills-{{year}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{year}}" type="button" role="tab" aria-controls="v-pills-{{year}}" aria-selected="true">{{year}} - {{year + 1}}</button>
                 {% endfor %}
                 </div>
-                <div class="tab-content" id="v-pills-tabContent">
+                <div class="tab-content allBonner" id="v-pills-tabContent">
                     <div class="tab-pane fade show active" id="v-pills-all" role="tabpanel" aria-labelledby="v-pills-all-tab">
-                    <a href="/bonnerxls" target="_blank" class="float-end" style="margin-right: -150px">
-                        <img class="mx-auto d-block" src="static/xls-icon-3379.png" alt="Export to Excel" height="32" width="32"/>
-                        <span>Export</span>
-                    </a>
+                        <a href="/bonnerxls" target="_blank" class="export">
+                            <img src="static/xls-icon-3379.png" alt="Export to Excel" height="32" width="32"/>
+                            <span>Export</span>
+                        </a>
                     {% for year, users in cohorts.items()|reverse %}
-                        <div class="p-1 rounded" style="width:150%;background-color: {{ "#fbfbfb" if year % 2 else "#f0f0f0" }}">
-                            <span class="fs-8">{{year}} - {{year + 1}}</span>
-                            <ul class="mb-0 list-unstyled fs-5">
+                        <div class="cohort {{ "event" if year % 2 else "odd" }}">
+                            <span>{{year}} - {{year + 1}}</span>
+                            <ul>
                             {% for user in users %}
-                                <li>{{user.fullName}}</li>
+                                <li><a href="/profile/{{user.username}}?accordion=bonner">{{user.fullName}}</a></li>
                             {% endfor %}
                             </ul>
                         </div>
