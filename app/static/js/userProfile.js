@@ -85,11 +85,12 @@ $(document).ready(function(){
 
   $(".savebtn").click(function () { // Updates the Background check of a volunteer in the database
     $(this).prop("disabled", true);
-    let bgCheckType = $(this).data("id")
-    let bgDate = $("#" + bgCheckType + "_date").val()
-    let bgStatus = $("#" + bgCheckType).val()
     var bgStatusInput = $("#" + bgCheckType)
     var bgDateInput = $("#" + bgCheckType + "_date")
+
+    let bgCheckType = $(this).data("id")
+    let bgDate = bgDateInput.val()
+    let bgStatus = bgStatusInput.val()
 
     if (bgStatus == '') {
       bgStatusInput.addClass("invalid");
