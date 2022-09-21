@@ -48,6 +48,9 @@ def signinEvent():
     bnumber = request.form["bNumber"]
     programid = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event == eventid)
 
+    if not bnumber: # Avoids string index out of range error
+        return "", 500
+
     if bnumber[0]==";" and bnumber[-1]=="?": # scanned bNumber starts with ";" and ends with "?"
         bnumber = "B"+ bnumber[1:9]
     else:
