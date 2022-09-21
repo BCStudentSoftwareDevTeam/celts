@@ -59,6 +59,7 @@ def getBonnerCohorts():
     currentYear = date.today().year
     defaultStart = currentYear-4
     firstYear = years[0].year if len(years) and years[0].year < defaultStart else defaultStart
+
     cohorts = { year: [] for year in range(firstYear, currentYear+1) }
     for cohort in years:
         cohorts[cohort.year].append(cohort.user)

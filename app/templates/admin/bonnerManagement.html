@@ -8,7 +8,7 @@
 
 {% block scripts %}
   {{super()}}
-  <script type="module" src="/static/js/bonnerManagement.js"></script>
+  <script type="module" src="{{url_for('static', filename = 'js/bonnerManagement.js') }}?u={{lastStaticUpdate}}"></script>
 {% endblock %}
 
 {% block app_content %}
@@ -49,7 +49,7 @@
                             <span>Export</span>
                         </a>
                     {% for year, users in cohorts.items()|reverse %}
-                        <div class="cohort {{ "event" if year % 2 else "odd" }}">
+                        <div class="cohort {{ "even" if year % 2 else "odd" }}">
                             <span>{{year}} - {{year + 1}}</span>
                             <ul>
                             {% for user in users %}
