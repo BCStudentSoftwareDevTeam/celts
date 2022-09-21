@@ -1,0 +1,38 @@
+
+/* Mostly copied from the Bootstrap classes, because it was looking pretty messy */
+
+.allBonner a.export {
+    margin-right: -160px;
+    float: right;
+}
+
+.allBonner a img {
+    margin-right: auto;
+    margin-left: auto;
+    display: block;
+}
+
+.allBonner div.cohort {
+    width: 150%;
+    border-radius: 0.3rem;
+    padding: 0.5rem;
+}
+
+.allBonner div.cohort.even {
+    background-color: #fbfbfb;
+}
+.allBonner div.cohort.odd {
+    background-color: #f0f0f0;
+}
+
+.allBonner div.cohort ul {
+    font-size: 1.25rem;
+    margin-left: 0.5rem;
+    margin-bottom: 0;
+    padding-left: 0;
+    list-style: none;
+}
+.allBonner div.cohort ul a {
+    text-decoration: none;
+}
+
