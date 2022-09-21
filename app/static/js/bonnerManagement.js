@@ -9,10 +9,6 @@ $(document).ready(function(){
     let year = $(this).data('year')
     submitRequest(year, "remove", $(this).data("username"));
   });
-
-  if(visible_tab != "none") {
-    $(`#v-pills-${visible_tab}-tab`).trigger("click");
-  }
 });
 
 function submitRequest(year, method, username){
