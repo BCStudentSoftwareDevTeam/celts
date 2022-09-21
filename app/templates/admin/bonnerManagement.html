@@ -30,13 +30,13 @@
                 </div>
                 <div class="tab-content" id="v-pills-tabContent">
                     <div class="tab-pane fade show active" id="v-pills-all" role="tabpanel" aria-labelledby="v-pills-all-tab">
-                    <a href="#" class="float-end" style="margin-right: -150px">
-                        <img class="mx-auto d-block" src="static/xls-icon-3379.png" height="32" width="32"/>
+                    <a href="/bonnerxls" target="_blank" class="float-end" style="margin-right: -150px">
+                        <img class="mx-auto d-block" src="static/xls-icon-3379.png" alt="Export to Excel" height="32" width="32"/>
                         <span>Export</span>
                     </a>
                     {% for year, users in cohorts.items()|reverse %}
-                        <div class="p-1" style="width:150%;background-color: {{ "white" if year % 2 else "#f0f0f0" }}">
-                            <h5 class="pt-2 text-center">{{year}} - {{year + 1}}</h5>
+                        <div class="p-1 rounded" style="width:150%;background-color: {{ "#fbfbfb" if year % 2 else "#f0f0f0" }}">
+                            <span class="fs-8">{{year}} - {{year + 1}}</span>
                             <ul class="mb-0 list-unstyled fs-5">
                             {% for user in users %}
                                 <li>{{user.fullName}}</li>

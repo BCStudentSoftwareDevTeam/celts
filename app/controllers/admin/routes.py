@@ -1,4 +1,5 @@
-from flask import request, render_template, url_for, g, Flask, redirect, flash, abort, json, jsonify, session
+from flask import request, render_template, url_for, g, Flask, redirect
+from flask import flash, abort, json, jsonify, session, send_file
 from peewee import DoesNotExist, fn, IntegrityError
 from playhouse.shortcuts import model_to_dict, dict_to_model
 import json
@@ -28,7 +29,7 @@ from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
 from app.logic.participants import getEventParticipants, getUserParticipatedEvents, checkUserRsvp, checkUserVolunteer
 from app.logic.fileHandler import FileHandler
-from app.logic.bonner import getBonnerCohorts
+from app.logic.bonner import getBonnerCohorts, makeBonnerXls
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
@@ -276,7 +277,6 @@ def updatecohort(year, method, username):
 
 @admin_bp.route("/bonnerxls")
 def bonnerxls():
-    cohorts = getBonnerCohorts()
-    return render_template("/admin/bonnerManagement.html", 
-                           cohorts=cohorts)
+    newfile = makeBonnerXls()
+    return send_file(open(newfile, 'rb'), download_name='BonnerStudents.xlsx', as_attachment=True)
 
