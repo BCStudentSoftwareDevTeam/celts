@@ -88,19 +88,21 @@ $(document).ready(function(){
     let bgCheckType = $(this).data("id")
     let bgDate = $("#" + bgCheckType + "_date").val()
     let bgStatus = $("#" + bgCheckType).val()
+    var bgStatusInput = $("#" + bgCheckType)
+    var bgDateInput = $("#" + bgCheckType + "_date")
 
     if (bgStatus == '') {
-      $("#" + bgCheckType).addClass("invalid");
-      window.setTimeout(() => $("#" + bgCheckType).removeClass("invalid"), 1000);
-      $("#" + bgCheckType).focus()
+      bgStatusInput.addClass("invalid");
+      window.setTimeout(() => bgStatusInput.removeClass("invalid"), 1000);
+      bgStatusInput.focus()
       $(this).prop("disabled", false);
       return false
     }
 
     if (bgDate == ''){
-      $("#" + bgCheckType + "_date").addClass("invalid");
-      window.setTimeout(() => $("#" + bgCheckType + "_date").removeClass("invalid"), 1000);
-      $("#" + bgCheckType + "_date").focus()
+      bgDateInput.addClass("invalid");
+      window.setTimeout(() => bgDateInput.removeClass("invalid"), 1000);
+      bgDateInput.focus()
       $(this).prop("disabled", false);
       return false
     }

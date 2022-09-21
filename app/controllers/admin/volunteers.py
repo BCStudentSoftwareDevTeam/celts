@@ -125,8 +125,8 @@ def addBackgroundCheck():
 def deleteBackgroundCheck():
     if g.current_user.isCeltsAdmin:
         eventData = request.form
-        bgId = BackgroundCheck.get_by_id(eventData['bgID'])
-        BackgroundCheck.delete().where(BackgroundCheck.id == bgId).execute()
+        bgToDelete = BackgroundCheck.get_by_id(eventData['bgID'])
+        BackgroundCheck.delete().where(BackgroundCheck.id == bgToDelete).execute()
         return ""
 
 @admin_bp.route('/updateProgramManager', methods=["POST"])
