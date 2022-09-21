@@ -19,7 +19,9 @@
   z-index: 11;
 }
 
-input.invalid {
+.form-control.invalid,
+input.invalid,
+select.invalid {
   background-color: #ffdddd;
 }
 

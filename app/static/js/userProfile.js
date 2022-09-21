@@ -94,17 +94,17 @@ $(document).ready(function(){
     let bgStatus = $("[data-id=" + bgCheckType + "]").val()
 
     if (bgStatus == '') {
+      bgStatusInput.focus()
       bgStatusInput.addClass("invalid");
       window.setTimeout(() => bgStatusInput.removeClass("invalid"), 1000);
-      bgStatusInput.focus()
       $(this).prop("disabled", false);
       return false
     }
 
     if (bgDate == ''){
+      bgDateInput.focus()
       bgDateInput.addClass("invalid");
       window.setTimeout(() => bgDateInput.removeClass("invalid"), 1000);
-      bgDateInput.focus()
       $(this).prop("disabled", false);
       return false
     }
@@ -120,7 +120,6 @@ $(document).ready(function(){
       type: "POST",
       data: data,
       success: function(s){
-        displayMessage("Saved!", "success")
         var date = new Date(data.bgDate + " 12:00").toLocaleDateString()
         reloadWithAccordion("background")
       },
@@ -164,11 +163,6 @@ $(document).ready(function(){
     validatePhoneNumber(this, "#phoneInput", username)
   });
 });
-
-function displayMessage(message, color) {  // displays message for saving background check
-    $("#displaySave").html(message).addClass("text-"+ color)
-    setTimeout(function() {$("#displaySave").html("").removeClass("text-"+ color)}, 2000)
-}
 
 function updateManagers(el, volunteer_username ){// retrieve the data of the student staff and program id if the boxes are checked or not
   let program_id=$(el).attr('data-programid');
