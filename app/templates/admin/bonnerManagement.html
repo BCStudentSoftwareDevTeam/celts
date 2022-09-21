@@ -94,10 +94,51 @@
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingTwo">
       {% set focus = "open" if visibleAccordion == "events" else "collapsed" %}
-      <button class="accordion-button {{focus}} " type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"> Requirements </button>
+      <button class="accordion-button {{focus}} " type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"> {{g.current_term.description}} Events </button>
     </h3>
     {% set show = "show" if visibleAccordion == "events" else "" %}
     <div id="collapseTwo" class="accordion-collapse collapse {{show}}" aria-labelledby="headingTwo" data-bs-parent="#bonnerManagement">
+        <div class="accordion-body">
+            <!-------------------- Events --------------------->
+            <div class="row table-responsive">
+              <table class="table">
+                {% if events|length > 0 %}
+                  <thead class="tableHeader">
+                    <th scope="col">Event Name</th>
+                    <th scope="col">Event Date</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">RSVPs</th>
+                    <th scope="col">Participants</th>
+                  </thead>
+                  {% for event in events|reverse %}
+                    <tr style="{% if event.isPast  %} opacity: 0.6 {% endif %}">
+                        <td><a href= '/eventsList/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
+                        <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
+                        <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}}</td>
+                        <td>{{event.location}}</td>
+                        <td>{{event.rsvps|count}}</td>
+                        <td>{{event.participants|count}}</td>
+                      </tr>
+                  {% endfor %}
+                {% else %}
+                  <h5>You have no Bonner events.</h5>
+                {% endif %}
+              </table>
+            </div>
+            <!-------------------- End Events --------------------->
+        </div>
+    </div>
+  </div>
+</div>
+
+  <div class="accordion-item">
+    <h3 class="accordion-header" id="headingThree">
+      {% set focus = "open" if visibleAccordion == "requirements" else "collapsed" %}
+      <button class="accordion-button {{focus}} " type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree"> Requirements </button>
+    </h3>
+    {% set show = "show" if visibleAccordion == "requirements" else "" %}
+    <div id="collapseThree" class="accordion-collapse collapse {{show}}" aria-labelledby="headingThree" data-bs-parent="#bonnerManagement">
         <div class="accordion-body">
             <!-------------------- Requirements --------------------->
             <h3>Coming Soon</h3>

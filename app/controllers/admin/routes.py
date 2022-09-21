@@ -26,7 +26,7 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.adminLogs import createLog
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
-from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency
+from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, getBonnerEvents
 from app.logic.participants import getEventParticipants, getUserParticipatedEvents, checkUserRsvp, checkUserVolunteer
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls
@@ -251,12 +251,18 @@ def deleteFile():
 
 @admin_bp.route("/manageBonner")
 def manageBonner():
-    cohorts = getBonnerCohorts()
+    if not g.current_user.isCeltsAdmin:
+        abort(403)
+
     return render_template("/admin/bonnerManagement.html", 
-                           cohorts=cohorts)
+                           cohorts=getBonnerCohorts(),
+                           events=getBonnerEvents(g.current_term))
 
 @admin_bp.route("/bonner/<year>/<method>/<username>", methods=["POST"])
 def updatecohort(year, method, username):
+    if not g.current_user.isCeltsAdmin:
+        abort(403)
+
     try:
         user = User.get_by_id(username)
     except:
@@ -277,6 +283,9 @@ def updatecohort(year, method, username):
 
 @admin_bp.route("/bonnerxls")
 def bonnerxls():
+    if not g.current_user.isCeltsAdmin:
+        abort(403)
+
     newfile = makeBonnerXls()
     return send_file(open(newfile, 'rb'), download_name='BonnerStudents.xlsx', as_attachment=True)
 
