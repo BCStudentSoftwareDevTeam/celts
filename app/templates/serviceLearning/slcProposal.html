@@ -36,8 +36,8 @@
             <tr data-username="{{instructor.user.username}}">
               <td>
                 <p class="mb-0">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user.email}})</p>
-                  <input type="text" style="border: none" size="12" class="form-control-sm" id="inputPhoneNumber-{{instructor.user}}" name="courseInstructorPhone" aria-label="Instructor Phone" value="{{instructor.user.phoneNumber}}" placeholder="Phone Number" />
-                  <a class="text-decoration-none primary editButton" tabindex="0" data-id="{{instructor.user}}"  id="editButton-{{instructor.user}}"  type="button">Edit</a>
+                  <input type="text" style="border: none" size="12" class="form-control-sm inputPhone" id="inputPhoneNumber-{{instructor.user}}" name="courseInstructorPhone" aria-label="Instructor Phone" value="{{instructor.user.phoneNumber}}" placeholder="Phone Number"/>
+                  <btn class="text-decoration-none btn-link editButton" tabindex="0" data-id="{{instructor.user}}"  id="editButton-{{instructor.user}}"  type="button">Edit</btn>
               </td>
               <td class="align-middle">
                   <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>

@@ -21,16 +21,19 @@ $(document).ready(function() {
 });
 
 
-function validatePhoneNumber(editButtonId, phoneInputId, username) {
-    if ($(editButtonId).html() === 'Edit') {
+function validatePhoneNumber(editButtonId, phoneInputId, username, whatsClicked) {
+    if ($(editButtonId).html() === 'Edit' && ((whatsClicked == "button") || (whatsClicked == "input"))) {
         $(editButtonId).html("Save");
         $(phoneInputId).focus();
+    } else if ($(editButtonId).html() === 'Save' && whatsClicked == "input") {
+         //pass
+    } else if ($(editButtonId).html() === 'Save' && (!$(phoneInputId).focus())){
+        $(".inputPhone").css("border-color", "#fff");
     } else {
         // Save the phone number
         var phoneInput = $(phoneInputId);
         var isvalid = phoneInput.val().replace(/\D/g,"").length === 10;
-        let isempty = phoneInput.val().replace(/\D/g,"").length === 0;
-        if (!(isvalid || isempty)) { // allows phone number input to be empty
+        let isempty = phoneInput.val().replace(/\D/g,"").length === 0;       if (!(isvalid || isempty)) { // allows phone number input to be empty
             phoneInput.addClass("invalid");
             window.setTimeout(() => phoneInput.removeClass("invalid"), 1000);
             phoneInput.focus()

@@ -80,13 +80,15 @@ $(document).ready(function(e) {
         $("#courseInstructor").on('input', function() {
             searchUser("courseInstructor", createNewRow, true, null, "instructor");
         });
-        $("input[name=courseInstructorPhone]").focus(focusHandler);
-        $("input[name=courseInstructorPhone]").focusout(blurHandler);
+        $('#instructorTable').on('click', ".inputPhone", function() {
+            var username=getRowUsername(this)
+            var phoneInput = "#inputPhoneNumber-" + username
+            validatePhoneNumber($(".editButton"), phoneInput, username, "input")
+        });
         $('#instructorTable').on('click', ".editButton", function() {
             var username=getRowUsername(this)
             var phoneInput = "#inputPhoneNumber-" + username
-            validatePhoneNumber(this, phoneInput, username)
-
+            validatePhoneNumber(this, phoneInput, username, "button")
         });
     }
 })
