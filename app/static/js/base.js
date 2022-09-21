@@ -18,8 +18,22 @@ $(document).ready(function() {
     });
     $(".alert").delay(5000).fadeOut();
 
+    toastElementList = [].slice.call(document.querySelectorAll('.toast'))
+    toastList = toastElementList.map(function (toastEl) {
+       return new bootstrap.Toast(toastEl)
+   })
+
 });
 
+function msgToast(head, body){
+  if ($("#liveToast").is(":visible") == true){
+    $('#liveToast').removeClass("show")
+    $('#liveToast').addClass("hide")
+  }
+  $("#toast-header").html(head)
+  $("#toast-body").html(body)
+  toastList[0].show()
+}
 
 function validatePhoneNumber(editButtonId, phoneInputId, username, whatsClicked) {
     if ($(editButtonId).html() === 'Edit' && ((whatsClicked == "button") || (whatsClicked == "input"))) {

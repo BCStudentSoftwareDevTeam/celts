@@ -36,6 +36,7 @@ def deleteEvent(eventId):
     to make sure there is no gap in weeks.
     """
     event = Event.get_or_none(Event.id == eventId)
+
     if event:
         if event.recurringId:
             recurringId = event.recurringId
@@ -52,11 +53,25 @@ def deleteEvent(eventId):
                     newEventName = recurringEvent.name
                     eventDeleted = True
 
+        program = event.singleProgram
+
+        if program:
+            createLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+        else:
+            createLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+
         event.delete_instance(recursive = True, delete_nullable = True)
 
-        createLog(f"Deleted event: {event.name}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}")
-
 def attemptSaveEvent(eventData, attachmentFiles = None):
+    """
+    Tries to save an event to the database:
+    Checks that the event data is valid and if it is it continus to saves the new
+    event to the database and adds files if there are any.
+    If it is not valid it will return a validation error.
+
+    Returns:
+    Created events and an error message.
+    """
     newEventData = preprocessEventData(eventData)
     addfile= FileHandler(attachmentFiles)
     isValid, validationErrorMessage = validateNewEventData(newEventData)
@@ -69,7 +84,7 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
         if  attachmentFiles:
             for event in events:
                 addfile.saveFilesForEvent(event.id)
-        return True, ""
+        return events, ""
     except Exception as e:
         print(e)
         return False, e
@@ -151,15 +166,16 @@ def getTrainingEvents(term, user):
         return: a list of all trainings the user can view
     """
     trainingQuery = (Event.select(Event)
-                           .join(ProgramEvent)
-                           .join(Program)
-                           .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate)
-                           .where(Event.isTraining, Event.term == term))
+                           .join(ProgramEvent, JOIN.LEFT_OUTER)
+                           .join(Program, JOIN.LEFT_OUTER)
+                           .where(Event.isTraining == True, Event.term == term)
+                           .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate).distinct())
+
     hideBonner = (not user.isAdmin) and not (user.isStudent and user.isBonnerScholar)
     if hideBonner:
         trainingQuery = trainingQuery.where(Program.isBonnerScholars == False)
 
-    return list(trainingQuery.distinct().execute())
+    return list(trainingQuery.execute())
 
 def getBonnerEvents(term):
 
@@ -211,7 +227,21 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
                     .order_by(Event.startDate, Event.name).execute() # keeps the order of events the same when the dates are the same
                     )
 
-    return events
+
+    events_list = []
+    shown_recurring_event_list = []
+
+    # removes all recurring events except for the next upcoming one
+    for event in events:
+        if event.recurringId:
+            if event.recurringId not in shown_recurring_event_list:
+                events_list.append(event)
+                shown_recurring_event_list.append(event.recurringId)
+
+        else:
+            events_list.append(event)
+
+    return events_list
 
 def getParticipatedEventsForUser(user):
     """
@@ -256,10 +286,11 @@ def validateNewEventData(data):
 
     # Validation if we are inserting a new event
     if 'id' not in data:
-        # Check for a pre-existing event with Event name, Description and Event Start date
+        
         event = Event.select().where((Event.name == data['name']) &
-                                 (Event.description == data['description']) &
-                                 (Event.startDate == data['startDate']))
+                                     (Event.location == data['location']) &
+                                     (Event.startDate == data['startDate']) &
+                                     (Event.timeStart == data['timeStart']))
 
         try:
             Term.get_by_id(data['term'])

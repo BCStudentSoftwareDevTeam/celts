@@ -1,4 +1,5 @@
 $(document).ready(function(){
+
   $("#phoneInput").inputmask('(999)-999-9999');
   $(".form-check-input").click(function updateInterest(){
     var programID = $(this).data("programid");
@@ -83,17 +84,29 @@ $(document).ready(function(){
   });
 
   $(".savebtn").click(function () { // Updates the Background check of a volunteer in the database
+    $(this).prop("disabled", true);
     let bgCheckType = $(this).data("id")
-    let bgDate = $("#" + bgCheckType + "_date").val()
+
+    var bgStatusInput = $("#" + bgCheckType)
+    var bgDateInput = $("#" + bgCheckType + "_date")
+
+    let bgDate =  bgDateInput.val()
     let bgStatus = $("[data-id=" + bgCheckType + "]").val()
 
-    if (bgStatus == '' && bgDate != '') {
-        displayMessage("Passed<br>Empty!", "danger")
-        return
+    if (bgStatus == '') {
+      bgStatusInput.focus()
+      bgStatusInput.addClass("invalid");
+      window.setTimeout(() => bgStatusInput.removeClass("invalid"), 1000);
+      $(this).prop("disabled", false);
+      return false
     }
-    if (bgStatus != '' && bgDate == '' ) {
-        displayMessage("Date<br>Empty!", "danger")
-        return
+
+    if (bgDate == ''){
+      bgDateInput.focus()
+      bgDateInput.addClass("invalid");
+      window.setTimeout(() => bgDateInput.removeClass("invalid"), 1000);
+      $(this).prop("disabled", false);
+      return false
     }
 
     let data = {
@@ -103,14 +116,12 @@ $(document).ready(function(){
         bgDate: bgDate  // Expected to be the date of the background check completion or '' if field is empty
     }
     $.ajax({
-      url: "/updateBackgroundCheck",
+      url: "/addBackgroundCheck",
       type: "POST",
       data: data,
       success: function(s){
-          displayMessage("Saved!", "success")
-          var date = new Date(data.bgDate).toLocaleDateString()
-          $("#bgHistory" + data.bgType).prepend(`<li> ${data.bgStatus}: ${date} </li>`);
-
+        var date = new Date(data.bgDate + " 12:00").toLocaleDateString()
+        reloadWithAccordion("background")
       },
       error: function(error, status){
           console.log(error, status)
@@ -118,6 +129,24 @@ $(document).ready(function(){
     })
   });
 
+  $("#bgHistoryTable").on("click", "#deleteBgHistory", function() {
+    let data = {
+        bgID: $(this).data("id"),       // Expected to be the ID of a background check in the database
+    }
+    $(this).closest("li").remove();
+
+    $.ajax({
+      url: "/deleteBackgroundCheck",
+      type: "POST",
+      data: data,
+      success: function(s){
+        msgToast("Background Check", "Successfully deleted background check.")
+      },
+      error: function(error, status){
+        console.log(error,status)
+      }
+    })
+  });
   // Popover functionalitie
     var requiredTraining = $(".trainingPopover");
     requiredTraining.popover({
@@ -139,14 +168,13 @@ $(document).ready(function(){
   });
 });
 
-function displayMessage(message, color) {  // displays message for saving background check
-    $("#displaySave").html(message).addClass("text-"+ color)
-    setTimeout(function() {$("#displaySave").html("").removeClass("text-"+ color)}, 2000)
-}
-
-function updateManagers(el, volunteer_username ){// retrieve the data of the studnet staff and program id if the boxes are checked or not
-  var program_id=$(el).attr('data-programid');
-  action= el.checked ? 'add' : 'remove';
+function updateManagers(el, volunteer_username ){// retrieve the data of the student staff and program id if the boxes are checked or not
+  let program_id=$(el).attr('data-programid');
+  let programName = $(el).attr('data-programName')
+  let name = $(el).attr('data-name')
+  let action= el.checked ? 'add' : 'remove';
+  let removeMessage = (name + " is no longer the manager of " + programName + ".")
+  let addMessage =  (name + " is now the manager of " + programName + ".")
 
   $.ajax({
     method:"POST",
@@ -155,5 +183,16 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
             "program_id":program_id,       // program id
             "action":action,          //action: add or remove
              },
+
+     success: function(s){
+         if(action == "add"){
+             msgToast("Program manager", addMessage)
+         } else if(action == 'remove'){
+             msgToast("Program manager", removeMessage)
+         }
+      },
+      error: function(error, status){
+          console.log(error, status)
+      }
   })
 }

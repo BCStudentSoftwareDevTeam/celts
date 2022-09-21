@@ -92,11 +92,12 @@ def addUserBackgroundCheck(user, bgType, bgStatus, dateCompleted):
         if not dateCompleted:
             dateCompleted = None
         update = BackgroundCheck.create(user=user, type=bgType, backgroundCheckStatus=bgStatus, dateCompleted=dateCompleted)
-        if bool(bgStatus):
+        if bgStatus == 'Submitted':
+            createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as submitted.")
+        elif bgStatus == 'Passed':
             createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as passed.")
         else:
-            createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as not passed.")
-
+            createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as failed.")
 
 def setProgramManager(username, program_id, action):
     '''

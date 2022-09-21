@@ -29,12 +29,12 @@
 <div class="accordion" id="userProfile">
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingOne">
-      {% set focus = "open" if not visibleAccordion or visibleAccordion == "upcoming" else "collapsed" %}
+      {% set focus = "open" if visibleAccordion == "upcoming" or volunteer.username == g.current_user.username and not visibleAccordion =="programTable" and not visibleAccordion =="background" else "collapsed" %}
       <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
         Upcoming Events
       </button>
     </h3>
-    {% set show = "show" if not visibleAccordion or visibleAccordion == "upcoming" %}
+    {% set show = "show" if visibleAccordion == "upcoming" or volunteer.username == g.current_user.username and not visibleAccordion =="programTable" and not visibleAccordion =="background" else ""%}
     <div id="collapseOne" class="accordion-collapse collapse {{show}} " aria-labelledby="headingOne" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="row table-responsive">
@@ -102,15 +102,15 @@
     </div>
   </div>
   <!-- End Program History -->
-  <!-- Start Program Eligibility Table -->
+  <!-- Start Program Table -->
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingThree">
-      {% set focus = "open" if visibleAccordion == "programTable" else "collapsed" %}
+      {% set focus = "open" if visibleAccordion == "programTable" or volunteer.username != g.current_user.username and not visibleAccordion =="background" else "collapsed" %}
       <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
           Programs
       </button>
     </h3>
-    {% set show = "show" if visibleAccordion == "programTable" else "" %}
+    {% set show = "show" if visibleAccordion == "programTable" or volunteer.username != g.current_user.username and not visibleAccordion =="background" else "" %}
     <div id="collapseThree" class="accordion-collapse collapse {{show}}" aria-labelledby="headingThree" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="table-responsive">
@@ -158,10 +158,10 @@
                    <td>
                        {% if row.completedTraining or not trainingList %}
                            <i class="bi bi-check-lg"></i> &nbsp&nbsp
-                           <a class="trainingPopover" id="{{row.program.id}}" href="#" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
+                           <a class="trainingPopover" id="{{row.program.id}}" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
                        {% else %}
                            <i class="bi bi-x-lg"></i> &nbsp&nbsp
-                           <a class="trainingPopover" id="{{row.program.id}}" href="#" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
+                           <a class="trainingPopover" id="{{row.program.id}}" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
                        {% endif %}
                    </td>
                  {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
@@ -190,7 +190,7 @@
       </div>
     </div>
   </div>
-  <!-- End Program Eligibility Table -->
+  <!-- End Program Table -->
   <!-- Start Program Manager section -->
   {% if volunteer.isCeltsStudentStaff %}
     <div class="accordion-item">
@@ -222,7 +222,7 @@
               {% endif %}
               {% if g.current_user.isCeltsAdmin%}
                 <li>
-                  <input  type="checkbox" id="mgr-{{ program.id }}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}')">
+                  <input  type="checkbox" id="mgr-{{ program.id }}" data-name="{{volunteer.firstName}} {{volunteer.lastName}}" data-programName="{{program.programName}}" data-programid="{{program.id}}" {{checked}}  onclick="updateManagers(this,'{{volunteer.username}}')">
                   <label  style="padding-left: 15px;" for="mgr-{{ program.id }}">{{program.programName}}</label>
                 </li>
               {% endif %}
@@ -246,7 +246,7 @@
       <div id="collapseFive" class="accordion-collapse collapse {{show}}" aria-labelledby="headingFive" data-bs-parent="#userProfile">
         <div class="accordion-body">
           <div class="table-responsive">
-            <table class="table">
+            <table class="table" id="bgHistoryTable">
               <thead>
                 <tr>
                   <th scope="col">Description</th>
@@ -264,7 +264,10 @@
                        <h6>{{bgType.description}}</h6>
                        <ul class="mb-0" id="bgHistory{{bgType.id}}" >
                           {% for bgStatus in allBackgroundHistory[bgType.id] %}
-                           <li>{{bgStatus}}</li>
+                           <li>
+                             {{bgStatus.backgroundCheckStatus}}: {{bgStatus.dateCompleted.strftime("%m/%d/%Y")}}
+                             <button class="bg-transparent border-0 text-danger" id="deleteBgHistory" data-id="{{bgStatus.id}}">X</button>
+                           </li>
                           {% endfor %}
                        </ul>
                    </td>
@@ -277,7 +280,7 @@
                               <option value="Failed">Failed</option>
                           </select>
                       </td>
-                      <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" class="form-control"/></td>
+                      <td><input name="dateCompleted" type="date" id="{{bgType.id}}_date" class="form-control"></td>
                       <td><button type="button" class="savebtn btn btn-primary" id="{{bgType.id}}" data-id="{{bgType.id}}" data-username="{{volunteer.username}}">Save</button></td>
                   {% endif %}
                   </tr>
