@@ -43,12 +43,6 @@ function validatePhoneNumber(editButtonId, phoneInputId, username, whatsClicked)
       //pass
 
     }
-    // else if(whatsClicked==="notSaved"){
-    //   if($("#updatePhone").html()==="Save"){
-    //   console.log("Helooooo")
-    //   }
-
-    // } 
     else {
         // Save the phone number
         var phoneInput = $(phoneInputId);
