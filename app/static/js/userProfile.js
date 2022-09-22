@@ -97,7 +97,7 @@ $(document).ready(function(){
       bgStatusInput.focus()
       bgStatusInput.addClass("invalid");
       window.setTimeout(() => bgStatusInput.removeClass("invalid"), 1000);
-      $(this).prop("disabled", false);
+     $(this).prop("disabled", false);
       return false
     }
 
@@ -157,6 +157,10 @@ $(document).ready(function(){
             return $(this).attr('data-content');
         }
     });
+  $("#phoneInput").focusout( function(){
+    var username = $("#updatePhone").data("username")
+    validatePhoneNumber($("#updatePhone"), "#phoneInput", username, "notSaved")
+  })
 
   $("#updatePhone").on('click', function() {
     var username = $(this).data("username")

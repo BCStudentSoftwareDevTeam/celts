@@ -40,10 +40,16 @@ function validatePhoneNumber(editButtonId, phoneInputId, username, whatsClicked)
         $(editButtonId).html("Save");
         $(phoneInputId).focus();
     } else if ($(editButtonId).html() === 'Save' && whatsClicked == "input") {
-         //pass
-    } else if ($(editButtonId).html() === 'Save' && (!$(phoneInputId).focus())){
-        $(".inputPhone").css("border-color", "#fff");
-    } else {
+      //pass
+
+    }
+    // else if(whatsClicked==="notSaved"){
+    //   if($("#updatePhone").html()==="Save"){
+    //   console.log("Helooooo")
+    //   }
+
+    // } 
+    else {
         // Save the phone number
         var phoneInput = $(phoneInputId);
         var isvalid = phoneInput.val().replace(/\D/g,"").length === 10;
@@ -59,7 +65,8 @@ function validatePhoneNumber(editButtonId, phoneInputId, username, whatsClicked)
             data:{"username":username,
                   "phoneNumber":phoneInput.val()},
             success: function(s){
-                msgFlash("Phone number is updated.", "success")
+              phoneInput.removeClass("invalid");
+              msgFlash("Phone number is updated.", "success")
             },
             error: function(request, status, error) {
                 msgFlash("Phone number not updated.", "danger")
