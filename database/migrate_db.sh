@@ -27,7 +27,7 @@ pem add app.models.backgroundCheck.BackgroundCheck
 pem add app.models.backgroundCheckType.BackgroundCheckType
 pem add app.models.adminLogs.AdminLogs
 pem add app.models.eventFile.EventFile
-pem add app.models.bonnerYear.BonnerYear
+pem add app.models.bonnerCohort.BonnerCohort
 
 
 pem watch

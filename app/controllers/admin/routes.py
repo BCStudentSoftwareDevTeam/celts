@@ -20,7 +20,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.models.adminLogs import AdminLogs
 from app.models.eventFile import EventFile
-from app.models.bonnerYear import BonnerYear
+from app.models.bonnerCohort import BonnerCohort
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.adminLogs import createLog
@@ -270,12 +270,12 @@ def updatecohort(year, method, username):
 
     if method == "add":
         try: 
-            BonnerYear.create(year=year, user=user)
+            BonnerCohort.create(year=year, user=user)
         except IntegrityError as e:
             # if they already exist, ignore the error
             pass
     elif method == "remove":
-        BonnerYear.delete().where(BonnerYear.user == user, BonnerYear.year == year).execute()
+        BonnerCohort.delete().where(BonnerCohort.user == user, BonnerCohort.year == year).execute()
     else:
         abort(500)
 

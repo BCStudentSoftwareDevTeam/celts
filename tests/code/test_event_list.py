@@ -4,7 +4,7 @@ from app.models import mainDB
 from app.models.programEvent import ProgramEvent
 from app.models.program import Program
 from app.models.event import Event
-from app.models.bonnerYear import BonnerYear
+from app.models.bonnerCohort import BonnerCohort
 from app.models.term import Term
 from app.models.user import User
 from app.logic.events import getStudentLedEvents,  getTrainingEvents, getBonnerEvents, getOtherEvents
@@ -155,7 +155,7 @@ def test_training_events(training_events):
                                         isStaff = False,
                                         isCeltsAdmin = False,
                                         isCeltsStudentStaff = False)
-        BonnerYear.create(user=userBonnerScholar, year=2020)
+        BonnerCohort.create(user=userBonnerScholar, year=2020)
 
         userNotBonnerScholar = User.create(username = "TestNotBonnerScholar",
                                             bnumber = "B00000000001",

@@ -4,7 +4,7 @@ from datetime import date
 import xlsxwriter
 
 from app import app
-from app.models.bonnerYear import BonnerYear
+from app.models.bonnerCohort import BonnerCohort
 from app.models.user import User
 
 def makeBonnerXls():
@@ -29,7 +29,7 @@ def makeBonnerXls():
     worksheet.write('D1', 'Student Email', bold)
     worksheet.set_column('D:D', 20)
 
-    students = BonnerYear.select(BonnerYear, User).join(User).order_by(BonnerYear.year.desc(), User.lastName)
+    students = BonnerCohort.select(BonnerCohort, User).join(User).order_by(BonnerCohort.year.desc(), User.lastName)
 
     prev_year = 0
     row = 0
@@ -54,7 +54,7 @@ def getBonnerCohorts():
         Return a dictionary with years as keys and a list of bonner users as values. Returns empty lists for 
         intermediate years, or the last 5 years if there are no older records.
     """
-    years = list(BonnerYear.select(BonnerYear, User).join(User).order_by(BonnerYear.year).execute())
+    years = list(BonnerCohort.select(BonnerCohort, User).join(User).order_by(BonnerCohort.year).execute())
 
     currentYear = date.today().year
     defaultStart = currentYear-4

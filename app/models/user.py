@@ -23,10 +23,10 @@ class User(baseModel):
 
     @property
     def isBonnerScholar(self):
-        from app.models.bonnerYear import BonnerYear
+        from app.models.bonnerCohort import BonnerCohort
         if self._bsCache is None:
             # TODO should we exclude users who are banned from Bonner here?
-            self._bsCache = BonnerYear.select().where(BonnerYear.user == self).exists()
+            self._bsCache = BonnerCohort.select().where(BonnerCohort.user == self).exists()
         
         return self._bsCache
 

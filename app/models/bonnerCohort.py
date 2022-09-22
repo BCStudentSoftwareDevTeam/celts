@@ -1,7 +1,7 @@
 from app.models import *
 from app.models.user import User
 
-class BonnerYear(baseModel):
+class BonnerCohort(baseModel):
     year = IntegerField()
     user = ForeignKeyField(User)
 
