@@ -69,7 +69,6 @@
     </thead>
     <tbody class="align-middle" id="volunteerTable">
       {% for participant in eventVolunteerData %}
-          <tr>
             <td>
               <input
                 class="form-control"
@@ -105,10 +104,10 @@
                 type ="number"
                 min="0"
                 step="0.01"
-                    {% if participant.user.username in eventParticipants and eventParticipants[participant.user.username] == None %}
+                    {% if participant.user in eventParticipants and eventParticipants[participant.user.username] == None %}
                       value="{{eventLength}}"
-                    {% elif participant.user.username in eventParticipants %}
-                      value="{{eventParticipants[participant.user.username]}}"
+                    {% elif participant.user in eventParticipants %}
+                      value="{{participant.hoursEarned}}"
                     {% else %} disabled {% endif %}
                 />
             </td>
@@ -118,7 +117,7 @@
                 class='attendanceCheck'
                 name="checkbox_{{participant.user.username}}"
                 {% if event.isPast %}
-                    {% if participant.user.username in eventParticipants %}
+                    {% if participant.user in eventParticipants %}
                       checked
                     {% endif %}
                 {% endif %} />

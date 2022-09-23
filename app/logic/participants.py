@@ -74,7 +74,6 @@ def addPersonToEvent(user, event):
     try:
         volunteerExists = checkUserVolunteer(user, event)
         rsvpExists = checkUserRsvp(user, event)
-
         if event.isPast:
             if not volunteerExists:
                 eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
@@ -82,7 +81,8 @@ def addPersonToEvent(user, event):
         else:
             if not rsvpExists:
                 EventRsvp.create(user = user, event = event)
-
+        if volunteerExists or rsvpExists:
+            return "already in"
     except Exception as e:
         print(e)
         return False
