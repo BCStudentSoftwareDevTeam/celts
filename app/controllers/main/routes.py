@@ -16,6 +16,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
+from app.models.profileNote import ProfileNote
 from app.models.programManager import ProgramManager
 from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
@@ -113,6 +114,8 @@ def viewUsersProfile(username):
                                    "trainingList": userParticipatedEvents,
                                    "isNotBanned": True if not notes else False,
                                    "banNote": noteForDict})
+        profileNotes = ProfileNote.select().where(ProfileNote.user == volunteer)
+        print(f"\nPROFILE NOTES: {profileNotes}")
 
         return render_template ("/main/userProfile.html",
                 programs = programs,
@@ -125,8 +128,8 @@ def viewUsersProfile(username):
                 volunteer = volunteer,
                 backgroundTypes = backgroundTypes,
                 allBackgroundHistory = allBackgroundHistory,
-                currentDateTime = datetime.datetime.now()
-
+                currentDateTime = datetime.datetime.now(),
+                profileNotes = profileNotes
             )
     abort(403)
 
