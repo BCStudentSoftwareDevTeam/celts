@@ -96,11 +96,13 @@ def addVolunteer(eventId):
     for user in usernameList:
         userObj = User.get_by_id(user)
         successfullyAddedVolunteer = addPersonToEvent(userObj, event)
-
-        if successfullyAddedVolunteer:
-            flash(f"{userObj.fullName} added successfully.", "success")
+        if successfullyAddedVolunteer == "already in":
+            flash(f"{userObj.fullName} already in table.", "warning")
         else:
-            flash(f"Error when adding {userObj.fullName} to event." ,"danger")
+            if successfullyAddedVolunteer:
+                flash(f"{userObj.fullName} added successfully.", "success")
+            else:
+                flash(f"Error when adding {userObj.fullName} to event." ,"danger")
 
     if 'ajax' in request.form and request.form['ajax']:
         return ''
