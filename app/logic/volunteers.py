@@ -99,7 +99,6 @@ def addUserBackgroundCheck(user, bgType, bgStatus, dateCompleted):
         else:
             createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as failed.")
 
-
 def setProgramManager(username, program_id, action):
     '''
     adds and removes the studentstaff from program that makes them  student manager.
