@@ -63,6 +63,7 @@ $(document).ready(function() {
              minTime: "08:00am",
              maxTime: "10:00pm"
     });
+    
     $(".timepicker").prop("type", "time");
     $(".timeIcons").prop("hidden", false);
 
