@@ -332,17 +332,17 @@ def test_getUserBGCheckHistory():
 @pytest.mark.integration
 def test_getBannedUsers():
     with mainDB.atomic() as transaction:
-        bannedUser = User.create(username = 'usrtst', # Test banned user
+        userToBan = User.create(username = 'usrtst', # Test banned user
                               firstName = 'Test',
                               lastName = 'User',
                               bnumber = '03522492',
                               email = 'usert@berea.deu',
                               isStudent = True)
         banUser(1, User.get_by_id("usrtst"), "nope", "2022-11-29", "ramsayb2")
-        assert bannedUser in [user.user for user in getBannedUsers(1)]
+        assert userToBan in [user.user for user in getBannedUsers(1)]
 
         unbanUser(1, User.get_by_id("usrtst"), "yep", "ramsayb2")  # Test eligible but previously banned user
-        assert bannedUser not in [user.user for user in getBannedUsers(1)]
+        assert userToBan not in [user.user for user in getBannedUsers(1)]
 
         notBannedUser = User.create(username = 'usrtst2', # Test eligible user
                               firstName = 'Test',
@@ -356,7 +356,7 @@ def test_getBannedUsers():
 @pytest.mark.integration
 def test_isBannedFromEvent():
     with mainDB.atomic() as transaction:
-        bannedUser = User.create(username = 'usrtst', # Test banned user
+        userToBan = User.create(username = 'usrtst', # Test banned user
                               firstName = 'Test',
                               lastName = 'User',
                               bnumber = '03522492',
