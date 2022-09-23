@@ -115,8 +115,8 @@ def removeVolunteerFromEvent(user, eventID):
     flash("Volunteer successfully removed", "success")
     return ""
 
-@admin_bp.route('/updateBackgroundCheck', methods = ['POST'])
-def updateBackgroundCheck():
+@admin_bp.route('/addBackgroundCheck', methods = ['POST'])
+def addBackgroundCheck():
     if g.current_user.isCeltsAdmin:
         eventData = request.form
         user = eventData['user']
@@ -125,6 +125,14 @@ def updateBackgroundCheck():
         dateCompleted = eventData['bgDate']
         addUserBackgroundCheck(user, type, bgStatus, dateCompleted)
         return " "
+
+@admin_bp.route('/deleteBackgroundCheck', methods = ['POST'])
+def deleteBackgroundCheck():
+    if g.current_user.isCeltsAdmin:
+        eventData = request.form
+        bgToDelete = BackgroundCheck.get_by_id(eventData['bgID'])
+        BackgroundCheck.delete().where(BackgroundCheck.id == bgToDelete).execute()
+        return ""
 
 @admin_bp.route('/updateProgramManager', methods=["POST"])
 def updateProgramManager():

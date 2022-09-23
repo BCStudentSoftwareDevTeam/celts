@@ -75,6 +75,10 @@ backgroundTypes = [
     "id": "FBI",
     "description": "Federal Criminal Background Check",
     },
+    {
+    "id": "BSL",
+    "description": "Berea Student Life Background Check",
+    },
 
 ]
 BackgroundCheckType.insert_many(backgroundTypes).on_conflict_replace().execute()
