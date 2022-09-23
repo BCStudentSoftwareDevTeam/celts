@@ -297,14 +297,14 @@
 <!-- Start Notes section -->
 {% if volunteer.isCeltsStudentStaff %}
   <div class="accordion-item">
-    <h3 class="accordion-header" id="headingFour">
-      {% set focus = "open" if visibleAccordion == "manager" else "collapsed" %}
-      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-          Program Manager
+    <h3 class="accordion-header" id="headingSix">
+      {% set focus = "open" if visibleAccordion == "notes" else "collapsed" %}
+      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+          Notes
       </button>
     </h3>
-    {% set show = "show" if visibleAccordion == "manager" else "" %}
-    <div id="collapseFour" class="accordion-collapse collapse {{show}}" aria-labelledby="headingFour" data-bs-parent="#userProfile">
+    {% set show = "show" if visibleAccordion == "notes" else "" %}
+    <div id="collapseSix" class="accordion-collapse collapse {{show}}" aria-labelledby="headingSix" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <!-- This makes sure that the CeltsAdmins can make someone program manager or not.  -->
         {% if g.current_user.isCeltsAdmin %}
