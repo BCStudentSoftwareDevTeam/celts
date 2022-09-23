@@ -1,6 +1,7 @@
 import searchUser from './searchUser.js'
 
 $(document).ready(function() {
+  var iconShowing = false
   var table =  $('#trackVolunteerstable').DataTable({
   "fnDrawCallback": function(oSettings) {
     if ($('#trackVolunteerstable tr').length < 11) {
@@ -116,6 +117,10 @@ $(document).ready(function() {
       success: function(response){
         if (response.banned){
           $("#addVolunteerElements"+index).append("<span class='ms-1 text-danger bi bi-slash-circle-fill'></span>")
+        }
+        if (!iconShowing){
+          $("#banned-message").removeAttr("hidden")
+          iconShowing = true
         }
       },
       error: function(request, status, error){

@@ -58,8 +58,8 @@
         <th>Name</th>
         <th>Email</th>
         <th>Phone Number</th>
-        <th class="noSort">Completed Trainings?</th>
-        <th class="noSort">Eligible?</th>
+        <th class="noSort">Completed Trainings</th>
+        <th class="noSort">Banned</th>
     {% if event.isPast %}
         <th class="noSort">Total Hours</th>
         <th class="noSort">Attended</th>
@@ -89,10 +89,10 @@
               {% endif %}
             </td>
             <td style="text-align:center">
-              {% if participant.user in bannedUsers %}
-                <span class="bi bi-x-lg" aria-label="Banned."></span>
+              {% if participant.user not in bannedUsers %}
+                <span class="bi bi-x-lg" aria-label="Not banned."></span>
               {% else %}
-                <span class="bi bi-check-lg" aria-label="Not banned."></span>
+                <span class="bi bi-check-lg" aria-label="Banned."></span>
               {% endif %}
             </td>
             {% if event.isPast %}
@@ -164,6 +164,7 @@
         </ul>
       </div>
       <div class="modal-footer">
+        <p id="banned-message" class="me-auto" hidden><span class="bi bi-slash-circle-fill text-danger"></span> → banned</p>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <button id="selectVolunteerButton" type="button" class="btn btn-primary" disabled>Add participant</button>
       </div>
