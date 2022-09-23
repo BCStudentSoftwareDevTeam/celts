@@ -227,7 +227,7 @@ def volunteerRegister():
     listOfRequirements = unattendedRequiredEvents(program, user)
 
     personAdded = False
-    if isEligible: 
+    if isEligible:
         personAdded = addPersonToEvent(user, event)
         if personAdded and listOfRequirements:
             reqListToString = ', '.join(listOfRequirements)

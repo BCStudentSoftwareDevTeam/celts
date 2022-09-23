@@ -14,7 +14,14 @@
     opacity: .9;
     margin-top:-50px;
 }
-input.invalid {
+
+.toast-container{
+  z-index: 11;
+}
+
+.form-control.invalid,
+input.invalid,
+select.invalid {
   background-color: #ffdddd;
 }
 
