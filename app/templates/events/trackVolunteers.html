@@ -68,6 +68,7 @@
       </tr>
     </thead>
     <tbody class="align-middle" id="volunteerTable">
+      <tr>
       {% for participant in eventVolunteerData %}
             <td>
               <input
@@ -161,10 +162,10 @@
         <h5>Selected Volunteers</h5>
         <ul class="list-unstyled" id= "addVolunteerList">
         </ul>
+        <p id="banned-message" hidden><span class="bi bi-slash-circle-fill text-danger"></span> → Banned</p>
       </div>
       <div class="modal-footer">
-        <p id="banned-message" class="me-auto" hidden><span class="bi bi-slash-circle-fill text-danger"></span> → banned</p>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
         <button id="selectVolunteerButton" type="button" class="btn btn-primary" disabled>Add participant</button>
       </div>
     </div>

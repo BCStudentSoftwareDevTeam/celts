@@ -117,10 +117,10 @@ $(document).ready(function() {
       success: function(response){
         if (response.banned){
           $("#addVolunteerElements"+index).append("<span class='ms-1 text-danger bi bi-slash-circle-fill'></span>")
-        }
-        if (!iconShowing){
-          $("#banned-message").removeAttr("hidden")
-          iconShowing = true
+          if (!iconShowing){
+            $("#banned-message").removeAttr("hidden")
+            iconShowing = true
+          }
         }
       },
       error: function(request, status, error){
