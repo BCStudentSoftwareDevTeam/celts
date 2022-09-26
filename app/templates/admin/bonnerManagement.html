@@ -14,8 +14,8 @@
 {% block app_content %}
 
     {# Figure out if we are showing a particular tab inside of the accordion #}
-    {% set subtab =  visibleAccordion[7:] if visibleAccordion and "cohort-" in visibleAccordion else "" %}
-    {% set visible_tab = subtab if visibleAccordion and subtab == "all" or subtab|int != 0 else "none" %}
+    {% set subtab =  visibleAccordion[7:] if visibleAccordion and "cohort-" in visibleAccordion else "newest" %}
+    {% set visible_tab = subtab if visibleAccordion and subtab == "first" or subtab|int != 0 else "none" %}
 
 <h1 class="text-center mb-5">Bonner Management</h1>
 
@@ -30,40 +30,20 @@
         <div class="accordion-body">
 
             <!---------------- Cohort management ---------------->
-            <div class="d-flex align-items-start">
+            <div class="d-flex justify-content-center">
                 <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                    {% set show = "active" if subtab == "" or subtab == "all" else "" %}
-                    {% set aria = "true" if subtab == "" or subtab == "all" else "false" %}
-                    <button class="nav-link {{show}}" id="v-pills-all-tab" data-bs-toggle="pill" data-bs-target="#v-pills-all" type="button" role="tab" aria-controls="v-pills-all" aria-selected="{{aria}}">All</button>
+                {% set subtab = cohorts.keys()|last if subtab == "newest" else subtab %}
                 {% for year in cohorts.keys()|reverse %}
                     {% set show = "active" if subtab|int == year else "" %}
                     {% set aria = "true" if subtab|int == year else "false" %}
                     <button class="nav-link {{show}}" id="v-pills-{{year}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{year}}" type="button" role="tab" aria-controls="v-pills-{{year}}" aria-selected="{{aria}}">{{year}} - {{year + 1}}</button>
                 {% endfor %}
                 </div>
-                <div class="tab-content allBonner" id="v-pills-tabContent">
-                    {% set show = "show active" if subtab == "" or subtab == "all" else "" %}
-                    <div class="tab-pane fade {{show}}" id="v-pills-all" role="tabpanel" aria-labelledby="v-pills-all-tab">
-                        <a href="/bonnerxls" target="_blank" class="export">
-                            <img src="static/xls-icon-3379.png" alt="Export to Excel" height="32" width="32"/>
-                            <span>Export</span>
-                        </a>
-                    {% for year, users in cohorts.items()|reverse %}
-                        <div class="cohort {{ "even" if year % 2 else "odd" }}">
-                            <span>{{year}} - {{year + 1}}</span>
-                            <ul>
-                            {% for user in users %}
-                                <li><a href="/profile/{{user.username}}?accordion=bonner">{{user.fullName}}</a></li>
-                            {% endfor %}
-                            </ul>
-                        </div>
-                    {%- endfor %}
-                    </div>
+                <div class="tab-content me-2 ms-2" id="v-pills-tabContent">
                     {% for year, users in cohorts.items() %}
                         {% set searchId = "search-" + year|string %}
                         {% set show = "show active" if subtab|int == year else "" %}
                         <div class="tab-pane fade {{show}}" id="v-pills-{{year}}" role="tabpanel" aria-labelledby="v-pills-{{year}}-tab">
-                            <h5 class="text-center">{{year}} - {{year + 1}}</h5>
                             <div>
                                 <div class="input-group mb-3">
                                     <input type="search" id="{{searchId}}" name="{{searchId}}" class="form-control" data-year="{{year}}" placeholder="Add Student" autocomplete="off" style="width:50%" />
@@ -76,14 +56,22 @@
 
                                 {% for user in users %}
                                     <tr>
-                                        <td id="{{user.username}}" class="align-middle">{{user.firstName}} {{user.lastName}}</td>
-                                        <td class="w-25"><button data-username="{{user.username}}" data-year="{{year}}" type="button" class="btn btn-danger removeBonner">Remove</button></td>
+                                        <td id="{{user.username}}" class="align-middle">
+                                            <a href="/profile/{{user.username}}?accordion=bonner">{{user.firstName}} {{user.lastName}}</a>
+                                        </td>
+                                        <td class="w-25"><button data-username="{{user.username}}" data-year="{{year}}" type="button" class="btn btn-danger removeBonner small">Remove</button></td>
                                     </tr>
                                 {% endfor %}
                                 </table>
                             </div>
                         </div>
                     {% endfor %}
+                </div>
+                <div class="flex-column ms-2">
+                    <a href="/bonnerxls" target="_blank">
+                        <img src="static/xls-icon-3379.png" alt="Export to Excel" height="32" width="32"/>
+                        <span>Export All</span>
+                    </a>
                 </div>
             </div>
             <!-------------------- End cohort management --------------------->
