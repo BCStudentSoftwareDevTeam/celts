@@ -11,6 +11,9 @@ def test_getBonnerCohorts():
     with mainDB.atomic() as transaction:
         currentYear = date.today().year
 
+        # reset bonner students
+        BonnerCohort.delete().execute()
+
         # always have the last 5, at least
         cohorts = getBonnerCohorts()
         assert len(cohorts) == 5
@@ -39,3 +42,7 @@ def test_getBonnerCohorts():
         assert len(cohorts[currentYear-1]) == 4
 
         transaction.rollback()
+
+@pytest.mark.integration
+def test_getBonnerCohorts():
+    pass

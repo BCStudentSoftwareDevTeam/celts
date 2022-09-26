@@ -5,6 +5,7 @@ This file will need to be changed if the format of models changes (new fields, d
 from datetime import datetime, timedelta
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
+from app.models.bonnerCohort import BonnerCohort
 from app.models.term import Term
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
@@ -172,6 +173,16 @@ users = [
 ]
 
 User.insert_many(users).on_conflict_replace().execute()
+
+bonners = [
+    { "year": 2021, "user": "qasema" },
+    { "year": 2021, "user": "neillz" },
+    { "year": 2021, "user": "mupotsal" },
+    { "year": 2022, "user": "khatts" },
+    { "year": 2022, "user": "ayisie" },
+    ]
+
+BonnerCohort.insert_many(bonners).on_conflict_replace().execute()
 
 terms = [
     {
