@@ -27,6 +27,8 @@ from app.models.backgroundCheck import BackgroundCheck
 from app.models.adminLogs import AdminLogs
 from app.models.emailLog import EmailLog
 from app.models.eventFile import EventFile
+from app.models.certification import Certification
+from app.models.certificationRequirement import CertificationRequirement
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -183,6 +185,83 @@ bonners = [
     ]
 
 BonnerCohort.insert_many(bonners).on_conflict_replace().execute()
+
+certs = [
+        { "id": 1, "name": "Bonner" },
+        { "id": 2, "name": "CESC Minor" },
+        { "id": 3, "name": "CPR" },
+        { "id": 4, "name": "Confidentiality" },
+        { "id": 5, "name": "I9" },
+]
+Certification.insert_many(certs).on_conflict_replace().execute()
+
+reqs = [
+        { "certification": 1, 
+          "name": "Bonner Orientation",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 1,
+        },
+        { "certification": 1, 
+          "name": "All Bonner Meeting",
+          "frequency": "term",
+          "isRequired": True,
+          "order": 2,
+        },
+        { "certification": 1, 
+          "name": "First Year Service Trip",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 3,
+        },
+        { "certification": 1, 
+          "name": "Sophomore Exchange",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 4,
+        },
+        { "certification": 1, 
+          "name": "Junior Recommitment",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 5,
+        },
+        { "certification": 1, 
+          "name": "Senior Legacy Training",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 6,
+        },
+        { "certification": 1, 
+          "name": "Senior Presentation of Learning",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 7,
+        },
+        { "certification": 1, 
+          "name": "Bonner Congress",
+          "frequency": "once",
+          "isRequired": False,
+        },
+        { "certification": 1, 
+          "name": "Bonner Student Leadership Institute",
+          "frequency": "once",
+          "isRequired": False,
+        },
+        { "certification": 3, 
+          "name": "CPR Training",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 2,
+        },
+        { "certification": 3, 
+          "name": "Volunteer Training",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 1,
+        },
+]
+CertificationRequirement.insert_many(reqs).on_conflict_replace().execute()
 
 terms = [
     {

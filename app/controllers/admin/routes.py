@@ -21,6 +21,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.adminLogs import AdminLogs
 from app.models.eventFile import EventFile
 from app.models.bonnerCohort import BonnerCohort
+from app.models.certification import Certification
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.adminLogs import createLog
@@ -256,7 +257,8 @@ def manageBonner():
 
     return render_template("/admin/bonnerManagement.html", 
                            cohorts=getBonnerCohorts(),
-                           events=getBonnerEvents(g.current_term))
+                           events=getBonnerEvents(g.current_term),
+                           requirements = getCertRequirements(certification=Certification.BONNER))
 
 @admin_bp.route("/bonner/<year>/<method>/<username>", methods=["POST"])
 def updatecohort(year, method, username):

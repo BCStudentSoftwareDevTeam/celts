@@ -6,4 +6,4 @@ class CertificationRequirement(baseModel):
     name = CharField()
     frequency = CharField()
     isRequired = BooleanField(default=True)
-    order = SmallIntegerField()
+    order = SmallIntegerField(null=True)
