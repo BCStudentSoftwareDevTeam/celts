@@ -82,10 +82,18 @@ $(document).ready(function(e) {
         });
         $("input[name=courseInstructorPhone]").focus(focusHandler);
         $("input[name=courseInstructorPhone]").focusout(blurHandler);
+        $('#instructorTable').on('click', "input[name=courseInstructorPhone]", function(){
+          var username=getRowUsername(this)
+          var phoneInput = "#inputPhoneNumber-" + username
+          var phoneInputName = "input[name=courseInstructorPhone]"
+          validatePhoneNumber(this, phoneInput, username,phoneInputName)
+        })
+
         $('#instructorTable').on('click', ".editButton", function() {
             var username=getRowUsername(this)
             var phoneInput = "#inputPhoneNumber-" + username
-            validatePhoneNumber(this, phoneInput, username)
+            var phoneInputName = "input[name=courseInstructorPhone]"
+            validatePhoneNumber(this, phoneInput, username,phoneInputName)
 
         });
     }
