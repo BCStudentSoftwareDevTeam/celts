@@ -42,8 +42,13 @@ def trackVolunteersPage(eventID):
 
     eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event))
     eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
-    eventVolunteerData = (eventParticipantData + eventRsvpData)
-
+    participantsAndRsvp = (eventParticipantData + eventRsvpData)
+    eventVolunteerData = []
+    volunteerUser = []
+    for volunteer in participantsAndRsvp:
+        if volunteer.user not in volunteerUser:
+            eventVolunteerData.append(volunteer)
+            volunteerUser.append(volunteer.user)
     eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
     recurringEventID = event.recurringId # query Event Table to get recurringId using Event ID.
@@ -91,11 +96,13 @@ def addVolunteer(eventId):
     for user in usernameList:
         userObj = User.get_by_id(user)
         successfullyAddedVolunteer = addPersonToEvent(userObj, event)
-
-        if successfullyAddedVolunteer:
-            flash(f"{userObj.fullName} added successfully.", "success")
+        if successfullyAddedVolunteer == "already in":
+            flash(f"{userObj.fullName} already in table.", "warning")
         else:
-            flash(f"Error when adding {userObj.fullName} to event." ,"danger")
+            if successfullyAddedVolunteer:
+                flash(f"{userObj.fullName} added successfully.", "success")
+            else:
+                flash(f"Error when adding {userObj.fullName} to event." ,"danger")
 
     if 'ajax' in request.form and request.form['ajax']:
         return ''
