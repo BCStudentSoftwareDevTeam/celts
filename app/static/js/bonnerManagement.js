@@ -19,6 +19,13 @@ $(document).ready(function(){
         }
     });
     $(".frequency-select").change();
+
+    // add sorting
+    new Sortable($('#requirements tbody')[0], {
+        animation: 150,
+        handle: '.drag-handle',
+        ghostClass: 'sortable-ghost'
+    });
 });
 
 function submitRequest(year, method, username){

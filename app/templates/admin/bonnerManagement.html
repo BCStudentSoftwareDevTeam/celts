@@ -9,6 +9,7 @@
 {% block scripts %}
   {{super()}}
   <script type="module" src="{{url_for('static', filename = 'js/bonnerManagement.js') }}?u={{lastStaticUpdate}}"></script>
+  <script type="module" src="{{url_for('static', filename = 'js/sortable.min.js') }}?u={{lastStaticUpdate}}"></script>
 {% endblock %}
 
 {% block app_content %}

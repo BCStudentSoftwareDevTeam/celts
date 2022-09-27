@@ -5,6 +5,11 @@
     cursor: grab;
 }
 
+.sortable-ghost {
+    background-color: #0d6efd;
+    opacity: .2;
+}
+
 .drag-handle img {
     margin-right: auto;
     margin-left: auto;
