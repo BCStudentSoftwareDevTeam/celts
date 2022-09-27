@@ -81,19 +81,23 @@ $(document).ready(function(e) {
             searchUser("courseInstructor", createNewRow, true, null, "instructor");
         });
         $("input[name=courseInstructorPhone]").focus(focusHandler);
-        $("input[name=courseInstructorPhone]").focusout(blurHandler);
-        $('#instructorTable').on('click', "input[name=courseInstructorPhone]", function(){
+        $("input[name=courseInstructorPhone]").focusout(function(){
           var username=getRowUsername(this)
           var phoneInput = "#inputPhoneNumber-" + username
-          var phoneInputName = "input[name=courseInstructorPhone]"
-          validatePhoneNumber(this, phoneInput, username,phoneInputName)
+          validatePhoneNumber(this, phoneInput, username,"focusOut")
+
+
+        });
+        $("input[name=courseInstructorPhone]").focus(function(){
+          var username=getRowUsername(this)
+          var phoneInput = "#inputPhoneNumber-" + username
+          validatePhoneNumber(this, phoneInput, username,"focus")
         })
 
         $('#instructorTable').on('click', ".editButton", function() {
             var username=getRowUsername(this)
             var phoneInput = "#inputPhoneNumber-" + username
-            var phoneInputName = "input[name=courseInstructorPhone]"
-            validatePhoneNumber(this, phoneInput, username,phoneInputName)
+            validatePhoneNumber(this, phoneInput, username,"buttonClick")
 
         });
     }

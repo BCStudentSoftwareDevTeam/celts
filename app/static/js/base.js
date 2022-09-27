@@ -35,11 +35,15 @@ function msgToast(head, body){
   toastList[0].show()
 }
 
-function validatePhoneNumber(editButtonId, phoneInputId, username, phoneInputName) {
+function validatePhoneNumber(editButtonId, phoneInputId, username,action) {
 
 
-    if ($(phoneInputName)){
-      console.log("ahsdiuh")
+    if (action=="buttonClick"){
+      console.log("buttonClick")
+    }else if (action=="focusOut"){
+      console.log("focusout")
+    }else if (action=="focus"){
+      console.log("focus")
     }
     if ($(editButtonId).html() === 'Edit') {
         $(editButtonId).html("Save");
