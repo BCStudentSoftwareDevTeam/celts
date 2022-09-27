@@ -25,6 +25,10 @@ select.invalid {
   background-color: #ffdddd;
 }
 
+select.empty {
+    color: gray;
+}
+
 
 .spacer {
     height: 100px; /* 80px + whatever spacing above the footer we want (in this case 20px) */

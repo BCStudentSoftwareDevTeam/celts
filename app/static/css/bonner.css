@@ -1,6 +1,17 @@
 
 /* Mostly copied from the Bootstrap classes, because it was looking pretty messy */
 
+.drag-handle {
+    cursor: grab;
+}
+
+.drag-handle img {
+    margin-right: auto;
+    margin-left: auto;
+    display:block;
+    opacity: .5;
+}
+
 .d-flex a img {
     margin-right: auto;
     margin-left: auto;

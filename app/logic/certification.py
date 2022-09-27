@@ -16,7 +16,7 @@ def getCertRequirements(certification=None):
     """
     query = (Certification.select(Certification, CertificationRequirement)
                          .join(CertificationRequirement, JOIN.LEFT_OUTER, attr="requirement")
-                         .order_by(Certification.id, CertificationRequirement.order))
+                         .order_by(Certification.id, CertificationRequirement.order.asc(nulls="LAST")))
     if certification:
         # we have to add the is not null check so that `cert.requirement` always exists
         query = query.where(Certification.id == certification, CertificationRequirement.id.is_null(False))

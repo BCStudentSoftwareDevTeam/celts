@@ -128,8 +128,35 @@
     <div id="collapseThree" class="accordion-collapse collapse {{show}}" aria-labelledby="headingThree" data-bs-parent="#bonnerManagement">
         <div class="accordion-body">
             <!-------------------- Requirements --------------------->
-            <h3>Coming Soon</h3>
+            <table class="table" id="requirements">
+                <thead>
+                    <tr><th></th><th>Requirement Name</th> <th>Necessity</th> <th>Frequency</th> <th></th></tr>
+                </thead>
+                <tbody>
+                {% for req in requirements %}
+                    <tr>
+                        <td class="align-middle drag-handle"><img src="static/drag-handle.jpg" width=24 height=24  /></td>
+                        <td><input class="form-control" value="{{req.name}}" ></td>
+                        <td><select class="form-select">
+                                <option {{ "selected" if req.isRequired else "" }}>Required</option>
+                                <option {{ "selected" if not req.isRequired else "" }}>Optional</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="flex-column form-select empty frequency-select" name="frequency_{{req.id}}">
+                                <option value="" {{ "selected" if not req.frequency else "" }}>Frequency</option>
+                                <option value="once" {{ "selected" if req.frequency == "once" else "" }}>Once</option>
+                                <option value="annual" {{ "selected" if req.frequency == "annual" else "" }}>Annual</option>
+                                <option value="term" {{ "selected" if req.frequency == "term" else "" }}>Every Term</option>
+                            </select>
+                        </td>
+                        <td><button data-reqid="{{req.id}}" type="button" class="btn btn-danger">Remove</button></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
             <!-------------------- End Requirements --------------------->
+            <button class="btn btn-primary">Save Changes</button>
         </div>
     </div>
   </div>

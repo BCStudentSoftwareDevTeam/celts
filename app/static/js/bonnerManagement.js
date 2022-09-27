@@ -9,6 +9,16 @@ $(document).ready(function(){
     let year = $(this).data('year')
     submitRequest(year, "remove", $(this).data("username"));
   });
+
+  // set up sortable requirements list
+    $(".frequency-select").change(function () {
+        if(!$(this).val()) {
+            $(this).addClass("empty");
+        } else {
+            $(this).removeClass("empty");
+        }
+    });
+    $(".frequency-select").change();
 });
 
 function submitRequest(year, method, username){
