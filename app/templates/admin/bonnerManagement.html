@@ -127,7 +127,7 @@
     </h3>
     {% set show = "show" if visibleAccordion == "requirements" else "" %}
     <div id="collapseThree" class="accordion-collapse collapse {{show}}" aria-labelledby="headingThree" data-bs-parent="#bonnerManagement">
-        <div class="accordion-body">
+        <div class="accordion-body clearfix">
             <!-------------------- Requirements --------------------->
             <table class="table" id="requirements">
                 <thead>
@@ -135,7 +135,7 @@
                 </thead>
                 <tbody>
                 {% for req in requirements %}
-                    <tr>
+                    <tr data-id="{{req.id}}">
                         <td class="align-middle drag-handle"><img src="static/drag-handle.jpg" width=24 height=24  /></td>
                         <td><input class="form-control" value="{{req.name}}" ></td>
                         <td><select class="form-select">
@@ -151,13 +151,14 @@
                                 <option value="term" {{ "selected" if req.frequency == "term" else "" }}>Every Term</option>
                             </select>
                         </td>
-                        <td><button data-reqid="{{req.id}}" type="button" class="btn btn-danger">Remove</button></td>
+                        <td><button type="button" class="btn btn-danger">Remove</button></td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
             <!-------------------- End Requirements --------------------->
-            <button class="btn btn-primary">Save Changes</button>
+            <button id="reqAdd" class="bi-plus-lg float-start btn btn-success"> Add Requirement</button>
+            <button id="reqSave" class="float-end btn btn-primary" disabled>Save Changes</button>
         </div>
     </div>
   </div>
