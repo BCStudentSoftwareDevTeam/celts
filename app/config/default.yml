@@ -19,6 +19,7 @@ tracy:
     password: "password"
 
 files:
+  base_path: 'app/static/files'
   email_attachment_path: 'app/static/files/emailattachments'
   event_attachment_path: 'app/static/files/eventattachments'
 

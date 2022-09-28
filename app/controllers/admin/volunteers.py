@@ -42,8 +42,13 @@ def trackVolunteersPage(eventID):
 
     eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event))
     eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
-    eventVolunteerData = (eventParticipantData + eventRsvpData)
-
+    participantsAndRsvp = (eventParticipantData + eventRsvpData)
+    eventVolunteerData = []
+    volunteerUser = []
+    for volunteer in participantsAndRsvp:
+        if volunteer.user not in volunteerUser:
+            eventVolunteerData.append(volunteer)
+            volunteerUser.append(volunteer.user)
     eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
     recurringEventID = event.recurringId # query Event Table to get recurringId using Event ID.
@@ -91,11 +96,13 @@ def addVolunteer(eventId):
     for user in usernameList:
         userObj = User.get_by_id(user)
         successfullyAddedVolunteer = addPersonToEvent(userObj, event)
-
-        if successfullyAddedVolunteer:
-            flash(f"{userObj.fullName} added successfully.", "success")
+        if successfullyAddedVolunteer == "already in":
+            flash(f"{userObj.fullName} already in table.", "warning")
         else:
-            flash(f"Error when adding {userObj.fullName} to event." ,"danger")
+            if successfullyAddedVolunteer:
+                flash(f"{userObj.fullName} added successfully.", "success")
+            else:
+                flash(f"Error when adding {userObj.fullName} to event." ,"danger")
 
     if 'ajax' in request.form and request.form['ajax']:
         return ''
@@ -110,8 +117,8 @@ def removeVolunteerFromEvent(user, eventID):
     flash("Volunteer successfully removed", "success")
     return ""
 
-@admin_bp.route('/updateBackgroundCheck', methods = ['POST'])
-def updateBackgroundCheck():
+@admin_bp.route('/addBackgroundCheck', methods = ['POST'])
+def addBackgroundCheck():
     if g.current_user.isCeltsAdmin:
         eventData = request.form
         user = eventData['user']
@@ -120,6 +127,14 @@ def updateBackgroundCheck():
         dateCompleted = eventData['bgDate']
         addUserBackgroundCheck(user, type, bgStatus, dateCompleted)
         return " "
+
+@admin_bp.route('/deleteBackgroundCheck', methods = ['POST'])
+def deleteBackgroundCheck():
+    if g.current_user.isCeltsAdmin:
+        eventData = request.form
+        bgToDelete = BackgroundCheck.get_by_id(eventData['bgID'])
+        BackgroundCheck.delete().where(BackgroundCheck.id == bgToDelete).execute()
+        return ""
 
 @admin_bp.route('/updateProgramManager', methods=["POST"])
 def updateProgramManager():

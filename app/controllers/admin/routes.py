@@ -1,5 +1,6 @@
-from flask import request, render_template, url_for, g, Flask, redirect, flash, abort, json, jsonify, session
-from peewee import DoesNotExist, fn
+from flask import request, render_template, url_for, g, Flask, redirect
+from flask import flash, abort, json, jsonify, session, send_file
+from peewee import DoesNotExist, fn, IntegrityError
 from playhouse.shortcuts import model_to_dict, dict_to_model
 import json
 from datetime import datetime, date
@@ -19,6 +20,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.models.adminLogs import AdminLogs
 from app.models.eventFile import EventFile
+from app.models.bonnerCohort import BonnerCohort
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.adminLogs import createLog
@@ -27,6 +29,7 @@ from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents
 from app.logic.participants import getEventParticipants, getUserParticipatedEvents, checkUserRsvp, checkUserVolunteer
 from app.logic.fileHandler import FileHandler
+from app.logic.bonner import getBonnerCohorts, makeBonnerXls
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
@@ -260,8 +263,48 @@ def adminLogs():
         abort(403)
 
 @admin_bp.route("/deleteFile", methods=["POST"])
-def deleteFIle():
+def deleteFile():
     fileData= request.form
     eventfile=FileHandler()
     eventfile.deleteEventFile(fileData["fileId"],fileData["eventId"])
     return ""
+
+@admin_bp.route("/manageBonner")
+def manageBonner():
+    if not g.current_user.isCeltsAdmin:
+        abort(403)
+
+    return render_template("/admin/bonnerManagement.html",
+                           cohorts=getBonnerCohorts(),
+                           events=getBonnerEvents(g.current_term))
+
+@admin_bp.route("/bonner/<year>/<method>/<username>", methods=["POST"])
+def updatecohort(year, method, username):
+    if not g.current_user.isCeltsAdmin:
+        abort(403)
+
+    try:
+        user = User.get_by_id(username)
+    except:
+        abort(500)
+
+    if method == "add":
+        try:
+            BonnerCohort.create(year=year, user=user)
+        except IntegrityError as e:
+            # if they already exist, ignore the error
+            pass
+    elif method == "remove":
+        BonnerCohort.delete().where(BonnerCohort.user == user, BonnerCohort.year == year).execute()
+    else:
+        abort(500)
+
+    return ""
+
+@admin_bp.route("/bonnerxls")
+def bonnerxls():
+    if not g.current_user.isCeltsAdmin:
+        abort(403)
+
+    newfile = makeBonnerXls()
+    return send_file(open(newfile, 'rb'), download_name='BonnerStudents.xlsx', as_attachment=True)
