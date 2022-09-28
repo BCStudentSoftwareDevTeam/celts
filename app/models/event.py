@@ -1,4 +1,4 @@
-from app.models import*
+from app.models import *
 from app.models.term import Term
 from app.models.program import Program
 from datetime import datetime

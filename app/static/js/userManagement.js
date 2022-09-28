@@ -1,4 +1,5 @@
 import searchUser from './searchUser.js'
+
 function callbackAdmin(selected){
     submitRequest("addCeltsAdmin", selected.username)
 }

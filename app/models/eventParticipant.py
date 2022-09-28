@@ -4,5 +4,5 @@ from app.models.event import Event
 
 class EventParticipant(baseModel):
     user = ForeignKeyField(User)
-    event = ForeignKeyField(Event)
+    event = ForeignKeyField(Event, backref="participants")
     hoursEarned = FloatField(null=True)
