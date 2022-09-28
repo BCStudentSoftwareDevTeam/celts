@@ -83,8 +83,8 @@ def deleteAllRecurringEvents(eventId):
             if event.recurringId:
                 recurringId = event.recurringId
                 allRecurringEvents = list(Event.select().where(Event.recurringId == recurringId))
-        for aRecurringEvent in allRecurringEvents:
-            aRecurringEvent.delete_instance(recursive = True)
+            for aRecurringEvent in allRecurringEvents:
+                aRecurringEvent.delete_instance(recursive = True)
 
 
 def attemptSaveEvent(eventData, attachmentFiles = None):

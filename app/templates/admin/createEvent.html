@@ -222,22 +222,27 @@
         <h5 class="modal-title" id="warningModel">Delete Event</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      {% if eventData.recurringId%}
+        {% if eventData.recurringId%}
         <div class="modal-body">
-          <p>Are you sure you want to delete these events? This action is irreversible.
-          Select an action.</p>
-          <div class="row g-0">
-            <div class="col-sm-3">
-            <form action="/event/{{eventData.id}}/delete" method='post'>
-                <input type="submit" class="btn btn-danger" value="Delete This Event"/>
-            </div>
-            <div class="col-sm">
-            <form action="/event/{{eventData.id}}/deleteEventAndAllFollowing" method='post'>
-                <input type="submit" class="btn btn-danger" value="Delete This and All Following"/>
-            </div>
-            <div class="col-sm">
-            <form action="/event/{{eventData.id}}/deleteAllRecurringEvents" method='post'>
-                <input type="submit" class="btn btn-danger" value="Delete Series"/>
+          <div class= "container-fluid">
+            <p>Are you sure you want to delete these events? This action is irreversible.
+            Select an action.</p>
+            <div class="row">
+              <div class="col-md-3">
+                <form action="/event/{{eventData.id}}/delete" method='post'>
+                  <button type="submit" class="btn btn-danger">Delete This Event</button>
+                </form>
+              </div>
+              <div class="col-md-4">
+                <form action="/event/{{eventData.id}}/deleteEventAndAllFollowing" method='post'>
+                    <button type="submit" class="btn btn-danger">Delete This and All Following</button>
+                </form>
+                </div>
+              <div class="col-md-4">
+                <form action="/event/{{eventData.id}}/deleteAllRecurring" method='post'>
+                    <button type="submit" class="btn btn-danger">Delete Series </button>
+                </form>
+              </div>
             </div>
           </div>
         </div>
@@ -248,11 +253,12 @@
         <div class="modal-body">
           <p>Are you sure you want to delete these events? This action is irreversible.</p>
         </div>
-           <div class="modal-footer">
-             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-             <form action="/event/{{eventData.id}}/delete" method='post'>
-                 <input type="submit" class="btn btn-danger" value="Delete This Event"/>
-          </div>
+        <div class="modal-footer">
+           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+           <form action="/event/{{eventData.id}}/delete" method='post'>
+               <button type="submit" class="btn btn-danger">Delete This Event</button>
+           </form>
+        </div>
         {%endif%}
        <div>
          <input type="hidden" value="{{eventData.id}}" name="id">

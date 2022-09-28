@@ -213,7 +213,7 @@ def deleteEventAndAllFollowingRoute(eventId):
     except Exception as e:
         print('Error while canceling event:', e)
         return "", 500
-@admin_bp.route('/event/<eventId>/deleteAllRecurringEvents', methods=['POST'])
+@admin_bp.route('/event/<eventId>/deleteAllRecurring', methods=['POST'])
 def deleteAllRecurringEventsRoute(eventId):
     try:
         deleteAllRecurringEvents(eventId)
