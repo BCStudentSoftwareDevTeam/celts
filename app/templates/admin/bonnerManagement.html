@@ -1,0 +1,138 @@
+{% set title = "Bonner Management" %}
+{% extends "base.html" %}
+
+{% block styles %}
+    {{super()}}
+    <link rel="stylesheet" href="{{url_for('static', filename ='css/bonner.css') }}?u={{lastStaticUpdate}}">
+{% endblock %}
+
+{% block scripts %}
+  {{super()}}
+  <script type="module" src="{{url_for('static', filename = 'js/bonnerManagement.js') }}?u={{lastStaticUpdate}}"></script>
+{% endblock %}
+
+{% block app_content %}
+
+    {# Figure out if we are showing a particular tab inside of the accordion #}
+    {% set subtab =  visibleAccordion[7:] if visibleAccordion and "cohort-" in visibleAccordion else "newest" %}
+    {% set visible_tab = subtab if visibleAccordion and subtab == "first" or subtab|int != 0 else "none" %}
+
+<h1 class="text-center mb-5">Bonner Management</h1>
+
+<div class="accordion" id="bonnerManagement">
+  <div class="accordion-item">
+    <h3 class="accordion-header" id="headingOne">
+      {% set focus = "open" if not visibleAccordion or "cohort" in visibleAccordion else "collapsed" %}
+      <button class="accordion-button {{focus}} " type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"> Cohort Management </button>
+    </h3>
+    {% set show = "show" if not visibleAccordion or "cohort" in visibleAccordion %}
+    <div id="collapseOne" class="accordion-collapse collapse {{show}}" aria-labelledby="headingOne" data-bs-parent="#bonnerManagement">
+        <div class="accordion-body">
+
+            <!---------------- Cohort management ---------------->
+            <div class="d-flex justify-content-center">
+                <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                {% set subtab = cohorts.keys()|last if subtab == "newest" else subtab %}
+                {% for year in cohorts.keys()|reverse %}
+                    {% set show = "active" if subtab|int == year else "" %}
+                    {% set aria = "true" if subtab|int == year else "false" %}
+                    <button class="nav-link {{show}}" id="v-pills-{{year}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{year}}" type="button" role="tab" aria-controls="v-pills-{{year}}" aria-selected="{{aria}}">{{year}} - {{year + 1}}</button>
+                {% endfor %}
+                </div>
+                <div class="tab-content me-2 ms-2" id="v-pills-tabContent">
+                    {% for year, users in cohorts.items() %}
+                        {% set searchId = "search-" + year|string %}
+                        {% set show = "show active" if subtab|int == year else "" %}
+                        <div class="tab-pane fade {{show}}" id="v-pills-{{year}}" role="tabpanel" aria-labelledby="v-pills-{{year}}-tab">
+                            <div>
+                                <div class="input-group mb-3">
+                                    <input type="search" id="{{searchId}}" name="{{searchId}}" class="form-control" data-year="{{year}}" placeholder="Add Student" autocomplete="off" style="width:50%" />
+                                    <span class="input-group-text me-1"><span class="bi bi-search"></span></span>
+                                </div>
+                                <table class="w-100 table table-striped">
+                                {% if users|count == 0 %}
+                                    <tr><td>No students added.</td></tr>
+                                {% endif %}
+
+                                {% for user in users %}
+                                    <tr>
+                                        <td id="{{user.username}}" class="align-middle">
+                                            <a href="/profile/{{user.username}}?accordion=bonner">{{user.firstName}} {{user.lastName}}</a>
+                                        </td>
+                                        <td class="w-25"><button data-username="{{user.username}}" data-year="{{year}}" type="button" class="btn btn-danger removeBonner small">Remove</button></td>
+                                    </tr>
+                                {% endfor %}
+                                </table>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="flex-column ms-2">
+                    <a href="/bonnerxls" target="_blank">
+                        <img src="static/xls-icon-3379.png" alt="Export to Excel" height="32" width="32"/>
+                        <span>Export All</span>
+                    </a>
+                </div>
+            </div>
+            <!-------------------- End cohort management --------------------->
+        </div>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <h3 class="accordion-header" id="headingTwo">
+      {% set focus = "open" if visibleAccordion == "events" else "collapsed" %}
+      <button class="accordion-button {{focus}} " type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"> {{g.current_term.description}} Events </button>
+    </h3>
+    {% set show = "show" if visibleAccordion == "events" else "" %}
+    <div id="collapseTwo" class="accordion-collapse collapse {{show}}" aria-labelledby="headingTwo" data-bs-parent="#bonnerManagement">
+        <div class="accordion-body">
+            <!-------------------- Events --------------------->
+            <div class="row table-responsive">
+              <table class="table">
+                {% if events|length > 0 %}
+                  <thead class="tableHeader">
+                    <th scope="col">Event Name</th>
+                    <th scope="col">Event Date</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">RSVPs</th>
+                    <th scope="col">Participants</th>
+                  </thead>
+                  {% for event in events|reverse %}
+                    <tr style="{% if event.isPast  %} opacity: 0.6 {% endif %}">
+                        <td><a href= '/eventsList/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
+                        <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
+                        <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}}</td>
+                        <td>{{event.location}}</td>
+                        <td>{{event.rsvps|count}}</td>
+                        <td>{{event.participants|count}}</td>
+                      </tr>
+                  {% endfor %}
+                {% else %}
+                  <h5>There are no Bonner events for this term.</h5>
+                {% endif %}
+              </table>
+            </div>
+            <!-------------------- End Events --------------------->
+        </div>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <h3 class="accordion-header" id="headingThree">
+      {% set focus = "open" if visibleAccordion == "requirements" else "collapsed" %}
+      <button class="accordion-button {{focus}} " type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree"> Requirements </button>
+    </h3>
+    {% set show = "show" if visibleAccordion == "requirements" else "" %}
+    <div id="collapseThree" class="accordion-collapse collapse {{show}}" aria-labelledby="headingThree" data-bs-parent="#bonnerManagement">
+        <div class="accordion-body">
+            <!-------------------- Requirements --------------------->
+            <h3>Coming Soon</h3>
+            <!-------------------- End Requirements --------------------->
+        </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
