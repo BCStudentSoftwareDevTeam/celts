@@ -84,20 +84,19 @@ $(document).ready(function(e) {
         $("input[name=courseInstructorPhone]").focusout(function(){
           var username=getRowUsername(this)
           var phoneInput = "#inputPhoneNumber-" + username
-          validatePhoneNumber(this, phoneInput, username,"focusOut")
-
+          validatePhoneNumber(this, phoneInput, username)
 
         });
         $("input[name=courseInstructorPhone]").focus(function(){
           var username=getRowUsername(this)
           var phoneInput = "#inputPhoneNumber-" + username
-          validatePhoneNumber(this, phoneInput, username,"focus")
+          validatePhoneNumber(this, phoneInput, username)
         })
 
         $('#instructorTable').on('click', ".editButton", function() {
             var username=getRowUsername(this)
             var phoneInput = "#inputPhoneNumber-" + username
-            validatePhoneNumber(this, phoneInput, username,"buttonClick")
+            validatePhoneNumber(this, phoneInput, username)
 
         });
     }

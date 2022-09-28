@@ -35,44 +35,45 @@ function msgToast(head, body){
   toastList[0].show()
 }
 
-function validatePhoneNumber(editButtonId, phoneInputId, username,action) {
+function setupPhoneNumber(editButton, phoneInput, username) {
+  if (action=="buttonClick"){
+    console.log("buttonClick")
+  }else if (action=="focusOut"){
+    console.log("focusout")
+  }else if (action=="focus"){
+    console.log("focus")
+  }
+  if ($(editButtonId).html() === 'Edit') {
+      $(editButtonId).html("Save");
+      $(phoneInputId).focus();
+  }
+}
 
+function validatePhoneNumber(editButtonId, phoneInputId, username) {
 
-    if (action=="buttonClick"){
-      console.log("buttonClick")
-    }else if (action=="focusOut"){
-      console.log("focusout")
-    }else if (action=="focus"){
-      console.log("focus")
-    }
-    if ($(editButtonId).html() === 'Edit') {
-        $(editButtonId).html("Save");
-        $(phoneInputId).focus();
-    } else {
-        // Save the phone number
-        var phoneInput = $(phoneInputId);
-        var isvalid = phoneInput.val().replace(/\D/g,"").length === 10;
-        let isempty = phoneInput.val().replace(/\D/g,"").length === 0;
-        if (!(isvalid || isempty)) { // allows phone number input to be empty
-            phoneInput.addClass("invalid");
-            window.setTimeout(() => phoneInput.removeClass("invalid"), 1000);
-            phoneInput.focus()
-            return isvalid;
-        }
-          $.ajax({
-            method:"POST",
-            url:"/updatePhone",
-            data:{"username":username,
-                  "phoneNumber":phoneInput.val()},
-            success: function(s){
-                msgFlash("Phone number is updated.", "success")
-            },
-            error: function(request, status, error) {
-                msgFlash("Phone number not updated.", "danger")
-            }
-          })
-        $(editButtonId).html('Edit');
+  // Save the phone number
+  var phoneInput = $(phoneInputId);
+  var isvalid = phoneInput.val().replace(/\D/g,"").length === 10;
+  let isempty = phoneInput.val().replace(/\D/g,"").length === 0;
+  if (!(isvalid || isempty)) { // allows phone number input to be empty
+      phoneInput.addClass("invalid");
+      window.setTimeout(() => phoneInput.removeClass("invalid"), 1000);
+      phoneInput.focus()
+      return isvalid;
+  }
+    $.ajax({
+      method:"POST",
+      url:"/updatePhone",
+      data:{"username":username,
+            "phoneNumber":phoneInput.val()},
+      success: function(s){
+          msgFlash("Phone number is updated.", "success")
+      },
+      error: function(request, status, error) {
+          msgFlash("Phone number not updated.", "danger")
       }
+    })
+  $(editButtonId).html('Edit');
 }
 
 function reloadWithAccordion(accordionName) {
