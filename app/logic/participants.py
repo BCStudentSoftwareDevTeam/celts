@@ -120,26 +120,14 @@ def getUserParticipatedEvents(program, user, currentTerm):
     :returns: trainings for program and if the user participated
     """
     academicYear = currentTerm.academicYear
-    print("------\nProgram: ", program.programName, "\nUser: ", user, "\nTerm: ", currentTerm.description, "\nAY: ", academicYear)
     otherCeltsEventsProgram = Program.get(11) # This is the ID for the other celts sponsored events
                                               # TODO: make a query that gets the program data without a need for the ID, in case the ID changes
-    print(program == otherCeltsEventsProgram)
 
     programTrainings = (Event.select(Event, EventParticipant)
                                 .join(EventParticipant, JOIN.LEFT_OUTER)
                                 .where((Event.isTraining),
                                         (Event.program == program) | (Event.program == otherCeltsEventsProgram),
                                         Event.term == currentTerm))
-
-    # programTrainings = (Event.select(Event, ProgramEvent, Term, EventParticipant)
-    #                            .join(EventParticipant, JOIN.LEFT_OUTER).switch()
-    #                            .join(ProgramEvent).switch()
-    #                            .join(Term)
-    #                            .where((Event.isTraining | Event.isAllVolunteerTraining),
-    #                                   ProgramEvent.program == program,
-    #                                   Event.term.academicYear == academicYear,
-    #                                   EventParticipant.user.is_null(True) | (EventParticipant.user == user)))
-    print(list(programTrainings))
 
     userParticipatedEvents = {}
     for training in programTrainings.objects():
