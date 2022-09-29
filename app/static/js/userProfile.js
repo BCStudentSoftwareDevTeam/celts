@@ -158,7 +158,7 @@ $(document).ready(function(){
         }
     });
 
-    setupPhoneNumber("#updatePhone", "#phoneInput")
+    setupPhoneNumber("#updatePhone", "#phoneInput", event)
 });
 
 function updateManagers(el, volunteer_username ){// retrieve the data of the student staff and program id if the boxes are checked or not

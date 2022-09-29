@@ -35,7 +35,7 @@ function msgToast(head, body){
   toastList[0].show()
 }
 
-function setupPhoneNumber(editButton, phoneInput){
+function setupPhoneNumber(editButton, phoneInput, event){
   // input, button, username
   // setup all the event handlers
   // does not do any actions
@@ -54,15 +54,22 @@ function setupPhoneNumber(editButton, phoneInput){
     var username = $("#updatePhone").data("username")
     bloo("#updatePhone", this, username, "focus")
   })
-  $(phoneInput).focusout(function () {
+  $(phoneInput).focusout(function (event) {
     var username = $("#updatePhone").data("username")
-    bloo("#updatePhone", this, username, "focusout")
+    var bla = $("#updatePhone" + username)
+    if ($(event.relatedTarget).attr("id") != bla.attr("id")){
+      bloo("#updatePhone", this, username, "save")
+    }
+    else{
+      bloo("#updatePhone", this, username, "focusout")
+    }
   })
 }
 
 function bloo (editButtonID, phoneInputID, username, action) {
   //second function that does all the actions that were setup in setupPhone
   // handler call
+  // debugger;
   if (action == "edit") {
     $(editButtonID).html("Save");
     $(phoneInputID).focus();
@@ -73,9 +80,9 @@ function bloo (editButtonID, phoneInputID, username, action) {
   else if (action == "focus") {
     $(editButtonID).html("Save");
   }
-  // else if (action == "focusout"){
-  //   $(editButtonID).html("Edit");
-  // }
+  else if (action == "focusout"){
+    $(editButtonID).html("Edit");
+  }
 }
 
 function validatePhoneNumber(editButtonId, phoneInputId, username) {
