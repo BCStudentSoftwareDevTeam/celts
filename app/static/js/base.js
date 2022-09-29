@@ -35,13 +35,16 @@ function msgToast(head, body){
   toastList[0].show()
 }
 
-function setupPhoneNumber(editButtonID, phoneInputID, username, action) {
+function setupPhoneNumber(editButtonID, phoneInputID, username) {
+  // input and button username
+  // setup all the event handlers
+  // does not do any actions
   if (action == "button" && $(editButtonID).html() === 'Edit') {
     $(editButtonID).html("Save");
     $(phoneInputID).focus();
 }
  if (action === "focus") {
-  if ($(editButtonID).html() == 'Edit'){ 
+  if ($(editButtonID).html() == 'Edit'){
   $(editButtonID).html("Save");
 }
  }
@@ -50,10 +53,15 @@ else if (action == "button" && $(editButtonID).html() === 'Save') {
   validatePhoneNumber(editButtonID, phoneInputID, username)
 }
 else if (action == "focusout") {
-  $(editButtonID).html("Edit");
+  var editbtn = editButtonID + username
+  if ($(event.relatedTarget).attr("id") != editButtonID) {
+    $(editButtonID).html("Edit");
+  }
 }
 
 }
+
+//second new function that does all the actions that were setup in setupPhone
 
 function validatePhoneNumber(editButtonId, phoneInputId, username) {
 

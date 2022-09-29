@@ -174,7 +174,7 @@ $(document).ready(function(){
     $("#phoneInput").focusout(function () {
       var username = $("#updatePhone").data("username")
       setupPhoneNumber("#updatePhone", this, username, "focusout")
-    }) 
+    })
 });
 
 function updateManagers(el, volunteer_username ){// retrieve the data of the student staff and program id if the boxes are checked or not
