@@ -35,18 +35,24 @@ function msgToast(head, body){
   toastList[0].show()
 }
 
-function setupPhoneNumber(editButton, phoneInput, username) {
-  if (action=="buttonClick"){
-    console.log("buttonClick")
-  }else if (action=="focusOut"){
-    console.log("focusout")
-  }else if (action=="focus"){
-    console.log("focus")
-  }
-  if ($(editButtonId).html() === 'Edit') {
-      $(editButtonId).html("Save");
-      $(phoneInputId).focus();
-  }
+function setupPhoneNumber(editButtonID, phoneInputID, username, action) {
+  if (action == "button" && $(editButtonID).html() === 'Edit') {
+    $(editButtonID).html("Save");
+    $(phoneInputID).focus();
+}
+ if (action === "focus") {
+  if ($(editButtonID).html() == 'Edit'){ 
+  $(editButtonID).html("Save");
+}
+ }
+else if (action == "button" && $(editButtonID).html() === 'Save') {
+  $(editButtonID).html("Edit");
+  validatePhoneNumber(editButtonID, phoneInputID, username)
+}
+else if (action == "focusout") {
+  $(editButtonID).html("Edit");
+}
+
 }
 
 function validatePhoneNumber(editButtonId, phoneInputId, username) {

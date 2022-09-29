@@ -158,10 +158,23 @@ $(document).ready(function(){
         }
     });
 
-  $("#updatePhone").on('click', function() {
-    var username = $(this).data("username")
-    validatePhoneNumber(this, "#phoneInput", username)
-  });
+    $("#updatePhone").on('click', function() {
+      var username = $(this).data("username")
+      if ($(this).html() === 'Edit'){
+        console.log("save")
+        $("#phoneInput").focus();
+      }
+      // setupPhoneNumber(this, "#phoneInput", username, "button")
+    });
+    $("#phoneInput").focus(function (){
+      console.log("ajkhduiwgdui")
+      var username = $("#updatePhone").data("username")
+      setupPhoneNumber("#updatePhone", this, username, "focus")
+    })
+    $("#phoneInput").focusout(function () {
+      var username = $("#updatePhone").data("username")
+      setupPhoneNumber("#updatePhone", this, username, "focusout")
+    }) 
 });
 
 function updateManagers(el, volunteer_username ){// retrieve the data of the student staff and program id if the boxes are checked or not
