@@ -1,0 +1,16 @@
+
+/* Mostly copied from the Bootstrap classes, because it was looking pretty messy */
+
+.d-flex a img {
+    margin-right: auto;
+    margin-left: auto;
+    display: block;
+}
+
+/* slightly smaller button */
+.removeBonner {
+    font-size: .9rem;
+    line-height: 1.2;
+    padding: .375rem .5rem;
+}
+

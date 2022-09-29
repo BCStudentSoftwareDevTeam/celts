@@ -54,7 +54,7 @@
             </button>
           </div>
         </nav>
-        <div class="{{ 'collapse-show' if request.path =='/adminLogs' or request.path =='/manageServiceLearning' or request.path =='/admin' or request.path == '/courseManagement' else 'collapse'}}" id="navbarToggleExternalContent">
+        <div class="{{ 'collapse-show' if request.path in ['/adminLogs','/manageServiceLearning','/admin','/courseManagement','/manageBonner'] else 'collapse'}}" id="navbarToggleExternalContent">
           <div class="bg-dark ps-3">
             <a href="/adminLogs" class="nav-link text-white {{ 'active' if request.path =='/adminLogs' }}">
               Activity Logs
@@ -64,6 +64,9 @@
             </a>
             <a href="/manageServiceLearning" class="nav-link text-white {{ 'active' if request.path =='/manageServiceLearning' }}">
               Course Management
+            </a>
+            <a href="/manageBonner" class="nav-link text-white {{ 'active' if request.path =='/manageBonner' }}">
+              Bonner Management
             </a>
           </div>
         </div>
