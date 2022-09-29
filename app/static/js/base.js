@@ -35,33 +35,48 @@ function msgToast(head, body){
   toastList[0].show()
 }
 
-function setupPhoneNumber(editButtonID, phoneInputID, username) {
-  // input and button username
+function setupPhoneNumber(editButton, phoneInput){
+  // input, button, username
   // setup all the event handlers
   // does not do any actions
-  if (action == "button" && $(editButtonID).html() === 'Edit') {
+
+  $(editButton).on('click', function() {
+    var username = $(this).data("username")
+    if ($(editButton).html() === 'Edit'){
+      bloo(this, phoneInput, username, "edit")
+    }
+    else{
+      bloo(this, phoneInput, username, "save")
+    }
+  });
+
+  $(phoneInput).focus(function (){
+    var username = $("#updatePhone").data("username")
+    bloo("#updatePhone", this, username, "focus")
+  })
+  $(phoneInput).focusout(function () {
+    var username = $("#updatePhone").data("username")
+    bloo("#updatePhone", this, username, "focusout")
+  })
+}
+
+function bloo (editButtonID, phoneInputID, username, action) {
+  //second function that does all the actions that were setup in setupPhone
+  // handler call
+  if (action == "edit") {
     $(editButtonID).html("Save");
     $(phoneInputID).focus();
-}
- if (action === "focus") {
-  if ($(editButtonID).html() == 'Edit'){
-  $(editButtonID).html("Save");
-}
- }
-else if (action == "button" && $(editButtonID).html() === 'Save') {
-  $(editButtonID).html("Edit");
-  validatePhoneNumber(editButtonID, phoneInputID, username)
-}
-else if (action == "focusout") {
-  var editbtn = editButtonID + username
-  if ($(event.relatedTarget).attr("id") != editButtonID) {
-    $(editButtonID).html("Edit");
   }
+  else if (action == "save" ) {
+    validatePhoneNumber(editButtonID, phoneInputID, username)
+  }
+  else if (action == "focus") {
+    $(editButtonID).html("Save");
+  }
+  // else if (action == "focusout"){
+  //   $(editButtonID).html("Edit");
+  // }
 }
-
-}
-
-//second new function that does all the actions that were setup in setupPhone
 
 function validatePhoneNumber(editButtonId, phoneInputId, username) {
 
