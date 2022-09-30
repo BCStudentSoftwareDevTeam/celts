@@ -13,7 +13,7 @@ $(document).ready(function(){
     // Add requirements sorting
     // https://github.com/SortableJS/Sortable
     // https://sortablejs.github.io/Sortable/
-    new Sortable($('#requirements tbody')[0], {
+    var requirementsObj = new Sortable($('#requirements tbody')[0], {
         animation: 150,
         forceFallback: false,
         handle: '.drag-handle',
@@ -29,10 +29,11 @@ $(document).ready(function(){
     $("#reqAdd").click(function() {
         var table = $("#requirements");
         var newrow = table.find("tbody tr:last-child").clone()
-        newrow.find("input").val("")
+        newrow.data("id", "X");
+        newrow.find("input").val("");
 
         newrow.find("select.frequency-select option:first-child").attr('selected', true);
-        newrow.find("select:not(.frequency-select) option:last-child").attr('selected', true);
+        newrow.find("select.required-select option:last-child").attr('selected', true);
 
         table.append(newrow)
         addRequirementsRowHandlers()
@@ -44,7 +45,33 @@ $(document).ready(function(){
     // Save Requirements handler
     $("#reqSave").click(function() {
         disableSave();
+
+        var data = $("#requirements tbody tr").map(function(i,row) { 
+                        return {
+                            'id': $(row).data("id"),
+                            'name': $(row).find("input").val(),
+                            'required': $(row).find("select.required-select").val() == 'Required' ? true : false,
+                            'frequency': $(row).find("select.frequency-select").val() 
+                        } 
+                    }).get()
+
         $.ajax({
+            'method': 'POST',
+            'url': '/saveRequirements/1',
+            'contentType': 'application/json',
+            'dataType': 'json',
+            'data': JSON.stringify(data),
+            'success': function(ids) {
+                // update our rows with any new ids
+                let rows = $('#requirements tbody tr').get()
+                ids.forEach(function(id, index) {
+                    let row = $(rows[index])
+                    if(id != row.data('id')) {
+                        row.data('id', id);
+                    }
+                });
+                msgToast("Bonner", "Updated Bonner Requirements");
+            }
         });
     });
 });
@@ -79,11 +106,20 @@ function addRequirementsRowHandlers() {
         }
     });
     $(".frequency-select").change();
+    $(".frequency-select").change(function(e) {
+        enableSave();
+    });
 
     // enable the remove button
     $("#requirements button").click(function(e) {
         enableSave();
         $(e.target.closest('tr')).fadeOut(function() { this.remove() });
+    });
+    $("#requirements input").keyup(function(e) {
+        enableSave();
+    });
+    $(".required-select").change(function(e) {
+        enableSave();
     });
 }
 

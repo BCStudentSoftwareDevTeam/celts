@@ -1,4 +1,4 @@
-from peewee import JOIN
+from peewee import JOIN, DoesNotExist
 
 from app.models.certification import Certification
 from app.models.certificationRequirement import CertificationRequirement
@@ -31,3 +31,33 @@ def getCertRequirements(certification=None):
             certs[cert.id]["requirements"].append(cert.requirement)
 
     return certs
+
+def updateCertRequirements(certId, newRequirements):
+    """
+    """
+    # check for missing ids to remove
+    newIds = [req['id'] for req in newRequirements]
+    missingReqs = CertificationRequirement.select().where(CertificationRequirement.id.not_in(newIds))
+    for req in missingReqs:
+        req.delete_instance()
+
+
+    # update existing and add new requirements
+    requirements = []
+    for order,req in enumerate(newRequirements):
+        try:
+            newreq = CertificationRequirement.get_by_id(req['id'])
+        except DoesNotExist:
+            newreq = CertificationRequirement()
+
+        newreq.certification = certId
+        newreq.isRequired = bool(req['required'])
+        newreq.frequency = req['frequency']
+        newreq.name = req['name']
+        newreq.order = order
+        newreq.save()
+
+        requirements.append(newreq)
+
+
+    return requirements 

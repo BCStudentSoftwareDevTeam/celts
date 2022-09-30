@@ -1,5 +1,5 @@
 from flask import request, render_template, url_for, g, Flask, redirect
-from flask import flash, abort, json, jsonify, session, send_file
+from flask import flash, abort, jsonify, session, send_file
 from peewee import DoesNotExist, fn, IntegrityError
 from playhouse.shortcuts import model_to_dict, dict_to_model
 import json
@@ -25,7 +25,7 @@ from app.models.certification import Certification
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.adminLogs import createLog
-from app.logic.certification import getCertRequirements
+from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, getBonnerEvents
@@ -292,3 +292,11 @@ def bonnerxls():
     newfile = makeBonnerXls()
     return send_file(open(newfile, 'rb'), download_name='BonnerStudents.xlsx', as_attachment=True)
 
+@admin_bp.route("/saveRequirements/<certid>", methods=["POST"])
+def saveRequirements(certid):
+    if not g.current_user.isCeltsAdmin:
+        abort(403)
+
+    newRequirements = updateCertRequirements(certid, request.get_json())
+
+    return jsonify([req.id for req in newRequirements])

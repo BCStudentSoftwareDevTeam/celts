@@ -138,7 +138,7 @@
                     <tr data-id="{{req.id}}">
                         <td class="align-middle drag-handle"><img src="static/drag-handle.jpg" width=24 height=24  /></td>
                         <td><input class="form-control" value="{{req.name}}" ></td>
-                        <td><select class="form-select">
+                        <td><select class="form-select required-select">
                                 <option {{ "selected" if req.isRequired else "" }}>Required</option>
                                 <option {{ "selected" if not req.isRequired else "" }}>Optional</option>
                             </select>
