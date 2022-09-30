@@ -56,13 +56,11 @@ $(document).ready(function() {
   $("#allowPastStart").click(function() {
     var bloo = $("#allowPastStart:checked").val()
     if (bloo == 'on') {
-      // can time travel into the past
       $.datepicker.setDefaults({
         minDate:  new Date('1999/10/25'),
         dateFormat:'mm-dd-yy'
       });
     } else {
-      // can't time travel
       $.datepicker.setDefaults({
         minDate:  new Date($.now()),
         dateFormat:'mm-dd-yy'
