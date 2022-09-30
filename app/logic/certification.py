@@ -37,9 +37,7 @@ def updateCertRequirements(certId, newRequirements):
     """
     # check for missing ids to remove
     newIds = [req['id'] for req in newRequirements]
-    missingReqs = CertificationRequirement.select().where(CertificationRequirement.id.not_in(newIds))
-    for req in missingReqs:
-        req.delete_instance()
+    CertificationRequirement.delete().where(CertificationRequirement.id.not_in(newIds)).execute()
 
 
     # update existing and add new requirements
