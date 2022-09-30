@@ -115,7 +115,7 @@ def viewUsersProfile(username):
                                    "isNotBanned": True if not notes else False,
                                    "banNote": noteForDict})
         profileNotes = ProfileNote.select().where(ProfileNote.user == volunteer)
-        print(f"\nPROFILE NOTES: {profileNotes}")
+        print(f"\nPROFILE NOTES: {list(profileNotes)}")
 
         return render_template ("/main/userProfile.html",
                 programs = programs,

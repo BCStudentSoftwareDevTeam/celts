@@ -27,6 +27,7 @@ from app.models.backgroundCheck import BackgroundCheck
 from app.models.adminLogs import AdminLogs
 from app.models.emailLog import EmailLog
 from app.models.eventFile import EventFile
+from app.models.bonnerCohort import BonnerCohort
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -1039,6 +1040,34 @@ files = [
     }
 ]
 EventFile.insert_many(files).on_conflict_replace().execute()
+
+cohort = [
+    {
+        "year": "2021",
+        "user": "neillz"
+    },
+    {
+        "year": "2022",
+        "user": "neillz"
+    },
+    {
+        "year": "2023",
+        "user": "neillz"
+    },
+    {
+        "year": "2021",
+        "user": "ramsayb2"
+    },
+    {
+        "year": "2022",
+        "user": "ramsayb2"
+    },
+    {
+        "year": "2023",
+        "user": "ramsayb2"
+    }
+]
+BonnerCohort.insert_many(cohort).on_conflict_replace().execute()
 
 profileNotes = [
     {

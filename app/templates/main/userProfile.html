@@ -10,6 +10,7 @@
 {% block styles %}
   {{super()}}
   <link rel="stylesheet" href="{{url_for('static', filename ='css/userProfile.css') }}?u={{lastStaticUpdate}}">
+
 {% endblock %}
 
 {% block app_content %}
@@ -38,7 +39,7 @@
     <div id="collapseOne" class="accordion-collapse collapse {{show}} " aria-labelledby="headingOne" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="row table-responsive">
-          <table class="table">
+          <table class="table table-striped">
             {% if upcomingEvents|length > 0 %}
               <thead class="tableHeader">
                 <th scope="col">Program</th>
@@ -79,7 +80,7 @@
     <div id="collapseTwo" class="accordion-collapse collapse {{show}}" aria-labelledby="headingTwo" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="table-responsive">
-          <table class="table banTable">
+          <table class="table table-striped banTable">
             {% if participatedEvents|length > 0 %}
               <thead>
                 <th scope="col">Program</th>
@@ -114,7 +115,7 @@
     <div id="collapseThree" class="accordion-collapse collapse {{show}}" aria-labelledby="headingThree" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="table-responsive">
-          <table class="table banTable">
+          <table class="table table-striped banTable">
              <thead>
                <tr>
                  <th scope="col">Program</th>
@@ -246,7 +247,7 @@
       <div id="collapseFive" class="accordion-collapse collapse {{show}}" aria-labelledby="headingFive" data-bs-parent="#userProfile">
         <div class="accordion-body">
           <div class="table-responsive">
-            <table class="table" id="bgHistoryTable">
+            <table class="table table-striped" id="bgHistoryTable">
               <thead>
                 <tr>
                   <th scope="col">Description</th>
@@ -305,33 +306,50 @@
     {% set show = "show" if visibleAccordion == "notes" else "" %}
     <div id="collapseSix" class="accordion-collapse collapse {{show}}" aria-labelledby="headingSix" data-bs-parent="#userProfile">
       <div class="accordion-body">
-        {% for note in profileNotes %}
-        <p>
-          {{note.note.noteContent}}
-        </p>
-        {% endfor %}
-        {% if g.current_user.isCeltsAdmin %}
-          <h6>Visible to Admins</h6>
-          <p>
-            Test
-          </p>
-        {% endif %}
-        {% if g.current_user.isCeltsStudentStaff or g.current_user.isCeltsAdmin %}
-          <h6>Visible to Student Staff</h6>
-          <p>
-            Test
-          </p>
-        {% endif %}
-        {% if g.current_user.isCeltsAdmin or g.current_user.isBonnerScholar %}
-          <h6>Visible to Bonner Scholars</h6>
-          <p>
-            Test
-          </p>
-        {% endif %}
-        <h6>Visible to Everyone</h6>
-        <p>
-          Test
-        </p>
+        <table class="table table-responsive table-striped" id="profileTable">
+          <thead>
+            <tr>
+              <th>Note</th>
+              <th>Visible By</th>
+            </tr>
+
+          </thead>
+        <tbody>
+          {% if g.current_user.isCeltsAdmin %}
+            {% set userViewTier = 3 %}
+          {% elif g.current_user.isCeltsStudentStaff %}
+            {% set userViewTier = 2 %}
+          {% else %}
+            {% set userViewTier = 1 %}
+          {% endif %}
+
+          {% for row in profileNotes %}
+            {% set sortDate = row.note.createdOn.strftime("%Y/%m/%d/%H/%M")%}
+            {% set displayDate = row.note.createdOn.strftime('%m/%d/%Y')%}
+            {% if userViewTier >= row.viewTier %}
+              <tr>
+                <td data-sort="{{sortDate}}">
+                  {{row.note.noteContent}} <span><i class="ms-1 text-muted">  -{{row.user.firstName+ " "+ row.user.lastName}} on {{displayDate}}</i></span>
+                </td>
+                <td>
+                  {% if row.isBonnerNote %}
+                    Bonner Scholars AND
+                  {% endif %}
+                  {% if row.viewTier == 3 %}
+                    Admins
+                  {% elif row.viewTier == 2 %}
+                    Admins, Student Staff
+                  {% else %}
+                    Everyone
+                  {% endif %}
+                </td>
+              </tr>
+            {% endif %}
+          {%endfor%}
+        </tbody>
+
+        </table>
+        <button type="button" name="button" class="btn btn-primary">Add Note</button>
       </div>
     </div>
   </div>
