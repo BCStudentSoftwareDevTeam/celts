@@ -63,6 +63,10 @@ $(document).ready(function() {
       });
     } else {
       // can't time travel
+      $.datepicker.setDefaults({
+        minDate:  new Date($.now()),
+        dateFormat:'mm-dd-yy'
+      });
     }
   });
   // everything except Chrome
