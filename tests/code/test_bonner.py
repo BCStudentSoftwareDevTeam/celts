@@ -43,7 +43,3 @@ def test_getBonnerCohorts():
         assert len(cohorts[currentYear-1]) == 4
 
         transaction.rollback()
-
-@pytest.mark.integration
-def test_getBonnerCohorts():
-    pass
