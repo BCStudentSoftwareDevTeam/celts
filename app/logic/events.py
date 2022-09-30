@@ -286,7 +286,7 @@ def validateNewEventData(data):
 
     # Validation if we are inserting a new event
     if 'id' not in data:
-        
+
         event = Event.select().where((Event.name == data['name']) &
                                      (Event.location == data['location']) &
                                      (Event.startDate == data['startDate']) &
