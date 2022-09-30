@@ -2,10 +2,12 @@ import pytest
 from peewee import DoesNotExist
 
 from app.models import mainDB
+from app.models.event import Event
 from app.models.certification import Certification
 from app.models.certificationRequirement import CertificationRequirement
+from app.models.requirementMatch import RequirementMatch
 
-from app.logic.certification import getCertRequirements, updateCertRequirements
+from app.logic.certification import getCertRequirements, updateCertRequirements, updateCertRequirementForEvent
 
 @pytest.mark.integration
 def test_getCertRequirements():
@@ -82,6 +84,42 @@ def test_updateCertRequirements():
         assert returnedIds[1].name == "CPR 2"
         assert returnedIds[1].frequency == "once"
         assert returnedIds[1].isRequired == False
+
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_updateCertRequirementForEvent():
+
+    with mainDB.atomic() as transaction:
+        RequirementMatch.create(event_id=14, requirement_id=8)
+
+        # adding a requirement/event pair that already exists
+        ev = Event.get_by_id(14)
+        updateCertRequirementForEvent(ev, 8)
+        results = RequirementMatch.select().where(RequirementMatch.requirement == 8)
+        assert len(results) == 1
+
+        # adding a requirement that is different for an existing event
+        ev = Event.get_by_id(14)
+        updateCertRequirementForEvent(ev, 9)
+        results = RequirementMatch.select().where(RequirementMatch.event == ev)
+        assert len(results) == 1, "Should have one requirement per event"
+
+        # adding an event that is different for an existing requirement
+        ev = Event.get_by_id(12)
+        updateCertRequirementForEvent(ev, 9)
+        results = RequirementMatch.select().where(RequirementMatch.event == ev)
+        assert len(results) == 1, "Should have one requirement per event"
+        results = RequirementMatch.select().where(RequirementMatch.requirement == 9)
+        assert len(results) == 2, "Can have multiple events satisfying a requirement"
+
+
+        # adding a new requirement/event pair
+        transaction.rollback()
+        ev = Event.get_by_id(14)
+        updateCertRequirementForEvent(ev, 8)
+        results = RequirementMatch.select().where(RequirementMatch.event == ev)
+        assert len(results) == 1
 
         transaction.rollback()
 

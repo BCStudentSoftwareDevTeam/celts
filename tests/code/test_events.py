@@ -10,6 +10,8 @@ from app.models import mainDB
 from app.models.event import Event
 from app.models.user import User
 from app.models.eventTemplate import EventTemplate
+from app.models.requirementMatch import RequirementMatch
+from app.models.certificationRequirement import CertificationRequirement
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
 from app.models.term import Term
@@ -167,6 +169,43 @@ def test_preprocessEventData_term():
     eventData = {'term': 'asdf'}
     preprocessEventData(eventData)
     assert eventData['term'] == ''
+
+@pytest.mark.integration
+def test_preprocessEventData_requirement():
+    with mainDB.atomic() as transaction:
+        RequirementMatch.create(event=1, requirement=3)
+
+        # key doesn't exist, no event id
+        eventData = {}
+        preprocessEventData(eventData)
+        assert 'certRequirement' not in eventData
+
+        # key doesn't exist, event id exists, requirement doesn't exist
+        eventData = {'id': 11}
+        preprocessEventData(eventData)
+        assert 'certRequirement' not in eventData
+
+        # key doesn't exist, event id exists, requirement exists
+        eventData = {'id': 1}
+        preprocessEventData(eventData)
+        assert eventData['certRequirement'] == CertificationRequirement.get_by_id(3)
+
+        # key exists, but requirement doesn't exist
+        eventData = {'certRequirement': 73}
+        preprocessEventData(eventData)
+        assert eventData['certRequirement'] == ''
+
+        # key is integer, requirement exists
+        eventData = {'certRequirement': 3}
+        preprocessEventData(eventData)
+        assert eventData['certRequirement'] == CertificationRequirement.get_by_id(3)
+
+        # key is object
+        eventData = {'certRequirement': CertificationRequirement.get_by_id(3)}
+        preprocessEventData(eventData)
+        assert eventData['certRequirement'] == CertificationRequirement.get_by_id(3)
+
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_correctValidateNewEventData():
@@ -358,6 +397,7 @@ def test_saveEventToDb_update():
                         "description": "This is a Test",
                         "timeStart": "06:00 PM",
                         "timeEnd": "09:00 PM",
+                        "certRequirement": 9,
                         "location": "House",
                         'isRecurring': True,
                         'recurringId': 2,
@@ -377,6 +417,8 @@ def test_saveEventToDb_update():
         afterUpdate = Event.get_by_id(newEventData['id'])
         assert afterUpdate.description == "This is a Test"
         assert afterUpdate.isAllVolunteerTraining == True
+        assert RequirementMatch.select().where(RequirementMatch.event == afterUpdate, 
+                                               RequirementMatch.requirement == 9).exists()
 
         newEventData = {
                         "id": 4,

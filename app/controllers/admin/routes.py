@@ -78,7 +78,7 @@ def createEvent(templateid, programid=None):
         flash("There was an error with your selection. Please try again or contact Systems Support.", "danger")
         return redirect(url_for("admin.program_picker"))
 
-    # Get the data for the form, from the template or the form submission
+    # Get the data from the form or from the template
     eventData = template.templateData
     if request.method == "POST":
         attachmentFiles = request.files.getlist("attachmentObject")
@@ -86,6 +86,7 @@ def createEvent(templateid, programid=None):
         if fileDoesNotExist:
             attachmentFiles = None
         eventData.update(request.form.copy())
+
     if program:
         eventData["program"] = program
 
@@ -130,10 +131,15 @@ def createEvent(templateid, programid=None):
 
     futureTerms = selectSurroundingTerms(g.current_term, prevTerms=0)
 
+    requirements = []
+    if 'program' in eventData and eventData['program'].isBonnerScholars:
+        requirements = getCertRequirements(Certification.BONNER)
+
     return render_template(f"/admin/{template.templateFile}",
             template = template,
             eventData = eventData,
             futureTerms = futureTerms,
+            requirements = requirements,
             isProgramManager = isProgramManager)
 
 @admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
@@ -149,25 +155,34 @@ def eventDisplay(eventId):
         print(f"Unknown event: {eventId}")
         abort(404)
     eventData = model_to_dict(event, recurse=False)
-    associatedAttachments = EventFile.select().where(EventFile.event == eventId)
+    associatedAttachments = EventFile.select().where(EventFile.event == event)
+
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
         attachmentFiles = request.files.getlist("attachmentObject")
         savedEvents, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
         if savedEvents:
             flash("Event successfully updated!", "success")
-            return redirect(url_for("admin.eventDisplay", eventId = eventId))
+            return redirect(url_for("admin.eventDisplay", eventId = event.id))
         else:
             flash(validationErrorMessage, 'warning')
 
     preprocessEventData(eventData)
+    eventData['program'] = event.singleProgram
     futureTerms = selectSurroundingTerms(g.current_term)
     userHasRSVPed = checkUserRsvp(g.current_user, event)
     isPastEvent = event.isPast
-    eventfiles=FileHandler()
-    program=event.singleProgram
-    filepaths =eventfiles.retrievePath(associatedAttachments, eventId)
-    isProgramManager = g.current_user.isProgramManagerFor(program)
+    filepaths =FileHandler().retrievePath(associatedAttachments, event.id)
+    isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
+
+    requirements = []
+    if eventData['program'] and eventData['program'].isBonnerScholars:
+        requirements = getCertRequirements(Certification.BONNER)
+
+    print("##############################################")
+    print(list(eventData.items()))
+    print("##############################################")
+
     rule = request.url_rule
     if 'edit' in rule.rule:
         if not (g.current_user.isCeltsAdmin or isProgramManager):
@@ -176,6 +191,7 @@ def eventDisplay(eventId):
                                 eventData = eventData,
                                 futureTerms=futureTerms,
                                 isPastEvent = isPastEvent,
+                                requirements = requirements,
                                 userHasRSVPed = userHasRSVPed,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths)
@@ -189,7 +205,7 @@ def eventDisplay(eventId):
         if event.recurringId and len(eventSeriesList) != (eventIndex + 1):
             eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
 
-        userParticipatedEvents = getUserParticipatedEvents(program, g.current_user, g.current_term)
+        userParticipatedEvents = getUserParticipatedEvents(eventData['program'], g.current_user, g.current_term)
         return render_template("eventView.html",
                                 eventData = eventData,
                                 isPastEvent = isPastEvent,

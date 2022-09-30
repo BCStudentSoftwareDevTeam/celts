@@ -42,11 +42,13 @@
                     {% else %}
                         <p>This event does not earn service hours.</p>
                     {% endif %}
+
                     {% if eventData.isRsvpRequired %}
                         <p>This event requires RSVP.</p>
                     {% else %}
                         <p>This event does not require RSVP.</p>
                     {% endif %}
+
                     {% if eventData.recurringId %}
                         <p>This event is a recurring event.
                             {% if eventData.nextRecurringEvent %}
@@ -56,9 +58,15 @@
                             {% endif %}
                         </p>
                     {% endif %}
+
                     {% if eventData.isTraining %}
                         <p>This event is a training.</p>
                     {% endif %}
+
+                    {% if eventData['certRequirement'] %}
+                        <p>This event satisfies the {{eventData['certRequirement'].name}} requirement for the Bonner program.</p>
+                    {% endif %}
+
                 </div>
                 <div class="col-md-6">
                     <div class="col-sm">
@@ -85,6 +93,7 @@
                           </div>
                       </div>
             </div>
+            {% if filepaths.keys()|count %}
             <div class="form-group mb-5">
                 <label class="mb-2" for= "eventAttachments"><strong>Event Attachments</strong></label>
                 <table>
@@ -96,7 +105,8 @@
                         </tr>
                     {% endfor %}
                 </table>
-              </div>
+            </div>
+            {% endif %}
             <div class="rsvp-btn text-center">
               {% if (not isPastEvent) and (not isNewEvent)%}
                   {% if userHasRSVPed %}

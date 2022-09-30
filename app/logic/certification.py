@@ -2,6 +2,7 @@ from peewee import JOIN, DoesNotExist
 
 from app.models.certification import Certification
 from app.models.certificationRequirement import CertificationRequirement
+from app.models.requirementMatch import RequirementMatch
 
 def getCertRequirements(certification=None):
     """
@@ -69,3 +70,18 @@ def updateCertRequirements(certId, newRequirements):
         requirements.append(newreq)
 
     return requirements 
+
+def updateCertRequirementForEvent(event, requirement):
+    """
+    Add a certification requirement to an event. 
+    Replaces the requirement for an event if the event already exists.
+
+    Arguments:
+        event - an Event object or id
+        requirement - a CertificationRequirement object or id
+    """
+    # delete existing matches for our event
+    for match in RequirementMatch.select().where(RequirementMatch.event == event):
+        match.delete_instance()
+
+    RequirementMatch.create(event=event, requirement=requirement)
