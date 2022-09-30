@@ -179,10 +179,6 @@ def eventDisplay(eventId):
     if eventData['program'] and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
 
-    print("##############################################")
-    print(list(eventData.items()))
-    print("##############################################")
-
     rule = request.url_rule
     if 'edit' in rule.rule:
         if not (g.current_user.isCeltsAdmin or isProgramManager):
