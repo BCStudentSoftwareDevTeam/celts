@@ -80,25 +80,25 @@ $(document).ready(function(e) {
         $("#courseInstructor").on('input', function() {
             searchUser("courseInstructor", createNewRow, true, null, "instructor");
         });
-        $("input[name=courseInstructorPhone]").focus(focusHandler);
-        $("input[name=courseInstructorPhone]").focusout(function(){
-          var username=getRowUsername(this)
-          var phoneInput = "#inputPhoneNumber-" + username
-          validatePhoneNumber(this, phoneInput, username)
-
-        });
-        $("input[name=courseInstructorPhone]").focus(function(){
-          var username=getRowUsername(this)
-          var phoneInput = "#inputPhoneNumber-" + username
-          validatePhoneNumber(this, phoneInput, username)
-        })
-
-        $('#instructorTable').on('click', ".editButton", function() {
-            var username=getRowUsername(this)
-            var phoneInput = "#inputPhoneNumber-" + username
-            validatePhoneNumber(this, phoneInput, username)
-
-        });
+        // $("input[name=courseInstructorPhone]").focus(focusHandler);
+        // $("input[name=courseInstructorPhone]").focusout(function(){
+        //   var username=getRowUsername(this)
+        //   var phoneInput = "#inputPhoneNumber-" + username
+        //   validatePhoneNumber(this, phoneInput, username)
+        //
+        // });
+        // $("input[name=courseInstructorPhone]").focus(function(){
+        //   var username=getRowUsername(this)
+        //   var phoneInput = "#inputPhoneNumber-" + username
+        //   validatePhoneNumber(this, phoneInput, username)
+        // })
+        //
+        // $('#instructorTable').on('click', ".editButton", function() {
+        //     var username=getRowUsername(this)
+        //     var phoneInput = "#inputPhoneNumber-" + username
+        //     validatePhoneNumber(this, phoneInput, username)
+        //
+        // });
     }
 })
 

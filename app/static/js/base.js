@@ -1,4 +1,4 @@
-
+processPhoneSetup
 function msgFlash(flash_message, status){
     if (status === "success") {
         category = "success";
@@ -35,50 +35,42 @@ function msgToast(head, body){
   toastList[0].show()
 }
 
-function setupPhoneNumber(editButton, phoneInput){
-  // input, button, username
-  // setup all the event handlers
-  // does not do any actions
-
-  $(editButton).on('click', function() {
+function setupPhoneNumber(editButtonId, phoneInput, username){
+  $(editButtonId).on('click', function() {
     var username = $(this).data("username")
-    if ($(editButton).html() === 'Edit'){
+    if ($(editButtonId).html() === 'Edit'){
       $(phoneInput).focus();
     }
     else{
-      bloo(this, phoneInput, username, "save")
+      processPhoneSetup(this, phoneInput, username, "save")
     }
   });
 
   $(phoneInput).focus(function (){
-    var username = $(editButton).data("username")
-    bloo(editButton, this, username, "edit")
+    var username = $(editButtonId).data("username")
+    processPhoneSetup(editButtonId, this, username, "edit")
   })
   $(phoneInput).focusout(function (event) {
-    var username = $(editButton).data("username")
-    var bla = $(editButton)
+    var username = $(editButtonId).data("username")
+    var bla = $(editButtonId)
     if ($(event.relatedTarget).attr("id") != bla.attr("id")){
-      bloo(editButton, this, username, "restore")
+      processPhoneSetup(editButtonId, this, username, "restore")
     }
   })
 }
 
-function bloo (editButtonID, phoneInputID, username, action) {
-  //second function that does all the actions that were setup in setupPhone
-  // handler call
-  // debugger;
+function processPhoneSetup (editButtonId, phoneInputId, username, action) {
   if (action == "edit" ) {
     console.log("edit the phone")
-    $(editButtonID).html("Save");
+    $(editButtonId).html("Save");
   }
   else if (action == "save" ) {
     console.log("save the phone")
-    $(editButtonID).html('Edit');
+    validatePhoneNumber(editButtonId, phoneInputId, username)
   }
   else if (action == "restore"){
-    console.log("restore origin phone")
-    $(editButtonID).html('Edit');
-
+    console.log("restore original phone number")
+    $(editButtonId).html('Edit');
   }
 }
 
@@ -106,6 +98,7 @@ function validatePhoneNumber(editButtonId, phoneInputId, username) {
           msgFlash("Phone number not updated.", "danger")
       }
     })
+    $(editButtonId).html('Edit');
 }
 
 function reloadWithAccordion(accordionName) {
