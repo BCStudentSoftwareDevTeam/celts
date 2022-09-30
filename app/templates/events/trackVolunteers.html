@@ -60,24 +60,25 @@
         <th>Phone Number</th>
         <th class="noSort">Completed Trainings</th>
         <th class="noSort">Banned</th>
-    {% if event.isPast %}
-        <th class="noSort">Total Hours</th>
-        <th class="noSort">Attended</th>
-    {% endif %}
+        {% if event.isPast %}
+          <th class="noSort">Total Hours</th>
+          <th class="noSort">Attended</th>
+        {% endif %}
         <th class="noSort">Remove Volunteer</th>
       </tr>
     </thead>
     <tbody class="align-middle" id="volunteerTable">
-      <tr>
+    {% if eventVolunteerData %}
       {% for participant in eventVolunteerData %}
-            <td>
-              <input
-                class="form-control"
-                type='hidden'
-                name="username{{loop.index|string}}"
-                id="{{participant.user.username}}"
-                value="{{participant.user}}" />
-                {{participant.user.firstName}} {{participant.user.lastName}}
+        <tr>
+          <td>
+            <input
+              class="form-control"
+              type='hidden'
+              name="username{{loop.index|string}}"
+              id="{{participant.user.username}}"
+              value="{{participant.user}}" />
+              {{participant.user.firstName}} {{participant.user.lastName}}
             </td>
             <td>{{participant.user.email}}</td>
             <td>{{participant.user.phoneNumber}}</td>
@@ -96,33 +97,33 @@
               {% endif %}
             </td>
             {% if event.isPast %}
-            <td>
-              <input
-                class="form-control number-only form-control input-sm"
-                id="inputHours_{{participant.user.username}}"
-                name="inputHours_{{participant.user.username}}"
-                style="max-width: 90px;"
-                type ="number"
-                min="0"
-                step="0.01"
+              <td>
+                <input
+                  class="form-control number-only form-control input-sm"
+                  id="inputHours_{{participant.user.username}}"
+                  name="inputHours_{{participant.user.username}}"
+                  style="max-width: 90px;"
+                  type ="number"
+                  min="0"
+                  step="0.01"
                     {% if participant.user in eventParticipants and eventParticipants[participant.user.username] == None %}
                       value="{{eventLength}}"
                     {% elif participant.user in eventParticipants %}
                       value="{{participant.hoursEarned}}"
                     {% else %} disabled {% endif %}
                 />
-            </td>
-            <td style="text-align:center">
-              <input
-                type="checkbox"
-                class='attendanceCheck'
-                name="checkbox_{{participant.user.username}}"
-                {% if event.isPast %}
+              </td>
+              <td style="text-align:center">
+                <input
+                  type="checkbox"
+                  class='attendanceCheck'
+                  name="checkbox_{{participant.user.username}}"
+                  {% if event.isPast %}
                     {% if participant.user in eventParticipants %}
                       checked
                     {% endif %}
-                {% endif %} />
-            </td>
+                  {% endif %} />
+              </td>
             {% endif %} {# end hiding the hours and attended inputs #}
             <td style="text-align:center">
               <button
@@ -134,7 +135,8 @@
               </button>
             </td>
           </tr>
-      {% endfor %}
+        {% endfor %}
+      {% endif %}
      </tbody>
     </table>
   <div>
