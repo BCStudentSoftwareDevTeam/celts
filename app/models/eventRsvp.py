@@ -4,4 +4,4 @@ from app.models.event import Event
 
 class EventRsvp(baseModel):
     user = ForeignKeyField(User)
-    event = ForeignKeyField(Event)
+    event = ForeignKeyField(Event, backref="rsvps")
