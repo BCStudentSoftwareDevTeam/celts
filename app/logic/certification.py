@@ -34,6 +34,17 @@ def getCertRequirements(certification=None):
 
 def updateCertRequirements(certId, newRequirements):
     """
+    Update the certification requirements in the database to match the provided list of requirement data.
+
+    The order of the list matters. Any ids that are in the database and not in `newRequirements` will be 
+    removed. IDs that do not exist in the database will be created (and given a new, auto-generated ID).
+
+    Arguments:
+        certId - The id of the certification whose requirements we are updating
+        newRequirements - a list of dictionaries. Each dictionary needs 'id', 'required', 'frequency', and 'name'.
+
+    Returns:
+        A list of CertificationRequirement objects corresponding to the given `newRequirements` list.
     """
     # check for missing ids to remove
     newIds = [req['id'] for req in newRequirements]
@@ -56,6 +67,5 @@ def updateCertRequirements(certId, newRequirements):
         newreq.save()
 
         requirements.append(newreq)
-
 
     return requirements 
