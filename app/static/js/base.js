@@ -92,7 +92,7 @@ function validatePhoneNumber(editButtonId, phoneInputId, username) {
       data:{"username":username,
             "phoneNumber":phoneInput.val()},
       success: function(s){
-          msgFlash("Phone number is updated.", "success")
+          msgToast("Phone Number", "Phone number successfully updated.")
       },
       error: function(request, status, error) {
           msgFlash("Phone number not updated.", "danger")
