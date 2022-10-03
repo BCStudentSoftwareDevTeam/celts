@@ -63,7 +63,7 @@ $(document).ready(function() {
              minTime: "08:00am",
              maxTime: "10:00pm"
     });
-    
+
     $(".timepicker").prop("type", "time");
     $(".timeIcons").prop("hidden", false);
 
@@ -71,6 +71,7 @@ $(document).ready(function() {
     var formattedEndTime = format24to12HourTime($("#endTime").prop("defaultValue"));
     $("#startTime").val(formattedStartTime);
     $("#endTime").val(formattedEndTime);
+
   }
   else {
     $(".timepicker").prop("type", "time");
