@@ -311,7 +311,15 @@
         <div class="accordion-body container">
             <div class="row">
                 <div class="col">
-                    <h5>Upcoming Bonner Events</h5>
+                    {% set address = "Your" if g.current_user == volunteer else volunteer.firstName~"'s" %}
+                    <h5>{{address}} Upcoming Bonner Events</h5>
+                    <ul>
+                    {% for event in upcomingEvents %}
+                        {% if event.singleProgram and event.singleProgram.isBonnerScholars %}
+                            <li>{{event.name}}</li>
+                        {% endif %}
+                    {% endfor %}
+                    </ul>
                 </div>
                 <div class="col">
                     <h5>Requirement Progress</h5>
@@ -330,7 +338,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    Notes
+                    Bonner Notes
                 </div>
             </div>
         </div>

@@ -212,7 +212,7 @@ def getOtherEvents(term):
 
     return otherEvents
 
-def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
+def getUpcomingEventsForUser(user, asOf=datetime.datetime.now(), program=None):
     """
         Get the list of upcoming events that the user is interested in.
         :param user: a username or User object
@@ -221,15 +221,16 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
         :return: A list of Event objects
     """
 
-    events =  list(Event.select()
+    events =  (Event.select()
                     .join(ProgramEvent, JOIN.LEFT_OUTER)
                     .join(Interest, JOIN.LEFT_OUTER, on=(ProgramEvent.program == Interest.program))
                     .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
-                    .where(Event.startDate >= asOf,
-                           (Interest.user == user) | (EventRsvp.user == user))
-                    .distinct() # necessary because of multiple programs
-                    .order_by(Event.startDate, Event.name).execute() # keeps the order of events the same when the dates are the same
-                    )
+                    .where(Event.startDate >= asOf, (Interest.user == user) | (EventRsvp.user == user)))
+
+    if program:
+        events = events.where(ProgramEvent.program == program)
+    
+    events = list(events.distinct().order_by(Event.startDate, Event.name).execute())
 
 
     events_list = []

@@ -591,15 +591,22 @@ def test_upcomingEvents():
                                             isBonnerScholars = False,
                                             contactEmail = "test@email",
                                             contactName = "testName")
+        programForInterest2 = Program.create(id = 14,
+                                            programName = "BOO2",
+                                            isStudentLed = False,
+                                            isBonnerScholars = False,
+                                            contactEmail = "test@email",
+                                            contactName = "testName")
 
         ProgramEvent.create(program = programForInterest, event = newRecurringEvent)
         ProgramEvent.create(program = programForInterest, event = newRecurringSecond)
         ProgramEvent.create(program = programForInterest, event = newRecurringDifferentId)
-        ProgramEvent.create(program = programForInterest, event = newProgramEvent)
+        ProgramEvent.create(program = programForInterest2, event = newProgramEvent)
 
 
         # User has not RSVPd and is Interested
         addUserInterest(programForInterest.id, user)
+        addUserInterest(programForInterest2.id, user)
         eventsInUserInterestedProgram = getUpcomingEventsForUser(user, asOf = testDate)
 
         assert newProgramEvent in eventsInUserInterestedProgram
@@ -618,9 +625,18 @@ def test_upcomingEvents():
 
         # User has RSVPd and is not Interested
         removeUserInterest(programForInterest.id, user)
+        removeUserInterest(programForInterest2.id, user)
         eventsInUserRsvp = getUpcomingEventsForUser(user, asOf = testDate)
 
         assert eventsInUserRsvp == [noProgram]
+
+        # Get upcoming for specific program only
+        # we would have multiples with interests in both programs, but we specify only one
+        addUserInterest(programForInterest.id, user)
+        addUserInterest(programForInterest2.id, user)
+        eventsInProgram = getUpcomingEventsForUser(user, program = programForInterest2.id, asOf = testDate)
+
+        assert eventsInProgram == [newProgramEvent]
 
         transaction.rollback()
 
