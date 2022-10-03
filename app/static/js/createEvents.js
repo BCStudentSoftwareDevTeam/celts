@@ -1,5 +1,14 @@
 import searchUser from './searchUser.js'
 
+document.getElementById("input").addEventListener("keypress", function(evt){
+  var words = this.value.split(/\s+/);
+  var numWords = words.length;
+  var maxWords = 350;
+  if(numWords > maxWords){
+    evt.preventDefault();
+  }
+});
+
 // updates max and min dates of the datepickers as the other datepicker changes
 function updateDate(obj) {
   // we need to replace "-" with "/" because firefox cannot turn a date with "-" to a datetime object
