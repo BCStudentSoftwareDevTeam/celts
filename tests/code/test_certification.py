@@ -6,8 +6,10 @@ from app.models.event import Event
 from app.models.certification import Certification
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.requirementMatch import RequirementMatch
+from app.models.eventParticipant import EventParticipant
 
 from app.logic.certification import getCertRequirements, updateCertRequirements, updateCertRequirementForEvent
+from app.logic.certification import getCertRequirementsWithCompletion
 
 @pytest.mark.integration
 def test_getCertRequirements():
@@ -25,6 +27,24 @@ def test_getCertRequirements():
 
     nonereqs = getCertRequirements(certification=1111)
     assert len(nonereqs) == 0
+
+@pytest.mark.integration
+def test_getCertRequirementsWithCompletion():
+
+    with mainDB.atomic() as transaction:
+        # add two matches for the same requirement to make sure we only return one row per requirement
+        RequirementMatch.create(event_id=14, requirement_id=10)
+        EventParticipant.create(event_id=14, user_id='ramsayb2')
+        RequirementMatch.create(event_id=13, requirement_id=10)
+        EventParticipant.create(event_id=13, user_id='ramsayb2')
+        cprcert = 3
+
+        cprreqs = getCertRequirementsWithCompletion(certification=cprcert, username='ramsayb2')
+        assert len(cprreqs) == 2
+        assert not cprreqs[0].completed, "The first event should not be completed"
+        assert cprreqs[1].completed, "The second event should be completed"
+
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_updateCertRequirements():

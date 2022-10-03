@@ -1,27 +1,58 @@
-from peewee import JOIN, DoesNotExist
+from peewee import JOIN, DoesNotExist, Case
 
 from app.models.certification import Certification
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.requirementMatch import RequirementMatch
+from app.models.eventParticipant import EventParticipant
 
-def getCertRequirements(certification=None):
+def getCertRequirementsWithCompletion(*, certification, username):
+    """
+    Function to differentiate between simple requirements and requirements completion checking.
+    See: `getCertRequirements`
+    """
+    return getCertRequirements(certification, username)
+
+def getCertRequirements(certification=None, username=None):
     """
     Return the requirements for all certifications, or for one if requested.
 
     Keyword arguments:
         certification -- The id or object for a certification to request
+        username -- The username to check for completion
 
     Returns:
         A list of dictionaries with all certification data and requirements. If `certification`
-        is given, returns only a list of requirement objects for the given certification.
+        is given, returns only a list of requirement objects for the given certification. If 
+        `username` is given, the requirement objects have a `completed` attribute.
     """
     reqList = (Certification.select(Certification, CertificationRequirement)
-                         .join(CertificationRequirement, JOIN.LEFT_OUTER, attr="requirement")
-                         .order_by(Certification.id, CertificationRequirement.order.asc(nulls="LAST")))
+                     .join(CertificationRequirement, JOIN.LEFT_OUTER, attr="requirement")
+                     .order_by(Certification.id, CertificationRequirement.order.asc(nulls="LAST")))
+
     if certification:
+        if username:
+            # I don't know how to add something to a select, so we have to recreate the whole query :(
+            completedCase = Case(None, ((EventParticipant.user_id.is_null(True), 0),), 1)
+            reqList = (Certification
+                .select(Certification, CertificationRequirement, completedCase.alias("completed"))
+                .join(CertificationRequirement, JOIN.LEFT_OUTER, attr="requirement")
+                .join(RequirementMatch, JOIN.LEFT_OUTER)
+                .join(EventParticipant, JOIN.LEFT_OUTER, on=(RequirementMatch.event == EventParticipant.event))
+                .where(EventParticipant.user.is_null(True) | (EventParticipant.user == username))
+                .order_by(Certification.id, CertificationRequirement.order.asc(nulls="LAST")))
+
         # we have to add the is not null check so that `cert.requirement` always exists
         reqList = reqList.where(Certification.id == certification, CertificationRequirement.id.is_null(False))
-        return [cert.requirement for cert in reqList]
+        reqList = reqList.distinct()
+
+        certs = []
+        for cert in reqList:
+            if username:
+                cert.requirement.completed = bool(cert.__dict__['completed'])
+            certs.append(cert.requirement)
+        return certs
+
+        #return [cert.requirement for cert in reqList]
     
     certs = {}
     for cert in reqList:

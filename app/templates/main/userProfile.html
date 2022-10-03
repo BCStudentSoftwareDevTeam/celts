@@ -25,16 +25,17 @@
           </div>
     </div>
 </div>
-<!-- Start Upcoming Events -->
 <div class="accordion" id="userProfile">
+
+<!-- ################# Upcoming Events ################ -->
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingOne">
-      {% set focus = "open" if visibleAccordion == "upcoming" or volunteer.username == g.current_user.username and not visibleAccordion =="programTable" and not visibleAccordion =="background" else "collapsed" %}
+      {% set focus = "open" if visibleAccordion == "upcoming" or (not visibleAccordion and volunteer.username == g.current_user.username) else "collapsed" %}
       <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
         Upcoming Events
       </button>
     </h3>
-    {% set show = "show" if visibleAccordion == "upcoming" or volunteer.username == g.current_user.username and not visibleAccordion =="programTable" and not visibleAccordion =="background" else ""%}
+    {% set show = "show" if visibleAccordion == "upcoming" or (not visibleAccordion and volunteer.username == g.current_user.username) else ""%}
     <div id="collapseOne" class="accordion-collapse collapse {{show}} " aria-labelledby="headingOne" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="row table-responsive">
@@ -66,8 +67,9 @@
       </div>
     </div>
   </div>
-  <!-- End Upcoming Events -->
-  <!-- Start Program History -->
+<!-- ################# Upcoming Events ################ -->
+
+<!-- ################# Participation History ################ -->
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingTwo">
       {% set focus = "open" if visibleAccordion == "history" else "collapsed" %}
@@ -101,16 +103,17 @@
       </div>
     </div>
   </div>
-  <!-- End Program History -->
-  <!-- Start Program Table -->
+<!-- ################# Participation History ################ -->
+
+<!-- ################# Program Table ################ -->
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingThree">
-      {% set focus = "open" if visibleAccordion == "programTable" or volunteer.username != g.current_user.username and not visibleAccordion =="background" else "collapsed" %}
+      {% set focus = "open" if visibleAccordion == "programTable" or (not visibleAccordion and volunteer.username != g.current_user.username) else "collapsed" %}
       <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
           Programs
       </button>
     </h3>
-    {% set show = "show" if visibleAccordion == "programTable" or volunteer.username != g.current_user.username and not visibleAccordion =="background" else "" %}
+    {% set show = "show" if visibleAccordion == "programTable" or (not visibleAccordion and volunteer.username != g.current_user.username) else "" %}
     <div id="collapseThree" class="accordion-collapse collapse {{show}}" aria-labelledby="headingThree" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="table-responsive">
@@ -190,8 +193,9 @@
       </div>
     </div>
   </div>
-  <!-- End Program Table -->
-  <!-- Start Program Manager section -->
+<!-- ################# Program Table ################ -->
+
+<!-- ################# Program Manager ################ -->
   {% if volunteer.isCeltsStudentStaff %}
     <div class="accordion-item">
       <h3 class="accordion-header" id="headingFour">
@@ -232,8 +236,9 @@
       </div>
     </div>
     {% endif %}
-    <!-- End Program Manager section -->
-    <!-- Start Background Check Table -->
+<!-- ################# Program Manager ################ -->
+
+<!-- ################# Background Check ################ -->
     {% if g.current_user.isAdmin %}
     <div class="accordion-item">
       <h3 class="accordion-header" id="headingFive">
@@ -292,7 +297,48 @@
       </div>
     </div>
     {% endif %}
-    <!-- End Background Check Table -->
+<!-- ################# Background Check ################ -->
+
+<!-- ################# Bonner Scholar ################ -->
+    {% if volunteer.isBonnerScholar %}
+    <div class="accordion-item">
+      <h3 class="accordion-header" id="headingSix">
+        {% set focus = "open" if visibleAccordion == "bonner" else "collapsed" %}
+        <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix"> Bonner Program </button>
+      </h3>
+      {% set show = "show" if visibleAccordion == "bonner" else "" %}
+      <div id="collapseSix" class="accordion-collapse collapse {{show}}" aria-labelledby="headingSix" data-bs-parent="#userProfile">
+        <div class="accordion-body container">
+            <div class="row">
+                <div class="col">
+                    <h5>Upcoming Bonner Events</h5>
+                </div>
+                <div class="col">
+                    <h5>Requirement Progress</h5>
+                    <ul>
+                    {% for req in bonnerRequirements %}
+                        <li>{{req.name}}
+                        {% if req.completed %}
+                            <span class="bi bi-check fs-3 text-success"></span>
+                        {% else %}
+                            <span class="bi bi-x fs-3"></span>
+                        {% endif %}
+                        </li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    Notes
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+<!-- ################# Bonner Scholar ################ -->
+
 </div>
 <!-- Ban or Unban Modal -->
 <div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banVolunteerModalLabel" aria-hidden="true" style="width:-60px;">

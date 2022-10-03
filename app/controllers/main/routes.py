@@ -19,6 +19,7 @@ from app.models.note import Note
 from app.models.programManager import ProgramManager
 from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
+from app.models.certification import Certification
 
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
@@ -30,6 +31,7 @@ from app.logic.transcript import *
 from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import unapprovedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
+from app.logic.certification import getCertRequirementsWithCompletion
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
@@ -114,6 +116,7 @@ def viewUsersProfile(username):
                                    "isNotBanned": True if not notes else False,
                                    "banNote": noteForDict})
 
+        bonnerRequirements = getCertRequirementsWithCompletion(certification=Certification.BONNER, username=volunteer)
         return render_template ("/main/userProfile.html",
                 programs = programs,
                 programsInterested = programsInterested,
@@ -125,8 +128,8 @@ def viewUsersProfile(username):
                 volunteer = volunteer,
                 backgroundTypes = backgroundTypes,
                 allBackgroundHistory = allBackgroundHistory,
-                currentDateTime = datetime.datetime.now()
-
+                currentDateTime = datetime.datetime.now(),
+                bonnerRequirements = bonnerRequirements,
             )
     abort(403)
 
