@@ -1,6 +1,6 @@
 import searchUser from './searchUser.js'
 
-document.getElementById("input").addEventListener("keypress", function(evt){
+document.getElementById("inputEventDescription").addEventListener("keypress", function(evt){
   var words = this.value.split(/\s+/);
   var numWords = words.length;
   var maxWords = 350;
