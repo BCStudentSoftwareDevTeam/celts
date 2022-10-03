@@ -20,6 +20,10 @@ def test_getBonnerCohorts():
         assert len(cohorts) == 5
         assert list(cohorts.keys()) == [currentYear-4,currentYear-3,currentYear-2,currentYear-1,currentYear]
 
+        # try a limit greater than our size
+        cohorts = getBonnerCohorts(limit=6)
+        assert len(cohorts) == 5
+
 
         BonnerCohort.create(user="lamichhanes2", year=currentYear-6)
         cohorts = getBonnerCohorts()
@@ -41,5 +45,12 @@ def test_getBonnerCohorts():
         assert len(cohorts[currentYear-3]) == 0
         assert len(cohorts[currentYear]) == 1
         assert len(cohorts[currentYear-1]) == 4
+
+        cohorts = getBonnerCohorts(limit=5)
+        assert len(cohorts) == 5
+        assert len(cohorts[currentYear-3]) == 0
+        assert len(cohorts[currentYear]) == 1
+        assert len(cohorts[currentYear-1]) == 4
+
 
         transaction.rollback()

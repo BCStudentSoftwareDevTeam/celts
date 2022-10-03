@@ -143,10 +143,9 @@
         </div>
         <div>
         </div>
-        <div class="mb-4">
-          <div class="row col-md-12" >
+        {% if eventData['program'].isBonnerScholars %}
+          <div class="row col-md-12 mb-4" >
             <div class="form-group">
-            {% if eventData['program'].isBonnerScholars %}
               <label class="form-label fw-bold" for="requirement">Bonner Requirement</label>
               <select class="form-select" name="certRequirement">
                   <option>None</option>
@@ -155,10 +154,22 @@
                   <option value="{{req.id}}" {{selected}}>{{req.name}}</option>
               {% endfor %}
               </select>
-            {% endif %}
             </div>
           </div>
-        </div>
+          <div class="row col-md-12 mb-4" >
+            <div class="form-group">
+              <label class="form-label fw-bold">Invite Cohort(s)</label>
+              {% for year,students in bonnerCohorts.items()|reverse %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="{{year}}" id="cohort-{{year}}">
+                    <label class="form-check-label" for="cohort-{{year}}">{{year}}
+                        <span class="text-muted">({{students|map(attribute='fullName')|join(", ")}})</span>
+                    </label>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
     </div>
 
         <div class="col-md-6 form-group">

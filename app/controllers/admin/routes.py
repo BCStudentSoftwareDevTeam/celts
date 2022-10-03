@@ -131,15 +131,17 @@ def createEvent(templateid, programid=None):
 
     futureTerms = selectSurroundingTerms(g.current_term, prevTerms=0)
 
-    requirements = []
+    requirements = bonnerCohorts = []
     if 'program' in eventData and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
+        bonnerCohorts = getBonnerCohorts(limit=5)
 
     return render_template(f"/admin/{template.templateFile}",
             template = template,
             eventData = eventData,
             futureTerms = futureTerms,
             requirements = requirements,
+            bonnerCohorts = bonnerCohorts,
             isProgramManager = isProgramManager)
 
 @admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
@@ -178,6 +180,7 @@ def eventDisplay(eventId):
     requirements = []
     if eventData['program'] and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
+        bonnerCohorts = getBonnerCohorts(limit=5)
 
     rule = request.url_rule
     if 'edit' in rule.rule:
