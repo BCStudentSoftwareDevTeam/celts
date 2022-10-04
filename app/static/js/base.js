@@ -69,7 +69,9 @@ function processPhoneSetup (editButtonId, phoneInputId, username, action) {
     validatePhoneNumber(editButtonId, phoneInputId, username)
   }
   else if (action == "restore"){
+    var phoneInput = $(phoneInputId);
     console.log("restore original phone number")
+    $(phoneInputId).val(phoneInput.attr("data-value"))
     $(editButtonId).html('Edit');
   }
 }
