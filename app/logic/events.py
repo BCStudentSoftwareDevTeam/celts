@@ -116,6 +116,7 @@ def saveEventToDb(newEventData):
                     "timeEnd": newEventData['timeEnd'],
                     "location": newEventData['location'],
                     "recurringId": recurringSeriesId,
+                    "foodProvided" : newEventData['foodProvided'],
                     "isTraining": newEventData['isTraining'],
                     "isRsvpRequired": newEventData['isRsvpRequired'],
                     "isService": newEventData['isService'],
@@ -286,7 +287,7 @@ def validateNewEventData(data):
 
     # Validation if we are inserting a new event
     if 'id' not in data:
-        
+
         event = Event.select().where((Event.name == data['name']) &
                                      (Event.location == data['location']) &
                                      (Event.startDate == data['startDate']) &
