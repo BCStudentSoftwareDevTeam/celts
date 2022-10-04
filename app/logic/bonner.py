@@ -73,8 +73,4 @@ def getBonnerCohorts(limit=None):
     return cohorts
 
 def rsvpForBonnerCohort(year, event):
-    try:
-        EventRsvp.insert_from(BonnerCohort.select(BonnerCohort.user, event).where(BonnerCohort.year == year),[EventRsvp.user, EventRsvp.event]).execute()
-    except IntegrityError as e:
-        # We want to ignore duplicate errors, but not missing foreign key errors
-        if 'Duplicate' not in str(e): raise e
+    EventRsvp.insert_from(BonnerCohort.select(BonnerCohort.user, event).where(BonnerCohort.year == year),[EventRsvp.user, EventRsvp.event]).on_conflict(action='IGNORE').execute()

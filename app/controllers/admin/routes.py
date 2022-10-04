@@ -102,9 +102,6 @@ def createEvent(templateid, programid=None):
     if request.method == "POST":
         try:
             savedEvents, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
-            rsvpcohorts = request.form.getlist("cohorts[]")
-            for year in rsvpcohorts:
-                rsvpForBonnerCohort(int(year), savedEvents[0].id)
 
         except Exception as e:
             print("Error saving event:", e)
@@ -112,6 +109,9 @@ def createEvent(templateid, programid=None):
             validationErrorMessage = "Unknown Error Saving Event. Please try again"
 
         if savedEvents:
+            rsvpcohorts = request.form.getlist("cohorts[]")
+            for year in rsvpcohorts:
+                rsvpForBonnerCohort(int(year), savedEvents[0].id)
 
             noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')

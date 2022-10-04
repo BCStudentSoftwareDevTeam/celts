@@ -71,12 +71,9 @@ def test_bonnerRsvp():
         assert EventRsvp.select().where(EventRsvp.event == event_id, EventRsvp.user == "neillz").exists()
 
         # make sure there is no error for duplicates
+        BonnerCohort.create(user="ayisie", year=2020)
         rsvpForBonnerCohort(2020, event_id)
-        assert EventRsvp.select().where(EventRsvp.event == event_id).count() == 2
-
-        # make sure there IS an exception for an invalid Event
-        with pytest.raises(IntegrityError):
-            rsvpForBonnerCohort(2020, "asdf")
+        assert EventRsvp.select().where(EventRsvp.event == event_id).count() == 3
 
         transaction.rollback()
 
