@@ -1,10 +1,12 @@
 from collections import defaultdict
 from datetime import date
+from peewee import IntegrityError
 
 import xlsxwriter
 
 from app import app
 from app.models.bonnerCohort import BonnerCohort
+from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 
 def makeBonnerXls():
@@ -69,3 +71,10 @@ def getBonnerCohorts(limit=None):
         cohorts = dict(list(cohorts.items())[-limit:])
 
     return cohorts
+
+def rsvpForBonnerCohort(year, event):
+    try:
+        EventRsvp.insert_from(BonnerCohort.select(BonnerCohort.user, event).where(BonnerCohort.year == year),[EventRsvp.user, EventRsvp.event]).execute()
+    except IntegrityError as e:
+        # We want to ignore duplicate errors, but not missing foreign key errors
+        if 'Duplicate' not in str(e): raise e

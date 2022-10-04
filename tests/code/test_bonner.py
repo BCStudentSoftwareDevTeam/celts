@@ -1,10 +1,12 @@
 import pytest
 from datetime import date
+from peewee import IntegrityError
 
 from app.models import mainDB
 from app.models.bonnerCohort import BonnerCohort
+from app.models.eventRsvp import EventRsvp
 
-from app.logic.bonner import getBonnerCohorts
+from app.logic.bonner import getBonnerCohorts, rsvpForBonnerCohort
 
 @pytest.mark.integration
 def test_getBonnerCohorts():
@@ -54,3 +56,28 @@ def test_getBonnerCohorts():
 
 
         transaction.rollback()
+
+@pytest.mark.integration
+def test_bonnerRsvp():
+    with mainDB.atomic() as transaction:
+        BonnerCohort.create(user="lamichhanes2", year=2022)
+        BonnerCohort.create(user="ramsayb2", year=2022)
+        BonnerCohort.create(user="khatts", year=2020)
+        BonnerCohort.create(user="neillz", year=2020)
+        event_id = 13
+
+        rsvpForBonnerCohort(2020, event_id)
+        assert EventRsvp.select().where(EventRsvp.event == event_id, EventRsvp.user == "khatts").exists()
+        assert EventRsvp.select().where(EventRsvp.event == event_id, EventRsvp.user == "neillz").exists()
+
+        # make sure there is no error for duplicates
+        rsvpForBonnerCohort(2020, event_id)
+        assert EventRsvp.select().where(EventRsvp.event == event_id).count() == 2
+
+        # make sure there IS an exception for an invalid Event
+        with pytest.raises(IntegrityError):
+            rsvpForBonnerCohort(2020, "asdf")
+
+        transaction.rollback()
+
+

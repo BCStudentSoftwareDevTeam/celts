@@ -31,7 +31,7 @@ from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, getBonnerEvents
 from app.logic.participants import getEventParticipants, getUserParticipatedEvents, checkUserRsvp, checkUserVolunteer
 from app.logic.fileHandler import FileHandler
-from app.logic.bonner import getBonnerCohorts, makeBonnerXls
+from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
@@ -102,6 +102,9 @@ def createEvent(templateid, programid=None):
     if request.method == "POST":
         try:
             savedEvents, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
+            rsvpcohorts = request.form.getlist("cohorts[]")
+            for year in rsvpcohorts:
+                rsvpForBonnerCohort(int(year), savedEvents[0].id)
 
         except Exception as e:
             print("Error saving event:", e)
@@ -163,6 +166,10 @@ def eventDisplay(eventId):
         eventData = request.form.copy()
         attachmentFiles = request.files.getlist("attachmentObject")
         savedEvents, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
+        rsvpcohorts = request.form.getlist("cohorts[]")
+        for year in rsvpcohorts:
+            rsvpForBonnerCohort(int(year), event.id)
+
         if savedEvents:
             flash("Event successfully updated!", "success")
             return redirect(url_for("admin.eventDisplay", eventId = event.id))

@@ -5,3 +5,7 @@ from app.models.event import Event
 class EventRsvp(baseModel):
     user = ForeignKeyField(User)
     event = ForeignKeyField(Event, backref="rsvps")
+    
+    class Meta:
+        indexes = ( (('user', 'event'), True), )
+
