@@ -162,8 +162,8 @@
               {% for year,students in bonnerCohorts.items()|reverse %}
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="{{year}}" id="cohort-{{year}}">
-                    <label class="form-check-label" for="cohort-{{year}}">{{year}}
-                        <span class="text-muted">({{students|map(attribute='fullName')|join(", ")}})</span>
+                    <label class="form-check-label text-truncate w-100" for="cohort-{{year}}">{{year}}-{{year+1}}
+                        <span class="text-muted" >({{students|map(attribute='fullName')|join(", ")}})</span>
                     </label>
                 </div>
               {% endfor %}

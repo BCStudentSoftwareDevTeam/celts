@@ -147,7 +147,7 @@ def createEvent(templateid, programid=None):
 @admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
 @admin_bp.route('/eventsList/<eventId>/edit', methods=['GET','POST'])
 def eventDisplay(eventId):
-    if request.method == "POST" and not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(eventId)):
+    if 'edit' in request.url_rule.rule and not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(eventId)):
         abort(403)
 
     # Validate given URL
@@ -169,6 +169,7 @@ def eventDisplay(eventId):
         else:
             flash(validationErrorMessage, 'warning')
 
+    # make sure our data is the same regardless of GET and POST
     preprocessEventData(eventData)
     eventData['program'] = event.singleProgram
     futureTerms = selectSurroundingTerms(g.current_term)
@@ -183,26 +184,30 @@ def eventDisplay(eventId):
         bonnerCohorts = getBonnerCohorts(limit=5)
 
     rule = request.url_rule
+    # Event Edit
     if 'edit' in rule.rule:
-        if not (g.current_user.isCeltsAdmin or isProgramManager):
-            abort(403)
         return render_template("admin/createEvent.html",
                                 eventData = eventData,
                                 futureTerms=futureTerms,
                                 isPastEvent = isPastEvent,
                                 requirements = requirements,
+                                bonnerCohorts = bonnerCohorts,
                                 userHasRSVPed = userHasRSVPed,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths)
+    # Event View
     else:
+        # get text representations of dates
         eventData['timeStart'] = event.timeStart.strftime("%-I:%M %p")
         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
         eventData["startDate"] = event.startDate.strftime("%m/%d/%Y")
-        # List below is to identify the next event in the series
-        eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId))
-        eventIndex = eventSeriesList.index(event)
-        if event.recurringId and len(eventSeriesList) != (eventIndex + 1):
-            eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
+
+        # Identify the next event in a recurring series
+        if event.recurringId:
+            eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId).order_by(Event.startDate))
+            eventIndex = eventSeriesList.index(event)
+            if len(eventSeriesList) != (eventIndex + 1):
+                eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
 
         userParticipatedEvents = getUserParticipatedEvents(eventData['program'], g.current_user, g.current_term)
         return render_template("eventView.html",
