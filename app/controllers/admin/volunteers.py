@@ -152,4 +152,5 @@ def updateProgramManager():
 def updatePhone():
     newinfo=request.form
     User.update(phoneNumber=newinfo["phoneNumber"]).where(User.username==newinfo["username"]).execute()
+    flash("Phone number is updated.","success")
     return ""
