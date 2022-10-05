@@ -28,7 +28,7 @@ from app.logic.adminLogs import createLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
-from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, getBonnerEvents
+from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents
 from app.logic.participants import getEventParticipants, getUserParticipatedEvents, checkUserRsvp, checkUserVolunteer
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls
@@ -220,6 +220,26 @@ def deleteRoute(eventId):
     except Exception as e:
         print('Error while canceling event:', e)
         return "", 500
+@admin_bp.route('/event/<eventId>/deleteEventAndAllFollowing', methods=['POST'])
+def deleteEventAndAllFollowingRoute(eventId):
+    try:
+        deleteEventAndAllFollowing(eventId)
+        flash("Events successfully deleted.", "success")
+        return redirect(url_for("main.events", selectedTerm=g.current_term))
+
+    except Exception as e:
+        print('Error while canceling event:', e)
+        return "", 500
+@admin_bp.route('/event/<eventId>/deleteAllRecurring', methods=['POST'])
+def deleteAllRecurringEventsRoute(eventId):
+    try:
+        deleteAllRecurringEvents(eventId)
+        flash("Events successfully deleted.", "success")
+        return redirect(url_for("main.events", selectedTerm=g.current_term))
+
+    except Exception as e:
+        print('Error while canceling event:', e)
+        return "", 500
 
 @admin_bp.route('/makeRecurringEvents', methods=['POST'])
 def addRecurringEvents():
@@ -268,7 +288,7 @@ def manageBonner():
     if not g.current_user.isCeltsAdmin:
         abort(403)
 
-    return render_template("/admin/bonnerManagement.html", 
+    return render_template("/admin/bonnerManagement.html",
                            cohorts=getBonnerCohorts(),
                            events=getBonnerEvents(g.current_term),
                            requirements = getCertRequirements(certification=Certification.BONNER))
@@ -284,7 +304,7 @@ def updatecohort(year, method, username):
         abort(500)
 
     if method == "add":
-        try: 
+        try:
             BonnerCohort.create(year=year, user=user)
         except IntegrityError as e:
             # if they already exist, ignore the error
@@ -303,6 +323,7 @@ def bonnerxls():
 
     newfile = makeBonnerXls()
     return send_file(open(newfile, 'rb'), download_name='BonnerStudents.xlsx', as_attachment=True)
+<<<<<<< HEAD
 
 @admin_bp.route("/saveRequirements/<certid>", methods=["POST"])
 def saveRequirements(certid):
@@ -312,3 +333,5 @@ def saveRequirements(certid):
     newRequirements = updateCertRequirements(certid, request.get_json())
 
     return jsonify([req.id for req in newRequirements])
+=======
+>>>>>>> 85f82b3a48072d9e021fb41a0efda1bf96377ff2

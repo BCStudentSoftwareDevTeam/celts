@@ -65,6 +65,31 @@ def deleteEvent(eventId):
 
         event.delete_instance(recursive = True, delete_nullable = True)
 
+def deleteEventAndAllFollowing(eventId):
+        """
+        Deletes a recurring event and all the recurring events after it.
+        """
+        event = Event.get_or_none(Event.id == eventId)
+        if event:
+            if event.recurringId:
+                recurringId = event.recurringId
+                recurringSeries = list(Event.select().where((Event.recurringId == recurringId) & (Event.startDate >= event.startDate)))
+        for seriesEvent in recurringSeries:
+            seriesEvent.delete_instance(recursive = True)
+
+def deleteAllRecurringEvents(eventId):
+        """
+        Deletes all recurring events.
+        """
+        event = Event.get_or_none(Event.id == eventId)
+        if event:
+            if event.recurringId:
+                recurringId = event.recurringId
+                allRecurringEvents = list(Event.select().where(Event.recurringId == recurringId))
+            for aRecurringEvent in allRecurringEvents:
+                aRecurringEvent.delete_instance(recursive = True)
+
+
 def attemptSaveEvent(eventData, attachmentFiles = None):
     """
     Tries to save an event to the database:
@@ -290,7 +315,7 @@ def validateNewEventData(data):
 
     # Validation if we are inserting a new event
     if 'id' not in data:
-        
+
         event = Event.select().where((Event.name == data['name']) &
                                      (Event.location == data['location']) &
                                      (Event.startDate == data['startDate']) &
