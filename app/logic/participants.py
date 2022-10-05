@@ -70,6 +70,7 @@ def addPersonToEvent(user, event):
     try:
         volunteerExists = checkUserVolunteer(user, event)
         rsvpExists = checkUserRsvp(user, event)
+
         if event.isPast:
             if not volunteerExists:
                 eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
@@ -77,8 +78,7 @@ def addPersonToEvent(user, event):
         else:
             if not rsvpExists:
                 EventRsvp.create(user = user, event = event)
-        if volunteerExists or rsvpExists:
-            return "already in"
+
     except Exception as e:
         print(e)
         return False
@@ -112,7 +112,7 @@ def getEventParticipants(event):
     return {p.user: p.hoursEarned for p in eventParticipants}
 
 
-def getUserParticipatedEvents(program, user, currentTerm):
+def getUserParticipatedTrainings(program, user, currentTerm):
     """
     This function returns a dictionary of all trainings for a program and
     whether the current user participated in them.
@@ -127,7 +127,9 @@ def getUserParticipatedEvents(program, user, currentTerm):
                                 .join(EventParticipant, JOIN.LEFT_OUTER)
                                 .where((Event.isTraining),
                                         (Event.program == program) | (Event.program == otherCeltsEventsProgram),
-                                        Event.term == currentTerm))
+                                        Event.term == currentTerm,
+                                        (EventParticipant.user == user) | (EventParticipant.user == None)))
+
 
     userParticipatedEvents = {}
     for training in programTrainings.objects():

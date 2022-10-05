@@ -27,7 +27,7 @@ from app.logic.adminLogs import createLog
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, getBonnerEvents
-from app.logic.participants import getEventParticipants, getUserParticipatedEvents, checkUserRsvp, checkUserVolunteer
+from app.logic.participants import getEventParticipants, getUserParticipatedTrainings, checkUserRsvp, checkUserVolunteer
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls
 from app.controllers.admin import admin_bp
@@ -187,7 +187,7 @@ def eventDisplay(eventId):
         if event.recurringId and len(eventSeriesList) != (eventIndex + 1):
             eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
 
-        userParticipatedEvents = getUserParticipatedEvents(program, g.current_user, g.current_term)
+        userParticipatedEvents = getUserParticipatedTrainings(program, g.current_user, g.current_term)
         return render_template("eventView.html",
                                 eventData = eventData,
                                 isPastEvent = isPastEvent,
@@ -254,7 +254,7 @@ def manageBonner():
     if not g.current_user.isCeltsAdmin:
         abort(403)
 
-    return render_template("/admin/bonnerManagement.html", 
+    return render_template("/admin/bonnerManagement.html",
                            cohorts=getBonnerCohorts(),
                            events=getBonnerEvents(g.current_term))
 
@@ -269,7 +269,7 @@ def updatecohort(year, method, username):
         abort(500)
 
     if method == "add":
-        try: 
+        try:
             BonnerCohort.create(year=year, user=user)
         except IntegrityError as e:
             # if they already exist, ignore the error
@@ -288,4 +288,3 @@ def bonnerxls():
 
     newfile = makeBonnerXls()
     return send_file(open(newfile, 'rb'), download_name='BonnerStudents.xlsx', as_attachment=True)
-
