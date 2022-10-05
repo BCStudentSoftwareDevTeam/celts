@@ -43,7 +43,7 @@ $(document).ready(function(){
     // Add Requirement handler
     $("#reqAdd").click(function() {
         addRequirement();
-        enableSave();
+        disableSave();
     });
 
     // Save Requirements handler
@@ -71,13 +71,13 @@ function addRequirement() {
 
 /* Get the data for the whole requirement set and save them */
 function saveRequirements() {
-    var data = $("#requirements tbody tr").map((i,row) => ( 
+    var data = $("#requirements tbody tr").map((i,row) => (
                     {
                         'id': $(row).data("id"),
                         'name': $(row).find("input").val(),
                         'required': $(row).find("select.required-select").val() == 'Required' ? true : false,
-                        'frequency': $(row).find("select.frequency-select").val() 
-                    } 
+                        'frequency': $(row).find("select.frequency-select").val()
+                    }
                 )).get()
 
     $.ajax({
@@ -115,7 +115,7 @@ function addRequirementsRowHandlers() {
      *
      * Enable the Save button when there are changes and row additions or removals.
      * Validate the name entry so that they can't submit empty values.
-     * Make the frequency select have a selectable default value 
+     * Make the frequency select have a selectable default value
      */
 
     // frequency select styling
@@ -160,4 +160,3 @@ function addRequirementsRowHandlers() {
         $(e.target.closest('tr')).fadeOut(function() { this.remove() });
     });
 }
-
