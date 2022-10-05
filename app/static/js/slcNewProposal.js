@@ -99,8 +99,9 @@ $(document).ready(function(e) {
         //     validatePhoneNumber(this, phoneInput, username)
         //
         // });
-        $('#instructorTable').contents().filter(function(){
+        $('#instructorTable tr').each(function(){
           console.log(this)
+          // for all the ones that have a data-username do handlers
         })
     }
 })
