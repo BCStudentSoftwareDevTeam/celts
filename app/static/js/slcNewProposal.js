@@ -99,6 +99,9 @@ $(document).ready(function(e) {
         //     validatePhoneNumber(this, phoneInput, username)
         //
         // });
+        $('#instructorTable').contents().filter(function(){
+          console.log(this)
+        })
     }
 })
 
