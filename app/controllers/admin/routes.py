@@ -323,7 +323,6 @@ def bonnerxls():
 
     newfile = makeBonnerXls()
     return send_file(open(newfile, 'rb'), download_name='BonnerStudents.xlsx', as_attachment=True)
-<<<<<<< HEAD
 
 @admin_bp.route("/saveRequirements/<certid>", methods=["POST"])
 def saveRequirements(certid):
@@ -333,5 +332,3 @@ def saveRequirements(certid):
     newRequirements = updateCertRequirements(certid, request.get_json())
 
     return jsonify([req.id for req in newRequirements])
-=======
->>>>>>> 85f82b3a48072d9e021fb41a0efda1bf96377ff2
