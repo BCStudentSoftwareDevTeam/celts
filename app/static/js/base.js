@@ -1,4 +1,3 @@
-processPhoneSetup
 function msgFlash(flash_message, status){
     if (status === "success") {
         category = "success";
@@ -99,10 +98,10 @@ function validatePhoneNumber(editButtonId, phoneInputId, username) {
       error: function(request, status, error) {
           msgFlash("Phone number not updated.", "danger")
       },
-  
+
     })
     $(editButtonId).html('Edit');
-    
+
 }
 
 function reloadWithAccordion(accordionName) {
