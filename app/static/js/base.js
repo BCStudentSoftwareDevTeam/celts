@@ -34,7 +34,7 @@ function msgToast(head, body){
   toastList[0].show()
 }
 
-function setupPhoneNumber(editButtonId, phoneInput, username){
+function setupPhoneNumber(editButtonId, phoneInput){
   $(editButtonId).on('click', function() {
     var username = $(this).data("username")
     if ($(editButtonId).html() === 'Edit'){
@@ -60,16 +60,13 @@ function setupPhoneNumber(editButtonId, phoneInput, username){
 
 function processPhoneSetup (editButtonId, phoneInputId, username, action) {
   if (action == "edit" ) {
-    console.log("edit the phone")
     $(editButtonId).html("Save");
   }
   else if (action == "save" ) {
-    console.log("save the phone")
     validatePhoneNumber(editButtonId, phoneInputId, username)
   }
   else if (action == "restore"){
     var phoneInput = $(phoneInputId);
-    console.log("restore original phone number")
     $(phoneInputId).val(phoneInput.attr("data-value"))
     $(editButtonId).html('Edit');
   }

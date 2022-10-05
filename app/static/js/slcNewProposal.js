@@ -80,28 +80,15 @@ $(document).ready(function(e) {
         $("#courseInstructor").on('input', function() {
             searchUser("courseInstructor", createNewRow, true, null, "instructor");
         });
-        // $("input[name=courseInstructorPhone]").focus(focusHandler);
-        // $("input[name=courseInstructorPhone]").focusout(function(){
-        //   var username=getRowUsername(this)
-        //   var phoneInput = "#inputPhoneNumber-" + username
-        //   validatePhoneNumber(this, phoneInput, username)
-        //
-        // });
-        // $("input[name=courseInstructorPhone]").focus(function(){
-        //   var username=getRowUsername(this)
-        //   var phoneInput = "#inputPhoneNumber-" + username
-        //   validatePhoneNumber(this, phoneInput, username)
-        // })
-        //
-        // $('#instructorTable').on('click', ".editButton", function() {
-        //     var username=getRowUsername(this)
-        //     var phoneInput = "#inputPhoneNumber-" + username
-        //     validatePhoneNumber(this, phoneInput, username)
-        //
-        // });
+        
+        // for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
         $('#instructorTable tr').each(function(){
-          console.log(this)
-          // for all the ones that have a data-username do handlers
+          var username = getRowUsername(this)
+          var edit = "#editButton-" + username
+          var input = "#inputPhoneNumber-" + username
+          if (username){
+            setupPhoneNumber(edit, input)
+          }
         })
     }
 })
