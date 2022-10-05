@@ -90,7 +90,8 @@ function validatePhoneNumber(editButtonId, phoneInputId, username) {
       data:{"username":username,
             "phoneNumber":phoneInput.val()},
       success: function(s){
-          location.reload()
+        $(phoneInputId).attr("data-value",phoneInput.val())
+        msgToast("Phone Number", "Successfully updated the phone number.")
       },
       error: function(request, status, error) {
           msgFlash("Phone number not updated.", "danger")
@@ -98,6 +99,7 @@ function validatePhoneNumber(editButtonId, phoneInputId, username) {
 
     })
     $(editButtonId).html('Edit');
+
 
 }
 
