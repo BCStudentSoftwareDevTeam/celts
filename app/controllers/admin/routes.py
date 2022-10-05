@@ -26,7 +26,7 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.adminLogs import createLog
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
-from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, getBonnerEvents
+from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents
 from app.logic.participants import getEventParticipants, getUserParticipatedTrainings, checkUserRsvp, checkUserVolunteer
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls
@@ -162,9 +162,9 @@ def eventDisplay(eventId):
     futureTerms = selectSurroundingTerms(g.current_term)
     userHasRSVPed = checkUserRsvp(g.current_user, event)
     isPastEvent = event.isPast
-    eventfiles=FileHandler()
-    program=event.singleProgram
-    filepaths =eventfiles.retrievePath(associatedAttachments, eventId)
+    eventfiles = FileHandler()
+    program = event.singleProgram
+    filepaths = eventfiles.retrievePath(associatedAttachments, eventId)
     isProgramManager = g.current_user.isProgramManagerFor(program)
     rule = request.url_rule
     if 'edit' in rule.rule:
@@ -201,6 +201,26 @@ def deleteRoute(eventId):
     try:
         deleteEvent(eventId)
         flash("Event successfully deleted.", "success")
+        return redirect(url_for("main.events", selectedTerm=g.current_term))
+
+    except Exception as e:
+        print('Error while canceling event:', e)
+        return "", 500
+@admin_bp.route('/event/<eventId>/deleteEventAndAllFollowing', methods=['POST'])
+def deleteEventAndAllFollowingRoute(eventId):
+    try:
+        deleteEventAndAllFollowing(eventId)
+        flash("Events successfully deleted.", "success")
+        return redirect(url_for("main.events", selectedTerm=g.current_term))
+
+    except Exception as e:
+        print('Error while canceling event:', e)
+        return "", 500
+@admin_bp.route('/event/<eventId>/deleteAllRecurring', methods=['POST'])
+def deleteAllRecurringEventsRoute(eventId):
+    try:
+        deleteAllRecurringEvents(eventId)
+        flash("Events successfully deleted.", "success")
         return redirect(url_for("main.events", selectedTerm=g.current_term))
 
     except Exception as e:
