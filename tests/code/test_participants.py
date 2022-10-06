@@ -10,7 +10,7 @@ from app.models.program import Program
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.logic.volunteers import getEventLengthInHours, updateEventParticipants
-from app.logic.participants import unattendedRequiredEvents, sendUserData, getEventParticipants, trainedParticipants, getUserParticipatedEvents, checkUserRsvp, checkUserVolunteer, addPersonToEvent
+from app.logic.participants import unattendedRequiredEvents, sendUserData, getEventParticipants, trainedParticipants, getUserParticipatedTrainings, checkUserRsvp, checkUserVolunteer, addPersonToEvent
 from app.models.eventRsvp import EventRsvp
 
 @pytest.mark.integration
@@ -284,7 +284,7 @@ def test_getEventParticipantsWithWrongParticipant():
     assert "agliullovak" not in eventParticipantsDict
 
 @pytest.mark.integration
-def test_getUserParticipatedEvents():
+def test_getUserParticipatedTrainings():
     with mainDB.atomic() as transaction:
         currentTerm = Term.get_by_id(3)
         academicYear = currentTerm.academicYear
@@ -317,7 +317,7 @@ def test_getUserParticipatedEvents():
         # If the user has participated in every training, assert their participated status for that training == 1
         for training in listOfProgramTrainings:
             EventParticipant.create(user = User.get_by_id("ramsayb2"), event = training)
-        programTrainings = getUserParticipatedEvents(Program.get_by_id(2), User.get_by_id("ramsayb2"), currentTerm)
+        programTrainings = getUserParticipatedTrainings(Program.get_by_id(2), User.get_by_id("ramsayb2"), currentTerm)
         for training in programTrainings.keys():
             assert programTrainings[training] == 1
         transaction.rollback()
@@ -328,7 +328,7 @@ def test_getUserParticipatedEvents():
             if (counter % 2) == 0:
                 EventParticipant.create(user = User.get_by_id("ramsayb2"), event = training)
 
-        programTrainings = getUserParticipatedEvents(Program.get_by_id(2), User.get_by_id("ramsayb2"), currentTerm)
+        programTrainings = getUserParticipatedTrainings(Program.get_by_id(2), User.get_by_id("ramsayb2"), currentTerm)
         for counter, training in enumerate(programTrainings.keys()):
             if (counter % 2) == 0:
                 assert programTrainings[training] == 1
@@ -337,7 +337,7 @@ def test_getUserParticipatedEvents():
         transaction.rollback()
 
         # If the user has not participated in any trainings, assert their participated status for that training == 1
-        programTrainings = getUserParticipatedEvents(Program.get_by_id(2), User.get_by_id("ramsayb2"), currentTerm)
+        programTrainings = getUserParticipatedTrainings(Program.get_by_id(2), User.get_by_id("ramsayb2"), currentTerm)
         for training in programTrainings.keys():
             assert programTrainings[training] == 0
         transaction.rollback()
@@ -359,7 +359,7 @@ def test_getUserParticipatedEvents():
         # If the event has not occured yet, assert their participated status for that event == None
         allProgramTrainings = Event.select().join(ProgramEvent).where(Event.isTraining == 1, ProgramEvent.program == Program.get_by_id(8))
         listOfProgramTrainings = [programTraining for programTraining in allProgramTrainings]
-        programTrainings = getUserParticipatedEvents(Program.get_by_id(8), User.get_by_id("ramsayb2"), currentTerm)
+        programTrainings = getUserParticipatedTrainings(Program.get_by_id(8), User.get_by_id("ramsayb2"), currentTerm)
         for training in programTrainings.keys():
             assert programTrainings[training][0] == None
             assert programTrainings[training][1] == datetime.strptime(testingEvent.startDate, "%Y-%m-%d").strftime("%m/%d/%Y")
