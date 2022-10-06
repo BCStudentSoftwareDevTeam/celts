@@ -294,7 +294,7 @@ programs = [
     },
     {
         "id": 11,
-        "programName": "CELTS-Sponsored Event",
+        "programName": "CELTS-Sponsored Event", 
         "isStudentLed": False,
         "isBonnerScholars": False,
         "contactEmail": "",
