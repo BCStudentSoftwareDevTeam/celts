@@ -297,6 +297,11 @@ function createNewRow(selectedInstructor) {
   newRow.attr("data-username", username)
   newRow.prop("hidden", false);
   lastRow.after(newRow);
+  var edit = "#editButton-" + username
+  var input = "#inputPhoneNumber-" + username
+  if (username){
+    setupPhoneNumber(edit, input)
+  }
 }
 
 function getCourseInstructors() {
