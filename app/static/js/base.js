@@ -94,13 +94,11 @@ function validatePhoneNumber(editButtonId, phoneInputId, username) {
         msgToast("Phone Number", "Successfully updated the phone number.")
       },
       error: function(request, status, error) {
-          msgFlash("Phone number not updated.", "danger")
+        msgFlash("Phone number not updated.", "danger")
       },
 
     })
     $(editButtonId).html('Edit');
-
-
 }
 
 function reloadWithAccordion(accordionName) {

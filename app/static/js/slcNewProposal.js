@@ -80,7 +80,7 @@ $(document).ready(function(e) {
         $("#courseInstructor").on('input', function() {
             searchUser("courseInstructor", createNewRow, true, null, "instructor");
         });
-        
+
         // for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
         $('#instructorTable tr').each(function(){
           var username = getRowUsername(this)
@@ -297,6 +297,8 @@ function createNewRow(selectedInstructor) {
   newRow.attr("data-username", username)
   newRow.prop("hidden", false);
   lastRow.after(newRow);
+
+  phoneInput.attr("data-value", phone)
   var edit = "#editButton-" + username
   var input = "#inputPhoneNumber-" + username
   if (username){
