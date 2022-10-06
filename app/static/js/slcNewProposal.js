@@ -255,18 +255,6 @@ function getRowUsername(element) {
     return $(element).closest("tr").data("username")
 }
 
-// Event handler callback definitions
-function focusHandler(event) {
-    var username=getRowUsername(this)
-    $("#editButton-" + username).html('Save');
-}
-function blurHandler(event) {
-    var username=getRowUsername(this)
-    var editBtn = $("#editButton-" + username)
-    if($(event.relatedTarget).attr("id") != editBtn.attr("id")) {
-        editBtn.html('Edit');
-    }
-}
 function createNewRow(selectedInstructor) {
   let instructor = (selectedInstructor["firstName"]+" "+selectedInstructor["lastName"]+" ("+selectedInstructor["email"]+")");
   let username = selectedInstructor["username"];
@@ -286,8 +274,6 @@ function createNewRow(selectedInstructor) {
   let phoneInput = newRow.find("td:eq(0) input")
   phoneInput.val(phone);
   phoneInput.attr("id", "inputPhoneNumber-" +username);
-  $(phoneInput).focus(focusHandler);
-  $(phoneInput).focusout(blurHandler);
   $(phoneInput).inputmask('(999)-999-9999');
 
   let removeButton = newRow.find("td:eq(1) button")
@@ -295,6 +281,7 @@ function createNewRow(selectedInstructor) {
   editLink.attr("id", "editButton-" + username);
 
   newRow.attr("data-username", username)
+  editLink.attr("data-username", username)
   newRow.prop("hidden", false);
   lastRow.after(newRow);
 
