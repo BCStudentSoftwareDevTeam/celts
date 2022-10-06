@@ -78,6 +78,8 @@ def addPersonToEvent(user, event):
         else:
             if not rsvpExists:
                 EventRsvp.create(user = user, event = event)
+        if volunteerExists or rsvpExists:
+            return "already in"
 
     except Exception as e:
         print(e)
