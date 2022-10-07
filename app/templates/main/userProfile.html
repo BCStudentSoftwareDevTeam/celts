@@ -55,7 +55,13 @@
                     <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
                     <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}}</td>
                     <td>{{event.location}}</td>
-                    <td>{{"RSVP'ed" if event.id in rsvpedEvents else "Not RSVP'ed"}}</td>
+                    {% if (event.isRsvpRequired) and (event.id in rsvpedEvents) %}
+                      <td>You have RSVP'd for this event.</td>
+                    {% elif (event.isRsvpRequired) and (event.id not in rsvpedEvents) %}
+                      <td>You have not RSVP'd for this event.</td>
+                    {% else %}
+                      <td>This event does not requrie RSVP.</td>
+                    {% endif %}
                   </tr>
               {% endfor %}
             {% else %}

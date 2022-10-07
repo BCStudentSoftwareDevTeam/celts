@@ -172,7 +172,9 @@ def getStudentLedEvents(term):
                              .join(ProgramEvent, attr = 'programEvent')
                              .join(Program)
                              .where(Program.isStudentLed,
-                                    Event.term == term).execute())
+                                    Event.term == term)
+                             .order_by(Event.startDate, Event.timeStart)
+                             .execute())
     programs = {}
 
     for event in studentLedEvents:
@@ -190,11 +192,11 @@ def getTrainingEvents(term, user):
         user: expected to be the current user
         return: a list of all trainings the user can view
     """
-    trainingQuery = (Event.select(Event)
+    trainingQuery = (Event.select(Event).distinct()
                            .join(ProgramEvent, JOIN.LEFT_OUTER)
                            .join(Program, JOIN.LEFT_OUTER)
                            .where(Event.isTraining == True, Event.term == term)
-                           .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate).distinct())
+                           .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate, Event.timeStart))
 
     hideBonner = (not user.isAdmin) and not (user.isStudent and user.isBonnerScholar)
     if hideBonner:
@@ -205,10 +207,12 @@ def getTrainingEvents(term, user):
 def getBonnerEvents(term):
 
     bonnerScholarsEvents = list(Event.select(Event,ProgramEvent, Program.id.alias("program_id"))
-                                 .join(ProgramEvent)
-                                 .join(Program)
-                                 .where(Program.isBonnerScholars,
-                                        Event.term == term).execute())
+                                     .join(ProgramEvent)
+                                     .join(Program)
+                                     .where(Program.isBonnerScholars,
+                                            Event.term == term)
+                                     .order_by(Event.startDate, Event.timeStart)
+                                     .execute())
     return bonnerScholarsEvents
 
 def getOtherEvents(term):
@@ -220,16 +224,16 @@ def getOtherEvents(term):
     # Gets all events that are not associated with a program and are not trainings
     # Gets all events that have a program but don't fit anywhere
     otherEvents = list(Event.select(Event, Program)
-                        .join(ProgramEvent, JOIN.LEFT_OUTER)
-                        .join(Program, JOIN.LEFT_OUTER)
-                        .where(Event.term == term,
-                               Event.isTraining == False,
-                               Event.isAllVolunteerTraining == False,
-                               ((ProgramEvent.program == None) |
-                                ((Program.isStudentLed == False) &
-                                (Program.isBonnerScholars == False))))
-                        .order_by(Event.id).execute()
-                      )
+                            .join(ProgramEvent, JOIN.LEFT_OUTER)
+                            .join(Program, JOIN.LEFT_OUTER)
+                            .where(Event.term == term,
+                                   Event.isTraining == False,
+                                   Event.isAllVolunteerTraining == False,
+                                    ((ProgramEvent.program == None) |
+                                    ((Program.isStudentLed == False) &
+                                    (Program.isBonnerScholars == False))))
+                            .order_by(Event.startDate, Event.timeStart, Event.id)
+                            .execute())
 
     return otherEvents
 
@@ -242,15 +246,14 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
         :return: A list of Event objects
     """
 
-    events =  list(Event.select()
-                    .join(ProgramEvent, JOIN.LEFT_OUTER)
-                    .join(Interest, JOIN.LEFT_OUTER, on=(ProgramEvent.program == Interest.program))
-                    .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
-                    .where(Event.startDate >= asOf,
-                           (Interest.user == user) | (EventRsvp.user == user))
-                    .distinct() # necessary because of multiple programs
-                    .order_by(Event.startDate, Event.name).execute() # keeps the order of events the same when the dates are the same
-                    )
+    events =  list(Event.select().distinct()
+                        .join(ProgramEvent, JOIN.LEFT_OUTER)
+                        .join(Interest, JOIN.LEFT_OUTER, on=(ProgramEvent.program == Interest.program))
+                        .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
+                        .where(Event.startDate >= asOf,
+                               (Interest.user == user) | (EventRsvp.user == user))
+                        .order_by(Event.startDate, Event.timeStart, Event.name)
+                        .execute())
 
 
     events_list = []
