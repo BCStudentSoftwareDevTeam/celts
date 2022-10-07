@@ -310,18 +310,22 @@
       <div id="collapseSix" class="accordion-collapse collapse {{show}}" aria-labelledby="headingSix" data-bs-parent="#userProfile">
         <div class="accordion-body container">
             <div class="row">
-                <div class="col">
+                <div class="col-md-6">
                     {% set address = "Your" if g.current_user == volunteer else volunteer.firstName~"'s" %}
                     <h5>{{address}} Upcoming Bonner Events</h5>
                     <ul>
                     {% for event in upcomingEvents %}
                         {% if event.singleProgram and event.singleProgram.isBonnerScholars %}
-                            <li>{{event.name}}</li>
+                            <li class="d-flex flex-row justify-content-start">
+                                <div class="me-2">{{event.startDate.strftime('%B %-m')}} at {{event.timeStart.strftime('%-I:%M%p')|lower}}:
+                                </div>
+                                <div><a href= '/eventsList/{{event.id}}/view' class="link-primary">{{event.name}}</a></div>
+                            </li>
                         {% endif %}
                     {% endfor %}
                     </ul>
                 </div>
-                <div class="col">
+                <div class="col-md-6">
                     <h5>Requirement Progress</h5>
                     <ul>
                     {% for req in bonnerRequirements %}

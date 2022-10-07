@@ -73,4 +73,7 @@ def getBonnerCohorts(limit=None):
     return cohorts
 
 def rsvpForBonnerCohort(year, event):
+    """
+    Adds an EventRsvp record to the given event for each user in the given Bonner year. 
+    """
     EventRsvp.insert_from(BonnerCohort.select(BonnerCohort.user, event).where(BonnerCohort.year == year),[EventRsvp.user, EventRsvp.event]).on_conflict(action='IGNORE').execute()
