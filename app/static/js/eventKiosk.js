@@ -66,7 +66,7 @@ function submitData(hitEnter = false){
         if (result.status == "already in") {
           message = result.user + " Already Signed In!"
         } else if (result.status === "banned") {
-          message = result.user + " is Banned."
+          message = result.user + " is ineligible."
           flasherStatus = "danger"
         } else if (result.status === "does not exist") {
           message = "User does not exist"
