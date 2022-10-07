@@ -54,8 +54,8 @@ $(document).ready(function() {
     }
   });
   $("#allowPastStart").click(function() {
-    var bloo = $("#allowPastStart:checked").val()
-    if (bloo == 'on') {
+    var allowPast = $("#allowPastStart:checked").val()
+    if (allowPast == 'on') {
       $.datepicker.setDefaults({
         minDate:  new Date('1999/10/25'),
         dateFormat:'mm-dd-yy'
