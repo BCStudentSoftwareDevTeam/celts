@@ -27,7 +27,7 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.adminLogs import createLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.volunteers import getEventLengthInHours
-from app.logic.utils import selectSurroundingTerms
+from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents
 from app.logic.participants import getEventParticipants, getUserParticipatedEvents, checkUserRsvp, checkUserVolunteer
 from app.logic.fileHandler import FileHandler
@@ -80,12 +80,6 @@ def createEvent(templateid, programid=None):
 
     # Get the data from the form or from the template
     eventData = template.templateData
-    if request.method == "POST":
-        attachmentFiles = request.files.getlist("attachmentObject")
-        fileDoesNotExist = attachmentFiles[0].content_type == "application/octet-stream"
-        if fileDoesNotExist:
-            attachmentFiles = None
-        eventData.update(request.form.copy())
 
     if program:
         eventData["program"] = program
@@ -100,8 +94,9 @@ def createEvent(templateid, programid=None):
 
     # Try to save the form
     if request.method == "POST":
+        eventData.update(request.form.copy())
         try:
-            savedEvents, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
+            savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
 
         except Exception as e:
             print("Error saving event:", e)
@@ -134,7 +129,7 @@ def createEvent(templateid, programid=None):
 
     futureTerms = selectSurroundingTerms(g.current_term, prevTerms=0)
 
-    requirements = bonnerCohorts = []
+    requirements, bonnerCohorts = [], []
     if 'program' in eventData and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
         bonnerCohorts = getBonnerCohorts(limit=5)
@@ -164,13 +159,20 @@ def eventDisplay(eventId):
 
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
-        attachmentFiles = request.files.getlist("attachmentObject")
-        savedEvents, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
-        rsvpcohorts = request.form.getlist("cohorts[]")
-        for year in rsvpcohorts:
-            rsvpForBonnerCohort(int(year), event.id)
+        try:
+            savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
+
+        except Exception as e:
+            print("Error saving event:", e)
+            savedEvents = False
+            validationErrorMessage = "Unknown Error Saving Event. Please try again"
+
 
         if savedEvents:
+            rsvpcohorts = request.form.getlist("cohorts[]")
+            for year in rsvpcohorts:
+                rsvpForBonnerCohort(int(year), event.id)
+
             flash("Event successfully updated!", "success")
             return redirect(url_for("admin.eventDisplay", eventId = event.id))
         else:
@@ -185,7 +187,7 @@ def eventDisplay(eventId):
     filepaths =FileHandler().retrievePath(associatedAttachments, event.id)
     isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
 
-    requirements = []
+    requirements, bonnerCohorts = [], []
     if eventData['program'] and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
         bonnerCohorts = getBonnerCohorts(limit=5)
