@@ -324,23 +324,23 @@
           {% endif %}
 
           {% for row in profileNotes %}
-            {% set sortDate = row.note.createdOn.strftime("%Y/%m/%d/%H/%M")%}
             {% set displayDate = row.note.createdOn.strftime('%m/%d/%Y')%}
-            {% if userViewTier >= row.viewTier %}
+            {% set bonnerScholar = '' %}
+            {% if userViewTier >= row.viewTier and ((row.isBonnerNote and g.current_user.isBonnerScholar) or ( not row.isBonnerNote) ) %}
               <tr>
-                <td data-sort="{{sortDate}}">
+                <td>
                   {{row.note.noteContent}} <span><i class="ms-1 text-muted">  -{{row.user.firstName+ " "+ row.user.lastName}} on {{displayDate}}</i></span>
                 </td>
                 <td>
                   {% if row.isBonnerNote %}
-                    Bonner Scholars AND
+                    {% set bonnerScholar = 'Bonner  '%}
                   {% endif %}
                   {% if row.viewTier == 3 %}
-                    Admins
+                    {{bonnerScholar}}Admins
                   {% elif row.viewTier == 2 %}
-                    Admins, Student Staff
+                    {{bonnerScholar}}Admins, {{bonnerScholar}}Student Staff
                   {% else %}
-                    Everyone
+                    {{bonnerScholar}}Admins, {{bonnerScholar}}Student Staff, {{bonnerScholar}}Students
                   {% endif %}
                 </td>
               </tr>
