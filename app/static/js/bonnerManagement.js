@@ -43,7 +43,7 @@ $(document).ready(function(){
     // Add Requirement handler
     $("#reqAdd").click(function() {
         addRequirement();
-        enableSave();
+        disableSave();
     });
 
     // Save Requirements handler
@@ -57,27 +57,27 @@ $(document).ready(function(){
 /* Add a new requirements row and focus it */
 function addRequirement() {
     var table = $("#requirements");
-    var newrow = table.find("tbody tr:last-child").clone()
-    newrow.data("id", "X");
-    newrow.find("input").val("");
+    var newRow = table.find("tbody tr:last-child").clone()
+    newRow.data("id", "X");
+    newRow.find("input").val("");
 
-    newrow.find("select.frequency-select option:first-child").attr('selected', true);
-    newrow.find("select.required-select option:last-child").attr('selected', true);
+    newRow.find("select.frequency-select option:first-child").attr('selected', true);
+    newRow.find("select.required-select option:last-child").attr('selected', true);
 
-    table.append(newrow)
+    table.append(newRow)
     addRequirementsRowHandlers()
-    newrow.find("input").focus()
+    newRow.find("input").focus()
 }
 
 /* Get the data for the whole requirement set and save them */
 function saveRequirements() {
-    var data = $("#requirements tbody tr").map((i,row) => ( 
+    var data = $("#requirements tbody tr").map((i,row) => (
                     {
                         'id': $(row).data("id"),
                         'name': $(row).find("input").val(),
                         'required': $(row).find("select.required-select").val() == 'Required' ? true : false,
-                        'frequency': $(row).find("select.frequency-select").val() 
-                    } 
+                        'frequency': $(row).find("select.frequency-select").val()
+                    }
                 )).get()
 
     $.ajax({
@@ -115,7 +115,7 @@ function addRequirementsRowHandlers() {
      *
      * Enable the Save button when there are changes and row additions or removals.
      * Validate the name entry so that they can't submit empty values.
-     * Make the frequency select have a selectable default value 
+     * Make the frequency select have a selectable default value
      */
 
     // frequency select styling
@@ -160,4 +160,3 @@ function addRequirementsRowHandlers() {
         $(e.target.closest('tr')).fadeOut(function() { this.remove() });
     });
 }
-
