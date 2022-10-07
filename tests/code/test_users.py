@@ -9,13 +9,13 @@ from app.models import mainDB
 from app.models.program import Program
 from app.models.programBan import ProgramBan
 from app.models.note import Note
+from app.models.profileNote import ProfileNote
 from app.models.user import User
 from app.models.programManager import ProgramManager
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.event import Event
 from app.models.programEvent import ProgramEvent
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory
-from app.logic.users import isEligibleForProgram
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote
 from app.logic.volunteers import addUserBackgroundCheck
 
 @pytest.mark.integration
@@ -104,9 +104,37 @@ def test_removeUserInterestt():
         transaction.rollback()
 
 @pytest.mark.integration
+def test_addUserProfileNote():
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+            g.current_user = "ramsayb2"
+            profileNote = addProfileNote(1, True, "Test profile note", "neillz")
+            assert profileNote == ProfileNote.get_by_id(profileNote.id)
+            profileNote2 = addProfileNote(3, False, "Test profile note 2", "ramsayb2")
+            assert profileNote2 == ProfileNote.get_by_id(profileNote2.id)
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_deleteUserProfileNote():
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+            g.current_user = "ramsayb2"
+
+            addedNote = addProfileNote(1, True, "Test profile note", "neillz")
+            profileNote = deleteProfileNote(addedNote)
+            with pytest.raises(DoesNotExist):
+                ProfileNote.get_by_id(addedNote)
+
+            addedNote = addProfileNote(3, False, "Test profile note 2", "ramsayb2")
+            profileNote = deleteProfileNote(addedNote)
+            with pytest.raises(DoesNotExist):
+                ProfileNote.get_by_id(addedNote.id)
+
+        transaction.rollback()
+
+@pytest.mark.integration
 def test_banUser():
     with mainDB.atomic() as transaction:
-
         #test for banning a user from a program
         username = User.get_by_id("khatts")
         program_id = 2

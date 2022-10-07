@@ -114,5 +114,7 @@ def addProfileNote(visibility, bonner, noteTextbox, username):
                                            note = noteForDb,
                                            isBonnerNote = bonner,
                                            viewTier = visibility)
+    return createProfileNote
+
 def deleteProfileNote(noteId):
-    ProfileNote.delete().where(ProfileNote.id == noteId).execute()
+    return ProfileNote.delete().where(ProfileNote.id == noteId).execute()
