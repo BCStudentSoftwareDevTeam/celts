@@ -36,7 +36,7 @@
   </ul>
 </div>
 <label class='d-none' id="eventLength">{{eventLength}}</label>
-<input class="form-control" id="eventID" name="event" value="{{event}}" type='hidden' />
+<input class="form-control" id="event" name="event" value="{{event}}" type='hidden' />
 <div class="flex-container" style="padding: 5px;">
   <div class='form-group d-inline-flex'>
     <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add Volunteer</a>
@@ -58,24 +58,27 @@
         <th>Name</th>
         <th>Email</th>
         <th>Phone Number</th>
-        <th class="noSort">Completed Trainings?</th>
-    {% if event.isPast %}
-        <th class="noSort">Total Hours</th>
-        <th class="noSort">Attended</th>
-    {% endif %}
+        <th class="noSort">Completed Trainings</th>
+        <th class="noSort">Banned</th>
+        {% if event.isPast %}
+          <th class="noSort">Total Hours</th>
+          <th class="noSort">Attended</th>
+        {% endif %}
         <th class="noSort">Remove Volunteer</th>
       </tr>
     </thead>
     <tbody class="align-middle" id="volunteerTable">
+    {% if eventVolunteerData %}
       {% for participant in eventVolunteerData %}
-            <td>
-              <input
-                class="form-control"
-                type='hidden'
-                name="username{{loop.index|string}}"
-                id="{{participant.user.username}}"
-                value="{{participant.user}}" />
-                {{participant.user.firstName}} {{participant.user.lastName}}
+        <tr>
+          <td>
+            <input
+              class="form-control"
+              type='hidden'
+              name="username{{loop.index|string}}"
+              id="{{participant.user.username}}"
+              value="{{participant.user}}" />
+              {{participant.user.firstName}} {{participant.user.lastName}}
             </td>
             <td>{{participant.user.email}}</td>
             <td>{{participant.user.phoneNumber}}</td>
@@ -86,34 +89,41 @@
                 <span class="bi bi-check-lg" aria-label="Completed all trainings."></span>
               {% endif %}
             </td>
+            <td style="text-align:center">
+              {% if participant.user not in bannedUsers %}
+                <span class="bi bi-x-lg" aria-label="Not banned."></span>
+              {% else %}
+                <span class="bi bi-check-lg" aria-label="Banned."></span>
+              {% endif %}
+            </td>
             {% if event.isPast %}
-            <td>
-              <input
-                class="form-control number-only form-control input-sm"
-                id="inputHours_{{participant.user.username}}"
-                name="inputHours_{{participant.user.username}}"
-                style="max-width: 90px;"
-                type ="number"
-                min="0"
-                step="0.01"
+              <td>
+                <input
+                  class="form-control number-only form-control input-sm"
+                  id="inputHours_{{participant.user.username}}"
+                  name="inputHours_{{participant.user.username}}"
+                  style="max-width: 90px;"
+                  type ="number"
+                  min="0"
+                  step="0.01"
                     {% if participant.user in eventParticipants and eventParticipants[participant.user.username] == None %}
                       value="{{eventLength}}"
                     {% elif participant.user in eventParticipants %}
                       value="{{participant.hoursEarned}}"
                     {% else %} disabled {% endif %}
                 />
-            </td>
-            <td style="text-align:center">
-              <input
-                type="checkbox"
-                class='attendanceCheck'
-                name="checkbox_{{participant.user.username}}"
-                {% if event.isPast %}
+              </td>
+              <td style="text-align:center">
+                <input
+                  type="checkbox"
+                  class='attendanceCheck'
+                  name="checkbox_{{participant.user.username}}"
+                  {% if event.isPast %}
                     {% if participant.user in eventParticipants %}
                       checked
                     {% endif %}
-                {% endif %} />
-            </td>
+                  {% endif %} />
+              </td>
             {% endif %} {# end hiding the hours and attended inputs #}
             <td style="text-align:center">
               <button
@@ -125,7 +135,8 @@
               </button>
             </td>
           </tr>
-      {% endfor %}
+        {% endfor %}
+      {% endif %}
      </tbody>
     </table>
   <div>
@@ -153,9 +164,10 @@
         <h5>Selected Volunteers</h5>
         <ul class="list-unstyled" id= "addVolunteerList">
         </ul>
+        <p id="banned-message" hidden><span class="bi bi-slash-circle-fill text-danger"></span> → Banned</p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
         <button id="selectVolunteerButton" type="button" class="btn btn-primary" disabled>Add participant</button>
       </div>
     </div>
