@@ -15,6 +15,7 @@ from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.programManager import ProgramManager
 from app.logic.adminLogs import createLog
+from app.logic.users import getBannedUsers, isBannedFromEvent
 
 
 
@@ -36,7 +37,7 @@ def trackVolunteersPage(eventID):
     trainedParticipantsList = trainedParticipants(program, g.current_term)
     eventParticipants = getEventParticipants(event)
     isProgramManager = g.current_user.isProgramManagerForEvent(event)
-
+    bannedUsers = [row.user for row in getBannedUsers(program)]
     if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
         abort(403)
 
@@ -64,6 +65,7 @@ def trackVolunteersPage(eventID):
         recurringEventID = recurringEventID,
         recurringEventStartDate = recurringEventStartDate,
         recurringVolunteers = recurringVolunteers,
+        bannedUsers = bannedUsers,
         trainedParticipantsList = trainedParticipantsList)
 
 @admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['POST'])
@@ -109,6 +111,9 @@ def addVolunteer(eventId):
 
     return redirect(url_for('admin.trackVolunteersPage', eventID = eventId))
 
+@admin_bp.route('/addVolunteersToEvent/<username>/<eventId>/isBanned', methods = ['GET'])
+def isVolunteerBanned(username, eventId):
+    return {"banned":1} if isBannedFromEvent(username, eventId) else {"banned":0}
 
 @admin_bp.route('/removeVolunteerFromEvent/<user>/<eventID>', methods = ['POST'])
 def removeVolunteerFromEvent(user, eventID):
