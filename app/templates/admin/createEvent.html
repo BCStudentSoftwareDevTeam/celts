@@ -232,19 +232,43 @@
         <h5 class="modal-title" id="warningModel">Delete Event</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        Are you sure you want to delete this event? This action is irreversible.
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <form action="/event/{{eventData.id}}/delete" method='post'>
-            <input type="submit" class="btn btn-danger" value="Delete Event"/>
-          <div>
-            <input type="hidden" value="{{eventData.id}}" name="id">
+        {% if eventData.recurringId%}
+        <div class="modal-body">
+          <div class= "container-fluid">
+            <p>This action is irreversible.</p>
+            <div class="d-grid gap-2">
+                <form action="/event/{{eventData.id}}/delete" method='post'>
+                  <button type="submit" class="btn btn-danger">Delete This Event</button>
+                </form>
+
+                <form action="/event/{{eventData.id}}/deleteEventAndAllFollowing" method='post'>
+                    <button type="submit" class="btn btn-danger">Delete This and All Following</button>
+                </form>
+
+                <form action="/event/{{eventData.id}}/deleteAllRecurring" method='post'>
+                    <button type="submit" class="btn btn-danger">Delete Series </button>
+                </form>
+            </div>
           </div>
-       </form>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+       </div>
+        {% else %}
+        <div class="modal-body">
+          <p>This action is irreversible.</p>
+        </div>
+        <div class="modal-footer justify-content-between">
+           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+           <form action="/event/{{eventData.id}}/delete" method='post'>
+               <button type="submit" class="btn btn-danger">Delete This Event</button>
+           </form>
+        </div>
+        {%endif%}
+       <div>
+         <input type="hidden" value="{{eventData.id}}" name="id">
+       </div>
       </div>
     </div>
   </div>
-</div>
 {% endblock %}
