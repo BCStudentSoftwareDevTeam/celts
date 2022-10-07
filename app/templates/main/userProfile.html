@@ -155,7 +155,7 @@
                {% endif %}
                  <tr>
                    <td><a href="{{row.program.url}}" id="programNameTable">{{row.program.programName}}</a></td>
-                   <td><input class="form-check-input" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>
+                   <td><input class="form-check-input" id="notifyInput" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>
                    <td>
                        {% if row.completedTraining or not trainingList %}
                            <i class="bi bi-check-lg"></i> &nbsp&nbsp
@@ -311,6 +311,7 @@
             <tr>
               <th>Note</th>
               <th>Visible By</th>
+              <th></th>
             </tr>
 
           </thead>
@@ -329,7 +330,7 @@
             {% if userViewTier >= row.viewTier and ((row.isBonnerNote and g.current_user.isBonnerScholar) or ( not row.isBonnerNote) ) %}
               <tr>
                 <td>
-                  {{row.note.noteContent}} <span><i class="ms-1 text-muted">  -{{row.user.firstName+ " "+ row.user.lastName}} on {{displayDate}}</i></span>
+                  {{row.note.noteContent}} <span><i class="ms-1 text-muted">  -{{row.note.createdBy.firstName+ " "+ row.note.createdBy.lastName}} on {{displayDate}}</i></span>
                 </td>
                 <td>
                   {% if row.isBonnerNote %}
@@ -343,17 +344,63 @@
                     {{bonnerScholar}}Admins, {{bonnerScholar}}Student Staff, {{bonnerScholar}}Students
                   {% endif %}
                 </td>
+                {% if userViewTier >= row.viewTier %}
+                <td>
+                  <button type="button" class="btn btn-sm btn-danger deleteNoteButton" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button>
+                </td>
+                {% endif %}
               </tr>
             {% endif %}
           {%endfor%}
         </tbody>
 
         </table>
-        <button type="button" name="button" class="btn btn-primary">Add Note</button>
+        <button type="button" name="button" class="btn btn-primary" id="addNoteButton">Add Note</button>
       </div>
     </div>
   </div>
   <!-- End Notes section -->
+<!-- Add Volunteer Profile Notes Modal -->
+<div class="modal fade" id="noteModal" tabindex="-1" aria-labelledby="banVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
+  <form action="/{{volunteer.username}}/addNote" method="post">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Notes</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" style="align=center">
+          <div class="input-group">
+            <div class="form-group input-group-x form-outline">
+              <label class="form-label" for='inputEventTerm'><strong>Visibility</strong></label>
+              <select class="form-select" name='visibility' id='noteDropdown'>
+                {% if userViewTier == 3 %}
+                  <option value='3'>Admins</option>
+                {% endif %}
+                {% if userViewTier >= 2 %}
+                  <option value='2'>Admins, Student Staff</option>
+                {% endif %}
+                <option value='1' selected>Everyone</option>
+              </select>
+              <div class="form-check form-switch pt-4">
+                <input class="form-check-input" name="bonner" id="bonnerInput" type="checkbox" />
+                <label class="form-check-label"><strong>Bonner Scholars only</strong></label>
+              </div><br>
+            </div>
+            <div class="form-group input-group-x form-outline ui-widget">
+              <textarea required name="noteTextbox" rows="8" cols="80" type="input" id="banNoteTxtArea" class="form-control" placeholder="This will add a note to a user's profile." ></textarea>
+            </div>
+          </div>
+        </div>
+  		  <div class="modal-footer justify-content-between">
+    			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    			<button id="notesSaveButton" type="submit" class="btn btn-primary">Save</button>
+  		  </div>
+      </div>
+    </div>
+  </form>
+</div>
+<!-- End Volunteer Profile Notes Modal -->
 <!-- Ban or Unban Modal -->
 <div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
   <form onsubmit="return validate();">

@@ -1,12 +1,15 @@
 from app.models.programBan import ProgramBan
 from app.models.interest import Interest
 from app.models.note import Note
+from app.models.user import User
+from app.models.profileNote import ProfileNote
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.backgroundCheckType import BackgroundCheckType
 from app.logic.volunteers import addUserBackgroundCheck
 import datetime
 from peewee import JOIN
 from dateutil import parser
+from flask import g
 
 
 def isEligibleForProgram(program, user):
@@ -102,3 +105,14 @@ def getUserBGCheckHistory(username):
         bgHistory[row.type_id].append(row)
 
     return bgHistory
+
+def addProfileNote(visibility, bonner, noteTextbox, username):
+    noteForDb = Note.create(createdBy = g.current_user,
+                            createdOn = datetime.datetime.now(),
+                            noteContent = noteTextbox)
+    createProfileNote = ProfileNote.create(user = User.get(User.username == username),
+                                           note = noteForDb,
+                                           isBonnerNote = bonner,
+                                           viewTier = visibility)
+def deleteProfileNote(noteId):
+    ProfileNote.delete().where(ProfileNote.id == noteId).execute()

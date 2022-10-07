@@ -1,7 +1,7 @@
 $(document).ready(function(){
 
   $("#phoneInput").inputmask('(999)-999-9999');
-  $(".form-check-input").click(function updateInterest(){
+  $("#notifyInput").click(function updateInterest(){
     var programID = $(this).data("programid");
     var username = $(this).data('username');
 
@@ -21,6 +21,7 @@ $(document).ready(function(){
       }
     });
   });
+
   // This function is to disable all the dates before current date in the ban modal End Date picker
   $(function(){
     var banEndDatepicker = $("#banEndDatepicker");
@@ -42,12 +43,12 @@ $(document).ready(function(){
 
     banButton.text($(this).val() + " Volunteer");
     banButton.data("programID", $(this).data("programid"))
-    banButton.data("username", $(".form-check-input").data("username"))
+    banButton.data("username", $("#notifyInput").data("username"))
     banButton.data("banOrUnban", $(this).val());
     banEndDateDiv.show();
     banEndDatepicker.val("")
     $(".modal-title").text($(this).val() + " Volunteer");
-    $("#modalProgramName").text("Program: " + $(this).data("name"));
+    $("#modalProgramName").text("Program: " + $(this).data("name "));
     $("#banModal").modal("toggle");
     banNoteDiv.hide();
     $("#banNoteTxtArea").val("");
@@ -59,6 +60,23 @@ $(document).ready(function(){
       banNote.text($(this).data("note"))
     }
 
+  });
+
+  $("#addNoteButton").click(function() {
+    $("#noteModal").modal("toggle");
+  });
+
+  $(".deleteNoteButton").click(function() {
+    let username = $(this).data('username')
+    let noteid = $(this).data('noteid')
+    $.ajax({
+      method: "POST",
+      url:  "/" + username + "/deleteNote",
+      data: {"id": noteid},
+      success: function(response) {
+        location.reload();
+      }
+    });
   });
 
   $("#banNoteTxtArea, #banEndDatepicker").on('input' , function (e) { //This is the if statement the placeholder in line 45 is for #PLCHLD1
