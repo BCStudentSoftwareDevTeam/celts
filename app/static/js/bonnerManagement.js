@@ -57,16 +57,16 @@ $(document).ready(function(){
 /* Add a new requirements row and focus it */
 function addRequirement() {
     var table = $("#requirements");
-    var newrow = table.find("tbody tr:last-child").clone()
-    newrow.data("id", "X");
-    newrow.find("input").val("");
+    var newRow = table.find("tbody tr:last-child").clone()
+    newRow.data("id", "X");
+    newRow.find("input").val("");
 
-    newrow.find("select.frequency-select option:first-child").attr('selected', true);
-    newrow.find("select.required-select option:last-child").attr('selected', true);
+    newRow.find("select.frequency-select option:first-child").attr('selected', true);
+    newRow.find("select.required-select option:last-child").attr('selected', true);
 
-    table.append(newrow)
+    table.append(newRow)
     addRequirementsRowHandlers()
-    newrow.find("input").focus()
+    newRow.find("input").focus()
 }
 
 /* Get the data for the whole requirement set and save them */

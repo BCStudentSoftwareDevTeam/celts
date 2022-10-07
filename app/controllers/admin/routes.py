@@ -331,4 +331,4 @@ def saveRequirements(certid):
 
     newRequirements = updateCertRequirements(certid, request.get_json())
 
-    return jsonify([req.id for req in newRequirements])
+    return jsonify([requirement.id for requirement in newRequirements])

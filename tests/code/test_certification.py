@@ -11,32 +11,32 @@ from app.logic.certification import getCertRequirements, updateCertRequirements,
 
 @pytest.mark.integration
 def test_getCertRequirements():
-    allreqs = getCertRequirements()
+    allRequirements = getCertRequirements()
 
     certNames =  ["Bonner", "CESC Minor", "CPR", "Confidentiality", "I9"]
-    assert certNames == [cert["data"].name for (id, cert) in allreqs.items()]
+    assert certNames == [cert["data"].name for (id, cert) in allRequirements.items()]
 
-    cprReqs = allreqs[3]['requirements']
-    assert ["Volunteer Training", "CPR Training"] == [r.name for r in cprReqs]
+    cpr = allRequirements[3]['requirements']
+    assert ["Volunteer Training", "CPR Training"] == [r.name for r in cpr]
 
-    cescreqs = getCertRequirements(certification=Certification.CESC)
-    bonnerreqs = getCertRequirements(certification=Certification.BONNER)
-    assert len(bonnerreqs) == 9
+    cesc = getCertRequirements(certification=Certification.CESC)
+    bonner = getCertRequirements(certification=Certification.BONNER)
+    assert len(bonner) == 9
 
-    nonereqs = getCertRequirements(certification=1111)
-    assert len(nonereqs) == 0
+    noRequirements = getCertRequirements(certification=1111)
+    assert len(noRequirements) == 0
 
 @pytest.mark.integration
 def test_updateCertRequirements():
 
     with mainDB.atomic() as transaction:
 
-        cprcert = 3
-        othercert = 4
+        cprId = 3
+        otherId = 4
 
         # Removal of missing items
-        returnedIds = updateCertRequirements(cprcert, [])
-        selectedIds = getCertRequirements(certification=cprcert)
+        returnedIds = updateCertRequirements(cprId, [])
+        selectedIds = getCertRequirements(certification=cprId)
         
         assert returnedIds == []
         assert selectedIds == []
@@ -54,8 +54,8 @@ def test_updateCertRequirements():
                  'frequency': 'term',
                  'required': False}
                 ]
-        returnedIds = updateCertRequirements(cprcert, newRequirements)
-        selectedIds = getCertRequirements(certification=cprcert)
+        returnedIds = updateCertRequirements(cprId, newRequirements)
+        selectedIds = getCertRequirements(certification=cprId)
         
         assert selectedIds == [CertificationRequirement.get_by_id(10),CertificationRequirement.get_by_id(11)]
         assert returnedIds == selectedIds
@@ -76,10 +76,10 @@ def test_updateCertRequirements():
                  'frequency': 'once',
                  'required': False}
                 ]
-        returnedIds = updateCertRequirements(othercert, newRequirements)
-        selectedIds = getCertRequirements(certification=othercert)
+        returnedIds = updateCertRequirements(otherId, newRequirements)
+        selectedIds = getCertRequirements(certification=otherId)
         
-        assert selectedIds == list(CertificationRequirement.select().where(CertificationRequirement.certification == othercert).order_by(CertificationRequirement.order))
+        assert selectedIds == list(CertificationRequirement.select().where(CertificationRequirement.certification == otherId).order_by(CertificationRequirement.order))
         assert returnedIds == selectedIds
         assert returnedIds[1].name == "CPR 2"
         assert returnedIds[1].frequency == "once"
