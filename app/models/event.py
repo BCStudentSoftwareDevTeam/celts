@@ -10,7 +10,7 @@ class Event(baseModel):
     timeStart = TimeField()
     timeEnd = TimeField()
     location = CharField()
-    foodProvided = BooleanField(default=False)
+    isFoodProvided = BooleanField(default=False)
     isTraining = BooleanField(default=False)
     isRsvpRequired = BooleanField(default=False)
     isService = BooleanField(default=False)
