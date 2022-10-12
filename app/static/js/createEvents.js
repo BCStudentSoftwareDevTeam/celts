@@ -53,6 +53,20 @@ $(document).ready(function() {
       $("#endDatePicker").prop('required', false);
     }
   });
+  $("#allowPastStart").click(function() {
+    var allowPast = $("#allowPastStart:checked").val()
+    if (allowPast == 'on') {
+      $.datepicker.setDefaults({
+        minDate:  new Date('1999/10/25'),
+        dateFormat:'mm-dd-yy'
+      });
+    } else {
+      $.datepicker.setDefaults({
+        minDate:  new Date($.now()),
+        dateFormat:'mm-dd-yy'
+      });
+    }
+  });
   // everything except Chrome
   if (navigator.userAgent.indexOf("Chrome") == -1) {
     $('input.timepicker').timepicker({
