@@ -150,6 +150,7 @@ $(document).ready(function() {
     }
   });
 
+
   var facilitatorArray = []
   function callback(selectedFacilitator) {
     // JSON.parse is required to de-stringify the search results into a dictionary.

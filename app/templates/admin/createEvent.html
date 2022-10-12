@@ -173,18 +173,34 @@
               </div>
           </div>
             {% if page_title != 'Create All Volunteer Training' %}
-              <div class="form-check form-switch pt-4">
-                <label class="custom-control-label" for="checkIsTraining"><strong>This event is a training.</strong></label>
-                <input class="form-check-input" type="checkbox" id="checkIsTraining" name="isTraining" {{"checked" if eventData.isTraining}}/>
+            <div class="pt-4 mb-4">
+              <div class="row col-md-12">
+                <div class="form-group col-md-6">
+                  <div class="form-check form-switch mb-2">
+                    <label class="custom-control-label" for="food"><strong>This event will provide food.</strong></label>
+                    <input class="form-check-input" type="checkbox" id="food" name="isFoodProvided" {{"checked" if eventData.isFoodProvided}}/>
+                  </div>
+                </div>
+                <div class="form-group col-md-6">
+                  <div class="form-check form-switch ">
+                    <label class="custom-control-label" for="checkIsTraining"><strong>This event is a training.</strong></label>
+                    <input class="form-check-input" type="checkbox" id="checkIsTraining" name="isTraining" {{"checked" if eventData.isTraining}}/>
+                  </div>
+                </div>
+                <div class="form-group col-md-6 mb-3">
+                  <div class="form-check form-switch">
+                    <label class="custom-control-label" for='rsvp'><strong>This event requires RSVP.</strong></label>
+                    <input class="form-check-input" type="checkbox" id="rsvp" name="isRsvpRequired" {{"checked" if eventData.isRsvpRequired}}/>
+                  </div>
+                </div>
+                <div class="form-group col-md-6">
+                  <div class="form-check form-switch">
+                    <label class="custom-control-label" for='earnServiceHours'><strong>This event earns service hours.</strong></label>
+                    <input class="form-check-input" type="checkbox" id="earnServiceHours" name="isService" {{"checked" if eventData.isService}}/>
+                  </div>
+                </div>
               </div>
-              <div class="form-check form-switch">
-                <label class="custom-control-label" for='rsvp'><strong>This event requires RSVP.</strong></label>
-                <input class="form-check-input" type="checkbox" id="rsvp" name="isRsvpRequired" {{"checked" if eventData.isRsvpRequired}}/>
-              </div>
-              <div class="form-check form-switch mb-4">
-                <label class="custom-control-label" for='earnServiceHours'><strong>This event earns service hours.</strong></label>
-                <input class="form-check-input" type="checkbox" id="earnServiceHours" name="isService" {{"checked" if eventData.isService}}/>
-              </div>
+            </div>
            {% endif %}
             <div class="form-group mb-5">
                 <div class="file-upload-wrapper">
