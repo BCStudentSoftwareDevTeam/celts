@@ -77,10 +77,22 @@
           <label class="form-label" for='inputEventLocation'><strong>Location</strong></label>
           <input class="form-control" id='inputEventLocation' value="{{eventData.location}}" placeholder="Enter location" name="location" required>
         </div>
-        {% if isNewEvent and template.tag != 'all-volunteer' %}
-        <div class="form-check form-switch pb-1">
-          <label class="custom-control-label" for='checkIsRecurring'><strong>This is a recurring event.</strong></label>
-          <input class="form-check-input" type="checkbox" id="checkIsRecurring" name="isRecurring"/>
+        {% if isNewEvent %}
+        <div class="row col-md-12">
+          <div class="form-group col-md-6">
+            <div class="form-check form-switch pb-1">
+              <label class="custom-control-label" for='allowPastStart'><strong>Allow start date to be in the past.</strong></label>
+              <input class="form-check-input" type="checkbox" id="allowPastStart"/>
+            </div>
+          </div>
+          <div class="form-group col-md-6">
+            {% if template.tag != 'all-volunteer' %}
+            <div class="form-check form-switch pb-1">
+              <label class="custom-control-label" for='checkIsRecurring'><strong>This is a recurring event.</strong></label>
+              <input class="form-check-input" type="checkbox" id="checkIsRecurring" name="isRecurring"/>
+            </div>
+            {% endif %}
+          </div>
         </div>
         {% endif %}
         <!-- Start and End Datepickers -->
