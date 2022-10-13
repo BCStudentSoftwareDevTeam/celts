@@ -49,7 +49,11 @@ def trainedParticipants(programID, currentTerm):
 def sendUserData(bnumber, eventId, programid):
     """Accepts scan input and signs in the user. If user exists or is already
     signed in will return user and login status"""
-    signedInUser = User.get(User.bnumber == bnumber)
+    try:
+        signedInUser = User.get(User.bnumber == bnumber)
+    except Exception as e:
+        print(e)
+        return None, "does not exist"
     event = Event.get_by_id(eventId)
     if not isEligibleForProgram(programid, signedInUser):
         userStatus = "banned"
