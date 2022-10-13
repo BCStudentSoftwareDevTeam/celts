@@ -20,14 +20,24 @@ def trainedParticipants(programID, currentTerm):
 
     # Reset program eligibility each term for all other trainings
 
+    # otherTrainingEvents = (Event.select(Event.id)
+    #         .join(ProgramEvent).switch()
+    #         .join(Term)
+    #         .where(
+    #             ProgramEvent.program == programID,
+    #             (Event.isTraining | Event.isAllVolunteerTraining),
+    #             Event.term.academicYear == academicYear)
+    #         )
+    otherCeltsSponsoredEvents = Program.get_by_id(11)
     otherTrainingEvents = (Event.select(Event.id)
-            .join(ProgramEvent).switch()
-            .join(Term)
-            .where(
-                ProgramEvent.program == programID,
-                (Event.isTraining | Event.isAllVolunteerTraining),
-                Event.term.academicYear == academicYear)
-            )
+                            .join(Term)
+                            .where(
+                                    (Event.program == programID) | (Event.program == otherCeltsSponsoredEvents),
+                                    (Event.isTraining) | (Event.isAllVolunteerTraining),
+                                    Event.term.academicYear == academicYear
+                                    )
+
+                          )
 
     allTrainingEvents = set(otherTrainingEvents)
     eventTrainingDataList = [participant.user for participant in (
