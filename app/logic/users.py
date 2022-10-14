@@ -79,7 +79,8 @@ def banUser(program_id, username, note, banEndDate, creator):
     noteForDb = Note.create(createdBy = creator,
                              createdOn = datetime.datetime.now(),
                              noteContent = note,
-                             isPrivate = 0)
+                             isPrivate = 0,
+                             noteType = "ban")
 
     ProgramBan.create(program = program_id,
                       user = username,
@@ -99,7 +100,8 @@ def unbanUser(program_id, username, note, creator):
     noteForDb = Note.create(createdBy = creator,
                              createdOn = datetime.datetime.now(),
                              noteContent = note,
-                             isPrivate = 0)
+                             isPrivate = 0,
+                             noteType = "unban")
     ProgramBan.update(endDate = datetime.datetime.now(),
                       unbanNote = noteForDb).where(ProgramBan.program == program_id,
                                                    ProgramBan.user == username,
@@ -123,7 +125,8 @@ def getUserBGCheckHistory(username):
 def addProfileNote(visibility, bonner, noteTextbox, username):
     noteForDb = Note.create(createdBy = g.current_user,
                             createdOn = datetime.datetime.now(),
-                            noteContent = noteTextbox)
+                            noteContent = noteTextbox,
+                            noteType = "profile")
     createProfileNote = ProfileNote.create(user = User.get(User.username == username),
                                            note = noteForDb,
                                            isBonnerNote = bonner,

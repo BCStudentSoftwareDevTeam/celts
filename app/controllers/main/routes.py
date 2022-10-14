@@ -142,7 +142,6 @@ def addNote(username):
     noteTextbox = postData["noteTextbox"] # Contains the notes written for the volunteer
     try:
         bonner = postData["bonner"] # This contains the note left if the volunteer is Bonner Scholoar
-        print("\n\n\n\n\n\n\n"+bonner)
     except:
         bonner = False
     try:

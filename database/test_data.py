@@ -576,42 +576,48 @@ notes = [
         "createdBy": "ramsayb2",
         "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
         "noteContent": "I think the training is put in wrong",
-        "isPrivate":False
+        "isPrivate":False,
+        "noteType": "ban"
     },
     {
         "id": 2,
         "createdBy": "mupotsal",
         "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
         "noteContent": "I agree with your comment on training",
-        "isPrivate":False
+        "isPrivate":False,
+        "noteType": "question"
     },
     {
         "id": 3,
         "createdBy": "mupotsal",
         "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
         "noteContent": "tells bad jokes",
-        "isPrivate": True
+        "isPrivate": True,
+        "noteType": "ban"
     },
     {
         "id": 4,
         "createdBy": "neillz",
         "createdOn": datetime.strptime("2021 11 26","%Y %m %d"),
         "noteContent": "Allergic to water",
-        "isPrivate": False
+        "isPrivate": False,
+        "noteType": "profile"
     },
     {
         "id": 5,
         "createdBy": "neillz",
         "createdOn": datetime.strptime("2021 11 30","%Y %m %d"),
         "noteContent": "Allergic to food",
-        "isPrivate": False
+        "isPrivate": False,
+        "noteType": "profile"
     },
     {
         "id": 6,
         "createdBy": "ramsayb2",
         "createdOn": datetime.strptime("2021 11 30","%Y %m %d"),
         "noteContent": "Run when in sight",
-        "isPrivate": False
+        "isPrivate": False,
+        "noteType": "profile"
     }
 ]
 Note.insert_many(notes).on_conflict_replace().execute()
@@ -1051,7 +1057,7 @@ cohort = [
         "user": "neillz"
     },
     {
-        "year": "2023",
+        "year": "2020",
         "user": "neillz"
     },
     {
@@ -1063,7 +1069,7 @@ cohort = [
         "user": "ramsayb2"
     },
     {
-        "year": "2023",
+        "year": "2020",
         "user": "ramsayb2"
     }
 ]
