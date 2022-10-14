@@ -30,7 +30,7 @@
 <div class="accordion" id="userProfile">
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingOne">
-      {% set focus = "open" if visibleAccordion == "upcoming" or volunteer.username == g.current_user.username and not visibleAccordion =="programTable" and not visibleAccordion =="background" else "collapsed" %}
+      {% set focus = "open" if visibleAccordion == "upcoming" or volunteer.username == g.current_user.username and not visibleAccordion =="programTable" and not visibleAccordion == "notes" and not visibleAccordion =="background" else "collapsed" %}
       <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
         Upcoming Events
       </button>
@@ -403,7 +403,7 @@
   <!-- End Notes section -->
   <!-- Add Volunteer Profile Notes Modal -->
   <div class="modal fade" id="noteModal" tabindex="-1" aria-labelledby="banVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
-    <form action="/{{volunteer.username}}/addNote" method="post">
+    <form id="addNoteForm" action="/{{volunteer.username}}/addNote" method="post">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -429,13 +429,13 @@
                 </div><br>
               </div>
               <div class="form-group input-group-x form-outline ui-widget">
-                <textarea required name="noteTextbox" rows="8" cols="80" type="input" id="banNoteTxtArea" class="form-control" placeholder="This will add a note to a user's profile." ></textarea>
+                <textarea required name="noteTextbox" rows="8" cols="80" type="input" id="addNoteTextArea" class="form-control" placeholder="This will add a note to a user's profile." ></textarea>
               </div>
             </div>
           </div>
     		  <div class="modal-footer justify-content-between">
       			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      			<button id="notesSaveButton" type="submit" class="btn btn-primary">Save</button>
+      			<button id="notesSaveButton" data-username="{{volunteer.username}}" type="submit" class="btn btn-primary">Save</button>
     		  </div>
         </div>
       </div>
