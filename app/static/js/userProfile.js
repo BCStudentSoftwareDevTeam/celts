@@ -200,10 +200,7 @@ $(document).ready(function(){
         }
     });
 
-  $("#updatePhone").on('click', function() {
-    var username = $(this).data("username")
-    validatePhoneNumber(this, "#phoneInput", username)
-  });
+    setupPhoneNumber("#updatePhone", "#phoneInput")
 });
 
 function updateManagers(el, volunteer_username ){// retrieve the data of the student staff and program id if the boxes are checked or not
