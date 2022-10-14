@@ -74,7 +74,7 @@ $(document).ready(function(){
       url:  "/" + username + "/deleteNote",
       data: {"id": noteid},
       success: function(response) {
-        location.reload();
+        reloadWithAccordion("notes")
       }
     });
   });

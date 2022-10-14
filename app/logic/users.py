@@ -1,3 +1,5 @@
+from app.models.user import User
+from app.models.event import Event
 from app.models.programBan import ProgramBan
 from app.models.interest import Interest
 from app.models.note import Note
@@ -22,9 +24,8 @@ def isEligibleForProgram(program, user):
     :return: True if the user is not banned and meets the requirements, and False otherwise
     """
     now = datetime.datetime.now()
-    if (ProgramBan.select().where(ProgramBan.user == user, ProgramBan.program == program, ProgramBan.endDate > now).exists()):
+    if (ProgramBan.select().where(ProgramBan.user == user, ProgramBan.program == program, ProgramBan.endDate > now, ProgramBan.unbanNote == None).exists()):
         return False
-
     return True
 
 def addUserInterest(program_id, username):
@@ -50,6 +51,19 @@ def removeUserInterest(program_id, username):
         interestToDelete.delete_instance()
     return True
 
+def getBannedUsers(program):
+    """
+    This function returns users banned from a program.
+    """
+    return ProgramBan.select().where(ProgramBan.program == program, ProgramBan.unbanNote == None)
+
+def isBannedFromEvent(username, eventId):
+    """
+    This function returns whether the user is banned from the program associated with an event.
+    """
+    program = Event.get_by_id(eventId).singleProgram
+    user = User.get(User.username == username)
+    return not isEligibleForProgram(program, user)
 
 def banUser(program_id, username, note, banEndDate, creator):
     """
