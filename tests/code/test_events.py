@@ -171,7 +171,7 @@ def test_preprocessEventData_term():
 @pytest.mark.integration
 def test_correctValidateNewEventData():
 
-    eventData =  {'isRsvpRequired': False, 'isService': False,
+    eventData =  {'isFoodProvided': False, 'isRsvpRequired': False, 'isService': False,
                   'isTraining': True,'isRecurring': False,'startDate': parser.parse('1999-12-12'),
                   'endDate': parser.parse('2022-06-12'),'programId': 1,'location': "a big room",
                   'timeEnd': '04:00', 'timeStart': '06:00','description': "Empty Bowls Spring 2021",
@@ -183,7 +183,7 @@ def test_correctValidateNewEventData():
 
 @pytest.mark.integration
 def test_wrongValidateNewEventData():
-    eventData =  {'isRsvpRequired':False, 'isService':False,
+    eventData =  {'isFoodProvided': False, 'isRsvpRequired':False, 'isService':False,
                   'isTraining':True, 'isRecurring':False, 'programId':1, 'location':"a big room",
                   'timeEnd':'12:00', 'timeStart':'15:00', 'description':"Empty Bowls Spring 2021",
                   'name':'Empty Bowls Spring Event 1','term':1,'contactName': "Big Mom", 'contactEmail': 'weeeDDDINgCAKKe@gmail.com'}
@@ -292,7 +292,7 @@ def test_attemptSaveEvent():
 @pytest.mark.integration
 def test_saveEventToDb_create():
 
-    eventInfo =  {'isRsvpRequired':False, 'isService':False,
+    eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'isService':False,
                   'isTraining':True, 'isRecurring':False,'isAllVolunteerTraining': True, 'recurringId':None, 'startDate': parser.parse('2021-12-12'),
                    'endDate':parser.parse('2022-06-12'), 'location':"a big room",
                    'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
@@ -327,7 +327,7 @@ def test_saveEventToDb_create():
 def test_saveEventToDb_recurring():
     with mainDB.atomic() as transaction:
         with app.app_context():
-            eventInfo =  {'isRsvpRequired':False, 'isService':False, 'isAllVolunteerTraining': True,
+            eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'isService':False, 'isAllVolunteerTraining': True,
                           'isTraining':True, 'isRecurring': True, 'recurringId':1, 'startDate': parser.parse('12-12-2021'),
                            'endDate':parser.parse('01-18-2022'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
@@ -359,6 +359,7 @@ def test_saveEventToDb_update():
                         "timeStart": "06:00 PM",
                         "timeEnd": "09:00 PM",
                         "location": "House",
+                        'isFoodProvided': False,
                         'isRecurring': True,
                         'recurringId': 2,
                         'isTraining': True,
@@ -387,6 +388,7 @@ def test_saveEventToDb_update():
                         "timeStart": "06:00 PM",
                         "timeEnd": "09:00 PM",
                         "location": "House",
+                        'isFoodProvided': False,
                         'isRecurring': True,
                         'recurringId': 3,
                         'isTraining': True,
@@ -441,7 +443,8 @@ def test_deleteEvent():
         transaction.rollback()
 
         # creates a recurring event
-        eventInfo =  {'isRsvpRequired': False,
+        eventInfo =  {'isFoodProvided': False,
+                      'isRsvpRequired': False,
                       'isService': False,
                       'isAllVolunteerTraining': True,
                       'isTraining': True,
