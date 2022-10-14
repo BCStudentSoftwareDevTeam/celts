@@ -32,7 +32,6 @@ function msgToast(head, body){
   $("#toast-header").html(head)
   $("#toast-body").html(body)
   toastList[0].show()
-  $("#liveToast").delay(2000).fadeOut();
 }
 
 function setupPhoneNumber(editButtonId, phoneInput){
