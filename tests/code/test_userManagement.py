@@ -67,21 +67,24 @@ def test_changeProgramInfo():
         eventName = "Test Event Name"
         contactName = "New Test Name"
         contactEmail = 'newtest@email'
+        location = "Danforth Tech"
         currentProgramInfo = Program.get_by_id(programId)
 
         assert currentProgramInfo.programName == "Adopt-a-Grandparent"
         assert currentProgramInfo.contactName == ""
         assert currentProgramInfo.contactEmail == ""
+        assert currentProgramInfo.contactEmail == ""
 
         with app.test_request_context():
             g.current_user = "ramsayb2"
-            changeProgramInfo(eventName, contactEmail, contactName, programId)
+            changeProgramInfo(eventName, contactEmail, contactName, location, programId)
 
         currentProgramInfo = Program.select().where(Program.id==programId).get()
 
         assert currentProgramInfo.programName == eventName
         assert currentProgramInfo.contactName == contactName
         assert currentProgramInfo.contactEmail == contactEmail
+        assert currentProgramInfo.programLocation == location
 
         transaction.rollback()
 

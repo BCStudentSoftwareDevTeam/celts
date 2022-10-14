@@ -70,12 +70,12 @@ def addNextTerm():
 
     return newTerm
 
-def changeProgramInfo(newProgramName, newContactEmail, newContactName, programId):
+def changeProgramInfo(newProgramName, newContactEmail, newContactName, newLocation, programId):
     """Updates the program info with a new sender and email."""
     program = Program.get_by_id(programId)
-    updatedProgram = Program.update({Program.programName:newProgramName,Program.contactEmail: newContactEmail, Program.contactName:newContactName}).where(Program.id==programId)
+    updatedProgram = Program.update({Program.programName:newProgramName,Program.contactEmail: newContactEmail, Program.contactName:newContactName, Program.programLocation:newLocation}).where(Program.id==programId)
     updatedProgram.execute()
-    createLog(f"{program.programName}'s settings changed to: Name: {newProgramName}; Reply-to-email: {newContactEmail}; Sender name: {newContactName}.")
+    createLog(f"{program.programName}'s settings changed to: Name: {newProgramName}; Reply-to-email: {newContactEmail}; Sender name: {newContactName}; location: {newLocation}")
 
     return (f'Program email info updated')
 

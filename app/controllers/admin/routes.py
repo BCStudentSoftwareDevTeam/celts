@@ -91,9 +91,10 @@ def createEvent(templateid, programid=None):
         eventData['contactName'] = "CELTS Admin"
         eventData['contactEmail'] = app.config['celts_admin_contact']
         if program:
-            if program.contactName and program.contactEmail:
+            if program.contactName or program.contactEmail or program.programLocation:
                 eventData['contactName'] = program.contactName
                 eventData['contactEmail'] = program.contactEmail
+                eventData['location'] = program.programLocation
 
     # Try to save the form
     if request.method == "POST":

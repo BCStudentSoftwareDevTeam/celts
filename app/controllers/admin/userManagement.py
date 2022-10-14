@@ -79,6 +79,7 @@ def updateProgramInfo(programID):
             changeProgramInfo(programInfo["programName"],  #calls logic function to add data to database
                                     programInfo["contactEmail"],
                                     programInfo["contactName"],
+                                    programInfo["location"],
                                     programID)
             flash("Program updated", "success")
             return redirect(url_for("admin.userManagement", accordion="program"))
