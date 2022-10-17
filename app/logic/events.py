@@ -254,15 +254,6 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
                     .order_by(Event.startDate, Event.name).execute() # keeps the order of events the same when the dates are the same
                     )
 
-    bannedEvents = list(Event.select()
-                             .join(ProgramEvent)
-                             .join(Program)
-                             .join(ProgramBan)
-                             .where(ProgramEvent.program_id == ProgramBan.program_id,
-                                    ProgramBan.user == user,
-                                    ProgramBan.unbanNote == None,
-                                    Event.startDate >= asOf))
-
     events_list = []
     shown_recurring_event_list = []
 
@@ -276,10 +267,25 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
         else:
             events_list.append(event)
 
-    # Remove all events the user is banned from from their upcoming events
-    events_list = [event for event in events_list if event not in bannedEvents]
+    banned_events_list = getBannedEventsForUser(user, asOf)
+    events_list = [event for event in events_list if event not in banned_events_list]
 
     return events_list
+
+def getBannedEventsForUser(user, asOf=datetime.datetime.now()):
+    """
+        Get all of the events a user is banned from.
+    """
+    bannedEvents = list(Event.select()
+                             .join(ProgramEvent)
+                             .join(Program)
+                             .join(ProgramBan)
+                             .where(ProgramEvent.program_id == ProgramBan.program_id,
+                                    ProgramBan.user == user,
+                                    ProgramBan.unbanNote == None,
+                                    Event.startDate >= asOf))
+
+    return bannedEvents
 
 def getParticipatedEventsForUser(user):
     """

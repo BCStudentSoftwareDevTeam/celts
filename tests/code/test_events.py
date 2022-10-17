@@ -546,28 +546,28 @@ def test_upcomingEvents():
                                              endDate = datetime.date(2021,12,13))
 
         newRecurringEvent = Event.create(name = "Recurring Event Test",
-                                term = 2,
-                                description = "Test upcoming program event.",
-                                location = "The sun",
-                                startDate = datetime.date(2021,12,12),
-                                endDate = datetime.date(2021,12,14),
-                                recurringId = 1)
+                                         term = 2,
+                                         description = "Test upcoming program event.",
+                                         location = "The sun",
+                                         startDate = datetime.date(2021,12,12),
+                                         endDate = datetime.date(2021,12,14),
+                                         recurringId = 1)
 
         newRecurringSecond = Event.create(name = "Recurring second event",
-                                term = 2,
-                                description = "Test upcoming program event.",
-                                location = "The sun",
-                                startDate = datetime.date(2021,12,14),
-                                endDate = datetime.date(2021,12,15),
-                                recurringId = 1)
+                                         term = 2,
+                                         description = "Test upcoming program event.",
+                                         location = "The sun",
+                                         startDate = datetime.date(2021,12,14),
+                                         endDate = datetime.date(2021,12,15),
+                                         recurringId = 1)
 
         newRecurringDifferentId = Event.create(name = "Recurring different Id",
-                                term = 2,
-                                description = "Test upcoming program event.",
-                                location = "The sun",
-                                startDate = datetime.date(2021,12,13),
-                                endDate = datetime.date(2021,12,13),
-                                recurringId = 2)
+                                               term = 2,
+                                               description = "Test upcoming program event.",
+                                               location = "The sun",
+                                               startDate = datetime.date(2021,12,13),
+                                               endDate = datetime.date(2021,12,13),
+                                               recurringId = 2)
 
         # Create a new Program to create the new Program Event off of so the
         # user can mark interest for it
@@ -626,7 +626,50 @@ def test_upcomingEvents():
         eventsInUserRsvp = getUpcomingEventsForUser(user, asOf = testDate)
         assert eventsInUserRsvp == [noProgram]
 
+        transaction.rollback()
 
+@pytest.mark.integration
+def test_bannedEventsForUser():
+    with mainDB.atomic() as transaction:
+        testDate = datetime.datetime.strptime("2021-08-01 05:00","%Y-%m-%d %H:%M")
+        # Create a test User to ban/unban from events
+        testUser = User.create(username = 'usrtst',
+                               firstName = 'Test',
+                               lastName = 'User',
+                               bnumber = '03522492',
+                               email = 'usert@berea.deu',
+                               isStudent = True)
+
+        newProgramEvent = Event.create(name = "Ban testUser from this program event",
+                                       term = 2,
+                                       description = "Test upcoming program event.",
+                                       location = "The sun",
+                                       startDate = datetime.date(2021,12,13),
+                                       endDate = datetime.date(2021,12,13),
+                                       recurringId = 2)
+
+
+        newProgram = Program.create(id = 13,
+                                    programName = "testUser is Banned from this program",
+                                    isStudentLed = False,
+                                    isBonnerScholars = False,
+                                    contactEmail = "test@email",
+                                    contactName = "testName")
+
+        ProgramEvent.create(program = newProgram, event = newProgramEvent)
+        addUserInterest(newProgram.id, testUser)
+
+        bannedEvents = getBannedEventsForUser(testUser, asOf = testDate)
+        upcomingEvents = getUpcomingEventsForUser(testUser, asOf = testDate)
+        assert bannedEvents == []
+        assert newProgramEvent in upcomingEvents
+
+        banUser(newProgram.id, testUser.username, "test Banned Event", "2022-11-29", "ramsayb2")
+        bannedEvents = getBannedEventsForUser(testUser, asOf = testDate)
+        upcomingEvents = getUpcomingEventsForUser(testUser, asOf = testDate)
+        assert bannedEvents != []
+        assert newProgramEvent in bannedEvents
+        assert newProgramEvent not in upcomingEvents
 
         transaction.rollback()
 
