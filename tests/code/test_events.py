@@ -632,37 +632,52 @@ def test_upcomingEvents():
 def test_bannedEventsForUser():
     with mainDB.atomic() as transaction:
         testDate = datetime.datetime.strptime("2021-08-01 05:00","%Y-%m-%d %H:%M")
-        # Create a test User to ban/unban from events
+        # Create a test User
         testUser = User.create(username = 'usrtst',
                                firstName = 'Test',
                                lastName = 'User',
                                bnumber = '03522492',
                                email = 'usert@berea.deu',
                                isStudent = True)
-
+        # Create program event the test user will be banned from
         newProgramEvent = Event.create(name = "Ban testUser from this program event",
                                        term = 2,
-                                       description = "Test upcoming program event.",
+                                       description = "Test banned event.",
                                        location = "The sun",
                                        startDate = datetime.date(2021,12,13),
-                                       endDate = datetime.date(2021,12,13),
-                                       recurringId = 2)
-
-
+                                       endDate = datetime.date(2021,12,13))
+        # Create a program event the test user will not be banned from
+        notBannedEvent = Event.create(name = "Program event test user will not be banned from",
+                                       term = 2,
+                                       description = "Test not banned event.",
+                                       location = "The moon",
+                                       startDate = datetime.date(2021,12,14),
+                                       endDate = datetime.date(2021,12,14))
+        # Create test program the test user will be banned from
         newProgram = Program.create(id = 13,
                                     programName = "testUser is Banned from this program",
                                     isStudentLed = False,
                                     isBonnerScholars = False,
                                     contactEmail = "test@email",
                                     contactName = "testName")
+        # Create test program the test user will not be banned from
+        notBannedProgram = Program.create(id = 14,
+                                          programName = "testUser is Banned from this program",
+                                          isStudentLed = False,
+                                          isBonnerScholars = False,
+                                          contactEmail = "test@email",
+                                          contactName = "testName")
 
         ProgramEvent.create(program = newProgram, event = newProgramEvent)
+        ProgramEvent.create(program = notBannedProgram, event =  notBannedEvent)
         addUserInterest(newProgram.id, testUser)
+        addUserInterest(notBannedProgram.id, testUser)
 
         bannedEvents = getBannedEventsForUser(testUser, asOf = testDate)
         upcomingEvents = getUpcomingEventsForUser(testUser, asOf = testDate)
         assert bannedEvents == []
         assert newProgramEvent in upcomingEvents
+        assert notBannedEvent in upcomingEvents
 
         banUser(newProgram.id, testUser.username, "test Banned Event", "2022-11-29", "ramsayb2")
         bannedEvents = getBannedEventsForUser(testUser, asOf = testDate)
@@ -670,6 +685,7 @@ def test_bannedEventsForUser():
         assert bannedEvents != []
         assert newProgramEvent in bannedEvents
         assert newProgramEvent not in upcomingEvents
+        assert notBannedEvent in upcomingEvents
 
         transaction.rollback()
 
