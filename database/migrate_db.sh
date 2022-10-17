@@ -28,7 +28,7 @@ pem add app.models.backgroundCheckType.BackgroundCheckType
 pem add app.models.adminLogs.AdminLogs
 pem add app.models.eventFile.EventFile
 pem add app.models.bonnerCohort.BonnerCohort
-
+pem add app.models.dietaryRestriction.DietaryRestriction
 
 pem watch
 pem migrate

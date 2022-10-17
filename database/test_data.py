@@ -26,6 +26,7 @@ from app.models.backgroundCheck import BackgroundCheck
 from app.models.adminLogs import AdminLogs
 from app.models.emailLog import EmailLog
 from app.models.eventFile import EventFile
+from app.models.dietaryRestriction import DietaryRestriction
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -1016,3 +1017,11 @@ files = [
     }
 ]
 EventFile.insert_many(files).on_conflict_replace().execute
+
+diets = [
+    {
+    "user": "ramsayb2",
+    "dietRestriction": "diary"
+    }
+]
+DietaryRestriction.insert_many(diets).on_conflict_replace().execute()

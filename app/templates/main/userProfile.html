@@ -329,4 +329,30 @@
   </form>
 </div>
 <!-- End Ban or Unban Modal -->
+<!-- Dietary Restriction Table -->
+<div class="accordion-item">
+  <h3 class="accordion-header" id="headingSix">
+    {% set focus = "open" if visibleAccordion == "dietaryInformation" else "collapsed" %}
+    <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+        Dietary Restrictions
+    </button>
+
+  </h3>
+  {% set show = "show" if visibleAccordion == "background" else "" %}
+  <div id="collapseSix" class="accordion-collapse collapse {{show}}" aria-labelledby="headingSix" data-bs-parent="#userProfile">
+    <div class="accordion-body">
+      <div class="container">
+          <form>
+            <div class="form-group">
+              <label for="usr">Please enter any dietary restrictions you have:</label>
+              <textarea class="form-control" id="diet"></textarea>
+            </div>
+            <br>
+            <button type="button" class="saveDiet btn btn-primary">Save</button>
+          </form>
+      </div>
+  </div>
+
+  </div>
+</div>
 {% endblock %}
