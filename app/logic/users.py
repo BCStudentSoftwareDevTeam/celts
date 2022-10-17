@@ -10,7 +10,7 @@ import datetime
 from peewee import JOIN
 from dateutil import parser
 
-
+# hello there
 def isEligibleForProgram(program, user):
     """
     Verifies if a given user is eligible for a program by checking if they are
