@@ -274,7 +274,12 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
 
 def getBannedEventsForUser(user, asOf=datetime.datetime.now()):
     """
-        Get all of the events a user is banned from.
+        Returns a list of events that a user is banned of as of whatever
+        the current day is.
+        :param user: a username or User object
+        :param asOf: The date to use when determining future and past events.
+                      Used in testing, defaults to the current timestamp.
+        :return: A list of Event objects
     """
     bannedEvents = list(Event.select()
                              .join(ProgramEvent)
