@@ -120,7 +120,7 @@ $(document).ready(function(){
              "endDate":$("#banEndDatepicker").val() //Expected to be a date in this format YYYY-MM-DD
             },
       success: function(response) {
-        location.reload();
+        reloadWithAccordion("programTable")
       }
     });
   });

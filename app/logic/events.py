@@ -236,23 +236,25 @@ def getOtherEvents(term):
 
 def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
     """
-        Get the list of upcoming events that the user is interested in.
+        Get the list of upcoming events that the user is interested in as long
+        as they are not banned from the program that the event is a part of.
         :param user: a username or User object
         :param asOf: The date to use when determining future and past events.
                       Used in testing, defaults to the current timestamp.
         :return: A list of Event objects
     """
 
-    events =  list(Event.select()
-                    .join(ProgramEvent, JOIN.LEFT_OUTER)
-                    .join(Interest, JOIN.LEFT_OUTER, on=(ProgramEvent.program == Interest.program))
-                    .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
-                    .where(Event.startDate >= asOf,
-                           (Interest.user == user) | (EventRsvp.user == user))
-                    .distinct() # necessary because of multiple programs
-                    .order_by(Event.startDate, Event.name).execute() # keeps the order of events the same when the dates are the same
-                    )
-
+    events =  (Event.select()
+                       .join(ProgramEvent, JOIN.LEFT_OUTER)
+                       .join(ProgramBan, JOIN.LEFT_OUTER, on=((ProgramBan.program == ProgramEvent.program) & (ProgramBan.user == user)))
+                       .join(Interest, JOIN.LEFT_OUTER, on=(ProgramEvent.program == Interest.program))
+                       .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
+                       .where(Event.startDate >= asOf,
+                              (Interest.user == user) | (EventRsvp.user == user),
+                              ProgramBan.user.is_null(True) | (ProgramBan.endDate < asOf))
+                       .distinct() # necessary because of multiple programs
+                       .order_by(Event.startDate, Event.name)
+                     )
 
     events_list = []
     shown_recurring_event_list = []
@@ -266,6 +268,7 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
 
         else:
             events_list.append(event)
+
 
     return events_list
 
