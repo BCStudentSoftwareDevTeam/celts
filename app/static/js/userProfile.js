@@ -72,18 +72,18 @@ $(document).ready(function(){
     )
   });
 
-// action="/{{volunteer.username}}/addNote"  method="post"
   $('#addNoteForm').submit(function(event) {
     event.preventDefault()
-    let username = $(this).data('username')
-    console.log($("#bonnerInput").val())
+    let username = $("#notesSaveButton").data('username')
     $.ajax({
       method: "POST",
-      url:  $("#addNoteForm").attr('action'),
-      data: {"visibility": $("#noteDropdown").val(),
+      url:  "/profile/addNote",
+      data: {"username": username,
+             "visibility": $("#noteDropdown").val(),
              "noteTextbox": $("#addNoteTextArea").val(),
              "bonner": $("#bonnerInput").val()},
       success: function(response) {
+        console.log(response)
         reloadWithAccordion("notes")
       }
     });

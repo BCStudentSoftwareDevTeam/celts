@@ -132,15 +132,17 @@ def viewUsersProfile(username):
             )
     abort(403)
 
-@main_bp.route('/<username>/addNote', methods=['POST'])
-def addNote(username):
+@main_bp.route('/profile/addNote', methods=['POST'])
+def addNote():
     """
     This function adds a note to the user's profile.
     """
     postData = request.form
+    print("\n\n\n\np", postData["username"], "\n\n\n\n\n\n")
     print("\n\n\n\np", postData, "\n\n\n\n\n\n")
     visibility = postData["visibility"] # Contains the note's visibility
     noteTextbox = postData["noteTextbox"] # Contains the notes written for the volunteer
+    username = postData["username"]
     try:
         if postData["bonner"] == "on":
             bonner = True  # This contains the note left if the volunteer is Bonner Scholar

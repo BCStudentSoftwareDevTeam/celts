@@ -106,12 +106,12 @@
   <!-- Start Program Table -->
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingThree">
-      {% set focus = "open" if visibleAccordion == "programTable" or volunteer.username != g.current_user.username and not visibleAccordion =="background" else "collapsed" %}
+      {% set focus = "open" if visibleAccordion == "programTable" or volunteer.username != g.current_user.username and not visibleAccordion =="notes" and not visibleAccordion =="background" else "collapsed" %}
       <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
           Programs
       </button>
     </h3>
-    {% set show = "show" if visibleAccordion == "programTable" or volunteer.username != g.current_user.username and not visibleAccordion =="background" else "" %}
+    {% set show = "show" if visibleAccordion == "programTable" or volunteer.username != g.current_user.username and not visibleAccordion =="background" and not visibleAccordion =="notes" else "" %}
     <div id="collapseThree" class="accordion-collapse collapse {{show}}" aria-labelledby="headingThree" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="table-responsive">
@@ -295,10 +295,10 @@
   {% endif %}
   <!-- End Background Check Table -->
   <!-- Start Notes section -->
-    <div class="accordion-item">
+    <div class="accordion-item" id="accordion5">
       <h3 class="accordion-header" id="headingSix">
         {% set focus = "open" if visibleAccordion == "notes" else "collapsed" %}
-        <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+        <button class="accordion-button {{focus}}" type="button" data-parent="#accordion5" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
             Notes
         </button>
       </h3>
@@ -402,8 +402,8 @@
   </div>
   <!-- End Notes section -->
   <!-- Add Volunteer Profile Notes Modal -->
-  <div class="modal fade" id="noteModal" tabindex="-1" aria-labelledby="banVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
-    <form id="addNoteForm" action="/{{volunteer.username}}/addNote" method="post">
+  <div class="modal fade" id="noteModal" tabindex="-1" aria-labelledby="addProfileNoteModalLabel" aria-hidden="true" style="width:-60px;">
+    <form id="addNoteForm">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
