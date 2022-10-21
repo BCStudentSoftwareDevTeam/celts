@@ -244,16 +244,17 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
         :return: A list of Event objects
     """
 
-    events =  list(Event.select()
-                    .join(ProgramEvent, JOIN.LEFT_OUTER)
-                    .join(Interest, JOIN.LEFT_OUTER, on=(ProgramEvent.program == Interest.program))
-                    .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
-                    .where(Event.startDate >= asOf,
-                           (Interest.user == user) | (EventRsvp.user == user))
-                    .distinct() # necessary because of multiple programs
-                    .order_by(Event.startDate, Event.name).execute() # keeps the order of events the same when the dates are the same
-                    )
-
+    events =  (Event.select()
+                       .join(ProgramEvent, JOIN.LEFT_OUTER)
+                       .join(ProgramBan, JOIN.LEFT_OUTER, on=((ProgramBan.program == ProgramEvent.program) & (ProgramBan.user == user)))
+                       .join(Interest, JOIN.LEFT_OUTER, on=(ProgramEvent.program == Interest.program))
+                       .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
+                       .where(Event.startDate >= asOf,
+                              (Interest.user == user) | (EventRsvp.user == user),
+                              ProgramBan.user.is_null(True) | (ProgramBan.endDate.is_null(False) & (ProgramBan.endDate < asOf)))
+                       .distinct() # necessary because of multiple programs
+                       .order_by(Event.startDate, Event.name)
+                     )
     events_list = []
     shown_recurring_event_list = []
 
@@ -267,30 +268,8 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
         else:
             events_list.append(event)
 
-    banned_events_list = getBannedEventsForUser(user, asOf)
-    events_list = [event for event in events_list if event not in banned_events_list]
 
     return events_list
-
-def getBannedEventsForUser(user, asOf=datetime.datetime.now()):
-    """
-        Returns a list of events that a user is banned of as of whatever
-        the current day is.
-        :param user: a username or User object
-        :param asOf: The date to use when determining future and past events.
-                      Used in testing, defaults to the current timestamp.
-        :return: A list of Event objects
-    """
-    bannedEvents = list(Event.select()
-                             .join(ProgramEvent)
-                             .join(Program)
-                             .join(ProgramBan)
-                             .where(ProgramEvent.program_id == ProgramBan.program_id,
-                                    ProgramBan.user == user,
-                                    ProgramBan.unbanNote == None,
-                                    Event.startDate >= asOf))
-
-    return bannedEvents
 
 def getParticipatedEventsForUser(user):
     """

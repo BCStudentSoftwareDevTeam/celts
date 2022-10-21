@@ -2,7 +2,7 @@ import pytest
 from flask import g
 from app import app
 from peewee import DoesNotExist, OperationalError, IntegrityError
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil import parser
 from werkzeug.datastructures import MultiDict
 
@@ -15,6 +15,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.interest import Interest
 from app.models.eventRsvp import EventRsvp
+from app.models.note import Note
 
 from app.logic.events import *
 from app.logic.volunteers import addVolunteerToEventRsvp, updateEventParticipants
@@ -512,38 +513,39 @@ def test_deleteEvent():
 def test_upcomingEvents():
     with mainDB.atomic() as transaction:
         testDate = datetime.datetime.strptime("2021-08-01 05:00","%Y-%m-%d %H:%M")
+        dayBeforeTestDate = testDate - timedelta(days=1)
 
         # Create a user to run the tests with
         user = User.create(username = 'usrtst',
-                              firstName = 'Test',
-                              lastName = 'User',
-                              bnumber = '03522492',
-                              email = 'usert@berea.deu',
-                              isStudent = True)
+                           firstName = 'Test',
+                           lastName = 'User',
+                           bnumber = '03522492',
+                           email = 'usert@berea.deu',
+                           isStudent = True)
 
         # Create an event that is not a part of a program the user can RSVP to
         noProgram = Event.create(name = "Upcoming event with no program",
-                                term = 2,
-                                description = "Test upcoming no program event.",
-                                location = "The moon",
-                                startDate = datetime.date(2021,12,12),
-                                endDate = datetime.date(2021,12,13))
+                                 term = 2,
+                                 description = "Test upcoming no program event.",
+                                 location = "The moon",
+                                 startDate = testDate,
+                                 endDate = testDate + timedelta(days=1))
 
         # Create a Program Event to show up when the user marks interest in a
         # new program
         newProgramEvent = Event.create(name = "Upcoming event with program",
-                                term = 2,
-                                description = "Test upcoming program event.",
-                                location = "The sun",
-                                startDate = datetime.date(2021,12,12),
-                                endDate = datetime.date(2021,12,13))
+                                      term = 2,
+                                      description = "Test upcoming program event.",
+                                      location = "The sun",
+                                      startDate = testDate,
+                                      endDate = testDate + timedelta(days=1))
 
         newBannedProgramEvent = Event.create(name = "Upcoming event with banned program",
                                              term = 2,
                                              description = "Test upcoming banned program event.",
                                              location = "The moon",
-                                             startDate = datetime.date(2021,12,12),
-                                             endDate = datetime.date(2021,12,13))
+                                             startDate = testDate,
+                                             endDate = testDate + timedelta(days=1))
 
         newRecurringEvent = Event.create(name = "Recurring Event Test",
                                          term = 2,
@@ -593,7 +595,7 @@ def test_upcomingEvents():
         # User has not RSVPd and is Interested
         addUserInterest(programForInterest.id, user)
         addUserInterest(programForBanning.id, user)
-        eventsInUserInterestedProgram = getUpcomingEventsForUser(user, asOf = testDate)
+        eventsInUserInterestedProgram = getUpcomingEventsForUser(user, testDate)
 
         assert newProgramEvent in eventsInUserInterestedProgram
         assert newRecurringDifferentId in eventsInUserInterestedProgram
@@ -602,19 +604,27 @@ def test_upcomingEvents():
 
         # Programs the user is banned from do not have their events showing up in
         # their upcoming events
-        banUser(programForBanning.id, user.username, "Test banned program", "2022-11-29", "ramsayb2")
-        eventsUserNotBannedFrom = getUpcomingEventsForUser(user, asOf = testDate)
+        banUser(programForBanning.id, user.username, "Test banned program", testDate, "ramsayb2")
+        eventsUserNotBannedFrom = getUpcomingEventsForUser(user, testDate)
         assert newBannedProgramEvent in eventsInUserInterestedProgram
         assert newBannedProgramEvent not in eventsUserNotBannedFrom
 
         # Programs the user has been unbanned from do have their events showing up
         # in their upcoming events
-        unbanUser(programForBanning.id, user.username, "Test unbanning program", "ramsayb2")
-        assert newBannedProgramEvent in getUpcomingEventsForUser(user, asOf = testDate)
+        noteForUnban = (Note.create(createdBy = "ramsayb2",
+                                    createdOn = dayBeforeTestDate,
+                                    noteContent = "The test user is unbanned.",
+                                    isPrivate = 0))
+        (ProgramBan.update(endDate = dayBeforeTestDate,
+                           unbanNote = noteForUnban)
+                   .where(ProgramBan.program == programForBanning.id,
+                          ProgramBan.user == user.username))
+
+        assert newBannedProgramEvent in getUpcomingEventsForUser(user, testDate)
 
         # user has RSVPd and is Interested
         EventRsvp.create(event=noProgram, user=user)
-        eventsInUserInterestAndRsvp = getUpcomingEventsForUser(user, asOf = testDate)
+        eventsInUserInterestAndRsvp = getUpcomingEventsForUser(user, testDate)
 
         interestAndRsvp = eventsInUserInterestedProgram + [noProgram]
         for event in eventsInUserInterestedProgram:
@@ -625,67 +635,6 @@ def test_upcomingEvents():
         removeUserInterest(programForBanning.id, user)
         eventsInUserRsvp = getUpcomingEventsForUser(user, asOf = testDate)
         assert eventsInUserRsvp == [noProgram]
-
-        transaction.rollback()
-
-@pytest.mark.integration
-def test_bannedEventsForUser():
-    with mainDB.atomic() as transaction:
-        testDate = datetime.datetime.strptime("2021-08-01 05:00","%Y-%m-%d %H:%M")
-        # Create a test User
-        testUser = User.create(username = 'usrtst',
-                               firstName = 'Test',
-                               lastName = 'User',
-                               bnumber = '03522492',
-                               email = 'usert@berea.deu',
-                               isStudent = True)
-        # Create program event the test user will be banned from
-        newProgramEvent = Event.create(name = "Ban testUser from this program event",
-                                       term = 2,
-                                       description = "Test banned event.",
-                                       location = "The sun",
-                                       startDate = datetime.date(2021,12,13),
-                                       endDate = datetime.date(2021,12,13))
-        # Create a program event the test user will not be banned from
-        notBannedEvent = Event.create(name = "Program event test user will not be banned from",
-                                       term = 2,
-                                       description = "Test not banned event.",
-                                       location = "The moon",
-                                       startDate = datetime.date(2021,12,14),
-                                       endDate = datetime.date(2021,12,14))
-        # Create test program the test user will be banned from
-        newProgram = Program.create(id = 13,
-                                    programName = "testUser is Banned from this program",
-                                    isStudentLed = False,
-                                    isBonnerScholars = False,
-                                    contactEmail = "test@email",
-                                    contactName = "testName")
-        # Create test program the test user will not be banned from
-        notBannedProgram = Program.create(id = 14,
-                                          programName = "testUser is Banned from this program",
-                                          isStudentLed = False,
-                                          isBonnerScholars = False,
-                                          contactEmail = "test@email",
-                                          contactName = "testName")
-
-        ProgramEvent.create(program = newProgram, event = newProgramEvent)
-        ProgramEvent.create(program = notBannedProgram, event =  notBannedEvent)
-        addUserInterest(newProgram.id, testUser)
-        addUserInterest(notBannedProgram.id, testUser)
-
-        bannedEvents = getBannedEventsForUser(testUser, asOf = testDate)
-        upcomingEvents = getUpcomingEventsForUser(testUser, asOf = testDate)
-        assert bannedEvents == []
-        assert newProgramEvent in upcomingEvents
-        assert notBannedEvent in upcomingEvents
-
-        banUser(newProgram.id, testUser.username, "test Banned Event", "2022-11-29", "ramsayb2")
-        bannedEvents = getBannedEventsForUser(testUser, asOf = testDate)
-        upcomingEvents = getUpcomingEventsForUser(testUser, asOf = testDate)
-        assert bannedEvents != []
-        assert newProgramEvent in bannedEvents
-        assert newProgramEvent not in upcomingEvents
-        assert notBannedEvent in upcomingEvents
 
         transaction.rollback()
 
