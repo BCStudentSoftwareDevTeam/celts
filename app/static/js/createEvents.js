@@ -1,13 +1,78 @@
 import searchUser from './searchUser.js'
 
-document.getElementById("inputEventDescription").addEventListener("keypress", function(evt){
-  var words = this.value.split(/\s+/);
-  var numWords = words.length;
-  var maxWords = 350;
-  if(numWords > maxWords){
-    evt.preventDefault();
+function truncateString(str, num) {
+  if (str.length <= num) {
+    return str
   }
-});
+  return str.slice(0, num) + '...'
+}
+
+console.log(truncateString("A-tisket a-tasket A green and yellow basket", 8));
+// $(document).ready(function()
+// {
+//     var wordCounts = {};
+//     $("#word_count").keyup(function() {
+//         var matches = this.value.match(/\b/g);
+//         wordCounts[this.id] = matches ? matches.length / 2 : 0;
+//         var finalCount = 0;
+//         $.each(wordCounts, function(k, v) {
+//             finalCount += v;
+//             // if (finalCount > 10){
+//             //     msgFlash("This is longer than 350 words")
+//             // }
+//         })
+//     }).keyup();
+//  });
+// counter = function() {
+//     var value = $('#text').val();
+//
+//     if (value.length == 0) {
+//         $('#wordCount').html(0);
+//         return;
+//     }
+//
+//     var regex = /\s+/gi;
+//     var wordCount = value.trim().replace(regex, ' ').split(' ').length;
+//     var charCount = value.trim().length;
+//     var charCountNoSpace = value.replace(regex, '').length;
+//
+//     $('#wordCount').html(wordCount);
+//
+// };
+
+
+// function countWords(){
+// 	s = document.getElementById("inputString").value;
+// 	s = s.replace(/(^\s*)|(\s*$)/gi,"");
+// 	s = s.replace(/[ ]{2,}/gi," ");
+// 	s = s.replace(/\n /,"\n");
+// 	document.getElementById("wordcount").value = s.split(' ').length;
+// }
+
+// var calculate = function() {
+//   var string = document.getElementById('inputEventDescription').value;
+//   var length = string.split(/[^\s]+/).length - 1;
+//   var maxWords = 4;
+//   document.getElementById('count').innerHTML = length;
+//   if (length > maxWords){
+//       msgFlash(error);
+//   }
+//
+// };
+// function WordCount(str) {
+//   return str.split(" ").length;
+// }
+//
+// console.log(WordCount("hello world"));
+//
+// document.getElementById("inputEventDescription"){
+//    var words = this.value.split(/\s+/);
+//    var numWords = words.length;
+//    var maxWords = 6;
+//    if(numWords > maxWords){
+//      msgFlash("Chicken");
+//    }
+//  });
 
 // updates max and min dates of the datepickers as the other datepicker changes
 function updateDate(obj) {
@@ -196,6 +261,10 @@ $(document).ready(function() {
         }
         });
     });
+ $("#endDatePicker").change(function(){
+     updateDate(this)
+ });
+
  $("#endDatePicker").change(function(){
      updateDate(this)
  });
