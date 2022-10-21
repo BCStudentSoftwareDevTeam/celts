@@ -68,7 +68,7 @@
     </div>
   </div>
   <!-- End Upcoming Events -->
-  <!-- Start Program History -->
+  <!-- Start Participation History -->
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingTwo">
       {% set focus = "open" if visibleAccordion == "history" else "collapsed" %}
@@ -155,7 +155,7 @@
                {% endif %}
                  <tr>
                    <td><a href="{{row.program.url}}" id="programNameTable">{{row.program.programName}}</a></td>
-                   <td><input class="form-check-input" id="notifyInput" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>
+                   <td><input class="form-check-input notifyInput" id="notifyInput" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>
                    <td>
                        {% if row.completedTraining or not trainingList %}
                            <i class="bi bi-check-lg"></i> &nbsp&nbsp

@@ -1,14 +1,13 @@
 $(document).ready(function(){
   $("#bonnerInput").val("off")
   $("#phoneInput").inputmask('(999)-999-9999');
-  $("#notifyInput").click(function updateInterest(){
+  $(".notifyInput").click(function updateInterest(){
     var programID = $(this).data("programid");
     var username = $(this).data('username');
 
     var interest = $(this).is(':checked');
     var routeUrl = interest ? "addInterest" : "removeInterest";
     interestUrl = "/" + username + "/" + routeUrl + "/" + programID ;
-
     $.ajax({
       method: "POST",
       url: interestUrl,
@@ -83,7 +82,6 @@ $(document).ready(function(){
              "noteTextbox": $("#addNoteTextArea").val(),
              "bonner": $("#bonnerInput").val()},
       success: function(response) {
-        console.log(response)
         reloadWithAccordion("notes")
       }
     });
