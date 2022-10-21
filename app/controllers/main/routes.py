@@ -138,10 +138,14 @@ def addNote(username):
     This function adds a note to the user's profile.
     """
     postData = request.form
+    print("\n\n\n\np", postData, "\n\n\n\n\n\n")
     visibility = postData["visibility"] # Contains the note's visibility
     noteTextbox = postData["noteTextbox"] # Contains the notes written for the volunteer
     try:
-        bonner = postData["bonner"] # This contains the note left if the volunteer is Bonner Scholoar
+        if postData["bonner"] == "on":
+            bonner = True  # This contains the note left if the volunteer is Bonner Scholar
+        else:
+            bonner = False
     except:
         bonner = False
     try:
