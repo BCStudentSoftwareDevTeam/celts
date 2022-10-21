@@ -16,10 +16,13 @@ from app.models.eventRsvp import EventRsvp
 from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
 from app.models.eventFile import EventFile
+from app.models.requirementMatch import RequirementMatch
+from app.models.certificationRequirement import CertificationRequirement
 
 from app.logic.adminLogs import createLog
 from app.logic.utils import format24HourTime
 from app.logic.fileHandler import FileHandler
+from app.logic.certification import updateCertRequirementForEvent
 
 def getEvents(program_id=None):
 
@@ -155,13 +158,14 @@ def saveEventToDb(newEventData):
             # Create or update the event
             if isNewEvent:
                 eventRecord = Event.create(**eventData)
-                # TODO handle multiple programs
                 if 'program' in newEventData:
                     ProgramEvent.create(program=newEventData['program'], event=eventRecord)
             else:
                 eventRecord = Event.get_by_id(newEventData['id'])
                 Event.update(**eventData).where(Event.id == eventRecord).execute()
 
+            if 'certRequirement' in newEventData and newEventData['certRequirement'] != "":
+                updateCertRequirementForEvent(eventRecord, newEventData['certRequirement'])
 
             eventRecords.append(eventRecord)
 
@@ -376,6 +380,7 @@ def preprocessEventData(eventData):
         - checkbaxes should be True or False
         - if term is given, convert it to a model object
         - times should exist be strings in 24 hour format example: 14:40
+        - Look up matching certification requirement if necessary
     """
     ## Process checkboxes
     eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isRecurring', 'isAllVolunteerTraining']
@@ -406,6 +411,18 @@ def preprocessEventData(eventData):
             eventData['term'] = Term.get_by_id(eventData['term'])
         except DoesNotExist:
             eventData['term'] = ''
+
+    # Process requirement
+    if 'certRequirement' in eventData:
+        try:
+            eventData['certRequirement'] = CertificationRequirement.get_by_id(eventData['certRequirement'])
+        except DoesNotExist:
+            eventData['certRequirement'] = ''
+    elif 'id' in eventData:
+        # look up requirement
+        match = RequirementMatch.get_or_none(event=eventData['id'])
+        if match:
+            eventData['certRequirement'] = match.requirement
 
     if 'timeStart' in eventData:
         eventData['timeStart'] = format24HourTime(eventData['timeStart'])

@@ -1,5 +1,5 @@
 from flask import request, render_template, url_for, g, Flask, redirect
-from flask import flash, abort, json, jsonify, session, send_file
+from flask import flash, abort, jsonify, session, send_file
 from peewee import DoesNotExist, fn, IntegrityError
 from playhouse.shortcuts import model_to_dict, dict_to_model
 import json
@@ -21,9 +21,11 @@ from app.models.programEvent import ProgramEvent
 from app.models.adminLogs import AdminLogs
 from app.models.eventFile import EventFile
 from app.models.bonnerCohort import BonnerCohort
+from app.models.certification import Certification
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.adminLogs import createLog
+from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms
 from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents
@@ -76,7 +78,7 @@ def createEvent(templateid, programid=None):
         flash("There was an error with your selection. Please try again or contact Systems Support.", "danger")
         return redirect(url_for("admin.program_picker"))
 
-    # Get the data for the form, from the template or the form submission
+    # Get the data from the form or from the template
     eventData = template.templateData
     if request.method == "POST":
         attachmentFiles = request.files.getlist("attachmentObject")
@@ -84,6 +86,7 @@ def createEvent(templateid, programid=None):
         if fileDoesNotExist:
             attachmentFiles = None
         eventData.update(request.form.copy())
+
     if program:
         eventData["program"] = program
 
@@ -128,10 +131,15 @@ def createEvent(templateid, programid=None):
 
     futureTerms = selectSurroundingTerms(g.current_term, prevTerms=0)
 
+    requirements = []
+    if 'program' in eventData and eventData['program'].isBonnerScholars:
+        requirements = getCertRequirements(Certification.BONNER)
+
     return render_template(f"/admin/{template.templateFile}",
             template = template,
             eventData = eventData,
             futureTerms = futureTerms,
+            requirements = requirements,
             isProgramManager = isProgramManager)
 
 @admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
@@ -146,25 +154,30 @@ def eventDisplay(eventId):
     if request.method == "POST" and not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(event)):
         abort(403)
     eventData = model_to_dict(event, recurse=False)
-    associatedAttachments = EventFile.select().where(EventFile.event == eventId)
+    associatedAttachments = EventFile.select().where(EventFile.event == event)
+
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
         attachmentFiles = request.files.getlist("attachmentObject")
         savedEvents, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
         if savedEvents:
             flash("Event successfully updated!", "success")
-            return redirect(url_for("admin.eventDisplay", eventId = eventId))
+            return redirect(url_for("admin.eventDisplay", eventId = event.id))
         else:
             flash(validationErrorMessage, 'warning')
 
     preprocessEventData(eventData)
+    eventData['program'] = event.singleProgram
     futureTerms = selectSurroundingTerms(g.current_term)
     userHasRSVPed = checkUserRsvp(g.current_user, event)
     isPastEvent = event.isPast
-    eventfiles = FileHandler()
-    program = event.singleProgram
-    filepaths = eventfiles.retrievePath(associatedAttachments, eventId)
-    isProgramManager = g.current_user.isProgramManagerFor(program)
+    filepaths =FileHandler().retrievePath(associatedAttachments, event.id)
+    isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
+
+    requirements = []
+    if eventData['program'] and eventData['program'].isBonnerScholars:
+        requirements = getCertRequirements(Certification.BONNER)
+
     rule = request.url_rule
     if 'edit' in rule.rule:
         if not (g.current_user.isCeltsAdmin or isProgramManager):
@@ -173,6 +186,7 @@ def eventDisplay(eventId):
                                 eventData = eventData,
                                 futureTerms=futureTerms,
                                 isPastEvent = isPastEvent,
+                                requirements = requirements,
                                 userHasRSVPed = userHasRSVPed,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths)
@@ -186,7 +200,7 @@ def eventDisplay(eventId):
         if event.recurringId and len(eventSeriesList) != (eventIndex + 1):
             eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
 
-        userParticipatedEvents = getUserParticipatedEvents(program, g.current_user, g.current_term)
+        userParticipatedEvents = getUserParticipatedEvents(eventData['program'], g.current_user, g.current_term)
         return render_template("eventView.html",
                                 eventData = eventData,
                                 isPastEvent = isPastEvent,
@@ -275,7 +289,8 @@ def manageBonner():
 
     return render_template("/admin/bonnerManagement.html",
                            cohorts=getBonnerCohorts(),
-                           events=getBonnerEvents(g.current_term))
+                           events=getBonnerEvents(g.current_term),
+                           requirements = getCertRequirements(certification=Certification.BONNER))
 
 @admin_bp.route("/bonner/<year>/<method>/<username>", methods=["POST"])
 def updatecohort(year, method, username):
@@ -307,3 +322,12 @@ def bonnerxls():
 
     newfile = makeBonnerXls()
     return send_file(open(newfile, 'rb'), download_name='BonnerStudents.xlsx', as_attachment=True)
+
+@admin_bp.route("/saveRequirements/<certid>", methods=["POST"])
+def saveRequirements(certid):
+    if not g.current_user.isCeltsAdmin:
+        abort(403)
+
+    newRequirements = updateCertRequirements(certid, request.get_json())
+
+    return jsonify([requirement.id for requirement in newRequirements])

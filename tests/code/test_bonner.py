@@ -3,6 +3,7 @@ from datetime import date
 
 from app.models import mainDB
 from app.models.bonnerCohort import BonnerCohort
+
 from app.logic.bonner import getBonnerCohorts
 
 @pytest.mark.integration
@@ -10,6 +11,9 @@ def test_getBonnerCohorts():
 
     with mainDB.atomic() as transaction:
         currentYear = date.today().year
+
+        # reset bonner students
+        BonnerCohort.delete().execute()
 
         # always have the last 5, at least
         cohorts = getBonnerCohorts()

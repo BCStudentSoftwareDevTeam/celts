@@ -5,6 +5,7 @@ This file will need to be changed if the format of models changes (new fields, d
 from datetime import datetime, timedelta
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
+from app.models.bonnerCohort import BonnerCohort
 from app.models.term import Term
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
@@ -27,7 +28,8 @@ from app.models.backgroundCheck import BackgroundCheck
 from app.models.adminLogs import AdminLogs
 from app.models.emailLog import EmailLog
 from app.models.eventFile import EventFile
-from app.models.bonnerCohort import BonnerCohort
+from app.models.certification import Certification
+from app.models.certificationRequirement import CertificationRequirement
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -174,6 +176,104 @@ users = [
 ]
 
 User.insert_many(users).on_conflict_replace().execute()
+
+bonners = [
+    { "year": 2021, "user": "qasema" },
+    { "year": 2021, "user": "neillz" },
+    { "year": 2021, "user": "mupotsal" },
+    { "year": 2022, "user": "khatts" },
+    { "year": 2022, "user": "ayisie" },
+    ]
+
+BonnerCohort.insert_many(bonners).on_conflict_replace().execute()
+
+certs = [
+        { "id": 1, "name": "Bonner" },
+        { "id": 2, "name": "CESC Minor" },
+        { "id": 3, "name": "CPR" },
+        { "id": 4, "name": "Confidentiality" },
+        { "id": 5, "name": "I9" },
+]
+Certification.insert_many(certs).on_conflict_replace().execute()
+
+reqs = [
+        { "id": 1,
+          "certification": 1, 
+          "name": "Bonner Orientation",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 1,
+        },
+        { "id": 2,
+          "certification": 1, 
+          "name": "All Bonner Meeting",
+          "frequency": "term",
+          "isRequired": True,
+          "order": 2,
+        },
+        { "id": 3,
+          "certification": 1, 
+          "name": "First Year Service Trip",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 3,
+        },
+        { "id": 4,
+          "certification": 1, 
+          "name": "Sophomore Exchange",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 4,
+        },
+        { "id": 5,
+          "certification": 1, 
+          "name": "Junior Recommitment",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 5,
+        },
+        { "id": 6,
+          "certification": 1, 
+          "name": "Senior Legacy Training",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 6,
+        },
+        { "id": 7,
+          "certification": 1, 
+          "name": "Senior Presentation of Learning",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 7,
+        },
+        { "id": 8,
+          "certification": 1, 
+          "name": "Bonner Congress",
+          "frequency": "once",
+          "isRequired": False,
+        },
+        { "id": 9,
+          "certification": 1, 
+          "name": "Bonner Student Leadership Institute",
+          "frequency": "once",
+          "isRequired": False,
+        },
+        { "id": 10,
+          "certification": 3, 
+          "name": "CPR Training",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 2,
+        },
+        { "id": 11,
+          "certification": 3, 
+          "name": "Volunteer Training",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 1,
+        },
+]
+CertificationRequirement.insert_many(reqs).on_conflict_replace().execute()
 
 terms = [
     {
