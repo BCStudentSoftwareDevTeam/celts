@@ -38,7 +38,7 @@ function format24to12HourTime(timeStr){
  */
 $(document).ready(function() {
     $("#attachmentObject").fileinput({
-        allowedFileExtensions:["pdf","jpg","png","gif", "csv", "docx"]
+        allowedFileExtensions:["pdf","jpg","png","gif", "csv", "docx", "jpg", "jpeg", "jfif"]
     })
   // Disable button when we are ready to submit
   $("#saveEvent").on('submit',function(event) {
