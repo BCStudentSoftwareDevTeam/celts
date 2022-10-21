@@ -20,7 +20,7 @@ from app.models.note import Note
 from app.logic.events import *
 from app.logic.volunteers import addVolunteerToEventRsvp, updateEventParticipants
 from app.logic.participants import addPersonToEvent
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser
+from app.logic.users import addUserInterest, removeUserInterest, banUser
 
 @pytest.mark.integration
 def test_event_model():
@@ -534,11 +534,11 @@ def test_upcomingEvents():
         # Create a Program Event to show up when the user marks interest in a
         # new program
         newProgramEvent = Event.create(name = "Upcoming event with program",
-                                      term = 2,
-                                      description = "Test upcoming program event.",
-                                      location = "The sun",
-                                      startDate = testDate,
-                                      endDate = testDate + timedelta(days=1))
+                                       term = 2,
+                                       description = "Test upcoming program event.",
+                                       location = "The sun",
+                                       startDate = testDate,
+                                       endDate = testDate + timedelta(days=1))
 
         newBannedProgramEvent = Event.create(name = "Upcoming event with banned program",
                                              term = 2,
@@ -556,12 +556,12 @@ def test_upcomingEvents():
                                          recurringId = 1)
 
         newRecurringSecond = Event.create(name = "Recurring second event",
-                                         term = 2,
-                                         description = "Test upcoming program event.",
-                                         location = "The sun",
-                                         startDate = datetime.date(2021,12,14),
-                                         endDate = datetime.date(2021,12,15),
-                                         recurringId = 1)
+                                          term = 2,
+                                          description = "Test upcoming program event.",
+                                          location = "The sun",
+                                          startDate = datetime.date(2021,12,14),
+                                          endDate = datetime.date(2021,12,15),
+                                          recurringId = 1)
 
         newRecurringDifferentId = Event.create(name = "Recurring different Id",
                                                term = 2,
@@ -595,7 +595,7 @@ def test_upcomingEvents():
         # User has not RSVPd and is Interested
         addUserInterest(programForInterest.id, user)
         addUserInterest(programForBanning.id, user)
-        eventsInUserInterestedProgram = getUpcomingEventsForUser(user, testDate)
+        eventsInUserInterestedProgram = getUpcomingEventsForUser(user, asOf = testDate)
 
         assert newProgramEvent in eventsInUserInterestedProgram
         assert newRecurringDifferentId in eventsInUserInterestedProgram
@@ -605,7 +605,7 @@ def test_upcomingEvents():
         # Programs the user is banned from do not have their events showing up in
         # their upcoming events
         banUser(programForBanning.id, user.username, "Test banned program", testDate, "ramsayb2")
-        eventsUserNotBannedFrom = getUpcomingEventsForUser(user, testDate)
+        eventsUserNotBannedFrom = getUpcomingEventsForUser(user, asOf = testDate)
         assert newBannedProgramEvent in eventsInUserInterestedProgram
         assert newBannedProgramEvent not in eventsUserNotBannedFrom
 
@@ -620,11 +620,11 @@ def test_upcomingEvents():
                    .where(ProgramBan.program == programForBanning.id,
                           ProgramBan.user == user.username).execute())
 
-        assert newBannedProgramEvent in getUpcomingEventsForUser(user, testDate)
+        assert newBannedProgramEvent in getUpcomingEventsForUser(user, asOf = testDate)
 
         # user has RSVPd and is Interested
         EventRsvp.create(event=noProgram, user=user)
-        eventsInUserInterestAndRsvp = getUpcomingEventsForUser(user, testDate)
+        eventsInUserInterestAndRsvp = getUpcomingEventsForUser(user, asOf = testDate)
 
         interestAndRsvp = eventsInUserInterestedProgram + [noProgram]
         for event in eventsInUserInterestedProgram:
