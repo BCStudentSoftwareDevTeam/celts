@@ -194,10 +194,11 @@ def getTrainingEvents(term, user):
         return: a list of all trainings the user can view
     """
     trainingQuery = (Event.select(Event).distinct()
-                           .join(ProgramEvent, JOIN.LEFT_OUTER)
-                           .join(Program, JOIN.LEFT_OUTER)
-                           .where(Event.isTraining == True, Event.term == term)
-                           .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate, Event.timeStart))
+                          .join(ProgramEvent, JOIN.LEFT_OUTER)
+                          .join(Program, JOIN.LEFT_OUTER)
+                          .where(Event.isTraining == True,
+                                 Event.term == term)
+                          .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate, Event.timeStart))
 
     hideBonner = (not user.isAdmin) and not (user.isStudent and user.isBonnerScholar)
     if hideBonner:
@@ -230,9 +231,9 @@ def getOtherEvents(term):
                             .where(Event.term == term,
                                    Event.isTraining == False,
                                    Event.isAllVolunteerTraining == False,
-                                    ((ProgramEvent.program == None) |
-                                    ((Program.isStudentLed == False) &
-                                    (Program.isBonnerScholars == False))))
+                                   ((ProgramEvent.program == None) |
+                                   ((Program.isStudentLed == False) &
+                                   (Program.isBonnerScholars == False))))
                             .order_by(Event.startDate, Event.timeStart, Event.id)
                             .execute())
 
@@ -290,7 +291,10 @@ def getParticipatedEventsForUser(user):
                                       Event.isAllVolunteerTraining == False)
                                .order_by(Event.startDate, Event.name))
 
-    allVolunteer = (Event.select(Event, "").join(EventParticipant).where(Event.isAllVolunteerTraining == True, EventParticipant.user == user))
+    allVolunteer = (Event.select(Event, "")
+                         .join(EventParticipant)
+                         .where(Event.isAllVolunteerTraining == True,
+                                EventParticipant.user == user))
     union = participatedEvents.union_all(allVolunteer)
     unionParticipationWithVolunteer = list(union.select_from(union.c.id, union.c.programName, union.c.startDate, union.c.name).order_by(union.c.startDate, union.c.name).execute())
 
@@ -317,10 +321,11 @@ def validateNewEventData(data):
     # Validation if we are inserting a new event
     if 'id' not in data:
 
-        event = Event.select().where((Event.name == data['name']) &
-                                     (Event.location == data['location']) &
-                                     (Event.startDate == data['startDate']) &
-                                     (Event.timeStart == data['timeStart']))
+        event = (Event.select()
+                      .where((Event.name == data['name']) &
+                             (Event.location == data['location']) &
+                             (Event.startDate == data['startDate']) &
+                             (Event.timeStart == data['timeStart'])))
 
         try:
             Term.get_by_id(data['term'])
@@ -347,7 +352,10 @@ def getPreviousRecurringEventData(recurringId):
     """
     Joins the User db table and Event Participant db table so that we can get the information of a participant if they attended an event
     """
-    previousEventVolunteers = User.select(User).join(EventParticipant).join(Event).where(Event.recurringId==recurringId).distinct()
+    previousEventVolunteers = (User.select(User).distinct()
+                                   .join(EventParticipant)
+                                   .join(Event)
+                                   .where(Event.recurringId==recurringId))
     return previousEventVolunteers
 
 def calculateRecurringEventFrequency(event):
