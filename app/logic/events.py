@@ -251,10 +251,11 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
                        .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
                        .where(Event.startDate >= asOf,
                               (Interest.user == user) | (EventRsvp.user == user),
-                              ProgramBan.user.is_null(True) | (ProgramBan.endDate.is_null(False) & (ProgramBan.endDate < asOf)))
+                              ProgramBan.user.is_null(True) | (ProgramBan.endDate < asOf))
                        .distinct() # necessary because of multiple programs
                        .order_by(Event.startDate, Event.name)
                      )
+
     events_list = []
     shown_recurring_event_list = []
 

@@ -611,14 +611,14 @@ def test_upcomingEvents():
 
         # Programs the user has been unbanned from do have their events showing up
         # in their upcoming events
-        noteForUnban = (Note.create(createdBy = "ramsayb2",
-                                    createdOn = dayBeforeTestDate,
-                                    noteContent = "The test user is unbanned.",
-                                    isPrivate = 0))
+        noteForUnban = Note.create(createdBy = "ramsayb2",
+                                   createdOn = dayBeforeTestDate,
+                                   noteContent = "The test user is unbanned.",
+                                   isPrivate = 0)
         (ProgramBan.update(endDate = dayBeforeTestDate,
                            unbanNote = noteForUnban)
                    .where(ProgramBan.program == programForBanning.id,
-                          ProgramBan.user == user.username))
+                          ProgramBan.user == user.username).execute())
 
         assert newBannedProgramEvent in getUpcomingEventsForUser(user, testDate)
 
