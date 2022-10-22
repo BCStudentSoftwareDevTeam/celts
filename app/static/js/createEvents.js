@@ -19,7 +19,7 @@ function updateDate(obj) {
   }
 }
 
-var maxWords = (350 - 5) + 1;
+var maxWords = 350;
 $("#inputEventDescription").keyup(function (event) {
     var text = $(this).val().split(" ");
     while (text.length > maxWords) {
