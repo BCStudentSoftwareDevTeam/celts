@@ -159,7 +159,11 @@ def test_userpriv():
 
     user = User.get_by_id("khatts")
     prg = Program.get_by_id(1)
-    assert user.isProgramManagerFor(prg)
+    assert user.isProgramManagerFor(prg), "khatts should be program manager"
+
+    # Test the case where we use the same object and want to calculate for a different program
+    prg = Program.get_by_id(10)
+    assert not user.isProgramManagerFor(prg), "khatts should not be program manager"
 
     user = User.get_by_id("mupotsal")
     prg = Program.get_by_id(10)
@@ -226,20 +230,12 @@ def test_getStudentManagerForEvent():
 
         Event.insert_many(testEvent).on_conflict_replace().execute() #Inserts new row into Event table
 
-        #Test data for creating a new row in ProgramEvent table
-        testProgramEvent = [
-        {
-        "program_id":13,
-        "event_id":16,
-        }
-        ]
-
         #Inserts new row into ProgramEvent table
-        ProgramEvent.insert_many(testProgramEvent).on_conflict_replace().execute()
+        ProgramEvent.create(program=13, event=16)
 
-        #Test data for test users, inserted in User table
+        # This user will not be a program manager
         testUserData = [
-        {#This user is not a program manager
+        {
         "username": "testUser",
         "bnumber": "B00724094",
         "email": "martinj2@berea.edu",
@@ -252,7 +248,8 @@ def test_getStudentManagerForEvent():
         "isCeltsStudentStaff": False
 
         },
-        {#This user is a program manager
+        # This user will be a program manager
+        {
         "username": "testUser2",
         "bnumber": "B00762158",
         "email": "studentmanagertest@berea.edu",
@@ -266,28 +263,20 @@ def test_getStudentManagerForEvent():
         }
         ]
 
-        #Insert new row into User table
+        # Insert new rows into User table
         User.insert_many(testUserData).on_conflict_replace().execute()
 
-        #Test data for StudentManager table, inserted in to StudentManager table
-        testProgramManagerData = [
-        {
-        'user': 'testUser2',
-        'program': 13
-        }
-        ]
+        # Insert new row into StudentManager table
+        ProgramManager.create(user='testUser2',program=13)
 
-        #Insert new row into StudentManager table
-        ProgramManager.insert_many(testProgramManagerData).on_conflict_replace().execute()
-
-        test_program = 13 #programID is passed in  as an int
         test_event = Event.get_by_id(16) #gets event object
         student = User.get_by_id("testUser") #This test user is not a program manager
         programManager = User.get_by_id("testUser2") ##This user is a program manager
 
-        ## user is manager of program
+        # user is manager of program
         assert programManager.isProgramManagerForEvent(test_event) == True
-        ## user is not manager of program
+
+        # user is not manager of program
         assert student.isProgramManagerForEvent(test_event) == False
 
         transaction.rollback()
