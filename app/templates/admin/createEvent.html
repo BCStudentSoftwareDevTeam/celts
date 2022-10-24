@@ -158,8 +158,7 @@
         <div class="mb-4">
           <div class="row col-md-12" >
             <div class="form-group">
-            {% if eventData.get("program", None) %}
-              {% if eventData['program'].isBonnerScholars %}
+              {% if 'program' in eventData and eventData['program'].isBonnerScholars %}
                 <label class="form-label fw-bold" for="requirement">Bonner Requirement</label>
                 <select class="form-select" name="certRequirement">
                     <option>None</option>
@@ -169,7 +168,6 @@
                 {% endfor %}
                 </select>
               {% endif %}
-            {% endif %}
             </div>
           </div>
         </div>
