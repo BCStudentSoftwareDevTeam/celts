@@ -15,7 +15,11 @@ class User(baseModel):
     isCeltsStudentStaff = BooleanField(default = False)
     isBonnerScholar = BooleanField(default = False)
 
-    _pmCache = None
+    # override BaseModel's __init__ so that we can set up an instance attribute for cache
+    def __init__(self,*args, **kwargs):
+        super().__init__(*args,**kwargs)
+
+        self._pmCache = {}
 
     @property
     def isAdmin(self):
@@ -42,10 +46,13 @@ class User(baseModel):
     def isProgramManagerFor(self, program):
         # Looks to see who is the Program Manager for a program
         from app.models.programManager import ProgramManager  # Must defer import until now to avoid circular reference
-        if self._pmCache is None:
-            self._pmCache = ProgramManager.select().where(ProgramManager.user == self, ProgramManager.program == program).exists()
+        if not program:
+            return False
 
-        return self._pmCache
+        if program not in self._pmCache:
+            self._pmCache[program] = ProgramManager.select().where(ProgramManager.user == self, ProgramManager.program == program).exists()
+
+        return self._pmCache[program]
 
     def isProgramManagerForEvent(self, event):
         # Looks to see who the Program Manager for a specific event is
