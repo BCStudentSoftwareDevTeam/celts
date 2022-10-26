@@ -9,6 +9,7 @@
 {% block scripts %}
   {{super()}}
   <script type="module" src="{{url_for('static', filename = 'js/bonnerManagement.js') }}?u={{lastStaticUpdate}}"></script>
+  <script type="module" src="{{url_for('static', filename = 'js/sortable.min.js') }}?u={{lastStaticUpdate}}"></script>
 {% endblock %}
 
 {% block app_content %}
@@ -126,10 +127,38 @@
     </h3>
     {% set show = "show" if visibleAccordion == "requirements" else "" %}
     <div id="collapseThree" class="accordion-collapse collapse {{show}}" aria-labelledby="headingThree" data-bs-parent="#bonnerManagement">
-        <div class="accordion-body">
+        <div class="accordion-body clearfix">
             <!-------------------- Requirements --------------------->
-            <h3>Coming Soon</h3>
+            <table class="table" id="requirements">
+                <thead>
+                    <tr><th></th><th>Requirement Name</th> <th>Necessity</th> <th>Frequency</th> <th></th></tr>
+                </thead>
+                <tbody>
+                {% for req in requirements %}
+                    <tr data-id="{{req.id}}">
+                        <td class="align-middle drag-handle"><img src="static/drag-handle.jpg" width=24 height=24  /></td>
+                        <td><input class="form-control" value="{{req.name}}" ></td>
+                        <td><select class="form-select required-select">
+                                <option {{ "selected" if req.isRequired else "" }}>Required</option>
+                                <option {{ "selected" if not req.isRequired else "" }}>Optional</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="flex-column form-select empty frequency-select" name="frequency_{{req.id}}">
+                                <option value="" {{ "selected" if not req.frequency else "" }}>Frequency</option>
+                                <option value="once" {{ "selected" if req.frequency == "once" else "" }}>Once</option>
+                                <option value="annual" {{ "selected" if req.frequency == "annual" else "" }}>Annual</option>
+                                <option value="term" {{ "selected" if req.frequency == "term" else "" }}>Every Term</option>
+                            </select>
+                        </td>
+                        <td><button type="button" class="btn btn-danger">Remove</button></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
             <!-------------------- End Requirements --------------------->
+            <button id="reqAdd" class="bi-plus-lg float-start btn btn-success"> Add Requirement</button>
+            <button id="reqSave" class="float-end btn btn-primary" disabled>Save Changes</button>
         </div>
     </div>
   </div>
