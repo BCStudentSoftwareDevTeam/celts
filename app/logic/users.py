@@ -5,6 +5,7 @@ from app.models.interest import Interest
 from app.models.note import Note
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.backgroundCheckType import BackgroundCheckType
+from app.models.dietaryRestriction import DietaryRestriction
 from app.logic.volunteers import addUserBackgroundCheck
 import datetime
 from peewee import JOIN
@@ -116,3 +117,13 @@ def getUserBGCheckHistory(username):
         bgHistory[row.type_id].append(row)
 
     return bgHistory
+
+def updateDietInfo(username, dietContent):
+    """
+    Creates or update a user's diet information
+    """
+
+    dietRecord = (DietaryRestriction
+                .insert(user = username, dietRestriction = dietContent)
+                .on_conflict('replace')
+                .execute())

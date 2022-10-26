@@ -162,6 +162,21 @@ $(document).ready(function(){
     var username = $(this).data("username")
     validatePhoneNumber(this, "#phoneInput", username)
   });
+
+  $("#saveDiet").on('click', function() {
+    let data = {
+      dietInfo: $(this).data("diet")
+    }
+    $.ajax({
+      method: "POST",
+      url: "/updateDietInformation",
+      data: data,
+      success: function(s){
+        msgToast("Dietary Information successfully updated!")
+      },
+    })
+  });
+
 });
 
 function updateManagers(el, volunteer_username ){// retrieve the data of the student staff and program id if the boxes are checked or not

@@ -19,6 +19,7 @@ from app.models.note import Note
 from app.models.programManager import ProgramManager
 from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
+from app.models.dietaryRestriction import DietaryRestriction
 
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
