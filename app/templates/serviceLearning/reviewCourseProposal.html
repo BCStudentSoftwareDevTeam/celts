@@ -1,0 +1,26 @@
+{%set title = "Review Course"%}
+{% extends "base.html"%}
+{% block scripts %}
+{{super()}}
+{% endblock %}
+{% block app_content %}
+
+<body>
+  <h1> Review Course Proposal </h1>
+  <br>
+  <h5> Course Name: </h5>
+  <h5> Credit: </h5>
+  <h5> Term: </h5>
+  <h5> Status: </h5>
+  <h5> Created By: </h5>
+<br>
+
+<button type="button" class="btn btn-secondary btn-sm">Close </button>
+<button type="button" class="btn btn-danger btn-sm">Deny</button>
+<button type="button" class="btn btn-primary btn-sm">Approve Course</button>
+
+
+
+
+</body>
+{% endblock %}
