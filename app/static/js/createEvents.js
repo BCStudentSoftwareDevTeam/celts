@@ -37,7 +37,9 @@ function format24to12HourTime(timeStr){
  * Run when the webpage is ready for javascript
  */
 $(document).ready(function() {
-    $("#attachmentObject").fileinput()
+    $("#attachmentObject").fileinput({
+        allowedFileExtensions:["pdf","jpg","png","gif", "csv", "docx", "jpg", "jpeg", "jfif"]
+    })
   // Disable button when we are ready to submit
   $("#saveEvent").on('submit',function(event) {
       $(this).find("input[type=submit]").prop("disabled", true)
@@ -51,6 +53,20 @@ $(document).ready(function() {
     } else {
       $("#endDateStyle, #recurringTableDiv").addClass('d-none')
       $("#endDatePicker").prop('required', false);
+    }
+  });
+  $("#allowPastStart").click(function() {
+    var allowPast = $("#allowPastStart:checked").val()
+    if (allowPast == 'on') {
+      $.datepicker.setDefaults({
+        minDate:  new Date('1999/10/25'),
+        dateFormat:'mm-dd-yy'
+      });
+    } else {
+      $.datepicker.setDefaults({
+        minDate:  new Date($.now()),
+        dateFormat:'mm-dd-yy'
+      });
     }
   });
   // everything except Chrome
@@ -135,6 +151,7 @@ $(document).ready(function() {
       $("#checkIsRequired").prop('disabled', false);
     }
   });
+
 
   var facilitatorArray = []
   function callback(selectedFacilitator) {

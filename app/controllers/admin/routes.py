@@ -145,15 +145,17 @@ def createEvent(templateid, programid=None):
 @admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
 @admin_bp.route('/eventsList/<eventId>/edit', methods=['GET','POST'])
 def eventDisplay(eventId):
-    if 'edit' in request.url_rule.rule and not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(eventId)):
-        abort(403)
-
     # Validate given URL
     try:
         event = Event.get_by_id(eventId)
     except DoesNotExist as e:
         print(f"Unknown event: {eventId}")
         abort(404)
+
+    notPermitted = not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(event))
+    if 'edit' in request.url_rule.rule and notPermitted:
+        abort(403)
+
     eventData = model_to_dict(event, recurse=False)
     associatedAttachments = EventFile.select().where(EventFile.event == event)
 
