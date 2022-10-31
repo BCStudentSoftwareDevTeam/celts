@@ -30,6 +30,9 @@ select.empty {
     color: gray;
 }
 
+H1 {
+  display: inline;
+}
 
 .spacer {
     height: 100px; /* 80px + whatever spacing above the footer we want (in this case 20px) */

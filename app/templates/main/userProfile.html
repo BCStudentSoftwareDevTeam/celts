@@ -16,16 +16,14 @@
 <div class="row">
   <div class="col-6">
     <h1>{{volunteer.firstName}} {{volunteer.lastName}}</h1>
-  </div>
-  <div class="col-6" style="display: inline;" align="right">
-    <div>{{volunteer.bnumber}} </div>
+    <p style="display: inline; font-size: 1.5rem" class="text-muted">{{volunteer.bnumber}}</p>
     <div>{{volunteer.email}} </div>
     <div>
-      <input type="text" style="border: none" size="14" class="form-control-sm bfh-phone" data-value="{{volunteer.phoneNumber}}" id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
+      <input type="text" style="border: none" size="14" class="bfh-phone" data-value="{{volunteer.phoneNumber}}" id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
       <a class="text-decoration-none primary editButton" tabindex="0" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
     </div>
-    <a href="/profile/{{volunteer.username}}/serviceTranscript">View Service Transcript</a>
   </div>
+  <a align="right" href="/profile/{{volunteer.username}}/serviceTranscript">View Service Transcript</a>
 </div>
 <!-- Start Upcoming Events -->
 <div class="accordion" id="userProfile">
