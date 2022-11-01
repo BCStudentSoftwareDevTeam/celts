@@ -1,4 +1,5 @@
 $(document).ready( function () {
+
   //make html table to datatable
    var table =  $('#myTable').DataTable({
    "fnDrawCallback": function(oSettings) {
@@ -10,4 +11,18 @@ $(document).ready( function () {
        }
     }
   });
+    $("#sendRecommendationBtn").click(function(){
+        $.ajax({
+            type:"GET",
+            url:"/serviceLearning/sendRecommendation",
+            success: function(response){
+                console.log(response)
+            },
+            error: function(response){
+                console.log(response)
+            },
+
+
+        })
+    })
 });

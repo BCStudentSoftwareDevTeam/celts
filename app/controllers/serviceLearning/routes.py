@@ -162,3 +162,18 @@ def renewCourse(courseID, termID):
         flash("Renewal Unsuccessful", 'warning')
 
     return "", 500
+
+@serviceLearning_bp.route('/serviceLearning/sendRecommendation', methods = ['GET'])
+def sendRecommendation():
+    """
+    This function allows the download of csv file
+    """
+    try:
+        requestedInfo = list(Course.select().where(Course.status_id == 3))
+        print(requestedInfo[0])
+        print("++++++++++++++++++++++++++++++++++++++++++++++++")
+        return ""
+    except:
+        print(requestedInfo[0])
+        print("++++++++++++++++++++++++++++++++++++++++++++++++")
+        return ""

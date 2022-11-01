@@ -103,7 +103,7 @@
 
       {% if term.isCurrentTerm or term.isFutureTerm %}
         <div class="float-end">
-          <button class="btn btn-primary" onclick="exportTableToExcel('tblData')">Send Recommendation</button>
+          <button class="btn btn-primary" id="sendRecommendationBtn">Send Recommendation</button>
           <table id="tblData"></table>
         </div>
        {% endif %}
