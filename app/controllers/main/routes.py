@@ -146,9 +146,9 @@ def addNote():
     except:
         bonner = False
     try:
-        addProfileNote(postData["visibility"], bonner, postData["noteTextbox"], postData["username"])
+        note = addProfileNote(postData["visibility"], bonner, postData["noteTextbox"], postData["username"])
         flash("Successfully added profile note", "success")
-        return redirect(url_for("main.viewUsersProfile", username=username))
+        return redirect(url_for("main.viewUsersProfile", username=postData["username"]))
     except Exception as e:
         print("Error adding note", e)
         flash("Failed to add profile note", "danger")
