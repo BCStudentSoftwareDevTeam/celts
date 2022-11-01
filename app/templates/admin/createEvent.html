@@ -158,16 +158,16 @@
         <div class="mb-4">
           <div class="row col-md-12" >
             <div class="form-group">
-            {% if eventData['program'].isBonnerScholars %}
-              <label class="form-label fw-bold" for="requirement">Bonner Requirement</label>
-              <select class="form-select" name="certRequirement">
-                  <option>None</option>
-              {% for req in requirements %}
-                  {% set selected = "selected" if eventData['certRequirement'] == req else "" %}
-                  <option value="{{req.id}}" {{selected}}>{{req.name}}</option>
-              {% endfor %}
-              </select>
-            {% endif %}
+              {% if 'program' in eventData and eventData['program'].isBonnerScholars %}
+                <label class="form-label fw-bold" for="requirement">Bonner Requirement</label>
+                <select class="form-select" name="certRequirement">
+                    <option>None</option>
+                {% for req in requirements %}
+                    {% set selected = "selected" if eventData['certRequirement'] == req else "" %}
+                    <option value="{{req.id}}" {{selected}}>{{req.name}}</option>
+                {% endfor %}
+                </select>
+              {% endif %}
             </div>
           </div>
         </div>

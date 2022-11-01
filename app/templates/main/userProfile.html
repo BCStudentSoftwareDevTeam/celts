@@ -45,7 +45,7 @@
                 <th scope="col">Program</th>
                 <th scope="col">Event Name</th>
                 <th scope="col">Event Date</th>
-                <th scope="col">Time</th>
+                <th scope="col">Start Time</th>
                 <th scope="col">Location</th>
                 <th scope="col">RSVP Status</th>
               </thead>
@@ -56,7 +56,13 @@
                     <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
                     <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}}</td>
                     <td>{{event.location}}</td>
-                    <td>{{"RSVP'ed" if event.id in rsvpedEvents else "Not RSVP'ed"}}</td>
+                    {% if (event.isRsvpRequired) and (event.id in rsvpedEvents) %}
+                      <td>You have RSVP'd for this event.</td>
+                    {% elif (event.isRsvpRequired) and (event.id not in rsvpedEvents) %}
+                      <td>You have not RSVP'd for this event.</td>
+                    {% else %}
+                      <td>This event does not require RSVP.</td>
+                    {% endif %}
                   </tr>
               {% endfor %}
             {% else %}
