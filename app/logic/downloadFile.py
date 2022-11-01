@@ -24,7 +24,7 @@ class fileMaker:
         Creates the file
         '''
         if fileType == "CSV"
-            formatFile(fileType, requestedInfo, fileFormat)
+            formatFile(fileType, approvedCourses, fileFormat)
             pass
         return None
 
@@ -41,5 +41,4 @@ class fileMaker:
         """
         Injects data into file
         """
-        
         pass

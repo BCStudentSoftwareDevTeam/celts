@@ -11,6 +11,7 @@ from app.logic.searchUsers import searchUsers
 from app.logic.utils import selectSurroundingTerms
 from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal, renewProposal
 from app.logic.courseManagement import updateCourse, createCourse
+from app.logic.downloadFile import *
 from app.controllers.main.routes import getRedirectTarget, setRedirectTarget
 from app.controllers.serviceLearning import serviceLearning_bp
 
@@ -169,11 +170,11 @@ def sendRecommendation():
     This function allows the download of csv file
     """
     try:
-        requestedInfo = list(Course.select().where(Course.status_id == 3))
-        print(requestedInfo[0])
-        print("++++++++++++++++++++++++++++++++++++++++++++++++")
+        approvedCourses = list(Course.select().where(Course.status_id == 3))
+        fileFormat = {"headers":["Course Name", "Course Number", "Faculty"]}
+        newFile = downloadFile(approvedCourses, "CSV", fileFormat)
         return ""
     except:
-        print(requestedInfo[0])
+        print(approvedCourses)
         print("++++++++++++++++++++++++++++++++++++++++++++++++")
         return ""
