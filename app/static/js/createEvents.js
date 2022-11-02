@@ -19,16 +19,6 @@ function updateDate(obj) {
   }
 }
 
-var maxWords = 350;
-$("#inputEventDescription").keyup(function (event) {
-    var text = $(this).val().split(" ");
-    while (text.length > maxWords) {
-        event.preventDefault();
-        text.pop();
-    }
-    $(this).val(text.join(" "));
-})
-
 // turns a string with a time with HH:mm format to %I:%M %p format
 // used to display 12 hour format but still use 24 hour format in the backend
 function format24to12HourTime(timeStr){
@@ -209,4 +199,18 @@ $(document).ready(function() {
  $("#startDatePicker").change(function(){
      updateDate(this)
  });
+
+ var maxCharacters = 1800;
+ $("#inputEventDescription").keyup(function(event) {
+     var text = $(this).val();
+     var remainingChar = maxCharacters - text.length;
+     console.log(remainingChar);
+     $("#remainingCharacters").text("Remaining Characters: " + remainingChar);
+ })
+
+
+
+
+$()
+
 });
