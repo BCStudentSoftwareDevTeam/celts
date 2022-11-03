@@ -145,9 +145,10 @@
     </div>
         <div class="col-md-6 form-group">
           <div class="form-group mb-4">
-            <label class="form-label" for='inputEventDescription'><strong>Description</strong> <i>Characters limit: 1800</i></label>
-            <label class="form-label" id ='remainingCharacters'><i>Remaining Characters: 1800 </i></label>
-            <textarea rows="5" cols="72" class="form-control" id='inputEventDescription' type="text" placeholder="Enter event description" name="description" maxlength="1800" required>{{eventData.description}}</textarea>
+            <label class="form-label" for='inputCharacters'><strong>Description</strong></label>
+            <label class="form-label">Characters Limit: 1800</label>
+            <textarea rows="5" cols="72" class="form-control" id="inputCharacters" type="text" placeholder="Enter event description" name="description" required>{{eventData.description}}</textarea>
+            <label class="form-label" id ="remainingCharacters"></label>
           </div>
           <div class="mb-4">
               <div class="row col-md-12" >
