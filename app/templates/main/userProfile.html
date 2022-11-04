@@ -336,11 +336,11 @@
                   {% set user.count = user.count + 1 %}
                 {% endif %}
               {% endfor %}
-              {% if user.count == 0 %}
-                <tr>There are no notes yet</tr>
-              {% endif %}
-            </tbody>
+              </tbody>
           </table>
+          {% if user.count == 0 %}
+            <tr>There are no notes yet</tr>
+          {% endif %}
           {% if g.current_user.isCeltsStudentStaff or g.current_user.isCeltsAdmin %}
           <h4 class="text-center pb-0 mb-0">Student Staff Notes</h4>
           <table class="table table-responsive table-striped" id="profileTable">
@@ -361,11 +361,11 @@
                   {% set studentStaff.count = studentStaff.count + 1 %}
                 {% endif %}
               {% endfor %}
-              {% if studentStaff.count == 0 %}
-                <tr>There are no notes yet</tr>
-              {% endif %}
             </tbody>
           </table>
+          {% if studentStaff.count == 0 %}
+            <tr>There are no notes yet</tr>
+          {% endif %}
           {% endif %}
           {% if g.current_user.isCeltsAdmin %}
           <h4 class="text-center pb-0 mb-0">Admin Notes</h4>
@@ -387,13 +387,13 @@
                   {% set admin.count = admin.count + 1 %}
                 {% endif %}
               {% endfor %}
-              {% if admin.count == 0 %}
-                <tr>There are no notes yet</tr>
-              {% endif %}
             </tbody>
-            {{adminCount}}
           </table>
-          {% if g.current_user.isBonnerScholar %}
+          {% if admin.count == 0 %}
+            <tr>There are no notes yet</tr>
+          {% endif %}
+          {% endif %}
+          {% if volunteer.isBonnerScholar %}
           <h4 class="text-center pb-0 mb-0">Bonner Scholar Notes</h4>
           <table class="table table-responsive table-striped" id="profileTable">
             <thead>
@@ -413,13 +413,14 @@
                   {% set bonner.count = bonner.count + 1 %}
                 {% endif %}
               {% endfor %}
-              {% if bonner.count == 0 %}
-                <tr>There are no notes yet</tr>
-              {% endif %}
             </tbody>
           </table>
+          {% if bonner.count == 0 %}
+            <tr>There are no notes yet</tr>
           {% endif %}
         {% endif %}
+        <br>
+        <br>
         <button type="button" name="button" class="btn btn-primary" id="addNoteButton">Add Note</button>
         </div>
       </div>
@@ -448,10 +449,13 @@
                   {% endif %}
                   <option value='1' selected>Everyone</option>
                 </select>
-                <div class="form-check form-switch pt-4">
-                  <input class="form-check-input" name="bonner" id="bonnerInput" type="checkbox" />
-                  <label class="form-check-label"><strong>Bonner Scholars only</strong></label>
-                </div><br>
+                {% if volunteer.isBonnerScholar %}
+                  <div class="form-check form-switch pt-4">
+                    <input class="form-check-input" name="bonner" id="bonnerInput" type="checkbox" />
+                    <label class="form-check-label"><strong>Bonner Scholars only</strong></label>
+                  </div>
+                {% endif %}
+                <br>
               </div>
               <div class="form-group input-group-x form-outline ui-widget">
                 <textarea required name="noteTextbox" rows="8" cols="80" type="input" id="addNoteTextArea" class="form-control" placeholder="This will add a note to a user's profile." ></textarea>
