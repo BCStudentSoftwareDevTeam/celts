@@ -319,7 +319,7 @@ def test_getUserParticipatedTrainings():
             EventParticipant.create(user = User.get_by_id("ramsayb2"), event = training)
         programTrainings = getUserParticipatedTrainings(Program.get_by_id(2), User.get_by_id("ramsayb2"), currentTerm)
         for training in programTrainings.keys():
-            assert programTrainings[training] == 1
+            assert programTrainings[training] == 0
         transaction.rollback()
 
         # If the user "attended" the training, assert their participated status == 1, otherwise, assert participated status == 0
@@ -331,7 +331,7 @@ def test_getUserParticipatedTrainings():
         programTrainings = getUserParticipatedTrainings(Program.get_by_id(2), User.get_by_id("ramsayb2"), currentTerm)
         for counter, training in enumerate(programTrainings.keys()):
             if (counter % 2) == 0:
-                assert programTrainings[training] == 1
+                assert programTrainings[training] == 0
             else:
                 assert programTrainings[training] == 0
         transaction.rollback()
