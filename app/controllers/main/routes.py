@@ -36,8 +36,22 @@ def redirectToLogout():
     return redirect(logout())
 
 @main_bp.route('/', methods=['GET'])
-def redirectToEventsList():
-    return redirect(url_for("main.events", selectedTerm=g.current_term))
+def home():
+    programs = Program.select()
+    managerRows = list(ProgramManager.select())
+    managerProgramList = {}
+    for program in programs:
+        for row in managerRows:
+            print(row.user)
+            if program == row.program:
+                if program in managerProgramList:
+                    managerProgramList.update({program: row.user})
+                else:
+                    managerProgramList[program] = [row.user]
+                managerRows.remove(row)
+            else:
+                managerProgramList[program] = [None]
+    return render_template("/main/home.html", managerProgramList = managerProgramList)
 
 @main_bp.route('/eventsList/<selectedTerm>', methods=['GET'])
 def events(selectedTerm):
