@@ -171,8 +171,11 @@ def sendRecommendation():
     """
     try:
         approvedCourses = list(Course.select().where(Course.status_id == 3))
+        print(approvedCourses)
+        print("---------------------------")
         fileFormat = {"headers":["Course Name", "Course Number", "Faculty"]}
-        newFile = downloadFile(approvedCourses, "CSV", fileFormat)
+        newFile = fileMaker(approvedCourses, "CSV", fileFormat)
+
         return ""
     except:
         print(approvedCourses)

@@ -11,12 +11,11 @@ class fileMaker:
     '''
     def __init__(self, requestedInfo, fileType, fileFormat = None):
         self.relativePath = app.config['files']['base_path']
+        self.completePath = self.relativePath + "/sendRecommendation.csv"
         self.requestedInfo = requestedInfo
         self.fileType = fileType
         self.fileFormat = fileFormat
-        self.makeFile()
-
-
+        self.makeFile(fileType)
 
 
     def makeFile(self, fileType):
@@ -24,25 +23,41 @@ class fileMaker:
         Creates the file
         '''
         if fileType == "CSV":
-            with open(self.relativePath, 'w', encoding='utf-8', errors="backslashreplace") as csvfile:
-                self.filewriter = csv.writer(csvfile, delimeter = ',',
-                                            quotechar='|', quoting=csv.QUOTE_MINIMAL)
-            formatFile(fileType, requestedInfo, fileFormat)
+            print(self.completePath)
+            print("creation works")
+            with open(self.completePath, 'w', encoding='utf-8', errors="backslashreplace") as csvfile:
+                print("file creation works")
+                self.filewriter = csv.writer(csvfile, delimiter = ',')
+            print("here")
+            self.formatFile()
+            print("make file fails")
         return None
 
-    def formatFile(self, fileType, requestedInfo, fileFormat = None):
+    def formatFile(self):
         """
         Formats the file
 
         Depending on the file data be will
         """
-        headers.extend(fileFormat["headers"])
-        self.filewriter.writerow(headers)
+        print("123456")
+        try:
+            print("here again")
 
-        approvedCoursesDict = {}
-        for i in requestedInfo:
-            approvedCoursesDict.update({i.id:[i.courseName, i.courseAbbreviation]})
 
-        self.filewriter.writerow(approvedCoursesDict.values())
+            headers = self.fileFormat.get("headers")
+            print(headers)
+            self.filewriter.writerow(headers)
+            print("hellooooooo")
 
-        return None
+            approvedCoursesDict = {}
+            for i in self.requestedInfo:
+                print(i)
+                approvedCoursesDict.update({i.id:[i.courseName, i.courseAbbreviation]})
+
+            self.filewriter.writerow(approvedCoursesDict.values())
+            return "success!"
+
+        except:
+            errorMessage = "Format File Fails"
+
+            return errorMessage
