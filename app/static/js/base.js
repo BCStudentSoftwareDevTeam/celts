@@ -75,3 +75,16 @@ function reloadWithAccordion(accordionName) {
 
   location.replace(origin + "?accordion=" + accordionName);
 }
+
+//set character limit and calculate remaining characters
+function setCharacterLimit(textboxId, labelId){
+  var maxCharacters = 1800;
+  var textLength = 0;
+  var textValue = $(textboxId).val();
+  var textLength = textValue.length;
+  $(labelId).text("Remaining Characters: " + (maxCharacters - textLength));
+  if (textLength > maxCharacters){
+      $(textboxId).val(textValue.substring(0, maxCharacters));
+      $(labelId).text("Remaining Characters: " + 0);
+  }
+}

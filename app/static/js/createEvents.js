@@ -19,23 +19,6 @@ function updateDate(obj) {
   }
 }
 
-//set character limit and calculate remaining characters
-function setCharacterLimit(obj){
-  var maxCharacters = 1800;
-  var textLength = 0;
-
-  if(obj.id == "inputCharacters" || obj.id == "remainingCharacters"){
-    var text = $(obj).val();
-    console.log(text)
-    var textLength = text.length;
-    console.log(typeof textLength)
-    if(textLength > maxCharacters){
-       text.pop();
-       $("inputCharacters").prop('disabled', true);
-     }
-    $("#remainingCharacters").text("Remaining Characters: " + (maxCharacters - textLength));
-  }
-}
 // turns a string with a time with HH:mm format to %I:%M %p format
 // used to display 12 hour format but still use 24 hour format in the backend
 function format24to12HourTime(timeStr){
@@ -217,9 +200,7 @@ $(document).ready(function() {
      updateDate(this)
  });
 
-$("#inputCharacters, #remainingCharacters").keyup(function(event){
-  event.preventDefault();
-  setCharacterLimit(this)
+$("#inputCharacters").keyup(function(event){
+  setCharacterLimit(this, "#remainingCharacters")
   });
-
 });
