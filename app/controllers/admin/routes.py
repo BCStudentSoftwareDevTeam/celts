@@ -200,7 +200,7 @@ def eventDisplay(eventId):
         if event.recurringId and len(eventSeriesList) != (eventIndex + 1):
             eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
 
-        userParticipatedEvents = getUserParticipatedEvents(eventData['program'], g.current_user, g.current_term)
+        userParticipatedEvents = getUserParticipatedTrainings(eventData['program'], g.current_user, g.current_term)
         return render_template("eventView.html",
                                 eventData = eventData,
                                 isPastEvent = isPastEvent,

@@ -125,25 +125,21 @@ def getUserParticipatedTrainings(program, user, currentTerm):
 
     :returns: trainings for program and if the user participated
     """
-    academicYear = currentTerm.academicYear
-    otherCeltsEventsProgram = Program.get(11) # This is the ID for the other celts sponsored events
-                                              # TODO: make a query that gets the program data without a need for the ID, in case the ID changes
 
     programTrainings = (Event.select(Event, EventParticipant)
                                 .join(EventParticipant, JOIN.LEFT_OUTER)
                                 .where((Event.isTraining),
-                                        (Event.program == program) | (Event.program == otherCeltsEventsProgram),
-                                        Event.term == currentTerm,
-                                        (EventParticipant.user == user) | (EventParticipant.user == None)))
-
+                                        (Event.program == program) | (Event.isAllVolunteerTraining),
+                                        Event.term == currentTerm))
 
     userParticipatedEvents = {}
     for training in programTrainings.objects():
         if training.startDate > date.today():
             didParticipate = [None, training.startDate.strftime("%m/%d/%Y")]
-        elif training.user:
+        elif training.user == user:
             didParticipate = True
         else:
             didParticipate = False
         userParticipatedEvents[training.name] = didParticipate
+
     return userParticipatedEvents

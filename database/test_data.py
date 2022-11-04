@@ -395,7 +395,7 @@ programs = [
     },
     {
         "id": 11,
-        "programName": "CELTS-Sponsored Program", 
+        "programName": "CELTS-Sponsored Program",
         "isStudentLed": False,
         "isBonnerScholars": False,
         "contactEmail": "",
@@ -615,12 +615,11 @@ events = [
         "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
-        "program": 11
     },
     {
         "id": 15,
         "term": 4,
-        "name": "Training Event",
+        "name": "CELTS-Training Event",
         "description": "Test for training",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
