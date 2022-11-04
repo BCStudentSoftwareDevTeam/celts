@@ -1,4 +1,5 @@
 from flask import request, render_template, g, url_for, abort, redirect, flash, session
+from peewee import *
 from app.models.user import User
 from app.models.term import Term
 from app.models.course import Course
@@ -170,8 +171,9 @@ def sendRecommendation():
     This function allows the download of csv file
     """
     try:
-        approvedCourses = list(Course.select().where(Course.status_id == 3))
-        print(approvedCourses)
+        approvedCourses = list(Course.select().join(CourseInstructor, JOIN.LEFT_OUTER).where(Course.status_id == 3, Course.id == CourseInstructor.course_id))
+        print(approvedCourses[0])
+        print(approvedCourses[1])
         print("---------------------------")
         fileFormat = {"headers":["Course Name", "Course Number", "Faculty"]}
         newFile = fileMaker(approvedCourses, "CSV", fileFormat)

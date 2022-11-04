@@ -22,42 +22,28 @@ class fileMaker:
         '''
         Creates the file
         '''
-        if fileType == "CSV":
-            print(self.completePath)
-            print("creation works")
-            with open(self.completePath, 'w', encoding='utf-8', errors="backslashreplace") as csvfile:
-                print("file creation works")
-                self.filewriter = csv.writer(csvfile, delimiter = ',')
-            print("here")
-            self.formatFile()
-            print("make file fails")
-        return None
-
-    def formatFile(self):
-        """
-        Formats the file
-
-        Depending on the file data be will
-        """
-        print("123456")
         try:
-            print("here again")
+            if fileType == "CSV":
+                print(self.completePath)
+                print("creation works")
+                with open(self.completePath, 'w', encoding='utf-8', errors="backslashreplace") as csvfile:
+                    print("file creation works")
+                    self.filewriter = csv.writer(csvfile, delimiter = ',')
+                    headers = self.fileFormat.get("headers")
+                    print(headers)
+                    self.filewriter.writerow(headers)
+                    print("hellooooooo")
 
+                    approvedCoursesDict = {}
+                    for i in self.requestedInfo:
+                        print(i)
+                        approvedCoursesDict.update({i.id:[i.courseName, i.courseAbbreviation, i.CourseInstructor.user]})
+                        self.filewriter.writerow(approvedCoursesDict.get(i.id))
+                    print(approvedCoursesDict)
+                return "success!"
 
-            headers = self.fileFormat.get("headers")
-            print(headers)
-            self.filewriter.writerow(headers)
-            print("hellooooooo")
-
-            approvedCoursesDict = {}
-            for i in self.requestedInfo:
-                print(i)
-                approvedCoursesDict.update({i.id:[i.courseName, i.courseAbbreviation]})
-
-            self.filewriter.writerow(approvedCoursesDict.values())
-            return "success!"
-
-        except:
+        except Exception as e:
             errorMessage = "Format File Fails"
+            print(e)
 
             return errorMessage
