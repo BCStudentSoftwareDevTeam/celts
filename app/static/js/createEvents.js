@@ -192,10 +192,6 @@ $(document).ready(function() {
      updateDate(this)
  });
 
- $("#endDatePicker").change(function(){
-     updateDate(this)
- });
-
  $("#startDatePicker").change(function(){
      updateDate(this)
  });
@@ -203,4 +199,6 @@ $(document).ready(function() {
 $("#inputCharacters").keyup(function(event){
   setCharacterLimit(this, "#remainingCharacters")
   });
+
+  setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
 });
