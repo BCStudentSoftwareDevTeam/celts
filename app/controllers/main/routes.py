@@ -105,12 +105,12 @@ def viewUsersProfile(username):
                                               ProgramBan.program == program,
                                               ProgramBan.endDate > datetime.datetime.now()).execute())
 
-            userParticipatedEvents = getUserParticipatedTrainings(program, volunteer, g.current_term)
-            allTrainingsComplete = not len([event for event in userParticipatedEvents.values() if event != True])
+            userParticipatedTrainings = getUserParticipatedTrainings(program, volunteer, g.current_term)
+            allTrainingsComplete = not len([event for event in userParticipatedTrainings.values() if event != True])
             noteForDict = notes[-1].banNote.noteContent if notes else ""
             eligibilityTable.append({"program": program,
                                    "completedTraining": allTrainingsComplete,
-                                   "trainingList": userParticipatedEvents,
+                                   "trainingList": userParticipatedTrainings,
                                    "isNotBanned": True if not notes else False,
                                    "banNote": noteForDict})
 

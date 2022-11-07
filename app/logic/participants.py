@@ -132,7 +132,7 @@ def getUserParticipatedTrainings(program, user, currentTerm):
                                         (Event.program == program) | (Event.isAllVolunteerTraining),
                                         Event.term == currentTerm))
 
-    userParticipatedEvents = {}
+    userParticipatedTrainings = {}
     for training in programTrainings.objects():
         if training.startDate > date.today():
             didParticipate = [None, training.startDate.strftime("%m/%d/%Y")]
@@ -140,6 +140,6 @@ def getUserParticipatedTrainings(program, user, currentTerm):
             didParticipate = True
         else:
             didParticipate = False
-        userParticipatedEvents[training.name] = didParticipate
+        userParticipatedTrainings[training.name] = didParticipate
 
-    return userParticipatedEvents
+    return userParticipatedTrainings
