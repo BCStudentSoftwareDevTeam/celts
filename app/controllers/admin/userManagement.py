@@ -74,6 +74,7 @@ def removeProgramManagers():
 def updateProgramInfo(programID):
     """Grabs info and then outputs it to logic function"""
     programInfo = request.form # grabs user inputs
+    print("Program information...............", programInfo)
     if g.current_user.isCeltsAdmin:
         try:
             changeProgramInfo(programInfo["programName"],  #calls logic function to add data to database
@@ -81,6 +82,7 @@ def updateProgramInfo(programID):
                                     programInfo["contactName"],
                                     programInfo["location"],
                                     programID)
+
             flash("Program updated", "success")
             return redirect(url_for("admin.userManagement", accordion="program"))
         except Exception as e:

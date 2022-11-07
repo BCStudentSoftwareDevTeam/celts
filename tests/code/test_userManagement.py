@@ -73,7 +73,7 @@ def test_changeProgramInfo():
         assert currentProgramInfo.programName == "Adopt-a-Grandparent"
         assert currentProgramInfo.contactName == ""
         assert currentProgramInfo.contactEmail == ""
-        assert currentProgramInfo.contactEmail == ""
+        assert currentProgramInfo.programLocation == ""
 
         with app.test_request_context():
             g.current_user = "ramsayb2"
