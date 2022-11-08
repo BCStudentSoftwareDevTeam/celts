@@ -171,15 +171,20 @@ def sendRecommendation():
     This function allows the download of csv file
     """
     try:
-        approvedCourses = list(Course.select().join(CourseInstructor, JOIN.LEFT_OUTER).where(Course.status_id == 3, Course.id == CourseInstructor.course_id))
-        print(approvedCourses[0])
-        print(approvedCourses[1])
+        courseInstructors = []
+        approvedCourses = list(Course.select().where(Course.status_id == 3))
+
+        for course in approvedCourses:
+            courseInstructors = list(CourseInstructor.select(CourseInstructor.user).where(CourseInstructor.course_id == course.id))
+
+        print(approvedCourses)
+        print(courseInstructors[0].user_id)
         print("---------------------------")
         fileFormat = {"headers":["Course Name", "Course Number", "Faculty"]}
         newFile = fileMaker(approvedCourses, "CSV", fileFormat)
 
         return ""
-    except:
-        print(approvedCourses)
+    except Exception as e:
+        print(e)
         print("++++++++++++++++++++++++++++++++++++++++++++++++")
         return ""
