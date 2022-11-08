@@ -75,11 +75,11 @@ def changeProgramInfo(newProgramName, newContactEmail, newContactName, newLocati
     program = Program.get_by_id(programId)
     updatedProgram = Program.update({Program.programName:newProgramName,Program.contactEmail: newContactEmail, Program.contactName:newContactName, Program.programLocation:newLocation}).where(Program.id==programId)
     updatedProgram.execute()
-    if newContactEmail != " ":
+    if newContactEmail != "":
         createLog(f"{program.programName}'s settings changed to: Reply-to-email: {newContactEmail}")
-    if newContactName != " ":
+    if newContactName != "":
         createLog(f"{program.programName}'s settings changed to: Sender name: {newContactName}")
-    if newLocation != " ":
+    if newLocation != "":
         createLog(f"{program.programName}'s settings changed to: location: {newLocation}")
     else:
         createLog(f"{program.programName}'s settings changed to: Name: {newProgramName}; Reply-to-email: {newContactEmail}; Sender name: {newContactName}; location: {newLocation}")
