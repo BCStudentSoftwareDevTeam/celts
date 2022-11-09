@@ -55,6 +55,9 @@
   <table class="table" id="trackVolunteerstable">
     <thead>
       <tr>
+        {% if (not event.isPast) and (event.isRsvpRequired)  %}
+          <th>RSVP Time</th>
+        {% endif %}
         <th>Name</th>
         <th>Email</th>
         <th>Phone Number</th>
@@ -71,6 +74,12 @@
     {% if eventVolunteerData %}
       {% for participant in eventVolunteerData %}
         <tr>
+          {% if (not event.isPast) and (event.isRsvpRequired)  %}
+            <td>
+              {# It only works because we are assuming that #}
+              {{ participant.rsvpTime.strftime('%b %-d %-I:%M %p') }}
+            </td>
+          {% endif %}
           <td>
             <input
               class="form-control"
