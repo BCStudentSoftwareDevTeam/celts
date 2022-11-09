@@ -76,7 +76,7 @@
         <tr>
           {% if (not event.isPast) and (event.isRsvpRequired)  %}
             <td>
-              {# It only works because we are assuming that #}
+              {# This only works because we are assuming that all participants are RSVP entries #}
               {{ participant.rsvpTime.strftime('%b %-d %-I:%M %p') }}
             </td>
           {% endif %}
