@@ -75,17 +75,15 @@ def changeProgramInfo(newProgramName, newContactEmail, newContactName, newLocati
     program = Program.get_by_id(programId)
     updatedProgram = Program.update({Program.programName:newProgramName, Program.contactEmail: newContactEmail, Program.contactName:newContactName, Program.programLocation:newLocation}).where(Program.id==programId)
     updatedProgram.execute()
-    if not (newProgramName != program.programName and newContactEmail != program.contactEmail and newContactName != program.contactName and newLocation != program.programLocation):
-        if newProgramName != program.programName:
-            createLog(f"{program.programName}'s Program name was changed to: {newProgramName}")
-        if newContactEmail != program.contactEmail:
-            createLog(f"{program.programName}'s Reply-to-email was changed to: {newContactEmail}")
-        if newContactName != program.contactName:
-            createLog(f"{program.programName}'s Sender name was changed to: {newContactName}")
-        if newLocation != program.programLocation:
-            createLog(f"{program.programName}'s Location was changed to: {newLocation}")
-    else:
-        createLog(f"{program.programName}'s settings were changed: Program name: {newProgramName}, Reply-to-email: {newContactEmail}, Sender name: {newContactName}, Location: {newLocation}")
+    if newProgramName != program.programName:
+        createLog(f"{program.programName} Program Name was changed to: {newProgramName}")
+    if newContactEmail != program.contactEmail:
+        createLog(f"{program.programName} Contact Email was changed to: {newContactEmail}")
+    if newContactName != program.contactName:
+        createLog(f"{program.programName} Contact Name was changed to: {newContactName}")
+    if newLocation != program.programLocation:
+        createLog(f"{program.programName} Location was changed to: {newLocation}")
+        
     return (f'Program email info updated')
 
 def getAllowedPrograms(currentUser):
