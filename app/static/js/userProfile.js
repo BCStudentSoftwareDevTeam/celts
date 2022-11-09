@@ -78,7 +78,7 @@ $(document).ready(function(){
              "endDate":$("#banEndDatepicker").val() //Expected to be a date in this format YYYY-MM-DD
             },
       success: function(response) {
-        location.reload();
+        reloadWithAccordion("programTable")
       }
     });
   });
@@ -163,6 +163,8 @@ $(document).ready(function(){
     validatePhoneNumber(this, "#phoneInput", username)
   });
 
+  setupPhoneNumber("#updatePhone", "#phoneInput")
+  
   $("#saveDiet").on('click', function() {
     let data = {
       dietInfo: $(this).data("diet")
@@ -176,6 +178,7 @@ $(document).ready(function(){
       },
     })
   });
+
 
 });
 

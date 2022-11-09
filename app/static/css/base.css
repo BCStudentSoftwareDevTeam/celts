@@ -16,6 +16,7 @@
 }
 
 .toast-container{
+  top: 0;
   z-index: 11;
 }
 
@@ -23,6 +24,10 @@
 input.invalid,
 select.invalid {
   background-color: #ffdddd;
+}
+
+select.empty {
+    color: gray;
 }
 
 

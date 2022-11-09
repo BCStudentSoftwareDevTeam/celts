@@ -16,10 +16,13 @@ from app.models.eventRsvp import EventRsvp
 from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
 from app.models.eventFile import EventFile
+from app.models.requirementMatch import RequirementMatch
+from app.models.certificationRequirement import CertificationRequirement
 
 from app.logic.adminLogs import createLog
 from app.logic.utils import format24HourTime
 from app.logic.fileHandler import FileHandler
+from app.logic.certification import updateCertRequirementForEvent
 
 def getEvents(program_id=None):
 
@@ -155,13 +158,14 @@ def saveEventToDb(newEventData):
             # Create or update the event
             if isNewEvent:
                 eventRecord = Event.create(**eventData)
-                # TODO handle multiple programs
                 if 'program' in newEventData:
                     ProgramEvent.create(program=newEventData['program'], event=eventRecord)
             else:
                 eventRecord = Event.get_by_id(newEventData['id'])
                 Event.update(**eventData).where(Event.id == eventRecord).execute()
 
+            if 'certRequirement' in newEventData and newEventData['certRequirement'] != "":
+                updateCertRequirementForEvent(eventRecord, newEventData['certRequirement'])
 
             eventRecords.append(eventRecord)
 
@@ -173,7 +177,9 @@ def getStudentLedEvents(term):
                              .join(ProgramEvent, attr = 'programEvent')
                              .join(Program)
                              .where(Program.isStudentLed,
-                                    Event.term == term).execute())
+                                    Event.term == term)
+                             .order_by(Event.startDate, Event.timeStart)
+                             .execute())
     programs = {}
 
     for event in studentLedEvents:
@@ -191,11 +197,12 @@ def getTrainingEvents(term, user):
         user: expected to be the current user
         return: a list of all trainings the user can view
     """
-    trainingQuery = (Event.select(Event)
-                           .join(ProgramEvent, JOIN.LEFT_OUTER)
-                           .join(Program, JOIN.LEFT_OUTER)
-                           .where(Event.isTraining == True, Event.term == term)
-                           .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate).distinct())
+    trainingQuery = (Event.select(Event).distinct()
+                          .join(ProgramEvent, JOIN.LEFT_OUTER)
+                          .join(Program, JOIN.LEFT_OUTER)
+                          .where(Event.isTraining == True,
+                                 Event.term == term)
+                          .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate, Event.timeStart))
 
     hideBonner = (not user.isAdmin) and not (user.isStudent and user.isBonnerScholar)
     if hideBonner:
@@ -206,10 +213,12 @@ def getTrainingEvents(term, user):
 def getBonnerEvents(term):
 
     bonnerScholarsEvents = list(Event.select(Event,ProgramEvent, Program.id.alias("program_id"))
-                                 .join(ProgramEvent)
-                                 .join(Program)
-                                 .where(Program.isBonnerScholars,
-                                        Event.term == term).execute())
+                                     .join(ProgramEvent)
+                                     .join(Program)
+                                     .where(Program.isBonnerScholars,
+                                            Event.term == term)
+                                     .order_by(Event.startDate, Event.timeStart)
+                                     .execute())
     return bonnerScholarsEvents
 
 def getOtherEvents(term):
@@ -221,38 +230,38 @@ def getOtherEvents(term):
     # Gets all events that are not associated with a program and are not trainings
     # Gets all events that have a program but don't fit anywhere
     otherEvents = list(Event.select(Event, Program)
-                        .join(ProgramEvent, JOIN.LEFT_OUTER)
-                        .join(Program, JOIN.LEFT_OUTER)
-                        .where(Event.term == term,
-                               Event.isTraining == False,
-                               Event.isAllVolunteerTraining == False,
-                               ((ProgramEvent.program == None) |
-                                ((Program.isStudentLed == False) &
-                                (Program.isBonnerScholars == False))))
-                        .order_by(Event.id).execute()
-                      )
+                            .join(ProgramEvent, JOIN.LEFT_OUTER)
+                            .join(Program, JOIN.LEFT_OUTER)
+                            .where(Event.term == term,
+                                   Event.isTraining == False,
+                                   Event.isAllVolunteerTraining == False,
+                                   ((ProgramEvent.program == None) |
+                                   ((Program.isStudentLed == False) &
+                                   (Program.isBonnerScholars == False))))
+                            .order_by(Event.startDate, Event.timeStart, Event.id)
+                            .execute())
 
     return otherEvents
 
 def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
     """
-        Get the list of upcoming events that the user is interested in.
+        Get the list of upcoming events that the user is interested in as long
+        as they are not banned from the program that the event is a part of.
         :param user: a username or User object
         :param asOf: The date to use when determining future and past events.
                       Used in testing, defaults to the current timestamp.
         :return: A list of Event objects
     """
 
-    events =  list(Event.select()
+    events =  (Event.select().distinct()
                     .join(ProgramEvent, JOIN.LEFT_OUTER)
+                    .join(ProgramBan, JOIN.LEFT_OUTER, on=((ProgramBan.program == ProgramEvent.program) & (ProgramBan.user == user)))
                     .join(Interest, JOIN.LEFT_OUTER, on=(ProgramEvent.program == Interest.program))
                     .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
                     .where(Event.startDate >= asOf,
-                           (Interest.user == user) | (EventRsvp.user == user))
-                    .distinct() # necessary because of multiple programs
-                    .order_by(Event.startDate, Event.name).execute() # keeps the order of events the same when the dates are the same
-                    )
-
+                          (Interest.user == user) | (EventRsvp.user == user),
+                          ProgramBan.user.is_null(True) | (ProgramBan.endDate < asOf))
+                    .order_by(Event.startDate, Event.name))
 
     events_list = []
     shown_recurring_event_list = []
@@ -286,7 +295,10 @@ def getParticipatedEventsForUser(user):
                                       Event.isAllVolunteerTraining == False)
                                .order_by(Event.startDate, Event.name))
 
-    allVolunteer = (Event.select(Event, "").join(EventParticipant).where(Event.isAllVolunteerTraining == True, EventParticipant.user == user))
+    allVolunteer = (Event.select(Event, "")
+                         .join(EventParticipant)
+                         .where(Event.isAllVolunteerTraining == True,
+                                EventParticipant.user == user))
     union = participatedEvents.union_all(allVolunteer)
     unionParticipationWithVolunteer = list(union.select_from(union.c.id, union.c.programName, union.c.startDate, union.c.name).order_by(union.c.startDate, union.c.name).execute())
 
@@ -313,10 +325,11 @@ def validateNewEventData(data):
     # Validation if we are inserting a new event
     if 'id' not in data:
 
-        event = Event.select().where((Event.name == data['name']) &
-                                     (Event.location == data['location']) &
-                                     (Event.startDate == data['startDate']) &
-                                     (Event.timeStart == data['timeStart']))
+        event = (Event.select()
+                      .where((Event.name == data['name']) &
+                             (Event.location == data['location']) &
+                             (Event.startDate == data['startDate']) &
+                             (Event.timeStart == data['timeStart'])))
 
         try:
             Term.get_by_id(data['term'])
@@ -343,7 +356,10 @@ def getPreviousRecurringEventData(recurringId):
     """
     Joins the User db table and Event Participant db table so that we can get the information of a participant if they attended an event
     """
-    previousEventVolunteers = User.select(User).join(EventParticipant).join(Event).where(Event.recurringId==recurringId).distinct()
+    previousEventVolunteers = (User.select(User).distinct()
+                                   .join(EventParticipant)
+                                   .join(Event)
+                                   .where(Event.recurringId==recurringId))
     return previousEventVolunteers
 
 def calculateRecurringEventFrequency(event):
@@ -373,6 +389,7 @@ def preprocessEventData(eventData):
         - checkbaxes should be True or False
         - if term is given, convert it to a model object
         - times should exist be strings in 24 hour format example: 14:40
+        - Look up matching certification requirement if necessary
     """
     ## Process checkboxes
     eventCheckBoxes = ['isFoodProvided', 'isRsvpRequired', 'isService', 'isTraining', 'isRecurring', 'isAllVolunteerTraining']
@@ -403,6 +420,18 @@ def preprocessEventData(eventData):
             eventData['term'] = Term.get_by_id(eventData['term'])
         except DoesNotExist:
             eventData['term'] = ''
+
+    # Process requirement
+    if 'certRequirement' in eventData:
+        try:
+            eventData['certRequirement'] = CertificationRequirement.get_by_id(eventData['certRequirement'])
+        except DoesNotExist:
+            eventData['certRequirement'] = ''
+    elif 'id' in eventData:
+        # look up requirement
+        match = RequirementMatch.get_or_none(event=eventData['id'])
+        if match:
+            eventData['certRequirement'] = match.requirement
 
     if 'timeStart' in eventData:
         eventData['timeStart'] = format24HourTime(eventData['timeStart'])

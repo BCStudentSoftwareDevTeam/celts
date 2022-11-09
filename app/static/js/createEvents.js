@@ -37,7 +37,9 @@ function format24to12HourTime(timeStr){
  * Run when the webpage is ready for javascript
  */
 $(document).ready(function() {
-    $("#attachmentObject").fileinput()
+    $("#attachmentObject").fileinput({
+        allowedFileExtensions:["pdf","jpg","png","gif", "csv", "docx", "jpg", "jpeg", "jfif"]
+    })
   // Disable button when we are ready to submit
   $("#saveEvent").on('submit',function(event) {
       $(this).find("input[type=submit]").prop("disabled", true)
