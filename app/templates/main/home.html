@@ -3,8 +3,25 @@
 
 {% block app_content %}
 <h1 class="text-center mb-5">Welcome to CELTS Link</h1>
-<div class="row row-cols-4">
-  {{managerProgramList}}
+<div class="d-flex">
+  <div class="justify-content-center row row-cols-lg-4 row-cols-md-3 row-cols-1 g-4">
+    {% for program, managers in managerProgramList.items() %}
+    <div class="card m-2">
+      <img src="{{url_for('static', filename='celts_logo.png')}}" class="card-img-top" alt="card-image">
+      <div class="card-body">
+        <h5 class="card-title">{{program.programName}}</h5>
+        <p class="card-subtitle text-muted">
+          Managed by: {{managers}}</p>
+        <p class="card-text">This is an event that improves work ethic.</p>
+        <div class="d-flex justify-content-between">
+          <a href="#" class="btn btn-primary">Go</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
 
 </div>
 {% endblock %}
+
+<!-- <div class="row row-cols-6"> -->

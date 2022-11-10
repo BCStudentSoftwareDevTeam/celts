@@ -40,17 +40,14 @@ def home():
     programs = Program.select()
     managerRows = list(ProgramManager.select())
     managerProgramList = {}
+
     for program in programs:
-        for row in managerRows:
-            print(row.user)
-            if program == row.program:
-                if program in managerProgramList:
-                    managerProgramList.update({program: row.user})
-                else:
-                    managerProgramList[program] = [row.user]
-                managerRows.remove(row)
-            else:
-                managerProgramList[program] = [None]
+        managerProgramList[program] = "Nobody"
+    for row in managerRows:
+        if managerProgramList[row.program] == "Nobody":
+            managerProgramList.update({row.program: f"{row.user.firstName} {row.user.lastName}"})
+        else:
+            managerProgramList.update({row.program: f"{managerProgramList[row.program]}, {row.user.firstName} {row.user.lastName}"})
     return render_template("/main/home.html", managerProgramList = managerProgramList)
 
 @main_bp.route('/eventsList/<selectedTerm>', methods=['GET'])
