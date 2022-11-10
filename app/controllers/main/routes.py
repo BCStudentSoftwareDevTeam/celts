@@ -139,14 +139,7 @@ def addNote():
     """
     postData = request.form
     try:
-        if postData["bonner"] == "on":
-            bonner = True  # This contains the note left if the volunteer is Bonner Scholar
-        else:
-            bonner = False
-    except:
-        bonner = False
-    try:
-        note = addProfileNote(postData["visibility"], bonner, postData["noteTextbox"], postData["username"])
+        note = addProfileNote(postData["visibility"], postData["bonner"] == "on", postData["noteTextbox"], postData["username"])
         flash("Successfully added profile note", "success")
         return redirect(url_for("main.viewUsersProfile", username=postData["username"]))
     except Exception as e:

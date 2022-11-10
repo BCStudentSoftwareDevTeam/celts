@@ -80,7 +80,7 @@ $(document).ready(function(){
       data: {"username": username,
              "visibility": $("#noteDropdown").val(),
              "noteTextbox": $("#addNoteTextArea").val(),
-             "bonner": $("#bonnerInput").val()},
+             "bonner": $("#bonnerInput").val()=="on"? "on":"off"},
       success: function(response) {
         reloadWithAccordion("notes")
       }

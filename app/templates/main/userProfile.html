@@ -35,7 +35,7 @@
         Upcoming Events
       </button>
     </h3>
-    {% set show = "show" if visibleAccordion == "upcoming" or volunteer.username == g.current_user.username and not visibleAccordion =="programTable" and not visibleAccordion =="background" else ""%}
+    {% set show = "show" if visibleAccordion == "upcoming" or volunteer.username == g.current_user.username and not visibleAccordion =="programTable" and not visibleAccordion == "notes" and not visibleAccordion =="background" else ""%}
     <div id="collapseOne" class="accordion-collapse collapse {{show}} " aria-labelledby="headingOne" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="row table-responsive">
@@ -301,123 +301,66 @@
   {% endif %}
   <!-- End Background Check Table -->
   <!-- Start Notes section -->
-    <div class="accordion-item" id="accordion5">
-      <h3 class="accordion-header" id="headingSix">
-        {% set focus = "open" if visibleAccordion == "notes" else "collapsed" %}
-        <button class="accordion-button {{focus}}" type="button" data-parent="#accordion5" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
-            Notes
-        </button>
-      </h3>
-      {% set show = "show" if visibleAccordion == "notes" else "" %}
-      <div id="collapseSix" class="accordion-collapse collapse {{show}}" aria-labelledby="headingSix" data-bs-parent="#userProfile">
-        <div class="accordion-body">
-          <h4 class="text-center pb-0 mb-0">User Notes</h4>
-          <table class="table table-responsive table-striped" id="profileTable">
-            <thead>
-              <tr>
-                <th></th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {% set user = namespace(count=0) %}
-              {% for row in profileNotes %}
-                {% if row.viewTier == 1 and not row.isBonnerNote %}
-                  <tr>
-                    <td>{{row.note.noteContent}} <span><i class="ms-1 text-muted">  -{{row.note.createdBy.firstName+ " "+ row.note.createdBy.lastName}} on {{row.note.createdOn.strftime('%m/%d/%Y')}}</i></span></td>
-                    <td>
-                      {% if g.current_user.isCeltsStudentStaff or g.current_user.isCeltsAdmin %}
-                        <button type="button" class="btn btn-sm btn-danger deleteNoteButton float-end" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button>
-                      {% else %}
-                        <button type="button" class="btn btn-sm btn-danger deleteNoteButton float-end disabled" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button>
-                      {% endif %}
-                    </td>
-                  </tr>
-                  {% set user.count = user.count + 1 %}
-                {% endif %}
-              {% endfor %}
-              </tbody>
-          </table>
-          {% if user.count == 0 %}
-            <tr>There are no notes yet</tr>
-          {% endif %}
-          {% if g.current_user.isCeltsStudentStaff or g.current_user.isCeltsAdmin %}
-          <h4 class="text-center pb-0 mb-0">Student Staff Notes</h4>
-          <table class="table table-responsive table-striped" id="profileTable">
-            <thead>
-              <tr>
-                <th></th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {% set studentStaff = namespace(count=0) %}
-              {% for row in profileNotes %}
-                {% if row.viewTier == 2 and not row.isBonnerNote %}
-                  <tr>
-                    <td>{{row.note.noteContent}} <span><i class="ms-1 text-muted">  -{{row.note.createdBy.firstName+ " "+ row.note.createdBy.lastName}} on {{row.note.createdOn.strftime('%m/%d/%Y')}}</i></span></td>
-                    <td><button type="button" class="btn btn-sm btn-danger deleteNoteButton float-end" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button></td>
-                  </tr>
-                  {% set studentStaff.count = studentStaff.count + 1 %}
-                {% endif %}
-              {% endfor %}
-            </tbody>
-          </table>
-          {% if studentStaff.count == 0 %}
-            <tr>There are no notes yet</tr>
-          {% endif %}
-          {% endif %}
-          {% if g.current_user.isCeltsAdmin %}
-          <h4 class="text-center pb-0 mb-0">Admin Notes</h4>
-          <table class="table table-responsive table-striped" id="profileTable">
-            <thead>
-              <tr>
-                <th></th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {% set admin = namespace(count=0) %}
-              {% for row in profileNotes %}
-                {% if row.viewTier == 3 and not row.isBonnerNote %}
-                  <tr>
-                    <td>{{row.note.noteContent}} <span><i class="ms-1 text-muted">  -{{row.note.createdBy.firstName+ " "+ row.note.createdBy.lastName}} on {{row.note.createdOn.strftime('%m/%d/%Y')}}</i></span></td>
-                    <td><button type="button" class="btn btn-sm btn-danger deleteNoteButton float-end" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button></td>
-                  </tr>
-                  {% set admin.count = admin.count + 1 %}
-                {% endif %}
-              {% endfor %}
-            </tbody>
-          </table>
-          {% if admin.count == 0 %}
-            <tr>There are no notes yet</tr>
-          {% endif %}
-          {% endif %}
-          {% if volunteer.isBonnerScholar %}
-          <h4 class="text-center pb-0 mb-0">Bonner Scholar Notes</h4>
-          <table class="table table-responsive table-striped" id="profileTable">
-            <thead>
-              <tr>
-                <th></th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {% set bonner = namespace(count=0) %}
-              {% for row in profileNotes %}
-                {% if row.isBonnerNote %}
-                  <tr>
-                    <td>{{row.note.noteContent}} <span><i class="ms-1 text-muted">  -{{row.note.createdBy.firstName+ " "+ row.note.createdBy.lastName}} on {{row.note.createdOn.strftime('%m/%d/%Y')}}</i></span></td>
-                    <td><button type="button" class="btn btn-sm btn-danger deleteNoteButton float-end" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button></td>
-                  </tr>
-                  {% set bonner.count = bonner.count + 1 %}
-                {% endif %}
-              {% endfor %}
-            </tbody>
-          </table>
-          {% if bonner.count == 0 %}
-            <tr>There are no notes yet</tr>
-          {% endif %}
+  <div class="accordion-item" id="accordion5">
+    <h3 class="accordion-header" id="headingSix">
+      {% set focus = "open" if visibleAccordion == "notes" else "collapsed" %}
+      <button class="accordion-button {{focus}}" type="button" data-parent="#accordion5" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+          Notes
+      </button>
+    </h3>
+    {% set show = "show" if visibleAccordion == "notes" else "" %}
+    <div id="collapseSix" class="accordion-collapse collapse {{show}}" aria-labelledby="headingSix" data-bs-parent="#userProfile">
+      <div class="accordion-body">
+        <table class="table table-responsive table-striped" id="profileTable">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Creator</th>
+              <th>Note</th>
+              <th>Visible By</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if g.current_user.isCeltsAdmin %}
+              {% set userTier = 3 %}
+            {% elif g.current_user.isCeltsStudentStaff %}
+              {% set userTier = 2 %}
+            {% else %}
+              {% set userTier = 1 %}
+            {% endif %}
+            {% set note = namespace(count=0) %}
+            {% for row in profileNotes %}
+              {% if userTier >= row.viewTier and (not row.isBonnerNote or g.current_user.isBonnerScholar) %}
+                <tr>
+                  <td>{{row.note.createdOn.strftime('%m/%d/%Y')}}</td>
+                  <td>{{row.note.createdBy.firstName+ " "+ row.note.createdBy.lastName}}</td>
+                  <td>{{row.note.noteContent}}</td>
+                  <td>
+                    {% set bonner = "Bonner " if row.isBonnerNote else "" %}
+                    {% if row.viewTier == 3 %}
+                      {{bonner}}Admins
+                    {% elif row.viewTier == 2 %}
+                      {{bonner}}Admins/Student Staff
+                    {% else %}
+                      {{ "Bonner Scholars " if row.isBonnerNote else "Everyone"}}
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if userTier > 1 %}
+                      <button type="button" class="btn btn-sm btn-danger deleteNoteButton float-end" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button>
+                    {% else %}
+                      <button type="button" class="btn btn-sm btn-danger deleteNoteButton float-end disabled" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% set note.count = note.count + 1 %}
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if note.count == 0 %}
+          <tr>There are no notes yet</tr>
         {% endif %}
         <br>
         <br>
@@ -449,10 +392,10 @@
                   {% endif %}
                   <option value='1' selected>Everyone</option>
                 </select>
-                {% if volunteer.isBonnerScholar %}
+                {% if g.current_user.isBonnerScholar %}
                   <div class="form-check form-switch pt-4">
                     <input class="form-check-input" name="bonner" id="bonnerInput" type="checkbox" />
-                    <label class="form-check-label"><strong>Bonner Scholars only</strong></label>
+                    <label class="form-check-label"><strong>For Bonners</strong></label>
                   </div>
                 {% endif %}
                 <br>
