@@ -13,5 +13,5 @@ class Course(baseModel):
     status = ForeignKeyField(CourseStatus)
     createdBy = ForeignKeyField(User)
     isAllSectionsServiceLearning = BooleanField(default=False)
-    serviceLearningDesignatedSections = CharField()
+    serviceLearningDesignatedSections = TextField()
     isPermanentlyDesignated = BooleanField(default=False)
