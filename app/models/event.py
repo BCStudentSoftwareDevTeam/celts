@@ -6,7 +6,7 @@ from datetime import datetime
 class Event(baseModel):
     name = CharField()
     term = ForeignKeyField(Term)
-    description = CharField()
+    description = TextField()
     timeStart = TimeField()
     timeEnd = TimeField()
     location = CharField()
