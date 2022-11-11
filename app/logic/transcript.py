@@ -46,11 +46,13 @@ def getProgramTranscript(username):
         .having(fn.SUM(EventParticipant.hoursEarned > 0)))
     transcriptData = {}
     for program in programData:
+        print("\n\n")
+        print(program.program.description)
+        print("\n\n")
         if program.program in transcriptData:
             transcriptData[program.program].append([program.event.term.description, program.hoursEarned])
         else:
             transcriptData[program.program] = [[program.event.term.description, program.hoursEarned]]
-
     return transcriptData
 
 def getAllEventTranscript(username):

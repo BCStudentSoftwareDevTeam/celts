@@ -27,6 +27,7 @@ from app.logic.participants import unattendedRequiredEvents, trainedParticipants
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
+from app.logic.home import getManagerProgramDict
 from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import unapprovedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
@@ -37,18 +38,8 @@ def redirectToLogout():
 
 @main_bp.route('/', methods=['GET'])
 def home():
-    programs = Program.select()
-    managerRows = list(ProgramManager.select())
-    managerProgramList = {}
-
-    for program in programs:
-        managerProgramList[program] = "Nobody"
-    for row in managerRows:
-        if managerProgramList[row.program] == "Nobody":
-            managerProgramList.update({row.program: f"{row.user.firstName} {row.user.lastName}"})
-        else:
-            managerProgramList.update({row.program: f"{managerProgramList[row.program]}, {row.user.firstName} {row.user.lastName}"})
-    return render_template("/main/home.html", managerProgramList = managerProgramList)
+    managerProgramDict = getManagerProgramDict()
+    return render_template("/main/home.html", managerProgramDict = managerProgramDict)
 
 @main_bp.route('/eventsList/<selectedTerm>', methods=['GET'])
 def events(selectedTerm):
