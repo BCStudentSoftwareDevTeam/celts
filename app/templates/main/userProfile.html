@@ -241,7 +241,7 @@
   {% endif %}
   <!-- End Program Manager section -->
   <!-- Start Background Check Table -->
-  {% if g.current_user.isAdmin %}
+  {% if g.current_user.isCeltsAdmin %}
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingFive">
       {% set focus = "open" if visibleAccordion == "background" else "collapsed" %}
@@ -334,7 +334,7 @@
               {% if userTier >= row.viewTier and (not row.isBonnerNote or g.current_user.isBonnerScholar) %}
                 <tr>
                   <td>{{row.note.createdOn.strftime('%m/%d/%Y')}}</td>
-                  <td>{{row.note.createdBy.firstName+ " "+ row.note.createdBy.lastName}}</td>
+                  <td>{{row.note.createdBy.firstName+ " "+ row.note.createdBy.lastName}}{{ " (you)" if row.note.createdBy == g.current_user else ""}}</td>
                   <td>{{row.note.noteContent}}</td>
                   <td>
                     {% set bonner = "Bonner " if row.isBonnerNote else "" %}
@@ -347,7 +347,7 @@
                     {% endif %}
                   </td>
                   <td>
-                    {% if userTier > 1 %}
+                    {% if (g.current_user == row.note.createdBy) or g.current_user.isCeltsAdmin%}
                       <button type="button" class="btn btn-sm btn-danger deleteNoteButton float-end" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button>
                     {% else %}
                       <button type="button" class="btn btn-sm btn-danger deleteNoteButton float-end disabled" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button>
@@ -392,7 +392,7 @@
                   {% endif %}
                   <option value='1' selected>Everyone</option>
                 </select>
-                {% if g.current_user.isBonnerScholar %}
+                {% if g.current_user.isBonnerScholar and volunteer.isBonnerScholar %}
                   <div class="form-check form-switch pt-4">
                     <input class="form-check-input" name="bonner" id="bonnerInput" type="checkbox" />
                     <label class="form-check-label"><strong>For Bonners</strong></label>
