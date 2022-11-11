@@ -1,18 +1,26 @@
 {% set title = "Home" %}
 {% extends "base.html" %}
-
+{% block scripts %}
+  {{super()}}
+  <script type="module" src="/static/js/home.js"></script>
+{% endblock %}
 {% block app_content %}
 <h1 class="text-center mb-5">Welcome to CELTS Link</h1>
 <div class="d-flex">
-  <div class="justify-content-center row row-cols-lg-4 row-cols-md-3 row-cols-1 g-4">
+  <div class="justify-content-center row row-cols-xl-4 row-cols-lg-3 row-cols-md-3 row-cols-1 g-4">
     {% for program, data in managerProgramDict.items() %}
     <div class="card m-2">
-      <img src="{{data.image}}" class="card-img-top" alt="card-image">
+      <img src="{{data.image}}" class="card-img-top rounded" alt="card-image">
       <div class="card-body">
         <h5 class="card-title">{{program.programName}}</h5>
         <p class="card-subtitle text-muted">
           Managed by: {{data.managers}}</p>
-        <p class="card-text">This is an event that improves work ethic.</p>
+        <p class="card-text">{{program.description|truncate(160)}}
+          <a type="button" class="link-primary" data-bs-toggle="modal"
+            data-bs-target="#descriptionModal" data-bs-program="{{program.programName}}" data-bs-image="{{data.image}}" data-bs-description="{{program.description}}">
+              Read more
+          </a>
+        </p>
         <div class="d-flex justify-content-between">
           <a href="#" class="btn btn-primary">Go</a>
         </div>
@@ -20,8 +28,24 @@
     </div>
     {% endfor %}
   </div>
+</div>
 
+<div class="modal fade" id="descriptionModal" tabindex="-1" aria-labelledby="descriptionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitle"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <img id="modalImage" src="" class="img-fluid rounded" alt="program-image">
+        <p id="modalDescription"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary">Go</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
-
-<!-- <div class="row row-cols-6"> -->
