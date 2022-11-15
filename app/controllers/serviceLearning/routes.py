@@ -173,13 +173,6 @@ def sendRecommendation():
     try:
         courseInstructors = []
         approvedCourses = list(Course.select().where(Course.status_id == 3))
-
-        for course in approvedCourses:
-            courseInstructors = list(CourseInstructor.select(CourseInstructor.user).where(CourseInstructor.course_id == course.id))
-
-        print(approvedCourses)
-        print(courseInstructors[0].user_id)
-        print("---------------------------")
         fileFormat = {"headers":["Course Name", "Course Number", "Faculty"]}
         newFile = fileMaker(approvedCourses, "CSV", fileFormat)
 

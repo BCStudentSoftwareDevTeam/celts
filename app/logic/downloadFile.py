@@ -1,4 +1,5 @@
 from app import app
+from app.models.courseInstructor import CourseInstructor
 import csv
 
 class fileMaker:
@@ -36,10 +37,9 @@ class fileMaker:
 
                     approvedCoursesDict = {}
                     for i in self.requestedInfo:
-                        print(i)
-                        approvedCoursesDict.update({i.id:[i.courseName, i.courseAbbreviation, i.CourseInstructor.user]})
+                        courseInstructor = list(CourseInstructor.select().where(CourseInstructor.course_id == i.id))
+                        approvedCoursesDict.update({i.id:[i.courseName, i.courseAbbreviation, courseInstructor[0].user_id]})
                         self.filewriter.writerow(approvedCoursesDict.get(i.id))
-                    print(approvedCoursesDict)
                 return "success!"
 
         except Exception as e:
