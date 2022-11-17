@@ -22,7 +22,6 @@ function formSubmit(el) {
 };
 
 function reviewCourses(action) {
-
   $.ajax({
     url: "/proposalReview/",
     type: "POST",

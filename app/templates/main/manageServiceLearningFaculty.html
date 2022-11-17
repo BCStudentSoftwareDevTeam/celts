@@ -50,19 +50,17 @@
           <table class="table table-striped border">
             <thead>
               <tr>
-                <th scope="col">Courses</th>
-                <th scope="col">Faculty</th>
-                <th scope="col">Status</th>
-                <th scope="col">Action</th>
+                <th class="col-md-1" scope="col">Courses</th>
+                <th class="col-md-1" scope="col">Faculty</th>
+                <th class="col-md-1" scope="col">Status</th>
+                <th class="col-md-1" scope="col">Action</th>
               </tr>
             </thead>
             <tbody>
               {% for course in unapprovedCourses %}
               <tr>
                 <td>{{course.courseName}}</td>
-                <td>
-                  {{ course.instructors }} <br>
-                </td>
+                <td>{{ course.instructors }}</td>
                 <td>{{course.status.status}}</td>
                 <td>
                   <select class="form-select courseData" id="{{course.id}}" onchange='courseAction(this)'>
@@ -84,19 +82,17 @@
           <table class="table table-striped border">
           <thead>
             <tr>
-              <th scope="col">Courses</th>
-              <th scope="col">Faculty</th>
-              <th scope="col">Status</th>
-              <th scope="col">Action</th>
+              <th class="col-md-1" scope="col">Courses</th>
+              <th class="col-md-1" scope="col">Faculty</th>
+              <th class="col-md-1" scope="col">Status</th>
+              <th class="col-md-1" scope="col">Action</th>
             </tr>
           </thead>
           <tbody>
               {% for course in approvedCourses %}
               <tr>
                 <td>{{course.courseName}}</td>
-                <td>
-                  {{ course.instructors }} <br>
-                </td>
+                <td>{{ course.instructors }}</td>
                 <td>{{course.status.status}}</td>
                 <td>
                   <select class="form-select courseData" id="{{course.id}}" onchange='courseAction(this)'>
