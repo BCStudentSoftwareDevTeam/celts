@@ -25,21 +25,24 @@ class fileMaker:
         '''
         try:
             if fileType == "CSV":
-                print(self.completePath)
-                print("creation works")
                 with open(self.completePath, 'w', encoding='utf-8', errors="backslashreplace") as csvfile:
-                    print("file creation works")
                     self.filewriter = csv.writer(csvfile, delimiter = ',')
                     headers = self.fileFormat.get("headers")
-                    print(headers)
                     self.filewriter.writerow(headers)
-                    print("hellooooooo")
-
                     approvedCoursesDict = {}
+                    courseInstructorList = []
                     for i in self.requestedInfo:
-                        courseInstructor = list(CourseInstructor.select().where(CourseInstructor.course_id == i.id))
-                        approvedCoursesDict.update({i.id:[i.courseName, i.courseAbbreviation, courseInstructor[0].user_id]})
+                        selectCourseInstructor = CourseInstructor.select(CourseInstructor.user_id).where(CourseInstructor.course_id == i.id)
+                        approvedCoursesDict.update({i.id:[i.courseName, i.courseAbbreviation]})
+                        if len(selectCourseInstructor) == 1:
+                            courseInstructorList.append(selectCourseInstructor[0].user_id)
+                            approvedCoursesDict[i.id].append(courseInstructorList)
+                        else:
+                            for j in range(len(selectCourseInstructor)):
+                                courseInstructorList.append(selectCourseInstructor[j].user_id)
+                                approvedCoursesDict[i.id].append(courseInstructorList)
                         self.filewriter.writerow(approvedCoursesDict.get(i.id))
+                        courseInstructorList.clear()
                 return "success!"
 
         except Exception as e:

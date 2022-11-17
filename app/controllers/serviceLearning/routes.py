@@ -171,9 +171,10 @@ def sendRecommendation():
     This function allows the download of csv file
     """
     try:
-        courseInstructors = []
         approvedCourses = list(Course.select().where(Course.status_id == 3))
+
         fileFormat = {"headers":["Course Name", "Course Number", "Faculty"]}
+
         newFile = fileMaker(approvedCourses, "CSV", fileFormat)
 
         return ""
