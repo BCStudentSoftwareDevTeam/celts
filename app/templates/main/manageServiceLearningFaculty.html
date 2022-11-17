@@ -53,7 +53,7 @@
                 <th scope="col">Courses</th>
                 <th scope="col">Faculty</th>
                 <th scope="col">Status</th>
-                <th scope="col">Edit</th>
+                <th scope="col">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -87,7 +87,7 @@
               <th scope="col">Courses</th>
               <th scope="col">Faculty</th>
               <th scope="col">Status</th>
-              <th scope="col">Sent</th>
+              <th scope="col">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -98,7 +98,12 @@
                   {{ course.instructors }} <br>
                 </td>
                 <td>{{course.status.status}}</td>
-                <td><i class="bi bi-check2"></i></td>
+                <td>
+                  <select class="form-select courseData" id="{{course.id}}" onchange='courseAction(this)'>
+                    <option value="---" disabled selected>Select Action</option>
+                    <option value="Review">Review</option>
+                    <option value="View">View</option>
+                </td>
               </tr>
               {% endfor %}
             </tbody>
