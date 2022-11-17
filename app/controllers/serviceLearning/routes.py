@@ -13,6 +13,7 @@ from app.logic.utils import selectSurroundingTerms
 from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal, renewProposal
 from app.logic.courseManagement import updateCourse, createCourse
 from app.logic.downloadFile import *
+from app.logic.courseManagement import approvedCourses
 from app.controllers.main.routes import getRedirectTarget, setRedirectTarget
 from app.controllers.serviceLearning import serviceLearning_bp
 
@@ -165,20 +166,20 @@ def renewCourse(courseID, termID):
 
     return "", 500
 
-@serviceLearning_bp.route('/serviceLearning/sendRecommendation', methods = ['GET'])
-def sendRecommendation():
+@serviceLearning_bp.route('/serviceLearning/sendRecommendation/<termID>', methods = ['GET'])
+def sendRecommendation(termID):
     """
     This function allows the download of csv file
     """
     try:
-        approvedCourses = list(Course.select().where(Course.status_id == 3))
-
+        print(termID)
+        csvInfo = approvedCourses(termID)
+        for course in csvInfo:
+            print(course.Term)
         fileFormat = {"headers":["Course Name", "Course Number", "Faculty"]}
-
-        newFile = fileMaker(approvedCourses, "CSV", fileFormat)
+        newFile = fileMaker(csvInfo, "CSV", fileFormat)
 
         return ""
     except Exception as e:
         print(e)
-        print("++++++++++++++++++++++++++++++++++++++++++++++++")
         return ""

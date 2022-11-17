@@ -12,9 +12,10 @@ $(document).ready( function () {
     }
   });
     $("#sendRecommendationBtn").click(function(){
+        let termID = $("#sendRecommendationBtn").val();
         $.ajax({
+            url:`/serviceLearning/sendRecommendation/${termID}`,
             type:"GET",
-            url:"/serviceLearning/sendRecommendation",
             success: function(response){
                 console.log(response)
             },

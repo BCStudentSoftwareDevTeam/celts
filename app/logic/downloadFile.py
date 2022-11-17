@@ -1,5 +1,6 @@
 from app import app
 from app.models.courseInstructor import CourseInstructor
+
 import csv
 
 class fileMaker:
@@ -31,18 +32,19 @@ class fileMaker:
                     self.filewriter.writerow(headers)
                     approvedCoursesDict = {}
                     courseInstructorList = []
-                    for i in self.requestedInfo:
-                        selectCourseInstructor = CourseInstructor.select(CourseInstructor.user_id).where(CourseInstructor.course_id == i.id)
-                        approvedCoursesDict.update({i.id:[i.courseName, i.courseAbbreviation]})
-                        if len(selectCourseInstructor) == 1:
-                            courseInstructorList.append(selectCourseInstructor[0].user_id)
-                            approvedCoursesDict[i.id].append(courseInstructorList)
-                        else:
-                            for j in range(len(selectCourseInstructor)):
-                                courseInstructorList.append(selectCourseInstructor[j].user_id)
-                                approvedCoursesDict[i.id].append(courseInstructorList)
-                        self.filewriter.writerow(approvedCoursesDict.get(i.id))
-                        courseInstructorList.clear()
+                    print(self.requestedInfo)
+                    # for i in self.requestedInfo:
+                        # print(self.requestedInfo)
+                    #     selectCourseInstructor = CourseInstructor.select(CourseInstructor.user_id).where(CourseInstructor.course_id == i.id)
+                    #     approvedCoursesDict.update({i.id:[i.courseName, i.courseAbbreviation]})
+                    #     if len(selectCourseInstructor) == 1:
+                    #         approvedCoursesDict[i.id].append(selectCourseInstructor[0].user_id)
+                    #     else:
+                    #         for j in range(len(selectCourseInstructor)):
+                    #             courseInstructorList.append(selectCourseInstructor[j].user_id)
+                    #             approvedCoursesDict[i.id].append(courseInstructorList)
+                    #     self.filewriter.writerow(approvedCoursesDict.get(i.id))
+                    #     courseInstructorList.clear()
                 return "success!"
 
         except Exception as e:
