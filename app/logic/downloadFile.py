@@ -40,7 +40,7 @@ class fileMaker:
                         else:
                             for j in range(len(selectCourseInstructor)):
                                 courseInstructorList.append(selectCourseInstructor[j].user_id)
-                                approvedCoursesDict[i.id].append(courseInstructorList)
+                            approvedCoursesDict[i.id].append(courseInstructorList)
                         self.filewriter.writerow(approvedCoursesDict.get(i.id))
                         courseInstructorList.clear()
                 return "success!"
