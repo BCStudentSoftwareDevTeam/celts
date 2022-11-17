@@ -22,7 +22,7 @@
       <div class="form-group">
         <select class="form-select" name='eventTerm' id='inputTerm' onchange="location=this.value">
           {% for term in listOfTerms %}
-            <option value='/eventsList/{{term}}' {{ "selected" if selectedTerm.id == term.id }}>{{term.description}} </option>
+            <option value='/eventsList/{{term}}/{{activeTab}}' {{ "selected" if selectedTerm.id == term.id }}>{{term.description}} </option>
           {% endfor %}
         </select>
       </div>
