@@ -27,7 +27,7 @@ from app.logic.participants import unattendedRequiredEvents, trainedParticipants
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
-from app.logic.home import getManagerProgramDict
+from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
 from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import unapprovedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
@@ -37,12 +37,18 @@ def redirectToLogout():
     return redirect(logout())
 
 @main_bp.route('/', methods=['GET'])
-def home():
+def landingPage():
     managerProgramDict = getManagerProgramDict()
-    return render_template("/main/home.html", managerProgramDict = managerProgramDict)
+    return render_template("/main/landingPage.html", managerProgramDict = managerProgramDict,
+                                                     term = g.current_term)
 
-@main_bp.route('/eventsList/<selectedTerm>', methods=['GET'])
-def events(selectedTerm):
+@main_bp.route('/goToEventsList/<programID>', methods=['GET'])
+def goToEventsList(programID):
+    return {"activeTab": getActiveEventTab(programID)}
+
+@main_bp.route('/eventsList/<selectedTerm>', methods=['GET'], defaults={'activeTab': "studentLedEvents"})
+@main_bp.route('/eventsList/<selectedTerm>/<activeTab>', methods=['GET'])
+def events(selectedTerm, activeTab):
     currentTerm = g.current_term
     if selectedTerm:
         currentTerm = selectedTerm
@@ -65,7 +71,8 @@ def events(selectedTerm):
         listOfTerms = listOfTerms,
         rsvpedEventsID = rsvpedEventsID,
         currentTime = currentTime,
-        user = g.current_user)
+        user = g.current_user,
+        activeTab = activeTab)
 
 @main_bp.route('/profile/<username>', methods=['GET'])
 def viewUsersProfile(username):

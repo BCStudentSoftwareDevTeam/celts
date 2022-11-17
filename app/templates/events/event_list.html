@@ -32,7 +32,7 @@
 <div class="row">
   <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
   <li class="col-md-3 col-12 nav-item" role="presentation">
-    <button class="nav-link active" id="studentLedEvents"
+    <button class="nav-link {{'active' if activeTab == 'studentLedEvents' else ''}}" id="studentLedEvents"
     data-bs-toggle="pill" data-bs-target="#pills-student-led" type="button" role="tab" aria-controls="pills-student-led" aria-selected="true">Student Led Service</button>
   </li>
   <li class="col-md-3 col-12 nav-item" role="presentation">
@@ -41,12 +41,12 @@
   </li>
   {% if user.isCeltsAdmin or user.isCeltsStudentStaff or user.isBonnerScholar %}
     <li class="col-md-3 col-12 nav-item" role="presentation">
-      <button class="nav-link" id="bonnerScholarsEvents"
+      <button class="nav-link {{'active' if activeTab == 'bonnerScholarsEvents' else ''}}" id="bonnerScholarsEvents"
       data-bs-toggle="pill" data-bs-target="#pills-bonner-scholars" type="button" role="tab" aria-controls="pills-bonner-scholars" aria-selected="false">Bonner Scholars</button>
     </li>
     {% endif %}
   <li class="col-md-3 col-12 nav-item" role="presentation">
-    <button class="nav-link" id="otherEvents"
+    <button class="nav-link {{'active' if activeTab == 'otherEvents' else ''}}" id="otherEvents"
     data-bs-toggle="pill" data-bs-target="#pills-one-time" type="button" role="tab" aria-controls="pills-one-time" aria-selected="false">Other Events</button>
   </li>
   </ul>
@@ -113,7 +113,7 @@
 {% endif %}
 {% endmacro %}
 <div class="tab-content" id="pills-tabContent">
-  <div class="tab-pane fade show active" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
+  <div class="tab-pane fade show {{'active' if activeTab == 'studentLedEvents' else ''}}" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
     {% if studentLedEvents %}
     <div class="accordion" id="categoryAccordion">
       {% for program,events in studentLedEvents.items() %}
@@ -189,10 +189,10 @@
   <div class="tab-pane fade show" id="pills-training" role="tabpanel" aria-labelledby="pills-training-tab">
     {{createTable(trainingEvents, "trainings")}}
   </div>
-  <div class="tab-pane fade show" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="pills-bonner-scholars-tab">
+  <div class="tab-pane {{'active' if activeTab == 'bonnerScholarsEvents' else ''}} fade show" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="pills-bonner-scholars-tab">
     {{createTable(bonnerEvents, "bonner")}}
   </div>
-  <div class="tab-pane fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
+  <div class="tab-pane {{'active' if activeTab == 'otherEvents' else ''}} fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
     {{createTable(otherEvents, "other")}}
   </div>
 </div>
