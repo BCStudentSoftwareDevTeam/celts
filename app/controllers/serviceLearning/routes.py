@@ -175,7 +175,7 @@ def sendRecommendation(termID):
         print(termID)
         csvInfo = approvedCourses(termID)
         for course in csvInfo:
-            print(course.Term)
+            print(course.)
         fileFormat = {"headers":["Course Name", "Course Number", "Faculty"]}
         newFile = fileMaker(csvInfo, "CSV", fileFormat)
 
