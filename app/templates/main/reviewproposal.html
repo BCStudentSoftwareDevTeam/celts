@@ -47,12 +47,13 @@
           </table>
         </div>
         <div class="modal-footer">
-          <a type="button" href="/serviceLearning/editProposal/{{course.id }}"  class="btn btn-secondary">  Edit  </a>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
           {% if course.status.status == "Approved" %}
-            <button type="button" class="btn btn-primary" data-id="{{course.id}}" id="unapproveButton" onclick="unapproveProposal(this)">Unapprove</button>
+            <button type="button" class="btn btn-warning" data-id="{{course.id}}" id="unapproveButton" onclick="unapproveProposal(this)">Unapprove</button>
           {% else %}
             <button type="button" class="btn btn-primary" data-id="{{course.id}}" id="approveButton" onclick="approveProposal(this)">Approve</button>
           {% endif %}
+          <a type="button" href="/serviceLearning/editProposal/{{course.id }}"  class="btn btn-secondary">Edit</a>
         </div>
       </div>
     </div>
