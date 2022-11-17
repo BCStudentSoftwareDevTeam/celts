@@ -34,7 +34,7 @@
      {% set programNameforEvent = eventData["program"].programName %}
      {% if eventData.name == 'All Volunteer Training' and program == None %}
         <h1>{{eventData.name}}</h1>
-     {% elif eventData.program != None %}
+     {% elif eventData.program%}
         <h1>{{eventData.name}}</h1>
         <h3>{{programNameforEvent}} Event</h3>
      {% else %}
