@@ -13,6 +13,7 @@
 {% endblock %}
 
 {% block app_content %}
+<<<<<<< Updated upstream
 <div class="row">
   <div class="col-6">
     <h1>{{volunteer.firstName}} {{volunteer.lastName}}</h1>
@@ -21,6 +22,18 @@
     <div>
       <input type="text" style="border: none" size="14" class="bfh-phone" data-value="{{volunteer.phoneNumber}}" id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
       <a class="text-decoration-none primary editButton" tabindex="0" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
+=======
+<div>
+    <h1 align="center">{{volunteer.firstName}} {{volunteer.lastName}}</h1>
+    <h6 align="center">{{volunteer.email}}</h6>
+    <div align="center">
+          <input type="text" style="border: none" size="14" class="form-control-sm bfh-phone" name="userProfilePhone"  id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
+          <a class="text-decoration-none primary editButton" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
+          <div align="right">
+            <a class="text-nowrap col-sm-3 float-end" href="/profile/{{volunteer.username}}/serviceTranscript">View Service Transcript</a>
+            <br>
+          </div>
+>>>>>>> Stashed changes
     </div>
   </div>
   <a align="right" href="/profile/{{volunteer.username}}/serviceTranscript">View Service Transcript</a>

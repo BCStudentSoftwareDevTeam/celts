@@ -53,7 +53,6 @@
                 <th scope="col">Courses</th>
                 <th scope="col">Faculty</th>
                 <th scope="col">Status</th>
-                <th scope="col"></th>
                 <th scope="col">Edit</th>
               </tr>
             </thead>
@@ -65,8 +64,13 @@
                   {{ course.instructors }} <br>
                 </td>
                 <td>{{course.status.status}}</td>
-                <td><button type="button" data-id="{{course}}" onclick="reviewCourses(this)" class="btn btn-primary btn-sm">{{ "Review"}}</button></td>
-                <td><a type="button" href="/serviceLearning/editProposal/{{course }}" class="btn btn-primary btn-sm">Edit</a></td>
+                <td>
+                  <select class="form-select courseData" id="{{course.id}}" onchange='courseAction(this)'>
+                    <option value="---" disabled selected>Select Action</option>
+                    <option value="Review">Review</option>
+                    <option value="View">View</option>
+                    <option value="Edit">Edit</option>
+                </td>
               </tr>
               {% endfor %}
             </tbody>

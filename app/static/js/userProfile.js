@@ -158,7 +158,22 @@ $(document).ready(function(){
         }
     });
 
+<<<<<<< Updated upstream
     setupPhoneNumber("#updatePhone", "#phoneInput")
+=======
+  $("#updatePhone").on('click', function() {
+    var username = $(this).data("username")
+    validatePhoneNumber(this, "#phoneInput", username, "buttonClick")
+  });
+  $("input[id=phoneInput]").focus(function(){
+    var username=$(this).data("username")
+    validatePhoneNumber(this, "#phoneInput", username,"focus")
+  })
+  $("input[id=phoneInput]").focusout(function(){
+    var username=$(this).data("username")
+    validatePhoneNumber(this, "#phoneInput", username,"focusOut")
+  })
+>>>>>>> Stashed changes
 });
 
 function updateManagers(el, volunteer_username ){// retrieve the data of the student staff and program id if the boxes are checked or not
