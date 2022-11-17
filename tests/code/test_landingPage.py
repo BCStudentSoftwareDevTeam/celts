@@ -51,14 +51,14 @@ def test_managerProgramDict():
         dict = getManagerProgramDict()
         assert os.path.join('static', 'images/landingPage/Hunger Initiatives.jpg') in dict[Program.get(Program.programName == "Hunger Initiatives")]["image"]
 
-        fakeProgram = Program.create(programName = "Fake Program",
+        noImageProgram = Program.create(programName = "Program with No Image",
                                           isStudentLed = False,
                                           isBonnerScholars = False,
                                           contactEmail = "",
                                           contactName = "")
 
         dict = getManagerProgramDict()
-        assert fakeProgram in dict
-        assert os.path.join('static', 'images/logos/celts_symbol.png') in dict[fakeProgram]["image"]
+        assert noImageProgram in dict
+        assert os.path.join('static', 'images/logos/celts_symbol.png') in dict[noImageProgram]["image"]
 
         transaction.rollback()
