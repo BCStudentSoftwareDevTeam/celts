@@ -44,3 +44,15 @@ function approveProposal(el){
     }
   })
 }
+
+function unapproveProposal(el){
+  let courseId = $(el).data("id")
+  $.ajax({
+    url: '/serviceLearning/unapproveCourse',
+    type: "POST",
+    data: {"courseID":courseID},
+    success: function(){
+      location.reload()
+    }
+  })
+}
