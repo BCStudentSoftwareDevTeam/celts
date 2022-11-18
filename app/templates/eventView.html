@@ -10,7 +10,7 @@
     <div class="text-center mb-3">
     {% set page_title = eventData.name %}
         <h1 id="title">{{page_title}}</h1>
-        {% if eventData.name != 'All Volunteer Training' and eventData.program == None%}
+        {% if eventData.name != 'All Volunteer Training' and eventData.program == None %}
           <h3>CELTS-Sponsored Event</h3>
         {% elif eventData.program %}
           <h3>{{eventData["program"].programName}} Event</h3>
