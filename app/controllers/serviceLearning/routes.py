@@ -1,4 +1,5 @@
-from flask import request, render_template, g, url_for, abort, redirect, flash, session
+from flask import request, render_template, g, url_for, abort, redirect, flash, session, safe_join
+import os
 from peewee import *
 from app.models.user import User
 from app.models.term import Term
@@ -176,8 +177,10 @@ def sendRecommendation(termID):
         csvInfo = approvedCourses(termID)
         fileFormat = {"headers":["Course Name", "Course Number", "Faculty", "Term"]}
         newFile = fileMaker(designator, csvInfo, "CSV", fileFormat)
+        print("+++++++++++++++++++++++")
+        print(downloadPath)
+        return safe_join(app.config['files']['base_path'], "ApprovedCourses.csv")
 
-        return ""
     except Exception as e:
         print(e)
         return ""
