@@ -11,9 +11,9 @@ class fileMaker:
     fileType: Specifies what type of file is going to be made. Currently implemented: (CSV)
     fileFormat (optional): The format of the file, primarily for CSV headers. Type: (dictionary of lists)
     '''
-    def __init__(self, requestedInfo, fileType, fileFormat = None):
+    def __init__(self, designator, requestedInfo, fileType, fileFormat = None):
         self.relativePath = app.config['files']['base_path']
-        self.completePath = self.relativePath + "/sendRecommendation.csv"
+        self.designator = designator
         self.requestedInfo = requestedInfo
         self.fileType = fileType
         self.fileFormat = fileFormat
@@ -25,30 +25,17 @@ class fileMaker:
         Creates the file
         '''
         try:
-            if fileType == "CSV":
-                with open(self.completePath, 'w', encoding='utf-8', errors="backslashreplace") as csvfile:
-                    self.filewriter = csv.writer(csvfile, delimiter = ',')
-                    headers = self.fileFormat.get("headers")
-                    self.filewriter.writerow(headers)
-                    approvedCoursesDict = {}
-                    courseInstructorList = []
-                    print(self.requestedInfo)
-                    # for i in self.requestedInfo:
-                        # print(self.requestedInfo)
-                    #     selectCourseInstructor = CourseInstructor.select(CourseInstructor.user_id).where(CourseInstructor.course_id == i.id)
-                    #     approvedCoursesDict.update({i.id:[i.courseName, i.courseAbbreviation]})
-                    #     if len(selectCourseInstructor) == 1:
-                    #         approvedCoursesDict[i.id].append(selectCourseInstructor[0].user_id)
-                    #     else:
-                    #         for j in range(len(selectCourseInstructor)):
-                    #             courseInstructorList.append(selectCourseInstructor[j].user_id)
-                    #             approvedCoursesDict[i.id].append(courseInstructorList)
-                    #     self.filewriter.writerow(approvedCoursesDict.get(i.id))
-                    #     courseInstructorList.clear()
-                return "success!"
+            if self.designator == "sendRecommendation":
+                if fileType == "CSV":
+                    with open(self.relativePath + "/sendRecommendation.csv", 'w', encoding='utf-8', errors="backslashreplace") as csvfile:
+                        self.filewriter = csv.writer(csvfile, delimiter = ',')
+                        headers = self.fileFormat.get("headers")
+                        self.filewriter.writerow(headers)
+                        csvWriteList = []
+                        for approvedCourse in self.requestedInfo:
+                            csvWriteList = [approvedCourse.courseName, approvedCourse.courseAbbreviation, approvedCourse.instructors, approvedCourse.term.description]
+                            self.filewriter.writerow(csvWriteList)
+                    return "Recommendation CSV created successfully "
 
         except Exception as e:
-            errorMessage = "Format File Fails"
-            print(e)
-
-            return errorMessage
+            return e

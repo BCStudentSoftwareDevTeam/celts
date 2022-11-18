@@ -172,12 +172,10 @@ def sendRecommendation(termID):
     This function allows the download of csv file
     """
     try:
-        print(termID)
+        designator = "sendRecommendation"
         csvInfo = approvedCourses(termID)
-        for course in csvInfo:
-            print(course.)
-        fileFormat = {"headers":["Course Name", "Course Number", "Faculty"]}
-        newFile = fileMaker(csvInfo, "CSV", fileFormat)
+        fileFormat = {"headers":["Course Name", "Course Number", "Faculty", "Term"]}
+        newFile = fileMaker(designator, csvInfo, "CSV", fileFormat)
 
         return ""
     except Exception as e:
