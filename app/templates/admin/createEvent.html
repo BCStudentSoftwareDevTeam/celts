@@ -31,7 +31,15 @@
         {% set page_title = 'Create ' + template.name + ' Event' %}
       {% endif %}
       {% else %}
-        {% set page_title = eventData.name %}
+        {% if eventData.name == 'All Volunteer Training'%}
+           <h1>{{eventData.name}}</h1>
+        {% elif eventData.program%}
+           <h1>{{eventData.name}}</h1>
+           <h3>{{eventData["program"].programName}} Event</h3>
+        {% else %}
+           <h1>{{eventData.name}}</h1>
+           <h3>CELTS-Sponsored Event</h3>
+        {% endif %}
       {% endif %}
     <h1 id="title">{{page_title}}</h1>
     {% if isPastEvent %}
