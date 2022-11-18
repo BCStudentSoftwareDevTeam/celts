@@ -47,8 +47,9 @@ def goToEventsList(programID):
     return {"activeTab": getActiveEventTab(programID)}
 
 @main_bp.route('/eventsList/<selectedTerm>', methods=['GET'], defaults={'activeTab': "studentLedEvents"})
-@main_bp.route('/eventsList/<selectedTerm>/<activeTab>', methods=['GET'])
-def events(selectedTerm, activeTab):
+@main_bp.route('/eventsList/<selectedTerm>/<activeTab>', methods=['GET'], defaults={'programID': 0})
+@main_bp.route('/eventsList/<selectedTerm>/<activeTab>/<programID>', methods=['GET'])
+def events(selectedTerm, activeTab, programID):
     currentTerm = g.current_term
     if selectedTerm:
         currentTerm = selectedTerm
@@ -72,7 +73,8 @@ def events(selectedTerm, activeTab):
         rsvpedEventsID = rsvpedEventsID,
         currentTime = currentTime,
         user = g.current_user,
-        activeTab = activeTab)
+        activeTab = activeTab,
+        programID = int(programID))
 
 @main_bp.route('/profile/<username>', methods=['GET'])
 def viewUsersProfile(username):

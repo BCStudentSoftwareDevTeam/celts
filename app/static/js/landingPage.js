@@ -6,11 +6,16 @@ $(document).ready(function(){
   })
   $('.eventsListButton').on('click', function(){
     let term = $(this).data("term")
+    let programID = $(this).data("program_id")
     $.ajax({
       url:  "/goToEventsList/"+$(this).data("program_id"),
       type: "GET",
       success: function(response) {
-        window.location.href += "eventsList/"+term+"/"+response.activeTab
+        if (response.activeTab === "studentLedEvents"){
+          window.location.href += "eventsList/"+term+"/"+response.activeTab+"/"+programID
+        } else {
+          window.location.href += "eventsList/"+term+"/"+response.activeTab
+        }
       }
     });
   })

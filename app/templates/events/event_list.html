@@ -22,7 +22,7 @@
       <div class="form-group">
         <select class="form-select" name='eventTerm' id='inputTerm' onchange="location=this.value">
           {% for term in listOfTerms %}
-            <option value='/eventsList/{{term}}/{{activeTab}}' {{ "selected" if selectedTerm.id == term.id }}>{{term.description}} </option>
+            <option value='/eventsList/{{term}}/{{activeTab}}/{{programID}}' {{ "selected" if selectedTerm.id == term.id }}>{{term.description}} </option>
           {% endfor %}
         </select>
       </div>
@@ -119,7 +119,7 @@
       {% for program,events in studentLedEvents.items() %}
         <div class="accordion-item">
           <h2 class="accordion-header" id="accordion__header_{{program}}">
-            <button class="accordion-button collapsed"
+            <button class="accordion-button {{'show' if programID == program.id else 'collapsed'}}"
                     type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="#accordion__body_{{program}}_num_{{ loop.index }}"
@@ -129,7 +129,7 @@
             </button>
           </h2>
           <div id="accordion__body_{{program}}_num_{{ loop.index }}"
-                class="accordion-collapse collapse"
+                class="accordion-collapse collapse {{'show' if programID == program.id else ''}}"
                 aria-labelledby="accordion__header_{{program}}"
                 data-bs-parent="#categoryAccordion">
             <div class="accordion-body table-responsive">
