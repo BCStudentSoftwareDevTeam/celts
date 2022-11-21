@@ -27,7 +27,7 @@ class fileMaker:
         try:
             if self.designator == "sendRecommendation":
                 if fileType == "CSV":
-                    with open(self.relativePath + "/sendRecommendation.csv", 'w', encoding='utf-8', errors="backslashreplace") as csvfile:
+                    with open(self.relativePath + "/ApprovedCourses.csv", 'w', encoding='utf-8', errors="backslashreplace") as csvfile:
                         self.filewriter = csv.writer(csvfile, delimiter = ',')
                         headers = self.fileFormat.get("headers")
                         self.filewriter.writerow(headers)
