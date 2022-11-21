@@ -10,6 +10,7 @@ class Program(baseModel):
     isBonnerScholars = BooleanField(default=False)
     contactName = CharField(null=True,default='')
     contactEmail = CharField(null=True,default='')
+    defaultLocation = CharField(null=True,default='')
 
     @property
     def url(self):
