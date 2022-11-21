@@ -122,8 +122,10 @@ def updateDietInfo(username, dietContent):
     """
     Creates or update a user's diet information
     """
-
-    dietRecord = (DietaryRestriction
-                .insert(user = username, dietRestriction = dietContent)
-                .on_conflict('replace')
-                .execute())
+    userDietQuery = DietaryRestriction.select().where(DietaryRestriction.user == username)
+    userList = [list.user for list in userDietQuery]
+    print("LISTTTTTTT", userList)
+    if username in userList:
+        DietaryRestriction.update(dietRestriction = dietContent)
+    else:
+        dietRecord = DietaryRestriction.create(user = username, dietRestriction =dietContent)

@@ -164,17 +164,19 @@ $(document).ready(function(){
   });
 
   setupPhoneNumber("#updatePhone", "#phoneInput")
-  
-  $("#saveDiet").on('click', function() {
+
+  $(".saveDiet").on('click', function() {
     let data = {
-      dietInfo: $(this).data("diet")
+      dietInfo: $("#diet").val(),
+      user: $(this).data("user")
     }
     $.ajax({
-      method: "POST",
+      type: "POST",
       url: "/updateDietInformation",
       data: data,
       success: function(s){
         msgToast("Dietary Information successfully updated!")
+        console.log(data)
       },
     })
   });

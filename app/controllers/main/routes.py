@@ -23,7 +23,7 @@ from app.models.dietaryRestriction import DietaryRestriction
 
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, updateDietInfo
 from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getUserParticipatedEvents, checkUserRsvp, addPersonToEvent
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
@@ -114,6 +114,8 @@ def viewUsersProfile(username):
                                    "trainingList": userParticipatedEvents,
                                    "isNotBanned": True if not notes else False,
                                    "banNote": noteForDict})
+        userDietQuery = DietaryRestriction.select().where(DietaryRestriction.user == username)
+        userDiet = [note.dietRestriction for note in userDietQuery]
 
         return render_template ("/main/userProfile.html",
                 programs = programs,
@@ -126,7 +128,8 @@ def viewUsersProfile(username):
                 volunteer = volunteer,
                 backgroundTypes = backgroundTypes,
                 allBackgroundHistory = allBackgroundHistory,
-                currentDateTime = datetime.datetime.now()
+                currentDateTime = datetime.datetime.now(),
+                userDiet = userDiet
 
             )
     abort(403)
@@ -366,3 +369,17 @@ def setRedirectTarget(target):
     return: None
     """
     session["redirectTarget"] = target
+
+@main_bp.route('/updateDietInformation', methods = ['GET', 'POST'])
+def getDietInfo():
+    dietaryInfo = request.form
+    user = dietaryInfo["user"]
+    dietInfo = dietaryInfo["dietInfo"]
+    print(dietaryInfo)
+
+    updateDietInfo(user, dietInfo)
+
+    return render_template("/main/userProfile.html",
+                            dietInfo = dietInfo
+
+        )
