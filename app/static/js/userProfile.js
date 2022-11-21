@@ -175,8 +175,7 @@ $(document).ready(function(){
       url: "/updateDietInformation",
       data: data,
       success: function(s){
-        msgToast("Dietary Information successfully updated!")
-        console.log(data)
+        location.reload();
       },
     })
   });

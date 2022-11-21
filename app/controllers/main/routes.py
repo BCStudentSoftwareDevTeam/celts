@@ -379,7 +379,4 @@ def getDietInfo():
 
     updateDietInfo(user, dietInfo)
 
-    return render_template("/main/userProfile.html",
-                            dietInfo = dietInfo
-
-        )
+    return " "

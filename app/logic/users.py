@@ -126,6 +126,6 @@ def updateDietInfo(username, dietContent):
     userList = [list.user for list in userDietQuery]
     print("LISTTTTTTT", userList)
     if username in userList:
-        DietaryRestriction.update(dietRestriction = dietContent)
+        DietaryRestriction.update(dietRestriction = dietContent).execute()
     else:
         dietRecord = DietaryRestriction.create(user = username, dietRestriction =dietContent)
