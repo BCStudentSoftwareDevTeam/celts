@@ -1,8 +1,9 @@
 $(document).ready(function(){
-  $('#descriptionModal').on('show.bs.modal', function(event){
-    $("#modalTitle").text('About '+ event.relatedTarget.getAttribute('data-programName'))
-    $("#modalImage").attr("src", event.relatedTarget.getAttribute('data-image'))
-    $('#modalDescription').text(event.relatedTarget.getAttribute('data-description'))
+    $('#descriptionModal').on('show.bs.modal', function(event){
+    $("#modalTitle").text('About '+ event.relatedTarget.getAttribute('data-bs-program'))
+    $("#modalImage").attr("src", event.relatedTarget.getAttribute('data-bs-image'))
+    $('#modalDescription').text(event.relatedTarget.getAttribute('data-bs-description'))
+    $('#modalProgram').data('program_id', event.relatedTarget.getAttribute('data-bs-id'))
   })
   $('.eventsListButton').on('click', function(){
     let term = $(this).data("term")
