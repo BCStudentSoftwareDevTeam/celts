@@ -9,26 +9,7 @@
 <div class="d-flex">
   <div class="justify-content-center row row-cols-xl-4 row-cols-lg-3 row-cols-md-3 row-cols-1 g-4">
     {% for program, data in managerProgramDict.items() %}
-    <!-- <div class="card m-2">
-      <img src="{{data.image}}" class="card-img-top rounded mt-2" alt="card-image">
-      <div class="card-body">
-        <h5 class="card-title">{{program.programName}}</h5>
-        <p class="card-subtitle text-muted">
-          Managed by: {{data.managers}}</p>
-        <p class="card-text">{{program.description|truncate(160)}}
-          {% if not program.description == program.description|truncate(160) %}
-          <a type="button" class="link-primary" data-bs-toggle="modal"
-            data-bs-target="#descriptionModal" data-bs-program="{{program.programName}}" data-bs-image="{{data.image}}" data-bs-description="{{program.description}}">
-              Read more
-          </a>
-          {% endif %}
-        </p>
-        <div class="d-flex justify-content-between">
-          <a class="btn btn-primary eventsListButton" data-term="{{term.id}}" data-program_id="{{program.id}}">Go</a>
-        </div>
-      </div>
-    </div> -->
-    <div class="card m-2">
+  <div class="card m-2">
   <div class="row g-0">
     <div class="text-center m-1">
       <img src="{{data.image}}" class="img-fluid rounded" alt="card-image">
@@ -47,7 +28,7 @@
           {% endif %}
         </p>
         <div class="d-flex justify-content-between">
-          <a class="btn btn-primary eventsListButton" data-term="{{term.id}}" data-program_id="{{program.id}}">Go</a>
+          <a class="btn btn-primary w-50 m-auto eventsListButton" data-term="{{term.id}}" data-program_id="{{program.id}}">View Events</a>
         </div>
       </div>
     </div>
