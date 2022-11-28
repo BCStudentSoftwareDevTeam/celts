@@ -176,13 +176,13 @@ def sendRecommendation(termID):
         designator = "sendRecommendation"
         csvInfo = approvedCourses(termID)
         fileFormat = {"headers":["Course Name", "Course Number", "Faculty", "Term"]}
+        filePath = safe_join(os.getcwd() ,app.config['files']['base_path'])
+        print(filePath)
         newFile = fileMaker(designator, csvInfo, "CSV", fileFormat)
         cwd = os.getcwd()
-        filePath = safe_join("./static/files/",'ApprovedCourses.csv')
-        print(filePath)
         print(os.getcwd())
         print(app.config['files']['base_path'])
-        return send_from_directory('./static/files/', 'ApprovedCourses.csv')
+        return send_from_directory(filePath, 'ApprovedCourses.csv')
 
     except Exception as e:
         print(e)
