@@ -320,7 +320,7 @@ def validateNewEventData(data):
         return (False, "Event end time must be after start time.")
 
     if data['endDate'] ==  data['startDate'] and data['timeEnd'] <= data['timeStart']:
-        return (False, "Event start time is after event end time")
+        return (False, "Event end time must be after start time")
 
     # Validation if we are inserting a new event
     if 'id' not in data:
