@@ -317,7 +317,7 @@ def validateNewEventData(data):
         return (False, "Raw form data passed to validate method. Preprocess first.")
 
     if data['isRecurring'] and data['timeEnd'] <= data['timeStart']:
-        return (False, "Event start time is after event end time.")
+        return (False, "Event end time must be after start time.")
 
     if data['endDate'] ==  data['startDate'] and data['timeEnd'] <= data['timeStart']:
         return (False, "Event start time is after event end time")
