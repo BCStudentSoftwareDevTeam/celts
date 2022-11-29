@@ -127,4 +127,4 @@ def updateDietInfo(username, dietContent):
     if username in userList:
         DietaryRestriction.update(dietRestriction = dietContent).where(DietaryRestriction.user == username).execute()
     else:
-        dietRecord = DietaryRestriction.create(user = username, dietRestriction =dietContent)
+        dietRecord = DietaryRestriction.create(user = username, dietRestriction = dietContent)

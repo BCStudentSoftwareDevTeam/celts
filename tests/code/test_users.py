@@ -14,8 +14,9 @@ from app.models.programManager import ProgramManager
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.event import Event
 from app.models.programEvent import ProgramEvent
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, getBannedUsers, isBannedFromEvent
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, getBannedUsers, isBannedFromEvent, updateDietInfo
 from app.logic.volunteers import addUserBackgroundCheck
+from app.models.dietaryRestriction import DietaryRestriction
 
 @pytest.mark.integration
 def test_user_model():
@@ -376,3 +377,19 @@ def test_isBannedFromEvent():
                               isStudent = True)
         assert not isBannedFromEvent("usrtst2", 1)
         transaction.rollback()
+
+@pytest.mark.integration
+def test_updateDietInfo():
+    with mainDB.atomic() as transaction:
+
+        updateDietInfo("khatts", "Cheese")
+        diet = DietaryRestriction.select().where(DietaryRestriction.user == "khatts")
+        content = [list.dietRestriction for list in diet]
+        assert content == ["Cheese"]
+
+        updateDietInfo("khatts", "Beef")
+        newDiet = DietaryRestriction.select().where(DietaryRestriction.user == "khatts")
+        newContent = [list.dietRestriction for list in newDiet]
+        assert newContent == ["Beef"]
+
+    transaction.rollback()
