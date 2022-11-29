@@ -17,7 +17,7 @@ $(document).ready( function () {
             url:`/serviceLearning/sendRecommendation/${termID}`,
             type:"GET",
             success: function(response){
-                console.log(response)
+              callback(response);
             },
             error: function(response){
                 console.log(response)

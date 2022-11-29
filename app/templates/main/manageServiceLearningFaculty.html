@@ -103,7 +103,9 @@
 
       {% if term.isCurrentTerm or term.isFutureTerm %}
         <div class="float-end">
+          <form method="GET" action="/serviceLearning/sendRecommendation/{{term.id}}">
           <button class="btn btn-primary" id="sendRecommendationBtn" value="{{term.id}}">Download File</button>
+          </form>
           <table id="tblData"></table>
         </div>
        {% endif %}

@@ -35,7 +35,8 @@ class fileMaker:
                         for approvedCourse in self.requestedInfo:
                             csvWriteList = [approvedCourse.courseName, approvedCourse.courseAbbreviation, approvedCourse.instructors, approvedCourse.term.description]
                             self.filewriter.writerow(csvWriteList)
-                    print("done creating file")
+                    print("done creating file", csvfile)
+                    csvfile.close()
                     return ""
 
         except Exception as e:

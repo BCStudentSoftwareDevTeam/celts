@@ -172,18 +172,20 @@ def sendRecommendation(termID):
     """
     This function allows the download of csv file
     """
-    try:
-        designator = "sendRecommendation"
-        csvInfo = approvedCourses(termID)
-        fileFormat = {"headers":["Course Name", "Course Number", "Faculty", "Term"]}
-        filePath = safe_join(os.getcwd() ,app.config['files']['base_path'])
-        print(filePath)
-        newFile = fileMaker(designator, csvInfo, "CSV", fileFormat)
-        cwd = os.getcwd()
-        print(os.getcwd())
-        print(app.config['files']['base_path'])
-        return send_from_directory(filePath, 'ApprovedCourses.csv')
+    # try:
+    designator = "sendRecommendation"
+    csvInfo = approvedCourses(termID)
+    fileFormat = {"headers":["Course Name", "Course Number", "Faculty", "Term"]}
+    filePath = safe_join(os.getcwd(), app.config['files']['base_path'])
+    # print(filePath)
+    newFile = fileMaker(designator, csvInfo, "CSV", fileFormat)
+    print(newFile.relativePath)
+    # cwd = os.getcwd()
+    # print(os.getcwd())
+    # print(app.config['files']['base_path'])
+    # return send_from_directory(filePath, 'ApprovedCourses.csv')
+    return send_from_directory('/home/agliullovak/celts/app/static/files/', 'ApprovedCourses.csv', as_attachment=True)
 
-    except Exception as e:
-        print(e)
-        return ""
+    # except Exception as e:
+    #     print(e)
+    #     return ""
