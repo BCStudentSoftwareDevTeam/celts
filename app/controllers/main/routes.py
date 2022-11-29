@@ -375,7 +375,6 @@ def getDietInfo():
     dietaryInfo = request.form
     user = dietaryInfo["user"]
     dietInfo = dietaryInfo["dietInfo"]
-    print(dietaryInfo)
 
     updateDietInfo(user, dietInfo)
 

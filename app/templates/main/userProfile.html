@@ -351,7 +351,7 @@
           <form>
             <div class="form-group">
               <label for="usr">Please enter any dietary restrictions you have:</label>
-              <textarea class="form-control" id="diet">{{userDiet}}</textarea>
+              <textarea class="form-control" id="diet">{%for diet in userDiet%}{{diet}}{%endfor%}</textarea>
             </div>
             <br>
             <button type="button" class="saveDiet btn btn-primary" data-user="{{g.current_user.username}}">Save</button>
