@@ -18,6 +18,7 @@ function updateDate(obj) {
     $("#startDatePicker").datepicker("option", "maxDate", new Date(  newYear, newMonth, newDay));
   }
 }
+
 // turns a string with a time with HH:mm format to %I:%M %p format
 // used to display 12 hour format but still use 24 hour format in the backend
 function format24to12HourTime(timeStr){
@@ -211,4 +212,10 @@ $(document).ready(function() {
  $("#startDatePicker").change(function(){
      updateDate(this)
  });
+
+$("#inputCharacters").keyup(function(event){
+  setCharacterLimit(this, "#remainingCharacters")
+  });
+
+  setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
 });
