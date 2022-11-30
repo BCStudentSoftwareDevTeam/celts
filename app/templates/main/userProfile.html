@@ -29,12 +29,12 @@
 <div class="accordion" id="userProfile">
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingOne">
-      {% set focus = "open" if visibleAccordion == "upcoming" or volunteer.username == g.current_user.username and not visibleAccordion =="programTable" and not visibleAccordion =="background" else "collapsed" %}
+      {% set focus = "open" if visibleAccordion == "upcoming" or (volunteer.username == g.current_user.username and not visibleAccordion) else "collapsed" %}
       <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
         Upcoming Events
       </button>
     </h3>
-    {% set show = "show" if visibleAccordion == "upcoming" or volunteer.username == g.current_user.username and not visibleAccordion =="programTable" and not visibleAccordion =="background" else ""%}
+    {% set focus = "open" if visibleAccordion == "upcoming" or (volunteer.username == g.current_user.username and not visibleAccordion) else "collapsed" %}
     <div id="collapseOne" class="accordion-collapse collapse {{show}} " aria-labelledby="headingOne" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="row table-responsive">
@@ -344,7 +344,7 @@
     </button>
 
   </h3>
-  {% set show = "show" if visibleAccordion == "background" else "" %}
+  {% set show = "show" if visibleAccordion == "dietaryInformation" else "" %}
   <div id="collapseSix" class="accordion-collapse collapse {{show}}" aria-labelledby="headingSix" data-bs-parent="#userProfile">
     <div class="accordion-body">
       <div class="container">

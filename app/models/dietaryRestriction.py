@@ -3,4 +3,4 @@ from app.models.user import User
 
 class DietaryRestriction(baseModel):
     user = ForeignKeyField(User)
-    dietRestriction = CharField()
+    dietRestriction = TextField()

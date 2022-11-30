@@ -158,11 +158,6 @@ $(document).ready(function(){
         }
     });
 
-  $("#updatePhone").on('click', function() {
-    var username = $(this).data("username")
-    validatePhoneNumber(this, "#phoneInput", username)
-  });
-
   setupPhoneNumber("#updatePhone", "#phoneInput")
 
   $(".saveDiet").on('click', function() {
@@ -175,7 +170,7 @@ $(document).ready(function(){
       url: "/updateDietInformation",
       data: data,
       success: function(s){
-        location.reload();
+        reloadWithAccordion("dietaryInformation");
       },
     })
   });
