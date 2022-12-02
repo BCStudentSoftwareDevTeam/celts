@@ -6,15 +6,12 @@
 {% endblock %}
 {% block app_content %}
 <h1 class="text-center mb-5">Welcome to <span><img src="{{url_for('static', filename='images/logos/celts_logo.png')}}" style="width:160px"></span></h1>
-<div class="d-flex">
-  <div class="justify-content-center row row-cols-xl-4 row-cols-lg-3 row-cols-md-3 row-cols-1 g-4">
+<div class="d-flex justify-content-center row row-cols-xl-4 row-cols-lg-3 row-cols-md-3 row-cols-1 g-4">
     {% for program, data in managerProgramDict.items() %}
   <div class="card m-2">
-  <div class="row g-0">
-    <div class="text-center mt-1 mx-1">
-      <img src="{{data.image}}" class="img-fluid rounded" alt="card-image">
+    <div class="mt-1 mx-1 d-flex" style="height:200px">
+      <img src="{{data.image}}" class="img-fluid rounded align-self-center m-auto" style="max-height:200px" alt="card-image">
     </div>
-    <div>
       <div class="card-body">
         <a class="btn btn-sm m-0 p-0"><h5 class="eventsListButton card-title" data-term="{{term.id}}" data-program_id="{{program.id}}">{{program.programName}}</h5></a>
         <p class="card-subtitle text-muted">
@@ -22,22 +19,30 @@
         <p class="card-text">{{program.description|truncate(160)}}
           {% if not program.description == program.description|truncate(160) %}
           <a type="button" class="float-end link-primary" data-bs-toggle="modal"
-            data-bs-target="#descriptionModal" data-bs-program="{{program.programName}}" data-bs-image="{{data.image}}" data-bs-description="{{program.description}}" data-bs-id="{{program.id}}">
+            data-bs-target="#descriptionModal" data-bs-url="{{program.url}}" data-bs-program="{{program.programName}}"
+            data-bs-image="{{data.image}}" data-bs-description="{{program.description}}" data-bs-id="{{program.id}}" data-bs-list="{{programsWithEventsList}}">
               Read more
-          </a>
+          </a><br /><br />
           {% endif %}
         </p>
-        <div class="d-flex justify-content-between card-footer">
-          <a class="btn btn-primary w-50 m-auto eventsListButton" data-term="{{term.id}}" data-program_id="{{program.id}}">View Events</a>
-        </div>
       </div>
+      {% if not program.isBonnerScholars %}
+        <div class="card-footer text-center">
+          {% if program.id in programsWithEventsList %}
+            <a class="btn btn-primary m-auto eventsListButton" data-term="{{term.id}}" data-program_id="{{program.id}}">View Events</a>
+          {% else %}
+            <a class="btn btn-secondary m-auto disabled">No Events This Term</a>
+          {% endif %}
+        </div>
+      {% else %}
+      <div class="card-footer text-center">
+        <a class="btn disabled opacity-0" style="opacity:0">Bonner Scholars</a>
+      </div>
+      {% endif %}
     </div>
-  </div>
-</div>
     {% endfor %}
   </div>
-</div>
-
+<!-- MODAL -->
 <div class="modal fade" id="descriptionModal" tabindex="-1" aria-labelledby="descriptionModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -46,8 +51,11 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <img id="modalImage" src="" class="img-fluid rounded" alt="program-image">
+        <div class="text-center">
+          <img id="modalImage" src="" class="img-fluid rounded" alt="program-image">
+        </div>
         <p class="mt-3" id="modalDescription"></p>
+        <a type="button" id="modalLearnMore" class="float-end link-primary" href="">Learn more</a>
       </div>
       <div class="modal-footer justify-content-between">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

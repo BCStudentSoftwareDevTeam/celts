@@ -39,8 +39,12 @@ def redirectToLogout():
 @main_bp.route('/', methods=['GET'])
 def landingPage():
     managerProgramDict = getManagerProgramDict()
+    programsWithEvents = list(ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event.term == g.current_term).join(Event).distinct())
+    programsWithEventsList = [program.program.id for program in programsWithEvents]
+
     return render_template("/main/landingPage.html", managerProgramDict = managerProgramDict,
-                                                     term = g.current_term)
+                                                     term = g.current_term,
+                                                     programsWithEventsList = programsWithEventsList)
 
 @main_bp.route('/goToEventsList/<programID>', methods=['GET'])
 def goToEventsList(programID):
