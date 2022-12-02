@@ -45,18 +45,6 @@ $(document).ready(function() {
   $("#saveEvent").on('submit',function(event) {
       debugger;
       $(this).find("input[type=submit]").prop("disabled", true);
-      console.log("here");
-      var recurringStatus = $("input[name='isRecurring']:checked").val()
-      console.log(recurringStatus);
-      console.log("Passed");
-      if (recurringStatus == 'on') {
-        $("#endDateStyle, #recurringTableDiv").removeClass('d-none')
-        $("#endDatePicker").prop('required', true);
-      } else {
-        $("#endDateStyle, #recurringTableDiv").addClass('d-none')
-        $("#endDatePicker").prop('required', false);
-      }
-      console.log("Bottom");
 
   });
 
