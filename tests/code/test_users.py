@@ -338,7 +338,7 @@ def test_getBannedUsers():
                               bnumber = '03522492',
                               email = 'usert@berea.deu',
                               isStudent = True)
-        banUser(1, User.get_by_id("usrtst"), "nope", "2022-11-29", "ramsayb2")
+        banUser(1, User.get_by_id("usrtst"), "nope", "2050-11-29", "ramsayb2")
         assert userToBan in [user.user for user in getBannedUsers(1)]
 
         unbanUser(1, User.get_by_id("usrtst"), "yep", "ramsayb2")  # Test eligible but previously banned user
