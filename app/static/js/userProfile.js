@@ -175,7 +175,6 @@ $(document).ready(function(){
     })
   });
 
-
 });
 
 function updateManagers(el, volunteer_username ){// retrieve the data of the student staff and program id if the boxes are checked or not

@@ -3,13 +3,25 @@ function changeTerm() {
     $('form').submit();
 };
 
+function executeCourseAction(action){
+  var courseID = action.id;
+  if (action.value == "Review"){
+    reviewCourses(courseID)
+  }
+  else if (action.value == "View"){
+    location = '/serviceLearning/viewProposal/' + courseID
+  }
+  else if (action.value == "Edit"){
+    location = '/serviceLearning/editProposal/' + courseID
+  }
+}
+
 function formSubmit(el) {
   $("#termSelector").attr('action', '/manageServiceLearning/' + el);
   $("#termSelector").submit()
 };
 
-function reviewCourses(el) {
-  let courseID = $(el).data('id');
+function reviewCourses(courseID) {
   $.ajax({
     url: "/proposalReview/",
     type: "POST",
@@ -25,6 +37,18 @@ function approveProposal(el){
   let courseID = $(el).data("id")
   $.ajax({
     url: '/serviceLearning/approveCourse',
+    type: "POST",
+    data: {"courseID":courseID},
+    success: function(){
+      location.reload()
+    }
+  })
+}
+
+function unapproveProposal(el){
+  let courseID = $(el).data("id")
+  $.ajax({
+    url: '/serviceLearning/unapproveCourse',
     type: "POST",
     data: {"courseID":courseID},
     success: function(){
