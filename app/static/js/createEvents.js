@@ -43,11 +43,26 @@ $(document).ready(function() {
     })
   // Disable button when we are ready to submit
   $("#saveEvent").on('submit',function(event) {
-      $(this).find("input[type=submit]").prop("disabled", true)
+      debugger;
+      $(this).find("input[type=submit]").prop("disabled", true);
+      console.log("here");
+      var recurringStatus = $("input[name='isRecurring']:checked").val()
+      console.log(recurringStatus);
+      console.log("Passed");
+      if (recurringStatus == 'on') {
+        $("#endDateStyle, #recurringTableDiv").removeClass('d-none')
+        $("#endDatePicker").prop('required', true);
+      } else {
+        $("#endDateStyle, #recurringTableDiv").addClass('d-none')
+        $("#endDatePicker").prop('required', false);
+      }
+      console.log("Bottom");
+
   });
 
   $("#checkIsRecurring").click(function() {
     var recurringStatus = $("input[name='isRecurring']:checked").val()
+    console.log(recurringStatus)
     if (recurringStatus == 'on') {
       $("#endDateStyle, #recurringTableDiv").removeClass('d-none')
       $("#endDatePicker").prop('required', true);
@@ -56,6 +71,8 @@ $(document).ready(function() {
       $("#endDatePicker").prop('required', false);
     }
   });
+
+
   $("#allowPastStart").click(function() {
     var allowPast = $("#allowPastStart:checked").val()
     if (allowPast == 'on') {
@@ -217,5 +234,5 @@ $("#inputCharacters").keyup(function(event){
   setCharacterLimit(this, "#remainingCharacters")
   });
 
-  setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
+  setCharacterLimit($("#inputCharacters"), "#remainingCharacters");
 });
