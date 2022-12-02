@@ -124,6 +124,29 @@ def approveCourse():
         print(e)
         flash("Course not approved!", "danger")
     return ""
+@serviceLearning_bp.route('/serviceLearning/unapproveCourse', methods=['POST'])
+def unapproveCourse():
+    """
+    This function updates and unapproves a Service-Learning Course when using the
+        unapprove button.
+    return: empty string because AJAX needs to receive something
+    """
+
+    try:
+        if len(request.form) == 1:
+            course = Course.get_by_id(request.form['courseID'])
+        else:
+            course = updateCourse(request.form.copy())
+
+        course.status = CourseStatus.SUBMITTED
+        course.save()
+        flash("Course unapproved!", "success")
+
+    except Exception as e:
+        print(e)
+        flash("Course was not unapproved!", "danger")
+
+    return ""
 
 @serviceLearning_bp.route('/updateInstructorPhone', methods=['POST'])
 def updateInstructorPhone():

@@ -157,7 +157,6 @@ $(document).ready(function(){
             return $(this).attr('data-content');
         }
     });
-
     setupPhoneNumber("#updatePhone", "#phoneInput")
 });
 
