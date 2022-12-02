@@ -34,7 +34,7 @@
         Upcoming Events
       </button>
     </h3>
-    {% set focus = "open" if visibleAccordion == "upcoming" or (volunteer.username == g.current_user.username and not visibleAccordion) else "collapsed" %}
+    {% set show = "show" if visibleAccordion == "upcoming" or (volunteer.username == g.current_user.username and not visibleAccordion) else "" %}
     <div id="collapseOne" class="accordion-collapse collapse {{show}} " aria-labelledby="headingOne" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="row table-responsive">
@@ -299,6 +299,31 @@
     </div>
     {% endif %}
     <!-- End Background Check Table -->
+    <div class="accordion-item">
+      <h3 class="accordion-header" id="headingSix">
+        {% set focus = "open" if visibleAccordion == "dietaryInformation" else "collapsed" %}
+        <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+            Dietary Restrictions
+        </button>
+
+      </h3>
+      {% set show = "show" if visibleAccordion == "dietaryInformation" else "" %}
+      <div id="collapseSix" class="accordion-collapse collapse {{show}}" aria-labelledby="headingSix" data-bs-parent="#userProfile">
+        <div class="accordion-body">
+          <div class="container">
+              <form>
+                <div class="form-group">
+                  <label for="usr">Please enter any dietary restrictions you have:</label>
+                  <textarea class="form-control" id="diet">{%for diet in userDiet%}{{diet}}{%endfor%}</textarea>
+                </div>
+                <br>
+                <button type="button" class="saveDiet btn btn-primary" data-user="{{g.current_user.username}}">Save</button>
+              </form>
+          </div>
+      </div>
+
+      </div>
+    </div>
 </div>
 <!-- Ban or Unban Modal -->
 <div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
@@ -336,29 +361,5 @@
 </div>
 <!-- End Ban or Unban Modal -->
 <!-- Dietary Restriction Table -->
-<div class="accordion-item">
-  <h3 class="accordion-header" id="headingSix">
-    {% set focus = "open" if visibleAccordion == "dietaryInformation" else "collapsed" %}
-    <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
-        Dietary Restrictions
-    </button>
 
-  </h3>
-  {% set show = "show" if visibleAccordion == "dietaryInformation" else "" %}
-  <div id="collapseSix" class="accordion-collapse collapse {{show}}" aria-labelledby="headingSix" data-bs-parent="#userProfile">
-    <div class="accordion-body">
-      <div class="container">
-          <form>
-            <div class="form-group">
-              <label for="usr">Please enter any dietary restrictions you have:</label>
-              <textarea class="form-control" id="diet">{%for diet in userDiet%}{{diet}}{%endfor%}</textarea>
-            </div>
-            <br>
-            <button type="button" class="saveDiet btn btn-primary" data-user="{{g.current_user.username}}">Save</button>
-          </form>
-      </div>
-  </div>
-
-  </div>
-</div>
 {% endblock %}
