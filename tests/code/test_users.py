@@ -16,7 +16,6 @@ from app.models.event import Event
 from app.models.programEvent import ProgramEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, getBannedUsers, isBannedFromEvent, updateDietInfo
 from app.logic.volunteers import addUserBackgroundCheck
-from app.models.dietaryRestriction import DietaryRestriction
 
 @pytest.mark.integration
 def test_user_model():
@@ -383,12 +382,12 @@ def test_updateDietInfo():
     with mainDB.atomic() as transaction:
 
         updateDietInfo("khatts", "Cheese")
-        diet = DietaryRestriction.select().where(DietaryRestriction.user == "khatts")
+        diet = User.select().where(User.username == "khatts")
         content = [list.dietRestriction for list in diet]
         assert content == ["Cheese"]
 
         updateDietInfo("khatts", "Beef")
-        newDiet = DietaryRestriction.select().where(DietaryRestriction.user == "khatts")
+        newDiet = User.select().where(User.username == "khatts")
         newContent = [list.dietRestriction for list in newDiet]
         assert newContent == ["Beef"]
 
