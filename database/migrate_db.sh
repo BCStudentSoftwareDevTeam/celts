@@ -32,7 +32,6 @@ pem add app.models.certification.Certification
 pem add app.models.certificationAttempt.CertificationAttempt
 pem add app.models.certificationRequirement.CertificationRequirement
 pem add app.models.requirementMatch.RequirementMatch
-pem add app.models.dietaryRestriction.DietaryRestriction
 
 pem watch
 pem migrate

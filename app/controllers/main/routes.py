@@ -19,7 +19,6 @@ from app.models.note import Note
 from app.models.programManager import ProgramManager
 from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
-from app.models.dietaryRestriction import DietaryRestriction
 
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
@@ -114,7 +113,7 @@ def viewUsersProfile(username):
                                    "trainingList": userParticipatedEvents,
                                    "isNotBanned": True if not notes else False,
                                    "banNote": noteForDict})
-        userDietQuery = DietaryRestriction.select().where(DietaryRestriction.user == username)
+        userDietQuery = User.select().where(User.username == username)
         userDiet = [note.dietRestriction for note in userDietQuery]
 
         return render_template ("/main/userProfile.html",

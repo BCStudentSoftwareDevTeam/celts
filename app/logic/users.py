@@ -5,7 +5,6 @@ from app.models.interest import Interest
 from app.models.note import Note
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.backgroundCheckType import BackgroundCheckType
-from app.models.dietaryRestriction import DietaryRestriction
 from app.logic.volunteers import addUserBackgroundCheck
 import datetime
 from peewee import JOIN
@@ -122,9 +121,7 @@ def updateDietInfo(username, dietContent):
     """
     Creates or update a user's diet information
     """
-    userDietQuery = DietaryRestriction.select().where(DietaryRestriction.user == username)
-    userList = [list.user.username for list in userDietQuery]
-    if username in userList:
-        DietaryRestriction.update(dietRestriction = dietContent).where(DietaryRestriction.user == username).execute()
-    else:
-        dietRecord = DietaryRestriction.create(user = username, dietRestriction = dietContent)
+
+    User.update(dietRestriction = dietContent).where(User.username == username).execute()
+
+    return ""
