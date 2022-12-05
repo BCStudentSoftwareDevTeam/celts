@@ -7,9 +7,9 @@ $(document).ready(function(){
     $('#modalProgram').data('program_id', event.relatedTarget.getAttribute('data-bs-id'))
 
     if (event.relatedTarget.getAttribute('data-bs-list').includes(event.relatedTarget.getAttribute('data-bs-id'))){
-      $("#modalProgram").removeClass("disabled btn-secondary").addClass("btn-primary")
+      $("#modalProgram").removeClass("disabled btn-secondary").addClass("btn-primary").text("View Events")
     } else {
-      $("#modalProgram").removeClass("btn-primary").addClass("disabled btn-secondary")
+      $("#modalProgram").removeClass("btn-primary").addClass("disabled btn-secondary").text("Currently No Events Planned")
     }
   })
   $('.eventsListButton').on('click', function(){
