@@ -115,19 +115,14 @@
                     </div>
                 </div>
             </div>
+
             {%if eventData.isRecurring == True and isNewEvent%}
-            <div class="form-group col-md-6" id ="endDateStyle" >
-            <!--datePicker for End date-->
-                <label class="form-label me-2" for="endDatePicker"><strong>End Date</strong></label>
-                <div class='input-group date' id="endDate">
-                  <input autocomplete="off" type='text' class="form-control datePicker" id='endDatePicker' value="{{eventData.endDate.strftime('%m-%d-%Y') if eventData.endDate and eventData.endDate.strftime else eventData.endDate}}" name="endDate" placeholder="Pick an end date">
-                  <div class="input-group-text" id="calendarIconEnd">
-                    <span><i class="bi bi-calendar-plus-fill"></i></span>
-                  </div>
-                </div>
-            </div>
+              {% set hideDate = "" %}
             {%else%}
-            <div class="form-group col-md-6 d-none" id ="endDateStyle" >
+              {% set hideDate = "d-none" %}
+            {%endif%}
+
+            <div class="form-group col-md-6 {{hideDate}}" id ="endDateStyle" >
             <!--datePicker for End date-->
                 <label class="form-label me-2" for="endDatePicker"><strong>End Date</strong></label>
                 <div class='input-group date' id="endDate">
@@ -137,7 +132,6 @@
                   </div>
                 </div>
             </div>
-            {%endif%}
 
         </div>
         <br>
