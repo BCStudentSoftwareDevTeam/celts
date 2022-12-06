@@ -3,8 +3,8 @@ function changeTerm() {
     $('form').submit();
 };
 
-function courseAction(action){
-  courseID = action.id;
+function executeCourseAction(action){
+  var courseID = action.id;
   if (action.value == "Review"){
     reviewCourses(courseID)
   }
@@ -21,7 +21,7 @@ function formSubmit(el) {
   $("#termSelector").submit()
 };
 
-function reviewCourses(action) {
+function reviewCourses(courseID) {
   $.ajax({
     url: "/proposalReview/",
     type: "POST",
@@ -46,7 +46,7 @@ function approveProposal(el){
 }
 
 function unapproveProposal(el){
-  let courseId = $(el).data("id")
+  let courseID = $(el).data("id")
   $.ajax({
     url: '/serviceLearning/unapproveCourse',
     type: "POST",
