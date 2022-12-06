@@ -34,6 +34,5 @@ pem add app.models.certificationAttempt.CertificationAttempt
 pem add app.models.certificationRequirement.CertificationRequirement
 pem add app.models.requirementMatch.RequirementMatch
 
-
 pem watch
 pem migrate

@@ -23,7 +23,7 @@ from app.models.courseInstructor import CourseInstructor
 
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, updateDietInfo
 from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getUserParticipatedEvents, checkUserRsvp, addPersonToEvent
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
@@ -130,6 +130,8 @@ def viewUsersProfile(username):
                                    "isNotBanned": True if not notes else False,
                                    "banNote": noteForDict})
         profileNotes = ProfileNote.select().where(ProfileNote.user == volunteer)
+        userDietQuery = User.select().where(User.username == username)
+        userDiet = [note.dietRestriction for note in userDietQuery]
 
         return render_template ("/main/userProfile.html",
                 programs = programs,
@@ -143,7 +145,8 @@ def viewUsersProfile(username):
                 backgroundTypes = backgroundTypes,
                 allBackgroundHistory = allBackgroundHistory,
                 currentDateTime = datetime.datetime.now(),
-                profileNotes = profileNotes
+                profileNotes = profileNotes,
+                userDiet = userDiet
             )
     abort(403)
 
@@ -410,3 +413,13 @@ def setRedirectTarget(target):
     return: None
     """
     session["redirectTarget"] = target
+
+@main_bp.route('/updateDietInformation', methods = ['GET', 'POST'])
+def getDietInfo():
+    dietaryInfo = request.form
+    user = dietaryInfo["user"]
+    dietInfo = dietaryInfo["dietInfo"]
+
+    updateDietInfo(user, dietInfo)
+
+    return " "

@@ -135,3 +135,12 @@ def addProfileNote(visibility, bonner, noteTextbox, username):
 
 def deleteProfileNote(noteId):
     return ProfileNote.delete().where(ProfileNote.id == noteId).execute()
+
+def updateDietInfo(username, dietContent):
+    """
+    Creates or update a user's diet information
+    """
+
+    User.update(dietRestriction = dietContent).where(User.username == username).execute()
+
+    return ""

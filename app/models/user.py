@@ -13,6 +13,7 @@ class User(baseModel):
     isStaff = BooleanField(default = False)
     isCeltsAdmin = BooleanField(default  =False)
     isCeltsStudentStaff = BooleanField(default = False)
+    dietRestriction = TextField(null=True)
 
     _pmCache = None
     _bsCache = None
@@ -27,7 +28,7 @@ class User(baseModel):
         if self._bsCache is None:
             # TODO should we exclude users who are banned from Bonner here?
             self._bsCache = BonnerCohort.select().where(BonnerCohort.user == self).exists()
-        
+
         return self._bsCache
 
     @property

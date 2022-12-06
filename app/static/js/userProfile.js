@@ -196,7 +196,24 @@ $(document).ready(function(){
             return $(this).attr('data-content');
         }
     });
-    setupPhoneNumber("#updatePhone", "#phoneInput")
+
+  setupPhoneNumber("#updatePhone", "#phoneInput")
+
+  $(".saveDiet").on('click', function() {
+    let data = {
+      dietInfo: $("#diet").val(),
+      user: $(this).data("user")
+    }
+    $.ajax({
+      type: "POST",
+      url: "/updateDietInformation",
+      data: data,
+      success: function(s){
+        reloadWithAccordion("dietaryInformation");
+      },
+    })
+  });
+
 });
 
 function updateManagers(el, volunteer_username ){// retrieve the data of the student staff and program id if the boxes are checked or not

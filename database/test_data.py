@@ -44,7 +44,8 @@ users = [
         "isFaculty": False,
         "isStaff": True,
         "isCeltsAdmin": True,
-        "isCeltsStudentStaff": False
+        "isCeltsStudentStaff": False,
+        "dietRestriction": "Diary"
     },
     {
         "username" : "khatts",
@@ -56,7 +57,7 @@ users = [
         "isStudent": True,
         "isFaculty": False,
         "isCeltsAdmin": True,
-        "isCeltsStudentStaff": False
+        "isCeltsStudentStaff": False,
     },
     {
         "username": "neillz",
@@ -68,7 +69,7 @@ users = [
         "isStudent": True,
         "isFaculty": False,
         "isCeltsAdmin": False,
-        "isCeltsStudentStaff": True
+        "isCeltsStudentStaff": True,
     },
 
     {
@@ -81,7 +82,7 @@ users = [
         "isStudent": True,
         "isFaculty": True,
         "isCeltsAdmin": False,
-        "isCeltsStudentStaff": False
+        "isCeltsStudentStaff": False,
     },
     {
         "username" : "ayisie",
@@ -93,7 +94,7 @@ users = [
         "isStudent": True,
         "isFaculty": False,
         "isCeltsAdmin": False,
-        "isCeltsStudentStaff": False
+        "isCeltsStudentStaff": False,
 
     },
     {
@@ -106,7 +107,7 @@ users = [
         "isStudent": True,
         "isFaculty": False,
         "isCeltsAdmin": False,
-        "isCeltsStudentStaff": False
+        "isCeltsStudentStaff": False,
     },
     {
         "username": "bryanta",
@@ -124,7 +125,7 @@ users = [
         "firstName": "Tyler",
         "lastName": "Parton",
         "isStudent": True,
-        "phoneNumber": "(859)433-1559"
+        "phoneNumber": "(859)433-1559",
     },
     {
         "username": "mupotsal",
@@ -134,7 +135,7 @@ users = [
         "lastName": "Mupotsa",
         "isStudent": True,
         "phoneNumber": "(859)463-1159",
-        "isCeltsStudentStaff": True
+        "isCeltsStudentStaff": True,
     },
     {
         "username": "heggens",
@@ -146,7 +147,7 @@ users = [
         "isCeltsAdmin": False,
         "isFaculty": True,
         "isCeltsStudentStaff": False,
-        "isStaff": True
+        "isStaff": True,
     },
      {
         "username": "qasema",
@@ -158,7 +159,7 @@ users = [
         "isCeltsAdmin": True,
         "isFaculty": True,
         "isCeltsStudentStaff": False,
-        "isStaff": True
+        "isStaff": True,
     },
     {
         "username": "stettnera2",
@@ -171,8 +172,8 @@ users = [
         "isFaculty": False,
         "isStaff": True,
         "isCeltsAdmin": True,
-        "isCeltsStudentStaff": False
-    }
+        "isCeltsStudentStaff": False,
+    },
 ]
 
 User.insert_many(users).on_conflict_replace().execute()
