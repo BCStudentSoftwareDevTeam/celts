@@ -16,13 +16,14 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
+from app.models.profileNote import ProfileNote
 from app.models.programManager import ProgramManager
 from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
 
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote
 from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getUserParticipatedEvents, checkUserRsvp, addPersonToEvent
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
@@ -128,6 +129,7 @@ def viewUsersProfile(username):
                                    "trainingList": userParticipatedEvents,
                                    "isNotBanned": True if not notes else False,
                                    "banNote": noteForDict})
+        profileNotes = ProfileNote.select().where(ProfileNote.user == volunteer)
 
         return render_template ("/main/userProfile.html",
                 programs = programs,
@@ -140,10 +142,38 @@ def viewUsersProfile(username):
                 volunteer = volunteer,
                 backgroundTypes = backgroundTypes,
                 allBackgroundHistory = allBackgroundHistory,
-                currentDateTime = datetime.datetime.now()
-
+                currentDateTime = datetime.datetime.now(),
+                profileNotes = profileNotes
             )
     abort(403)
+
+@main_bp.route('/profile/addNote', methods=['POST'])
+def addNote():
+    """
+    This function adds a note to the user's profile.
+    """
+    postData = request.form
+    try:
+        note = addProfileNote(postData["visibility"], postData["bonner"] == "on", postData["noteTextbox"], postData["username"])
+        flash("Successfully added profile note", "success")
+        return redirect(url_for("main.viewUsersProfile", username=postData["username"]))
+    except Exception as e:
+        print("Error adding note", e)
+        flash("Failed to add profile note", "danger")
+        return "Failed to add profile note", 500
+
+@main_bp.route('/<username>/deleteNote', methods=['POST'])
+def deleteNote(username):
+    """
+    This function deletes a note from the user's profile.
+    """
+    try:
+        deleteProfileNote(request.form["id"])
+        flash("Successfully deleted profile note", "success")
+    except Exception as e:
+        print("Error deleting note", e)
+        flash("Failed to delete profile note", "danger")
+    return "success"
 
 # ===========================Ban===============================================
 @main_bp.route('/<username>/ban/<program_id>', methods=['POST'])
@@ -163,7 +193,7 @@ def ban(program_id, username):
         createLog(f'Banned {username} from {programInfo.programName} until {banEndDate}.')
         return "Successfully banned the volunteer."
     except Exception as e:
-        print("Error  while updating ban", e)
+        print("Error while updating ban", e)
         flash("Failed to ban the volunteer", "danger")
         return "Failed to ban the volunteer", 500
 

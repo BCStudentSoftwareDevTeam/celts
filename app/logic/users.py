@@ -3,12 +3,15 @@ from app.models.event import Event
 from app.models.programBan import ProgramBan
 from app.models.interest import Interest
 from app.models.note import Note
+from app.models.user import User
+from app.models.profileNote import ProfileNote
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.backgroundCheckType import BackgroundCheckType
 from app.logic.volunteers import addUserBackgroundCheck
 import datetime
 from peewee import JOIN
 from dateutil import parser
+from flask import g
 
 
 def isEligibleForProgram(program, user):
@@ -76,7 +79,8 @@ def banUser(program_id, username, note, banEndDate, creator):
     noteForDb = Note.create(createdBy = creator,
                              createdOn = datetime.datetime.now(),
                              noteContent = note,
-                             isPrivate = 0)
+                             isPrivate = 0,
+                             noteType = "ban")
 
     ProgramBan.create(program = program_id,
                       user = username,
@@ -96,7 +100,8 @@ def unbanUser(program_id, username, note, creator):
     noteForDb = Note.create(createdBy = creator,
                              createdOn = datetime.datetime.now(),
                              noteContent = note,
-                             isPrivate = 0)
+                             isPrivate = 0,
+                             noteType = "unban")
     ProgramBan.update(endDate = datetime.datetime.now(),
                       unbanNote = noteForDb).where(ProgramBan.program == program_id,
                                                    ProgramBan.user == username,
@@ -116,3 +121,17 @@ def getUserBGCheckHistory(username):
         bgHistory[row.type_id].append(row)
 
     return bgHistory
+
+def addProfileNote(visibility, bonner, noteTextbox, username):
+    noteForDb = Note.create(createdBy = g.current_user,
+                            createdOn = datetime.datetime.now(),
+                            noteContent = noteTextbox,
+                            noteType = "profile")
+    createProfileNote = ProfileNote.create(user = User.get(User.username == username),
+                                           note = noteForDb,
+                                           isBonnerNote = bonner,
+                                           viewTier = visibility)
+    return createProfileNote
+
+def deleteProfileNote(noteId):
+    return ProfileNote.delete().where(ProfileNote.id == noteId).execute()

@@ -20,6 +20,7 @@ from app.models.courseQuestion import CourseQuestion
 from app.models.questionNote import QuestionNote
 from app.models.interest import Interest
 from app.models.note import Note
+from app.models.profileNote import ProfileNote
 from app.models.programManager import ProgramManager
 from app.models.emailTemplate import EmailTemplate
 from app.models.backgroundCheck import BackgroundCheck
@@ -679,25 +680,52 @@ ProgramEvent.insert_many(program_events).on_conflict_replace().execute()
 
 notes = [
     {
-    "id": 1,
-    "createdBy": "ramsayb2",
-    "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
-    "noteContent": "I think the training is put in wrong",
-    "isPrivate":False
+        "id": 1,
+        "createdBy": "ramsayb2",
+        "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
+        "noteContent": "I think the training is put in wrong",
+        "isPrivate":False,
+        "noteType": "ban"
     },
     {
-    "id": 2,
-    "createdBy": "mupotsal",
-    "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
-    "noteContent": "I agree with your comment on training",
-    "isPrivate":False
+        "id": 2,
+        "createdBy": "mupotsal",
+        "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
+        "noteContent": "I agree with your comment on training",
+        "isPrivate":False,
+        "noteType": "question"
     },
     {
-    "id": 3,
-    "createdBy": "mupotsal",
-    "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
-    "noteContent": "tells bad jokes",
-    "isPrivate": True
+        "id": 3,
+        "createdBy": "mupotsal",
+        "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
+        "noteContent": "tells bad jokes",
+        "isPrivate": True,
+        "noteType": "ban"
+    },
+    {
+        "id": 4,
+        "createdBy": "neillz",
+        "createdOn": datetime.strptime("2021 11 26","%Y %m %d"),
+        "noteContent": "Allergic to water",
+        "isPrivate": False,
+        "noteType": "profile"
+    },
+    {
+        "id": 5,
+        "createdBy": "neillz",
+        "createdOn": datetime.strptime("2021 11 30","%Y %m %d"),
+        "noteContent": "Allergic to food",
+        "isPrivate": False,
+        "noteType": "profile"
+    },
+    {
+        "id": 6,
+        "createdBy": "ramsayb2",
+        "createdOn": datetime.strptime("2021 11 30","%Y %m %d"),
+        "noteContent": "Run when in sight",
+        "isPrivate": False,
+        "noteType": "profile"
     }
 ]
 Note.insert_many(notes).on_conflict_replace().execute()
@@ -1117,11 +1145,62 @@ AdminLogs.insert_many(logs).on_conflict_replace().execute()
 
 files = [
     {
-    "event": 16,
+    "event": 1,
     "fileName":"Map1.pdf"
     },
-    {"event": 99999,
+    {
+    "event": 2,
     "fileName" : "adfsfdhqwre_;ldgfk####l;kgfdg.jpg"
     }
 ]
-EventFile.insert_many(files).on_conflict_replace().execute
+EventFile.insert_many(files).on_conflict_replace().execute()
+
+cohort = [
+    {
+        "year": "2021",
+        "user": "neillz"
+    },
+    {
+        "year": "2022",
+        "user": "neillz"
+    },
+    {
+        "year": "2020",
+        "user": "neillz"
+    },
+    {
+        "year": "2021",
+        "user": "ramsayb2"
+    },
+    {
+        "year": "2022",
+        "user": "ramsayb2"
+    },
+    {
+        "year": "2020",
+        "user": "ramsayb2"
+    }
+]
+BonnerCohort.insert_many(cohort).on_conflict_replace().execute()
+
+profileNotes = [
+    {
+        "user": "neillz",
+        "note": 4,
+        "isBonnerNote": False,
+        "viewTier": 2
+    },
+    {
+        "user": "ramsayb2",
+        "note": 5,
+        "isBonnerNote": False,
+        "viewTier": 3
+    },
+    {
+        "user": "partont",
+        "note": 6,
+        "isBonnerNote": True,
+        "viewTier": 1
+    }
+]
+ProfileNote.insert_many(profileNotes).on_conflict_replace().execute()

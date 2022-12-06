@@ -24,22 +24,22 @@ def test_getBonnerCohorts():
         BonnerCohort.create(user="lamichhanes2", year=currentYear-6)
         cohorts = getBonnerCohorts()
         assert len(cohorts) == 7
-        assert len(cohorts[currentYear]) == 0
+        assert len(cohorts[currentYear]) == 2
         assert len(cohorts[currentYear-6]) == 1
 
         BonnerCohort.create(user="lamichhanes2", year=currentYear-5)
         BonnerCohort.create(user="lamichhanes2", year=currentYear-4)
         BonnerCohort.create(user="lamichhanes2", year=currentYear-2)
         BonnerCohort.create(user="lamichhanes2", year=currentYear-1)
-        BonnerCohort.create(user="ramsayb2", year=currentYear-1)
+        BonnerCohort.create(user="ayisie", year=currentYear-1)
         BonnerCohort.create(user="khatts", year=currentYear-1)
-        BonnerCohort.create(user="neillz", year=currentYear-1)
-        BonnerCohort.create(user="neillz", year=currentYear)
+        BonnerCohort.create(user="heggens", year=currentYear-1)
+        BonnerCohort.create(user="khatts", year=currentYear)
 
         cohorts = getBonnerCohorts()
         assert len(cohorts) == 7
         assert len(cohorts[currentYear-3]) == 0
-        assert len(cohorts[currentYear]) == 1
-        assert len(cohorts[currentYear-1]) == 4
+        assert len(cohorts[currentYear]) == 3
+        assert len(cohorts[currentYear-1]) == 6
 
         transaction.rollback()

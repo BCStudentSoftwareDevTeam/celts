@@ -51,7 +51,7 @@ def makeBonnerXls():
 
 def getBonnerCohorts():
     """
-        Return a dictionary with years as keys and a list of bonner users as values. Returns empty lists for 
+        Return a dictionary with years as keys and a list of bonner users as values. Returns empty lists for
         intermediate years, or the last 5 years if there are no older records.
     """
     years = list(BonnerCohort.select(BonnerCohort, User).join(User).order_by(BonnerCohort.year).execute())
@@ -63,5 +63,4 @@ def getBonnerCohorts():
     cohorts = { year: [] for year in range(firstYear, currentYear+1) }
     for cohort in years:
         cohorts[cohort.year].append(cohort.user)
-
     return cohorts
