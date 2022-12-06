@@ -20,6 +20,7 @@ from app.models.profileNote import ProfileNote
 from app.models.programManager import ProgramManager
 from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
+from app.models.certification import Certification
 
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
@@ -32,6 +33,7 @@ from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
 from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import unapprovedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
+from app.logic.certification import getCertRequirementsWithCompletion
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
@@ -133,6 +135,7 @@ def viewUsersProfile(username):
         userDietQuery = User.select().where(User.username == username)
         userDiet = [note.dietRestriction for note in userDietQuery]
 
+        bonnerRequirements = getCertRequirementsWithCompletion(certification=Certification.BONNER, username=volunteer)
         return render_template ("/main/userProfile.html",
                 programs = programs,
                 programsInterested = programsInterested,
@@ -146,6 +149,7 @@ def viewUsersProfile(username):
                 allBackgroundHistory = allBackgroundHistory,
                 currentDateTime = datetime.datetime.now(),
                 profileNotes = profileNotes,
+                bonnerRequirements = bonnerRequirements,
                 userDiet = userDiet
             )
     abort(403)

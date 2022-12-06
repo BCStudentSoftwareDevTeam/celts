@@ -1,10 +1,12 @@
 import pytest
 from datetime import date
+from peewee import IntegrityError
 
 from app.models import mainDB
 from app.models.bonnerCohort import BonnerCohort
+from app.models.eventRsvp import EventRsvp
 
-from app.logic.bonner import getBonnerCohorts
+from app.logic.bonner import getBonnerCohorts, rsvpForBonnerCohort
 
 @pytest.mark.integration
 def test_getBonnerCohorts():
@@ -19,6 +21,10 @@ def test_getBonnerCohorts():
         cohorts = getBonnerCohorts()
         assert len(cohorts) == 5
         assert list(cohorts.keys()) == [currentYear-4,currentYear-3,currentYear-2,currentYear-1,currentYear]
+
+        # try a limit greater than our size
+        cohorts = getBonnerCohorts(limit=6)
+        assert len(cohorts) == 5
 
 
         BonnerCohort.create(user="lamichhanes2", year=currentYear-6)
@@ -42,4 +48,33 @@ def test_getBonnerCohorts():
         assert len(cohorts[currentYear]) == 3
         assert len(cohorts[currentYear-1]) == 6
 
+        cohorts = getBonnerCohorts(limit=5)
+        assert len(cohorts) == 5
+        assert len(cohorts[currentYear-3]) == 0
+        assert len(cohorts[currentYear]) == 1
+        assert len(cohorts[currentYear-1]) == 4
+
+
         transaction.rollback()
+
+@pytest.mark.integration
+def test_bonnerRsvp():
+    with mainDB.atomic() as transaction:
+        BonnerCohort.create(user="lamichhanes2", year=2022)
+        BonnerCohort.create(user="ramsayb2", year=2022)
+        BonnerCohort.create(user="khatts", year=2020)
+        BonnerCohort.create(user="neillz", year=2020)
+        event_id = 13
+
+        rsvpForBonnerCohort(2020, event_id)
+        assert EventRsvp.select().where(EventRsvp.event == event_id, EventRsvp.user == "khatts").exists()
+        assert EventRsvp.select().where(EventRsvp.event == event_id, EventRsvp.user == "neillz").exists()
+
+        # make sure there is no error for duplicates
+        BonnerCohort.create(user="ayisie", year=2020)
+        rsvpForBonnerCohort(2020, event_id)
+        assert EventRsvp.select().where(EventRsvp.event == event_id).count() == 3
+
+        transaction.rollback()
+
+
