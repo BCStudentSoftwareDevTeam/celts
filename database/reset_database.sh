@@ -8,11 +8,12 @@ if [ "`hostname`" == 'CS-CELTS' ]; then
 fi
 
 cd database/
+
 ########### Process Arguments ############
 BACKUP=0
 BASE=0
 TEST=1
-if [ "$1" == "real" ]; then
+if [ "$1" == "from-backup" ]; then
 	BACKUP=1
 	TEST=0
 elif [ "$1" == "base" ]; then
@@ -22,7 +23,7 @@ elif [ "$1" == "test" ]; then
 	:
 else
     echo "You must specify which data set you want to restore"
-    echo "Usage: ./reset_database.sh [real|base|test]"
+    echo "Usage: ./reset_database.sh [from-backup|base|test]"
     exit;
 fi
 
