@@ -50,23 +50,25 @@
           <table class="table table-striped border">
             <thead>
               <tr>
-                <th scope="col">Courses</th>
-                <th scope="col">Faculty</th>
-                <th scope="col">Status</th>
-                <th scope="col"></th>
-                <th scope="col">Edit</th>
+                <th class="col-md-1" scope="col">Courses</th>
+                <th class="col-md-1" scope="col">Faculty</th>
+                <th class="col-md-1" scope="col">Status</th>
+                <th class="col-md-1" scope="col">Action</th>
               </tr>
             </thead>
             <tbody>
               {% for course in unapprovedCourses %}
               <tr>
                 <td>{{course.courseName}}</td>
-                <td>
-                  {{ course.instructors }} <br>
-                </td>
+                <td>{{ course.instructors }}</td>
                 <td>{{course.status.status}}</td>
-                <td><button type="button" data-id="{{course}}" onclick="reviewCourses(this)" class="btn btn-primary btn-sm">{{ "Review"}}</button></td>
-                <td><a type="button" href="/serviceLearning/editProposal/{{course }}" class="btn btn-primary btn-sm">Edit</a></td>
+                <td>
+                  <select class="form-select courseData" id="{{course.id}}" onchange='executeCourseAction(this)'>
+                    <option value="---" disabled selected>Select Action</option>
+                    <option value="Review">Review</option>
+                    <option value="View">View</option>
+                    <option value="Edit">Edit</option>
+                </td>
               </tr>
               {% endfor %}
             </tbody>
@@ -80,21 +82,24 @@
           <table class="table table-striped border">
           <thead>
             <tr>
-              <th scope="col">Courses</th>
-              <th scope="col">Faculty</th>
-              <th scope="col">Status</th>
-              <th scope="col">Sent</th>
+              <th class="col-md-1" scope="col">Courses</th>
+              <th class="col-md-1" scope="col">Faculty</th>
+              <th class="col-md-1" scope="col">Status</th>
+              <th class="col-md-1" scope="col">Action</th>
             </tr>
           </thead>
           <tbody>
               {% for course in approvedCourses %}
               <tr>
                 <td>{{course.courseName}}</td>
-                <td>
-                  {{ course.instructors }} <br>
-                </td>
+                <td>{{ course.instructors }}</td>
                 <td>{{course.status.status}}</td>
-                <td><i class="bi bi-check2"></i></td>
+                <td>
+                  <select class="form-select" id="{{course.id}}" onchange='executeCourseAction(this)'>
+                    <option value="---" disabled selected>Select Action</option>
+                    <option value="Review">Review</option>
+                    <option value="View">View</option>
+                </td>
               </tr>
               {% endfor %}
             </tbody>
@@ -102,18 +107,18 @@
         {% endif %}
 
       {% if term.isCurrentTerm or term.isFutureTerm %}
-        <div class="col">
+      <div class="col">
+        <div class="float-end">
+          <form method="GET" action="/serviceLearning/sendRecommendation/{{term.id}}">
+            <button class="btn btn-primary" id="sendRecommendationBtn" value="{{term.id}}">Download File</button>
+          </form>
+        </div>
+        <div align="center">
           <div class="float-end">
-            <form method="GET" action="/serviceLearning/sendRecommendation/{{term.id}}">
-              <button class="btn btn-primary" id="sendRecommendationBtn" value="{{term.id}}">Download File</button>
-            </form>
-          </div>
-          <div align="center">
-            <div class="float-end">
-              <a  class="btn btn-primary" href="mailto:{{(';'.join(instructorEmails))}}?subject=Approved Courses Recommendation for {{term.description}}&body=Body-goes-here"> Send Recommendation </a>
-            </div>
+            <a  class="btn btn-primary" href="mailto:{{(';'.join(instructorEmails))}}?subject=Approved Courses Recommendation for {{term.description}}&body=Body-goes-here"> Send Recommendation </a>
           </div>
         </div>
+      </div>
        {% endif %}
         </div>
       </div>
