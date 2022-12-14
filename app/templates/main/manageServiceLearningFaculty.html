@@ -107,18 +107,16 @@
         {% endif %}
 
       {% if term.isCurrentTerm or term.isFutureTerm %}
-        <div class="col">
-          <div class="float-end">
-            <form method="GET" action="/serviceLearning/sendRecommendation/{{term.id}}">
-              <button class="btn btn-primary" id="sendRecommendationBtn" value="{{term.id}}">Download File</button>
-            </form>
-          </div>
-          <div align="center">
-            <div class="float-end">
-              <a  class="btn btn-primary" href="mailto:{{(';'.join(instructorEmails))}}?subject=Approved Courses Recommendation"> Send Recommendation </a>
-            </div>
-          </div>
+      <div class="col">
+        <div class="float-end">
+          <form method="GET" action="/serviceLearning/sendRecommendation/{{term.id}}">
+            <button class="btn btn-primary" id="sendRecommendationBtn" value="{{term.id}}">Download File</button>
+          </form>
         </div>
+          <div class="float-end">
+            <a  class="btn btn-primary mr" href="mailto:{{(';'.join(instructorEmails))}}?subject=Approved Courses Recommendation for {{term.description}}&body=Body-goes-here"> Send Recommendation </a>
+          </div>
+      </div>
        {% endif %}
         </div>
       </div>
