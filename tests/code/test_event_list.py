@@ -176,8 +176,6 @@ def test_training_events(training_events):
         assert notBonnerList == getTrainingEvents(testTerm, userNotBonnerScholar)
         assert notBonnerList == getTrainingEvents(testTerm, userStaff)
         assert bonnerList == getTrainingEvents(testTerm, userCeltsAdmin)
-        print(getTrainingEvents(testTerm, userBonnerScholar))
-        print(bonnerList)
         assert bonnerList == getTrainingEvents(testTerm, userBonnerScholar)
 
         transaction.rollback()
