@@ -20,8 +20,8 @@ class User(baseModel):
         super().__init__(*args,**kwargs)
 
         self._pmCache = {}
-        self._bsCache = {}
-
+        self._bsCache = None
+        
     @property
     def isAdmin(self):
         return (self.isCeltsAdmin or self.isCeltsStudentStaff)
