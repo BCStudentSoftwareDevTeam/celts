@@ -19,8 +19,8 @@ class User(baseModel):
         super().__init__(*args,**kwargs)
 
         self._pmCache = {}
-        self._bsCache = {}
-
+        self._bsCache = None
+        
     @property
     def isAdmin(self):
         return (self.isCeltsAdmin or self.isCeltsStudentStaff)
@@ -31,7 +31,7 @@ class User(baseModel):
         if self._bsCache is None:
             # TODO should we exclude users who are banned from Bonner here?
             self._bsCache = BonnerCohort.select().where(BonnerCohort.user == self).exists()
-        
+
         return self._bsCache
 
     @property
