@@ -72,6 +72,8 @@
         type="number"
         min="0"
         required/>
+      <label for="syllabus">Please upload a copy of the course syllabus.</label>
+      <!--TODO: add the ability for the user to upload a copy of the syllabus -->
     </div>
     <div class="p-2 col-md-6">
       <label for="inputCourseInstructor">When will this course be offered?</label>
@@ -84,7 +86,10 @@
           <option value="{{ term.id }}" {{ "selected" if course.term == term }}> {{ term.description }}</option>
         {% endfor %}
       </select>
-      <label for="courseOccurrence">How often will this course recur?</label>
+      <label for="courseOccurrence">This course will be taught:</label>
+      <!-- TODO: Change this to two check boxes, first being "Regularly" and second being "One-time" -->
+      <!-- we already have a isPermanentlyDesignated for it being a perminate SLC course so make a relation between that and "Regularly" the
+           add something new like "isOneTime" to have a relation to "One-time"-->
       <div class="pb-2">
           <input
             value="{{course.courseOccurrence or ''}}"
@@ -92,27 +97,46 @@
             name="courseOccurrence"
             type="text"/>
       </div>
-      <span>Are all sections SL?</span>
+      <label for="sectionDesignation">Section Designation (if applicable).</label>
+      <!-- TODO: Add/get the section designation to the course model -->
+      <input
+        class="form-control"
+        id="sectionDesignation"
+        name="sectionDesignation"
+        value="{{course.courseAbbreviation}}"
+        type="text"
+        />
+      <label for="whichAreSL">Are all sections SL?</label>
       <div class="form-check form-switch pb-4">
         <input
           class="form-check-input"
           type="checkbox"
           name="slSectionsToggle" {{"checked" if isAllSectionsServiceLearning}}/>
       </div>
+      <!-- TODO: only show the "Sections with SL Designation" when "Are all sections Service-Learning" is checked NO -->
       <label class="pt-2" for="slDesignation">Sections with SL Designation</label>
       <textarea
         class="form-control"
         id="slDesignation"
         name="slDesignation"
         rows="3">{{course.serviceLearningDesignatedSections}}</textarea>
-      <div class="form-check form-switch">
-        <label class="form-label" for="permanentDesignation"><strong>Will this course be a permanently designated service-learning course?</strong></label>
+      <label for="previouslyApproved">Has this course been previously approved as a service-learning course?</label>
+      <div class="form-check form-switch pb-4">
         <input
           class="form-check-input"
           type="checkbox"
-          name="permanentDesignation"
-          id="permanentDesignation"
-          {{"checked" if isPermanentlyDesignated}}/>
+          name="previouslyApproved"{{"checked" if isAllSectionsServiceLearning}}/>
+      </div>
+      <!-- TODO: Only show previouslyApprovedProposal if the checked yes on "previouslyApproved" -->
+      <div name="previouslyApprovedProposal">
+        <p>When was the course approved previously? Also, please describe the service-learning project you
+        plan for the upcoming course, including identification of the community parter organization(s)</p>
+        <textarea
+          class="form-control"
+          id="previouslyApprovedProposal"
+          name="previouslyApprovedProposal"
+          rows="3">
+          </textarea>
       </div>
     </div>
   </div>
