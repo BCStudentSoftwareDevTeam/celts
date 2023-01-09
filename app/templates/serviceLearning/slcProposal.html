@@ -87,15 +87,21 @@
         {% endfor %}
       </select>
       <label for="courseOccurrence">This course will be taught:</label>
-      <!-- TODO: Change this to two check boxes, first being "Regularly" and second being "One-time" -->
       <!-- we already have a isPermanentlyDesignated for it being a perminate SLC course so make a relation between that and "Regularly" the
            add something new like "isOneTime" to have a relation to "One-time"-->
-      <div class="pb-2">
-          <input
-            value="{{course.courseOccurrence or ''}}"
-            class="form-control"
-            name="courseOccurrence"
-            type="text"/>
+        <div class="row col-md-8" >
+          <div class="form-group col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="courseOccurrence" name="Regularly" value="{{course.isPermanentlyDesignated}}">
+              <label class="formcheck-label"> Regularly </lable>
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="courseOccurrence" name="oneTime" value="{{course.isPermanentlyDesignated}}">
+              <label class="formcheck-label"> One-Time </lable>
+            </div>
+        </div>
       </div>
       <label for="sectionDesignation">Section Designation (if applicable).</label>
       <input
@@ -105,7 +111,7 @@
         value="{{course.sectionDesignation}}"
         type="text"
         />
-      <label for="whichAreSL">Are all sections SL?</label>
+      <label for="whichAreSL">Are all sections service-learning?</label>
       <div class="form-check form-switch pb-4">
         <input
           class="form-check-input"
