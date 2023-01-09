@@ -62,6 +62,7 @@ def updateCourse(courseData):
     Course.update(
         courseName=courseData["courseName"],
         courseAbbreviation=courseData["courseAbbreviation"],
+        sectionDesignation=courseData["sectionDesignation"],
         courseCredit=courseData["credit"],
         courseOccurrence=courseData["courseOccurrence"],
         term=courseData['term'],
