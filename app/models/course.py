@@ -9,7 +9,7 @@ class Course(baseModel):
     courseAbbreviation = CharField()
     sectionDesignation = CharField()
     courseCredit = FloatField()
-    courseOccurrence = CharField(null=True)
+    courseOccurrence = CharField(null=True) # TODO: Investigate if this is still needed
     term = ForeignKeyField(Term, null = True)
     status = ForeignKeyField(CourseStatus)
     createdBy = ForeignKeyField(User)
