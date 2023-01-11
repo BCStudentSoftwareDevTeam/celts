@@ -88,8 +88,10 @@ def createEvent(templateid, programid=None):
         eventData['contactName'] = "CELTS Admin"
         eventData['contactEmail'] = app.config['celts_admin_contact']
         if program:
-            if program.contactName and program.contactEmail:
+            eventData['location'] = program.defaultLocation
+            if program.contactName:
                 eventData['contactName'] = program.contactName
+            if program.contactEmail:
                 eventData['contactEmail'] = program.contactEmail
 
     # Try to save the form
