@@ -24,12 +24,13 @@ def test_update_course():
                                         courseName = "Testing Course",
                                         courseAbbreviation = "TC",
                                         courseCredit = 2,
-                                        courseOccurrence = "this event is ALL THE TIME",
+                                        isRegularlyOccurring = True,
                                         term = 3,
                                         status = CourseStatus.SUBMITTED,
                                         createdBy = testUser,
                                         isAllSectionsServiceLearning = 0,
                                         serviceLearningDesignatedSections = "None",
+                                        sectionDesignation = "Section A",
                                         isPermanentlyDesignated = 0)
         testingCourseInstructor = CourseInstructor.create( course=testingCourse, user="ramsayb2")
 
@@ -38,10 +39,11 @@ def test_update_course():
                         "courseID": testingCourse,
                         "courseAbbreviation": "EDIT",
                         "credit": 1.5,
-                        "courseOccurrence": "NEVER",
+                        "isRegularlyOccurring": "False",
                         "term": 2,
                         "slSectionsToggle": "on",
                         "slDesignation": "All",
+                        "sectionDesignation":"Section B",
                         "permanentDesignation": "on",
                         "1": "Question 1",
                         "2": "Question 2",
@@ -62,9 +64,10 @@ def test_update_course():
         assert updatedCourse.courseName == "Course Edited"
         assert updatedCourse.courseAbbreviation == "EDIT"
         assert updatedCourse.courseCredit == 1.5
-        assert updatedCourse.courseOccurrence == "NEVER"
+        assert updatedCourse.isRegularlyOccurring == "False"
         assert updatedCourse.status.id == CourseStatus.SUBMITTED
         assert updatedCourse.isAllSectionsServiceLearning
+        assert updatedCourse.sectionDesignation == "Section B"
         assert updatedCourse.serviceLearningDesignatedSections == "All"
         assert updatedCourse.isPermanentlyDesignated
 

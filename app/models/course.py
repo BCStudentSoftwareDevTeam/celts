@@ -9,10 +9,11 @@ class Course(baseModel):
     courseAbbreviation = CharField()
     sectionDesignation = CharField()
     courseCredit = FloatField()
-    courseOccurrence = CharField(null=True) # TODO: Investigate if this is still needed
     term = ForeignKeyField(Term, null = True)
     status = ForeignKeyField(CourseStatus)
     createdBy = ForeignKeyField(User)
-    isAllSectionsServiceLearning = BooleanField(default=False)
     serviceLearningDesignatedSections = TextField()
     isPermanentlyDesignated = BooleanField(default=False)
+    isAllSectionsServiceLearning = BooleanField(default=False)
+    isRegularlyOccurring = BooleanField(default=False)
+

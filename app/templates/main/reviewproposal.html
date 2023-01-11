@@ -33,12 +33,16 @@
                 <td class="fw-bold">Term</td>
                 <td>{{course.term.description}}</td>
               </tr>
-              {% if course.courseOccurrence %}
-                  <tr>
-                      <td class="fw-bold">Occurrence</td>
-                      <td>{{course.courseOccurrence}}</td>
-                  </tr>
-              {% endif %}
+              <tr>
+                  <td class="fw-bold">Occurrence</td>
+                  <td>
+                    {% if course.isRegularlyOccurring == True %}
+                      Regularly
+                    {% else %}
+                      One-time special topics/4-week course offering
+                    {% endif %}
+                  </td>
+              </tr>
               <tr>
                 <td class="fw-bold">Status</td>
                 <td>{{course.status.status}}</td>

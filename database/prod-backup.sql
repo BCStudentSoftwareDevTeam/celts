@@ -110,7 +110,7 @@ CREATE TABLE `course` (
   `courseName` varchar(255) NOT NULL,
   `courseAbbreviation` varchar(255) NOT NULL,
   `courseCredit` float NOT NULL,
-  `courseOccurrence` varchar(255) DEFAULT NULL,
+  `isRegularlyOccurring` tinyint(1) NOT NULL,
   `term_id` int DEFAULT NULL,
   `status_id` int NOT NULL,
   `createdBy_id` varchar(255) NOT NULL,
