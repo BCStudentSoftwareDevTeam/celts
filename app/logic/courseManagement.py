@@ -56,6 +56,7 @@ def updateCourse(courseData):
         This function will take in courseData for the SLC proposal page and a dictionary
         of instuctors assigned to the course and update the information in the db.
     """
+    print(courseData["isRegularlyOccurring"])
     course = Course.get_by_id(courseData['courseID'])
     for toggler in ["slSectionsToggle", "permanentDesignation"]:
         courseData.setdefault(toggler, "off")
@@ -64,7 +65,7 @@ def updateCourse(courseData):
         courseAbbreviation=courseData["courseAbbreviation"],
         sectionDesignation=courseData["sectionDesignation"],
         courseCredit=courseData["credit"],
-        isRegularlyOccurring=courseData["isRegularlyOccurring"],
+        isRegularlyOccurring=int(courseData["isRegularlyOccurring"]),
         term=courseData['term'],
         status=CourseStatus.SUBMITTED,
         isAllSectionsServiceLearning=("on" in courseData["slSectionsToggle"]),

@@ -27,17 +27,17 @@ $(document).ready(function(e) {
         return false;
     });
 
-    $("#regularly").on("click", function() {
-      if ($("#regularly").is(":checked") && $("#one-time").is(":checked")) {
-        $( "#one-time" ).prop( "checked", false );
-      }
-    })
+    // $("#regularly").on("click", function() {
+    //   if ($("#regularly").is(":checked") && $("#one-time").is(":checked")) {
+    //     $( "#one-time" ).prop( "checked", false );
+    //   }
+    // })
 
-    $("#one-time").on("click", function() {
-      if ($("#one-time").is(":checked") && $("#regularly").is(":checked")) {
-        $( "#regularly" ).prop( "checked", false );
-      }
-    })
+    // $("#one-time").on("click", function() {
+    //   if ($("#one-time").is(":checked") && $("#regularly").is(":checked")) {
+    //     $( "#regularly" ).prop( "checked", false );
+    //   }
+    // })
 
     $("#previousButton").on("click", function() {
         displayCorrectTab(-1);

@@ -77,9 +77,6 @@ def slcSaveContinue():
     course = updateCourse(request.form.copy())
     course.status = CourseStatus.INCOMPLETE
     course.save()
-    print("AAAAAAAAAAAAAAAA")
-    print(course.isRegularlyOccurring)
-    print("AAAAAAAAAAAAAAAAAAA")
     return ""
 
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
