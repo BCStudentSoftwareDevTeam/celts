@@ -73,7 +73,6 @@ $(document).ready(function() {
     })
   // Disable button when we are ready to submit
   $("#saveEvent").on('submit',function(event) {
-      debugger;
       $(this).find("input[type=submit]").prop("disabled", true);
 
   });
