@@ -64,7 +64,8 @@ function format24to12HourTime(timeStr){
  * Run when the webpage is ready for javascript
  */
 $(document).ready(function() {
-  if ( $("#startDatePicker").val() && $("#endDatePicker").val()){
+  if ( $("#startDatePicker").val() != $("#endDatePicker").val()){
+  
     calculateRecurringEventFrequency();
   }
 
