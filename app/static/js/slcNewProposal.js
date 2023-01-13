@@ -26,7 +26,30 @@ $(document).ready(function(e) {
         }
         return false;
     });
-    
+    // one-time check to set the initial state
+    if ($("#allSectionsSL").is(":checked")) {
+      $("#slDesignationGroup").hide();
+    }
+    $("#allSectionsSL").on("click", function() {
+      if ($("#allSectionsSL").is(":checked")) {
+        $("#slDesignationGroup").hide();
+      }
+      else {
+        $("#slDesignationGroup").show();
+      }
+    })
+    if ($("#notPreviouslyApproved").is(":checked")) {
+      $("#previouslyApprovedProposal").hide();
+    }
+    $("#previouslyApprovedGroup").on("click", function() {
+      if ($("#notPreviouslyApproved").is(":checked")) {
+        $("#previouslyApprovedProposal").hide();
+      }
+      else {
+        $("#previouslyApprovedProposal").show();
+      }
+    })
+
     $("#previousButton").on("click", function() {
         displayCorrectTab(-1);
     });

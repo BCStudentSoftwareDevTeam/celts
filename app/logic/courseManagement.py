@@ -56,7 +56,6 @@ def updateCourse(courseData):
         This function will take in courseData for the SLC proposal page and a dictionary
         of instuctors assigned to the course and update the information in the db.
     """
-    print(courseData["isRegularlyOccurring"])
     course = Course.get_by_id(courseData['courseID'])
     for toggler in ["slSectionsToggle", "permanentDesignation"]:
         courseData.setdefault(toggler, "off")

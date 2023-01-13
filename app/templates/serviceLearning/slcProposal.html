@@ -118,34 +118,33 @@
         <input
           class="form-check-input"
           type="checkbox"
+          id="allSectionsSL"
           name="slSectionsToggle" {{"checked" if isAllSectionsServiceLearning}}/>
       </div>
-      <!-- TODO: only show the "Sections with SL Designation" when "Are all sections Service-Learning" is checked NO -->
-      <div class="pb-4">
-      <label class="pt-2" for="slDesignation">Which sections will have a service-learning designation?</label>
-      <textarea
-        class="form-control"
-        id="slDesignation"
-        name="slDesignation"
-        rows="1">
-        {{course.serviceLearningDesignatedSections}}
-      </textarea>
+      <div class="pb-4" id="slDesignationGroup">
+        <label class="pt-2" for="slDesignation" >Which sections will have a service-learning designation?</label>
+        <textarea
+          class="form-control"
+          id="slDesignation"
+          name="slDesignation"
+          rows="1">{{course.serviceLearningDesignatedSections}}</textarea>
       </div>
       <label for="previouslyApproved">Has this course been previously approved as a service-learning course?</label>
-      <div class="form-check pb-2">
-        <input class="form-check-input" type="radio" id="PreviouslyApproved" name="isPreviouslyApproved" value=1
-        {{"checked" if course.isPreviouslyApproved}}>
-          Yes, this course has been previously approved as a service-learning course.
-        </input>
+      <div id="previouslyApprovedGroup">
+        <div class="form-check pb-2">
+          <input class="form-check-input" type="radio" id="PreviouslyApproved" name="isPreviouslyApproved" value=1
+          {{"checked" if course.isPreviouslyApproved}}>
+            Yes, this course has been previously approved as a service-learning course.
+          </input>
+        </div>
+        <div class="form-check pb-4">
+          <input class="form-check-input" type="radio" id="notPreviouslyApproved" name="isPreviouslyApproved" value=0
+          {{"checked" if not course.isPreviouslyApproved}}>
+            No, this course has never been approved as a service-learning course.
+          </input>
+        </div>
       </div>
-      <div class="form-check pb-4">
-        <input class="form-check-input" type="radio" id="notPreviouslyApproved" name="isPreviouslyApproved" value=0
-        {{"checked" if not course.isPreviouslyApproved}}>
-          No, this course has never been approved as a service-learning course.
-        </input>
-      </div>
-      <!-- TODO: Only show previouslyApprovedProposal if the checked yes on "previouslyApproved" -->
-      <div name="previouslyApprovedProposal">
+      <div id="previouslyApprovedProposal">
         <p>When was the course approved previously? Also, please describe the service-learning project you
         plan for the upcoming course, including identification of the community partner organization(s).</p>
         <textarea
