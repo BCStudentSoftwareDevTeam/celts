@@ -73,16 +73,13 @@
         min="0"
         required/>
         <label for="isRegularlyOccurring" class="pt-3">This course will be taught:</label>
-        <!-- we already have a isPermanentlyDesignated for it being a perminate SLC course so make a relation between that and "Regularly" the
-             add something new like "isOneTime" to have a relation to "One-time"-->
-          <div class="row col-md-8" >
-            <div class="form-group col-md-3">
-              <div class="form-check">
-                <input class="form-check-input" type="radio" id="regularly" name="isRegularlyOccurring" value="1"
-                {{ "checked" if course.isRegularlyOccurring }}>
-                <label class="form-check-label"> Regularly </label>
-              </div>
-
+        <div class="row col-md-8" >
+          <div class="form-group col-md-3">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" id="regularly" name="isRegularlyOccurring" value="1"
+              {{ "checked" if course.isRegularlyOccurring }}>
+              <label class="form-check-label"> Regularly </label>
+            </div>
             <div class="col-md-9">
               <div class="form-check">
                 <input class="form-check-input" type="radio" id="one-time" name="isRegularlyOccurring" value="0"
