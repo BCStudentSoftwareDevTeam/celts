@@ -117,6 +117,7 @@ CREATE TABLE `course` (
   `createdBy_id` varchar(255) NOT NULL,
   `isAllSectionsServiceLearning` tinyint(1) NOT NULL,
   `serviceLearningDesignatedSections` varchar(255) NOT NULL,
+  `previouslyApprovedDescription` varchar(255) NOT NULL,
   `isPermanentlyDesignated` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `course_term_id` (`term_id`),

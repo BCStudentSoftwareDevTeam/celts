@@ -73,25 +73,23 @@
         min="0"
         required/>
         <label for="isRegularlyOccurring" class="pt-3">This course will be taught:</label>
-        <!-- we already have a isPermanentlyDesignated for it being a perminate SLC course so make a relation between that and "Regularly" the
-             add something new like "isOneTime" to have a relation to "One-time"-->
-          <div class="row col-md-8" >
-            <div class="form-group col-md-3">
-              <div class="form-check">
-                <input class="form-check-input" type="radio" id="regularly" name="isRegularlyOccurring" value="1"
-                {{ "checked" if course.isRegularlyOccurring }}>
-                <label class="form-check-label"> Regularly </label>
-              </div>
+        <div class="row col-md-8" >
+          <div class="form-group col-md-3">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" id="regularly" name="isRegularlyOccurring" value="1"
+              {{ "checked" if course.isRegularlyOccurring }}>
+              <label class="form-check-label"> Regularly </label>
+            </div>
 
-            <div class="col-md-9">
-              <div class="form-check">
-                <input class="form-check-input" type="radio" id="one-time" name="isRegularlyOccurring" value="0"
-                {{ "checked" if not course.isRegularlyOccurring }}>
-                <label class="form-check-label"> One-Time Special Topics/4-week course offering </label>
-              </div>
+          <div class="col-md-9">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" id="one-time" name="isRegularlyOccurring" value="0"
+              {{ "checked" if not course.isRegularlyOccurring }}>
+              <label class="form-check-label"> One-Time Special Topics/4-week course offering </label>
             </div>
           </div>
         </div>
+      </div>
       <label for="syllabus" class="pt-3">Please upload a copy of the course syllabus below:</label>
       <!--TODO: add the ability for the user to upload a copy of the syllabus -->
     </div>
@@ -130,7 +128,9 @@
         class="form-control"
         id="slDesignation"
         name="slDesignation"
-        rows="1">{{course.serviceLearningDesignatedSections}}</textarea>
+        rows="1">
+        {{course.serviceLearningDesignatedSections}}
+      </textarea>
       </div>
       <label for="previouslyApproved">Has this course been previously approved as a service-learning course?</label>
       <div class="form-check pb-2">
@@ -148,13 +148,12 @@
       <!-- TODO: Only show previouslyApprovedProposal if the checked yes on "previouslyApproved" -->
       <div name="previouslyApprovedProposal">
         <p>When was the course approved previously? Also, please describe the service-learning project you
-        plan for the upcoming course, including identification of the community parter organization(s)</p>
+        plan for the upcoming course, including identification of the community partner organization(s).</p>
         <textarea
           class="form-control"
-          id="previouslyApprovedProposal"
-          name="previouslyApprovedProposal"
-          rows="3">
-          </textarea>
+          id="previouslyApprovedDescription"
+          name="previouslyApprovedDescription"
+          rows="3">{{course.previouslyApprovedDescription}}</textarea>
       </div>
     </div>
   </div>
