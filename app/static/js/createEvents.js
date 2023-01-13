@@ -66,7 +66,6 @@ function format24to12HourTime(timeStr){
 $(document).ready(function() {
   if ( $("#startDatePicker").val() && $("#endDatePicker").val()){
     calculateRecurringEventFrequency();
-
   }
 
     $("#attachmentObject").fileinput({
@@ -81,7 +80,6 @@ $(document).ready(function() {
 
   $("#checkIsRecurring").click(function() {
     var recurringStatus = $("input[name='isRecurring']:checked").val()
-    console.log(recurringStatus)
     if (recurringStatus == 'on') {
       $("#endDateStyle, #recurringTableDiv").removeClass('d-none')
       $("#endDatePicker").prop('required', true);
