@@ -16,4 +16,4 @@ class Course(baseModel):
     isPermanentlyDesignated = BooleanField(default=False)
     isAllSectionsServiceLearning = BooleanField(default=False)
     isRegularlyOccurring = BooleanField(default=False)
-
+    isPreviouslyApproved = BooleanField(default=False)

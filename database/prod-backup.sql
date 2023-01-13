@@ -111,6 +111,7 @@ CREATE TABLE `course` (
   `courseAbbreviation` varchar(255) NOT NULL,
   `courseCredit` float NOT NULL,
   `isRegularlyOccurring` tinyint(1) NOT NULL,
+  'isPreviouslyApproved' tinyint(1) NOT NULL,
   `term_id` int DEFAULT NULL,
   `status_id` int NOT NULL,
   `createdBy_id` varchar(255) NOT NULL,

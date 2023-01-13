@@ -66,6 +66,7 @@ def updateCourse(courseData):
         sectionDesignation=courseData["sectionDesignation"],
         courseCredit=courseData["credit"],
         isRegularlyOccurring=int(courseData["isRegularlyOccurring"]),
+        isPreviouslyApproved=int(courseData["isPreviouslyApproved"]),
         term=courseData['term'],
         status=CourseStatus.SUBMITTED,
         isAllSectionsServiceLearning=("on" in courseData["slSectionsToggle"]),
