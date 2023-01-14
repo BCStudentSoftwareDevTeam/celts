@@ -73,7 +73,7 @@ def test_changeProgramInfo():
         assert currentProgramInfo.programName == "Adopt-a-Grandparent"
         assert currentProgramInfo.contactName == ""
         assert currentProgramInfo.contactEmail == ""
-        assert currentProgramInfo.programLocation == ""
+        assert currentProgramInfo.defaultLocation == ""
 
         with app.test_request_context():
             g.current_user = "ramsayb2"
@@ -84,7 +84,7 @@ def test_changeProgramInfo():
         assert currentProgramInfo.programName == eventName
         assert currentProgramInfo.contactName == contactName
         assert currentProgramInfo.contactEmail == contactEmail
-        assert currentProgramInfo.programLocation == location
+        assert currentProgramInfo.defaultLocation == location
 
         transaction.rollback()
 
