@@ -22,7 +22,7 @@ function changeAction(action){
   } else if(action.value == "Edit"){
     location = '/serviceLearning/editProposal/' + courseID;
   } else if(action.value == "Download"){
-    slcDownloadPDF()
+    slcDownloadPDF(courseID)
   }
 }
 function renew(){
@@ -53,8 +53,7 @@ function withdraw(){
     }
   })
 };
-function slcDownloadPDF(){
-  courseID = $("#courseID").val();
+function slcDownloadPDF(courseID){
   $.ajax({
     url: `/serviceLearning/download/${courseID}`,
     type: "GET",

@@ -1,12 +1,12 @@
 {%set title = "SLC Form Download"%}
-{% extends "base.html"%}
-{% block scripts %}
-  {{super()}}
-  <script src="/static/js/slcManagement.js"></script>
-{% endblock %}
+<script src="/static/js/slcManagement.js"></script>
 
-{% block app_content %}
-<p>
-Hello World
-</p>
-{% endblock %}
+<html>
+<body>
+  {{course.courseName}}
+
+  {% for instructor in pdfInstructor %}
+    <p class="mb-0">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user.email}})</p>
+  {% endfor %}
+</body>
+</html>

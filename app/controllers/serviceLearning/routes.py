@@ -1,4 +1,4 @@
-from flask import request, render_template, g, url_for, abort, redirect, flash, session
+from flask import request, render_template, g, url_for, abort, redirect, flash, session, jsonify, make_response
 from app.models.user import User
 from app.models.term import Term
 from app.models.course import Course
@@ -185,10 +185,25 @@ def renewCourse(courseID, termID):
 
     return "", 500
 
-@serviceLearning_bp.route('/serviceLearning/download/<courseID>/', methods=['GET'])
+@serviceLearning_bp.route('/serviceLearning/download/<courseID>', methods=['GET'])
 def downloadCourse(courseID):
     """
-    This function will download a copy of an SLC proposal.
+    This function will download a PDF of an SLC proposal.
     """
+    try:
+        course = Course.get_by_id(courseID)
+        pdfCourse = Course.select().where(Course.id == courseID)
+        pdfInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
+        pdfQuestions = (CourseQuestion.select().where(CourseQuestion.course == course))
 
-    
+        pdf = make_response(render_template('serviceLearning/slcFormDownload.html',
+                            course = course,
+                            pdfCourse = pdfCourse,
+                            pdfInstructor = pdfInstructor,
+                            pdfQuestions = pdfQuestions
+                            ))
+        return(pdf)
+    except Exception as e:
+        flash("IT DIDNT WORK", 'warning')
+        print(e)
+        return(jsonify({"Success": False}))
