@@ -73,7 +73,6 @@ function slcDownloadPDF(){
       doc.rect(20, 90, 550, 18, 'F')
       doc.setFontType("normal");
       doc.text('Berea, KY 40404', 565, 150,'right')
-      doc.text('Phone: (859) 985-3611', 570, 160,'right')
       doc.fromHTML(response, margins.left,margins.top, {width: margins.width}); // Change the HTML template to PDF
       doc.save()
     }
