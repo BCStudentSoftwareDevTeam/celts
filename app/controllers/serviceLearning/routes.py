@@ -184,3 +184,11 @@ def renewCourse(courseID, termID):
         flash("Renewal Unsuccessful", 'warning')
 
     return "", 500
+
+@serviceLearning_bp.route('/serviceLearning/download/<courseID>/', methods=['GET'])
+def downloadCourse(courseID):
+    """
+    This function will download a copy of an SLC proposal.
+    """
+
+    

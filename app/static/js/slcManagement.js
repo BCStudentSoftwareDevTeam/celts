@@ -21,6 +21,8 @@ function changeAction(action){
     $('#withdrawModal').modal('show');
   } else if(action.value == "Edit"){
     location = '/serviceLearning/editProposal/' + courseID;
+  } else if(action.value == "Download"){
+    slcDownloadPDF()
   }
 }
 function renew(){
@@ -51,3 +53,29 @@ function withdraw(){
     }
   })
 };
+function slcDownloadPDF(){
+  courseID = $("#courseID").val();
+  $.ajax({
+    url: `/serviceLearning/download/${courseID}`,
+    type: "GET",
+    success: function(response){
+      var doc = new jsPDF('portrait', 'pt', 'letter');
+      margins = {
+        top: 180,
+        bottom: 60,
+        left: 40,
+        width:522
+      };
+      doc.setFontSize(9);
+      doc.setFontType("bold")
+      doc.setDrawColor(0)
+      doc.setFillColor(48, 71, 102)
+      doc.rect(20, 90, 550, 18, 'F')
+      doc.setFontType("normal");
+      doc.text('Berea, KY 40404', 565, 150,'right')
+      doc.text('Phone: (859) 985-3611', 570, 160,'right')
+      doc.fromHTML(response, margins.left,margins.top, {width: margins.width}); // Change the HTML template to PDF
+      doc.save()
+    }
+  })
+}
