@@ -34,12 +34,24 @@
           <td>{{courseDict[course]['term'].description}}</td>
           <td>{{courseDict[course]['status']}}</td>
           <td>
-            <select class="form-select courseData" id="{{courseDict[course]['id']}}" onchange='changeAction(this)'>
-              <option value="---" disabled selected>Select Action</option>
-              <option value="Renew">Renew</option>
-              <option value="View">View</option>
-              <option value="Withdraw">Withdraw</option>
-              <option value="Edit">Edit</option>
+            {% if g.current_user.isFaculty%}
+              <select class="form-select courseData" id="{{courseDict[course]['id']}}" onchange='changeAction(this)'>
+                <option value="---" disabled selected>Select Action</option>
+                <option value="Renew">Renew</option>
+                <option value="View">View</option>
+                <option value="Withdraw">Withdraw</option>
+                <option value="Edit">Edit</option>
+              {% else %}
+                <select class="form-select courseData" id="{{courseDict[course]['id']}}" onchange='changeAction(this)'>
+                  <option value="---" disabled selected>Select Action</option>
+                  <option value="Renew">Renew</option>
+                  <option value="View">View</option>
+                  <option value="Withdraw">Withdraw</option>
+
+            {% endif %}
+
+
+
             </select>
           </td>
         </tr>
