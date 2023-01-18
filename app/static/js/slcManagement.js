@@ -59,20 +59,8 @@ function slcDownloadPDF(courseID){
     type: "GET",
     success: function(response){
       var doc = new jsPDF('portrait', 'pt', 'letter');
-      margins = {
-        top: 180,
-        bottom: 60,
-        left: 40,
-        width:522
-      };
-      doc.setFontSize(9);
-      doc.setFontType("bold")
-      doc.setDrawColor(0)
-      doc.setFillColor(48, 71, 102)
-      doc.rect(20, 90, 550, 18, 'F')
-      doc.setFontType("normal");
-      doc.text('Berea, KY 40404', 565, 150,'right')
-      doc.fromHTML(response, margins.left,margins.top, {width: margins.width}); // Change the HTML template to PDF
+      
+      doc.fromHTML(response); // Change the HTML template to PDF
       doc.save()
     }
   })
