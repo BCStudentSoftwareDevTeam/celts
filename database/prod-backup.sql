@@ -361,11 +361,14 @@ DROP TABLE IF EXISTS `eventfile`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `eventfile` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `event_id` int NOT NULL,
+  `event_id` int,
+  `course_id` int,
   `fileName` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `eventfile_event_id` (`event_id`),
-  CONSTRAINT `eventfile_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `event` (`id`)
+  CONSTRAINT `eventfile_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `event` (`id`),
+  CONSTRAINT `eventfile_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`)
+
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
