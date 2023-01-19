@@ -1,6 +1,7 @@
 from flask import request, render_template, g, url_for, abort, redirect, flash, session
 from app.models.user import User
 from app.models.term import Term
+from app.models.courseStatus import Course
 from app.models.course import Course
 from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
@@ -25,11 +26,14 @@ def serviceCourseManagement(username=None):
         user = User.get(User.username==username) if username else g.current_user
         courseDict = getServiceLearningCoursesData(user)
         termList = selectSurroundingTerms(g.current_term, prevTerms=0)
-        status = CourseStatus.select
+
+        status = Status.select()
+        print("_______________________", status)
         return render_template('serviceLearning/slcManagement.html',
             user=user,
             courseDict=courseDict,
-            termList=termList)
+            termList=termList,
+            status=status)
     else:
         flash("Unauthorized to view page", 'warning')
         return redirect(url_for('main.events', selectedTerm=g.current_term))

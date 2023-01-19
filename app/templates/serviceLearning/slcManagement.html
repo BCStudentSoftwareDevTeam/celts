@@ -34,7 +34,8 @@
           <td>{{courseDict[course]['term'].description}}</td>
           <td>{{courseDict[course]['status']}}</td>
           <td>
-            {% if g.current_user.isFaculty%}
+            {% if (g.current_user.isFaculty) and (status == 'Approved') %}
+              <p>{{status}} chicjen</p>
               <select class="form-select courseData" id="{{courseDict[course]['id']}}" onchange='changeAction(this)'>
                 <option value="---" disabled selected>Select Action</option>
                 <option value="Renew">Renew</option>
