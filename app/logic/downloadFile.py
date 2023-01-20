@@ -34,9 +34,9 @@ class fileMaker:
                         self.filewriter.writerow(headers)
                         csvWriteList = []
                         for approvedCourse in self.requestedInfo:
-                            csvWriteList = [approvedCourse.courseName, approvedCourse.courseAbbreviation, approvedCourse.instructors, approvedCourse.term.description, approvedCourse.status]
+                            csvWriteList = [approvedCourse.courseName, approvedCourse.courseAbbreviation, approvedCourse.instructors, approvedCourse.term.description]
                             self.filewriter.writerow(csvWriteList)
-                    return "File Downloaded Created Successfully"
+                        return "File Downloaded Created Successfully"
 
         except Exception as e:
             return e
