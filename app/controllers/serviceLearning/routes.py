@@ -1,7 +1,6 @@
 from flask import request, render_template, g, url_for, abort, redirect, flash, session
 from app.models.user import User
 from app.models.term import Term
-from app.models.courseStatus import Course
 from app.models.course import Course
 from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
@@ -26,14 +25,10 @@ def serviceCourseManagement(username=None):
         user = User.get(User.username==username) if username else g.current_user
         courseDict = getServiceLearningCoursesData(user)
         termList = selectSurroundingTerms(g.current_term, prevTerms=0)
-
-        status = Status.select()
-        print("_______________________", status)
         return render_template('serviceLearning/slcManagement.html',
             user=user,
             courseDict=courseDict,
-            termList=termList,
-            status=status)
+            termList=termList)
     else:
         flash("Unauthorized to view page", 'warning')
         return redirect(url_for('main.events', selectedTerm=g.current_term))
@@ -45,8 +40,12 @@ def slcEditProposal(courseID):
         Route for editing proposals, it will fill the form with the data found in the database
         given a courseID.
     """
-    if g.current_user.isCeltsAdmin or g.current_user.isFaculty:
-        course = Course.get_by_id(courseID)
+    #if g.current_user.isCeltsAdmin or g.current_user.isFaculty:
+    course = Course.get_by_id(courseID)
+    coursest=CourseStatus.get_by_id(course.status)
+    print(course.status)
+    if coursest.status!="Approved":
+        print("klsdjfklsdjfklsdjflksdjflksdjlfkj", course.status)
         questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
         questionanswers = [question.questionContent for question in questionData]
         courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
@@ -66,7 +65,12 @@ def slcEditProposal(courseID):
                                     courseInstructor = courseInstructor,
                                     isAllSectionsServiceLearning = isAllSectionsServiceLearning,
                                     isPermanentlyDesignated = isPermanentlyDesignated,
-                                    redirectTarget=getRedirectTarget())
+                                redirectTarget=getRedirectTarget())
+    else:
+        print("**************************", course.status)
+        flash("Unauthorized to view page", 'warning')
+        return ""
+
 
 @serviceLearning_bp.route('/serviceLearning/createCourse', methods=['POST'])
 def slcCreateCourse():
