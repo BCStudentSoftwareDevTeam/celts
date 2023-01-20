@@ -1,5 +1,6 @@
 from app import app
 from app.models.courseInstructor import CourseInstructor
+from app.models.courseStatus import CourseStatus
 
 import csv
 
@@ -33,7 +34,7 @@ class fileMaker:
                         self.filewriter.writerow(headers)
                         csvWriteList = []
                         for approvedCourse in self.requestedInfo:
-                            csvWriteList = [approvedCourse.courseName, approvedCourse.courseAbbreviation, approvedCourse.instructors, approvedCourse.term.description]
+                            csvWriteList = [approvedCourse.courseName, approvedCourse.courseAbbreviation, approvedCourse.instructors, approvedCourse.term.description, approvedCourse.status]
                             self.filewriter.writerow(csvWriteList)
                     return "File Downloaded Created Successfully"
 

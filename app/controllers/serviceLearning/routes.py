@@ -198,15 +198,9 @@ def sendRecommendation(termID):
     try:
         designator = "sendRecommendation"
         csvInfo = approvedCourses(termID)
-        fileFormat = {"headers":["Course Name", "Course Number", "Faculty", "Term"]}
+        fileFormat = {"headers":["Course Name", "Course Number", "Faculty", "Term", "Previously Approved Course?"]}
         filePath = safe_join(os.getcwd(), app.config['files']['base_path'])
-        # print(filePath)
         newFile = fileMaker(designator, csvInfo, "CSV", fileFormat)
-        print(newFile.relativePath)
-        # cwd = os.getcwd()
-        # print(os.getcwd())
-        # print(app.config['files']['base_path'])
-        # return send_from_directory(filePath, 'ApprovedCourses.csv')
         return send_from_directory(filePath, 'ApprovedCourses.csv', as_attachment=True)
 
     except Exception as e:
