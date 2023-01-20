@@ -8,7 +8,7 @@ $(document).ready(function() {
   });
 });
 
-function changeAction(action, status){
+function changeAction(action){
   courseID = action.id;
   // decides what to do based on selection
   if (action.value == "Renew"){
