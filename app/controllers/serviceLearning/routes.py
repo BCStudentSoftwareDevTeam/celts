@@ -25,6 +25,7 @@ def serviceCourseManagement(username=None):
         user = User.get(User.username==username) if username else g.current_user
         courseDict = getServiceLearningCoursesData(user)
         termList = selectSurroundingTerms(g.current_term, prevTerms=0)
+        status = CourseStatus.select
         return render_template('serviceLearning/slcManagement.html',
             user=user,
             courseDict=courseDict,
