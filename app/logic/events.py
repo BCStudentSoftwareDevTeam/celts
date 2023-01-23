@@ -101,7 +101,6 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
     Created events and an error message.
     """
     newEventData = preprocessEventData(eventData)
-    addfile= FileHandler(attachmentFiles)
     isValid, validationErrorMessage = validateNewEventData(newEventData)
 
     if not isValid:
@@ -111,7 +110,8 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
         events = saveEventToDb(newEventData)
         if attachmentFiles:
             for event in events:
-                addfile.saveFiles(eventId=event.id)
+                addfile= FileHandler(attachmentFiles, eventId=event.id)
+                addfile.saveFiles()
         return events, ""
     except Exception as e:
         print(e)

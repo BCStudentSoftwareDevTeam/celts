@@ -280,8 +280,8 @@ def adminLogs():
 @admin_bp.route("/deleteFile", methods=["POST"])
 def deleteFile():
     fileData= request.form
-    eventfile=FileHandler()
-    eventfile.deleteEventFile(fileData["fileId"],fileData["eventId"])
+    eventfile=FileHandler(eventId=fileData["eventId"])
+    eventfile.deleteEventFile(fileData["fileId"])
     return ""
 
 @admin_bp.route("/manageBonner")
