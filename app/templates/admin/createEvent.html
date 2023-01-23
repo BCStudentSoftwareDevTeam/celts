@@ -117,7 +117,7 @@
             </div>
 
             {% if eventData.isRecurring == True and isNewEvent %}
-              { % set hideDate = "" %}
+              {% set hideDate = "" %}
             {% else %}
               {% set hideDate = "d-none" %}
             {% endif %}
