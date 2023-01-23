@@ -31,7 +31,7 @@ Flask-Migrate==3.0.0
 Flask-MySQL==1.5.2
 flask-nav==0.6
 Flask-SQLAlchemy==2.5.1
-greenlet==1.1.0
+greenlet
 humanfriendly==9.1
 idna==2.10
 iniconfig==1.1.1
