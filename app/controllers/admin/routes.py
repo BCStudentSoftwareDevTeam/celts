@@ -181,7 +181,7 @@ def eventDisplay(eventId):
             return redirect(url_for("admin.eventDisplay", eventId = event.id))
         else:
             flash(validationErrorMessage, 'warning')
-
+            
     # make sure our data is the same regardless of GET and POST
     preprocessEventData(eventData)
     eventData['program'] = event.singleProgram
