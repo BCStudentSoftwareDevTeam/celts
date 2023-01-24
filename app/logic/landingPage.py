@@ -4,7 +4,10 @@ from app.models.programManager import ProgramManager
 from app.models.program import Program
 
 def getManagerProgramDict():
-    programs = Program.select()
+    if g.current_user.isAdmin or g.current_user.isBonnerScholar:
+        programs = Program.select()
+    else:
+        programs = Program.select().where(Program.programName != "Bonners Scholars")
     managerRows = list(ProgramManager.select())
     managerProgramDict = {}
 
