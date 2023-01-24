@@ -13,9 +13,7 @@ from app.models.term import Term
 from app.models.programBan import ProgramBan
 from app.models.interest import Interest
 from app.models.eventRsvp import EventRsvp
-from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
-from app.models.eventFile import EventFile
 from app.models.requirementMatch import RequirementMatch
 from app.models.certificationRequirement import CertificationRequirement
 

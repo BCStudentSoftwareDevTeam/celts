@@ -7,7 +7,7 @@ $(document).ready(function(e) {
 
       let fileId=  $(this).data("id")
       let fileData = {fileId : fileId,
-                        eventId:this.id}
+                        courseId:this.id}
         $.ajax({
           type:"POST",
           url: "/deleteCourseFile",
