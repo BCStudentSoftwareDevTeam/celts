@@ -7,6 +7,7 @@ from app.models import mainDB
 from app.models.programManager import ProgramManager
 from app.models.program import Program
 from app.models.term import Term
+from app.models.user import User
 
 from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
 
@@ -47,8 +48,8 @@ def test_activeEventTab():
 @pytest.mark.integration
 def test_managerProgramDict():
     with mainDB.atomic() as transaction:
-
-        dict = getManagerProgramDict()
+        user = User.get(User.username == "ramsayb2")
+        dict = getManagerProgramDict(user)
         assert os.path.join('static', 'images/landingPage/Hunger Initiatives.jpg') in dict[Program.get(Program.programName == "Hunger Initiatives")]["image"]
 
         noImageProgram = Program.create(programName = "Program with No Image",
@@ -57,7 +58,7 @@ def test_managerProgramDict():
                                           contactEmail = "",
                                           contactName = "")
 
-        dict = getManagerProgramDict()
+        dict = getManagerProgramDict(user)
         assert noImageProgram in dict
         assert os.path.join('static', 'images/logos/celts_symbol.png') in dict[noImageProgram]["image"]
 
