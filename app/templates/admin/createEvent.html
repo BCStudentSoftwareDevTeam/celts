@@ -7,6 +7,7 @@
   <script type="module" src="/static/js/createEvents.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.0/js/fileinput.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+
 {% endblock %}
 
 {% block styles %}
@@ -97,7 +98,7 @@
             {% if template.tag != 'all-volunteer' %}
             <div class="form-check form-switch pb-1">
               <label class="custom-control-label" for='checkIsRecurring'><strong>This is a recurring event.</strong></label>
-              <input class="form-check-input" type="checkbox" id="checkIsRecurring" name="isRecurring"/>
+              <input class="form-check-input" type="checkbox" id="checkIsRecurring" name="isRecurring" {{"checked" if eventData.isRecurring}}/>
             </div>
             {% endif %}
           </div>
@@ -114,7 +115,14 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group col-md-6 d-none" id ="endDateStyle">
+
+            {% if eventData.isRecurring == True and isNewEvent %}
+              {% set hideDate = "" %}
+            {% else %}
+              {% set hideDate = "d-none" %}
+            {% endif %}
+
+            <div class="form-group col-md-6 {{hideDate}}" id ="endDateStyle" >
             <!--datePicker for End date-->
                 <label class="form-label me-2" for="endDatePicker"><strong>End Date</strong></label>
                 <div class='input-group date' id="endDate">
@@ -124,6 +132,7 @@
                   </div>
                 </div>
             </div>
+
         </div>
         <br>
         <!-- Start and End Time -->
@@ -133,9 +142,9 @@
               <label class="form-label me-2" for="startTime"><strong>Start Time</strong></label>
               <div class="input-group">
                 {% if eventData.timeStart %}
-                  {%set start_time = eventData.timeStart %}
-                {%else%}
-                  {%set start_time = "12:00" %}
+                  {% set start_time = eventData.timeStart %}
+                {% else %}
+                  {% set start_time = "12:00" %}
                 {% endif %}
                 <input autocomplete="off" type="time" class="form-control timepicker" value="{{start_time}}" name="timeStart" aria-describedby="timeIcon1" placeholder="Pick a start time" onchange="update(this)" id=startTime required />
                 <span class="input-group-text timeIcons" id="timeIcon1" hidden><i class="bi bi-clock"></i></span>
@@ -145,9 +154,9 @@
               <label class="form-label me-2" for="pickEndTime"><strong>End Time</strong></label>
               <div class="input-group">
                 {% if eventData.timeEnd %}
-                  {%set end_time = eventData.timeEnd%}
+                  {% set end_time = eventData.timeEnd %}
                 {%else%}
-                  {%set end_time = "12:00" %}
+                  {% set end_time = "12:00" %}
                 {% endif %}
                   <input autocomplete="off" type="time" class="form-control timepicker" value="{{end_time}}" name="timeEnd" aria-describedby="timeIcon2" placeholder="Pick an end time" onchange="update(this)" id=endTime required />
                   <span class="input-group-text timeIcons" id="timeIcon2" hidden><i class="bi bi-clock"></i></span>
@@ -155,7 +164,8 @@
             </div>
           </div>
         </div>
-        <div class="d-none" id="recurringTableDiv">
+        
+        <div class="{{hideDate}}" id="recurringTableDiv">
           <table class="table" id="recurringEventsTable">
             <thead><tr><th>Event Name</th><th>Date</th></tr></thead>
             <tbody></tbody>
@@ -309,7 +319,7 @@
                <button type="submit" class="btn btn-danger">Delete This Event</button>
            </form>
         </div>
-        {%endif%}
+        {% endif %}
        <div>
          <input type="hidden" value="{{eventData.id}}" name="id">
        </div>

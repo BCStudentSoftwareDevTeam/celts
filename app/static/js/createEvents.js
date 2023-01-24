@@ -34,16 +34,48 @@ function format24to12HourTime(timeStr){
     }
     return formattedTime;
   }
+
+  function calculateRecurringEventFrequency(){
+      var eventDatesAndName = {name:$("#inputEventName").val(),
+                               isRecurring: true,
+                               startDate:$("#startDatePicker").val(),
+                               endDate:$("#endDatePicker").val()}
+      $.ajax({
+        type:"POST",
+        url: "/makeRecurringEvents",
+        data: eventDatesAndName, //get the startDate, endDate and name as a dictionary
+        success: function(jsonData){
+          var recurringEvents = JSON.parse(jsonData)
+          var recurringTable = $("#recurringEventsTable")
+          $("#recurringEventsTable tbody tr").remove();
+
+          for (var event of recurringEvents){
+            var eventdate = new Date(event.date).toLocaleDateString()
+            recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
+            }
+        },
+        error: function(error){
+          console.log(error)
+        }
+      });
+
+  }
 /*
  * Run when the webpage is ready for javascript
  */
 $(document).ready(function() {
+  if ( $("#startDatePicker").val() != $("#endDatePicker").val()){
+  
+    calculateRecurringEventFrequency();
+  }
+
     $("#attachmentObject").fileinput({
         allowedFileExtensions:["pdf","jpg","png","gif", "csv", "docx", "jpg", "jpeg", "jfif"]
     })
   // Disable button when we are ready to submit
   $("#saveEvent").on('submit',function(event) {
-      $(this).find("input[type=submit]").prop("disabled", true)
+      $(this).find("input[type=submit]").prop("disabled", true);
+
   });
 
   $("#checkIsRecurring").click(function() {
@@ -56,6 +88,8 @@ $(document).ready(function() {
       $("#endDatePicker").prop('required', false);
     }
   });
+
+
   $("#allowPastStart").click(function() {
     var allowPast = $("#allowPastStart:checked").val()
     if (allowPast == 'on') {
@@ -119,28 +153,7 @@ $(document).ready(function() {
 
   $("#startDatePicker, #endDatePicker").change(function(){
     if ( $("#startDatePicker").val() && $("#endDatePicker").val()){
-      var eventDatesAndName = {name:$("#inputEventName").val(),
-                               isRecurring: true,
-                               startDate:$("#startDatePicker").val(),
-                               endDate:$("#endDatePicker").val()}
-      $.ajax({
-        type:"POST",
-        url: "/makeRecurringEvents",
-        data: eventDatesAndName, //get the startDate, endDate and name as a dictionary
-        success: function(jsonData){
-          var recurringEvents = JSON.parse(jsonData)
-          var recurringTable = $("#recurringEventsTable")
-          $("#recurringEventsTable tbody tr").remove();
-
-          for (var event of recurringEvents){
-            var eventdate = new Date(event.date).toLocaleDateString()
-            recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
-            }
-        },
-        error: function(error){
-          console.log(error)
-        }
-      });
+      calculateRecurringEventFrequency();
     }
   });
 
@@ -217,5 +230,5 @@ $("#inputCharacters").keyup(function(event){
   setCharacterLimit(this, "#remainingCharacters")
   });
 
-  setCharacterLimit($("#inputCharacters"), "#remainingCharacters"); 
+  setCharacterLimit($("#inputCharacters"), "#remainingCharacters");
 });
