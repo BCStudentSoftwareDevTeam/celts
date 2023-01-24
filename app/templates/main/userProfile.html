@@ -298,10 +298,10 @@
 <!-- ################# Background Check Section  ################ -->
 
 <!-- ################# Notes Section ################ -->
-  <div class="accordion-item" id="accordion5">
+  <div class="accordion-item">
     <h3 class="accordion-header" id="headingSix">
       {% set focus = "open" if visibleAccordion == "notes" else "collapsed" %}
-      <button class="accordion-button {{focus}}" type="button" data-parent="#accordion5" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">Notes</button>
+      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">Notes</button>
     </h3>
     {% set show = "show" if visibleAccordion == "notes" else "" %}
     <div id="collapseSix" class="accordion-collapse collapse {{show}}" aria-labelledby="headingSix" data-bs-parent="#userProfile">
@@ -312,7 +312,7 @@
               <th>Date</th>
               <th>Creator</th>
               <th>Note</th>
-              <th>Visible By</th>
+              <th>Visible To</th>
               <th></th>
             </tr>
           </thead>
@@ -461,14 +461,14 @@
                   <option value='3'>Admins</option>
                 {% endif %}
                 {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
-                  <option value='2'>Admins, Student Staff</option>
+                  <option value='2'>Admin/Student Staff</option>
                 {% endif %}
                 <option value='1' selected>Everyone</option>
               </select>
               {% if g.current_user.isBonnerScholar and volunteer.isBonnerScholar %}
                 <div class="form-check form-switch pt-4">
                   <input class="form-check-input" name="bonner" id="bonnerInput" type="checkbox" />
-                  <label class="form-check-label"><strong>For Bonners</strong></label>
+                  <label class="form-check-label"><strong>Related to Bonner Scholars Program</strong></label>
                 </div>
               {% endif %}
               <br>
