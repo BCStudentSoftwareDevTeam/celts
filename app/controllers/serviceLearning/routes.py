@@ -5,12 +5,11 @@ from app.models.course import Course
 from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseQuestion import CourseQuestion
-from app.models.courseParticipant import CourseParticipant
 from app.logic.utils import selectSurroundingTerms
-from app.logic.searchUsers import searchUsers
-from app.logic.utils import selectSurroundingTerms
+from app.logic.fileHandler import FileHandler
 from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal, renewProposal
 from app.logic.courseManagement import updateCourse, createCourse
+from app.models.eventFile import EventFile
 from app.controllers.main.routes import getRedirectTarget, setRedirectTarget
 from app.controllers.serviceLearning import serviceLearning_bp
 
@@ -44,7 +43,9 @@ def slcEditProposal(courseID):
     questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
     questionanswers = [question.questionContent for question in questionData]
     courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
+    associatedAttachments = EventFile.select().where(EventFile.course == course.id)
 
+    filepaths = FileHandler(courseId=course.id).retrievePath(associatedAttachments)
     isAllSectionsServiceLearning = ""
     isPermanentlyDesignated = ""
 
@@ -60,6 +61,7 @@ def slcEditProposal(courseID):
                                 courseInstructor = courseInstructor,
                                 isAllSectionsServiceLearning = isAllSectionsServiceLearning,
                                 isPermanentlyDesignated = isPermanentlyDesignated,
+                                filepaths = filepaths,
                                 redirectTarget=getRedirectTarget())
 
 @serviceLearning_bp.route('/serviceLearning/createCourse', methods=['POST'])
@@ -207,3 +209,9 @@ def downloadCourse(courseID):
         flash("IT DIDNT WORK", 'warning')
         print(e)
         return(jsonify({"Success": False}))
+@serviceLearning_bp.route("/deleteCourseFile", methods=["POST"])
+def deleteCourseFile():
+    fileData= request.form
+    eventfile=FileHandler(courseId=fileData["courseId"])
+    eventfile.deleteFile(fileData["fileId"])
+    return ""

@@ -3,6 +3,28 @@ import searchUser from './searchUser.js'
 var currentTab = 0; // Current tab is set to be the first tab (0)
 
 $(document).ready(function(e) {
+    $(".removeAttachment").on("click", function(){
+
+      let fileId=  $(this).data("id")
+      let fileData = {fileId : fileId,
+                        eventId:this.id}
+        $.ajax({
+          type:"POST",
+          url: "/deleteCourseFile",
+          data: fileData, //get the startDate, endDate and name as a dictionary
+          success: function(){
+              msgFlash("Attachment removed successfully")
+              $("#attachment_"+fileId).remove()
+
+          },
+              error: function(error){
+                  msgFlash(error)
+          }
+          });
+    });
+    $("#attachmentObject").fileinput({
+      allowedFileExtensions:["pdf","jpg","png","gif", "csv", "docx", "jpg", "jpeg", "jfif"]
+    })
     // set up the current tab and button state
     showTab(currentTab);
 

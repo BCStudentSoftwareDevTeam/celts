@@ -10,10 +10,13 @@ class FileHandler:
         self.courseId = courseId
         self.eventId = eventId
         if courseId:
-            self.path= os.path.join(self.path, app.config['files']['course_attachment_path'], str(courseId))
+            self.path = os.path.join(self.path, app.config['files']['course_attachment_path'], str(courseId))
         elif eventId:
             self.path = os.path.join(self.path, app.config['files']['event_attachment_path'], str(eventId))
-        os.makedirs(self.path)
+        try:
+            os.makedirs(self.path)
+        except:
+            print("Directory exists.")
 
     def getFileFullPath(self, newfile = None):
         """
@@ -61,9 +64,7 @@ class FileHandler:
         """
         try:
             file = EventFile.get_by_id(fileId)
-            print("hello")
             path = os.path.join(self.path, file.fileName)
-            print("hello")
             os.remove(path)
             file.delete_instance()
         except AttributeError: #passes if no attachment is selected.
