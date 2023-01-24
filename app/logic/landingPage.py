@@ -3,8 +3,9 @@ from flask import g
 from app.models.programManager import ProgramManager
 from app.models.program import Program
 
-def getManagerProgramDict():
-    if g.current_user.isAdmin or g.current_user.isBonnerScholar:
+
+def getManagerProgramDict(user):
+    if user.isAdmin or user.isBonnerScholar:
         programs = Program.select()
     else:
         programs = Program.select().where(Program.programName != "Bonners Scholars")
