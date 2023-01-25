@@ -106,7 +106,7 @@ def getUserBGCheckHistory(username):
     """
     Get a users background check history
     """
-    bgHistory = {'CAN': [], 'FBI': [], 'SHS': [], 'BSL': []}
+    bgHistory = {'CAN': [], 'FBI': [], 'SHS': [], 'BSL': [],"DD":[]}
 
     allBackgroundChecks = (BackgroundCheck.select(BackgroundCheck, BackgroundCheckType)
                                                   .join(BackgroundCheckType)
