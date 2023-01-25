@@ -45,7 +45,7 @@ class FileHandler:
                 elif self.courseId:
                     isFileInCourse = EventFile.select().where(EventFile.course == self.courseId, EventFile.fileName == file.filename).exists()
                     if not isFileInCourse:
-                        EventFile.create(event = self.courseId, fileName = file.filename)
+                        EventFile.create(course = self.courseId, fileName = file.filename)
                         file.save(self.getFileFullPath(newfile = file)) # saves attachment in directory
         except AttributeError: # will pass if there is no attachment to save
             return False

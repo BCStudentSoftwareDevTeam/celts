@@ -52,7 +52,7 @@ def createCourse(creator="No user provided"):
 
     return course
 
-def updateCourse(courseData):
+def updateCourse(courseData, attachment=None):
     """
         This function will take in courseData for the SLC proposal page and a dictionary
         of instuctors assigned to the course and update the information in the db.
@@ -85,11 +85,10 @@ def updateCourse(courseData):
         for instructor in instructorList:
             CourseInstructor.create(course=course, user=instructor)
         createLog(f"Saved SLC proposal: {courseData['courseName']}")
-        if courseData['attachmentFiles']:
-            for event in events:
-                addfile= FileHandler(attachmentFiles, eventId=event.id)
-                addfile.saveFiles()
-        return ""
+        if attachment:
+            addfile= FileHandler(attachment, courseId=course.id)
+            addfile.saveFiles()
+        return Course.get_by_id(course.id)
     except Exception as e:
         print(e)
         return False, e

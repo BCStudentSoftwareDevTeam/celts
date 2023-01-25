@@ -76,7 +76,7 @@ def slcCreateCourse():
 def slcSaveContinue():
     """Will update the the course proposal and return an empty string since ajax request needs a response
     Also, it updates the course status as 'Incomplete'"""
-    course = updateCourse(request.form.copy(), request.files.getlist("attachmentObject"))
+    course = updateCourse(request.form.copy())
     course.status = CourseStatus.INCOMPLETE
     course.save()
     return ""
@@ -84,7 +84,7 @@ def slcSaveContinue():
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcCreateOrEdit():
     if request.method == "POST":
-        course = updateCourse(request.form.copy())
+        course = updateCourse(request.form.copy(), request.files.getlist("attachmentObject"))
         if getRedirectTarget(False):
             return redirect('' + getRedirectTarget(True) + '')
         return redirect('/serviceLearning/courseManagement')
@@ -111,7 +111,7 @@ def approveCourse():
 
         # We have data and need to update the course first
         else:
-            course = updateCourse(request.form.copy())
+            course = updateCourse(request.form.copy(), request.files.getlist("attachmentObject"))
 
         course.status = CourseStatus.APPROVED
         course.save()

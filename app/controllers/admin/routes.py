@@ -19,7 +19,7 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.adminLogs import createLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.volunteers import getEventLengthInHours
-from app.logic.utils import selectSurroundingTerms
+from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents
 from app.logic.participants import getEventParticipants, getUserParticipatedEvents, checkUserRsvp, checkUserVolunteer
 from app.logic.fileHandler import FileHandler
@@ -70,12 +70,6 @@ def createEvent(templateid, programid=None):
 
     # Get the data from the form or from the template
     eventData = template.templateData
-    if request.method == "POST":
-        attachmentFiles = request.files.getlist("attachmentObject")
-        fileDoesNotExist = attachmentFiles[0].content_type == "application/octet-stream"
-        if fileDoesNotExist:
-            attachmentFiles = None
-        eventData.update(request.form.copy())
 
     if program:
         eventData["program"] = program
@@ -92,8 +86,9 @@ def createEvent(templateid, programid=None):
 
     # Try to save the form
     if request.method == "POST":
+        eventData.update(request.form.copy())
         try:
-            savedEvents, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
+            savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
 
         except Exception as e:
             print("Error saving event:", e)
@@ -150,8 +145,12 @@ def eventDisplay(eventId):
 
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
-        attachmentFiles = request.files.getlist("attachmentObject")
-        savedEvents, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
+        try:
+            savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
+        except Exception as e:
+            savedEvents = False
+            print(e)
+
         if savedEvents:
             flash("Event successfully updated!", "success")
             return redirect(url_for("admin.eventDisplay", eventId = event.id))
