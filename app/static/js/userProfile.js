@@ -65,6 +65,10 @@ $(document).ready(function(){
     $("#noteModal").modal("toggle");
   });
 
+  $("#addBonnerNoteButton").click(function() {
+    $("#noteModal").modal("toggle");
+  });
+
   $("#bonnerInput").click(function() {
     $("#bonnerInput").val(
       $("#bonnerInput").val()== "on" ? "off" : "on"
