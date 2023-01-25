@@ -121,6 +121,10 @@ def test_deleteUserProfileNote():
             g.current_user = "ramsayb2"
 
             addedNote = addProfileNote(1, True, "Test profile note", "neillz")
+            assert addedNote.isBonnerNote == True
+            assert addedNote.viewTier == 1
+            assert addedNote.user == User.get_by_id("neillz")
+
             profileNote = deleteProfileNote(addedNote)
             with pytest.raises(DoesNotExist):
                 ProfileNote.get_by_id(addedNote)
