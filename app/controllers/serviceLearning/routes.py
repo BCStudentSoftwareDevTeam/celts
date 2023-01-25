@@ -5,7 +5,7 @@ from app.models.course import Course
 from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseQuestion import CourseQuestion
-from app.logic.utils import selectSurroundingTerms
+from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.fileHandler import FileHandler
 from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal, renewProposal
 from app.logic.courseManagement import updateCourse, createCourse
@@ -84,7 +84,7 @@ def slcSaveContinue():
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcCreateOrEdit():
     if request.method == "POST":
-        course = updateCourse(request.form.copy(), request.files.getlist("attachmentObject"))
+        course = updateCourse(request.form.copy(), getFilesFromRequest(request))
         if getRedirectTarget(False):
             return redirect('' + getRedirectTarget(True) + '')
         return redirect('/serviceLearning/courseManagement')
@@ -111,7 +111,7 @@ def approveCourse():
 
         # We have data and need to update the course first
         else:
-            course = updateCourse(request.form.copy(), request.files.getlist("attachmentObject"))
+            course = updateCourse(request.form.copy())
 
         course.status = CourseStatus.APPROVED
         course.save()
