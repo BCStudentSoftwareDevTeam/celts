@@ -76,7 +76,12 @@ def slcCreateCourse():
 def slcSaveContinue():
     """Will update the the course proposal and return an empty string since ajax request needs a response
     Also, it updates the course status as 'Incomplete'"""
-    course = updateCourse(request.form.copy())
+    try:
+        course = updateCourse(request.form.copy(), getFilesFromRequest(request))
+    except Exception as e:
+        print(e)
+        course = updateCourse(request.form.copy())
+        
     course.status = CourseStatus.INCOMPLETE
     course.save()
     return ""
