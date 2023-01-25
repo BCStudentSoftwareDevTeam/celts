@@ -59,8 +59,13 @@ function slcDownloadPDF(courseID){
     type: "GET",
     success: function(response){
       var doc = new jsPDF('portrait', 'pt', 'letter');
-      
-      doc.fromHTML(response); // Change the HTML template to PDF
+      margins = {
+             top: 40,
+             bottom: 60,
+             left: 40,
+             width: 522
+             };
+       doc.fromHTML(response, margins.left,margins.top, {width: margins.width}); // Change the HTML template to PDF
       doc.save()
     }
   })
