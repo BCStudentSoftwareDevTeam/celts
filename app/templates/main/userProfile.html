@@ -455,8 +455,12 @@
         <div class="modal-body" style="align=center">
           <div class="input-group">
             <div class="form-group input-group-x form-outline">
-              <label class="form-label" for='inputEventTerm'><strong>Visibility</strong></label>
-              <select class="form-select" name='visibility' id='noteDropdown'>
+              {%  set vis = "" if g.current_user.isCeltsStudentStaff or g.current_user.isCeltsAdmin else "d-none" %}
+              {% if vis != "" %}
+                <p><b>This note will only be visible to you, CELTS Student Staff, and Administrators.</b></p>
+              {% endif %}
+              <label class="form-label {{vis}}" for='inputEventTerm'><strong>Visibility</strong></label>
+              <select class="form-select {{vis}}" name='visibility' id='noteDropdown'>
                 {% if g.current_user.isCeltsAdmin %}
                   <option value='3'>Admins</option>
                 {% endif %}
