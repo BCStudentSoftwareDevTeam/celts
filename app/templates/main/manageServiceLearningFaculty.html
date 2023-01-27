@@ -105,16 +105,16 @@
             </tbody>
           </table>
         {% endif %}
-
+      {% set downloadAndSend = "disabled" if approvedCourses | length ==0 else "" %}
       {% if term.isCurrentTerm or term.isFutureTerm %}
       <div class="col">
         <div class="float-end">
           <form method="GET" action="/serviceLearning/sendRecommendation/{{term.id}}">
-            <button class="btn btn-primary" id="sendRecommendationBtn" value="{{term.id}}">Download File</button>
+            <button class="btn btn-primary {{downloadAndSend}}" id="sendRecommendationBtn" value="{{term.id}}">Download File</button>
           </form>
         </div>
           <div class="float-end">
-            <a  class="btn btn-primary mr" href="mailto:{{(';'.join(instructorEmails))}}?subject=Designated Service-Learning Courses: List of recommended courses for {{term.description}}&body=Hello,%0D%0A%0D%0AI’m writing to submit the list of courses recommended for the Service-Learning Course Designation (meeting the ALE requirement) for the upcoming semester; this list is ready to be shared with COGE. Please find the list of courses in the attached document. The proposals have been reviewed and approved by the Service-Learning Faculty Fellow and Director of CELTS (me).%0D%0A%0D%0AIn addition to these courses, all the courses that have received the Permanent Service-Learning Course Designation that will be taught in the upcoming semester should also have the Service-Learning Course Designation.%0D%0A%0D%0AThank you,%0D%0A%0D%0AAshley"> Send Recommendation </a>
+            <a  class="btn btn-primary mr {{downloadAndSend}}" href="mailto:{{(';'.join(instructorEmails))}}?subject=Designated Service-Learning Courses: List of recommended courses for {{term.description}}&body=Hello,%0D%0A%0D%0AI’m writing to submit the list of courses recommended for the Service-Learning Course Designation (meeting the ALE requirement) for the upcoming semester; this list is ready to be shared with COGE. Please find the list of courses in the attached document. The proposals have been reviewed and approved by the Service-Learning Faculty Fellow and Director of CELTS (me).%0D%0A%0D%0AIn addition to these courses, all the courses that have received the Permanent Service-Learning Course Designation that will be taught in the upcoming semester should also have the Service-Learning Course Designation.%0D%0A%0D%0AThank you,%0D%0A%0D%0AAshley"> Send Recommendation </a>
           </div>
       </div>
        {% endif %}
