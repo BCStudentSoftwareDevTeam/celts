@@ -76,11 +76,7 @@ def slcCreateCourse():
 def slcSaveContinue():
     """Will update the the course proposal and return an empty string since ajax request needs a response
     Also, it updates the course status as 'Incomplete'"""
-    try:
-        course = updateCourse(request.form.copy(), getFilesFromRequest(request))
-    except Exception as e:
-        print(e)
-        course = updateCourse(request.form.copy())
+    course = updateCourse(request.form.copy())
         
     course.status = CourseStatus.INCOMPLETE
     course.save()
@@ -214,6 +210,16 @@ def downloadCourse(courseID):
         flash("IT DIDNT WORK", 'warning')
         print(e)
         return(jsonify({"Success": False}))
+
+@serviceLearning_bp.route("/uploadCourseFile", methods=["POST"])
+def uploadCourseFile():
+    attachment = getFilesFromRequest(request)
+    courseID = request.form["courseID"]
+    addfile= FileHandler(attachment, courseId=courseID)
+    addfile.saveFiles()
+    return ""
+
+
 @serviceLearning_bp.route("/deleteCourseFile", methods=["POST"])
 def deleteCourseFile():
     fileData= request.form

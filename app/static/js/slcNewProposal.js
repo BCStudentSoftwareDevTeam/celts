@@ -8,20 +8,40 @@ $(document).ready(function(e) {
       let fileId=  $(this).data("id")
       let fileData = {fileId : fileId,
                         courseId:this.id}
-        $.ajax({
-          type:"POST",
-          url: "/deleteCourseFile",
-          data: fileData, //get the startDate, endDate and name as a dictionary
-          success: function(){
-              msgFlash("Attachment removed successfully")
-              $("#attachment_"+fileId).remove()
+      $.ajax({
+        type:"POST",
+        url: "/deleteCourseFile",
+        data: fileData, //get the startDate, endDate and name as a dictionary
+        success: function(){
+            msgFlash("Attachment removed successfully")
+            $("#attachment_"+fileId).remove()
 
-          },
-              error: function(error){
-                  msgFlash(error)
-          }
-          });
+        },
+        error: function(error){
+            msgFlash(error)
+        }
+        });
     });
+    // $("#submitUploadForm").on("click", function() {
+    //   let fd = new FormData($("#syllabusUploadForm"))
+    //   $.ajax({
+    //     type: "POST",
+    //     url: "/uploadCourseFile",
+    //     processData: false,
+    //     contentType: false,
+    //     data: fd, //get the startDate, endDate and name as a dictionary
+    //     success: function(){
+    //       console.log(data)
+    //     },
+    //     error: function(error){
+    //       console.log(data)
+
+    //     }
+    //     });
+    // })
+    $("#syllabusUploadButton").on("click", function() {
+      $("#syllabusUploadModal").modal("toggle")
+    })
     $("#attachmentObject").fileinput({
       allowedFileExtensions:["pdf","jpg","png","gif", "csv", "docx", "jpg", "jpeg", "jfif"]
     })
