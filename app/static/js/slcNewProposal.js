@@ -13,7 +13,7 @@ $(document).ready(function(e) {
         url: "/deleteCourseFile",
         data: fileData, //get the startDate, endDate and name as a dictionary
         success: function(){
-            msgFlash("Attachment removed successfully")
+            msgFlash("Attachment removed successfully", "success")
             $("#attachment_"+fileId).remove()
 
         },
@@ -22,23 +22,6 @@ $(document).ready(function(e) {
         }
         });
     });
-    // $("#submitUploadForm").on("click", function() {
-    //   let fd = new FormData($("#syllabusUploadForm"))
-    //   $.ajax({
-    //     type: "POST",
-    //     url: "/uploadCourseFile",
-    //     processData: false,
-    //     contentType: false,
-    //     data: fd, //get the startDate, endDate and name as a dictionary
-    //     success: function(){
-    //       console.log(data)
-    //     },
-    //     error: function(error){
-    //       console.log(data)
-
-    //     }
-    //     });
-    // })
     $("#syllabusUploadButton").on("click", function() {
       $("#syllabusUploadModal").modal("toggle")
     })

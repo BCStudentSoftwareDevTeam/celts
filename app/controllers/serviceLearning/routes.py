@@ -211,7 +211,7 @@ def downloadCourse(courseID):
         print(e)
         return(jsonify({"Success": False}))
 
-@serviceLearning_bp.route("/uploadCourseFile", methods=["POST"])
+@serviceLearning_bp.route("/uploadCourseFile", methods=['GET', "POST"])
 def uploadCourseFile():
     attachment = getFilesFromRequest(request)
     courseID = request.form["courseID"]
