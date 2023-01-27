@@ -213,12 +213,11 @@ def downloadCourse(courseID):
 
 @serviceLearning_bp.route("/uploadCourseFile", methods=['GET', "POST"])
 def uploadCourseFile():
-    bloo = request.form
     attachment = getFilesFromRequest(request)
     courseID = request.form["courseID"]
     addfile= FileHandler(attachment, courseId=courseID)
     addfile.saveFiles()
-    return redirect(url_for("serviceLearning.slcEditProposal", courseID = bloo["courseID"]))
+    return redirect(url_for("serviceLearning.slcEditProposal", courseID = courseID))
 
 
 @serviceLearning_bp.route("/deleteCourseFile", methods=["POST"])
