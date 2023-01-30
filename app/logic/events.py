@@ -317,10 +317,10 @@ def validateNewEventData(data):
         return (False, "Raw form data passed to validate method. Preprocess first.")
 
     if data['isRecurring'] and data['endDate']  <  data['startDate']:
-        return (False, "Event start date is after event end date")
+        return (False, "Event start date is after event end date.")
 
-    if data['endDate'] ==  data['startDate'] and data['timeEnd'] <= data['timeStart']:
-        return (False, "Event start time is after event end time")
+    if data['timeEnd'] <= data['timeStart']:
+        return (False, "Event end time must be after start time.")
 
     # Validation if we are inserting a new event
     if 'id' not in data:

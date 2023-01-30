@@ -167,7 +167,6 @@ def eventDisplay(eventId):
             return redirect(url_for("admin.eventDisplay", eventId = event.id))
         else:
             flash(validationErrorMessage, 'warning')
-
     preprocessEventData(eventData)
     eventData['program'] = event.singleProgram
     futureTerms = selectSurroundingTerms(g.current_term)
