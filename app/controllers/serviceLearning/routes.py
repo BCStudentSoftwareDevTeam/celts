@@ -34,6 +34,33 @@ def serviceCourseManagement(username=None):
         return redirect(url_for('main.events', selectedTerm=g.current_term))
 
 @serviceLearning_bp.route('/serviceLearning/viewProposal/<courseID>', methods=['GET'])
+def slcViewProposal(courseID):
+    """
+        Route for viewing proposals, it will let the users view the proposals
+        that have been approved.
+    """
+    course = Course.get_by_id(courseID)
+    questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
+    questionanswers = [question.questionContent for question in questionData]
+    courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
+
+    isAllSectionsServiceLearning = ""
+    isPermanentlyDesignated = ""
+
+    if course.isAllSectionsServiceLearning:
+        isAllSectionsServiceLearning = True
+    if course.isPermanentlyDesignated:
+        isPermanentlyDesignated = True
+    terms = selectSurroundingTerms(g.current_term, 0)
+    return render_template('serviceLearning/slcNewProposal.html',
+                                course = course,
+                                questionanswers = questionanswers,
+                                terms = terms,
+                                courseInstructor = courseInstructor,
+                                isAllSectionsServiceLearning = isAllSectionsServiceLearning,
+                                isPermanentlyDesignated = isPermanentlyDesignated,
+                                redirectTarget=getRedirectTarget())
+
 @serviceLearning_bp.route('/serviceLearning/editProposal/<courseID>', methods=['GET'])
 def slcEditProposal(courseID):
     """
@@ -65,12 +92,10 @@ def slcEditProposal(courseID):
                                     courseInstructor = courseInstructor,
                                     isAllSectionsServiceLearning = isAllSectionsServiceLearning,
                                     isPermanentlyDesignated = isPermanentlyDesignated,
-                                redirectTarget=getRedirectTarget())
+                                    redirectTarget=getRedirectTarget())
     else:
-        print("**************************", course.status)
-        flash("Unauthorized to view page", 'warning')
-        return ""
-
+        flash("You cannot edit an approved SLC proposal. Contact ", 'warning')
+        return redirect(url_for('serviceLearning.slcViewProposal', courseID = course.id))
 
 @serviceLearning_bp.route('/serviceLearning/createCourse', methods=['POST'])
 def slcCreateCourse():
