@@ -37,7 +37,7 @@ def serviceCourseManagement(username=None):
 def slcViewProposal(courseID):
     """
         Route for viewing proposals, it will let the users view the proposals
-        that have been approved.
+        of any status.
     """
     course = Course.get_by_id(courseID)
     questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
@@ -70,9 +70,8 @@ def slcEditProposal(courseID):
     #if g.current_user.isCeltsAdmin or g.current_user.isFaculty:
     course = Course.get_by_id(courseID)
     coursest=CourseStatus.get_by_id(course.status)
-    print(course.status)
+
     if coursest.status!="Approved":
-        print("klsdjfklsdjfklsdjflksdjflksdjlfkj", course.status)
         questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
         questionanswers = [question.questionContent for question in questionData]
         courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
