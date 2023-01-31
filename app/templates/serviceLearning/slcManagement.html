@@ -8,11 +8,7 @@
 {% block app_content %}
 <input id="username" type="hidden" value='{{user.username}}'>
 <h1 class="text-center mb-2">{{user.firstName}} {{user.lastName}}'s SLC Proposals</h1>
-<div align="right">
-  <form method="post" action="/serviceLearning/createCourse" >
-    <button class="btn btn-primary" type = 'Submit'>Create Course Proposal</button>
-  </form>
-</div>
+<p class="text-center">Feel free to download whenever you want. Here is a copy of a blank form that you can look at before starting <a href="/static/files/serviceLearningProposalForm/slCourseDesignationProposalForm.doc">Service Learning Course Designation Form</a>. You can save and come back at any time. </p>
 <div class="table-responsive" id="proposalTable">
   <table class="table table-striped">
     <thead>
@@ -50,6 +46,11 @@
   {% if not courseDict %}
     <p class="text-center">{{user.firstName}} {{user.lastName}} has no associated course proposals.</p>
   {% endif %}
+</div>
+<div align="right">
+  <form method="post" action="/serviceLearning/createCourse" >
+    <button class="btn btn-primary" type = 'Submit'>Create Course Proposal</button>
+  </form>
 </div>
 <div class="modal fade" id="withdrawModal" tabindex="-1" aria-labelledby="withdrawModalLabel" aria-hidden="true">
   <div class="modal-dialog">
