@@ -52,6 +52,7 @@
   </ul>
 </div>
 {% macro createTable(events, type) %}
+<p> checkthis{{ events|length }}</p>
 {% if events|count %}
 <div class="table-responsive">
   <table class="table table-striped">
@@ -68,6 +69,7 @@
       </tr>
     </thead>
     <tbody>
+
         {% for event in events %}
           <tr>
             {% if type != "bonner" %}
