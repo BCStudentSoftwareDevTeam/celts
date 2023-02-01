@@ -106,6 +106,8 @@ function disableInput() {
     $(".removeButton").hide()
 }
 
+
+
 function readOnly() {
     return window.location.href.includes("view");
 }
