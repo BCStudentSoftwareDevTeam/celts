@@ -85,7 +85,7 @@ def slcSaveContinue():
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcCreateOrEdit():
     if request.method == "POST":
-        course = updateCourse(request.form.copy(), getFilesFromRequest(request))
+        course = updateCourse(request.form.copy())
         if getRedirectTarget(False):
             return redirect('' + getRedirectTarget(True) + '')
         return redirect('/serviceLearning/courseManagement')

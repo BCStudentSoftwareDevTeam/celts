@@ -69,6 +69,7 @@ def updateCourse(courseData, attachment=None):
             isRegularlyOccurring=int(courseData["isRegularlyOccurring"]),
             term=courseData['term'],
             status=CourseStatus.SUBMITTED,
+            isPreviouslyApproved=int(courseData["isPreviouslyApproved"]),
             previouslyApprovedDescription = courseData["previouslyApprovedDescription"],
             isAllSectionsServiceLearning=("on" in courseData["slSectionsToggle"]),
             serviceLearningDesignatedSections=courseData["slDesignation"],
