@@ -108,9 +108,14 @@ $(document).ready(function(e) {
             else if (currentTab == (allTabs.length - 1)){
               window.location.replace("/serviceLearning/courseManagement");
             }
-            msgFlash("Changes saved!", "success")
         });
     });
+
+      $("#saveExit").on("click", function() {
+        saveCourseData("/serviceLearning/saveProposal", function() {
+          window.location.replace("/serviceLearning/courseManagement");
+      });
+    })
 
     if(!readOnly()) {
         $("#submitAndApproveButton").click(function(){
@@ -200,6 +205,7 @@ function showTab(currentTab) {
         $("#nextButton").text("Next");
         $("#nextButton").show();
         $("#saveContinue").hide();
+        $("#saveExit").hide()
         break;
     case 1: // Second page
         $("#cancelButton").hide();
@@ -207,10 +213,12 @@ function showTab(currentTab) {
         $("#submitAndApproveButton").hide();
         $("#nextButton").hide();
         $("#saveContinue").show();
-        $("#saveContinue").text("Save and Continue");
+        $("#saveExit").show()
         if(readOnly()) {
             $("#nextButton").show();
             $("#saveContinue").hide();
+            $("#saveExit").hide()
+
         }
         break;
     case 2: // Third page
@@ -220,6 +228,7 @@ function showTab(currentTab) {
         $("#nextButton").text("Submit");
         $("#nextButton").show();
         $("#saveContinue").text("Save for Later");
+        $("#saveExit").hide()
         if(readOnly()) {
             $("#nextButton").text("Next");
             $("#nextButton").hide();

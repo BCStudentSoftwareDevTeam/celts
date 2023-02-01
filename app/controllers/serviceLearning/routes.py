@@ -80,7 +80,9 @@ def slcSaveContinue():
 
     course.status = CourseStatus.INCOMPLETE
     course.save()
+    flash("Changes saved!", "success")
     return ""
+
 
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcCreateOrEdit():
