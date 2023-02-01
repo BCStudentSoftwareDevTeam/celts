@@ -93,7 +93,7 @@ def slcEditProposal(courseID):
                                         isPermanentlyDesignated = isPermanentlyDesignated,
                                         redirectTarget=getRedirectTarget())
         else:
-            flash("You cannot edit an approved SLC proposal. Contact ", 'warning')
+            flash("You cannot edit an approved SLC proposal. Contact Ashley Cochrane if you have any questions.", 'warning')
             return redirect(url_for('serviceLearning.slcViewProposal', courseID = course.id))
 
 @serviceLearning_bp.route('/serviceLearning/createCourse', methods=['POST'])
