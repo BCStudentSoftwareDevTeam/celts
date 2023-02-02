@@ -227,7 +227,6 @@ function validateForm() {
       }
     }
   }
-
   var instructors = getCourseInstructors()
   if (!instructors.length && currentTab == 1) {
     valid = false;
@@ -301,3 +300,18 @@ function getCourseInstructors() {
                 .map((i,el) => $(el).data('username')).get()
                 .filter(val => (val))
 }
+
+
+const textareas = document.querySelectorAll("textarea");
+textareas.forEach(function(textarea) {
+  const count = textarea.nextElementSibling;
+
+textarea.addEventListener("input", function() {
+    if (textarea.value.length > 0) {
+      count.textContent = "Number of Characters: " + textarea.value.length;
+    }
+    else {
+        count.textContent = "";
+      }
+    });
+  });
