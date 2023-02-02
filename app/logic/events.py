@@ -182,7 +182,7 @@ def getStudentLedEvents(term):
                              .execute())
     programs = {}
 
-    for event in studentLedEvents:
+    for event in sortEvents(studentLedEvents):
         programs.setdefault(event.programEvent.program, []).append(event)
 
     return programs
@@ -208,7 +208,7 @@ def getTrainingEvents(term, user):
     if hideBonner:
         trainingQuery = trainingQuery.where(Program.isBonnerScholars == False)
 
-    return list(trainingQuery.execute())
+    return sortEvents(list(trainingQuery.execute()))
 
 def getBonnerEvents(term):
 
@@ -219,7 +219,7 @@ def getBonnerEvents(term):
                                             Event.term == term)
                                      .order_by(Event.startDate, Event.timeStart)
                                      .execute())
-    return bonnerScholarsEvents
+    return sortEvents(bonnerScholarsEvents)
 
 def getOtherEvents(term):
     """
@@ -241,7 +241,7 @@ def getOtherEvents(term):
                             .order_by(Event.startDate, Event.timeStart, Event.id)
                             .execute())
 
-    return otherEvents
+    return sortEvents(otherEvents)
 
 def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
     """
@@ -446,3 +446,10 @@ def getTomorrowsEvents():
     tomorrowDate = date.today() + timedelta(days=1)
     events = list(Event.select().where(Event.startDate==tomorrowDate))
     return events
+def sortEvents(EventList):
+    sortedList=[]
+    while len(EventList)>=1 and EventList[0].isPast :
+        sortedList.append(EventList[0])
+        del EventList[0]
+    return EventList+sortedList
+
