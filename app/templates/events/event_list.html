@@ -55,7 +55,7 @@
 <p> checkthis{{ events|length }}</p>
 {% if events|count %}
 <div class="table-responsive">
-  <table class="table table-striped">
+  <table class="table ">
     <thead>
       <tr>
         {% if type != "bonner" %}
@@ -69,9 +69,12 @@
       </tr>
     </thead>
     <tbody>
-
         {% for event in events %}
-          <tr>
+        {% set Fade_event= "" %}
+        {% if event.isPast %}
+        {% set Fade_event="secondary"%}
+        {% endif %}
+          <tr class="table-{{Fade_event}}">
             {% if type != "bonner" %}
               {% if event.singleProgram%}
                 <td>{{event.singleProgram.programName}}</td>
@@ -80,9 +83,9 @@
               {% endif %}
             {% endif %}
             {% if user.isCeltsAdmin or user.isProgramManagerFor(event.singleProgram)%}
-              <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+              <td class="table-secondary" > <a href="/eventsList/{{event.id}}/edit" class=text-{{Fade_event}}>{{event.name}}</a></td>
             {% else %}
-              <td> <a href="/eventsList/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
+              <td> <a href="/eventsList/{{event.id}}/view" class=text-{{Fade_event}}>{{event.name}}</a></td>
             {% endif %}
             <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
             <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
@@ -92,7 +95,7 @@
                 {% if event.isPast %}
                   {% set isPastEvent = "true" %}
                 {% endif %}
-                <button class="btn btn-primary" onclick="showEmailModal({{event.id}}, 'Unknown', {{selectedTerm}}, {{isPastEvent}})">
+                <button class="btn btn-{{Fade_event}} btn-primary" onclick="showEmailModal({{event.id}}, 'Unknown', {{selectedTerm}}, {{isPastEvent}})">
                   <span class="bi bi-envelope-fill"> Invite</span>
                 </button>
               </td>
@@ -135,7 +138,7 @@
                 aria-labelledby="accordion__header_{{program}}"
                 data-bs-parent="#categoryAccordion">
             <div class="accordion-body table-responsive">
-              <table class="table table-striped">
+              <table class="table">
                 <thead>
                   <tr>
                     <th scope="col">Event Name</th>
@@ -147,21 +150,25 @@
                 </thead>
                 <tbody>
                     {% for event in events %}
-                      <tr>
+                    {% set Fade_event= "" %}
+                    {% if event.isPast %}
+                    {% set Fade_event="secondary"%}
+                    {% endif %}
+                      <tr class="table-{{Fade_event}}">
                           {% if user.isCeltsAdmin or user.isProgramManagerFor(event.singleProgram) %}
-                            <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+                            <td> <a href="/eventsList/{{event.id}}/edit" class=text-{{Fade_event}}>{{event.name}}</a></td>
                           {% else %}
-                            <td> <a href="/eventsList/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
+                            <td> <a href="/eventsList/{{event.id}}/view" class=text-{{Fade_event}}>{{event.name}}</a></td>
                           {% endif %}
-                        <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
-                        <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
-                        <td>{{event.location}}</td>
+                        <td nowrap  class=text-{{Fade_event}}>{{event.startDate.strftime('%m/%d/%Y')}}</td>
+                        <td nowrap  class=text-{{Fade_event}}>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
+                        <td  class=text-{{Fade_event}}>{{event.location}}</td>
                         {% if user.isAdmin %}
                           <td>
                             {% if event.isPast %}
                               {% set isPastEvent = "true" %}
                             {% endif %}
-                            <button class="btn btn-primary"
+                            <button class="btn btn-{{Fade_event}} btn-primary"
                             onclick="showEmailModal({{event.id}}, {{program.id}}, {{selectedTerm}}, {{isPastEvent}})">
                               <span class="bi bi-envelope-fill"> Invite</span>
                             </button>
