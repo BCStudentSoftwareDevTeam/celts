@@ -100,19 +100,22 @@ $(document).ready(function(e) {
         }
 
         //this will save the change from the current page and move to the next page
-        saveCourseData("/serviceLearning/saveProposal", function() {
-            let allTabs = $(".tab");
-            if (currentTab == (allTabs.length - 2)) {
+        let allTabs = $(".tab");
+        if (currentTab == (allTabs.length - 2)) {
+
+          saveCourseData("/serviceLearning/saveContinue", function() {
               displayCorrectTab(1);
-            }
-            else if (currentTab == (allTabs.length - 1)){
+          })
+        }
+        else if (currentTab == (allTabs.length - 1)){
+          saveCourseData("/serviceLearning/saveExit", function() {
               window.location.replace("/serviceLearning/courseManagement");
-            }
-        });
+          });
+      }
     });
 
       $("#saveExit").on("click", function() {
-        saveCourseData("/serviceLearning/saveProposal", function() {
+        saveCourseData("/serviceLearning/saveExit", function() {
           window.location.replace("/serviceLearning/courseManagement");
       });
     })
@@ -213,6 +216,7 @@ function showTab(currentTab) {
         $("#submitAndApproveButton").hide();
         $("#nextButton").hide();
         $("#saveContinue").show();
+        $("#saveContinue").text("Next");
         $("#saveExit").show()
         if(readOnly()) {
             $("#nextButton").show();

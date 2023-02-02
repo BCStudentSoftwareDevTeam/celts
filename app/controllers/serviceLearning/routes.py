@@ -80,6 +80,16 @@ def slcSaveContinue():
 
     course.status = CourseStatus.INCOMPLETE
     course.save()
+    return ""
+
+@serviceLearning_bp.route('/serviceLearning/saveExit', methods=['POST'])
+def slcSaveExit():
+    """Will update the the course proposal and return an empty string since ajax request needs a response
+    Also, it updates the course status as 'Incomplete'"""
+    course = updateCourse(request.form.copy())
+
+    course.status = CourseStatus.INCOMPLETE
+    course.save()
     flash("Changes saved!", "success")
     return ""
 
