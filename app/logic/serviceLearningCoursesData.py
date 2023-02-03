@@ -61,6 +61,7 @@ def renewProposal(courseID, term):
     newCourse.id = None
     newCourse.term = Term.get_by_id(term)
     newCourse.status = CourseStatus.INCOMPLETE
+    newCourse.isPreviouslyApproved = True
     newCourse.save()
     questions = CourseQuestion.select().where(CourseQuestion.course==oldCourse)
     for question in questions:
