@@ -100,6 +100,12 @@ function disableInput() {
     $("input").prop("disabled", true);
     $("select").prop("disabled", true);
     $("textarea").prop("disabled", true);
+    $("#one").replaceWith( "<ul>" + $( "#one" ).text() + "</ul>" );
+    $("#two").replaceWith( "<ul>" + $( "#two" ).text() + "</ul>" );
+    $("#three").replaceWith( "<ul>" + $( "#three" ).text() + "</ul>" );
+    $("#four").replaceWith( "<ul>" + $( "#four" ).text() + "</ul>" );
+    $("#five").replaceWith( "<ul>" + $( "#five" ).text() + "</ul>" );
+    $("#six").replaceWith( "<ul>" + $( "#six" ).text() + "</ul>" );
     $(".view").prop("disabled", true);
     $("#submitAndApproveButton").hide();
     $(".editButton").hide()
