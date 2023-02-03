@@ -302,16 +302,12 @@ function getCourseInstructors() {
 }
 
 
-const textareas = document.querySelectorAll("textarea");
-textareas.forEach(function(textarea) {
-  const count = textarea.nextElementSibling;
+const textareas = document.querySelectorAll(".textarea");
+const charCounts = document.querySelectorAll(".charCount");
 
-textarea.addEventListener("input", function() {
-    if (textarea.value.length > 0) {
-      count.textContent = "Number of Characters: " + textarea.value.length;
-    }
-    else {
-        count.textContent = "";
-      }
-    });
+textareas.forEach((textarea, index) => {
+  textarea.addEventListener("input", function() {
+    charCounts[index].innerHTML = textarea.value.length;
   });
+  charCounts[index].innerHTML = textarea.value.length;
+});
