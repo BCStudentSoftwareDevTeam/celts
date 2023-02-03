@@ -77,19 +77,19 @@
           <tr class="table-{{Fade_event}}">
             {% if type != "bonner" %}
               {% if event.singleProgram%}
-                <td>{{event.singleProgram.programName}}</td>
+                <td  class=text-{{Fade_event}}>{{event.singleProgram.programName}}</td>
               {% else %}
-                <td>This event does not belong to any program.</td>
+                <td  class=text-{{Fade_event}} >This event does not belong to any program.</td>
               {% endif %}
             {% endif %}
             {% if user.isCeltsAdmin or user.isProgramManagerFor(event.singleProgram)%}
-              <td class="table-secondary" > <a href="/eventsList/{{event.id}}/edit" class=text-{{Fade_event}}>{{event.name}}</a></td>
+              <td> <a href="/eventsList/{{event.id}}/edit" class=text-{{Fade_event}}>{{event.name}}</a></td>
             {% else %}
               <td> <a href="/eventsList/{{event.id}}/view" class=text-{{Fade_event}}>{{event.name}}</a></td>
             {% endif %}
-            <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
-            <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
-            <td>{{event.location}}</td>
+            <td nowrap  class=text-{{Fade_event}} >{{event.startDate.strftime('%m/%d/%Y')}}</td>
+            <td nowrap  class=text-{{Fade_event}} >{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
+            <td  class=text-{{Fade_event}}>{{event.location}}</td>
             {% if user.isAdmin %}
               <td>
                 {% if event.isPast %}
