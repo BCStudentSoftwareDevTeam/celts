@@ -65,7 +65,7 @@
           </div>
           {% if filepaths %}
           <div class="form-group mb-5">
-            <label class="mb-2" for= "courseAttachments"><strong>Course Attachments</strong></label>
+            <label class="mb-2 courseAttachments" for= "courseAttachments"><strong>Course Attachments</strong></label>
             <table>
                 {% for key, value in filepaths.items() %}
                     <tr id="attachment_{{value[1]}}" class="attachmentRow_{{key}}" data-id= "{{key}}">

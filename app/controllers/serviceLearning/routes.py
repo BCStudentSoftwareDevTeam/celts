@@ -32,8 +32,8 @@ def serviceCourseManagement(username=None):
         flash("Unauthorized to view page", 'warning')
         return redirect(url_for('main.events', selectedTerm=g.current_term))
 
-@serviceLearning_bp.route('/serviceLearning/viewProposal/<courseID>', methods=['GET'])
-@serviceLearning_bp.route('/serviceLearning/editProposal/<courseID>', methods=['GET'])
+@serviceLearning_bp.route('/serviceLearning/viewProposal/<courseID>/', methods=['GET'])
+@serviceLearning_bp.route('/serviceLearning/editProposal/<courseID>/', methods=['GET'])
 def slcEditProposal(courseID):
     """
         Route for editing proposals, it will fill the form with the data found in the database
