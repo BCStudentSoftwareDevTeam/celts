@@ -34,6 +34,7 @@ def serviceCourseManagement(username=None):
 
 @serviceLearning_bp.route('/serviceLearning/viewProposal/<courseID>', methods=['GET'])
 @serviceLearning_bp.route('/serviceLearning/editProposal/<courseID>', methods=['GET'])
+@serviceLearning_bp.route('/serviceLearning/editProposal/upload/<courseID>', methods=['GET'])
 def slcEditProposal(courseID):
     """
         Route for editing proposals, it will fill the form with the data found in the database
@@ -229,7 +230,7 @@ def uploadCourseFile():
     courseID = request.form["courseID"]
     addfile= FileHandler(attachment, courseId=courseID)
     addfile.saveFiles()
-    return redirect(url_for("serviceLearning.slcEditProposal", courseID = courseID))
+    return redirect('/serviceLearning/editProposal/upload/'+courseID)
 
 
 @serviceLearning_bp.route("/deleteCourseFile", methods=["POST"])

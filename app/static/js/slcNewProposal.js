@@ -29,6 +29,11 @@ $(document).ready(function(e) {
       allowedFileExtensions:["pdf","jpg","png","gif", "csv", "docx", "jpg", "jpeg", "jfif"]
     })
     // set up the current tab and button state
+    console.log(window.location.href.includes("upload"))
+    if(window.location.href.includes("upload")) {
+      currentTab = 1
+    }
+    
     showTab(currentTab);
 
     // Update display if we are viewing only

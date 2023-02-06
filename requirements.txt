@@ -52,11 +52,11 @@ pycparser==2.20
 Pygments==2.9.0
 PyMySQL==1.0.2
 pyparsing==2.4.7
-pytest==7.1.2
-pytest-base-url==1.4.2
-pytest-html==2.1.1
-pytest-metadata==1.10.0
-pytest-watch==4.2.0
+pytest
+pytest-base-url
+pytest-html
+pytest-metadata
+pytest-watch
 python-dateutil==2.8.0
 python-editor==1.0.4
 PyYAML==5.4.1
