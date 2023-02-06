@@ -83,7 +83,7 @@ def test_update_course():
         assert updatedCourse.previouslyApprovedDescription == "Hoho"
 
         for i in range(1,7):
-            assert CourseQuestion.get(questionNumber=str(i), course=testingCourse.id) == courseDict[str(i)]
+            assert CourseQuestion.get(questionNumber=str(i), course=testingCourse.id).questionContent == courseDict[str(i)]
 
 
         instructorCount = CourseInstructor.select().where(CourseInstructor.course == updatedCourse.id).count()
