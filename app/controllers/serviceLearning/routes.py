@@ -225,11 +225,14 @@ def downloadCourse(courseID):
         return(jsonify({"Success": False}))
 
 @serviceLearning_bp.route("/uploadCourseFile", methods=['GET', "POST"])
-def uploadCourseFile():
-    attachment = getFilesFromRequest(request)
-    courseID = request.form["courseID"]
-    addfile= FileHandler(attachment, courseId=courseID)
-    addfile.saveFiles()
+def uploadCourseFile(): 
+    try:
+        attachment = getFilesFromRequest(request)
+        courseID = request.form["courseID"]
+        addfile= FileHandler(attachment, courseId=courseID)
+        addfile.saveFiles()
+    except:
+        flash("No file selected.", "warning")
     return redirect('/serviceLearning/editProposal/upload/'+courseID)
 
 
