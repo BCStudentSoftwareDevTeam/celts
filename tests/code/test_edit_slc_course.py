@@ -6,6 +6,7 @@ from app import app
 from app.models import mainDB
 from app.models.course import Course
 from app.models.courseInstructor import CourseInstructor
+from app.models.courseQuestion import CourseQuestion
 from app.models.user import User
 from app.models.courseStatus import CourseStatus
 from app.logic.courseManagement import updateCourse
@@ -34,6 +35,10 @@ def test_update_course():
                                         isPermanentlyDesignated = 1,
                                         isPreviouslyApproved = 1,
                                         previouslyApprovedDescription = "Hehe")
+
+        for i in range(1, 7):
+            CourseQuestion.create( course=Course.get(courseName="Testing Course"), questionNumber=i)
+
         testingCourseInstructor = CourseInstructor.create( course=testingCourse, user="ramsayb2")
 
         courseDict = MultiDict({
@@ -76,6 +81,10 @@ def test_update_course():
         assert not updatedCourse.isPermanentlyDesignated
         assert updatedCourse.isPreviouslyApproved == 0
         assert updatedCourse.previouslyApprovedDescription == "Hoho"
+
+        for i in range(1,7):
+            assert CourseQuestion.get(questionNumber=str(i), course=testingCourse.id) == courseDict[str(i)]
+
 
         instructorCount = CourseInstructor.select().where(CourseInstructor.course == updatedCourse.id).count()
         assert instructorCount == 2
