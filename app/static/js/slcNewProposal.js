@@ -13,8 +13,9 @@ $(document).ready(function(e) {
         url: "/deleteCourseFile",
         data: fileData, //get the startDate, endDate and name as a dictionary
         success: function(){
-            msgFlash("Attachment removed successfully", "success")
             $("#attachment_"+fileId).remove()
+            $("#attachment_"+fileId).remove()
+            currentTab = 1;
 
         },
         error: function(error){

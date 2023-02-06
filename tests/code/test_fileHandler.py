@@ -7,33 +7,64 @@ from app.models.eventFile import EventFile
 from app.models.event import Event
 from app.logic.fileHandler import FileHandler
 
+# test events
+eventFileStorageObject= [FileStorage(filename= "eventfile.pdf")]
 
-fileStorageObject= [FileStorage(filename= "file.pdf")]
+handledEventFile = FileHandler(eventFileStorageObject, eventId=15)
 
-handledFile = FileHandler(fileStorageObject)
+# test course
+courseFileStorageObject= [FileStorage(filename= "coursefile.pdf")]
 
+handledCourseFile = FileHandler(courseFileStorageObject, courseId=1)
 @pytest.mark.integration
 def test_getFileFullPath():
-    filePath = handledFile.getFileFullPath(15, fileStorageObject[0])
-    assert filePath == 'app/static/files/eventattachments/15/file.pdf'
+    # test event
+    filePath = handledEventFile.getFileFullPath(eventFileStorageObject[0])
+    assert filePath == 'app/static/files/eventattachments/15/eventfile.pdf'
+    
+    # test course
+    filePath = handledCourseFile.getFileFullPath(courseFileStorageObject[0])
+    assert filePath == 'app/static/files/courseattachments/1/coursefile.pdf'
+
 
 @pytest.mark.integration
-def test_saveFilesForEvent():
-    handledFile.saveFilesForEvent(15)
-    assert EventFile.select().where( EventFile.event == 15, EventFile.fileName == 'file.pdf').exists()
+def test_saveFiles():
+    # test event
+    handledEventFile.saveFiles()
+    assert EventFile.select().where(EventFile.fileName == 'eventfile.pdf').exists()
+    
+    # test course
+    handledCourseFile.saveFiles()
+    assert EventFile.select().where(EventFile.fileName == 'coursefile.pdf').exists()
 
 @pytest.mark.integration
 def test_retrievePath():
+    # test event
     eventfiles= EventFile.select().where(EventFile.event == 15)
-    paths = handledFile.retrievePath(eventfiles, 15)
-    path = paths["file.pdf"][0]
-    assert path =='/static/files/eventattachments/15/file.pdf'
+    paths = handledEventFile.retrievePath(eventfiles)
+    path = paths["eventfile.pdf"][0]
+    assert path =='/static/files/eventattachments/15/eventfile.pdf'
+
+    # test course
+    coursefiles= EventFile.select().where(EventFile.course == 1)
+    paths = handledCourseFile.retrievePath(coursefiles)
+    path = paths["coursefile.pdf"][0]
+    assert path =='/static/files/courseattachments/1/coursefile.pdf'
 
 @pytest.mark.integration
-def test_deleteEventFile():
+def test_deleteFile():
+    # test file
     eventfiles= EventFile.select().where(EventFile.event == 15)
-    pathDictionary = handledFile.retrievePath(eventfiles, 15)
-    fileId = pathDictionary["file.pdf"][1]
-    path = pathDictionary["file.pdf"][0]
-    handledFile.deleteEventFile(fileId, 15)
+    pathDictionary = handledEventFile.retrievePath(eventfiles)
+    fileId = pathDictionary["eventfile.pdf"][1]
+    path = pathDictionary["eventfile.pdf"][0]
+    handledEventFile.deleteFile(fileId)
+    assert os.path.exists(path)==False
+
+    # test course
+    coursefiles= EventFile.select().where(EventFile.course == 1)
+    pathDictionary = handledCourseFile.retrievePath(coursefiles)
+    fileId = pathDictionary["coursefile.pdf"][1]
+    path = pathDictionary["coursefile.pdf"][0]
+    handledCourseFile.deleteFile(fileId)
     assert os.path.exists(path)==False

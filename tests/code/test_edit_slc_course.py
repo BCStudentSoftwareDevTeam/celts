@@ -23,28 +23,32 @@ def test_update_course():
         testingCourse = Course.create(
                                         courseName = "Testing Course",
                                         courseAbbreviation = "TC",
-                                        courseCredit = 2,
-                                        isRegularlyOccurring = True,
+                                        courseCredit = 1.5,
+                                        isRegularlyOccurring = 0,
                                         term = 3,
                                         status = CourseStatus.SUBMITTED,
                                         createdBy = testUser,
                                         isAllSectionsServiceLearning = 0,
-                                        serviceLearningDesignatedSections = "None",
-                                        sectionDesignation = "Section A",
-                                        isPermanentlyDesignated = 0)
+                                        serviceLearningDesignatedSections = "All",
+                                        sectionDesignation = "Section B",
+                                        isPermanentlyDesignated = 1,
+                                        isPreviouslyApproved = 1,
+                                        previouslyApprovedDescription = "Hehe")
         testingCourseInstructor = CourseInstructor.create( course=testingCourse, user="ramsayb2")
 
         courseDict = MultiDict({
-                        "courseName": "Course Edited",
+                        "courseName": "Changed",
                         "courseID": testingCourse,
-                        "courseAbbreviation": "EDIT",
-                        "credit": 1.5,
-                        "isRegularlyOccurring": "False",
+                        "courseAbbreviation": "Chan",
+                        "credit": 2,
+                        "isRegularlyOccurring": 1,
                         "term": 2,
                         "slSectionsToggle": "on",
-                        "slDesignation": "All",
-                        "sectionDesignation":"Section B",
-                        "permanentDesignation": "on",
+                        "slDesignation": "None",
+                        "sectionDesignation":"Section A",
+                        "permanentDesignation": "off",
+                        "isPreviouslyApproved":0,
+                        "previouslyApprovedDescription":"Hoho",
                         "1": "Question 1",
                         "2": "Question 2",
                         "3": "Question 3",
@@ -61,15 +65,17 @@ def test_update_course():
             updateCourse(courseDict)
 
         updatedCourse = Course.get_by_id(testingCourse.id)
-        assert updatedCourse.courseName == "Course Edited"
-        assert updatedCourse.courseAbbreviation == "EDIT"
-        assert updatedCourse.courseCredit == 1.5
-        assert updatedCourse.isRegularlyOccurring == "False"
+        assert updatedCourse.courseName == "Changed"
+        assert updatedCourse.courseAbbreviation == "Chan"
+        assert updatedCourse.courseCredit == 2
+        assert updatedCourse.isRegularlyOccurring == 1
         assert updatedCourse.status.id == CourseStatus.SUBMITTED
-        assert updatedCourse.isAllSectionsServiceLearning
-        assert updatedCourse.sectionDesignation == "Section B"
-        assert updatedCourse.serviceLearningDesignatedSections == "All"
-        assert updatedCourse.isPermanentlyDesignated
+        assert updatedCourse.isAllSectionsServiceLearning == 1
+        assert updatedCourse.sectionDesignation == "Section A"
+        assert updatedCourse.serviceLearningDesignatedSections == "None"
+        assert not updatedCourse.isPermanentlyDesignated
+        assert updatedCourse.isPreviouslyApproved == 0
+        assert updatedCourse.previouslyApprovedDescription == "Hoho"
 
         instructorCount = CourseInstructor.select().where(CourseInstructor.course == updatedCourse.id).count()
         assert instructorCount == 2
