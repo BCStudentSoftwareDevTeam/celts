@@ -39,6 +39,8 @@ def slcViewProposal(courseID):
         Route for viewing proposals, it will let the users view the proposals
         of any status.
     """
+    if g.current_user.isStudent:
+        abort(403)
     if g.current_user.isCeltsAdmin or g.current_user.isFaculty:
         course = Course.get_by_id(courseID)
         questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
@@ -71,6 +73,8 @@ def slcEditProposal(courseID):
         Route for editing proposals, it will fill the form with the data found in the database
         given a courseID.
     """
+    if g.current_user.isStudent:
+        abort(403)
     if g.current_user.isCeltsAdmin or g.current_user.isFaculty:
         course = Course.get_by_id(courseID)
         coursest=CourseStatus.get_by_id(course.status)
