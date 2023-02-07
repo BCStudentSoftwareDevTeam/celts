@@ -62,7 +62,6 @@
         <th>Email</th>
         <th>Phone Number</th>
         <th class="noSort">Completed Trainings</th>
-        <th class="noSort">Banned</th>
         {% if event.isPast %}
           <th class="noSort">Total Hours</th>
           <th class="noSort">Attended</th>
@@ -88,6 +87,9 @@
               id="{{participant.user.username}}"
               value="{{participant.user}}" />
               {{participant.user.firstName}} {{participant.user.lastName}}
+              {% if participant.user in bannedUsers %} 
+                <span class="bi bi-x-circle-fill text-danger"></span>
+              {% endif %}
             </td>
             <td>{{participant.user.email}}</td>
             <td>{{participant.user.phoneNumber}}</td>
@@ -96,13 +98,6 @@
                 <span class="bi bi-x-lg" aria-label="Did not complete all trainings."></span>
               {% else %}
                 <span class="bi bi-check-lg" aria-label="Completed all trainings."></span>
-              {% endif %}
-            </td>
-            <td style="text-align:center">
-              {% if participant.user not in bannedUsers %}
-                <span class="bi bi-x-lg" aria-label="Not banned."></span>
-              {% else %}
-                <span class="bi bi-check-lg" aria-label="Banned."></span>
               {% endif %}
             </td>
             {% if event.isPast %}
@@ -173,7 +168,7 @@
         <h5>Selected Volunteers</h5>
         <ul class="list-unstyled" id= "addVolunteerList">
         </ul>
-        <p id="banned-message" hidden><span class="bi bi-slash-circle-fill text-danger"></span> → Banned</p>
+        <p id="banned-message" hidden><span class="bi bi-x-circle-fill text-danger"></span> → Banned</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
