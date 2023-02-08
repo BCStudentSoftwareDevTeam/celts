@@ -52,7 +52,6 @@
   </ul>
 </div>
 {% macro createTable(events, type) %}
-<p> checkthis{{ events|length }}</p>
 {% if events|count %}
 <div class="table-responsive">
   <table class="table ">
@@ -70,7 +69,6 @@
     </thead>
     <tbody>
         {% for event in events %}
-        {% set Fade_event= "" %}
         {% if event.isPast %}
           {% if user.isCeltsStudentStaff or user.isAdmin %}
             <tr class="table-secondary">
@@ -95,7 +93,7 @@
                     {% set isPastEvent = "true" %}
                   {% endif %}
                   <button class="btn btn-secondary" onclick="showEmailModal({{event.id}}, 'Unknown', {{selectedTerm}}, {{isPastEvent}})">
-                    <span class="bi bi-envelope-fill"> Invite</span>
+                    <span class="bi bi-envelope-fill"> Email</span>
                   </button>
                 </td>
               {% else %}
@@ -123,8 +121,8 @@
             {% else %}
               <td> <a href="/eventsList/{{event.id}}/view" class=text-primary>{{event.name}}</a></td>
             {% endif %}
-            <td nowrap  class=text-{{Fade_event}} >{{event.startDate.strftime('%m/%d/%Y')}}</td>
-            <td nowrap  class=text-{{Fade_event}} >{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
+            <td nowrap  class=text-primary >{{event.startDate.strftime('%m/%d/%Y')}}</td>
+            <td nowrap  class=text-primary >{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
             <td  class=text-primary>{{event.location}}</td>
             {% if user.isAdmin %}
               <td>
@@ -186,11 +184,9 @@
                   </tr>
                 </thead>
                 <tbody>
-                    {% for event in events %}
-                    {% set Fade_event= "" %}
+                  {% for event in events %}
                     {% if event.isPast %}
                      {% if user.isCeltsStudentStaff or user.isAdmin %}
-                      {% set Fade_event="secondary"%}
                         <tr class="table-secondary">
                             {% if user.isCeltsAdmin or user.isProgramManagerFor(event.singleProgram) %}
                               <td> <a href="/eventsList/{{event.id}}/edit" class=text-secondary>{{event.name}}</a></td>
@@ -207,7 +203,7 @@
                               {% endif %}
                               <button class="btn btn-secondary"
                               onclick="showEmailModal({{event.id}}, {{program.id}}, {{selectedTerm}}, {{isPastEvent}})">
-                                <span class="bi bi-envelope-fill"> Invite</span>
+                                <span class="bi bi-envelope-fill"> Email</span>
                               </button>
                             </td>
                           {% else %}
