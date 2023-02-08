@@ -1,6 +1,7 @@
 import searchUser from './searchUser.js'
 
 $(document).ready(function() {
+  $('[data-toggle="tooltip"]').tooltip();
   var iconShowing = false
   var table =  $('#trackVolunteerstable').DataTable({
   "fnDrawCallback": function(oSettings) {
@@ -11,8 +12,6 @@ $(document).ready(function() {
       }
     }
   });
-
-  $('[data-toggle="tooltip"]').tooltip();
 
   // Search functionalities from the volunteer table in the UI
     $("#trackVolunteersInput").on("keyup", function() {
@@ -116,7 +115,7 @@ $(document).ready(function() {
       type: "GET",
       success: function(response){
         if (response.banned){
-          $("#addVolunteerElements"+index).append("<span class='ms-1 text-danger bi bi-x-circle-fill'></span>")
+          $("#addVolunteerElements"+index).append("<a href='#' data-toggle='tooltip' data-placement='top' title='User is banned from this program.'><span class='bi bi-x-circle-fill text-danger'></span></a>")
           if (!iconShowing){
             $("#banned-message").removeAttr("hidden")
             iconShowing = true

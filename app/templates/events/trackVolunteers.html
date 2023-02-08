@@ -87,8 +87,10 @@
               id="{{participant.user.username}}"
               value="{{participant.user}}" />
               {{participant.user.firstName}} {{participant.user.lastName}}
-              {% if participant.user in bannedUsers %} 
-                <span class="bi bi-x-circle-fill text-danger"></span>
+              {% if participant.user in bannedUsers %}
+                <a href="#" data-toggle="tooltip" data-placement="top" title="User is banned from this program.">
+                  <span class="bi bi-x-circle-fill text-danger"></span>
+                </a>
               {% endif %}
             </td>
             <td>{{participant.user.email}}</td>
@@ -168,7 +170,6 @@
         <h5>Selected Volunteers</h5>
         <ul class="list-unstyled" id= "addVolunteerList">
         </ul>
-        <p id="banned-message" hidden><span class="bi bi-x-circle-fill text-danger"></span> → Banned</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
