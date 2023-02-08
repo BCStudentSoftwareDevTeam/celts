@@ -9,6 +9,7 @@ $(document).ready(function(e) {
     // Update display if we are viewing only
     if (readOnly()){
         disableInput()
+        $(".charCount, .charCounter" ).replaceWith( " ");
     }
 
     // set up phone numbers
