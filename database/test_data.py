@@ -180,7 +180,7 @@ User.insert_many(users).on_conflict_replace().execute()
 
 bonners = [
     { "year": 2020, "user": "neillz" },
-    { "year": 2020, "user": "ramsayb2" }
+    { "year": 2020, "user": "ramsayb2" },
     { "year": 2021, "user": "qasema" },
     { "year": 2021, "user": "neillz" },
     { "year": 2021, "user": "mupotsal" },

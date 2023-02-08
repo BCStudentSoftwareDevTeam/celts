@@ -1,4 +1,5 @@
-from flask import request, render_template, g, url_for, abort, redirect, flash, session, safe_join, send_from_directory, send_file
+from flask import request, render_template, g, url_for, abort, redirect, flash, session, send_from_directory, send_file
+from werkzeug.utils import safe_join
 import os
 from peewee import *
 from app.models.user import User
