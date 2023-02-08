@@ -51,14 +51,13 @@ def makeBonnerXls():
 
     return filepath
 
-def getBonnerCohorts(limit=None):
+def getBonnerCohorts(limit=None, currentYear=date.today().year):
     """
         Return a dictionary with years as keys and a list of bonner users as values. Returns empty lists for
         intermediate years, or the last 5 years if there are no older records.
     """
     years = list(BonnerCohort.select(BonnerCohort, User).join(User).order_by(BonnerCohort.year).execute())
 
-    currentYear = date.today().year
     defaultStart = currentYear-4
     firstYear = years[0].year if len(years) and years[0].year < defaultStart else defaultStart
 

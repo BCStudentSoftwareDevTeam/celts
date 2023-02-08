@@ -179,13 +179,18 @@ users = [
 User.insert_many(users).on_conflict_replace().execute()
 
 bonners = [
+    { "year": 2020, "user": "neillz" },
+    { "year": 2020, "user": "ramsayb2" }
     { "year": 2021, "user": "qasema" },
     { "year": 2021, "user": "neillz" },
     { "year": 2021, "user": "mupotsal" },
+    { "year": 2021, "user": "neillz" },
+    { "year": 2021, "user": "ramsayb2" },
     { "year": 2022, "user": "khatts" },
     { "year": 2022, "user": "ayisie" },
+    { "year": 2022, "user": "neillz" },
+    { "year": 2022, "user": "ramsayb2" },
     ]
-
 BonnerCohort.insert_many(bonners).on_conflict_replace().execute()
 
 certs = [
@@ -1155,34 +1160,6 @@ files = [
     }
 ]
 EventFile.insert_many(files).on_conflict_replace().execute()
-
-cohort = [
-    {
-        "year": "2021",
-        "user": "neillz"
-    },
-    {
-        "year": "2022",
-        "user": "neillz"
-    },
-    {
-        "year": "2020",
-        "user": "neillz"
-    },
-    {
-        "year": "2021",
-        "user": "ramsayb2"
-    },
-    {
-        "year": "2022",
-        "user": "ramsayb2"
-    },
-    {
-        "year": "2020",
-        "user": "ramsayb2"
-    }
-]
-BonnerCohort.insert_many(cohort).on_conflict_replace().execute()
 
 profileNotes = [
     {
