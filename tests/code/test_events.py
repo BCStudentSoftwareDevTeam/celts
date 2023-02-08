@@ -214,7 +214,7 @@ def test_correctValidateNewEventData():
     eventData =  {'isFoodProvided': False, 'isRsvpRequired': False, 'isService': False,
                   'isTraining': True,'isRecurring': False,'startDate': parser.parse('1999-12-12'),
                   'endDate': parser.parse('2022-06-12'),'programId': 1,'location': "a big room",
-                  'timeEnd': '04:00', 'timeStart': '06:00','description': "Empty Bowls Spring 2021",
+                  'timeEnd': '06:00', 'timeStart': '04:00','description': "Empty Bowls Spring 2021",
                   'name': 'Empty Bowls Spring Event 1','term': 1,'contactName': "Kaidou of the Beast",'contactEmail': 'beastpirates@gmail.com'}
 
     isValid, eventErrorMessage = validateNewEventData(eventData)
@@ -233,7 +233,7 @@ def test_wrongValidateNewEventData():
     eventData['endDate'] = parser.parse('2021-06-12')
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid == False
-    assert eventErrorMessage == "Event start date is after event end date"
+    assert eventErrorMessage == "Event start date is after event end date."
 
     # testing checks for raw form data
     eventData["startDate"] = parser.parse('2021-10-12')
@@ -245,21 +245,20 @@ def test_wrongValidateNewEventData():
         assert eventErrorMessage == "Raw form data passed to validate method. Preprocess first."
         eventData[boolKey] = False
 
-    eventData['isRecurring'] = True # needed to pass the event check
-
     # testing event starts after it ends.
     eventData["startDate"] = parser.parse('2021-06-12')
     eventData["endDate"] = parser.parse('2021-06-12')
     eventData["timeStart"] =  '21:39'
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid == False
-    assert eventErrorMessage == "Event start time is after event end time"
+    assert eventErrorMessage == "Event end time must be after start time."
 
     # testing same event already exists if no event id
     eventData["startDate"] = parser.parse('2021-10-12')
     eventData["endDate"] = parser.parse('2022-06-12')
     eventData["location"] = "Seabury Center"
     eventData["timeStart"] = '18:00'
+    eventData["timeEnd"] =  '21:00'
     isValid, eventErrorMessage = validateNewEventData(eventData)
     assert isValid == False
     assert eventErrorMessage == "This event already exists"
@@ -419,7 +418,7 @@ def test_saveEventToDb_update():
         afterUpdate = Event.get_by_id(newEventData['id'])
         assert afterUpdate.description == "This is a Test"
         assert afterUpdate.isAllVolunteerTraining == True
-        assert RequirementMatch.select().where(RequirementMatch.event == afterUpdate, 
+        assert RequirementMatch.select().where(RequirementMatch.event == afterUpdate,
                                                RequirementMatch.requirement == 9).exists()
 
         newEventData = {
