@@ -248,13 +248,13 @@ def deleteCourseFile():
     eventfile.deleteFile(fileData["fileId"])
     return ""
 
-@serviceLearning_bp.route('/serviceLearning/sendRecommendation/<termID>', methods = ['GET'])
-def sendRecommendation(termID):
+@serviceLearning_bp.route('/serviceLearning/downloadApprovedCourses/<termID>', methods = ['GET'])
+def downloadApprovedCourses(termID):
     """
     This function allows the download of csv file
     """
     try:
-        designator = "sendRecommendation"
+        designator = "downloadApprovedCourses"
         csvInfo = approvedCourses(termID)
         fileFormat = {"headers":["Course Name", "Course Number", "Faculty", "Term", "Previously Approved Course?"]}
         filePath = safe_join(os.getcwd(), app.config['files']['base_path'])
@@ -263,4 +263,5 @@ def sendRecommendation(termID):
 
     except Exception as e:
         print(e)
+        flash("File failed to download, please try again.", "warning")
         return ""
