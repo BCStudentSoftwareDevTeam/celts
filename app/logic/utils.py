@@ -64,7 +64,7 @@ def format24HourTime(unformattedTime):
 
 def getUsernameFromEmail(email):
     return email.split("@")[0]
-    
+
 def getFilesFromRequest(request):
     attachmentFiles = request.files.getlist("attachmentObject")
     fileDoesNotExist = attachmentFiles[0].content_type == "application/octet-stream"

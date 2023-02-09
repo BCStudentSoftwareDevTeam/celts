@@ -1,15 +1,20 @@
-from flask import request, render_template, g, url_for, abort, redirect, flash, session, jsonify, make_response
+from flask import request, render_template, g, url_for, abort, redirect, flash, session, send_from_directory, send_file
+from werkzeug.utils import safe_join
+import os
+from peewee import *
 from app.models.user import User
 from app.models.term import Term
 from app.models.course import Course
 from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseQuestion import CourseQuestion
+from app.models.eventFile import EventFile
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.fileHandler import FileHandler
 from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal, renewProposal
 from app.logic.courseManagement import updateCourse, createCourse
-from app.models.eventFile import EventFile
+from app.logic.downloadFile import *
+from app.logic.courseManagement import approvedCourses
 from app.controllers.main.routes import getRedirectTarget, setRedirectTarget
 from app.controllers.serviceLearning import serviceLearning_bp
 
@@ -225,7 +230,7 @@ def downloadCourse(courseID):
         return(jsonify({"Success": False}))
 
 @serviceLearning_bp.route("/uploadCourseFile", methods=['GET', "POST"])
-def uploadCourseFile(): 
+def uploadCourseFile():
     try:
         attachment = getFilesFromRequest(request)
         courseID = request.form["courseID"]
@@ -242,3 +247,20 @@ def deleteCourseFile():
     eventfile=FileHandler(courseId=fileData["courseId"])
     eventfile.deleteFile(fileData["fileId"])
     return ""
+
+@serviceLearning_bp.route('/serviceLearning/sendRecommendation/<termID>', methods = ['GET'])
+def sendRecommendation(termID):
+    """
+    This function allows the download of csv file
+    """
+    try:
+        designator = "sendRecommendation"
+        csvInfo = approvedCourses(termID)
+        fileFormat = {"headers":["Course Name", "Course Number", "Faculty", "Term", "Previously Approved Course?"]}
+        filePath = safe_join(os.getcwd(), app.config['files']['base_path'])
+        newFile = fileMaker(designator, csvInfo, "CSV", fileFormat)
+        return send_from_directory(filePath, 'ApprovedCourses.csv', as_attachment=True)
+
+    except Exception as e:
+        print(e)
+        return ""

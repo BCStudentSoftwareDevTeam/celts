@@ -241,7 +241,7 @@ def getOtherEvents(term):
 
     return otherEvents
 
-def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
+def getUpcomingEventsForUser(user, asOf=datetime.datetime.now(), program=None):
     """
         Get the list of upcoming events that the user is interested in as long
         as they are not banned from the program that the event is a part of.
@@ -258,8 +258,12 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now()):
                     .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
                     .where(Event.startDate >= asOf,
                           (Interest.user == user) | (EventRsvp.user == user),
-                          ProgramBan.user.is_null(True) | (ProgramBan.endDate < asOf))
-                    .order_by(Event.startDate, Event.name))
+                          ProgramBan.user.is_null(True) | (ProgramBan.endDate < asOf)))
+
+    if program:
+        events = events.where(ProgramEvent.program == program)
+    
+    events = events.order_by(Event.startDate, Event.name)
 
     events_list = []
     shown_recurring_event_list = []

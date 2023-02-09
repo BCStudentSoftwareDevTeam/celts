@@ -20,6 +20,7 @@ from app.models.courseQuestion import CourseQuestion
 from app.models.questionNote import QuestionNote
 from app.models.interest import Interest
 from app.models.note import Note
+from app.models.profileNote import ProfileNote
 from app.models.programManager import ProgramManager
 from app.models.emailTemplate import EmailTemplate
 from app.models.backgroundCheck import BackgroundCheck
@@ -43,7 +44,8 @@ users = [
         "isFaculty": False,
         "isStaff": True,
         "isCeltsAdmin": True,
-        "isCeltsStudentStaff": False
+        "isCeltsStudentStaff": False,
+        "dietRestriction": "Diary"
     },
     {
         "username" : "khatts",
@@ -55,7 +57,7 @@ users = [
         "isStudent": True,
         "isFaculty": False,
         "isCeltsAdmin": True,
-        "isCeltsStudentStaff": False
+        "isCeltsStudentStaff": False,
     },
     {
         "username": "neillz",
@@ -67,7 +69,7 @@ users = [
         "isStudent": True,
         "isFaculty": False,
         "isCeltsAdmin": False,
-        "isCeltsStudentStaff": True
+        "isCeltsStudentStaff": True,
     },
 
     {
@@ -80,7 +82,7 @@ users = [
         "isStudent": True,
         "isFaculty": True,
         "isCeltsAdmin": False,
-        "isCeltsStudentStaff": False
+        "isCeltsStudentStaff": False,
     },
     {
         "username" : "ayisie",
@@ -92,7 +94,7 @@ users = [
         "isStudent": True,
         "isFaculty": False,
         "isCeltsAdmin": False,
-        "isCeltsStudentStaff": False
+        "isCeltsStudentStaff": False,
 
     },
     {
@@ -105,7 +107,7 @@ users = [
         "isStudent": True,
         "isFaculty": False,
         "isCeltsAdmin": False,
-        "isCeltsStudentStaff": False
+        "isCeltsStudentStaff": False,
     },
     {
         "username": "bryanta",
@@ -123,7 +125,7 @@ users = [
         "firstName": "Tyler",
         "lastName": "Parton",
         "isStudent": True,
-        "phoneNumber": "(859)433-1559"
+        "phoneNumber": "(859)433-1559",
     },
     {
         "username": "mupotsal",
@@ -133,7 +135,7 @@ users = [
         "lastName": "Mupotsa",
         "isStudent": True,
         "phoneNumber": "(859)463-1159",
-        "isCeltsStudentStaff": True
+        "isCeltsStudentStaff": True,
     },
     {
         "username": "heggens",
@@ -145,7 +147,7 @@ users = [
         "isCeltsAdmin": False,
         "isFaculty": True,
         "isCeltsStudentStaff": False,
-        "isStaff": True
+        "isStaff": True,
     },
      {
         "username": "qasema",
@@ -157,7 +159,7 @@ users = [
         "isCeltsAdmin": True,
         "isFaculty": True,
         "isCeltsStudentStaff": False,
-        "isStaff": True
+        "isStaff": True,
     },
     {
         "username": "stettnera2",
@@ -170,20 +172,25 @@ users = [
         "isFaculty": False,
         "isStaff": True,
         "isCeltsAdmin": True,
-        "isCeltsStudentStaff": False
-    }
+        "isCeltsStudentStaff": False,
+    },
 ]
 
 User.insert_many(users).on_conflict_replace().execute()
 
 bonners = [
+    { "year": 2020, "user": "neillz" },
+    { "year": 2020, "user": "ramsayb2" },
     { "year": 2021, "user": "qasema" },
     { "year": 2021, "user": "neillz" },
     { "year": 2021, "user": "mupotsal" },
+    { "year": 2021, "user": "neillz" },
+    { "year": 2021, "user": "ramsayb2" },
     { "year": 2022, "user": "khatts" },
     { "year": 2022, "user": "ayisie" },
+    { "year": 2022, "user": "neillz" },
+    { "year": 2022, "user": "ramsayb2" },
     ]
-
 BonnerCohort.insert_many(bonners).on_conflict_replace().execute()
 
 certs = [
@@ -197,75 +204,75 @@ Certification.insert_many(certs).on_conflict_replace().execute()
 
 reqs = [
         { "id": 1,
-          "certification": 1, 
+          "certification": 1,
           "name": "Bonner Orientation",
           "frequency": "once",
           "isRequired": True,
           "order": 1,
         },
         { "id": 2,
-          "certification": 1, 
+          "certification": 1,
           "name": "All Bonner Meeting",
           "frequency": "term",
           "isRequired": True,
           "order": 2,
         },
         { "id": 3,
-          "certification": 1, 
+          "certification": 1,
           "name": "First Year Service Trip",
           "frequency": "once",
           "isRequired": True,
           "order": 3,
         },
         { "id": 4,
-          "certification": 1, 
+          "certification": 1,
           "name": "Sophomore Exchange",
           "frequency": "once",
           "isRequired": True,
           "order": 4,
         },
         { "id": 5,
-          "certification": 1, 
+          "certification": 1,
           "name": "Junior Recommitment",
           "frequency": "once",
           "isRequired": True,
           "order": 5,
         },
         { "id": 6,
-          "certification": 1, 
+          "certification": 1,
           "name": "Senior Legacy Training",
           "frequency": "once",
           "isRequired": True,
           "order": 6,
         },
         { "id": 7,
-          "certification": 1, 
+          "certification": 1,
           "name": "Senior Presentation of Learning",
           "frequency": "once",
           "isRequired": True,
           "order": 7,
         },
         { "id": 8,
-          "certification": 1, 
+          "certification": 1,
           "name": "Bonner Congress",
           "frequency": "once",
           "isRequired": False,
         },
         { "id": 9,
-          "certification": 1, 
+          "certification": 1,
           "name": "Bonner Student Leadership Institute",
           "frequency": "once",
           "isRequired": False,
         },
         { "id": 10,
-          "certification": 3, 
+          "certification": 3,
           "name": "CPR Training",
           "frequency": "once",
           "isRequired": True,
           "order": 2,
         },
         { "id": 11,
-          "certification": 3, 
+          "certification": 3,
           "name": "Volunteer Training",
           "frequency": "once",
           "isRequired": True,
@@ -348,6 +355,14 @@ programs = [
     {
         "id": 3,
         "programName": "Adopt-a-Grandparent",
+        "isStudentLed": True,
+        "isBonnerScholars": False,
+        "contactEmail": "",
+        "contactName": ""
+    },
+    {
+        "id": 4,
+        "programName": "People Who Care",
         "isStudentLed": True,
         "isBonnerScholars": False,
         "contactEmail": "",
@@ -671,25 +686,52 @@ ProgramEvent.insert_many(program_events).on_conflict_replace().execute()
 
 notes = [
     {
-    "id": 1,
-    "createdBy": "ramsayb2",
-    "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
-    "noteContent": "I think the training is put in wrong",
-    "isPrivate":False
+        "id": 1,
+        "createdBy": "ramsayb2",
+        "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
+        "noteContent": "I think the training is put in wrong",
+        "isPrivate":False,
+        "noteType": "ban"
     },
     {
-    "id": 2,
-    "createdBy": "mupotsal",
-    "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
-    "noteContent": "I agree with your comment on training",
-    "isPrivate":False
+        "id": 2,
+        "createdBy": "mupotsal",
+        "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
+        "noteContent": "I agree with your comment on training",
+        "isPrivate":False,
+        "noteType": "question"
     },
     {
-    "id": 3,
-    "createdBy": "mupotsal",
-    "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
-    "noteContent": "tells bad jokes",
-    "isPrivate": True
+        "id": 3,
+        "createdBy": "mupotsal",
+        "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
+        "noteContent": "tells bad jokes",
+        "isPrivate": True,
+        "noteType": "ban"
+    },
+    {
+        "id": 4,
+        "createdBy": "neillz",
+        "createdOn": datetime.strptime("2021 11 26","%Y %m %d"),
+        "noteContent": "Allergic to water",
+        "isPrivate": False,
+        "noteType": "profile"
+    },
+    {
+        "id": 5,
+        "createdBy": "neillz",
+        "createdOn": datetime.strptime("2021 11 30","%Y %m %d"),
+        "noteContent": "Allergic to food",
+        "isPrivate": False,
+        "noteType": "profile"
+    },
+    {
+        "id": 6,
+        "createdBy": "ramsayb2",
+        "createdOn": datetime.strptime("2021 11 30","%Y %m %d"),
+        "noteContent": "Run when in sight",
+        "isPrivate": False,
+        "noteType": "profile"
     }
 ]
 Note.insert_many(notes).on_conflict_replace().execute()
@@ -1109,11 +1151,34 @@ AdminLogs.insert_many(logs).on_conflict_replace().execute()
 
 files = [
     {
-    "event": 16,
+    "event": 1,
     "fileName":"Map1.pdf"
     },
-    {"event": 99999,
+    {
+    "event": 2,
     "fileName" : "adfsfdhqwre_;ldgfk####l;kgfdg.jpg"
     }
 ]
-EventFile.insert_many(files).on_conflict_replace().execute
+EventFile.insert_many(files).on_conflict_replace().execute()
+
+profileNotes = [
+    {
+        "user": "neillz",
+        "note": 4,
+        "isBonnerNote": False,
+        "viewTier": 2
+    },
+    {
+        "user": "ramsayb2",
+        "note": 5,
+        "isBonnerNote": False,
+        "viewTier": 3
+    },
+    {
+        "user": "partont",
+        "note": 6,
+        "isBonnerNote": True,
+        "viewTier": 1
+    }
+]
+ProfileNote.insert_many(profileNotes).on_conflict_replace().execute()

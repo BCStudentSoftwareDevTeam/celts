@@ -23,7 +23,7 @@ from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents
 from app.logic.participants import getEventParticipants, getUserParticipatedEvents, checkUserRsvp, checkUserVolunteer
 from app.logic.fileHandler import FileHandler
-from app.logic.bonner import getBonnerCohorts, makeBonnerXls
+from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
 
 
@@ -96,6 +96,9 @@ def createEvent(templateid, programid=None):
             validationErrorMessage = "Unknown Error Saving Event. Please try again"
 
         if savedEvents:
+            rsvpcohorts = request.form.getlist("cohorts[]")
+            for year in rsvpcohorts:
+                rsvpForBonnerCohort(int(year), savedEvents[0].id)
 
             noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
@@ -118,15 +121,17 @@ def createEvent(templateid, programid=None):
 
     futureTerms = selectSurroundingTerms(g.current_term, prevTerms=0)
 
-    requirements = []
+    requirements, bonnerCohorts = [], []
     if 'program' in eventData and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
+        bonnerCohorts = getBonnerCohorts(limit=5)
 
     return render_template(f"/admin/{template.templateFile}",
             template = template,
             eventData = eventData,
             futureTerms = futureTerms,
             requirements = requirements,
+            bonnerCohorts = bonnerCohorts,
             isProgramManager = isProgramManager)
 
 @admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
@@ -138,8 +143,11 @@ def eventDisplay(eventId):
     except DoesNotExist as e:
         print(f"Unknown event: {eventId}")
         abort(404)
-    if request.method == "POST" and not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(event)):
+
+    notPermitted = not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(event))
+    if 'edit' in request.url_rule.rule and notPermitted:
         abort(403)
+
     eventData = model_to_dict(event, recurse=False)
     associatedAttachments = EventFile.select().where(EventFile.event == event)
 
@@ -147,15 +155,24 @@ def eventDisplay(eventId):
         eventData = request.form.copy()
         try:
             savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
+
         except Exception as e:
+            print("Error saving event:", e)
             savedEvents = False
-            print(e)
+            validationErrorMessage = "Unknown Error Saving Event. Please try again"
+
 
         if savedEvents:
+            rsvpcohorts = request.form.getlist("cohorts[]")
+            for year in rsvpcohorts:
+                rsvpForBonnerCohort(int(year), event.id)
+
             flash("Event successfully updated!", "success")
             return redirect(url_for("admin.eventDisplay", eventId = event.id))
         else:
             flash(validationErrorMessage, 'warning')
+
+    # make sure our data is the same regardless of GET and POST
     preprocessEventData(eventData)
     eventData['program'] = event.singleProgram
     futureTerms = selectSurroundingTerms(g.current_term)
@@ -164,31 +181,36 @@ def eventDisplay(eventId):
     filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)
     isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
 
-    requirements = []
+    requirements, bonnerCohorts = [], []
     if eventData['program'] and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
+        bonnerCohorts = getBonnerCohorts(limit=5)
 
     rule = request.url_rule
+    # Event Edit
     if 'edit' in rule.rule:
-        if not (g.current_user.isCeltsAdmin or isProgramManager):
-            abort(403)
         return render_template("admin/createEvent.html",
                                 eventData = eventData,
                                 futureTerms=futureTerms,
                                 isPastEvent = isPastEvent,
                                 requirements = requirements,
+                                bonnerCohorts = bonnerCohorts,
                                 userHasRSVPed = userHasRSVPed,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths)
+    # Event View
     else:
+        # get text representations of dates
         eventData['timeStart'] = event.timeStart.strftime("%-I:%M %p")
         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
         eventData["startDate"] = event.startDate.strftime("%m/%d/%Y")
-        # List below is to identify the next event in the series
-        eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId))
-        eventIndex = eventSeriesList.index(event)
-        if event.recurringId and len(eventSeriesList) != (eventIndex + 1):
-            eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
+
+        # Identify the next event in a recurring series
+        if event.recurringId:
+            eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId).order_by(Event.startDate))
+            eventIndex = eventSeriesList.index(event)
+            if len(eventSeriesList) != (eventIndex + 1):
+                eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
 
         userParticipatedEvents = getUserParticipatedEvents(eventData['program'], g.current_user, g.current_term)
         return render_template("eventView.html",
