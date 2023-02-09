@@ -74,6 +74,33 @@
       Evaluative criteria of the final project will be included in the syllabi, including the percentage that the summary presentation or synthesizing project will represent in the final grade.
     </li>
   </ul>
+<strong>PROPOSAL FOR SERVICE-LEARNING COURSE DESIGNATION/ALE REQUIREMENT MET THROUGH SERVICE-LEARNING</strong>
+  <p>Email proposal form to <b>ashley_cochrane@berea.edu</b></p>
+  <p>Approved courses will be listed in the Schedule of Classes as service-learning courses that meet the ALE requirement.</p>
+  <p><b>Note:</b> If this course has previously been approved as a service-learning course, please complete only Part A of this form, indicating that this is a resubmission of an approved service-learning course. If the course has not previously been approved as a service-learning course, please complete both Parts A and B.</p>
+<hr>
 
+<h3>Part A</h3>
+  <p><b>Course Instructor Name:</b> 
+    {% for instructor in pdfInstructor %} 
+      {{instructor.user.firstName}} {{instructor.user.lastName}}
+    {% endfor %}
+    </p>
+  <p><b>Course Instructor Phone(s): </b>
+    {% for instructor in pdfInstructor %} 
+      {{instructor.user.phoneNumber}}
+    {% endfor %}
+  </p>
+  <p><b>Full Course Name:</b> {{course.courseName}}</p>
+  <p><b>Course Abbreviation/Number: </b>{{course.courseAbbreviation}}</p>
+  <p><b>Credit: </b>{{course.courseCredit}}</p>
+  <p><b>Section Designation (if applicable): </b>{{course.serviceLearningDesignatedSections}}</p>
+  {% set all = "Yes" if course.isAllSectionsServiceLearning else "No" %}
+  <p><b>Is service-learning included in all sections? </b>{{all}}</p>
+  <p><b>When will the course be offered?</b>{{course.term}}</p>
+  {% set occurrence = "Yes" if course.isRegularlyOccurring else "No" %}
+  <p><b>This course will be taught:</b> {{occurrence}}</p>
+
+  <p><b>Will this course be taught with a significant service-learning component each time it is taught? </b> Do this thang.</p>
 </body>
 </html>
