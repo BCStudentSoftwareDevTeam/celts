@@ -44,7 +44,7 @@
       {% endif %}
     <h1 id="title">{{page_title}}</h1>
     {% if isPastEvent %}
-      <div class="alert alert-danger" role="alert">This event is in the past.</div>
+      <h3>This is a past event!</h3>
     {% endif %}
 </div>
 {% if not isNewEvent %}
@@ -164,7 +164,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="{{hideDate}}" id="recurringTableDiv">
           <table class="table" id="recurringEventsTable">
             <thead><tr><th>Event Name</th><th>Date</th></tr></thead>

@@ -11,10 +11,10 @@ $(document).ready( function () {
        }
     }
   });
-    $("#sendRecommendationBtn").click(function(){
-        let termID = $("#sendRecommendationBtn").val();
+    $("#downloadApprovedCoursesBtn").click(function(){
+        let termID = $("#downloadApprovedCoursesBtn").val();
         $.ajax({
-            url:`/serviceLearning/sendRecommendation/${termID}`,
+            url:`/serviceLearning/downloadApprovedCourses/${termID}`,
             type:"GET",
             success: function(response){
               callback(response);
