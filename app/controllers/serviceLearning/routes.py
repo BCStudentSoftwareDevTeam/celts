@@ -216,12 +216,14 @@ def downloadCourse(courseID):
         pdfCourse = Course.select().where(Course.id == courseID)
         pdfInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
         pdfQuestions = (CourseQuestion.select().where(CourseQuestion.course == course))
+        questionanswers = [question.questionContent for question in pdfQuestions]
 
         pdf = make_response(render_template('serviceLearning/slcFormDownload.html',
                             course = course,
                             pdfCourse = pdfCourse,
                             pdfInstructor = pdfInstructor,
-                            pdfQuestions = pdfQuestions
+                            pdfQuestions = pdfQuestions,
+                            questionanswers=questionanswers
                             ))
         return(pdf)
     except Exception as e:
