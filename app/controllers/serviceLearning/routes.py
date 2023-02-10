@@ -54,11 +54,14 @@ def slcEditProposal(courseID):
     filepaths = FileHandler(courseId=course.id).retrievePath(associatedAttachments)
     isAllSectionsServiceLearning = ""
     isPermanentlyDesignated = ""
+    hasSlcComponent = ""
 
     if course.isAllSectionsServiceLearning:
         isAllSectionsServiceLearning = True
     if course.isPermanentlyDesignated:
         isPermanentlyDesignated = True
+    if course.hasSlcComponent:
+        hasSlcComponent = True
     terms = selectSurroundingTerms(g.current_term, 0)
     return render_template('serviceLearning/slcNewProposal.html',
                                 course = course,
@@ -67,6 +70,7 @@ def slcEditProposal(courseID):
                                 courseInstructor = courseInstructor,
                                 isAllSectionsServiceLearning = isAllSectionsServiceLearning,
                                 isPermanentlyDesignated = isPermanentlyDesignated,
+                                hasSlcComponent = hasSlcComponent,
                                 filepaths = filepaths,
                                 redirectTarget=getRedirectTarget())
 

@@ -74,6 +74,7 @@ def updateCourse(courseData, attachment=None):
             isAllSectionsServiceLearning=("on" in courseData["slSectionsToggle"]),
             serviceLearningDesignatedSections=courseData["slDesignation"],
             isPermanentlyDesignated=("on" in courseData["permanentDesignation"]),
+            hasSlcComponent = int(courseData["hasSlcComponent"])
         ).where(Course.id == course.id).execute()
         for i in range(1, 7):
             (CourseQuestion.update(questionContent=courseData[f"{i}"])

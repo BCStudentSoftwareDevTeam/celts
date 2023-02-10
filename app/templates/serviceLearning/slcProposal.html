@@ -172,6 +172,34 @@
           name="previouslyApprovedDescription"
           rows="3">{{course.previouslyApprovedDescription}}</textarea>
       </div>
+      <label class="pb-2" for="slcComponent">Will this course be taught with a significant service-learning component each time it is taught?</label>
+      <div id="slcComponent">
+        <div class="form-check pb-1">
+          <input class="form-check-input" type="radio" id="hasSlcComponent" name="hasSlcComponent" value=1
+          {{"checked" if course.hasSlcComponent}}>
+            <label class="form-check-label">Yes, this course has a significant service-learning component.</label>
+        </div>
+        <div class="form-check pb-4">
+          <input class="form-check-input" type="radio" id="noSlcComponent" name="hasSlcComponent" value=0
+          {{"checked" if not course.hasSlcComponent}}>
+            <label class="form-check-label">No, this course does not have a significant service-learning component.</label>
+        </div>
+      </div>
+      <div id="permanentDesignationGroup">
+        <label class="pb-2" for="permanentDesignation">Would you like for this course to have a permanent Service-Learning Course Designation (i.e., in the Course Catalog)? (A change in the Catalog description must be approved by COGE.) </label>
+        <div class="form-group" id="permanentDesignation">
+          <div class="form-check pb-1">
+            <input class="form-check-input" type="radio" id="permanentlyDesignated" name="isPermanentlyDesignated" value=1
+            {{"checked" if course.isPermanentlyDesignated}}>
+              <label class="form-check-label">Yes, this this course should be permanently designated as Service-Learning.</label>
+          </div>
+          <div class="form-check pb-4">
+            <input class="form-check-input" type="radio" id="notPermanentlyDesignated" name="isPermanentlyDesignated" value=0
+            {{"checked" if not course.isPermanentlyDesignated}}>
+              <label class="form-check-label">No, this this course should not be permanently designated as Service-Learning.</label>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <input value={{course.id}} name="courseID" hidden/>

@@ -69,6 +69,17 @@ $(document).ready(function(e) {
         $("#slDesignationGroup").show();
       }
     })
+    if ($("#noSlcComponent").is(":checked")) {
+      $("#permanentDesignationGroup").hide();
+    }
+    $("#slcComponent").on("click", function() {
+      if ($("#noSlcComponent").is(":checked")) {
+        $("#permanentDesignationGroup").hide();
+      }
+      else {
+        $("#permanentDesignationGroup").show();
+      }
+    })
     if ($("#notPreviouslyApproved").is(":checked")) {
       $("#previouslyApprovedProposal").hide();
     }

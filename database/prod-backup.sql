@@ -119,6 +119,7 @@ CREATE TABLE `course` (
   `serviceLearningDesignatedSections` varchar(255) NOT NULL,
   `previouslyApprovedDescription` varchar(255) NOT NULL,
   `isPermanentlyDesignated` tinyint(1) NOT NULL,
+  `hasSlcComponent` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `course_term_id` (`term_id`),
   KEY `course_status_id` (`status_id`),

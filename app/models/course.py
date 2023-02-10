@@ -18,3 +18,5 @@ class Course(baseModel):
     isAllSectionsServiceLearning = BooleanField(default=False)
     isRegularlyOccurring = BooleanField(default=False)
     isPreviouslyApproved = BooleanField(default=False)
+    hasSlcComponent = BooleanField(default=False)
+
