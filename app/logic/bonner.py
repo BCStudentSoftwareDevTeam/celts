@@ -1,10 +1,12 @@
 from collections import defaultdict
 from datetime import date
+from peewee import IntegrityError
 
 import xlsxwriter
 
 from app import app
 from app.models.bonnerCohort import BonnerCohort
+from app.models.eventRsvp import EventRsvp
 from app.models.user import User
 
 def makeBonnerXls():
@@ -49,14 +51,13 @@ def makeBonnerXls():
 
     return filepath
 
-def getBonnerCohorts():
+def getBonnerCohorts(limit=None, currentYear=date.today().year):
     """
-        Return a dictionary with years as keys and a list of bonner users as values. Returns empty lists for 
+        Return a dictionary with years as keys and a list of bonner users as values. Returns empty lists for
         intermediate years, or the last 5 years if there are no older records.
     """
     years = list(BonnerCohort.select(BonnerCohort, User).join(User).order_by(BonnerCohort.year).execute())
 
-    currentYear = date.today().year
     defaultStart = currentYear-4
     firstYear = years[0].year if len(years) and years[0].year < defaultStart else defaultStart
 
@@ -64,4 +65,14 @@ def getBonnerCohorts():
     for cohort in years:
         cohorts[cohort.year].append(cohort.user)
 
+    # slice off the last n elements
+    if limit:
+        cohorts = dict(list(cohorts.items())[-limit:])
+
     return cohorts
+
+def rsvpForBonnerCohort(year, event):
+    """
+    Adds an EventRsvp record to the given event for each user in the given Bonner year.
+    """
+    EventRsvp.insert_from(BonnerCohort.select(BonnerCohort.user, event).where(BonnerCohort.year == year),[EventRsvp.user, EventRsvp.event]).on_conflict(action='IGNORE').execute()

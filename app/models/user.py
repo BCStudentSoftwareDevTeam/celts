@@ -13,6 +13,7 @@ class User(baseModel):
     isStaff = BooleanField(default = False)
     isCeltsAdmin = BooleanField(default  =False)
     isCeltsStudentStaff = BooleanField(default = False)
+    dietRestriction = TextField(null=True)
 
     # override BaseModel's __init__ so that we can set up an instance attribute for cache
     def __init__(self,*args, **kwargs):
