@@ -306,7 +306,9 @@ def RemoveRSVP():
     event = Event.get_by_id(eventData['id'])
 
     currentRsvpParticipant = EventRsvp.get(EventRsvp.user == g.current_user, EventRsvp.event == event)
-    currentRsvpParticipant.delete_instance()
+    EventRsvp.update({EventRsvp.unRsvpTime: datetime.datetime.now()}).where(EventRsvp.id == currentRsvpParticipant).execute()
+
+    # currentRsvpParticipant.delete_instance()
     
     flash("Successfully unregistered for event!", "success")
     if 'from' in eventData:
