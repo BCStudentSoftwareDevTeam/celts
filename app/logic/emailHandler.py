@@ -251,3 +251,12 @@ class EmailHandler:
             return last_email
         except DoesNotExist:
             return None
+
+
+    def email_when_submitted(self):
+        defaultEmailInfo = {"senderName":"Ashley Cochrane", "replyTo":self.reply_to}
+        template_id, subject, body = self.build_email()
+        # if proposal status == SUBMITTED:
+            # send email to Ashley Cochrane
+            # indicate what should be in the email
+            # flash("Email has been sent to Ashley C")
