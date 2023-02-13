@@ -423,7 +423,7 @@ def getDietInfo():
     dietaryInfo = request.form
     user = dietaryInfo["user"]
     dietInfo = dietaryInfo["dietInfo"]
-
-    updateDietInfo(user, dietInfo)
+    if (g.current_user.username == user) or g.current_user.isAdmin:
+        updateDietInfo(user, dietInfo)
 
     return " "
