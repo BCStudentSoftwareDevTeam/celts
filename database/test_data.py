@@ -370,7 +370,7 @@ programs = [
     },
     {
         "id": 5,
-        "programName": "Bonners Scholars",
+        "programName": "Bonner Scholar",
         "isStudentLed": False,
         "isBonnerScholars": True,
         "contactEmail": "",
