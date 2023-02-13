@@ -5,8 +5,8 @@ from app.models.partner import Partner
 
 class Program(baseModel):
     programName = CharField()
-    programUrl = CharField()
-    programDescription = CharField()
+    programUrl = TextField()
+    programDescription = TextField()
     partner = ForeignKeyField(Partner, null=True)
     isStudentLed = BooleanField(default=False)
     isBonnerScholars = BooleanField(default=False)
