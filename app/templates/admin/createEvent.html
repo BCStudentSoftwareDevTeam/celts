@@ -44,7 +44,7 @@
       {% endif %}
     <h1 id="title">{{page_title}}</h1>
     {% if isPastEvent %}
-      <h3>This is a past event!</h3>
+      <div class="alert-danger pb-2 pt-2" role="alert">This event is in the past.</div>
     {% endif %}
 </div>
 {% if not isNewEvent %}
