@@ -34,7 +34,8 @@ def test_update_course():
                                         sectionDesignation = "Section B",
                                         isPermanentlyDesignated = 1,
                                         isPreviouslyApproved = 1,
-                                        previouslyApprovedDescription = "Hehe")
+                                        previouslyApprovedDescription = "Hehe",
+                                        hasSlcComponent = 1)
 
         for i in range(1, 7):
             CourseQuestion.create( course=Course.get(courseName="Testing Course"), questionNumber=i)
@@ -54,6 +55,7 @@ def test_update_course():
                         "permanentDesignation": "off",
                         "isPreviouslyApproved":0,
                         "previouslyApprovedDescription":"Hoho",
+                        "hasSlcComponent": 0,
                         "1": "Question 1",
                         "2": "Question 2",
                         "3": "Question 3",
@@ -81,6 +83,7 @@ def test_update_course():
         assert not updatedCourse.isPermanentlyDesignated
         assert updatedCourse.isPreviouslyApproved == 0
         assert updatedCourse.previouslyApprovedDescription == "Hoho"
+        assert updatedCourse.hasSlcComponent == 0
 
         for i in range(1,7):
             assert CourseQuestion.get(questionNumber=str(i), course=testingCourse.id).questionContent == courseDict[str(i)]
