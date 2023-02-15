@@ -65,8 +65,10 @@ function slcDownloadPDF(courseID){
              left: 40,
              width: 522
              };
-       doc.fromHTML(response, margins.left,margins.top, {width: margins.width}); // Change the HTML template to PDF
-      doc.save()
+      doc.fromHTML(response, margins.left, margins.top, {width: margins.width},
+          function (dispose){
+            doc.save('Service Learning Course Proposal')
+          }, margins);
     }
   })
 }
