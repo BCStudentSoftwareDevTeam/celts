@@ -81,13 +81,13 @@
 <hr>
 
 <h3>Part A</h3>
-  <p><b>Course Instructor Name:</b> 
-    {% for instructor in pdfInstructor %} 
+  <p><b>Course Instructor Name:</b>
+    {% for instructor in pdfInstructor %}
       {{instructor.user.firstName}} {{instructor.user.lastName}}
     {% endfor %}
     </p>
   <p><b>Course Instructor Phone(s): </b>
-    {% for instructor in pdfInstructor %} 
+    {% for instructor in pdfInstructor %}
       {{instructor.user.phoneNumber}}
     {% endfor %}
   </p>
@@ -101,30 +101,35 @@
   {% set occurrence = "Yes" if course.isRegularlyOccurring else "No" %}
   <p><b>This course will be taught:</b> {{occurrence}}</p>
 
-  <p><b>Will this course be taught with a significant service-learning component each time it is taught? </b> Do this thang.</p>
+  {% set component = "Yes" if course.hasSlcComponent else "No" %}
+  <p><b>Will this course be taught with a significant service-learning component each time it is taught? </b> {{component}}</p>
 
-  <p><b><i>If yes, would you like for this course to have a permanent Service-Learning Course Designation (i.e., in the Course Catalog)? (A change in the Catalog description must be approved by COGE.)</i></b>{{course.isPermanentlyDesignated}}</p>
-  <p><b>Has this course previously been approved as a service-learning course?</b> {{course.isPreviouslyApproved}}</p>
-  
+  {% set permanent = "Yes" if course.isPermanentlyDesignated else "No" %}
+  <p><b><i>If yes, would you like for this course to have a permanent Service-Learning Course Designation (i.e., in the Course Catalog)? (A change in the Catalog description must be approved by COGE.)</i></b>{{permanent}}</p>
+  {% set previously = "Yes" if course.isPreviouslyApproved else "No" %}
+  <p><b>Has this course previously been approved as a service-learning course?</b> {{previously}}</p>
+  <p><b>If yes, when was the course approved previously? Also, please describe the service-learning project you plan for the upcoming course, including indentification of the community partner organization(s).</b></p>
+  <p>{{course.previouslyApprovedDescription}} </p>
+
   <p><b>Please attach the syllabus for the course.</b></p>
 
 <h3>Part B</h3>
   <p>You do not need to complete Part B if this is a resubmission of a previously approved service-learning course, unless there are significant changes to the course since the last time it was taught.</p>
-  <p>Referring to the <b>Criteria for the Service-Learning Course Designation/ALE Requirement met through Service-Learning,</b> please address the following in a one-page proposal narrative.  Attach your syllabus (or the one from the most recent time that the course was taught).  If you are in the process of designing the syllabus, please indicate that.</p>  
+  <p>Referring to the <b>Criteria for the Service-Learning Course Designation/ALE Requirement met through Service-Learning,</b> please address the following in a one-page proposal narrative.  Attach your syllabus (or the one from the most recent time that the course was taught).  If you are in the process of designing the syllabus, please indicate that.</p>
   <ol>
-    <li>Indicate the specific course learning objective(s) that will be addressed by the service-learning component. 
+    <li>Indicate the specific course learning objective(s) that will be addressed by the service-learning component.
     <p>{{questionanswers[0]}}</p></li>
     <li>Describe the method of structured, critical reflection you will use in order to connect the service activity or activities to the learning objective(s) of the course.
     <p>{{questionanswers[1]}}</p></li>
-    <li>Describe the service-learning activity or activities.  Indicate the approximate number of hours or days of service experience. There is no formal requirement, but the activity must be substantial and sustained throughout the semester.  
+    <li>Describe the service-learning activity or activities.  Indicate the approximate number of hours or days of service experience. There is no formal requirement, but the activity must be substantial and sustained throughout the semester.
     <p>{{questionanswers[2]}}</p></li>
     <li>Identify the community partner(s) with whom you will collaborate in order to structure this service-learning experience.  How will the community partner(s) be involved in planning, implementation, and evaluation?
     <p>{{questionanswers[3]}}</p></li>
-    <li>Describe the final product to be completed by the students.  How will this benefit the community? 
+    <li>Describe the final product to be completed by the students.  How will this benefit the community?
     <p>{{questionanswers[4]}}</p></li>
-    <li>Indicate how you will assess student learning related to the identified course objective(s) that will be enhanced by the service-learning experience. Identify what percentage of the final grade will be based on the assessment of reflection, the final product, and other forms of assessment related to the identified course objective(s). 
+    <li>Indicate how you will assess student learning related to the identified course objective(s) that will be enhanced by the service-learning experience. Identify what percentage of the final grade will be based on the assessment of reflection, the final product, and other forms of assessment related to the identified course objective(s).
     <p>{{questionanswers[5]}}</p></li>
   </ol>
-  
+
 </body>
 </html>
