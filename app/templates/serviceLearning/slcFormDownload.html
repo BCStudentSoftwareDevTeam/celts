@@ -1,21 +1,38 @@
-{%set title = "SLC Form Download"%}
-<script src="/static/js/slcManagement.js"></script>
-<link rel="stylesheet" href="{{url_for('static', filename ='css/slcFormDownloade.css') }}?u={{lastStaticUpdate}}">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% block styles %}
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="{{url_for('static', filename ='css/bootstrap.min.css') }}?u={{lastStaticUpdate}}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{url_for('static', filename ='css/base.css') }}?u={{lastStaticUpdate}}">
+    <link rel="stylesheet" href="{{url_for('static', filename ='css/sidebar.css') }}?u={{lastStaticUpdate}}">
+  {% endblock %}
 
-<html>
+  {% block scripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="{{url_for('static', filename='js/bootstrap.bundle.min.js') }}?u={{lastStaticUpdate}}" type="text/javascript"></script>
+    <script src="{{url_for('static', filename='js/base.js') }}?u={{lastStaticUpdate}}" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+  {% endblock %}
+<title>
+  {%set title = "SLC Form Download"%}
+</title>
 <body>
   <div>
     <img src="{{url_for('static', filename='images/logos/slc_prop_download_celts_logo.png')}}" height="75" width ="75">
   </div>
-  <h2>
+  <h3 class="text-center">
     Service-Learning Course Designation/Active Learning Experience (ALE) Requirements Met Through Service-Learning
-  </h2>
-  <h4>Criteria and Proposal Form</h4>
+  </h3>
+  <h4 class="text-center">CRITERIA AND PROPOSAL FORM</h4>
   <p>
-    Service-Learning at Berea College is an educational experience based upon a collaborative partnership between College and community. Learning through service enables students to apply academic knowledge and critical-thinking skills to meet genuine community needs. Through reflection and assessment, students gain deeper understanding of course content and the importance of civic engagement.
+    <b>SERVICE-LEARNING</b> at Berea College is an educational experience based upon a collaborative partnership between College and community. Learning through service enables students to apply academic knowledge and critical-thinking skills to meet genuine community needs. Through reflection and assessment, students gain deeper understanding of course content and the importance of civic engagement.
   </p>
   <p>
-    All Designated Service-Learning Courses will meet the Active Learning Experience (ALE) Requirement.
+    All Designated Service-Learning Courses will meet the <b>Active Learning Experience (ALE)</b> Requirement.
   </p>
   <p>
     If you have questions about the criteria for Service-Learning Courses, please call Ashley Cochrane at x. 3605.
@@ -43,7 +60,7 @@
     </li>
     <li>
       Together, the community partner and faculty member will identify community needs and will structure a service-learning experience designed to address those needs.
-    </li>
+    </li>Criteria and Proposal Form
     <li>
       Service-Learning activities will be integrated into course work and will serve as the pedagogical method for the specified service-learning course objective(s). As such, all students in the course will participate in the service-learning activities.
     </li>
@@ -78,7 +95,7 @@
       Evaluative criteria of the final project will be included in the syllabi, including the percentage that the summary presentation or synthesizing project will represent in the final grade.
     </li>
   </ul>
-<strong>PROPOSAL FOR SERVICE-LEARNING COURSE DESIGNATION/ALE REQUIREMENT MET THROUGH SERVICE-LEARNING</strong>
+<p class="text-center"><strong >PROPOSAL FOR SERVICE-LEARNING COURSE DESIGNATION/ALE REQUIREMENT MET THROUGH SERVICE-LEARNING</strong></p>
   <p>Email proposal form to <b>ashley_cochrane@berea.edu</b></p>
   <p>Approved courses will be listed in the Schedule of Classes as service-learning courses that meet the ALE requirement.</p>
   <p><b>Note:</b> If this course has previously been approved as a service-learning course, please complete only Part A of this form, indicating that this is a resubmission of an approved service-learning course. If the course has not previously been approved as a service-learning course, please complete both Parts A and B.</p>
@@ -109,7 +126,7 @@
   <p><b>Will this course be taught with a significant service-learning component each time it is taught? </b> {{component}}</p>
 
   {% set permanent = "Yes" if course.isPermanentlyDesignated else "No" %}
-  <p><b><i>If yes, would you like for this course to have a permanent Service-Learning Course Designation (i.e., in the Course Catalog)? (A change in the Catalog description must be approved by COGE.)</i></b>{{permanent}}</p>
+  <p><b><i>If yes, would you like for this course to have a permanent Service-Learning Course Designation (i.e., in the Course Catalog)? (A change in the Catalog description must be approved by COGE.)</i></b> {{permanent}}</p>
   {% set previously = "Yes" if course.isPreviouslyApproved else "No" %}
   <p><b>Has this course previously been approved as a service-learning course?</b> {{previously}}</p>
   <p><b>If yes, when was the course approved previously? Also, please describe the service-learning project you plan for the upcoming course, including indentification of the community partner organization(s).</b></p>
