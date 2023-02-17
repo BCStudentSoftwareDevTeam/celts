@@ -451,5 +451,5 @@ def sortEvents(EventList):
     while len(EventList)>=1 and EventList[0].isPast :
         sortedList.append(EventList[0])
         del EventList[0]
-    return EventList+sortedList
+    return EventList+sortedList[::-1]
 

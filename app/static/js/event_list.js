@@ -41,3 +41,8 @@ function removeRsvpForEvent(eventID){
 
   })
 }
+$(function() {
+  $('.toggle-table').click(function() {
+    $(this).next('table').toggleClass('d-none');
+  });
+});
