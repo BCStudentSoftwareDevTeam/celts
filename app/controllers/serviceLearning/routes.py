@@ -1,6 +1,8 @@
-from flask import request, render_template, g, url_for, abort, redirect, flash, session, send_from_directory, send_file
+from flask import Flask, request, render_template, g, url_for, abort, redirect, flash, session, send_from_directory, send_file
 from werkzeug.utils import safe_join
 import os
+from flask_cors import CORS
+import smtplib
 from peewee import *
 from app.models.user import User
 from app.models.term import Term
@@ -19,6 +21,9 @@ from app.logic.courseManagement import approvedCourses
 from app.controllers.main.routes import getRedirectTarget, setRedirectTarget
 from app.controllers.serviceLearning import serviceLearning_bp
 
+
+app = Flask(__name__)
+CORS(app)
 
 @serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
 @serviceLearning_bp.route('/serviceLearning/courseManagement/<username>', methods = ['GET'])
@@ -56,7 +61,7 @@ def slcEditProposal(courseID):
         isPermanentlyDesignated = ""
         course.status = CourseStatus.APPROVED
 
-        
+
         if course.isAllSectionsServiceLearning:
             isAllSectionsServiceLearning = True
         if course.isPermanentlyDesignated:
@@ -211,3 +216,22 @@ def sendRecommendation(termID):
     except Exception as e:
         print(e)
         return ""
+
+@serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['POST'])
+def emailAshley(courseID, termID):
+    """
+    This function sends an email to Ashley Cochrane when the SLC course is submitted
+    with the information about the course, instructor and term
+    """
+    course.status = CourseStatus.SUBMITTED
+    if g.current_user.isFaculty:
+        if courses in course.status:
+            receiver_email = 'agliullovak@berea.edu'
+            message = 'Subject: Test Email\n\nThis is a test email.'
+            smtp_server = smtplib.SMTP('smtp.example.com', 587)
+            smtp_server.starttls()
+            smtp_server.login('yourusername', 'yourpassword')
+            smtp_server.sendmail(receiver_email, message)
+            smtp_server.quit()
+
+    return '', 204
