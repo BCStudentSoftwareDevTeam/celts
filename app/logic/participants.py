@@ -58,7 +58,21 @@ def sendUserData(bnumber, eventId, programid):
     return signedInUser, userStatus
 
 def checkUserRsvp(user,  event):
-    return EventRsvp.select().where(EventRsvp.user==user, EventRsvp.event == event).exists()
+    participantRSvp = EventRsvp.get_or_none(EventRsvp.user==user, EventRsvp.event == event)
+     
+#if there's no EventRSVP record, student has not rsvp
+    if participantRSvp == "None": 
+        return False
+    else:    
+#if rsvp record exists and unrsvp is not None
+        if participantRSvp.unRsvpTime != None: 
+            if participantRSvp.unRsvpTime > participantRSvp.rsvpTime:
+                return False
+            else:
+                return True 
+        else: 
+#if there's a record and unRsvptime is none, rsvp is true
+            return True
 
 def checkUserVolunteer(user,  event):
     return EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event).exists()
@@ -79,7 +93,11 @@ def addPersonToEvent(user, event):
                 eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
                 EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
         else:
-            if not rsvpExists:
+            # Adding RSVP if the person has rsvp before 
+            if rsvpExists:
+                EventRsvp.update({EventRsvp.rsvpTime: datetime.datetime.now()}).where(EventRsvp.id == user, EventRsvp.event == event).execute()
+            else:
+
                 EventRsvp.create(user = user, event = event)
         if volunteerExists or rsvpExists:
             return "already in"
