@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-<div class= "w-100 d-print-inline-block">
+<div class= "w-100 d-print-block">
   <div class= "text-center">
     <img src="{{url_for('static', filename='images/logos/slc_prop_download_celts_logo.png')}}" height="75" width ="75">
   <h3>
@@ -137,11 +137,25 @@
     {% endfor %}
   </p>
   <p><b>Full Course Name:</b> {{course.courseName}}</p>
-  <p><b>Course Abbreviation/Number: </b>{{course.courseAbbreviation}}</p>
-  <p><b>Credit: </b>{{course.courseCredit}}</p>
-  <p><b>Section Designation (if applicable):</b> {{course.serviceLearningDesignatedSections}}</p>
-  {% set all = "Yes" if course.isAllSectionsServiceLearning else "No" %}
-  <p><b>Is service-learning included in all sections?</b> {{all}}</p>
+  <div class="row col-md-12">
+    <div class="form-group col-md-6">
+      {% set abbreviation = course.courseAbbreviation if course.courseAbbreviation != "" else "_________________________" %}
+      <p><b>Course Abbreviation/Number: </b>{{abbreviation}}</p>
+    </div>
+    <div class="form-group col-md-6">
+      <p><b>Credit: </b>{{course.courseCredit}}</p>
+    </div>
+  </div>
+  <div class="row col-md-12">
+    <div class="form-group col-md-6">
+      {% set designation = course.sectionDesignation if course.sectionDesignation != "" else "_________________________" %}
+      <p><b>Section Designation (if applicable):</b> {{designation}}</p>
+    </div>
+    <div class="form-group col-md-6">
+      {% set all = "Yes" if course.isAllSectionsServiceLearning else "No" %}
+      <p><b>Is service-learning included in all sections?</b> {{all}}</p>
+    </div>
+  </div>
   <p><b>When will the course be offered?</b> {{course.term.description}}</p>
   {% set occurrence = "Yes" if course.isRegularlyOccurring else "No" %}
   <p><b>This course will be taught:</b> {{occurrence}}</p>
@@ -163,17 +177,17 @@
   <p>Referring to the <b>Criteria for the Service-Learning Course Designation/ALE Requirement met through Service-Learning,</b> please address the following in a one-page proposal narrative.  Attach your syllabus (or the one from the most recent time that the course was taught).  If you are in the process of designing the syllabus, please indicate that.</p>
   <ol>
     <li>Indicate the specific course learning objective(s) that will be addressed by the service-learning component.
-    <p>{{questionanswers[0]}}</p></li>
+    <p class="mt-1">{{questionanswers[0]}}</p></li>
     <li>Describe the method of structured, critical reflection you will use in order to connect the service activity or activities to the learning objective(s) of the course.
-    <p>{{questionanswers[1]}}</p></li>
+    <p class="mt-1">{{questionanswers[1]}}</p></li>
     <li>Describe the service-learning activity or activities.  Indicate the approximate number of hours or days of service experience. There is no formal requirement, but the activity must be substantial and sustained throughout the semester.
-    <p>{{questionanswers[2]}}</p></li>
+    <p class="mt-1">{{questionanswers[2]}}</p></li>
     <li>Identify the community partner(s) with whom you will collaborate in order to structure this service-learning experience.  How will the community partner(s) be involved in planning, implementation, and evaluation?
-    <p>{{questionanswers[3]}}</p></li>
+    <p class="mt-1">{{questionanswers[3]}}</p></li>
     <li>Describe the final product to be completed by the students.  How will this benefit the community?
-    <p>{{questionanswers[4]}}</p></li>
+    <p class="mt-1">{{questionanswers[4]}}</p></li>
     <li>Indicate how you will assess student learning related to the identified course objective(s) that will be enhanced by the service-learning experience. Identify what percentage of the final grade will be based on the assessment of reflection, the final product, and other forms of assessment related to the identified course objective(s).
-    <p>{{questionanswers[5]}}</p></li>
+    <p class="mt-1">{{questionanswers[5]}}</p></li>
   </ol>
   <button type="button" class="btn btn-primary d-print-none m-4" onclick="window.print()"><span class="bi bi-printer d-print-none"></span>Print</button>
 </div>
