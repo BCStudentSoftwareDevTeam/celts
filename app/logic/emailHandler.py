@@ -2,6 +2,7 @@ from datetime import datetime
 from peewee import DoesNotExist, JOIN
 from flask_mail import Mail, Message
 import os
+import email.message
 
 from app import app
 from app.models.programEvent import ProgramEvent
@@ -253,10 +254,23 @@ class EmailHandler:
             return None
 
 
-    def email_when_submitted(self):
+    def email_when_submitted(recipient, subject, body):
         defaultEmailInfo = {"senderName":"Ashley Cochrane", "replyTo":self.reply_to}
         template_id, subject, body = self.build_email()
-        # if proposal status == SUBMITTED:
-            # send email to Ashley Cochrane
-            # indicate what should be in the email
-            # flash("Email has been sent to Ashley C")
+
+        with self.mail.connect() as conn:
+            for recipient in self.recipients:
+                full_name = f'{recipient.firstName} {recipient.lastName}'
+                email_body = self.replace_name_placeholder(full_name, body)
+
+                conn.send(Message(
+                    subject,
+                    # [recipient.email],
+                    [self.override_all_mail],
+                    email_body,
+                    file_attachment = self.getAttachmentFullPath(), #needs to be modified later
+                    reply_to = defaultEmailInfo["replyTo"],
+                    sender = (defaultEmailInfo["senderName"], defaultEmailInfo["replyTo"])
+                    ))
+        self.store_sent_email(subject, template_id)
+        return True
