@@ -19,7 +19,7 @@
         <p class="card-text">{{program.programDescription|truncate(160)}}
           {% if not program.programDescription == program.programDescription|truncate(160) %}
             <a type="button" class="float-end link-primary" data-bs-toggle="modal"
-              data-bs-target="#descriptionModal" data-bs-url="{{program.ProgramUrl}}" data-bs-program="{{program.programName}}"
+              data-bs-target="#descriptionModal" data-bs-url="{{program.programUrl}}" data-bs-program="{{program.programName}}"
               data-bs-image="{{data.image}}" data-bs-description="{{program.programDescription}}" data-bs-id="{{program.id}}" data-bs-list="{{programsWithEventsList}}">
                 Read more
             </a><br /><br />
