@@ -22,7 +22,8 @@ function changeAction(action){
   } else if(action.value == "Edit"){
     location = '/serviceLearning/editProposal/' + courseID;
   } else if(action.value == "Download"){
-    slcDownloadPDF(courseID)
+    // slcDownloadPDF(courseID)
+    location = '/serviceLearning/download/' + courseID;
   }
 }
 function renew(){

@@ -1,102 +1,126 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  {% block styles %}
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <link rel="stylesheet" href="{{url_for('static', filename ='css/bootstrap.min.css') }}?u={{lastStaticUpdate}}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="{{url_for('static', filename ='css/base.css') }}?u={{lastStaticUpdate}}">
-    <link rel="stylesheet" href="{{url_for('static', filename ='css/sidebar.css') }}?u={{lastStaticUpdate}}">
-  {% endblock %}
+{% extends "base.html" %}
 
-  {% block scripts %}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="{{url_for('static', filename='js/bootstrap.bundle.min.js') }}?u={{lastStaticUpdate}}" type="text/javascript"></script>
-    <script src="{{url_for('static', filename='js/base.js') }}?u={{lastStaticUpdate}}" type="text/javascript"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
-  {% endblock %}
-<title>
-  {%set title = "SLC Form Download"%}
-</title>
-<body>
-  <div>
+{% block app_content %}
+<div class= "w-100 d-print-inline-block">
+  <div class= "text-center">
     <img src="{{url_for('static', filename='images/logos/slc_prop_download_celts_logo.png')}}" height="75" width ="75">
-  </div>
-  <h3 class="text-center">
+  <h3>
     Service-Learning Course Designation/Active Learning Experience (ALE) Requirements Met Through Service-Learning
   </h3>
-  <h4 class="text-center">CRITERIA AND PROPOSAL FORM</h4>
-  <p>
+  </div>
+  <h4>CRITERIA AND PROPOSAL FORM</h4>
+  <p class="mb-1">
     <b>SERVICE-LEARNING</b> at Berea College is an educational experience based upon a collaborative partnership between College and community. Learning through service enables students to apply academic knowledge and critical-thinking skills to meet genuine community needs. Through reflection and assessment, students gain deeper understanding of course content and the importance of civic engagement.
   </p>
-  <p>
+  <p class="mb-1">
     All Designated Service-Learning Courses will meet the <b>Active Learning Experience (ALE)</b> Requirement.
   </p>
   <p>
     If you have questions about the criteria for Service-Learning Courses, please call Ashley Cochrane at x. 3605.
   </p>
 
-  <h4>Criteria for the Service-Learning Course Designation/ALE Requirement met through Service-Learning</h4>
-
-<strong>Student Learning Outcomes</strong>
-  <p>Students will be able to:</p>
-  <ul>
-    <li>
-      Apply academic knowledge and critical-thinking skills to meet genuine community needs.
-    </li>
-    <li>
-      Demonstrate deeper understanding of specific course learning objectives appropriate to the experience.
-    </li>
-    <li>
-      Reflect critically on multiple facets of their experience, on the connections between theory and practice, and between learning inside and outside the classroom.
-    </li>
-  </ul>
-<strong>Service-Learning Experience</strong>
-  <ul>
-    <li>
-      Faculty will identify one or more course learning objectives that students will address through their service work in the community.
-    </li>
-    <li>
-      Together, the community partner and faculty member will identify community needs and will structure a service-learning experience designed to address those needs.
-    </li>Criteria and Proposal Form
-    <li>
-      Service-Learning activities will be integrated into course work and will serve as the pedagogical method for the specified service-learning course objective(s). As such, all students in the course will participate in the service-learning activities.
-    </li>
-    <li>
-      The service-learning experience will be substantial and sustained throughout the course, involving active student engagement.
-    </li>
-  </ul>
-<strong>Community Partnerships</strong>
-  <ul>
-    <li>
-      Faculty will identify and designate an appropriate community partner(s) in order for course learning objectives to be met.
-    </li>
-    <li>
-      All partners will be involved in the planning, implementation, and evaluation of the structured service-learning experience.
-    </li>
-  </ul>
-<strong>Reflection and Assessment</strong>
-  <ul>
-    <li>
-      Faculty will infuse critical reflection throughout the service-learning experience; the reflection will create the connection among service work, course objectives, and student learning outcomes.
-    </li>
-    <li>
-      Evaluative criteria for service-learning reflection will be included in the syllabi, including the percentage that reflection will represent in the final grade.
-    </li>
-  </ul>
-<strong>Summary Presentation and Assessment</strong>
-  <ul>
-    <li>
-      The service-learning experience will result in a summary presentation, performance, exhibition, and/or other synthesizing project completed by the students engaged in the experience.
-    </li>
-    <li>
-      Evaluative criteria of the final project will be included in the syllabi, including the percentage that the summary presentation or synthesizing project will represent in the final grade.
-    </li>
-  </ul>
-<p class="text-center"><strong >PROPOSAL FOR SERVICE-LEARNING COURSE DESIGNATION/ALE REQUIREMENT MET THROUGH SERVICE-LEARNING</strong></p>
+  <h4 class="text-center">Criteria for the Service-Learning Course Designation/ALE Requirement met through Service-Learning</h4>
+<table class="table table-bordered">
+  <tr class='text-center'>
+    <td>
+      <strong>Student Learning Outcomes</strong>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <p class='mb-1'>Students will be able to:</p>
+      <ul>
+        <li>
+          Apply academic knowledge and critical-thinking skills to meet genuine community needs.
+        </li>
+        <li>
+          Demonstrate deeper understanding of specific course learning objectives appropriate to the experience.
+        </li>
+        <li>
+          Reflect critically on multiple facets of their experience, on the connections between theory and practice, and between learning inside and outside the classroom.
+        </li>
+      </ul>
+    </td>
+  </tr>
+  <tr class='text-center'>
+    <td>
+      <strong>Service-Learning Experience</strong>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <ul>
+        <li>
+          Faculty will identify one or more course learning objectives that students will address through their service work in the community.
+        </li>
+        <li>
+          Together, the community partner and faculty member will identify community needs and will structure a service-learning experience designed to address those needs.
+        </li>Criteria and Proposal Form
+        <li>
+          Service-Learning activities will be integrated into course work and will serve as the pedagogical method for the specified service-learning course objective(s). As such, all students in the course will participate in the service-learning activities.
+        </li>
+        <li>
+          The service-learning experience will be substantial and sustained throughout the course, involving active student engagement.
+        </li>
+      </ul>
+    </td>
+  </tr>
+  <tr class='text-center'>
+    <td>
+      <strong>Community Partnerships</strong>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <ul>
+        <li>
+          Faculty will identify and designate an appropriate community partner(s) in order for course learning objectives to be met.
+        </li>
+        <li>
+          All partners will be involved in the planning, implementation, and evaluation of the structured service-learning experience.
+        </li>
+      </ul>
+    </td>
+  </tr>
+  <tr class='text-center'>
+    <td>
+      <strong>Reflection and Assessment</strong>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <ul>
+        <li>
+          Faculty will infuse critical reflection throughout the service-learning experience; the reflection will create the connection among service work, course objectives, and student learning outcomes.
+        </li>
+        <li>
+          Evaluative criteria for service-learning reflection will be included in the syllabi, including the percentage that reflection will represent in the final grade.
+        </li>
+      </ul>
+    </td>
+  </tr>
+  <tr class='text-center'>
+    <td>
+      <strong>Summary Presentation and Assessment</strong>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <ul>
+        <li>
+          The service-learning experience will result in a summary presentation, performance, exhibition, and/or other synthesizing project completed by the students engaged in the experience.
+        </li>
+        <li>
+          Evaluative criteria of the final project will be included in the syllabi, including the percentage that the summary presentation or synthesizing project will represent in the final grade.
+        </li>
+      </ul>
+    </td>
+  </tr>
+</table>
+<div class= "text-center">
+<p class="mb-1"><strong >PROPOSAL FOR SERVICE-LEARNING COURSE DESIGNATION/ALE REQUIREMENT MET THROUGH SERVICE-LEARNING</strong></p>
   <p>Email proposal form to <b>ashley_cochrane@berea.edu</b></p>
+</div>
   <p>Approved courses will be listed in the Schedule of Classes as service-learning courses that meet the ALE requirement.</p>
   <p><b>Note:</b> If this course has previously been approved as a service-learning course, please complete only Part A of this form, indicating that this is a resubmission of an approved service-learning course. If the course has not previously been approved as a service-learning course, please complete both Parts A and B.</p>
 <hr>
@@ -151,6 +175,6 @@
     <li>Indicate how you will assess student learning related to the identified course objective(s) that will be enhanced by the service-learning experience. Identify what percentage of the final grade will be based on the assessment of reflection, the final product, and other forms of assessment related to the identified course objective(s).
     <p>{{questionanswers[5]}}</p></li>
   </ol>
-
-</body>
-</html>
+  <button type="button" class="btn btn-primary d-print-none m-4" onclick="window.print()"><span class="bi bi-printer d-print-none"></span>Print</button>
+</div>
+ {% endblock %}

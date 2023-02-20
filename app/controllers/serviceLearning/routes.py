@@ -222,14 +222,21 @@ def downloadCourse(courseID):
         pdfQuestions = (CourseQuestion.select().where(CourseQuestion.course == course))
         questionanswers = [question.questionContent for question in pdfQuestions]
 
-        pdf = make_response(render_template('serviceLearning/slcFormDownload.html',
-                            course = course,
-                            pdfCourse = pdfCourse,
-                            pdfInstructor = pdfInstructor,
-                            pdfQuestions = pdfQuestions,
-                            questionanswers=questionanswers
-                            ))
-        return(pdf)
+        # pdf = make_response(render_template('serviceLearning/slcFormDownload.html',
+        #                     course = course,
+        #                     pdfCourse = pdfCourse,
+        #                     pdfInstructor = pdfInstructor,
+        #                     pdfQuestions = pdfQuestions,
+        #                     questionanswers=questionanswers
+        #                     ))
+        # return(pdf)
+        return render_template('serviceLearning/slcFormDownload.html',
+                                course = course,
+                                pdfCourse = pdfCourse,
+                                pdfInstructor = pdfInstructor,
+                                pdfQuestions = pdfQuestions,
+                                questionanswers=questionanswers
+                                )
     except Exception as e:
         flash("IT DIDNT WORK", 'warning')
         print(e)
