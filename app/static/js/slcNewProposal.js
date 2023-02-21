@@ -30,11 +30,10 @@ $(document).ready(function(e) {
       allowedFileExtensions:["pdf","jpg","png","gif", "csv", "docx", "jpg", "jpeg", "jfif"]
     })
     // set up the current tab and button state
-    console.log(window.location.href.includes("upload"))
     if(window.location.href.includes("upload")) {
       currentTab = 1
     }
-    
+
     showTab(currentTab);
 
     // Update display if we are viewing only
@@ -275,7 +274,6 @@ function saveCourseData(url, successCallback) {
     if (!validateForm()) return false;
 
     var formdata = $("form").serialize()
-    console.log(formdata)
     var instructordata = $.param({"instructor":getCourseInstructors()})
     $.ajax({
         url: url,
