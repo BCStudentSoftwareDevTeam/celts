@@ -260,15 +260,14 @@ class EmailHandler:
 
         with self.mail.connect() as conn:
             for recipient in self.recipients:
-                full_name = f'{recipient.firstName} {recipient.lastName}'
+                full_name = "Ashley Cochrane"
                 email_body = self.replace_name_placeholder(full_name, body)
 
                 conn.send(Message(
                     subject,
-                    # [recipient.email],
+                    [recipient.email],
                     [self.override_all_mail],
                     email_body,
-                    file_attachment = self.getAttachmentFullPath(), #needs to be modified later
                     reply_to = defaultEmailInfo["replyTo"],
                     sender = (defaultEmailInfo["senderName"], defaultEmailInfo["replyTo"])
                     ))
