@@ -210,10 +210,10 @@ def renewCourse(courseID, termID):
 
     return "", 500
 
-@serviceLearning_bp.route('/serviceLearning/download/<courseID>', methods=['GET'])
-def downloadCourse(courseID):
+@serviceLearning_bp.route('/serviceLearning/print/<courseID>', methods=['GET'])
+def printCourse(courseID):
     """
-    This function will download a PDF of an SLC proposal.
+    This function will print a PDF of an SLC proposal.
     """
     try:
         course = Course.get_by_id(courseID)
@@ -222,7 +222,7 @@ def downloadCourse(courseID):
         pdfQuestions = (CourseQuestion.select().where(CourseQuestion.course == course))
         questionanswers = [question.questionContent for question in pdfQuestions]
 
-        # pdf = make_response(render_template('serviceLearning/slcFormDownload.html',
+        # pdf = make_response(render_template('serviceLearning/slcFormPrint.html',
         #                     course = course,
         #                     pdfCourse = pdfCourse,
         #                     pdfInstructor = pdfInstructor,
@@ -230,7 +230,7 @@ def downloadCourse(courseID):
         #                     questionanswers=questionanswers
         #                     ))
         # return(pdf)
-        return render_template('serviceLearning/slcFormDownload.html',
+        return render_template('serviceLearning/slcFormPrint.html',
                                 course = course,
                                 pdfCourse = pdfCourse,
                                 pdfInstructor = pdfInstructor,
