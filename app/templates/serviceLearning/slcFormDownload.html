@@ -8,7 +8,7 @@
 <div class= "w-100 d-print-block">
   <div class= "text-center">
     <img src="{{url_for('static', filename='images/logos/slc_prop_download_celts_logo.png')}}" height="85" width ="90">
-    <h6> 
+    <h6>
       <br><b>Service-Learning Course Designation/<br>Active Learning Experience (ALE) Requirements Met Through Service-Learning</b>
     </h6>
     <h6 class="m-3"><b>CRITERIA AND PROPOSAL FORM</b></h6>
@@ -114,36 +114,88 @@
 <h1 class="mb-1"><b>__________________________________________________________________________________________________________________</b></h1>
 
 <h6 class="mb-0"><b>PART A</b></h6>
-  <p class="mb-1"><b>Course Instructor Name:</b>
-    {% for instructor in pdfInstructor %}
-      {{instructor.user.firstName}} {{instructor.user.lastName}}
-    {% endfor %}
-    </p>
-  <p class="info-field"><b>Course Instructor Phone(s): </b>
-    {% for instructor in pdfInstructor %}
-      {{instructor.user.phoneNumber}}
-    {% endfor %}
-  </p>
-  <p class="info-field"><b>Full Course Name:</b> {{course.courseName}}</p>
-  {% set abbreviation = course.courseAbbreviation if course.courseAbbreviation != "" else "_________________________" %}
-  <p class="info-field"><b>Course Abbreviation/Number: </b>{{abbreviation}}</p>
-  <p class="info-field"><b>Credit: </b>{{course.courseCredit}}</p>
-  {% set designation = course.sectionDesignation if course.sectionDesignation != "" else "_________________________" %}
-  <p class="info-field"><b>Section Designation (if applicable):</b> {{designation}}</p>
-  {% set all = "Yes" if course.isAllSectionsServiceLearning else "No" %}
-  <p class="info-field"><b>Is service-learning included in all sections?</b> {{all}}</p>
-  <p class="info-field"><b>When will the course be offered?</b> {{course.term.description}}</p>
-  {% set occurrence = "Yes" if course.isRegularlyOccurring else "No" %}
-  <p class="info-field"><b>This course will be taught:</b> {{occurrence}}</p>
-
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <p class="mb-1"><b>Course Instructor Name:</b></p>
+      </td>
+      <td>
+        {% for instructor in pdfInstructor %}
+          {{instructor.user.firstName}} {{instructor.user.lastName}}
+        {% endfor %}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p class="info-field"><b>Course Instructor Phone(s): </b></p>
+      </td>
+      <td>
+        {% for instructor in pdfInstructor %}
+          {{instructor.user.phoneNumber}}
+        {% endfor %}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p class="info-field"><b>Full Course Name:</b> </p>
+      </td>
+      <td>
+        {{course.courseName}}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p class="info-field"><b>Course Abbreviation/Number: </b></p>
+      </td>
+      <td>
+        {% set abbreviation = course.courseAbbreviation if course.courseAbbreviation != "" else "_________________________" %}
+        {{abbreviation}}
+      </td>
+      <td>
+        <p class="info-field"><b>Credit: </b>{{course.courseCredit}}</p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        {% set designation = course.sectionDesignation if course.sectionDesignation != "" else "_________________________" %}
+        <p class="info-field"><b>Section Designation (if applicable):</b> </p>
+      </td>
+      <td>
+        {{designation}}
+      </td>
+      <td>
+        {% set all = "Yes" if course.isAllSectionsServiceLearning else "No" %}
+        <p class="info-field"><b>Is service-learning included in all sections?</b> {{all}}</p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p class="info-field"><b>When will the course be offered?</b></p>
+      </td>
+      <td>
+        {{course.term.description}}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        {% set occurrence = "Regularly" if course.isRegularlyOccurring else "On a one-time basis" %}
+        <p class="info-field"><b>This course will be taught:</b></p>
+      </td>
+      <td>
+        {{occurrence}}
+      </td>
+    </tr>
+  </tbody>
+</table>
   {% set component = "Yes" if course.hasSlcComponent else "No" %}
   <p class="info-field"><b>Will this course be taught with a significant service-learning component each time it is taught? </b> {{component}}</p>
 
   {% set permanent = "Yes" if course.isPermanentlyDesignated else "No" %}
-  <p class="info-field"><b><i>If yes, would you like for this course to have a permanent Service-Learning Course Designation (i.e., in the Course Catalog)? (A change in the Catalog description must be approved by COGE.)</i></b> {{permanent}}</p>
+  <p><b><i>If yes, would you like for this course to have a permanent Service-Learning Course Designation (i.e., in the Course Catalog)? (A change in the Catalog description must be approved by COGE.)</i></b> {{permanent}}</p>
   {% set previously = "Yes" if course.isPreviouslyApproved else "No" %}
   <p class="info-field"><b>Has this course previously been approved as a service-learning course?</b> {{previously}}</p>
-  <p class="info-field"><b>If yes, when was the course approved previously? Also, please describe the service-learning project you plan for the upcoming course, including indentification of the community partner organization(s).</b></p>
+  <p class="info-field"><b><i>If yes, when was the course approved previously? Also, please describe the service-learning project you plan for the upcoming course, including indentification of the community partner organization(s).</i></b></p>
   <p class="info-field">{{course.previouslyApprovedDescription}} </p>
 
   <p class="info-field"><b>Please attach the syllabus for the course.</b></p>
