@@ -222,14 +222,6 @@ def printCourse(courseID):
         pdfQuestions = (CourseQuestion.select().where(CourseQuestion.course == course))
         questionanswers = [question.questionContent for question in pdfQuestions]
 
-        # pdf = make_response(render_template('serviceLearning/slcFormPrint.html',
-        #                     course = course,
-        #                     pdfCourse = pdfCourse,
-        #                     pdfInstructor = pdfInstructor,
-        #                     pdfQuestions = pdfQuestions,
-        #                     questionanswers=questionanswers
-        #                     ))
-        # return(pdf)
         return render_template('serviceLearning/slcFormPrint.html',
                                 course = course,
                                 pdfCourse = pdfCourse,
@@ -238,7 +230,7 @@ def printCourse(courseID):
                                 questionanswers=questionanswers
                                 )
     except Exception as e:
-        flash("IT DIDNT WORK", 'warning')
+        flash("An error was encountered when printing, please try again.", 'warning')
         print(e)
         return(jsonify({"Success": False}))
 
