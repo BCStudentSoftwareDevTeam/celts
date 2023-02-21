@@ -378,7 +378,7 @@ programs = [
     },
     {
         "id": 5,
-        "programName": "Bonner Scholar",
+        "programName": "Bonner Scholars",
         "programUrl": "https://www.berea.edu/celts/bonner-scholars-program/",
         "programDescription": "The Bonner Scholars Program is a unique opportunity for students who want to combine a strong commitment to service with personal growth, teamwork, leadership development, and scholarship. Students who have completed an application for the Berea College class of 2026 may apply to be a Bonner Scholar.",
         "isStudentLed": False,
