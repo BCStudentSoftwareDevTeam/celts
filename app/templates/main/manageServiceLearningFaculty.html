@@ -58,7 +58,9 @@
               <tr>
                 <td>{{course.courseName}}</td>
                 <td>{{ course.instructors }}</td>
-                <td>{{course.status.status}}</td>
+                <td>
+                  <a class="status-key" id="statusKey" href="javascript:void(0);" data-toggle="popover" title="Status Key" data-content="{{course.status.status}}">{{course.status.status}}</a>
+                </td>
                 <td>
                   <select class="form-select courseData" id="{{course.id}}" onchange='changeAction(this)'>
                     <option value="---" disabled selected>Select Action</option>
@@ -91,7 +93,9 @@
               <tr>
                 <td>{{course.courseName}}</td>
                 <td>{{ course.instructors }}</td>
-                <td>{{course.status.status}}</td>
+                <td>
+                  <a class="status-key" id="statusKey" href="javascript:void(0);" data-toggle="popover" title="Status Key" data-content="{{course.status.status}}">{{course.status.status}}</a>
+                </td>
                 <td>
                   <select class="form-select" id="{{course.id}}" onchange='changeAction(this)'>
                     <option value="---" disabled selected>Select Action</option>

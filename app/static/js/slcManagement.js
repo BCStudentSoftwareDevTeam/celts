@@ -6,6 +6,21 @@ $(document).ready(function() {
   $("#withdrawBtn").on("click", function() {
     withdraw();
   });
+  var statusKey = $(".status-key");
+  statusKey.popover({
+    trigger: "hover",
+    sanitize: false,
+    html: true,
+    content: function() {
+      if ($(this).attr('data-content') == "Submitted") {
+        return "blah"
+      } else if ($(this).attr('data-content') == "Approved") {
+        return "Blah"
+      } else if ($(this).attr('data-content') == "In Progress") {
+        return "blah"
+      }
+    }
+  });
 });
 
 function changeAction(action){
