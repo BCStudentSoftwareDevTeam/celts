@@ -54,13 +54,13 @@ def withdrawProposal(courseID):
 def renewProposal(courseID, term):
     """
     Renews proposal of ID passed in for the selected term.
-    Sets status to incomplete.
+    Sets status to in progress.
     """
     oldCourse = Course.get_by_id(courseID)
     newCourse = Course.get_by_id(courseID)
     newCourse.id = None
     newCourse.term = Term.get_by_id(term)
-    newCourse.status = CourseStatus.INCOMPLETE
+    newCourse.status = CourseStatus.IN_PROGRESS
     newCourse.isPreviouslyApproved = True
     newCourse.save()
     questions = CourseQuestion.select().where(CourseQuestion.course==oldCourse)
