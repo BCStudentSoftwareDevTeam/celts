@@ -215,24 +215,30 @@ def printCourse(courseID):
     """
     This function will print a PDF of an SLC proposal.
     """
-    try:
-        course = Course.get_by_id(courseID)
-        pdfCourse = Course.select().where(Course.id == courseID)
-        pdfInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
-        pdfQuestions = (CourseQuestion.select().where(CourseQuestion.course == course))
-        questionanswers = [question.questionContent for question in pdfQuestions]
+    instructors = CourseInstructor.select().where(CourseInstructor.course==courseID)
+    courseInstructors = [instructor.user for instructor in instructors]
+    theCreator = Course.select().join(User).where(Course.createdBy.username, Course.id==courseID)
+    if g.current_user.isCeltsAdmin or g.current_user in courseInstructors or g.current_user in theCreator:
+        try:
+            course = Course.get_by_id(courseID)
+            pdfCourse = Course.select().where(Course.id == courseID)
+            pdfInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
+            pdfQuestions = (CourseQuestion.select().where(CourseQuestion.course == course))
+            questionanswers = [question.questionContent for question in pdfQuestions]
 
-        return render_template('serviceLearning/slcFormPrint.html',
-                                course = course,
-                                pdfCourse = pdfCourse,
-                                pdfInstructor = pdfInstructor,
-                                pdfQuestions = pdfQuestions,
-                                questionanswers=questionanswers
-                                )
-    except Exception as e:
-        flash("An error was encountered when printing, please try again.", 'warning')
-        print(e)
-        return(jsonify({"Success": False}))
+            return render_template('serviceLearning/slcFormPrint.html',
+                                    course = course,
+                                    pdfCourse = pdfCourse,
+                                    pdfInstructor = pdfInstructor,
+                                    pdfQuestions = pdfQuestions,
+                                    questionanswers=questionanswers
+                                    )
+        except Exception as e:
+            flash("An error was encountered when printing, please try again.", 'warning')
+            print(e)
+            return(jsonify({"Success": False}))
+    else:
+        abort(403)
 
 @serviceLearning_bp.route("/uploadCourseFile", methods=['GET', "POST"])
 def uploadCourseFile():
