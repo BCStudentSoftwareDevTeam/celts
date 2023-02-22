@@ -1,4 +1,5 @@
 from peewee import fn, JOIN
+import datetime
 from datetime import date
 from app.models.user import User
 from app.models.event import Event
@@ -59,13 +60,9 @@ def sendUserData(bnumber, eventId, programid):
 
 def checkUserRsvp(user,  event):
     participantRSvp = EventRsvp.get_or_none(EventRsvp.user==user, EventRsvp.event == event)
-     
-#if there's no EventRSVP record, student has not rsvp
-    if participantRSvp == "None": 
-        return False
-    else:    
-#if rsvp record exists and unrsvp is not None
-        if participantRSvp.unRsvpTime != None: 
+    #if there's no EventRSVP record, student has not rsvp
+    if participantRSvp is not None: 
+        if participantRSvp.unRsvpTime is not None: #if rsvp record exists and unrsvp is not None
             if participantRSvp.unRsvpTime > participantRSvp.rsvpTime:
                 return False
             else:
@@ -73,6 +70,8 @@ def checkUserRsvp(user,  event):
         else: 
 #if there's a record and unRsvptime is none, rsvp is true
             return True
+    else:    
+        return False
 
 def checkUserVolunteer(user,  event):
     return EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event).exists()
@@ -88,17 +87,23 @@ def addPersonToEvent(user, event):
     try:
         volunteerExists = checkUserVolunteer(user, event)
         rsvpExists = checkUserRsvp(user, event)
+        print("HEREEEEE RSVP exists", type(rsvpExists))
+        print(event.isPast)
         if event.isPast:
             if not volunteerExists:
                 eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
                 EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
         else:
+            print("Not past event")
             # Adding RSVP if the person has rsvp before 
-            if rsvpExists:
-                EventRsvp.update({EventRsvp.rsvpTime: datetime.datetime.now()}).where(EventRsvp.id == user, EventRsvp.event == event).execute()
-            else:
+            if rsvpExists == False: 
+                if EventRsvp.select().where(EventRsvp.user == user, EventRsvp.event == event).exists():
+                    print("HEREEEEEEEEEEEEEEEEEE to RSVP after unrsvp")
+                    EventRsvp.update({EventRsvp.rsvpTime: datetime.datetime.now()}).where(EventRsvp.user == user, EventRsvp.event == event).execute()
+                    print("Have already updated!")
+                else:
+                    EventRsvp.create(user = user, event = event)
 
-                EventRsvp.create(user = user, event = event)
         if volunteerExists or rsvpExists:
             return "already in"
     except Exception as e:

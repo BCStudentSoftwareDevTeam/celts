@@ -62,7 +62,7 @@ def events(selectedTerm, activeTab, programID):
         currentTerm = selectedTerm
     currentTime = datetime.datetime.now()
     listOfTerms = Term.select()
-    participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
+    participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user, EventRsvp.rsvpTime > EventRsvp.unRsvpTime)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
     term = Term.get_by_id(currentTerm)
     studentLedEvents = getStudentLedEvents(term)
@@ -281,6 +281,8 @@ def volunteerRegister():
     personAdded = False
     if isEligible:
         personAdded = addPersonToEvent(user, event)
+        print("HEREEEEEEE", personAdded)
+        
         if personAdded and listOfRequirements:
             reqListToString = ', '.join(listOfRequirements)
             flash(f"{user.firstName} {user.lastName} successfully registered. However, the following training may be required: {reqListToString}.", "success")
