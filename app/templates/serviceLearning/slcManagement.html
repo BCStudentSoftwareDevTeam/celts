@@ -31,7 +31,7 @@
           <td>{{courseDict[course]['faculty']|join(", ")}}</td>
           <td>{{courseDict[course]['term'].description}}</td>
           <td>
-            <a class="status-key" id="statusKey" href="javascript:void(0);" data-toggle="popover" title="Status Key" data-content="{{courseDict[course]['status']}}">{{courseDict[course]['status']}}</a>
+            <a class="status-key" id="statusKey" href="javascript:void(0);" data-toggle="popover" title="Status" data-content="{{courseDict[course]['status']}}">{{courseDict[course]['status']}}</a>
           </td>
           <td>
             <select class="form-select courseData" id="{{courseDict[course]['id']}}" onchange='changeAction(this)'>

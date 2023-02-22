@@ -13,11 +13,11 @@ $(document).ready(function() {
     html: true,
     content: function() {
       if ($(this).attr('data-content') == "Submitted") {
-        return "blah"
+        return "This proposal has been submitted and is waiting on CELTS review."
       } else if ($(this).attr('data-content') == "Approved") {
-        return "Blah"
+        return "This proposal has been approved by CELTS."
       } else if ($(this).attr('data-content') == "In Progress") {
-        return "blah"
+        return "This proposal has not been submitted for review."
       }
     }
   });
