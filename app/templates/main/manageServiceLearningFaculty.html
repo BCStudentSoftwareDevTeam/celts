@@ -5,7 +5,7 @@
   {{super()}}
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
   <script type="module" src="/static/js/manageServiceLearningFaculty.js"></script>
-  <script src="/static/js/courseManagement.js"></script>
+  <script src="/static/js/slcManagement.js"></script>
 {% endblock %}
 
 {% block styles %}
@@ -60,11 +60,12 @@
                 <td>{{ course.instructors }}</td>
                 <td>{{course.status.status}}</td>
                 <td>
-                  <select class="form-select courseData" id="{{course.id}}" onchange='executeCourseAction(this)'>
+                  <select class="form-select courseData" id="{{course.id}}" onchange='changeAction(this)'>
                     <option value="---" disabled selected>Select Action</option>
                     <option value="Review">Review</option>
                     <option value="View">View</option>
                     <option value="Edit">Edit</option>
+                    <option value="Print">Print</option>
                 </td>
               </tr>
               {% endfor %}
@@ -92,10 +93,11 @@
                 <td>{{ course.instructors }}</td>
                 <td>{{course.status.status}}</td>
                 <td>
-                  <select class="form-select" id="{{course.id}}" onchange='executeCourseAction(this)'>
+                  <select class="form-select" id="{{course.id}}" onchange='changeAction(this)'>
                     <option value="---" disabled selected>Select Action</option>
                     <option value="Review">Review</option>
                     <option value="View">View</option>
+                    <option value="Print">Print</option>
                 </td>
               </tr>
               {% endfor %}
