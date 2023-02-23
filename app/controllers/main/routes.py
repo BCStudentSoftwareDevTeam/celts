@@ -62,14 +62,17 @@ def events(selectedTerm, activeTab, programID):
         currentTerm = selectedTerm
     currentTime = datetime.datetime.now()
     listOfTerms = Term.select()
-    participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user, EventRsvp.rsvpTime > EventRsvp.unRsvpTime)
-    rsvpedEventsID = [event.event.id for event in participantRSVP]
+    # checkUserRsvp(g.current_user, )
+    rsvpedEventsID = []
+    participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
+    for event in participantRSVP:
+        if checkUserRsvp(g.current_user, event.event.id):
+            rsvpedEventsID.append(event.event.id)
     term = Term.get_by_id(currentTerm)
     studentLedEvents = getStudentLedEvents(term)
     trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
-
     return render_template("/events/event_list.html",
         selectedTerm = term,
         studentLedEvents = studentLedEvents,

@@ -87,20 +87,14 @@ def addPersonToEvent(user, event):
     try:
         volunteerExists = checkUserVolunteer(user, event)
         rsvpExists = checkUserRsvp(user, event)
-        print("HEREEEEE RSVP exists", type(rsvpExists))
-        print(event.isPast)
         if event.isPast:
             if not volunteerExists:
                 eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
                 EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
         else:
-            print("Not past event")
-            # Adding RSVP if the person has rsvp before 
             if rsvpExists == False: 
                 if EventRsvp.select().where(EventRsvp.user == user, EventRsvp.event == event).exists():
-                    print("HEREEEEEEEEEEEEEEEEEE to RSVP after unrsvp")
                     EventRsvp.update({EventRsvp.rsvpTime: datetime.datetime.now()}).where(EventRsvp.user == user, EventRsvp.event == event).execute()
-                    print("Have already updated!")
                 else:
                     EventRsvp.create(user = user, event = event)
 
