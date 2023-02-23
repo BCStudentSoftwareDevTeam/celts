@@ -8,9 +8,12 @@
 {% block app_content %}
 <input id="username" type="hidden" value='{{user.username}}'>
 <h1 class="text-center mb-2">{{user.firstName}} {{user.lastName}}'s SLC Proposals</h1>
-<p class="mb-0">If you would like to see the Service Learning Course Proposal form before starting, you can download it <a href="/static/files/serviceLearningProposalForm/slCourseDesignationProposalForm.doc">here</a>.</p>
-<p class="mb-0">For a copy of your proposal form, select the <b>Print</b> option using the <b>Action</b> menu.</p>
-<p class="mb-2">You can save and come back to a form at any time by clicking one of the <b>Save</b> buttons. </p>
+<div class="text-center">
+  <p class="mb-0">If you would like to see the Service-Learning Course Designation form before starting, you can download it <a href="/static/files/serviceLearningProposalForm/slCourseDesignationProposalForm.doc">here</a>.</p>
+  <p class="mb-0">You can save and come back to a form at any time by clicking one of the <b>Save</b> buttons. </p>
+  <p class="mb-2">For a copy of your proposal form, select the <b>Print</b> option using the <b>Action</b> menu.</p>
+
+</div>
 <div class="table-responsive" id="proposalTable">
   <table class="table table-striped">
     <thead>
@@ -31,7 +34,7 @@
           <td>{{courseDict[course]['faculty']|join(", ")}}</td>
           <td>{{courseDict[course]['term'].description}}</td>
           <td>
-            <a class="status-key" id="statusKey" href="javascript:void(0);" data-toggle="popover" title="Status" data-content="{{courseDict[course]['status']}}">{{courseDict[course]['status']}}</a>
+            <a class="status-key text-dark" id="statusKey" href="javascript:void(0);" data-toggle="popover" title="Status" data-content="{{courseDict[course]['status']}}">{{courseDict[course]['status']}}</a>
           </td>
           <td>
             <select class="form-select courseData" id="{{courseDict[course]['id']}}" onchange='changeAction(this)'>
