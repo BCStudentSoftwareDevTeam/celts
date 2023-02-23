@@ -72,10 +72,13 @@ function withdraw(){
 };
 function slcPrintPDF(courseID){
   var printProposal = window.open('/serviceLearning/print/' + courseID);
-  printProposal.print();
-  printProposal.onafterprint = function(){
-    printProposal.close()
-  }
+  setTimeout(function () {
+            printProposal.print();
+            var timeoutInterval = setInterval(function() {
+                printProposal.close();
+                clearInterval(timeoutInterval);
+            }, 30);
+        }, 30);
 }
 
 function changeTerm() {
