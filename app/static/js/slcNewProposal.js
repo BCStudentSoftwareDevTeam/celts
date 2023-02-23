@@ -253,12 +253,13 @@ function showTab(currentTab) {
         $("#submitAndApproveButton").show();
         $("#nextButton").text("Submit");
         $("#nextButton").show();
-        $("#saveContinue").text("Save for Later");
+        $("#saveContinue").text("Save and Exit");
         $("#saveExit").hide()
         if(readOnly()) {
             $("#nextButton").text("Next");
             $("#nextButton").hide();
-            $("#saveContinue").hide();
+            $("#saveContinue").show()
+            $("#saveContinue").text("Exit");
             $("#submitAndApproveButton").hide();
         }
         break;
