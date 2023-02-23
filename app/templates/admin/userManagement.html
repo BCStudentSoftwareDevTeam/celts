@@ -121,28 +121,31 @@
       </h3>
       {% set show = "show" if visibleAccordion == "program" else "" %}
       <div id="collapseThree" class="accordion-collapse collapse {{show}}" aria-labelledby="headingThree" data-bs-parent="#adminManagement">
-        <div class="accordion-body programData">
-          <table>
-            <tr>
-              <th>Program Name</th>
-              <th>Contact Email</th>
-              <th>Contact Name</th>
-              <th>Location</th>
-            </tr>
-            {% for program in programs %}
-            <form action="/admin/updateProgramInfo/{{program.id}}" method="POST">
+        <div class="accordion-body">
+          <div class="table-responsive">  
+            <table>
+              <tr>
+                <th>Program Name</th>
+                <th>Contact Email</th>
+                <th>Contact Name</th>
+                <th>Location</th>
+              </tr>
+              {% for program in programs %}
+              <form action="/admin/updateProgramInfo/{{program.id}}" method="POST">
                 <tr class="p-1">
-                    <td> <input type="text" name="programName" value ="{{program.programName}}" required> </td>
-                    <td><input type="text" name="contactEmail" value="{{program.contactEmail or ""}}"></td>
-                    <td><input type="text" name="contactName" value="{{program.contactName or ""}}"></td>
-                    <td><input type="text" name="location" value="{{program.defaultLocation or ""}}"></td>
-                    <td><button type="submit" class="btn btn-success w-101" role ="button">Update</button> </td>
+                  <td> <input type="text" name="programName" value ="{{program.programName}}" required> </td>
+                  <td><input type="text" name="contactEmail" value="{{program.contactEmail or ""}}"></td>
+                  <td><input type="text" name="contactName" value="{{program.contactName or ""}}"></td>
+                  <td><input type="text" name="location" value="{{program.defaultLocation or ""}}"></td>
+                  <td><button type="submit" class="btn btn-success w-101" role ="button">Update</button> </td>
                 </tr>
-                </form>
-            {% endfor %}
-        </table>
+              </form>
+              {% endfor %}
+          </table>
+        </div>
       </div>
     </div>
   </div>
+</div>
 
 {% endblock %}
