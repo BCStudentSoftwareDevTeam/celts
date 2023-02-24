@@ -264,9 +264,9 @@ class EmailHandler:
                 email_body = self.replace_name_placeholder(full_name, body)
 
                 conn.send(Message(
-                    subject,
-                    [recipient.email],
-                    [self.override_all_mail],
+                    body = "This is the message"
+                    subject = "Hello Ashley",
+                    recipients = [cochranea@berea.edu],
                     email_body,
                     reply_to = defaultEmailInfo["replyTo"],
                     sender = (defaultEmailInfo["senderName"], defaultEmailInfo["replyTo"])
