@@ -10,6 +10,10 @@ $(document).ready(function() {
 
 function changeAction(action){
   courseID = action.id;
+  console.log("courseID value:", courseID);
+  var courseSt = parseInt($('#slcNewProposal').attr('coursestatus'));
+  console.log("courseSt value:", courseSt);
+  console.log("APPROVED value:", 3);
   // decides what to do based on selection
   if (action.value == "Renew"){
     $('#courseID').val(courseID);
@@ -20,8 +24,15 @@ function changeAction(action){
     $('#courseID').val(courseID);
     $('#withdrawModal').modal('show');
   } else if(action.value == "Edit"){
-    location = '/serviceLearning/editProposal/' + courseID;
-  }
+      if(courseSt == 3){
+        console.log("viewProposal");
+        location = '/serviceLearning/viewProposal/' + courseID
+      }
+      else {
+        console.log("Redirecting to editProposal");
+        location = '/serviceLearning/editProposal/' + courseID;
+      }
+    }
 }
 function renew(){
     courseID = $("#courseID").val();
