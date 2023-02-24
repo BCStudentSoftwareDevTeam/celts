@@ -314,7 +314,7 @@ def RemoveRSVP():
     EventRsvp.update({EventRsvp.unRsvpTime: datetime.datetime.now()}).where(EventRsvp.id == currentRsvpParticipant).execute()
 
     # currentRsvpParticipant.delete_instance()
-    
+
     flash("Successfully unregistered for event!", "success")
     if 'from' in eventData:
         if eventData['from'] == 'ajax':

@@ -42,10 +42,9 @@ def trackVolunteersPage(eventID):
         abort(403)
     eventRsvpData = []
     rsvpEntries = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
-    #only count the most recent RSVP (for those who have unrsvped)
     for entry in rsvpEntries:
-        if checkUserRsvp(entry.user, entry.event):
-            eventRsvpData.append(entry)
+        eventRsvpData.append(entry)
+   
     eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
     participantsAndRsvp = (eventParticipantData + eventRsvpData)
     eventVolunteerData = []
