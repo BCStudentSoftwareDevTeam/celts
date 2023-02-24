@@ -9,7 +9,7 @@ from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours, addUserBackgroundCheck, setProgramManager
-from app.logic.participants import trainedParticipants, getEventParticipants, addPersonToEvent
+from app.logic.participants import trainedParticipants, getEventParticipants, addPersonToEvent, checkUserRsvp
 from app.logic.events import getPreviousRecurringEventData
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
@@ -40,8 +40,12 @@ def trackVolunteersPage(eventID):
     bannedUsers = [row.user for row in getBannedUsers(program)]
     if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
         abort(403)
-
-    eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
+    eventRsvpData = []
+    rsvpEntries = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
+    #only count the most recent RSVP (for those who have unrsvped)
+    for entry in rsvpEntries:
+        if checkUserRsvp(entry.user, entry.event):
+            eventRsvpData.append(entry)
     eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
     participantsAndRsvp = (eventParticipantData + eventRsvpData)
     eventVolunteerData = []
