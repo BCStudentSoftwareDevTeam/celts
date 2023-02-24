@@ -138,7 +138,7 @@ def getEventParticipants(event):
 
     return {p.user: p.hoursEarned for p in eventParticipants}
 
-def getUserParticipatedEvents(program, user, currentTerm):
+def getUserParticipatedTrainingEvents(program, user, currentTerm):
     """
     This function returns a dictionary of all trainings for a program and
     whether the current user participated in them.
@@ -156,7 +156,7 @@ def getUserParticipatedEvents(program, user, currentTerm):
                                       Event.term.academicYear == academicYear,
                                       EventParticipant.user.is_null(True) | (EventParticipant.user == user)))
 
-    userParticipatedEvents = {}
+    UserParticipatedTrainingEvents = {}
     for training in programTrainings.objects():
         if training.startDate > date.today():
             didParticipate = [None, training.startDate.strftime("%m/%d/%Y")]
@@ -164,5 +164,5 @@ def getUserParticipatedEvents(program, user, currentTerm):
             didParticipate = True
         else:
             didParticipate = False
-        userParticipatedEvents[training.name] = didParticipate
-    return userParticipatedEvents
+        UserParticipatedTrainingEvents[training.name] = didParticipate
+    return UserParticipatedTrainingEvents

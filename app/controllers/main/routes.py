@@ -25,7 +25,7 @@ from app.models.certification import Certification
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, updateDietInfo
-from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getUserParticipatedEvents, checkUserRsvp, addPersonToEvent
+from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getUserParticipatedTrainingEvents, checkUserRsvp, addPersonToEvent
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
@@ -123,12 +123,12 @@ def viewUsersProfile(username):
                                               ProgramBan.program == program,
                                               ProgramBan.endDate > datetime.datetime.now()).execute())
 
-            userParticipatedEvents = getUserParticipatedEvents(program, g.current_user, g.current_term)
-            allTrainingsComplete = not len([event for event in userParticipatedEvents.values() if event != True])
+            UserParticipatedTrainingEvents = getUserParticipatedTrainingEvents(program, g.current_user, g.current_term)
+            allTrainingsComplete = not len([event for event in UserParticipatedTrainingEvents.values() if event != True])
             noteForDict = notes[-1].banNote.noteContent if notes else ""
             eligibilityTable.append({"program": program,
                                    "completedTraining": allTrainingsComplete,
-                                   "trainingList": userParticipatedEvents,
+                                   "trainingList": UserParticipatedTrainingEvents,
                                    "isNotBanned": True if not notes else False,
                                    "banNote": noteForDict})
         profileNotes = ProfileNote.select().where(ProfileNote.user == volunteer)
