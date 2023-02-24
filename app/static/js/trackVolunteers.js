@@ -128,14 +128,4 @@ $(document).ready(function() {
     })
   }
 
-$("#trackVolunteerBtn").click(function() {
-  var event = $("#volunteerTable").attr("name");
-  if (event.unRsvpTime > event.rsvpTime) {
-    console.log("nopee");
-  } else {
-    console.log("yeppp");
-  }
-  // console.log(event);
-});
-
 })
