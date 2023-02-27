@@ -72,7 +72,7 @@
     <tbody class="align-middle" id="volunteerTable">
     {% if eventVolunteerData %}
       {% for participant in eventVolunteerData %}
-        <tr class="{% if participant.unRsvpTime == None %}" "{% elif participant.rsvpTime.strftime('%b %-d %-I:%M %S %p') < participant.unRsvpTime.strftime('%b %-d %-I:%M %S %p') %}table-secondary{% endif %}" data-toggle="popover">
+        <tr class="{% if participant.unRsvpTime == None %}" "{% elif participant.rsvpTime.strftime('%b %-d %-I:%M:%S %p') < participant.unRsvpTime.strftime('%b %-d %-I:%M:%S %p') %}table-secondary{% endif %}" data-toggle="popover">
           {% if (not event.isPast) and (event.isRsvpRequired)  %}
             <td>
               {# This only works because we are assuming that all participants are RSVP entries #}
