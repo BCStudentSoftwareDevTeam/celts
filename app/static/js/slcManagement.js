@@ -75,10 +75,10 @@ function slcPrintPDF(courseID){
   setTimeout(function () {
             printProposal.print();
             var timeoutInterval = setInterval(function() {
-                printProposal.close();
-                clearInterval(timeoutInterval);
+              printProposal.close();
+              //not clearing the interval on purpose becuase firefox needs it to repeat
             }, 30);
-        }, 30);
+        }, 100);
 }
 
 function changeTerm() {
