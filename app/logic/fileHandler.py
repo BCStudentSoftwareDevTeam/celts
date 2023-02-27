@@ -48,7 +48,6 @@ class FileHandler:
                         AttachmentUpload.create(course = self.courseId, fileName = file.filename)
                         file.save(self.getFileFullPath(newfile = file)) # saves attachment in directory
         except AttributeError: # will pass if there is no attachment to save
-            return False
             pass
 
     def retrievePath(self,files):
@@ -60,7 +59,7 @@ class FileHandler:
 
     def deleteFile(self, fileId):
         """
-        Deletes attachmant from the app/static/files/eventattachments/ or courseattachements/ directory
+        Deletes attachmant from the app/static/files/eventattachments/ or courseattachments/ directory
         """
         try:
             file = AttachmentUpload.get_by_id(fileId)

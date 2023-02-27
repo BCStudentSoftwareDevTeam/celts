@@ -10,6 +10,7 @@ from app.models.note import Note
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.term import Term
 from app.logic.adminLogs import createLog
+from app.logic.fileHandler import FileHandler
 
 def getServiceLearningCoursesData(user):
     """Returns dictionary with data used to populate Service-Learning proposal table"""
@@ -40,6 +41,15 @@ def withdrawProposal(courseID):
     """Withdraws proposal of ID passed in. Removes foreign keys first.
     Key Dependencies: QuestionNote, CourseQuestion, CourseParticipant,
     CourseInstructor, Note"""
+
+    # delete syllabus
+    try:
+        syllabus = AttachmentUpload.select().where(AttachmentUpload.course==courseID).get()
+        FileHandler(courseId = courseID).deleteFile(syllabus.id)
+    except:
+        pass
+
+    # delete course object
     course = Course.get(Course.id == courseID)
     courseName = course.courseName
     questions = CourseQuestion.select().where(CourseQuestion.course == course)
@@ -50,6 +60,7 @@ def withdrawProposal(courseID):
     course.delete_instance(recursive=True)
     for note in notes:
         note.delete_instance()
+
     createLog(f"Withdrew SLC proposal: {courseName}")
 
 def renewProposal(courseID, term):
