@@ -190,7 +190,7 @@ $(document).ready(function(){
       }
     })
   });
-  // Popover functionalitie
+  // Popover functionalities
     var requiredTraining = $(".trainingPopover");
     requiredTraining.popover({
        trigger: "hover",

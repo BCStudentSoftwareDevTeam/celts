@@ -128,4 +128,14 @@ $(document).ready(function() {
     })
   }
 
+  var rsvpHistory = $(".rsvpPopover");
+  rsvpHistory.popover({
+     trigger: "hover",
+     sanitize: false,
+     html: true,
+     content: function() {
+          return $(this).attr('data-content');
+      }
+  });
+
 })

@@ -76,7 +76,7 @@
           {% if (not event.isPast) and (event.isRsvpRequired)  %}
             <td>
               {# This only works because we are assuming that all participants are RSVP entries #}
-              {{ participant.rsvpTime.strftime('%b %-d %-I:%M %p') }}
+              <a class="rsvpPopover" id="rsvpTinme" href="javascript:void(0);" data-toggle="popover" title="RSVP History" data-content=" ">{{ participant.rsvpTime.strftime('%b %-d %-I:%M %p') }}</a>
             </td>
           {% endif %}
           <td>
