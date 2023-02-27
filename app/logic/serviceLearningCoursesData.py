@@ -7,6 +7,7 @@ from app.models.courseStatus import CourseStatus
 from app.models.courseQuestion import CourseQuestion
 from app.models.questionNote import QuestionNote
 from app.models.note import Note
+from app.models.attachmentUpload import AttachmentUpload
 from app.models.term import Term
 from app.logic.adminLogs import createLog
 

@@ -8,7 +8,7 @@ from app.models.course import Course
 from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseQuestion import CourseQuestion
-from app.models.eventFile import EventFile
+from app.models.attachmentUpload import AttachmentUpload
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.fileHandler import FileHandler
 from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal, renewProposal
@@ -49,7 +49,7 @@ def slcEditProposal(courseID):
     questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
     questionanswers = [question.questionContent for question in questionData]
     courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
-    associatedAttachments = EventFile.select().where(EventFile.course == course.id)
+    associatedAttachments = AttachmentUpload.select().where(AttachmentUpload.course == course.id)
 
     filepaths = FileHandler(courseId=course.id).retrievePath(associatedAttachments)
     isAllSectionsServiceLearning = ""
@@ -255,8 +255,8 @@ def uploadCourseFile():
 @serviceLearning_bp.route("/deleteCourseFile", methods=["POST"])
 def deleteCourseFile():
     fileData= request.form
-    eventfile=FileHandler(courseId=fileData["courseId"])
-    eventfile.deleteFile(fileData["fileId"])
+    courseFile=FileHandler(courseId=fileData["courseId"])
+    courseFile.deleteFile(fileData["fileId"])
     return ""
 
 @serviceLearning_bp.route('/serviceLearning/sendRecommendation/<termID>', methods = ['GET'])

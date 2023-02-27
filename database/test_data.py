@@ -27,7 +27,7 @@ from app.models.backgroundCheck import BackgroundCheck
 # from app.models.backgroundCheckType import BackgroundCheckType
 from app.models.adminLogs import AdminLogs
 from app.models.emailLog import EmailLog
-from app.models.eventFile import EventFile
+from app.models.attachmentUpload import AttachmentUpload
 from app.models.certification import Certification
 from app.models.certificationRequirement import CertificationRequirement
 
@@ -1159,7 +1159,7 @@ files = [
     "fileName" : "adfsfdhqwre_;ldgfk####l;kgfdg.jpg"
     }
 ]
-EventFile.insert_many(files).on_conflict_replace().execute()
+AttachmentUpload.insert_many(files).on_conflict_replace().execute()
 
 profileNotes = [
     {

@@ -3,7 +3,7 @@ import os
 from werkzeug.datastructures import FileStorage
 
 from app import app
-from app.models.eventFile import EventFile
+from app.models.attachmentUpload import AttachmentUpload
 from app.models.event import Event
 from app.logic.fileHandler import FileHandler
 
@@ -31,22 +31,22 @@ def test_getFileFullPath():
 def test_saveFiles():
     # test event
     handledEventFile.saveFiles()
-    assert EventFile.select().where(EventFile.fileName == 'eventfile.pdf').exists()
+    assert AttachmentUpload.select().where(AttachmentUpload.fileName == 'eventfile.pdf').exists()
     
     # test course
     handledCourseFile.saveFiles()
-    assert EventFile.select().where(EventFile.fileName == 'coursefile.pdf').exists()
+    assert AttachmentUpload.select().where(AttachmentUpload.fileName == 'coursefile.pdf').exists()
 
 @pytest.mark.integration
 def test_retrievePath():
     # test event
-    eventfiles= EventFile.select().where(EventFile.event == 15)
+    eventfiles= AttachmentUpload.select().where(AttachmentUpload.event == 15)
     paths = handledEventFile.retrievePath(eventfiles)
     path = paths["eventfile.pdf"][0]
     assert path =='/static/files/eventattachments/15/eventfile.pdf'
 
     # test course
-    coursefiles= EventFile.select().where(EventFile.course == 1)
+    coursefiles= AttachmentUpload.select().where(AttachmentUpload.course == 1)
     paths = handledCourseFile.retrievePath(coursefiles)
     path = paths["coursefile.pdf"][0]
     assert path =='/static/files/courseattachments/1/coursefile.pdf'
@@ -54,7 +54,7 @@ def test_retrievePath():
 @pytest.mark.integration
 def test_deleteFile():
     # test file
-    eventfiles= EventFile.select().where(EventFile.event == 15)
+    eventfiles= AttachmentUpload.select().where(AttachmentUpload.event == 15)
     pathDictionary = handledEventFile.retrievePath(eventfiles)
     fileId = pathDictionary["eventfile.pdf"][1]
     path = pathDictionary["eventfile.pdf"][0]
@@ -62,7 +62,7 @@ def test_deleteFile():
     assert os.path.exists(path)==False
 
     # test course
-    coursefiles= EventFile.select().where(EventFile.course == 1)
+    coursefiles= AttachmentUpload.select().where(AttachmentUpload.course == 1)
     pathDictionary = handledCourseFile.retrievePath(coursefiles)
     fileId = pathDictionary["coursefile.pdf"][1]
     path = pathDictionary["coursefile.pdf"][0]

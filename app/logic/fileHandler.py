@@ -1,7 +1,7 @@
 import os
 from flask import redirect, url_for
 from app import app
-from app.models.eventFile import EventFile
+from app.models.attachmentUpload import AttachmentUpload
 
 class FileHandler:
     def __init__(self,files=None, courseId=None, eventId=None):
@@ -38,14 +38,14 @@ class FileHandler:
         try:
             for file in self.files:
                 if self.eventId:
-                    isFileInEvent = EventFile.select().where(EventFile.event == self.eventId, EventFile.fileName == file.filename).exists()
+                    isFileInEvent = AttachmentUpload.select().where(AttachmentUpload.event == self.eventId, AttachmentUpload.fileName == file.filename).exists()
                     if not isFileInEvent:
-                        EventFile.create(event = self.eventId, fileName = file.filename)
+                        AttachmentUpload.create(event = self.eventId, fileName = file.filename)
                         file.save(self.getFileFullPath(newfile = file)) # saves attachment in directory
                 elif self.courseId:
-                    isFileInCourse = EventFile.select().where(EventFile.course == self.courseId, EventFile.fileName == file.filename).exists()
+                    isFileInCourse = AttachmentUpload.select().where(AttachmentUpload.course == self.courseId, AttachmentUpload.fileName == file.filename).exists()
                     if not isFileInCourse:
-                        EventFile.create(course = self.courseId, fileName = file.filename)
+                        AttachmentUpload.create(course = self.courseId, fileName = file.filename)
                         file.save(self.getFileFullPath(newfile = file)) # saves attachment in directory
         except AttributeError: # will pass if there is no attachment to save
             return False
@@ -63,7 +63,7 @@ class FileHandler:
         Deletes attachmant from the app/static/files/eventattachments/ or courseattachements/ directory
         """
         try:
-            file = EventFile.get_by_id(fileId)
+            file = AttachmentUpload.get_by_id(fileId)
             path = os.path.join(self.path, file.fileName)
             os.remove(path)
             file.delete_instance()

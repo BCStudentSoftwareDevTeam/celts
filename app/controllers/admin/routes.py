@@ -11,7 +11,7 @@ from app.models.event import Event
 from app.models.user import User
 from app.models.eventTemplate import EventTemplate
 from app.models.adminLogs import AdminLogs
-from app.models.eventFile import EventFile
+from app.models.attachmentUpload import AttachmentUpload
 from app.models.bonnerCohort import BonnerCohort
 from app.models.certification import Certification
 
@@ -149,7 +149,7 @@ def eventDisplay(eventId):
         abort(403)
 
     eventData = model_to_dict(event, recurse=False)
-    associatedAttachments = EventFile.select().where(EventFile.event == event)
+    associatedAttachments = AttachmentUpload.select().where(AttachmentUpload.event == event)
 
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
