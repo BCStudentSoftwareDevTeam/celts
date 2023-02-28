@@ -179,6 +179,7 @@ function disableInput() {
     $("#slcQuestionFive").replaceWith( "<ul>" + $( "#slcQuestionFive" ).text() + "</ul>" );
     $("#slcQuestionSix").replaceWith( "<ul>" + $( "#slcQuestionSix" ).text() + "</ul>" );
     $(".view").prop("disabled", true);
+    $("#syllabusUploadButton").prop("disabled", true);
     $("#submitAndApproveButton").hide();
     $(".editButton").hide()
     $(".removeButton").hide()
