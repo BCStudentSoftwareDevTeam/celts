@@ -24,6 +24,17 @@ $(document).ready(function(e) {
         });
     });
     $("#syllabusUploadButton").on("click", function() {
+      var bloo = $("form").serialize()
+      var instruct = $.param({"instructor": getCourseInstructors()})
+      $.ajax({
+          url: '/serviceLearning/saveProposal',
+          type: "POST",
+          data: bloo + "&" + instruct,
+          success: console.log("hello"),
+          error: function(request, status, error) {
+           msgFlash("Error saving changes!", "danger")
+         }
+    });
       $("#syllabusUploadModal").modal("toggle")
     })
     $("#attachmentObject").fileinput({
