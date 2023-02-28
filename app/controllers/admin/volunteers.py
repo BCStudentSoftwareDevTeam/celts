@@ -33,11 +33,12 @@ def trackVolunteersPage(eventID):
         print(f"No event found for {eventID}")
         abort(404)
 
-    program = event.singleProgram
-    trainedParticipantsList = trainedParticipants(program, g.current_term)
+    eventData = model_to_dict(event, recurse=False)
+    eventData["program"] = event.singleProgram
+    trainedParticipantsList = trainedParticipants(event.singleProgram, g.current_term)
     eventParticipants = getEventParticipants(event)
     isProgramManager = g.current_user.isProgramManagerForEvent(event)
-    bannedUsers = [row.user for row in getBannedUsers(program)]
+    bannedUsers = [row.user for row in getBannedUsers(event.singleProgram)]
     if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
         abort(403)
 
@@ -57,10 +58,10 @@ def trackVolunteersPage(eventID):
     recurringVolunteers = getPreviousRecurringEventData(recurringEventID)
 
     return render_template("/events/trackVolunteers.html",
+        eventData = eventData,
         eventVolunteerData = eventVolunteerData,
         eventParticipants = eventParticipants,
         eventLength = eventLengthInHours,
-        program = program,
         event = event,
         recurringEventID = recurringEventID,
         recurringEventStartDate = recurringEventStartDate,

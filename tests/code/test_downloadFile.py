@@ -7,7 +7,7 @@ from app.logic.downloadFile import fileMaker
 from app.models.course import Course
 from app.models import mainDB
 
-designator = "sendRecommendation"
+designator = "downloadApprovedCourses"
 csvInfo = approvedCourses(4)
 fileFormat = {"headers":["Course Name", "Course Number", "Faculty", "Term"]}
 

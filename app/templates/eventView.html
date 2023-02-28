@@ -16,7 +16,7 @@
           <h3>{{eventData["program"].programName}} Event</h3>
         {% endif %}
     {% if isPastEvent %}
-        <div class="alert alert-danger" role="alert">This event is in the past.</div>
+        <div class="alert-danger pb-2 pt-2" role="alert">This event is in the past.</div>
     {% endif %}
     </div>
     {% if g.current_user.isCeltsAdmin or isProgramManager %}

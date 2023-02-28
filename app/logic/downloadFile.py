@@ -26,7 +26,7 @@ class fileMaker:
         Creates the file
         '''
         try:
-            if self.designator == "sendRecommendation":
+            if self.designator == "downloadApprovedCourses":
                 if fileType == "CSV":
                     with open(self.relativePath + "/ApprovedCourses.csv", 'w', encoding='utf-8', errors="backslashreplace") as csvfile:
                         self.filewriter = csv.writer(csvfile, delimiter = ',')
