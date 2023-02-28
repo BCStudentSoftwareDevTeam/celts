@@ -1,5 +1,4 @@
 $(document).ready(function(){
-  $("#bonnerInput").val("off")
   $("#phoneInput").inputmask('(999)-999-9999');
   $(".notifyInput").click(function updateInterest(){
     var programID = $(this).data("programid");
@@ -67,12 +66,7 @@ $(document).ready(function(){
 
   $("#addBonnerNoteButton").click(function() {
     $("#noteModal").modal("toggle");
-  });
-
-  $("#bonnerInput").click(function() {
-    $("#bonnerInput").val(
-      $("#bonnerInput").val()== "on" ? "off" : "on"
-    )
+    $("#bonnerInput").attr("checked", true)
   });
 
   $('#addNoteForm').submit(function(event) {
@@ -84,7 +78,7 @@ $(document).ready(function(){
       data: {"username": username,
              "visibility": $("#noteDropdown").val(),
              "noteTextbox": $("#addNoteTextArea").val(),
-             "bonner": $("#bonnerInput").val()=="on"? "on":"off"},
+             "bonner": $("#bonnerInput").is(":checked") ? "yes":"no"},
       success: function(response) {
         reloadWithAccordion("notes")
       }
