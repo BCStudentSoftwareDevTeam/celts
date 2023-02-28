@@ -112,8 +112,8 @@
       {% if term.isCurrentTerm or term.isFutureTerm %}
       <div class="col">
         <div class="float-end">
-          <form method="GET" action="/serviceLearning/sendRecommendation/{{term.id}}">
-            <button class="btn btn-primary {{downloadAndSend}}" id="sendRecommendationBtn" value="{{term.id}}">Download File</button>
+          <form method="GET" action="/serviceLearning/downloadApprovedCourses/{{term.id}}">
+            <button class="btn btn-primary {{downloadAndSend}}" id="downloadApprovedCoursesBtn" value="{{term.id}}">Download File</button>
           </form>
         </div>
           <div class="float-end">
