@@ -84,11 +84,11 @@
     {% endmacro %}
     {% if eventVolunteerData %}
       {% for participant in eventVolunteerData %}
-        <tr class="{% if participant.unRsvpTime == None %}" "{% elif participant.rsvpTime.strftime('%b %-d %-I:%M:%S %p') < participant.unRsvpTime.strftime('%b %-d %-I:%M:%S %p') %}table-secondary{% endif %}" data-toggle="popover">
+        <tr class="{% if participant.unRsvpTime == None or participant.rsvpTime.strftime('%b %-d %-I:%M:%S %p') > participant.unRsvpTime.strftime('%b %-d %-I:%M:%S %p') %}" "{% elif participant.rsvpTime.strftime('%b %-d %-I:%M:%S %p') < participant.unRsvpTime.strftime('%b %-d %-I:%M:%S %p')%}table-secondary{% endif %}" data-toggle="popover">
           {% if (not event.isPast) and (event.isRsvpRequired)  %}
             <td>
               {# This only works because we are assuming that all participants are RSVP entries #}
-              <a class="rsvpPopover" id="rsvpTinme" href="javascript:void(0);" data-toggle="popover" title="RSVP History" data-content="{{rsvpHistoryData(participant.user)}}">{{ participant.rsvpTime.strftime('%b %-d %-I:%M %p') }}</a>
+              <a class="rsvpPopover" id="rsvpTinme" href="javascript:void(0);" data-toggle="popover" title="RSVP History" data-content="{{rsvpHistoryData(participant.user)}}">{% if participant.unRsvpTime == None or participant.rsvpTime.strftime('%b %-d %-I:%M:%S %p') > participant.unRsvpTime.strftime('%b %-d %-I:%M:%S %p') %} {{participant.rsvpTime.strftime('%b %-d %-I:%M %p')}} {% elif participant.rsvpTime.strftime('%b %-d %-I:%M:%S %p') < participant.unRsvpTime.strftime('%b %-d %-I:%M:%S %p') %}{{participant.unRsvpTime.strftime('%b %-d %-I:%M:%S %p')}}{% endif %}</a>
             </td>
           {% endif %}
           <td>
