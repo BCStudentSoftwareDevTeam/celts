@@ -70,13 +70,25 @@
       </tr>
     </thead>
     <tbody class="align-middle" id="volunteerTable">
+    {% macro rsvpHistoryData(volunteerUser) %}
+      {% if eventVolunteerData %}
+        {% for volunteer in eventVolunteerData %}
+          {% if volunteerUser == volunteer.user %}
+            <p>{{volunteer.user.firstName}}'s last rsvp was on {{volunteer.rsvpTime.strftime('%b %-d %-I:%M %p')}}</p>
+            {% if volunteer.unRsvpTime != None %}
+              <p>{{volunteer.user.firstName}} last unrsvp was on {{volunteer.unRsvpTime.strftime('%b %-d %-I:%M %p')}}</p>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endmacro %}
     {% if eventVolunteerData %}
       {% for participant in eventVolunteerData %}
         <tr class="{% if participant.unRsvpTime == None %}" "{% elif participant.rsvpTime.strftime('%b %-d %-I:%M:%S %p') < participant.unRsvpTime.strftime('%b %-d %-I:%M:%S %p') %}table-secondary{% endif %}" data-toggle="popover">
           {% if (not event.isPast) and (event.isRsvpRequired)  %}
             <td>
               {# This only works because we are assuming that all participants are RSVP entries #}
-              <a class="rsvpPopover" id="rsvpTinme" href="javascript:void(0);" data-toggle="popover" title="RSVP History" data-content=" ">{{ participant.rsvpTime.strftime('%b %-d %-I:%M %p') }}</a>
+              <a class="rsvpPopover" id="rsvpTinme" href="javascript:void(0);" data-toggle="popover" title="RSVP History" data-content="{{rsvpHistoryData(participant.user)}}">{{ participant.rsvpTime.strftime('%b %-d %-I:%M %p') }}</a>
             </td>
           {% endif %}
           <td>
