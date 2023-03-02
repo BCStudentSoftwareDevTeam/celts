@@ -164,7 +164,7 @@ def addNote():
     """
     postData = request.form
     try:
-        note = addProfileNote(postData["visibility"], postData["bonner"] == "on", postData["noteTextbox"], postData["username"])
+        note = addProfileNote(postData["visibility"], postData["bonner"] == "yes", postData["noteTextbox"], postData["username"])
         flash("Successfully added profile note", "success")
         return redirect(url_for("main.viewUsersProfile", username=postData["username"]))
     except Exception as e:
@@ -431,7 +431,7 @@ def getDietInfo():
     dietaryInfo = request.form
     user = dietaryInfo["user"]
     dietInfo = dietaryInfo["dietInfo"]
-
-    updateDietInfo(user, dietInfo)
+    if (g.current_user.username == user) or g.current_user.isAdmin:
+        updateDietInfo(user, dietInfo)
 
     return " "
