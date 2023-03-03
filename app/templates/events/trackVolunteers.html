@@ -80,9 +80,9 @@
       {% if eventVolunteerData %}
         {% for volunteer in eventVolunteerData %}
           {% if volunteerUser == volunteer.user %}
-            <p>{{volunteer.user.firstName}}'s last rsvp was on {{volunteer.rsvpTime.strftime('%b %-d %-I:%M %p')}}</p>
+            <p>{{volunteer.user.firstName}}'s last RSVP was on {{volunteer.rsvpTime.strftime('%b %-d %-I:%M%S %p')}}</p>
             {% if volunteer.unRsvpTime != None %}
-              <p>{{volunteer.user.firstName}} last unrsvp was on {{volunteer.unRsvpTime.strftime('%b %-d %-I:%M %p')}}</p>
+              <p>{{volunteer.user.firstName}} last unRSVP was on {{volunteer.unRsvpTime.strftime('%b %-d %-I:%M%S %p')}}</p>
             {% endif %}
           {% endif %}
         {% endfor %}
@@ -90,11 +90,18 @@
     {% endmacro %}
     {% if eventVolunteerData %}
       {% for participant in eventVolunteerData %}
-        <tr class="{% if participant.unRsvpTime == None or participant.rsvpTime.strftime('%b %-d %-I:%M:%S %p') > participant.unRsvpTime.strftime('%b %-d %-I:%M:%S %p') %}" "{% elif participant.rsvpTime.strftime('%b %-d %-I:%M:%S %p') < participant.unRsvpTime.strftime('%b %-d %-I:%M:%S %p')%}table-secondary{% endif %}" data-toggle="popover">
+      {%if participant.unRsvpTime != None %}
+        {%if participant.rsvpTime.strftime('%b %-d %-I:%M:%S %p') > participant.unRsvpTime.strftime('%b %-d %-I:%M:%S %p')%}
+          {%set rsvped = true %}
+        {% elif participant.rsvpTime.strftime('%b %-d %-I:%M:%S %p') < participant.unRsvpTime.strftime('%b %-d %-I:%M:%S %p')%}
+          {%set rsvped = false %}
+        {% endif %}
+      {% endif %}
+        <tr class="{% if participant.unRsvpTime == None or rsvped == true %}" "{% elif rsvped == false %}table-secondary{% endif %}" data-toggle="popover">
           {% if (not event.isPast) and (event.isRsvpRequired)  %}
             <td>
               {# This only works because we are assuming that all participants are RSVP entries #}
-              <a class="rsvpPopover" id="rsvpTinme" href="javascript:void(0);" data-toggle="popover" title="RSVP History" data-content="{{rsvpHistoryData(participant.user)}}">{% if participant.unRsvpTime == None or participant.rsvpTime.strftime('%b %-d %-I:%M:%S %p') > participant.unRsvpTime.strftime('%b %-d %-I:%M:%S %p') %} {{participant.rsvpTime.strftime('%b %-d %-I:%M %p')}} {% elif participant.rsvpTime.strftime('%b %-d %-I:%M:%S %p') < participant.unRsvpTime.strftime('%b %-d %-I:%M:%S %p') %}{{participant.unRsvpTime.strftime('%b %-d %-I:%M:%S %p')}}{% endif %}</a>
+              <a class="rsvpPopover" id="rsvpTinme" href="javascript:void(0);" data-toggle="popover" title="RSVP History" data-content="{{rsvpHistoryData(participant.user)}}">{% if participant.unRsvpTime == None or rsvped == true %} {{participant.rsvpTime.strftime('%b %-d %-I:%M%S %p')}} {% elif rsvped == false %}{{participant.unRsvpTime.strftime('%b %-d %-I:%M:%S %p')}}{% endif %}</a>
             </td>
           {% endif %}
           <td>
