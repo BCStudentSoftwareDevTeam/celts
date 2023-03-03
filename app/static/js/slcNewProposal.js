@@ -246,6 +246,7 @@ function showTab(currentTab) {
             $("#nextButton").show();
             $("#saveContinue").hide();
             $("#saveExit").hide()
+            $(".removeAttachment").hide()
 
         }
         break;
