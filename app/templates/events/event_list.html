@@ -55,6 +55,7 @@
 
 {% macro createTable(events, type) %}
 {% if events|count %}
+
 <div class="table-responsive">
   <table class="table ">
     <thead>
@@ -69,8 +70,11 @@
         <th scope="col"></th>
       </tr>
     </thead>
+    {% if not events[0].isPast %}
+
     <tbody>
         {% for event in events %}
+        
         {% if event and not event.isPast %}
             {% if type != "bonner" and type != "studentLed" %}
               {% if event.singleProgram%}
@@ -109,9 +113,17 @@
           {% endif %}
         {% endfor %}
      </tbody>
+     {% else %}
+     <tbody>
+       
+        <p>No upcoming events for this term</p>
+     
+     </tbody>
+     {% endif %}
   </table>
   {% if user.isCeltsStudentStaff or user.isAdmin %}
-  <button class="toggle-table text-primary border border-primary border-2">Past Events</button>
+  {% if events[-1].isPast %}
+  <button class="toggle-table col-md-12 p-300 text-secondary border border-secondary border-2">Past Events</button>
   <table class="table d-none">
    <thead>
      <tr>
@@ -160,11 +172,11 @@
           </td>
         {% endif %}
       </tr>
-      
       {% endif %}
      {% endfor %}
    </tbody>
   </table>
+  {% endif %}
  {% endif %}
 </div>
 {% else %}
