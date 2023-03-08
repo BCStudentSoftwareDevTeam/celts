@@ -150,6 +150,7 @@ def saveEventToDb(newEventData):
                     "isService": newEventData['isService'],
                     "startDate": eventInstance['date'],
                     "isAllVolunteerTraining": newEventData['isAllVolunteerTraining'],
+                    "rsvpLimit": newEventData['rsvpLimit'],
                     "endDate": eventInstance['date'],
                     "contactEmail": newEventData['contactEmail'],
                     "contactName": newEventData['contactName']
@@ -264,7 +265,7 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now(), program=None):
 
     if program:
         events = events.where(ProgramEvent.program == program)
-    
+
     events = events.order_by(Event.startDate, Event.name)
 
     events_list = []
