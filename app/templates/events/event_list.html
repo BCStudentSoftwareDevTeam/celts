@@ -80,19 +80,19 @@
         {% if event and not event.isPast %}
             {% if type != "bonner" and type != "studentLed" %}
               {% if event.singleProgram%}
-                <td  class=text-primary>{{event.singleProgram.programName}}</td>
+                <td  class="text-primary">{{event.singleProgram.programName}}</td>
               {% else %}
-                <td  class=text-primary >This event does not belong to any program.</td>
+                <td  class="text-primary" >This event does not belong to any program.</td>
               {% endif %}
             {% endif %}
             {% if user.isCeltsAdmin or user.isProgramManagerFor(event.singleProgram)%}
-              <td> <a href="/eventsList/{{event.id}}/edit" class=text-primary>{{event.name}}</a></td>
+              <td> <a href="/eventsList/{{event.id}}/edit" class="text-primary">{{event.name}}</a></td>
             {% else %}
-              <td> <a href="/eventsList/{{event.id}}/view" class=text-primary>{{event.name}}</a></td>
+              <td> <a href="/eventsList/{{event.id}}/view" class="text-primary">{{event.name}}</a></td>
             {% endif %}
-            <td nowrap  class=text-primary >{{event.startDate.strftime('%m/%d/%Y')}}</td>
-            <td nowrap  class=text-primary >{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
-            <td  class=text-primary>{{event.location}}</td>
+            <td nowrap  class="text-primary" >{{event.startDate.strftime('%m/%d/%Y')}}</td>
+            <td nowrap  class="text-primary" >{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
+            <td  class="text-primary">{{event.location}}</td>
             {% if user.isAdmin %}
               <td>
                 {% if event.isPast %}
@@ -140,19 +140,19 @@
        <tr class="table-secondary">
         {% if type != "bonner" and type != "studentLed" %}
           {% if event.singleProgram%}
-            <td  class=text-secondary>{{event.singleProgram.programName}}</td>
+            <td  class="text-secondary">{{event.singleProgram.programName}}</td>
           {% else %}
-            <td  class=text-secondary>This event does not belong to any program.</td>
+            <td  class="text-secondary">This event does not belong to any program.</td>
           {% endif %}
         {% endif %}
         {% if user.isCeltsAdmin or user.isProgramManagerFor(event.singleProgram)%}
-          <td> <a href="/eventsList/{{event.id}}/edit" class=text-secondary>{{event.name}}</a></td>
+          <td> <a href="/eventsList/{{event.id}}/edit" class="text-secondary">{{event.name}}</a></td>
         {% else %}
-          <td> <a href="/eventsList/{{event.id}}/view" class=text-secondary>{{event.name}}</a></td>
+          <td> <a href="/eventsList/{{event.id}}/view" class="text-secondary">{{event.name}}</a></td>
         {% endif %}
-        <td nowrap  class=text-secondary >{{event.startDate.strftime('%m/%d/%Y')}}</td>
-        <td nowrap  class=text-secondary >{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
-        <td  class=text-secondary>{{event.location}}</td>
+        <td nowrap  class="text-secondary" >{{event.startDate.strftime('%m/%d/%Y')}}</td>
+        <td nowrap  class="text-secondary" >{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
+        <td  class="text-secondary">{{event.location}}</td>
         {% if user.isAdmin %}
           <td>
             {% if event.isPast %}
