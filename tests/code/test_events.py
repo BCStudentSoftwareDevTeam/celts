@@ -853,7 +853,6 @@ def test_getPreviousRecurringEventData():
 @pytest.mark.integration
 def test_getCurrentRsvpAmmount():
     with mainDB.atomic() as transaction:
-
         eventWithRsvpLimit = Event.create(name = "Req and Limit",
                                           term = 2,
                                           description = "Event that requries RSVP and has an RSVP limit set.",
@@ -865,32 +864,20 @@ def test_getCurrentRsvpAmmount():
                                           startDate = "2022-12-19",
                                           endDate = "2022-12-19",
                                           )
-        #
-        # eventWithoutRsvpLimitAndRsvpReq = Event.create(name= "Req and no Limit",
-        #                                                term = 2,
-        #                                                description = "Event that requires RSVP but does not have a RSVP limit set.",
-        #                                                timeStart = "6:00 pm",
-        #                                                timeEnd = "9:00 pm",
-        #                                                location = "The Sun",
-        #                                                isRsvpRequired = 1,
-        #                                                rsvpLimit = None,
-        #                                                startDate = "2022-12-19",
-        #                                                endDate = "2022-12-19",
-        #                                                )
-        #
-        # eventWithoutRsvpReq = Event.create(name= "No Req and no Limit",
-        #                                    term = 2,
-        #                                    description = "Event that does not require RSVP and also does not have an RSVP limit set.",
-        #                                    timeStart = "6:00 pm",
-        #                                    timeEnd = "9:00 pm",
-        #                                    location = "Somewhere Over the Rainbow ",
-        #                                    isRsvpRequired = 0,
-        #                                    rsvpLimit = None,
-        #                                    startDate = "2022-12-19",
-        #                                    endDate = "2022-12-19",
-        #                                    )
+
+        testUserToRsvp = User.create(username = 'rsvpUsr',
+                              firstName = 'RSVP',
+                              lastName = 'Test',
+                              bnumber = '48616874',
+                              email = 'helloThere@berea.edu',
+                              isStudent = True)
 
         limit = getCurrentRsvpAmmount(Term.get_by_id(2))
-        # assert limit == 4
-        print(limit)
-    transaction.rollback()
+        assert limit[eventWithRsvpLimit.id] == 0
+
+        EventRsvp.create(event=eventWithRsvpLimit, user=testUserToRsvp)
+
+        limit = getCurrentRsvpAmmount(Term.get_by_id(2))
+        assert limit[eventWithRsvpLimit.id] == 1
+
+        transaction.rollback()
