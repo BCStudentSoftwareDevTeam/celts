@@ -391,7 +391,7 @@ def preprocessEventData(eventData):
         Ensures that the event data dictionary is consistent before it reaches the template or event logic.
 
         - dates should exist and be date objects if there is a value
-        - checkbaxes should be True or False
+        - checkboxes should be True or False
         - if term is given, convert it to a model object
         - times should exist be strings in 24 hour format example: 14:40
         - Look up matching certification requirement if necessary

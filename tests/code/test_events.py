@@ -24,7 +24,7 @@ from app.models.note import Note
 from app.logic.events import getEvents, preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
 from app.logic.events import attemptSaveEvent, saveEventToDb, deleteEvent, getParticipatedEventsForUser
 from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser
-from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents
+from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getRsvpLimit
 from app.logic.volunteers import addVolunteerToEventRsvp, updateEventParticipants
 from app.logic.participants import addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser
@@ -301,16 +301,9 @@ def test_calculateRecurringEventFrequency():
 @pytest.mark.integration
 def test_attemptSaveEvent():
     # This test duplicates some of the saving tests, but with raw data, like from a form
-    eventData =  {'isRsvpRequired':False, 'isService':False,
-                  'isTraining':True, 'isRecurring':True, 'recurringId':0,
-                  'startDate': '2021-12-12',
-                  'endDate': '2021-06-12', 'programId':1, 'location':"a big room",
-                  'timeEnd':'09:00 PM', 'timeStart':'06:00 PM',
-                  'description':"Empty Bowls Spring 2021",
-                  'name':'Empty Bowls Spring','term':1,'contactName':"Monkey D. Luffy",
-                  'contactEmail': 'strawhats@hotmail.com'}
     eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'recurringId':None,
                    'startDate': '2021-12-12',
+                   'rsvpLimit': None,
                    'endDate':'2022-06-12', 'location':"a big room",
                    'timeEnd':'09:00 PM', 'timeStart':'06:00 PM',
                    'description':"Empty Bowls Spring 2021",
@@ -337,7 +330,7 @@ def test_attemptSaveEvent():
 @pytest.mark.integration
 def test_saveEventToDb_create():
 
-    eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'isService':False,
+    eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False,
                   'isTraining':True, 'isRecurring':False,'isAllVolunteerTraining': True, 'recurringId':None, 'startDate': parser.parse('2021-12-12'),
                    'endDate':parser.parse('2022-06-12'), 'location':"a big room",
                    'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
@@ -372,7 +365,7 @@ def test_saveEventToDb_create():
 def test_saveEventToDb_recurring():
     with mainDB.atomic() as transaction:
         with app.app_context():
-            eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'isService':False, 'isAllVolunteerTraining': True,
+            eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
                           'isTraining':True, 'isRecurring': True, 'recurringId':1, 'startDate': parser.parse('12-12-2021'),
                            'endDate':parser.parse('01-18-2022'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
@@ -410,6 +403,7 @@ def test_saveEventToDb_update():
                         'recurringId': 2,
                         'isTraining': True,
                         'isRsvpRequired': False,
+                        'rsvpLimit': None,
                         'isAllVolunteerTraining': True,
                         'isService': False,
                         "startDate": "2021-12-12",
@@ -441,6 +435,7 @@ def test_saveEventToDb_update():
                         'recurringId': 3,
                         'isTraining': True,
                         'isRsvpRequired': False,
+                        'rsvpLimit': None,
                         'isAllVolunteerTraining': False,
                         'isService': 5,
                         "startDate": "2021-12-12",
@@ -493,6 +488,7 @@ def test_deleteEvent():
         # creates a recurring event
         eventInfo =  {'isFoodProvided': False,
                       'isRsvpRequired': False,
+                      'rsvpLimit': None,
                       'isService': False,
                       'isAllVolunteerTraining': True,
                       'isTraining': True,
@@ -853,3 +849,9 @@ def test_getPreviousRecurringEventData():
         assert val[1].username == "ramsayb2"
         assert val[2].username == "khatts"
         transaction.rollback()
+
+@pytest.mark.integration
+def test_getRsvpLimit():
+    with mainDB.atomic() as transaction:
+        pass
+    transaction.rollback()
