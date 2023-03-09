@@ -866,11 +866,12 @@ def test_getCurrentRsvpAmmount():
                                           )
 
         testUserToRsvp = User.create(username = 'rsvpUsr',
-                              firstName = 'RSVP',
-                              lastName = 'Test',
-                              bnumber = '48616874',
-                              email = 'helloThere@berea.edu',
-                              isStudent = True)
+                                     firstName = 'RSVP',
+                                     lastName = 'Test',
+                                     bnumber = '48616874',
+                                     email = 'helloThere@berea.edu',
+                                     isStudent = True,
+                                     )
 
         limit = getCurrentRsvpAmmount(Term.get_by_id(2))
         assert limit[eventWithRsvpLimit.id] == 0

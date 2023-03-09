@@ -453,6 +453,11 @@ def getTomorrowsEvents():
     return events
 
 def getCurrentRsvpAmmount(term):
+    """
+        Get all of the RSVPs for the events that exist in the term.
+        Returns a dictionary with the event id as the key and the ammount of
+        current RSVPs to that event as the pair. 
+    """
     ammount = (Event.select(Event, fn.COUNT(EventRsvp.event_id).alias('count'))
                   .join(EventRsvp, JOIN.LEFT_OUTER)
                   .where(Event.term == term)
