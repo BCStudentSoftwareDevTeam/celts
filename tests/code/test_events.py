@@ -24,7 +24,7 @@ from app.models.note import Note
 from app.logic.events import getEvents, preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
 from app.logic.events import attemptSaveEvent, saveEventToDb, deleteEvent, getParticipatedEventsForUser
 from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser
-from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getRsvpLimit
+from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getCurrentRsvpAmmount
 from app.logic.volunteers import addVolunteerToEventRsvp, updateEventParticipants
 from app.logic.participants import addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser
@@ -851,7 +851,46 @@ def test_getPreviousRecurringEventData():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_getRsvpLimit():
+def test_getCurrentRsvpAmmount():
     with mainDB.atomic() as transaction:
-        pass
+
+        eventWithRsvpLimit = Event.create(name = "Req and Limit",
+                                          term = 2,
+                                          description = "Event that requries RSVP and has an RSVP limit set.",
+                                          timeStart = "6:00 pm",
+                                          timeEnd = "9:00 pm",
+                                          location = "The Moon",
+                                          isRsvpRequired = 1,
+                                          rsvpLimit = 4,
+                                          startDate = "2022-12-19",
+                                          endDate = "2022-12-19",
+                                          )
+        #
+        # eventWithoutRsvpLimitAndRsvpReq = Event.create(name= "Req and no Limit",
+        #                                                term = 2,
+        #                                                description = "Event that requires RSVP but does not have a RSVP limit set.",
+        #                                                timeStart = "6:00 pm",
+        #                                                timeEnd = "9:00 pm",
+        #                                                location = "The Sun",
+        #                                                isRsvpRequired = 1,
+        #                                                rsvpLimit = None,
+        #                                                startDate = "2022-12-19",
+        #                                                endDate = "2022-12-19",
+        #                                                )
+        #
+        # eventWithoutRsvpReq = Event.create(name= "No Req and no Limit",
+        #                                    term = 2,
+        #                                    description = "Event that does not require RSVP and also does not have an RSVP limit set.",
+        #                                    timeStart = "6:00 pm",
+        #                                    timeEnd = "9:00 pm",
+        #                                    location = "Somewhere Over the Rainbow ",
+        #                                    isRsvpRequired = 0,
+        #                                    rsvpLimit = None,
+        #                                    startDate = "2022-12-19",
+        #                                    endDate = "2022-12-19",
+        #                                    )
+
+        limit = getCurrentRsvpAmmount(Term.get_by_id(2))
+        # assert limit == 4
+        print(limit)
     transaction.rollback()

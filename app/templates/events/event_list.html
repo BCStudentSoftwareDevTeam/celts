@@ -99,7 +99,7 @@
               {% if event.id in rsvpedEventsID %}
                 <button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button>
               {% elif (not event.isPast) and (event.isRsvpRequired) %}
-                  {% if (event.rsvpLimit) and (eventRsvpLimit[event.id] <= event.rsvpLimit) %}
+                  {% if (event.rsvpLimit) and (currentEventRsvpAmmount[event.id] <= event.rsvpLimit) %}
                     <button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button>
                   {% else %}
                     <button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">change</button>

@@ -452,12 +452,12 @@ def getTomorrowsEvents():
     events = list(Event.select().where(Event.startDate==tomorrowDate))
     return events
 
-def getRsvpLimit(term):
-    limit = (Event.select(Event, fn.COUNT(EventRsvp.event_id).alias('count'))
-                .join(EventRsvp, JOIN.LEFT_OUTER)
-                .where(Event.term == term)
-                .group_by(Event.id))
+def getCurrentRsvpAmmount(term):
+    ammount = (Event.select(Event, fn.COUNT(EventRsvp.event_id).alias('count'))
+                  .join(EventRsvp, JOIN.LEFT_OUTER)
+                  .where(Event.term == term)
+                  .group_by(Event.id))
 
-    limitAsDict = {event.id: event.count for event in limit}
+    ammountAsDict = {event.id: event.count for event in ammount}
 
-    return limitAsDict
+    return ammountAsDict
