@@ -239,9 +239,10 @@
                   <div class="form-check form-switch">
                     <label class="custom-control-label" for='rsvp'><strong>This event requires RSVP.</strong></label>
                     <input class="form-check-input" type="checkbox" id="rsvp" name="isRsvpRequired" {{"checked" if eventData.isRsvpRequired}}/>
-                    <div class="form-group">
-                      <label class="form-label" for='limitRsvp'><strong>Please enter a RSVP limit, if there is none leave empty.</strong></label>
-                      <input class="form-control" id="limitRsvp" name="rsvpLimit">{{eventData.rsvpLimit}}</input>
+                    {% set hide = "" if eventData.isRsvpRequired else "display: none" %}
+                    <div class="form-group" id="limitGroup" style="{{hide}}">
+                      <label class="form-label mt-2" for='limitRsvp'><strong>Attendance Limit</strong></label>
+                      <input class="form-control" type="number" id="limitRsvp" name="rsvpLimit" value="{{eventData.rsvpLimit}}" placeholder="No Limit"></input>
                     </div>
                   </div>
                 </div>
