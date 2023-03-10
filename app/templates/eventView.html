@@ -53,6 +53,9 @@
 
                     {% if eventData.isRsvpRequired %}
                         <p>This event requires RSVP.</p>
+                        {% if eventData.rsvpLimit %}
+                          <p>There is a limit of {{eventData.rsvpLimit}} people for this event.</p>
+                        {% endif %}
                     {% else %}
                         <p>This event does not require RSVP.</p>
                     {% endif %}
@@ -120,7 +123,11 @@
                   {% if userHasRSVPed %}
                     <button type="submit" class="btn btn-danger" value="{{eventData.id}}" id="removeRsvpBtn">Remove RSVP</button>
                   {% elif eventData.isRsvpRequired %}
-                    <button type="submit" class="btn btn-primary" value="{{eventData.id}}" id="rsvpBtn">RSVP</button>
+                    {% if (eventData.rsvpLimit) and (currentEventRsvpAmmount[eventData.id] >= eventData.rsvpLimit) %}
+                      <button type="submit" class="btn btn-primary" value="{{eventData.id}}" id="rsvpBtn" disabled>RSVP</button>
+                    {% else %}
+                      <button type="submit" class="btn btn-primary" value="{{eventData.id}}" id="rsvpBtn">RSVP</button>
+                    {% endif %}
                  {% endif %}
               {% endif %}
             </div>
