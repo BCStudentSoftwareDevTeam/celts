@@ -28,7 +28,7 @@ from app.logic.adminLogs import createLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents, getCurrentRsvpAmmount
+from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents
 from app.logic.participants import getEventParticipants, getUserParticipatedTrainingEvents, checkUserRsvp, checkUserVolunteer
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
@@ -221,15 +221,13 @@ def eventDisplay(eventId):
             eventIndex = eventSeriesList.index(event)
             if len(eventSeriesList) != (eventIndex + 1):
                 eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
-                
-        currentEventRsvpAmmount = getCurrentRsvpAmmount(g.current_term)
+
         UserParticipatedTrainingEvents = getUserParticipatedTrainingEvents(eventData['program'], g.current_user, g.current_term)
         return render_template("eventView.html",
                                 eventData = eventData,
                                 isPastEvent = isPastEvent,
                                 userHasRSVPed = userHasRSVPed,
                                 programTrainings = UserParticipatedTrainingEvents,
-                                currentEventRsvpAmmount = currentEventRsvpAmmount,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths)
 

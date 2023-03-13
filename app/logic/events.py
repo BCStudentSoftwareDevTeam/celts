@@ -100,6 +100,12 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
     Returns:
     Created events and an error message.
     """
+
+    # Manually set the value of RSVP Limit if it is and empty string since it is
+    # automatically changed from "" to 0
+    if eventData["rsvpLimit"] == "":
+        eventData["rsvpLimit"] = None
+
     newEventData = preprocessEventData(eventData)
     addfile= FileHandler(attachmentFiles)
     isValid, validationErrorMessage = validateNewEventData(newEventData)
@@ -456,7 +462,7 @@ def getCurrentRsvpAmmount(term):
     """
         Get all of the RSVPs for the events that exist in the term.
         Returns a dictionary with the event id as the key and the ammount of
-        current RSVPs to that event as the pair. 
+        current RSVPs to that event as the pair.
     """
     ammount = (Event.select(Event, fn.COUNT(EventRsvp.event_id).alias('count'))
                   .join(EventRsvp, JOIN.LEFT_OUTER)
