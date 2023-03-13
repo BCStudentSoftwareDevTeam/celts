@@ -24,7 +24,7 @@ from app.models.note import Note
 from app.logic.events import getEvents, preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
 from app.logic.events import attemptSaveEvent, saveEventToDb, deleteEvent, getParticipatedEventsForUser
 from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser
-from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getCurrentRsvpAmmount
+from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getCurrentRsvpAmount
 from app.logic.volunteers import addVolunteerToEventRsvp, updateEventParticipants
 from app.logic.participants import addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser
@@ -851,7 +851,7 @@ def test_getPreviousRecurringEventData():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_getCurrentRsvpAmmount():
+def test_getCurrentRsvpAmount():
     with mainDB.atomic() as transaction:
         eventWithRsvpLimit = Event.create(name = "Req and Limit",
                                           term = 2,
@@ -873,12 +873,12 @@ def test_getCurrentRsvpAmmount():
                                      isStudent = True,
                                      )
 
-        limit = getCurrentRsvpAmmount(Term.get_by_id(2))
+        limit = getCurrentRsvpAmount(Term.get_by_id(2))
         assert limit[eventWithRsvpLimit.id] == 0
 
         EventRsvp.create(event=eventWithRsvpLimit, user=testUserToRsvp)
 
-        limit = getCurrentRsvpAmmount(Term.get_by_id(2))
+        limit = getCurrentRsvpAmount(Term.get_by_id(2))
         assert limit[eventWithRsvpLimit.id] == 1
 
         transaction.rollback()
