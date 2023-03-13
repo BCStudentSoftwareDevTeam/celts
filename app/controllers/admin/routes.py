@@ -64,7 +64,6 @@ def templateSelect():
 @admin_bp.route('/eventTemplates/<templateid>/create', methods=['GET','POST'])
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
 def createEvent(templateid, programid=None):
-    print(request.form.copy())
     if not (g.current_user.isAdmin or g.current_user.isProgramManagerFor(programid)):
         abort(403)
 
@@ -164,7 +163,6 @@ def eventDisplay(eventId):
 
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
-        print(eventData)
         try:
             savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
 
