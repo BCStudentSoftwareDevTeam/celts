@@ -81,6 +81,7 @@ $(document).ready(function() {
         $("#limitGroup").hide();
       }
     })
+
   // Disable button when we are ready to submit
   $("#saveEvent").on('submit',function(event) {
       $(this).find("input[type=submit]").prop("disabled", true);
