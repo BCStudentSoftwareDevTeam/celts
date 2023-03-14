@@ -50,12 +50,16 @@
                     {% else %}
                         <p>This event does not earn service hours.</p>
                     {% endif %}
-
-                    {% if eventData.isRsvpRequired %}
-                        <p>This event requires RSVP.</p>
-                        {% if eventData.rsvpLimit %}
-                          <p>There is a limit of {{eventData.rsvpLimit}} people for this event.</p>
-                        {% endif %}
+                    {% if eventData.isRsvpRequired and eventData.rsvpLimit %}
+                      {% if currentEventRsvpAmount[eventData.id] >= eventData.rsvpLimit %}
+                        <p>Sorry, there are currently no more spots available for this event.</p>
+                      {% elif eventData.rsvpLimit - currentEventRsvpAmount[eventData.id] == 1 %}
+                        <p>This event requires RSVP. There is {{eventData.rsvpLimit - currentEventRsvpAmount[eventData.id]}} open spot remaining out of {{eventData.rsvpLimit}}.</p>
+                      {% else %}
+                        <p>This event requires RSVP. There are {{eventData.rsvpLimit - currentEventRsvpAmount[eventData.id]}} open spots remaining out of {{eventData.rsvpLimit}}.</p>
+                      {% endif %}
+                    {% elif eventData.isRsvpRequired %}
+                      <p>This event requires RSVP.</p>
                     {% else %}
                         <p>This event does not require RSVP.</p>
                     {% endif %}
