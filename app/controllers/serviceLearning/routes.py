@@ -44,7 +44,7 @@ def slcEditProposal(courseID):
         abort(403)
     if g.current_user.isCeltsAdmin or g.current_user.isFaculty:
         course = Course.get_by_id(courseID)
-        coursestatus = CourseStatus.get_by_id(course.status)
+
 
         questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
         questionanswers = [question.questionContent for question in questionData]
@@ -62,7 +62,6 @@ def slcEditProposal(courseID):
                                     course = course,
                                     questionanswers = questionanswers,
                                     terms = terms,
-                                    coursestatus = coursestatus,
                                     courseInstructor = courseInstructor,
                                     isAllSectionsServiceLearning = isAllSectionsServiceLearning,
                                     isPermanentlyDesignated = isPermanentlyDesignated,
