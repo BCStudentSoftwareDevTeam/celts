@@ -73,8 +73,8 @@ $(document).ready(function() {
         allowedFileExtensions:["pdf","jpg","png","gif", "csv", "docx", "jpg", "jpeg", "jfif"]
     })
 
-    $("#rsvp").on("click", function() {
-      if ($("#rsvp").is(":checked")) {
+    $("#checkRSVP").on("click", function() {
+      if ($("#checkRSVP").is(":checked")) {
         $("#limitGroup").show();
       }
       else{
@@ -167,14 +167,15 @@ $(document).ready(function() {
     }
   });
 
-  $("#checkIsTraining").click(function(){
-    if ($("input[name='isTraining']:checked").val() == 'on'){
-      $("#checkIsRequired").prop('checked', true);
+  $("#checkRSVP").click(function(){
+    if ($("input[name='isRsvpRequired']:checked").val() == 'on'){
+      $("#checkFood").prop('checked', true);
 
     } else{
-      $("#checkIsRequired").prop('disabled', false);
+      $("#checkFood").prop('disabled', false);
     }
   });
+
 
 
   var facilitatorArray = []
