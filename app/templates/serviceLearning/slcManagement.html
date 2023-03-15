@@ -32,7 +32,7 @@
           <td>{{courseDict[course]['creator']}}</td>
           <td>{{courseDict[course]['faculty']|join(", ")}}</td>
           <td>{{courseDict[course]['term'].description}}</td>
-          <td>{{courseDict[course]['status']}}</td>
+          <td id="courseStatus-{{courseDict[course]['id']}}">{{courseDict[course]['status']}}</td>
           <td>
             <select class="form-select courseData" id="{{courseDict[course]['id']}}" onchange='changeAction(this)'>
               <option value="---" disabled selected>Select Action</option>
