@@ -9,7 +9,7 @@ $(document).ready(function(e) {
     // Update display if we are viewing only
     if (readOnly()){
         disableInput()
-        $(".charCount, .charCounter" ).replaceWith( " ");
+        $(".slcQuestionCharCount, .slcQestionCharCounter" ).replaceWith( " ");
     }
 
     // set up phone numbers
@@ -310,11 +310,11 @@ function getCourseInstructors() {
 
 
 const textareas = document.querySelectorAll(".textarea");
-const charCounts = document.querySelectorAll(".charCount");
+const slcQuestionCharCounts = document.querySelectorAll(".slcQuestionCharCount");
 
 textareas.forEach((textarea, index) => {
   textarea.addEventListener("input", function() {
-    charCounts[index].innerHTML = textarea.value.length;
+    slcQuestionCharCounts[index].innerHTML = textarea.value.length;
   });
-  charCounts[index].innerHTML = textarea.value.length;
+  slcQuestionCharCounts[index].innerHTML = textarea.value.length;
 });
