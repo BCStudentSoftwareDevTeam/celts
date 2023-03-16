@@ -1166,6 +1166,8 @@ logs = [
    }
 ]
 AdminLogs.insert_many(logs).on_conflict_replace().execute()
+rsvpLogs.insert_many(logs).on_conflict_replace().execute()
+
 
 files = [
     {

@@ -8,6 +8,7 @@ from app.models.programManager import ProgramManager
 from datetime import datetime, date
 from app.logic.adminLogs import createLog
 from app.logic.events import getEvents
+from app.logic.rsvpLogs import createRsvpLog
 
 def getEventLengthInHours(startTime, endTime, eventDate):
     """
@@ -74,6 +75,8 @@ def addVolunteerToEventRsvp(user, volunteerEventID):
     try:
         if not EventRsvp.get_or_none(user=user, event=volunteerEventID):
             EventRsvp.create(user=user, event=volunteerEventID)
+            createLog("hello")
+            
         return True
 
     except Exception as e:
