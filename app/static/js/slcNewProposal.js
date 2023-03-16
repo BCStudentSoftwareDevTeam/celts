@@ -309,12 +309,12 @@ function getCourseInstructors() {
 }
 
 
-const textareas = document.querySelectorAll(".textarea");
-const slcQuestionCharCounts = document.querySelectorAll(".slcQuestionCharCount");
+const textareas = $(".textarea");
+const slcQuestionCharCounts = $(".slcQuestionCharCount");
 
-textareas.forEach((textarea, index) => {
-  textarea.addEventListener("input", function() {
-    slcQuestionCharCounts[index].innerHTML = textarea.value.length;
+textareas.each(function(index, textarea) {
+  $(textarea).on("input", function() {
+    $(slcQuestionCharCounts[index]).html($(textarea).val().length);
   });
-  slcQuestionCharCounts[index].innerHTML = textarea.value.length;
+  $(slcQuestionCharCounts[index]).html($(textarea).val().length);
 });
