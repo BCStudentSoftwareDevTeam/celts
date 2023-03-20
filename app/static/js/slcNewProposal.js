@@ -9,7 +9,7 @@ $(document).ready(function(e) {
     // Update display if we are viewing only
     if (readOnly()){
         disableInput()
-        $(".slcQuestionCharCount, .slcQestionCharCounter" ).replaceWith( " ");
+
     }
 
     // set up phone numbers
@@ -111,6 +111,7 @@ function disableInput() {
     $("#submitAndApproveButton").hide();
     $(".editButton").hide()
     $(".removeButton").hide()
+    $(".slcQuestionCharCount, .slcQestionCharCounter" ).replaceWith( " ");
 }
 
 
