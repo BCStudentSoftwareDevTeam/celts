@@ -26,8 +26,7 @@ function changeAction(action){
         return;
       }
       else {
-        console.log("Redirecting to editProposal");
-        location = '/serviceLearning/editProposal/' + courseID;
+        location = '/serviceLearning/editProposal/' + courseID
       }
     }
 }
