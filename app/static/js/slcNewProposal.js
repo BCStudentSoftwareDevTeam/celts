@@ -310,11 +310,11 @@ function getCourseInstructors() {
 
 
 const textareas = $(".textarea");
-const slcQuestionCharCounts = $(".slcQuestionCharCount");
+const slcQuestionCharCount = $(".slcQuestionCharCount");
 
 textareas.each(function(index, textarea) {
   $(textarea).on("input", function() {
-    $(slcQuestionCharCounts[index]).html($(textarea).val().length);
+    $(slcQuestionCharCount[index]).html($(textarea).val().length);
   });
-  $(slcQuestionCharCounts[index]).html($(textarea).val().length);
+  $(slcQuestionCharCount[index]).html($(textarea).val().length);
 });
