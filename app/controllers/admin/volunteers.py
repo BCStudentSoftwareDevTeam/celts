@@ -69,6 +69,14 @@ def trackVolunteersPage(eventID):
         bannedUsers = bannedUsers,
         trainedParticipantsList = trainedParticipantsList)
 
+@admin_bp.route('/rsvpLogs', methods=['GET','POST'])
+def rsvpLogs():
+    if g.current_user.isCeltsAdmin:
+        # allLogs = AdminLogs.select(AdminLogs, User).join(User).order_by(AdminLogs.createdOn.desc())
+        return render_template("/admin/rsvpLogs.html")
+    else:
+        abort(403)
+
 @admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['POST'])
 def updateVolunteerTable(eventID):
     try:
