@@ -2,13 +2,20 @@ pipeline {
     agent any
 
     stages {
-        stage('Something 1') {
+        stage('Build') {
             steps {
-               sh 'echo "Hello"'
-               sh 'source setup.sh'
-               sh 'echo "End of source setup"'
+                echo 'Building..'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing..'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying....'
             }
         }
     }
 }
-
