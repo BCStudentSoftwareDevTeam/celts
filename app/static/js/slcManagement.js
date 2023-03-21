@@ -10,7 +10,7 @@ $(document).ready(function() {
 
 function changeAction(action){
   courseID = action.id;
-  var courseSt = $("#courseStatus-" + courseID).html();
+  var courseStatus = $("#courseStatus-" + courseID).html();
   // decides what to do based on selection
   if (action.value == "Renew"){
     $('#courseID').val(courseID);
@@ -21,7 +21,7 @@ function changeAction(action){
     $('#courseID').val(courseID);
     $('#withdrawModal').modal('show');
   } else if(action.value == "Edit"){
-      if(courseSt == "Approved"){
+      if(courseStatus == "Approved"){
         window.location.href = "/serviceLearning/viewProposal/" + courseID;
         return;
       }
