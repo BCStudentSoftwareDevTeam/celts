@@ -1,8 +1,10 @@
 pipeline {
-    agent any
-
+    agent {label "builtIn"}
+    options {
+        buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumbToKeepStr: '5', daysToKeepStr: '', numToKeepStr: '5')
+    }
     stages {
-        stage('Stage 1 Example') {
+        stage('Hello') {
             steps {
                 echo "Hello"
             }
