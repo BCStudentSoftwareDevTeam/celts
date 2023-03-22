@@ -173,6 +173,18 @@ users = [
         "isStaff": True,
         "isCeltsAdmin": True,
         "isCeltsStudentStaff": False,
+    },     
+    {
+        "username": "bledsoef",
+        "bnumber": "B00776544",
+        "email": "bledsoef@berea.edu",
+        "firstName": "Finn",
+        "lastName": "Bledsoe",
+        "phoneNumber": "(123)456-7890",
+        "isCeltsAdmin": False,
+        "isFaculty": True,
+        "isCeltsStudentStaff": False,
+        "isStaff": True,
     },
 ]
 
@@ -832,6 +844,11 @@ courseInstructorRecords = [
         "id": 6,
         "course": 4,
         "user": "qasema"
+    },
+    {
+        "id": 7,
+        "course": 1,
+        "user": "bledsoef"
     }
 
 ]
@@ -871,29 +888,124 @@ CourseParticipant.insert_many(courseHoursEarned).on_conflict_replace().execute()
 courseQuestions = [
     {
     "course":1,
-    "questionContent":" Why are you interested in teaching this course?",
+    "questionContent":"This is testing for the first question.",
     "questionNumber":1,
     },
     {
     "course":1,
-    "questionContent":"Is there anything confusing?",
+    "questionContent":"This is testing for the second question.",
     "questionNumber":2,
     },
-    {
+        {
     "course":1,
-    "questionContent":"How many students willl betaking this course?",
+    "questionContent":"This is testing for the third question.",
     "questionNumber":3,
     },
     {
-    "course":3,
-    "questionContent":" This is another random question",
+    "course":1,
+    "questionContent":"This is testing for the fourth question.",
+    "questionNumber":4,
+    },
+    {
+    "course":1,
+    "questionContent":"This is testing for the fifth question.",
+    "questionNumber":5,
+    },
+    {
+    "course":1,
+    "questionContent":"This is testing for the sixth question.",
+    "questionNumber":6,
+    },
+    {
+    "course":2,
+    "questionContent":"This is testing for the first question.",
+    "questionNumber":1,
+    },
+    {
+    "course":2,
+    "questionContent":"This is testing for the second question.",
+    "questionNumber":2,
+    },
+        {
+    "course":2,
+    "questionContent":"This is testing for the third question.",
+    "questionNumber":3,
+    },
+    {
+    "course":2,
+    "questionContent":"This is testing for the fourth question.",
     "questionNumber":4,
     },
     {
     "course":2,
-    "questionContent":" Why are you interested in teaching this course?",
+    "questionContent":"This is testing for the fifth question.",
     "questionNumber":5,
-    }
+    },
+    {
+    "course":2,
+    "questionContent":"This is testing for the sixth question.",
+    "questionNumber":6,
+    },
+    {
+    "course":3,
+    "questionContent":"This is testing for the first question.",
+    "questionNumber":1,
+    },
+    {
+    "course":3,
+    "questionContent":"This is testing for the second question.",
+    "questionNumber":2,
+    },
+        {
+    "course":3,
+    "questionContent":"This is testing for the third question.",
+    "questionNumber":3,
+    },
+    {
+    "course":3,
+    "questionContent":"This is testing for the fourth question.",
+    "questionNumber":4,
+    },
+    {
+    "course":3,
+    "questionContent":"This is testing for the fifth question.",
+    "questionNumber":5,
+    },
+    {
+    "course":3,
+    "questionContent":"This is testing for the sixth question.",
+    "questionNumber":6,
+    },
+    {
+    "course":4,
+    "questionContent":"This is testing for the first question.",
+    "questionNumber":1,
+    },
+    {
+    "course":4,
+    "questionContent":"This is testing for the second question.",
+    "questionNumber":2,
+    },
+        {
+    "course":4,
+    "questionContent":"This is testing for the third question.",
+    "questionNumber":3,
+    },
+    {
+    "course":4,
+    "questionContent":"This is testing for the fourth question.",
+    "questionNumber":4,
+    },
+    {
+    "course":4,
+    "questionContent":"This is testing for the fifth question.",
+    "questionNumber":5,
+    },
+    {
+    "course":4,
+    "questionContent":"This is testing for the sixth question.",
+    "questionNumber":6,
+    },
 ]
 
 CourseQuestion.insert_many(courseQuestions).on_conflict_replace().execute()
