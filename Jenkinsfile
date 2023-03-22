@@ -4,7 +4,9 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'mkdir'
+                sh 'source setup.sh'
+                sh 'cd database/'
+                sh './reset_database test'
             }
         }
         stage('Test') {
