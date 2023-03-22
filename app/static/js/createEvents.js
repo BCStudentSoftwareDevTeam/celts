@@ -157,14 +157,15 @@ $(document).ready(function() {
     }
   });
 
-  $("#checkIsTraining").click(function(){
-    if ($("input[name='isTraining']:checked").val() == 'on'){
-      $("#checkIsRequired").prop('checked', true);
+  $("#checkRSVP").click(function(){
+    if ($("input[name='isRsvpRequired']:checked").val() == 'on'){
+      $("#checkFood").prop('checked', true);
 
     } else{
-      $("#checkIsRequired").prop('disabled', false);
+      $("#checkFood").prop('disabled', false);
     }
   });
+
 
 
   var facilitatorArray = []
