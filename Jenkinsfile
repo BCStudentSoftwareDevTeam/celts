@@ -4,7 +4,6 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'source setup.sh'
                 sh 'cd database/'
 		echo 'hello...'
             }
