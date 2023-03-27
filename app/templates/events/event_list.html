@@ -55,112 +55,118 @@
 
 {% macro createTable(events, type) %}
 {% if events|count %}
-<div class="table-responsive">
-  <table class="table ">
-    <thead>
-      <tr>
-        {% if type != "bonner" and type != "studentLed" %}
-        <th scope="col">Program</th>
-        {% endif %}
-        <th scope="col">Event Name</th>
-        <th scope="col">Date</th>
-        <th scope="col">Time</th>
-        <th scope="col">Location</th>
-        <th scope="col"></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for event in events %}
-      {% if events[events.index(event)] == events[0] and events[events.index(event)].isPast %}
-     <tr> No upcoming events for this term </tr>
-      {% endif %}
-      <tr>
-        {% if event and not event.isPast %}
+  {% if not events[0].isPast  %}
+    {% set visibleEvent = "d-none" %}
+    {% set visibleClass = "showlist" %}
+  {% endif %}
+  <div class="table-responsive">
+    <table class="table ">
+      <thead>
+        <tr>
           {% if type != "bonner" and type != "studentLed" %}
-            {% if event.singleProgram%}
-              <td>{{event.singleProgram.programName}}</td>
-            {% else %}
-              <td>This event does not belong to any program.</td>
-            {% endif %}
+          <th scope="col">Program</th>
           {% endif %}
-          {% if user.isCeltsAdmin or user.isProgramManagerFor(event.singleProgram)%}
-            <td> <a href="/eventsList/{{event.id}}/edit" class="text-primary">{{event.name}}</a></td>
-          {% else %}
-            <td> <a href="/eventsList/{{event.id}}/view" class="text-primary">{{event.name}}</a></td>
-          {% endif %}
-          <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
-          <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
-          <td>{{event.location}}</td>
-          {% if user.isAdmin %}
-            <td>
-              {% if event.isPast %}
-                {% set isPastEvent = "true" %}
-              {% endif %}
-              <button class="btn btn-primary" onclick="showEmailModal({{event.id}}, 'Unknown', {{selectedTerm}}, {{isPastEvent}})">
-                <span class="bi bi-envelope-fill"> Invite</span>
-              </button>
-            </td>
-          {% else %}
-            <td>
-            {% if event.id in rsvpedEventsID %}
-              <button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button>
-            {% elif (not event.isPast) and (event.isRsvpRequired) %}
-              <button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button>
-            {% endif %}
-            </td>
-          {% endif %}
-         </tr>
-         {% endif %}
-         {% if user.isCeltsStudentStaff or user.isAdmin %}
-          {% if not event.isPast and events[events.index(event)+1].isPast %}
-            <tr>
-              <td>
-                <button class="toggle-event col-md-12 p-300 text-secondary border border-secondary border-2">Past Events</button>
-              </td>
-            </tr>
-          {% endif %}
-          {% if event.isPast %}
-            <tr class=" showlist table-secondary d-show">
-              {% if type != "bonner" and type != "studentLed" %}
-                {% if event.singleProgram%}
-                  <td  class="text-secondary">{{event.singleProgram.programName}}</td>
-                {% else %}
-                  <td  class="text-secondary">This event does not belong to any program.</td>
-                {% endif %}
-              {% endif %}
-              {% if user.isCeltsAdmin or user.isProgramManagerFor(event.singleProgram)%}
-                <td> <a href="/eventsList/{{event.id}}/edit" class="text-secondary">{{event.name}}</a></td>
+          <th scope="col">Event Name</th>
+          <th scope="col">Date</th>
+          <th scope="col">Time</th>
+          <th scope="col">Location</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for event in events %}
+        {% if events[events.index(event)] == events[0] and events[events.index(event)].isPast %}
+      <tr> No upcoming events for this term </tr>
+        {% endif %}
+        <tr>
+          {% if event and not event.isPast %}
+            {% if type != "bonner" and type != "studentLed" %}
+              {% if event.singleProgram%}
+                <td>{{event.singleProgram.programName}}</td>
               {% else %}
-                <td> <a href="/eventsList/{{event.id}}/view" class="text-secondary">{{event.name}}</a></td>
+                <td>This event does not belong to any program.</td>
               {% endif %}
-              <td nowrap  class="text-secondary" >{{event.startDate.strftime('%m/%d/%Y')}}</td>
-              <td nowrap  class="text-secondary" >{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
-              <td  class="text-secondary">{{event.location}}</td>
-              {% if user.isAdmin %}
+            {% endif %}
+            {% if user.isCeltsAdmin or user.isProgramManagerFor(event.singleProgram)%}
+              <td> <a href="/eventsList/{{event.id}}/edit" class="text-primary">{{event.name}}</a></td>
+            {% else %}
+              <td> <a href="/eventsList/{{event.id}}/view" class="text-primary">{{event.name}}</a></td>
+            {% endif %}
+            <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
+            <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
+            <td>{{event.location}}</td>
+            {% if user.isAdmin %}
+              <td>
+                {% if event.isPast %}
+                  {% set isPastEvent = "true" %}
+                {% endif %}
+                <button class="btn btn-primary" onclick="showEmailModal({{event.id}}, 'Unknown', {{selectedTerm}}, {{isPastEvent}})">
+                  <span class="bi bi-envelope-fill"> Invite</span>
+                </button>
+              </td>
+            {% else %}
+              <td>
+              {% if event.id in rsvpedEventsID %}
+                <button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button>
+              {% elif (not event.isPast) and (event.isRsvpRequired) %}
+                <button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button>
+              {% endif %}
+              </td>
+            {% endif %}
+          </tr>
+          {% endif %}
+          {% if user.isCeltsStudentStaff or user.isAdmin %}
+            {% if not event.isPast and events[events.index(event)+1].isPast %}
+              <tr>
                 <td>
-                  {% if event.isPast %}
-                    {% set isPastEvent = "true" %}
-                  {% endif %}
-                  <button class="btn btn-secondary" onclick="showEmailModal({{event.id}}, 'Unknown', {{selectedTerm}}, {{isPastEvent}})">
-                    <span class="bi bi-envelope-fill"> Email</span>
+                  <button class="toggle-event btn btn-secondary">
+                    <span class="bi "> Past Events</span>
                   </button>
                 </td>
-              {% else %}
-                <td>
-                {% if event.id in rsvpedEventsID %}
-                  <button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button>
-                {% elif (not event.isPast) and (event.isRsvpRequired) %}
-                  <button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button>
+              </tr>
+            {% endif %}
+            {% if event.isPast %}
+              <tr class=" {{visibleClass}} table-secondary {{visibleEvent}}">
+                {% if type != "bonner" and type != "studentLed" %}
+                  {% if event.singleProgram%}
+                    <td  class="text-secondary">{{event.singleProgram.programName}}</td>
+                  {% else %}
+                    <td  class="text-secondary">This event does not belong to any program.</td>
+                  {% endif %}
                 {% endif %}
-                </td>
-              {% endif %}
-            </tr>
+                {% if user.isCeltsAdmin or user.isProgramManagerFor(event.singleProgram)%}
+                  <td> <a href="/eventsList/{{event.id}}/edit" class="text-secondary">{{event.name}}</a></td>
+                {% else %}
+                  <td> <a href="/eventsList/{{event.id}}/view" class="text-secondary">{{event.name}}</a></td>
+                {% endif %}
+                <td nowrap  class="text-secondary" >{{event.startDate.strftime('%m/%d/%Y')}}</td>
+                <td nowrap  class="text-secondary" >{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
+                <td  class="text-secondary">{{event.location}}</td>
+                {% if user.isAdmin %}
+                  <td>
+                    {% if event.isPast %}
+                      {% set isPastEvent = "true" %}
+                    {% endif %}
+                    <button class="btn btn-secondary" onclick="showEmailModal({{event.id}}, 'Unknown', {{selectedTerm}}, {{isPastEvent}})">
+                      <span class="bi bi-envelope-fill"> Email</span>
+                    </button>
+                  </td>
+                {% else %}
+                  <td>
+                  {% if event.id in rsvpedEventsID %}
+                    <button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button>
+                  {% elif (not event.isPast) and (event.isRsvpRequired) %}
+                    <button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button>
+                  {% endif %}
+                  </td>
+                {% endif %}
+              </tr>
+            {% endif %}
           {% endif %}
-         {% endif %}
-        {% endfor %}
-     </tbody>
-  </table>
-</div>
+          {% endfor %}
+      </tbody>
+    </table>
+  </div>
 {% else %}
   <p>No upcoming events for this term</p>
 {% endif %}
