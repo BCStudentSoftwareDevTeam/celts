@@ -42,7 +42,7 @@ function removeRsvpForEvent(eventID){
   })
 }
 $(function() {
-  $('.toggle-table').click(function() {
-    $(this).next('table').toggleClass('d-none');
+  $('.toggle-event').click(function() {
+    $(".showlist").toggleClass('d-none');
   });
 });
