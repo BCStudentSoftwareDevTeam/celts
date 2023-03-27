@@ -76,6 +76,8 @@ def getStudentData():
             "firstName": row[2].strip(),
             "lastName": row[3].strip(),
             "isStudent": True,
+            "major": row[6].strip(),
+            "classLevel": row[4].strip()
           }
         for row in c.execute('select * from STUDATA')
     ]
