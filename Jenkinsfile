@@ -5,7 +5,8 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'cd database/'
-		echo 'hello...'
+		sh 'which python'
+		sh 'python --version'
             }
         }
         stage('Test') {
