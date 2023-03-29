@@ -34,7 +34,7 @@ def addToDb(userList):
 
         except peewee.IntegrityError as e:
             if user['username']:
-                (User.update(firstName = user['firstName'], lastName = user['lastName'], email = user['email'])
+                (User.update(firstName = user['firstName'], lastName = user['lastName'], email = user['email'], major = user['major'], classLevel = user['classLevel'])
                      .where(user['bnumber'] == User.bnumber)).execute()
             else:
                 print(f"No username for {user['bnumber']}!", user)
@@ -58,6 +58,8 @@ def getFacultyStaffData():
             "isStudent": False,
             "isFaculty": True,
             "isStaff": False,
+            "major": None,
+            "classLevel": None,
           }
         for row in c.execute('select * from STUSTAFF')
     ]

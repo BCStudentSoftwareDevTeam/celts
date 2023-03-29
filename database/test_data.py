@@ -45,7 +45,10 @@ users = [
         "isStaff": True,
         "isCeltsAdmin": True,
         "isCeltsStudentStaff": False,
-        "dietRestriction": "Diary"
+        "dietRestriction": "Diary",
+        "major": "",
+        "classLevel": "",
+
     },
     {
         "username" : "khatts",
@@ -58,6 +61,8 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": True,
         "isCeltsStudentStaff": False,
+        "major": "",
+        "classLevel": "",
     },
     {
         "username": "neillz",
@@ -70,6 +75,8 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": True,
+        "major": "",
+        "classLevel": "",
     },
 
     {
@@ -83,6 +90,8 @@ users = [
         "isFaculty": True,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
+        "major": "",
+        "classLevel": "",
     },
     {
         "username" : "ayisie",
@@ -95,6 +104,8 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
+        "major": "",
+        "classLevel": "",
 
     },
     {
@@ -108,6 +119,8 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
+        "major": "",
+        "classLevel": "",
     },
     {
         "username": "bryanta",
@@ -117,6 +130,8 @@ users = [
         "firstName": "Alex",
         "lastName": "Bryant",
         "isStudent": True,
+        "major": "",
+        "classLevel": "",
     },
     {
         "username": "partont",
@@ -126,6 +141,8 @@ users = [
         "lastName": "Parton",
         "isStudent": True,
         "phoneNumber": "(859)433-1559",
+        "major": "",
+        "classLevel": "",
     },
     {
         "username": "mupotsal",
@@ -136,6 +153,8 @@ users = [
         "isStudent": True,
         "phoneNumber": "(859)463-1159",
         "isCeltsStudentStaff": True,
+        "major": "",
+        "classLevel": "",
     },
     {
         "username": "heggens",
@@ -148,6 +167,8 @@ users = [
         "isFaculty": True,
         "isCeltsStudentStaff": False,
         "isStaff": True,
+        "major": "",
+        "classLevel": "",
     },
      {
         "username": "qasema",
@@ -160,6 +181,8 @@ users = [
         "isFaculty": True,
         "isCeltsStudentStaff": False,
         "isStaff": True,
+        "major": "",
+        "classLevel": "",
     },
     {
         "username": "stettnera2",
@@ -173,6 +196,8 @@ users = [
         "isStaff": True,
         "isCeltsAdmin": True,
         "isCeltsStudentStaff": False,
+        "major": "",
+        "classLevel": "",
     },
 ]
 
