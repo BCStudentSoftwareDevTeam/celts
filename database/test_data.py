@@ -46,8 +46,8 @@ users = [
         "isCeltsAdmin": True,
         "isCeltsStudentStaff": False,
         "dietRestriction": "Diary",
-        "major": "",
-        "classLevel": "",
+        "major": None,
+        "classLevel": None,
 
     },
     {
@@ -61,8 +61,8 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": True,
         "isCeltsStudentStaff": False,
-        "major": "",
-        "classLevel": "",
+        "major": None,
+        "classLevel": None,
     },
     {
         "username": "neillz",
@@ -75,8 +75,8 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": True,
-        "major": "",
-        "classLevel": "",
+        "major": None,
+        "classLevel": None,
     },
 
     {
@@ -90,8 +90,8 @@ users = [
         "isFaculty": True,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
-        "major": "",
-        "classLevel": "",
+        "major": None,
+        "classLevel": None,
     },
     {
         "username" : "ayisie",
@@ -104,8 +104,8 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
-        "major": "",
-        "classLevel": "",
+        "major": None,
+        "classLevel": None,
 
     },
     {
@@ -119,8 +119,8 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
-        "major": "",
-        "classLevel": "",
+        "major": None,
+        "classLevel": None,
     },
     {
         "username": "bryanta",
@@ -130,8 +130,8 @@ users = [
         "firstName": "Alex",
         "lastName": "Bryant",
         "isStudent": True,
-        "major": "",
-        "classLevel": "",
+        "major": None,
+        "classLevel": None,
     },
     {
         "username": "partont",
@@ -141,8 +141,8 @@ users = [
         "lastName": "Parton",
         "isStudent": True,
         "phoneNumber": "(859)433-1559",
-        "major": "",
-        "classLevel": "",
+        "major": None,
+        "classLevel": None,
     },
     {
         "username": "mupotsal",
@@ -153,8 +153,8 @@ users = [
         "isStudent": True,
         "phoneNumber": "(859)463-1159",
         "isCeltsStudentStaff": True,
-        "major": "",
-        "classLevel": "",
+        "major": None,
+        "classLevel": None,
     },
     {
         "username": "heggens",
@@ -167,8 +167,8 @@ users = [
         "isFaculty": True,
         "isCeltsStudentStaff": False,
         "isStaff": True,
-        "major": "",
-        "classLevel": "",
+        "major": None,
+        "classLevel": None,
     },
      {
         "username": "qasema",
@@ -181,8 +181,8 @@ users = [
         "isFaculty": True,
         "isCeltsStudentStaff": False,
         "isStaff": True,
-        "major": "",
-        "classLevel": "",
+        "major": None,
+        "classLevel": None,
     },
     {
         "username": "stettnera2",
@@ -196,8 +196,8 @@ users = [
         "isStaff": True,
         "isCeltsAdmin": True,
         "isCeltsStudentStaff": False,
-        "major": "",
-        "classLevel": "",
+        "major": None,
+        "classLevel": None,
     },
 ]
 
