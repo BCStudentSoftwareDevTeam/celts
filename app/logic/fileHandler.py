@@ -14,37 +14,47 @@ class FileHandler:
         :returns: directory path for attachment
         """
         try:
-            # tries to create the full path of the files location and passes if
-            # the directories already exist or there is no attachment
+        # tries to create the full path of the files location and passes if
+        # the directories already exist or there is no attachment
             if eventId:
-                filePath=(os.path.join(self.path, str(eventId), newfile.filename))
-                os.makedirs(self.path +"/"+ str(eventId))
-
+                event_path = os.path.join(self.path, str(eventId))
+                if not os.path.exists(event_path):
+                    os.makedirs(event_path)
+                file_path = os.path.join(event_path, newfile.filename)
             else:
-                filePath=(os.path.join(self.path, newfile.filename))
-                os.makedirs(self.path+"/"+ str(eventId))
+                file_path = os.path.join(self.path, newfile.filename)
+            print("*****************", file_path)
+            print("^^^^^^^^^^^^^^^^^^^", event_path)
+            return file_path
         except AttributeError:  # will pass if there is no attachment to save
             pass
         except FileExistsError:
             pass
-        return filePath
+
 
     def saveFilesForEvent(self, eventId):
         """ Saves the attachment in the app/static/files/eventattachments/ directory """
         try:
             for file in self.files:
-                isFileInEvent = EventFile.select().where(EventFile.event == eventId, EventFile.fileName == file.filename).exists()
-                if not isFileInEvent:
-                    EventFile.create(event = eventId, fileName = file.filename)
-                    file.save(self.getFileFullPath(eventId = eventId, newfile = file)) # saves attachment in directory
+                file_path = self.getFileFullPath(eventId=eventId, newfile=file)
+                if not os.path.exists(file_path):
+                    isFileInEvent = EventFile.select().where(EventFile.event == eventId, EventFile.fileName == file.filename).exists()
+                    if not isFileInEvent:
+                        EventFile.create(event=eventId, fileName=file.filename)
+                        file.save(file_path)
         except AttributeError: # will pass if there is no attachment to save
             return False
             pass
 
     def retrievePath(self,files, eventId = None):
-        pathDict={}
+        pathDict = {}
         for file in files:
-            pathDict[file.fileName] = ((self.path+"/"+ str(eventId) +"/"+ file.fileName)[3:], file)
+            if eventId:
+                file_path = os.path.join(self.path, str(eventId), file.fileName)
+            else:
+                file_path = os.path.join(self.path, file.fileName)
+            if os.path.exists(file_path):
+                pathDict[f"{eventId}_{file.fileName}"] = (file_path[3:], file)
         return pathDict
 
     def deleteEventFile(self, fileId, eventId):
