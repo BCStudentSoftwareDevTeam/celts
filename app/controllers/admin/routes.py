@@ -22,6 +22,8 @@ from app.models.adminLogs import AdminLogs
 from app.models.eventFile import EventFile
 from app.models.bonnerCohort import BonnerCohort
 from app.models.certification import Certification
+from app.models.user import User
+from app.models.programEvent import ProgramEvent
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.adminLogs import createLog
@@ -35,6 +37,7 @@ from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohor
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
+from app.logic.spreadsheet import volunteer
 
 
 @admin_bp.route('/switch_user', methods=['POST'])
@@ -160,6 +163,8 @@ def eventDisplay(eventId):
 
     eventData = model_to_dict(event, recurse=False)
     associatedAttachments = EventFile.select().where(EventFile.event == event)
+
+    volunteers = volunteer()
 
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
