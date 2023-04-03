@@ -5,7 +5,9 @@ pipeline {
         stage('Build') {
             steps {
 		sh './setup.sh'
-                sh 'cd database/'
+		sh 'export USING_CONTAINER=True'
+		sh 'export FLASK_ENV=Testing'
+                sh './database/reset_database.sh test'
             }
         }
         stage('Test') {
