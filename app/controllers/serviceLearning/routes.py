@@ -40,40 +40,38 @@ def slcEditProposal(courseID):
         Route for editing proposals, it will fill the form with the data found in the database
         given a courseID.
     """
+    course = Course.get_by_id(courseID)
+    courseStatus = CourseStatus.get_by_id(course.status)
+    if courseStatus == "Approved":
+        return redirect(url_for('.slcEditProposal', courseID=courseID))
     instructors = CourseInstructor.select().where(CourseInstructor.course==courseID)
     courseInstructors = [instructor.user for instructor in instructors]
     if g.current_user.isStudent:
         abort(403)
-    if g.current_user.isCeltsAdmin or g.current_user in courseInstructors:
-        course = Course.get_by_id(courseID)
-        courseStatus = CourseStatus.get_by_id(course.status)
+    if not (g.current_user.isCeltsAdmin) or not (g.current_user in courseInstructors):
+        return redirect(url_for('.slcEditProposal', courseID=courseID))
+    questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
+    questionanswers = [question.questionContent for question in questionData]
+    courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
 
-        if courseStatus != "Approved":
-            questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
-            questionanswers = [question.questionContent for question in questionData]
-            courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
+    isAllSectionsServiceLearning = ""
+    isPermanentlyDesignated = ""
 
-            isAllSectionsServiceLearning = ""
-            isPermanentlyDesignated = ""
+    if course.isAllSectionsServiceLearning:
+        isAllSectionsServiceLearning = True
+    if course.isPermanentlyDesignated:
+        isPermanentlyDesignated = True
+    terms = selectSurroundingTerms(g.current_term, 0)
+    return render_template('serviceLearning/slcNewProposal.html',
+                                course = course,
+                                questionanswers = questionanswers,
+                                terms = terms,
+                                courseStatus = courseStatus,
+                                courseInstructor = courseInstructor,
+                                isAllSectionsServiceLearning = isAllSectionsServiceLearning,
+                                isPermanentlyDesignated = isPermanentlyDesignated,
+                                redirectTarget=getRedirectTarget())
 
-            if course.isAllSectionsServiceLearning:
-                isAllSectionsServiceLearning = True
-            if course.isPermanentlyDesignated:
-                isPermanentlyDesignated = True
-            terms = selectSurroundingTerms(g.current_term, 0)
-            return render_template('serviceLearning/slcNewProposal.html',
-                                        course = course,
-                                        questionanswers = questionanswers,
-                                        terms = terms,
-                                        courseStatus = courseStatus,
-                                        courseInstructor = courseInstructor,
-                                        isAllSectionsServiceLearning = isAllSectionsServiceLearning,
-                                        isPermanentlyDesignated = isPermanentlyDesignated,
-                                        redirectTarget=getRedirectTarget())
-        else:
-            return redirect(url_for('serviceLearning_bp.viewProposal', courseID = course.id))
-    else:
-        abort(403)
 
 @serviceLearning_bp.route('/serviceLearning/createCourse', methods=['POST'])
 def slcCreateCourse():
