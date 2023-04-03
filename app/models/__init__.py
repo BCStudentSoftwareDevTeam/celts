@@ -5,10 +5,12 @@ import os
 from app import app
 
 def getMySQLDB():
-    if os.environ.get("USING_CONTAINER", False):
-        app.config['db']['host'] = 'mysqldb'
-    else:
-        app.config["db"]["host"] = "localhost"
+#     if os.environ.get("USING_CONTAINER", False):
+#         app.config['db']['host'] = 'mysqldb'
+#     else:
+#         app.config["db"]["host"] = "localhost"
+    app.config['db']['host'] = 'mysqldb'
+
     db_cfg = app.config['db']
     theDB = MySQLDatabase(db_cfg['name'], host = db_cfg['host'], user = db_cfg['username'], passwd = db_cfg['password'])
     return theDB
