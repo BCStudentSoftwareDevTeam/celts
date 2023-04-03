@@ -6,7 +6,7 @@ from app import app
 
 def getMySQLDB():
     if os.environ.get("USING_CONTAINER", False):
-        app.config['db']['host'] = 'db'
+        app.config['db']['host'] = 'mysqldb'
     else:
         app.config["db"]["host"] = "localhost"
     db_cfg = app.config['db']
