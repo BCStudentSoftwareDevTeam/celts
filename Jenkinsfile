@@ -4,9 +4,9 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+		sh 'source setup.sh'
+		sh './setup.sh'
                 sh 'cd database/'
-		sh 'which python'
-		sh 'python --version'
             }
         }
         stage('Test') {
