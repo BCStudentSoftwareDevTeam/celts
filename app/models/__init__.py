@@ -9,6 +9,7 @@ def getMySQLDB():
 #         app.config['db']['host'] = 'mysqldb'
 #     else:
 #         app.config["db"]["host"] = "localhost"
+    print("I made it here")
     app.config['db']['host'] = 'mysqldb'
 
     db_cfg = app.config['db']
