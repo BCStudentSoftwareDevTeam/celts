@@ -7,7 +7,6 @@ pipeline {
 		sh 'python3 -m venv venv'
                 sh '. venv/bin/activate'
 		sh './setup.sh'
-		sh '. venv/bin/activate'
             }
         }
 	stage('Database') {
