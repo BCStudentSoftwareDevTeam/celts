@@ -32,10 +32,10 @@ fi
 
 ########### Recreate Database Schema ###########
 echo "Dropping databases"
-mysql -u root -proot --execute="DROP DATABASE \`celts\`; DROP USER 'celts_user';"
+mysql -h 172.31.2.60:3306 -u root -proot --execute="DROP DATABASE \`celts\`; DROP USER 'celts_user';"
 
 echo "Recreating databases and users"
-mysql -u root -proot --execute="CREATE DATABASE IF NOT EXISTS \`celts\`; CREATE USER IF NOT EXISTS 'celts_user'@'%' IDENTIFIED BY 'password'; GRANT ALL PRIVILEGES ON *.* TO 'celts_user'@'%';"
+mysql -h 172.31.2.60:3306 -u root -proot --execute="CREATE DATABASE IF NOT EXISTS \`celts\`; CREATE USER IF NOT EXISTS 'celts_user'@'%' IDENTIFIED BY 'password'; GRANT ALL PRIVILEGES ON *.* TO 'celts_user'@'%';"
 
 
 # remove ahead of time in case we didn't clean up last time
@@ -45,7 +45,7 @@ rm -rf migrations.json
 echo -n "Creating database objects"
 if [ $BACKUP -eq 1 ]; then
     echo " from backup"
-    mysql -u root -proot celts < prod-backup.sql
+    mysql -h 172.31.2.60:3306 -u root -proot celts < prod-backup.sql
 else
     echo " empty"
     ./migrate_db.sh
