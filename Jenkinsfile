@@ -14,7 +14,6 @@ pipeline {
                 sh 'export USING_CONTAINER=True'
 		sh 'export FLASK_ENV=Testing'
 		sh './database/reset_database.sh test'
-		echo 'databse setup and rest'
             }
         }
         stage('Test') {
