@@ -1,5 +1,6 @@
 #!/bin/bash
-echo "I made it here 1"
+SOURCE=${BASH_SOURCE[0]}
+echo $SOURCE
 PRODUCTION=0
 if [ "`hostname`" == 'CS-CELTS' ]; then
 	echo "DO NOT RUN THIS SCRIPT ON PRODUCTION UNLESS YOU REALLY REALLY KNOW WHAT YOU ARE DOING"
