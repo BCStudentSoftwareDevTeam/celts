@@ -16,7 +16,7 @@ pipeline {
 			export USING_CONTAINER=True && 
 			export FLASK_ENV=Testing &&
 			./database/reset_database.sh test &&
-			d tests && ./run_tests.sh'''
+			cd tests && ./run_tests.sh'''
             }
         }
         stage('Test') {
