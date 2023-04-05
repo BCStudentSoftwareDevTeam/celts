@@ -4,16 +4,13 @@ pipeline {
     stages {
         stage('BuildVm') {
             steps {
-		sh 'python3 -m venv venv'
-                sh '. venv/bin/activate'
-		sh './setup.sh'
+// 		sh 'python3 -m venv venv'
+//                 sh '. venv/bin/activate'
             }
         }
 	stage('Database') {
             steps {
-                sh 'export USING_CONTAINER=True'
-		sh 'export FLASK_ENV=Testing'
-		sh './database/reset_database.sh test'
+                sh './setup.sh && export USING_CONTAINER=True && export FLASK_ENV=Testing && ./database/reset_database.sh test'
             }
         }
         stage('Test') {
