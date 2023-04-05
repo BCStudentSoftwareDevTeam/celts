@@ -2,16 +2,21 @@
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.programEvent import ProgramEvent
-from peewee import fn
+from peewee import fn, JOIN
 
 # Total volunteer hours by program along with a sum of all programs
 def volunteer():
     query = (EventParticipant
-            .select(ProgramEvent.program, fn.Sum(fn.Coalesce(EventParticipant.hoursEarned, 0)))
-            .join(ProgramEvent, on=(EventParticipant.event == ProgramEvent.event))
-            .group_by(ProgramEvent.program))
-        
-    print("SPREADSHEEEEEEEEEEEEEEEEt", list(query))
+            .select(fn.SUM(EventParticipant.hoursEarned))
+            .join(ProgramEvent, on=(EventParticipant.event_id == ProgramEvent.event_id))
+            .group_by(ProgramEvent.program_id))
+    result = query.scalar()
+    print(result)
+
+
+    totalHours = EventParticipant.select(fn.Sum(fn.Coalesce(EventParticipant.hoursEarned, 0))).scalar()
+
+    print("Total Hours", totalHours)
 
     return query
 
