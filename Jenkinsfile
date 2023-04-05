@@ -10,7 +10,13 @@ pipeline {
 //         }
 	stage('Database') {
             steps {
-                sh './setup.sh && python3 -m venv venv && . venv/bin/activate && export USING_CONTAINER=True && export FLASK_ENV=Testing && ./database/reset_database.sh test && tests/run_tests.sh'
+                sh '''./setup.sh && 
+			python3 -m venv venv && 
+			. venv/bin/activate && 
+			export USING_CONTAINER=True && 
+			export FLASK_ENV=Testing &&
+			./database/reset_database.sh test &&
+			d tests && ./run_tests.sh'''
             }
         }
         stage('Test') {
