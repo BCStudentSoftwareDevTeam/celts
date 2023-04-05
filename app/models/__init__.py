@@ -3,13 +3,13 @@ import os
 
 # from app import login
 from app import app
-
+print("I made it here 1")
 def getMySQLDB():
 #     if os.environ.get("USING_CONTAINER", False):
 #         app.config['db']['host'] = 'mysqldb'
 #     else:
 #         app.config["db"]["host"] = "localhost"
-    print("I made it here")
+    print("I made it here 2")
     app.config['db']['host'] = 'mysqldb'
 
     db_cfg = app.config['db']
