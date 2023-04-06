@@ -6,15 +6,26 @@ from peewee import fn, JOIN
 
 # Total volunteer hours by program along with a sum of all programs
 def volunteer():
-    query = (ProgramEvent
-            .select(fn.SUM(EventParticipant.hoursEarned).alias('hours'))
-            .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
-            .group_by(ProgramEvent.program_id)).execute()
+
+    #What Anderson, Sreynit, Fleur worked on
+    # query = (ProgramEvent
+    #         .select(fn.SUM(EventParticipant.hoursEarned))
+    #         .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
+    #         .group_by(ProgramEvent.program_id))
     # result = query.scalar()
     # print(result)
-    Hours = {program.id: program.hours for program in query}
-    print(Hours)
+   
+    # Hours = {program.id: program.hours for program in query}
+    # print(Hours)
 
+    #Fleur and Sreynit after Anderson left (This is printing the correct total for each program)
+    query = (ProgramEvent
+            .select(ProgramEvent.program_id, fn.SUM(EventParticipant.hoursEarned).alias('sum'))
+            .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
+            .group_by(ProgramEvent.program_id))
+
+    for row in query:
+        print(row.program_id, getattr(row, 'sum'))
 
     totalHours = EventParticipant.select(fn.Sum(fn.Coalesce(EventParticipant.hoursEarned, 0))).scalar()
 
