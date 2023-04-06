@@ -1,3 +1,5 @@
+#!/bin/bash
+
 if [[ `pwd` =~ tests$ ]]; then
     cd ../
 fi
