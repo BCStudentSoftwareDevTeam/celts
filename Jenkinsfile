@@ -2,14 +2,22 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+         stage('BuildVm') {
+             steps {
+		sh './setup.sh'
+             }
+         }
+	stage('Database') {
             steps {
-                sh 'cd database/'
-		echo 'hello...'
-            }
+                sh '''. venv/bin/activate && 
+			export USING_CONTAINER=True && 
+			export FLASK_ENV=Testing &&
+			database/reset_database.sh test'''
+	    }
         }
         stage('Test') {
             steps {
+	    	 sh ''' #!/bin/bash && venv/bin/activate && tests/run_test.sh'''
                 echo 'Testing..'
             }
         }
