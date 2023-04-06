@@ -6,12 +6,14 @@ from peewee import fn, JOIN
 
 # Total volunteer hours by program along with a sum of all programs
 def volunteer():
-    query = (EventParticipant
-            .select(fn.SUM(EventParticipant.hoursEarned))
-            .join(ProgramEvent, on=(EventParticipant.event_id == ProgramEvent.event_id))
-            .group_by(ProgramEvent.program_id))
-    result = query.scalar()
-    print(result)
+    query = (ProgramEvent
+            .select(fn.SUM(EventParticipant.hoursEarned).alias('hours'))
+            .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
+            .group_by(ProgramEvent.program_id)).execute()
+    # result = query.scalar()
+    # print(result)
+    Hours = {program.id: program.hours for program in query}
+    print(Hours)
 
 
     totalHours = EventParticipant.select(fn.Sum(fn.Coalesce(EventParticipant.hoursEarned, 0))).scalar()
