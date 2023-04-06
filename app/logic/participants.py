@@ -36,26 +36,57 @@ def trainedParticipants(programID, currentTerm):
     attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(allTrainingEvents), eventTrainingDataList)))
     return attendedTraining
 
-def sendUserData(bnumber, eventId, programid):
-    """Accepts scan input and signs in the user. If user exists or is already
-    signed in will return user and login status"""
+
+def signUserUp(user, event, programid):
+    """
+        Signs up a user for an event.
+        If the event is in the past, adds the user as a volunteer (EventParticipant) including hours worked.
+        If the event is in the future, rsvp for the user (EventRsvp).
+        Returns a tuple containing the signed in user and a user status message.
+    """
     try:
-        signedInUser = User.get(User.bnumber == bnumber)
+        if event.isPast:
+            if isEligibleForProgram(programid, user):
+                eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
+                if not checkUserVolunteer(user, event):
+                    EventParticipant.create(user=user, event=event, hoursEarned=eventHours)
+                    userStatus = "success"
+                else:
+                    userStatus = "already in"
+            else:
+                userStatus = "banned"
+        else:
+            if not checkUserRsvp(user, event):
+                EventRsvp.create(user=user, event=event)
+                userStatus = "success"
+            else:
+                userStatus = "already in"
+        return user, userStatus
     except Exception as e:
         print(e)
-        return None, "does not exist"
-    event = Event.get_by_id(eventId)
-    if not isEligibleForProgram(programid, signedInUser):
-        userStatus = "banned"
-    elif ((EventParticipant.select(EventParticipant.user)
-       .where(EventParticipant.user == signedInUser, EventParticipant.event==eventId))
-       .exists()):
-        userStatus = "already in"
-    else:
-        userStatus = "success"
-        totalHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
-        EventParticipant.create (user=signedInUser, event=eventId, hoursEarned=totalHours)
-    return signedInUser, userStatus
+        return None, False
+
+
+# def sendUserData(bnumber, eventId, programid):
+#     """Accepts scan input and signs in the user. If user exists or is already
+#     signed in will return user and login status"""
+#     try:
+#         signedInUser = User.get(User.bnumber == bnumber)
+#     except Exception as e:
+#         print(e)
+#         return None, "does not exist"
+#     event = Event.get_by_id(eventId)
+#     if not isEligibleForProgram(programid, signedInUser):
+#         userStatus = "banned"
+#     elif ((EventParticipant.select(EventParticipant.user)
+#        .where(EventParticipant.user == signedInUser, EventParticipant.event==eventId))
+#        .exists()):
+#         userStatus = "already in"
+#     else:
+#         userStatus = "success"
+#         totalHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
+#         EventParticipant.create (user=signedInUser, event=eventId, hoursEarned=totalHours)
+#     return signedInUser, userStatus
 
 def checkUserRsvp(user,  event):
     return EventRsvp.select().where(EventRsvp.user==user, EventRsvp.event == event).exists()
@@ -63,31 +94,31 @@ def checkUserRsvp(user,  event):
 def checkUserVolunteer(user,  event):
     return EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event).exists()
 
-def addPersonToEvent(user, event):
-    """
-        Add a user to an event.
-        If the event is in the past, add the user as a volunteer (EventParticipant) including hours worked.
-        If the event is in the future, rsvp for the user (EventRsvp)
-
-        Returns True if the operation was successful, false otherwise
-    """
-    try:
-        volunteerExists = checkUserVolunteer(user, event)
-        rsvpExists = checkUserRsvp(user, event)
-        if event.isPast:
-            if not volunteerExists:
-                eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
-                EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
-        else:
-            if not rsvpExists:
-                EventRsvp.create(user = user, event = event)
-        if volunteerExists or rsvpExists:
-            return "already in"
-    except Exception as e:
-        print(e)
-        return False
-
-    return True
+# def addPersonToEvent(user, event):
+#     """
+#         Add a user to an event.
+#         If the event is in the past, add the user as a volunteer (EventParticipant) including hours worked.
+#         If the event is in the future, rsvp for the user (EventRsvp)
+#
+#         Returns True if the operation was successful, false otherwise
+#     """
+#     try:
+#         volunteerExists = checkUserVolunteer(user, event)
+#         rsvpExists = checkUserRsvp(user, event)
+#         if event.isPast:
+#             if not volunteerExists:
+#                 eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
+#                 EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
+#         else:
+#             if not rsvpExists:
+#                 EventRsvp.create(user = user, event = event)
+#         if volunteerExists or rsvpExists:
+#             return "already in"
+#     except Exception as e:
+#         print(e)
+#         return False
+#
+#     return True
 
 def unattendedRequiredEvents(program, user):
 
