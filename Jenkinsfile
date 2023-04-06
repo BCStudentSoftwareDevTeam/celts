@@ -15,7 +15,8 @@ pipeline {
 			. venv/bin/activate && 
 			export USING_CONTAINER=True && 
 			export FLASK_ENV=Testing &&
-			./database/reset_database.sh test '''
+			./database/reset_database.sh test &&
+			tests/run_test.sh'''
 //	    sh '''#!/bin/bash source venv/bin/activate && tests/run_test.sh'''
 	    }
         }
