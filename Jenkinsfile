@@ -17,7 +17,7 @@ pipeline {
         }
         stage('Test') {
             steps {
-	    	 sh ''' #!/bin/bash venv/bin/activate && tests/run_test.sh'''
+	    	 sh ''' #!/bin/bash && venv/bin/activate && tests/run_test.sh'''
                 echo 'Testing..'
             }
         }
