@@ -9,7 +9,7 @@ pipeline {
          }
 	stage('Database') {
             steps {
-                sh '''venv/bin/activate && 
+                sh '''. venv/bin/activate && 
 			export USING_CONTAINER=True && 
 			export FLASK_ENV=Testing &&
 			database/reset_database.sh test'''
