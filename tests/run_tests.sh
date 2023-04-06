@@ -3,7 +3,7 @@
 if [[ `pwd` =~ tests$ ]]; then
     cd ../
 fi
-echo "here i am"
+
 BASE_URL=http://localhost:8080
 SENSITIVE_URL=http://celts.berea.edu
 #VERBOSE="--verbose "
