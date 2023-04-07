@@ -2,6 +2,7 @@
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.programEvent import ProgramEvent
+from app.models.program import Program
 from peewee import fn, JOIN
 
 # Total volunteer hours by program along with a sum of all programs
@@ -22,7 +23,11 @@ def volunteer():
     query = (ProgramEvent
             .select(ProgramEvent.program_id, fn.SUM(EventParticipant.hoursEarned).alias('sum'))
             .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
+            .join(Program, on=(Program.id == ProgramEvent.program_id))
             .group_by(ProgramEvent.program_id))
+
+    #Added by Anderson (nice job getting figured out!), I am not sure how yall will be accessing/passing around the data for the spreadsheet but I added the program name to it. The print below has the creats a dict with the program name as the key and the hours as the value. If you don't want to keep the program name here and will change is later then remove the second join I added. 
+    print({pe.program.programName: pe.sum for pe in query})
 
     for row in query:
         print(row.program_id, getattr(row, 'sum'))
