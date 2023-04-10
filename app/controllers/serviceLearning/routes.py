@@ -42,14 +42,15 @@ def slcEditProposal(courseID):
     """
     course = Course.get_by_id(courseID)
     courseStatus = CourseStatus.get_by_id(course.status)
-    if courseStatus == "Approved":
-        return redirect(url_for('.slcEditProposal', courseID=courseID))
-    instructors = CourseInstructor.select().where(CourseInstructor.course==courseID)
-    courseInstructors = [instructor.user for instructor in instructors]
-    if g.current_user.isStudent:
-        abort(403)
-    if not (g.current_user.isCeltsAdmin) or not (g.current_user in courseInstructors):
-        return redirect(url_for('.slcEditProposal', courseID=courseID))
+    # if Course.select().where(Course.status == 3) == True:
+    #     return redirect(url_for('.slcEditProposal', courseID=courseID))
+    # instructors = CourseInstructor.select().where(CourseInstructor.course==courseID)
+    # courseInstructors = [instructor.user for instructor in instructors]
+    # if g.current_user.isStudent:
+    #     abort(403)
+    # if not (g.current_user.isCeltsAdmin) or not (g.current_user in courseInstructors):
+    #     return redirect(url_for('.slcEditProposal', courseID=courseID))
+    statusOfCourse = Course.select(Course.status)
     questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
     questionanswers = [question.questionContent for question in questionData]
     courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
@@ -66,6 +67,7 @@ def slcEditProposal(courseID):
                                 course = course,
                                 questionanswers = questionanswers,
                                 terms = terms,
+                                statusOfCourse = statusOfCourse,
                                 courseStatus = courseStatus,
                                 courseInstructor = courseInstructor,
                                 isAllSectionsServiceLearning = isAllSectionsServiceLearning,

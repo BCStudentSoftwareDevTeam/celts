@@ -3,6 +3,21 @@ import searchUser from './searchUser.js'
 var currentTab = 0; // Current tab is set to be the first tab (0)
 
 $(document).ready(function(e) {
+  //courseID = course.id;
+  courseID = $("#courseID").val();
+  console.log("Clourse id", courseID)
+  var courseStatus = $("#courseStatus-" + courseID).html();
+    if(window.location.href.includes("edit")) {
+      console.log("asdf")
+      if(courseStatus == "Approved"){
+        console.log("approved")
+        location = '/serviceLearning/viewProposal/' + courseID
+      }
+      else {
+        console.log("not approved")
+        location = '/serviceLearning/editProposal/' + courseID
+      }
+    }
     // set up the current tab and button state
     showTab(currentTab);
 

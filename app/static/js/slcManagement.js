@@ -6,6 +6,19 @@ $(document).ready(function() {
   $("#withdrawBtn").on("click", function() {
     withdraw();
   });
+
+  // if(window.location.href.includes("edit")) {
+  //   debugger;
+  //   console.log("asdf")
+  //   if(courseStatus == "Approved"){
+  //     console.log("approved")
+  //     location = '/serviceLearning/viewProposal/' + courseID
+  //   }
+  //   else {
+  //     console.log("not approved")
+  //     location = '/serviceLearning/editProposal/' + courseID
+  //   }
+  // }
 });
 
 function changeAction(action){
