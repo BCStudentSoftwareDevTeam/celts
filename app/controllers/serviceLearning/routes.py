@@ -87,9 +87,11 @@ def slcSaveContinue():
     """Will update the the course proposal and return an empty string since ajax request needs a response
     Also, it updates the course status as 'in progress'"""
     course = updateCourse(request.form.copy())
-
-    course.status = CourseStatus.IN_PROGRESS
-    course.save()
+    if not course:
+        flash("Error saving changes", "danger")
+    else:
+        course.status = CourseStatus.IN_PROGRESS
+        course.save()
     return ""
 
 @serviceLearning_bp.route('/serviceLearning/saveExit', methods=['POST'])
@@ -217,8 +219,8 @@ def printCourse(courseID):
     """
     instructors = CourseInstructor.select().where(CourseInstructor.course==courseID)
     courseInstructors = [instructor.user for instructor in instructors]
-    theCreator = Course.select().join(User).where(Course.createdBy.username, Course.id==courseID)
-    if g.current_user.isCeltsAdmin or g.current_user in courseInstructors or g.current_user in theCreator:
+    isCreator = Course.select(Course.createdBy.username).join(User).where(Course.createdBy.username == g.current_user, Course.id==courseID).exists()
+    if g.current_user.isCeltsAdmin or g.current_user in courseInstructors or isCreator:
         try:
             course = Course.get_by_id(courseID)
             pdfCourse = Course.select().where(Course.id == courseID)
