@@ -173,7 +173,7 @@ users = [
         "isStaff": True,
         "isCeltsAdmin": True,
         "isCeltsStudentStaff": False,
-    },     
+    },
     {
         "username": "bledsoef",
         "bnumber": "B00776544",
