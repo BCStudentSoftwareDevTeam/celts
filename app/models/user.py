@@ -9,6 +9,8 @@ class User(baseModel):
     firstName = CharField()
     lastName  = CharField()
     isStudent = BooleanField(default = False)
+    major = CharField(null = True)
+    classLevel = CharField(null = True)
     isFaculty = BooleanField(default = False)
     isStaff = BooleanField(default = False)
     isCeltsAdmin = BooleanField(default  =False)
