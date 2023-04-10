@@ -79,3 +79,4 @@ webdriver-manager==3.4.2
 Werkzeug==2.2.2
 WTForms==2.3.3
 XlsxWriter==3.0.3
+pyodbc==4.0.35
