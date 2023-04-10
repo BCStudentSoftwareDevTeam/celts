@@ -61,7 +61,7 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": True,
         "isCeltsStudentStaff": False,
-        "major": None,
+        "major": "Computer Science",
         "classLevel": None,
     },
     {
@@ -75,7 +75,7 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": True,
-        "major": None,
+        "major": "Psychology",
         "classLevel": None,
     },
 
@@ -104,7 +104,7 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
-        "major": None,
+        "major": "Chemistry",
         "classLevel": None,
 
     },
@@ -130,7 +130,7 @@ users = [
         "firstName": "Alex",
         "lastName": "Bryant",
         "isStudent": True,
-        "major": None,
+        "major": "Biology",
         "classLevel": None,
     },
     {
@@ -141,7 +141,7 @@ users = [
         "lastName": "Parton",
         "isStudent": True,
         "phoneNumber": "(859)433-1559",
-        "major": None,
+        "major": "Computer Science",
         "classLevel": None,
     },
     {

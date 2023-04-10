@@ -14,22 +14,26 @@ def volunteer():
             .join(Program, on=(Program.id == ProgramEvent.program_id))
             .group_by(ProgramEvent.program_id))
 
-    totalHoursByProgram = {pe.program.programName: pe.sum for pe in query}
+    totalHoursByProgram= {pe.program.programName: pe.sum for pe in query}
 
     totalHoursAllProgram = EventParticipant.select(fn.Sum(fn.Coalesce(EventParticipant.hoursEarned, 0))).scalar()
+
+    print('Total Hours by Program', totalHoursByProgram)
     print('Total Hours', totalHoursAllProgram)
 
-    # Volunteering numbers by class year
-    return query
+
+    # Majors represented in volunteering
+    query_major = (User
+            .select(User.username, User.major)
+            .join(EventParticipant)
+            .group_by(User.username, User.major))
+
+    print("Majors represented in volunteering:")
+    for row in query_major:
+        print({row.username: row.major})
 
 
+# # Volunteering numbers by class year
 # Volunteering numbers by class year
 # Repeat volunteers (for individual events/programs and across all programs)
-
-# Majors represented in volunteering
-
-
-
-
-
 # Retention rates of volunteers (waiting for a bit of clarification from CELTS, check with me if you pick up this issue)
