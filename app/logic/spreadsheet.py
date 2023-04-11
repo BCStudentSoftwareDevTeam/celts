@@ -8,11 +8,10 @@ from peewee import fn, JOIN
 def volunteer():
 
     # Total volunteer hours by program along with a sum of all programs
-    query = (ProgramEvent
-            .select(ProgramEvent.program_id, fn.SUM(EventParticipant.hoursEarned).alias('sum'))
-            .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
-            .join(Program, on=(Program.id == ProgramEvent.program_id))
-            .group_by(ProgramEvent.program_id))
+    query = (ProgramEvent.select(ProgramEvent.program_id, fn.SUM(EventParticipant.hoursEarned).alias('sum'))
+                         .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
+                         .join(Program, on=(Program.id == ProgramEvent.program_id))
+                         .group_by(ProgramEvent.program_id))
 
     totalHoursByProgram= {pe.program.programName: pe.sum for pe in query}
 
@@ -23,12 +22,10 @@ def volunteer():
 
 
     # Majors represented in volunteering
-    major_query = (User
-           .select(User.major, fn.COUNT(fn.DISTINCT(EventParticipant.user_id)).alias('count'))
-           .join(EventParticipant, on=(User.username == EventParticipant.user_id))
-           .group_by(User.major))
+    major_query = (User.select(User.major, fn.COUNT(fn.DISTINCT(EventParticipant.user_id)).alias('count'))
+                        .join(EventParticipant, on=(User.username == EventParticipant.user_id))
+                        .group_by(User.major))
 
-        # Execute the query and print the results
     for row in major_query:
         print(row.major, row.count)
 
