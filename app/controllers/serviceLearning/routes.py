@@ -42,8 +42,11 @@ def slcEditProposal(courseID):
     """
     course = Course.get_by_id(courseID)
     courseStatus = CourseStatus.get_by_id(course.status)
-    # if Course.select().where(Course.status == 3) == True:
-    #     return redirect(url_for('.slcEditProposal', courseID=courseID))
+    approved = 3
+    # add a condition to check the route you are comming from
+    if course.status_id == approved:
+        print("hello")
+        return redirect(url_for('.slcViewProposal', courseID=course))
     # instructors = CourseInstructor.select().where(CourseInstructor.course==courseID)
     # courseInstructors = [instructor.user for instructor in instructors]
     # if g.current_user.isStudent:
