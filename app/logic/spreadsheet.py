@@ -23,17 +23,16 @@ def volunteer():
 
 
     # Majors represented in volunteering
-    query_major = (User
-            .select(User.username, User.major)
-            .join(EventParticipant)
-            .group_by(User.username, User.major))
+    major_query = (User
+           .select(User.major, fn.COUNT(fn.DISTINCT(EventParticipant.user_id)).alias('count'))
+           .join(EventParticipant, on=(User.username == EventParticipant.user_id))
+           .group_by(User.major))
 
-    print("Majors represented in volunteering:")
-    for row in query_major:
-        print({row.username: row.major})
+        # Execute the query and print the results
+    for row in major_query:
+        print(row.major, row.count)
 
 
-# # Volunteering numbers by class year
 # Volunteering numbers by class year
 # Repeat volunteers (for individual events/programs and across all programs)
 # Retention rates of volunteers (waiting for a bit of clarification from CELTS, check with me if you pick up this issue)
