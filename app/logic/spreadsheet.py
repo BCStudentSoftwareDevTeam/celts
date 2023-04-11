@@ -26,10 +26,19 @@ def volunteer():
                         .join(EventParticipant, on=(User.username == EventParticipant.user_id))
                         .group_by(User.major))
 
+    print("_____________majors represented___")
     for row in major_query:
         print(row.major, row.count)
 
 
-# Volunteering numbers by class year
+    # Volunteering numbers by class year
+    classLevel_query = (User.select(User.classLevel, fn.COUNT(fn.DISTINCT(EventParticipant.user_id)).alias('classCount'))
+                        .join(EventParticipant, on=(User.username == EventParticipant.user_id))
+                        .group_by(User.classLevel))
+
+    print("_____________class year___")
+    for row in classLevel_query:
+        print(row.classLevel, row.classCount)
+
 # Repeat volunteers (for individual events/programs and across all programs)
 # Retention rates of volunteers (waiting for a bit of clarification from CELTS, check with me if you pick up this issue)
