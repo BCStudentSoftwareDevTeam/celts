@@ -17,7 +17,7 @@ pipeline {
         }
         stage('Test') {
             steps {
-	    	echo 'Running tests... 3:02' 
+	    	echo 'Running tests...' 
 		sh '''. venv/bin/activate && tests/run_tests.sh'''
             }
         }
