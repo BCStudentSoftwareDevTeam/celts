@@ -13,8 +13,8 @@ $(document).ready(function(e) {
         url: "/deleteCourseFile",
         data: fileData, //get the startDate, endDate and name as a dictionary
         success: function(){
-            $("#attachment_"+fileId).remove()
-            $("#attachment_"+fileId).remove()
+            $("#modalAttachment_"+fileId).remove()
+            $("#pageAttachment_"+fileId).remove()
             currentTab = 1;
 
         },

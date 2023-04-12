@@ -94,7 +94,7 @@
           <label class="mb-2 courseAttachments" for= "courseAttachments"><strong>Course Attachments</strong></label>
           <table>
               {% for key, value in filepaths.items() %}
-                  <tr id="attachment_{{value[1]}}" class="attachmentRow_{{key}}" data-id= "{{key}}">
+                  <tr id="pageAttachment_{{value[1]}}" class="attachmentRow_{{key}}" data-id= "{{key}}">
                       <td class="pr-5">
                           <a class="mr-5" href="{{value[0]}}" target="_blank">{{key}}</a>
                       </td>
