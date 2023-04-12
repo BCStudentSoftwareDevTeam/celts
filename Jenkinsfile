@@ -4,6 +4,7 @@ pipeline {
     stages {
          stage('BuildVm') {
              steps {
+	     	echo "This is Branch: ${env.BRANCH_NAME}"
 	     	echo "This is Pull Request: PR-${env.CHANGE_ID}"
 		sh './setup.sh'
              }
