@@ -45,10 +45,13 @@ def withdrawProposal(courseID):
 
     # delete syllabus
     try:
-        syllabus = AttachmentUpload.select().where(AttachmentUpload.course==courseID).get()
-        FileHandler(courseId = courseID).deleteFile(100000000)
+        syllabi = AttachmentUpload.select().where(AttachmentUpload.course==courseID)
+        for syllabus in syllabi:
+            FileHandler(courseId = courseID).deleteFile(syllabus.id)
+
     except DoesNotExist:
-        pass
+        print("File does not exist")
+
     # delete course object
     course = Course.get(Course.id == courseID)
     courseName = course.courseName
