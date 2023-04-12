@@ -170,8 +170,7 @@ def test_training_events(training_events):
                                             isCeltsStudentStaff = False)
 
         notBonnerList = [testNotBonnerTraining]
-        bonnerList = [testNotBonnerTraining, testBonnerTraining]
-
+        bonnerList = [testBonnerTraining, testNotBonnerTraining]
         assert notBonnerList == getTrainingEvents(testTerm, userFaculty)
         assert notBonnerList == getTrainingEvents(testTerm, userNotBonnerScholar)
         assert notBonnerList == getTrainingEvents(testTerm, userStaff)
@@ -184,11 +183,10 @@ def test_training_events(training_events):
 def test_bonner_events(special_bonner):
     bonner = special_bonner
     allBonnerProgram = [bonner.event]
-
     assert allBonnerProgram == getBonnerEvents(2)
 
 @pytest.mark.integration
 def test_getOtherEvents(special_otherEvents):
     otherEvent = special_otherEvents
-    otherEvents = [Event.get_by_id(11), Event.get_by_id(7), otherEvent]
+    otherEvents = [otherEvent, Event.get_by_id(7), Event.get_by_id(11),]
     assert otherEvents == getOtherEvents(4)
