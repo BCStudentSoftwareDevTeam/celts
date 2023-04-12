@@ -9,6 +9,7 @@ from app.models.questionNote import QuestionNote
 from app.models.note import Note
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.term import Term
+from app.models import DoesNotExist
 from app.logic.adminLogs import createLog
 from app.logic.fileHandler import FileHandler
 
@@ -45,10 +46,9 @@ def withdrawProposal(courseID):
     # delete syllabus
     try:
         syllabus = AttachmentUpload.select().where(AttachmentUpload.course==courseID).get()
-        FileHandler(courseId = courseID).deleteFile(syllabus.id)
-    except:
+        FileHandler(courseId = courseID).deleteFile(100000000)
+    except DoesNotExist:
         pass
-
     # delete course object
     course = Course.get(Course.id == courseID)
     courseName = course.courseName
