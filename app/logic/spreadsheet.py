@@ -23,46 +23,53 @@ def volunteer():
 
 
     # Majors represented in volunteering
-    major_query = (User.select(User.major, fn.COUNT(fn.DISTINCT(EventParticipant.user_id)).alias('count'))
-                         .join(EventParticipant, on=(User.username == EventParticipant.user_id))
-                         .group_by(User.major))
+    majorQuery = (User.select(User.major, fn.COUNT(fn.DISTINCT(EventParticipant.user_id)).alias('count'))
+                       .join(EventParticipant, on=(User.username == EventParticipant.user_id))
+                       .group_by(User.major))
  
     print("_____________majors represented___")
-    for row in major_query:
+    for row in majorQuery:
         print(row.major, row.count)
 
 
     # Volunteering numbers by class year
-    classLevel_query = (User.select(User.classLevel, fn.COUNT(fn.DISTINCT(EventParticipant.user_id)).alias('classCount'))
-                         .join(EventParticipant, on=(User.username == EventParticipant.user_id))
-                         .group_by(User.classLevel))
+    classLevelQuery = (User.select(User.classLevel, fn.COUNT(fn.DISTINCT(EventParticipant.user_id)).alias('classCount'))
+                            .join(EventParticipant, on=(User.username == EventParticipant.user_id))
+                            .group_by(User.classLevel))
 
     print("_____________class year___")
-    for row in classLevel_query:
+    for row in classLevelQuery:
         print(row.classLevel, row.classCount)
 
 
     print("_____________Repeat Volunteers___")
     # Repeat volunteers (for individual events/programs and across all programs)
     # Excluding all volunteer training for now
-    # Get people who came more than once for a program
-    p_query = (EventParticipant
-                         .select(   EventParticipant.user_id,
-                                    (ProgramEvent.program_id).alias('program_id'),
-                                    Program.programName.alias("programName"),
-                                    fn.Count(EventParticipant.event_id).alias('event_count'))
-                         .join(ProgramEvent, on=(EventParticipant.event_id == ProgramEvent.event_id))
-                         .join(Program, on=(ProgramEvent.program_id == Program.id))
-                         .group_by(EventParticipant.user_id, ProgramEvent.program_id)
-                         .having(fn.Count(EventParticipant.event_id) > 1))
-    for result in p_query.dicts():
+
+    # Get people who came more than once (individual program)
+    repeatPerProgramQuery = (EventParticipant.select(EventParticipant.user_id,(ProgramEvent.program_id).alias('program_id'),Program.programName.alias("programName"),fn.Count(EventParticipant.event_id).alias('event_count'))
+                               .join(ProgramEvent, on=(EventParticipant.event_id == ProgramEvent.event_id))
+                               .join(Program, on=(ProgramEvent.program_id == Program.id))
+                               .group_by(EventParticipant.user_id, ProgramEvent.program_id)
+                               .having(fn.Count(EventParticipant.event_id) > 1))
+
+
+    for result in repeatPerProgramQuery.dicts():
         print(f"Participant:", result["user"], "   Events:", result["event_count"], "    Program Id/Name:", result["program_id"], result["programName"])
     print("-----------------------")
-
     
 
-    # People who came more than twice for a program
-    # Get people/how many that participated in any to any event
+    # Get people who came more than once (all programs)
+    repeatAllProgramQuery = (EventParticipant.select(EventParticipant.user_id, fn.COUNT(EventParticipant.user_id).alias('count'))
+                               .group_by(EventParticipant.user_id)
+                               .having(fn.COUNT(EventParticipant.user_id) > 1))
+
+    for result in repeatAllProgramQuery:
+        print(f"participant: {result.user_id}, count: {result.count}")
+
+
+
+
 
 
     # Retention rates of volunteers (waiting for a bit of clarification from CELTS, check with me if you pick up this issue)
