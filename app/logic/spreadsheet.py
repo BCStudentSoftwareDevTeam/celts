@@ -3,6 +3,8 @@ from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.programEvent import ProgramEvent
 from app.models.program import Program
+from app.models.event import Event
+from app.models.term import Term
 from peewee import fn, JOIN
 
 
@@ -71,7 +73,47 @@ def volunteer():
 
 
     # Retention rates of volunteers (waiting for a bit of clarification from CELTS, check with me if you pick up this issue)
+    # We were thinking about overall retention from semester to semester generally, since we cannot do year to year yet. 
+    # We would want this for recurring events as well as individual program participation.
 
+    # Overall program retention from semester to semester
+        #participation in a program in Fall 
+    
 
+    # programRetention = (EventParticipant.select(EventParticipant.event_id, (Event.term_id))
+    #                                     .join(ProgramEvent, on=(EventParticipant.event_id == ProgramEvent.event_id))
+    #                                     .join(Program, on=(ProgramEvent.program_id == Program.id))
+    #                                     .join(Event, on=(EventParticipant.event_id == Event.id))
+    #                                     .join()
+    #                                     )
+    
+
+     #participation in a program in Fall
+
+    fallParticipationQuery=(ProgramEvent.select(ProgramEvent.program_id, fn.COUNT(EventParticipant.user_id).alias('participants'), Program.programName.alias("progName"))
+                                  .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
+                                  .join(Program, on=(Program.id == ProgramEvent.program_id))
+                                  .join(Event, on=(EventParticipant.event_id == Event.id))
+                                  .join(Term, on=(Event.term_id == Term.id) )
+                                  .group_by(ProgramEvent.program_id)
+                                  .where(Term.description == "Fall 2022"))
+                                  
+    
+    for result in fallParticipationQuery.dicts():
+        print(f"Fall2022", result["participants"], result["progName"])
+    
+      #participation in a program in Spring
+    springParticipationQuery=(ProgramEvent.select(ProgramEvent.program_id, fn.COUNT(EventParticipant.user_id).alias('participants'), Program.programName.alias("progName"))
+                                  .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
+                                  .join(Program, on=(Program.id == ProgramEvent.program_id))
+                                  .join(Event, on=(EventParticipant.event_id == Event.id))
+                                  .join(Term, on=(Event.term_id == Term.id) )
+                                  .group_by(ProgramEvent.program_id)
+                                  .where(Term.description == "Spring 2023"))
+    for result in springParticipationQuery.dicts():
+        print(f"Spring2023", result["participants"], result["progName"])
+    
+      
+    
 
 
