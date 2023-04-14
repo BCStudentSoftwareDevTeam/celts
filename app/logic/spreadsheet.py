@@ -48,10 +48,10 @@ def volunteer():
 
     # Get people who came more than once (individual program)
     repeatPerProgramQuery = (EventParticipant.select(EventParticipant.user_id,(ProgramEvent.program_id).alias('program_id'),Program.programName.alias("programName"),fn.Count(EventParticipant.event_id).alias('event_count'))
-                               .join(ProgramEvent, on=(EventParticipant.event_id == ProgramEvent.event_id))
-                               .join(Program, on=(ProgramEvent.program_id == Program.id))
-                               .group_by(EventParticipant.user_id, ProgramEvent.program_id)
-                               .having(fn.Count(EventParticipant.event_id) > 1))
+                                             .join(ProgramEvent, on=(EventParticipant.event_id == ProgramEvent.event_id))
+                                             .join(Program, on=(ProgramEvent.program_id == Program.id))
+                                             .group_by(EventParticipant.user_id, ProgramEvent.program_id)
+                                             .having(fn.Count(EventParticipant.event_id) > 1))
 
 
     for result in repeatPerProgramQuery.dicts():
@@ -61,13 +61,11 @@ def volunteer():
 
     # Get people who came more than once (all programs)
     repeatAllProgramQuery = (EventParticipant.select(EventParticipant.user_id, fn.COUNT(EventParticipant.user_id).alias('count'))
-                               .group_by(EventParticipant.user_id)
-                               .having(fn.COUNT(EventParticipant.user_id) > 1))
+                                             .group_by(EventParticipant.user_id)
+                                             .having(fn.COUNT(EventParticipant.user_id) > 1))
 
     for result in repeatAllProgramQuery:
         print(f"participant: {result.user_id}, count: {result.count}")
-
-
 
 
 
