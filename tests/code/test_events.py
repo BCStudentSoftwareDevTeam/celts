@@ -388,6 +388,7 @@ def test_saveEventToDb_update():
         beforeUpdate = Event.get_by_id(eventId)
         assert beforeUpdate.name == "First Meetup"
 
+        # Change description, the value of isAllVolunteerTraining, and certRequirement on event 4
         newEventData = {
                         "id": 4,
                         "program": 1,
@@ -412,44 +413,24 @@ def test_saveEventToDb_update():
                         "contactEmail": "goatpiece@berea.edu",
                         "valid": True
                     }
+        
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
-            eventFunction = saveEventToDb(newEventData)
+            saveEventToDb(newEventData)
         afterUpdate = Event.get_by_id(newEventData['id'])
         assert afterUpdate.description == "This is a Test"
         assert afterUpdate.isAllVolunteerTraining == True
         assert RequirementMatch.select().where(RequirementMatch.event == afterUpdate,
                                                RequirementMatch.requirement == 9).exists()
+        
+        newEventData['description'] = "Berea Buddies First Meetup"
 
-        newEventData = {
-                        "id": 4,
-                        "program": 1,
-                        "term": 1,
-                        "name": "First Meetup",
-                        "description": "Berea Buddies First Meetup",
-                        "timeStart": "06:00 PM",
-                        "timeEnd": "09:00 PM",
-                        "location": "House",
-                        'isFoodProvided': False,
-                        'isRecurring': True,
-                        'recurringId': 3,
-                        'isTraining': True,
-                        'isRsvpRequired': False,
-                        'rsvpLimit': None,
-                        'isAllVolunteerTraining': False,
-                        'isService': 5,
-                        "startDate": "2021-12-12",
-                        "endDate": "2022-6-12",
-                        "contactName": "Monkey D. Luffy",
-                        "contactEmail": "goatpiece@berea.edu",
-                        "valid": True
-                    }
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
-            eventFunction = saveEventToDb(newEventData)
+            saveEventToDb(newEventData)
         afterUpdate = Event.get_by_id(newEventData['id'])
-
         assert afterUpdate.description == "Berea Buddies First Meetup"
+        
 
         transaction.rollback()
 
