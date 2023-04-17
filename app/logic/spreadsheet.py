@@ -113,7 +113,7 @@ def volunteer():
     for result in springParticipationQuery.dicts():
         print(f"Spring2023", result["participants"], result["progName"])
     
-      
+    #retention rate = (springParticipation/fallParticipation) * 100 ? (Do this by program)
     
 
 
