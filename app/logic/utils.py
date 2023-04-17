@@ -35,7 +35,7 @@ def deep_update(d, u):
                 d[key] = u[key]
         else:
             d = {key: u[key]}
-
+    print("DDDDDDDDDDDDDDDDDDDDDDDDD", d)
     return d
 
 def getStartofCurrentAcademicYear(currentTerm):
