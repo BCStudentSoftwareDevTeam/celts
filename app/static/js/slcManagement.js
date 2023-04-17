@@ -6,19 +6,6 @@ $(document).ready(function() {
   $("#withdrawBtn").on("click", function() {
     withdraw();
   });
-
-  // if(window.location.href.includes("edit")) {
-  //   debugger;
-  //   console.log("asdf")
-  //   if(courseStatus == "Approved"){
-  //     console.log("approved")
-  //     location = '/serviceLearning/viewProposal/' + courseID
-  //   }
-  //   else {
-  //     console.log("not approved")
-  //     location = '/serviceLearning/editProposal/' + courseID
-  //   }
-  // }
 });
 
 function changeAction(action){
@@ -36,6 +23,8 @@ function changeAction(action){
   } else if(action.value == "Edit"){
       if(courseStatus == "Approved"){
         window.location.href = "/serviceLearning/viewProposal/" + courseID;
+        console.log("+++++++++++++++++")
+        console.log("HIIIII")
         return;
       }
       else {

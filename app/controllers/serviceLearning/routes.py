@@ -40,42 +40,47 @@ def slcEditProposal(courseID):
         Route for editing proposals, it will fill the form with the data found in the database
         given a courseID.
     """
-    course = Course.get_by_id(courseID)
-    courseStatus = CourseStatus.get_by_id(course.status)
-    approved = 3
-    # add a condition to check the route you are comming from
-    if course.status_id == approved:
-        print("hello")
-        return redirect(url_for('.slcViewProposal', courseID=course))
-    # instructors = CourseInstructor.select().where(CourseInstructor.course==courseID)
-    # courseInstructors = [instructor.user for instructor in instructors]
-    # if g.current_user.isStudent:
-    #     abort(403)
-    # if not (g.current_user.isCeltsAdmin) or not (g.current_user in courseInstructors):
-    #     return redirect(url_for('.slcEditProposal', courseID=courseID))
-    statusOfCourse = Course.select(Course.status)
-    questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
-    questionanswers = [question.questionContent for question in questionData]
-    courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
 
-    isAllSectionsServiceLearning = ""
-    isPermanentlyDesignated = ""
+    instructors = CourseInstructor.select().where(CourseInstructor.course==courseID)
+    courseInstructors = [instructor.user for instructor in instructors]
+    if g.current_user.isCeltsAdmin or g.current_user in courseInstructors:
+        course = Course.get_by_id(courseID)
+        courseStatus = CourseStatus.get_by_id(course.status)
+        approved = 3
+        #add a condition to check the route you are comming from
+        if courseStatus==approved:
+            print("__________________________________________________")
+            print("hello")
+            print(courseStatus)
+            return redirect(f"/serviceLearning/viewProposal/{courseID}")
+        else:
+            print("+++++++++++")
+            print(courseStatus)
+            statusOfCourse = Course.select(Course.status)
+            questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
+            questionanswers = [question.questionContent for question in questionData]
+            courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
 
-    if course.isAllSectionsServiceLearning:
-        isAllSectionsServiceLearning = True
-    if course.isPermanentlyDesignated:
-        isPermanentlyDesignated = True
-    terms = selectSurroundingTerms(g.current_term, 0)
-    return render_template('serviceLearning/slcNewProposal.html',
-                                course = course,
-                                questionanswers = questionanswers,
-                                terms = terms,
-                                statusOfCourse = statusOfCourse,
-                                courseStatus = courseStatus,
-                                courseInstructor = courseInstructor,
-                                isAllSectionsServiceLearning = isAllSectionsServiceLearning,
-                                isPermanentlyDesignated = isPermanentlyDesignated,
-                                redirectTarget=getRedirectTarget())
+            isAllSectionsServiceLearning = ""
+            isPermanentlyDesignated = ""
+
+            if course.isAllSectionsServiceLearning:
+                isAllSectionsServiceLearning = True
+            if course.isPermanentlyDesignated:
+                isPermanentlyDesignated = True
+            terms = selectSurroundingTerms(g.current_term, 0)
+            return render_template('serviceLearning/slcNewProposal.html',
+                                        course = course,
+                                        questionanswers = questionanswers,
+                                        terms = terms,
+                                        statusOfCourse = statusOfCourse,
+                                        courseStatus = courseStatus,
+                                        courseInstructor = courseInstructor,
+                                        isAllSectionsServiceLearning = isAllSectionsServiceLearning,
+                                        isPermanentlyDesignated = isPermanentlyDesignated,
+                                        redirectTarget=getRedirectTarget())
+    else:
+        abort(403)
 
 
 @serviceLearning_bp.route('/serviceLearning/createCourse', methods=['POST'])
