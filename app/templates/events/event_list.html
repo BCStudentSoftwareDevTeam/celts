@@ -22,7 +22,7 @@
       <div class="form-group">
         <select class="form-select" name='eventTerm' id='inputTerm' onchange="location=this.value">
           {% for term in listOfTerms %}
-            <option value='/eventsList/{{term}}' {{ "selected" if selectedTerm.id == term.id }}>{{term.description}} </option>
+            <option value='/eventsList/{{term}}/{{activeTab}}/{{programID}}' {{ "selected" if selectedTerm.id == term.id }}>{{term.description}} </option>
           {% endfor %}
         </select>
       </div>
@@ -32,7 +32,7 @@
 <div class="row">
   <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
   <li class="col-md-3 col-12 nav-item" role="presentation">
-    <button class="nav-link active" id="studentLedEvents"
+    <button class="nav-link {{'active' if activeTab == 'studentLedEvents' else ''}}" id="studentLedEvents"
     data-bs-toggle="pill" data-bs-target="#pills-student-led" type="button" role="tab" aria-controls="pills-student-led" aria-selected="true">Student Led Service</button>
   </li>
   <li class="col-md-3 col-12 nav-item" role="presentation">
@@ -41,18 +41,16 @@
   </li>
   {% if user.isCeltsAdmin or user.isCeltsStudentStaff or user.isBonnerScholar %}
     <li class="col-md-3 col-12 nav-item" role="presentation">
-      <button class="nav-link" id="bonnerScholarsEvents"
+      <button class="nav-link {{'active' if activeTab == 'bonnerScholarsEvents' else ''}}" id="bonnerScholarsEvents"
       data-bs-toggle="pill" data-bs-target="#pills-bonner-scholars" type="button" role="tab" aria-controls="pills-bonner-scholars" aria-selected="false">Bonner Scholars</button>
     </li>
     {% endif %}
   <li class="col-md-3 col-12 nav-item" role="presentation">
-    <button class="nav-link" id="otherEvents"
+    <button class="nav-link {{'active' if activeTab == 'otherEvents' else ''}}" id="otherEvents"
     data-bs-toggle="pill" data-bs-target="#pills-one-time" type="button" role="tab" aria-controls="pills-one-time" aria-selected="false">Other Events</button>
   </li>
   </ul>
 </div>
-
-
 {% macro createTable(events, type) %}
 {% if events|count %}
   {% if not events[0].isPast  %}
@@ -172,41 +170,39 @@
 {% endif %}
 {% endmacro %}
 <div class="tab-content" id="pills-tabContent">
-  
-
-  <div class="tab-pane fade show active" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
-    <div class="accordion" id="categoryAccordion">
-      {% for program,events in studentLedEvents.items() %}
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="accordion__header_{{program}}">
-            <button class="accordion-button collapsed"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#accordion__body_{{program}}_num_{{ loop.index }}"
-                    aria-expanded="true"
-                    aria-controls="accordion__body_{{program}}" >
-                    {{program.programName}}
-            </button>
-          </h2>
-          <div id="accordion__body_{{program}}_num_{{ loop.index }}"
-          class="accordion-collapse collapse"
-          aria-labelledby="accordion__header_{{program}}"
-          data-bs-parent="#categoryAccordion">
-            {{createTable(events, "studentLed")}}
-
+  <div class="tab-pane fade show {{'active' if activeTab == 'studentLedEvents' else ''}}" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
+    {% if studentLedEvents %}
+      <div class="accordion" id="categoryAccordion">
+        {% for program,events in studentLedEvents.items() %}
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="accordion__header_{{program}}">
+              <button class="accordion-button {{'show' if programID == program.id else 'collapsed'}}"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#accordion__body_{{program}}_num_{{ loop.index }}"
+                      aria-expanded="true"
+                      aria-controls="accordion__body_{{program}}" >
+                      {{program.programName}}
+              </button>
+            </h2>
+            <div id="accordion__body_{{program}}_num_{{ loop.index }}"
+            class="accordion-collapse collapse {{'show' if programID == program.id else ''}}"
+            aria-labelledby="accordion__header_{{program}}"
+            data-bs-parent="#categoryAccordion">
+              {{createTable(events, "studentLed")}}
+            </div>
           </div>
-        </div>
-    {% endfor %}
-    </div>
-  
+        {% endfor %}
+      </div>
+    {% endif %}
   </div>
   <div class="tab-pane fade show" id="pills-training" role="tabpanel" aria-labelledby="pills-training-tab">
     {{createTable(trainingEvents, "trainings")}}
   </div>
-  <div class="tab-pane fade show" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="pills-bonner-scholars-tab">
+  <div class="tab-pane {{'active' if activeTab == 'bonnerScholarsEvents' else ''}} fade show" id="pills-bonner-scholars" role="tabpanel" aria-labelledby="pills-bonner-scholars-tab">
     {{createTable(bonnerEvents, "bonner")}}
   </div>
-  <div class="tab-pane fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
+  <div class="tab-pane {{'active' if activeTab == 'otherEvents' else ''}} fade show" id="pills-one-time" role="tabpanel" aria-labelledby="pills-one-time-tab">
     {{createTable(otherEvents, "other")}}
   </div>
 </div>

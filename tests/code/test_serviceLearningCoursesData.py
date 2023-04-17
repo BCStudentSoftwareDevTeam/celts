@@ -49,7 +49,7 @@ def test_getServiceLearningCoursesData():
 def test_withdrawProposal():
     '''creates a test course with all foreign key fields. tests if they can
     be deleted'''
-    
+
     with mainDB.atomic() as transaction:
 
         if 99 in Course.select(Course.id):
@@ -75,7 +75,8 @@ def test_withdrawProposal():
             createdBy = "neillz",
             createdOn = "2021-10-12 00:00:00",
             noteContent = "This is a test note.",
-            isPrivate = False
+            isPrivate = False,
+            noteType = "question"
         )
         qnote = QuestionNote.create(
         id = 99,

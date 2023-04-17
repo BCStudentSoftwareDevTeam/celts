@@ -27,11 +27,11 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.adminLogs import createLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.volunteers import getEventLengthInHours
-from app.logic.utils import selectSurroundingTerms
+from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents
-from app.logic.participants import getEventParticipants, getUserParticipatedEvents, checkUserRsvp, checkUserVolunteer
+from app.logic.participants import getEventParticipants, getUserParticipatedTrainingEvents, checkUserRsvp, checkUserVolunteer
 from app.logic.fileHandler import FileHandler
-from app.logic.bonner import getBonnerCohorts, makeBonnerXls
+from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
@@ -80,12 +80,6 @@ def createEvent(templateid, programid=None):
 
     # Get the data from the form or from the template
     eventData = template.templateData
-    if request.method == "POST":
-        attachmentFiles = request.files.getlist("attachmentObject")
-        fileDoesNotExist = attachmentFiles[0].content_type == "application/octet-stream"
-        if fileDoesNotExist:
-            attachmentFiles = None
-        eventData.update(request.form.copy())
 
     if program:
         eventData["program"] = program
@@ -102,8 +96,9 @@ def createEvent(templateid, programid=None):
 
     # Try to save the form
     if request.method == "POST":
+        eventData.update(request.form.copy())
         try:
-            savedEvents, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
+            savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
 
         except Exception as e:
             print("Error saving event:", e)
@@ -111,6 +106,9 @@ def createEvent(templateid, programid=None):
             validationErrorMessage = "Unknown Error Saving Event. Please try again"
 
         if savedEvents:
+            rsvpcohorts = request.form.getlist("cohorts[]")
+            for year in rsvpcohorts:
+                rsvpForBonnerCohort(int(year), savedEvents[0].id)
 
             noun = (eventData['isRecurring'] == 'on' and "Events" or "Event") # pluralize
             flash(f"{noun} successfully created!", 'success')
@@ -133,15 +131,17 @@ def createEvent(templateid, programid=None):
 
     futureTerms = selectSurroundingTerms(g.current_term, prevTerms=0)
 
-    requirements = []
+    requirements, bonnerCohorts = [], []
     if 'program' in eventData and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
+        bonnerCohorts = getBonnerCohorts(limit=5)
 
     return render_template(f"/admin/{template.templateFile}",
             template = template,
             eventData = eventData,
             futureTerms = futureTerms,
             requirements = requirements,
+            bonnerCohorts = bonnerCohorts,
             isProgramManager = isProgramManager)
 
 @admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
@@ -153,20 +153,36 @@ def eventDisplay(eventId):
     except DoesNotExist as e:
         print(f"Unknown event: {eventId}")
         abort(404)
-    if request.method == "POST" and not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(event)):
+
+    notPermitted = not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(event))
+    if 'edit' in request.url_rule.rule and notPermitted:
         abort(403)
+
     eventData = model_to_dict(event, recurse=False)
     associatedAttachments = EventFile.select().where(EventFile.event == event)
 
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
-        attachmentFiles = request.files.getlist("attachmentObject")
-        savedEvents, validationErrorMessage = attemptSaveEvent(eventData, attachmentFiles)
+        try:
+            savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
+
+        except Exception as e:
+            print("Error saving event:", e)
+            savedEvents = False
+            validationErrorMessage = "Unknown Error Saving Event. Please try again"
+
+
         if savedEvents:
+            rsvpcohorts = request.form.getlist("cohorts[]")
+            for year in rsvpcohorts:
+                rsvpForBonnerCohort(int(year), event.id)
+
             flash("Event successfully updated!", "success")
             return redirect(url_for("admin.eventDisplay", eventId = event.id))
         else:
             flash(validationErrorMessage, 'warning')
+
+    # make sure our data is the same regardless of GET and POST
     preprocessEventData(eventData)
     eventData['program'] = event.singleProgram
     futureTerms = selectSurroundingTerms(g.current_term)
@@ -175,38 +191,43 @@ def eventDisplay(eventId):
     filepaths =FileHandler().retrievePath(associatedAttachments, event.id)
     isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
 
-    requirements = []
+    requirements, bonnerCohorts = [], []
     if eventData['program'] and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
+        bonnerCohorts = getBonnerCohorts(limit=5)
 
     rule = request.url_rule
+    # Event Edit
     if 'edit' in rule.rule:
-        if not (g.current_user.isCeltsAdmin or isProgramManager):
-            abort(403)
         return render_template("admin/createEvent.html",
                                 eventData = eventData,
                                 futureTerms=futureTerms,
                                 isPastEvent = isPastEvent,
                                 requirements = requirements,
+                                bonnerCohorts = bonnerCohorts,
                                 userHasRSVPed = userHasRSVPed,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths)
+    # Event View
     else:
+        # get text representations of dates
         eventData['timeStart'] = event.timeStart.strftime("%-I:%M %p")
         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
         eventData["startDate"] = event.startDate.strftime("%m/%d/%Y")
-        # List below is to identify the next event in the series
-        eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId))
-        eventIndex = eventSeriesList.index(event)
-        if event.recurringId and len(eventSeriesList) != (eventIndex + 1):
-            eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
 
-        userParticipatedEvents = getUserParticipatedEvents(eventData['program'], g.current_user, g.current_term)
+        # Identify the next event in a recurring series
+        if event.recurringId:
+            eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId).order_by(Event.startDate))
+            eventIndex = eventSeriesList.index(event)
+            if len(eventSeriesList) != (eventIndex + 1):
+                eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
+
+        UserParticipatedTrainingEvents = getUserParticipatedTrainingEvents(eventData['program'], g.current_user, g.current_term)
         return render_template("eventView.html",
                                 eventData = eventData,
                                 isPastEvent = isPastEvent,
                                 userHasRSVPed = userHasRSVPed,
-                                programTrainings = userParticipatedEvents,
+                                programTrainings = UserParticipatedTrainingEvents,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths)
 

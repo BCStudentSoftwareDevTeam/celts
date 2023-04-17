@@ -44,7 +44,7 @@
       {% endif %}
     <h1 id="title">{{page_title}}</h1>
     {% if isPastEvent %}
-      <div class="alert alert-danger" role="alert">This event is in the past.</div>
+      <div class="alert-danger pb-2 pt-2" role="alert">This event is in the past.</div>
     {% endif %}
 </div>
 {% if not isNewEvent %}
@@ -156,7 +156,7 @@
                 {% if eventData.timeEnd %}
                   {% set end_time = eventData.timeEnd %}
                 {%else%}
-                  {% set end_time = "12:00" %}
+                  {% set end_time = "13:00" %}
                 {% endif %}
                   <input autocomplete="off" type="time" class="form-control timepicker" value="{{end_time}}" name="timeEnd" aria-describedby="timeIcon2" placeholder="Pick an end time" onchange="update(this)" id=endTime required />
                   <span class="input-group-text timeIcons" id="timeIcon2" hidden><i class="bi bi-clock"></i></span>
@@ -164,7 +164,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="{{hideDate}}" id="recurringTableDiv">
           <table class="table" id="recurringEventsTable">
             <thead><tr><th>Event Name</th><th>Date</th></tr></thead>
@@ -173,22 +173,33 @@
         </div>
         <div>
         </div>
-        <div class="mb-4">
-          <div class="row col-md-12" >
+        {% if 'program' in eventData and eventData['program'].isBonnerScholars %}
+          <div class="row col-md-12 mb-4" >
             <div class="form-group">
-              {% if 'program' in eventData and eventData['program'].isBonnerScholars %}
-                <label class="form-label fw-bold" for="requirement">Bonner Requirement</label>
-                <select class="form-select" name="certRequirement">
-                    <option>None</option>
-                {% for req in requirements %}
-                    {% set selected = "selected" if eventData['certRequirement'] == req else "" %}
-                    <option value="{{req.id}}" {{selected}}>{{req.name}}</option>
-                {% endfor %}
-                </select>
-              {% endif %}
+              <label class="form-label fw-bold" for="requirement">Bonner Requirement</label>
+              <select class="form-select" name="certRequirement">
+                  <option>None</option>
+              {% for req in requirements %}
+                  {% set selected = "selected" if eventData['certRequirement'] == req else "" %}
+                  <option value="{{req.id}}" {{selected}}>{{req.name}}</option>
+              {% endfor %}
+              </select>
             </div>
           </div>
-        </div>
+          <div class="row col-md-12 mb-4" >
+            <div class="form-group">
+              <label class="form-label fw-bold">Invite Cohort(s)</label>
+              {% for year,students in bonnerCohorts.items()|reverse %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="{{year}}" name="cohorts[]" id="cohort-{{year}}">
+                    <label class="form-check-label text-truncate w-100" for="cohort-{{year}}">{{year}}-{{year+1}}
+                        <span class="text-muted" >({{students|map(attribute='fullName')|join(", ")}})</span>
+                    </label>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
     </div>
 
         <div class="col-md-6 form-group">
@@ -214,8 +225,8 @@
               <div class="row col-md-12">
                 <div class="form-group col-md-6">
                   <div class="form-check form-switch mb-2">
-                    <label class="custom-control-label" for="food"><strong>This event will provide food.</strong></label>
-                    <input class="form-check-input" type="checkbox" id="food" name="isFoodProvided" {{"checked" if eventData.isFoodProvided}}/>
+                    <label class="custom-control-label" for='checkRSVP'><strong>This event requires RSVP.</strong></label>
+                    <input class="form-check-input" type="checkbox" id="checkRSVP" name="isRsvpRequired" {{"checked" if eventData.isRsvpRequired}}/>
                   </div>
                 </div>
                 <div class="form-group col-md-6">
@@ -226,14 +237,14 @@
                 </div>
                 <div class="form-group col-md-6 mb-3">
                   <div class="form-check form-switch">
-                    <label class="custom-control-label" for='rsvp'><strong>This event requires RSVP.</strong></label>
-                    <input class="form-check-input" type="checkbox" id="rsvp" name="isRsvpRequired" {{"checked" if eventData.isRsvpRequired}}/>
+                    <label class="custom-control-label" for="checkFood"><strong>This event will provide food.</strong></label>
+                    <input class="form-check-input" type="checkbox" id="checkFood" name="isFoodProvided" {{"checked" if eventData.isFoodProvided}}/>
                   </div>
                 </div>
                 <div class="form-group col-md-6">
                   <div class="form-check form-switch">
-                    <label class="custom-control-label" for='earnServiceHours'><strong>This event earns service hours.</strong></label>
-                    <input class="form-check-input" type="checkbox" id="earnServiceHours" name="isService" {{"checked" if eventData.isService}}/>
+                    <label class="custom-control-label" for='checkServiceHours'><strong>This event earns service hours.</strong></label>
+                    <input class="form-check-input" type="checkbox" id="checkServiceHours" name="isService" {{"checked" if eventData.isService}}/>
                   </div>
                 </div>
               </div>

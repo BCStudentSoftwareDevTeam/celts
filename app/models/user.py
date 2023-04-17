@@ -9,10 +9,13 @@ class User(baseModel):
     firstName = CharField()
     lastName  = CharField()
     isStudent = BooleanField(default = False)
+    major = CharField(null = True)
+    classLevel = CharField(null = True)
     isFaculty = BooleanField(default = False)
     isStaff = BooleanField(default = False)
     isCeltsAdmin = BooleanField(default  =False)
     isCeltsStudentStaff = BooleanField(default = False)
+    dietRestriction = TextField(null=True)
 
     # override BaseModel's __init__ so that we can set up an instance attribute for cache
     def __init__(self,*args, **kwargs):
