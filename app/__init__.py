@@ -8,7 +8,7 @@ from playhouse.shortcuts import model_to_dict, dict_to_model
 # Initialize our application
 app = Flask(__name__, template_folder="templates")
 
-from app.logic.utils import load_config_files
+from app.logic.config import load_config_files
 
 env = get_env()
 
