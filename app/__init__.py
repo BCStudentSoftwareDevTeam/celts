@@ -24,30 +24,24 @@ app = Flask(__name__, template_folder="templates")
 #
 ##########################################################
 
-# load in default
-# with open(environment_file) as ymlfile:
-# deep_update(override with ymlfile)
-# with open(local_override) as ymlfile:
-# deep_update(override with ymlfile)
-from app.logic.utils import deep_update
 os.environ["ENV"] = get_env()
-with open("app/config/default.yml", 'r') as ymlfile:
-    try:
-        app.config.update(deep_update(app.config, yaml.load(ymlfile, Loader=yaml.FullLoader)))
-    except TypeError:
-        print("There was an error loading the override config file default.yml. It might just be empty.")
-with open("app/config/" + [os.environ["ENV"]]+ ".yml", 'r') as ymlfile:
-    try:
-        app.config.update(deep_update(app.config, yaml.load(ymlfile, Loader=yaml.FullLoader)))
-    except TypeError:
-        print(f"There was an error loading the override config file " + [os.environ["ENV"]]+ ".yml. It might just be empty.")
 
-# Override configuration with our local instance configuration
-with open("app/config/" + app.config['override_file'], 'r') as ymlfile:
-    try:
-        app.config.update(deep_update(app.config, yaml.load(ymlfile, Loader=yaml.FullLoader)))
-    except TypeError:
-        print("There was an error loading the override config file " + app.config["override_file"] + ". It might just be empty.")
+from app.logic.utils import load_config_files
+
+app.config.update(load_config_files(app.config, os.environ["ENV"]))
+
+from config2.config import config as config2 # import after setting environment
+
+# # Update application config from config2
+# app.config.update(config2.get()['__config_data__']) # getting only the data, not all of config2 metadata
+
+# # Override configuration with our local instance configuration
+# from app.logic.utils import deep_update
+# with open("app/config/" + app.config['override_file'], 'r') as ymlfile:
+#     try:
+#         app.config.update(deep_update(app.config, yaml.load(ymlfile, Loader=yaml.FullLoader)))
+#     except TypeError:
+#         print("There was an error loading the override config file " + app.config["override_file"] + ". It might just be empty.")
 
 # set the secret key after configuration is set up
 app.secret_key = app.config['secret_key']

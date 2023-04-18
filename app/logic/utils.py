@@ -3,6 +3,8 @@ from peewee import DoesNotExist
 from app.models.term import Term
 from datetime import datetime
 
+import yaml
+
 def selectSurroundingTerms(currentTerm, prevTerms=2):
     """
     Returns a list of term objects around the provided Term object for the current term.
@@ -35,8 +37,30 @@ def deep_update(d, u):
                 d[key] = u[key]
         else:
             d = {key: u[key]}
-    print("DDDDDDDDDDDDDDDDDDDDDDDDD", d)
     return d
+
+def load_config_files(conf, env):
+    # New Funct: 
+    # load in default
+    # with open(environment_file) as ymlfile:
+    # deep_update(override with ymlfile)
+    # with open(local_override) as ymlfile:
+    # deep_update(override with ymlfile)
+
+    print("AAAAAAAAAAAAAAAAAAAA", conf, env)
+
+    with open("app/config/default.yml", 'r') as ymlfile:
+        try:
+            conf.update(deep_update(conf, yaml.load(ymlfile, Loader=yaml.FullLoader)))
+        except TypeError:
+            print("There was an error loading the override config file default.yml. It might just be empty.")
+    with open("app/config/{env}.yml", 'r') as ymlfile:
+        try:
+            conf.update(deep_update(conf, yaml.load(ymlfile, Loader=yaml.FullLoader)))
+        except TypeError:
+            print(f"There was an error loading the override config file {env}.yml. It might just be empty.")
+    
+    return conf
 
 def getStartofCurrentAcademicYear(currentTerm):
     if ("Summer" in currentTerm.description) or ("Spring" in currentTerm.description):
