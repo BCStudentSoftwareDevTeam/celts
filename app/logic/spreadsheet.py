@@ -77,20 +77,10 @@ def volunteer():
     # We would want this for recurring events as well as individual program participation.
 
     # Overall program retention from semester to semester
-        #participation in a program in Fall 
-    
-
-    # programRetention = (EventParticipant.select(EventParticipant.event_id, (Event.term_id))
-    #                                     .join(ProgramEvent, on=(EventParticipant.event_id == ProgramEvent.event_id))
-    #                                     .join(Program, on=(ProgramEvent.program_id == Program.id))
-    #                                     .join(Event, on=(EventParticipant.event_id == Event.id))
-    #                                     .join()
-    #                                     )
-    
 
      #participation in a program in Fall
 
-    fallParticipationQuery=(ProgramEvent.select(ProgramEvent.program_id, fn.COUNT(EventParticipant.user_id).alias('participants'), Program.programName.alias("progName"))
+    fallParticipationQuery=(ProgramEvent.select(ProgramEvent.program_id, EventParticipant.user_id.alias('participants'), Program.programName.alias("progName"))
                                   .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
                                   .join(Program, on=(Program.id == ProgramEvent.program_id))
                                   .join(Event, on=(EventParticipant.event_id == Event.id))
@@ -114,6 +104,7 @@ def volunteer():
         print(f"Spring2023", result["participants"], result["progName"])
     
     #retention rate = (springParticipation/fallParticipation) * 100 ? (Do this by program)
+
     
 
 
