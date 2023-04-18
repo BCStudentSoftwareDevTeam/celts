@@ -148,9 +148,9 @@ def createEvent(templateid, programid=None):
 @admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
 @admin_bp.route('/eventsList/<eventId>/edit', methods=['GET','POST'])
 def eventDisplay(eventId):
-
+    viewCount = EventViews.select().where(EventViews.event == eventId).count()
     if request.method == 'GET' and request.path == f'/eventsList/{eventId}/view':
-        viewCount=9
+    
         user = User.get_by_id(g.current_user)
         event = Event.get_by_id(eventId)
         event_view_exists = EventViews.select().where(EventViews.user == user, EventViews.event == event).exists()
