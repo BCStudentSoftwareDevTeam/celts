@@ -3,8 +3,6 @@ from peewee import DoesNotExist
 from app.models.term import Term
 from datetime import datetime
 
-import yaml
-
 def selectSurroundingTerms(currentTerm, prevTerms=2):
     """
     Returns a list of term objects around the provided Term object for the current term.
@@ -46,7 +44,9 @@ def load_config_files(conf, env):
     # deep_update(override with ymlfile)
     # with open(local_override) as ymlfile:
     # deep_update(override with ymlfile)
-
+    
+    import yaml
+    
     print("AAAAAAAAAAAAAAAAAAAA", conf, env)
 
     with open("app/config/default.yml", 'r') as ymlfile:
