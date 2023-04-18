@@ -28,15 +28,13 @@ def load_config_files(conf, env):
     # deep_update(override with ymlfile)
     
     import yaml
-    
-    print("AAAAAAAAAAAAAAAAAAAA", conf, env)
 
     with open("app/config/default.yml", 'r') as ymlfile:
         try:
             conf.update(deep_update(conf, yaml.load(ymlfile, Loader=yaml.FullLoader)))
         except TypeError:
             print("There was an error loading the override config file default.yml. It might just be empty.")
-    with open("app/config/{env}.yml", 'r') as ymlfile:
+    with open("app/config/"+ env + ".yml", 'r') as ymlfile:
         try:
             conf.update(deep_update(conf, yaml.load(ymlfile, Loader=yaml.FullLoader)))
         except TypeError:
