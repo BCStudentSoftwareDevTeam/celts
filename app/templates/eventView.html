@@ -14,6 +14,11 @@
           <h3>CELTS-Sponsored Event</h3>
         {% elif eventData.program %}
           <h3>{{eventData["program"].programName}} Event</h3>
+          <div class="d-flex align-items-center">
+            <i class="bi bi-eye-fill me-2"></i>
+            <span class="me-2">Views:{{viewCount}}</span>
+            <span id="view-count">0</span>
+          </div>
         {% endif %}
     {% if isPastEvent %}
         <div class="alert-danger pb-2 pt-2" role="alert">This event is in the past.</div>

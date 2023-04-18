@@ -22,6 +22,7 @@ from app.models.adminLogs import AdminLogs
 from app.models.eventFile import EventFile
 from app.models.bonnerCohort import BonnerCohort
 from app.models.certification import Certification
+from app.models.eventViews import EventViews
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.adminLogs import createLog
@@ -147,7 +148,18 @@ def createEvent(templateid, programid=None):
 @admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
 @admin_bp.route('/eventsList/<eventId>/edit', methods=['GET','POST'])
 def eventDisplay(eventId):
-    # Validate given URL
+
+    if request.method == 'GET' and request.path == f'/eventsList/{eventId}/view':
+        viewCount=9
+        user = User.get_by_id(g.current_user)
+        event = Event.get_by_id(eventId)
+        event_view_exists = EventViews.select().where(EventViews.user == user, EventViews.event == event).exists()
+        
+        if not event_view_exists:
+            # Insert new EventViews record for the user and event
+            new_event_view = EventViews.create(user=user, event=event)
+            new_event_view.save()
+            
     try:
         event = Event.get_by_id(eventId)
     except DoesNotExist as e:
@@ -229,7 +241,8 @@ def eventDisplay(eventId):
                                 userHasRSVPed = userHasRSVPed,
                                 programTrainings = UserParticipatedTrainingEvents,
                                 isProgramManager = isProgramManager,
-                                filepaths = filepaths)
+                                filepaths = filepaths,
+                                viewCount= viewCount)
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
