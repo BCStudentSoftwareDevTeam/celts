@@ -21,13 +21,7 @@ function changeAction(action){
     $('#courseID').val(courseID);
     $('#withdrawModal').modal('show');
   } else if(action.value == "Edit"){
-      if(courseStatus == "Approved"){
-        window.location.href = "/serviceLearning/viewProposal/" + courseID;
-        return;
-      }
-      else {
         location = '/serviceLearning/editProposal/' + courseID
-      }
     }
 }
 function renew(){
