@@ -3,7 +3,8 @@ import pytest
 from app.models import mainDB
 from app.models.user import User
 from app.models.term import Term
-from app.logic.utils import deep_update, selectSurroundingTerms
+from app.logic.config import deep_update
+from app.logic.utils import selectSurroundingTerms
 from app.logic.userManagement import addCeltsAdmin, removeCeltsAdmin,addCeltsStudentStaff, removeCeltsStudentStaff, changeCurrentTerm, addNextTerm
 
 
