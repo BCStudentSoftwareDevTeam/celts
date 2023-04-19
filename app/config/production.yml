@@ -1,3 +1,2 @@
 use_shibboleth: True
 show_queries: False
-test_item: "The Moon"
