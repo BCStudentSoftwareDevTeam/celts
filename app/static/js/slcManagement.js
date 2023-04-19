@@ -23,8 +23,6 @@ function changeAction(action){
   } else if(action.value == "Edit"){
       if(courseStatus == "Approved"){
         window.location.href = "/serviceLearning/viewProposal/" + courseID;
-        console.log("+++++++++++++++++")
-        console.log("HIIIII")
         return;
       }
       else {
