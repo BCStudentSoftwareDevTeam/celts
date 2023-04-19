@@ -50,37 +50,8 @@ def slcEditProposal(courseID):
         approved = 3
         #add a condition to check the route you are comming from
         if courseStatusInt==approved and request.path == f"/serviceLearning/editProposal/{courseID}":
-            print("__________________________________________________")
-            print("hello")
-            print(request.base_url)
-            print(courseStatus)
-            # statusOfCourse = Course.select(Course.status)
-            # questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
-            # questionanswers = [question.questionContent for question in questionData]
-            # courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
-            #
-            # isAllSectionsServiceLearning = ""
-            # isPermanentlyDesignated = ""
-            #
-            # if course.isAllSectionsServiceLearning:
-            #     isAllSectionsServiceLearning = True
-            # if course.isPermanentlyDesignated:
-            #     isPermanentlyDesignated = True
-            # terms = selectSurroundingTerms(g.current_term, 0)
-            # return render_template('serviceLearning/slcNewProposal.html',
-            #                             course = course,
-            #                             questionanswers = questionanswers,
-            #                             terms = terms,
-            #                             statusOfCourse = statusOfCourse,
-            #                             courseStatus = courseStatus,
-            #                             courseInstructor = courseInstructor,
-            #                             isAllSectionsServiceLearning = isAllSectionsServiceLearning,
-            #                             isPermanentlyDesignated = isPermanentlyDesignated,
-            #                             redirectTarget=getRedirectTarget())
             return redirect(f"/serviceLearning/viewProposal/{courseID}")
         else:
-            print("+++++++++++")
-            print(courseStatus)
             statusOfCourse = Course.select(Course.status)
             questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
             questionanswers = [question.questionContent for question in questionData]
