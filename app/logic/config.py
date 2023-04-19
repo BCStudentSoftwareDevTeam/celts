@@ -29,7 +29,7 @@ def load_config_files(app, env):
 
 def update_config_from_yaml(app, configFile):
     """
-    
+    Update the application config with a yml file based on the Flask environment.
     """
     with open(f"app/config/{configFile}", 'r') as ymlfile:
         try:
