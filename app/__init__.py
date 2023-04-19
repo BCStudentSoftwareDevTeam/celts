@@ -4,15 +4,13 @@ import pprint
 from flask import Flask, render_template
 from flask.helpers import get_env
 from playhouse.shortcuts import model_to_dict, dict_to_model
+from app.logic.config import load_config_files
 
 # Initialize our application
 app = Flask(__name__, template_folder="templates")
 
-from app.logic.config import load_config_files
-
-env = get_env()
-
-app.config.update(load_config_files(app.config, env))
+# Set the correct configuration according to the environment
+load_config_files(app, get_env())
 
 # set the secret key after configuration is set up
 app.secret_key = app.config['secret_key']

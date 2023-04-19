@@ -1,3 +1,5 @@
+import yaml
+
 import collections.abc as collections
 
 def deep_update(d, u):
@@ -19,25 +21,19 @@ def deep_update(d, u):
             d = {key: u[key]}
     return d
 
-def load_config_files(conf, env):
-    # New Funct: 
-    # load in default
-    # with open(environment_file) as ymlfile:
-    # deep_update(override with ymlfile)
-    # with open(local_override) as ymlfile:
-    # deep_update(override with ymlfile)
+def load_config_files(app, env):
     
-    import yaml
+    update_config_from_yaml(app, "default.yml")
+    update_config_from_yaml(app, f"{env}.yml")
+    update_config_from_yaml(app, "local-override.yml")
 
-    with open("app/config/default.yml", 'r') as ymlfile:
-        try:
-            conf.update(deep_update(conf, yaml.load(ymlfile, Loader=yaml.FullLoader)))
-        except TypeError:
-            print("There was an error loading the override config file default.yml. It might just be empty.")
-    with open("app/config/"+ env + ".yml", 'r') as ymlfile:
-        try:
-            conf.update(deep_update(conf, yaml.load(ymlfile, Loader=yaml.FullLoader)))
-        except TypeError:
-            print(f"There was an error loading the override config file {env}.yml. It might just be empty.")
+def update_config_from_yaml(app, configFile):
+    """
     
-    return conf
+    """
+    with open(f"app/config/{configFile}", 'r') as ymlfile:
+        try:
+            app.config.update(deep_update(app.config, yaml.load(ymlfile, Loader=yaml.FullLoader)))
+        except TypeError:
+            print(F"There was an error loading the override config file {configFile}.")
+    
