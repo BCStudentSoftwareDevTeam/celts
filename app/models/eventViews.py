@@ -4,4 +4,5 @@ from app.models.event import Event
 
 class EventViews(baseModel):
     user = ForeignKeyField(User)
-    event= ForeignKeyField(Event)
+    event = ForeignKeyField(Event)
+    viewedOn = DateTimeField()

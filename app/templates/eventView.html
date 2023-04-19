@@ -14,11 +14,6 @@
           <h3>CELTS-Sponsored Event</h3>
         {% elif eventData.program %}
           <h3>{{eventData["program"].programName}} Event</h3>
-          <div class="d-flex align-items-center">
-            <i class="bi bi-eye-fill me-2"></i>
-            <span class="me-2">Views:</span>
-            <span id="view-count">{{viewCount}}</span>
-          </div>
         {% endif %}
     {% if isPastEvent %}
         <div class="alert-danger pb-2 pt-2" role="alert">This event is in the past.</div>
@@ -128,5 +123,12 @@
                     <button type="submit" class="btn btn-primary" value="{{eventData.id}}" id="rsvpBtn">RSVP</button>
                  {% endif %}
               {% endif %}
+              {% if g.current_user.isCeltsAdmin or isProgramManager %}
+            <div class="d-flex align-items-center">
+                <i class="bi bi-eye-fill me-2"></i>
+                <span class="me-2">Views:</span>
+                <span id="view-count">{{viewCount}}</span>
+            </div>
+          {% endif %}
             </div>
 {% endblock %}
