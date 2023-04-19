@@ -5,8 +5,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.program import Program
 from app.models.event import Event
 from app.models.term import Term
-from peewee import fn, JOIN
-
+from peewee import *
 
 def volunteer():
 
@@ -85,23 +84,40 @@ def volunteer():
                                   .join(Program, on=(Program.id == ProgramEvent.program_id))
                                   .join(Event, on=(EventParticipant.event_id == Event.id))
                                   .join(Term, on=(Event.term_id == Term.id) )
-                                  .group_by(ProgramEvent.program_id)
                                   .where(Term.description == "Fall 2022"))
                                   
-    
+    # for result in fallParticipationQuery.dicts():
+    #     print(f"Fall2022", result["participants"], result["progName"])
+    fallParticipationDict = {}
     for result in fallParticipationQuery.dicts():
-        print(f"Fall2022", result["participants"], result["progName"])
+        prog_name = result['progName']
+        participant = result['participants']
+        if prog_name not in fallParticipationDict:
+            fallParticipationDict[prog_name] = []
+        fallParticipationDict[prog_name].append(participant)
+    
+    print(fallParticipationDict)
+
     
       #participation in a program in Spring
-    springParticipationQuery=(ProgramEvent.select(ProgramEvent.program_id, fn.COUNT(EventParticipant.user_id).alias('participants'), Program.programName.alias("progName"))
+    springParticipationQuery=(ProgramEvent.select(ProgramEvent.program_id, EventParticipant.user_id.alias('participants'), Program.programName.alias("progName"))
                                   .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
                                   .join(Program, on=(Program.id == ProgramEvent.program_id))
                                   .join(Event, on=(EventParticipant.event_id == Event.id))
                                   .join(Term, on=(Event.term_id == Term.id) )
-                                  .group_by(ProgramEvent.program_id)
+                                #   .group_by(ProgramEvent.program_id)
                                   .where(Term.description == "Spring 2023"))
+    # for result in springParticipationQuery.dicts():
+    #     print(f"Spring2023", result["participants"], result["progName"])
+    
+    springParticipationDict = {}
     for result in springParticipationQuery.dicts():
-        print(f"Spring2023", result["participants"], result["progName"])
+        prog_name = result['progName']
+        participant = result['participants']
+        if prog_name not in springParticipationDict:
+            springParticipationDict[prog_name] = []
+        springParticipationDict[prog_name].append(participant)
+    print(springParticipationDict)
     
     #retention rate = (springParticipation/fallParticipation) * 100 ? (Do this by program)
 
