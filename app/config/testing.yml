@@ -5,6 +5,7 @@ use_banner: False
 default_user: "ramsayb2"
 celts_admin_contact: "celts@berea.edu"
 show_queries: True
+test_entry: "Testing"
 
 db:
     name: "celts"
