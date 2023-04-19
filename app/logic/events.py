@@ -18,7 +18,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.eventFile import EventFile
 from app.models.requirementMatch import RequirementMatch
 from app.models.certificationRequirement import CertificationRequirement
-from app.models.eventViews import EventViews
+from app.models.eventViews import EventView
 
 from app.logic.adminLogs import createLog
 from app.logic.utils import format24HourTime
@@ -452,10 +452,10 @@ def getTomorrowsEvents():
     events = list(Event.select().where(Event.startDate==tomorrowDate))
     return events
 def eventViewCount(viewer,event):
-    """This checks if the current user already viewed the event. If not, insert a recored to EventViews table"""
-    event_view_exists = EventViews.select().where(EventViews.user == viewer, EventViews.event == event).exists()     
+    """This checks if the current user already viewed the event. If not, insert a recored to EventView table"""
+    event_view_exists = EventView.select().where(EventView.user == viewer, EventView.event == event).exists()     
     if not event_view_exists:
-        # Insert new EventViews record for the user and event
+        # Insert new EventView record for the user and event
         date = datetime.datetime.now()
-        new_event_view = EventViews.create(user=viewer, event=event, viewedOn=date)
+        new_event_view = EventView.create(user=viewer, event=event, viewedOn=date)
         new_event_view.save()

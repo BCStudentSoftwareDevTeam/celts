@@ -22,7 +22,7 @@ from app.models.adminLogs import AdminLogs
 from app.models.eventFile import EventFile
 from app.models.bonnerCohort import BonnerCohort
 from app.models.certification import Certification
-from app.models.eventViews import EventViews
+from app.models.eventViews import EventView
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.adminLogs import createLog
@@ -148,11 +148,11 @@ def createEvent(templateid, programid=None):
 @admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
 @admin_bp.route('/eventsList/<eventId>/edit', methods=['GET','POST'])
 def eventDisplay(eventId):
-    viewCount = EventViews.select().where(EventViews.event == eventId).count() # count the event views 
+    viewCount = EventView.select().where(EventView.event == eventId).count() # count the event views 
     if not g.current_user.isCeltsAdmin and request.method == 'GET' and request.path == f'/eventsList/{eventId}/view':
         viewer = User.get_by_id(g.current_user)
         event = Event.get_by_id(eventId)
-        eventViewCount(viewer,event) #insert into the EventViews table 
+        eventViewCount(viewer,event) #insert into the EventView table 
 
     try:
         event = Event.get_by_id(eventId)
