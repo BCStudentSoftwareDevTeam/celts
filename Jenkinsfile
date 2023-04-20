@@ -19,7 +19,7 @@ pipeline {
         stage('Test') {
             steps {
 	    	echo 'Running tests...' 
-		exprot FLASK_ENV=testing &&
+		export FLASK_ENV=testing &&
 		sh '''. venv/bin/activate && tests/run_tests.sh'''
             }
         }
