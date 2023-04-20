@@ -310,6 +310,8 @@ def RemoveRSVP():
 
     currentRsvpParticipant = EventRsvp.get(EventRsvp.user == g.current_user, EventRsvp.event == event)
     currentRsvpParticipant.delete_instance()
+    # if event waitlist exist 
+        # oldest waitlist -> RSVP
     flash("Successfully unregistered for event!", "success")
     if 'from' in eventData:
         if eventData['from'] == 'ajax':
