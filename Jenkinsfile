@@ -12,7 +12,7 @@ pipeline {
             steps {
                 sh '''. venv/bin/activate && 
 			export USING_CONTAINER=True && 
-			export FLASK_ENV=Testing &&
+			export FLASK_ENV=testing &&
 			database/reset_database.sh test'''
 	    }
         }
