@@ -19,8 +19,9 @@ pipeline {
         stage('Test') {
             steps {
 	    	echo 'Running tests...' 
-		export FLASK_ENV=testing &&
-		sh '''. venv/bin/activate && tests/run_tests.sh'''
+		sh '''. venv/bin/activate &&
+			export FLASK_ENV=testing &&
+			tests/run_tests.sh'''
             }
         }
     }
