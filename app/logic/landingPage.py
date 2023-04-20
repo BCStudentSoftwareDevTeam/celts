@@ -8,7 +8,7 @@ def getManagerProgramDict(user):
     if user.isAdmin or user.isBonnerScholar:
         programs = Program.select()
     else:
-        programs = Program.select().where(Program.programName != "Bonners Scholars")
+        programs = Program.select().where(Program.isBonnerScholars == False)
     managerRows = list(ProgramManager.select())
     managerProgramDict = {}
 
