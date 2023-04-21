@@ -67,6 +67,9 @@ def volunteer():
 
     for result in repeatAllProgramQuery:
         print(f"participant: {result.user_id}, count: {result.count}")
+    print("-----------------------")
+
+    
 
 
 
@@ -95,8 +98,9 @@ def volunteer():
         if prog_name not in fallParticipationDict:
             fallParticipationDict[prog_name] = []
         fallParticipationDict[prog_name].append(participant)
-    
     print(fallParticipationDict)
+    print("------------------------")
+
 
     
       #participation in a program in Spring
@@ -118,9 +122,53 @@ def volunteer():
             springParticipationDict[prog_name] = []
         springParticipationDict[prog_name].append(participant)
     print(springParticipationDict)
-    
+
+    print("-----------------")
+
+
     #retention rate = (springParticipation/fallParticipation) * 100 ? (Do this by program)
 
+    #retention rates by program
+    # define a function to calculate the retention rate for each program
+    def retention_rate(fall_dict, spring_dict):
+        retention_dict = {}
+        for program in fall_dict.keys():
+            fall_participants = set(fall_dict[program])
+            spring_participants = set(spring_dict.get(program, []))
+            retention_rate = len(fall_participants & spring_participants) / len(fall_participants)
+            retention_dict[program] = retention_rate
+        return retention_dict
+
+    # calculate the retention rate using the defined function
+    retention_rate_dict = retention_rate(fallParticipationDict, springParticipationDict)
+
+    for program, retention_rate in retention_rate_dict.items():
+        print(f"{program}: {round(retention_rate * 100, 2)}%")
+    print("-----------")
     
 
 
+    #Half retention rate for recurring events (still working on this)
+    #Fall 2022
+    programs = ProgramEvent.select(ProgramEvent.program_id).distinct()
+    
+
+    # Loop over the programs and get the corresponding event IDs
+    for program in programs:
+        print(program)
+        # Define the query for each program
+        query = (EventParticipant
+                .select(EventParticipant.event_id.alias("event_id"), Event.name.alias("name"))
+                .join(Event, on=(EventParticipant.event_id == Event.id))
+                .join(ProgramEvent, on=(EventParticipant.event_id == ProgramEvent.event_id))
+                .where((ProgramEvent.program_id == program.program_id) & (Event.recurringId == True))
+                .distinct()
+                .dicts())
+
+        results = query.execute()
+
+        # Print the results for each program
+        for result in results:
+            print(result["event_id"], result["name"])
+
+     
