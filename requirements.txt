@@ -39,7 +39,6 @@ ordered-set==4.0.2
 packaging==20.9
 peewee==3.14.4
 peewee-migrations==0.3.19
-pkg_resources==0.0.0
 pluggy==0.13.1
 py==1.11.0
 pycparser==2.20
