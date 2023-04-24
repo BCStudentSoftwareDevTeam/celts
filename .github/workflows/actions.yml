@@ -22,6 +22,7 @@ jobs:
       MYSQL_USER: 'celts_user'
       MYSQL_PASSWORD: 'password'
       MYSQL_ROOT_PASSWORD: 'root'
+      FLASK_ENV: 'testing'
 
     # port mapping for each of these services is required otherwise it's inaccessible to the rest of the jobs
 #     services:
