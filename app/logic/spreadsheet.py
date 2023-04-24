@@ -109,7 +109,6 @@ def volunteer():
                                   .join(Program, on=(Program.id == ProgramEvent.program_id))
                                   .join(Event, on=(EventParticipant.event_id == Event.id))
                                   .join(Term, on=(Event.term_id == Term.id) )
-                                #   .group_by(ProgramEvent.program_id)
                                   .where(Term.description == "Spring 2023"))
     # for result in springParticipationQuery.dicts():
     #     print(f"Spring2023", result["participants"], result["progName"])
