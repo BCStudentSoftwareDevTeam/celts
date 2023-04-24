@@ -93,7 +93,7 @@ def test_update_config_from_yaml():
 
     update_config_from_yaml(app, f"{get_env()}.yml")
     # test that something that is in default and in testing is updated after the override
-    assert(app.config["test_entry"] == "Testing")
+    assert(app.config["test_entry"] == "Break")
     # test that something that is in default but not in testing is still there after the override
     assert(app.config["MAIL_ENABLED"] == True)
 
