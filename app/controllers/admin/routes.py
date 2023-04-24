@@ -148,11 +148,11 @@ def createEvent(templateid, programid=None):
 @admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
 @admin_bp.route('/eventsList/<eventId>/edit', methods=['GET','POST'])
 def eventDisplay(eventId):
-    viewCount = EventView.select().where(EventView.event == eventId).count() # count the event views 
+    pageViewsCount = EventView.select().where(EventView.event == eventId).count() # count the event views 
     if not g.current_user.isCeltsAdmin and request.method == 'GET' and request.path == f'/eventsList/{eventId}/view':
         viewer = User.get_by_id(g.current_user)
         event = Event.get_by_id(eventId)
-        eventViewCount(viewer,event) #insert into the EventView table 
+        eventViewCount(viewer,event) 
     # Validate given URL
     try:
         event = Event.get_by_id(eventId)
@@ -236,7 +236,7 @@ def eventDisplay(eventId):
                                 programTrainings = UserParticipatedTrainingEvents,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths,
-                                viewCount= viewCount)
+                                pageViewsCount= pageViewsCount)
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
