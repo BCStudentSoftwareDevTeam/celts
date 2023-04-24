@@ -53,7 +53,7 @@ def slcEditProposal(courseID):
         courseStatus = CourseStatus.get_by_id(course.status)
         courseStatusInt = courseStatus.get_id()
         approved = 3
-        #add a condition to check the route you are comming from
+        # Condition to check the route you are comming from
         if courseStatusInt==approved and request.path == f"/serviceLearning/editProposal/{courseID}":
             return redirect(f"/serviceLearning/viewProposal/{courseID}")
         else:
