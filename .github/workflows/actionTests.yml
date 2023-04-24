@@ -1,0 +1,41 @@
+name: Celts CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ development ]
+  pull_request:
+    branches: [ development ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+
+    # each step can define `env` vars, but it's easiest to define them on the build level
+    env:
+      MYSQL_DATABASE: 'celts'
+      MYSQL_USER: 'celts_user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'root'
+      FLASK_ENV: 'testing'
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+    - run: |
+        sudo /etc/init.d/mysql start
+    - name: Install dependencies
+      run: |
+        source setup.sh
+    - name: Activate environment and reset database
+      run: |
+        . venv/bin/activate && database/reset_database.sh test
+    - name: Run tests
+      run: |
+       . venv/bin/activate && ./tests/run_tests.sh
