@@ -2,6 +2,7 @@ from datetime import datetime
 from peewee import DoesNotExist, JOIN
 from flask_mail import Mail, Message
 import os
+import email.message
 
 from app import app
 from app.models.programEvent import ProgramEvent
@@ -251,3 +252,24 @@ class EmailHandler:
             return last_email
         except DoesNotExist:
             return None
+
+
+    def email_when_submitted(recipient, subject, body):
+        defaultEmailInfo = {"senderName":"Ashley Cochrane", "replyTo":self.reply_to}
+        template_id, subject, body = self.build_email()
+
+        with self.mail.connect() as conn:
+            for recipient in self.recipients:
+                full_name = "Ashley Cochrane"
+                email_body = self.replace_name_placeholder(full_name, body)
+
+                conn.send(Message(
+                    body = "This is the message"
+                    subject = "Hello Ashley",
+                    recipients = [cochranea@berea.edu],
+                    email_body,
+                    reply_to = defaultEmailInfo["replyTo"],
+                    sender = (defaultEmailInfo["senderName"], defaultEmailInfo["replyTo"])
+                    ))
+        self.store_sent_email(subject, template_id)
+        return True

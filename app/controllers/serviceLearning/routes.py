@@ -19,7 +19,6 @@ from app.logic.courseManagement import approvedCourses
 from app.controllers.main.routes import getRedirectTarget, setRedirectTarget
 from app.controllers.serviceLearning import serviceLearning_bp
 
-
 @serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
 @serviceLearning_bp.route('/serviceLearning/courseManagement/<username>', methods = ['GET'])
 def serviceCourseManagement(username=None):
@@ -30,6 +29,7 @@ def serviceCourseManagement(username=None):
         user = User.get(User.username==username) if username else g.current_user
         courseDict = getServiceLearningCoursesData(user)
         termList = selectSurroundingTerms(g.current_term, prevTerms=0)
+        status = CourseStatus.select
         return render_template('serviceLearning/slcManagement.html',
             user=user,
             courseDict=courseDict,
@@ -45,27 +45,30 @@ def slcEditProposal(courseID):
         Route for editing proposals, it will fill the form with the data found in the database
         given a courseID.
     """
-    course = Course.get_by_id(courseID)
-    questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
-    questionanswers = [question.questionContent for question in questionData]
-    courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
+    if g.current_user.isCeltsAdmin or g.current_user.isFaculty:
+        course = Course.get_by_id(courseID)
+        questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
+        questionanswers = [question.questionContent for question in questionData]
+        courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
 
-    isAllSectionsServiceLearning = ""
-    isPermanentlyDesignated = ""
+        isAllSectionsServiceLearning = ""
+        isPermanentlyDesignated = ""
+        course.status = CourseStatus.APPROVED
 
-    if course.isAllSectionsServiceLearning:
-        isAllSectionsServiceLearning = True
-    if course.isPermanentlyDesignated:
-        isPermanentlyDesignated = True
-    terms = selectSurroundingTerms(g.current_term, 0)
-    return render_template('serviceLearning/slcNewProposal.html',
-                                course = course,
-                                questionanswers = questionanswers,
-                                terms = terms,
-                                courseInstructor = courseInstructor,
-                                isAllSectionsServiceLearning = isAllSectionsServiceLearning,
-                                isPermanentlyDesignated = isPermanentlyDesignated,
-                                redirectTarget=getRedirectTarget())
+
+        if course.isAllSectionsServiceLearning:
+            isAllSectionsServiceLearning = True
+        if course.isPermanentlyDesignated:
+            isPermanentlyDesignated = True
+        terms = selectSurroundingTerms(g.current_term, 0)
+        return render_template('serviceLearning/slcNewProposal.html',
+                                    course = course,
+                                    questionanswers = questionanswers,
+                                    terms = terms,
+                                    courseInstructor = courseInstructor,
+                                    isAllSectionsServiceLearning = isAllSectionsServiceLearning,
+                                    isPermanentlyDesignated = isPermanentlyDesignated,
+                                    redirectTarget=getRedirectTarget())
 
 @serviceLearning_bp.route('/serviceLearning/createCourse', methods=['POST'])
 def slcCreateCourse():
