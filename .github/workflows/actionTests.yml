@@ -15,7 +15,6 @@ jobs:
         python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
 
     # each step can define `env` vars, but it's easiest to define them on the build level
-    # if you'll add additional jobs testing the same application later (which you probably will
     env:
       MYSQL_DATABASE: 'celts'
       MYSQL_USER: 'celts_user'
