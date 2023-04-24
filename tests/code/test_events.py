@@ -1,28 +1,34 @@
 import pytest
 from flask import g
 from app import app
-from peewee import DoesNotExist, OperationalError, IntegrityError
-from datetime import datetime, timedelta
+from peewee import DoesNotExist, OperationalError, IntegrityError, fn
+from datetime import datetime, date, timedelta
 from dateutil import parser
 from werkzeug.datastructures import MultiDict
 
 from app.models import mainDB
 from app.models.event import Event
+from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.eventTemplate import EventTemplate
 from app.models.requirementMatch import RequirementMatch
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
+from app.models.programBan import ProgramBan
 from app.models.term import Term
 from app.models.interest import Interest
 from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
 
-from app.logic.events import *
+from app.logic.events import getEvents, preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
+from app.logic.events import attemptSaveEvent, saveEventToDb, deleteEvent, getParticipatedEventsForUser
+from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser
+from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents
 from app.logic.volunteers import addVolunteerToEventRsvp, updateEventParticipants
 from app.logic.participants import addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser
+from app.logic.utils import format24HourTime
 
 @pytest.mark.integration
 def test_event_model():
@@ -138,13 +144,13 @@ def test_preprocessEventData_dates():
 
     eventData = {'startDate':'09/07/21', 'endDate': '2021-08-08', 'isRecurring': 'on'}
     newData = preprocessEventData(eventData)
-    assert newData['startDate'] == datetime.datetime.strptime("2021-09-07","%Y-%m-%d")
-    assert newData['endDate'] == datetime.datetime.strptime("2021-08-08","%Y-%m-%d")
+    assert newData['startDate'] == datetime.strptime("2021-09-07","%Y-%m-%d")
+    assert newData['endDate'] == datetime.strptime("2021-08-08","%Y-%m-%d")
 
     # test different date formats
     eventData = {'startDate':parser.parse('09/07/21'), 'endDate': 75, 'isRecurring': 'on'}
     newData = preprocessEventData(eventData)
-    assert newData['startDate'] == datetime.datetime.strptime("2021-09-07","%Y-%m-%d")
+    assert newData['startDate'] == datetime.strptime("2021-09-07","%Y-%m-%d")
     assert newData['endDate'] == ''
 
     # endDate should match startDate for non-recurring events
@@ -553,7 +559,7 @@ def test_deleteEvent():
 @pytest.mark.integration
 def test_upcomingEvents():
     with mainDB.atomic() as transaction:
-        testDate = datetime.datetime.strptime("2021-08-01 05:00","%Y-%m-%d %H:%M")
+        testDate = datetime.strptime("2021-08-01 05:00","%Y-%m-%d %H:%M")
         dayBeforeTestDate = testDate - timedelta(days=1)
 
         # Create a user to run the tests with
@@ -592,24 +598,24 @@ def test_upcomingEvents():
                                          term = 2,
                                          description = "Test upcoming program event.",
                                          location = "The sun",
-                                         startDate = datetime.date(2021,12,12),
-                                         endDate = datetime.date(2021,12,14),
+                                         startDate = date(2021,12,12),
+                                         endDate = date(2021,12,14),
                                          recurringId = 1)
 
         newRecurringSecond = Event.create(name = "Recurring second event",
                                           term = 2,
                                           description = "Test upcoming program event.",
                                           location = "The sun",
-                                          startDate = datetime.date(2021,12,14),
-                                          endDate = datetime.date(2021,12,15),
+                                          startDate = date(2021,12,14),
+                                          endDate = date(2021,12,15),
                                           recurringId = 1)
 
         newRecurringDifferentId = Event.create(name = "Recurring different Id",
                                                term = 2,
                                                description = "Test upcoming program event.",
                                                location = "The sun",
-                                               startDate = datetime.date(2021,12,13),
-                                               endDate = datetime.date(2021,12,13),
+                                               startDate = date(2021,12,13),
+                                               endDate = date(2021,12,13),
                                                recurringId = 2)
 
         # Create a new Program to create the new Program Event off of so the
@@ -620,7 +626,13 @@ def test_upcomingEvents():
                                             isBonnerScholars = False,
                                             contactEmail = "test@email",
                                             contactName = "testName")
-        programForBanning = Program.create(id = 14,
+        programForInterest2 = Program.create(id = 14,
+                                           programName = "BOO2",
+                                           isStudentLed = False,
+                                           isBonnerScholars = False,
+                                           contactEmail = "test@email",
+                                           contactName = "testName")
+        programForBanning = Program.create(id = 15,
                                            programName = "BANNED",
                                            isStudentLed = False,
                                            isBonnerScholars = False,
@@ -630,11 +642,12 @@ def test_upcomingEvents():
         ProgramEvent.create(program = programForInterest, event = newRecurringEvent)
         ProgramEvent.create(program = programForInterest, event = newRecurringSecond)
         ProgramEvent.create(program = programForInterest, event = newRecurringDifferentId)
-        ProgramEvent.create(program = programForInterest, event = newProgramEvent)
+        ProgramEvent.create(program = programForInterest2, event = newProgramEvent)
         ProgramEvent.create(program = programForBanning, event = newBannedProgramEvent)
 
         # User has not RSVPd and is Interested
         addUserInterest(programForInterest.id, user)
+        addUserInterest(programForInterest2.id, user)
         addUserInterest(programForBanning.id, user)
         eventsInUserInterestedProgram = getUpcomingEventsForUser(user, asOf = testDate)
 
@@ -673,9 +686,18 @@ def test_upcomingEvents():
 
         # User has RSVPd and is not Interested
         removeUserInterest(programForInterest.id, user)
+        removeUserInterest(programForInterest2.id, user)
         removeUserInterest(programForBanning.id, user)
         eventsInUserRsvp = getUpcomingEventsForUser(user, asOf = testDate)
         assert eventsInUserRsvp == [noProgram]
+
+        # Get upcoming for specific program only
+        # we would have multiples with interests in both programs, but we specify only one
+        addUserInterest(programForInterest.id, user)
+        addUserInterest(programForInterest2.id, user)
+        eventsInProgram = getUpcomingEventsForUser(user, program = programForInterest2.id, asOf = testDate)
+
+        assert eventsInProgram == [newProgramEvent]
 
         transaction.rollback()
 
@@ -750,11 +772,11 @@ def test_format24HourTime():
     assert format24HourTime('00:01') == "00:01"
     assert format24HourTime('17:07') == "17:07"
     assert format24HourTime('23:59') == "23:59"
-    time = datetime.datetime(1900, 1, 1, 8, 30)
+    time = datetime(1900, 1, 1, 8, 30)
     assert format24HourTime(time) == "08:30"
-    time = datetime.datetime(1900, 1, 1, 23, 59)
+    time = datetime(1900, 1, 1, 23, 59)
     assert format24HourTime(time) == "23:59"
-    time = datetime.datetime(1900, 1, 1, 00, 1)
+    time = datetime(1900, 1, 1, 00, 1)
     assert format24HourTime(time) == "00:01"
 
     # tests "input times" that are not valid inputs

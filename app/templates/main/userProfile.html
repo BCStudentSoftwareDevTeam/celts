@@ -10,6 +10,7 @@
 {% block styles %}
   {{super()}}
   <link rel="stylesheet" href="{{url_for('static', filename ='css/userProfile.css') }}?u={{lastStaticUpdate}}">
+
 {% endblock %}
 
 {% block app_content %}
@@ -25,20 +26,19 @@
   </div>
   <a align="right" href="/profile/{{volunteer.username}}/serviceTranscript">View Service Transcript</a>
 </div>
-<!-- Start Upcoming Events -->
 <div class="accordion" id="userProfile">
+
+<!-- ################# Upcoming Events ################ -->
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingOne">
-      {% set focus = "open" if visibleAccordion == "upcoming" or volunteer.username == g.current_user.username and not visibleAccordion =="programTable" and not visibleAccordion =="background" else "collapsed" %}
-      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-        Upcoming Events
-      </button>
+      {% set focus = "open" if visibleAccordion == "upcoming" or (not visibleAccordion and volunteer.username == g.current_user.username) else "collapsed" %}
+      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Upcoming Events</button>
     </h3>
-    {% set show = "show" if visibleAccordion == "upcoming" or volunteer.username == g.current_user.username and not visibleAccordion =="programTable" and not visibleAccordion =="background" else ""%}
+    {% set show = "show" if visibleAccordion == "upcoming" or (not visibleAccordion and volunteer.username == g.current_user.username) else ""%}
     <div id="collapseOne" class="accordion-collapse collapse {{show}} " aria-labelledby="headingOne" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="row table-responsive">
-          <table class="table">
+          <table class="table table-striped">
             {% if upcomingEvents|length > 0 %}
               <thead class="tableHeader">
                 <th scope="col">Program</th>
@@ -72,8 +72,9 @@
       </div>
     </div>
   </div>
-  <!-- End Upcoming Events -->
-  <!-- Start Program History -->
+<!-- ################# Upcoming Events ################ -->
+
+<!-- ################# Participation History ################ -->
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingTwo">
       {% set focus = "open" if visibleAccordion == "history" else "collapsed" %}
@@ -85,7 +86,7 @@
     <div id="collapseTwo" class="accordion-collapse collapse {{show}}" aria-labelledby="headingTwo" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="table-responsive">
-          <table class="table banTable">
+          <table class="table table-striped banTable">
             {% if participatedEvents|length > 0 %}
               <thead>
                 <th scope="col">Program</th>
@@ -107,104 +108,101 @@
       </div>
     </div>
   </div>
-  <!-- End Program History -->
-  <!-- Start Program Table -->
+<!-- ################# Participation History ################ -->
+
+<!-- ################# Program Table ################ -->
   <div class="accordion-item">
     <h3 class="accordion-header" id="headingThree">
-      {% set focus = "open" if visibleAccordion == "programTable" or volunteer.username != g.current_user.username and not visibleAccordion =="background" else "collapsed" %}
+      {% set focus = "open" if visibleAccordion == "programTable" or (not visibleAccordion and volunteer.username != g.current_user.username) else "collapsed" %}
       <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
           Programs
       </button>
     </h3>
-    {% set show = "show" if visibleAccordion == "programTable" or volunteer.username != g.current_user.username and not visibleAccordion =="background" else "" %}
+    {% set show = "show" if visibleAccordion == "programTable" or (not visibleAccordion and volunteer.username != g.current_user.username) else "" %}
     <div id="collapseThree" class="accordion-collapse collapse {{show}}" aria-labelledby="headingThree" data-bs-parent="#userProfile">
       <div class="accordion-body">
         <div class="table-responsive">
-          <table class="table banTable">
-             <thead>
-               <tr>
-                 <th scope="col">Program</th>
-                 <th scope="col">Notify</th>
-                 <th scope="col">Training</th>
-                 {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff%}
-                   <th scope="col">Eligibility</th>
-                 {% endif %}
-                 <th scope="col"></th>
-               </tr>
-             </thead>
-             <tbody>
-             {% for row in eligibilityTable %}
-             {% set trainingList = row['trainingList'] %}
-             {% macro trainingListView() %}
-               {% if trainingList %}
-                   {% for trainings, participated in trainingList.items() %}
-                       {% if g.current_user.isCeltsAdmin %}
-                         <li>{{trainings}}</li>
-                       {% else %}
-                           {% if participated == 1 %}
-                               <p><b>{{trainings}}</b>: <br>Attended</p>
-                           {% elif participated == 0 %}
-                               <p><b>{{trainings}}</b>: <br>Not attended</p>
-                           {% elif not participated[0] %}
-                               <p><b>{{trainings}}</b>: <br>Takes place on {{participated[1]}}</p>
-                           {% endif%}
-                       {% endif %}
-                   {% endfor %}
-               {% else %}
-                   <p>No trainings for this program.</p>
-               {% endif %}
-             {% endmacro %}
-               {% set checked = "" %}
-               {% if row.program in programsInterested %}
-                   {% set checked = "checked" %}
-               {% endif %}
-                 <tr>
-                   <td><a href="{{row.program.url}}" id="programNameTable">{{row.program.programName}}</a></td>
-                   <td><input class="form-check-input" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>
-                   <td>
-                       {% if row.completedTraining or not trainingList %}
-                           <i class="bi bi-check-lg"></i> &nbsp&nbsp
-                           <a class="trainingPopover" id="{{row.program.id}}" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
-                       {% else %}
-                           <i class="bi bi-x-lg"></i> &nbsp&nbsp
-                           <a class="trainingPopover" id="{{row.program.id}}" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
-                       {% endif %}
-                   </td>
-                 {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
-                     {% if row.isNotBanned %}
-                       <td class="programBan">
-                         {% set label = "Ban" %}
-                         Eligible
-                     {% else %}
-                       <td class="programBan text-danger">
-                         {% set label = "Unban" %}
-                           Banned
-                     {% endif %}
-                   </td>
-                   <td>
-                   {% if g.current_user.isCeltsAdmin %}
-                       <button type="button" class="ban btn btn-primary" data-programid="{{row.program.id}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}">Edit</button>
-                   {% endif %}
-                   </td>
-                 {% endif %}
-             </tr>
-           {% endfor %}
-           </tbody>
-       </table>
-       <a href="https://www.berea.edu/celts/community-service-programs/volunteer-opportunities/">For more information about CELTS opportunities, click here.</a>
-       </div>
+          <table class="table table-striped banTable">
+            <thead>
+              <tr>
+                <th scope="col">Program</th>
+                <th scope="col">Notify</th>
+                <th scope="col">Training</th>
+                {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff%}
+                  <th scope="col">Eligibility</th>
+                {% endif %}
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in eligibilityTable %}
+                {% set trainingList = row['trainingList'] %}
+                {% macro trainingListView() %}
+                  {% if trainingList %}
+                    {% for trainings, participated in trainingList.items() %}
+                      {% if g.current_user.isCeltsAdmin %}
+                        <li>{{trainings}}</li>
+                      {% else %}
+                        {% if participated == 1 %}
+                          <p><b>{{trainings}}</b>: <br>Attended</p>
+                        {% elif participated == 0 %}
+                          <p><b>{{trainings}}</b>: <br>Not attended</p>
+                        {% elif not participated[0] %}
+                          <p><b>{{trainings}}</b>: <br>Takes place on {{participated[1]}}</p>
+                        {% endif%}
+                      {% endif %}
+                    {% endfor %}
+                  {% else %}
+                    <p>No trainings for this program.</p>
+                  {% endif %}
+                {% endmacro %}
+                {% set checked = "" %}
+                {% if row.program in programsInterested %}
+                  {% set checked = "checked" %}
+                {% endif %}
+                <tr>
+                  <td><a href="{{row.program.url}}" id="programNameTable">{{row.program.programName}}</a></td>
+                  <td><input class="form-check-input notifyInput" id="notifyInput" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>
+                  <td>
+                    {% if row.completedTraining or not trainingList %}
+                      <i class="bi bi-check-lg"></i> &nbsp&nbsp
+                      <a class="trainingPopover" id="{{row.program.id}}" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
+                    {% else %}
+                      <i class="bi bi-x-lg"></i> &nbsp&nbsp
+                      <a class="trainingPopover" id="{{row.program.id}}" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
+                    {% endif %}
+                  </td>
+                  {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
+                    {% if row.isNotBanned %}
+                      <td class="programBan"> Eligible </td>
+                      {% set label = "Ban" %}
+                    {% else %}
+                      <td class="programBan text-danger"> Banned </td>
+                      {% set label = "Unban" %}
+                    {% endif %}
+                    <td>
+                    {% if g.current_user.isCeltsAdmin %}
+                      <button type="button" class="ban btn btn-primary" data-programid="{{row.program.id}}" data-name="{{row.program.programName}}" data-note="{{row.banNote}}" value="{{label}}">Edit</button>
+                    {% endif %}
+                    </td>
+                  {% endif %}
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        <a href="https://next.berea.edu/centers/center-for-excellence-in-learning-through-service">For more information about CELTS opportunities, click here.</a>
+        </div>
       </div>
     </div>
   </div>
-  <!-- End Program Table -->
-  <!-- Start Program Manager section -->
+<!-- ################# Program Table ################ -->
+
+<!-- ################# Program Manager Section ################ -->
   {% if volunteer.isCeltsStudentStaff %}
     <div class="accordion-item">
       <h3 class="accordion-header" id="headingFour">
         {% set focus = "open" if visibleAccordion == "manager" else "collapsed" %}
-        <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-            Program Manager
-        </button>
+        <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">Program Manager</button>
       </h3>
       {% set show = "show" if visibleAccordion == "manager" else "" %}
       <div id="collapseFour" class="accordion-collapse collapse {{show}}" aria-labelledby="headingFour" data-bs-parent="#userProfile">
@@ -237,22 +235,21 @@
         </div>
       </div>
     </div>
-    {% endif %}
-    <!-- End Program Manager section -->
-    <!-- Start Background Check Table -->
-    {% if g.current_user.isAdmin %}
+  {% endif %}
+<!-- ################# Program Manager Section ################ -->
+
+<!-- ################# Background Check Section ################ -->
+  {% if g.current_user.isCeltsAdmin %}
     <div class="accordion-item">
       <h3 class="accordion-header" id="headingFive">
         {% set focus = "open" if visibleAccordion == "background" else "collapsed" %}
-        <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
-            Background Check
-        </button>
+        <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">Background Check</button>
       </h3>
       {% set show = "show" if visibleAccordion == "background" else "" %}
       <div id="collapseFive" class="accordion-collapse collapse {{show}}" aria-labelledby="headingFive" data-bs-parent="#userProfile">
         <div class="accordion-body">
           <div class="table-responsive">
-            <table class="table" id="bgHistoryTable">
+            <table class="table table-striped" id="bgHistoryTable">
               <thead>
                 <tr>
                   <th scope="col">Description</th>
@@ -297,10 +294,205 @@
         </div>
       </div>
     </div>
-    {% endif %}
-    <!-- End Background Check Table -->
+  {% endif %}
+<!-- ################# Background Check Section  ################ -->
+
+<!-- ################# Notes Section ################ -->
+  <div class="accordion-item">
+    <h3 class="accordion-header" id="headingSix">
+      {% set focus = "open" if visibleAccordion == "notes" else "collapsed" %}
+      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">Notes</button>
+    </h3>
+    {% set show = "show" if visibleAccordion == "notes" else "" %}
+    <div id="collapseSix" class="accordion-collapse collapse {{show}}" aria-labelledby="headingSix" data-bs-parent="#userProfile">
+      <div class="accordion-body">
+        <table class="table table-responsive table-striped" id="profileTable">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Creator</th>
+              <th>Note</th>
+              <th>Visible To</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if g.current_user.isCeltsAdmin %}
+              {% set userTier = 3 %}
+            {% elif g.current_user.isCeltsStudentStaff %}
+              {% set userTier = 2 %}
+            {% else %}
+              {% set userTier = 1 %}
+            {% endif %}
+            {% set note = namespace(count=0) %}
+            {% for row in profileNotes %}
+              {% if userTier >= row.viewTier and (not row.isBonnerNote or g.current_user.isBonnerScholar) %}
+                <tr>
+                  <td>{{row.note.createdOn.strftime('%m/%d/%Y')}}</td>
+                  <td>{{row.note.createdBy.firstName+ " "+ row.note.createdBy.lastName}}{{ " (you)" if row.note.createdBy == g.current_user else ""}}</td>
+                  <td>{{row.note.noteContent}}</td>
+                  <td>
+                    {% set bonner = "Bonner " if row.isBonnerNote else "" %}
+                    {% if row.viewTier == 3 %}
+                      {{bonner}}Admins
+                    {% elif row.viewTier == 2 %}
+                      {{bonner}}Admins/Student Staff
+                    {% else %}
+                      {{ "Bonner Scholars " if row.isBonnerNote else "Everyone"}}
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if (g.current_user == row.note.createdBy) or g.current_user.isCeltsAdmin%}
+                      <button type="button" class="btn btn-sm btn-danger deleteNoteButton float-end" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button>
+                    {% else %}
+                      <button type="button" class="btn btn-sm btn-danger deleteNoteButton float-end disabled" data-noteid="{{row.id}}" data-username="{{volunteer.username}}">Delete</button>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% set note.count = note.count + 1 %}
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if note.count == 0 %}
+          <tr>There are no notes yet</tr>
+        {% endif %}
+        <br>
+        <br>
+        <button type="button" name="button" class="btn btn-primary" id="addNoteButton">Add Note</button>
+      </div>
+    </div>
+  </div>
+<!-- ################# Notes Section ################ -->
+
+<!-- ################# Dietary Restrictions Section  ################ -->
+  <div class="accordion-item">
+    <h3 class="accordion-header" id="headingSeven">
+    {% set focus = "open" if visibleAccordion == "dietaryInformation" else "collapsed" %}
+    <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
+      Dietary Restrictions
+    </button>
+    </h3>
+    {% set show = "show" if visibleAccordion == "dietaryInformation" else "" %}
+    <div id="collapseSeven" class="accordion-collapse collapse {{show}}" aria-labelledby="headingSeven" data-bs-parent="#userProfile">
+      <div class="accordion-body">
+        <div class="container">
+          <form>
+            <div class="form-group">
+              <label for="usr">Please enter any dietary restrictions you have:</label>
+              <textarea class="form-control" id="diet">{%for diet in userDiet%}{{diet}}{%endfor%}</textarea>
+            </div>
+            <br>
+            <button type="button" class="saveDiet btn btn-primary" data-user="{{volunteer.username}}">Save</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- ################# Dietary Restrictions Section  ################ -->
+
+<!-- ################# Bonner Scholar ################ -->
+  {% if volunteer.isBonnerScholar %}
+  <div class="accordion-item">
+    <h3 class="accordion-header" id="headingEight">
+      {% set focus = "open" if visibleAccordion == "bonner" else "collapsed" %}
+      <button class="accordion-button {{focus}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEight" aria-expanded="false" aria-controls="collapseEight">Bonner Program</button>
+    </h3>
+    {% set show = "show" if visibleAccordion == "bonner" else "" %}
+    <div id="collapseEight" class="accordion-collapse collapse {{show}}" aria-labelledby="headingEight" data-bs-parent="#userProfile">
+      <div class="accordion-body container">
+          <div class="row">
+            <div class="col-md-6">
+              {% set address = "Your" if g.current_user == volunteer else volunteer.firstName~"'s" %}
+              <h5>{{address}} Upcoming Bonner Events</h5>
+              <ul>
+              {% for event in upcomingEvents %}
+                {% if event.singleProgram and event.singleProgram.isBonnerScholars %}
+                  <li class="d-flex flex-row justify-content-start">
+                    <div class="me-2">{{event.startDate.strftime('%B %-m')}} at {{event.timeStart.strftime('%-I:%M%p')|lower}}:</div>
+                    <div><a href= '/eventsList/{{event.id}}/view' class="link-primary">{{event.name}}</a></div>
+                  </li>
+                {% endif %}
+              {% endfor %}
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h5>Requirement Progress</h5>
+              <ul>
+              {% for req in bonnerRequirements %}
+                <li>{{req.name}}
+                {% if req.completed %}
+                  <span class="bi bi-check fs-3 text-success"></span>
+                {% else %}
+                  <span class="bi bi-x fs-3"></span>
+                {% endif %}
+                </li>
+              {% endfor %}
+              </ul>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+                <button type="button" name="button" class="btn btn-primary" id="addBonnerNoteButton">Add Bonner Note</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+<!-- ################# Bonner Scholar ################ -->
 </div>
-<!-- Ban or Unban Modal -->
+
+<!-- ################# Add Notes Modal ################ -->
+<div class="modal fade" id="noteModal" tabindex="-1" aria-labelledby="addProfileNoteModalLabel" aria-hidden="true" style="width:-60px;">
+  <form id="addNoteForm">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Notes</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" style="align=center">
+          <div class="input-group">
+            <div class="form-group input-group-x form-outline">
+              {%  set vis = "" if g.current_user.isCeltsStudentStaff or g.current_user.isCeltsAdmin else "d-none" %}
+              {% if vis != "" %}
+                <p><b>This note will only be visible to you, CELTS Student Staff, and Administrators.</b></p>
+              {% endif %}
+              <label class="form-label {{vis}}" for='inputEventTerm'><strong>Visibility</strong></label>
+              <select class="form-select {{vis}}" name='visibility' id='noteDropdown'>
+                {% if g.current_user.isCeltsAdmin %}
+                  <option value='3'>Admins</option>
+                {% endif %}
+                {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
+                  <option value='2'>Admin/Student Staff</option>
+                {% endif %}
+                <option value='1' selected>Everyone</option>
+              </select>
+              {% if g.current_user.isBonnerScholar and volunteer.isBonnerScholar %}
+                <div class="form-check form-switch pt-4">
+                  <input class="form-check-input" name="bonner" id="bonnerInput" type="checkbox" />
+                  <label class="form-check-label"><strong>Related to Bonner Scholars Program</strong></label>
+                </div>
+              {% endif %}
+              <br>
+            </div>
+            <div class="form-group input-group-x form-outline ui-widget">
+              <textarea required name="noteTextbox" rows="8" cols="80" type="input" id="addNoteTextArea" class="form-control" placeholder="This will add a note to a user's profile." ></textarea>
+            </div>
+          </div>
+        </div>
+  		  <div class="modal-footer justify-content-between">
+    			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    			<button id="notesSaveButton" data-username="{{volunteer.username}}" type="submit" class="btn btn-primary">Save</button>
+  		  </div>
+      </div>
+    </div>
+  </form>
+</div>
+<!-- ################# Add Notes Modal ################ -->
+
+<!-- ################# Ban or Unban Modal ################ -->
 <div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banVolunteerModalLabel" aria-hidden="true" style="width:-60px;">
   <form onsubmit="return validate();">
     <div class="modal-dialog">
@@ -334,5 +526,5 @@
     </div>
   </form>
 </div>
-<!-- End Ban or Unban Modal -->
+<!-- ################# Ban or Unban Modal ################ -->
 {% endblock %}

@@ -6,4 +6,4 @@ class BonnerCohort(baseModel):
     user = ForeignKeyField(User)
 
     class Meta:
-        primary_key=CompositeKey('year', 'user')
+        indexes = ( (('year','user'), True), )

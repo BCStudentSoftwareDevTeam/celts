@@ -6,3 +6,4 @@ class Note(baseModel):
     createdOn = DateTimeField()
     noteContent = CharField()
     isPrivate = BooleanField(default=False)
+    noteType = CharField(null=True)

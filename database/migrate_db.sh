@@ -20,6 +20,7 @@ pem add app.models.programBan.ProgramBan
 pem add app.models.courseInstructor.CourseInstructor
 pem add app.models.courseQuestion.CourseQuestion
 pem add app.models.questionNote.QuestionNote
+pem add app.models.profileNote.ProfileNote
 pem add app.models.eventRsvp.EventRsvp
 pem add app.models.programManager.ProgramManager
 pem add app.models.emailLog.EmailLog
@@ -32,7 +33,6 @@ pem add app.models.certification.Certification
 pem add app.models.certificationAttempt.CertificationAttempt
 pem add app.models.certificationRequirement.CertificationRequirement
 pem add app.models.requirementMatch.RequirementMatch
-
 
 pem watch
 pem migrate

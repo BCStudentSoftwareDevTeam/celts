@@ -1,14 +1,12 @@
 $(document).ready(function(){
-
   $("#phoneInput").inputmask('(999)-999-9999');
-  $(".form-check-input").click(function updateInterest(){
+  $(".notifyInput").click(function updateInterest(){
     var programID = $(this).data("programid");
     var username = $(this).data('username');
 
     var interest = $(this).is(':checked');
     var routeUrl = interest ? "addInterest" : "removeInterest";
     interestUrl = "/" + username + "/" + routeUrl + "/" + programID ;
-
     $.ajax({
       method: "POST",
       url: interestUrl,
@@ -21,6 +19,7 @@ $(document).ready(function(){
       }
     });
   });
+
   // This function is to disable all the dates before current date in the ban modal End Date picker
   $(function(){
     var banEndDatepicker = $("#banEndDatepicker");
@@ -42,12 +41,12 @@ $(document).ready(function(){
 
     banButton.text($(this).val() + " Volunteer");
     banButton.data("programID", $(this).data("programid"))
-    banButton.data("username", $(".form-check-input").data("username"))
+    banButton.data("username", $("#notifyInput").data("username"))
     banButton.data("banOrUnban", $(this).val());
     banEndDateDiv.show();
     banEndDatepicker.val("")
     $(".modal-title").text($(this).val() + " Volunteer");
-    $("#modalProgramName").text("Program: " + $(this).data("name"));
+    $("#modalProgramName").text("Program: " + $(this).data("name "));
     $("#banModal").modal("toggle");
     banNoteDiv.hide();
     $("#banNoteTxtArea").val("");
@@ -59,6 +58,44 @@ $(document).ready(function(){
       banNote.text($(this).data("note"))
     }
 
+  });
+
+  $("#addNoteButton").click(function() {
+    $("#noteModal").modal("toggle");
+  });
+
+  $("#addBonnerNoteButton").click(function() {
+    $("#noteModal").modal("toggle");
+    $("#bonnerInput").attr("checked", true)
+  });
+
+  $('#addNoteForm').submit(function(event) {
+    event.preventDefault()
+    let username = $("#notesSaveButton").data('username')
+    $.ajax({
+      method: "POST",
+      url:  "/profile/addNote",
+      data: {"username": username,
+             "visibility": $("#noteDropdown").val(),
+             "noteTextbox": $("#addNoteTextArea").val(),
+             "bonner": $("#bonnerInput").is(":checked") ? "yes":"no"},
+      success: function(response) {
+        reloadWithAccordion("notes")
+      }
+    });
+});
+
+  $(".deleteNoteButton").click(function() {
+    let username = $(this).data('username')
+    let noteid = $(this).data('noteid')
+    $.ajax({
+      method: "POST",
+      url:  "/" + username + "/deleteNote",
+      data: {"id": noteid},
+      success: function(response) {
+        reloadWithAccordion("notes")
+      }
+    });
   });
 
   $("#banNoteTxtArea, #banEndDatepicker").on('input' , function (e) { //This is the if statement the placeholder in line 45 is for #PLCHLD1
@@ -157,7 +194,24 @@ $(document).ready(function(){
             return $(this).attr('data-content');
         }
     });
-    setupPhoneNumber("#updatePhone", "#phoneInput")
+
+  setupPhoneNumber("#updatePhone", "#phoneInput")
+
+  $(".saveDiet").on('click', function() {
+    let data = {
+      dietInfo: $("#diet").val(),
+      user: $(this).data("user")
+    }
+    $.ajax({
+      type: "POST",
+      url: "/updateDietInformation",
+      data: data,
+      success: function(s){
+        reloadWithAccordion("dietaryInformation");
+      },
+    })
+  });
+
 });
 
 function updateManagers(el, volunteer_username ){// retrieve the data of the student staff and program id if the boxes are checked or not
