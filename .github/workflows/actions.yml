@@ -1,1 +1,55 @@
 
+name: Celts CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ development ]
+  pull_request:
+    branches: [ development ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+
+    # each step can define `env` vars, but it's easiest to define them on the build level
+    # if you'll add additional jobs testing the same application later (which you probably will
+    env:
+      MYSQL_DATABASE: 'celts'
+      MYSQL_USER: 'celts_user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'root'
+
+    # port mapping for each of these services is required otherwise it's inaccessible to the rest of the jobs
+#     services:
+#       mysql:
+#         image: mysql:8
+#         # these options are recommended by GitHub to ensure the container is fully operational before moving 
+#         options: >-
+#           --health-cmd "redis-cli ping"
+#           --health-interval 10s
+#           --health-timeout 5s
+#           --health-retries 5
+#         ports:
+#           - 3306:3306
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+          python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        source setup.sh
+    - name: Activate environment and reset database
+      run: |
+        source .venv/bin/activate
+			  database/reset_database.sh test
+
+    - name: Run tests
+      run: |
+        source .venv/bin/activate
+			  ./tests/run_tests.sh
