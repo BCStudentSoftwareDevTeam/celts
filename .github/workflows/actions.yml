@@ -46,10 +46,8 @@ jobs:
         source setup.sh
     - name: Activate environment and reset database
       run: |
-        source .venv/bin/activate
-	database/reset_database.sh test
+        source .venv/bin/activate && database/reset_database.sh test
 
     - name: Run tests
       run: |
-        source .venv/bin/activate
-	./tests/run_tests.sh
+        source .venv/bin/activate && ./tests/run_tests.sh
