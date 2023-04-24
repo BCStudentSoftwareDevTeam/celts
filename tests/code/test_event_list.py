@@ -7,7 +7,8 @@ from app.models.event import Event
 from app.models.bonnerCohort import BonnerCohort
 from app.models.term import Term
 from app.models.user import User
-from app.logic.events import getStudentLedEvents,  getTrainingEvents, getBonnerEvents, getOtherEvents
+from app.models.eventViews import EventView
+from app.logic.events import getStudentLedEvents,  getTrainingEvents, getBonnerEvents, getOtherEvents, eventViewCount
 
 @pytest.mark.integration
 @pytest.fixture
@@ -192,3 +193,32 @@ def test_getOtherEvents(special_otherEvents):
     otherEvent = special_otherEvents
     otherEvents = [Event.get_by_id(11), Event.get_by_id(7), otherEvent]
     assert otherEvents == getOtherEvents(4)
+
+@pytest.mark.integration
+def test_eventViewCount():
+    with mainDB.atomic() as transaction:
+        testEvent = Event.create(name = "Test Student view",
+                            term = 2,
+                            description = "event for testing",
+                            timeStart = "18:00:00",
+                            timeEnd = "21:00:00",
+                            location = "basement",
+                            isTraining = True,
+                            startDate = "2021-12-12",
+                            endDate = "2021-12-13")
+        viewer = User.create(username = "eventViewer",
+                                    bnumber = "B000000000",
+                                    email = "test@test.com",
+                                    phoneNumber = "Null",
+                                    firstName = "TestFirst",
+                                    lastName = "TestLast",
+                                    isStudent = False,
+                                    isFaculty = True,
+                                    isStaff = False,
+                                    isCeltsAdmin = False,
+                                    isCeltsStudentStaff = False)
+        eventViewCount(viewer,testEvent)
+        assert EventView.select().where(EventView.user == viewer, EventView.event == testEvent).exists()
+        eventViewCount(viewer,testEvent) # to check that no more than one record for the same user and the same event
+        assert( EventView.select().where(EventView.user == viewer, EventView.event == testEvent).count() ==1 ) 
+        transaction.rollback() 

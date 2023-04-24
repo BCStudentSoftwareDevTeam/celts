@@ -153,7 +153,7 @@ def eventDisplay(eventId):
         viewer = User.get_by_id(g.current_user)
         event = Event.get_by_id(eventId)
         eventViewCount(viewer,event) #insert into the EventView table 
-
+    # Validate given URL
     try:
         event = Event.get_by_id(eventId)
     except DoesNotExist as e:
