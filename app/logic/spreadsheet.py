@@ -149,9 +149,50 @@ def volunteer():
 
 
     #Half retention rate for recurring events (still working on this)
-    #Fall 2022
     programs = ProgramEvent.select(ProgramEvent.program_id).distinct()
-    
+
+    # Loop over the programs and get the corresponding event IDs
+    for program in programs:
+        print("program_id", program)
+        # Define the query for each program
+        query = (EventParticipant
+                .select(EventParticipant.event_id.alias("event_id"), Event.name.alias("name"))
+                .join(Event, on=(EventParticipant.event_id == Event.id))
+                .join(ProgramEvent, on=(EventParticipant.event_id == ProgramEvent.event_id))
+                .where((ProgramEvent.program_id == program.program_id) & (Event.recurringId != None))
+                .distinct()
+                .dicts())
+
+        results = query.execute()
+
+        event_count = 0
+        name_counts = {}
+
+        for result in results:
+            event_count += 1
+            print(result["event_id"], "--------",result["name"])
+            participants = EventParticipant.select(EventParticipant.user_id).where(EventParticipant.event_id == result["event_id"])
+            for participant in participants:
+                name = participant.user_id
+                if name not in name_counts:
+                    name_counts[name] = 1
+                else:
+                    name_counts[name] += 1
+                
+        half_count = event_count // 2
+        qualified_names = [name for name, count in name_counts.items() if count >= half_count]
+        
+        if len(name_counts) > 0:
+            percentage = len(qualified_names) / len(name_counts) * 100
+        else:
+            percentage = 0
+        
+        print(f'{percentage:.2f}% of the participants came to at least half of the events.')
+        print("__________________________________________________________________________________")
+    print("--------------------------------------------------------------------------------------------------------")
+
+     #Full retention rate for recurring events (still working on this)
+    programs = ProgramEvent.select(ProgramEvent.program_id).distinct()
 
     # Loop over the programs and get the corresponding event IDs
     for program in programs:
@@ -161,14 +202,37 @@ def volunteer():
                 .select(EventParticipant.event_id.alias("event_id"), Event.name.alias("name"))
                 .join(Event, on=(EventParticipant.event_id == Event.id))
                 .join(ProgramEvent, on=(EventParticipant.event_id == ProgramEvent.event_id))
-                .where((ProgramEvent.program_id == program.program_id) & (Event.recurringId == True))
+                .where((ProgramEvent.program_id == program.program_id) & (Event.recurringId != None))
                 .distinct()
                 .dicts())
 
         results = query.execute()
 
-        # Print the results for each program
+        event_count = 0
+        name_counts = {}
+
         for result in results:
-            print(result["event_id"], result["name"])
+            event_count += 1
+            print(result["event_id"], "--------",result["name"])
+            participants = EventParticipant.select(EventParticipant.user_id).where(EventParticipant.event_id == result["event_id"])
+            for participant in participants:
+                name = participant.user_id
+                if name not in name_counts:
+                    name_counts[name] = 1
+                else:
+                    name_counts[name] += 1
+                
+        qualified_names = [name for name, count in name_counts.items() if count == event_count]
+        
+        if len(name_counts) > 0:
+            percentage = len(qualified_names) / len(name_counts) * 100
+        else:
+            percentage = 0
+        
+        print(f'{percentage:.2f}% of the participants came to all the series in this recurring event.')
+
+        print("__________________________________________________________________________________")
+
+
 
      
