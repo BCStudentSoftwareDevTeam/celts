@@ -32,7 +32,7 @@ jobs:
         sudo /etc/init.d/mysql start
     - name: Install dependencies
       run: |
-        source setup.sh
+        source setup.sh && pip install pylint
     - name: Activate environment and reset database
       run: |
         . venv/bin/activate && database/reset_database.sh test
@@ -43,4 +43,5 @@ jobs:
        
     - name: Lint
       run: |
-        . venv/bin/activate && pylint **/*.py
+        find . -name '*.py' -exec pylint {} \;
+      
