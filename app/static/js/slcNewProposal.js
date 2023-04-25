@@ -9,6 +9,7 @@ $(document).ready(function(e) {
     // Update display if we are viewing only
     if (readOnly()){
         disableInput()
+
     }
 
     // set up phone numbers
@@ -110,7 +111,10 @@ function disableInput() {
     $("#submitAndApproveButton").hide();
     $(".editButton").hide()
     $(".removeButton").hide()
+    $(".slcQuestionCharCount, .slcQestionCharCounter" ).replaceWith( " ");
 }
+
+
 
 function readOnly() {
     return window.location.href.includes("view");
@@ -231,7 +235,6 @@ function validateForm() {
       }
     }
   }
-
   var instructors = getCourseInstructors()
   if (!instructors.length && currentTab == 1) {
     valid = false;
@@ -305,3 +308,14 @@ function getCourseInstructors() {
                 .map((i,el) => $(el).data('username')).get()
                 .filter(val => (val))
 }
+
+
+const textareas = $(".textarea");
+const slcQuestionCharCount = $(".slcQuestionCharCount");
+
+textareas.each(function(index, textarea) {
+  $(textarea).on("input", function() {
+    $(slcQuestionCharCount[index]).html($(textarea).val().length);
+  });
+  $(slcQuestionCharCount[index]).html($(textarea).val().length);
+});
