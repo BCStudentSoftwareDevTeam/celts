@@ -43,4 +43,4 @@ jobs:
        
     - name: Lint
       run: |
-        . /venv/bin/activate && pylint **/*.py
+        . venv/bin/activate && pylint **/*.py
