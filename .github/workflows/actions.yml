@@ -40,3 +40,7 @@ jobs:
     - name: Run tests
       run: |
        . venv/bin/activate && ./tests/run_tests.sh
+       
+    - name: Lint
+      run: |
+        . /venv/bin/activate && pylint **/*.py
