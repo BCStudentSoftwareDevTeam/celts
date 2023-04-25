@@ -45,34 +45,50 @@ def slcEditProposal(courseID):
         Route for editing proposals, it will fill the form with the data found in the database
         given a courseID.
     """
-    course = Course.get_by_id(courseID)
-    questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
-    questionanswers = [question.questionContent for question in questionData]
-    courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
-    associatedAttachments = AttachmentUpload.select().where(AttachmentUpload.course == course.id)
+    instructors = CourseInstructor.select().where(CourseInstructor.course==courseID)
+    courseInstructors = [instructor.user for instructor in instructors]
+    if g.current_user.isCeltsAdmin or g.current_user in courseInstructors:
+        course = Course.get_by_id(courseID)
+        courseStatus = CourseStatus.get_by_id(course.status)
+        courseStatusInt = courseStatus.get_id()
+        approved = 3
+        # Condition to check the route you are comming from
+        if courseStatusInt==approved and request.path == f"/serviceLearning/editProposal/{courseID}":
+            return redirect(f"/serviceLearning/viewProposal/{courseID}")
+        else:
+            statusOfCourse = Course.select(Course.status)
+            questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
+            questionanswers = [question.questionContent for question in questionData]
+            courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
+            associatedAttachments = AttachmentUpload.select().where(AttachmentUpload.course == course.id)
 
-    filepaths = FileHandler(courseId=course.id).retrievePath(associatedAttachments)
-    isAllSectionsServiceLearning = ""
-    isPermanentlyDesignated = ""
-    hasSlcComponent = ""
-
-    if course.isAllSectionsServiceLearning:
-        isAllSectionsServiceLearning = True
-    if course.isPermanentlyDesignated:
-        isPermanentlyDesignated = True
-    if course.hasSlcComponent:
-        hasSlcComponent = True
-    terms = selectSurroundingTerms(g.current_term, 0)
-    return render_template('serviceLearning/slcNewProposal.html',
-                                course = course,
-                                questionanswers = questionanswers,
-                                terms = terms,
-                                courseInstructor = courseInstructor,
-                                isAllSectionsServiceLearning = isAllSectionsServiceLearning,
-                                isPermanentlyDesignated = isPermanentlyDesignated,
-                                hasSlcComponent = hasSlcComponent,
-                                filepaths = filepaths,
-                                redirectTarget=getRedirectTarget())
+            filepaths = FileHandler(courseId=course.id).retrievePath(associatedAttachments)
+            isAllSectionsServiceLearning = ""
+            isPermanentlyDesignated = ""
+            hasSlcComponent = ""
+            
+            if course.isAllSectionsServiceLearning:
+                isAllSectionsServiceLearning = True
+            if course.isPermanentlyDesignated:
+                isPermanentlyDesignated = True
+            if course.hasSlcComponent:
+                hasSlcComponent = True
+            terms = selectSurroundingTerms(g.current_term, 0)
+            return render_template('serviceLearning/slcNewProposal.html',
+                                        course = course,
+                                        questionanswers = questionanswers,
+                                        terms = terms,
+                                        statusOfCourse = statusOfCourse,
+                                        courseStatus = courseStatus,
+                                        courseInstructor = courseInstructor,
+                                        isAllSectionsServiceLearning = isAllSectionsServiceLearning,
+                                        isPermanentlyDesignated = isPermanentlyDesignated,
+                                        hasSlcComponent = hasSlcComponent,
+                                        filepaths = filepaths,
+                                        redirectTarget=getRedirectTarget())
+    else:
+        abort(403)
+        
 
 @serviceLearning_bp.route('/serviceLearning/createCourse', methods=['POST'])
 def slcCreateCourse():

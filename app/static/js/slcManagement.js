@@ -30,7 +30,7 @@ function changeAction(action){
     $('#courseID').val(courseID);
     $("#course-" + courseID).modal('show')
   } else if (action.value == "View"){
-    location = '/serviceLearning/viewProposal/' + courseID
+    location = '/serviceLearning/viewProposal/' + courseID;
   } else if (action.value == "Withdraw"){
     $('#courseID').val(courseID);
     $('#withdrawModal').modal('show');
