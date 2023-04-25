@@ -4,7 +4,7 @@ pipeline {
     stages {
          stage('BuildVm') {
              steps {
-	     	echo "This is Branch: ${env.BRANCH_NAME}"
+	     	echo "This is Branch : ${env.BRANCH_NAME}"
 		sh './setup.sh'
              }
          }
