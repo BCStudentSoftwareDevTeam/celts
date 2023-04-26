@@ -198,14 +198,14 @@ def test_getOtherEvents(special_otherEvents):
 def test_eventViewCount():
     with mainDB.atomic() as transaction:
         testEvent = Event.create(name = "Test Student view",
-                            term = 2,
-                            description = "event for testing",
-                            timeStart = "18:00:00",
-                            timeEnd = "21:00:00",
-                            location = "basement",
-                            isTraining = True,
-                            startDate = "2021-12-12",
-                            endDate = "2021-12-13")
+                                term = 2,
+                                description = "event for testing",
+                                timeStart = "18:00:00",
+                                timeEnd = "21:00:00",
+                                location = "basement",
+                                isTraining = True,
+                                startDate = "2021-12-12",
+                                endDate = "2021-12-13")
         viewer = User.create(username = "eventViewer",
                                     bnumber = "B000000000",
                                     email = "test@test.com",
