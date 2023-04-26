@@ -209,7 +209,7 @@ def test_eventViewCount():
         viewer = User.create(username = "eventViewer",
                                     bnumber = "B000000000",
                                     email = "test@test.com",
-                                    phoneNumber = "Null",
+                                    phoneNumber = "000-000-0000",
                                     firstName = "TestFirst",
                                     lastName = "TestLast",
                                     isStudent = False,
