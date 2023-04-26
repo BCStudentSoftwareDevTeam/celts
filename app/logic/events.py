@@ -453,4 +453,4 @@ def getTomorrowsEvents():
     return events
 def addEventView(viewer,event):
     """This checks if the current user already viewed the event. If not, insert a recored to EventView table"""
-    eventViewExists = EventView.get_or_create(user = viewer, event = event)   
+    EventView.get_or_create(user = viewer, event = event)   
