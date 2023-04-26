@@ -35,7 +35,7 @@ def test_event_model():
 
     # single program
     event = Event.get_by_id(12)
-    assert event.singleProgram == Program.get_by_id(4)
+    assert event.singleProgram == Program.get_by_id(5)
 
     # no program
     event = Event.get_by_id(13)
