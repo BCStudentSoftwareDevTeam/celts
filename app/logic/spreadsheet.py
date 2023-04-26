@@ -6,6 +6,8 @@ from app.models.program import Program
 from app.models.event import Event
 from app.models.term import Term
 from peewee import *
+import csv
+
 
 def volunteer():
 
@@ -234,4 +236,38 @@ def volunteer():
 
 
 
+    # Define the name of the CSV file
+    filename = "program_hours.csv"
+
+    # Open the CSV file in append mode and write the program names and volunteer hours to it
+    with open(filename, "w", newline="") as csvfile:
+        writer = csv.writer(csvfile)
+        
+        # If the file is empty, add the header row
+        if csvfile.tell() == 0:
+            writer.writerow(["PROGRAM NAME", "VOLUNTEER HOURS", "RETENTION RATE"])
+        
+        # Write each program name and its corresponding volunteer hours as a row in the CSV file,
+        # and update the retention rate if the program is already in the file
+        for program, hours in totalHoursByProgram.items():
+            retention_rate = retention_rate_dict.get(program)
+            if retention_rate is None:
+                writer.writerow([program, hours, ""])
+            else:
+                writer.writerow([program, hours, f"{round(retention_rate * 100, 2)}%"])
+        
      
+        writer.writerow([" "," "])
+        writer.writerow(["TOTAL HOURS ALL PROGRAMS",totalHoursAllProgram])
+
+
+
+        writer.writerow([" "," "])
+        writer.writerow(["MAJORS REPRESENTED IN VOLUNTEERING", "COUNT"])
+        for row in majorQuery:
+            writer.writerow([row.major, row.count])
+
+        writer.writerow([" "," "])
+        writer.writerow(["VOLUNTEERS BY CLASS YEAR", "COUNT"])
+        for row in classLevelQuery:
+            writer.writerow([row.classLevel, row.classCount])
