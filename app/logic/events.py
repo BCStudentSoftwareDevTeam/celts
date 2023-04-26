@@ -451,11 +451,6 @@ def getTomorrowsEvents():
     tomorrowDate = date.today() + timedelta(days=1)
     events = list(Event.select().where(Event.startDate==tomorrowDate))
     return events
-def eventViewCount(viewer,event):
+def addEventView(viewer,event):
     """This checks if the current user already viewed the event. If not, insert a recored to EventView table"""
-    eventViewExists = EventView.select().where(EventView.user == viewer, EventView.event == event).exists()     
-    if not eventViewExists:
-        # Insert new EventView record for the user and event
-        date = datetime.datetime.now()
-        newEventView = EventView.create(user=viewer, event=event, viewedOn=date)
-        newEventView.save()
+    eventViewExists = EventView.get_or_create(user = viewer, event = event)   

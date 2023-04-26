@@ -8,7 +8,7 @@ from app.models.bonnerCohort import BonnerCohort
 from app.models.term import Term
 from app.models.user import User
 from app.models.eventViews import EventView
-from app.logic.events import getStudentLedEvents,  getTrainingEvents, getBonnerEvents, getOtherEvents, eventViewCount
+from app.logic.events import getStudentLedEvents,  getTrainingEvents, getBonnerEvents, getOtherEvents, addEventView
 
 @pytest.mark.integration
 @pytest.fixture
@@ -217,8 +217,8 @@ def test_eventViewCount():
                                     isStaff = False,
                                     isCeltsAdmin = False,
                                     isCeltsStudentStaff = False)
-        eventViewCount(viewer,testEvent)
+        addEventView(viewer,testEvent)
         assert EventView.select().where(EventView.user == viewer, EventView.event == testEvent).exists()
-        eventViewCount(viewer,testEvent) # to check that no more than one record for the same user and the same event
+        addEventView(viewer,testEvent) # to check that no more than one record for the same user and the same event
         assert( EventView.select().where(EventView.user == viewer, EventView.event == testEvent).count() ==1 ) 
         transaction.rollback() 
