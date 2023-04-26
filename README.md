@@ -26,7 +26,7 @@
 6. Run the app with ```flask run``` in the root directory
 
 ## Testing
-Test should be added in `tests/code/`, logically grouped into files named `test_EXAMPLE.py`. you can run tests individually with `pytest`, or run the entire suite with `tests/run_tests.sh`. The most common usage will be to run the non-ui tests continually by running `tests/monitor.sh no-ui` from the root directory of the repo. Where possible, use TDD and write your test before the code that makes it pass. Follow the Fail - Implement - Pass cycle.
+Test should be added in `tests/code/`, logically grouped into files named `test_EXAMPLE.py`. you can run tests individually with `pytest`, or run the entire suite with `tests/run_tests.sh`. Where possible, use TDD and write your test before the code that makes it pass. Follow the Fail - Implement - Pass cycle.
 
 ## Troubleshooting
 1. If you can't clone the repository, make sure your SSH public key is added to your GitHub profile.
