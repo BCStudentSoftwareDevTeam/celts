@@ -46,6 +46,7 @@ def volunteer():
 
 
     print("_____________Repeat Volunteers___")
+
     # Repeat volunteers (for individual events/programs and across all programs)
     # Excluding all volunteer training for now
 
@@ -271,3 +272,24 @@ def volunteer():
         writer.writerow(["VOLUNTEERS BY CLASS YEAR", "COUNT"])
         for row in classLevelQuery:
             writer.writerow([row.classLevel, row.classCount])
+
+        writer.writerow([" "," "])
+        writer.writerow(["PROGRAM", "REPEAT VOLUNTEER"])
+        for row in repeatPerProgramQuery.dicts():
+            writer.writerow([row["programName"], row["user"]])
+        
+        writer.writerow([" "," "])
+        # Get people who came more than once (all programs)
+        writer.writerow(["PROGRAM", "PARTICIPANT WHO ATTENDED ALL PROGRAM"])
+        for result in repeatAllProgramQuery:
+             writer.writerow([result.count, result.user_id])
+
+        writer.writerow([" "," "])
+        writer.writerow(["PROGRAM", "RETENTION RATE"])
+        
+
+            
+
+
+
+
