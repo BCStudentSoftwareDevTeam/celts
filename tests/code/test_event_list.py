@@ -217,8 +217,21 @@ def test_eventViewCount():
                                     isStaff = False,
                                     isCeltsAdmin = False,
                                     isCeltsStudentStaff = False)
+        admineView = User.create(username = "admineViewer",
+                                    bnumber = "B000000001",
+                                    email = "test@test.com",
+                                    phoneNumber = "000-000-0000",
+                                    firstName = "TestFirst",
+                                    lastName = "TestLast",
+                                    isStudent = False,
+                                    isFaculty = True,
+                                    isStaff = False,
+                                    isCeltsAdmin = True,
+                                    isCeltsStudentStaff = False)        
         addEventView(viewer,testEvent)
         assert EventView.select().where(EventView.user == viewer, EventView.event == testEvent).exists()
         addEventView(viewer,testEvent) # to check that no more than one record for the same user and the same event
         assert( EventView.select().where(EventView.user == viewer, EventView.event == testEvent).count() ==1 ) 
+        addEventView(admineView,testEvent) # to check that admin view is not recorded 
+        assert not EventView.select().where(EventView.user == admineView, EventView.event == testEvent).exists()
         transaction.rollback() 

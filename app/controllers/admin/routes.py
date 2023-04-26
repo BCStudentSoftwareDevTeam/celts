@@ -149,7 +149,7 @@ def createEvent(templateid, programid=None):
 @admin_bp.route('/eventsList/<eventId>/edit', methods=['GET','POST'])
 def eventDisplay(eventId):
     pageViewsCount = EventView.select().where(EventView.event == eventId).count()
-    if not g.current_user.isCeltsAdmin and request.method == 'GET' and request.path == f'/eventsList/{eventId}/view':
+    if request.method == 'GET' and request.path == f'/eventsList/{eventId}/view':
         viewer = g.current_user
         event = Event.get_by_id(eventId)
         addEventView(viewer,event) 
