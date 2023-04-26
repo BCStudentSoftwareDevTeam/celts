@@ -28,6 +28,13 @@
 ## Testing
 Test should be added in `tests/code/`, logically grouped into files named `test_EXAMPLE.py`. you can run tests individually with `pytest`, or run the entire suite with `tests/run_tests.sh`. Where possible, use TDD and write your test before the code that makes it pass. Follow the Fail - Implement - Pass cycle.
 
+When running tests, an optional parameter is available. If you would like to run tests in more detail and see which tests specifically pass and fail run `tests/run_tests.sh --verbose`. To test once specific file instead of the whole suite, add the path to the file after the run tests command like so: `tests/run_tests.sh tests/code/test_sampleFile.py`. 
+
+## Pull Requests
+
+### General Pull Request Rules
+
+
 ## Troubleshooting
 1. If you can't clone the repository, make sure your SSH public key is added to your GitHub profile.
 2. Make sure that you are running `source setup.sh` and `./reset\_database.sh`, in that order, without errors. Errors there should be resolved first.

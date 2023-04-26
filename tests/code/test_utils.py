@@ -10,7 +10,7 @@ from app.logic.userManagement import addCeltsAdmin, removeCeltsAdmin,addCeltsStu
 @pytest.mark.integration
 def test_selectSurroundingTerms():
     listOfTerms = selectSurroundingTerms(Term.get_by_id(3))
-    assert 9 == len(listOfTerms)
+    assert 10 == len(listOfTerms)
 
     listOfTerms = selectSurroundingTerms(Term.get_by_id(3), prevTerms=0)
     assert [3,4,5,6,7,8,9] == [t.id for t in listOfTerms]
