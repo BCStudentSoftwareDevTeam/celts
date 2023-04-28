@@ -110,14 +110,17 @@
             </tr>
           {% endif %}
           {% if user.isCeltsStudentStaff or user.isAdmin %}
-            {% if not event.isPast and events[events.index(event)+1].isPast or events[events.index(event)] == events[0] and events[events.index(event)].isPast %}
-              <tr>
-                <td>
-                  <button class="toggle-event btn btn-secondary">
-                    <span class="bi "> View Past Events</span>
-                  </button>
-                </td>
-              </tr>
+            {% if events[events.index(event)+1] %}
+
+              {% if not event.isPast and events[events.index(event)+1].isPast or events[events.index(event)] == events[0] and events[events.index(event)].isPast %}
+                <tr>
+                  <td>
+                    <button class="toggle-event btn btn-secondary">
+                      <span class="bi "> View Past Events</span>
+                    </button>
+                  </td>
+                </tr>
+              {% endif %}
             {% endif %}
             {% if event.isPast %}
               <tr class="table-light d-none showlist">
