@@ -216,7 +216,7 @@ def printCourse(courseID):
     """
     instructors = CourseInstructor.select().where(CourseInstructor.course==courseID)
     courseInstructors = [instructor.user for instructor in instructors]
-    isCreator = Course.select(Course.createdBy.username).join(User).where(Course.createdBy.username == g.current_user, Course.id==courseID).exists()
+    isCreator = Course.select().where(Course.createdBy == g.current_user, Course.id==courseID).exists()
     if g.current_user.isCeltsAdmin or g.current_user in courseInstructors or isCreator:
         try:
             course = Course.get_by_id(courseID)
@@ -235,7 +235,7 @@ def printCourse(courseID):
         except Exception as e:
             flash("An error was encountered when printing, please try again.", 'warning')
             print(e)
-            return(jsonify({"Success": False}))
+            return "", 500
     else:
         abort(403)
 
