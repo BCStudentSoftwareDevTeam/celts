@@ -37,7 +37,15 @@ from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohor
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
-from app.logic.spreadsheet import volunteer
+from app.logic.spreadsheet import volunteerHoursByProgram
+from app.logic.spreadsheet import volunteerHoursAllPrograms
+from app.logic.spreadsheet import volunteersMajors
+from app.logic.spreadsheet import classLevelsInVolunteering
+from app.logic.spreadsheet import repeatVolunteersPerProgram
+from app.logic.spreadsheet import repeatVolunteersAllPrograms
+from app.logic.spreadsheet import retentionRate
+
+
 
 
 @admin_bp.route('/switch_user', methods=['POST'])
@@ -164,8 +172,14 @@ def eventDisplay(eventId):
     eventData = model_to_dict(event, recurse=False)
     associatedAttachments = EventFile.select().where(EventFile.event == event)
 
-    volunteers = volunteer()
+    volunteerHoursByProgramt = volunteerHoursByProgram()
+    volunteerHoursAllProgramst = volunteerHoursAllPrograms()
+    volunteersMajorst = volunteersMajors()
+    classLevelsInVolunteeringt =  classLevelsInVolunteering()
 
+    # repeatVolunteersPerProgram = repeatVolunteersPerProgram()
+    # repeatVolunteersAllPrograms = repeatVolunteersAllPrograms()
+    # retentionRate = retentionRate()
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
         try:
