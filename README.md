@@ -43,7 +43,9 @@ When running tests, an optional parameter is available. If you would like to run
 8. SSDT coding practices are followed. 
 
 ### GitHub Actions
-GitHub Actions is a continuous integration/delivery tool we use that allows us to automatically test our code on push. When you prepare to merge a branch into development, GitHub Actions will run our test suite on Python versions 3.7-3.11 and prevent you from merging your code into development if there are any failing tests. You can see the status of the test suite with an icon next to the pull request title that will display a check if all the tests are passing or an x if the tests are failing. GitHub actions will give you a more in depth breakdown of the tests if you are viewing a specific pull request. 
+GitHub Actions is a continuous integration/delivery tool we use that allows us to automatically test our code on push. When you prepare to merge a branch into development, GitHub Actions will run our test suite on Python versions 3.7-3.11 and prevent you from merging your code into development if there are any failing tests. You can see the status of the test suite with an icon next to the pull request title that will display a check if all the tests are passing or an x if the tests are failing. GitHub actions will give you a more in depth breakdown of the tests if you are viewing a specific pull request.
+
+If you would like to learn more about Actions you can read more here: https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions
 
 ## Troubleshooting
 1. If you can't clone the repository, make sure your SSH public key is added to your GitHub profile.
