@@ -244,8 +244,8 @@ def uploadCourseFile():
     try:
         attachment = getFilesFromRequest(request)
         courseID = request.form["courseID"]
-        addfile= FileHandler(attachment, courseId=courseID)
-        addfile.saveFiles()
+        addFile= FileHandler(attachment, courseId=courseID)
+        addFile.saveFiles()
     except:
         flash("No file selected.", "warning")
     return redirect('/serviceLearning/editProposal/upload/'+courseID)
