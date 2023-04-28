@@ -32,8 +32,15 @@ When running tests, an optional parameter is available. If you would like to run
 
 ## Pull Requests
 
-### General Pull Request Rules
-
+### General Pull Request Checklist
+1. The code fixes the issue the author is saying it fixes. 
+2. The code is well designed.
+3. There is no existing code thsat serves the same functionality. 
+4. The code is adequately tested. 
+5. Variable, Class, and Method names are purpouseful.
+6. Code is well commented and functions include dockstrings.
+7. Update the documentation if relevant.
+8. SSDT coding practices are followed. 
 
 ## Troubleshooting
 1. If you can't clone the repository, make sure your SSH public key is added to your GitHub profile.
