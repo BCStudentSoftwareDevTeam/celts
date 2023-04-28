@@ -94,6 +94,6 @@ def updateCourse(courseData, attachment=None):
                 addFile.saveFiles()
             return Course.get_by_id(course.id)
         except Exception as e:
-            transaction.rollback()
             print(e)
+            transaction.rollback()
             return False
