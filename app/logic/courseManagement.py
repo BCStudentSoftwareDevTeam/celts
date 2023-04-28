@@ -93,4 +93,4 @@ def updateCourse(courseData, attachment=None):
         return Course.get_by_id(course.id)
     except Exception as e:
         print(e)
-        return False, e
+        return False

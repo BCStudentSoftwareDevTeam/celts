@@ -85,38 +85,31 @@ def slcCreateCourse():
 
     return redirect(url_for('serviceLearning.slcEditProposal', courseID = course.id))
 
-
+@serviceLearning_bp.route('/serviceLearning/saveExit', methods=['POST'])
 @serviceLearning_bp.route('/serviceLearning/saveProposal', methods=['POST'])
 def slcSaveContinue():
     """Will update the the course proposal and return an empty string since ajax request needs a response
     Also, it updates the course status as 'in progress'"""
     course = updateCourse(request.form.copy())
+
     if not course:
         flash("Error saving changes", "danger")
     else:
         course.status = CourseStatus.IN_PROGRESS
         course.save()
+        flash("Error saving ")
     return ""
-
-@serviceLearning_bp.route('/serviceLearning/saveExit', methods=['POST'])
-def slcSaveExit():
-    """Will update the the course proposal and return an empty string since ajax request needs a response
-    Also, it updates the course status as 'in progress'"""
-    course = updateCourse(request.form.copy())
-
-    course.status = CourseStatus.IN_PROGRESS
-    course.save()
-    flash("Changes saved!", "success")
-    return ""
-
 
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcCreateOrEdit():
     if request.method == "POST":
         course = updateCourse(request.form.copy())
-        if getRedirectTarget(False):
-            return redirect('' + getRedirectTarget(True) + '')
-        return redirect('/serviceLearning/courseManagement')
+        if not course:
+            flash("Error saving changes", "danger")
+        else:
+            if getRedirectTarget(False):
+                return redirect('' + getRedirectTarget(True) + '')
+            return redirect('/serviceLearning/courseManagement')
 
     terms = Term.select().where(Term.year >= g.current_term.year)
     courseData = None
