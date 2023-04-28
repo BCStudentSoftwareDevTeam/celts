@@ -53,10 +53,6 @@
 </div>
 {% macro createTable(events, type) %}
 {% if events|count %}
-  {% if not events[0].isPast  %}
-    {% set visibleEvent = "d-none" %}
-    {% set visibleClass = "showlist" %}
-  {% endif %}
   <div class="table-responsive">
     <table class="table ">
       <thead>
@@ -114,17 +110,17 @@
             </tr>
           {% endif %}
           {% if user.isCeltsStudentStaff or user.isAdmin %}
-            {% if not event.isPast and events[events.index(event)+1].isPast %}
+            {% if not event.isPast and events[events.index(event)+1].isPast or events[events.index(event)] == events[0] and events[events.index(event)].isPast %}
               <tr>
                 <td>
                   <button class="toggle-event btn btn-secondary">
-                    <span class="bi "> Past Events</span>
+                    <span class="bi "> View Past Events</span>
                   </button>
                 </td>
               </tr>
             {% endif %}
             {% if event.isPast %}
-              <tr class=" {{visibleClass}} table-secondary {{visibleEvent}}">
+              <tr class="table-light d-none">
                 {% if type != "bonner" and type != "studentLed" %}
                   {% if event.singleProgram%}
                     <td  class="text-secondary">{{event.singleProgram.programName}}</td>
