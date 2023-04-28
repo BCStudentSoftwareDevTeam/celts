@@ -50,7 +50,7 @@ def withdrawProposal(courseID):
             FileHandler(courseId = courseID).deleteFile(syllabus.id)
 
     except DoesNotExist:
-        print("File does not exist")
+        print(f"File, {AttachmentUpload.fileName}, does not exist.")
 
     # delete course object
     course = Course.get(Course.id == courseID)
