@@ -37,8 +37,8 @@ When running tests, an optional parameter is available. If you would like to run
 2. The code is well designed.
 3. There is no existing code thsat serves the same functionality. 
 4. The code is adequately tested. 
-5. Variable, Class, and Method names are purpouseful.
-6. Code is well commented and functions include dockstrings.
+5. Variable, Class, and Method names are purposeful.
+6. Code is well commented and functions include docstrings.
 7. Update the documentation if relevant.
 8. SSDT coding practices are followed. 
 
