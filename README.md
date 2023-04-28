@@ -35,7 +35,7 @@ When running tests, an optional parameter is available. If you would like to run
 ### General Pull Request Checklist
 1. The code fixes the issue the author is saying it fixes. 
 2. The code is well designed.
-3. There is no existing code thsat serves the same functionality. 
+3. There is no existing code that serves the same functionality. 
 4. The code is adequately tested. 
 5. Variable, Class, and Method names are purposeful.
 6. Code is well commented and functions include docstrings.
