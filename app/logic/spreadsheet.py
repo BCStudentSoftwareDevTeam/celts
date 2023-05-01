@@ -7,7 +7,6 @@ from app.models.program import Program
 from app.models.event import Event
 from app.models.term import Term
 from peewee import *
-import openpyxl
 import pandas as pd
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.table import Table, TableStyleInfo
@@ -20,10 +19,12 @@ def volunteerHoursByProgram():
                          .group_by(ProgramEvent.program_id))
 
     totalHoursByProgram= {pe.program.programName: float(pe.sum) for pe in query}
+
     return totalHoursByProgram
 
 def volunteerHoursAllPrograms():
     totalHoursAllProgram = float(EventParticipant.select(fn.Sum(fn.Coalesce(EventParticipant.hoursEarned, 0))).scalar())
+
     return totalHoursAllProgram
 
 
@@ -53,18 +54,20 @@ def repeatVolunteersPerProgram():
                                              .join(Program, on=(ProgramEvent.program_id == Program.id))
                                              .group_by(EventParticipant.user_id, ProgramEvent.program_id)
                                              .having(fn.Count(EventParticipant.event_id) > 1))
-    
-    return repeatPerProgramQuery
-
+    repeatPerProgramDict = {result["user"]: [result["event_count"],result["programName"]] for result in repeatPerProgramQuery.dicts()}
+    return repeatPerProgramDict
 
 def repeatVolunteersAllPrograms():
     # Get people who participated in events more than once (all programs)
     repeatAllProgramQuery = (EventParticipant.select(EventParticipant.user_id, fn.COUNT(EventParticipant.user_id).alias('count'))
                                              .group_by(EventParticipant.user_id)
                                              .having(fn.COUNT(EventParticipant.user_id) > 1))
-    return repeatAllProgramQuery
+    repeatAllProgramDict = {result.user_id: result.count for result in repeatAllProgramQuery}
+
+    return repeatAllProgramDict
 
 def retentionRate():
+    retentionDict = {}
     #fall participation
     fallParticipationQuery=(ProgramEvent.select(ProgramEvent.program_id, EventParticipant.user_id.alias('participants'), Program.programName.alias("progName"))
                                         .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
@@ -111,7 +114,9 @@ def retentionRate():
 
     # calculate the retention rate using the defined function
     retention_rate_dict = retention_rate(fallParticipationDict, springParticipationDict)
-    return retention_rate_dict
+    for program, retention_rate in retention_rate_dict.items():
+         retentionDict[program]= str(round(retention_rate * 100, 2)) + "%"
+    return retentionDict
 
 
 def halfRetentionRateRecurringEvents():
@@ -119,11 +124,11 @@ def halfRetentionRateRecurringEvents():
 
     # Loop over the programs and get the corresponding event IDs
     for program in programs:
-        print("program_id", program)
         # Define the query for each program
         query = (EventParticipant.select(EventParticipant.event_id.alias("event_id"), Event.name.alias("name"))
                                  .join(Event, on=(EventParticipant.event_id == Event.id))
                                  .join(ProgramEvent, on=(EventParticipant.event_id == ProgramEvent.event_id))
+                                 .join(Program, on=(Program.id == ProgramEvent.program_id))
                                  .where((ProgramEvent.program_id == program.program_id) & (Event.recurringId != None))
                                  .distinct()
                                  .dicts())
@@ -195,8 +200,8 @@ def fullRetentionRateRecurringEvents():
 writer = pd.ExcelWriter('volunteer_data.xlsx', engine='openpyxl')
 
 # define function to save data to a sheet in the Excel file
-def save_to_sheet(data, sheet_name):
-    df = pd.DataFrame.from_dict(data, orient='index', columns=['Values'])
+def save_to_sheet(data, titles, sheet_name):
+    df = pd.DataFrame.from_dict(data, orient='index', columns=titles)
     df.to_excel(writer, sheet_name=sheet_name, startrow=1)
 
     # Add title to first row
@@ -205,11 +210,19 @@ def save_to_sheet(data, sheet_name):
 
 # call each function and save data to a separate sheet
 
+Title1 = ["Hours"]
+save_to_sheet(volunteerHoursByProgram(), Title1, 'Total Hours by Program')
+Title0 = [" "]
+save_to_sheet({'Total Hours All Programs': volunteerHoursAllPrograms()}, Title0, "Total Hours All Programs")
+Title2 = ["Count"]
+save_to_sheet(volunteersMajors(), Title2, 'Volunteers by Major')
+save_to_sheet(classLevelsInVolunteering(), Title2, 'Volunteers by Class Level')
+Title5 = ["Event Count", "Program Name"]
+save_to_sheet(repeatVolunteersPerProgram(), Title5, 'Repeat Volunteers Per Program')
+save_to_sheet(repeatVolunteersAllPrograms(), Title2, 'Repeat Volunteers All Program')
+Title6 = ["Rate"]
+save_to_sheet(retentionRate(), Title2, 'Retention Rate By Semester')
 
-save_to_sheet(volunteerHoursByProgram(), 'Total Hours by Program')
-save_to_sheet({'Total Hours All Programs': volunteerHoursAllPrograms()}, 'Summary')
-save_to_sheet(volunteersMajors(), 'Volunteers by Major')
-save_to_sheet(classLevelsInVolunteering(), 'Volunteers by Class Level')
  
  
 writer.close()
@@ -439,77 +452,4 @@ writer.close()
 #             percentage = 0
         
 #         print(f'{percentage:.2f}% of the participants came to all the series in this recurring event.')
-
-
-
-
-#     # Define the name of the CSV file
-#     filename = "participation.csv"
-
-#     # Open the CSV file in append mode and write the program names and volunteer hours to it
-#     with open(filename, "w", newline="") as csvfile:
-#         writer = csv.writer(csvfile)
-        
-#         # If the file is empty, add the header row
-#         if csvfile.tell() == 0:
-#             writer.writerow(["PROGRAM NAME", "VOLUNTEER HOURS", "RETENTION RATE"])
-        
-#         # Write each program name and its corresponding volunteer hours as a row in the CSV file,
-#         # and update the retention rate if the program is already in the file
-#         for program, hours in totalHoursByProgram.items():
-#             retention_rate = retention_rate_dict.get(program)
-#             if retention_rate is None:
-#                 writer.writerow([program, hours, ""])
-#             else:
-#                 writer.writerow([program, hours, f"{round(retention_rate * 100, 2)}%"])
-        
-     
-#         writer.writerow([" "," "])
-#         writer.writerow(["TOTAL HOURS ALL PROGRAMS",totalHoursAllProgram])
-
-
-
-#         writer.writerow([" "," "])
-#         writer.writerow(["MAJORS REPRESENTED IN VOLUNTEERING", "COUNT"])
-#         for row in majorQuery:
-#             writer.writerow([row.major, row.count])
-
-#         writer.writerow([" "," "])
-#         writer.writerow(["VOLUNTEERS BY CLASS YEAR", "COUNT"])
-#         for row in classLevelQuery:
-#             writer.writerow([row.classLevel, row.classCount])
-
-#         writer.writerow([" "," "])
-#         writer.writerow(["PROGRAM", "REPEAT VOLUNTEER"])
-#         for row in repeatPerProgramQuery.dicts():
-#             writer.writerow([row["programName"], row["user"]])
-        
-#         writer.writerow([" "," "])
-#         # Get people who came more than once (all programs)
-#         writer.writerow(["PROGRAM", "PARTICIPANT WHO ATTENDED ALL PROGRAM"])
-#         for result in repeatAllProgramQuery:
-#              writer.writerow([result.count, result.user_id])
-
-#         writer.writerow([" "," "])
-#         writer.writerow(["PROGRAM", "RETENTION RATE"])
-
-
-
-#     # Create an Excel writer object
-#     writer = pd.ExcelWriter('volunteer_results.xlsx', engine='xlsxwriter')
-
-#     # Save query 1 to a sheet named 'Total Hours by Program'
-#     pd.DataFrame(totalHoursByProgram.items(), columns=['Program', 'Total Hours']).to_excel(writer, sheet_name='Total Hours by Program', index=False)
-
-#     # Save query 2 to a sheet named 'Total Hours for All Programs'
-#     pd.DataFrame({'Total Hours': [totalHoursAllProgram]}).to_excel(writer, sheet_name='Total Hours for All Programs', index=False)
-
-#     # Save query 3 to a sheet named 'Volunteers by Major'
-#     pd.DataFrame([(m.major, m.count) for m in majorQuery], columns=['Major', 'Volunteers']).to_excel(writer, sheet_name='Volunteers by Major', index=False)
-
-#     # Save query 4 to a sheet named 'Volunteers by Class Level'
-#     pd.DataFrame([(c.classLevel, c.classCount) for c in classLevelQuery], columns=['Class Level', 'Volunteers']).to_excel(writer, sheet_name='Volunteers by Class Level', index=False)
-
-#     # Save and close the Excel file
-#     writer.close()
 

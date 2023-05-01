@@ -44,6 +44,8 @@ from app.logic.spreadsheet import classLevelsInVolunteering
 from app.logic.spreadsheet import repeatVolunteersPerProgram
 from app.logic.spreadsheet import repeatVolunteersAllPrograms
 from app.logic.spreadsheet import retentionRate
+from app.logic.spreadsheet import halfRetentionRateRecurringEvents
+from app.logic.spreadsheet import fullRetentionRateRecurringEvents
 
 
 
@@ -182,9 +184,14 @@ def eventDisplay(eventId):
     volunteersMajorst = volunteersMajors()
     classLevelsInVolunteeringt =  classLevelsInVolunteering()
 
-    # repeatVolunteersPerProgram = repeatVolunteersPerProgram()
-    # repeatVolunteersAllPrograms = repeatVolunteersAllPrograms()
-    # retentionRate = retentionRate()
+    repeatVolunteersPerProgramt = repeatVolunteersPerProgram()
+    repeatVolunteersAllProgramst = repeatVolunteersAllPrograms()
+    retentionRatet = retentionRate()
+    halfRetentionRateRecurringEventst= halfRetentionRateRecurringEvents()
+    halfRetentionRateRecurringEventst = fullRetentionRateRecurringEvents()
+
+
+
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
         try:
