@@ -37,13 +37,10 @@ from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohor
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
-from app.logic.spreadsheet import volunteerHoursByProgram
-from app.logic.spreadsheet import volunteerHoursAllPrograms
-from app.logic.spreadsheet import volunteersMajors
-from app.logic.spreadsheet import classLevelsInVolunteering
-from app.logic.spreadsheet import repeatVolunteersPerProgram
-from app.logic.spreadsheet import repeatVolunteersAllPrograms
-from app.logic.spreadsheet import retentionRate
+from app.logic.spreadsheet import create_spreadsheet
+
+
+
 from app.logic.spreadsheet import halfRetentionRateRecurringEvents
 from app.logic.spreadsheet import fullRetentionRateRecurringEvents
 
@@ -179,16 +176,7 @@ def eventDisplay(eventId):
     eventData = model_to_dict(event, recurse=False)
     associatedAttachments = EventFile.select().where(EventFile.event == event)
 
-    volunteerHoursByProgramt = volunteerHoursByProgram()
-    volunteerHoursAllProgramst = volunteerHoursAllPrograms()
-    volunteersMajorst = volunteersMajors()
-    classLevelsInVolunteeringt =  classLevelsInVolunteering()
-
-    repeatVolunteersPerProgramt = repeatVolunteersPerProgram()
-    repeatVolunteersAllProgramst = repeatVolunteersAllPrograms()
-    retentionRatet = retentionRate()
-    halfRetentionRateRecurringEventst= halfRetentionRateRecurringEvents()
-    halfRetentionRateRecurringEventst = fullRetentionRateRecurringEvents()
+    createSpreadsheet = create_spreadsheet()
 
 
 

@@ -8,6 +8,7 @@ from app.models.event import Event
 from app.models.term import Term
 from peewee import *
 import pandas as pd
+import openpyxl
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.table import Table, TableStyleInfo
 
@@ -210,22 +211,20 @@ def save_to_sheet(data, titles, sheet_name):
 
 # call each function and save data to a separate sheet
 
-Title1 = ["Hours"]
-save_to_sheet(volunteerHoursByProgram(), Title1, 'Total Hours by Program')
-Title0 = [" "]
-save_to_sheet({'Total Hours All Programs': volunteerHoursAllPrograms()}, Title0, "Total Hours All Programs")
-Title2 = ["Count"]
-save_to_sheet(volunteersMajors(), Title2, 'Volunteers by Major')
-save_to_sheet(classLevelsInVolunteering(), Title2, 'Volunteers by Class Level')
-Title5 = ["Event Count", "Program Name"]
-save_to_sheet(repeatVolunteersPerProgram(), Title5, 'Repeat Volunteers Per Program')
-save_to_sheet(repeatVolunteersAllPrograms(), Title2, 'Repeat Volunteers All Program')
-Title6 = ["Rate"]
-save_to_sheet(retentionRate(), Title2, 'Retention Rate By Semester')
-
- 
- 
-writer.close()
+def create_spreadsheet():
+    Title1 = ["Hours"]
+    save_to_sheet(volunteerHoursByProgram(), Title1, 'Total Hours by Program')
+    Title0 = [" "]
+    save_to_sheet({'Total Hours All Programs': volunteerHoursAllPrograms()}, Title0, "Total Hours All Programs")
+    Title2 = ["Count"]
+    save_to_sheet(volunteersMajors(), Title2, 'Volunteers by Major')
+    save_to_sheet(classLevelsInVolunteering(), Title2, 'Volunteers by Class Level')
+    Title5 = ["Event Count", "Program Name"]
+    save_to_sheet(repeatVolunteersPerProgram(), Title5, 'Repeat Volunteers Per Program')
+    save_to_sheet(repeatVolunteersAllPrograms(), Title2, 'Repeat Volunteers All Program')
+    Title6 = ["Rate"]
+    save_to_sheet(retentionRate(), Title6, 'Retention Rate By Semester')
+    writer.close()
 
 
 
