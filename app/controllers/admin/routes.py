@@ -22,13 +22,14 @@ from app.models.adminLogs import AdminLogs
 from app.models.eventFile import EventFile
 from app.models.bonnerCohort import BonnerCohort
 from app.models.certification import Certification
+from app.models.eventViews import EventView
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.adminLogs import createLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents
+from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView
 from app.logic.participants import getEventParticipants, getUserParticipatedTrainingEvents, checkUserRsvp, checkUserVolunteer
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
@@ -147,6 +148,11 @@ def createEvent(templateid, programid=None):
 @admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
 @admin_bp.route('/eventsList/<eventId>/edit', methods=['GET','POST'])
 def eventDisplay(eventId):
+    pageViewsCount = EventView.select().where(EventView.event == eventId).count()
+    if request.method == 'GET' and request.path == f'/eventsList/{eventId}/view':
+        viewer = g.current_user
+        event = Event.get_by_id(eventId)
+        addEventView(viewer,event) 
     # Validate given URL
     try:
         event = Event.get_by_id(eventId)
@@ -229,7 +235,8 @@ def eventDisplay(eventId):
                                 userHasRSVPed = userHasRSVPed,
                                 programTrainings = UserParticipatedTrainingEvents,
                                 isProgramManager = isProgramManager,
-                                filepaths = filepaths)
+                                filepaths = filepaths,
+                                pageViewsCount= pageViewsCount)
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
