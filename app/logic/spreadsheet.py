@@ -48,12 +48,24 @@ def repeatVolunteersAllPrograms():
     repeatAllProgramQuery = (EventParticipant.select(EventParticipant.user_id, fn.COUNT(EventParticipant.user_id).alias('count'))
                                              .group_by(EventParticipant.user_id)
                                              .having(fn.COUNT(EventParticipant.user_id) > 1))
+    
     repeatAllProgramDict = {result.user_id: result.count for result in repeatAllProgramQuery}
 
     return repeatAllProgramDict
 
-def participation(termDescription):
-    
+def getRetentionRate():
+    retentionDict = {}
+
+    fallParticipationDict = termParticipation("Fall 2022")
+    springParticipationDict = termParticipation("Spring 2023")  
+
+    # calculate the retention rate using the defined function
+    retention_rate_dict = calculateRetentionRate(fallParticipationDict, springParticipationDict)
+    for program, retention_rate in retention_rate_dict.items():
+            retentionDict[program]= str(round(retention_rate * 100, 2)) + "%"
+    return  retentionDict
+
+def termParticipation(termDescription):
     participationQuery = (ProgramEvent.select(ProgramEvent.program_id, EventParticipant.user_id.alias('participants'), Program.programName.alias("progName"))
                                       .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
                                       .join(Program, on=(Program.id == ProgramEvent.program_id))
@@ -66,25 +78,19 @@ def participation(termDescription):
         prog_name = result['progName']
         participant = result['participants']
         programParticipationDict[prog_name].append(participant)
-    
-def retentionRate():
 
-    # function to calculate the retention rate for each program
-    def retention_rate(fall_dict, spring_dict):
-        retention_dict = {}
-        for program in fall_dict.keys():
-            fall_participants = set(fall_dict[program])
-            spring_participants = set(spring_dict.get(program, []))
-            retention_rate = len(fall_participants & spring_participants) / len(fall_participants)
-            retention_dict[program] = retention_rate
-        return retention_dict
+    return programParticipationDict
 
-    # calculate the retention rate using the defined function
-    retention_rate_dict = retention_rate(fallParticipationDict, springParticipationDict)
-    for program, retention_rate in retention_rate_dict.items():
-         retentionDict[program]= str(round(retention_rate * 100, 2)) + "%"
-    return retentionDict
-
+# function to calculate the retention rate for each program
+def calculateRetentionRate(fall_dict, spring_dict):
+    retention_dict = {}
+    for program in fall_dict.keys():
+        fall_participants = set(fall_dict[program])
+        spring_participants = set(spring_dict.get(program, []))
+        retention_rate = len(fall_participants & spring_participants) / len(fall_participants)
+        retention_dict[program] = retention_rate
+  
+    return retention_dict
 
 def halfRetentionRateRecurringEvents():
     programs = ProgramEvent.select(ProgramEvent.program_id).distinct()
@@ -189,7 +195,7 @@ def create_spreadsheet():
     save_to_sheet(repeatVolunteersPerProgram(), Title5, 'Repeat Volunteers Per Program', writer)
     save_to_sheet(repeatVolunteersAllPrograms(), Title2, 'Repeat Volunteers All Program', writer)
     Title6 = ["Rate"]
-    save_to_sheet(retentionRate(), Title6, 'Retention Rate By Semester', writer)
+    save_to_sheet(getRetentionRate(), Title6, 'Retention Rate By Semester', writer)
     
     writer.close()
 
