@@ -52,8 +52,8 @@ def repeatVolunteersAllPrograms():
 
     return repeatAllProgramDict
 
-def retentionRate(termDescription):
-
+def participation(termDescription):
+    
     participationQuery = (ProgramEvent.select(ProgramEvent.program_id, EventParticipant.user_id.alias('participants'), Program.programName.alias("progName"))
                                       .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
                                       .join(Program, on=(Program.id == ProgramEvent.program_id))
@@ -66,6 +66,8 @@ def retentionRate(termDescription):
         prog_name = result['progName']
         participant = result['participants']
         programParticipationDict[prog_name].append(participant)
+    
+def retentionRate():
 
     # function to calculate the retention rate for each program
     def retention_rate(fall_dict, spring_dict):
@@ -187,7 +189,7 @@ def create_spreadsheet():
     save_to_sheet(repeatVolunteersPerProgram(), Title5, 'Repeat Volunteers Per Program', writer)
     save_to_sheet(repeatVolunteersAllPrograms(), Title2, 'Repeat Volunteers All Program', writer)
     Title6 = ["Rate"]
-    save_to_sheet(retentionRate("Fall 2022"), Title6, 'Retention Rate By Semester', writer)
+    save_to_sheet(retentionRate(), Title6, 'Retention Rate By Semester', writer)
     
     writer.close()
 
