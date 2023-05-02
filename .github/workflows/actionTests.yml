@@ -38,4 +38,4 @@ jobs:
         . venv/bin/activate && database/reset_database.sh test
     - name: Run tests
       run: |
-       . venv/bin/activate && ./tests/run_tests.sh && coverage report -m
+       . venv/bin/activate && ./tests/run_tests.sh && coverage html
