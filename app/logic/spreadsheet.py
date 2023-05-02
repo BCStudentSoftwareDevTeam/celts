@@ -16,7 +16,7 @@ def volunteerHoursByProgram():
                          .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
                          .group_by(Program.id)))
 
-    totalHoursByProgram= {program.programName: float(pe.sum) for program in query}
+    totalHoursByProgram= {program.programName: float(program.sum) for program in query}
 
     return totalHoursByProgram
 
@@ -25,6 +25,18 @@ def volunteerHoursAllPrograms():
 
     return totalHoursAllProgram
 
+# def volunteerMajorAndClass(bloo):
+#     col_name = bloo
+#     majorAndClass = (User.select(getattr(User, col_name), fn.COUNT(fn.DISTINCT(EventParticipant.user_id)).alias('count'))
+#                          .join(EventParticipant, on=(User.username == EventParticipant.user_id))
+#                          .group_by(User.major))
+    
+#     if col_name == 'major':
+#         majorAndClass_dict = {row.major: float(row.count) for row in majorAndClass}
+#     else: 
+#         majorAndClass_dict = {row.classLevel: float(row.count) for row in majorAndClass}
+
+#     return majorAndClass_dict
 
 def volunteersMajors():
     # Majors represented in volunteering
@@ -217,6 +229,8 @@ def create_spreadsheet():
     Title2 = ["Count"]
     save_to_sheet(volunteersMajors(), Title2, 'Volunteers by Major', writer)
     save_to_sheet(classLevelsInVolunteering(), Title2, 'Volunteers by Class Level', writer)
+    # save_to_sheet(volunteerMajorAndClass('major'), Title2, 'Volunteers by Major', writer)
+    # save_to_sheet(volunteerMajorAndClass('classLevel'), Title2, 'Volunteers by Class Level', writer)
     Title5 = ["Event Count", "Program Name"]
     save_to_sheet(repeatVolunteersPerProgram(), Title5, 'Repeat Volunteers Per Program', writer)
     save_to_sheet(repeatVolunteersAllPrograms(), Title2, 'Repeat Volunteers All Program', writer)
