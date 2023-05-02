@@ -1,25 +1,22 @@
 #query data and generate spreadsheet
-from os import major
+import pandas as pd
+from peewee import fn
+
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.programEvent import ProgramEvent
 from app.models.program import Program
 from app.models.event import Event
 from app.models.term import Term
-from peewee import *
-import pandas as pd
-import openpyxl
-from openpyxl.utils import get_column_letter
-from openpyxl.worksheet.table import Table, TableStyleInfo
 
 
 def volunteerHoursByProgram():
-    query = (ProgramEvent.select(ProgramEvent.program_id, fn.SUM(EventParticipant.hoursEarned).alias('sum'))
+    query = ((Program.select(Program.id, fn.SUM(EventParticipant.hoursEarned).alias('sum'))
+                         .join(ProgramEvent)
                          .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
-                         .join(Program, on=(Program.id == ProgramEvent.program_id))
-                         .group_by(ProgramEvent.program_id))
+                         .group_by(Program.id)))
 
-    totalHoursByProgram= {pe.program.programName: float(pe.sum) for pe in query}
+    totalHoursByProgram= {program.programName: float(pe.sum) for program in query}
 
     return totalHoursByProgram
 
@@ -198,10 +195,9 @@ def fullRetentionRateRecurringEvents():
 
 
 # create a new Excel file
-writer = pd.ExcelWriter('volunteer_data.xlsx', engine='openpyxl')
 
 # define function to save data to a sheet in the Excel file
-def save_to_sheet(data, titles, sheet_name):
+def save_to_sheet(data, titles, sheet_name, writer):
     df = pd.DataFrame.from_dict(data, orient='index', columns=titles)
     df.to_excel(writer, sheet_name=sheet_name, startrow=1)
 
@@ -212,21 +208,22 @@ def save_to_sheet(data, titles, sheet_name):
 # call each function and save data to a separate sheet
 
 def create_spreadsheet():
+    writer = pd.ExcelWriter('volunteer_data.xlsx', engine='openpyxl')
+    
     Title1 = ["Hours"]
-    save_to_sheet(volunteerHoursByProgram(), Title1, 'Total Hours by Program')
+    save_to_sheet(volunteerHoursByProgram(), Title1, 'Total Hours by Program', writer)
     Title0 = [" "]
-    save_to_sheet({'Total Hours All Programs': volunteerHoursAllPrograms()}, Title0, "Total Hours All Programs")
+    save_to_sheet({'Total Hours All Programs': volunteerHoursAllPrograms()}, Title0, "Total Hours All Programs", writer)
     Title2 = ["Count"]
-    save_to_sheet(volunteersMajors(), Title2, 'Volunteers by Major')
-    save_to_sheet(classLevelsInVolunteering(), Title2, 'Volunteers by Class Level')
+    save_to_sheet(volunteersMajors(), Title2, 'Volunteers by Major', writer)
+    save_to_sheet(classLevelsInVolunteering(), Title2, 'Volunteers by Class Level', writer)
     Title5 = ["Event Count", "Program Name"]
-    save_to_sheet(repeatVolunteersPerProgram(), Title5, 'Repeat Volunteers Per Program')
-    save_to_sheet(repeatVolunteersAllPrograms(), Title2, 'Repeat Volunteers All Program')
+    save_to_sheet(repeatVolunteersPerProgram(), Title5, 'Repeat Volunteers Per Program', writer)
+    save_to_sheet(repeatVolunteersAllPrograms(), Title2, 'Repeat Volunteers All Program', writer)
     Title6 = ["Rate"]
-    save_to_sheet(retentionRate(), Title6, 'Retention Rate By Semester')
+    save_to_sheet(retentionRate(), Title6, 'Retention Rate By Semester', writer)
+    
     writer.close()
-
-
 
 #########################################################################################################################################
 # def volunteer():
