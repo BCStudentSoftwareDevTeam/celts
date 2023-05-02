@@ -25,37 +25,13 @@ def volunteerHoursAllPrograms():
 
     return totalHoursAllProgram
 
-# def volunteerMajorAndClass(bloo):
-#     col_name = bloo
-#     majorAndClass = (User.select(getattr(User, col_name), fn.COUNT(fn.DISTINCT(EventParticipant.user_id)).alias('count'))
-#                          .join(EventParticipant, on=(User.username == EventParticipant.user_id))
-#                          .group_by(User.major))
+def volunteerMajorAndClass(column):
+
+    majorAndClass = (User.select(column.alias("bloo"), fn.COUNT(fn.DISTINCT(EventParticipant.user_id)).alias('count'))
+                         .join(EventParticipant, on=(User.username == EventParticipant.user_id))
+                         .group_by(column))
     
-#     if col_name == 'major':
-#         majorAndClass_dict = {row.major: float(row.count) for row in majorAndClass}
-#     else: 
-#         majorAndClass_dict = {row.classLevel: float(row.count) for row in majorAndClass}
-
-#     return majorAndClass_dict
-
-def volunteersMajors():
-    # Majors represented in volunteering
-    majorQuery = (User.select(User.major, fn.COUNT(fn.DISTINCT(EventParticipant.user_id)).alias('count'))
-                      .join(EventParticipant, on=(User.username == EventParticipant.user_id))
-                      .group_by(User.major))
-    major_query_dict = {row.major: float(row.count) for row in majorQuery}
-
-    return major_query_dict
-
-def classLevelsInVolunteering():
-    # Volunteering numbers by class year
-    classLevelQuery = (User.select(User.classLevel, fn.COUNT(fn.DISTINCT(EventParticipant.user_id)).alias('classCount'))
-                           .join(EventParticipant, on=(User.username == EventParticipant.user_id))
-                           .group_by(User.classLevel))
-    class_level_query_dict = {row.classLevel: float(row.classCount) for row in classLevelQuery}
-
-    return class_level_query_dict
-
+    return {row.bloo: float(row.count) for row in majorAndClass}
 
 def repeatVolunteersPerProgram():
     # Get people who participated in events more than once (individual program)
@@ -227,10 +203,8 @@ def create_spreadsheet():
     Title0 = [" "]
     save_to_sheet({'Total Hours All Programs': volunteerHoursAllPrograms()}, Title0, "Total Hours All Programs", writer)
     Title2 = ["Count"]
-    save_to_sheet(volunteersMajors(), Title2, 'Volunteers by Major', writer)
-    save_to_sheet(classLevelsInVolunteering(), Title2, 'Volunteers by Class Level', writer)
-    # save_to_sheet(volunteerMajorAndClass('major'), Title2, 'Volunteers by Major', writer)
-    # save_to_sheet(volunteerMajorAndClass('classLevel'), Title2, 'Volunteers by Class Level', writer)
+    save_to_sheet(volunteerMajorAndClass(User.major), Title2, 'Volunteers by Major', writer)
+    save_to_sheet(volunteerMajorAndClass(User.classLevel), Title2, 'Volunteers by Class Level', writer)
     Title5 = ["Event Count", "Program Name"]
     save_to_sheet(repeatVolunteersPerProgram(), Title5, 'Repeat Volunteers Per Program', writer)
     save_to_sheet(repeatVolunteersAllPrograms(), Title2, 'Repeat Volunteers All Program', writer)
