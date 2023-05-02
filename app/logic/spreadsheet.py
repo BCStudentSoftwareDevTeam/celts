@@ -1,5 +1,6 @@
 import pandas as pd
 from peewee import fn
+from collections import defaultdict
 
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
@@ -51,40 +52,20 @@ def repeatVolunteersAllPrograms():
 
     return repeatAllProgramDict
 
-def retentionRate():
-    retentionDict = {}
-    #fall participation
-    fallParticipationQuery=(ProgramEvent.select(ProgramEvent.program_id, EventParticipant.user_id.alias('participants'), Program.programName.alias("progName"))
-                                        .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
-                                        .join(Program, on=(Program.id == ProgramEvent.program_id))
-                                        .join(Event, on=(EventParticipant.event_id == Event.id))
-                                        .join(Term, on=(Event.term_id == Term.id) )
-                                        .where(Term.description == "Fall 2022"))
-                                  
-    fallParticipationDict = {}
-    for result in fallParticipationQuery.dicts():
-        prog_name = result['progName']
-        participant = result['participants']
-        if prog_name not in fallParticipationDict:
-            fallParticipationDict[prog_name] = []
-        fallParticipationDict[prog_name].append(participant)
-    
-    # spring participation
-    springParticipationQuery=(ProgramEvent.select(ProgramEvent.program_id, EventParticipant.user_id.alias('participants'), Program.programName.alias("progName"))
-                                          .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
-                                          .join(Program, on=(Program.id == ProgramEvent.program_id))
-                                          .join(Event, on=(EventParticipant.event_id == Event.id))
-                                          .join(Term, on=(Event.term_id == Term.id) )
-                                          .where(Term.description == "Spring 2023"))
+def retentionRate(termDescription):
 
+    participationQuery = (ProgramEvent.select(ProgramEvent.program_id, EventParticipant.user_id.alias('participants'), Program.programName.alias("progName"))
+                                      .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
+                                      .join(Program, on=(Program.id == ProgramEvent.program_id))
+                                      .join(Event, on=(EventParticipant.event_id == Event.id))
+                                      .join(Term, on=(Event.term_id == Term.id) )
+                                      .where(Term.description == termDescription ))
     
-    springParticipationDict = {}
-    for result in springParticipationQuery.dicts():
+    programParticipationDict = defaultdict(list)
+    for result in participationQuery.dicts():
         prog_name = result['progName']
         participant = result['participants']
-        if prog_name not in springParticipationDict:
-            springParticipationDict[prog_name] = []
-        springParticipationDict[prog_name].append(participant)
+        programParticipationDict[prog_name].append(participant)
 
     # function to calculate the retention rate for each program
     def retention_rate(fall_dict, spring_dict):
@@ -206,7 +187,7 @@ def create_spreadsheet():
     save_to_sheet(repeatVolunteersPerProgram(), Title5, 'Repeat Volunteers Per Program', writer)
     save_to_sheet(repeatVolunteersAllPrograms(), Title2, 'Repeat Volunteers All Program', writer)
     Title6 = ["Rate"]
-    save_to_sheet(retentionRate(), Title6, 'Retention Rate By Semester', writer)
+    save_to_sheet(retentionRate("Fall 2022"), Title6, 'Retention Rate By Semester', writer)
     
     writer.close()
 
