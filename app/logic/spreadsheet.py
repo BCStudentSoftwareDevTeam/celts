@@ -1,4 +1,3 @@
-#query data and generate spreadsheet
 import pandas as pd
 from peewee import fn
 
@@ -12,9 +11,9 @@ from app.models.term import Term
 
 def volunteerHoursByProgram():
     query = ((Program.select(Program.id, fn.SUM(EventParticipant.hoursEarned).alias('sum'))
-                         .join(ProgramEvent)
-                         .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
-                         .group_by(Program.id)))
+                     .join(ProgramEvent)
+                     .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
+                     .group_by(Program.id)))
 
     totalHoursByProgram= {program.programName: float(program.sum) for program in query}
 
@@ -62,7 +61,6 @@ def retentionRate():
                                         .join(Term, on=(Event.term_id == Term.id) )
                                         .where(Term.description == "Fall 2022"))
                                   
-
     fallParticipationDict = {}
     for result in fallParticipationQuery.dicts():
         prog_name = result['progName']
@@ -150,13 +148,12 @@ def fullRetentionRateRecurringEvents():
     # Loop over the programs and get the corresponding event IDs
     for program in programs:
         # Define the query for each program
-        query = (EventParticipant
-                .select(EventParticipant.event_id.alias("event_id"), Event.name.alias("name"))
-                .join(Event, on=(EventParticipant.event_id == Event.id))
-                .join(ProgramEvent, on=(EventParticipant.event_id == ProgramEvent.event_id))
-                .where((ProgramEvent.program_id == program.program_id) & (Event.recurringId != None))
-                .distinct()
-                .dicts())
+        query = (EventParticipant.select(EventParticipant.event_id.alias("event_id"), Event.name.alias("name"))
+                                 .join(Event, on=(EventParticipant.event_id == Event.id))
+                                 .join(ProgramEvent, on=(EventParticipant.event_id == ProgramEvent.event_id))
+                                 .where((ProgramEvent.program_id == program.program_id) & (Event.recurringId != None))
+                                 .distinct()
+                                 .dicts())
 
         results = query.execute()
 
