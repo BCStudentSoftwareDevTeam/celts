@@ -52,4 +52,4 @@ jobs:
         exclude_assets: ".gitignore"
     - name: Coverage report URL 
       run: |
-        echo "### Coverage report URL: https://bcstudentsoftwaredevteam.github.io/coverage/${{ github.repository }}/${{ github.head_ref }}/"
+        echo "https://bcstudentsoftwaredevteam.github.io/coverage/${{ github.repository }}/${{ github.head_ref }}/"
