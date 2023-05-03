@@ -28,15 +28,13 @@ jobs:
       with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
-    - run: |
-        sudo /etc/init.d/mysql start
+    - run: sudo /etc/init.d/mysql start
     - name: Install dependencies
-      run: "source setup.sh"
+      run: source setup.sh
     - name: Activate environment and reset database
       run: . venv/bin/activate && database/reset_database.sh test
     - name: Run tests
-      run: |
-       . venv/bin/activate && ./tests/run_tests.sh && coverage html --omit=tests/*
+      run: . venv/bin/activate && ./tests/run_tests.sh && coverage html --omit=tests/*
     - name: Deploy code coverage report
       if: matrix.python-version == '3.11' # only run deploy one time
       uses: peaceiris/actions-gh-pages@v3
@@ -48,5 +46,4 @@ jobs:
         destination_dir: ${{ github.repository }}/${{ github.head_ref }}
         exclude_assets: ".gitignore"  # without exclude_assets, htmlcov/ was being removed and not pushed to the coverage repo
     - name: Coverage report URL 
-      run: |
-        echo "[View Code Coverage](https://bcstudentsoftwaredevteam.github.io/coverage/${{ github.repository }}/${{ github.head_ref }}/)" >> $GITHUB_STEP_SUMMARY
+      run: echo '[View Code Coverage](https://bcstudentsoftwaredevteam.github.io/coverage/${{ github.repository }}/${{ github.head_ref }}/)' >> $GITHUB_STEP_SUMMARY
