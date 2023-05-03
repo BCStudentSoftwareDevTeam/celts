@@ -21,7 +21,6 @@ jobs:
       MYSQL_PASSWORD: 'password'
       MYSQL_ROOT_PASSWORD: 'root'
       FLASK_ENV: 'testing'
-      BROWSER: '/usr/bin/chromium-browser'
 
     steps:
     - uses: actions/checkout@v3
@@ -39,4 +38,17 @@ jobs:
         . venv/bin/activate && database/reset_database.sh test
     - name: Run tests
       run: |
-       . venv/bin/activate && ./tests/run_tests.sh && coverage html && open htmlcov/index.html 
+       . venv/bin/activate && ./tests/run_tests.sh && coverage html
+    - name: What is here?
+      run: |
+        ls && pwd
+    - name: Deploy pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        deploy_key: ${{ secrets.COVERAGE_DEPLOY_KEY }}
+        external_repository: Andersonstettner/sendActions
+        publish_branch: main
+        publish_dir: ./htmlcov
+        destination_dir: ${{ github.repository }}/${{ github.head_ref }}
+        # exclude has to be because it breaks without. Brian also has no clue. So it is staying
+        exclude_assets: ".gitignore"
