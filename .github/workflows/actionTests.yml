@@ -52,5 +52,5 @@ jobs:
         destination_dir: ${{ github.repository }}/${{ github.head_ref }}
         # exclude has to be because it breaks without. Brian also has no clue. So it is staying
         exclude_assets: ".gitignore"
-     run: |
-        echo https://bcstudentsoftwaredevteam.github.io/${{ github.repository }}/${{ github.head_ref }}
+      run: |
+        echo "https://bcstudentsoftwaredevteam.github.io/${{ github.repository }}/${{ github.head_ref }}/"
