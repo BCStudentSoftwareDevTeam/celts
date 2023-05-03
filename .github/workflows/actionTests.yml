@@ -46,4 +46,4 @@ jobs:
         destination_dir: ${{ github.repository }}/${{ github.head_ref }}
         exclude_assets: ".gitignore"  # without exclude_assets, htmlcov/ was being removed and not pushed to the coverage repo
     - name: Coverage report URL 
-      run: echo '[View Code Coverage](https://bcstudentsoftwaredevteam.github.io/coverage/${{ github.repository }}/${{ github.head_ref }}/)' >> $GITHUB_STEP_SUMMARY
+      run: echo '[View Code Coverage](https://bcstudentsoftwaredevteam.github.io/coverage/${{ github.repository }}/${{ github.head_ref }}/?)' >> $GITHUB_STEP_SUMMARY
