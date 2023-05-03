@@ -51,5 +51,4 @@ jobs:
         # exclude has to be because it breaks without. Brian also has no clue. So it is staying
         exclude_assets: ".gitignore"
     - name: Coverage report URL 
-      run: |
-        echo "https://bcstudentsoftwaredevteam.github.io/coverage/${{ github.repository }}/${{ github.head_ref }}/"
+      echo "### Coverage report URL: https://bcstudentsoftwaredevteam.github.io/coverage/${{ github.repository }}/${{ github.head_ref }}/"
