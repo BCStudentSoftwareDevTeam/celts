@@ -48,8 +48,7 @@ jobs:
         publish_branch: main
         publish_dir: ./htmlcov
         destination_dir: ${{ github.repository }}/${{ github.head_ref }}
-        # exclude has to be because it breaks without. Brian also has no clue. So it is staying
-        exclude_assets: ".gitignore"
+        exclude_assets: ".gitignore"  # without exclude_assets, htmlcov/ was being removed and not pushed to the coverage repo
     - name: Coverage report URL 
       run: |
-        echo "## https://bcstudentsoftwaredevteam.github.io/coverage/${{ github.repository }}/${{ github.head_ref }}/" >> $GITHUB_STEP_SUMMARY
+        echo "[View Code Coverage](https://bcstudentsoftwaredevteam.github.io/coverage/${{ github.repository }}/${{ github.head_ref }}/)" >> $GITHUB_STEP_SUMMARY
