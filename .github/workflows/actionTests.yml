@@ -52,4 +52,4 @@ jobs:
     - name: Put coverage link on PR
       uses: mshick/add-pr-comment@v2
       with:
-        message: [View Code Coverage](https://bcstudentsoftwaredevteam.github.io/coverage/${{ github.repository }}/${{ github.head_ref }}/?)
+        message: "[View Code Coverage](https://bcstudentsoftwaredevteam.github.io/coverage/${{ github.repository }}/${{ github.head_ref }}/?)"
