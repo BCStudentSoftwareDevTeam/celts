@@ -18,6 +18,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.eventFile import EventFile
 from app.models.requirementMatch import RequirementMatch
 from app.models.certificationRequirement import CertificationRequirement
+from app.models.eventViews import EventView
 
 from app.logic.adminLogs import createLog
 from app.logic.utils import format24HourTime
@@ -457,4 +458,8 @@ def upcomingEventsFirst(EventList):
         sortedList.append(EventList[0])
         del EventList[0]
     return EventList+sortedList[::-1]
+def addEventView(viewer,event):
+    """This checks if the current user already viewed the event. If not, insert a recored to EventView table"""
+    if not viewer.isCeltsAdmin:
+         EventView.get_or_create(user = viewer, event = event)   
 
