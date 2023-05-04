@@ -1,5 +1,5 @@
 import pandas as pd
-from peewee import fn
+from peewee import fn, Case
 from collections import defaultdict
 
 from app.models.eventParticipant import EventParticipant
@@ -17,9 +17,7 @@ def volunteerHoursByProgram():
                      .group_by(Program.programName)
                      .order_by(Program.programName)))
 
-    totalHoursByProgram= {program.programName: float(program.sum) for program in query}
-
-    return totalHoursByProgram
+    return query.tuples()
 
 # def volunteerHoursAllPrograms():
 #     totalHoursAllProgram = float(EventParticipant.select(fn.Sum(fn.Coalesce(EventParticipant.hoursEarned, 0))).scalar())
@@ -28,15 +26,17 @@ def volunteerHoursByProgram():
 
 def volunteerMajorAndClass(column):
 
-    majorAndClass = (User.select(column.alias("bloo"), fn.COUNT(fn.DISTINCT(EventParticipant.user_id)).alias('count'))
+    majorAndClass = (User.select(Case(None, ((column.is_null(), "Unknown"),), column), fn.COUNT(fn.DISTINCT(EventParticipant.user_id)).alias('count'))
                          .join(EventParticipant, on=(User.username == EventParticipant.user_id))
-                         .group_by(column))
+                         .group_by(column)
+                         .order_by(column.asc(nulls = 'LAST')))
     
-    return {row.bloo or "Unknown": float(row.count) for row in majorAndClass}
+    # return {row.bloo or "Unknown": float(row.count) for row in majorAndClass}
+    return majorAndClass.tuples()
 
 def repeatVolunteersPerProgram():
     # Get people who participated in events more than once (individual program)
-    repeatPerProgramQuery = (EventParticipant.select(User.firstName, User.lastName, (ProgramEvent.program_id).alias('program_id'),Program.programName.alias("programName"),fn.Count(EventParticipant.event_id).alias('event_count'))
+    repeatPerProgramQuery = (EventParticipant.select(fn.CONCAT(User.firstName, " ", User.lastName),Program.programName.alias("programName"),fn.Count(EventParticipant.event_id).alias('event_count'))
                                              .join(ProgramEvent, on=(EventParticipant.event_id == ProgramEvent.event_id))
                                              .join(Program, on=(ProgramEvent.program_id == Program.id))
                                              .join(User, on=(User.username == EventParticipant.user_id))
@@ -44,23 +44,23 @@ def repeatVolunteersPerProgram():
                                              .having(fn.Count(EventParticipant.event_id) > 1)
                                              .order_by(ProgramEvent.program_id, User.lastName ))
     
-    repeatPerProgramDict = { f"{result['firstName']} {result['lastName']}": [result["event_count"],result["programName"]] for result in repeatPerProgramQuery.dicts()}
+    # repeatPerProgramDict =  [[f"{result['firstName']} {result['lastName']}", result["event_count"],result["programName"]] for result in repeatPerProgramQuery.tuples()]
     
-    return repeatPerProgramDict
+    return repeatPerProgramQuery.tuples()
 
 def repeatVolunteers():
     # Get people who participated in events more than once (all programs)
-    repeatAllProgramQuery = (EventParticipant.select(User.firstName, User.lastName, fn.COUNT(EventParticipant.user_id).alias('count'))
+    repeatAllProgramQuery = (EventParticipant.select(fn.CONCAT(User.firstName," ", User.lastName), fn.COUNT(EventParticipant.user_id).alias('count'))
                                              .join(User, on=(User.username == EventParticipant.user_id))
                                              .group_by(User.firstName, User.lastName)
                                              .having(fn.COUNT(EventParticipant.user_id) > 1))
     
-    repeatAllProgramDict = {f"{result.user.firstName} {result.user.lastName}": result.count for result in repeatAllProgramQuery}
+    # repeatAllProgramDict = {f"{result.user.firstName} {result.user.lastName}": result.count for result in repeatAllProgramQuery}
 
-    return repeatAllProgramDict
+    return repeatAllProgramQuery.tuples()
 
 def getRetentionRate():
-    retentionDict = {}
+    retentionDict = []
 
     fallParticipationDict = termParticipation("Fall 2022")
     springParticipationDict = termParticipation("Spring 2023")  
@@ -68,7 +68,8 @@ def getRetentionRate():
     # calculate the retention rate using the defined function
     retention_rate_dict = calculateRetentionRate(fallParticipationDict, springParticipationDict)
     for program, retention_rate in retention_rate_dict.items():
-            retentionDict[program]= str(round(retention_rate * 100, 2)) + "%"
+         retentionDict.append((program, str(round(retention_rate * 100, 2)) + "%"))
+            # retentionDict[program]= str(round(retention_rate * 100, 2)) + "%"
     return  retentionDict
 
 def termParticipation(termDescription):
@@ -180,8 +181,8 @@ def fullRetentionRateRecurringEvents():
 
 # define function to save data to a sheet in the Excel file
 def save_to_sheet(data, titles, sheet_name, writer):
-    df = pd.DataFrame.from_dict(data, orient='index', columns=titles)
-    df.to_excel(writer, sheet_name=sheet_name, startrow=1)
+    df = pd.DataFrame.from_records(data, columns=titles)
+    df.to_excel(writer, sheet_name=sheet_name, index= False, startrow=1)
 
     # Add title to first row
     ws = writer.sheets[sheet_name]
@@ -192,17 +193,17 @@ def save_to_sheet(data, titles, sheet_name, writer):
 def create_spreadsheet():
     writer = pd.ExcelWriter('volunteer_data.xlsx', engine='openpyxl')
     
-    Title1 = ["Hours"]
+    Title1 = ["Program","Hours"]
     save_to_sheet(volunteerHoursByProgram(), Title1, 'Total Hours by Program', writer)
     # Title0 = [" "]
     # save_to_sheet({'Total Hours All Programs': volunteerHoursAllPrograms()}, Title0, "Total Hours All Programs", writer)
-    Title2 = ["Count"]
+    Title2 = ["Major","Count"]
     save_to_sheet(volunteerMajorAndClass(User.major), Title2, 'Volunteers by Major', writer)
     save_to_sheet(volunteerMajorAndClass(User.classLevel), Title2, 'Volunteers by Class Level', writer)
-    Title5 = ["Event Count", "Program Name"]
+    Title5 = ["Volunteer","Event Count", "Program Name"]
     save_to_sheet(repeatVolunteersPerProgram(), Title5, 'Repeat Volunteers Per Program', writer)
-    save_to_sheet(repeatVolunteers(), ["Events"], 'Repeat Volunteers All Program', writer)
-    Title6 = ["Rate"]
+    save_to_sheet(repeatVolunteers(), ["Volunteer","Events"], 'Repeat Volunteers All Program', writer)
+    Title6 = ["Program","Rate"]
     save_to_sheet(getRetentionRate(), Title6, 'Retention Rate By Semester', writer)
     
     writer.close()
