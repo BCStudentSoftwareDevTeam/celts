@@ -14,7 +14,8 @@ def volunteerHoursByProgram():
     query = ((Program.select(Program.programName, fn.SUM(EventParticipant.hoursEarned).alias('sum'))
                      .join(ProgramEvent)
                      .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
-                     .group_by(Program.programName)))
+                     .group_by(Program.programName)
+                     .order_by(Program.programName)))
 
     totalHoursByProgram= {program.programName: float(program.sum) for program in query}
 
@@ -40,20 +41,21 @@ def repeatVolunteersPerProgram():
                                              .join(Program, on=(ProgramEvent.program_id == Program.id))
                                              .join(User, on=(User.username == EventParticipant.user_id))
                                              .group_by(User.firstName, User.lastName, ProgramEvent.program_id)
-                                             .having(fn.Count(EventParticipant.event_id) > 1))
+                                             .having(fn.Count(EventParticipant.event_id) > 1)
+                                             .order_by(ProgramEvent.program_id, User.lastName ))
     
-    repeatPerProgramDict = {(result["firstName"], result["lastName"]): [result["event_count"],result["programName"]] for result in repeatPerProgramQuery.dicts()}
+    repeatPerProgramDict = { f"{result['firstName']} {result['lastName']}": [result["event_count"],result["programName"]] for result in repeatPerProgramQuery.dicts()}
     
     return repeatPerProgramDict
 
-def repeatVolunteersAllPrograms():
+def repeatVolunteers():
     # Get people who participated in events more than once (all programs)
     repeatAllProgramQuery = (EventParticipant.select(User.firstName, User.lastName, fn.COUNT(EventParticipant.user_id).alias('count'))
                                              .join(User, on=(User.username == EventParticipant.user_id))
                                              .group_by(User.firstName, User.lastName)
                                              .having(fn.COUNT(EventParticipant.user_id) > 1))
     
-    repeatAllProgramDict = {(result.user.firstName, result.user.lastName): result.count for result in repeatAllProgramQuery}
+    repeatAllProgramDict = {f"{result.user.firstName} {result.user.lastName}": result.count for result in repeatAllProgramQuery}
 
     return repeatAllProgramDict
 
@@ -191,7 +193,7 @@ def create_spreadsheet():
     writer = pd.ExcelWriter('volunteer_data.xlsx', engine='openpyxl')
     
     Title1 = ["Hours"]
-    save_to_sheet(volunteerHoursByProgram(), Title1, 'bla', writer)
+    save_to_sheet(volunteerHoursByProgram(), Title1, 'Total Hours by Program', writer)
     # Title0 = [" "]
     # save_to_sheet({'Total Hours All Programs': volunteerHoursAllPrograms()}, Title0, "Total Hours All Programs", writer)
     Title2 = ["Count"]
@@ -199,7 +201,7 @@ def create_spreadsheet():
     save_to_sheet(volunteerMajorAndClass(User.classLevel), Title2, 'Volunteers by Class Level', writer)
     Title5 = ["Event Count", "Program Name"]
     save_to_sheet(repeatVolunteersPerProgram(), Title5, 'Repeat Volunteers Per Program', writer)
-    save_to_sheet(repeatVolunteersAllPrograms(), Title2, 'Repeat Volunteers All Program', writer)
+    save_to_sheet(repeatVolunteers(), ["Events"], 'Repeat Volunteers All Program', writer)
     Title6 = ["Rate"]
     save_to_sheet(getRetentionRate(), Title6, 'Retention Rate By Semester', writer)
     
