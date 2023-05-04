@@ -50,6 +50,7 @@ jobs:
     - name: Coverage report URL 
       run: echo '[View Code Coverage](https://bcstudentsoftwaredevteam.github.io/coverage/${{ github.repository }}/${{ github.head_ref }}/?)' >> $GITHUB_STEP_SUMMARY
     - name: Put coverage link on PR
+      if: matrix.python-version == '3.11' # only make a link when we deploy
       uses: mshick/add-pr-comment@v2
       with:
         refresh-message-position: True
