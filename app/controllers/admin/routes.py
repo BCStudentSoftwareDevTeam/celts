@@ -41,8 +41,8 @@ from app.logic.spreadsheet import create_spreadsheet
 
 
 
-from app.logic.spreadsheet import halfRetentionRateRecurringEvents
-from app.logic.spreadsheet import fullRetentionRateRecurringEvents
+#from app.logic.spreadsheet import halfRetentionRateRecurringEvents
+#from app.logic.spreadsheet import fullRetentionRateRecurringEvents
 
 
 

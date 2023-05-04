@@ -11,19 +11,19 @@ from app.models.term import Term
 
 
 def volunteerHoursByProgram():
-    query = ((Program.select(Program.id, fn.SUM(EventParticipant.hoursEarned).alias('sum'))
+    query = ((Program.select(Program.programName, fn.SUM(EventParticipant.hoursEarned).alias('sum'))
                      .join(ProgramEvent)
                      .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
-                     .group_by(Program.id)))
+                     .group_by(Program.programName)))
 
     totalHoursByProgram= {program.programName: float(program.sum) for program in query}
 
     return totalHoursByProgram
 
-def volunteerHoursAllPrograms():
-    totalHoursAllProgram = float(EventParticipant.select(fn.Sum(fn.Coalesce(EventParticipant.hoursEarned, 0))).scalar())
+# def volunteerHoursAllPrograms():
+#     totalHoursAllProgram = float(EventParticipant.select(fn.Sum(fn.Coalesce(EventParticipant.hoursEarned, 0))).scalar())
 
-    return totalHoursAllProgram
+#     return totalHoursAllProgram
 
 def volunteerMajorAndClass(column):
 
@@ -31,25 +31,29 @@ def volunteerMajorAndClass(column):
                          .join(EventParticipant, on=(User.username == EventParticipant.user_id))
                          .group_by(column))
     
-    return {row.bloo: float(row.count) for row in majorAndClass}
+    return {row.bloo or "Unknown": float(row.count) for row in majorAndClass}
 
 def repeatVolunteersPerProgram():
     # Get people who participated in events more than once (individual program)
-    repeatPerProgramQuery = (EventParticipant.select(EventParticipant.user_id,(ProgramEvent.program_id).alias('program_id'),Program.programName.alias("programName"),fn.Count(EventParticipant.event_id).alias('event_count'))
+    repeatPerProgramQuery = (EventParticipant.select(User.firstName, User.lastName, (ProgramEvent.program_id).alias('program_id'),Program.programName.alias("programName"),fn.Count(EventParticipant.event_id).alias('event_count'))
                                              .join(ProgramEvent, on=(EventParticipant.event_id == ProgramEvent.event_id))
                                              .join(Program, on=(ProgramEvent.program_id == Program.id))
-                                             .group_by(EventParticipant.user_id, ProgramEvent.program_id)
+                                             .join(User, on=(User.username == EventParticipant.user_id))
+                                             .group_by(User.firstName, User.lastName, ProgramEvent.program_id)
                                              .having(fn.Count(EventParticipant.event_id) > 1))
-    repeatPerProgramDict = {result["user"]: [result["event_count"],result["programName"]] for result in repeatPerProgramQuery.dicts()}
+    
+    repeatPerProgramDict = {(result["firstName"], result["lastName"]): [result["event_count"],result["programName"]] for result in repeatPerProgramQuery.dicts()}
+    
     return repeatPerProgramDict
 
 def repeatVolunteersAllPrograms():
     # Get people who participated in events more than once (all programs)
-    repeatAllProgramQuery = (EventParticipant.select(EventParticipant.user_id, fn.COUNT(EventParticipant.user_id).alias('count'))
-                                             .group_by(EventParticipant.user_id)
+    repeatAllProgramQuery = (EventParticipant.select(User.firstName, User.lastName, fn.COUNT(EventParticipant.user_id).alias('count'))
+                                             .join(User, on=(User.username == EventParticipant.user_id))
+                                             .group_by(User.firstName, User.lastName)
                                              .having(fn.COUNT(EventParticipant.user_id) > 1))
     
-    repeatAllProgramDict = {result.user_id: result.count for result in repeatAllProgramQuery}
+    repeatAllProgramDict = {(result.user.firstName, result.user.lastName): result.count for result in repeatAllProgramQuery}
 
     return repeatAllProgramDict
 
@@ -93,7 +97,10 @@ def calculateRetentionRate(fall_dict, spring_dict):
     return retention_dict
 
 def halfRetentionRateRecurringEvents():
+
     programs = ProgramEvent.select(ProgramEvent.program_id).distinct()
+
+    retention_rates = {}
 
     # Loop over the programs and get the corresponding event IDs
     for program in programs:
@@ -106,21 +113,15 @@ def halfRetentionRateRecurringEvents():
                                  .distinct()
                                  .dicts())
 
-        results = query.execute()
-
         event_count = 0
-        name_counts = {}
+        name_counts = defaultdict(int)
 
-        for result in results:
+        for result in query:
             event_count += 1
-            print(result["event_id"], "--------",result["name"])
             participants = EventParticipant.select(EventParticipant.user_id).where(EventParticipant.event_id == result["event_id"])
             for participant in participants:
                 name = participant.user_id
-                if name not in name_counts:
-                    name_counts[name] = 1
-                else:
-                    name_counts[name] += 1
+                name_counts[name] += 1
                 
         half_count = event_count // 2
         qualified_names = [name for name, count in name_counts.items() if count >= half_count]
@@ -129,10 +130,17 @@ def halfRetentionRateRecurringEvents():
             percentage = len(qualified_names) / len(name_counts) * 100
         else:
             percentage = 0
-        return percentage
+
+        retention_rates[program.program.programName] = percentage
+
+    return retention_rates
+
 
 def fullRetentionRateRecurringEvents():
+    
     programs = ProgramEvent.select(ProgramEvent.program_id).distinct()
+
+    full_retention = {}
 
     # Loop over the programs and get the corresponding event IDs
     for program in programs:
@@ -140,33 +148,31 @@ def fullRetentionRateRecurringEvents():
         query = (EventParticipant.select(EventParticipant.event_id.alias("event_id"), Event.name.alias("name"))
                                  .join(Event, on=(EventParticipant.event_id == Event.id))
                                  .join(ProgramEvent, on=(EventParticipant.event_id == ProgramEvent.event_id))
+                                 .join(Program, on=(Program.id == ProgramEvent.program_id))
                                  .where((ProgramEvent.program_id == program.program_id) & (Event.recurringId != None))
                                  .distinct()
                                  .dicts())
 
-        results = query.execute()
-
         event_count = 0
-        name_counts = {}
+        name_counts = defaultdict(int)
 
-        for result in results:
+        for result in query:
             event_count += 1
             participants = EventParticipant.select(EventParticipant.user_id).where(EventParticipant.event_id == result["event_id"])
             for participant in participants:
                 name = participant.user_id
-                if name not in name_counts:
-                    name_counts[name] = 1
-                else:
-                    name_counts[name] += 1
+                name_counts[name] += 1
                 
-        qualified_names = [name for name, count in name_counts.items() if count == event_count]
+        qualified_names = [name for name, count in name_counts.items() if count >= event_count]
         
         if len(name_counts) > 0:
             percentage = len(qualified_names) / len(name_counts) * 100
         else:
             percentage = 0
-        return percentage
 
+        full_retention[program.program.programName] = percentage
+
+    return full_retention
 
 # create a new Excel file
 
@@ -185,9 +191,9 @@ def create_spreadsheet():
     writer = pd.ExcelWriter('volunteer_data.xlsx', engine='openpyxl')
     
     Title1 = ["Hours"]
-    save_to_sheet(volunteerHoursByProgram(), Title1, 'Total Hours by Program', writer)
-    Title0 = [" "]
-    save_to_sheet({'Total Hours All Programs': volunteerHoursAllPrograms()}, Title0, "Total Hours All Programs", writer)
+    save_to_sheet(volunteerHoursByProgram(), Title1, 'bla', writer)
+    # Title0 = [" "]
+    # save_to_sheet({'Total Hours All Programs': volunteerHoursAllPrograms()}, Title0, "Total Hours All Programs", writer)
     Title2 = ["Count"]
     save_to_sheet(volunteerMajorAndClass(User.major), Title2, 'Volunteers by Major', writer)
     save_to_sheet(volunteerMajorAndClass(User.classLevel), Title2, 'Volunteers by Class Level', writer)
