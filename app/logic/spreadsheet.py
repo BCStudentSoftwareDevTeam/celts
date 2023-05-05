@@ -1,7 +1,8 @@
-import pandas as pd
+import xlsxwriter
 from peewee import fn, Case, JOIN
 from collections import defaultdict
 
+from app import app
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.programEvent import ProgramEvent
@@ -184,31 +185,43 @@ def calculateRetentionRate(fall_dict, spring_dict):
 # create a new Excel file
 
 # define function to save data to a sheet in the Excel file
-def save_to_sheet(data, titles, sheet_name, writer):
-    df = pd.DataFrame.from_records(data, columns=titles)
-    df.to_excel(writer, sheet_name=sheet_name, index= False, startrow=1)
+def makeDataXls(getData, columnTitles, sheetName, workbook):
 
-    # Add title to first row
-    ws = writer.sheets[sheet_name]
-    ws.cell(row=1, column=1).value = sheet_name
+    worksheet = workbook.add_worksheet(sheetName)
+    bold = workbook.add_format({'bold': True})
 
-# call each function and save data to a separate sheet
+    worksheet.write_string(0, 0, sheetName)
 
-def create_spreadsheet():
-    writer = pd.ExcelWriter('volunteer_data.xlsx', engine='openpyxl')
+    for column, title in enumerate(columnTitles):
+        worksheet.write(1, column, title, bold)
+
+    for column, rowData in enumerate(getData):
+        for data, value in enumerate(rowData):
+            worksheet.write(column+2, data, value)
     
-    Title1 = ["Program","Hours"]
-    save_to_sheet(volunteerHoursByProgram(), Title1, 'Total Hours by Program', writer)
-    # Title0 = [" "]
-    # save_to_sheet({'Total Hours All Programs': volunteerHoursAllPrograms()}, Title0, "Total Hours All Programs", writer)
-    Title2 = ["Major","Count"]
-    save_to_sheet(volunteerMajorAndClass(User.major), Title2, 'Volunteers by Major', writer)
-    save_to_sheet(volunteerMajorAndClass(User.classLevel), Title2, 'Volunteers by Class Level', writer)
-    Title5 = ["Volunteer","Program Name", "Event Count"]
-    save_to_sheet(repeatVolunteersPerProgram(), Title5, 'Repeat Volunteers Per Program', writer)
-    save_to_sheet(repeatVolunteers(), ["Volunteer","Events"], 'Repeat Volunteers All Program', writer)
-    Title6 = ["Program","Rate"]
-    save_to_sheet(getRetentionRate(), Title6, 'Retention Rate By Semester', writer)
-    
-    writer.close()
+    for column, title in enumerate(columnTitles):
+        columnData = [title] + [rowData[column] for rowData in getData]
+        setColumnWidth = max(len(str(x)) for x in columnData)
+        worksheet.set_column(column, column, setColumnWidth + 3)
 
+def create_spreadsheet(): 
+    filepath = app.config['files']['base_path'] + '/volunteer_data.xlsx'
+    workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
+
+    hoursByProgramColumn = ["Program", "Hours"]
+    volunteerMajorColumn = ["Major", "Count"]
+    volunteerClassColumn = ["Class Level", "Count"]
+    repeatProgramEventVolunteerColumn = ["Volunteer", "Program Name", "Event Count"]
+    repeatAllProgramVolunteerColumn = ["Volunteer", "Number of Events"]
+    volunteerProgramRetentionRateAcrossTermColumn = ["Program", "Retention Rate"]
+
+    makeDataXls(volunteerHoursByProgram(), hoursByProgramColumn, "Total Hours By Program", workbook)
+    makeDataXls(volunteerMajorAndClass(User.major), volunteerMajorColumn, "Volunteers By Major", workbook)
+    makeDataXls(volunteerMajorAndClass(User.classLevel), volunteerClassColumn, "Volunteers By Class Level", workbook)
+    makeDataXls(repeatVolunteersPerProgram(), repeatProgramEventVolunteerColumn, "Repeat Volunteers Per Program", workbook)
+    makeDataXls(repeatVolunteers(), repeatAllProgramVolunteerColumn, "Repeat Volunteers All Programs", workbook)
+    makeDataXls(getRetentionRate(), volunteerProgramRetentionRateAcrossTermColumn, "Retention Rate By Semester", workbook)
+
+    workbook.close()
+
+    return filepath
