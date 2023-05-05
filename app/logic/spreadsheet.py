@@ -1,3 +1,5 @@
+from importlib.abc import ResourceReader
+from os import major
 import xlsxwriter
 from peewee import fn, Case, JOIN
 from collections import defaultdict
@@ -25,13 +27,24 @@ def volunteerHoursByProgram():
 
 #     return totalHoursAllProgram
 
-def volunteerMajorAndClass(column):
-
+def volunteerMajorAndClass(column, reorderClassLevel=False):
     majorAndClass = (User.select(Case(None, ((column.is_null(), "Unknown"),), column), fn.COUNT(fn.DISTINCT(EventParticipant.user_id)).alias('count'))
                          .join(EventParticipant, on=(User.username == EventParticipant.user_id))
-                         .group_by(column)
-                         .order_by(column.asc(nulls = 'LAST')))
-    
+                         .group_by(column))
+
+    if reorderClassLevel:
+        majorAndClass = majorAndClass.order_by(Case(None, ((column == "Freshman", 1),
+                                                           (column == "Sophomore", 2),
+                                                           (column == "Junior", 3),
+                                                           (column == "Senior", 4),
+                                                           (column == "Graduating", 5),
+                                                           (column == "Non-Degree", 6),
+                                                           (column.is_null(), 7)),
+                                                            8))
+    else: 
+        majorAndClass = majorAndClass.order_by(column.asc(nulls = 'LAST'))
+         
+
     return majorAndClass.tuples()
 
 def repeatVolunteersPerProgram():
@@ -208,19 +221,19 @@ def create_spreadsheet():
     filepath = app.config['files']['base_path'] + '/volunteer_data.xlsx'
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
 
-    hoursByProgramColumn = ["Program", "Hours"]
-    volunteerMajorColumn = ["Major", "Count"]
-    volunteerClassColumn = ["Class Level", "Count"]
-    repeatProgramEventVolunteerColumn = ["Volunteer", "Program Name", "Event Count"]
-    repeatAllProgramVolunteerColumn = ["Volunteer", "Number of Events"]
-    volunteerProgramRetentionRateAcrossTermColumn = ["Program", "Retention Rate"]
+    hoursByProgramColumns = ["Program", "Hours"]
+    volunteerMajorColumns = ["Major", "Count"]
+    volunteerClassColumns = ["Class Level", "Count"]
+    repeatProgramEventVolunteerColumns = ["Volunteer", "Program Name", "Event Count"]
+    repeatAllProgramVolunteerColumns = ["Volunteer", "Number of Events"]
+    volunteerProgramRetentionRateAcrossTermColumns = ["Program", "Retention Rate"]
 
-    makeDataXls(volunteerHoursByProgram(), hoursByProgramColumn, "Total Hours By Program", workbook)
-    makeDataXls(volunteerMajorAndClass(User.major), volunteerMajorColumn, "Volunteers By Major", workbook)
-    makeDataXls(volunteerMajorAndClass(User.classLevel), volunteerClassColumn, "Volunteers By Class Level", workbook)
-    makeDataXls(repeatVolunteersPerProgram(), repeatProgramEventVolunteerColumn, "Repeat Volunteers Per Program", workbook)
-    makeDataXls(repeatVolunteers(), repeatAllProgramVolunteerColumn, "Repeat Volunteers All Programs", workbook)
-    makeDataXls(getRetentionRate(), volunteerProgramRetentionRateAcrossTermColumn, "Retention Rate By Semester", workbook)
+    makeDataXls(volunteerHoursByProgram(), hoursByProgramColumns, "Total Hours By Program", workbook)
+    makeDataXls(volunteerMajorAndClass(User.major), volunteerMajorColumns, "Volunteers By Major", workbook)
+    makeDataXls(volunteerMajorAndClass(User.classLevel, reorderClassLevel=True), volunteerClassColumns, "Volunteers By Class Level", workbook)
+    makeDataXls(repeatVolunteersPerProgram(), repeatProgramEventVolunteerColumns, "Repeat Volunteers Per Program", workbook)
+    makeDataXls(repeatVolunteers(), repeatAllProgramVolunteerColumns, "Repeat Volunteers All Programs", workbook)
+    makeDataXls(getRetentionRate(), volunteerProgramRetentionRateAcrossTermColumns, "Retention Rate By Semester", workbook)
 
     workbook.close()
 
