@@ -1,5 +1,5 @@
 import pandas as pd
-from peewee import fn, Case
+from peewee import fn, Case, JOIN
 from collections import defaultdict
 
 from app.models.eventParticipant import EventParticipant
@@ -31,7 +31,6 @@ def volunteerMajorAndClass(column):
                          .group_by(column)
                          .order_by(column.asc(nulls = 'LAST')))
     
-    # return {row.bloo or "Unknown": float(row.count) for row in majorAndClass}
     return majorAndClass.tuples()
 
 def repeatVolunteersPerProgram():
@@ -43,9 +42,7 @@ def repeatVolunteersPerProgram():
                                              .group_by(User.firstName, User.lastName, ProgramEvent.program_id)
                                              .having(fn.Count(EventParticipant.event_id) > 1)
                                              .order_by(ProgramEvent.program_id, User.lastName ))
-    
-    # repeatPerProgramDict =  [[f"{result['firstName']} {result['lastName']}", result["event_count"],result["programName"]] for result in repeatPerProgramQuery.tuples()]
-    
+        
     return repeatPerProgramQuery.tuples()
 
 def repeatVolunteers():
@@ -55,8 +52,6 @@ def repeatVolunteers():
                                              .group_by(User.firstName, User.lastName)
                                              .having(fn.COUNT(EventParticipant.user_id) > 1))
     
-    # repeatAllProgramDict = {f"{result.user.firstName} {result.user.lastName}": result.count for result in repeatAllProgramQuery}
-
     return repeatAllProgramQuery.tuples()
 
 def getRetentionRate():
@@ -73,109 +68,118 @@ def getRetentionRate():
     return  retentionDict
 
 def termParticipation(termDescription):
-    participationQuery = (ProgramEvent.select(ProgramEvent.program_id, EventParticipant.user_id.alias('participants'), Program.programName.alias("progName"))
-                                      .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
+    participationQuery = (ProgramEvent.select(ProgramEvent.program_id, EventParticipant.user_id.alias('participant'), Program.programName.alias("progName"))
+                                      .join(EventParticipant, JOIN.LEFT_OUTER, on=(ProgramEvent.event == EventParticipant.event))
                                       .join(Program, on=(Program.id == ProgramEvent.program_id))
-                                      .join(Event, on=(EventParticipant.event_id == Event.id))
+                                      .join(Event, on=(ProgramEvent.event_id == Event.id))
                                       .join(Term, on=(Event.term_id == Term.id) )
                                       .where(Term.description == termDescription ))
-    
+    print(participationQuery)
     programParticipationDict = defaultdict(list)
     for result in participationQuery.dicts():
         prog_name = result['progName']
-        participant = result['participants']
+        participant = result['participant']
         programParticipationDict[prog_name].append(participant)
 
     return programParticipationDict
 
+def removeNullParticipants(bla):
+    # loop through the list and remove all entries that do not have a participant
+    return list(filter(lambda participant: bool(participant), bla))
+    
 # function to calculate the retention rate for each program
 def calculateRetentionRate(fall_dict, spring_dict):
     retention_dict = {}
     for program in fall_dict.keys():
-        fall_participants = set(fall_dict[program])
-        spring_participants = set(spring_dict.get(program, []))
-        retention_rate = len(fall_participants & spring_participants) / len(fall_participants)
+        fall_participants = set(removeNullParticipants(fall_dict[program]))
+        spring_participants = set(removeNullParticipants(spring_dict.get(program, [])))
+        retention_rate = 0.0
+        try: 
+            retention_rate = len(fall_participants & spring_participants) / len(fall_participants)
+        except ZeroDivisionError:
+            pass
+
         retention_dict[program] = retention_rate
   
     return retention_dict
 
-def halfRetentionRateRecurringEvents():
+# def halfRetentionRateRecurringEvents():
 
-    programs = ProgramEvent.select(ProgramEvent.program_id).distinct()
+#     programs = ProgramEvent.select(ProgramEvent.program_id).distinct()
 
-    retention_rates = {}
+#     retention_rates = {}
 
-    # Loop over the programs and get the corresponding event IDs
-    for program in programs:
-        # Define the query for each program
-        query = (EventParticipant.select(EventParticipant.event_id.alias("event_id"), Event.name.alias("name"))
-                                 .join(Event, on=(EventParticipant.event_id == Event.id))
-                                 .join(ProgramEvent, on=(EventParticipant.event_id == ProgramEvent.event_id))
-                                 .join(Program, on=(Program.id == ProgramEvent.program_id))
-                                 .where((ProgramEvent.program_id == program.program_id) & (Event.recurringId != None))
-                                 .distinct()
-                                 .dicts())
+#     # Loop over the programs and get the corresponding event IDs
+#     for program in programs:
+#         # Define the query for each program
+#         query = (EventParticipant.select(EventParticipant.event_id.alias("event_id"), Event.name.alias("name"))
+#                                  .join(Event, on=(EventParticipant.event_id == Event.id))
+#                                  .join(ProgramEvent, on=(EventParticipant.event_id == ProgramEvent.event_id))
+#                                  .join(Program, on=(Program.id == ProgramEvent.program_id))
+#                                  .where((ProgramEvent.program_id == program.program_id) & (Event.recurringId != None))
+#                                  .distinct()
+#                                  .dicts())
 
-        event_count = 0
-        name_counts = defaultdict(int)
+#         event_count = 0
+#         name_counts = defaultdict(int)
 
-        for result in query:
-            event_count += 1
-            participants = EventParticipant.select(EventParticipant.user_id).where(EventParticipant.event_id == result["event_id"])
-            for participant in participants:
-                name = participant.user_id
-                name_counts[name] += 1
+#         for result in query:
+#             event_count += 1
+#             participants = EventParticipant.select(EventParticipant.user_id).where(EventParticipant.event_id == result["event_id"])
+#             for participant in participants:
+#                 name = participant.user_id
+#                 name_counts[name] += 1
                 
-        half_count = event_count // 2
-        qualified_names = [name for name, count in name_counts.items() if count >= half_count]
+#         half_count = event_count // 2
+#         qualified_names = [name for name, count in name_counts.items() if count >= half_count]
         
-        if len(name_counts) > 0:
-            percentage = len(qualified_names) / len(name_counts) * 100
-        else:
-            percentage = 0
+#         if len(name_counts) > 0:
+#             percentage = len(qualified_names) / len(name_counts) * 100
+#         else:
+#             percentage = 0
 
-        retention_rates[program.program.programName] = percentage
+#         retention_rates[program.program.programName] = percentage
 
-    return retention_rates
+#     return retention_rates
 
 
-def fullRetentionRateRecurringEvents():
+# def fullRetentionRateRecurringEvents():
     
-    programs = ProgramEvent.select(ProgramEvent.program_id).distinct()
+#     programs = ProgramEvent.select(ProgramEvent.program_id).distinct()
 
-    full_retention = {}
+#     full_retention = {}
 
-    # Loop over the programs and get the corresponding event IDs
-    for program in programs:
-        # Define the query for each program
-        query = (EventParticipant.select(EventParticipant.event_id.alias("event_id"), Event.name.alias("name"))
-                                 .join(Event, on=(EventParticipant.event_id == Event.id))
-                                 .join(ProgramEvent, on=(EventParticipant.event_id == ProgramEvent.event_id))
-                                 .join(Program, on=(Program.id == ProgramEvent.program_id))
-                                 .where((ProgramEvent.program_id == program.program_id) & (Event.recurringId != None))
-                                 .distinct()
-                                 .dicts())
+#     # Loop over the programs and get the corresponding event IDs
+#     for program in programs:
+#         # Define the query for each program
+#         query = (EventParticipant.select(EventParticipant.event_id.alias("event_id"), Event.name.alias("name"))
+#                                  .join(Event, on=(EventParticipant.event_id == Event.id))
+#                                  .join(ProgramEvent, on=(EventParticipant.event_id == ProgramEvent.event_id))
+#                                  .join(Program, on=(Program.id == ProgramEvent.program_id))
+#                                  .where((ProgramEvent.program_id == program.program_id) & (Event.recurringId != None))
+#                                  .distinct()
+#                                  .dicts())
 
-        event_count = 0
-        name_counts = defaultdict(int)
+#         event_count = 0
+#         name_counts = defaultdict(int)
 
-        for result in query:
-            event_count += 1
-            participants = EventParticipant.select(EventParticipant.user_id).where(EventParticipant.event_id == result["event_id"])
-            for participant in participants:
-                name = participant.user_id
-                name_counts[name] += 1
+#         for result in query:
+#             event_count += 1
+#             participants = EventParticipant.select(EventParticipant.user_id).where(EventParticipant.event_id == result["event_id"])
+#             for participant in participants:
+#                 name = participant.user_id
+#                 name_counts[name] += 1
                 
-        qualified_names = [name for name, count in name_counts.items() if count >= event_count]
+#         qualified_names = [name for name, count in name_counts.items() if count >= event_count]
         
-        if len(name_counts) > 0:
-            percentage = len(qualified_names) / len(name_counts) * 100
-        else:
-            percentage = 0
+#         if len(name_counts) > 0:
+#             percentage = len(qualified_names) / len(name_counts) * 100
+#         else:
+#             percentage = 0
 
-        full_retention[program.program.programName] = percentage
+#         full_retention[program.program.programName] = percentage
 
-    return full_retention
+#     return full_retention
 
 # create a new Excel file
 
@@ -200,7 +204,7 @@ def create_spreadsheet():
     Title2 = ["Major","Count"]
     save_to_sheet(volunteerMajorAndClass(User.major), Title2, 'Volunteers by Major', writer)
     save_to_sheet(volunteerMajorAndClass(User.classLevel), Title2, 'Volunteers by Class Level', writer)
-    Title5 = ["Volunteer","Event Count", "Program Name"]
+    Title5 = ["Volunteer","Program Name", "Event Count"]
     save_to_sheet(repeatVolunteersPerProgram(), Title5, 'Repeat Volunteers Per Program', writer)
     save_to_sheet(repeatVolunteers(), ["Volunteer","Events"], 'Repeat Volunteers All Program', writer)
     Title6 = ["Program","Rate"]
