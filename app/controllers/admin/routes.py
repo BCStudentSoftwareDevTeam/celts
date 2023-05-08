@@ -37,14 +37,6 @@ from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohor
 from app.controllers.admin import admin_bp
 from app.controllers.admin.volunteers import getVolunteers
 from app.controllers.admin.userManagement import manageUsers
-from app.logic.spreadsheet import create_spreadsheet
-
-
-
-#from app.logic.spreadsheet import halfRetentionRateRecurringEvents
-#from app.logic.spreadsheet import fullRetentionRateRecurringEvents
-
-
 
 
 @admin_bp.route('/switch_user', methods=['POST'])
@@ -175,10 +167,6 @@ def eventDisplay(eventId):
 
     eventData = model_to_dict(event, recurse=False)
     associatedAttachments = EventFile.select().where(EventFile.event == event)
-
-    createSpreadsheet = create_spreadsheet()
-
-
 
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
