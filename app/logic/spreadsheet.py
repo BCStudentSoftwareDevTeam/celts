@@ -78,7 +78,7 @@ def getRetentionRate():
     retention_rate_dict = calculateRetentionRate(fallParticipationDict, springParticipationDict)
     for program, retention_rate in retention_rate_dict.items():
          retentionDict.append((program, str(round(retention_rate * 100, 2)) + "%"))
-            # retentionDict[program]= str(round(retention_rate * 100, 2)) + "%"
+
     return  retentionDict
 
 def termParticipation(termDescription):
