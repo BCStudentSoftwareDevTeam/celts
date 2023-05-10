@@ -96,7 +96,12 @@ def addPersonToEvent(user, event):
                 if EventRsvp.select().where(EventRsvp.user == user, EventRsvp.event == event).exists():
                     EventRsvp.update({EventRsvp.rsvpTime: datetime.datetime.now()}).where(EventRsvp.user == user, EventRsvp.event == event).execute()
                 else:
+                    # if rsvp limit 
+                    #   if limit is reached 
+                            # add to waitlist
+                    # else 
                     EventRsvp.create(user = user, event = event)
+
 
         if volunteerExists or rsvpExists:
             return "already in"

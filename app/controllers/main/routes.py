@@ -64,10 +64,13 @@ def events(selectedTerm, activeTab, programID):
     listOfTerms = Term.select()
     rsvpedEventsID = []
     participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
+
     for event in participantRSVP:
         if checkUserRsvp(g.current_user, event.event.id):
             rsvpedEventsID.append(event.event.id)
+
     term = Term.get_by_id(currentTerm)
+    currentEventRsvpAmount = getCurrentRsvpAmount(term)
     studentLedEvents = getStudentLedEvents(term)
     trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)
@@ -80,6 +83,7 @@ def events(selectedTerm, activeTab, programID):
         otherEvents = otherEvents,
         listOfTerms = listOfTerms,
         rsvpedEventsID = rsvpedEventsID,
+        currentEventRsvpAmount = currentEventRsvpAmount,
         currentTime = currentTime,
         user = g.current_user,
         activeTab = activeTab,
@@ -308,9 +312,13 @@ def RemoveRSVP():
     event = Event.get_by_id(eventData['id'])
 
     currentRsvpParticipant = EventRsvp.get(EventRsvp.user == g.current_user, EventRsvp.event == event)
+
+    # Turn into/bakeinto an rsvp function
     EventRsvp.update({EventRsvp.unRsvpTime: datetime.datetime.now()}).where(EventRsvp.id == currentRsvpParticipant).execute()
 
     # currentRsvpParticipant.delete_instance()
+    # if event waitlist exist 
+        # oldest waitlist -> RSVP
 
     flash("Successfully unregistered for event!", "success")
     if 'from' in eventData:
