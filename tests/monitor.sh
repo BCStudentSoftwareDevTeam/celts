@@ -5,7 +5,7 @@ fi
 BUILD="$@"
 if [ -z "$BUILD" ]
 then
-	BUILD="no-ui";
+	BUILD="";
 	#BUILD="all";
 fi
 

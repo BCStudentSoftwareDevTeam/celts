@@ -1,4 +1,8 @@
 import searchUser from './searchUser.js'
+
+function callbackAdmin(selected){
+    submitRequest("addCeltsAdmin", selected.username)
+}
 function callbackStudentStaff(selected){
     submitRequest("addCeltsStudentStaff", selected.username)
 }
@@ -82,7 +86,7 @@ function addNewTerm(){
     url: "/admin/addNewTerm",
     type: "POST",
     success: function(s){
-      location.reload()
+      reloadWithAccordion("term")
     },
     error: function(error, status){
         console.log(error, status)

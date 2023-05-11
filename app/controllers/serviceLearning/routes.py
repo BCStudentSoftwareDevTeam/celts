@@ -1,4 +1,7 @@
-from flask import request, render_template, g, url_for, abort, redirect, flash, session
+from flask import request, render_template, g, url_for, abort, redirect, flash, session, send_from_directory, send_file
+from werkzeug.utils import safe_join
+import os
+from peewee import *
 from app.models.user import User
 from app.models.term import Term
 from app.models.course import Course
@@ -11,6 +14,8 @@ from app.logic.searchUsers import searchUsers
 from app.logic.utils import selectSurroundingTerms
 from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal, renewProposal
 from app.logic.courseManagement import updateCourse, createCourse
+from app.logic.downloadFile import *
+from app.logic.courseManagement import approvedCourses
 from app.controllers.main.routes import getRedirectTarget, setRedirectTarget
 from app.controllers.serviceLearning import serviceLearning_bp
 
@@ -18,8 +23,6 @@ from app.controllers.serviceLearning import serviceLearning_bp
 @serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
 @serviceLearning_bp.route('/serviceLearning/courseManagement/<username>', methods = ['GET'])
 def serviceCourseManagement(username=None):
-    """This is a Temporary Page for the Service Course Management Screen."""
-    # TODO: How to make accessing other user's interfaces more userfriendly?
     if g.current_user.isStudent:
         abort(403)
     if g.current_user.isCeltsAdmin or g.current_user.isFaculty:
@@ -42,27 +45,44 @@ def slcEditProposal(courseID):
         Route for editing proposals, it will fill the form with the data found in the database
         given a courseID.
     """
-    course = Course.get_by_id(courseID)
-    questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
-    questionanswers = [question.questionContent for question in questionData]
-    courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
 
-    isAllSectionsServiceLearning = ""
-    isPermanentlyDesignated = ""
+    instructors = CourseInstructor.select().where(CourseInstructor.course==courseID)
+    courseInstructors = [instructor.user for instructor in instructors]
+    if g.current_user.isCeltsAdmin or g.current_user in courseInstructors:
+        course = Course.get_by_id(courseID)
+        courseStatus = CourseStatus.get_by_id(course.status)
+        courseStatusInt = courseStatus.get_id()
+        approved = 3
+        # Condition to check the route you are comming from
+        if courseStatusInt==approved and request.path == f"/serviceLearning/editProposal/{courseID}":
+            return redirect(f"/serviceLearning/viewProposal/{courseID}")
+        else:
+            statusOfCourse = Course.select(Course.status)
+            questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
+            questionanswers = [question.questionContent for question in questionData]
+            courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
 
-    if course.isAllSectionsServiceLearning:
-        isAllSectionsServiceLearning = True
-    if course.isPermanentlyDesignated:
-        isPermanentlyDesignated = True
-    terms = selectSurroundingTerms(g.current_term, 0)
-    return render_template('serviceLearning/slcNewProposal.html',
-                                course = course,
-                                questionanswers = questionanswers,
-                                terms = terms,
-                                courseInstructor = courseInstructor,
-                                isAllSectionsServiceLearning = isAllSectionsServiceLearning,
-                                isPermanentlyDesignated = isPermanentlyDesignated,
-                                redirectTarget=getRedirectTarget())
+            isAllSectionsServiceLearning = ""
+            isPermanentlyDesignated = ""
+
+            if course.isAllSectionsServiceLearning:
+                isAllSectionsServiceLearning = True
+            if course.isPermanentlyDesignated:
+                isPermanentlyDesignated = True
+            terms = selectSurroundingTerms(g.current_term, 0)
+            return render_template('serviceLearning/slcNewProposal.html',
+                                        course = course,
+                                        questionanswers = questionanswers,
+                                        terms = terms,
+                                        statusOfCourse = statusOfCourse,
+                                        courseStatus = courseStatus,
+                                        courseInstructor = courseInstructor,
+                                        isAllSectionsServiceLearning = isAllSectionsServiceLearning,
+                                        isPermanentlyDesignated = isPermanentlyDesignated,
+                                        redirectTarget=getRedirectTarget())
+    else:
+        abort(403)
+
 
 @serviceLearning_bp.route('/serviceLearning/createCourse', methods=['POST'])
 def slcCreateCourse():
@@ -122,6 +142,29 @@ def approveCourse():
         print(e)
         flash("Course not approved!", "danger")
     return ""
+@serviceLearning_bp.route('/serviceLearning/unapproveCourse', methods=['POST'])
+def unapproveCourse():
+    """
+    This function updates and unapproves a Service-Learning Course when using the
+        unapprove button.
+    return: empty string because AJAX needs to receive something
+    """
+
+    try:
+        if len(request.form) == 1:
+            course = Course.get_by_id(request.form['courseID'])
+        else:
+            course = updateCourse(request.form.copy())
+
+        course.status = CourseStatus.SUBMITTED
+        course.save()
+        flash("Course unapproved!", "success")
+
+    except Exception as e:
+        print(e)
+        flash("Course was not unapproved!", "danger")
+
+    return ""
 
 @serviceLearning_bp.route('/updateInstructorPhone', methods=['POST'])
 def updateInstructorPhone():
@@ -164,3 +207,20 @@ def renewCourse(courseID, termID):
         flash("Renewal Unsuccessful", 'warning')
 
     return "", 500
+
+@serviceLearning_bp.route('/serviceLearning/downloadApprovedCourses/<termID>', methods = ['GET'])
+def downloadApprovedCourses(termID):
+    """
+    This function allows the download of csv file
+    """
+    try:
+        designator = "downloadApprovedCourses"
+        csvInfo = approvedCourses(termID)
+        fileFormat = {"headers":["Course Name", "Course Number", "Faculty", "Term", "Previously Approved Course?"]}
+        filePath = safe_join(os.getcwd(), app.config['files']['base_path'])
+        newFile = fileMaker(designator, csvInfo, "CSV", fileFormat)
+        return send_from_directory(filePath, 'ApprovedCourses.csv', as_attachment=True)
+
+    except Exception as e:
+        print(e)
+        return ""

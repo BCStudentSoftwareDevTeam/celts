@@ -9,17 +9,33 @@ class User(baseModel):
     firstName = CharField()
     lastName  = CharField()
     isStudent = BooleanField(default = False)
+    major = CharField(null = True)
+    classLevel = CharField(null = True)
     isFaculty = BooleanField(default = False)
     isStaff = BooleanField(default = False)
     isCeltsAdmin = BooleanField(default  =False)
     isCeltsStudentStaff = BooleanField(default = False)
-    isBonnerScholar = BooleanField(default = False)
+    dietRestriction = TextField(null=True)
 
-    _pmCache = None
+    # override BaseModel's __init__ so that we can set up an instance attribute for cache
+    def __init__(self,*args, **kwargs):
+        super().__init__(*args,**kwargs)
 
+        self._pmCache = {}
+        self._bsCache = None
+        
     @property
     def isAdmin(self):
         return (self.isCeltsAdmin or self.isCeltsStudentStaff)
+
+    @property
+    def isBonnerScholar(self):
+        from app.models.bonnerCohort import BonnerCohort
+        if self._bsCache is None:
+            # TODO should we exclude users who are banned from Bonner here?
+            self._bsCache = BonnerCohort.select().where(BonnerCohort.user == self).exists()
+
+        return self._bsCache
 
     @property
     def fullName(self):
@@ -42,10 +58,13 @@ class User(baseModel):
     def isProgramManagerFor(self, program):
         # Looks to see who is the Program Manager for a program
         from app.models.programManager import ProgramManager  # Must defer import until now to avoid circular reference
-        if self._pmCache is None:
-            self._pmCache = ProgramManager.select().where(ProgramManager.user == self, ProgramManager.program == program).exists()
+        if not program:
+            return False
 
-        return self._pmCache
+        if program not in self._pmCache:
+            self._pmCache[program] = ProgramManager.select().where(ProgramManager.user == self, ProgramManager.program == program).exists()
+
+        return self._pmCache[program]
 
     def isProgramManagerForEvent(self, event):
         # Looks to see who the Program Manager for a specific event is

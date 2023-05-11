@@ -1,6 +1,8 @@
 import searchUser from './searchUser.js'
 
 $(document).ready(function() {
+  $('[data-toggle="tooltip"]').tooltip();
+  var iconShowing = false
   var table =  $('#trackVolunteerstable').DataTable({
   "fnDrawCallback": function(oSettings) {
     if ($('#trackVolunteerstable tr').length < 11) {
@@ -10,8 +12,6 @@ $(document).ready(function() {
       }
     }
   });
-
-  $('[data-toggle="tooltip"]').tooltip();
 
   // Search functionalities from the volunteer table in the UI
     $("#trackVolunteersInput").on("keyup", function() {
@@ -51,14 +51,15 @@ $(document).ready(function() {
     function callback(selected) {
       $("#selectVolunteerButton").prop('disabled', false);
       let user = $("#addVolunteerInput").val()
-      if(userlist.includes(selected["username"]) == false){
+      if (userlist.includes(selected["username"]) == false){
           userlist.push(user)
           let i = userlist.length;
           $("#addVolunteerList").append("<li class id= 'addVolunteerElements"+i+"'> </li>")
           $("#addVolunteerElements"+i).append("<input  type='checkbox' id= 'userlistCheckbox"+i+"' checked value='" + user +"' >  </input>")
           $("#addVolunteerElements"+i).append("<label form for= 'userlistCheckbox"+i+"'>"+ selected["firstName"]+ " " + selected["lastName"] +"</label>")
+          handleBanned(selected["username"], $("#eventID").val(), i)
       }
-      else{
+      else {
           msgFlash("User already selected.")
       }
     }
@@ -89,7 +90,7 @@ $(document).ready(function() {
   });
 
 
-$(".attendanceCheck").on("change", function() {
+  $(".attendanceCheck").on("change", function() {
     let username =  this.name.substring(9) //get everything after the 9th character;
     let inputFieldID = `inputHours_${username}`
 
@@ -107,4 +108,23 @@ $(".attendanceCheck").on("change", function() {
   $("#selectAllVolunteers").click(function(){
       $("#addPastVolunteerModal input[type=checkbox]").prop('checked', true)
   });
+
+  function handleBanned(username, eventId, index){
+    $.ajax({
+      url: `/addVolunteersToEvent/${username}/${eventId}/isBanned`,
+      type: "GET",
+      success: function(response){
+        if (response.banned){
+          $("#addVolunteerElements"+index).append("<a href='#' data-toggle='tooltip' data-placement='top' title='User is banned from this program.'><span class='bi bi-x-circle-fill text-danger'></span></a>")
+          if (!iconShowing){
+            $("#banned-message").removeAttr("hidden")
+            iconShowing = true
+          }
+        }
+      },
+      error: function(request, status, error){
+          console.log(status, error)
+      }
+    })
+  }
 });

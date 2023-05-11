@@ -5,6 +5,7 @@ This file will need to be changed if the format of models changes (new fields, d
 from datetime import datetime, timedelta
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
+from app.models.bonnerCohort import BonnerCohort
 from app.models.term import Term
 from app.models.program import Program
 from app.models.programEvent import ProgramEvent
@@ -19,6 +20,7 @@ from app.models.courseQuestion import CourseQuestion
 from app.models.questionNote import QuestionNote
 from app.models.interest import Interest
 from app.models.note import Note
+from app.models.profileNote import ProfileNote
 from app.models.programManager import ProgramManager
 from app.models.emailTemplate import EmailTemplate
 from app.models.backgroundCheck import BackgroundCheck
@@ -26,6 +28,8 @@ from app.models.backgroundCheck import BackgroundCheck
 from app.models.adminLogs import AdminLogs
 from app.models.emailLog import EmailLog
 from app.models.eventFile import EventFile
+from app.models.certification import Certification
+from app.models.certificationRequirement import CertificationRequirement
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -40,7 +44,11 @@ users = [
         "isFaculty": False,
         "isStaff": True,
         "isCeltsAdmin": True,
-        "isCeltsStudentStaff": False
+        "isCeltsStudentStaff": False,
+        "dietRestriction": "Diary",
+        "major": None,
+        "classLevel": None,
+
     },
     {
         "username" : "khatts",
@@ -52,7 +60,9 @@ users = [
         "isStudent": True,
         "isFaculty": False,
         "isCeltsAdmin": True,
-        "isCeltsStudentStaff": False
+        "isCeltsStudentStaff": False,
+        "major": None,
+        "classLevel": None,
     },
     {
         "username": "neillz",
@@ -64,7 +74,9 @@ users = [
         "isStudent": True,
         "isFaculty": False,
         "isCeltsAdmin": False,
-        "isCeltsStudentStaff": True
+        "isCeltsStudentStaff": True,
+        "major": None,
+        "classLevel": None,
     },
 
     {
@@ -77,7 +89,9 @@ users = [
         "isStudent": True,
         "isFaculty": True,
         "isCeltsAdmin": False,
-        "isCeltsStudentStaff": False
+        "isCeltsStudentStaff": False,
+        "major": None,
+        "classLevel": None,
     },
     {
         "username" : "ayisie",
@@ -89,7 +103,9 @@ users = [
         "isStudent": True,
         "isFaculty": False,
         "isCeltsAdmin": False,
-        "isCeltsStudentStaff": False
+        "isCeltsStudentStaff": False,
+        "major": None,
+        "classLevel": None,
 
     },
     {
@@ -102,7 +118,9 @@ users = [
         "isStudent": True,
         "isFaculty": False,
         "isCeltsAdmin": False,
-        "isCeltsStudentStaff": False
+        "isCeltsStudentStaff": False,
+        "major": None,
+        "classLevel": None,
     },
     {
         "username": "bryanta",
@@ -112,6 +130,8 @@ users = [
         "firstName": "Alex",
         "lastName": "Bryant",
         "isStudent": True,
+        "major": None,
+        "classLevel": None,
     },
     {
         "username": "partont",
@@ -120,7 +140,9 @@ users = [
         "firstName": "Tyler",
         "lastName": "Parton",
         "isStudent": True,
-        "phoneNumber": "(859)433-1559"
+        "phoneNumber": "(859)433-1559",
+        "major": None,
+        "classLevel": None,
     },
     {
         "username": "mupotsal",
@@ -130,7 +152,9 @@ users = [
         "lastName": "Mupotsa",
         "isStudent": True,
         "phoneNumber": "(859)463-1159",
-        "isCeltsStudentStaff": True
+        "isCeltsStudentStaff": True,
+        "major": None,
+        "classLevel": None,
     },
     {
         "username": "heggens",
@@ -142,7 +166,9 @@ users = [
         "isCeltsAdmin": False,
         "isFaculty": True,
         "isCeltsStudentStaff": False,
-        "isStaff": True
+        "isStaff": True,
+        "major": None,
+        "classLevel": None,
     },
      {
         "username": "qasema",
@@ -154,11 +180,131 @@ users = [
         "isCeltsAdmin": True,
         "isFaculty": True,
         "isCeltsStudentStaff": False,
-        "isStaff": True
-    }
+        "isStaff": True,
+        "major": None,
+        "classLevel": None,
+    },
+    {
+        "username": "stettnera2",
+        "bnumber": "B00719955",
+        "email": "stettnera2@berea.edu",
+        "phoneNumber": "(555)555-5555",
+        "firstName": "Anderson",
+        "lastName": "Stettner",
+        "isStudent": False,
+        "isFaculty": False,
+        "isStaff": True,
+        "isCeltsAdmin": True,
+        "isCeltsStudentStaff": False,
+        "major": None,
+        "classLevel": None,
+    },
 ]
 
 User.insert_many(users).on_conflict_replace().execute()
+
+bonners = [
+    { "year": 2020, "user": "neillz" },
+    { "year": 2020, "user": "ramsayb2" },
+    { "year": 2021, "user": "qasema" },
+    { "year": 2021, "user": "neillz" },
+    { "year": 2021, "user": "mupotsal" },
+    { "year": 2021, "user": "neillz" },
+    { "year": 2021, "user": "ramsayb2" },
+    { "year": 2022, "user": "khatts" },
+    { "year": 2022, "user": "ayisie" },
+    { "year": 2022, "user": "neillz" },
+    { "year": 2022, "user": "ramsayb2" },
+    ]
+BonnerCohort.insert_many(bonners).on_conflict_replace().execute()
+
+certs = [
+        { "id": 1, "name": "Bonner" },
+        { "id": 2, "name": "CESC Minor" },
+        { "id": 3, "name": "CPR" },
+        { "id": 4, "name": "Confidentiality" },
+        { "id": 5, "name": "I9" },
+]
+Certification.insert_many(certs).on_conflict_replace().execute()
+
+reqs = [
+        { "id": 1,
+          "certification": 1,
+          "name": "Bonner Orientation",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 1,
+        },
+        { "id": 2,
+          "certification": 1,
+          "name": "All Bonner Meeting",
+          "frequency": "term",
+          "isRequired": True,
+          "order": 2,
+        },
+        { "id": 3,
+          "certification": 1,
+          "name": "First Year Service Trip",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 3,
+        },
+        { "id": 4,
+          "certification": 1,
+          "name": "Sophomore Exchange",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 4,
+        },
+        { "id": 5,
+          "certification": 1,
+          "name": "Junior Recommitment",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 5,
+        },
+        { "id": 6,
+          "certification": 1,
+          "name": "Senior Legacy Training",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 6,
+        },
+        { "id": 7,
+          "certification": 1,
+          "name": "Senior Presentation of Learning",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 7,
+        },
+        { "id": 8,
+          "certification": 1,
+          "name": "Bonner Congress",
+          "frequency": "once",
+          "isRequired": False,
+        },
+        { "id": 9,
+          "certification": 1,
+          "name": "Bonner Student Leadership Institute",
+          "frequency": "once",
+          "isRequired": False,
+        },
+        { "id": 10,
+          "certification": 3,
+          "name": "CPR Training",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 2,
+        },
+        { "id": 11,
+          "certification": 3,
+          "name": "Volunteer Training",
+          "frequency": "once",
+          "isRequired": True,
+          "order": 1,
+        },
+]
+CertificationRequirement.insert_many(reqs).on_conflict_replace().execute()
 
 terms = [
     {
@@ -217,6 +363,8 @@ programs = [
     {
         "id": 1,
         "programName": "Hunger Initiatives",
+        "programUrl": "https://www.berea.edu/celts/community-service-programs/hunger-initiatives/",
+        "programDescription": "Each year 200 people stand in line to get into Woods-Penniman for the Annual Empty Bowls Event sponsored by the Berea College ceramics students and CELTS. Students, faculty, staff and community members each pay $10 for a beautiful bowl, soup and the privilege of helping those in need in our community.",
         "isStudentLed": False,
         "isBonnerScholars": False,
         "contactEmail": "",
@@ -225,6 +373,8 @@ programs = [
     {
         "id": 2,
         "programName": "Berea Buddies",
+        "programUrl": "https://www.berea.edu/celts/community-service-programs/volunteer-opportunities/berea-buddies-program/",
+        "programDescription": "The Berea Buddies program is dedicated to establishing long-term mentorships between Berea youth (Little Buddies) and Berea College students (Big Buddies). Volunteers serve children by offering them friendship and quality time. Big and Little Buddies meet each other every Monday or Tuesday during the academic year, except on school and national holidays, to enjoy structured activities around campus.",
         "isStudentLed": True,
         "isBonnerScholars": False,
         "contactEmail": "",
@@ -234,6 +384,18 @@ programs = [
     {
         "id": 3,
         "programName": "Adopt-a-Grandparent",
+        "programUrl": "https://www.berea.edu/celts/community-service-programs/volunteer-opportunities/adopt-a-grandparent-program/",
+        "programDescription": "Adopt-a-Grandparent (AGP) is an outreach program for Berea elders. The program matches college student volunteers with residents of local long-term care centers. Volunteers visit with residents for at least an hour per week, and participate in special monthly programs.",
+        "isStudentLed": True,
+        "isBonnerScholars": False,
+        "contactEmail": "",
+        "contactName": ""
+    },
+    {
+        "id": 4,
+        "programName": "People Who Care",
+        "programUrl": "https://www.berea.edu/celts/community-service-programs/volunteer-opportunities/people-who-care-program/",
+        "programDescription":"People Who Care (PWC) helps to connect Berea College students with organizations and opportunities that promote change through advocacy, education, action, and direct community service. Volunteers may serve at local shelters, work with the Fair Trade University Campaign, or help to raise awareness about local issues like domestic violence, homelessness, fair trade, and AIDS awareness education. Students are welcome to participate as volunteers in PWC’s projects.",
         "isStudentLed": True,
         "isBonnerScholars": False,
         "contactEmail": "",
@@ -241,7 +403,9 @@ programs = [
     },
     {
         "id": 5,
-        "programName": "Bonners Scholars",
+        "programName": "Bonner Scholars",
+        "programUrl": "https://www.berea.edu/celts/bonner-scholars-program/",
+        "programDescription": "The Bonner Scholars Program is a unique opportunity for students who want to combine a strong commitment to service with personal growth, teamwork, leadership development, and scholarship. Students who have completed an application for the Berea College class of 2026 may apply to be a Bonner Scholar.",
         "isStudentLed": False,
         "isBonnerScholars": True,
         "contactEmail": "",
@@ -250,6 +414,8 @@ programs = [
     {
         "id": 6,
         "programName": "Habitat for Humanity",
+        "programUrl": "https://www.berea.edu/celts/community-service-programs/volunteer-opportunities/habitat-for-humanity-program/",
+        "programDescription": "Through the work of Habitat for Humanity International, thousands of low-income families have found hope through affordable housing. Hard work and volunteering have resulted in the organization sheltering more than two million people worldwide.",
         "isStudentLed": False,
         "isBonnerScholars": False,
         "contactEmail": "",
@@ -258,6 +424,8 @@ programs = [
     {
         "id": 7,
         "programName": "Berea Teen Mentoring",
+        "programUrl": "https://www.berea.edu/celts/community-service-programs/volunteer-opportunities/teen-mentoring-program/",
+        "programDescription": "Berea Teen Mentoring (BTM) brings Berea community youth, from ages 13-18, into a group setting for mentorship and enrichment programs. Staff members are assisted during the weekly program by Berea College student volunteers, who act as mentors for these program participants. The mission of the program is to stimulate and cultivate personal growth for young adults in the Berea community.",
         "isStudentLed": True,
         "isBonnerScholars": False,
         "contactEmail": "",
@@ -266,6 +434,8 @@ programs = [
     {
         "id": 8,
         "programName": "Hispanic Outreach Program",
+        "programUrl": "https://www.berea.edu/celts/community-service-programs/volunteer-opportunities/hispanic-outreach-project/",
+        "programDescription": "The Hispanic Outreach Program (HOP) is a service-learning effort which brings together CELTS, several community organizations, and the Department of Foreign Languages at Berea College. HOP aims to build bridges among the Spanish-speaking and English-speaking residents of Madison County.",
         "isStudentLed": True,
         "isBonnerScholars": False,
         "contactEmail": "",
@@ -274,6 +444,8 @@ programs = [
     {
         "id": 10,
         "programName": "Berea Tutoring",
+        "programUrl": "https://www.berea.edu/celts/community-service-programs/volunteer-opportunities/berea-tutoring-program/",
+        "programDescription": "Berea Tutoring provides an encouraging atmosphere for local students who need help in achieving academic success, and for college volunteers who want to learn more about teaching or volunteering. Our mission is to increase conceptual understanding in academic subject areas, enrich educational experiences, and build self-confidence by providing college-aged tutors to local school children.",
         "isStudentLed": False,
         "isBonnerScholars": False,
         "contactEmail": "",
@@ -557,25 +729,52 @@ ProgramEvent.insert_many(program_events).on_conflict_replace().execute()
 
 notes = [
     {
-    "id": 1,
-    "createdBy": "ramsayb2",
-    "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
-    "noteContent": "I think the training is put in wrong",
-    "isPrivate":False
+        "id": 1,
+        "createdBy": "ramsayb2",
+        "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
+        "noteContent": "I think the training is put in wrong",
+        "isPrivate":False,
+        "noteType": "ban"
     },
     {
-    "id": 2,
-    "createdBy": "mupotsal",
-    "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
-    "noteContent": "I agree with your comment on training",
-    "isPrivate":False
+        "id": 2,
+        "createdBy": "mupotsal",
+        "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
+        "noteContent": "I agree with your comment on training",
+        "isPrivate":False,
+        "noteType": "question"
     },
     {
-    "id": 3,
-    "createdBy": "mupotsal",
-    "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
-    "noteContent": "tells bad jokes",
-    "isPrivate": True
+        "id": 3,
+        "createdBy": "mupotsal",
+        "createdOn": datetime.strptime("2021 10 12","%Y %m %d"),
+        "noteContent": "tells bad jokes",
+        "isPrivate": True,
+        "noteType": "ban"
+    },
+    {
+        "id": 4,
+        "createdBy": "neillz",
+        "createdOn": datetime.strptime("2021 11 26","%Y %m %d"),
+        "noteContent": "Allergic to water",
+        "isPrivate": False,
+        "noteType": "profile"
+    },
+    {
+        "id": 5,
+        "createdBy": "neillz",
+        "createdOn": datetime.strptime("2021 11 30","%Y %m %d"),
+        "noteContent": "Allergic to food",
+        "isPrivate": False,
+        "noteType": "profile"
+    },
+    {
+        "id": 6,
+        "createdBy": "ramsayb2",
+        "createdOn": datetime.strptime("2021 11 30","%Y %m %d"),
+        "noteContent": "Run when in sight",
+        "isPrivate": False,
+        "noteType": "profile"
     }
 ]
 Note.insert_many(notes).on_conflict_replace().execute()
@@ -995,11 +1194,34 @@ AdminLogs.insert_many(logs).on_conflict_replace().execute()
 
 files = [
     {
-    "event": 16,
+    "event": 1,
     "fileName":"Map1.pdf"
     },
-    {"event": 99999,
+    {
+    "event": 2,
     "fileName" : "adfsfdhqwre_;ldgfk####l;kgfdg.jpg"
     }
 ]
-EventFile.insert_many(files).on_conflict_replace().execute
+EventFile.insert_many(files).on_conflict_replace().execute()
+
+profileNotes = [
+    {
+        "user": "neillz",
+        "note": 4,
+        "isBonnerNote": False,
+        "viewTier": 2
+    },
+    {
+        "user": "ramsayb2",
+        "note": 5,
+        "isBonnerNote": False,
+        "viewTier": 3
+    },
+    {
+        "user": "partont",
+        "note": 6,
+        "isBonnerNote": True,
+        "viewTier": 1
+    }
+]
+ProfileNote.insert_many(profileNotes).on_conflict_replace().execute()

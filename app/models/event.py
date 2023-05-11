@@ -1,4 +1,4 @@
-from app.models import*
+from app.models import *
 from app.models.term import Term
 from app.models.program import Program
 from datetime import datetime
@@ -6,10 +6,11 @@ from datetime import datetime
 class Event(baseModel):
     name = CharField()
     term = ForeignKeyField(Term)
-    description = CharField()
+    description = TextField()
     timeStart = TimeField()
     timeEnd = TimeField()
     location = CharField()
+    isFoodProvided = BooleanField(default=False)
     isTraining = BooleanField(default=False)
     isRsvpRequired = BooleanField(default=False)
     isService = BooleanField(default=False)

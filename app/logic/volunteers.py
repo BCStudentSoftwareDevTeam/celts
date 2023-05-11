@@ -79,24 +79,25 @@ def addVolunteerToEventRsvp(user, volunteerEventID):
     except Exception as e:
         return False
 
-def addUserBackgroundCheck(user, bgType, checkPassed, dateCompleted):
+def addUserBackgroundCheck(user, bgType, bgStatus, dateCompleted):
     """
     Changes the status of a users background check depending on what was marked
     on their volunteer profile.
     """
     today = date.today()
     user = User.get_by_id(user)
-    if checkPassed == '' and dateCompleted == '':
+    if bgStatus == '' and dateCompleted == '':
         createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as incomplete.")
     else:
         if not dateCompleted:
             dateCompleted = None
-        update = BackgroundCheck.create(user=user, type=bgType, backgroundCheckStatus=checkPassed, dateCompleted=dateCompleted)
-        if bool(checkPassed):
+        update = BackgroundCheck.create(user=user, type=bgType, backgroundCheckStatus=bgStatus, dateCompleted=dateCompleted)
+        if bgStatus == 'Submitted':
+            createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as submitted.")
+        elif bgStatus == 'Passed':
             createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as passed.")
         else:
-            createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as not passed.")
-
+            createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as failed.")
 
 def setProgramManager(username, program_id, action):
     '''

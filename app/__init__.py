@@ -4,40 +4,13 @@ import pprint
 from flask import Flask, render_template
 from flask.helpers import get_env
 from playhouse.shortcuts import model_to_dict, dict_to_model
-
-import yaml
+from app.logic.config import load_config_files
 
 # Initialize our application
 app = Flask(__name__, template_folder="templates")
 
-######### Set up Application Configuration #############
-# Uses config2 - https://pypi.org/project/config2/ - with the addition of an uncommitted
-# override yml to set instance parameters. By default, 'local-override.yml'
-#
-# Precedence of configuration values is as follows:
-#
-# local-override.yml
-#     ↓
-# environment file (e.g., development.yml, production.yml)
-#     ↓
-# default.yml
-#
-##########################################################
-
-# ensure ENV matches flask environment (for config2)
-os.environ["ENV"] = get_env()
-from config2.config import config as config2 # import after setting environment
-
-# Update application config from config2
-app.config.update(config2.get()['__config_data__']) # getting only the data, not all of config2 metadata
-
-# Override configuration with our local instance configuration
-from app.logic.utils import deep_update
-with open("app/config/" + app.config['override_file'], 'r') as ymlfile:
-    try:
-        app.config.update(deep_update(app.config, yaml.load(ymlfile, Loader=yaml.FullLoader)))
-    except TypeError:
-        print(f"There was an error loading the override config file {config.override_file}. It might just be empty.")
+# Set the correct configuration according to the environment
+load_config_files(app, get_env())
 
 # set the secret key after configuration is set up
 app.secret_key = app.config['secret_key']
@@ -108,6 +81,12 @@ def load_currentTerm():
         term = getCurrentTerm()
         session['current_term'] = model_to_dict(term)
         g.current_term = term
+
+from flask import request
+@app.context_processor
+def load_visibleAccordion():
+    acc = request.args.get("accordion", default = False)
+    return {"visibleAccordion": acc}
 """
 Error handling for all 403, 404, 500 errors. Works by rendering a customm html
 file located at templates/errors. All abort calls are automatically routed here

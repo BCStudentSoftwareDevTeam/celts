@@ -9,6 +9,7 @@ $(document).ready(function(e) {
     // Update display if we are viewing only
     if (readOnly()){
         disableInput()
+
     }
 
     // set up phone numbers
@@ -80,14 +81,16 @@ $(document).ready(function(e) {
         $("#courseInstructor").on('input', function() {
             searchUser("courseInstructor", createNewRow, true, null, "instructor");
         });
-        $("input[name=courseInstructorPhone]").focus(focusHandler);
-        $("input[name=courseInstructorPhone]").focusout(blurHandler);
-        $('#instructorTable').on('click', ".editButton", function() {
-            var username=getRowUsername(this)
-            var phoneInput = "#inputPhoneNumber-" + username
-            validatePhoneNumber(this, phoneInput, username)
 
-        });
+        // for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
+        $('#instructorTable tr').each(function(){
+          var username = getRowUsername(this)
+          var edit = "#editButton-" + username
+          var input = "#inputPhoneNumber-" + username
+          if (username){
+            setupPhoneNumber(edit, input)
+          }
+        })
     }
 })
 
@@ -98,11 +101,20 @@ function disableInput() {
     $("input").prop("disabled", true);
     $("select").prop("disabled", true);
     $("textarea").prop("disabled", true);
+    $("#slcQuestionOne").replaceWith( "<ul>" + $( "#slcQuestionOne" ).text() + "</ul>" );
+    $("#slcQuestionTwo").replaceWith( "<ul>" + $( "#slcQuestionTwo" ).text() + "</ul>" );
+    $("#slcQuestionThree").replaceWith( "<ul>" + $( "#slcQuestionThree" ).text() + "</ul>" );
+    $("#slcQuestionFour").replaceWith( "<ul>" + $( "#slcQuestionFour" ).text() + "</ul>" );
+    $("#slcQuestionFive").replaceWith( "<ul>" + $( "#slcQuestionFive" ).text() + "</ul>" );
+    $("#slcQuestionSix").replaceWith( "<ul>" + $( "#slcQuestionSix" ).text() + "</ul>" );
     $(".view").prop("disabled", true);
     $("#submitAndApproveButton").hide();
     $(".editButton").hide()
     $(".removeButton").hide()
+    $(".slcQuestionCharCount, .slcQestionCharCounter" ).replaceWith( " ");
 }
+
+
 
 function readOnly() {
     return window.location.href.includes("view");
@@ -223,7 +235,6 @@ function validateForm() {
       }
     }
   }
-
   var instructors = getCourseInstructors()
   if (!instructors.length && currentTab == 1) {
     valid = false;
@@ -253,18 +264,6 @@ function getRowUsername(element) {
     return $(element).closest("tr").data("username")
 }
 
-// Event handler callback definitions
-function focusHandler(event) {
-    var username=getRowUsername(this)
-    $("#editButton-" + username).html('Save');
-}
-function blurHandler(event) {
-    var username=getRowUsername(this)
-    var editBtn = $("#editButton-" + username)
-    if($(event.relatedTarget).attr("id") != editBtn.attr("id")) {
-        editBtn.html('Edit');
-    }
-}
 function createNewRow(selectedInstructor) {
   let instructor = (selectedInstructor["firstName"]+" "+selectedInstructor["lastName"]+" ("+selectedInstructor["email"]+")");
   let username = selectedInstructor["username"];
@@ -284,8 +283,6 @@ function createNewRow(selectedInstructor) {
   let phoneInput = newRow.find("td:eq(0) input")
   phoneInput.val(phone);
   phoneInput.attr("id", "inputPhoneNumber-" +username);
-  $(phoneInput).focus(focusHandler);
-  $(phoneInput).focusout(blurHandler);
   $(phoneInput).inputmask('(999)-999-9999');
 
   let removeButton = newRow.find("td:eq(1) button")
@@ -293,8 +290,16 @@ function createNewRow(selectedInstructor) {
   editLink.attr("id", "editButton-" + username);
 
   newRow.attr("data-username", username)
+  editLink.attr("data-username", username)
   newRow.prop("hidden", false);
   lastRow.after(newRow);
+
+  phoneInput.attr("data-value", phone)
+  var edit = "#editButton-" + username
+  var input = "#inputPhoneNumber-" + username
+  if (username){
+    setupPhoneNumber(edit, input)
+  }
 }
 
 function getCourseInstructors() {
@@ -303,3 +308,14 @@ function getCourseInstructors() {
                 .map((i,el) => $(el).data('username')).get()
                 .filter(val => (val))
 }
+
+
+const textareas = $(".textarea");
+const slcQuestionCharCount = $(".slcQuestionCharCount");
+
+textareas.each(function(index, textarea) {
+  $(textarea).on("input", function() {
+    $(slcQuestionCharCount[index]).html($(textarea).val().length);
+  });
+  $(slcQuestionCharCount[index]).html($(textarea).val().length);
+});

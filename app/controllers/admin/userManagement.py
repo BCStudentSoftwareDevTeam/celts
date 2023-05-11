@@ -79,9 +79,11 @@ def updateProgramInfo(programID):
             changeProgramInfo(programInfo["programName"],  #calls logic function to add data to database
                                     programInfo["contactEmail"],
                                     programInfo["contactName"],
+                                    programInfo["location"],
                                     programID)
+
             flash("Program updated", "success")
-            return redirect(url_for("admin.userManagement", showSettingsPane="program"))
+            return redirect(url_for("admin.userManagement", accordion="program"))
         except Exception as e:
             print(e)
             flash('Error while updating program info.','warning')
@@ -90,7 +92,6 @@ def updateProgramInfo(programID):
 
 @admin_bp.route('/admin', methods = ['GET'])
 def userManagement():
-    showSettingsPane=request.args.get('showSettingsPane')
     terms = selectSurroundingTerms(g.current_term)
     current_programs = Program.select()
     currentAdmins = list(User.select().where(User.isCeltsAdmin))
@@ -101,7 +102,6 @@ def userManagement():
                                 programs = list(current_programs),
                                 currentAdmins = currentAdmins,
                                 currentStudentStaff = currentStudentStaff,
-                                showSettingsPane=showSettingsPane
                                 )
     abort(403)
 

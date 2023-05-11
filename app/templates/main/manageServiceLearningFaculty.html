@@ -33,9 +33,6 @@
             <h2>Unapproved</h2>
           </div>
           <div class="col">
-            <div class="float-end">
-              <button type="button" class="btn btn-primary btn-sm" disabled>Send To Faculty Fellow</button>
-            </div>
             <div align="right">
               <form method="post" action="/serviceLearning/createCourse" >
                 <button class="btn btn-success btn-sm mr" type = 'Submit' >Add Course </button>
@@ -50,96 +47,109 @@
           <table class="table table-striped border">
             <thead>
               <tr>
-                <th scope="col">Courses</th>
-                <th scope="col">Faculty</th>
-                <th scope="col">Status</th>
-                <th scope="col"></th>
-                <th scope="col">Edit</th>
+                <th class="col-md-1" scope="col">Courses</th>
+                <th class="col-md-1" scope="col">Faculty</th>
+                <th class="col-md-1" scope="col">Status</th>
+                <th class="col-md-1" scope="col">Action</th>
               </tr>
             </thead>
             <tbody>
               {% for course in unapprovedCourses %}
               <tr>
                 <td>{{course.courseName}}</td>
-                <td>
-                  {{ course.instructors }} <br>
-                </td>
+                <td>{{ course.instructors }}</td>
                 <td>{{course.status.status}}</td>
-                <td><button type="button" data-id="{{course}}" onclick="reviewCourses(this)" class="btn btn-primary btn-sm">{{ "Review"}}</button></td>
-                <td><a type="button" href="/serviceLearning/editProposal/{{course }}" class="btn btn-primary btn-sm">Edit</a></td>
+                <td>
+                  <select class="form-select courseData" id="{{course.id}}" onchange='executeCourseAction(this)'>
+                    <option value="---" disabled selected>Select Action</option>
+                    <option value="Review">Review</option>
+                    <option value="View">View</option>
+                    <option value="Edit">Edit</option>
+                </td>
               </tr>
               {% endfor %}
             </tbody>
           </table>
       {% endif %}
-  <div class="pb-5">
-    <h2>Approved</h2>
-      {% if approvedCourses | length == 0 %}
-        <h5 class="ms-3">There are no approved courses for {{ term.description }}.</h5>
-      {% else %}
-        <table class="table table-striped border">
-        <thead>
-          <tr>
-            <th scope="col">Courses</th>
-            <th scope="col">Faculty</th>
-            <th scope="col">Status</th>
-            <th scope="col">Sent</th>
-          </tr>
-        </thead>
-        <tbody>
-            {% for course in approvedCourses %}
+    <div class="pb-5">
+      <h2>Approved</h2>
+        {% if approvedCourses | length == 0 %}
+          <h5 class="ms-3">There are no approved courses for {{ term.description }}.</h5>
+        {% else %}
+          <table class="table table-striped border">
+          <thead>
             <tr>
-              <td>{{course.courseName}}</td>
-              <td>
-                {{ course.instructors }} <br>
-              </td>
-              <td>{{course.status.status}}</td>
-              <td><i class="bi bi-check2"></i></td>
+              <th class="col-md-1" scope="col">Courses</th>
+              <th class="col-md-1" scope="col">Faculty</th>
+              <th class="col-md-1" scope="col">Status</th>
+              <th class="col-md-1" scope="col">Action</th>
             </tr>
+          </thead>
+          <tbody>
+              {% for course in approvedCourses %}
+              <tr>
+                <td>{{course.courseName}}</td>
+                <td>{{ course.instructors }}</td>
+                <td>{{course.status.status}}</td>
+                <td>
+                  <select class="form-select" id="{{course.id}}" onchange='executeCourseAction(this)'>
+                    <option value="---" disabled selected>Select Action</option>
+                    <option value="Review">Review</option>
+                    <option value="View">View</option>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% endif %}
+      {% set downloadAndSend = "disabled" if approvedCourses | length ==0 else "" %}
+      {% if term.isCurrentTerm or term.isFutureTerm %}
+      <div class="col">
+        <div class="float-end">
+          <form method="GET" action="/serviceLearning/downloadApprovedCourses/{{term.id}}">
+            <button class="btn btn-primary {{downloadAndSend}}" id="downloadApprovedCoursesBtn" value="{{term.id}}">Download File</button>
+          </form>
+        </div>
+          <div class="float-end">
+            <a  class="btn btn-primary mr {{downloadAndSend}}" href="mailto:{{(';'.join(instructorEmails))}}?subject=Designated Service-Learning Courses: List of recommended courses for {{term.description}}&body=Hello,%0D%0A%0D%0AI’m writing to submit the list of courses recommended for the Service-Learning Course Designation (meeting the ALE requirement) for the upcoming semester; this list is ready to be shared with COGE. Please find the list of courses in the attached document. The proposals have been reviewed and approved by the Service-Learning Faculty Fellow and Director of CELTS (me).%0D%0A%0D%0AIn addition to these courses, all the courses that have received the Permanent Service-Learning Course Designation that will be taught in the upcoming semester should also have the Service-Learning Course Designation.%0D%0A%0D%0AThank you,%0D%0A%0D%0AAshley"> Send Recommendation </a>
+          </div>
+      </div>
+       {% endif %}
+        </div>
+      </div>
+      <div id="wrapper">
+          <h1 class="text-center pt-1 pb-4">Service-Learning Faculty</h1>
+          <div style="text-align:right; position:relative; top: 38px; z-index:1;" >
+            {% set instructorEmails = [] %}
+            {% for instructor in courseInstructors%}
+              {{ instructorEmails.append(instructor.email) or "" }}
             {% endfor %}
+            <div>
+              <a  class="btn btn-primary" href="mailto:{{(';'.join(instructorEmails))}}?subject=Renew Course Proposal"> Email All </a>
+            </div>
+          </div>
+        <div class ="container">
+          <a class="skipContent" href="#backButton" tabindex="1" style="top:8%">Click to Skip</a>
+          <div class="contributors" align="center">
+        <table class="table table-striped" id="myTable">
+            <thead>
+              <tr class="header">
+                <th scope = "col">Name</th>
+                <th scope = "col">Prev Classes</th>
+              </tr>
+            </thead>
+          <tbody id = "facultyTable">
+          {% for instructor in courseInstructors%}
+              <tr>
+                <td> {{instructor.firstName }} {{instructor.lastName}}</td>
+                <td>{{(', '.join(courseInstructors[instructor]))}}</td>
+              </tr>
+          {% endfor %}
           </tbody>
         </table>
-      {% endif %}
-
-    {% if term.isCurrentTerm or term.isFutureTerm %}
-      <div class="float-end">
-        <button class="btn btn-primary" disabled>Send to Registrar</button>
-      </div>
-     {% endif %}
       </div>
     </div>
-<div id="wrapper">
-    <h1 class="text-center pt-1 pb-4">Service-Learning Faculty</h1>
-    <div style="text-align:right; position:relative; top: 38px; z-index:1;" >
-      {% set instructorEmails = [] %}
-      {% for instructor in courseInstructors%}
-        {{ instructorEmails.append(instructor.email) or "" }}
-      {% endfor %}
-      <div>
-        <a  class="btn btn-primary" href="mailto:{{(';'.join(instructorEmails))}}?subject=Renew Course Proposal"> Email All </a>
-      </div>
-    </div>
-  <div class ="container">
-    <a class="skipContent" href="#backButton" tabindex="1" style="top:8%">Click to Skip</a>
-    <div class="contributors" align="center">
-  <table class="table table-striped" id="myTable">
-      <thead>
-        <tr class="header">
-          <th scope = "col">Name</th>
-          <th scope = "col">Prev Classes</th>
-        </tr>
-      </thead>
-    <tbody id = "facultyTable">
-    {% for instructor in courseInstructors%}
-        <tr>
-          <td> {{instructor.firstName }} {{instructor.lastName}}</td>
-          <td>{{(', '.join(courseInstructors[instructor]))}}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-</div>
-
+  </div>
 </div>
 <div id="review-modal"></div>
 {% endblock %}

@@ -1,11 +1,11 @@
 secret_key: "123"
 use_shibboleth: False
-override_file: "local-override.yml"
 default_user: "ramsayb2"
 
 celts_admin_contact: "celts@berea.edu"
 support_email_contact: "support@bereacollege.onmicrosoft.com"
 show_queries: True
+test_entry: "Default"
 
 db:
     name: "celts"
@@ -20,6 +20,7 @@ tracy:
     password: "OVERRIDE"
 
 files:
+  base_path: 'app/static/files'
   email_attachment_path: 'app/static/files/emailattachments'
   event_attachment_path: 'app/static/files/eventattachments'
 

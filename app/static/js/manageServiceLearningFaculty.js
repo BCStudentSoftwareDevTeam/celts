@@ -1,4 +1,5 @@
 $(document).ready( function () {
+
   //make html table to datatable
    var table =  $('#myTable').DataTable({
    "fnDrawCallback": function(oSettings) {
@@ -10,4 +11,19 @@ $(document).ready( function () {
        }
     }
   });
+    $("#downloadApprovedCoursesBtn").click(function(){
+        let termID = $("#downloadApprovedCoursesBtn").val();
+        $.ajax({
+            url:`/serviceLearning/downloadApprovedCourses/${termID}`,
+            type:"GET",
+            success: function(response){
+              callback(response);
+            },
+            error: function(response){
+                console.log(response)
+            },
+
+
+        })
+    })
 });

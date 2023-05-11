@@ -16,31 +16,47 @@ from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
+from app.models.profileNote import ProfileNote
 from app.models.programManager import ProgramManager
 from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
+from app.models.certification import Certification
 
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory
-from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getUserParticipatedEvents, checkUserRsvp, addPersonToEvent
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, updateDietInfo
+from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getUserParticipatedTrainingEvents, checkUserRsvp, addPersonToEvent
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
+from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
 from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import unapprovedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
+from app.logic.certification import getCertRequirementsWithCompletion
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
     return redirect(logout())
 
 @main_bp.route('/', methods=['GET'])
-def redirectToEventsList():
-    return redirect(url_for("main.events", selectedTerm=g.current_term))
+def landingPage():
+    managerProgramDict = getManagerProgramDict(g.current_user)
+    programsWithEvents = list(ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event.term == g.current_term).join(Event).distinct())
+    programsWithEventsList = [program.program.id for program in programsWithEvents]
 
-@main_bp.route('/eventsList/<selectedTerm>', methods=['GET'])
-def events(selectedTerm):
+    return render_template("/main/landingPage.html", managerProgramDict = managerProgramDict,
+                                                     term = g.current_term,
+                                                     programsWithEventsList = programsWithEventsList)
+
+@main_bp.route('/goToEventsList/<programID>', methods=['GET'])
+def goToEventsList(programID):
+    return {"activeTab": getActiveEventTab(programID)}
+
+@main_bp.route('/eventsList/<selectedTerm>', methods=['GET'], defaults={'activeTab': "studentLedEvents", 'programID': 0})
+@main_bp.route('/eventsList/<selectedTerm>/<activeTab>', methods=['GET'], defaults={'programID': 0})
+@main_bp.route('/eventsList/<selectedTerm>/<activeTab>/<programID>', methods=['GET'])
+def events(selectedTerm, activeTab, programID):
     currentTerm = g.current_term
     if selectedTerm:
         currentTerm = selectedTerm
@@ -63,7 +79,9 @@ def events(selectedTerm):
         listOfTerms = listOfTerms,
         rsvpedEventsID = rsvpedEventsID,
         currentTime = currentTime,
-        user = g.current_user)
+        user = g.current_user,
+        activeTab = activeTab,
+        programID = int(programID))
 
 @main_bp.route('/profile/<username>', methods=['GET'])
 def viewUsersProfile(username):
@@ -94,10 +112,8 @@ def viewUsersProfile(username):
         programManagerPrograms = ProgramManager.select(ProgramManager, Program).join(Program).where(ProgramManager.user == volunteer)
         permissionPrograms = [entry.program.id for entry in programManagerPrograms]
 
-
         allBackgroundHistory = getUserBGCheckHistory(volunteer)
         backgroundTypes = list(BackgroundCheckType.select())
-
 
         eligibilityTable = []
         for program in programs:
@@ -107,15 +123,19 @@ def viewUsersProfile(username):
                                               ProgramBan.program == program,
                                               ProgramBan.endDate > datetime.datetime.now()).execute())
 
-            userParticipatedEvents = getUserParticipatedEvents(program, g.current_user, g.current_term)
-            allTrainingsComplete = not len([event for event in userParticipatedEvents.values() if event != True])
+            UserParticipatedTrainingEvents = getUserParticipatedTrainingEvents(program, g.current_user, g.current_term)
+            allTrainingsComplete = not len([event for event in UserParticipatedTrainingEvents.values() if event != True])
             noteForDict = notes[-1].banNote.noteContent if notes else ""
             eligibilityTable.append({"program": program,
                                    "completedTraining": allTrainingsComplete,
-                                   "trainingList": userParticipatedEvents,
+                                   "trainingList": UserParticipatedTrainingEvents,
                                    "isNotBanned": True if not notes else False,
                                    "banNote": noteForDict})
+        profileNotes = ProfileNote.select().where(ProfileNote.user == volunteer)
+        userDietQuery = User.select().where(User.username == username)
+        userDiet = [note.dietRestriction for note in userDietQuery]
 
+        bonnerRequirements = getCertRequirementsWithCompletion(certification=Certification.BONNER, username=volunteer)
         return render_template ("/main/userProfile.html",
                 programs = programs,
                 programsInterested = programsInterested,
@@ -127,10 +147,40 @@ def viewUsersProfile(username):
                 volunteer = volunteer,
                 backgroundTypes = backgroundTypes,
                 allBackgroundHistory = allBackgroundHistory,
-                currentDateTime = datetime.datetime.now()
-
+                currentDateTime = datetime.datetime.now(),
+                profileNotes = profileNotes,
+                bonnerRequirements = bonnerRequirements,
+                userDiet = userDiet
             )
     abort(403)
+
+@main_bp.route('/profile/addNote', methods=['POST'])
+def addNote():
+    """
+    This function adds a note to the user's profile.
+    """
+    postData = request.form
+    try:
+        note = addProfileNote(postData["visibility"], postData["bonner"] == "yes", postData["noteTextbox"], postData["username"])
+        flash("Successfully added profile note", "success")
+        return redirect(url_for("main.viewUsersProfile", username=postData["username"]))
+    except Exception as e:
+        print("Error adding note", e)
+        flash("Failed to add profile note", "danger")
+        return "Failed to add profile note", 500
+
+@main_bp.route('/<username>/deleteNote', methods=['POST'])
+def deleteNote(username):
+    """
+    This function deletes a note from the user's profile.
+    """
+    try:
+        deleteProfileNote(request.form["id"])
+        flash("Successfully deleted profile note", "success")
+    except Exception as e:
+        print("Error deleting note", e)
+        flash("Failed to delete profile note", "danger")
+    return "success"
 
 # ===========================Ban===============================================
 @main_bp.route('/<username>/ban/<program_id>', methods=['POST'])
@@ -150,7 +200,7 @@ def ban(program_id, username):
         createLog(f'Banned {username} from {programInfo.programName} until {banEndDate}.')
         return "Successfully banned the volunteer."
     except Exception as e:
-        print("Error  while updating ban", e)
+        print("Error while updating ban", e)
         flash("Failed to ban the volunteer", "danger")
         return "Failed to ban the volunteer", 500
 
@@ -229,7 +279,7 @@ def volunteerRegister():
     listOfRequirements = unattendedRequiredEvents(program, user)
 
     personAdded = False
-    if isEligible: 
+    if isEligible:
         personAdded = addPersonToEvent(user, event)
         if personAdded and listOfRequirements:
             reqListToString = ', '.join(listOfRequirements)
@@ -367,3 +417,13 @@ def setRedirectTarget(target):
     return: None
     """
     session["redirectTarget"] = target
+
+@main_bp.route('/updateDietInformation', methods = ['GET', 'POST'])
+def getDietInfo():
+    dietaryInfo = request.form
+    user = dietaryInfo["user"]
+    dietInfo = dietaryInfo["dietInfo"]
+    if (g.current_user.username == user) or g.current_user.isAdmin:
+        updateDietInfo(user, dietInfo)
+
+    return " "

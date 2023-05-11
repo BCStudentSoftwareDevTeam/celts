@@ -18,6 +18,7 @@ function updateDate(obj) {
     $("#startDatePicker").datepicker("option", "maxDate", new Date(  newYear, newMonth, newDay));
   }
 }
+
 // turns a string with a time with HH:mm format to %I:%M %p format
 // used to display 12 hour format but still use 24 hour format in the backend
 function format24to12HourTime(timeStr){
@@ -33,14 +34,48 @@ function format24to12HourTime(timeStr){
     }
     return formattedTime;
   }
+
+  function calculateRecurringEventFrequency(){
+      var eventDatesAndName = {name:$("#inputEventName").val(),
+                               isRecurring: true,
+                               startDate:$("#startDatePicker").val(),
+                               endDate:$("#endDatePicker").val()}
+      $.ajax({
+        type:"POST",
+        url: "/makeRecurringEvents",
+        data: eventDatesAndName, //get the startDate, endDate and name as a dictionary
+        success: function(jsonData){
+          var recurringEvents = JSON.parse(jsonData)
+          var recurringTable = $("#recurringEventsTable")
+          $("#recurringEventsTable tbody tr").remove();
+
+          for (var event of recurringEvents){
+            var eventdate = new Date(event.date).toLocaleDateString()
+            recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
+            }
+        },
+        error: function(error){
+          console.log(error)
+        }
+      });
+
+  }
 /*
  * Run when the webpage is ready for javascript
  */
 $(document).ready(function() {
-    $("#attachmentObject").fileinput()
+  if ( $("#startDatePicker").val() != $("#endDatePicker").val()){
+  
+    calculateRecurringEventFrequency();
+  }
+
+    $("#attachmentObject").fileinput({
+        allowedFileExtensions:["pdf","jpg","png","gif", "csv", "docx", "jpg", "jpeg", "jfif"]
+    })
   // Disable button when we are ready to submit
   $("#saveEvent").on('submit',function(event) {
-      $(this).find("input[type=submit]").prop("disabled", true)
+      $(this).find("input[type=submit]").prop("disabled", true);
+
   });
 
   $("#checkIsRecurring").click(function() {
@@ -51,6 +86,22 @@ $(document).ready(function() {
     } else {
       $("#endDateStyle, #recurringTableDiv").addClass('d-none')
       $("#endDatePicker").prop('required', false);
+    }
+  });
+
+
+  $("#allowPastStart").click(function() {
+    var allowPast = $("#allowPastStart:checked").val()
+    if (allowPast == 'on') {
+      $.datepicker.setDefaults({
+        minDate:  new Date('1999/10/25'),
+        dateFormat:'mm-dd-yy'
+      });
+    } else {
+      $.datepicker.setDefaults({
+        minDate:  new Date($.now()),
+        dateFormat:'mm-dd-yy'
+      });
     }
   });
   // everything except Chrome
@@ -102,39 +153,20 @@ $(document).ready(function() {
 
   $("#startDatePicker, #endDatePicker").change(function(){
     if ( $("#startDatePicker").val() && $("#endDatePicker").val()){
-      var eventDatesAndName = {name:$("#inputEventName").val(),
-                               isRecurring: true,
-                               startDate:$("#startDatePicker").val(),
-                               endDate:$("#endDatePicker").val()}
-      $.ajax({
-        type:"POST",
-        url: "/makeRecurringEvents",
-        data: eventDatesAndName, //get the startDate, endDate and name as a dictionary
-        success: function(jsonData){
-          var recurringEvents = JSON.parse(jsonData)
-          var recurringTable = $("#recurringEventsTable")
-          $("#recurringEventsTable tbody tr").remove();
-
-          for (var event of recurringEvents){
-            var eventdate = new Date(event.date).toLocaleDateString()
-            recurringTable.append("<tr><td>"+event.name+"</td><td><input name='week"+event.week+"' type='hidden' value='"+eventdate+"'>"+eventdate+"</td></tr>");
-            }
-        },
-        error: function(error){
-          console.log(error)
-        }
-      });
+      calculateRecurringEventFrequency();
     }
   });
 
-  $("#checkIsTraining").click(function(){
-    if ($("input[name='isTraining']:checked").val() == 'on'){
-      $("#checkIsRequired").prop('checked', true);
+  $("#checkRSVP").click(function(){
+    if ($("input[name='isRsvpRequired']:checked").val() == 'on'){
+      $("#checkFood").prop('checked', true);
 
     } else{
-      $("#checkIsRequired").prop('disabled', false);
+      $("#checkFood").prop('disabled', false);
     }
   });
+
+
 
   var facilitatorArray = []
   function callback(selectedFacilitator) {
@@ -194,4 +226,10 @@ $(document).ready(function() {
  $("#startDatePicker").change(function(){
      updateDate(this)
  });
+
+$("#inputCharacters").keyup(function(event){
+  setCharacterLimit(this, "#remainingCharacters")
+  });
+
+  setCharacterLimit($("#inputCharacters"), "#remainingCharacters");
 });

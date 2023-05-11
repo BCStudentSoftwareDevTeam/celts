@@ -11,45 +11,53 @@ from app.models import mainDB
 
 @pytest.mark.integration
 def test_modifyCeltsAdmin():
-    user = "agliullovak"
-    userInTest = User.get(User.username == user)
-    assert userInTest.isCeltsAdmin == False
-    with app.app_context():
-        g.current_user = "ramsayb2"
-        addCeltsAdmin(userInTest)
-        userInTest = User.get(User.username == user)
-        assert userInTest.isCeltsAdmin == True
-        removeCeltsAdmin(userInTest)
+    with mainDB.atomic() as transaction:
+
+        user = "agliullovak"
         userInTest = User.get(User.username == user)
         assert userInTest.isCeltsAdmin == False
+        with app.app_context():
+            g.current_user = "ramsayb2"
+            addCeltsAdmin(userInTest)
+            userInTest = User.get(User.username == user)
+            assert userInTest.isCeltsAdmin == True
+            removeCeltsAdmin(userInTest)
+            userInTest = User.get(User.username == user)
+            assert userInTest.isCeltsAdmin == False
 
-        with pytest.raises(DoesNotExist):
-            addCeltsAdmin("blahbah")
-        with pytest.raises(DoesNotExist):
-            addCeltsAdmin("ksgvoidsid;")
+            with pytest.raises(DoesNotExist):
+                addCeltsAdmin("blahbah")
+            with pytest.raises(DoesNotExist):
+                addCeltsAdmin("ksgvoidsid;")
+
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_modifyCeltsStudentStaff():
-    user = "mupotsal"
-    userInTest = User.get(User.username == user)
-    assert userInTest.isCeltsAdmin == False
-    with app.app_context():
-        g.current_user = "ramsayb2"
-        addCeltsStudentStaff(userInTest)
-    userInTest = User.get(User.username == user)
-    assert userInTest.isCeltsStudentStaff == True
+    with mainDB.atomic() as transaction:
 
-    with app.app_context():
-        g.current_user = "ramsayb2"
-        removeCeltsStudentStaff(userInTest)
-    userInTest = User.get(User.username == user)
-    assert userInTest.isCeltsStudentStaff == False
-    with app.app_context():
-        g.current_user = "ramsayb2"
-        with pytest.raises(DoesNotExist):
-            addCeltsStudentStaff("asdf")
-        with pytest.raises(DoesNotExist):
-            removeCeltsStudentStaff("1234")
+        user = "mupotsal"
+        userInTest = User.get(User.username == user)
+        assert userInTest.isCeltsAdmin == False
+        with app.app_context():
+            g.current_user = "ramsayb2"
+            addCeltsStudentStaff(userInTest)
+        userInTest = User.get(User.username == user)
+        assert userInTest.isCeltsStudentStaff == True
+
+        with app.app_context():
+            g.current_user = "ramsayb2"
+            removeCeltsStudentStaff(userInTest)
+        userInTest = User.get(User.username == user)
+        assert userInTest.isCeltsStudentStaff == False
+        with app.app_context():
+            g.current_user = "ramsayb2"
+            with pytest.raises(DoesNotExist):
+                addCeltsStudentStaff("asdf")
+            with pytest.raises(DoesNotExist):
+                removeCeltsStudentStaff("1234")
+
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_changeProgramInfo():
@@ -59,21 +67,24 @@ def test_changeProgramInfo():
         eventName = "Test Event Name"
         contactName = "New Test Name"
         contactEmail = 'newtest@email'
+        location = "Danforth Tech"
         currentProgramInfo = Program.get_by_id(programId)
 
         assert currentProgramInfo.programName == "Adopt-a-Grandparent"
         assert currentProgramInfo.contactName == ""
         assert currentProgramInfo.contactEmail == ""
+        assert currentProgramInfo.defaultLocation == ""
 
         with app.test_request_context():
             g.current_user = "ramsayb2"
-            changeProgramInfo(eventName, contactEmail, contactName, programId)
+            changeProgramInfo(eventName, contactEmail, contactName, location, programId)
 
         currentProgramInfo = Program.select().where(Program.id==programId).get()
 
         assert currentProgramInfo.programName == eventName
         assert currentProgramInfo.contactName == contactName
         assert currentProgramInfo.contactEmail == contactEmail
+        assert currentProgramInfo.defaultLocation == location
 
         transaction.rollback()
 

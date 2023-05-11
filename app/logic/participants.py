@@ -39,7 +39,11 @@ def trainedParticipants(programID, currentTerm):
 def sendUserData(bnumber, eventId, programid):
     """Accepts scan input and signs in the user. If user exists or is already
     signed in will return user and login status"""
-    signedInUser = User.get(User.bnumber == bnumber)
+    try:
+        signedInUser = User.get(User.bnumber == bnumber)
+    except Exception as e:
+        print(e)
+        return None, "does not exist"
     event = Event.get_by_id(eventId)
     if not isEligibleForProgram(programid, signedInUser):
         userStatus = "banned"
@@ -50,7 +54,6 @@ def sendUserData(bnumber, eventId, programid):
     else:
         userStatus = "success"
         totalHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
-        EventRsvp.create(user=signedInUser, event=eventId)
         EventParticipant.create (user=signedInUser, event=eventId, hoursEarned=totalHours)
     return signedInUser, userStatus
 
@@ -62,7 +65,7 @@ def checkUserVolunteer(user,  event):
 
 def addPersonToEvent(user, event):
     """
-        Add a user to an event. 
+        Add a user to an event.
         If the event is in the past, add the user as a volunteer (EventParticipant) including hours worked.
         If the event is in the future, rsvp for the user (EventRsvp)
 
@@ -71,7 +74,6 @@ def addPersonToEvent(user, event):
     try:
         volunteerExists = checkUserVolunteer(user, event)
         rsvpExists = checkUserRsvp(user, event)
-
         if event.isPast:
             if not volunteerExists:
                 eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
@@ -79,7 +81,8 @@ def addPersonToEvent(user, event):
         else:
             if not rsvpExists:
                 EventRsvp.create(user = user, event = event)
-
+        if volunteerExists or rsvpExists:
+            return "already in"
     except Exception as e:
         print(e)
         return False
@@ -112,7 +115,7 @@ def getEventParticipants(event):
 
     return {p.user: p.hoursEarned for p in eventParticipants}
 
-def getUserParticipatedEvents(program, user, currentTerm):
+def getUserParticipatedTrainingEvents(program, user, currentTerm):
     """
     This function returns a dictionary of all trainings for a program and
     whether the current user participated in them.
@@ -130,7 +133,7 @@ def getUserParticipatedEvents(program, user, currentTerm):
                                       Event.term.academicYear == academicYear,
                                       EventParticipant.user.is_null(True) | (EventParticipant.user == user)))
 
-    userParticipatedEvents = {}
+    UserParticipatedTrainingEvents = {}
     for training in programTrainings.objects():
         if training.startDate > date.today():
             didParticipate = [None, training.startDate.strftime("%m/%d/%Y")]
@@ -138,5 +141,5 @@ def getUserParticipatedEvents(program, user, currentTerm):
             didParticipate = True
         else:
             didParticipate = False
-        userParticipatedEvents[training.name] = didParticipate
-    return userParticipatedEvents
+        UserParticipatedTrainingEvents[training.name] = didParticipate
+    return UserParticipatedTrainingEvents

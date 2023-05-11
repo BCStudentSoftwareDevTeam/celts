@@ -6,12 +6,17 @@
     <script src="/static/js/event_list.js"></script>
 {% endblock %}
 
-{% block app_content%}
+{% block app_content %}
     <div class="text-center mb-3">
     {% set page_title = eventData.name %}
         <h1 id="title">{{page_title}}</h1>
+        {% if eventData.name != 'All Volunteer Training' and eventData.program == None %}
+          <h3>CELTS-Sponsored Event</h3>
+        {% elif eventData.program %}
+          <h3>{{eventData["program"].programName}} Event</h3>
+        {% endif %}
     {% if isPastEvent %}
-        <div class="alert alert-danger" role="alert">This event is in the past.</div>
+        <div class="alert-danger pb-2 pt-2" role="alert">This event is in the past.</div>
     {% endif %}
     </div>
     {% if g.current_user.isCeltsAdmin or isProgramManager %}
@@ -37,29 +42,39 @@
             <div class="row">
                 <div class="col-md-6">
                     <h3><br>Description</h3><p>{{eventData.description|urlize}}</p><br>
+                    {% if eventData.isFoodProvided %}
+                        <p>Food will be provided at this event. <a href="/profile/{{g.current_user}}?accordion=dietaryInformation"><b>Please fill in any dietary restrictions on your "My profile" page.</b></a></p>
+                    {% endif %}
                     {% if eventData.isService %}
                         <p>This event earns service hours.</p>
                     {% else %}
                         <p>This event does not earn service hours.</p>
                     {% endif %}
+
                     {% if eventData.isRsvpRequired %}
                         <p>This event requires RSVP.</p>
                     {% else %}
                         <p>This event does not require RSVP.</p>
                     {% endif %}
+
                     {% if eventData.recurringId %}
                         <p>This event is a recurring event.
                             {% if eventData.nextRecurringEvent %}
-                            The next event in the series occurs on <b>{{eventData.nextRecurringEvent.startDate.strftime("%B %-d")}}</b>.
-                            <a href="/eventsList/{{eventData.nextRecurringEvent.id}}/view">Click here for more information.</a>
+                            The next event in the series occurs on <a href="/eventsList/{{eventData.nextRecurringEvent.id}}/view"><b>{{eventData.nextRecurringEvent.startDate.strftime("%B %-d")}}.</b></a>
                             {% else %}
                             <b>However, this is the last event in the series.</b>
                             {% endif %}
                         </p>
                     {% endif %}
+
                     {% if eventData.isTraining %}
                         <p>This event is a training.</p>
                     {% endif %}
+
+                    {% if eventData['certRequirement'] %}
+                        <p>This event satisfies the {{eventData['certRequirement'].name}} requirement for the Bonner program.</p>
+                    {% endif %}
+
                 </div>
                 <div class="col-md-6">
                     <div class="col-sm">
@@ -86,6 +101,7 @@
                           </div>
                       </div>
             </div>
+            {% if filepaths.keys()|count %}
             <div class="form-group mb-5">
                 <label class="mb-2" for= "eventAttachments"><strong>Event Attachments</strong></label>
                 <table>
@@ -97,7 +113,8 @@
                         </tr>
                     {% endfor %}
                 </table>
-              </div>
+            </div>
+            {% endif %}
             <div class="rsvp-btn text-center">
               {% if (not isPastEvent) and (not isNewEvent)%}
                   {% if userHasRSVPed %}
@@ -106,5 +123,12 @@
                     <button type="submit" class="btn btn-primary" value="{{eventData.id}}" id="rsvpBtn">RSVP</button>
                  {% endif %}
               {% endif %}
+              {% if g.current_user.isCeltsAdmin or isProgramManager %}
+            <div class="d-flex align-items-center">
+                <i class="bi bi-eye-fill me-2"></i>
+                <span class="me-2">Unique Viewers:</span>
+                <span id="viewCount">{{pageViewsCount}}</span>
+            </div>
+          {% endif %}
             </div>
 {% endblock %}

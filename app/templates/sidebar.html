@@ -1,14 +1,14 @@
 <div id="sidebar">
   <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 280px">
     <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-      <span class="fs-4">CELTS</span>
+      <img src="{{url_for('static', filename='images/logos/celts_logo_white.png')}}" alt="CELTS-image" width="230">
     </a>
     <a href="#maincontent" class="visually-hidden-focusable">Skip to main content</a>
     <hr>
 
     <ul class="nav nav-pills flex-column mb-auto">
       <li class="nav-item">
-        <a href="/eventsList/{{g.current_term}}" class="nav-link text-white {{'active' if 'eventsList' in request.path}}" {{"aria-current='page'" if 'eventsList' in request.path}}>
+        <a href="/eventsList/{{g.current_term}}/studentLedEvents" class="nav-link text-white {{'active' if 'eventsList' in request.path}}" {{"aria-current='page'" if 'eventsList' in request.path}}>
           Events List
         </a>
       </li>
@@ -54,7 +54,7 @@
             </button>
           </div>
         </nav>
-        <div class="{{ 'collapse-show' if request.path =='/adminLogs' or request.path =='/manageServiceLearning' or request.path =='/admin' or request.path == '/courseManagement' else 'collapse'}}" id="navbarToggleExternalContent">
+        <div class="{{ 'collapse-show' if request.path in ['/adminLogs','/manageServiceLearning','/admin','/courseManagement','/manageBonner'] else 'collapse'}}" id="navbarToggleExternalContent">
           <div class="bg-dark ps-3">
             <a href="/adminLogs" class="nav-link text-white {{ 'active' if request.path =='/adminLogs' }}">
               Activity Logs
@@ -64,6 +64,9 @@
             </a>
             <a href="/manageServiceLearning" class="nav-link text-white {{ 'active' if request.path =='/manageServiceLearning' }}">
               Course Management
+            </a>
+            <a href="/manageBonner" class="nav-link text-white {{ 'active' if request.path =='/manageBonner' }}">
+              Bonner Management
             </a>
           </div>
         </div>

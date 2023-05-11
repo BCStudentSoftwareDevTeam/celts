@@ -50,7 +50,6 @@ def getProgramTranscript(username):
             transcriptData[program.program].append([program.event.term.description, program.hoursEarned])
         else:
             transcriptData[program.program] = [[program.event.term.description, program.hoursEarned]]
-
     return transcriptData
 
 def getAllEventTranscript(username):

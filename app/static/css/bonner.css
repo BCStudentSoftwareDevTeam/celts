@@ -1,0 +1,42 @@
+
+/* Mostly copied from the Bootstrap classes, because it was looking pretty messy */
+
+.d-flex a img {
+    margin-right: auto;
+    margin-left: auto;
+    display: block;
+}
+
+/* slightly smaller button */
+.removeBonner {
+    font-size: .9rem;
+    line-height: 1.2;
+    padding: .375rem .5rem;
+}
+
+.drag-handle img {
+    margin-right: auto;
+    margin-left: auto;
+    display:block;
+    opacity: .5;
+}
+.drag-handle {
+    cursor: grab;
+}
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.sortable-ghost {
+    background-color: #0d6efd;
+    opacity: .2;
+}
+
+
+/* these don't work the way I would expect */
+.sortable-drag .drag-handle {
+    cursor: grabbing;
+}
+.sortable-drag {
+    cursor: grabbing;
+}

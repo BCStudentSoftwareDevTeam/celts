@@ -11,7 +11,9 @@ def main():
     print("Don't forget to put the correct Tracy password in app/config/local-override.yml")
 
     addToDb(getStudentData())
+    print("done.")
     addToDb(getFacultyStaffData())
+    print("done.")
 
 def getCursor():
     details = {
@@ -32,7 +34,7 @@ def addToDb(userList):
 
         except peewee.IntegrityError as e:
             if user['username']:
-                (User.update(firstName = user['firstName'], lastName = user['lastName'], email = user['email'])
+                (User.update(firstName = user['firstName'], lastName = user['lastName'], email = user['email'], major = user['major'], classLevel = user['classLevel'])
                      .where(user['bnumber'] == User.bnumber)).execute()
             else:
                 print(f"No username for {user['bnumber']}!", user)
@@ -44,17 +46,20 @@ def getFacultyStaffData():
     """
     This function pulls all the faculty and staff data from Tracy and formats for our table
     """
+    print("Retrieving Faculty data from Tracy...",end="")
     c = getCursor()
     return [
-          { "username": getUsernameFromEmail(row[4]),
-            "bnumber": row[1],
-            "email": row[4],
+          { "username": getUsernameFromEmail(row[4].strip()),
+            "bnumber": row[1].strip(),
+            "email": row[4].strip(),
             "phoneNumber": None, 
-            "firstName": row[2],
-            "lastName": row[3],
+            "firstName": row[2].strip(),
+            "lastName": row[3].strip(),
             "isStudent": False,
             "isFaculty": True,
             "isStaff": False,
+            "major": None,
+            "classLevel": None,
           }
         for row in c.execute('select * from STUSTAFF')
     ]
@@ -63,15 +68,18 @@ def getStudentData():
     """
     This function pulls all the student data from Tracy and formats for our table
     """
+    print("Retrieving Student data from Tracy...",end="")
     c = getCursor()
     return [
-          { "username": getUsernameFromEmail(row[9]),
-            "bnumber": row[1],
-            "email": row[9],
+          { "username": getUsernameFromEmail(row[9].strip()),
+            "bnumber": row[1].strip(),
+            "email": row[9].strip(),
             "phoneNumber": None, 
-            "firstName": row[2],
-            "lastName": row[3],
+            "firstName": row[2].strip(),
+            "lastName": row[3].strip(),
             "isStudent": True,
+            "major": row[6].strip(),
+            "classLevel": row[4].strip()
           }
         for row in c.execute('select * from STUDATA')
     ]

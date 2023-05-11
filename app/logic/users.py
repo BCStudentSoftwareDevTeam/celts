@@ -1,12 +1,17 @@
+from app.models.user import User
+from app.models.event import Event
 from app.models.programBan import ProgramBan
 from app.models.interest import Interest
 from app.models.note import Note
+from app.models.user import User
+from app.models.profileNote import ProfileNote
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.backgroundCheckType import BackgroundCheckType
 from app.logic.volunteers import addUserBackgroundCheck
 import datetime
 from peewee import JOIN
 from dateutil import parser
+from flask import g
 
 
 def isEligibleForProgram(program, user):
@@ -19,9 +24,8 @@ def isEligibleForProgram(program, user):
     :return: True if the user is not banned and meets the requirements, and False otherwise
     """
     now = datetime.datetime.now()
-    if (ProgramBan.select().where(ProgramBan.user == user, ProgramBan.program == program, ProgramBan.endDate > now).exists()):
+    if (ProgramBan.select().where(ProgramBan.user == user, ProgramBan.program == program, ProgramBan.endDate > now, ProgramBan.unbanNote == None).exists()):
         return False
-
     return True
 
 def addUserInterest(program_id, username):
@@ -47,6 +51,19 @@ def removeUserInterest(program_id, username):
         interestToDelete.delete_instance()
     return True
 
+def getBannedUsers(program):
+    """
+    This function returns users banned from a program.
+    """
+    return ProgramBan.select().where(ProgramBan.program == program, ProgramBan.unbanNote == None)
+
+def isBannedFromEvent(username, eventId):
+    """
+    This function returns whether the user is banned from the program associated with an event.
+    """
+    program = Event.get_by_id(eventId).singleProgram
+    user = User.get(User.username == username)
+    return not isEligibleForProgram(program, user)
 
 def banUser(program_id, username, note, banEndDate, creator):
     """
@@ -62,7 +79,8 @@ def banUser(program_id, username, note, banEndDate, creator):
     noteForDb = Note.create(createdBy = creator,
                              createdOn = datetime.datetime.now(),
                              noteContent = note,
-                             isPrivate = 0)
+                             isPrivate = 0,
+                             noteType = "ban")
 
     ProgramBan.create(program = program_id,
                       user = username,
@@ -82,7 +100,8 @@ def unbanUser(program_id, username, note, creator):
     noteForDb = Note.create(createdBy = creator,
                              createdOn = datetime.datetime.now(),
                              noteContent = note,
-                             isPrivate = 0)
+                             isPrivate = 0,
+                             noteType = "unban")
     ProgramBan.update(endDate = datetime.datetime.now(),
                       unbanNote = noteForDb).where(ProgramBan.program == program_id,
                                                    ProgramBan.user == username,
@@ -92,15 +111,36 @@ def getUserBGCheckHistory(username):
     """
     Get a users background check history
     """
-    bgHistory = {'CAN': [], 'FBI': [], 'SHS': []}
+    bgHistory = {'CAN': [], 'FBI': [], 'SHS': [], 'BSL': []}
 
     allBackgroundChecks = (BackgroundCheck.select(BackgroundCheck, BackgroundCheckType)
                                                   .join(BackgroundCheckType)
                                                   .where(BackgroundCheck.user == username)
-                                                  .group_by(BackgroundCheck.backgroundCheckStatus, BackgroundCheck.dateCompleted)
                                                   .order_by(BackgroundCheck.dateCompleted.desc()))
     for row in allBackgroundChecks:
-        bgHistory[row.type_id].append(row.backgroundCheckStatus + ": " + row.dateCompleted.strftime("%m/%d/%Y"))
-
+        bgHistory[row.type_id].append(row)
 
     return bgHistory
+
+def addProfileNote(visibility, bonner, noteTextbox, username):
+    noteForDb = Note.create(createdBy = g.current_user,
+                            createdOn = datetime.datetime.now(),
+                            noteContent = noteTextbox,
+                            noteType = "profile")
+    createProfileNote = ProfileNote.create(user = User.get(User.username == username),
+                                           note = noteForDb,
+                                           isBonnerNote = bonner,
+                                           viewTier = visibility)
+    return createProfileNote
+
+def deleteProfileNote(noteId):
+    return ProfileNote.delete().where(ProfileNote.id == noteId).execute()
+
+def updateDietInfo(username, dietContent):
+    """
+    Creates or update a user's diet information
+    """
+
+    User.update(dietRestriction = dietContent).where(User.username == username).execute()
+
+    return ""

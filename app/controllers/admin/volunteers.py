@@ -4,6 +4,7 @@ from peewee import DoesNotExist
 from playhouse.shortcuts import model_to_dict
 from app.controllers.admin import admin_bp
 from app.models.event import Event
+from app.models.program import Program
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
@@ -14,6 +15,7 @@ from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.programManager import ProgramManager
 from app.logic.adminLogs import createLog
+from app.logic.users import getBannedUsers, isBannedFromEvent
 
 
 
@@ -31,18 +33,24 @@ def trackVolunteersPage(eventID):
         print(f"No event found for {eventID}")
         abort(404)
 
-    program = event.singleProgram
-    trainedParticipantsList = trainedParticipants(program, g.current_term)
+    eventData = model_to_dict(event, recurse=False)
+    eventData["program"] = event.singleProgram
+    trainedParticipantsList = trainedParticipants(event.singleProgram, g.current_term)
     eventParticipants = getEventParticipants(event)
     isProgramManager = g.current_user.isProgramManagerForEvent(event)
-
+    bannedUsers = [row.user for row in getBannedUsers(event.singleProgram)]
     if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
         abort(403)
 
-    eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event))
+    eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
     eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
-    eventVolunteerData = (eventParticipantData + eventRsvpData)
-
+    participantsAndRsvp = (eventParticipantData + eventRsvpData)
+    eventVolunteerData = []
+    volunteerUser = []
+    for volunteer in participantsAndRsvp:
+        if volunteer.user not in volunteerUser:
+            eventVolunteerData.append(volunteer)
+            volunteerUser.append(volunteer.user)
     eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
     recurringEventID = event.recurringId # query Event Table to get recurringId using Event ID.
@@ -50,14 +58,15 @@ def trackVolunteersPage(eventID):
     recurringVolunteers = getPreviousRecurringEventData(recurringEventID)
 
     return render_template("/events/trackVolunteers.html",
+        eventData = eventData,
         eventVolunteerData = eventVolunteerData,
         eventParticipants = eventParticipants,
         eventLength = eventLengthInHours,
-        program = program,
         event = event,
         recurringEventID = recurringEventID,
         recurringEventStartDate = recurringEventStartDate,
         recurringVolunteers = recurringVolunteers,
+        bannedUsers = bannedUsers,
         trainedParticipantsList = trainedParticipantsList)
 
 @admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['POST'])
@@ -90,17 +99,22 @@ def addVolunteer(eventId):
     for user in usernameList:
         userObj = User.get_by_id(user)
         successfullyAddedVolunteer = addPersonToEvent(userObj, event)
-
-        if successfullyAddedVolunteer:
-            flash(f"{userObj.fullName} added successfully.", "success")
+        if successfullyAddedVolunteer == "already in":
+            flash(f"{userObj.fullName} already in table.", "warning")
         else:
-            flash(f"Error when adding {userObj.fullName} to event." ,"danger")
+            if successfullyAddedVolunteer:
+                flash(f"{userObj.fullName} added successfully.", "success")
+            else:
+                flash(f"Error when adding {userObj.fullName} to event." ,"danger")
 
     if 'ajax' in request.form and request.form['ajax']:
         return ''
 
     return redirect(url_for('admin.trackVolunteersPage', eventID = eventId))
 
+@admin_bp.route('/addVolunteersToEvent/<username>/<eventId>/isBanned', methods = ['GET'])
+def isVolunteerBanned(username, eventId):
+    return {"banned":1} if isBannedFromEvent(username, eventId) else {"banned":0}
 
 @admin_bp.route('/removeVolunteerFromEvent/<user>/<eventID>', methods = ['POST'])
 def removeVolunteerFromEvent(user, eventID):
@@ -109,25 +123,33 @@ def removeVolunteerFromEvent(user, eventID):
     flash("Volunteer successfully removed", "success")
     return ""
 
-@admin_bp.route('/updateBackgroundCheck', methods = ['POST'])
-def updateBackgroundCheck():
+@admin_bp.route('/addBackgroundCheck', methods = ['POST'])
+def addBackgroundCheck():
     if g.current_user.isCeltsAdmin:
         eventData = request.form
         user = eventData['user']
-        checkPassed = eventData['checkPassed']
+        bgStatus = eventData['bgStatus']
         type = eventData['bgType']
         dateCompleted = eventData['bgDate']
-        addUserBackgroundCheck(user, type, checkPassed, dateCompleted)
+        addUserBackgroundCheck(user, type, bgStatus, dateCompleted)
         return " "
+
+@admin_bp.route('/deleteBackgroundCheck', methods = ['POST'])
+def deleteBackgroundCheck():
+    if g.current_user.isCeltsAdmin:
+        eventData = request.form
+        bgToDelete = BackgroundCheck.get_by_id(eventData['bgID'])
+        BackgroundCheck.delete().where(BackgroundCheck.id == bgToDelete).execute()
+        return ""
 
 @admin_bp.route('/updateProgramManager', methods=["POST"])
 def updateProgramManager():
     if g.current_user.isCeltsAdmin:
         data =request.form
         username = User.get(User.username == data["user_name"])
-        event =Event.get_by_id(data['program_id'])
+        program = Program.get_by_id(data['program_id'])
         setProgramManager(data["user_name"], data["program_id"], data["action"])
-        createLog(f'{username.firstName} has been {data["action"]}ed as a Program Manager for {event.name}')
+        createLog(f'{username.firstName} has been {data["action"]}ed as a Program Manager for {program.programName}')
         return ""
     else:
         abort(403)

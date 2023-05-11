@@ -8,14 +8,26 @@
 }
 .flash_container{
     width: 80%;
-    margin: 0px 10% 0 10%;
+    margin: -50px 10% 0 10%;
     position: absolute;
     z-index: 10;
     opacity: .9;
     margin-top:-50px;
 }
-input.invalid {
+
+.toast-container{
+  top: 0;
+  z-index: 11;
+}
+
+.form-control.invalid,
+input.invalid,
+select.invalid {
   background-color: #ffdddd;
+}
+
+select.empty {
+    color: gray;
 }
 
 

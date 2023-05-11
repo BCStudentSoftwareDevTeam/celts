@@ -17,9 +17,15 @@
 {% block app_content %}
 
 <div class="text-center">
-    <h1 class="text-center">{{event.name}}</h1>
+  {% set page_title = eventData.name %}
+      <h1 id="title">{{page_title}}</h1>
+      {% if eventData.name != 'All Volunteer Training' and eventData.program == None %}
+        <h3>CELTS-Sponsored Event</h3>
+      {% elif eventData.program %}
+        <h3>{{eventData["program"].programName}} Event</h3>
+      {% endif %}
     {% if event.isPast %}
-      <div class="alert alert-danger" role="alert">This event is in the past.</div>
+      <div class="alert-danger mb-2 pb-2 pt-2" role="alert">This event is in the past.</div>
     {% endif %}
 </div>
 <div class="btn-group">
@@ -36,7 +42,7 @@
   </ul>
 </div>
 <label class='d-none' id="eventLength">{{eventLength}}</label>
-<input class="form-control" id="eventID" name="event" value="{{event}}" type='hidden' />
+<input class="form-control" id="event" name="event" value="{{event}}" type='hidden' />
 <div class="flex-container" style="padding: 5px;">
   <div class='form-group d-inline-flex'>
     <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add Volunteer</a>
@@ -55,28 +61,43 @@
   <table class="table" id="trackVolunteerstable">
     <thead>
       <tr>
+        {% if (not event.isPast) and (event.isRsvpRequired)  %}
+          <th>RSVP Time</th>
+        {% endif %}
         <th>Name</th>
         <th>Email</th>
         <th>Phone Number</th>
-        <th class="noSort">Completed Trainings?</th>
-    {% if event.isPast %}
-        <th class="noSort">Total Hours</th>
-        <th class="noSort">Attended</th>
-    {% endif %}
+        <th class="noSort">Completed Trainings</th>
+        {% if event.isPast %}
+          <th class="noSort">Total Hours</th>
+          <th class="noSort">Attended</th>
+        {% endif %}
         <th class="noSort">Remove Volunteer</th>
       </tr>
     </thead>
     <tbody class="align-middle" id="volunteerTable">
+    {% if eventVolunteerData %}
       {% for participant in eventVolunteerData %}
-          <tr>
+        <tr>
+          {% if (not event.isPast) and (event.isRsvpRequired)  %}
             <td>
-              <input
-                class="form-control"
-                type='hidden'
-                name="username{{loop.index|string}}"
-                id="{{participant.user.username}}"
-                value="{{participant.user}}" />
-                {{participant.user.firstName}} {{participant.user.lastName}}
+              {# This only works because we are assuming that all participants are RSVP entries #}
+              {{ participant.rsvpTime.strftime('%b %-d %-I:%M %p') }}
+            </td>
+          {% endif %}
+          <td>
+            <input
+              class="form-control"
+              type='hidden'
+              name="username{{loop.index|string}}"
+              id="{{participant.user.username}}"
+              value="{{participant.user}}" />
+              {{participant.user.firstName}} {{participant.user.lastName}}
+              {% if participant.user in bannedUsers %}
+                <a href="#" data-toggle="tooltip" data-placement="top" title="User is banned from this program.">
+                  <span class="bi bi-x-circle-fill text-danger"></span>
+                </a>
+              {% endif %}
             </td>
             <td>{{participant.user.email}}</td>
             <td>{{participant.user.phoneNumber}}</td>
@@ -88,33 +109,33 @@
               {% endif %}
             </td>
             {% if event.isPast %}
-            <td>
-              <input
-                class="form-control number-only form-control input-sm"
-                id="inputHours_{{participant.user.username}}"
-                name="inputHours_{{participant.user.username}}"
-                style="max-width: 90px;"
-                type ="number"
-                min="0"
-                step="0.01"
-                    {% if participant.user.username in eventParticipants and eventParticipants[participant.user.username] == None %}
+              <td>
+                <input
+                  class="form-control number-only form-control input-sm"
+                  id="inputHours_{{participant.user.username}}"
+                  name="inputHours_{{participant.user.username}}"
+                  style="max-width: 90px;"
+                  type ="number"
+                  min="0"
+                  step="0.01"
+                    {% if participant.user in eventParticipants and eventParticipants[participant.user.username] == None %}
                       value="{{eventLength}}"
-                    {% elif participant.user.username in eventParticipants %}
-                      value="{{eventParticipants[participant.user.username]}}"
+                    {% elif participant.user in eventParticipants %}
+                      value="{{participant.hoursEarned}}"
                     {% else %} disabled {% endif %}
                 />
-            </td>
-            <td style="text-align:center">
-              <input
-                type="checkbox"
-                class='attendanceCheck'
-                name="checkbox_{{participant.user.username}}"
-                {% if event.isPast %}
-                    {% if participant.user.username in eventParticipants %}
+              </td>
+              <td style="text-align:center">
+                <input
+                  type="checkbox"
+                  class='attendanceCheck'
+                  name="checkbox_{{participant.user.username}}"
+                  {% if event.isPast %}
+                    {% if participant.user in eventParticipants %}
                       checked
                     {% endif %}
-                {% endif %} />
-            </td>
+                  {% endif %} />
+              </td>
             {% endif %} {# end hiding the hours and attended inputs #}
             <td style="text-align:center">
               <button
@@ -122,11 +143,12 @@
                 class="removeVolunteer btn btn-danger btn-sm"
                 id="{{participant.user.username}}"
                 aria-label="remove volunteer">
-                  <i class="bi bi-trash h5 align-middle"></i>
+                  <span class="bi bi-trash h5 align-middle"></span>
               </button>
             </td>
           </tr>
-      {% endfor %}
+        {% endfor %}
+      {% endif %}
      </tbody>
     </table>
   <div>
@@ -156,7 +178,7 @@
         </ul>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
         <button id="selectVolunteerButton" type="button" class="btn btn-primary" disabled>Add participant</button>
       </div>
     </div>

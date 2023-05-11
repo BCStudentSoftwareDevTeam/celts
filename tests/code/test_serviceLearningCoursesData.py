@@ -49,53 +49,59 @@ def test_getServiceLearningCoursesData():
 def test_withdrawProposal():
     '''creates a test course with all foreign key fields. tests if they can
     be deleted'''
-    if 99 in Course.select(Course.id):
-        withdrawProposal(99)
-    course = Course.create(
+
+    with mainDB.atomic() as transaction:
+
+        if 99 in Course.select(Course.id):
+            withdrawProposal(99)
+        course = Course.create(
+                id= 99,
+                courseName= "Test",
+                term=2,
+                status= 1,
+                courseCredit= "",
+                createdBy= "ramsayb2",
+                isAllSectionsServiceLearning= True,
+                isPermanentlyDesignated= False,
+                )
+        question = CourseQuestion.create(
+            id = 99,
+            course=99,
+            questionContent="Why must I create so much for just one test?",
+            questionNumber=1
+        )
+        note = Note.create(
+            id = 99,
+            createdBy = "neillz",
+            createdOn = "2021-10-12 00:00:00",
+            noteContent = "This is a test note.",
+            isPrivate = False,
+            noteType = "question"
+        )
+        qnote = QuestionNote.create(
+        id = 99,
+        question = 99,
+        note = 99
+        )
+        instructor = CourseInstructor.create(
             id= 99,
-            courseName= "Test",
-            term=2,
-            status= 1,
-            courseCredit= "",
-            createdBy= "ramsayb2",
-            isAllSectionsServiceLearning= True,
-            isPermanentlyDesignated= False,
-            )
-    question = CourseQuestion.create(
-        id = 99,
-        course=99,
-        questionContent="Why must I create so much for just one test?",
-        questionNumber=1
-    )
-    note = Note.create(
-        id = 99,
-        createdBy = "neillz",
-        createdOn = "2021-10-12 00:00:00",
-        noteContent = "This is a test note.",
-        isPrivate = False
-    )
-    qnote = QuestionNote.create(
-    id = 99,
-    question = 99,
-    note = 99
-    )
-    instructor = CourseInstructor.create(
-        id= 99,
-        course= 99,
-        user= "ramsayb2"
-    )
-    participant = CourseParticipant.create(
-        course= 99,
-        user= "neillz",
-        hoursEarned= 2.0
-    )
+            course= 99,
+            user= "ramsayb2"
+        )
+        participant = CourseParticipant.create(
+            course= 99,
+            user= "neillz",
+            hoursEarned= 2.0
+        )
 
-    with app.test_request_context():
-        g.current_user = "ramsayb2"
-        withdrawProposal(99)
+        with app.test_request_context():
+            g.current_user = "ramsayb2"
+            withdrawProposal(99)
 
-    with pytest.raises(DoesNotExist):
-        Course.get_by_id(99)
+        with pytest.raises(DoesNotExist):
+            Course.get_by_id(99)
+
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_renewProposal():
@@ -120,7 +126,7 @@ def test_renewProposal():
             course= 100,
             user= "ramsayb2"
         )
-        
+
         renewProposal(course.id, 4)
 
         # test and make sure a new course with a different id was created
