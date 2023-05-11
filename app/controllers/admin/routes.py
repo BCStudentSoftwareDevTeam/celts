@@ -22,6 +22,7 @@ from app.models.adminLogs import AdminLogs
 from app.models.eventFile import EventFile
 from app.models.bonnerCohort import BonnerCohort
 from app.models.certification import Certification
+from app.models.user import User
 from app.models.eventViews import EventView
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
