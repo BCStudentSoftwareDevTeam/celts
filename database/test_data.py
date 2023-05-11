@@ -61,8 +61,8 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": True,
         "isCeltsStudentStaff": False,
-        "major": None,
-        "classLevel": None,
+        "major": "Computer Science",
+        "classLevel": "Senior",
     },
     {
         "username": "neillz",
@@ -75,8 +75,8 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": True,
-        "major": None,
-        "classLevel": None,
+        "major": "Psychology",
+        "classLevel": "Sophomore",
     },
 
     {
@@ -104,8 +104,8 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
-        "major": None,
-        "classLevel": None,
+        "major": "Chemistry",
+        "classLevel": "Junior",
 
     },
     {
@@ -130,8 +130,8 @@ users = [
         "firstName": "Alex",
         "lastName": "Bryant",
         "isStudent": True,
-        "major": None,
-        "classLevel": None,
+        "major": "Biology",
+        "classLevel": "Senior",
     },
     {
         "username": "partont",
@@ -141,8 +141,8 @@ users = [
         "lastName": "Parton",
         "isStudent": True,
         "phoneNumber": "(859)433-1559",
-        "major": None,
-        "classLevel": None,
+        "major": "Computer Science",
+        "classLevel": "Senior",
     },
     {
         "username": "mupotsal",
