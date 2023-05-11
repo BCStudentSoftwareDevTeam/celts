@@ -10,6 +10,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     strategy:
       matrix:
         python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
@@ -28,14 +30,28 @@ jobs:
       with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
-    - run: |
-        sudo /etc/init.d/mysql start
+    - run: sudo /etc/init.d/mysql start
     - name: Install dependencies
-      run: |
-        source setup.sh
+      run: source setup.sh
     - name: Activate environment and reset database
-      run: |
-        . venv/bin/activate && database/reset_database.sh test
+      run: . venv/bin/activate && database/reset_database.sh test
     - name: Run tests
-      run: |
-       . venv/bin/activate && ./tests/run_tests.sh
+      run: . venv/bin/activate && ./tests/run_tests.sh && coverage html --omit=tests/*
+    - name: Deploy code coverage report
+      if: matrix.python-version == '3.11' # only run deploy one time
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        deploy_key: ${{ secrets.COVERAGE_DEPLOY_KEY }}
+        external_repository: BCStudentSoftwareDevTeam/coverage
+        publish_branch: main
+        publish_dir: ./htmlcov
+        destination_dir: ${{ github.repository }}/${{ github.head_ref }}
+        exclude_assets: ".gitignore"  # without exclude_assets, htmlcov/ was being removed and not pushed to the coverage repo
+    - name: Coverage report URL 
+      run: echo '[View Code Coverage](https://bcstudentsoftwaredevteam.github.io/coverage/${{ github.repository }}/${{ github.head_ref }}/?)' >> $GITHUB_STEP_SUMMARY
+    - name: Put coverage link on PR
+      if: matrix.python-version == '3.11' # only make a link when we deploy
+      uses: mshick/add-pr-comment@v2
+      with:
+        refresh-message-position: True
+        message: "[View Code Coverage](https://bcstudentsoftwaredevteam.github.io/coverage/${{ github.repository }}/${{ github.head_ref }}/?)"
