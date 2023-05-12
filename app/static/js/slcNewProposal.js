@@ -132,10 +132,14 @@ $(document).ready(function(e) {
       }
     });
 
-      $("#saveExit").on("click", function() {
-        saveCourseData("/serviceLearning/saveExit", function() {
-          window.location.replace("/serviceLearning/courseManagement");
-      });
+    $("#saveExit").on("click", function() {
+      saveCourseData("/serviceLearning/saveExit", function() {
+        window.location.replace("/serviceLearning/courseManagement");
+    });
+    })
+
+    $("#exitButton").on("click", function() {
+      window.location.replace("/serviceLearning/courseManagement")
     })
 
     if(!readOnly()) {
@@ -237,6 +241,7 @@ function showTab(currentTab) {
         $("#nextButton").show();
         $("#saveContinue").hide();
         $("#saveExit").hide()
+        $("#exitButton").hide()
         break;
     case 1: // Second page
         $("#cancelButton").hide();
@@ -246,12 +251,13 @@ function showTab(currentTab) {
         $("#saveContinue").show();
         $("#saveContinue").text("Next");
         $("#saveExit").show()
+        $("#exitButton").hide()
         if(readOnly()) {
             $("#nextButton").show();
             $("#saveContinue").hide();
             $("#saveExit").hide()
             $(".removeAttachment").hide()
-
+            $("#exitButton").hide()
         }
         break;
     case 2: // Third page
@@ -262,13 +268,13 @@ function showTab(currentTab) {
         $("#nextButton").show();
         $("#saveContinue").text("Save and Exit");
         $("#saveExit").hide()
+        $("#exitButton").hide()
         if(readOnly()) {
             $("#nextButton").text("Next");
             $("#nextButton").hide();
-            $("#saveContinue").show()
-            $("#saveContinue").text("Exit");
             $("#submitAndApproveButton").hide();
-        }
+            $("#exitButton").show()
+          }
         break;
     }
 

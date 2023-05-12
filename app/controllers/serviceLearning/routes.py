@@ -97,7 +97,7 @@ def slcSaveContinue():
     else:
         course.status = CourseStatus.IN_PROGRESS
         course.save()
-        flash("Error saving ")
+        flash(f"{course.courseName} has been saved.", "success")
     return ""
 
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
