@@ -5,6 +5,12 @@ $(document).ready(function(){
     $("#rsvpBtn").click(function(){
         rsvpForEvent($("#rsvpBtn").val())
     })
+    $("#viewWaitlistBtn").click(function(){
+      rsvpForEvent($("#viewWaitlistBtn").val())
+    })
+    $("#listWaitlistBtn").click(function(){
+      rsvpForEvent($("#listWaitlistBtn").val())
+    })
 })
 
 function rsvpForEvent(eventID){

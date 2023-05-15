@@ -99,7 +99,11 @@
               {% if event.id in rsvpedEventsID %}
                 <button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button>
               {% elif (not event.isPast) and (event.isRsvpRequired) %}
-                <button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button>
+                  {% if (event.rsvpLimit) and (currentEventRsvpAmount[event.id] >= event.rsvpLimit) %}
+                    <button type="button" class="btn btn-primary" id="listWaitlistBtn">Join Waitlist</button>
+                  {% else %}
+                    <button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button>
+                  {% endif %}
               {% endif %}
               </td>
             {% endif %}
@@ -169,7 +173,11 @@
                           {% if event.id in rsvpedEventsID %}
                             <button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button>
                           {% elif (not event.isPast) and (event.isRsvpRequired) %}
-                            <button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button>
+                            {% if (event.rsvpLimit) and (currentEventRsvpAmount[event.id] >= event.rsvpLimit) %}
+                              <button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})" disabled>RSVP</button>
+                            {% else %}
+                              <button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button>
+                            {% endif %}
                           {% endif %}
                         {% endif %}
                          </td>

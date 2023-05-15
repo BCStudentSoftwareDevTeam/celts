@@ -101,6 +101,12 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
     Returns:
     Created events and an error message.
     """
+
+    # Manually set the value of RSVP Limit if it is and empty string since it is
+    # automatically changed from "" to 0
+    if eventData["rsvpLimit"] == "":
+        eventData["rsvpLimit"] = None
+
     newEventData = preprocessEventData(eventData)
     addfile= FileHandler(attachmentFiles)
     isValid, validationErrorMessage = validateNewEventData(newEventData)
@@ -151,6 +157,7 @@ def saveEventToDb(newEventData):
                     "isService": newEventData['isService'],
                     "startDate": eventInstance['date'],
                     "isAllVolunteerTraining": newEventData['isAllVolunteerTraining'],
+                    "rsvpLimit": newEventData['rsvpLimit'],
                     "endDate": eventInstance['date'],
                     "contactEmail": newEventData['contactEmail'],
                     "contactName": newEventData['contactName']
@@ -265,7 +272,7 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now(), program=None):
 
     if program:
         events = events.where(ProgramEvent.program == program)
-    
+
     events = events.order_by(Event.startDate, Event.name)
 
     events_list = []
@@ -391,7 +398,7 @@ def preprocessEventData(eventData):
         Ensures that the event data dictionary is consistent before it reaches the template or event logic.
 
         - dates should exist and be date objects if there is a value
-        - checkbaxes should be True or False
+        - checkboxes should be True or False
         - if term is given, convert it to a model object
         - times should exist be strings in 24 hour format example: 14:40
         - Look up matching certification requirement if necessary
@@ -455,3 +462,18 @@ def addEventView(viewer,event):
     """This checks if the current user already viewed the event. If not, insert a recored to EventView table"""
     if not viewer.isCeltsAdmin:
          EventView.get_or_create(user = viewer, event = event)   
+
+def getCurrentRsvpAmount(term):
+    """
+        Get all of the RSVPs for the events that exist in the term.
+        Returns a dictionary with the event id as the key and the amount of
+        current RSVPs to that event as the pair.
+    """
+    amount = (Event.select(Event, fn.COUNT(EventRsvp.event_id).alias('count'))
+                  .join(EventRsvp, JOIN.LEFT_OUTER)
+                  .where(Event.term == term)
+                  .group_by(Event.id))
+
+    amountAsDict = {event.id: event.count for event in amount}
+
+    return amountAsDict

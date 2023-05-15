@@ -80,6 +80,10 @@ def addPersonToEvent(user, event):
                 EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
         else:
             if not rsvpExists:
+                # if rsvp limit 
+                #   if limit is reached 
+                        # add to waitlist
+                # else 
                 EventRsvp.create(user = user, event = event)
         if volunteerExists or rsvpExists:
             return "already in"
