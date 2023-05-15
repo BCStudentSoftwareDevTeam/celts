@@ -7,7 +7,7 @@ class EventRsvp(baseModel):
     user = ForeignKeyField(User)
     event = ForeignKeyField(Event, backref="rsvps")
     rsvpTime = DateTimeField(default=datetime.now)
-    unRsvpTime = DateTimeField(null=True)
+    rsvpWaitlist = BooleanField(default=False)
 
 
     class Meta:
