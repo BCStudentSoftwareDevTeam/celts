@@ -230,6 +230,7 @@ def eventDisplay(eventId):
                 eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
 
         currentEventRsvpAmount = getCurrentRsvpAmount(g.current_term)
+
         UserParticipatedTrainingEvents = getUserParticipatedTrainingEvents(eventData['program'], g.current_user, g.current_term)
         return render_template("eventView.html",
                                 eventData = eventData,

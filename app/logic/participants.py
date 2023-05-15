@@ -9,6 +9,7 @@ from app.models.programEvent import ProgramEvent
 from app.models.eventParticipant import EventParticipant
 from app.logic.users import isEligibleForProgram
 from app.logic.volunteers import getEventLengthInHours
+from app.logic.events import getCurrentRsvpAmount
 
 def trainedParticipants(programID, currentTerm):
     """
@@ -80,11 +81,8 @@ def addPersonToEvent(user, event):
                 EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
         else:
             if not rsvpExists:
-                # if rsvp limit 
-                #   if limit is reached 
-                        # add to waitlist
-                # else 
-                EventRsvp.create(user = user, event = event)
+                currentRsvp = getCurrentRsvpAmount(event.term)
+                EventRsvp.create(user = user, event = event, rsvpWaitlist = (currentRsvp[event.id] >= event.rsvpLimit))
         if volunteerExists or rsvpExists:
             return "already in"
     except Exception as e:
@@ -147,3 +145,6 @@ def getUserParticipatedTrainingEvents(program, user, currentTerm):
             didParticipate = False
         UserParticipatedTrainingEvents[training.name] = didParticipate
     return UserParticipatedTrainingEvents
+
+def addPersonToWaitlist(user , eventID):
+    EventRsvp.create(user = user, event = eventID, rsvpWaitlist = True)

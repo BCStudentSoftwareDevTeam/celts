@@ -52,7 +52,7 @@
                     {% endif %}
                     {% if eventData.isRsvpRequired and eventData.rsvpLimit %}
                       {% if currentEventRsvpAmount[eventData.id] >= eventData.rsvpLimit %}
-                        <p>Sorry, there are currently no more spots available for this event.</p>
+                        <p>Sorry, there are currently no more spots available for this event. Feel free to add yorself to the waitlist if you would still like a possibliy</p>
                       {% elif eventData.rsvpLimit - currentEventRsvpAmount[eventData.id] == 1 %}
                         <p>This event requires RSVP. There is {{eventData.rsvpLimit - currentEventRsvpAmount[eventData.id]}} open spot remaining out of {{eventData.rsvpLimit}}.</p>
                       {% else %}
@@ -123,23 +123,20 @@
             </div>
             {% endif %}
             <div class="rsvp-btn text-center">
-              {% if (not isPastEvent) and (not isNewEvent)%}
-                  {% if userHasRSVPed %}
-                    <button type="submit" class="btn btn-danger" value="{{eventData.id}}" id="removeRsvpBtn">Remove RSVP</button>
-                  {% elif eventData.isRsvpRequired %}
-                    {% if (eventData.rsvpLimit) and (currentEventRsvpAmount[eventData.id] >= eventData.rsvpLimit) %}
-                      <button type="submit" class="btn btn-primary" value="{{eventData.id}}" id="viewWatilistBtn">Join Waitlist</button>
-                    {% else %}
-                      <button type="submit" class="btn btn-primary" value="{{eventData.id}}" id="rsvpBtn">RSVP</button>
+                {% if (not isPastEvent) and (not isNewEvent)%}
+                    {% if userHasRSVPed %}
+                        <button type="submit" class="btn btn-danger" value="{{eventData.id}}" id="removeRsvpBtn">Remove RSVP</button>
+                    {% elif eventData.isRsvpRequired %}
+                        {% set buttonName = "Join Waitlist" if (eventData.rsvpLimit) and (currentEventRsvpAmount[eventData.id] >= eventData.rsvpLimit) else "RSVP" %}
+                        <button type="submit" class="btn btn-primary" value="{{eventData.id}}" id="rsvpBtn">{{buttonName}}</button>
                     {% endif %}
-                 {% endif %}
-              {% endif %}
-              {% if g.current_user.isCeltsAdmin or isProgramManager %}
-            <div class="d-flex align-items-center">
-                <i class="bi bi-eye-fill me-2"></i>
-                <span class="me-2">Unique Viewers:</span>
-                <span id="viewCount">{{pageViewsCount}}</span>
-            </div>
-          {% endif %}
+                {% endif %}
+                {% if g.current_user.isCeltsAdmin or isProgramManager %}
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-eye-fill me-2"></i>
+                        <span class="me-2">Unique Viewers:</span>
+                        <span id="viewCount">{{pageViewsCount}}</span>
+                    </div>
+                {% endif %}
             </div>
 {% endblock %}
