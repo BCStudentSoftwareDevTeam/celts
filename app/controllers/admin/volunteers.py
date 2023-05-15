@@ -30,7 +30,7 @@ def trackVolunteersPage(eventID):
     try:
         event = Event.get_by_id(eventID)
     except DoesNotExist as e:
-        print(f"No event found for {eventID}")
+        print(f"No event found for {eventID}", e)
         abort(404)
 
     eventData = model_to_dict(event, recurse=False)
@@ -74,7 +74,7 @@ def updateVolunteerTable(eventID):
     try:
         event = Event.get_by_id(eventID)
     except DoesNotExist as e:
-        print(f"No event found for {eventID}")
+        print(f"No event found for {eventID}", e)
         abort(404)
 
     program = event.singleProgram
