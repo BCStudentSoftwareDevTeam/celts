@@ -33,7 +33,6 @@ def trackVolunteersPage(eventID):
     except DoesNotExist as e:
         print(f"No event found for {eventID}", e)
         abort(404)
-    print("BBBBBBBBBBBBBBBBBBB", getCurrentRsvpAmount(g.current_term))
     eventData = model_to_dict(event, recurse=False)
     eventData["program"] = event.singleProgram
     trainedParticipantsList = trainedParticipants(event.singleProgram, g.current_term)
