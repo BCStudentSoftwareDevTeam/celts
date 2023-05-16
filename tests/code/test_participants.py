@@ -86,7 +86,9 @@ def test_addPersonToEvent():
         yesterday = datetime.today() - timedelta(days=1)
         newEvent = Event.create(name = "Test event 1234", term = 2,
                                 startDate=yesterday.date(),
-                                endDate=yesterday.date())
+                                endDate=yesterday.date(),
+                                isRsvpRequired = True)
+        
         newEvent = Event.get(name="Test event 1234")
 
         user = User.get_by_id("ramsayb2")
@@ -99,7 +101,9 @@ def test_addPersonToEvent():
         tomorrow = datetime.today() + timedelta(days=1)
         newEvent = Event.create(name = "Test event 1234", term = 2,
                                 startDate=tomorrow.date(),
-                                endDate=tomorrow.date())
+                                endDate=tomorrow.date(),
+                                isRsvpRequired = True)
+        
         newEvent = Event.get(name="Test event 1234")
 
         userAdded = addPersonToEvent(user, newEvent)

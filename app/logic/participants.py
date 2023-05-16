@@ -82,7 +82,9 @@ def addPersonToEvent(user, event):
         else:
             if not rsvpExists:
                 currentRsvp = getCurrentRsvpAmount(event.term)
-                EventRsvp.create(user = user, event = event, rsvpWaitlist = (currentRsvp[event.id] >= event.rsvpLimit))
+                waitlist = currentRsvp[event.id] >= event.rsvpLimit if event.rsvpLimit is not None else 0
+                EventRsvp.create(user = user, event = event, rsvpWaitlist = waitlist)
+
         if volunteerExists or rsvpExists:
             return "already in"
     except Exception as e:
@@ -145,6 +147,3 @@ def getUserParticipatedTrainingEvents(program, user, currentTerm):
             didParticipate = False
         UserParticipatedTrainingEvents[training.name] = didParticipate
     return UserParticipatedTrainingEvents
-
-def addPersonToWaitlist(user , eventID):
-    EventRsvp.create(user = user, event = eventID, rsvpWaitlist = True)
