@@ -38,7 +38,7 @@ jobs:
     - name: Run tests
       run: . venv/bin/activate && ./tests/run_tests.sh && coverage html --omit=tests/*
     - name: Deploy code coverage report
-      if: github.event_name != 'pull_request' && matrix.python-version == '3.11' # only run deploy one time
+      if: github.event_name == 'pull_request' && matrix.python-version == '3.11' # only run deploy one time
       uses: peaceiris/actions-gh-pages@v3
       with:
         deploy_key: ${{ secrets.COVERAGE_DEPLOY_KEY }}
