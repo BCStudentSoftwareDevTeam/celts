@@ -5,7 +5,7 @@
   {{super()}}
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
   <script type="module" src="/static/js/manageServiceLearningFaculty.js"></script>
-  <script src="/static/js/courseManagement.js"></script>
+  <script src="/static/js/slcManagement.js"></script>
 {% endblock %}
 
 {% block styles %}
@@ -58,13 +58,16 @@
               <tr>
                 <td>{{course.courseName}}</td>
                 <td>{{ course.instructors }}</td>
-                <td>{{course.status.status}}</td>
                 <td>
-                  <select class="form-select courseData" id="{{course.id}}" onchange='executeCourseAction(this)'>
+                  <a class="status-key text-dark" id="statusKey" href="javascript:void(0);" data-toggle="popover" title="Status" data-content="{{course.status.status}}">{{course.status.status}}</a>
+                </td>
+                <td>
+                  <select class="form-select courseData" id="{{course.id}}" onchange='changeAction(this)'>
                     <option value="---" disabled selected>Select Action</option>
                     <option value="Review">Review</option>
                     <option value="View">View</option>
                     <option value="Edit">Edit</option>
+                    <option value="Print">Print</option>
                 </td>
               </tr>
               {% endfor %}
@@ -90,12 +93,15 @@
               <tr>
                 <td>{{course.courseName}}</td>
                 <td>{{ course.instructors }}</td>
-                <td>{{course.status.status}}</td>
                 <td>
-                  <select class="form-select" id="{{course.id}}" onchange='executeCourseAction(this)'>
+                  <a class="status-key text-dark" id="statusKey" href="javascript:void(0);" data-toggle="popover" title="Status Key" data-content="{{course.status.status}}">{{course.status.status}}</a>
+                </td>
+                <td>
+                  <select class="form-select" id="{{course.id}}" onchange='changeAction(this)'>
                     <option value="---" disabled selected>Select Action</option>
                     <option value="Review">Review</option>
                     <option value="View">View</option>
+                    <option value="Print">Print</option>
                 </td>
               </tr>
               {% endfor %}
@@ -107,7 +113,7 @@
       <div class="col">
         <div class="float-end">
           <form method="GET" action="/serviceLearning/downloadApprovedCourses/{{term.id}}">
-            <button class="btn btn-primary {{downloadAndSend}}" id="downloadApprovedCoursesBtn" value="{{term.id}}">Download File</button>
+            <button class="btn btn-primary {{downloadAndSend}}" id="downloadApprovedCoursesBtn" value="{{term.id}}">Download Course List</button>
           </form>
         </div>
           <div class="float-end">

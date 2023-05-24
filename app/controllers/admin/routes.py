@@ -4,22 +4,14 @@ from peewee import DoesNotExist, fn, IntegrityError
 from playhouse.shortcuts import model_to_dict, dict_to_model
 import json
 from datetime import datetime, date
-from dateutil import parser
 
 from app import app
 from app.models.program import Program
-from app.models.programManager import ProgramManager
 from app.models.event import Event
-from app.models.eventParticipant import EventParticipant
-from app.models.eventRsvp import EventRsvp
 from app.models.user import User
-from app.models.term import Term
 from app.models.eventTemplate import EventTemplate
-from app.models.outsideParticipant import OutsideParticipant
-from app.models.eventParticipant import EventParticipant
-from app.models.programEvent import ProgramEvent
 from app.models.adminLogs import AdminLogs
-from app.models.eventFile import EventFile
+from app.models.attachmentUpload import AttachmentUpload
 from app.models.bonnerCohort import BonnerCohort
 from app.models.certification import Certification
 from app.models.user import User
@@ -35,8 +27,6 @@ from app.logic.participants import getEventParticipants, getUserParticipatedTrai
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
-from app.controllers.admin.volunteers import getVolunteers
-from app.controllers.admin.userManagement import manageUsers
 
 
 @admin_bp.route('/switch_user', methods=['POST'])
@@ -166,7 +156,7 @@ def eventDisplay(eventId):
         abort(403)
 
     eventData = model_to_dict(event, recurse=False)
-    associatedAttachments = EventFile.select().where(EventFile.event == event)
+    associatedAttachments = AttachmentUpload.select().where(AttachmentUpload.event == event)
 
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
@@ -195,7 +185,7 @@ def eventDisplay(eventId):
     futureTerms = selectSurroundingTerms(g.current_term)
     userHasRSVPed = checkUserRsvp(g.current_user, event)
     isPastEvent = event.isPast
-    filepaths =FileHandler().retrievePath(associatedAttachments, event.id)
+    filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)
     isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
 
     requirements, bonnerCohorts = [], []
@@ -308,11 +298,11 @@ def adminLogs():
     else:
         abort(403)
 
-@admin_bp.route("/deleteFile", methods=["POST"])
-def deleteFile():
+@admin_bp.route("/deleteEventFile", methods=["POST"])
+def deleteEventFile():
     fileData= request.form
-    eventfile=FileHandler()
-    eventfile.deleteEventFile(fileData["fileId"],fileData["eventId"])
+    eventfile=FileHandler(eventId=fileData["eventId"])
+    eventfile.deleteFile(fileData["fileId"])
     return ""
 
 @admin_bp.route("/manageBonner")

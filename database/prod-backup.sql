@@ -224,13 +224,16 @@ CREATE TABLE `course` (
   `courseName` varchar(255) NOT NULL,
   `courseAbbreviation` varchar(255) NOT NULL,
   `courseCredit` float NOT NULL,
-  `courseOccurrence` varchar(255) DEFAULT NULL,
+  `isRegularlyOccurring` tinyint(1) NOT NULL,
+  'isPreviouslyApproved' tinyint(1) NOT NULL,
   `term_id` int DEFAULT NULL,
   `status_id` int NOT NULL,
   `createdBy_id` varchar(255) NOT NULL,
   `isAllSectionsServiceLearning` tinyint(1) NOT NULL,
+  `serviceLearningDesignatedSections` varchar(255) NOT NULL,
+  `previouslyApprovedDescription` varchar(255) NOT NULL,
   `isPermanentlyDesignated` tinyint(1) NOT NULL,
-  `serviceLearningDesignatedSections` text NOT NULL,
+  `hasSlcComponent` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `course_term_id` (`term_id`),
   KEY `course_status_id` (`status_id`),
@@ -474,12 +477,15 @@ DROP TABLE IF EXISTS `eventfile`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `eventfile` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `event_id` int NOT NULL,
+  `event_id` int,
+  `course_id` int,
   `fileName` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `eventfile_event_id` (`event_id`),
-  CONSTRAINT `eventfile_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `event` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `eventfile_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `event` (`id`),
+  CONSTRAINT `eventfile_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`)
+
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
