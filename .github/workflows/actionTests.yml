@@ -3,9 +3,13 @@ name: Celts CI
 on:
   workflow_dispatch:
   push:
-    branches: [ development ]
+    branches: 
+      - development 
+      - production
   pull_request:
-    branches: [ development ]
+    branches: 
+      - development 
+      - production
 
 jobs:
   build:
