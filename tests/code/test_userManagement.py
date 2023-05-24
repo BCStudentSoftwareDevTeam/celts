@@ -123,9 +123,9 @@ def test_getAllowedPrograms():
         assert allowedPrograms == totalPrograms
 
         # creates program manager and checks the programs they can access
-        User.create(username = "bledsoef",
+        User.create(username = "bledsoefd",
                     bnumber = "B00775205",
-                    email = "bledsoef@berea.edu",
+                    email = "bledsoefd@berea.edu",
                     phoneNumber = "(859)876-5309",
                     firstName = "Fips",
                     lastName = "Bledsoe",
@@ -135,14 +135,14 @@ def test_getAllowedPrograms():
                     isCeltsAdmin = False,
                     isCeltsStudentStaff = True)
 
-        ProgramManager.create(user = "bledsoef",
+        ProgramManager.create(user = "bledsoefd",
                               program = Program.get_by_id(3))
-        ProgramManager.create(user = "bledsoef",
+        ProgramManager.create(user = "bledsoefd",
                               program = Program.get_by_id(6))
-        ProgramManager.create(user = "bledsoef",
+        ProgramManager.create(user = "bledsoefd",
                               program = Program.get_by_id(5))
 
-        allowedPrograms = len(getAllowedPrograms(User.get_by_id("bledsoef")))
+        allowedPrograms = len(getAllowedPrograms(User.get_by_id("bledsoefd")))
         assert allowedPrograms == 3
 
         # checks to make sure users can't access any programs

@@ -4,11 +4,14 @@
   {{super()}}
   <script type="module" src="{{url_for('static', filename ='js/slcNewProposal.js') }}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.0/js/fileinput.min.js"></script>
+
 {% endblock %}
 
 {% block styles %}
   {{super()}}
   <link rel="stylesheet" href="{{url_for('static', filename ='css/slcNewProposal.css')}}">
+  <link href="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.0/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
 {% endblock %}
 
 {% block app_content %}
@@ -24,7 +27,7 @@
   </div>
   <div class="row align-items-end pt-5 pb-5">
     <div class="col">
-      <button class="btn btn-primary" type="button" id="previousButton">Previous</button>
+      <button class="btn btn-secondary" type="button" id="previousButton">Previous</button>
       <button class="btn btn-danger" value="{{ redirectTarget }}" type="button" id="cancelButton">Cancel</button>
     </div>
     <div class="col stepsIndicator">
@@ -33,12 +36,64 @@
       <span class="step"></span>
     </div>
     <div class="col" align="right">
-      <button class="btn btn-primary" type="button" id="saveContinue">Save and Continue</button>
+      <button class="btn btn-primary" type="button" id="saveExit">Save and Exit</button>
+      <button class="btn btn-primary" type="button" id="saveContinue">Next</button>
       <button class="btn btn-primary" type="button" id="nextButton">Next</button>
+      <button class="btn btn-primary" type="button" id="exitButton">Exit</button>
       {% if g.current_user.isCeltsAdmin %}
         <button class="btn btn-success" type="button" id="submitAndApproveButton">Submit and Approve</button>
       {% endif %}
     </div>
   </div>
 </form>
+
+<!--modal-->
+<div class="modal" id="syllabusUploadModal" tabindex="-1">
+  <form enctype="multipart/form-data" id="syllabusUploadForm" action="/uploadCourseFile" data-toggle="validator" role="form" method="POST">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Upload Syllabus</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group mb-5">
+            <input class="form-input" value={{course.id}} name="courseID" hidden/>
+            <div class="file-upload-wrapper">
+              <label class="form-label mb-2" for='attachmentObject'><strong>Add Files</strong></label>
+              <input type="file" id="attachmentObject" name="attachmentObject" multiple accept= ".png, .jpg, .pdf, .jpeg, .docx, .xlsx"/>
+            </div>
+          </div>
+          {% if filepaths %}
+          <div class="form-group mb-5">
+            <label class="mb-2 courseAttachments" for= "courseAttachments"><strong>Course Attachments</strong></label>
+            <table>
+                {% for key, value in filepaths.items() %}
+                    <tr id="modalAttachment_{{value[1]}}" class="attachmentRow_{{key}}" data-id= "{{key}}">
+                        <td class="pr-5">
+                            <a class="mr-5" href="{{value[0]}}" target="_blank">{{key}}</a>
+                        </td>
+                        <td style="text-align:center">
+                          <button
+                            data-id="{{value[1]}}"
+                            type="button"
+                            class="removeAttachment btn btn-danger btn-sm"
+                            id={{course.id}}>
+                              <i class="bi bi-trash h5 align-middle"></i>
+                          </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+          </div>
+          {% endif %}
+        </div>
+        <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Dismiss</button>
+            <button type="submit" class="btn btn-primary" id="fileUpload">Upload File</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
  {% endblock %}

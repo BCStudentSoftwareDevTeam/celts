@@ -87,7 +87,7 @@ def addUserBackgroundCheck(user, bgType, bgStatus, dateCompleted):
     today = date.today()
     user = User.get_by_id(user)
     if bgStatus == '' and dateCompleted == '':
-        createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as incomplete.")
+        createLog(f"Marked {user.firstName} {user.lastName}'s background check for {bgType} as 'in progress'.")
     else:
         if not dateCompleted:
             dateCompleted = None
@@ -101,7 +101,7 @@ def addUserBackgroundCheck(user, bgType, bgStatus, dateCompleted):
 
 def setProgramManager(username, program_id, action):
     '''
-    adds and removes the studentstaff from program that makes them  student manager.
+    adds and removes the studentstaff from program that makes them student manager.
 
     param: uername - a string
            program_id - id
