@@ -7,11 +7,16 @@ from app.models.user import User
 class Course(baseModel):
     courseName = CharField()
     courseAbbreviation = CharField()
+    sectionDesignation = CharField()
     courseCredit = FloatField()
-    courseOccurrence = CharField(null=True)
     term = ForeignKeyField(Term, null = True)
     status = ForeignKeyField(CourseStatus)
     createdBy = ForeignKeyField(User)
-    isAllSectionsServiceLearning = BooleanField(default=False)
     serviceLearningDesignatedSections = TextField()
+    previouslyApprovedDescription = TextField()
     isPermanentlyDesignated = BooleanField(default=False)
+    isAllSectionsServiceLearning = BooleanField(default=False)
+    isRegularlyOccurring = BooleanField(default=False)
+    isPreviouslyApproved = BooleanField(default=False)
+    hasSlcComponent = BooleanField(default=False)
+

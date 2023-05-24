@@ -207,7 +207,7 @@ $(document).ready(function() {
                       eventId:this.id}
       $.ajax({
         type:"POST",
-        url: "/deleteFile",
+        url: "/deleteEventFile",
         data: fileData, //get the startDate, endDate and name as a dictionary
         success: function(){
             msgFlash("Attachment removed successfully")

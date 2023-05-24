@@ -1,0 +1,22 @@
+
+html * {
+    font-size: 12px;
+    font-family: "Arial Narrow", sans-serif;
+  }
+
+ol {
+    padding-left: 12px;
+}
+.info-field {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+hr {
+    display: block;
+    height: 1px;
+    background: transparent;
+    width: 100%;
+    border: none;
+    border-top: solid 1px #aaa;
+}

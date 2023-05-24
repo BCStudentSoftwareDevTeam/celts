@@ -13,9 +13,7 @@ from app.models.term import Term
 from app.models.programBan import ProgramBan
 from app.models.interest import Interest
 from app.models.eventRsvp import EventRsvp
-from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
-from app.models.eventFile import EventFile
 from app.models.requirementMatch import RequirementMatch
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.eventViews import EventView
@@ -102,7 +100,6 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
     Created events and an error message.
     """
     newEventData = preprocessEventData(eventData)
-    addfile= FileHandler(attachmentFiles)
     isValid, validationErrorMessage = validateNewEventData(newEventData)
 
     if not isValid:
@@ -110,9 +107,10 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
 
     try:
         events = saveEventToDb(newEventData)
-        if  attachmentFiles:
+        if attachmentFiles:
             for event in events:
-                addfile.saveFilesForEvent(event.id)
+                addFile= FileHandler(attachmentFiles, eventId=event.id)
+                addFile.saveFiles()
         return events, ""
     except Exception as e:
         print(e)
