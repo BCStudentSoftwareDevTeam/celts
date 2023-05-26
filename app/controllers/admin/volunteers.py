@@ -9,7 +9,7 @@ from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours, addUserBackgroundCheck, setProgramManager
-from app.logic.participants import trainedParticipants, getEventParticipants, addPersonToEvent
+from app.logic.participants import trainedParticipants, getEventParticipants, addPersonToEvent, getCurrentRsvpAmount
 from app.logic.events import getPreviousRecurringEventData
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
@@ -55,6 +55,8 @@ def trackVolunteersPage(eventID):
     recurringEventStartDate = event.startDate
     recurringVolunteers = getPreviousRecurringEventData(recurringEventID)
 
+    currentRsvpAmount = getCurrentRsvpAmount(g.current_term)
+
     return render_template("/events/trackVolunteers.html",
                             eventData = eventData,
                             eventVolunteerData = eventVolunteerData,
@@ -65,7 +67,8 @@ def trackVolunteersPage(eventID):
                             recurringEventStartDate = recurringEventStartDate,
                             recurringVolunteers = recurringVolunteers,
                             bannedUsers = bannedUsers,
-                            trainedParticipantsList = trainedParticipantsList)
+                            trainedParticipantsList = trainedParticipantsList,
+                            currentRsvpAmount = currentRsvpAmount)
 
 @admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['POST'])
 def updateVolunteerTable(eventID):

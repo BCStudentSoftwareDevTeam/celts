@@ -157,17 +157,20 @@
       {% endif %}
     </tbody>
   </table>
-  <div>
-    <button type="submit" class="btn btn-primary float-end">Save</button>
-  </div>
+  {% if event.isPast %}
+    <div>
+      <button type="submit" class="btn btn-primary float-end">Save</button>
+    </div>
+  {% endif %}
   <br>
     <!-- Waitlist Table -->
-  {% if (not event.isPast) and (event.isRsvpRequired) and (event.rsvpLimit) %}
+  {% if (not event.isPast) and (event.isRsvpRequired) and (currentRsvpAmount[event.id] > event.rsvpLimit) %}
     <h4>RSVP Waitlist</h4>
     <table class="table" id="trackWaitlistTable">
       <thead>
         <tr>
           <th></th>
+          <th>Waitlist Time</th>
           <th>Name</th>
           <th>Email</th>
           <th>Phone Number</th>
@@ -183,6 +186,12 @@
                 <td>
                   <button class="btn btn-primary">Add to RSVP</button>
                 </td>
+                {% if (not event.isPast) and (event.isRsvpRequired)  %}
+                <td>
+                  {# This only works because we are assuming that all participants are RSVP entries #}
+                  {{ participant.rsvpTime.strftime('%b %-d %-I:%M %p') }}
+                </td>
+              {% endif %}
                 <td>
                   <input class="form-control" type='hidden' name="username{{loop.index|string}}" id="{{participant.user.username}}" value="{{participant.user}}" />
                   {{participant.user.firstName}} {{participant.user.lastName}}
