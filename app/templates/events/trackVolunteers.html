@@ -34,11 +34,14 @@
         <a class="nav-link" href="/eventsList/{{event.id}}/view" role="tab" aria-selected="false">View Event</a>
     </li>
     <li class="nav-item" role="presentation">
+        <a class="nav-link" href="/eventsList/{{event.id}}/edit" role="tab" aria-selected="false">Edit Event</a>
+    </li>
+    <li class="nav-item" role="presentation">
         <a class="nav-link active" href="#" role="tab" aria-selected="true">Track Volunteers</a>
     </li>
     <li class="nav-item" role="presentation">
-        <a class="nav-link" href="/eventsList/{{event.id}}/edit" role="tab" aria-selected="false">Edit Event</a>
-    </li>
+      <a class="nav-link" href="/eventList/{{eventData.id}}/rsvp_history" role="tab" aria-selected="false">RSVP History</a>
+  </li>
   </ul>
 </div>
 <label class='d-none' id="eventLength">{{eventLength}}</label>

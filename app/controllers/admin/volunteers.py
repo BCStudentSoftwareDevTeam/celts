@@ -16,8 +16,6 @@ from app.models.backgroundCheck import BackgroundCheck
 from app.models.programManager import ProgramManager
 from app.logic.adminLogs import createLog
 from app.logic.users import getBannedUsers, isBannedFromEvent
-from app.logic.events import getCurrentRsvpAmount
-
 
 
 @admin_bp.route('/searchVolunteers/<query>', methods = ['GET'])
@@ -58,16 +56,16 @@ def trackVolunteersPage(eventID):
     recurringVolunteers = getPreviousRecurringEventData(recurringEventID)
 
     return render_template("/events/trackVolunteers.html",
-        eventData = eventData,
-        eventVolunteerData = eventVolunteerData,
-        eventParticipants = eventParticipants,
-        eventLength = eventLengthInHours,
-        event = event,
-        recurringEventID = recurringEventID,
-        recurringEventStartDate = recurringEventStartDate,
-        recurringVolunteers = recurringVolunteers,
-        bannedUsers = bannedUsers,
-        trainedParticipantsList = trainedParticipantsList)
+                            eventData = eventData,
+                            eventVolunteerData = eventVolunteerData,
+                            eventParticipants = eventParticipants,
+                            eventLength = eventLengthInHours,
+                            event = event,
+                            recurringEventID = recurringEventID,
+                            recurringEventStartDate = recurringEventStartDate,
+                            recurringVolunteers = recurringVolunteers,
+                            bannedUsers = bannedUsers,
+                            trainedParticipantsList = trainedParticipantsList)
 
 @admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['POST'])
 def updateVolunteerTable(eventID):
