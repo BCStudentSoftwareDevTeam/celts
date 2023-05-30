@@ -58,7 +58,7 @@
       {%endif%}
       <a class="btn btn-warning" role="button" href= "/eventsList/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
     </div>
-    {% if (not event.isPast) and (event.isRsvpRequired) and (currentRsvpAmount[event.id] >= event.rsvpLimit) %}
+    {% if (not event.isPast) and (event.isRsvpRequired) and (event.rsvpLimit is not none) and (currentRsvpAmount[event.id] >= event.rsvpLimit) %}
     <div class="col-6 text-end">
       <p class="text-danger">RSVP Limit has been reached! Future RSVPs will be added to the Waitlist!</p>
     </div>
@@ -171,7 +171,7 @@
   {% endif %}
   <br>
     <!-- Waitlist Table -->
-  {% if (not event.isPast) and (event.isRsvpRequired) and (currentRsvpAmount[event.id] > event.rsvpLimit) %}
+  {% if (not event.isPast) and (event.isRsvpRequired) and (event.rsvpLimit is not none) and (currentRsvpAmount[event.id] > event.rsvpLimit) %}
     <h4>RSVP Waitlist</h4>
     <table class="table" id="trackWaitlistTable">
       <thead>
@@ -233,7 +233,7 @@
 </form>
 <!-- Modal -->
 {% set rsvpNeeded  = (event.isRsvpRequired) and (not event.isPast) %}
-{% set rsvpFull = rsvpNeeded and (currentRsvpAmount[event.id] >= event.rsvpLimit) %}
+{% set rsvpFull = rsvpNeeded and (event.rsvpLimit is not none) and (currentRsvpAmount[event.id] >= event.rsvpLimit) %}
 <div class="modal fade float-start" id="addVolunteerModal" tabindex="-1" aria-labelledby="addVolunteerModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
