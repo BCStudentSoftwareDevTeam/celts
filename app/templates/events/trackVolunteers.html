@@ -246,9 +246,12 @@
         <ul class="list-unstyled" id= "addVolunteerList">
         </ul>
       </div>
+      {% set rsvpNeeded  = (event.isRsvpRequired) and (not event.isPast) %}
+      {% set rsvpFull = rsvpNeeded and (currentRsvpAmount[event.id] >= event.rsvpLimit) %}
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
-        <button id="selectVolunteerButton" type="button" class="btn btn-primary" disabled>Add participant</button>
+        {% set buttonName = "Add to Waitlist" if rsvpFull else ("Add RSVP" if rsvpNeeded else "Add Participant") %}
+        <button id="selectVolunteerButton" type="button" class="btn btn-primary" disabled>{{buttonName}}</button>
       </div>
     </div>
   </div>
