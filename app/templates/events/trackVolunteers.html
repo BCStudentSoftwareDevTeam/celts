@@ -47,15 +47,22 @@
 <label class='d-none' id="eventLength">{{eventLength}}</label>
 <input class="form-control" id="event" name="event" value="{{event}}" type='hidden' />
 <div class="flex-container" style="padding: 5px;">
-  <div class='form-group d-inline-flex'>
-    <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add Volunteer</a>
-    {% if event.isRecurring and not event.isFirstRecurringEvent%}
-        {% if recurringVolunteers | count == 0  %}
-            {% set disabled = "disabled" %}
-        {% endif %}
-        <button type="button" class="btn btn-success" id="pastVolunteers" data-bs-toggle="modal" data-bs-target= "#addPastVolunteerModal" style="margin:5px;" {{disabled}}>Add Past Volunteers</button>
-    {%endif%}
-    <a class="btn btn-warning" role="button" href= "/eventsList/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
+  <div class='form-group d-flex row'>
+    <div class="col-6">
+      <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add Volunteer</a>
+      {% if event.isRecurring and not event.isFirstRecurringEvent%}
+      {% if recurringVolunteers | count == 0  %}
+      {% set disabled = "disabled" %}
+      {% endif %}
+      <button type="button" class="btn btn-success" id="pastVolunteers" data-bs-toggle="modal" data-bs-target= "#addPastVolunteerModal" style="margin:5px;" {{disabled}}>Add Past Volunteers</button>
+      {%endif%}
+      <a class="btn btn-warning" role="button" href= "/eventsList/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
+    </div>
+    {% if (not event.isPast) and (event.isRsvpRequired) and (currentRsvpAmount[event.id] >= event.rsvpLimit) %}
+    <div class="col-6 text-end">
+      <p class="text-danger">RSVP Limit has been reached! Future RSVPs will be added to the Waitlist!</p>
+    </div>
+    {% endif %}
   </div>
 </div>
 <form method="post">
@@ -225,11 +232,14 @@
   {% endif %}
 </form>
 <!-- Modal -->
+{% set rsvpNeeded  = (event.isRsvpRequired) and (not event.isPast) %}
+{% set rsvpFull = rsvpNeeded and (currentRsvpAmount[event.id] >= event.rsvpLimit) %}
 <div class="modal fade float-start" id="addVolunteerModal" tabindex="-1" aria-labelledby="addVolunteerModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add a volunteer</h5>
+        {% set modalTitle = "Add Volunteer to Waitlist" if rsvpFull else("Add Volunteer RSVP" if rsvpNeeded else "Add Volunteer") %}
+        <h5 class="modal-title" id="exampleModalLabel">{{modalTitle}}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -246,8 +256,6 @@
         <ul class="list-unstyled" id= "addVolunteerList">
         </ul>
       </div>
-      {% set rsvpNeeded  = (event.isRsvpRequired) and (not event.isPast) %}
-      {% set rsvpFull = rsvpNeeded and (currentRsvpAmount[event.id] >= event.rsvpLimit) %}
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
         {% set buttonName = "Add to Waitlist" if rsvpFull else ("Add RSVP" if rsvpNeeded else "Add Participant") %}
