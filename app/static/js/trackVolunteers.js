@@ -89,6 +89,20 @@ $(document).ready(function() {
     });
   });
 
+  $("#addRsvpFromWaitlistBtn").on("click",function(){
+    // debugger
+    console.log("hello")
+    let username = $('#addRsvpFromWaitlistBtn').val()
+    let eventId = $('#eventID').val()
+    $.ajax({
+      url: `/rsvpFromWaitlist/${username}/${eventId}`,
+      type: "POST",
+      success: function(s) {
+         location.reload();
+      }
+    });
+  });
+
 
   $(".attendanceCheck").on("change", function() {
     let username =  this.name.substring(9) //get everything after the 9th character;

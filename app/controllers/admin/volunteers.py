@@ -113,6 +113,12 @@ def addVolunteer(eventId):
 
     return redirect(url_for('admin.trackVolunteersPage', eventID = eventId))
 
+@admin_bp.route('/rsvpFromWaitlist/<username>/<eventId>', methods = ['POST'])
+def rsvpFromWaitlist(username, eventId):
+    if g.current_user.isAdmin: 
+        (EventRsvp.update(rsvpWaitlist = False).where(EventRsvp.event_id == eventId, EventRsvp.user_id == username)).execute()
+    return ""
+
 @admin_bp.route('/addVolunteersToEvent/<username>/<eventId>/isBanned', methods = ['GET'])
 def isVolunteerBanned(username, eventId):
     return {"banned":1} if isBannedFromEvent(username, eventId) else {"banned":0}

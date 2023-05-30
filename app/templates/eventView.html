@@ -55,7 +55,7 @@
                     {% endif %}
                     {% if eventData.isRsvpRequired and eventData.rsvpLimit %}
                       {% if currentEventRsvpAmount[eventData.id] >= eventData.rsvpLimit %}
-                        <p>Sorry, there are currently no more spots available for this event. Feel free to add yorself to the waitlist if you would still like a possibliy</p>
+                        <p>All RSVP spots are full. Feel free to join the waitlist in case more space is made available or someone is unable to attend. </p>
                       {% elif eventData.rsvpLimit - currentEventRsvpAmount[eventData.id] == 1 %}
                         <p>This event requires RSVP. There is {{eventData.rsvpLimit - currentEventRsvpAmount[eventData.id]}} open spot remaining out of {{eventData.rsvpLimit}}.</p>
                       {% else %}

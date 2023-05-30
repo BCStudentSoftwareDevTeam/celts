@@ -191,7 +191,7 @@
             {% if participant.rsvpWaitlist %}
               <tr>
                 <td>
-                  <button class="btn btn-primary">Add to RSVP</button>
+                  <button class="btn btn-primary" value="{{participant.user.username}}" id="addRsvpFromWaitlistBtn" type="submit">Add to RSVP</button>
                 </td>
                 {% if (not event.isPast) and (event.isRsvpRequired)  %}
                 <td>
