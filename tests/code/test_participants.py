@@ -1,3 +1,4 @@
+from pprint import isrecursive
 import pytest
 from datetime import datetime, timedelta
 from peewee import IntegrityError, DoesNotExist
@@ -110,7 +111,30 @@ def test_addPersonToEvent():
         assert userAdded == True, "User was not added"
         assert checkUserRsvp(user, newEvent), "No RSVP record was added"
         assert not checkUserVolunteer(user, newEvent), "A Volunteer record was added instead"
+        transaction.rollback()
 
+        tomorrow = datetime.today() + timedelta(days=1)
+        testWaitlistEvent = Event.create(name = "Waitlist Event",
+                                         term = 2,
+                                         startDate = tomorrow.date(),
+                                         endDate = tomorrow.date(),
+                                         isRsvpRequired = True,
+                                         rsvpLimit = 1)
+        waitlistEvent = Event.get(name="Waitlist Event")
+        rsvpUser = User.get_by_id("ayisie")
+        
+        addRsvp = addPersonToEvent(rsvpUser, waitlistEvent)
+        rsvpNoWaitlist = list(EventRsvp.select().where(EventRsvp.event_id == testWaitlistEvent.id, EventRsvp.rsvpWaitlist == False))
+        assert addRsvp == True
+        assert len(rsvpNoWaitlist) == 1
+
+        waitlistUser = User.get_by_id("partont")
+        addWaitlist = addPersonToEvent(waitlistUser, waitlistEvent)
+        rsvpWaitlist = EventRsvp.select().where(EventRsvp.event_id == testWaitlistEvent.id, EventRsvp.rsvpWaitlist == True)
+        
+        assert addWaitlist == True
+        assert len(rsvpWaitlist) == 1
+        
         transaction.rollback()
 
 @pytest.mark.integration
