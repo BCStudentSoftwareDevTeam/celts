@@ -9,8 +9,8 @@ from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours, addUserBackgroundCheck, setProgramManager
-from app.logic.participants import trainedParticipants, getEventParticipants, addPersonToEvent, getCurrentRsvpAmount
-from app.logic.events import getPreviousRecurringEventData
+from app.logic.participants import trainedParticipants, getEventParticipants, addPersonToEvent
+from app.logic.events import getPreviousRecurringEventData, getCurrentRsvpAmount
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.programManager import ProgramManager
@@ -49,6 +49,7 @@ def trackVolunteersPage(eventID):
         if volunteer.user not in volunteerUser:
             eventVolunteerData.append(volunteer)
             volunteerUser.append(volunteer.user)
+    eventWaitlistData = [volunteer for volunteer in eventVolunteerData if volunteer.rsvpWaitlist]
     eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
     recurringEventID = event.recurringId # query Event Table to get recurringId using Event ID.
@@ -68,6 +69,7 @@ def trackVolunteersPage(eventID):
                             recurringVolunteers = recurringVolunteers,
                             bannedUsers = bannedUsers,
                             trainedParticipantsList = trainedParticipantsList,
+                            eventWaitlistData = eventWaitlistData,
                             currentRsvpAmount = currentRsvpAmount)
 
 @admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['POST'])

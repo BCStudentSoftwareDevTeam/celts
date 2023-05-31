@@ -456,6 +456,7 @@ def getTomorrowsEvents():
     tomorrowDate = date.today() + timedelta(days=1)
     events = list(Event.select().where(Event.startDate==tomorrowDate))
     return events
+
 def addEventView(viewer,event):
     """This checks if the current user already viewed the event. If not, insert a recored to EventView table"""
     if not viewer.isCeltsAdmin:
@@ -468,9 +469,9 @@ def getCurrentRsvpAmount(term):
         current RSVPs to that event as the pair.
     """
     amount = (Event.select(Event, fn.COUNT(EventRsvp.event_id).alias('count'))
-                  .join(EventRsvp, JOIN.LEFT_OUTER)
-                  .where(Event.term == term)
-                  .group_by(Event.id))
+                   .join(EventRsvp, JOIN.LEFT_OUTER)
+                   .where(Event.term == term)
+                   .group_by(Event.id))
 
     amountAsDict = {event.id: event.count for event in amount}
 
