@@ -34,7 +34,6 @@ pem add app.models.certificationAttempt.CertificationAttempt
 pem add app.models.certificationRequirement.CertificationRequirement
 pem add app.models.requirementMatch.RequirementMatch
 pem add app.models.eventViews.EventView
-pem add app.models.eventRsvpLogs.EventRsvpLogs
 
 pem watch
 pem migrate
