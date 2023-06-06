@@ -134,6 +134,7 @@ def test_addPersonToEvent():
         
         assert addWaitlist == True
         assert len(rsvpWaitlist) == 1
+        assert len(rsvpNoWaitlist) == 1
         
         transaction.rollback()
 
