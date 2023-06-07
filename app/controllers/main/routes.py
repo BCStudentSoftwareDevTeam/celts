@@ -66,7 +66,7 @@ def events(selectedTerm, activeTab, programID):
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
     term = Term.get_by_id(currentTerm)
-    currentEventRsvpAmount = getCurrentRsvpAmount(term)
+    currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     studentLedEvents = getStudentLedEvents(term)
     trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)

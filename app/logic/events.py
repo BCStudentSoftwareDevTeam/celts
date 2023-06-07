@@ -462,7 +462,7 @@ def addEventView(viewer,event):
     if not viewer.isCeltsAdmin:
          EventView.get_or_create(user = viewer, event = event)   
 
-def getCurrentRsvpAmount(term):
+def getEventRsvpCountsForTerm(term):
     """
         Get all of the RSVPs for the events that exist in the term.
         Returns a dictionary with the event id as the key and the amount of

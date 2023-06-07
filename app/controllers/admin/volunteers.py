@@ -10,7 +10,7 @@ from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours, addUserBackgroundCheck, setProgramManager
 from app.logic.participants import trainedParticipants, getEventParticipants, addPersonToEvent
-from app.logic.events import getPreviousRecurringEventData, getCurrentRsvpAmount
+from app.logic.events import getPreviousRecurringEventData, getEventRsvpCountsForTerm
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.programManager import ProgramManager
@@ -56,7 +56,7 @@ def trackVolunteersPage(eventID):
     recurringEventStartDate = event.startDate
     recurringVolunteers = getPreviousRecurringEventData(recurringEventID)
 
-    currentRsvpAmount = getCurrentRsvpAmount(g.current_term)
+    currentRsvpAmount = getEventRsvpCountsForTerm(g.current_term)
 
     return render_template("/events/trackVolunteers.html",
                             eventData = eventData,
