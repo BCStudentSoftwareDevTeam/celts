@@ -77,7 +77,7 @@ def updateVolunteerTable(eventID):
     try:
         event = Event.get_by_id(eventID)
     except DoesNotExist as e:
-        print(f"No event found for {eventID}", e)
+        print(f"No event found for {eventID}")
         abort(404)
 
     program = event.singleProgram
