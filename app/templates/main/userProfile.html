@@ -19,6 +19,12 @@
     <h1>{{volunteer.firstName}} {{volunteer.lastName}}</h1>
     <div>{{volunteer.bnumber}}</div>
     <div>{{volunteer.email}} </div>
+    {% if volunteer.major != None -%}
+    <div>{{volunteer.major}}</div>
+    {% endif %}
+    {% if volunteer.classLevel != None -%}
+    <div>{{volunteer.classLevel}}</div> 
+    {% endif %}
     <div>
       <input type="text" style="border: none" size="14" class="bfh-phone" data-value="{{volunteer.phoneNumber}}" id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
       <a class="text-decoration-none primary editButton" tabindex="0" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
