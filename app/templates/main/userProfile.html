@@ -19,10 +19,10 @@
     <h1>{{volunteer.firstName}} {{volunteer.lastName}}</h1>
     <div>{{volunteer.bnumber}}</div>
     <div>{{volunteer.email}} </div>
-    {% if volunteer.major != None -%}
+    {% if volunteer.major -%}
     <div>{{volunteer.major}}</div>
     {% endif %}
-    {% if volunteer.classLevel != None -%}
+    {% if volunteer.classLevel -%}
     <div>{{volunteer.classLevel}}</div> 
     {% endif %}
     <div>
