@@ -69,6 +69,53 @@ def trackVolunteersPage(eventID):
         bannedUsers = bannedUsers,
         trainedParticipantsList = trainedParticipantsList)
 
+
+
+@admin_bp.route('/eventsList/<eventID>/dietary_restrictions', methods=['GET'])
+def trackDietaryRestrictions(eventID):
+    try:
+        event = Event.get_by_id(eventID)
+    except DoesNotExist as e:
+        print(f"No event found for {eventID}")
+        abort(404)
+
+    eventData = model_to_dict(event, recurse=False)
+    eventData["program"] = event.singleProgram
+    trainedParticipantsList = trainedParticipants(event.singleProgram, g.current_term)
+    eventParticipants = getEventParticipants(event)
+    isProgramManager = g.current_user.isProgramManagerForEvent(event)
+    bannedUsers = [row.user for row in getBannedUsers(event.singleProgram)]
+    if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
+        abort(403)
+
+    eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
+    eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
+    participantsAndRsvp = (eventParticipantData + eventRsvpData)
+    eventVolunteerData = []
+    volunteerUser = []
+    for volunteer in participantsAndRsvp:
+        if volunteer.user not in volunteerUser:
+            eventVolunteerData.append(volunteer)
+            volunteerUser.append(volunteer.user)
+    eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
+
+    recurringEventID = event.recurringId # query Event Table to get recurringId using Event ID.
+    recurringEventStartDate = event.startDate
+    recurringVolunteers = getPreviousRecurringEventData(recurringEventID)
+
+    return render_template("/events/dietary_restrictions.html",
+        eventData = eventData,
+        eventVolunteerData = eventVolunteerData,
+        eventParticipants = eventParticipants,
+        eventLength = eventLengthInHours,
+        event = event,
+        recurringEventID = recurringEventID,
+        recurringEventStartDate = recurringEventStartDate,
+        recurringVolunteers = recurringVolunteers,
+        bannedUsers = bannedUsers,
+        trainedParticipantsList = trainedParticipantsList)
+
+
 @admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['POST'])
 def updateVolunteerTable(eventID):
     try:
