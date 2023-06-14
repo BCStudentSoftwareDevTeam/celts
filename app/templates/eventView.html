@@ -39,6 +39,7 @@
     {% else %}
         <p class="heading-size"><b>{{eventData.name}}</b> will take place on <b>{{eventData.startDate}}</b> from <b>{{eventData.timeStart}}</b> to <b>{{eventData.timeEnd}}</b> and will be located in <b>{{eventData.location}}</b>.</p>
     {% endif %}
+    <img src="{{image}}">
             <div class="row">
                 <div class="col-md-6">
                     <h3><br>Description</h3><p>{{eventData.description|urlize}}</p><br>
@@ -108,7 +109,10 @@
                     {% for key, value in filepaths.items() %}
                         <tr id="attachment_{{value[1]}}" class="attachmentRow_{{key}}" data-id= "{{key}}">
                             <td class="pr-5">
-                                <a class="mr-5" href="{{value[0]}}" target="_blank">{{key}}</a>
+                                <!--<img src="{{value[0]}}"
+                                width="200"
+                                height="200">-->
+                                <a class="mr-5" href="{{value[0]|replace('#','%23')}}" target="_blank">{{key}}</a>
                             </td>
                         </tr>
                     {% endfor %}

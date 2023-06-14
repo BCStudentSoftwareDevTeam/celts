@@ -164,10 +164,8 @@ def eventDisplay(eventId):
         for extension in picurestype:
             if (attachment.fileName.endswith(extension)):
                 print(attachment.fileName)
-                image = True
-        
-        
-            
+                imageName = attachment.fileName
+
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
         try:
@@ -196,7 +194,9 @@ def eventDisplay(eventId):
     userHasRSVPed = checkUserRsvp(g.current_user, event)
     isPastEvent = event.isPast
     filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)
+    image = filepaths[imageName][0]
     isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
+    print(filepaths)
 
     requirements, bonnerCohorts = [], []
     if eventData['program'] and eventData['program'].isBonnerScholars:
@@ -237,6 +237,7 @@ def eventDisplay(eventId):
                                 programTrainings = UserParticipatedTrainingEvents,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths,
+                                image = image,
                                 pageViewsCount= pageViewsCount)
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
