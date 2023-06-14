@@ -50,8 +50,7 @@ def trackVolunteersPage(eventID):
             eventVolunteerData.append(volunteer)
             volunteerUser.append(volunteer.user)
     eventWaitlistData = []
-    if volunteer.rsvpWaitlist:
-        eventWaitlistData = [volunteer for volunteer in eventVolunteerData if volunteer.rsvpWaitlist]
+    eventWaitlistData = [volunteer for volunteer in eventVolunteerData if volunteer.rsvpWaitlist]
     eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
     recurringEventID = event.recurringId # query Event Table to get recurringId using Event ID.
