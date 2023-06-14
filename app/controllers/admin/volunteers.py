@@ -76,13 +76,12 @@ def trackVolunteersPage(eventID):
 
 
 @admin_bp.route('/eventsList/<eventID>/dietary_restrictions', methods=['GET'])
-def trackDietaryRestrictions(eventID):
+def dietaryRestrictionsPage(eventID):
     try:
         event = Event.get_by_id(eventID)
     except DoesNotExist as e:
-        print(f"No event found for {eventID}")
+        print(f"No event found for {eventID}", e)
         abort(404)
-
     eventData = model_to_dict(event, recurse=False)
     eventData["program"] = event.singleProgram
     trainedParticipantsList = trainedParticipants(event.singleProgram, g.current_term)
@@ -101,23 +100,29 @@ def trackDietaryRestrictions(eventID):
         if volunteer.user not in volunteerUser:
             eventVolunteerData.append(volunteer)
             volunteerUser.append(volunteer.user)
+    eventWaitlistData = []
+    eventWaitlistData = [volunteer for volunteer in eventVolunteerData if volunteer.rsvpWaitlist]
     eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
     recurringEventID = event.recurringId # query Event Table to get recurringId using Event ID.
     recurringEventStartDate = event.startDate
     recurringVolunteers = getPreviousRecurringEventData(recurringEventID)
 
+    currentRsvpAmount = getEventRsvpCountsForTerm(g.current_term)
+
     return render_template("/events/dietary_restrictions.html",
-        eventData = eventData,
-        eventVolunteerData = eventVolunteerData,
-        eventParticipants = eventParticipants,
-        eventLength = eventLengthInHours,
-        event = event,
-        recurringEventID = recurringEventID,
-        recurringEventStartDate = recurringEventStartDate,
-        recurringVolunteers = recurringVolunteers,
-        bannedUsers = bannedUsers,
-        trainedParticipantsList = trainedParticipantsList)
+                            eventData = eventData,
+                            eventVolunteerData = eventVolunteerData,
+                            eventParticipants = eventParticipants,
+                            eventLength = eventLengthInHours,
+                            event = event,
+                            recurringEventID = recurringEventID,
+                            recurringEventStartDate = recurringEventStartDate,
+                            recurringVolunteers = recurringVolunteers,
+                            bannedUsers = bannedUsers,
+                            trainedParticipantsList = trainedParticipantsList,
+                            eventWaitlistData = eventWaitlistData,
+                            currentRsvpAmount = currentRsvpAmount)
 
 
 @admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['POST'])

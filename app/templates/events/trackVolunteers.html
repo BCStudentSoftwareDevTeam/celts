@@ -39,9 +39,11 @@
     <li class="nav-item" role="presentation">
         <a class="nav-link active" href="#" role="tab" aria-selected="true">Track Volunteers</a>
     </li>
+    {% if eventData.isFoodProvided %}
     <li class="nav-item" role="presentation">
       <a class="nav-link" href="/eventsList/{{eventData.id}}/dietary_restrictions" role="tab" aria-selected="false">Dietary Restricitons</a>
-  </li>
+    </li>
+    {% endif %}
   </ul>
 </div>
 <label class='d-none' id="eventLength">{{eventLength}}</label>
