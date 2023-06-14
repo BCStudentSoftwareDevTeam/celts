@@ -64,6 +64,16 @@ $(document).ready(function(){
     $("#noteModal").modal("toggle");
   });
 
+  $("#addVisibility").click(function() { 
+    var bonnerChecked = $("input[name='bonner']:checked").val()
+    console.log(bonnerChecked)
+  if (bonnerChecked == 'on') {
+    $("#noteDropdown").addClass('d-none')
+  } else {
+    $("#noteDropdown").removeClass('d-none')
+  }});
+
+
   $("#addBonnerNoteButton").click(function() {
     $("#noteModal").modal("toggle");
     $("#bonnerInput").attr("checked", true)

@@ -459,20 +459,23 @@
               {% if vis != "" %}
                 <p><b>This note will only be visible to you, CELTS Student Staff, and Administrators.</b></p>
               {% endif %}
-              <label class="form-label {{vis}}" for='inputEventTerm'><strong>Visibility</strong></label>
-              <select class="form-select {{vis}}" name='visibility' id='noteDropdown'>
-                {% if g.current_user.isCeltsAdmin %}
-                  <option value='3'>Admins</option>
-                {% endif %}
-                {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
-                  <option value='2'>Admin/Student Staff</option>
-                {% endif %}
-                <option value='1' selected>Everyone</option>
-              </select>
+              
+                <label class="form-label {{vis}}" for='inputEventTerm'><strong>Visibility</strong></label>
+                <select class="form-select {{vis}}" name='visibility' id='noteDropdown'>
+                  {% if g.current_user.isCeltsAdmin %}
+                    <option value='3'>Admins</option>
+                  {% endif %}
+                  {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
+                    <option value='2'>Admin/Student Staff</option>
+                  {% endif %}
+                  <option value='1' selected>Everyone</option>
+                </select> 
+              <div id="addVisibility"> 
               {% if g.current_user.isBonnerScholar and volunteer.isBonnerScholar %}
                 <div class="form-check form-switch pt-4">
                   <input class="form-check-input" name="bonner" id="bonnerInput" type="checkbox" />
                   <label class="form-check-label"><strong>Related to Bonner Scholars Program</strong></label>
+              <div>
                 </div>
               {% endif %}
               <br>
