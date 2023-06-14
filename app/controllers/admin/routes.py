@@ -16,6 +16,8 @@ from app.models.bonnerCohort import BonnerCohort
 from app.models.certification import Certification
 from app.models.user import User
 from app.models.eventViews import EventView
+from app.models.eventRsvp import EventRsvp
+from app.models.eventParticipant import EventParticipant
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.adminLogs import createLog
@@ -192,12 +194,24 @@ def eventDisplay(eventId):
     if eventData['program'] and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
         bonnerCohorts = getBonnerCohorts(limit=5)
-
+    
     rule = request.url_rule
+
+    eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
+    eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
+    participantsAndRsvp = (eventParticipantData + eventRsvpData)
+    eventVolunteerData = []
+    volunteerUser = []
+    for volunteer in participantsAndRsvp:
+        if volunteer.user not in volunteerUser:
+            eventVolunteerData.append(volunteer)
+            volunteerUser.append(volunteer.user)
+
     # Event Edit
     if 'edit' in rule.rule:
         return render_template("admin/createEvent.html",
                                 eventData = eventData,
+                                eventVolunteerData = eventVolunteerData,
                                 futureTerms=futureTerms,
                                 isPastEvent = isPastEvent,
                                 requirements = requirements,
@@ -224,6 +238,7 @@ def eventDisplay(eventId):
         UserParticipatedTrainingEvents = getUserParticipatedTrainingEvents(eventData['program'], g.current_user, g.current_term)
         return render_template("eventView.html",
                                 eventData = eventData,
+                                eventVolunteerData = eventVolunteerData,
                                 isPastEvent = isPastEvent,
                                 userHasRSVPed = userHasRSVPed,
                                 programTrainings = UserParticipatedTrainingEvents,

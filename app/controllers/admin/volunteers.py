@@ -82,15 +82,7 @@ def dietaryRestrictionsPage(eventID):
     except DoesNotExist as e:
         print(f"No event found for {eventID}", e)
         abort(404)
-    eventData = model_to_dict(event, recurse=False)
-    eventData["program"] = event.singleProgram
-    trainedParticipantsList = trainedParticipants(event.singleProgram, g.current_term)
     eventParticipants = getEventParticipants(event)
-    isProgramManager = g.current_user.isProgramManagerForEvent(event)
-    bannedUsers = [row.user for row in getBannedUsers(event.singleProgram)]
-    if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
-        abort(403)
-
     eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
     eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
     participantsAndRsvp = (eventParticipantData + eventRsvpData)
@@ -98,31 +90,47 @@ def dietaryRestrictionsPage(eventID):
     volunteerUser = []
     for volunteer in participantsAndRsvp:
         if volunteer.user not in volunteerUser:
-            eventVolunteerData.append(volunteer)
+            eventVolunteerData.append(volunteer.user)
             volunteerUser.append(volunteer.user)
+        # if User.username[volunteer.user_id].dietRestriction:
+        #     eventVolunteerData.append(volunteer)
+
+    # participantDietRestricitons = list(User.select().where(User in participantsAndRsvp))
+    
+    eventData = model_to_dict(event, recurse=False)
+    eventData["program"] = event.singleProgram
+    # trainedParticipantsList = trainedParticipants(event.singleProgram, g.current_term)
+    # eventParticipants = getEventParticipants(event)
+    # isProgramManager = g.current_user.isProgramManagerForEvent(event)
+    # bannedUsers = [row.user for row in getBannedUsers(event.singleProgram)]
+    # if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
+    #     abort(403)
+
+    # eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
+    # eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
+    # participantsAndRsvp = (eventParticipantData + eventRsvpData)
+    # eventVolunteerData = []
+    # volunteerUser = []
+    # for volunteer in participantsAndRsvp:
+    #     if volunteer.user not in volunteerUser:
+    #         eventVolunteerData.append(volunteer)
+    #         volunteerUser.append(volunteer.user)
     eventWaitlistData = []
-    eventWaitlistData = [volunteer for volunteer in eventVolunteerData if volunteer.rsvpWaitlist]
-    eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
+    # eventWaitlistData = [volunteer for volunteer in eventVolunteerData if volunteer.rsvpWaitlist]
+    # eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
-    recurringEventID = event.recurringId # query Event Table to get recurringId using Event ID.
-    recurringEventStartDate = event.startDate
-    recurringVolunteers = getPreviousRecurringEventData(recurringEventID)
+    # recurringEventID = event.recurringId # query Event Table to get recurringId using Event ID.
+    # recurringEventStartDate = event.startDate
+    # recurringVolunteers = getPreviousRecurringEventData(recurringEventID)
 
-    currentRsvpAmount = getEventRsvpCountsForTerm(g.current_term)
+    # currentRsvpAmount = getEventRsvpCountsForTerm(g.current_term)
 
     return render_template("/events/dietary_restrictions.html",
-                            eventData = eventData,
                             eventVolunteerData = eventVolunteerData,
                             eventParticipants = eventParticipants,
-                            eventLength = eventLengthInHours,
                             event = event,
-                            recurringEventID = recurringEventID,
-                            recurringEventStartDate = recurringEventStartDate,
-                            recurringVolunteers = recurringVolunteers,
-                            bannedUsers = bannedUsers,
-                            trainedParticipantsList = trainedParticipantsList,
-                            eventWaitlistData = eventWaitlistData,
-                            currentRsvpAmount = currentRsvpAmount)
+                            eventData = eventData,
+                            eventWaitlistData = eventWaitlistData)
 
 
 @admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['POST'])
