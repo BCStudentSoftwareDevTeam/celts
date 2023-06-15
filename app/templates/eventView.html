@@ -39,9 +39,12 @@
     {% else %}
         <p class="heading-size"><b>{{eventData.name}}</b> will take place on <b>{{eventData.startDate}}</b> from <b>{{eventData.timeStart}}</b> to <b>{{eventData.timeEnd}}</b> and will be located in <b>{{eventData.location}}</b>.</p>
     {% endif %}
-    <img src="{{image}}">
+    
+
             <div class="row">
                 <div class="col-md-6">
+                    <img src="{{image}}" class = "img-fluid">
+                    
                     <h3><br>Description</h3><p>{{eventData.description|urlize}}</p><br>
                     {% if eventData.isFoodProvided %}
                         <p>Food will be provided at this event. <a href="/profile/{{g.current_user}}?accordion=dietaryInformation"><b>Please fill in any dietary restrictions on your "My profile" page.</b></a></p>
