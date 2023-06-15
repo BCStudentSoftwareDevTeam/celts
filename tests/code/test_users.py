@@ -230,7 +230,6 @@ def test_Add_Remove_ProgramManager():
 @pytest.mark.integration
 def test_getStudentManagerForEvent():
     with mainDB.atomic() as transaction:
-
         #Test data for creating a program
         testProgramData = [
         {

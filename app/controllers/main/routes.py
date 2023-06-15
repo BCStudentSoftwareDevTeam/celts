@@ -64,7 +64,9 @@ def events(selectedTerm, activeTab, programID):
     listOfTerms = Term.select()
     participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
+
     term = Term.get_by_id(currentTerm)
+    currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     studentLedEvents = getStudentLedEvents(term)
     trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)
@@ -78,6 +80,7 @@ def events(selectedTerm, activeTab, programID):
         otherEvents = otherEvents,
         listOfTerms = listOfTerms,
         rsvpedEventsID = rsvpedEventsID,
+        currentEventRsvpAmount = currentEventRsvpAmount,
         currentTime = currentTime,
         user = g.current_user,
         activeTab = activeTab,
@@ -307,6 +310,7 @@ def RemoveRSVP():
 
     currentRsvpParticipant = EventRsvp.get(EventRsvp.user == g.current_user, EventRsvp.event == event)
     currentRsvpParticipant.delete_instance()
+
     flash("Successfully unregistered for event!", "success")
     if 'from' in eventData:
         if eventData['from'] == 'ajax':
