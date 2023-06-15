@@ -3,6 +3,7 @@ $(document).ready(function(){
   $(".notifyInput").click(function updateInterest(){
     var programID = $(this).data("programid");
     var username = $(this).data('username');
+    
 
     var interest = $(this).is(':checked');
     var routeUrl = interest ? "addInterest" : "removeInterest";
@@ -69,9 +70,17 @@ $(document).ready(function(){
     console.log(bonnerChecked)
   if (bonnerChecked == 'on') {
     $("#noteDropdown").addClass('d-none')
+    $("#noteDrop").removeClass('d-none')
+    $("#noteD").hide()
+    
   } else {
+    $("#noteD").show()
     $("#noteDropdown").removeClass('d-none')
-  }});
+    $("#noteDrop").addClass('d-none')    
+    }});
+  
+
+
 
 
   $("#addBonnerNoteButton").click(function() {
