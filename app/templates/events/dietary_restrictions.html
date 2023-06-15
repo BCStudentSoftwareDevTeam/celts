@@ -39,7 +39,7 @@
     <li class="nav-item" role="presentation">
         <a class="nav-link" href="/eventsList/{{event.id}}/track_volunteers" role="tab" aria-selected="false">Track Volunteers</a>
     </li>
-    {% if (eventData.isFoodProvided) and (eventVolunteerData.dietRestriction) %}
+    {% if (eventData.isFoodProvided) and (hasDietRestriction) %}
     <li class="nav-item" role="presentation">
       <a class="nav-link active" href="/eventsList/{{eventData.id}}/dietary_restrictions" role="tab" aria-selected="True">Dietary Restricitons</a>
     </li>
@@ -47,50 +47,50 @@
   </ul>
 </div>
 
-<table class="table table-striped" id="attendingDietaryRestrictionsTable">
-  <thead>
-    <tr>
-      <th>Attending</th>
-    </tr>
-  </thead>
-  <tbody id="attendingDietaryTable">
-  {% if eventVolunteerData %}
-    {% for participant in eventVolunteerData %}
-      {% if not participant.rsvpWaitlist%}
-        {% if participant.dietRestriction %}
+{% if showAttending %}
+  <table class="table table-striped" id="attendingDietaryRestrictionsTable">
+    <thead>
+      <tr>
+        <th>Attending</th>
+      </tr>
+    </thead>
+    <tbody id="attendingDietaryTable">
+    {% if eventVolunteerData %}
+      {% for participant in eventVolunteerData %}
+        {% if participant.dietRestriction and participant.username not in waitListRsvp%}
         <tr>
             <td class="col-sm-1">{{participant.firstName}} {{participant.lastName}}</td>
 
             <td class="col-sm-6">{{participant.dietRestriction}}</td>
         </tr>
         {%endif%}
-      {% endif %}
-    {% endfor %}
-  {% endif %}
-   </tbody>
-</table>
+      {% endfor %}
+    {% endif %}
+    </tbody>
+  </table>
+{% endif %}
 
-<table class="table table-striped" id="waitlistDietaryRestrictionsTable">
-  <thead>
-    <tr>
-      <th>Wait list</th>
-    </tr>
-  </thead>
-  <tbody id="waitlistDietaryTable">
+{% if showWaitlist %}
+  <table class="table table-striped" id="waitlistDietaryRestrictionsTable">
+    <thead>
+      <tr>
+        <th>Wait list</th>
+      </tr>
+    </thead>
+    <tbody id="waitlistDietaryTable">
     {% if eventVolunteerData %}
-    {% for participant in eventVolunteerData %}
-      {% if participant.rsvpWaitlist%}
-        {% if participant.dietRestriction %}
-        <tr>
-            <td class="col-sm-1">{{participant.firstName}} {{participant.lastName}}</td>
+      {% for participant in eventVolunteerData %}
+        {% if participant.dietRestriction and participant.username in waitListRsvp%}
+          <tr>
+              <td class="col-sm-1">{{participant.firstName}} {{participant.lastName}}</td>
 
-            <td class="col-sm-6">{{participant.dietRestriction}}</td>
+              <td class="col-sm-6">{{participant.dietRestriction}}</td>
           </tr>
-          {%endif%}
-      {% endif %}
-    {% endfor %}
-  {% endif %}
-   </tbody>
-</table>
-{% [diet.dietRestriction for diet in eventVolunteerData] %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+    </tbody>
+  </table>
+{% endif %}
+{{eventRsvpData}}
 {% endblock %}

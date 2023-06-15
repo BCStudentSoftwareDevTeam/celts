@@ -88,6 +88,16 @@ def dietaryRestrictionsPage(eventID):
     participantsAndRsvp = (eventParticipantData + eventRsvpData)
     eventVolunteerData = []
     volunteerUser = []
+    waitListRsvp = []
+    attendingRsvp = []
+    showAttending = False
+    showWaitlist = False
+    for user in eventRsvpData:
+        if user.rsvpWaitlist:
+            waitListRsvp.append(user.user_id)
+        else:
+            attendingRsvp.append(user.user_id)
+
     for volunteer in participantsAndRsvp:
         if volunteer.user not in volunteerUser:
             eventVolunteerData.append(volunteer.user)
@@ -95,8 +105,17 @@ def dietaryRestrictionsPage(eventID):
         # if User.username[volunteer.user_id].dietRestriction:
         #     eventVolunteerData.append(volunteer)
 
+    for user in eventVolunteerData:
+        if user.username in waitListRsvp and user.dietRestriction:
+            showWaitlist = True
+        elif user.dietRestriction:
+            showAttending = True
+
+
     # participantDietRestricitons = list(User.select().where(User in participantsAndRsvp))
     
+    hasDietRestriction =  bool([user.dietRestriction for user in eventVolunteerData if user.dietRestriction])
+
     eventData = model_to_dict(event, recurse=False)
     eventData["program"] = event.singleProgram
     # trainedParticipantsList = trainedParticipants(event.singleProgram, g.current_term)
@@ -130,7 +149,13 @@ def dietaryRestrictionsPage(eventID):
                             eventParticipants = eventParticipants,
                             event = event,
                             eventData = eventData,
-                            eventWaitlistData = eventWaitlistData)
+                            eventWaitlistData = eventWaitlistData,
+                            hasDietRestriction = hasDietRestriction,
+                            eventRsvpData = eventRsvpData,
+                            waitListRsvp = waitListRsvp,
+                            attendingRsvp = attendingRsvp,
+                            showWaitlist = showWaitlist,
+                            showAttending = showAttending)
 
 
 @admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['POST'])
