@@ -26,10 +26,10 @@ def serviceCourseManagement(username=None):
         user = User.get(User.username==username) if username else g.current_user
     except DoesNotExist:
         abort(404)
-
+    
     isRequestingForSelf = g.current_user == user 
     if g.current_user.isCeltsAdmin or (g.current_user.isFaculty and isRequestingForSelf):
-        setRedirectTarget("/serviceLearning/courseManagement")
+        setRedirectTarget(request.full_path)
         courseDict = getServiceLearningCoursesData(user)
         termList = selectSurroundingTerms(g.current_term, prevTerms=0)
         return render_template('serviceLearning/slcManagement.html',
