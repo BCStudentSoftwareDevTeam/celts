@@ -22,11 +22,14 @@ from app.controllers.serviceLearning import serviceLearning_bp
 @serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
 @serviceLearning_bp.route('/serviceLearning/courseManagement/<username>', methods = ['GET'])
 def serviceCourseManagement(username=None):
-    if g.current_user.isStudent:
-        abort(403)
-    if g.current_user.isCeltsAdmin or g.current_user.isFaculty:
-        setRedirectTarget("/serviceLearning/courseManagement")
+    try:
         user = User.get(User.username==username) if username else g.current_user
+    except DoesNotExist:
+        abort(404)
+    
+    isRequestingForSelf = g.current_user == user 
+    if g.current_user.isCeltsAdmin or (g.current_user.isFaculty and isRequestingForSelf):
+        setRedirectTarget(request.full_path)
         courseDict = getServiceLearningCoursesData(user)
         termList = selectSurroundingTerms(g.current_term, prevTerms=0)
         return render_template('serviceLearning/slcManagement.html',
@@ -34,8 +37,8 @@ def serviceCourseManagement(username=None):
             courseDict=courseDict,
             termList=termList)
     else:
-        flash("Unauthorized to view page", 'warning')
-        return redirect(url_for('main.events', selectedTerm=g.current_term))
+        abort(403)
+        
 
 @serviceLearning_bp.route('/serviceLearning/viewProposal/<courseID>', methods=['GET'])
 @serviceLearning_bp.route('/serviceLearning/editProposal/upload/<courseID>', methods=['GET'])
@@ -47,7 +50,9 @@ def slcEditProposal(courseID):
     """
     instructors = CourseInstructor.select().where(CourseInstructor.course==courseID)
     courseInstructors = [instructor.user for instructor in instructors]
-    if g.current_user.isCeltsAdmin or g.current_user in courseInstructors:
+    isCourseCreator = Course.select().where(Course.createdBy == g.current_user, Course.id==courseID).exists()
+
+    if g.current_user.isCeltsAdmin or g.current_user in courseInstructors or isCourseCreator:
         course = Course.get_by_id(courseID)
         courseStatus = CourseStatus.get_by_id(course.status)
         courseStatusInt = courseStatus.get_id()
