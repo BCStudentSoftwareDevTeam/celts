@@ -22,9 +22,12 @@ from app.controllers.serviceLearning import serviceLearning_bp
 @serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
 @serviceLearning_bp.route('/serviceLearning/courseManagement/<username>', methods = ['GET'])
 def serviceCourseManagement(username=None):
-    user = User.get(User.username==username) if username else g.current_user
+    try:
+        user = User.get(User.username==username) if username else g.current_user
+    except DoesNotExist:
+        abort(404)
+
     isRequestingForSelf = g.current_user == user 
-    
     if g.current_user.isCeltsAdmin or (g.current_user.isFaculty and isRequestingForSelf):
         setRedirectTarget("/serviceLearning/courseManagement")
         courseDict = getServiceLearningCoursesData(user)
@@ -34,9 +37,8 @@ def serviceCourseManagement(username=None):
             courseDict=courseDict,
             termList=termList)
     else:
-        flash("Unauthorized to view page", 'warning')
-        return redirect(url_for('main.events', selectedTerm=g.current_term))
-    
+        abort(403)
+        
 
 @serviceLearning_bp.route('/serviceLearning/viewProposal/<courseID>', methods=['GET'])
 @serviceLearning_bp.route('/serviceLearning/editProposal/upload/<courseID>', methods=['GET'])
