@@ -90,8 +90,6 @@ $(document).ready(function() {
   });
 
   $("#addRsvpFromWaitlistBtn").on("click",function(){
-    // debugger
-    console.log("hello")
     let username = $('#addRsvpFromWaitlistBtn').val()
     let eventId = $('#eventID').val()
     $.ajax({
