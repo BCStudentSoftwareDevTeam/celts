@@ -65,13 +65,23 @@ function format24to12HourTime(timeStr){
  */
 $(document).ready(function() {
   if ( $("#startDatePicker").val() != $("#endDatePicker").val()){
-  
+
     calculateRecurringEventFrequency();
   }
 
     $("#attachmentObject").fileinput({
         allowedFileExtensions:["pdf","jpg","png","gif", "csv", "docx", "jpg", "jpeg", "jfif"]
     })
+
+    $("#checkRSVP").on("click", function() {
+      if ($("#checkRSVP").is(":checked")) {
+        $("#limitGroup").show();
+      }
+      else{
+        $("#limitGroup").hide();
+      }
+    })
+
   // Disable button when we are ready to submit
   $("#saveEvent").on('submit',function(event) {
       $(this).find("input[type=submit]").prop("disabled", true);
@@ -219,17 +229,18 @@ $(document).ready(function() {
         }
         });
     });
- $("#endDatePicker").change(function(){
+  $("#endDatePicker").change(function(){
      updateDate(this)
- });
-
- $("#startDatePicker").change(function(){
-     updateDate(this)
- });
-
-$("#inputCharacters").keyup(function(event){
-  setCharacterLimit(this, "#remainingCharacters")
   });
 
+  $("#startDatePicker").change(function(){
+     updateDate(this)
+  });
+
+  $("#inputCharacters").keyup(function(event){
+    setCharacterLimit(this, "#remainingCharacters")
+    });
+
   setCharacterLimit($("#inputCharacters"), "#remainingCharacters");
+
 });

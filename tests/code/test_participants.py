@@ -1,3 +1,4 @@
+from pprint import isrecursive
 import pytest
 from datetime import datetime, timedelta
 from peewee import IntegrityError, DoesNotExist
@@ -86,7 +87,9 @@ def test_addPersonToEvent():
         yesterday = datetime.today() - timedelta(days=1)
         newEvent = Event.create(name = "Test event 1234", term = 2,
                                 startDate=yesterday.date(),
-                                endDate=yesterday.date())
+                                endDate=yesterday.date(),
+                                isRsvpRequired = True)
+        
         newEvent = Event.get(name="Test event 1234")
 
         user = User.get_by_id("ramsayb2")
@@ -99,14 +102,40 @@ def test_addPersonToEvent():
         tomorrow = datetime.today() + timedelta(days=1)
         newEvent = Event.create(name = "Test event 1234", term = 2,
                                 startDate=tomorrow.date(),
-                                endDate=tomorrow.date())
+                                endDate=tomorrow.date(),
+                                isRsvpRequired = True)
+        
         newEvent = Event.get(name="Test event 1234")
 
         userAdded = addPersonToEvent(user, newEvent)
         assert userAdded == True, "User was not added"
         assert checkUserRsvp(user, newEvent), "No RSVP record was added"
         assert not checkUserVolunteer(user, newEvent), "A Volunteer record was added instead"
+        transaction.rollback()
 
+        tomorrow = datetime.today() + timedelta(days=1)
+        testWaitlistEvent = Event.create(name = "Waitlist Event",
+                                         term = 2,
+                                         startDate = tomorrow.date(),
+                                         endDate = tomorrow.date(),
+                                         isRsvpRequired = True,
+                                         rsvpLimit = 1)
+        waitlistEvent = Event.get(name="Waitlist Event")
+        rsvpUser = User.get_by_id("ayisie")
+        
+        addRsvp = addPersonToEvent(rsvpUser, waitlistEvent)
+        rsvpNoWaitlist = list(EventRsvp.select().where(EventRsvp.event_id == testWaitlistEvent.id, EventRsvp.rsvpWaitlist == False))
+        assert addRsvp == True
+        assert len(rsvpNoWaitlist) == 1
+
+        waitlistUser = User.get_by_id("partont")
+        addWaitlist = addPersonToEvent(waitlistUser, waitlistEvent)
+        rsvpWaitlist = EventRsvp.select().where(EventRsvp.event_id == testWaitlistEvent.id, EventRsvp.rsvpWaitlist == True)
+        
+        assert addWaitlist == True
+        assert len(rsvpWaitlist) == 1
+        assert len(rsvpNoWaitlist) == 1
+        
         transaction.rollback()
 
 @pytest.mark.integration
