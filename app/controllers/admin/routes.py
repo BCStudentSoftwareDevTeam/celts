@@ -192,8 +192,9 @@ def eventDisplay(eventId):
     if eventData['program'] and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
         bonnerCohorts = getBonnerCohorts(limit=5)
-
+    
     rule = request.url_rule
+
     # Event Edit
     if 'edit' in rule.rule:
         return render_template("admin/createEvent.html",
@@ -272,9 +273,13 @@ def addRecurringEvents():
 @admin_bp.route('/userProfile', methods=['POST'])
 def userProfile():
     volunteerName= request.form.copy()
-    username = volunteerName['searchStudentsInput'].strip("()")
-    user=username.split('(')[-1]
-    return redirect(url_for('main.viewUsersProfile', username=user))
+    if volunteerName['searchStudentsInput']:
+        username = volunteerName['searchStudentsInput'].strip("()")
+        user=username.split('(')[-1]
+        return redirect(url_for('main.viewUsersProfile', username=user))
+    else:
+        flash(f"You have not entered anything.", category='danger')
+        return redirect(url_for('admin.studentSearchPage'))
 
 @admin_bp.route('/search_student', methods=['GET'])
 def studentSearchPage():
