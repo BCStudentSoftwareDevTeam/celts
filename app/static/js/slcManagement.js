@@ -3,9 +3,6 @@ $(document).ready(function() {
   $('#withdrawModal').on('hidden.bs.modal', function () {
     $('.form-select').val('---');
   });
-  $("#withdrawBtn").on("click", function() {
-    withdraw();
-  });
   var statusKey = $(".status-key");
   statusKey.popover({
     trigger: "hover",
