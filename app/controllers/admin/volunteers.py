@@ -32,8 +32,6 @@ def updateVolunteerTable(eventID):
         print(f"No event found for {eventID}")
         abort(404)
 
-    program = event.singleProgram
-
     volunteerUpdated = updateEventParticipants(request.form)
     if volunteerUpdated:
         flash("Volunteer table succesfully updated", "success")
