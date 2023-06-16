@@ -29,10 +29,10 @@
     <tbody>
       {% for course in courseDict %}
         <tr>
-          <td>{{courseDict[course]['name']}}</td>
-          <td>{{courseDict[course]['creator']}}</td>
-          <td>{{courseDict[course]['faculty']|join(", ")}}</td>
-          <td>{{courseDict[course]['term'].description}}</td>
+          <td id="name-{{courseDict[course]['id']}}">{{courseDict[course]['name']}}</td>
+          <td id="creator-{{courseDict[course]['id']}}">{{courseDict[course]['creator']}}</td>
+          <td id="faculty-{{courseDict[course]['id']}}">{{courseDict[course]['faculty']|join(", ")}}</td>
+          <td id="term-{{courseDict[course]['id']}}">{{courseDict[course]['term'].description}}</td>
           <td>
             <a class="status-key text-dark" id="statusKey" href="javascript:void(0);" data-toggle="popover" title="Status" data-content="{{courseDict[course]['status']}}">{{courseDict[course]['status']}}</a>
           </td>
@@ -81,8 +81,8 @@
     </div>
   </div>
 </div>
-{% for course in courseDict %}
-<div class="modal fade" id="course-{{courseDict[course]['id']}}" tabindex="-1" aria-labelledby="renewModalLabel" aria-hidden="true">
+<!-- modal -->
+<div class="modal fade" id="renewModal" tabindex="-1" aria-labelledby="renewModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -94,25 +94,27 @@
             <tbody id="facultyTable">
               <tr>
                 <td class="fw-bold">Course Name</td>
-                <td> {{courseDict[course]['name']}}</td>
+                <td id="rMCourseNameCell"> 
+                  <!-- courseDict[course]['name'] -->
+                </td>
               </tr>
               <tr>
                 <td class="fw-bold"> Instructor(s)</td>
-                <td>
-                  {{courseDict[course]['faculty']|join(", ")}}
+                <td id="rMFacultyCell">
+                  <!-- courseDict[course]['faculty']|join(", ") -->
                 </td>
               </tr>
               <tr>
                 <td class="fw-bold">Status</td>
-                <td>
-                  {{courseDict[course]['status']}}
+                <td id="rMStatusCell">
+                  <!-- courseDict[course]['status'] -->
                 </td>
               </tr>
             </tbody>
           </table>
         <input id="courseID" type="hidden" value="">
         <p>Choose a term for the new course:</p>
-        <select class="form-select courseRenewal" id="renewCourse-{{courseDict[course]['id']}}">
+        <select class="form-select courseRenewal" id="rMTermSelect">
           <option value="---" disabled selected>Select Term</option>
           {% for term in termList %}
           <option id="termSelect" value="{{term}}">{{term.description}}</option>
@@ -126,5 +128,4 @@
     </div>
   </div>
 </div>
-{% endfor %}
 {% endblock %}

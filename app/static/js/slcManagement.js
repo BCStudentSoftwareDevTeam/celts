@@ -23,12 +23,20 @@ $(document).ready(function() {
   });
 });
 
+function updateRenewModal(courseID){
+  // updates renewModal with the course's information
+  $("#rMCourseNameCell").text($("#name-" + courseID).text())
+  $("#rMFacultyCell").text($("#faculty-" + courseID).text())
+  $("#rMStatusCell").text($("#status-" + courseID).text())
+}
 function changeAction(action){
+  console.log(action)
   courseID = action.id;
   // decides what to do based on selection
   if (action.value == "Renew"){
     $('#courseID').val(courseID);
-    $("#course-" + courseID).modal('show')
+    updateRenewModal(courseID)
+    $("#renewModal").modal('show')
   } else if (action.value == "View"){
     location = '/serviceLearning/viewProposal/' + courseID;
   } else if (action.value == "Withdraw"){
@@ -44,7 +52,7 @@ function changeAction(action){
 }
 function renew(){
     courseID = $("#courseID").val();
-    termID = $('#renewCourse-'+courseID).find(":selected").val()
+    termID = $('rMTermSelect').find(":selected").val()
     $.ajax({
       url: `/serviceLearning/renew/${courseID}/${termID}/`,
       type: "POST",
