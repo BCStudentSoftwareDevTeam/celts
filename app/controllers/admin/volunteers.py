@@ -89,7 +89,7 @@ def dietaryRestrictionsPage(eventID):
 
     #get unique list of users for each category waitlist/notwaitlist
     volunteerUser = list(set([obj.user for obj in participantsAndRsvp if not obj.rsvpWaitlist and obj.user.dietRestriction]))
-    waitlistUser = list(set([obj.user for obj in participantsAndRsvp if obj.rsvpWaitlist and obj.user.dietRestriciton]))
+    waitlistUser = list(set([obj.user for obj in participantsAndRsvp if obj.rsvpWaitlist and obj.user.dietRestriction]))
 
 
     eventData = model_to_dict(event, recurse=False)
