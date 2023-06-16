@@ -74,6 +74,7 @@ function renew(){
           console.log(status,error);
       }
     })
+    resetAllSelections()
 }
 function withdraw(){
   // uses hidden label to withdraw course
