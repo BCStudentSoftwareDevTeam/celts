@@ -50,7 +50,6 @@ def trackVolunteersPage(eventID):
             eventVolunteerData.append(volunteer)
             volunteerUser.append(volunteer.user)
     
-    eventWaitlistData = []
     eventWaitlistData = [volunteer for volunteer in eventVolunteerData if volunteer.rsvpWaitlist]
     eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
@@ -83,11 +82,12 @@ def dietaryRestrictionsPage(eventID):
     except DoesNotExist as e:
         print(f"No event found for {eventID}", e)
         abort(404)
-    eventParticipants = getEventParticipants(event)
+
     eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
     eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
     participantsAndRsvp = (eventParticipantData + eventRsvpData)
 
+    #get unique list of users for each category waitlist/notwaitlist
     volunteerUser = list(set([obj.user for obj in participantsAndRsvp if not obj.rsvpWaitlist]))
     waitlistUser = list(set([obj.user for obj in participantsAndRsvp if obj.rsvpWaitlist]))
 
