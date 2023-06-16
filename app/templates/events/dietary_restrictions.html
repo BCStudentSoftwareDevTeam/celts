@@ -51,7 +51,7 @@
   <table class="table table-striped" id="attendingDietaryRestrictionsTable">
     <thead>
       <tr>
-        <th>Attending</th>
+        <th colspan ="2">Attending</th>
       </tr>
     </thead>
     <tbody id="attendingDietaryTable">
@@ -59,9 +59,9 @@
       {% for participant in eventVolunteerData %}
         {% if participant.dietRestriction and participant.username not in waitListRsvp%}
         <tr>
-            <td class="col-sm-1">{{participant.firstName}} {{participant.lastName}}</td>
+            <td class="col-2">{{participant.firstName}} {{participant.lastName}}</td>
 
-            <td class="col-sm-6">{{participant.dietRestriction}}</td>
+            <td class="col-10">{{participant.dietRestriction}}</td>
         </tr>
         {%endif%}
       {% endfor %}
@@ -74,7 +74,7 @@
   <table class="table table-striped" id="waitlistDietaryRestrictionsTable">
     <thead>
       <tr>
-        <th>Wait list</th>
+        <th colspan ="2">Wait list</th>
       </tr>
     </thead>
     <tbody id="waitlistDietaryTable">
@@ -82,9 +82,9 @@
       {% for participant in eventVolunteerData %}
         {% if participant.dietRestriction and participant.username in waitListRsvp%}
           <tr>
-              <td class="col-sm-1">{{participant.firstName}} {{participant.lastName}}</td>
+              <td class="col-2">{{participant.firstName}} {{participant.lastName}}</td>
 
-              <td class="col-sm-6">{{participant.dietRestriction}}</td>
+              <td class="col-10">{{participant.dietRestriction}}</td>
           </tr>
         {% endif %}
       {% endfor %}
