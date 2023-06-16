@@ -24,6 +24,21 @@ def getVolunteers(query):
 
     return json.dumps(searchUsers(query))
 
+@admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['POST'])
+def updateVolunteerTable(eventID):
+    try:
+        event = Event.get_by_id(eventID)
+    except DoesNotExist as e:
+        print(f"No event found for {eventID}")
+        abort(404)
+
+    volunteerUpdated = updateEventParticipants(request.form)
+    if volunteerUpdated:
+        flash("Volunteer table succesfully updated", "success")
+    else:
+        flash("Error adding volunteer", "danger")
+    return redirect(url_for("admin.trackVolunteersPage", eventID=eventID))
+
 @admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['GET'])
 def trackVolunteersPage(eventID):
     try:
@@ -49,7 +64,6 @@ def trackVolunteersPage(eventID):
         if volunteer.user not in volunteerUser:
             eventVolunteerData.append(volunteer)
             volunteerUser.append(volunteer.user)
-    
     eventWaitlistData = [volunteer for volunteer in eventVolunteerData if volunteer.rsvpWaitlist]
     eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
@@ -73,52 +87,6 @@ def trackVolunteersPage(eventID):
                             eventWaitlistData = eventWaitlistData,
                             currentRsvpAmount = currentRsvpAmount)
 
-
-
-@admin_bp.route('/eventsList/<eventID>/dietary_restrictions', methods=['GET'])
-def dietaryRestrictionsPage(eventID):
-    try:
-        event = Event.get_by_id(eventID)
-    except DoesNotExist as e:
-        print(f"No event found for {eventID}", e)
-        abort(404)
-
-    eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
-    eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
-    participantsAndRsvp = (eventParticipantData + eventRsvpData)
-
-    #get unique list of users for each category waitlist/notwaitlist
-    volunteerUser = list(set([obj.user for obj in participantsAndRsvp if not obj.rsvpWaitlist and obj.user.dietRestriction]))
-    waitlistUser = list(set([obj.user for obj in participantsAndRsvp if obj.rsvpWaitlist and obj.user.dietRestriction]))
-
-
-    eventData = model_to_dict(event, recurse=False)
-    eventData["program"] = event.singleProgram
-
-
-    return render_template("/events/dietary_restrictions.html",
-                            volunteerUser = volunteerUser,
-                            waitlistUser = waitlistUser,
-                            event = event,
-                            eventData = eventData)
-
-
-@admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['POST'])
-def updateVolunteerTable(eventID):
-    try:
-        event = Event.get_by_id(eventID)
-    except DoesNotExist as e:
-        print(f"No event found for {eventID}")
-        abort(404)
-
-    program = event.singleProgram
-
-    volunteerUpdated = updateEventParticipants(request.form)
-    if volunteerUpdated:
-        flash("Volunteer table succesfully updated", "success")
-    else:
-        flash("Error adding volunteer", "danger")
-    return redirect(url_for("admin.trackVolunteersPage", eventID=eventID))
 
 
 @admin_bp.route('/addVolunteersToEvent/<eventId>', methods = ['POST'])
