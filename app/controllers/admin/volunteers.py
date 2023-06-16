@@ -24,6 +24,23 @@ def getVolunteers(query):
 
     return json.dumps(searchUsers(query))
 
+@admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['POST'])
+def updateVolunteerTable(eventID):
+    try:
+        event = Event.get_by_id(eventID)
+    except DoesNotExist as e:
+        print(f"No event found for {eventID}")
+        abort(404)
+
+    program = event.singleProgram
+
+    volunteerUpdated = updateEventParticipants(request.form)
+    if volunteerUpdated:
+        flash("Volunteer table succesfully updated", "success")
+    else:
+        flash("Error adding volunteer", "danger")
+    return redirect(url_for("admin.trackVolunteersPage", eventID=eventID))
+
 @admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['GET'])
 def trackVolunteersPage(eventID):
     try:
@@ -72,22 +89,6 @@ def trackVolunteersPage(eventID):
                             eventWaitlistData = eventWaitlistData,
                             currentRsvpAmount = currentRsvpAmount)
 
-@admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['POST'])
-def updateVolunteerTable(eventID):
-    try:
-        event = Event.get_by_id(eventID)
-    except DoesNotExist as e:
-        print(f"No event found for {eventID}")
-        abort(404)
-
-    program = event.singleProgram
-
-    volunteerUpdated = updateEventParticipants(request.form)
-    if volunteerUpdated:
-        flash("Volunteer table succesfully updated", "success")
-    else:
-        flash("Error adding volunteer", "danger")
-    return redirect(url_for("admin.trackVolunteersPage", eventID=eventID))
 
 
 @admin_bp.route('/addVolunteersToEvent/<eventId>', methods = ['POST'])
