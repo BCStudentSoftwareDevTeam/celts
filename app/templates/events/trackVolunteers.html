@@ -58,7 +58,7 @@
       {% endif %}
       <button type="button" class="btn btn-success" id="pastVolunteers" data-bs-toggle="modal" data-bs-target= "#addPastVolunteerModal" style="margin:5px;" {{disabled}}>Add Past Volunteers</button>
       {%endif%}
-      <a class="btn btn-warning" role="button" href= "/eventsList/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
+      <a class="btn btn-warning" role="button" href= "/event/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
     </div>
     {% if (not event.isPast) and (event.isRsvpRequired) and (event.rsvpLimit is not none) and (currentRsvpAmount[event.id] >= event.rsvpLimit) %}
     <div class="col-6 text-end">

@@ -147,7 +147,7 @@
           <tbody id = "facultyTable">
           {% for instructor in courseInstructors%}
               <tr>
-                <td> {{instructor.firstName }} {{instructor.lastName}}</td>
+                <td><a href="/serviceLearning/courseManagement/{{instructor.username}}"> {{instructor.firstName }} {{instructor.lastName}}</a></td>
                 <td>{{(', '.join(courseInstructors[instructor]))}}</td>
               </tr>
           {% endfor %}
