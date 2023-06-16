@@ -3,6 +3,12 @@ $(document).ready(function() {
   $('.modal').on('hidden.bs.modal', function () {
     resetAllSelections()
   });
+  $('#rMTermSelect').on('change', function(){
+    if ($('#rMTermSelect').value != "---"){
+      console.log("This should enable the thing!")
+      $('#renewButton').prop('disabled', false);
+    }
+  })
   var statusKey = $(".status-key");
   statusKey.popover({
     trigger: "hover",
@@ -22,6 +28,7 @@ $(document).ready(function() {
 
 function resetAllSelections(){
   $('.form-select').val('---');
+  $('#renewButton').prop('disabled', true);
 }
 function updateRenewModal(courseID){
   // updates renewModal with the course's information
@@ -50,7 +57,7 @@ function changeAction(action){
     reviewCourses(courseID)
   }
   // leave these two selected until the modal is closed
-  if (courseAction != "Renew" || courseAction != "Withdraw"){
+  if (courseAction != "Renew" && courseAction != "Withdraw"){
     resetAllSelections()
   }
 }
