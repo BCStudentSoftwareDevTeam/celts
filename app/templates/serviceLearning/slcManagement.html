@@ -51,6 +51,7 @@
       {% endfor %}
     </tbody>
   </table>
+  <input id="courseID" type="hidden" value="">
   {% if not courseDict %}
     <p class="text-center">{{user.firstName}} {{user.lastName}} has no associated course proposals.</p>
   {% endif %}
@@ -68,7 +69,6 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <input id="courseID" type="hidden" value="">
         <p>Are you sure you want to withdraw this service-learning course proposal?<br><br>
           <span class="text-danger bi bi-exclamation-triangle-fill"></span>
           <b>Note: This action is irreversible. Once withdrawn, the proposal will be forever deleted.</b>
@@ -81,7 +81,6 @@
     </div>
   </div>
 </div>
-<!-- modal -->
 <div class="modal fade" id="renewModal" tabindex="-1" aria-labelledby="renewModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -94,25 +93,18 @@
             <tbody id="facultyTable">
               <tr>
                 <td class="fw-bold">Course Name</td>
-                <td id="rMCourseNameCell"> 
-                  <!-- courseDict[course]['name'] -->
-                </td>
+                <td id="rMCourseNameCell"></td>
               </tr>
               <tr>
                 <td class="fw-bold"> Instructor(s)</td>
-                <td id="rMFacultyCell">
-                  <!-- courseDict[course]['faculty']|join(", ") -->
-                </td>
+                <td id="rMFacultyCell"></td>
               </tr>
               <tr>
                 <td class="fw-bold">Status</td>
-                <td id="rMStatusCell">
-                  <!-- courseDict[course]['status'] -->
-                </td>
+                <td id="rMStatusCell"></td>
               </tr>
             </tbody>
           </table>
-        <input id="courseID" type="hidden" value="">
         <p>Choose a term for the new course:</p>
         <select class="form-select courseRenewal" id="rMTermSelect">
           <option value="---" disabled selected>Select Term</option>
