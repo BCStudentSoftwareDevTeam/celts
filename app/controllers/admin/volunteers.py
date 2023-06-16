@@ -50,7 +50,6 @@ def trackVolunteersPage(eventID):
             eventVolunteerData.append(volunteer)
             volunteerUser.append(volunteer.user)
     
-    hasDietRestriction =  bool([user.dietRestriction for user in volunteerUser if user.dietRestriction])
     eventWaitlistData = []
     eventWaitlistData = [volunteer for volunteer in eventVolunteerData if volunteer.rsvpWaitlist]
     eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
@@ -73,8 +72,7 @@ def trackVolunteersPage(eventID):
                             bannedUsers = bannedUsers,
                             trainedParticipantsList = trainedParticipantsList,
                             eventWaitlistData = eventWaitlistData,
-                            currentRsvpAmount = currentRsvpAmount,
-                            hasDietRestriction = hasDietRestriction)
+                            currentRsvpAmount = currentRsvpAmount)
 
 
 
@@ -89,33 +87,9 @@ def dietaryRestrictionsPage(eventID):
     eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
     eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
     participantsAndRsvp = (eventParticipantData + eventRsvpData)
-    eventVolunteerData = []
-    volunteerUser = []
-    waitListRsvp = []
-    attendingRsvp = []
-    showAttending = False
-    showWaitlist = False
-    for user in eventRsvpData:
-        if user.rsvpWaitlist:
-            waitListRsvp.append(user.user_id)
-        else:
-            attendingRsvp.append(user.user_id)
 
-    for volunteer in participantsAndRsvp:
-        if volunteer.user not in volunteerUser:
-            eventVolunteerData.append(volunteer.user)
-            volunteerUser.append(volunteer.user)
-
-    hasDietRestriction =  bool([user.dietRestriction for user in volunteerUser if user.dietRestriction])
-
-    for user in eventVolunteerData:
-        if user.username in waitListRsvp and user.dietRestriction:
-            showWaitlist = True
-        elif user.dietRestriction:
-            showAttending = True
-
-
-    
+    volunteerUser = list(set([obj.user for obj in participantsAndRsvp if not obj.rsvpWaitlist]))
+    waitlistUser = list(set([obj.user for obj in participantsAndRsvp if obj.rsvpWaitlist]))
 
 
     eventData = model_to_dict(event, recurse=False)
@@ -123,16 +97,10 @@ def dietaryRestrictionsPage(eventID):
 
 
     return render_template("/events/dietary_restrictions.html",
-                            eventVolunteerData = eventVolunteerData,
-                            eventParticipants = eventParticipants,
+                            volunteerUser = volunteerUser,
+                            waitlistUser = waitlistUser,
                             event = event,
-                            eventData = eventData,
-                            hasDietRestriction = hasDietRestriction,
-                            eventRsvpData = eventRsvpData,
-                            waitListRsvp = waitListRsvp,
-                            attendingRsvp = attendingRsvp,
-                            showWaitlist = showWaitlist,
-                            showAttending = showAttending)
+                            eventData = eventData)
 
 
 @admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['POST'])

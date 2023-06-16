@@ -197,23 +197,10 @@ def eventDisplay(eventId):
     
     rule = request.url_rule
 
-    eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
-    eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
-    participantsAndRsvp = (eventParticipantData + eventRsvpData)
-    eventVolunteerData = []
-    volunteerUser = []
-    for volunteer in participantsAndRsvp:
-        if volunteer.user not in volunteerUser:
-            eventVolunteerData.append(volunteer)
-            volunteerUser.append(volunteer.user)
-
-    hasDietRestriction =  bool([user.dietRestriction for user in volunteerUser if user.dietRestriction])
-
     # Event Edit
     if 'edit' in rule.rule:
         return render_template("admin/createEvent.html",
                                 eventData = eventData,
-                                hasDietRestriction = hasDietRestriction,
                                 futureTerms=futureTerms,
                                 isPastEvent = isPastEvent,
                                 requirements = requirements,
@@ -240,7 +227,6 @@ def eventDisplay(eventId):
         UserParticipatedTrainingEvents = getUserParticipatedTrainingEvents(eventData['program'], g.current_user, g.current_term)
         return render_template("eventView.html",
                                 eventData = eventData,
-                                hasDietRestriction = hasDietRestriction,
                                 isPastEvent = isPastEvent,
                                 userHasRSVPed = userHasRSVPed,
                                 programTrainings = UserParticipatedTrainingEvents,

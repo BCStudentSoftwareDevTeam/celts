@@ -39,7 +39,7 @@
     <li class="nav-item" role="presentation">
         <a class="nav-link" href="/eventsList/{{event.id}}/track_volunteers" role="tab" aria-selected="false">Track Volunteers</a>
     </li>
-    {% if (eventData.isFoodProvided) and (hasDietRestriction) %}
+    {% if (eventData.isFoodProvided) %}
     <li class="nav-item" role="presentation">
       <a class="nav-link active" href="/eventsList/{{eventData.id}}/dietary_restrictions" role="tab" aria-selected="True">Dietary Restricitons</a>
     </li>
@@ -47,7 +47,7 @@
   </ul>
 </div>
 
-{% if showAttending %}
+{% if volunteerUser %}
   <table class="table table-striped" id="attendingDietaryRestrictionsTable">
     <thead>
       <tr>
@@ -55,22 +55,20 @@
       </tr>
     </thead>
     <tbody id="attendingDietaryTable">
-    {% if eventVolunteerData %}
-      {% for participant in eventVolunteerData %}
-        {% if participant.dietRestriction and participant.username not in waitListRsvp%}
-        <tr>
-            <td class="col-2">{{participant.firstName}} {{participant.lastName}}</td>
+    {% for participant in volunteerUser %}
+      {% if participant.dietRestriction %}
+      <tr>
+          <td class="col-2">{{participant.firstName}} {{participant.lastName}}</td>
 
-            <td class="col-10">{{participant.dietRestriction}}</td>
-        </tr>
-        {%endif%}
-      {% endfor %}
-    {% endif %}
+          <td class="col-10">{{participant.dietRestriction}}</td>
+      </tr>
+      {%endif%}
+    {% endfor %}
     </tbody>
   </table>
 {% endif %}
 
-{% if showWaitlist %}
+{% if waitlistUser %}
   <table class="table table-striped" id="waitlistDietaryRestrictionsTable">
     <thead>
       <tr>
@@ -78,9 +76,8 @@
       </tr>
     </thead>
     <tbody id="waitlistDietaryTable">
-    {% if eventVolunteerData %}
-      {% for participant in eventVolunteerData %}
-        {% if participant.dietRestriction and participant.username in waitListRsvp%}
+      {% for participant in waitlistUser %}
+        {% if participant.dietRestriction %}
           <tr>
               <td class="col-2">{{participant.firstName}} {{participant.lastName}}</td>
 
@@ -88,7 +85,6 @@
           </tr>
         {% endif %}
       {% endfor %}
-    {% endif %}
     </tbody>
   </table>
 {% endif %}
