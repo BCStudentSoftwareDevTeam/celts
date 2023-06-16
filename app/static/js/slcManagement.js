@@ -1,7 +1,7 @@
 $(document).ready(function() {
   // if they decide not to withdraw, change selection back to "select action"
-  $('#withdrawModal').on('hidden.bs.modal', function () {
-    $('.form-select').val('---');
+  $('.modal').on('hidden.bs.modal', function () {
+    resetAllSelections()
   });
   var statusKey = $(".status-key");
   statusKey.popover({
@@ -20,6 +20,9 @@ $(document).ready(function() {
   });
 });
 
+function resetAllSelections(){
+  $('.form-select').val('---');
+}
 function updateRenewModal(courseID){
   // updates renewModal with the course's information
   $("#rMCourseNameCell").text($("#name-" + courseID).text())
@@ -28,22 +31,27 @@ function updateRenewModal(courseID){
 }
 function changeAction(action){
   courseID = action.id;
+  courseAction = action.value
   // decides what to do based on selection
-  if (action.value == "Renew"){
+  if (courseAction == "Renew"){
     $('#courseID').val(courseID);
     updateRenewModal(courseID)
     $("#renewModal").modal('show')
-  } else if (action.value == "View"){
+  } else if (courseAction == "View"){
     location = '/serviceLearning/viewProposal/' + courseID;
-  } else if (action.value == "Withdraw"){
+  } else if (courseAction == "Withdraw"){
     $('#courseID').val(courseID);
     $('#withdrawModal').modal('show');
-  } else if(action.value == "Edit"){
+  } else if(courseAction == "Edit"){
     location = '/serviceLearning/editProposal/' + courseID;
-  } else if(action.value == "Print"){
+  } else if(courseAction == "Print"){
     slcPrintPDF(courseID)
-  } else if (action.value == "Review"){
+  } else if (courseAction == "Review"){
     reviewCourses(courseID)
+  }
+  // leave these two selected until the modal is closed
+  if (courseAction != "Renew" || courseAction != "Withdraw"){
+    resetAllSelections()
   }
 }
 function renew(){
