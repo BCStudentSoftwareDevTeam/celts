@@ -60,7 +60,7 @@
           <td class="col">{{participant.dietRestriction}}</td>
         </tr>
       {% endfor %}
-      {% if event.isPast and waitlistUser %}
+      {% if event.isPast %}
         {% for participant in waitlistUser %}
           <tr>
             <td class="col-auto" nowrap>>{{participant.firstName}} {{participant.lastName}}</td>
