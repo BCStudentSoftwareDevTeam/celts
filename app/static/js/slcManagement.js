@@ -30,7 +30,6 @@ function updateRenewModal(courseID){
   $("#rMStatusCell").text($("#status-" + courseID).text())
 }
 function changeAction(action){
-  console.log(action)
   courseID = action.id;
   // decides what to do based on selection
   if (action.value == "Renew"){
