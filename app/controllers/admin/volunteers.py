@@ -49,6 +49,8 @@ def trackVolunteersPage(eventID):
         if volunteer.user not in volunteerUser:
             eventVolunteerData.append(volunteer)
             volunteerUser.append(volunteer.user)
+    
+    hasDietRestriction =  bool([user.dietRestriction for user in volunteerUser if user.dietRestriction])
     eventWaitlistData = []
     eventWaitlistData = [volunteer for volunteer in eventVolunteerData if volunteer.rsvpWaitlist]
     eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
@@ -71,7 +73,8 @@ def trackVolunteersPage(eventID):
                             bannedUsers = bannedUsers,
                             trainedParticipantsList = trainedParticipantsList,
                             eventWaitlistData = eventWaitlistData,
-                            currentRsvpAmount = currentRsvpAmount)
+                            currentRsvpAmount = currentRsvpAmount,
+                            hasDietRestriction = hasDietRestriction)
 
 
 
@@ -102,8 +105,8 @@ def dietaryRestrictionsPage(eventID):
         if volunteer.user not in volunteerUser:
             eventVolunteerData.append(volunteer.user)
             volunteerUser.append(volunteer.user)
-        # if User.username[volunteer.user_id].dietRestriction:
-        #     eventVolunteerData.append(volunteer)
+
+    hasDietRestriction =  bool([user.dietRestriction for user in volunteerUser if user.dietRestriction])
 
     for user in eventVolunteerData:
         if user.username in waitListRsvp and user.dietRestriction:
@@ -112,44 +115,18 @@ def dietaryRestrictionsPage(eventID):
             showAttending = True
 
 
-    # participantDietRestricitons = list(User.select().where(User in participantsAndRsvp))
     
-    hasDietRestriction =  bool([user.dietRestriction for user in eventVolunteerData if user.dietRestriction])
+
 
     eventData = model_to_dict(event, recurse=False)
     eventData["program"] = event.singleProgram
-    # trainedParticipantsList = trainedParticipants(event.singleProgram, g.current_term)
-    # eventParticipants = getEventParticipants(event)
-    # isProgramManager = g.current_user.isProgramManagerForEvent(event)
-    # bannedUsers = [row.user for row in getBannedUsers(event.singleProgram)]
-    # if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
-    #     abort(403)
 
-    # eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
-    # eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
-    # participantsAndRsvp = (eventParticipantData + eventRsvpData)
-    # eventVolunteerData = []
-    # volunteerUser = []
-    # for volunteer in participantsAndRsvp:
-    #     if volunteer.user not in volunteerUser:
-    #         eventVolunteerData.append(volunteer)
-    #         volunteerUser.append(volunteer.user)
-    eventWaitlistData = []
-    # eventWaitlistData = [volunteer for volunteer in eventVolunteerData if volunteer.rsvpWaitlist]
-    # eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
-
-    # recurringEventID = event.recurringId # query Event Table to get recurringId using Event ID.
-    # recurringEventStartDate = event.startDate
-    # recurringVolunteers = getPreviousRecurringEventData(recurringEventID)
-
-    # currentRsvpAmount = getEventRsvpCountsForTerm(g.current_term)
 
     return render_template("/events/dietary_restrictions.html",
                             eventVolunteerData = eventVolunteerData,
                             eventParticipants = eventParticipants,
                             event = event,
                             eventData = eventData,
-                            eventWaitlistData = eventWaitlistData,
                             hasDietRestriction = hasDietRestriction,
                             eventRsvpData = eventRsvpData,
                             waitListRsvp = waitListRsvp,
