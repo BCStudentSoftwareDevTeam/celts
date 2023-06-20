@@ -67,25 +67,26 @@ $(document).ready(function(){
 
   $("#addVisibility").click(function() { 
     var bonnerChecked = $("input[name='bonner']:checked").val()
-    console.log(bonnerChecked)
+    
   if (bonnerChecked == 'on') {
     $("#noteDropdown").addClass('d-none')
     $("#noteDrop").removeClass('d-none')
-    $("#noteD").hide()
+    $("#noteD").addClass('d-none')
     
   } else {
-    $("#noteD").show()
+    $("#noteD").removeClass('d-none')
     $("#noteDropdown").removeClass('d-none')
     $("#noteDrop").addClass('d-none')    
     }});
   
 
-
-
-
   $("#addBonnerNoteButton").click(function() {
     $("#noteModal").modal("toggle");
-    $("#bonnerInput").attr("checked", true)
+    $("#bonnerInput").attr("checked", true);
+    $("#noteD").addClass('d-none');
+    $("#noteDropdown").addClass('d-none');
+    $("#noteDrop").removeClass('d-none') 
+
   });
 
   $('#addNoteForm').submit(function(event) {
