@@ -429,18 +429,18 @@ textareas.each(function(index, textarea) {
 const textareas = $(".textarea");
 const slcQuestionWordCount = $(".slcQuestionWordCount")
 
-function countWords(text){
-  const words = text.split(/\s+/);
+function calculateCountWords(text){
+  const words = text.split(/\s+|[;:,.~?!]/);
   return words.length - 1;
 }
 
 textareas.each(function(index, textarea){
   $(textarea).on("input", function(){
-    const wordCount = countWords($(textarea).val());
+    const wordCount = calculateCountWords($(textarea).val());
     $(slcQuestionWordCount[index]).html(wordCount);
 
   });
-  const initialWordCount = countWords($(textarea).val());
+  const initialWordCount = calculateCountWords($(textarea).val());
   $(slcQuestionWordCount[index]).html(initialWordCount);
 });
 
