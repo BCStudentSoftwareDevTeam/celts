@@ -118,7 +118,7 @@ $(document).ready(function() {
   });
 
   $("#selectAllVolunteers").click(function(){
-      $("#addPastVolunteerModal input[type=checkbox]").prop('checked', true)
+      $("#addVolunteerModal input[type=checkbox]").prop('checked', true)
   });
 
   function handleBanned(username, eventId, index){

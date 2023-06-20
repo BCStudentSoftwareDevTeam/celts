@@ -234,12 +234,18 @@
 <div class="modal fade float-start" id="addVolunteerModal" tabindex="-1" aria-labelledby="addVolunteerModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
+      <form action="/addVolunteersToEvent/{{event.id}}" method="POST">
       <div class="modal-header">
-        {% set modalTitle = "Add Volunteer to Waitlist" if rsvpFull else("Add Volunteer RSVP" if rsvpNeeded else "Add Volunteer") %}
-        <h5 class="modal-title" id="exampleModalLabel">{{modalTitle}}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        {% if event.isPast %}
+          <h5 class="modal-title">Add Past Volunteers</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        {% else %}
+          {% set modalTitle = "Add Volunteer to Waitlist" if rsvpFull else("Add Volunteer RSVP" if rsvpNeeded else "Add Volunteer") %}
+          <h5 class="modal-title" id="exampleModalLabel">{{modalTitle}}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        {% endif %}
       </div>
-      <div class="modal-body">
+      <div class="modal-body"> 
         <div class="input-group">
           <div class="form-group input-group-x form-outline ui-widget" style="width:80%;">
             <input type="input" id="addVolunteerInput" class="form-control" placeholder="Search" autocomplete="off"/>
@@ -247,44 +253,36 @@
           <button type="button" class="btn btn-primary btn-sm">
             <i class="bi bi-search ms-0"></i>
           </button>
+          <div class="modal-body pl-5">
+            {%for participant in recurringVolunteers%}
+              <table>
+                <input class="m-2" type="checkbox" id ="recurringVolunteerCheckbox_{{loop.index}}" name="volunteer[]" value= {{participant}} />
+                <label class="form-check-label" for="recurringVolunteerCheckbox_{{loop.index}}"> {{participant.firstName}} {{participant.lastName}}  </label>
+              </table>
+            {% endfor %}
+        </div>
         </div>
         <br>
         <h5>Selected Volunteers</h5>
         <ul class="list-unstyled" id= "addVolunteerList">
         </ul>
       </div>
+      {% if event.isPast %}
+      <div class="modal-footer" >
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close </button>
+        <button type="button" id = "selectAllVolunteers" class="btn btn-secondary" >Select All</button>
+        <button id="AddPastVolunteerButton" type="submit" class="btn btn-primary" >Add Volunteers</button>
+      </div>
+      {% else %}
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
         {% set buttonName = "Add to Waitlist" if rsvpFull else ("Add RSVP" if rsvpNeeded else "Add Participant") %}
         <button id="selectVolunteerButton" type="button" class="btn btn-primary" disabled>{{buttonName}}</button>
       </div>
+      {% endif %}
     </div>
   </div>
 </div>
-<!-- Modal for Add Past Volunteers-->
-<div class="modal fade float-start" id="addPastVolunteerModal" tabindex="-1" aria-labelledby="addPastVolunteerModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <form action="/addVolunteersToEvent/{{event.id}}" method="POST">
-          <div class="modal-header">
-            <h5 class="modal-title">Add Past Volunteers</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-              <div class="modal-body pl-5">
-                  {%for participant in recurringVolunteers%}
-                    <table>
-                      <input class="m-2" type="checkbox" id ="recurringVolunteerCheckbox_{{loop.index}}" name="volunteer[]" value= {{participant}} />
-                      <label class="form-check-label" for="recurringVolunteerCheckbox_{{loop.index}}"> {{participant.firstName}} {{participant.lastName}}  </label>
-                    </table>
-                  {% endfor %}
-              </div>
-          <div class="modal-footer" >
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close </button>
-            <button type="button" id = "selectAllVolunteers" class="btn btn-secondary" >Select All</button>
-            <button id="AddPastVolunteerButton" type="submit" class="btn btn-primary" >Add Volunteers</button>
-          </div>
-      </form>
-    </div>
-  </div>
-</div>
+
+
 {% endblock %}
