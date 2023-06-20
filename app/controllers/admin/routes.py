@@ -278,7 +278,7 @@ def userProfile():
         user=username.split('(')[-1]
         return redirect(url_for('main.viewUsersProfile', username=user))
     else:
-        flash(f"Please enter the first name or the username of the user you would like to search.", category='danger')
+        flash(f"Please enter the first name or the username of the student you would like to search for.", category='danger')
         return redirect(url_for('admin.studentSearchPage'))
 
 @admin_bp.route('/search_student', methods=['GET'])
