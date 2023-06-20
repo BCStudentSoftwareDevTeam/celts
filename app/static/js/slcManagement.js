@@ -3,9 +3,8 @@ $(document).ready(function() {
   $('.modal').on('hidden.bs.modal', function () {
     resetAllSelections()
   });
-  $('#rMTermSelect').on('change', function(){
-    if ($('#rMTermSelect').value != "---"){
-      console.log("This should enable the thing!")
+  $('#renewTerm').on('change', function(){
+    if ($('#renewTerm').value != "---"){
       $('#renewButton').prop('disabled', false);
     }
   })
@@ -32,9 +31,9 @@ function resetAllSelections(){
 }
 function updateRenewModal(courseID){
   // updates renewModal with the course's information
-  $("#rMCourseNameCell").text($("#name-" + courseID).text())
-  $("#rMFacultyCell").text($("#faculty-" + courseID).text())
-  $("#rMStatusCell").text($("#status-" + courseID).text())
+  $("#renewName").text($("#name-" + courseID).text())
+  $("#renewFaculty").text($("#faculty-" + courseID).text())
+  $("#renewStatus").text($("#status-" + courseID).text())
 }
 function changeAction(action){
   courseID = action.id;
@@ -63,7 +62,7 @@ function changeAction(action){
 }
 function renew(){
     courseID = $("#courseID").val();
-    termID = $('#rMTermSelect').find(":selected").val()
+    termID = $('#renewTerm').find(":selected").val()
     $.ajax({
       url: `/serviceLearning/renew/${courseID}/${termID}/`,
       type: "POST",

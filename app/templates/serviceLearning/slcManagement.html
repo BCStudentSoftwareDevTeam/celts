@@ -93,20 +93,20 @@
             <tbody id="facultyTable">
               <tr>
                 <td class="fw-bold">Course Name</td>
-                <td id="rMCourseNameCell"></td>
+                <td id="renewName"></td>
               </tr>
               <tr>
                 <td class="fw-bold"> Instructor(s)</td>
-                <td id="rMFacultyCell"></td>
+                <td id="renewFaculty"></td>
               </tr>
               <tr>
                 <td class="fw-bold">Status</td>
-                <td id="rMStatusCell"></td>
+                <td id="renewStatus"></td>
               </tr>
             </tbody>
           </table>
         <p>Choose a term for the new course:</p>
-        <select class="form-select courseRenewal" id="rMTermSelect">
+        <select class="form-select courseRenewal" id="renewTerm">
           <option value="---" disabled selected>Select Term</option>
           {% for term in termList %}
           <option value="{{term}}">{{term.description}}</option>
