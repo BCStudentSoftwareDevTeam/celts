@@ -114,7 +114,7 @@ class EmailHandler:
 
     def replace_general_template_placeholders(self, email_body=None):
         """ Replaces all template placeholders except name """
-        event_link = f"{self.url_domain}/eventsList/{self.event.id}/edit"
+        event_link = f"{self.url_domain}/event/{self.event.id}/edit"
 
         new_body = email_body.format(event_name=self.event.name,
             location=self.event.location,
