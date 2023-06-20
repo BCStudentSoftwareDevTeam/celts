@@ -51,7 +51,7 @@
       {% endfor %}
     </tbody>
   </table>
-  <input id="courseID" type="hidden" value="">
+  <input id="courseID" type="hidden">
   {% if not courseDict %}
     <p class="text-center">{{user.firstName}} {{user.lastName}} has no associated course proposals.</p>
   {% endif %}
@@ -76,7 +76,7 @@
       </div>
       <div class="modal-footer justify-content-between">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary" id="withdrawBtn" onclick="withdraw()">Withdraw</button>
+        <button type="button" class="btn btn-primary" id="withdrawBtn">Withdraw</button>
       </div>
     </div>
   </div>
@@ -115,7 +115,7 @@
       </div>
       <div class="modal-footer justify-content-between">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary" onclick="renew()" id="renewButton" disabled>Renew</button>
+        <button type="button" class="btn btn-primary" id="renewBtn" disabled>Renew</button>
       </div>
     </div>
   </div>

@@ -5,9 +5,11 @@ $(document).ready(function() {
   });
   $('#renewTerm').on('change', function(){
     if ($('#renewTerm').value != "---"){
-      $('#renewButton').prop('disabled', false);
+      $('#renewBtn').prop('disabled', false);
     }
-  })
+  });
+  $("#withdrawBtn").on("click", withdraw);
+  $("#renewBtn").on("click", renew);
   var statusKey = $(".status-key");
   statusKey.popover({
     trigger: "hover",
@@ -27,7 +29,7 @@ $(document).ready(function() {
 
 function resetAllSelections(){
   $('.form-select').val('---');
-  $('#renewButton').prop('disabled', true);
+  $('#renewBtn').prop('disabled', true);
 }
 function updateRenewModal(courseID){
   // updates renewModal with the course's information
