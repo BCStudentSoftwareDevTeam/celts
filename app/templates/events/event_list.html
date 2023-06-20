@@ -22,7 +22,7 @@
       <div class="form-group">
         <select class="form-select" name='eventTerm' id='inputTerm' onchange="location=this.value">
           {% for term in listOfTerms %}
-            <option value='/eventsList/{{term}}/{{activeTab}}/{{programID}}' {{ "selected" if selectedTerm.id == term.id }}>{{term.description}} </option>
+            <option value='/event/{{term}}/{{activeTab}}/{{programID}}' {{ "selected" if selectedTerm.id == term.id }}>{{term.description}} </option>
           {% endfor %}
         </select>
       </div>
@@ -78,9 +78,9 @@
               {% endif %}
             {% endif %}
             {% if user.isCeltsAdmin or user.isProgramManagerFor(event.singleProgram)%}
-              <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+              <td> <a href="/event/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
             {% else %}
-              <td> <a href="/eventsList/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
+              <td> <a href="/event/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
             {% endif %}
             <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
             <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
@@ -148,9 +148,9 @@
                     {% for event in events %}
                       <tr>
                           {% if user.isCeltsAdmin or user.isProgramManagerFor(event.singleProgram) %}
-                            <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+                            <td> <a href="/event/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
                           {% else %}
-                            <td> <a href="/eventsList/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
+                            <td> <a href="/event/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
                           {% endif %}
                         <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
                         <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>

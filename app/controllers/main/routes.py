@@ -49,13 +49,13 @@ def landingPage():
                                                      term = g.current_term,
                                                      programsWithEventsList = programsWithEventsList)
 
-@main_bp.route('/goToEventsList/<programID>', methods=['GET'])
+@main_bp.route('/goToevent/<programID>', methods=['GET'])
 def goToEventsList(programID):
     return {"activeTab": getActiveEventTab(programID)}
 
-@main_bp.route('/eventsList/<selectedTerm>', methods=['GET'], defaults={'activeTab': "studentLedEvents", 'programID': 0})
-@main_bp.route('/eventsList/<selectedTerm>/<activeTab>', methods=['GET'], defaults={'programID': 0})
-@main_bp.route('/eventsList/<selectedTerm>/<activeTab>/<programID>', methods=['GET'])
+@main_bp.route('/event/<selectedTerm>', methods=['GET'], defaults={'activeTab': "studentLedEvents", 'programID': 0})
+@main_bp.route('/event/<selectedTerm>/<activeTab>', methods=['GET'], defaults={'programID': 0})
+@main_bp.route('/event/<selectedTerm>/<activeTab>/<programID>', methods=['GET'])
 def events(selectedTerm, activeTab, programID):
     currentTerm = g.current_term
     if selectedTerm:

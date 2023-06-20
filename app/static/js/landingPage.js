@@ -16,13 +16,13 @@ $(document).ready(function(){
     let term = $(this).data("term")
     let programID = $(this).data("program_id")
     $.ajax({
-      url: "/goToEventsList/"+programID,
+      url: "/goToevent/"+programID,
       type: "GET",
       success: function(response) {
         if (response.activeTab === "studentLedEvents"){
-          window.location.href += "eventsList/"+term+"/"+response.activeTab+"/"+programID
+          window.location.href += "event/"+term+"/"+response.activeTab+"/"+programID
         } else {
-          window.location.href += "eventsList/"+term+"/"+response.activeTab
+          window.location.href += "event/"+term+"/"+response.activeTab
         }
       }
     });
