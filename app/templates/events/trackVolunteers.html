@@ -47,12 +47,6 @@
   <div class='form-group d-flex row'>
     <div class="col-6">
       <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add Volunteer</a>
-      {% if event.isRecurring and not event.isFirstRecurringEvent%}
-      {% if recurringVolunteers | count == 0  %}
-      {% set disabled = "disabled" %}
-      {% endif %}
-      <button type="button" class="btn btn-success" id="pastVolunteers" data-bs-toggle="modal" data-bs-target= "#addPastVolunteerModal" style="margin:5px;" {{disabled}}>Add Past Volunteers</button>
-      {%endif%}
       <a class="btn btn-warning" role="button" href= "/event/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
     </div>
     {% if (not event.isPast) and (event.isRsvpRequired) and (event.rsvpLimit is not none) and (currentRsvpAmount[event.id] >= event.rsvpLimit) %}
@@ -249,12 +243,25 @@
           </button>
         </div>
         <br>
+        {% if event.isRecurring and not event.isFirstRecurringEvent%}
+          {% if recurringVolunteers | count != 0  %}
+            <div class="modal-body pl-5">
+              {%for participant in recurringVolunteers%}
+                <table>
+                  <input class="m-2" type="checkbox" id ="recurringVolunteerCheckbox_{{loop.index}}" name="volunteer[]" value= {{participant}} />
+                  <label class="form-check-label" for="recurringVolunteerCheckbox_{{loop.index}}"> {{participant.firstName}} {{participant.lastName}}  </label>
+                </table>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endif %}
         <h5>Selected Volunteers</h5>
         <ul class="list-unstyled" id= "addVolunteerList">
         </ul>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
+        <button type="button" id = "selectAllVolunteers" class="btn btn-secondary" >Select All Previous</button>
         {% set buttonName = "Add to Waitlist" if rsvpFull else ("Add RSVP" if rsvpNeeded else "Add Participant") %}
         <button id="selectVolunteerButton" type="button" class="btn btn-primary" disabled>{{buttonName}}</button>
       </div>
