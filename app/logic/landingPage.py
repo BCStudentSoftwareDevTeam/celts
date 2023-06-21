@@ -6,9 +6,9 @@ from app.models.program import Program
 
 def getManagerProgramDict(user):
     if user.isAdmin or user.isBonnerScholar:
-        programs = Program.select()
+        programs = Program.select().order_by(Program.programName)
     else:
-        programs = Program.select().where(Program.isBonnerScholars == False)
+        programs = Program.select().where(Program.isBonnerScholars == False).order_by(Program.programName)
     managerRows = list(ProgramManager.select())
     managerProgramDict = {}
 
