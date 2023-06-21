@@ -4,6 +4,9 @@ $(document).ready(function() {
   $('[data-toggle="tooltip"]').tooltip();
   // var recurringVolunteers = $("#recurringVolunteers").val()
   var iconShowing = false
+
+  $("#addVolunteerModal input[type=checkbox]").click(updateSelectVolunteer);
+
   var table =  $('#trackVolunteerstable').DataTable({
   "fnDrawCallback": function(oSettings) {
     if ($('#trackVolunteerstable tr').length < 11) {
@@ -22,6 +25,23 @@ $(document).ready(function() {
       });
     });
 
+    function updateSelectVolunteer(){
+      let checkboxlist = $("#addVolunteerModal input[type=checkbox]")
+      var shouldEnableButton = false
+      console.log("updating button")
+      $.each(checkboxlist, function(index, checkbox){
+          if(checkbox["checked"] == true){
+            shouldEnableButton = true
+          }
+      })
+      if (shouldEnableButton){
+        $("#selectVolunteerButton").prop("disabled", false)
+      }
+      else{
+        $("#selectVolunteerButton").prop("disabled", true)
+      }
+    }
+    
 
   // Adding the new volunteer to the user database table
     $("#selectVolunteerButton").click(function(){
@@ -53,7 +73,6 @@ $(document).ready(function() {
     }).get()
     console.log(userlist);
     function callback(selected) {
-      $("#selectVolunteerButton").prop('disabled', false);
       let user = $("#addVolunteerInput").val()
       console.log(user)
       if (userlist.includes(selected["username"]) == false){
@@ -63,6 +82,8 @@ $(document).ready(function() {
           $("#addVolunteerElements"+i).append("<input  type='checkbox' id= 'userlistCheckbox"+i+"' checked value='" + user +"' >  </input>")
           $("#addVolunteerElements"+i).append("<label form for= 'userlistCheckbox"+i+"'>"+ selected["firstName"]+ " " + selected["lastName"] +"</label>")
           handleBanned(selected["username"], $("#eventID").val(), i)
+          $("#userlistCheckbox"+i).click(updateSelectVolunteer)
+          updateSelectVolunteer()
       }
       else {
           msgFlash("User already selected.")
@@ -124,7 +145,8 @@ $(document).ready(function() {
   });
 
   $("#selectAllVolunteers").click(function(){
-      $("#addPastVolunteerModal input[type=checkbox]").prop('checked', true)
+      $("#addVolunteerModal input[type=checkbox]").prop('checked', true);
+      updateSelectVolunteer();
   });
 
   function handleBanned(username, eventId, index){
