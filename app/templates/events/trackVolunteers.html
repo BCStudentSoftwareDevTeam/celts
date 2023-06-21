@@ -7,6 +7,10 @@
   <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/r-2.2.9/datatables.min.js"></script>
 {% endblock %}
 
+
+
+
+
 {% block styles %}
 
   {{super()}}
@@ -15,7 +19,7 @@
 {% endblock %}
 
 {% block app_content %}
-
+<input id="recurringVolunteers" type="hidden" value='{{ recurringVolunteerUsernames }}'>  </input>
 <div class="text-center">
   {% set page_title = eventData.name %}
       <h1 id="title">{{page_title}}</h1>
@@ -243,20 +247,19 @@
           </button>
         </div>
         <br>
+        <h5> Volunteers</h5>
+        <ul class="list-unstyled" id= "addVolunteerList">
         {% if event.isRecurring and not event.isFirstRecurringEvent%}
           {% if recurringVolunteers | count != 0  %}
-            <div class="modal-body pl-5">
-              {%for participant in recurringVolunteers%}
-                <table>
-                  <input class="m-2" type="checkbox" id ="recurringVolunteerCheckbox_{{loop.index}}" name="volunteer[]" value= {{participant}} />
-                  <label class="form-check-label" for="recurringVolunteerCheckbox_{{loop.index}}"> {{participant.firstName}} {{participant.lastName}}  </label>
-                </table>
-              {% endfor %}
-            </div>
+            {%for participant in recurringVolunteers%}     
+              <li>
+                <input class="recurringVolunteer" type="checkbox" id ="recurringVolunteerCheckbox_{{loop.index}}" name="volunteer[]" value= {{participant}} />
+                <label class="form-check-label" for="recurringVolunteerCheckbox_{{loop.index}}"> {{participant.firstName}} {{participant.lastName}}  </label>                
+              </li>
+            {% endfor %}
           {% endif %}
         {% endif %}
-        <h5>Selected Volunteers</h5>
-        <ul class="list-unstyled" id= "addVolunteerList">
+        
         </ul>
       </div>
       <div class="modal-footer">
@@ -265,32 +268,6 @@
         {% set buttonName = "Add to Waitlist" if rsvpFull else ("Add RSVP" if rsvpNeeded else "Add Participant") %}
         <button id="selectVolunteerButton" type="button" class="btn btn-primary" disabled>{{buttonName}}</button>
       </div>
-    </div>
-  </div>
-</div>
-<!-- Modal for Add Past Volunteers-->
-<div class="modal fade float-start" id="addPastVolunteerModal" tabindex="-1" aria-labelledby="addPastVolunteerModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <form action="/addVolunteersToEvent/{{event.id}}" method="POST">
-          <div class="modal-header">
-            <h5 class="modal-title">Add Past Volunteers</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-              <div class="modal-body pl-5">
-                  {%for participant in recurringVolunteers%}
-                    <table>
-                      <input class="m-2" type="checkbox" id ="recurringVolunteerCheckbox_{{loop.index}}" name="volunteer[]" value= {{participant}} />
-                      <label class="form-check-label" for="recurringVolunteerCheckbox_{{loop.index}}"> {{participant.firstName}} {{participant.lastName}}  </label>
-                    </table>
-                  {% endfor %}
-              </div>
-          <div class="modal-footer" >
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close </button>
-            <button type="button" id = "selectAllVolunteers" class="btn btn-secondary" >Select All</button>
-            <button id="AddPastVolunteerButton" type="submit" class="btn btn-primary" >Add Volunteers</button>
-          </div>
-      </form>
     </div>
   </div>
 </div>

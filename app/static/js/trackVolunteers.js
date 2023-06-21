@@ -2,6 +2,7 @@ import searchUser from './searchUser.js'
 
 $(document).ready(function() {
   $('[data-toggle="tooltip"]').tooltip();
+  // var recurringVolunteers = $("#recurringVolunteers").val()
   var iconShowing = false
   var table =  $('#trackVolunteerstable').DataTable({
   "fnDrawCallback": function(oSettings) {
@@ -47,14 +48,18 @@ $(document).ready(function() {
       })
     })
 
-    var userlist = []
+    var userlist = $(".recurringVolunteer").map(function(){
+      return $(this).val()
+    }).get()
+    console.log(userlist);
     function callback(selected) {
       $("#selectVolunteerButton").prop('disabled', false);
       let user = $("#addVolunteerInput").val()
+      console.log(user)
       if (userlist.includes(selected["username"]) == false){
           userlist.push(user)
           let i = userlist.length;
-          $("#addVolunteerList").append("<li class id= 'addVolunteerElements"+i+"'> </li>")
+          $("#addVolunteerList").prepend("<li class id= 'addVolunteerElements"+i+"'> </li>")          
           $("#addVolunteerElements"+i).append("<input  type='checkbox' id= 'userlistCheckbox"+i+"' checked value='" + user +"' >  </input>")
           $("#addVolunteerElements"+i).append("<label form for= 'userlistCheckbox"+i+"'>"+ selected["firstName"]+ " " + selected["lastName"] +"</label>")
           handleBanned(selected["username"], $("#eventID").val(), i)
@@ -64,7 +69,7 @@ $(document).ready(function() {
       }
     }
   $("#selectVolunteerButton").prop('disabled', true);
-
++
   $("#addVolunteerModal").on("shown.bs.modal", function() {
       $('#addVolunteerInput').focus();
   });
@@ -80,8 +85,9 @@ $(document).ready(function() {
     $.ajax({
       url: `/removeVolunteerFromEvent/${username}/${eventId}`,
       type: "POST",
-      success: function(s) {
-         location.reload();
+      success: function(response) {
+        console.log(response);
+        location.reload();
       },
       error: function(request, status, error) {
           $(".removeVolunteer").prop("disabled", false)
