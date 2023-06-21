@@ -6,6 +6,12 @@ $(document).ready(function() {
   var iconShowing = false
 
   $("#addVolunteerModal input[type=checkbox]").click(updateSelectVolunteer);
+  $('[data-toggle="previousVolunteerHover"]').popover({
+    trigger: "hover",
+    sanitize: false,
+    html: true,
+    content: "Previous Volunteer"
+});
 
   var table =  $('#trackVolunteerstable').DataTable({
   "fnDrawCallback": function(oSettings) {
@@ -35,17 +41,17 @@ $(document).ready(function() {
           }
       })
       if (shouldEnableButton){
-        $("#selectVolunteerButton").prop("disabled", false)
+        $("#addVolunteersButton").prop("disabled", false)
       }
       else{
-        $("#selectVolunteerButton").prop("disabled", true)
+        $("#addVolunteersButton").prop("disabled", true)
       }
     }
     
 
   // Adding the new volunteer to the user database table
-    $("#selectVolunteerButton").click(function(){
-        $("#selectVolunteerButton").prop("disabled", true)
+    $("#addVolunteersButton").click(function(){
+        $("#addVolunteersButton").prop("disabled", true)
         let user = $("#addVolunteerInput").val()
         let eventId = $("#eventID").val()
         let checkboxlist = $("#addVolunteerModal input[type=checkbox]")
@@ -89,7 +95,7 @@ $(document).ready(function() {
           msgFlash("User already selected.")
       }
     }
-  $("#selectVolunteerButton").prop('disabled', true);
+  $("#addVolunteersButton").prop('disabled', true);
 +
   $("#addVolunteerModal").on("shown.bs.modal", function() {
       $('#addVolunteerInput').focus();
