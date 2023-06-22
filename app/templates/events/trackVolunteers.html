@@ -50,7 +50,7 @@
 <div class="flex-container" style="padding: 5px;">
   <div class='form-group d-flex row'>
     <div class="col-6">
-      <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add Volunteer</a>
+      <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add Volunteers</a>
       <a class="btn btn-warning" role="button" href= "/event/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
     </div>
     {% if (not event.isPast) and (event.isRsvpRequired) and (event.rsvpLimit is not none) and (currentRsvpAmount[event.id] >= event.rsvpLimit) %}
@@ -233,7 +233,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        {% set modalTitle = "Add Volunteer to Waitlist" if rsvpFull else("Add Volunteer RSVP" if rsvpNeeded else "Add Volunteer") %}
+        {% set modalTitle = "Add Volunteer to Waitlist" if rsvpFull else("Add Volunteers to RSVP" if rsvpNeeded else "Add Volunteers") %}
         <h5 class="modal-title" id="exampleModalLabel">{{modalTitle}}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -246,9 +246,7 @@
             <i class="bi bi-search ms-0"></i>
           </button>
         </div>
-        <br>
-        <h5> Volunteers</h5>
-        <ul class="list-unstyled" id= "addVolunteerList">
+        <ul class="list-unstyled mx-3 mt-2" id= "addVolunteerList">
           {% if event.isRecurring and not event.isFirstRecurringEvent%}
             {% if recurringVolunteers | count != 0  %}
               {%for participant in recurringVolunteers%}     
@@ -265,7 +263,7 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
         <button type="button" id = "selectAllVolunteers" class="btn btn-secondary" >Select All</button>
-        {% set buttonName = "Add to Waitlist" if rsvpFull else ("Add RSVP" if rsvpNeeded else "Add Participant") %}
+        {% set buttonName = "Add to Waitlist" if rsvpFull else ("Add to RSVP" if rsvpNeeded else "Add Participant(s)") %}
         <button id="addVolunteersButton" type="button" class="btn btn-primary" disabled>{{buttonName}}</button>
       </div>
     </div>
