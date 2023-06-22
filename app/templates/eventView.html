@@ -8,12 +8,10 @@
 
 {% block app_content %}
     <div class="text-center mb-3">
-    {% set page_title = eventData.name %}
-        <h1 id="title">{{page_title}}</h1>
         {% if eventData.name != 'All Volunteer Training' and eventData.program == None %}
-          <h3>CELTS-Sponsored Event</h3>
+          <h2>CELTS-Sponsored Event</h2>
         {% elif eventData.program %}
-          <h3>{{eventData["program"].programName}} Event</h3>
+          <h2>{{eventData["program"].programName}} Event</h2>
         {% endif %}
     {% if isPastEvent %}
         <div class="alert-danger pb-2 pt-2" role="alert">This event is in the past.</div>
@@ -34,17 +32,53 @@
           </ul>
          </div> <br />
     {% endif %}
+    
+    <!--
     {% if isPastEvent %}
         <p class="heading-size"><b>{{eventData.name}}</b> took place on <b>{{eventData.startDate}}</b> from <b>{{eventData.timeStart}}</b> to <b>{{eventData.timeEnd}}</b> and was located in <b>{{eventData.location}}</b>.</p>
     {% else %}
         <p class="heading-size"><b>{{eventData.name}}</b> will take place on <b>{{eventData.startDate}}</b> from <b>{{eventData.timeStart}}</b> to <b>{{eventData.timeEnd}}</b> and will be located in <b>{{eventData.location}}</b>.</p>
-    {% endif %}
-    <img src="{{image}}">
+    {% endif %} -->
+    <div class="container-fluid">
             <div class="row">
                 <div class="col-md-6">
+                    <img src="{{image}}" class="img-fluid">
+                </div>
+                <div class="col-md-6">
+                    <br>
+                    <div>
+                    {% set event_title = eventData.name %}
+                    <h3 id="title">{{event_title}}</h3>
+                    </div>
+                    <br>
+                    <div>
+                    {% set event_date = eventData.startDate %}
+                    <h5 id="date">Date: <br>{{event_date}}</h5>
+                    </div>
+                    <br>
+                    <div>
+                    {% set event_time = eventData.timeStart %}
+                    <h5 id="time">Time: <br>{{eventData.timeStart}} - {{eventData.timeEnd}}</h5>
+                    </div>
+                    <br>
+                    <div>
+                    {% set event_location = eventData.location %}
+                    <h5 id="time">Location: <br>{{eventData.location}}</h5>
+                    </div>
+                    <br>
+                    <div>
+                    {% if eventData.isRsvpRequired %}
+                        <button type="submit" class="btn btn-primary" value="{{eventData.id}}" id="rsvpBtn">RSVP</button>
+                    {% endif %}
+                    </div>
+ 
+                </div>
+            </div>
+            
+            <div class="row">
                     <h3><br>Description</h3><p>{{eventData.description|urlize}}</p><br>
                     {% if eventData.isFoodProvided %}
-                        <p>Food will be provided at this event. <a href="/profile/{{g.current_user}}?accordion=dietaryInformation"><b>Please fill in any dietary restrictions on your "My profile" page.</b></a></p>
+                        <p>Food will be provided at this event. <a href="/profile/{{g.current_user}}?accordion=dietaryInformation"><br><b>Please fill in any dietary restrictions on your "My profile" page.</b></a></p>
                     {% endif %}
                     {% if eventData.isService %}
                         <p>This event earns service hours.</p>
@@ -61,7 +95,7 @@
                     {% if eventData.recurringId %}
                         <p>This event is a recurring event.
                             {% if eventData.nextRecurringEvent %}
-                            The next event in the series occurs on <a href="/eventsList/{{eventData.nextRecurringEvent.id}}/view"><b>{{eventData.nextRecurringEvent.startDate.strftime("%B %-d")}}.</b></a>
+                            The next event in the series occurs on <a href="/eventsList/{{eventData.nextRecurringEvent.id}}/view"><br><b>{{eventData.nextRecurringEvent.startDate.strftime("%B %-d")}}.</b></a>
                             {% else %}
                             <b>However, this is the last event in the series.</b>
                             {% endif %}
@@ -75,7 +109,8 @@
                     {% if eventData['certRequirement'] %}
                         <p>This event satisfies the {{eventData['certRequirement'].name}} requirement for the Bonner program.</p>
                     {% endif %}
-
+                </div>
+                <!--
                 </div>
                 <div class="col-md-6">
                     <div class="col-sm">
@@ -109,9 +144,11 @@
                     {% for key, value in filepaths.items() %}
                         <tr id="attachment_{{value[1]}}" class="attachmentRow_{{key}}" data-id= "{{key}}">
                             <td class="pr-5">
-                                <!--<img src="{{value[0]}}"
+                                Comment: 
+                                <img src="{{value[0]}}"
                                 width="200"
-                                height="200">-->
+                                height="200">
+                                EndComment
                                 <a class="mr-5" href="{{value[0]|replace('#','%23')}}" target="_blank">{{key}}</a>
                             </td>
                         </tr>
@@ -134,5 +171,6 @@
                 <span id="viewCount">{{pageViewsCount}}</span>
             </div>
           {% endif %}
-            </div>
+            </div> -->
+    <!--FIXME-->
 {% endblock %}
