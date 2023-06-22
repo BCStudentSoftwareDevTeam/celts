@@ -201,8 +201,9 @@ def renewCourse(courseID, termID):
     """
     instructors = CourseInstructor.select().where(CourseInstructor.course==courseID)
     courseInstructors = [instructor.user for instructor in instructors]
+    isCourseCreator = Course.select().where(Course.createdBy == g.current_user, Course.id==courseID).exists()
     try:
-        if g.current_user.isCeltsAdmin or g.current_user in courseInstructors:
+        if g.current_user.isCeltsAdmin or g.current_user in courseInstructors or isCourseCreator:
             renewedProposal = renewProposal(courseID, termID)
             flash("Course successfully renewed", 'success')
             return str(renewedProposal.id)
