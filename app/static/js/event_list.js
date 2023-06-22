@@ -23,6 +23,24 @@ function rsvpForEvent(eventID){
     }
   });
 }
+function addCourseFile(addCourseParticipant) {
+  addCourseInfo = {
+    id: addCourseParticipant,
+    from: 'ajax'
+  }
+
+  $.ajax({
+    url: "/uploadCourseParticipantFile",
+    type: "POST",
+    data: addCourseFileInfo,
+    success: function (s) {
+      location.reload()
+    },
+    error: function (error, status) {
+      console.log(error, status)
+    }
+  });
+}
 
 function removeRsvpForEvent(eventID){
   removeRsvpInfo = {id: eventID,

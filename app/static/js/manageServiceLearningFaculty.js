@@ -11,19 +11,58 @@ $(document).ready( function () {
        }
     }
   });
-    $("#downloadApprovedCoursesBtn").click(function(){
-        let termID = $("#downloadApprovedCoursesBtn").val();
-        $.ajax({
-            url:`/serviceLearning/downloadApprovedCourses/${termID}`,
-            type:"GET",
-            success: function(response){
-              callback(response);
-            },
-            error: function(response){
-                console.log(response)
-            },
+  $("#downloadApprovedCoursesBtn").click(function () {
+    let termID = $("#downloadApprovedCoursesBtn").val();
+    $.ajax({
+      url: `/serviceLearning/downloadApprovedCourses/${termID}`,
+      type: "GET",
+      success: function (response) {
+        callback(response);
+      },
+      error: function (response) {
+        console.log(response)
+      },
 
 
-        })
     })
+  });
+  function removeRsvpForEvent(eventID) {
+    removeRsvpInfo = {
+      id: eventID,
+      from: 'ajax'
+    }
+
+    $.ajax({
+      url: "/rsvpRemove",
+      type: "POST",
+      data: removeRsvpInfo,
+      success: function (s) {
+        location.reload()
+      },
+      error: function (error, status) {
+        console.log(error, status)
+      }
+
+    })
+  }
 });
+
+  function addCourseFile(addCourseParticipant) {
+    addCourseInfo = {
+      id: addCourseParticipant,
+      from: 'ajax'
+    }
+
+    $.ajax({
+      url: "/uploadCourseParticipantFile",
+      type: "POST",
+      data: addCourseFileInfo,
+      success: function (s) {
+        location.reload()
+      },
+      error: function (error, status) {
+        console.log(error, status)
+      }
+    });
+  }
+

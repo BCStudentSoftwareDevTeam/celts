@@ -305,6 +305,20 @@ def deleteEventFile():
     eventfile.deleteFile(fileData["fileId"])
     return ""
 
+@admin_bp.route("/uploadCourseParticipant", methods= ["POST"])
+def addCourseFile():
+    if request.method == POST:
+        file = request.files.get["addCourseParticipant"]
+        if file: 
+             file.save("uploads/" + file.filename)
+             return "File uploaded successfully."
+        return "no file uploaded"
+
+
+
+
+    
+
 @admin_bp.route("/manageBonner")
 def manageBonner():
     if not g.current_user.isCeltsAdmin:
