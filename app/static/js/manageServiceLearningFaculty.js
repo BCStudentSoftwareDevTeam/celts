@@ -47,30 +47,13 @@ $(document).ready( function () {
   }
 });
 
-function addCourseFile(addCourseParticipant) {
-  var addCourseFileInfo = {
-    id: addCourseParticipant,
-    from: 'ajax'
-  };
-
-  $.ajax({
-    url: "/uploadCourseParticipantFile",
-    type: "POST",
-    data: addCourseFileInfo,
-    success: function (response) {
-      saveFileToDatabase(response.filePath);
-      location.reload();
-    },
-    error: function (error, status) {
-      console.log(error, status);
-    }
-  });
-}
 
 function saveFileToDatabase(filePath) {
   // Code to save the file path in the database
   // We can may be replace this with our actual database-saving logic after testing if it actually print in console 
   console.log("Saving file to database:", filePath);
 }
+
+
 
 

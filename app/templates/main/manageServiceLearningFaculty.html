@@ -122,13 +122,13 @@
             <div class="float-end">
               <a  class="btn btn-primary mr {{downloadAndSend}}" href="mailto:registrar@berea.edu?subject=Requesting%20Student%20Service-Learning%20Course%20participation&body=ADD TEXT" target="_blank"> Email registrar </a>
             </div>
-                <div class="btn btn-primary btn-file">  
-                  <label for="addCourseParticipant" action = "/" method ="POST" enctype="multipart/form-data">
-                    Upload Excel
-                    <input type="file" id="addCourseParticipant" name="addCourseParticipant" multiple="" accept=".xlsx" style="display: none">
-                    <input type="submit" value="Upload File"   name="submit" style="display: none">
-                  </label>
-                </div>
+            <div class="float-end">
+              <form method="POST" action="/uploadCourseParticipant" enctype="multipart/form-data">
+                <label for="addCourseParticipant" class="form-label">Upload Excel</label>
+                <input class="form-control" type="file" id="addCourseParticipant" name="addCourseParticipant">
+                <input class="form-control" type="submit"></input>
+            </form>
+            </div>
       </div>
        {% endif %}
         </div>
