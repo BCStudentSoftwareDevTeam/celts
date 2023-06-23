@@ -24,7 +24,7 @@ from app.models.note import Note
 from app.logic.events import getEvents, preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
 from app.logic.events import attemptSaveEvent, saveEventToDb, deleteEvent, getParticipatedEventsForUser
 from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser
-from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents
+from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm
 from app.logic.volunteers import addVolunteerToEventRsvp, updateEventParticipants
 from app.logic.participants import addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser
@@ -301,16 +301,9 @@ def test_calculateRecurringEventFrequency():
 @pytest.mark.integration
 def test_attemptSaveEvent():
     # This test duplicates some of the saving tests, but with raw data, like from a form
-    eventData =  {'isRsvpRequired':False, 'isService':False,
-                  'isTraining':True, 'isRecurring':True, 'recurringId':0,
-                  'startDate': '2021-12-12',
-                  'endDate': '2021-06-12', 'programId':1, 'location':"a big room",
-                  'timeEnd':'09:00 PM', 'timeStart':'06:00 PM',
-                  'description':"Empty Bowls Spring 2021",
-                  'name':'Empty Bowls Spring','term':1,'contactName':"Monkey D. Luffy",
-                  'contactEmail': 'strawhats@hotmail.com'}
     eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'recurringId':None,
                    'startDate': '2021-12-12',
+                   'rsvpLimit': None,
                    'endDate':'2022-06-12', 'location':"a big room",
                    'timeEnd':'09:00 PM', 'timeStart':'06:00 PM',
                    'description':"Empty Bowls Spring 2021",
@@ -337,7 +330,7 @@ def test_attemptSaveEvent():
 @pytest.mark.integration
 def test_saveEventToDb_create():
 
-    eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'isService':False,
+    eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False,
                   'isTraining':True, 'isRecurring':False,'isAllVolunteerTraining': True, 'recurringId':None, 'startDate': parser.parse('2021-12-12'),
                    'endDate':parser.parse('2022-06-12'), 'location':"a big room",
                    'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
@@ -372,7 +365,7 @@ def test_saveEventToDb_create():
 def test_saveEventToDb_recurring():
     with mainDB.atomic() as transaction:
         with app.app_context():
-            eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'isService':False, 'isAllVolunteerTraining': True,
+            eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
                           'isTraining':True, 'isRecurring': True, 'recurringId':1, 'startDate': parser.parse('12-12-2021'),
                            'endDate':parser.parse('01-18-2022'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
@@ -395,6 +388,7 @@ def test_saveEventToDb_update():
         beforeUpdate = Event.get_by_id(eventId)
         assert beforeUpdate.name == "First Meetup"
 
+        # Change description, the value of isAllVolunteerTraining, and certRequirement on event 4
         newEventData = {
                         "id": 4,
                         "program": 1,
@@ -410,6 +404,7 @@ def test_saveEventToDb_update():
                         'recurringId': 2,
                         'isTraining': True,
                         'isRsvpRequired': False,
+                        'rsvpLimit': None,
                         'isAllVolunteerTraining': True,
                         'isService': False,
                         "startDate": "2021-12-12",
@@ -418,43 +413,24 @@ def test_saveEventToDb_update():
                         "contactEmail": "goatpiece@berea.edu",
                         "valid": True
                     }
+        
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
-            eventFunction = saveEventToDb(newEventData)
+            saveEventToDb(newEventData)
         afterUpdate = Event.get_by_id(newEventData['id'])
         assert afterUpdate.description == "This is a Test"
         assert afterUpdate.isAllVolunteerTraining == True
         assert RequirementMatch.select().where(RequirementMatch.event == afterUpdate,
                                                RequirementMatch.requirement == 9).exists()
+        
+        newEventData['description'] = "Berea Buddies First Meetup"
 
-        newEventData = {
-                        "id": 4,
-                        "program": 1,
-                        "term": 1,
-                        "name": "First Meetup",
-                        "description": "Berea Buddies First Meetup",
-                        "timeStart": "06:00 PM",
-                        "timeEnd": "09:00 PM",
-                        "location": "House",
-                        'isFoodProvided': False,
-                        'isRecurring': True,
-                        'recurringId': 3,
-                        'isTraining': True,
-                        'isRsvpRequired': False,
-                        'isAllVolunteerTraining': False,
-                        'isService': 5,
-                        "startDate": "2021-12-12",
-                        "endDate": "2022-6-12",
-                        "contactName": "Monkey D. Luffy",
-                        "contactEmail": "goatpiece@berea.edu",
-                        "valid": True
-                    }
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
-            eventFunction = saveEventToDb(newEventData)
+            saveEventToDb(newEventData)
         afterUpdate = Event.get_by_id(newEventData['id'])
-
         assert afterUpdate.description == "Berea Buddies First Meetup"
+        
 
         transaction.rollback()
 
@@ -493,6 +469,7 @@ def test_deleteEvent():
         # creates a recurring event
         eventInfo =  {'isFoodProvided': False,
                       'isRsvpRequired': False,
+                      'rsvpLimit': None,
                       'isService': False,
                       'isAllVolunteerTraining': True,
                       'isTraining': True,
@@ -852,4 +829,37 @@ def test_getPreviousRecurringEventData():
         assert val[0].username == "neillz"
         assert val[1].username == "ramsayb2"
         assert val[2].username == "khatts"
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_getEventRsvpCountsForTerm():
+    with mainDB.atomic() as transaction:
+        eventWithRsvpLimit = Event.create(name = "Req and Limit",
+                                          term = 2,
+                                          description = "Event that requries RSVP and has an RSVP limit set.",
+                                          timeStart = "6:00 pm",
+                                          timeEnd = "9:00 pm",
+                                          location = "The Moon",
+                                          isRsvpRequired = 1,
+                                          rsvpLimit = 4,
+                                          startDate = "2022-12-19",
+                                          endDate = "2022-12-19",
+                                          )
+
+        testUserToRsvp = User.create(username = 'rsvpUsr',
+                                     firstName = 'RSVP',
+                                     lastName = 'Test',
+                                     bnumber = '48616874',
+                                     email = 'helloThere@berea.edu',
+                                     isStudent = True,
+                                     )
+
+        limit = getEventRsvpCountsForTerm(Term.get_by_id(2))
+        assert limit[eventWithRsvpLimit.id] == 0
+
+        EventRsvp.create(event=eventWithRsvpLimit, user=testUserToRsvp)
+
+        limit = getEventRsvpCountsForTerm(Term.get_by_id(2))
+        assert limit[eventWithRsvpLimit.id] == 1
+
         transaction.rollback()
