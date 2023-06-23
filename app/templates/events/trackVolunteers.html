@@ -264,9 +264,9 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
-        <button type="button" id = "selectAllVolunteers" class="btn btn-secondary" >Select All</button>
+        <button type="button" id = "selectAllVolunteers" class="btn btn-primary" >Select All</button>
         {% set buttonName = "Add to Waitlist" if rsvpFull else ("Add RSVP" if rsvpNeeded else "Add Participant") %}
-        <button id="addVolunteersButton" type="button" class="btn btn-primary" disabled>{{buttonName}}</button>
+        <button id="addVolunteersButton" type="button" class="btn btn-success" disabled>{{buttonName}}</button>
       </div>
     </div>
   </div>
