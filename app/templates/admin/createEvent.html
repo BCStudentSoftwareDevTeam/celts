@@ -1,13 +1,22 @@
 {% set title = "Create Single Event" %}
 
-{% set eventName = eventData.name %}
-{% set eventProgram = eventData.program %}
-{% set eventProgramName = eventData["program"].programName %}
-{% set eventPast = event.isPast %}
-{% set eventID = eventData.id %}
+{% set isNewEvent = 'create' in request.path %}
+{% if isNewEvent %}
+  {% if template.tag == 'single-program' %}
+    {% set page_title = 'Create Event for ' + eventData["program"].programName %}
+  {% elif template.tag == 'all-volunteer' %}
+    {% set page_title = 'Create All Volunteer Training' %}
+  {% elif template.tag == 'no-program' %}
+    {% set page_title = 'Create Other CELTS-Sponsored Event' %}
+  {% else %}
+    {% set page_title = 'Create ' + template.name + ' Event' %}
+  {% endif %}
+{% else %}
+  {% set page_title = eventData.name %}
+{% endif %}
 
+{% set eventPast = event.isPast if not isNewEvent else False %}
 {% set tabName = 'edit' %}
-
 {% extends "events_nav.html"%}
 
 
@@ -26,7 +35,17 @@
 
 {% block app_content %}
 
-{{super()}}
+
+
+{% block content_pageHeading %}
+  {{super()}}
+{% endblock %}
+
+{% block navbar %}
+  {% if not isNewEvent %}
+    {{super()}}
+  {% endif %}
+{% endblock %}
 
 <form enctype="multipart/form-data" id="saveEvent" data-toggle="validator" role="form" action="{{request.path}}" method="POST">
     <div class="row p-2">
