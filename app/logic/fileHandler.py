@@ -33,15 +33,25 @@ class FileHandler:
             pass
         return filePath
 
-    def saveFiles(self):
+    def saveFiles(self, saveOriginalFile):
         """ Saves the attachment in the app/static/files/eventattachments/ or courseattachements/ directory """
         try:
+            fileCount = 1
             for file in self.files:
                 if self.eventId:
-                    isFileInEvent = AttachmentUpload.select().where(AttachmentUpload.event == self.eventId, AttachmentUpload.fileName == file.filename).exists()
-                    if not isFileInEvent:
-                        AttachmentUpload.create(event = self.eventId, fileName = file.filename)
-                        file.save(self.getFileFullPath(newfile = file)) # saves attachment in directory
+                    if fileCount:       # Checks if iterant is the first (recurring) event
+                        isFileInEvent = AttachmentUpload.select().where(AttachmentUpload.event == self.eventId, AttachmentUpload.fileName == file.filename).exists()
+                        if not isFileInEvent:
+                            AttachmentUpload.create(event = self.eventId, fileName = file.filename)
+                            file.save(self.getFileFullPath(newfile = file))
+                            fileCount = 0
+                            print("The lines are working effectively")
+                    else:
+                        isFileInEvent = AttachmentUpload.select().where(AttachmentUpload.event == self.eventId, AttachmentUpload.fileName == file.filename).exists()
+                        if not isFileInEvent:
+                            AttachmentUpload.create(event = self.eventId, fileName = file.filename)
+                            file.save(self.getFileFullPath(newfile = file))
+                            print("Code not working, help")
                 elif self.courseId:
                     isFileInCourse = AttachmentUpload.select().where(AttachmentUpload.course == self.courseId, AttachmentUpload.fileName == file.filename).exists()
                     if not isFileInCourse:
