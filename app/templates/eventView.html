@@ -1,13 +1,7 @@
 {% set title = eventData.name %}
-
-{% set eventName = eventData.name %}
-{% set eventProgram = eventData.program %}
-{% set eventProgramName = eventData["program"].programName %}
+{% set page_title = eventData.name %}
 {% set eventPast = event.isPast %}
-{% set eventID = eventData.id %}
-
 {% set tabName = 'view' %}
-
 {% extends "events_nav.html"%}
 
 {% block scripts %}
