@@ -3,8 +3,11 @@
 {% set eventName = eventData.name %}
 {% set eventProgram = eventData.program %}
 {% set eventProgramName = eventData["program"].programName %}
-{% set eventPast = event.isPast %}
+{% set isNewEvent = 'create' in request.path %}
+{% set eventData["isNewEvent"] = True %}
+{% set eventPast = event.isPast if not isNewEvent else False %}
 {% set eventID = eventData.id %}
+
 
 {% set tabName = 'edit' %}
 

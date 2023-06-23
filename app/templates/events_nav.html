@@ -2,7 +2,7 @@
 
 
 {% block app_content %}
-
+{% if not eventData.get("isNewEvent", False) %}
 <div class="text-center">
     {% set page_title = eventName %}
     <h1 id="title">{{page_title}}</h1>
@@ -32,6 +32,7 @@
     </ul>
 </div>
 
+{% endif %}
 {% endif %}
 
 {% endblock %}
