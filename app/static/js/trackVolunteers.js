@@ -2,7 +2,6 @@ import searchUser from './searchUser.js'
 
 $(document).ready(function() {
   $('[data-toggle="tooltip"]').tooltip();
-  // var recurringVolunteers = $("#recurringVolunteers").val()
   var iconShowing = false
 
   $("#addVolunteerModal input[type=checkbox]").click(updateSelectVolunteer);
@@ -34,7 +33,6 @@ $(document).ready(function() {
     function updateSelectVolunteer(){
       let checkboxlist = $("#addVolunteerModal input[type=checkbox]")
       var shouldEnableButton = false
-      console.log("updating button")
       $.each(checkboxlist, function(index, checkbox){
           if(checkbox["checked"] == true){
             shouldEnableButton = true
@@ -77,10 +75,8 @@ $(document).ready(function() {
     var userlist = $(".recurringVolunteer").map(function(){
       return $(this).val()
     }).get()
-    console.log(userlist);
     function callback(selected) {
       let user = $("#addVolunteerInput").val()
-      console.log(user)
       if (userlist.includes(selected["username"]) == false){
           userlist.push(user)
           let i = userlist.length;
@@ -113,7 +109,6 @@ $(document).ready(function() {
       url: `/removeVolunteerFromEvent/${username}/${eventId}`,
       type: "POST",
       success: function(response) {
-        console.log(response);
         location.reload();
       },
       error: function(request, status, error) {
