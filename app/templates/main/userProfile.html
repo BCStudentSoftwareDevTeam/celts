@@ -15,10 +15,20 @@
 
 {% block app_content %}
 <div class="row">
-  <div class="col-6">
-    <h1>{{volunteer.firstName}} {{volunteer.lastName}}</h1>
+  <h1>{{volunteer.firstName}} {{volunteer.lastName}}</h1>
+  <div class="col-md-6 col-lg-3">
     <div>{{volunteer.bnumber}}</div>
     <div>{{volunteer.email}} </div>
+  </div>
+  <div class="col-md-6 col-lg-3">
+    {% if volunteer.major -%}
+    <div>{{volunteer.major}}</div>
+    {% endif %}
+    {% if volunteer.classLevel -%}
+    <div>{{volunteer.classLevel}}</div> 
+    {% endif %}
+  </div>
+  <div class="col-12">
     <div>
       <input type="text" style="border: none" size="14" class="bfh-phone" data-value="{{volunteer.phoneNumber}}" id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
       <a class="text-decoration-none primary editButton" tabindex="0" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
@@ -51,7 +61,7 @@
               {% for event in upcomingEvents %}
               <tr class="{% if event.startDate == currentDateTime.date() and event.timeStart < currentDateTime.time() %} ongoing-event {% endif %}{% if event.startDate == currentDateTime.date() and not event.timeStart < currentDateTime.time() %} bg-info {% endif %}">
                     <td>{{event.singleProgram.programName if event.singleProgram else '--'}}</td>
-                    <td><a href= '/eventsList/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
+                    <td><a href= '/event/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
                     <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
                     <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}}</td>
                     <td>{{event.location}}</td>
@@ -96,7 +106,7 @@
               {% for event in participatedEvents %}
               <tr>
                 <td>{{event.programName}}</td>
-                <td><a href= '/eventsList/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
+                <td><a href= '/event/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
                 <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
               </tr>
               {% endfor %}
@@ -410,7 +420,7 @@
                 {% if event.singleProgram and event.singleProgram.isBonnerScholars %}
                   <li class="d-flex flex-row justify-content-start">
                     <div class="me-2">{{event.startDate.strftime('%B %-m')}} at {{event.timeStart.strftime('%-I:%M%p')|lower}}:</div>
-                    <div><a href= '/eventsList/{{event.id}}/view' class="link-primary">{{event.name}}</a></div>
+                    <div><a href= '/event/{{event.id}}/view' class="link-primary">{{event.name}}</a></div>
                   </li>
                 {% endif %}
               {% endfor %}

@@ -10,13 +10,12 @@ from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours, addUserBackgroundCheck, setProgramManager
 from app.logic.participants import trainedParticipants, getEventParticipants, addPersonToEvent
-from app.logic.events import getPreviousRecurringEventData
+from app.logic.events import getPreviousRecurringEventData, getEventRsvpCountsForTerm
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.programManager import ProgramManager
 from app.logic.adminLogs import createLog
 from app.logic.users import getBannedUsers, isBannedFromEvent
-
 
 
 @admin_bp.route('/searchVolunteers/<query>', methods = ['GET'])
@@ -25,14 +24,28 @@ def getVolunteers(query):
 
     return json.dumps(searchUsers(query))
 
-@admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['GET'])
-def trackVolunteersPage(eventID):
+@admin_bp.route('/event/<eventID>/track_volunteers', methods=['POST'])
+def updateVolunteerTable(eventID):
     try:
         event = Event.get_by_id(eventID)
     except DoesNotExist as e:
         print(f"No event found for {eventID}")
         abort(404)
 
+    volunteerUpdated = updateEventParticipants(request.form)
+    if volunteerUpdated:
+        flash("Volunteer table succesfully updated", "success")
+    else:
+        flash("Error adding volunteer", "danger")
+    return redirect(url_for("admin.trackVolunteersPage", eventID=eventID))
+
+@admin_bp.route('/event/<eventID>/track_volunteers', methods=['GET'])
+def trackVolunteersPage(eventID):
+    try:
+        event = Event.get_by_id(eventID)
+    except DoesNotExist as e:
+        print(f"No event found for {eventID}", e)
+        abort(404)
     eventData = model_to_dict(event, recurse=False)
     eventData["program"] = event.singleProgram
     trainedParticipantsList = trainedParticipants(event.singleProgram, g.current_term)
@@ -51,40 +64,29 @@ def trackVolunteersPage(eventID):
         if volunteer.user not in volunteerUser:
             eventVolunteerData.append(volunteer)
             volunteerUser.append(volunteer.user)
+    eventWaitlistData = [volunteer for volunteer in eventVolunteerData if volunteer.rsvpWaitlist]
     eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
     recurringEventID = event.recurringId # query Event Table to get recurringId using Event ID.
     recurringEventStartDate = event.startDate
     recurringVolunteers = getPreviousRecurringEventData(recurringEventID)
 
+    currentRsvpAmount = getEventRsvpCountsForTerm(g.current_term)
+
     return render_template("/events/trackVolunteers.html",
-        eventData = eventData,
-        eventVolunteerData = eventVolunteerData,
-        eventParticipants = eventParticipants,
-        eventLength = eventLengthInHours,
-        event = event,
-        recurringEventID = recurringEventID,
-        recurringEventStartDate = recurringEventStartDate,
-        recurringVolunteers = recurringVolunteers,
-        bannedUsers = bannedUsers,
-        trainedParticipantsList = trainedParticipantsList)
+                            eventData = eventData,
+                            eventVolunteerData = eventVolunteerData,
+                            eventParticipants = eventParticipants,
+                            eventLength = eventLengthInHours,
+                            event = event,
+                            recurringEventID = recurringEventID,
+                            recurringEventStartDate = recurringEventStartDate,
+                            recurringVolunteers = recurringVolunteers,
+                            bannedUsers = bannedUsers,
+                            trainedParticipantsList = trainedParticipantsList,
+                            eventWaitlistData = eventWaitlistData,
+                            currentRsvpAmount = currentRsvpAmount)
 
-@admin_bp.route('/eventsList/<eventID>/track_volunteers', methods=['POST'])
-def updateVolunteerTable(eventID):
-    try:
-        event = Event.get_by_id(eventID)
-    except DoesNotExist as e:
-        print(f"No event found for {eventID}")
-        abort(404)
-
-    program = event.singleProgram
-
-    volunteerUpdated = updateEventParticipants(request.form)
-    if volunteerUpdated:
-        flash("Volunteer table succesfully updated", "success")
-    else:
-        flash("Error adding volunteer", "danger")
-    return redirect(url_for("admin.trackVolunteersPage", eventID=eventID))
 
 
 @admin_bp.route('/addVolunteersToEvent/<eventId>', methods = ['POST'])
@@ -111,6 +113,12 @@ def addVolunteer(eventId):
         return ''
 
     return redirect(url_for('admin.trackVolunteersPage', eventID = eventId))
+
+@admin_bp.route('/rsvpFromWaitlist/<username>/<eventId>', methods = ['POST'])
+def rsvpFromWaitlist(username, eventId):
+    if g.current_user.isAdmin: 
+        (EventRsvp.update(rsvpWaitlist = False).where(EventRsvp.event_id == eventId, EventRsvp.user_id == username)).execute()
+    return ""
 
 @admin_bp.route('/addVolunteersToEvent/<username>/<eventId>/isBanned', methods = ['GET'])
 def isVolunteerBanned(username, eventId):

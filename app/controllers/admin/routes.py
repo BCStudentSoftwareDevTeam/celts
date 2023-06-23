@@ -22,7 +22,7 @@ from app.logic.adminLogs import createLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView
+from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm
 from app.logic.participants import getEventParticipants, getUserParticipatedTrainingEvents, checkUserRsvp, checkUserVolunteer
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
@@ -136,11 +136,11 @@ def createEvent(templateid, programid=None):
             bonnerCohorts = bonnerCohorts,
             isProgramManager = isProgramManager)
 
-@admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
-@admin_bp.route('/eventsList/<eventId>/edit', methods=['GET','POST'])
+@admin_bp.route('/event/<eventId>/view', methods=['GET'])
+@admin_bp.route('/event/<eventId>/edit', methods=['GET','POST'])
 def eventDisplay(eventId):
     pageViewsCount = EventView.select().where(EventView.event == eventId).count()
-    if request.method == 'GET' and request.path == f'/eventsList/{eventId}/view':
+    if request.method == 'GET' and request.path == f'/event/{eventId}/view':
         viewer = g.current_user
         event = Event.get_by_id(eventId)
         addEventView(viewer,event) 
@@ -202,8 +202,9 @@ def eventDisplay(eventId):
     if eventData['program'] and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
         bonnerCohorts = getBonnerCohorts(limit=5)
-
+    
     rule = request.url_rule
+
     # Event Edit
     if 'edit' in rule.rule:
         return render_template("admin/createEvent.html",
@@ -229,12 +230,15 @@ def eventDisplay(eventId):
             if len(eventSeriesList) != (eventIndex + 1):
                 eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
 
+        currentEventRsvpAmount = getEventRsvpCountsForTerm(g.current_term)
+
         UserParticipatedTrainingEvents = getUserParticipatedTrainingEvents(eventData['program'], g.current_user, g.current_term)
         return render_template("eventView.html",
                                 eventData = eventData,
                                 isPastEvent = isPastEvent,
                                 userHasRSVPed = userHasRSVPed,
                                 programTrainings = UserParticipatedTrainingEvents,
+                                currentEventRsvpAmount = currentEventRsvpAmount,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths,
                                 image = image,
@@ -280,9 +284,13 @@ def addRecurringEvents():
 @admin_bp.route('/userProfile', methods=['POST'])
 def userProfile():
     volunteerName= request.form.copy()
-    username = volunteerName['searchStudentsInput'].strip("()")
-    user=username.split('(')[-1]
-    return redirect(url_for('main.viewUsersProfile', username=user))
+    if volunteerName['searchStudentsInput']:
+        username = volunteerName['searchStudentsInput'].strip("()")
+        user=username.split('(')[-1]
+        return redirect(url_for('main.viewUsersProfile', username=user))
+    else:
+        flash(f"Please enter the first name or the username of the student you would like to search for.", category='danger')
+        return redirect(url_for('admin.studentSearchPage'))
 
 @admin_bp.route('/search_student', methods=['GET'])
 def studentSearchPage():
