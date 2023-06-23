@@ -97,6 +97,10 @@ def dietaryRestrictionsPage(eventID):
         print(f"No event found for {eventID}", e)
         abort(404)
 
+
+    if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerForEvent(event))):
+        abort(403)
+
     eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
     eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
     participantsAndRsvp = (eventParticipantData + eventRsvpData)
