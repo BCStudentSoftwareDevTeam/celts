@@ -52,19 +52,28 @@
                     <div style="display: flex; align-items: top;">
                         <i class="bi bi-calendar" style="margin-right: 10px;"></i>
                         {% set event_date = eventData.startDate %}
-                        <h5 id="date" style="margin: 0;"> Date: <br>{{event_date}}</h5>
+                        <div>
+                            <h5 id="date" style="margin: 0;"> Date:</h5>
+                            <p style="margin: 0;">{{event_date}}</p>
+                        </div>    
                     </div>
                     <br>
                     <div style="display: flex; align-items: top;">
                         <i class="bi bi-clock" style="margin-right: 10px;"></i>
                         {% set event_time = eventData.timeStart %}
-                        <h5 id="time" style="margin: 0;">Time: <br>{{eventData.timeStart}} - {{eventData.timeEnd}}</h5>
+                        <div>
+                            <h5 id="time" style="margin: 0;">Time:</h5>
+                            <p style="margin: 0;">{{eventData.timeStart}} - {{eventData.timeEnd}}</p>
+                        </div>    
                     </div>
                     <br>
                     <div style="display: flex; align-items: top;">
                         <i class="bi bi-geo" style="margin-right: 10px;"></i>
                         {% set event_location = eventData.location %}
-                        <h5 id="time">Location: <br>{{eventData.location}}</h5>                  
+                        <div>
+                            <h5 id="location"style="margin: 0;">Location:</h5>   
+                            <p style="margin: 0;">{{eventData.location}}</p> 
+                        </div>            
                     </div>
                     <br>
                     <div>
