@@ -412,20 +412,6 @@ function enableSyllabusUploadFile() {
     $("#fileUpload").prop("disabled", false);
 }
 
-
-/*
-const textareas = $(".textarea");
-const slcQuestionCharCount = $(".slcQuestionCharCount");
-
-textareas.each(function(index, textarea) {
-  $(textarea).on("input", function() {
-    $(slcQuestionCharCount[index]).html($(textarea).val().length);
-  });
-  $(slcQuestionCharCount[index]).html($(textarea).val().length);
-});
-*/
-
-
 const textareas = $(".textarea");
 const slcQuestionWordCount = $(".slcQuestionWordCount")
 
