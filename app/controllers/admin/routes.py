@@ -4,6 +4,7 @@ from peewee import DoesNotExist, fn, IntegrityError
 from playhouse.shortcuts import model_to_dict, dict_to_model
 import json
 from datetime import datetime, date
+import os
 
 from app import app
 from app.models.program import Program
@@ -27,6 +28,7 @@ from app.logic.participants import getEventParticipants, getUserParticipatedTrai
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
+from openpyxl import load_workbook
 
 
 @admin_bp.route('/switch_user', methods=['POST'])
@@ -307,13 +309,29 @@ def deleteEventFile():
 
 @admin_bp.route("/uploadCourseParticipant", methods= ["POST"])
 def addCourseFile():
-    if request.method == POST:
-        file = request.files.get["addCourseParticipant"]
-        if file: 
-             file.save("uploads/" + file.filename)
-             return "File uploaded successfully."
-        return "no file uploaded"
+    fileData = request.files['addCourseParticipant']
+    filePath = os.path.join(app.config["files"]["base_path"], fileData.filename)
+    fileData.save(filePath)
+    excelData = load_workbook(filename=filePath)
+    excelSheet = excelData.active\
+    
+    for row in excelSheet.iter_rows():
+        print(row)
+    print(":::::::::::::::::::::::::::::::::::::")
+    print(excelSheet['A1'].value)
+    
 
+
+    
+
+    # if request.method == POST:
+    #     file = request.files.get["addCourseParticipant"]
+    #     if file: 
+    #          file.save("uploads/" + file.filename)
+    #          return "File uploaded successfully."
+    os.remove(filePath)
+    
+    return redirect(url_for("main.getAllCourseInstructors"))
 
 
 
