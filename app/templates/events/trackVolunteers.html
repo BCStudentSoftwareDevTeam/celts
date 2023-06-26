@@ -65,7 +65,7 @@
 <form method="post">
   <label class='d-none' id="eventLength">{{eventLength}}</label>
   <input class="form-control" id="eventID" name="event" value="{{event.id}}" type='hidden'>
-  <table class="table" id="trackVolunteerstable">
+  <table class="table" id="trackVolunteerstable" data-entryCount="{{ eventVolunteerData|length }}">
     <thead>
       <tr>
         {% if (not event.isPast) and (event.isRsvpRequired)  %}
