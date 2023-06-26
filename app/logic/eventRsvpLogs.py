@@ -4,5 +4,5 @@ from app.models.eventRsvpLogs import EventRsvpLogs
 
 def createRsvpLog(eventId, content):
     date = datetime.now()
-    entry = EventRsvpLogs.create(createdBy=g.current_user,createdOn=date,logContent=content,event_id=eventId)
+    entry = EventRsvpLogs.create(createdBy=g.current_user,createdOn=date,rsvpLogContent=content,event_id=eventId)
     entry.save()

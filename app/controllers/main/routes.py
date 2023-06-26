@@ -287,10 +287,8 @@ def volunteerRegister():
         personAdded = addPersonToEvent(user, event)
         if personAdded and listOfRequirements:
             reqListToString = ', '.join(listOfRequirements)
-            createRsvpLog(event.id, f"{user.username} added themselves to RSVP list. Trainings required: {reqListToString}")
             flash(f"{user.firstName} {user.lastName} successfully registered. However, the following training may be required: {reqListToString}.", "success")
         elif personAdded:
-            createRsvpLog(event.id, f"{user.username} added themselves to RSVP list.")
             flash("Successfully registered for event!","success")
         else:
             flash(f"RSVP Failed due to an unknown error.", "danger")

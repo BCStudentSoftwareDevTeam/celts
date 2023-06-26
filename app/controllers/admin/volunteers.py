@@ -122,7 +122,7 @@ def rsvpFromWaitlist(username, eventId):
     if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager): 
         waitlistUsers = EventRsvp.select().where(eventRsvp.user == username, EventRsvp.event==eventID).execute()
         if (waitlistUsers):
-            createRsvpLog(event.id, f"{g.current_user.username} removed {username} from RSVP list.")
+            createRsvpLog(event.id, f"Moved {username} from waitlist to RSVP.")
             (EventRsvp.update(rsvpWaitlist = False).where(EventRsvp.event_id == eventId, EventRsvp.user_id == username)).execute()
     return ""
 
@@ -133,12 +133,12 @@ def isVolunteerBanned(username, eventId):
 @admin_bp.route('/removeVolunteerFromEvent/<username>/<eventID>', methods = ['POST'])
 def removeVolunteerFromEvent(username, eventID):
     (EventParticipant.delete().where(EventParticipant.user==username, EventParticipant.event==eventID)).execute()
-    rsvpUsers = EventRsvp.select().where(eventRsvp.user == username, EventRsvp.event==eventID).execute()
-    if (rspvUsers):
+    rsvpUsers = EventRsvp.select().where(EventRsvp.user == username, EventRsvp.event==eventID).execute()
+    if (rsvpUsers):
         if rsvpUsers[0].rsvpWaitlist:
-            createRsvpLog(event.id, f"{g.current_user.username} removed {username} from waitlist.")
+            createRsvpLog(eventID, f"Removed {rsvpUsers[0].user_id} from waitlist.")
         else:
-            createRsvpLog(event.id, f"{g.current_user.username} removed {username} from RSVP list.")
+            createRsvpLog(eventID, f"Removed {rsvpUsers[0].user_id} from RSVP list.")
 
         (EventRsvp.delete().where(EventRsvp.user==username, EventRsvp.event==eventID)).execute()
 
