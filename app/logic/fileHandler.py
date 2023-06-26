@@ -16,7 +16,7 @@ class FileHandler:
         
         try:
             extraDir = str(self.eventId) if self.eventId else ""
-            os.makedirs(os.path.join(self.path, extraDir))
+            os.makedirs(os.path.join(self.path, extraDir))                                          #Changed the path where the directory is created.
         except:
             print("Directory exists.")
 
