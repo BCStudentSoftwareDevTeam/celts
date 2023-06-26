@@ -19,12 +19,12 @@ handledCourseFile = FileHandler(courseFileStorageObject, courseId=1)
 @pytest.mark.integration
 def test_getFileFullPath():
     # test event
-    filePath = handledEventFile.getFileFullPath(eventFileStorageObject[0])
+    filePath = handledEventFile.getFileFullPath("15/" + "".join(eventFileStorageObject[0].filename))
     print("test", filePath)
     assert filePath == 'app/static/files/eventattachments/15/eventfile.pdf'
     
     # test course
-    filePath = handledCourseFile.getFileFullPath(courseFileStorageObject[0])
+    filePath = handledCourseFile.getFileFullPath("".join(courseFileStorageObject[0].filename))
     assert filePath == 'app/static/files/courseattachments/1/coursefile.pdf'
 
 

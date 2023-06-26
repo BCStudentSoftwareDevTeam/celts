@@ -27,11 +27,10 @@ class FileHandler:
         """
 
         # Added the eventID of the first recurring event to track the file path for subsequent recurring events.
-
         try:
             # tries to create the full path of the files location and passes if
             # the directories already exist or there is no attachment
-            filePath=(os.path.join(self.path, newfilename))  # This line adds the eventID of the first recurring event.
+            filePath=(os.path.join(self.path, "".join(newfilename)))  # This line adds the eventID of the first recurring event.
         except AttributeError:  # will pass if there is no attachment to save
             pass
         except FileExistsError:
