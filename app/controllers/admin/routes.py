@@ -5,6 +5,7 @@ from playhouse.shortcuts import model_to_dict, dict_to_model
 import json
 from datetime import datetime, date
 import os
+import re
 
 from app import app
 from app.models.program import Program
@@ -17,6 +18,7 @@ from app.models.bonnerCohort import BonnerCohort
 from app.models.certification import Certification
 from app.models.user import User
 from app.models.eventViews import EventView
+from app.models.term import Term
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.adminLogs import createLog
@@ -29,6 +31,7 @@ from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
 from openpyxl import load_workbook
+
 
 
 @admin_bp.route('/switch_user', methods=['POST'])
@@ -313,12 +316,48 @@ def addCourseFile():
     filePath = os.path.join(app.config["files"]["base_path"], fileData.filename)
     fileData.save(filePath)
     excelData = load_workbook(filename=filePath)
-    excelSheet = excelData.active\
-    
+    excelSheet = excelData.active
+
+    courseAbrev = "" 
+    term = ""
+
+
+    row = ['course name', 'course number', 'faculty', 'term', 'previously']
+    row[0]
+    termReg = r"\b[a-zA-Z]{3,}\s\d{4}\b"
+    courseReg = r"\b[A-Z]{2,4}\s\d{3}\b"
+    bnumberReg = r"\b[B]\d{8}\b"
     for row in excelSheet.iter_rows():
-        print(row)
+        cellVal = row[0].value
+    
+        if re.search(termReg, str(cellVal)):
+            # get term obj from database
+            termObj = Term.select()
+            term = termReg
+          
+
+            
+
+
+        elif re.search(courseReg, str(cellVal)):
+            # get course obj from database, create if doesn't exist yet
+            course_abrev = courseReg
+          
+        
+        elif re.search(bnumberReg, str(cellVal)):
+            # get studentname from database
+            # add term,course,student to courseparticipant
+   
+
+        else:
+            print("/////////////////////// INVALID INPUT //////////////////////////\n")
+
+
+
+    studentbnumber(course, term``)
+
+    
     print(":::::::::::::::::::::::::::::::::::::")
-    print(excelSheet['A1'].value)
     
 
 
