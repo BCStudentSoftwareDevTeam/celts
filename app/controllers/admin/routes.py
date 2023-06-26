@@ -136,11 +136,11 @@ def createEvent(templateid, programid=None):
             bonnerCohorts = bonnerCohorts,
             isProgramManager = isProgramManager)
 
-@admin_bp.route('/eventsList/<eventId>/view', methods=['GET'])
-@admin_bp.route('/eventsList/<eventId>/edit', methods=['GET','POST'])
+@admin_bp.route('/event/<eventId>/view', methods=['GET'])
+@admin_bp.route('/event/<eventId>/edit', methods=['GET','POST'])
 def eventDisplay(eventId):
     pageViewsCount = EventView.select().where(EventView.event == eventId).count()
-    if request.method == 'GET' and request.path == f'/eventsList/{eventId}/view':
+    if request.method == 'GET' and request.path == f'/event/{eventId}/view':
         viewer = g.current_user
         event = Event.get_by_id(eventId)
         addEventView(viewer,event) 
@@ -192,8 +192,9 @@ def eventDisplay(eventId):
     if eventData['program'] and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
         bonnerCohorts = getBonnerCohorts(limit=5)
-
+    
     rule = request.url_rule
+
     # Event Edit
     if 'edit' in rule.rule:
         return render_template("admin/createEvent.html",
@@ -272,9 +273,13 @@ def addRecurringEvents():
 @admin_bp.route('/userProfile', methods=['POST'])
 def userProfile():
     volunteerName= request.form.copy()
-    username = volunteerName['searchStudentsInput'].strip("()")
-    user=username.split('(')[-1]
-    return redirect(url_for('main.viewUsersProfile', username=user))
+    if volunteerName['searchStudentsInput']:
+        username = volunteerName['searchStudentsInput'].strip("()")
+        user=username.split('(')[-1]
+        return redirect(url_for('main.viewUsersProfile', username=user))
+    else:
+        flash(f"Please enter the first name or the username of the student you would like to search for.", category='danger')
+        return redirect(url_for('admin.studentSearchPage'))
 
 @admin_bp.route('/search_student', methods=['GET'])
 def studentSearchPage():
