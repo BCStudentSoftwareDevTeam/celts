@@ -416,7 +416,11 @@ const textareas = $(".textarea");
 const slcQuestionWordCount = $(".slcQuestionWordCount")
 
 function calculateCountWords(text){
+<<<<<<< HEAD
   const words = text.split(/\s+/);
+=======
+  const words = text.split(/\s+|[;:,.~?!]+/);
+>>>>>>> refs/remotes/origin/slcQuestions
   return words.length - 1;
 }
 
