@@ -11,6 +11,7 @@ from app.models.event import Event
 from app.models.user import User
 from app.models.eventTemplate import EventTemplate
 from app.models.adminLogs import AdminLogs
+from app.models.eventRsvpLogs import EventRsvpLogs
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.bonnerCohort import BonnerCohort
 from app.models.certification import Certification
@@ -135,6 +136,28 @@ def createEvent(templateid, programid=None):
             requirements = requirements,
             bonnerCohorts = bonnerCohorts,
             isProgramManager = isProgramManager)
+
+
+@admin_bp.route('/event/<eventId>/rsvp', methods=['GET'])
+def rsvpLogDisplay(eventId):
+    #rsvpoccurs
+    #unrsvp
+    #deleted form RSVP
+    #put on waitlist
+    #delete from waitlist table
+    #moved from the waitlist table to the RSVP table an who moved them
+    #added to the RSVP table through the "Add Volunteer" modal and who added them
+    event = Event.get_by_id(eventId)
+    eventData = model_to_dict(event, recurse=False)
+    eventData['program'] = event.singleProgram
+    isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
+    if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager):
+        allLogs = EventRsvpLogs.select(EventRsvpLogs, User).join(User).order_by(EventRsvpLogs.createdOn.desc()).where(EventRsvpLogs.event_id == eventId)
+        return render_template("/events/rsvpLog.html",
+                                allLogs = allLogs)
+    else:
+        abort(403)
+
 
 @admin_bp.route('/event/<eventId>/view', methods=['GET'])
 @admin_bp.route('/event/<eventId>/edit', methods=['GET','POST'])

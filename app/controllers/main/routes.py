@@ -34,6 +34,7 @@ from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import unapprovedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
 from app.logic.certification import getCertRequirementsWithCompletion
+from app.logic.eventRsvpLogs import createRsvpLog
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
@@ -286,8 +287,10 @@ def volunteerRegister():
         personAdded = addPersonToEvent(user, event)
         if personAdded and listOfRequirements:
             reqListToString = ', '.join(listOfRequirements)
+            createRsvpLog(event.id, f"{user.username} added themselves to RSVP list. Trainings required: {reqListToString}")
             flash(f"{user.firstName} {user.lastName} successfully registered. However, the following training may be required: {reqListToString}.", "success")
         elif personAdded:
+            createRsvpLog(event.id, f"{user.username} added themselves to RSVP list.")
             flash("Successfully registered for event!","success")
         else:
             flash(f"RSVP Failed due to an unknown error.", "danger")
@@ -311,6 +314,7 @@ def RemoveRSVP():
     currentRsvpParticipant = EventRsvp.get(EventRsvp.user == g.current_user, EventRsvp.event == event)
     currentRsvpParticipant.delete_instance()
 
+    createRsvpLog(event.id, f"{g.current_user.username} removed themselves from RSVP list.")
     flash("Successfully unregistered for event!", "success")
     if 'from' in eventData:
         if eventData['from'] == 'ajax':
