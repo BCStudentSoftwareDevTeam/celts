@@ -15,6 +15,10 @@
   {% set page_title = eventData.name %}
 {% endif %}
 
+{% if isNewEvent %}
+  {% set eventProgramHeader = eventData.update({'program': ''}) %}
+{% endif %}
+
 {% set eventPast = event.isPast if not isNewEvent else False %}
 {% set tabName = 'edit' %}
 {% extends "eventsNav.html"%}
