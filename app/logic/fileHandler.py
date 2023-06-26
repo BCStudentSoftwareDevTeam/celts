@@ -31,7 +31,11 @@ class FileHandler:
         try:
             # tries to create the full path of the files location and passes if
             # the directories already exist or there is no attachment
-            filePath=(os.path.join(self.path, newfilename))                                  # This line adds the eventID of the first recurring event.
+            if self.eventId:
+                filePath=(os.path.join(self.path, str(self.eventId), newfilename.filename))  
+            elif self.courseId:
+                filePath=(os.path.join(self.path, newfilename.filename))
+                                           # This line adds the eventID of the first recurring event.
         except AttributeError:  # will pass if there is no attachment to save
             pass
         except FileExistsError:

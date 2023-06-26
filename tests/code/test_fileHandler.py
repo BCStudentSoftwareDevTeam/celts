@@ -20,6 +20,7 @@ handledCourseFile = FileHandler(courseFileStorageObject, courseId=1)
 def test_getFileFullPath():
     # test event
     filePath = handledEventFile.getFileFullPath(eventFileStorageObject[0])
+    print("test", filePath)
     assert filePath == 'app/static/files/eventattachments/15/eventfile.pdf'
     
     # test course
