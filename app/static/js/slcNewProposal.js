@@ -197,7 +197,7 @@ function disableInput() {
     $("#submitAndApproveButton").hide();
     $(".editButton").hide()
     $(".removeButton").hide()
-    $(".slcQuestionWordCount, .slcQuestionWordCounter" ).replaceWith( " ");
+    $(".slcQuestionWordCounter span" ).replaceWith( " ");
 }
 
 
@@ -416,7 +416,7 @@ const textareas = $(".textarea");
 const slcQuestionWordCount = $(".slcQuestionWordCount")
 
 function calculateCountWords(text){
-  const words = text.split(/\s+|[;:,.~?!]/);
+  const words = text.split(/\s+/);
   return words.length - 1;
 }
 
