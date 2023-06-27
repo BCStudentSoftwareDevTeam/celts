@@ -41,13 +41,13 @@ def sendUserData(bnumber, eventId, programid):
     """Accepts scan input and signs in the user. If user exists or is already
     signed in will return user and login status"""
     try:
+        event = Event.get_by_id(eventId)
         signedInUser = User.get(User.bnumber == bnumber)
-        volunteerExists = checkUserVolunteer(user, event)
-        rsvpExists = checkUserRsvp(user, event)
+        volunteerExists = checkUserVolunteer(signedInUser , event)
+        rsvpExists = checkUserRsvp(signedInUser , event)
     except Exception as e:
         print(e)
         return None, "does not exist"
-    event = Event.get_by_id(eventId)
     if not isEligibleForProgram(programid, signedInUser):
         userStatus = "banned"
     elif ((EventParticipant.select(EventParticipant.user)
@@ -57,7 +57,7 @@ def sendUserData(bnumber, eventId, programid):
     elif not rsvpExists:
         currentRsvp = getEventRsvpCountsForTerm(event.term)
         waitlist = currentRsvp[event.id] >= event.rsvpLimit if event.rsvpLimit is not None else 0
-        EventRsvp.create(user = user, event = event, rsvpWaitlist = waitlist)
+        EventRsvp.create(user = signedInUser, event = event, rsvpWaitlist = waitlist)
     else:
         userStatus = "success"
         totalHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
