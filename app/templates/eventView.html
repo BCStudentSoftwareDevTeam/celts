@@ -32,11 +32,7 @@
           </ul>
          </div> <br />
     {% endif %}
-    <!--
-    {% if isPastEvent %}
-        <p class="heading-size"><b>{{eventData.name}}</b> took place on <b>{{eventData.startDate}}</b> </p>
-    {% endif %}
-    -->
+
     <div class="container-fluid">
             <div class="row">
                 <div class="col-md-6">
@@ -141,19 +137,19 @@
                         <h3><br>Program Trainings</h3>
                         {% for training, participated in programTrainings.items() %}
                             {% if g.current_user.isCeltsAdmin %}
-                            <p>{{training}}</p>
-                            {% else %}
-                            {% if participated == 1 %}
-                                <p><b>{{training}}</b>: Attended</p>
-                            {% elif participated == 0 %}
-                                <p><b>{{training}}</b>: Not attended</p>
-                            {% else %}
-                                <p><b>{{training}}</b>: Upcoming</p>
-                            {% endif%}
-                                {% endif %}
+                                <p>{{training}}</p>
+                                {% else %}
+                                {% if participated == 1 %}
+                                    <p><b>{{training}}</b>: Attended</p>
+                                {% elif participated == 0 %}
+                                    <p><b>{{training}}</b>: Not attended</p>
+                                {% else %}
+                                    <p><b>{{training}}</b>: Upcoming</p>
+                                {% endif%}
+                            {% endif %}
                         {% endfor %}
                     {% endif %}
-                        
+                            
                     {% if filepaths.keys()|count %}
                     <div class="form-group mb-5">
                         <label class="mb-2" for= "eventAttachments"><strong>Event Attachments</strong></label>
@@ -169,26 +165,24 @@
                     </div>
                     {% endif %}
                     <div class="rsvp-btn text-center">
-                    {% if (not isPastEvent) and (not isNewEvent)%}
-                        {% if userHasRSVPed %}
-                            <button type="submit" class="btn btn-danger" value="{{eventData.id}}" id="removeRsvpBtn">Remove RSVP</button>
-                        {% elif eventData.isRsvpRequired %}
-                            {% set buttonName = "Join Waitlist" if (eventData.rsvpLimit) and (currentEventRsvpAmount[eventData.id] >= eventData.rsvpLimit) else "RSVP" %}
-                            <button type="submit" class="btn btn-primary" value="{{eventData.id}}" id="rsvpBtn">{{buttonName}}</button>
+                        {% if (not isPastEvent) and (not isNewEvent)%}
+                            {% if userHasRSVPed %}
+                                <button type="submit" class="btn btn-danger" value="{{eventData.id}}" id="removeRsvpBtn">Remove RSVP</button>
+                            {% elif eventData.isRsvpRequired %}
+                                {% set buttonName = "Join Waitlist" if (eventData.rsvpLimit) and (currentEventRsvpAmount[eventData.id] >= eventData.rsvpLimit) else "RSVP" %}
+                                <button type="submit" class="btn btn-primary" value="{{eventData.id}}" id="rsvpBtn">{{buttonName}}</button>
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
-                    
-                    {% if g.current_user.isCeltsAdmin or isProgramManager %}
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-eye-fill me-2"></i>
-                        <span class="me-2">Unique Viewers:</span>
-                        <span id="viewCount">{{pageViewsCount}}</span>
-                    </div>
-                    {% endif %}
-                    </div> 
+                        
+                        {% if g.current_user.isCeltsAdmin or isProgramManager %}
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-eye-fill me-2"></i>
+                            <span class="me-2">Unique Viewers:</span>
+                            <span id="viewCount">{{pageViewsCount}}</span>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
-    </div>
-            <!--FIXME-->
+            </div>
 
 {% endblock %}

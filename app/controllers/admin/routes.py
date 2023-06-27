@@ -163,7 +163,6 @@ def eventDisplay(eventId):
     for attachment in associatedAttachments:
         for extension in picurestype:
             if (attachment.fileName.endswith(extension)):
-                print(attachment.fileName)
                 image = filepaths[attachment.fileName[0]]
                 
     if request.method == "POST": # Attempt to save form
@@ -194,7 +193,6 @@ def eventDisplay(eventId):
     userHasRSVPed = checkUserRsvp(g.current_user, event)
     isPastEvent = event.isPast
     isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
-    print(filepaths)
 
     requirements, bonnerCohorts = [], []
     if eventData['program'] and eventData['program'].isBonnerScholars:
