@@ -73,7 +73,6 @@ def addPersonToEvent(user, event):
 
         Returns True if the operation was successful, false otherwise
     """
-    createRsvpLog(event.id, f"Added {user} to waitlist.")
     try:
         volunteerExists = checkUserVolunteer(user, event)
         rsvpExists = checkUserRsvp(user, event)
