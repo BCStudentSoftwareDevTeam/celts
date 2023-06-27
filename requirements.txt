@@ -1,4 +1,4 @@
-making change for the hell of i
+making change for the **** of it
 now we make moret
 alembic==1.6.3
 appdirs==1.4.4
