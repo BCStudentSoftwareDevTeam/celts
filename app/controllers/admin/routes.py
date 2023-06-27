@@ -154,6 +154,8 @@ def rsvpLogDisplay(eventId):
     if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager):
         allLogs = EventRsvpLogs.select(EventRsvpLogs, User).join(User).order_by(EventRsvpLogs.createdOn.desc()).where(EventRsvpLogs.event_id == eventId)
         return render_template("/events/rsvpLog.html",
+                                event = event,
+                                eventData = eventData,
                                 allLogs = allLogs)
     else:
         abort(403)

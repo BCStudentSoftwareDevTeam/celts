@@ -1,3 +1,4 @@
+from flask import g
 from peewee import fn, JOIN
 from datetime import date
 from app.models.user import User
@@ -85,10 +86,12 @@ def addPersonToEvent(user, event):
                 currentRsvp = getEventRsvpCountsForTerm(event.term)
                 waitlist = currentRsvp[event.id] >= event.rsvpLimit if event.rsvpLimit is not None else 0
                 EventRsvp.create(user = user, event = event, rsvpWaitlist = waitlist)
-                if waitlist:
-                    createRsvpLog(event.id, f"Added {user} to waitlist.")
+
+                targetList = "waitlist" if waitlist else "RSVP list"
+                if g.current_user.username == user.username:
+                    createRsvpLog(event.id, f"{user.fullName} RSVP'd for event.")
                 else:
-                    createRsvpLog(event.id, f"Added {user} to RSVP list.")
+                    createRsvpLog(event.id, f"Added {user.fullName} to {targetList}.")
 
         if volunteerExists or rsvpExists:
             return "already in"

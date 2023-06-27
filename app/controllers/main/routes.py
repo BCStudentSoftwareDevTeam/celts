@@ -312,7 +312,7 @@ def RemoveRSVP():
     currentRsvpParticipant = EventRsvp.get(EventRsvp.user == g.current_user, EventRsvp.event == event)
     currentRsvpParticipant.delete_instance()
 
-    createRsvpLog(event.id, f"{g.current_user.username} removed themselves from RSVP list.")
+    createRsvpLog(event.id, f"{g.current_user.firstName} {g.current_user.lastName} un-RSVP'd.")
     flash("Successfully unregistered for event!", "success")
     if 'from' in eventData:
         if eventData['from'] == 'ajax':
