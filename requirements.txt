@@ -1,4 +1,4 @@
-making change for the hell of it
+making change for the **** of it
 alembic==1.6.3
 appdirs==1.4.4
 attrs==21.2.0
