@@ -3,15 +3,24 @@ import searchUser from './searchUser.js'
 $(document).ready(function() {
   $('[data-toggle="tooltip"]').tooltip();
   var iconShowing = false
+
+var participantCount = $('#trackVolunteerstable').attr('data-entryCount');
   var table =  $('#trackVolunteerstable').DataTable({
-  "fnDrawCallback": function(oSettings) {
-    if ($('#trackVolunteerstable tr').length < 11) {
-        $('.dataTables_paginate').hide(); //disable search and page numbers when the length of the table is less 11
-        $('.dataTables_filter').hide();
-        $('.dataTables_length').hide();
+    "fnDrawCallback": function(oSettings) {
+      $(".removeVolunteer").on("click", removeVolunteer); // we need to rebind this as new rows become visible
+      let displayedRows = $('#trackVolunteerstable tr').length; // This is actually the number of displayed particpants plus one extra row for the column labels
+      if (displayedRows > participantCount){
+        $('.dataTables_paginate').hide();
+      }
+      else{
+        $('.dataTables_paginate').show();
       }
     }
   });
+  if (participantCount < 11){
+    $('.dataTables_length').hide();
+  }
+
 
   // Search functionalities from the volunteer table in the UI
     $("#trackVolunteersInput").on("keyup", function() {
@@ -73,8 +82,9 @@ $(document).ready(function() {
     searchUser("addVolunteerInput", callback, true, "addVolunteerModal");
   });
 
-  $(".removeVolunteer").on("click", function() {
-      $(".removeVolunteer").prop("disabled", true)
+
+  function removeVolunteer(){
+    $(".removeVolunteer").prop("disabled", true)
     let username =  this.id;
     let eventId = $('#eventID').val()
     $.ajax({
@@ -87,7 +97,7 @@ $(document).ready(function() {
           $(".removeVolunteer").prop("disabled", false)
       }
     });
-  });
+  }
 
   $("#addRsvpFromWaitlistBtn").on("click",function(){
     let username = $('#addRsvpFromWaitlistBtn').val()
