@@ -272,7 +272,7 @@ function showTab(currentTab) {
         $("#cancelButton").hide();
         $("#previousButton").show();
         $("#submitAndApproveButton").show();
-        $("#nextButton").text("Submit");
+        $("#nextButton").text("Submit Proposal");
         $("#nextButton").show();
         $("#saveContinue").text("Save and Exit");
         $("#saveExit").hide()
