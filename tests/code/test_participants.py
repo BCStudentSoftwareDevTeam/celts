@@ -107,7 +107,7 @@ def test_sendUserData():
         
         newEvent = Event.get(name="Test event 1234")
 
-        userAdded = sendUserData(bnumber, newEvent)
+        userAdded = sendUserData(user.bnumber, newEvent)
         assert userAdded == True, "User was not added"
         assert checkUserRsvp(user, newEvent), "No RSVP record was added"
         assert not checkUserVolunteer(user, newEvent), "A Volunteer record was added instead"
@@ -271,7 +271,6 @@ def test_sendUserData():
     with mainDB.atomic() as transaction:
         signedInUser, userStatus = sendUserData("B00739736", 2, 1)
         assert userStatus == "banned"
-
 
         # user is already signed in
         signedInUser, userStatus = sendUserData("B00751360", 2, 1)

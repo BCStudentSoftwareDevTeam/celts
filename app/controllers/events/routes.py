@@ -12,6 +12,7 @@ from app.models.programEvent import ProgramEvent
 from app.controllers.events import events_bp
 from app.controllers.events import email
 from app.logic.emailHandler import EmailHandler
+from app.logic.participants import sendUserData
 
 
 @events_bp.route('/email', methods=['POST'])
@@ -59,7 +60,7 @@ def signinEvent():
         elif bnumber[0].upper() != "B":
             return "", 500
     try:
-        kioskUser, userStatus = sendUserData(userObj.bnumber, eventid, programid)
+        kioskUser, userStatus = sendUserData(bnumber, eventid, programid)
         if kioskUser:
             return {"user": f"{kioskUser.firstName} {kioskUser.lastName}", "status": userStatus}
         else:
