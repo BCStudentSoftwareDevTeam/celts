@@ -48,20 +48,21 @@ class FileHandler:
                         isFileInEvent = AttachmentUpload.select().where(AttachmentUpload.event == self.eventId, AttachmentUpload.fileName == file.filename).exists()
                         if not isFileInEvent:
                             AttachmentUpload.create(event = self.eventId, fileName = str(saveOriginalFile.id) + "/" + file.filename)
-
+                            
                             # saves attachment in the same directory using the eventID of the first recurring event.
-                            file.save(self.getFileFullPath(newfilename = str(saveOriginalFile.id) + "/" + file.filename)) 
+                            file.save(self.getFileFullPath(newfilename = str(saveOriginalFile.id) + "/" + file.filename))
                             # We need to add the event id to the file path when we call it in file.save.
                     else:
                         isFileInEvent = AttachmentUpload.select().where(AttachmentUpload.event == self.eventId, AttachmentUpload.fileName == file.filename).exists()
                         if not isFileInEvent:
                             AttachmentUpload.create(event = self.eventId, fileName = str(saveOriginalFile.id) + "/" + file.filename)
-                            
+                       
+
                 elif self.courseId:
                     isFileInCourse = AttachmentUpload.select().where(AttachmentUpload.course == self.courseId, AttachmentUpload.fileName == file.filename).exists()
                     if not isFileInCourse:
                         AttachmentUpload.create(course = self.courseId, fileName = file.filename)
-                        file.save(self.getFileFullPath(newfile = file)) # saves attachment in directory
+                        file.save(self.getFileFullPath(newfilename = file.filename)) # saves attachment in directory
         except AttributeError: # will pass if there is no attachment to save
             pass
 
@@ -78,7 +79,9 @@ class FileHandler:
         """
         try:
             file = AttachmentUpload.get_by_id(fileId)
+            print("this is the file", file)
             path = os.path.join(self.path, file.fileName)
+            print("this is the path", path)
             os.remove(path)
             file.delete_instance()
         except AttributeError: #passes if no attachment is selected.

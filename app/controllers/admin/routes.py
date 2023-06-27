@@ -231,8 +231,7 @@ def eventDisplay(eventId):
                                 currentEventRsvpAmount = currentEventRsvpAmount,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths,
-                                pageViewsCount= pageViewsCount,
-                                eventSeriesList = eventSeriesList)
+                                pageViewsCount= pageViewsCount)
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
