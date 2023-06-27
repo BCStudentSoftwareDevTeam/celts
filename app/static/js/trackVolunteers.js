@@ -39,19 +39,13 @@ var participantCount = $('#trackVolunteerstable').attr('data-entryCount');
     });
 
     function updateSelectVolunteer(){
-      let checkboxlist = $("#addVolunteerModal input[type=checkbox]")
-      var shouldEnableButton = false
-      $.each(checkboxlist, function(index, checkbox){
+      $("#addVolunteerModal input[type=checkbox]").each(function(index, checkbox){
           if(checkbox["checked"] == true){
-            shouldEnableButton = true
+            $("#addVolunteersButton").prop("disabled", false)
+            return false
           }
+          $("#addVolunteersButton").prop("disabled", true)
       })
-      if (shouldEnableButton){
-        $("#addVolunteersButton").prop("disabled", false)
-      }
-      else{
-        $("#addVolunteersButton").prop("disabled", true)
-      }
     }
     
 
