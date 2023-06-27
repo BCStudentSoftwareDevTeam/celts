@@ -124,11 +124,14 @@ def rsvpFromWaitlist(username, eventId):
 def isVolunteerBanned(username, eventId):
     return {"banned":1} if isBannedFromEvent(username, eventId) else {"banned":0}
 
-@admin_bp.route('/removeVolunteerFromEvent/<user>/<eventID>', methods = ['POST'])
-def removeVolunteerFromEvent(user, eventID):
-    (EventParticipant.delete().where(EventParticipant.user==user, EventParticipant.event==eventID)).execute()
-    (EventRsvp.delete().where(EventRsvp.user==user, EventRsvp.event==eventID)).execute()
-    flash("Volunteer successfully removed", "success")
+@admin_bp.route('/removeVolunteerFromEvent', methods = ['POST'])
+def removeVolunteerFromEvent():
+    user = request.form.get('username')
+    eventID = request.form.get('eventId')
+    if g.current_user.isAdmin: 
+        (EventParticipant.delete().where(EventParticipant.user==user, EventParticipant.event==eventID)).execute()
+        (EventRsvp.delete().where(EventRsvp.user==user, EventRsvp.event==eventID)).execute()
+        flash("Volunteer successfully removed", "success")
     return ""
 
 @admin_bp.route('/addBackgroundCheck', methods = ['POST'])
