@@ -1,5 +1,9 @@
 {% set title = "Track Volunteers" %}
-{% extends "base.html"%}
+{% set page_title = eventData.name %}
+{% set eventPast = event.isPast %}
+{% set tabName = 'trackVolunteers' %}
+{% extends "eventNav.html" %}
+
 
 {% block scripts %}
   {{super()}}
@@ -16,36 +20,8 @@
 
 {% block app_content %}
 
-<div class="text-center">
-  {% set page_title = eventData.name %}
-      <h1 id="title">{{page_title}}</h1>
-      {% if eventData.name != 'All Volunteer Training' and eventData.program == None %}
-        <h3>CELTS-Sponsored Event</h3>
-      {% elif eventData.program %}
-        <h3>{{eventData["program"].programName}} Event</h3>
-      {% endif %}
-    {% if event.isPast %}
-      <div class="alert-danger mb-2 pb-2 pt-2" role="alert">This event is in the past.</div>
-    {% endif %}
-</div>
-<div class="btn-group">
-  <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
-    <li class="nav-item" role="presentation">
-        <a class="nav-link" href="/event/{{event.id}}/view" role="tab" aria-selected="false">View Event</a>
-    </li>
-    <li class="nav-item" role="presentation">
-        <a class="nav-link" href="/event/{{event.id}}/edit" role="tab" aria-selected="false">Edit Event</a>
-    </li>
-    <li class="nav-item" role="presentation">
-        <a class="nav-link active" href="#" role="tab" aria-selected="true">Track Volunteers</a>
-    </li>
-    {% if (eventData.isFoodProvided) %}
-    <li class="nav-item" role="presentation">
-      <a class="nav-link" href="/event/{{event.id}}/dietary_restrictions" role="tab" aria-selected="false">Dietary Restrictions</a>
-    </li>
-    {% endif %}
-  </ul>
-</div>
+
+{{super()}}
 <label class='d-none' id="eventLength">{{eventLength}}</label>
 <input class="form-control" id="event" name="event" value="{{event}}" type='hidden' />
 <div class="flex-container" style="padding: 5px;">
@@ -70,7 +46,7 @@
 <form method="post">
   <label class='d-none' id="eventLength">{{eventLength}}</label>
   <input class="form-control" id="eventID" name="event" value="{{event.id}}" type='hidden'>
-  <table class="table" id="trackVolunteerstable">
+  <table class="table" id="trackVolunteerstable" data-entryCount="{{ eventVolunteerData|length }}">
     <thead>
       <tr>
         {% if (not event.isPast) and (event.isRsvpRequired)  %}
