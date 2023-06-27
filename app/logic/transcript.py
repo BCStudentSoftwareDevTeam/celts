@@ -1,7 +1,6 @@
 from app.models.course import Course
 from app.models.courseParticipant import CourseParticipant
 from app.models.program import Program
-from app.models.programEvent import ProgramEvent
 from app.models.courseInstructor import CourseInstructor
 from app.models.user import User
 from app.models.term import Term
@@ -18,11 +17,10 @@ def getOtherEventsTranscript(username):
 
     otherEventsData = list(EventParticipant.select(Event, Term, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
                     .join(Event)
-                    .join(ProgramEvent, JOIN.LEFT_OUTER)
                     .join(Program, JOIN.LEFT_OUTER).switch(Event)
                     .join(Term)
                     .where(EventParticipant.user==username,
-                    ProgramEvent.program == None)
+                    Event.program_id == None)
                     .group_by(Event.term)
                   )
 
@@ -34,6 +32,8 @@ def getProgramTranscript(username):
     current user.
     """
     # Add up hours earned in a term for each program they've participated in
+    
+    #check with anderson
     programData = (ProgramEvent
         .select(Program, Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
         .join(Program)

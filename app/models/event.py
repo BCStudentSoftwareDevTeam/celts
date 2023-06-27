@@ -1,6 +1,5 @@
 from app.models import *
 from app.models.term import Term
-from app.models.program import Program
 from datetime import datetime
 
 class Event(baseModel):
@@ -21,6 +20,7 @@ class Event(baseModel):
     recurringId = IntegerField(null=True)
     contactEmail = CharField(null=True)
     contactName = CharField(null=True)
+    program_id = ForeignKeyField(program, null= True)
 
     _spCache = "Empty"
 
@@ -29,20 +29,21 @@ class Event(baseModel):
 
     @property
     def noProgram(self):
-        return not self.programEvents.exists()
+        #Ask Anderson 
+        return not self.program_id.exists()
 
-    @property
-    def singleProgram(self):
-        from app.models.programEvent import ProgramEvent
+    # @property
+    # def singleProgram(self):
+    #     from app.models.programEvent import ProgramEvent
 
-        if self._spCache == "Empty":
-            countPE = list(self.programEvents.select(ProgramEvent, Program).join(Program).execute())
-            if len(countPE) == 1:
-                self._spCache = countPE[0].program
-            else:
-                self._spCache = None
+    #     if self._spCache == "Empty":
+    #         countPE = list(Event.select( Program).join(Program).execute())
+    #         if len(countPE) == 1:
+    #             self._spCache = countPE[0].program
+    #         else:
+    #             self._spCache = None
 
-        return self._spCache
+    #     return self._spCache
 
     @property
     def isPast(self):

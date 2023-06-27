@@ -5,7 +5,6 @@ from app.models.event import Event
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.models.program import Program
-from app.models.programEvent import ProgramEvent
 from app.models.eventParticipant import EventParticipant
 from app.logic.users import isEligibleForProgram
 from app.logic.volunteers import getEventLengthInHours
@@ -22,10 +21,9 @@ def trainedParticipants(programID, currentTerm):
     # Reset program eligibility each term for all other trainings
 
     otherTrainingEvents = (Event.select(Event.id)
-            .join(ProgramEvent).switch()
             .join(Term)
             .where(
-                ProgramEvent.program == programID,
+                Event.program_id == programID,
                 (Event.isTraining | Event.isAllVolunteerTraining),
                 Event.term.academicYear == academicYear)
             )
@@ -97,8 +95,7 @@ def unattendedRequiredEvents(program, user):
 
     # Check for events that are prerequisite for program
     requiredEvents = (Event.select(Event)
-                           .join(ProgramEvent)
-                           .where(Event.isTraining == True, ProgramEvent.program == program))
+                           .where(Event.isTraining == True, Event.program_id == program))
 
     if requiredEvents:
         attendedRequiredEventsList = []
@@ -128,12 +125,11 @@ def getUserParticipatedTrainingEvents(program, user, currentTerm):
     """
     academicYear = currentTerm.academicYear
 
-    programTrainings = (Event.select(Event, ProgramEvent, Term, EventParticipant)
+    programTrainings = (Event.select(Event, Term, EventParticipant)
                                .join(EventParticipant, JOIN.LEFT_OUTER).switch()
-                               .join(ProgramEvent).switch()
                                .join(Term)
                                .where((Event.isTraining | Event.isAllVolunteerTraining),
-                                      ProgramEvent.program == program,
+                                      Event.program_id== program,
                                       Event.term.academicYear == academicYear,
                                       EventParticipant.user.is_null(True) | (EventParticipant.user == user)))
 

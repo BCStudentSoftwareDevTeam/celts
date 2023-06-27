@@ -8,7 +8,6 @@ from app.models.program import Program
 from app.models.event import Event
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
-from app.models.programEvent import ProgramEvent
 from app.controllers.events import events_bp
 from app.controllers.events import email
 from app.logic.emailHandler import EmailHandler
@@ -46,7 +45,9 @@ def signinEvent():
     """Utilizes form data and sign in function. Returns correct flasher message."""
     eventid = request.form["eventid"]
     bnumber = request.form["bNumber"]
-    programid = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event == eventid)
+    
+    # Correct query
+    programid= Event.select(Event.program_id). where(Event.id == eventid)
 
     if not bnumber: # Avoids string index out of range error
         return "", 500

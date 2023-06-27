@@ -8,12 +8,10 @@ from app.models.user import User
 from app.models.event import Event
 from app.models.eventParticipant import EventParticipant
 from app.models.program import Program
-from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.programBan import ProgramBan
 from app.models.interest import Interest
 from app.models.eventRsvp import EventRsvp
-from app.models.programEvent import ProgramEvent
 from app.models.requirementMatch import RequirementMatch
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.eventViews import EventView
@@ -27,8 +25,8 @@ def getEvents(program_id=None):
 
     if program_id:
         Program.get_by_id(program_id) # raises an exception if program doesn't exist
-        return (Event.select(Event).join(ProgramEvent)
-                    .where(ProgramEvent.program == program_id).distinct())
+        return (Event.select(Event)
+                     .where(Event.program_id == program_id).distinct())
     else:
         return Event.select()
 
@@ -260,16 +258,15 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now(), program=None):
     """
 
     events =  (Event.select().distinct()
-                    .join(ProgramEvent, JOIN.LEFT_OUTER)
-                    .join(ProgramBan, JOIN.LEFT_OUTER, on=((ProgramBan.program == ProgramEvent.program) & (ProgramBan.user == user)))
-                    .join(Interest, JOIN.LEFT_OUTER, on=(ProgramEvent.program == Interest.program))
+                    .join(ProgramBan, JOIN.LEFT_OUTER, on=((ProgramBan.program == Event.program_id) & (ProgramBan.user == user)))
+                    .join(Interest, JOIN.LEFT_OUTER, on=(Event.program_id == Interest.program))
                     .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
                     .where(Event.startDate >= asOf,
                           (Interest.user == user) | (EventRsvp.user == user),
                           ProgramBan.user.is_null(True) | (ProgramBan.endDate < asOf)))
 
     if program:
-        events = events.where(ProgramEvent.program == program)
+        events = events.where(Event.program_id == program)
 
     events = events.order_by(Event.startDate, Event.name)
 

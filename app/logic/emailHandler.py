@@ -4,7 +4,6 @@ from flask_mail import Mail, Message
 import os
 
 from app import app
-from app.models.programEvent import ProgramEvent
 from app.models.interest import Interest
 from app.models.user import User
 from app.models.program import Program
@@ -71,8 +70,11 @@ class EmailHandler:
         """ Fetches all the programs of a particular event """
         # Non-student-led programs have "Unknown" as their id
         if program_id == 'Unknown' or program_id is None:
-            programEvents = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event==self.event.id)
-            return [program.program for program in programEvents.objects()]
+            
+            programEvents = Event.select(Event.program_id).where(Event.id==self.event.id)
+            
+            
+            return [program.program_id for program in programEvents.objects()] 
         else:
             return [Program.get_by_id(program_id)]
 

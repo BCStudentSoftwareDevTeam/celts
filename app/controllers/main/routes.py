@@ -12,7 +12,6 @@ from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
 from app.models.programBan import ProgramBan
-from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
@@ -42,8 +41,11 @@ def redirectToLogout():
 @main_bp.route('/', methods=['GET'])
 def landingPage():
     managerProgramDict = getManagerProgramDict(g.current_user)
-    programsWithEvents = list(ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event.term == g.current_term).join(Event).distinct())
-    programsWithEventsList = [program.program.id for program in programsWithEvents]
+
+    
+    programsWithEvents = list(Event.select(Event.program_id).where(Event.term == g.current_term).distinct()) # check before submitting with Anderson
+    
+    programsWithEventsList = [program.program_id for program in programsWithEvents]
 
     return render_template("/main/landingPage.html", managerProgramDict = managerProgramDict,
                                                      term = g.current_term,
