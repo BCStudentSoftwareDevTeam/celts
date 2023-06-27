@@ -114,7 +114,7 @@ def dietaryRestrictionsPage(eventID):
     eventData["program"] = event.singleProgram
 
 
-    return render_template("/events/dietary_restrictions.html",
+    return render_template("/events/dietaryRestrictions.html",
                             volunteerUser = volunteerUser,
                             waitlistUser = waitlistUser,
                             event = event,
