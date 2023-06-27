@@ -310,9 +310,9 @@ def RemoveRSVP():
     event = Event.get_by_id(eventData['id'])
 
     currentRsvpParticipant = EventRsvp.get(EventRsvp.user == g.current_user, EventRsvp.event == event)
+    logBody = "withdrew from the waitlist" if currentRsvpParticipant.rsvpWaitlist else "un-RSVP'd"
     currentRsvpParticipant.delete_instance()
-
-    createRsvpLog(event.id, f"{g.current_user.firstName} {g.current_user.lastName} un-RSVP'd.")
+    createRsvpLog(event.id, f"{g.current_user.fullName} {logBody}.")
     flash("Successfully unregistered for event!", "success")
     if 'from' in eventData:
         if eventData['from'] == 'ajax':
