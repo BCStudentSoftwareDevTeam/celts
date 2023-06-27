@@ -140,13 +140,6 @@ def createEvent(templateid, programid=None):
 
 @admin_bp.route('/event/<eventId>/rsvp', methods=['GET'])
 def rsvpLogDisplay(eventId):
-    #rsvpoccurs
-    #unrsvp
-    #deleted form RSVP
-    #put on waitlist
-    #delete from waitlist table
-    #moved from the waitlist table to the RSVP table an who moved them
-    #added to the RSVP table through the "Add Volunteer" modal and who added them
     event = Event.get_by_id(eventId)
     eventData = model_to_dict(event, recurse=False)
     eventData['program'] = event.singleProgram
