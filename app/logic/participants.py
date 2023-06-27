@@ -42,6 +42,8 @@ def sendUserData(bnumber, eventId, programid):
     signed in will return user and login status"""
     try:
         signedInUser = User.get(User.bnumber == bnumber)
+        volunteerExists = checkUserVolunteer(user, event)
+        rsvpExists = checkUserRsvp(user, event)
     except Exception as e:
         print(e)
         return None, "does not exist"
@@ -52,6 +54,10 @@ def sendUserData(bnumber, eventId, programid):
        .where(EventParticipant.user == signedInUser, EventParticipant.event==eventId))
        .exists()):
         userStatus = "already in"
+    elif not rsvpExists:
+        currentRsvp = getEventRsvpCountsForTerm(event.term)
+        waitlist = currentRsvp[event.id] >= event.rsvpLimit if event.rsvpLimit is not None else 0
+        EventRsvp.create(user = user, event = event, rsvpWaitlist = waitlist)
     else:
         userStatus = "success"
         totalHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
@@ -64,34 +70,34 @@ def checkUserRsvp(user,  event):
 def checkUserVolunteer(user,  event):
     return EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event).exists()
 
-def addPersonToEvent(user, event):
-    """
-        Add a user to an event.
-        If the event is in the past, add the user as a volunteer (EventParticipant) including hours worked.
-        If the event is in the future, rsvp for the user (EventRsvp)
+# def addPersonToEvent(user, event):
+#     """
+#         Add a user to an event.
+#         If the event is in the past, add the user as a volunteer (EventParticipant) including hours worked.
+#         If the event is in the future, rsvp for the user (EventRsvp)
 
-        Returns True if the operation was successful, false otherwise
-    """
-    try:
-        volunteerExists = checkUserVolunteer(user, event)
-        rsvpExists = checkUserRsvp(user, event)
-        if event.isPast:
-            if not volunteerExists:
-                eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
-                EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
-        else:
-            if not rsvpExists:
-                currentRsvp = getEventRsvpCountsForTerm(event.term)
-                waitlist = currentRsvp[event.id] >= event.rsvpLimit if event.rsvpLimit is not None else 0
-                EventRsvp.create(user = user, event = event, rsvpWaitlist = waitlist)
+#         Returns True if the operation was successful, false otherwise
+#     """
+#     try:
+#         volunteerExists = checkUserVolunteer(user, event)
+#         rsvpExists = checkUserRsvp(user, event)
+#         if event.isPast:
+#             if not volunteerExists:
+#                 eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
+#                 EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
+#         else:
+#             if not rsvpExists:
+#                 currentRsvp = getEventRsvpCountsForTerm(event.term)
+#                 waitlist = currentRsvp[event.id] >= event.rsvpLimit if event.rsvpLimit is not None else 0
+#                 EventRsvp.create(user = user, event = event, rsvpWaitlist = waitlist)
 
-        if volunteerExists or rsvpExists:
-            return "already in"
-    except Exception as e:
-        print(e)
-        return False
+#         if volunteerExists or rsvpExists:
+#             return "already in"
+#     except Exception as e:
+#         print(e)
+#         return False
 
-    return True
+#     return True
 
 def unattendedRequiredEvents(program, user):
 

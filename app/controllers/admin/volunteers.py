@@ -9,7 +9,7 @@ from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours, addUserBackgroundCheck, setProgramManager
-from app.logic.participants import trainedParticipants, getEventParticipants, addPersonToEvent
+from app.logic.participants import trainedParticipants, getEventParticipants, sendUserData
 from app.logic.events import getPreviousRecurringEventData, getEventRsvpCountsForTerm
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
@@ -97,10 +97,11 @@ def addVolunteer(eventId):
     eventParticipants = getEventParticipants(eventId)
     usernameList = request.form.getlist("volunteer[]")
 
+
     successfullyAddedVolunteer = False
     for user in usernameList:
         userObj = User.get_by_id(user)
-        successfullyAddedVolunteer = addPersonToEvent(userObj, event)
+        successfullyAddedVolunteer = sendUserData(userObj.bnumber, event, programid=None)
         if successfullyAddedVolunteer == "already in":
             flash(f"{userObj.fullName} already in table.", "warning")
         else:

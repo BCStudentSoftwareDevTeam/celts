@@ -11,7 +11,7 @@ from app.models.program import Program
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.logic.volunteers import getEventLengthInHours, updateEventParticipants
-from app.logic.participants import unattendedRequiredEvents, sendUserData, getEventParticipants, trainedParticipants, getUserParticipatedTrainingEvents, checkUserRsvp, checkUserVolunteer, addPersonToEvent
+from app.logic.participants import unattendedRequiredEvents, sendUserData, getEventParticipants, trainedParticipants, getUserParticipatedTrainingEvents, checkUserRsvp, checkUserVolunteer
 from app.models.eventRsvp import EventRsvp
 
 @pytest.mark.integration
@@ -82,7 +82,7 @@ def test_checkUserVolunteer():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_addPersonToEvent():
+def test_sendUserData():
     with mainDB.atomic() as transaction:
         yesterday = datetime.today() - timedelta(days=1)
         newEvent = Event.create(name = "Test event 1234", term = 2,
@@ -93,7 +93,7 @@ def test_addPersonToEvent():
         newEvent = Event.get(name="Test event 1234")
 
         user = User.get_by_id("ramsayb2")
-        userAdded = addPersonToEvent(user, newEvent)
+        userAdded = sendUserData(user, newEvent)
         assert userAdded == True, "User was not added"
         assert checkUserVolunteer(user, newEvent), "No Volunteer record was added"
         assert not checkUserRsvp(user, newEvent), "An RSVP record was added instead"
@@ -107,7 +107,7 @@ def test_addPersonToEvent():
         
         newEvent = Event.get(name="Test event 1234")
 
-        userAdded = addPersonToEvent(user, newEvent)
+        userAdded = sendUserData(bnumber, newEvent)
         assert userAdded == True, "User was not added"
         assert checkUserRsvp(user, newEvent), "No RSVP record was added"
         assert not checkUserVolunteer(user, newEvent), "A Volunteer record was added instead"
@@ -123,13 +123,13 @@ def test_addPersonToEvent():
         waitlistEvent = Event.get(name="Waitlist Event")
         rsvpUser = User.get_by_id("ayisie")
         
-        addRsvp = addPersonToEvent(rsvpUser, waitlistEvent)
+        addRsvp = sendUserData(rsvpUser, waitlistEvent)
         rsvpNoWaitlist = list(EventRsvp.select().where(EventRsvp.event_id == testWaitlistEvent.id, EventRsvp.rsvpWaitlist == False))
         assert addRsvp == True
         assert len(rsvpNoWaitlist) == 1
 
         waitlistUser = User.get_by_id("partont")
-        addWaitlist = addPersonToEvent(waitlistUser, waitlistEvent)
+        addWaitlist = sendUserData(waitlistUser, waitlistEvent)
         rsvpWaitlist = EventRsvp.select().where(EventRsvp.event_id == testWaitlistEvent.id, EventRsvp.rsvpWaitlist == True)
         
         assert addWaitlist == True

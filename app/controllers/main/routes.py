@@ -25,7 +25,7 @@ from app.models.certification import Certification
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, updateDietInfo
-from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getUserParticipatedTrainingEvents, checkUserRsvp, addPersonToEvent
+from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getUserParticipatedTrainingEvents, checkUserRsvp, sendUserData
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
@@ -283,7 +283,7 @@ def volunteerRegister():
 
     personAdded = False
     if isEligible:
-        personAdded = addPersonToEvent(user, event)
+        personAdded = sendUserData(userObj.bnumber, event, programid=None)
         if personAdded and listOfRequirements:
             reqListToString = ', '.join(listOfRequirements)
             flash(f"{user.firstName} {user.lastName} successfully registered. However, the following training may be required: {reqListToString}.", "success")

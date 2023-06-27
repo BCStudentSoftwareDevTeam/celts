@@ -26,7 +26,7 @@ from app.logic.events import attemptSaveEvent, saveEventToDb, deleteEvent, getPa
 from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser
 from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm
 from app.logic.volunteers import addVolunteerToEventRsvp, updateEventParticipants
-from app.logic.participants import addPersonToEvent
+from app.logic.participants import sendUserData
 from app.logic.users import addUserInterest, removeUserInterest, banUser
 from app.logic.utils import format24HourTime
 
