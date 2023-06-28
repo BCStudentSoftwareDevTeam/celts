@@ -3,15 +3,32 @@ import searchUser from './searchUser.js'
 $(document).ready(function() {
   $('[data-toggle="tooltip"]').tooltip();
   var iconShowing = false
+
+  $("#addVolunteerModal input[type=checkbox]").click(updateSelectVolunteer);
+  $('[data-toggle="previousVolunteerHover"]').popover({
+    trigger: "hover",
+    sanitize: false,
+    html: true,
+    content: "Previous Volunteer"
+});
+
+var participantCount = $('#trackVolunteerstable').attr('data-entryCount');
   var table =  $('#trackVolunteerstable').DataTable({
-  "fnDrawCallback": function(oSettings) {
-    if ($('#trackVolunteerstable tr').length < 11) {
-        $('.dataTables_paginate').hide(); //disable search and page numbers when the length of the table is less 11
-        $('.dataTables_filter').hide();
-        $('.dataTables_length').hide();
+    "fnDrawCallback": function(oSettings) {
+      $(".removeVolunteer").on("click", removeVolunteer); // we need to rebind this as new rows become visible
+      let displayedRows = $('#trackVolunteerstable tr').length; // This is actually the number of displayed particpants plus one extra row for the column labels
+      if (displayedRows > participantCount){
+        $('.dataTables_paginate').hide();
+      }
+      else{
+        $('.dataTables_paginate').show();
       }
     }
   });
+  if (participantCount < 11){
+    $('.dataTables_length').hide();
+  }
+
 
   // Search functionalities from the volunteer table in the UI
     $("#trackVolunteersInput").on("keyup", function() {
@@ -21,10 +38,20 @@ $(document).ready(function() {
       });
     });
 
+    function updateSelectVolunteer(){
+      $("#addVolunteerModal input[type=checkbox]").each(function(index, checkbox){
+          if(checkbox["checked"] == true){
+            $("#addVolunteersButton").prop("disabled", false)
+            return false
+          }
+          $("#addVolunteersButton").prop("disabled", true)
+      })
+    }
+    
 
   // Adding the new volunteer to the user database table
-    $("#selectVolunteerButton").click(function(){
-        $("#selectVolunteerButton").prop("disabled", true)
+    $("#addVolunteersButton").click(function(){
+        $("#addVolunteersButton").prop("disabled", true)
         let user = $("#addVolunteerInput").val()
         let eventId = $("#eventID").val()
         let checkboxlist = $("#addVolunteerModal input[type=checkbox]")
@@ -47,24 +74,27 @@ $(document).ready(function() {
       })
     })
 
-    var userlist = []
+    var userlist = $(".recurringVolunteer").map(function(){
+      return $(this).val()
+    }).get()
     function callback(selected) {
-      $("#selectVolunteerButton").prop('disabled', false);
       let user = $("#addVolunteerInput").val()
       if (userlist.includes(selected["username"]) == false){
           userlist.push(user)
           let i = userlist.length;
-          $("#addVolunteerList").append("<li class id= 'addVolunteerElements"+i+"'> </li>")
+          $("#addVolunteerList").prepend("<li class id= 'addVolunteerElements"+i+"'> </li>")          
           $("#addVolunteerElements"+i).append("<input  type='checkbox' id= 'userlistCheckbox"+i+"' checked value='" + user +"' >  </input>")
           $("#addVolunteerElements"+i).append("<label form for= 'userlistCheckbox"+i+"'>"+ selected["firstName"]+ " " + selected["lastName"] +"</label>")
           handleBanned(selected["username"], $("#eventID").val(), i)
+          $("#userlistCheckbox"+i).click(updateSelectVolunteer)
+          updateSelectVolunteer()
       }
       else {
           msgFlash("User already selected.")
       }
     }
-  $("#selectVolunteerButton").prop('disabled', true);
-
+  $("#addVolunteersButton").prop('disabled', true);
++
   $("#addVolunteerModal").on("shown.bs.modal", function() {
       $('#addVolunteerInput').focus();
   });
@@ -73,21 +103,22 @@ $(document).ready(function() {
     searchUser("addVolunteerInput", callback, true, "addVolunteerModal");
   });
 
-  $(".removeVolunteer").on("click", function() {
-      $(".removeVolunteer").prop("disabled", true)
+
+  function removeVolunteer(){
+    $(".removeVolunteer").prop("disabled", true)
     let username =  this.id;
     let eventId = $('#eventID').val()
     $.ajax({
       url: `/removeVolunteerFromEvent/${username}/${eventId}`,
       type: "POST",
-      success: function(s) {
-         location.reload();
+      success: function(response) {
+        location.reload();
       },
       error: function(request, status, error) {
           $(".removeVolunteer").prop("disabled", false)
       }
     });
-  });
+  }
 
   $("#addRsvpFromWaitlistBtn").on("click",function(){
     let username = $('#addRsvpFromWaitlistBtn').val()
@@ -118,7 +149,8 @@ $(document).ready(function() {
   });
 
   $("#selectAllVolunteers").click(function(){
-      $("#addPastVolunteerModal input[type=checkbox]").prop('checked', true)
+      $("#addVolunteerModal input[type=checkbox]").prop('checked', true);
+      updateSelectVolunteer();
   });
 
   function handleBanned(username, eventId, index){

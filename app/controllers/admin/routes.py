@@ -207,7 +207,6 @@ def eventDisplay(eventId):
     eventData['program'] = event.singleProgram
     futureTerms = selectSurroundingTerms(g.current_term)
     userHasRSVPed = checkUserRsvp(g.current_user, event)
-    isPastEvent = event.isPast
     filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)
     isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
 
@@ -223,7 +222,7 @@ def eventDisplay(eventId):
         return render_template("admin/createEvent.html",
                                 eventData = eventData,
                                 futureTerms=futureTerms,
-                                isPastEvent = isPastEvent,
+                                event = event,
                                 requirements = requirements,
                                 bonnerCohorts = bonnerCohorts,
                                 userHasRSVPed = userHasRSVPed,
@@ -248,7 +247,7 @@ def eventDisplay(eventId):
         UserParticipatedTrainingEvents = getUserParticipatedTrainingEvents(eventData['program'], g.current_user, g.current_term)
         return render_template("eventView.html",
                                 eventData = eventData,
-                                isPastEvent = isPastEvent,
+                                event = event,
                                 userHasRSVPed = userHasRSVPed,
                                 programTrainings = UserParticipatedTrainingEvents,
                                 currentEventRsvpAmount = currentEventRsvpAmount,
