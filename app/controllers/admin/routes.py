@@ -140,13 +140,6 @@ def createEvent(templateid, programid=None):
 
 @admin_bp.route('/event/<eventId>/rsvp', methods=['GET'])
 def rsvpLogDisplay(eventId):
-    #rsvpoccurs
-    #unrsvp
-    #deleted form RSVP
-    #put on waitlist
-    #delete from waitlist table
-    #moved from the waitlist table to the RSVP table an who moved them
-    #added to the RSVP table through the "Add Volunteer" modal and who added them
     event = Event.get_by_id(eventId)
     eventData = model_to_dict(event, recurse=False)
     eventData['program'] = event.singleProgram
@@ -154,6 +147,8 @@ def rsvpLogDisplay(eventId):
     if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager):
         allLogs = EventRsvpLogs.select(EventRsvpLogs, User).join(User).order_by(EventRsvpLogs.createdOn.desc()).where(EventRsvpLogs.event_id == eventId)
         return render_template("/events/rsvpLog.html",
+                                event = event,
+                                eventData = eventData,
                                 allLogs = allLogs)
     else:
         abort(403)
