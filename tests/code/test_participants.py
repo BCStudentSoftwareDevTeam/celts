@@ -9,7 +9,6 @@ from app.models.event import Event
 from app.models.term import Term
 from app.models.program import Program
 from app.models.eventParticipant import EventParticipant
-from app.models.programEvent import ProgramEvent
 from app.logic.volunteers import getEventLengthInHours, updateEventParticipants
 from app.logic.participants import unattendedRequiredEvents, sendUserData, getEventParticipants, trainedParticipants, getUserParticipatedTrainingEvents, checkUserRsvp, checkUserVolunteer, addPersonToEvent
 from app.models.eventRsvp import EventRsvp
@@ -205,7 +204,8 @@ def test_trainedParticipants():
     assert attendedPreq == [khatts]
 
     with mainDB.atomic() as transaction:
-        ProgramEvent.create(program = 3, event=14) # require AVT
+        Event.update(program_id = 3).where(Event.id== 14).execute() # require AVT
+        
         attendedPreq = trainedParticipants(3, currentTerm)
         assert attendedPreq == []   # no user has completed both AVT and ACT for program 3
 
@@ -328,15 +328,13 @@ def test_getUserParticipatedTrainingEvents():
                                       isTraining = 1,
                                       isService = 0,
                                       startDate= "2021-12-12",
-                                      recurringId = None)
-        ProgramEvent.create(program = Program.get_by_id(8),
-                            event = testingEvent)
+                                      recurringId = None,
+                                      program_id = Program.get_by_id(8))
 
         allProgramTrainings = (Event.select()
-                                   .join(ProgramEvent).switch()
                                    .join(Term)
                                    .where(Event.isTraining == True,
-                                          ProgramEvent.program == Program.get_by_id(2),
+                                          Event.program_id == Program.get_by_id(2),
                                           Event.term.academicYear == academicYear)
                               )
         listOfProgramTrainings = [programTraining for programTraining in allProgramTrainings]
@@ -381,12 +379,11 @@ def test_getUserParticipatedTrainingEvents():
                                       isTraining = 1,
                                       isService = 0,
                                       startDate= "2023-12-12",
-                                      recurringId = None)
-        ProgramEvent.create(program = Program.get_by_id(8),
-                            event = testingEvent)
+                                      recurringId = None,
+                                      program_id = Program.get_by_id(8))
 
         # If the event has not occured yet, assert their participated status for that event == None
-        allProgramTrainings = Event.select().join(ProgramEvent).where(Event.isTraining == 1, ProgramEvent.program == Program.get_by_id(8))
+        allProgramTrainings = Event.select().join(Event).where(Event.isTraining == 1, Event.program_id == Program.get_by_id(8))
         listOfProgramTrainings = [programTraining for programTraining in allProgramTrainings]
         programTrainings = getUserParticipatedTrainingEvents(Program.get_by_id(8), User.get_by_id("ramsayb2"), currentTerm)
         for training in programTrainings.keys():

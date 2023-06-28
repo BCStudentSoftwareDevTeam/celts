@@ -14,7 +14,6 @@ from app.models.user import User
 from app.models.programManager import ProgramManager
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.event import Event
-from app.models.programEvent import ProgramEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, getBannedUsers, isBannedFromEvent, updateDietInfo
 from app.logic.volunteers import addUserBackgroundCheck
 
@@ -261,8 +260,8 @@ def test_getStudentManagerForEvent():
 
         Event.insert_many(testEvent).on_conflict_replace().execute() #Inserts new row into Event table
 
-        #Inserts new row into ProgramEvent table
-        ProgramEvent.create(program=13, event=16)
+        #Inserts new row into Event table
+        Event.update(program_id=13).where(Event.id == 16).execute()
 
         # This user will not be a program manager
         testUserData = [

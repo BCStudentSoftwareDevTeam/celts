@@ -33,22 +33,19 @@ def getProgramTranscript(username):
     """
     # Add up hours earned in a term for each program they've participated in
     
-    programData = (ProgramEvent
-        .select(Program, Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
-        .join(Program)
-        .switch(ProgramEvent)
-        .join(Event)
+    programData = (Event
+        .select(Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
         .join(EventParticipant)
         .where(EventParticipant.user == username)
-        .group_by(Program, Event.term)
+        .group_by(Event.program_id, Event.term)
         .order_by(Event.term)
         .having(fn.SUM(EventParticipant.hoursEarned > 0)))
     transcriptData = {}
     for program in programData:
-        if program.program in transcriptData:
-            transcriptData[program.program].append([program.event.term.description, program.hoursEarned])
+        if program.program_id in transcriptData:
+            transcriptData[program.program_id].append([program.term.description, program.hoursEarned])
         else:
-            transcriptData[program.program] = [[program.event.term.description, program.hoursEarned]]
+            transcriptData[program.program_id] = [[program.term.description, program.hoursEarned]]
     return transcriptData
 
 def getAllEventTranscript(username):
