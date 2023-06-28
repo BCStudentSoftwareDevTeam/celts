@@ -413,7 +413,7 @@ function enableSyllabusUploadFile() {
 }
 
 const textareas = $(".textarea");
-const slcQuestionWordCount = $(".slcQuestionWordCount")
+const slcQuestionWordCount = $(".slcQuestionWordCounter span")
 
 function calculateCountWords(text){
   const words = text.split(/\s+/);
