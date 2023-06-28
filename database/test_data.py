@@ -8,7 +8,6 @@ from app.models.user import User
 from app.models.bonnerCohort import BonnerCohort
 from app.models.term import Term
 from app.models.program import Program
-from app.models.programEvent import ProgramEvent
 from app.models.event import Event
 from app.models.programBan import ProgramBan
 from app.models.course import Course

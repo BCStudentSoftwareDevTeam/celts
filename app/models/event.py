@@ -1,5 +1,6 @@
 from app.models import *
 from app.models.term import Term
+from app.models.program import Program
 from datetime import datetime
 
 class Event(baseModel):
@@ -20,7 +21,7 @@ class Event(baseModel):
     recurringId = IntegerField(null=True)
     contactEmail = CharField(null=True)
     contactName = CharField(null=True)
-    program_id = ForeignKeyField(program, null= True)
+    program_id = ForeignKeyField(Program, null= True)
 
     _spCache = "Empty"
 
