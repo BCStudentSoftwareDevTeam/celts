@@ -33,18 +33,17 @@ class Event(baseModel):
         #Ask Anderson 
         return not self.program_id.exists()
 
-    # @property
-    # def singleProgram(self):
-    #     from app.models.programEvent import ProgramEvent
+    @property
+    def singleProgram(self):
 
-    #     if self._spCache == "Empty":
-    #         countPE = list(Event.select( Program).join(Program).execute())
-    #         if len(countPE) == 1:
-    #             self._spCache = countPE[0].program
-    #         else:
-    #             self._spCache = None
+        if self._spCache == "Empty":
+            countPE = list(Event.select( Program).join(Program).execute())
+            if len(countPE) == 1:
+                self._spCache = countPE[0].program
+            else:
+                self._spCache = None
 
-    #     return self._spCache
+        return self._spCache
 
     @property
     def isPast(self):

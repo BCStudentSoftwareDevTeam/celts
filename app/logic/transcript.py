@@ -33,7 +33,6 @@ def getProgramTranscript(username):
     """
     # Add up hours earned in a term for each program they've participated in
     
-    #check with anderson
     programData = (ProgramEvent
         .select(Program, Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
         .join(Program)

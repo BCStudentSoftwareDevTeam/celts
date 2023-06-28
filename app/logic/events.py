@@ -162,8 +162,6 @@ def saveEventToDb(newEventData):
             # Create or update the event
             if isNewEvent:
                 eventRecord = Event.create(**eventData)
-                if 'program' in newEventData:
-                    ProgramEvent.create(program=newEventData['program'], event=eventRecord)
             else:
                 eventRecord = Event.get_by_id(newEventData['id'])
                 Event.update(**eventData).where(Event.id == eventRecord).execute()
@@ -177,8 +175,7 @@ def saveEventToDb(newEventData):
 
 def getStudentLedEvents(term):
 
-    studentLedEvents = list(Event.select(Event, Program, ProgramEvent)
-                             .join(ProgramEvent, attr = 'programEvent')
+    studentLedEvents = list(Event.select(Event, Program)
                              .join(Program)
                              .where(Program.isStudentLed,
                                     Event.term == term)
@@ -187,7 +184,7 @@ def getStudentLedEvents(term):
     programs = {}
 
     for event in studentLedEvents:
-        programs.setdefault(event.programEvent.program, []).append(event)
+        programs.setdefault(event.program_id, []).append(event)
 
     return programs
 
@@ -202,7 +199,6 @@ def getTrainingEvents(term, user):
         return: a list of all trainings the user can view
     """
     trainingQuery = (Event.select(Event).distinct()
-                          .join(ProgramEvent, JOIN.LEFT_OUTER)
                           .join(Program, JOIN.LEFT_OUTER)
                           .where(Event.isTraining == True,
                                  Event.term == term)
@@ -216,8 +212,7 @@ def getTrainingEvents(term, user):
 
 def getBonnerEvents(term):
 
-    bonnerScholarsEvents = list(Event.select(Event,ProgramEvent, Program.id.alias("program_id"))
-                                     .join(ProgramEvent)
+    bonnerScholarsEvents = list(Event.select(Event, Program.id.alias("program_id"))
                                      .join(Program)
                                      .where(Program.isBonnerScholars,
                                             Event.term == term)
@@ -234,12 +229,11 @@ def getOtherEvents(term):
     # Gets all events that are not associated with a program and are not trainings
     # Gets all events that have a program but don't fit anywhere
     otherEvents = list(Event.select(Event, Program)
-                            .join(ProgramEvent, JOIN.LEFT_OUTER)
                             .join(Program, JOIN.LEFT_OUTER)
                             .where(Event.term == term,
                                    Event.isTraining == False,
                                    Event.isAllVolunteerTraining == False,
-                                   ((ProgramEvent.program == None) |
+                                   ((Event.program_id == None) |
                                    ((Program.isStudentLed == False) &
                                    (Program.isBonnerScholars == False))))
                             .order_by(Event.startDate, Event.timeStart, Event.id)
@@ -295,7 +289,6 @@ def getParticipatedEventsForUser(user):
     """
 
     participatedEvents = (Event.select(Event, Program.programName)
-                               .join(ProgramEvent, JOIN.LEFT_OUTER)
                                .join(Program, JOIN.LEFT_OUTER).switch()
                                .join(EventParticipant)
                                .where(EventParticipant.user == user,
