@@ -22,21 +22,13 @@
           <td class="col">{{participant.dietRestriction}}</td>
         </tr>
       {% endfor %}
-      {% if event.isPast %}
-        {% for participant in waitlistUser %}
-          <tr>
-            <td class="col-1" nowrap><b>{{participant.firstName}} {{participant.lastName}}</b></td>
-            <td class="col">{{participant.dietRestriction}}</td>
-          </tr>
-        {% endfor %}
-      {% endif %}
     </tbody>
   </table>
 {% endif %}
 
 {% if waitlistUser and not event.isPast %}
   <br>
-  <h3>Wait List</h3>
+  <h3>Waitlist</h3>
   <table class="table table-striped" style="font-size: 1.1em" id="waitlistDietaryRestrictionsTable">
     <tbody id="waitlistDietaryTable">
       {% for participant in waitlistUser %}
@@ -50,12 +42,11 @@
 {% endif %}
 
 
-{% if not waitlistUser and not volunteerUser %}
-  {% if event.isPast %}
-    <h3>Attendees had no dietary restrictions.</h3>
-  {% else %}
+{% if event.isPast and not volunteerUser %}
+  <h3>Attendees had no dietary restrictions.</h3>
+{% else %}
+  {% if not volunteerUser and not waitlistUser %}
     <h3>Volunteers have no dietary restrictions.</h3>
   {% endif %}
 {% endif %}
-
 {% endblock %}
