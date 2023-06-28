@@ -197,7 +197,7 @@ function disableInput() {
     $("#submitAndApproveButton").hide();
     $(".editButton").hide()
     $(".removeButton").hide()
-    $(".slcQuestionCharCount, .slcQestionCharCounter" ).replaceWith( " ");
+    $(".slcQuestionWordCounter").replaceWith(" ");
 }
 
 
@@ -413,11 +413,22 @@ function enableSyllabusUploadFile() {
 }
 
 const textareas = $(".textarea");
-const slcQuestionCharCount = $(".slcQuestionCharCount");
+const slcQuestionWordCount = $(".slcQuestionWordCounter span")
 
-textareas.each(function(index, textarea) {
-  $(textarea).on("input", function() {
-    $(slcQuestionCharCount[index]).html($(textarea).val().length);
+function calculateCountWords(text){
+  const words = text.split(/\s+/);
+  return words.length - 1;
+}
+
+textareas.each(function(index, textarea){
+  $(textarea).on("input", function(){
+    const wordCount = calculateCountWords($(textarea).val());
+    $(slcQuestionWordCount[index]).html(wordCount);
+
   });
-  $(slcQuestionCharCount[index]).html($(textarea).val().length);
+  const initialWordCount = calculateCountWords($(textarea).val());
+  $(slcQuestionWordCount[index]).html(initialWordCount);
 });
+
+
+
