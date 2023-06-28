@@ -27,7 +27,6 @@
 {% block scripts %}
   {{super()}}
   <script type="module" src="/static/js/createEvents.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.0/js/fileinput.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
 
 {% endblock %}
@@ -243,34 +242,33 @@
             </div>
            {% endif %}
             <div class="form-group mb-5">
-                <div class="file-upload-wrapper">
-                <label class="form-label mb-2" for='attachmentObject'><strong>Add Files</strong></label>
-                <input type="file" id="attachmentObject" name="attachmentObject" multiple accept= ".png, .jpg, .pdf, .jpeg, .docx, .xlsx"/>
-                </div>
+              <label class="mb-2" for='attachmentObject'><strong>Add Files</strong></label>
+              <input type="file" class="form-control" id="attachmentObject" name="attachmentObject" multiple accept= ".png, .jpg, .pdf, .jpeg, .docx, .xlsx"/>
+              <div id="attachedObjectContainer"></div>
             </div>
-            {% if filepaths %}
-            <div class="form-group mb-5">
-                <label class="mb-2" for= "eventAttachments"><strong>Event Attachments</strong></label>
-                <table>
-                    {% for key, value in filepaths.items() %}
-                        <tr id="attachment_{{value[1]}}" class="attachmentRow_{{key}}" data-id= "{{key}}">
-                            <td class="pr-5">
-                                <a class="mr-5" href="{{value[0]}}" target="_blank">{{key}}</a>
-                            </td>
-                            <td style="text-align:center">
-                              <button
-                                data-id="{{value[1]}}"
-                                type="button"
-                                class="removeAttachment btn btn-danger btn-sm"
-                                id={{eventData.id}}>
-                                  <i class="bi bi-trash h5 align-middle"></i>
-                              </button>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </table>
-              </div>
-              {% endif %}
+          {% if filepaths %}
+          <div class="form-group mb-5">
+              <label class="mb-2" for= "eventAttachments"><strong>Event Attachments</strong></label>
+              <table>
+                  {% for key, value in filepaths.items() %}
+                      <tr id="attachment_{{value[1]}}" class="attachmentRow_{{key}}" data-id= "{{key}}">
+                          <td class="pr-5">
+                              <a class="mr-5" href="{{value[0]}}" target="_blank">{{key}}</a>
+                          </td>
+                          <td style="text-align:center">
+                            <button
+                              data-id="{{value[1]}}"
+                              type="button"
+                              class="removeAttachment btn btn-danger btn-sm"
+                              id={{eventData.id}}>
+                                <i class="bi bi-trash h5 align-middle"></i>
+                            </button>
+                          </td>
+                      </tr>
+                  {% endfor %}
+              </table>
+            </div>
+            {% endif %}
           </div>
         </div>
     <div class="row justify-content-left mt-2">

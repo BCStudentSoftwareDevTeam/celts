@@ -69,9 +69,24 @@ $(document).ready(function() {
     calculateRecurringEventFrequency();
   }
 
-    $("#attachmentObject").fileinput({
-        allowedFileExtensions:["pdf","jpg","png","gif", "csv", "docx", "jpg", "jpeg", "jfif"]
-    })
+    // $("#attachmentObject").fileinput({
+    //     allowedFileExtensions:["pdf","jpg","png","gif", "csv", "docx", "jpg", "jpeg", "jfif"]
+    // })
+
+    var fileNum = 0;
+    $("#attachmentObject").on('change', function() {
+      const selectedFiles = $("#attachmentObject").prop('files'); // TODO: see if we can append file data by reading the list and appending to it.
+      
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        const fileName = file.name;
+        console.log(file)
+  
+        $("#attachedObjectContainer").append("<div id='attachedFile" + fileNum + "' class='attached-file col' data-file>" + fileName + "</div>")
+        $("#attachedFile" + fileNum).prop("data-file", file)
+        fileNum++;
+      }
+    });
 
     $("#checkRSVP").on("click", function() {
       if ($("#checkRSVP").is(":checked")) {
