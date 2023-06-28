@@ -197,7 +197,7 @@ function disableInput() {
     $("#submitAndApproveButton").hide();
     $(".editButton").hide()
     $(".removeButton").hide()
-    $(".slcQuestionWordCounter span" ).replaceWith( " ");
+    $(".slcQuestionWordCounter").replaceWith(" ");
 }
 
 
