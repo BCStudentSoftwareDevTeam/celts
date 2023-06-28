@@ -8,52 +8,47 @@
 {% block app_content %}
 
 {{super()}}
-
-<div class="row">
-  {% if volunteerUser or (waitlistUser and event.isPast) %}
-  <div class="col-12 col-xl-6">
-    {% if event.isPast %}
-      <h3>Attended</h3>
-    {% else %}
-      <h3>RSVP</h3>
-    {% endif %}
-    <table class="table table-striped" style="font-size: 1.1em" id="attendingDietaryRestrictionsTable">
-      <tbody id="attendingDietaryTable">
-        {% for participant in volunteerUser %}
-          <tr>
-            <td class="col-auto" nowrap>{{participant.firstName}} {{participant.lastName}}</td>
-            <td >{{participant.dietRestriction}}</td>
-          </tr>
-        {% endfor %}
-        {% if event.isPast %}
-          {% for participant in waitlistUser %}
-            <tr>
-              <td class="col-auto pr-5 mr-5" nowrap>{{participant.firstName}} {{participant.lastName}}</td>
-              <td class="col">{{participant.dietRestriction}}</td>
-            </tr>
-          {% endfor %}
-        {% endif %}
-      </tbody>
-    </table>
-  </div>
+{% if volunteerUser or (waitlistUser and event.isPast) %}
+  {% if event.isPast %}
+    <h3>Attended</h3>
+  {% else %}
+    <h3>RSVP</h3>
   {% endif %}
-
-  {% if waitlistUser and not event.isPast %}
-  <div class="col-12 col-xl-6">
-    <h3>Wait List</h3>
-    <table class="table table-striped" style="font-size: 1.1em" id="waitlistDietaryRestrictionsTable">
-      <tbody id="waitlistDietaryTable">
+  <table class="table table-striped" style="font-size: 1.1em" id="attendingDietaryRestrictionsTable">
+    <tbody id="attendingDietaryTable">
+      {% for participant in volunteerUser %}
+        <tr>
+          <td class="col-1" nowrap><b>{{participant.firstName}} {{participant.lastName}}</b></td>
+          <td class="col">{{participant.dietRestriction}}</td>
+        </tr>
+      {% endfor %}
+      {% if event.isPast %}
         {% for participant in waitlistUser %}
-          <tr class="row">
-            <td class="col-auto" nowrap>{{participant.firstName}} {{participant.lastName}}</td>
+          <tr>
+            <td class="col-1" nowrap><b>{{participant.firstName}} {{participant.lastName}}</b></td>
             <td class="col">{{participant.dietRestriction}}</td>
           </tr>
         {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  {% endif %}
-</div>
+      {% endif %}
+    </tbody>
+  </table>
+{% endif %}
+
+{% if waitlistUser and not event.isPast %}
+  <br>
+  <h3>Wait List</h3>
+  <table class="table table-striped" style="font-size: 1.1em" id="waitlistDietaryRestrictionsTable">
+    <tbody id="waitlistDietaryTable">
+      {% for participant in waitlistUser %}
+        <tr>
+          <td class="col-1" nowrap><b>{{participant.firstName}} {{participant.lastName}}</b></td>
+          <td class="col">{{participant.dietRestriction}}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+
 
 {% if not waitlistUser and not volunteerUser %}
   {% if event.isPast %}
