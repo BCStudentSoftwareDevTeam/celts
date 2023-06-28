@@ -378,7 +378,6 @@ def getAllCourseInstructors(term=None):
     if g.current_user.isCeltsAdmin:
         setRedirectTarget("/manageServiceLearning")
         courseDict = getCourseDict()
-
         term = Term.get_or_none(Term.id == term) or g.current_term
 
         unapproved = unapprovedCourses(term)

@@ -19,6 +19,9 @@ from app.models.certification import Certification
 from app.models.user import User
 from app.models.eventViews import EventView
 from app.models.term import Term
+from app.models.course import Course
+from app.models.courseStatus import CourseStatus
+
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.adminLogs import createLog
@@ -323,56 +326,54 @@ def addCourseFile():
     excelData = load_workbook(filename=filePath)
     excelSheet = excelData.active
 
-    courseAbrev = "" 
-    term = ""
+    courseObj = "" 
+    termObj = ""
 
-
-    row = ['course name', 'course number', 'faculty', 'term', 'previously']
-    row[0]
     termReg = r"\b[a-zA-Z]{3,}\s\d{4}\b"
     courseReg = r"\b[A-Z]{2,4}\s\d{3}\b"
     bnumberReg = r"\b[B]\d{8}\b"
+
+    isSummer = False
+
     for row in excelSheet.iter_rows():
         cellVal = row[0].value
     
         if re.search(termReg, str(cellVal)):
             # get term obj from database
-            termObj = Term.select()
-            term = termReg
-          
+            year = cellVal[-4:]
+            if "Fall" in cellVal :
+                academicYear = year + "-" + str(int(year) + 1)
 
+            elif "Summer" or "May" or "Spring" in cellVal:
+                academicYear=  str(int(year) - 1) + "-" + year
+ 
+                if "Summer" in cellVal:
+                    isSummer = True
+
+            term = Term.get_or_create(description=cellVal, year=year, academicYear=academicYear, isSummer=isSummer, isCurrentTerm=False)
             
 
-
         elif re.search(courseReg, str(cellVal)):
+            course_status = CourseStatus(status=3)
+            tempUser =  User(username=True, bnumber=True, email = "", phoneNumber=True, firstName = "", lastName  = "",
+                         isStudent=False, major=True, classLevel=True, isFaculty = False, isStaff = False, 
+                         isCeltsAdmin=False, isCeltsStudentStaff=False, dietRestriction=True)
+            
             # get course obj from database, create if doesn't exist yet
-            course_abrev = courseReg
-          
+            course = Course.select().where(Course.courseAbbreviation == cellVal)
+            Course.get_or_create(courseName=cellVal, courseAbbreviation=cellVal, sectionDesignation="", courseCredit="", term=term, 
+                                 status=course_status, createdBy=tempUser, serviceLearningDesignatedSections="", previouslyApprovedDescription="", 
+                                 isPermanentlyDesignated=False, isAllSectionsServiceLearning=False, isRegularlyOccurring=False, isPreviouslyApproved=False, hasSlcComponent=False)
+            
         
-        elif re.search(bnumberReg, str(cellVal)):
+        elif re.search(bnumberReg, str(cellVal), ):
+            bnumberObj = 2 
+            # User.select(User.firstName, User.lastName).where(User.bnumber == cellVal)
+
             # get studentname from database
-            # add term,course,student to courseparticipant
-   
-
-        else:
-            print("/////////////////////// INVALID INPUT //////////////////////////\n")
-
-
-
-    studentbnumber(course, term``)
+            # add term,course,student to courseparticipantP
 
     
-    print(":::::::::::::::::::::::::::::::::::::")
-    
-
-
-    
-
-    # if request.method == POST:
-    #     file = request.files.get["addCourseParticipant"]
-    #     if file: 
-    #          file.save("uploads/" + file.filename)
-    #          return "File uploaded successfully."
     os.remove(filePath)
     
     return redirect(url_for("main.getAllCourseInstructors"))
