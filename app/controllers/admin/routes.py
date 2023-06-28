@@ -351,17 +351,18 @@ def addCourseFile():
                     isSummer = True
 
             term = Term.get_or_create(description=cellVal, year=year, academicYear=academicYear, isSummer=isSummer, isCurrentTerm=False)
-            
+            termId= Term.select(id).where(Term.description==cellVal)
 
         elif re.search(courseReg, str(cellVal)):
-            course_status = CourseStatus(status=3)
+            course_status = CourseStatus(status="APPROVED", status_id= 3)
             tempUser =  User(username=True, bnumber=True, email = "", phoneNumber=True, firstName = "", lastName  = "",
                          isStudent=False, major=True, classLevel=True, isFaculty = False, isStaff = False, 
                          isCeltsAdmin=False, isCeltsStudentStaff=False, dietRestriction=True)
             
             # get course obj from database, create if doesn't exist yet
             course = Course.select().where(Course.courseAbbreviation == cellVal)
-            Course.get_or_create(courseName=cellVal, courseAbbreviation=cellVal, sectionDesignation="", courseCredit="", term=term, 
+            
+            courseGet= Course.get_or_create(courseName="", courseAbbreviation=cellVal, sectionDesignation="", courseCredit="1", term=termId, 
                                  status=course_status, createdBy=tempUser, serviceLearningDesignatedSections="", previouslyApprovedDescription="", 
                                  isPermanentlyDesignated=False, isAllSectionsServiceLearning=False, isRegularlyOccurring=False, isPreviouslyApproved=False, hasSlcComponent=False)
             
