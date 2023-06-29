@@ -74,19 +74,32 @@ $(document).ready(function() {
     // })
 
     var fileNum = 0;
+    var filesDict = new DataTransfer();
     $("#attachmentObject").on('change', function() {
       const selectedFiles = $("#attachmentObject").prop('files'); // TODO: see if we can append file data by reading the list and appending to it.
+      console.log($("#attachmentObject"));
       
       for (let i = 0; i < selectedFiles.length; i++) {
+        
         const file = selectedFiles[i];
-        const fileName = file.name;
-        console.log(file)
-  
-        $("#attachedObjectContainer").append("<div id='attachedFile" + fileNum + "' class='attached-file col' data-file>" + fileName + "</div>")
-        $("#attachedFile" + fileNum).prop("data-file", file)
+        let fileName = (file.name.length > 25) ? file.name.slice(0,10) + '...' + file.name.slice(-10) : file.name;
+        let fileExtension = file.name.split(".").pop();
+        console.log(fileExtension);
+        $("#attachedObjectContainer").append("<div class='border row p-0 m-0' id='row" +fileNum+ "'></div>")
+        $("#row"+fileNum).append("<i class='col-auto fs-3 px-3 bi bi-filetype-docx'></i>")
+        $("#row"+fileNum).append( "<div id='attachedFile" + fileNum + "' class='attached-file col-auto pt-2' value='" + file.name + "'>" + fileName + "</div>");
+        $("#row"+fileNum).append("<div class='col' style='text-align:right'> \
+                                                <div class='btn btn-danger bi bi-trash deleteFile p-1 my-1 mx-1'></div>\
+                                              </div>")
         fileNum++;
+        filesDict.items.add(file);
       }
+      $("#attachmentObject").prop("value", '');
+      console.log(filesDict);
+      $("#attachmentObject").prop('files', filesDict.files);
     });
+
+
 
     $("#checkRSVP").on("click", function() {
       if ($("#checkRSVP").is(":checked")) {
