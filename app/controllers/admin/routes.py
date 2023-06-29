@@ -351,28 +351,54 @@ def addCourseFile():
                     isSummer = True
 
             term = Term.get_or_create(description=cellVal, year=year, academicYear=academicYear, isSummer=isSummer, isCurrentTerm=False)
-            termId= Term.select(id).where(Term.description==cellVal)
+            termId= Term.select().where(Term.description==cellVal)
 
         elif re.search(courseReg, str(cellVal)):
-            course_status = CourseStatus(status="APPROVED", status_id= 3)
+            
             tempUser =  User(username=True, bnumber=True, email = "", phoneNumber=True, firstName = "", lastName  = "",
                          isStudent=False, major=True, classLevel=True, isFaculty = False, isStaff = False, 
                          isCeltsAdmin=False, isCeltsStudentStaff=False, dietRestriction=True)
             
             # get course obj from database, create if doesn't exist yet
             course = Course.select().where(Course.courseAbbreviation == cellVal)
+            course_status = CourseStatus.select().where(CourseStatus.id == 3)
+            couseId= Course.select().where(Course.term_id==3)
+
             
-            courseGet= Course.get_or_create(courseName="", courseAbbreviation=cellVal, sectionDesignation="", courseCredit="1", term=termId, 
-                                 status=course_status, createdBy=tempUser, serviceLearningDesignatedSections="", previouslyApprovedDescription="", 
-                                 isPermanentlyDesignated=False, isAllSectionsServiceLearning=False, isRegularlyOccurring=False, isPreviouslyApproved=False, hasSlcComponent=False)
+            # courseGet= Course.get_or_create(courseName="", courseAbbreviation=cellVal, sectionDesignation="", courseCredit="1", term=1, 
+            #                      status=course_status, createdBy=True, serviceLearningDesignatedSections="", previouslyApprovedDescription="", 
+            #                      isPermanentlyDesignated=False, isAllSectionsServiceLearning=False, isRegularlyOccurring=False, isPreviouslyApproved=False, hasSlcComponent=False)
             
         
         elif re.search(bnumberReg, str(cellVal), ):
             bnumberObj = 2 
-            # User.select(User.firstName, User.lastName).where(User.bnumber == cellVal)
+            # studentName = User.select().where(User.bnumber == cellVal)
+            users = User.select(User.firstName, User.lastName, User.username).where(User.bnumber == cellVal)
+            print("////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////")
+            for user in users:
+                print(user.firstName)
+                print(user.lastName)
+                print(user.username)
+
+                stuFName= user.firstName
+                stuLName= user.lastName
+                userName = User.username
+            # else:
+            #     print("User not found")
+
+
+
+            # student = User.get_or_create(username =userName, bnumber = cellVal, email = "", phoneNumber = "", firstName = studentFirstName, lastName  = studentLastName, isStudent = True, major ="",  
+            # classLevel = "" , isFaculty = False , isStaff =  False, isCeltsAdmin = False, isCeltsStudentStaff = False, dietRestriction ="")
+
+            
+
+            # print (studentName)
+           
 
             # get studentname from database
             # add term,course,student to courseparticipantP
+
 
     
     os.remove(filePath)
