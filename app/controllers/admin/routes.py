@@ -21,6 +21,7 @@ from app.models.eventViews import EventView
 from app.models.term import Term
 from app.models.course import Course
 from app.models.courseStatus import CourseStatus
+from app.models.courseParticipant import CourseParticipant
 
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
@@ -326,79 +327,64 @@ def addCourseFile():
     excelData = load_workbook(filename=filePath)
     excelSheet = excelData.active
 
-    courseObj = "" 
-    termObj = ""
-
-    termReg = r"\b[a-zA-Z]{3,}\s\d{4}\b"
+    termReg = r"\b[a-zA-Z]{3,}\s\d{4}\b" # regular expression to check cells content
     courseReg = r"\b[A-Z]{2,4}\s\d{3}\b"
     bnumberReg = r"\b[B]\d{8}\b"
 
     isSummer = False
+    courseId = ""
+    termId = ""
 
     for row in excelSheet.iter_rows():
         cellVal = row[0].value
-    
         if re.search(termReg, str(cellVal)):
-            # get term obj from database
             year = cellVal[-4:]
             if "Fall" in cellVal :
                 academicYear = year + "-" + str(int(year) + 1)
-
             elif "Summer" or "May" or "Spring" in cellVal:
                 academicYear=  str(int(year) - 1) + "-" + year
- 
                 if "Summer" in cellVal:
                     isSummer = True
 
             term = Term.get_or_create(description=cellVal, year=year, academicYear=academicYear, isSummer=isSummer, isCurrentTerm=False)
-            termId= Term.select().where(Term.description==cellVal)
-
-        elif re.search(courseReg, str(cellVal)):
-            
-            tempUser =  User(username=True, bnumber=True, email = "", phoneNumber=True, firstName = "", lastName  = "",
-                         isStudent=False, major=True, classLevel=True, isFaculty = False, isStaff = False, 
-                         isCeltsAdmin=False, isCeltsStudentStaff=False, dietRestriction=True)
-            
-            # get course obj from database, create if doesn't exist yet
-            course = Course.select().where(Course.courseAbbreviation == cellVal)
-            course_status = CourseStatus.select().where(CourseStatus.id == 3)
-            couseId= Course.select().where(Course.term_id==3)
-
-            
-            # courseGet= Course.get_or_create(courseName="", courseAbbreviation=cellVal, sectionDesignation="", courseCredit="1", term=1, 
-            #                      status=course_status, createdBy=True, serviceLearningDesignatedSections="", previouslyApprovedDescription="", 
-            #                      isPermanentlyDesignated=False, isAllSectionsServiceLearning=False, isRegularlyOccurring=False, isPreviouslyApproved=False, hasSlcComponent=False)
-            
-        
-        elif re.search(bnumberReg, str(cellVal), ):
-            bnumberObj = 2 
-            # studentName = User.select().where(User.bnumber == cellVal)
-            users = User.select(User.firstName, User.lastName, User.username).where(User.bnumber == cellVal)
-            print("////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////")
-            for user in users:
-                print(user.firstName)
-                print(user.lastName)
-                print(user.username)
-
-                stuFName= user.firstName
-                stuLName= user.lastName
-                userName = User.username
-            # else:
-            #     print("User not found")
-
-
-
-            # student = User.get_or_create(username =userName, bnumber = cellVal, email = "", phoneNumber = "", firstName = studentFirstName, lastName  = studentLastName, isStudent = True, major ="",  
-            # classLevel = "" , isFaculty = False , isStaff =  False, isCeltsAdmin = False, isCeltsStudentStaff = False, dietRestriction ="")
-
-            
-
-            # print (studentName)
+            terms = Term.select().where(Term.description==cellVal)
+            for term in terms:
+                termId = term.id
            
 
-            # get studentname from database
-            # add term,course,student to courseparticipantP
+        elif re.search(courseReg, str(cellVal)):
+            # tempUser =  User(username=True, bnumber=True, email = "", phoneNumber=True, firstName = "", lastName  = "",
+            #             isStudent=False, major=True, classLevel=True, isFaculty = False, isStaff = False, 
+            #             isCeltsAdmin=False, isCeltsStudentStaff=False, dietRestriction=True) 
+    
+            courses = Course.select().where(Course.courseAbbreviation == cellVal)
+            course_status = CourseStatus.select().where(CourseStatus.id == 3)
+            for course in courses:
+                courseId = course.id
+                print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+                print(courseId)
+            # courseId= Course.select().where(Course.id==3)
 
+            
+            courseGet= Course.get_or_create(courseName=cellVal, courseAbbreviation=cellVal, sectionDesignation="", courseCredit="1", term=termId, 
+                                status=course_status, createdBy="heggens", serviceLearningDesignatedSections="", previouslyApprovedDescription="", 
+                                isPermanentlyDesignated=False, isAllSectionsServiceLearning=False, isRegularlyOccurring=False, isPreviouslyApproved=False, hasSlcComponent=False)
+            
+        
+        elif re.search(bnumberReg, str(cellVal)):           # get studentname from database, then add term,course,student to courseparticipant
+            users = User.select(User.firstName, User.lastName, User.username).where(User.bnumber == cellVal)
+           
+            
+            for user in users: 
+                print("--------------------------------------------------------------------------")
+                print(user.firstName)
+                stuFName= user.firstName
+                stuLName= user.lastName
+                userName = user.username
+
+                ## add term, course, student to courseparticipant table
+                newParticipant = CourseParticipant(course = courseGet.id,user = userName, hoursEarned = 2)
+                newParticipant.save()
 
     
     os.remove(filePath)
