@@ -60,6 +60,8 @@ function format24to12HourTime(timeStr){
       });
 
   }
+
+
 /*
  * Run when the webpage is ready for javascript
  */
@@ -84,17 +86,41 @@ $(document).ready(function() {
         const file = selectedFiles[i];
         let fileName = (file.name.length > 25) ? file.name.slice(0,10) + '...' + file.name.slice(-10) : file.name;
         let fileExtension = file.name.split(".").pop();
+        let iconClass = '';
+        switch(fileExtension) {
+          case 'jpg': 
+          case 'png':
+          case 'jpeg':
+            iconClass = "bi-file-image";
+            break
+          case 'pdf':
+            iconClass = 'bi-filetype-pdf';
+            break
+          case 'docx':
+            iconClass = 'bi-filetype-docx';
+            break
+          case 'xlsx':
+            iconClass = 'bi-filetype-xlsx';
+            break
+          default:
+            iconClass = 'bi-file-earmark-arrow-up';
+        }
         console.log(fileExtension);
-        $("#attachedObjectContainer").append("<div class='border row p-0 m-0' id='row" +fileNum+ "'></div>")
-        $("#row"+fileNum).append("<i class='col-auto fs-3 px-3 bi bi-filetype-docx'></i>")
-        $("#row"+fileNum).append( "<div id='attachedFile" + fileNum + "' class='attached-file col-auto pt-2' value='" + file.name + "'>" + fileName + "</div>");
-        $("#row"+fileNum).append("<div class='col' style='text-align:right'> \
-                                                <div class='btn btn-danger bi bi-trash deleteFile p-1 my-1 mx-1'></div>\
+        $("#attachedObjectContainer").append("<div class='border row p-0 m-0' id='attachedFilesRow" +fileNum+"'></div>")
+        $("#attachedFilesRow"+fileNum).append("<i class='col-auto fs-3 px-3 bi " + iconClass + "'></i>")
+        $("#attachedFilesRow"+fileNum).append("<div id='attachedFile" + fileNum + "' class='attached-file col-auto pt-2' value='" + file.name + "'>" + fileName + "</div>");
+        $("#attachedFilesRow"+fileNum).append("<div class='col' style='text-align:right'> \
+                                                <div class='btn btn-danger p-1 my-1 mx-1' value='"+fileNum+"' id='trash"+ fileNum +"''>\
+                                                  <span class='bi bi-trash fs-6'></span>\
+                                                </div>\
                                               </div>")
+        $("#trash"+fileNum).on("click", function() {
+          $("#attachedFilesRow"+$(this).val).remove();}
+          // console.log($(this).val); }
+        )
         fileNum++;
         filesDict.items.add(file);
       }
-      $("#attachmentObject").prop("value", '');
       console.log(filesDict);
       $("#attachmentObject").prop('files', filesDict.files);
     });
