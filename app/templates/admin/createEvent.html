@@ -1,5 +1,27 @@
-{% set title = "Create Single Event" %}crea
-{% extends "base.html"%}
+{% set title = "Create Single Event" %}
+
+{% set isNewEvent = 'create' in request.path %}
+{% if isNewEvent %}
+  {% if template.tag == 'single-program' %}
+    {% set page_title = 'Create Event for ' + eventData["program"].programName %}
+  {% elif template.tag == 'all-volunteer' %}
+    {% set page_title = 'Create All Volunteer Training' %}
+  {% elif template.tag == 'no-program' %}
+    {% set page_title = 'Create Other CELTS-Sponsored Event' %}
+  {% else %}
+    {% set page_title = 'Create ' + template.name + ' Event' %}
+  {% endif %}
+{% else %}
+  {% set page_title = eventData.name %}
+{% endif %}
+
+{% if isNewEvent %}
+  {% set eventProgramHeader = eventData.update({'program': ''}) %}
+{% endif %}
+
+{% set eventPast = event.isPast if not isNewEvent else False %}
+{% set tabName = 'edit' %}
+{% extends "eventNav.html"%}
 
 
 {% block scripts %}
