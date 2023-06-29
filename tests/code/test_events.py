@@ -315,6 +315,8 @@ def test_attemptSaveEvent():
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
             success, errorMessage = attemptSaveEvent(eventInfo)
+            bla = Event.select().where(Event.name == "Attempt Save Test")
+            print([bloo.id for bloo in bla])
         if not success:
             pytest.fail(f"Save failed: {errorMessage}")
 

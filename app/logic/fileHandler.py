@@ -36,7 +36,6 @@ class FileHandler:
         except FileExistsError:
             pass
 
-        print(filePath)
         return filePath
 
     def saveFiles(self, saveOriginalFile=None):
@@ -48,7 +47,6 @@ class FileHandler:
                         isFileInEvent = AttachmentUpload.select().where(AttachmentUpload.event == self.eventId, AttachmentUpload.fileName == file.filename).exists()
                         if not isFileInEvent:
                             AttachmentUpload.create(event = self.eventId, fileName = str(saveOriginalFile.id) + "/" + file.filename)
-                            
                             # saves attachment in the same directory using the eventID of the first recurring event.
                             file.save(self.getFileFullPath(newfilename = str(saveOriginalFile.id) + "/" + file.filename))
                             # We need to add the event id to the file path when we call it in file.save.
@@ -79,9 +77,7 @@ class FileHandler:
         """
         try:
             file = AttachmentUpload.get_by_id(fileId)
-            print("this is the file", file)
             path = os.path.join(self.path, file.fileName)
-            print("this is the path", path)
             os.remove(path)
             file.delete_instance()
         except AttributeError: #passes if no attachment is selected.

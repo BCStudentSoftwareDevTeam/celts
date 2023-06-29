@@ -121,7 +121,7 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
                 addFile= FileHandler(attachmentFiles, eventId=event.id)
                 addFile.saveFiles(saveOriginalFile=events[0])
 
-        return events, ""
+        return events, " "
     except Exception as e:
         print(e)
         return False, e

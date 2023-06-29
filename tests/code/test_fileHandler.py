@@ -2,7 +2,17 @@ import pytest
 import os
 from werkzeug.datastructures import FileStorage
 
+
+
 from app import app
+from app.models import mainDB
+from dateutil import parser
+from app.models.user import User
+from flask import g
+from app.logic.events import attemptSaveEvent
+
+
+from app.models.program import Program
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.event import Event
 from app.logic.fileHandler import FileHandler
@@ -40,6 +50,40 @@ def test_saveFiles():
 
 @pytest.mark.integration
 def test_recurringSaveFiles():
+    # creates recurring events for transaction
+    # eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'recurringId':None,
+    #             'startDate': '2021-12-12',
+    #             'rsvpLimit': None,
+    #             'endDate':'2022-06-12', 'location':"a big room",
+    #             'timeEnd':'09:00 PM', 'timeStart':'06:00 PM',
+    #             'description':"Empty Bowls Spring 2021",
+    #             'name':'Attempt Save Test','term':1,'contactName':"Garrett D. Clark",
+    #             'contactEmail': 'boorclark@gmail.com'}
+    # eventInfo['program'] = Program.get_by_id(1)
+            # eventInfo['eventAttachment'] = 'recurringEvent.pdf'
+    eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'recurringId':None,
+                'startDate': '2021-12-12',
+                'rsvpLimit': None,
+                'endDate':'2022-06-12', 'location':"a big room",
+                'timeEnd':'09:00 PM', 'timeStart':'06:00 PM',
+                'description':"Empty Bowls Spring 2021",
+                'name':'bloo','term':1,'contactName':"Garrett D. Clark",
+                'contactEmail': 'boorclark@gmail.com'}
+    eventInfo['program'] = Program.get_by_id(1)
+
+
+
+    with mainDB.atomic() as transaction:
+        with app.app_context():
+            g.current_user = User.get_by_id("ramsayb2")
+            createdEvents = attemptSaveEvent(eventInfo)
+            bla  = Event.select().where(Event.name == "bloo")
+            print([food.isRecurring for food in bla])
+            assert AttachmentUpload.select().where(AttachmentUpload.fileName == 'recurringEvent.pdf').exists()
+
+            transaction.rollback()
+        
+        # saves recurring events
 
 @pytest.mark.integration
 def test_retrievePath():
@@ -56,9 +100,6 @@ def test_retrievePath():
     paths = handledCourseFile.retrievePath(coursefiles)
     path = paths["coursefile.pdf"][0]
     assert path =='/static/files/courseattachments/1/coursefile.pdf'
-
-@pytest.mark.integration
-def test_recurringSaveFiles():
 
 @pytest.mark.integration
 def test_deleteFile():
