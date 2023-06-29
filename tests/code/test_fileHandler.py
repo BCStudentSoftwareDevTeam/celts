@@ -22,6 +22,10 @@ eventFileStorageObject= [FileStorage(filename= "eventfile.pdf")]
 
 handledEventFile = FileHandler(eventFileStorageObject, eventId=15)
 
+# eventFileStorageObjectRecurring= [FileStorage(filename= "eventfile.pdf")]
+
+handledEventFileRecurring = FileHandler(eventFileStorageObject, eventId=16)
+
 # test course
 courseFileStorageObject= [FileStorage(filename= "coursefile.pdf")]
 
@@ -44,46 +48,13 @@ def test_saveFiles():
     # print(AttachmentUpload.fileName)
     assert AttachmentUpload.select().where(AttachmentUpload.fileName == '15/eventfile.pdf').exists()
     
+    # test saving 2nd event in a hypothetical recurring series
+    handledEventFileRecurring.saveFiles(saveOriginalFile = Event.get_by_id(15))
+    assert AttachmentUpload.select().where(AttachmentUpload.event_id == 16, AttachmentUpload.fileName == '15/eventfile.pdf').exists()
+
     # test course
     handledCourseFile.saveFiles()
     assert AttachmentUpload.select().where(AttachmentUpload.fileName == 'coursefile.pdf').exists()
-
-@pytest.mark.integration
-def test_recurringSaveFiles():
-    # creates recurring events for transaction
-    # eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'recurringId':None,
-    #             'startDate': '2021-12-12',
-    #             'rsvpLimit': None,
-    #             'endDate':'2022-06-12', 'location':"a big room",
-    #             'timeEnd':'09:00 PM', 'timeStart':'06:00 PM',
-    #             'description':"Empty Bowls Spring 2021",
-    #             'name':'Attempt Save Test','term':1,'contactName':"Garrett D. Clark",
-    #             'contactEmail': 'boorclark@gmail.com'}
-    # eventInfo['program'] = Program.get_by_id(1)
-            # eventInfo['eventAttachment'] = 'recurringEvent.pdf'
-    eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'recurringId':None,
-                'startDate': '2021-12-12',
-                'rsvpLimit': None,
-                'endDate':'2022-06-12', 'location':"a big room",
-                'timeEnd':'09:00 PM', 'timeStart':'06:00 PM',
-                'description':"Empty Bowls Spring 2021",
-                'name':'bloo','term':1,'contactName':"Garrett D. Clark",
-                'contactEmail': 'boorclark@gmail.com'}
-    eventInfo['program'] = Program.get_by_id(1)
-
-
-
-    with mainDB.atomic() as transaction:
-        with app.app_context():
-            g.current_user = User.get_by_id("ramsayb2")
-            createdEvents = attemptSaveEvent(eventInfo)
-            bla  = Event.select().where(Event.name == "bloo")
-            print([food.isRecurring for food in bla])
-            assert AttachmentUpload.select().where(AttachmentUpload.fileName == 'recurringEvent.pdf').exists()
-
-            transaction.rollback()
-        
-        # saves recurring events
 
 @pytest.mark.integration
 def test_retrievePath():
@@ -94,6 +65,11 @@ def test_retrievePath():
     assert path =='/static/files/eventattachments/15/eventfile.pdf'
 
     # test recurring event
+    # this tests that the recurring events are referencing the same file directory as the first event.
+    eventfiles= AttachmentUpload.select().where(AttachmentUpload.event == 16)
+    paths = handledEventFile.retrievePath(eventfiles)
+    path = paths["15/eventfile.pdf"][0]
+    assert path =='/static/files/eventattachments/15/eventfile.pdf'
 
     # test course
     coursefiles= AttachmentUpload.select().where(AttachmentUpload.course == 1)
@@ -110,6 +86,9 @@ def test_deleteFile():
     path = pathDictionary["15/eventfile.pdf"][0]
     handledEventFile.deleteFile(fileId)
     assert os.path.exists(path)==False
+
+    # test recurring events
+    
 
     # test course
     coursefiles= AttachmentUpload.select().where(AttachmentUpload.course == 1)
