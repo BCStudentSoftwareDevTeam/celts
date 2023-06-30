@@ -62,31 +62,38 @@ $(document).ready(function(){
   });
 
   $("#addNoteButton").click(function() {
+    $("#noteDropdown").show()
+    $("#bonnerStatement").hide()
+    $("#VisibilityLabel").show()
+    $("#bonnerInput").prop("checked", false);
     $("#noteModal").modal("toggle");
+  
   });
 
   $("#addVisibility").click(function() { 
     var bonnerChecked = $("input[name='bonner']:checked").val()
     
   if (bonnerChecked == 'on') {
-    $("#noteDropdown").addClass('d-none')
-    $("#noteDrop").removeClass('d-none')
-    $("#noteD").addClass('d-none')
-    
+    $("#noteDropdown").hide()
+    $("#bonnerStatement").show()
+    $("#VisibilityLabel").hide()
+    $("#bonnerInput").prop("checked", true);
+   
   } else {
-    $("#noteD").removeClass('d-none')
-    $("#noteDropdown").removeClass('d-none')
-    $("#noteDrop").addClass('d-none')    
+    $("#bonnerInput").prop("checked", false);
+    $("#VisibilityLabel").show()
+    $("#noteDropdown").show()
+    $("#bonnerStatement").hide()
     }});
   
 
   $("#addBonnerNoteButton").click(function() {
+    $("#bonnerInput").prop("checked", true);
     $("#noteModal").modal("toggle");
-    $("#bonnerInput").attr("checked", true);
-    $("#noteD").addClass('d-none');
-    $("#noteDropdown").addClass('d-none');
-    $("#noteDrop").removeClass('d-none') 
-
+    $("#VisibilityLabel").hide();
+    $("#noteDropdown").hide();
+    $("#bonnerStatement").show() 
+ 
   });
 
   $('#addNoteForm').submit(function(event) {

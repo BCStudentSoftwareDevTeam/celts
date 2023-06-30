@@ -470,8 +470,8 @@
                 <p><b>This note will only be visible to you, CELTS Student Staff, and Administrators.</b></p>
               {% endif %}
 
-              <label class="form-label d-none" for='inputEventTerm' id="noteDrop"><strong>Bonner notes are visible to {{volunteer.firstName}} and CELTS administrators.</strong></label>
-              <label class="form-label {{vis}}" for='inputEventTerm' id="noteD"><strong>Visibility</strong></label>
+              <label class="form-label" style="display:none" for='inputEventTerm' id="bonnerStatement"><strong>Bonner notes are visible to {{volunteer.firstName}} and CELTS administrators.</strong></label>
+              <label class="form-label {{vis}}" for='inputEventTerm' id="VisibilityLabel"><strong>Visibility</strong></label>
               <select class="form-select {{vis}}" name='visibility' id='noteDropdown'>
               
 
@@ -486,14 +486,14 @@
                 </select>
                
               <div id="addVisibility"> 
-              {% if g.current_user.isBonnerScholar and volunteer.isBonnerScholar %}
-                <div class="form-check form-switch pt-4">
-                  <input class="form-check-input" name="bonner" id="bonnerInput" type="checkbox" />
-                  <label class="form-check-label"><strong>Related to Bonner Scholars Program</strong></label>
-                  
-              <div>
-                </div>
-              {% endif %}
+                {% if g.current_user.isBonnerScholar and volunteer.isBonnerScholar %}
+                  <div class="form-check form-switch pt-4">
+                    <input class="form-check-input" name="bonner" id="bonnerInput" type="checkbox" />
+                    <label class="form-check-label"><strong>Related to Bonner Scholars Program</strong></label>
+                  </div>
+                {% endif %}
+              </div>
+              
               <br>
             </div>
             <div class="form-group input-group-x form-outline ui-widget">
