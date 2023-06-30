@@ -332,11 +332,15 @@ def addCourseFile():
     bnumberReg = r"\b[B]\d{8}\b"
 
     isSummer = False
-    courseId = ""
-    termId = ""
+    courseGet = None
+    
+    userName = None
+    
+    
 
     for row in excelSheet.iter_rows():
         cellVal = row[0].value
+
         if re.search(termReg, str(cellVal)):
             year = cellVal[-4:]
             if "Fall" in cellVal :
@@ -346,45 +350,30 @@ def addCourseFile():
                 if "Summer" in cellVal:
                     isSummer = True
 
-            term = Term.get_or_create(description=cellVal, year=year, academicYear=academicYear, isSummer=isSummer, isCurrentTerm=False)
-            terms = Term.select().where(Term.description==cellVal)
-            for term in terms:
-                termId = term.id
-           
+            term, tCreated = Term.get_or_create(description=cellVal, year=year, academicYear=academicYear, isSummer=isSummer, isCurrentTerm=False)
+          
 
         elif re.search(courseReg, str(cellVal)):
-            # tempUser =  User(username=True, bnumber=True, email = "", phoneNumber=True, firstName = "", lastName  = "",
-            #             isStudent=False, major=True, classLevel=True, isFaculty = False, isStaff = False, 
-            #             isCeltsAdmin=False, isCeltsStudentStaff=False, dietRestriction=True) 
-    
-            courses = Course.select().where(Course.courseAbbreviation == cellVal)
-            course_status = CourseStatus.select().where(CourseStatus.id == 3)
-            for course in courses:
-                courseId = course.id
-                print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
-                print(courseId)
-            # courseId= Course.select().where(Course.id==3)
 
-            
-            courseGet= Course.get_or_create(courseName=cellVal, courseAbbreviation=cellVal, sectionDesignation="", courseCredit="1", term=termId, 
-                                status=course_status, createdBy="heggens", serviceLearningDesignatedSections="", previouslyApprovedDescription="", 
-                                isPermanentlyDesignated=False, isAllSectionsServiceLearning=False, isRegularlyOccurring=False, isPreviouslyApproved=False, hasSlcComponent=False)
-            
+            courseGet, cCreated = Course.get_or_create(courseAbbreviation = cellVal, defaults = {
+                "CourseName" : "",
+                "sectionDesignation" : "", 
+                "courseCredit" : "1", 
+                "term" : term, 
+                "status" : 3, 
+                "createdBy" : "heggens", 
+                "serviceLearningDesignatedSections" : "", 
+                "previouslyApprovedDescription" : ""
+                }
+                ) 
         
-        elif re.search(bnumberReg, str(cellVal)):           # get studentname from database, then add term,course,student to courseparticipant
-            users = User.select(User.firstName, User.lastName, User.username).where(User.bnumber == cellVal)
-           
-            
-            for user in users: 
-                print("--------------------------------------------------------------------------")
-                print(user.firstName)
-                stuFName= user.firstName
-                stuLName= user.lastName
-                userName = user.username
+        elif re.search(bnumberReg, str(cellVal)):           
+            user = User.get(User.bnumber == cellVal)
 
-                ## add term, course, student to courseparticipant table
-                newParticipant = CourseParticipant(course = courseGet.id,user = userName, hoursEarned = 2)
-                newParticipant.save()
+            CourseParticipant.get_or_create(user = user, defaults = {
+                "course" : courseGet,
+                "hoursEarned" : 2
+            })
 
     
     os.remove(filePath)
