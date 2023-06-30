@@ -17,7 +17,10 @@
     <h2 class="m-5" align="center">{{bNumberToUser}}</h2>
   </div>
   <div id="signinData" class="mx-auto px-5 mb-2">
-    <input type="text" id="submitScannerData" name="bNumber" class="form-control input-lg" oninput="submitData()" style="font-size: 2rem;" placeholder="Enter scanner data" autofocus/>
+    <div class="input-group">
+      <input type="text" id="submitScannerData" name="bNumber" class="form-control input-lg" oninput="submitData()" style="font-size: 2rem;" placeholder="Enter scanner data" autofocus/>
+      <button type="button" class="btn btn-primary" id="cameraButton" onclick="triggerCamera()"><span class="bi bi-camera"></span></button>
+    </div>
   </div>
   <div class="form-check form-switch mx-5 position-absolute end-0">
     <input class="form-check-input mt-2" type="checkbox" id="fullscreenCheck" onclick="toggleFullscreen()">
