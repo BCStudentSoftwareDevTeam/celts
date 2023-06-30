@@ -253,7 +253,7 @@
                   {% for key, value in filepaths.items() %}
                       <tr id="attachment_{{value[1]}}" class="attachmentRow_{{key}}" data-id= "{{key}}">
                           <td class="pr-5">
-                              <a class="mr-5 fileName" value='{{key}}' href="{{value[0]}}" target="_blank">{{key}}</a>
+                              <a class="mr-5 fileName" data-filename='{{key}}' href="{{value[0]}}" target="_blank">{{key}}</a>
                           </td>
                           <td style="text-align:center">
                             <button

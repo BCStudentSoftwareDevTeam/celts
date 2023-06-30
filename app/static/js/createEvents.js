@@ -65,7 +65,7 @@ function format24to12HourTime(timeStr){
 function getSelectedFiles(){
   let _fileHolder = new DataTransfer();
   $(".fileHolder").each(function(){
-    _fileHolder.items.add($(this).val());
+    _fileHolder.items.add($(this).data("file"));
   });
   return _fileHolder.files;
 }
@@ -74,7 +74,7 @@ function getSelectedFiles(){
 function hasUniqueFileName(fileName){
   let nameHolders = $(".fileName").toArray();
   for (let i = 0; i < nameHolders.length; i++){
-    if (fileName == $(nameHolders[i]).val()) return false;
+    if (fileName == $(nameHolders[i]).data("filename")) return false;
   }
   return true;
 }
@@ -86,7 +86,6 @@ function hasUniqueFileName(fileName){
  */
 $(document).ready(function() {
   if ( $("#startDatePicker").val() != $("#endDatePicker").val()){
-
     calculateRecurringEventFrequency();
   }
 
@@ -119,14 +118,13 @@ $(document).ready(function() {
           }
           $("#attachedObjectContainer").append("<div class='border row p-0 m-0' id='attachedFilesRow" +fileNum+"'></div>")
           $("#attachedFilesRow"+fileNum).append("<i class='col-auto fs-3 px-3 bi " + iconClass + "'></i>")
-          $("#attachedFilesRow"+fileNum).append("<div id='attachedFile" + fileNum + "' class='fileName col-auto pt-2'>" + fileName + "</div>");
-          $("#attachedFile"+fileNum).val(file.name);
+          $("#attachedFilesRow"+fileNum).append("<div id='attachedFile" + fileNum + "' data-filename='" + file.name + "' class='fileName col-auto pt-2'>" + fileName + "</div>");
           $("#attachedFilesRow"+fileNum).append("<div class='col' style='text-align:right'> \
-                                                  <div class='btn btn-danger fileHolder p-1 my-1 mx-1' id='trash" + fileNum + "' >\
+                                                  <div class='btn btn-danger fileHolder p-1 my-1 mx-1' id='trash" + fileNum + "'>\
                                                     <span class='bi bi-trash fs-6'></span>\
                                                   </div>\
                                                 </div>")
-          $("#trash"+fileNum).val(file);
+          $("#trash"+fileNum).data("file", file);
           $("#trash"+fileNum).on("click", function() {
             let elementFileNum = $(this).prop("id").split("trash")[1];
             $("#attachedFilesRow" + elementFileNum).remove();
