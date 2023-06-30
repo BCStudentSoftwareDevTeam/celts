@@ -11,7 +11,7 @@ from app.models.eventParticipant import EventParticipant
 from app.logic.users import isEligibleForProgram
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.events import getEventRsvpCountsForTerm
-from app.logic.eventRsvpLogs import createRsvpLog
+from app.logic.createLogs import createRsvpLog
 
 def trainedParticipants(programID, currentTerm):
     """

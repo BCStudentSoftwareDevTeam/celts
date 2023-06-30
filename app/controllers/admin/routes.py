@@ -19,7 +19,7 @@ from app.models.user import User
 from app.models.eventViews import EventView
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
-from app.logic.adminLogs import createLog
+from app.logic.createLogs import createAdminLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
@@ -108,11 +108,11 @@ def createEvent(templateid, programid=None):
 
             if program:
                 if len(savedEvents) > 1:
-                    createLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
+                    createAdminLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
                 else:
-                    createLog(f"Created <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
+                    createAdminLog(f"Created <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
             else:
-                createLog(f"Created a non-program event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
+                createAdminLog(f"Created a non-program event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
 
             return redirect(url_for("admin.eventDisplay", eventId = savedEvents[0].id))
         else:
@@ -145,7 +145,7 @@ def rsvpLogDisplay(eventId):
     eventData['program'] = event.singleProgram
     isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
     if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager):
-        allLogs = EventRsvpLogs.select(EventRsvpLogs, User).join(User).order_by(EventRsvpLogs.createdOn.desc()).where(EventRsvpLogs.event_id == eventId)
+        allLogs = EventRsvpLogs.select(EventRsvpLogs, User).join(User).where(EventRsvpLogs.event_id == eventId).order_by(EventRsvpLogs.createdOn.desc())
         return render_template("/events/rsvpLog.html",
                                 event = event,
                                 eventData = eventData,

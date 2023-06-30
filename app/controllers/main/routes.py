@@ -34,7 +34,7 @@ from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import unapprovedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
 from app.logic.certification import getCertRequirementsWithCompletion
-from app.logic.eventRsvpLogs import createRsvpLog
+from app.logic.createLogs import createRsvpLog
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
@@ -201,7 +201,7 @@ def ban(program_id, username):
         banUser(program_id, username, banNote, banEndDate, g.current_user)
         programInfo = Program.get(int(program_id))
         flash("Successfully banned the volunteer", "success")
-        createLog(f'Banned {username} from {programInfo.programName} until {banEndDate}.')
+        createAdminLog(f'Banned {username} from {programInfo.programName} until {banEndDate}.')
         return "Successfully banned the volunteer."
     except Exception as e:
         print("Error while updating ban", e)
@@ -221,7 +221,7 @@ def unban(program_id, username):
     try:
         unbanUser(program_id, username, unbanNote, g.current_user)
         programInfo = Program.get(int(program_id))
-        createLog(f'Unbanned {username} from {programInfo.programName}.')
+        createAdminLog(f'Unbanned {username} from {programInfo.programName}.')
         flash("Successfully unbanned the volunteer", "success")
         return "Successfully unbanned the volunteer"
 

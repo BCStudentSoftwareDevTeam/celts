@@ -14,9 +14,8 @@ from app.logic.events import getPreviousRecurringEventData, getEventRsvpCountsFo
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.programManager import ProgramManager
-from app.logic.adminLogs import createLog
+from app.logic.createLogs import createAdminLog, createRsvpLog
 from app.logic.users import getBannedUsers, isBannedFromEvent
-from app.logic.eventRsvpLogs import createRsvpLog
 
 
 @admin_bp.route('/searchVolunteers/<query>', methods = ['GET'])
@@ -204,7 +203,7 @@ def updateProgramManager():
         username = User.get(User.username == data["user_name"])
         program = Program.get_by_id(data['program_id'])
         setProgramManager(data["user_name"], data["program_id"], data["action"])
-        createLog(f'{username.firstName} has been {data["action"]}ed as a Program Manager for {program.programName}')
+        createAdminLog(f'{username.firstName} has been {data["action"]}ed as a Program Manager for {program.programName}')
         return ""
     else:
         abort(403)
