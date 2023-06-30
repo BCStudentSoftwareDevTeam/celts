@@ -79,13 +79,23 @@ def test_retrievePath():
 
 @pytest.mark.integration
 def test_deleteFile():
+    
     # test file
     eventfiles= AttachmentUpload.select().where(AttachmentUpload.event == 15)
     pathDictionary = handledEventFile.retrievePath(eventfiles)
-    fileId = pathDictionary["15/eventfile.pdf"][1]
+
+    pathDictTest = handledEventFile.getFileFullPath("15/eventfile.pdf")
+
     path = pathDictionary["15/eventfile.pdf"][0]
-    handledEventFile.deleteFile(fileId)
-    assert os.path.exists(path)==False
+    assert os.path.exists(pathDictTest)==True, f"Path {path} does not exist"
+
+    firstevent = AttachmentUpload.get(AttachmentUpload.event == 15)
+    handledEventFile.deleteFile(firstevent.id)
+    assert os.path.exists(pathDictTest)==True
+ 
+    secondevent = AttachmentUpload.get(AttachmentUpload.event == 16)
+    handledEventFile.deleteFile(secondevent.id)
+    assert os.path.exists(pathDictTest)==False
 
     # test recurring events
     

@@ -307,6 +307,9 @@ def adminLogs():
 def deleteEventFile():
     fileData= request.form
     eventfile=FileHandler(eventId=fileData["eventId"])
+    print("#####################")
+    print(fileData)
+    print("#####################")
     eventfile.deleteFile(fileData["fileId"])
     return ""
 

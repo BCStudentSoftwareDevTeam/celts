@@ -75,10 +75,13 @@ class FileHandler:
         """
         Deletes attachmant from the app/static/files/eventattachments/ or courseattachments/ directory
         """
-        try:
-            file = AttachmentUpload.get_by_id(fileId)
+        file = AttachmentUpload.get_by_id(fileId)
+        filename = file.fileName
+        file.delete_instance()
+
+        # checks if there are other instances with the same filename in the AttachmentUpload table
+        if AttachmentUpload.select().where(AttachmentUpload.fileName == file.fileName).exists():
+            pass
+        else:
             path = os.path.join(self.path, file.fileName)
             os.remove(path)
-            file.delete_instance()
-        except AttributeError: #passes if no attachment is selected.
-            pass
