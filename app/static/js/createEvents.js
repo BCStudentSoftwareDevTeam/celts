@@ -62,6 +62,25 @@ function format24to12HourTime(timeStr){
   }
 
 
+function getSelectedFiles(){
+  let _fileHolder = new DataTransfer();
+  $(".fileHolder").each(function(){
+    _fileHolder.items.add($(this).val());
+  });
+  return _fileHolder.files;
+}
+
+
+function hasUniqueFileName(fileName){
+  let nameHolders = $(".fileName").toArray();
+  for (let i = 0; i < nameHolders.length; i++){
+    if (fileName == $(nameHolders[i]).val()) return false;
+  }
+  return true;
+}
+
+
+
 /*
  * Run when the webpage is ready for javascript
  */
@@ -71,58 +90,55 @@ $(document).ready(function() {
     calculateRecurringEventFrequency();
   }
 
-    // $("#attachmentObject").fileinput({
-    //     allowedFileExtensions:["pdf","jpg","png","gif", "csv", "docx", "jpg", "jpeg", "jfif"]
-    // })
-
     var fileNum = 0;
-    var filesDict = new DataTransfer();
     $("#attachmentObject").on('change', function() {
-      const selectedFiles = $("#attachmentObject").prop('files'); // TODO: see if we can append file data by reading the list and appending to it.
-      console.log($("#attachmentObject"));
-      
+      const selectedFiles = $("#attachmentObject").prop('files');
       for (let i = 0; i < selectedFiles.length; i++) {
-        
         const file = selectedFiles[i];
-        let fileName = (file.name.length > 25) ? file.name.slice(0,10) + '...' + file.name.slice(-10) : file.name;
-        let fileExtension = file.name.split(".").pop();
-        let iconClass = '';
-        switch(fileExtension) {
-          case 'jpg': 
-          case 'png':
-          case 'jpeg':
-            iconClass = "bi-file-image";
-            break
-          case 'pdf':
-            iconClass = 'bi-filetype-pdf';
-            break
-          case 'docx':
-            iconClass = 'bi-filetype-docx';
-            break
-          case 'xlsx':
-            iconClass = 'bi-filetype-xlsx';
-            break
-          default:
-            iconClass = 'bi-file-earmark-arrow-up';
+        if (hasUniqueFileName(file.name)){
+          let fileName = (file.name.length > 25) ? file.name.slice(0,10) + '...' + file.name.slice(-10) : file.name;
+          let fileExtension = file.name.split(".").pop();
+          let iconClass = '';
+          switch(fileExtension) {
+            case 'jpg': 
+            case 'png':
+            case 'jpeg':
+              iconClass = "bi-file-image";
+              break
+            case 'pdf':
+              iconClass = 'bi-filetype-pdf';
+              break
+            case 'docx':
+              iconClass = 'bi-filetype-docx';
+              break
+            case 'xlsx':
+              iconClass = 'bi-filetype-xlsx';
+              break
+            default:
+              iconClass = 'bi-file-earmark-arrow-up';
+          }
+          $("#attachedObjectContainer").append("<div class='border row p-0 m-0' id='attachedFilesRow" +fileNum+"'></div>")
+          $("#attachedFilesRow"+fileNum).append("<i class='col-auto fs-3 px-3 bi " + iconClass + "'></i>")
+          $("#attachedFilesRow"+fileNum).append("<div id='attachedFile" + fileNum + "' class='fileName col-auto pt-2'>" + fileName + "</div>");
+          $("#attachedFile"+fileNum).val(file.name);
+          $("#attachedFilesRow"+fileNum).append("<div class='col' style='text-align:right'> \
+                                                  <div class='btn btn-danger fileHolder p-1 my-1 mx-1' id='trash" + fileNum + "' >\
+                                                    <span class='bi bi-trash fs-6'></span>\
+                                                  </div>\
+                                                </div>")
+          $("#trash"+fileNum).val(file);
+          $("#trash"+fileNum).on("click", function() {
+            let elementFileNum = $(this).prop("id").split("trash")[1];
+            $("#attachedFilesRow" + elementFileNum).remove();
+            $("#attachmentObject").prop('files', getSelectedFiles);
+          })
+          fileNum++;
         }
-        console.log(fileExtension);
-        $("#attachedObjectContainer").append("<div class='border row p-0 m-0' id='attachedFilesRow" +fileNum+"'></div>")
-        $("#attachedFilesRow"+fileNum).append("<i class='col-auto fs-3 px-3 bi " + iconClass + "'></i>")
-        $("#attachedFilesRow"+fileNum).append("<div id='attachedFile" + fileNum + "' class='attached-file col-auto pt-2' value='" + file.name + "'>" + fileName + "</div>");
-        $("#attachedFilesRow"+fileNum).append("<div class='col' style='text-align:right'> \
-                                                <div class='btn btn-danger p-1 my-1 mx-1' value='"+fileNum+"' id='trash"+ fileNum +"''>\
-                                                  <span class='bi bi-trash fs-6'></span>\
-                                                </div>\
-                                              </div>")
-        $("#trash"+fileNum).on("click", function() {
-          $("#attachedFilesRow"+$(this).val).remove();}
-          // console.log($(this).val); }
-        )
-        fileNum++;
-        filesDict.items.add(file);
+        else{
+          msgFlash("File with filename '" + file.name + "' has already been added to this event")
+        }
       }
-      console.log(filesDict);
-      $("#attachmentObject").prop('files', filesDict.files);
+      $("#attachmentObject").prop('files', getSelectedFiles);
     });
 
 
@@ -138,8 +154,7 @@ $(document).ready(function() {
 
   // Disable button when we are ready to submit
   $("#saveEvent").on('submit',function(event) {
-      $(this).find("input[type=submit]").prop("disabled", true);
-
+    $(this).find("input[type=submit]").prop("disabled", true);
   });
 
   $("#checkIsRecurring").click(function() {
