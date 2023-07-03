@@ -30,7 +30,7 @@ class FileHandler:
         try:
             # tries to create the full path of the files location and passes if
             # the directories already exist or there is no attachment
-            filePath=(os.path.join(self.path, "".join(newfilename)))  # This line adds the eventID of the first recurring event.
+            filePath=(os.path.join(self.path, "".join(newfilename)))
         except AttributeError:  # will pass if there is no attachment to save
             pass
         except FileExistsError:
@@ -43,18 +43,17 @@ class FileHandler:
         try:
             for file in self.files:
                 if self.eventId:
+                    # isFileInEvent checks if the attachment exists in the database under that eventId and filename.
+                    isFileInEvent = AttachmentUpload.select().where(AttachmentUpload.event == self.eventId,
+                                                                    AttachmentUpload.fileName == file.filename).exists()
                     if saveOriginalFile and saveOriginalFile.id == self.eventId:       # Checks if iterant is the first (recurring) event
-                        isFileInEvent = AttachmentUpload.select().where(AttachmentUpload.event == self.eventId, AttachmentUpload.fileName == file.filename).exists()
                         if not isFileInEvent:
                             AttachmentUpload.create(event = self.eventId, fileName = str(saveOriginalFile.id) + "/" + file.filename)
                             # saves attachment in the same directory using the eventID of the first recurring event.
                             file.save(self.getFileFullPath(newfilename = str(saveOriginalFile.id) + "/" + file.filename))
-                            # We need to add the event id to the file path when we call it in file.save.
                     else:
-                        isFileInEvent = AttachmentUpload.select().where(AttachmentUpload.event == self.eventId, AttachmentUpload.fileName == file.filename).exists()
                         if not isFileInEvent:
                             AttachmentUpload.create(event = self.eventId, fileName = str(saveOriginalFile.id) + "/" + file.filename)
-                       
 
                 elif self.courseId:
                     isFileInCourse = AttachmentUpload.select().where(AttachmentUpload.course == self.courseId, AttachmentUpload.fileName == file.filename).exists()
@@ -80,8 +79,7 @@ class FileHandler:
         file.delete_instance()
 
         # checks if there are other instances with the same filename in the AttachmentUpload table
-        if AttachmentUpload.select().where(AttachmentUpload.fileName == file.fileName).exists():
-            pass
-        else:
+        if not AttachmentUpload.select().where(AttachmentUpload.fileName == file.fileName).exists():
             path = os.path.join(self.path, file.fileName)
+            print("this is the path", path)
             os.remove(path)

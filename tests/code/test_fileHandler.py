@@ -2,15 +2,12 @@ import pytest
 import os
 from werkzeug.datastructures import FileStorage
 
-
-
 from app import app
 from app.models import mainDB
 from dateutil import parser
 from app.models.user import User
 from flask import g
 from app.logic.events import attemptSaveEvent
-
 
 from app.models.program import Program
 from app.models.attachmentUpload import AttachmentUpload
@@ -24,7 +21,7 @@ handledEventFile = FileHandler(eventFileStorageObject, eventId=15)
 
 handledEventFileRecurring = FileHandler(eventFileStorageObject, eventId=16)
 
-# creates base objects for course tests
+# creates base object for course tests
 courseFileStorageObject= [FileStorage(filename= "coursefile.pdf")]
 
 handledCourseFile = FileHandler(courseFileStorageObject, courseId=1)
@@ -35,7 +32,7 @@ def test_getFileFullPath():
     assert filePath == 'app/static/files/eventattachments/15/eventfile.pdf'
     
     # test course
-    filePath = handledCourseFile.getFileFullPath("".join(courseFileStorageObject[0].filename))
+    filePath = handledCourseFile.getFileFullPath(courseFileStorageObject[0].filename)
     assert filePath == 'app/static/files/courseattachments/1/coursefile.pdf'
 
 
@@ -54,6 +51,9 @@ def test_saveFiles():
         # test course
         handledCourseFile.saveFiles()
         assert AttachmentUpload.select().where(AttachmentUpload.fileName == 'coursefile.pdf').exists()
+
+        # removes saved paths from file directory
+        os.remove(handledEventFile.getFileFullPath('15/eventfile.pdf'))
         
         transaction.rollback()
 
@@ -94,38 +94,33 @@ def test_retrievePath():
 @pytest.mark.integration
 def test_deleteFile():
     with mainDB.atomic() as transaction:
-        # uploads attachments for course test to the database using the transaction
-        AttachmentUpload.create(course=1, fileName= 'coursefile.pdf')
+        # creates file in event file directory for deletion
+        handledEventFile.saveFiles(saveOriginalFile = Event.get_by_id(15))
 
-        # uploads attachments for events tests to the database using the transaction
-        AttachmentUpload.create(event=15, fileName= '15/eventfile.pdf')
+        # creates a second file to simulate recurring events
+        handledEventFileRecurring.saveFiles(saveOriginalFile = Event.get_by_id(15))
+        
+        # creates a course file for deletion
+        handledCourseFile.saveFiles()
 
-        AttachmentUpload.create(event=16, fileName= '15/eventfile.pdf')
-
-        # test file
-        eventfiles= AttachmentUpload.select().where(AttachmentUpload.event == 15)
-        pathDictionary = handledEventFile.retrievePath(eventfiles)
-
-        pathDictTest = handledEventFile.getFileFullPath("15/eventfile.pdf")
-
-        path = pathDictionary["15/eventfile.pdf"][0]
-        assert os.path.exists(pathDictTest)==True
+        # delete events
+        path = handledEventFile.getFileFullPath("15/eventfile.pdf")
 
         firstevent = AttachmentUpload.get(AttachmentUpload.event == 15)
         handledEventFile.deleteFile(firstevent.id)
-        assert os.path.exists(pathDictTest)==True
+        assert os.path.exists(path)==True
     
         secondevent = AttachmentUpload.get(AttachmentUpload.event == 16)
         handledEventFile.deleteFile(secondevent.id)
-        assert os.path.exists(pathDictTest)==False
-        
-
-        # test course
-        coursefiles= AttachmentUpload.select().where(AttachmentUpload.course == 1)
-        pathDictionary = handledCourseFile.retrievePath(coursefiles)
-        fileId = pathDictionary['coursefile.pdf'][1]
-        path = pathDictionary['coursefile.pdf'][0]
         assert os.path.exists(path)==False
 
-        # clears transaction
-        transaction.rollback()
+        # delete courses
+        coursefile = AttachmentUpload.get(AttachmentUpload.course == 1)
+        
+        path = handledCourseFile.getFileFullPath('coursefile.pdf')
+
+        handledCourseFile.deleteFile(coursefile.id)
+        
+        assert os.path.exists(path)==False
+
+
