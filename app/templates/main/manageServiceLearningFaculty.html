@@ -116,25 +116,29 @@
             <button class="btn btn-primary {{downloadAndSend}}" id="downloadApprovedCoursesBtn" value="{{term.id}}">Download Course List</button>
           </form>
         </div>
-          <div class="float-end">
-            <a  class="btn btn-primary mr {{downloadAndSend}}" href="mailto:{{(';'.join(instructorEmails))}}?subject=Designated Service-Learning Courses: List of recommended courses for {{term.description}}&body=Hello,%0D%0A%0D%0AI’m writing to submit the list of courses recommended for the Service-Learning Course Designation (meeting the ALE requirement) for the upcoming semester; this list is ready to be shared with COGE. Please find the list of courses in the attached document. The proposals have been reviewed and approved by the Service-Learning Faculty Fellow and Director of CELTS (me).%0D%0A%0D%0AIn addition to these courses, all the courses that have received the Permanent Service-Learning Course Designation that will be taught in the upcoming semester should also have the Service-Learning Course Designation.%0D%0A%0D%0AThank you,%0D%0A%0D%0AAshley" target="_blank"> Send Recommendation </a>
-          </div>
-            <div class="float-end">
-              <a  class="btn btn-primary mr {{downloadAndSend}}" href="mailto:registrar@berea.edu?subject=Requesting%20Student%20Service-Learning%20Course%20participation&body=ADD TEXT" target="_blank"> Email registrar </a>
-            </div>
-            <div class="float-end">
-              <form method="POST" action="/uploadCourseParticipant" enctype="multipart/form-data">
-                <label for="addCourseParticipant" class="form-label">Upload Excel</label>
-                <input class="form-control" type="file" id="addCourseParticipant" name="addCourseParticipant">
-                <input class="form-control" type="submit"></input>
-            </form>
-            </div>
+        <div class="float-end">
+          <a  class="btn btn-primary mr {{downloadAndSend}}" href="mailto:{{(';'.join(instructorEmails))}}?subject=Designated Service-Learning Courses: List of recommended courses for {{term.description}}&body=Hello,%0D%0A%0D%0AI’m writing to submit the list of courses recommended for the Service-Learning Course Designation (meeting the ALE requirement) for the upcoming semester; this list is ready to be shared with COGE. Please find the list of courses in the attached document. The proposals have been reviewed and approved by the Service-Learning Faculty Fellow and Director of CELTS (me).%0D%0A%0D%0AIn addition to these courses, all the courses that have received the Permanent Service-Learning Course Designation that will be taught in the upcoming semester should also have the Service-Learning Course Designation.%0D%0A%0D%0AThank you,%0D%0A%0D%0AAshley" target="_blank"> Send Recommendation </a>
+        </div>
+        <div class="float-end">
+          <a  class="btn btn-primary mr {{downloadAndSend}}" href="mailto:registrar@berea.edu?subject=Requesting%20Student%20Service-Learning%20Course%20participation&body=ADD TEXT" target="_blank"> Email registrar </a>
+        </div>
+        <div class="float-start col btn btn-primary">
+          <form method="POST" action="/uploadCourseParticipant" enctype="multipart/form-data">
+            <label for="addCourseParticipant" class="form-label"></label>
+            <input class="form-control" type="file" id="addCourseParticipant" name="addCourseParticipant">
+            <input class="form-control" type="submit"></input>
+          </form>
+        </div>
       </div>
        {% endif %}
         </div>
       </div>
       <div id="wrapper">
-          <h1 class="text-center pt-1 pb-4">Service-Learning Faculty</h1>
+        <br>
+        <br>
+        <br>
+
+        <h1 class="text-center pt-1 pb-4">Service-Learning Faculty</h1>
           <div style="text-align:right; position:relative; top: 38px; z-index:1;" >
             {% set instructorEmails = [] %}
             {% for instructor in courseInstructors%}

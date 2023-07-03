@@ -357,15 +357,15 @@ def addCourseFile():
 
             courseGet, cCreated = Course.get_or_create(courseAbbreviation = cellVal, defaults = {
                 "CourseName" : "",
-                "sectionDesignation" : "", 
-                "courseCredit" : "1", 
-                "term" : term, 
-                "status" : 3, 
-                "createdBy" : "heggens", 
-                "serviceLearningDesignatedSections" : "", 
+                "sectionDesignation" : "",
+                "courseCredit" : "1",
+                "term" : term,
+                "status" : 3,
+                "createdBy" : "heggens",
+                "serviceLearningDesignatedSections" : "",
                 "previouslyApprovedDescription" : ""
                 }
-                ) 
+            ) 
         
         elif re.search(bnumberReg, str(cellVal)):           
             user = User.get(User.bnumber == cellVal)
