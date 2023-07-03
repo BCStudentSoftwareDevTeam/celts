@@ -48,11 +48,22 @@ $(document).ready( function () {
 });
 
 
-function saveFileToDatabase(filePath) {
-  // Code to save the file path in the database
-  // We can may be replace this with our actual database-saving logic after testing if it actually print in console 
-  console.log("Saving file to database:", filePath);
-}
+
+
+$("#modalCourseParticipant").on("click", function () {
+
+  console.log("Hi Steve")
+
+  $("#modalSubmit").modal("toggle");
+
+});
+
+
+// $("#addNoteButton").click(function () {
+//   $("#noteModal").modal("toggle");
+// });
+
+
 
 
 
