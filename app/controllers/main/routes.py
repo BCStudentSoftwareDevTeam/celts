@@ -34,7 +34,7 @@ from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import unapprovedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
 from app.logic.certification import getCertRequirementsWithCompletion
-from app.logic.createLogs import createRsvpLog
+from app.logic.createLogs import createRsvpLog, createAdminLog
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
