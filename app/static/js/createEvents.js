@@ -72,11 +72,8 @@ function getSelectedFiles(){
 
 
 function hasUniqueFileName(fileName){
-  let nameHolders = $(".fileName").toArray();
-  for (let i = 0; i < nameHolders.length; i++){
-    if (fileName == $(nameHolders[i]).data("filename")) return false;
-  }
-  return true;
+  if ($(".fileName[data-filename='" + fileName + "']").length == 0) { return true }
+  return false;
 }
 
 
@@ -116,27 +113,28 @@ $(document).ready(function() {
             default:
               iconClass = 'bi-file-earmark-arrow-up';
           }
-          $("#attachedObjectContainer").append("<div class='border row p-0 m-0' id='attachedFilesRow" +fileNum+"'></div>")
-          $("#attachedFilesRow"+fileNum).append("<i class='col-auto fs-3 px-3 bi " + iconClass + "'></i>")
-          $("#attachedFilesRow"+fileNum).append("<div id='attachedFile" + fileNum + "' data-filename='" + file.name + "' class='fileName col-auto pt-2'>" + fileName + "</div>");
-          $("#attachedFilesRow"+fileNum).append("<div class='col' style='text-align:right'> \
-                                                  <div class='btn btn-danger fileHolder p-1 my-1 mx-1' id='trash" + fileNum + "'>\
-                                                    <span class='bi bi-trash fs-6'></span>\
-                                                  </div>\
+          $("#attachedObjectContainer").append("<div class='border row p-0 m-0' id='attachedFilesRow" +fileNum+"'> \
+                                                  <i class='col-auto fs-3 px-3 bi " + iconClass + "'></i> \
+                                                  <div id='attachedFile" + fileNum + "' data-filename='" + file.name + "' class='fileName col-auto pt-2'>" + fileName + "</div> \
+                                                  <div class='col' style='text-align:right'> \
+                                                    <div class='btn btn-danger fileHolder p-1 my-1 mx-1' id='trash" + fileNum + "' data-filenum='" + fileNum + "'>\
+                                                      <span class='bi bi-trash fs-6'></span>\
+                                                    </div>\
+                                                  </div> \
                                                 </div>")
           $("#trash"+fileNum).data("file", file);
           $("#trash"+fileNum).on("click", function() {
-            let elementFileNum = $(this).prop("id").split("trash")[1];
+            let elementFileNum = $(this).data('filenum');
             $("#attachedFilesRow" + elementFileNum).remove();
-            $("#attachmentObject").prop('files', getSelectedFiles);
+            $("#attachmentObject").prop('files', getSelectedFiles());
           })
           fileNum++;
         }
         else{
-          msgFlash("File with filename '" + file.name + "' has already been added to this event")
+          msgToast("File with filename '" + file.name + "' has already been added to this event")
         }
       }
-      $("#attachmentObject").prop('files', getSelectedFiles);
+      $("#attachmentObject").prop('files', getSelectedFiles());
     });
 
 
