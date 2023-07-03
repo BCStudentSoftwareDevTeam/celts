@@ -17,16 +17,14 @@ from app.models.attachmentUpload import AttachmentUpload
 from app.models.event import Event
 from app.logic.fileHandler import FileHandler
 
-# test events
+# creates base object for events tests
 eventFileStorageObject= [FileStorage(filename= "eventfile.pdf")]
 
 handledEventFile = FileHandler(eventFileStorageObject, eventId=15)
 
-# eventFileStorageObjectRecurring= [FileStorage(filename= "eventfile.pdf")]
-
 handledEventFileRecurring = FileHandler(eventFileStorageObject, eventId=16)
 
-# test course
+# creates base objects for course tests
 courseFileStorageObject= [FileStorage(filename= "coursefile.pdf")]
 
 handledCourseFile = FileHandler(courseFileStorageObject, courseId=1)
@@ -62,7 +60,11 @@ def test_saveFiles():
 @pytest.mark.integration
 def test_retrievePath():
     with mainDB.atomic() as transaction:
-        # upload attachments to the database using the transaction
+
+        # uploads attachments for course test to the database using the transaction
+        AttachmentUpload.create(course=1, fileName= 'coursefile.pdf')
+
+        # uploads attachments for events tests to the database using the transaction
         AttachmentUpload.create(event=15, fileName= '15/eventfile.pdf')
 
         AttachmentUpload.create(event=16, fileName= '15/eventfile.pdf')
@@ -71,14 +73,14 @@ def test_retrievePath():
         # test event
         eventfiles= AttachmentUpload.select().where(AttachmentUpload.event == 15)
         paths = handledEventFile.retrievePath(eventfiles)
-        path = paths["15/eventfile.pdf"][0]
+        path = paths['15/eventfile.pdf'][0]
         assert path =='/static/files/eventattachments/15/eventfile.pdf'
 
         # test recurring event
         # this tests that the recurring events are referencing the same file directory as the first event.
         eventfiles= AttachmentUpload.select().where(AttachmentUpload.event == 16)
         paths = handledEventFile.retrievePath(eventfiles)
-        path = paths["15/eventfile.pdf"][0]
+        path = paths['15/eventfile.pdf'][0]
         assert path =='/static/files/eventattachments/15/eventfile.pdf'
 
         # test course
@@ -92,6 +94,14 @@ def test_retrievePath():
 @pytest.mark.integration
 def test_deleteFile():
     with mainDB.atomic() as transaction:
+        # uploads attachments for course test to the database using the transaction
+        AttachmentUpload.create(course=1, fileName= 'coursefile.pdf')
+
+        # uploads attachments for events tests to the database using the transaction
+        AttachmentUpload.create(event=15, fileName= '15/eventfile.pdf')
+
+        AttachmentUpload.create(event=16, fileName= '15/eventfile.pdf')
+
         # test file
         eventfiles= AttachmentUpload.select().where(AttachmentUpload.event == 15)
         pathDictionary = handledEventFile.retrievePath(eventfiles)
@@ -99,7 +109,7 @@ def test_deleteFile():
         pathDictTest = handledEventFile.getFileFullPath("15/eventfile.pdf")
 
         path = pathDictionary["15/eventfile.pdf"][0]
-        assert os.path.exists(pathDictTest)==True, f"Path {path} does not exist"
+        assert os.path.exists(pathDictTest)==True
 
         firstevent = AttachmentUpload.get(AttachmentUpload.event == 15)
         handledEventFile.deleteFile(firstevent.id)
@@ -113,8 +123,9 @@ def test_deleteFile():
         # test course
         coursefiles= AttachmentUpload.select().where(AttachmentUpload.course == 1)
         pathDictionary = handledCourseFile.retrievePath(coursefiles)
-        fileId = pathDictionary["coursefile.pdf"][1]
-        path = pathDictionary["coursefile.pdf"][0]
+        fileId = pathDictionary['coursefile.pdf'][1]
+        path = pathDictionary['coursefile.pdf'][0]
         assert os.path.exists(path)==False
 
+        # clears transaction
         transaction.rollback()
