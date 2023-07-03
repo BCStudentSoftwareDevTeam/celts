@@ -72,8 +72,7 @@ function getSelectedFiles(){
 
 
 function hasUniqueFileName(fileName){
-  if ($(".fileName[data-filename='" + fileName + "']").length == 0) { return true }
-  return false;
+  return $(".fileName[data-filename='" + fileName + "']").length == 0;
 }
 
 
