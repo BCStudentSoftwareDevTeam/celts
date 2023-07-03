@@ -4,6 +4,14 @@ $(document).ready(function() {
   $('[data-toggle="tooltip"]').tooltip();
   var iconShowing = false
 
+  $("#addVolunteerModal input[type=checkbox]").click(updateSelectVolunteer);
+  $('[data-toggle="previousVolunteerHover"]').popover({
+    trigger: "hover",
+    sanitize: false,
+    html: true,
+    content: "Previous Volunteer"
+});
+
 var participantCount = $('#trackVolunteerstable').attr('data-entryCount');
   var table =  $('#trackVolunteerstable').DataTable({
     "fnDrawCallback": function(oSettings) {
@@ -30,10 +38,20 @@ var participantCount = $('#trackVolunteerstable').attr('data-entryCount');
       });
     });
 
+    function updateSelectVolunteer(){
+      $("#addVolunteerModal input[type=checkbox]").each(function(index, checkbox){
+          if(checkbox["checked"] == true){
+            $("#addVolunteersButton").prop("disabled", false)
+            return false
+          }
+          $("#addVolunteersButton").prop("disabled", true)
+      })
+    }
+    
 
   // Adding the new volunteer to the user database table
-    $("#selectVolunteerButton").click(function(){
-        $("#selectVolunteerButton").prop("disabled", true)
+    $("#addVolunteersButton").click(function(){
+        $("#addVolunteersButton").prop("disabled", true)
         let user = $("#addVolunteerInput").val()
         let eventId = $("#eventID").val()
         let checkboxlist = $("#addVolunteerModal input[type=checkbox]")
@@ -56,24 +74,27 @@ var participantCount = $('#trackVolunteerstable').attr('data-entryCount');
       })
     })
 
-    var userlist = []
+    var userlist = $(".recurringVolunteer").map(function(){
+      return $(this).val()
+    }).get()
     function callback(selected) {
-      $("#selectVolunteerButton").prop('disabled', false);
       let user = $("#addVolunteerInput").val()
       if (userlist.includes(selected["username"]) == false){
           userlist.push(user)
           let i = userlist.length;
-          $("#addVolunteerList").append("<li class id= 'addVolunteerElements"+i+"'> </li>")
+          $("#addVolunteerList").prepend("<li class id= 'addVolunteerElements"+i+"'> </li>")          
           $("#addVolunteerElements"+i).append("<input  type='checkbox' id= 'userlistCheckbox"+i+"' checked value='" + user +"' >  </input>")
           $("#addVolunteerElements"+i).append("<label form for= 'userlistCheckbox"+i+"'>"+ selected["firstName"]+ " " + selected["lastName"] +"</label>")
           handleBanned(selected["username"], $("#eventID").val(), i)
+          $("#userlistCheckbox"+i).click(updateSelectVolunteer)
+          updateSelectVolunteer()
       }
       else {
           msgFlash("User already selected.")
       }
     }
-  $("#selectVolunteerButton").prop('disabled', true);
-
+  $("#addVolunteersButton").prop('disabled', true);
++
   $("#addVolunteerModal").on("shown.bs.modal", function() {
       $('#addVolunteerInput').focus();
   });
@@ -88,9 +109,10 @@ var participantCount = $('#trackVolunteerstable').attr('data-entryCount');
     let username =  this.id;
     let eventId = $('#eventID').val()
     $.ajax({
-      url: `/removeVolunteerFromEvent/${username}/${eventId}`,
+      url: '/removeVolunteerFromEvent',
       type: "POST",
-      success: function(s) {
+      data: {username: username, eventId: eventId},
+      success: function(response) {
          location.reload();
       },
       error: function(request, status, error) {
@@ -128,7 +150,8 @@ var participantCount = $('#trackVolunteerstable').attr('data-entryCount');
   });
 
   $("#selectAllVolunteers").click(function(){
-      $("#addPastVolunteerModal input[type=checkbox]").prop('checked', true)
+      $("#addVolunteerModal input[type=checkbox]").prop('checked', true);
+      updateSelectVolunteer();
   });
 
   function handleBanned(username, eventId, index){

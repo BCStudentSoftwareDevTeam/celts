@@ -89,6 +89,38 @@ def trackVolunteersPage(eventID):
 
 
 
+@admin_bp.route('/event/<eventID>/dietary_restrictions', methods=['GET'])
+def dietaryRestrictionsPage(eventID):
+    try:
+        event = Event.get_by_id(eventID)
+    except DoesNotExist as e:
+        print(f"No event found for {eventID}", e)
+        abort(404)
+
+
+    if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerForEvent(event))):
+        abort(403)
+
+    eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
+    eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
+    participantsAndRsvp = (eventParticipantData + eventRsvpData)
+
+    #get unique list of users for each category waitlist/notwaitlist
+    volunteerUser = list(set([obj.user for obj in participantsAndRsvp if not obj.rsvpWaitlist and obj.user.dietRestriction]))
+    waitlistUser = list(set([obj.user for obj in participantsAndRsvp if obj.rsvpWaitlist and obj.user.dietRestriction]))
+
+
+    eventData = model_to_dict(event, recurse=False)
+    eventData["program"] = event.singleProgram
+
+
+    return render_template("/events/dietaryRestrictions.html",
+                            volunteerUser = volunteerUser,
+                            waitlistUser = waitlistUser,
+                            event = event,
+                            eventData = eventData)
+
+
 @admin_bp.route('/addVolunteersToEvent/<eventId>', methods = ['POST'])
 def addVolunteer(eventId):
     event = Event.get_by_id(eventId)
@@ -125,11 +157,14 @@ def rsvpFromWaitlist(username, eventId):
 def isVolunteerBanned(username, eventId):
     return {"banned":1} if isBannedFromEvent(username, eventId) else {"banned":0}
 
-@admin_bp.route('/removeVolunteerFromEvent/<user>/<eventID>', methods = ['POST'])
-def removeVolunteerFromEvent(user, eventID):
-    (EventParticipant.delete().where(EventParticipant.user==user, EventParticipant.event==eventID)).execute()
-    (EventRsvp.delete().where(EventRsvp.user==user, EventRsvp.event==eventID)).execute()
-    flash("Volunteer successfully removed", "success")
+@admin_bp.route('/removeVolunteerFromEvent', methods = ['POST'])
+def removeVolunteerFromEvent():
+    user = request.form.get('username')
+    eventID = request.form.get('eventId')
+    if g.current_user.isAdmin: 
+        (EventParticipant.delete().where(EventParticipant.user==user, EventParticipant.event==eventID)).execute()
+        (EventRsvp.delete().where(EventRsvp.user==user, EventRsvp.event==eventID)).execute()
+        flash("Volunteer successfully removed", "success")
     return ""
 
 @admin_bp.route('/addBackgroundCheck', methods = ['POST'])

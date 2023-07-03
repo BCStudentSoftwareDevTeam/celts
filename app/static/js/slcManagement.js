@@ -27,6 +27,7 @@ $(document).ready(function() {
   });
 });
 
+
 function resetAllSelections(){
   $('.form-select').val('---');
   $('#renewBtn').prop('disabled', true);
