@@ -1,6 +1,6 @@
 from flask import request, render_template, redirect, url_for, request, flash, abort, g, json, jsonify
 from datetime import datetime
-from peewee import DoesNotExist
+from peewee import DoesNotExist, JOIN
 from playhouse.shortcuts import model_to_dict
 from app.controllers.admin import admin_bp
 from app.models.event import Event
@@ -55,12 +55,17 @@ def trackVolunteersPage(eventID):
     if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
         abort(403)
 
-    eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
     eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
+    eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
+    eventParticipantUsers = [participantDatum.user for participantDatum in eventParticipantData]
+    eventRsvpData = [rsvpDatum for rsvpDatum in eventRsvpData if rsvpDatum.user not in eventParticipantUsers]
+    # The two unique lists:
+    # eventParticipantData & eventRsvpData
+
     participantsAndRsvp = (eventParticipantData + eventRsvpData)
     eventVolunteerData = []
     volunteerUser = []
-    for volunteer in participantsAndRsvp:
+    for volunteer in participantsAndRsvp: #NOTE, the rows represented in eventVolunteerData are not from the same table.
         if volunteer.user not in volunteerUser:
             eventVolunteerData.append(volunteer)
             volunteerUser.append(volunteer.user)
@@ -77,6 +82,8 @@ def trackVolunteersPage(eventID):
                             eventData = eventData,
                             eventVolunteerData = eventVolunteerData,
                             eventParticipants = eventParticipants,
+                            eventParticipantData = eventParticipantData,
+                            eventRsvpData = eventRsvpData,
                             eventLength = eventLengthInHours,
                             event = event,
                             recurringEventID = recurringEventID,
@@ -156,14 +163,11 @@ def rsvpFromWaitlist(username, eventId):
 def isVolunteerBanned(username, eventId):
     return {"banned":1} if isBannedFromEvent(username, eventId) else {"banned":0}
 
-@admin_bp.route('/removeVolunteerFromEvent', methods = ['POST'])
-def removeVolunteerFromEvent():
-    user = request.form.get('username')
-    eventID = request.form.get('eventId')
-    if g.current_user.isAdmin: 
-        (EventParticipant.delete().where(EventParticipant.user==user, EventParticipant.event==eventID)).execute()
-        (EventRsvp.delete().where(EventRsvp.user==user, EventRsvp.event==eventID)).execute()
-        flash("Volunteer successfully removed", "success")
+@admin_bp.route('/removeVolunteerFromEvent/<user>/<eventID>', methods = ['POST'])
+def removeVolunteerFromEvent(user, eventID):
+    (EventParticipant.delete().where(EventParticipant.user==user, EventParticipant.event==eventID)).execute()
+    (EventRsvp.delete().where(EventRsvp.user==user, EventRsvp.event==eventID)).execute()
+    flash("Volunteer successfully removed", "success")
     return ""
 
 @admin_bp.route('/addBackgroundCheck', methods = ['POST'])
