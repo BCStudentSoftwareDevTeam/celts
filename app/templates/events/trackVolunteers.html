@@ -63,7 +63,7 @@
     </thead>
     <tbody class="align-middle" id="volunteerTable">
       {% if eventVolunteerData %}
-        {% for participant in eventParticipantData %}
+        {% for participant in eventParticipantData  %}
           {% if not participant.rsvpWaitlist %}
             <tr>
               {% if (not event.isPast) and (event.isRsvpRequired)  %}
