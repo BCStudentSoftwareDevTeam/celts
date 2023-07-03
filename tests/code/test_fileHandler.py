@@ -41,7 +41,7 @@ def test_saveFiles():
     with mainDB.atomic() as transaction:
         # test event
         handledEventFile.saveFiles(saveOriginalFile = Event.get_by_id(15))
-        # print(AttachmentUpload.fileName)
+        
         assert AttachmentUpload.select().where(AttachmentUpload.fileName == '15/eventfile.pdf').exists()
         
         # test saving 2nd event in a hypothetical recurring series

@@ -81,5 +81,4 @@ class FileHandler:
         # checks if there are other instances with the same filename in the AttachmentUpload table
         if not AttachmentUpload.select().where(AttachmentUpload.fileName == file.fileName).exists():
             path = os.path.join(self.path, file.fileName)
-            print("this is the path", path)
             os.remove(path)
