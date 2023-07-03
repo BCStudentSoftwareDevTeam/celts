@@ -70,11 +70,6 @@ def checkUserRsvp(user,  event):
 def checkUserVolunteer(user,  event):
     return EventParticipant.select().where(EventParticipant.user == user, EventParticipant.event == event).exists()
 
-#         if event.isPast:
-#             if not volunteerExists:
-#                 eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
-#                 EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
-
 def unattendedRequiredEvents(program, user):
 
     # Check for events that are prerequisite for program
