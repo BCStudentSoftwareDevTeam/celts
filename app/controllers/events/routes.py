@@ -47,7 +47,7 @@ def signinEvent():
     bnumber = request.form["bNumber"]
     
     # Correct query
-    programid= Event.select(Event.program_id). where(Event.id == eventid)
+    programid= Event.select(Event.program). where(Event.id == eventid)
 
     if not bnumber: # Avoids string index out of range error
         return "", 500

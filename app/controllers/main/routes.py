@@ -42,10 +42,9 @@ def redirectToLogout():
 def landingPage():
     managerProgramDict = getManagerProgramDict(g.current_user)
 
-    
-    programsWithEvents = list(Event.select(Event.program_id).where(Event.term == g.current_term).distinct()) # check before submitting with Anderson
-    
-    programsWithEventsList = [program.program_id for program in programsWithEvents]
+
+    programsWithEvents = list(Event.select(Event.program).where(Event.term == g.current_term).distinct())
+    programsWithEventsList = [program.program for program in programsWithEvents]
 
     return render_template("/main/landingPage.html", managerProgramDict = managerProgramDict,
                                                      term = g.current_term,

@@ -30,6 +30,8 @@ def getEvents(program_id=None):
     else:
         return Event.select()
 
+    #   return (Event.select().where(Event.program = program))              (this is for the if statement.)
+
 def deleteEvent(eventId):
     """
     Deletes an event, if it is a recurring event, rename all following events
@@ -162,6 +164,10 @@ def saveEventToDb(newEventData):
             # Create or update the event
             if isNewEvent:
                 eventRecord = Event.create(**eventData)
+
+                # if program in newEventData:
+                    # Event.insert(program = newEventData[program]).where(Event.id == eventRecord)
+                    # ?????????????
             else:
                 eventRecord = Event.get_by_id(newEventData['id'])
                 Event.update(**eventData).where(Event.id == eventRecord).execute()

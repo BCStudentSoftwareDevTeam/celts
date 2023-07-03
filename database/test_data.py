@@ -479,7 +479,7 @@ events = [
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
-        "program_id": 1
+        "program": 1
         
     },
     {
@@ -495,7 +495,7 @@ events = [
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
-        "program_id": 1
+        "program": 1
         
     },
     {
@@ -511,7 +511,7 @@ events = [
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
-        "program_id": 3
+        "program": 3
     },
     {
         "id": 4,
@@ -526,7 +526,7 @@ events = [
         "endDate": datetime.strptime("2021 6 25","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
-        "program_id": 2
+        "program": 2
     },
     {
         "id": 5,
@@ -541,7 +541,7 @@ events = [
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
-        "program_id": 2
+        "program": 2
     },
     {
         "id": 6,
@@ -556,7 +556,7 @@ events = [
         "endDate": datetime.strptime("2021 9 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
-        "program_id": 3
+        "program": 3
     },
     {
         "id": 7,
@@ -571,7 +571,7 @@ events = [
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
-        "program_id": 1
+        "program": 1
     },
     {
         "id": 8,
@@ -586,7 +586,7 @@ events = [
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
-        "program_id": 2
+        "program": 2
     },
     {
         "id": 9,
@@ -601,7 +601,7 @@ events = [
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
-        "program_id": 2
+        "program": 2
 
     },
     {
@@ -617,7 +617,7 @@ events = [
         "endDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
-        "program_id": 3
+        "program": 3
     },
     {
         "id": 11,
@@ -646,7 +646,7 @@ events = [
         "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
         "contactName": "testName",
-        "program_id": 3
+        "program": 3
     },
     {
         "id": 13,

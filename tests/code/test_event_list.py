@@ -23,7 +23,7 @@ def training_events():
                              isTraining = True,
                              startDate = "2021-12-12",
                              endDate = "2021-12-13",
-                             program_id = 2)
+                             program = 2)
 
     yield testEvent
     testEvent.delete_instance(testEvent)
@@ -39,7 +39,7 @@ def special_bonner():
                                location = "moon",
                                startDate = "2021-12-12",
                                endDate = "2021-12-13",
-                               program_id = 5)
+                               program = 5)
 
 
     yield bonnerEvent
@@ -64,7 +64,7 @@ def special_otherEvents():
 @pytest.mark.integration
 def test_studentled_events(training_events):
     studentLed = training_events
-    allStudentLedProgram = {studentLed.program_id: [studentLed]}
+    allStudentLedProgram = {studentLed.program: [studentLed]}
     assert allStudentLedProgram == getStudentLedEvents(2)
 
 @pytest.mark.integration
@@ -99,7 +99,7 @@ def test_training_events(training_events):
                                           isTraining = True,
                                           startDate = "1919-12-13",
                                           endDate = "1919-12-14",
-                                          program_id = testBonnerProgram.id)
+                                          program = testBonnerProgram.id)
        
         testNotBonnerTraining = Event.create(name = "Bonner Test Training",
                                              term = testTerm,
@@ -110,7 +110,7 @@ def test_training_events(training_events):
                                              isTraining = True,
                                              startDate = "1919-12-12",
                                              endDate = "1919-12-13",
-                                             program_id = testNotBonnerProgram.id)
+                                             program = testNotBonnerProgram.id)
    
 
         userFaculty = User.create(username = "TestNotBonner",
