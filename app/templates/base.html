@@ -101,6 +101,26 @@
 {% block scripts %}
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/quagga/dist/quagga.min.js"></script>
+  <script>
+    Quagga.init({
+    inputStream : {
+      name : "Live",
+      type : "LiveStream",
+      target: document.querySelector('#yourElement')    // Or '#yourElement' (optional)
+    },
+    decoder : {
+      readers : ["code_128_reader"]
+    }
+  }, function(err) {
+      if (err) {
+          console.log(err);
+          return
+      }
+      console.log("Initialization finished. Ready to start");
+      Quagga.start();
+  });
+  </script>
   <script src="{{url_for('static', filename='js/bootstrap.bundle.min.js') }}?u={{lastStaticUpdate}}" type="text/javascript"></script>
   <script src="{{url_for('static', filename='js/base.js') }}?u={{lastStaticUpdate}}" type="text/javascript"></script>
 {% endblock %}
