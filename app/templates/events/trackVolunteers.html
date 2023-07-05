@@ -63,7 +63,7 @@
   </div>
 </div>
 <form method="post">
-  <label class='d-none' id="eventPost">{{eventLength}}</label>
+  <label class='d-none'>{{eventLength}}</label>
   <input class="form-control" id="eventID" name="event" value="{{event.id}}" type='hidden'>
   <table class="table" id="trackVolunteerstable">
     <thead>
@@ -236,7 +236,7 @@
     <div class="modal-content">
       <div class="modal-header">
         {% set modalTitle = "Add Volunteer to Waitlist" if rsvpFull else("Add Volunteer RSVP" if rsvpNeeded else "Add Volunteer") %}
-        <h5 class="modal-title" id="ModalLabel">{{modalTitle}}</h5>
+        <h5 class="modal-title">{{modalTitle}}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
