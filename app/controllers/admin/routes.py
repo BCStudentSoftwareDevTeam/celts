@@ -10,8 +10,8 @@ from app.models.program import Program
 from app.models.event import Event
 from app.models.user import User
 from app.models.eventTemplate import EventTemplate
-from app.models.adminLogs import AdminLogs
-from app.models.eventRsvpLogs import EventRsvpLogs
+from app.models.adminLog import AdminLog
+from app.models.eventRsvpLog import EventRsvpLog
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.bonnerCohort import BonnerCohort
 from app.models.certification import Certification
@@ -145,7 +145,7 @@ def rsvpLogDisplay(eventId):
     eventData['program'] = event.singleProgram
     isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
     if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager):
-        allLogs = EventRsvpLogs.select(EventRsvpLogs, User).join(User).where(EventRsvpLogs.event_id == eventId).order_by(EventRsvpLogs.createdOn.desc())
+        allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
         return render_template("/events/rsvpLog.html",
                                 event = event,
                                 eventData = eventData,
@@ -314,7 +314,7 @@ def addParticipants():
 @admin_bp.route('/adminLogs', methods = ['GET', 'POST'])
 def adminLogs():
     if g.current_user.isCeltsAdmin:
-        allLogs = AdminLogs.select(AdminLogs, User).join(User).order_by(AdminLogs.createdOn.desc())
+        allLogs = AdminLog.select(AdminLog, User).join(User).order_by(AdminLog.createdOn.desc())
         return render_template("/admin/adminLogs.html",
                                 allLogs = allLogs)
     else:
