@@ -85,6 +85,7 @@ def addPersonToEvent(user, event):
         rsvpExists = checkUserRsvp(user, event)
         if event.isPast:
             if not volunteerExists:
+                # We duplicate these two lines in addBnumberAsParticipant
                 eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
                 EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
         else:
