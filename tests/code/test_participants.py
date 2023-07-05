@@ -13,7 +13,7 @@ from app.models.program import Program
 from app.models.eventParticipant import EventParticipant
 from app.models.programEvent import ProgramEvent
 from app.logic.volunteers import getEventLengthInHours, updateEventParticipants
-from app.logic.participants import unattendedRequiredEvents, sendUserData, getEventParticipants, trainedParticipants, getUserParticipatedTrainingEvents, checkUserRsvp, checkUserVolunteer, addPersonToEvent
+from app.logic.participants import unattendedRequiredEvents, addBnumberAsParticipant, getEventParticipants, trainedParticipants, getUserParticipatedTrainingEvents, checkUserRsvp, checkUserVolunteer, addPersonToEvent
 from app.models.eventRsvp import EventRsvp
 
 @pytest.mark.integration
@@ -269,17 +269,17 @@ def test_unattendedRequiredEvents():
     assert unattendedEvents == ['Empty Bowls Spring Event 1']
 
 @pytest.mark.integration
-def test_sendUserData():
+def test_addBnumberAsParticipant():
     # Tests the Kiosk
     # user is banned
     with mainDB.atomic() as transaction:
-        signedInUser, userStatus = sendUserData("B00739736", 2, 1)
+        signedInUser, userStatus = addBnumberAsParticipant("B00739736", 2)
         assert userStatus == "banned"
 
 
         # user is already signed in
-        signedInUser, userStatus = sendUserData("B00751360", 2, 1)
-        assert userStatus == "already in"
+        signedInUser, userStatus = addBnumberAsParticipant("B00751360", 2)
+        assert userStatus == "already signed in"
 
         # user is eligible but the user is not in EventParticipant and EventRsvp
         signedInUser = User.get(User.bnumber=="B00759117")
@@ -287,7 +287,7 @@ def test_sendUserData():
             EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
             EventRsvp.get(EventRsvp.user==signedInUser, EventRsvp.event==2)
 
-            signedInUser, userStatus = sendUserData("B00759117", 2, 1)
+            signedInUser, userStatus = addBnumberAsParticipant("B00759117", 2)
             assert userStatus == "success"
 
             participant = EventParticipant.select().where(EventParticipant.event==2, EventParticipant.user==signedInUser)
