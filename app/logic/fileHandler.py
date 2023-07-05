@@ -32,7 +32,6 @@ class FileHandler:
             # tries to create the full path of the files location and passes if
             # the directories already exist or there is no attachment
             filePath=(os.path.join(self.path, newfilename))
-            print("this is the filePath, updated", filePath)
         except AttributeError:  # will pass if there is no attachment to save
             pass
         except FileExistsError:
