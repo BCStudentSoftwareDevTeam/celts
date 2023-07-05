@@ -20,7 +20,7 @@ def getOtherEventsTranscript(username):
                     .join(Program, JOIN.LEFT_OUTER).switch(Event)
                     .join(Term)
                     .where(EventParticipant.user==username,
-                    Event.program_id == None)
+                    Event.program == None)
                     .group_by(Event.term)
                   )
 
@@ -37,15 +37,15 @@ def getProgramTranscript(username):
         .select(Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
         .join(EventParticipant)
         .where(EventParticipant.user == username)
-        .group_by(Event.program_id, Event.term)
+        .group_by(Event.program, Event.term)
         .order_by(Event.term)
         .having(fn.SUM(EventParticipant.hoursEarned > 0)))
     transcriptData = {}
     for program in programData:
-        if program.program_id in transcriptData:
-            transcriptData[program.program_id].append([program.term.description, program.hoursEarned])
+        if program.program in transcriptData:
+            transcriptData[program.program].append([program.term.description, program.hoursEarned])
         else:
-            transcriptData[program.program_id] = [[program.term.description, program.hoursEarned]]
+            transcriptData[program.program] = [[program.term.description, program.hoursEarned]]
     return transcriptData
 
 def getAllEventTranscript(username):

@@ -70,11 +70,7 @@ class EmailHandler:
         """ Fetches all the programs of a particular event """
         # Non-student-led programs have "Unknown" as their id
         if program_id == 'Unknown' or program_id is None:
-            
-            programEvents = Event.select(Event.program_id).where(Event.id==self.event.id)
-            
-            
-            return [program.program_id for program in programEvents.objects()] 
+            return self.event.program
         else:
             return [Program.get_by_id(program_id)]
 

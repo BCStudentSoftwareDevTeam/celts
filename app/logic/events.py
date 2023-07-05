@@ -21,17 +21,6 @@ from app.logic.utils import format24HourTime
 from app.logic.fileHandler import FileHandler
 from app.logic.certification import updateCertRequirementForEvent
 
-def getEvents(program_id=None):
-
-    if program_id:
-        Program.get_by_id(program_id) # raises an exception if program doesn't exist
-        return (Event.select(Event)
-                     .where(Event.program_id == program_id).distinct())
-    else:
-        return Event.select()
-
-    #   return (Event.select().where(Event.program = program))              (this is for the if statement.)
-
 def deleteEvent(eventId):
     """
     Deletes an event, if it is a recurring event, rename all following events
@@ -55,7 +44,7 @@ def deleteEvent(eventId):
                     newEventName = recurringEvent.name
                     eventDeleted = True
 
-        program = event.singleProgram
+        program = event.program
 
         if program:
             createLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
@@ -158,7 +147,8 @@ def saveEventToDb(newEventData):
                     "rsvpLimit": newEventData['rsvpLimit'],
                     "endDate": eventInstance['date'],
                     "contactEmail": newEventData['contactEmail'],
-                    "contactName": newEventData['contactName']
+                    "contactName": newEventData['contactName'],
+                    "program" : newEventData['program']
             }
 
             # Create or update the event
@@ -190,7 +180,7 @@ def getStudentLedEvents(term):
     programs = {}
 
     for event in studentLedEvents:
-        programs.setdefault(event.program_id, []).append(event)
+        programs.setdefault(event.program, []).append(event)
 
     return programs
 
@@ -239,7 +229,7 @@ def getOtherEvents(term):
                             .where(Event.term == term,
                                    Event.isTraining == False,
                                    Event.isAllVolunteerTraining == False,
-                                   ((Event.program_id == None) |
+                                   ((Event.program == None) |
                                    ((Program.isStudentLed == False) &
                                    (Program.isBonnerScholars == False))))
                             .order_by(Event.startDate, Event.timeStart, Event.id)
@@ -258,15 +248,15 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now(), program=None):
     """
 
     events =  (Event.select().distinct()
-                    .join(ProgramBan, JOIN.LEFT_OUTER, on=((ProgramBan.program == Event.program_id) & (ProgramBan.user == user)))
-                    .join(Interest, JOIN.LEFT_OUTER, on=(Event.program_id == Interest.program))
+                    .join(ProgramBan, JOIN.LEFT_OUTER, on=((ProgramBan.program == Event.program) & (ProgramBan.user == user)))
+                    .join(Interest, JOIN.LEFT_OUTER, on=(Event.program == Interest.program))
                     .join(EventRsvp, JOIN.LEFT_OUTER, on=(Event.id == EventRsvp.event))
                     .where(Event.startDate >= asOf,
                           (Interest.user == user) | (EventRsvp.user == user),
                           ProgramBan.user.is_null(True) | (ProgramBan.endDate < asOf)))
 
     if program:
-        events = events.where(Event.program_id == program)
+        events = events.where(Event.program == program)
 
     events = events.order_by(Event.startDate, Event.name)
 

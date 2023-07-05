@@ -14,7 +14,7 @@ from app.models.term import Term
 
 def volunteerHoursByProgram():
     query = ((Program.select(Program.programName, fn.SUM(EventParticipant.hoursEarned).alias('sum'))
-                     .join(EventParticipant, on=(Event.program_id == EventParticipant.event))
+                     .join(EventParticipant, on=(Event.program== EventParticipant.event))
                      .group_by(Program.programName)
                      .order_by(Program.programName)))
 
@@ -49,11 +49,11 @@ def repeatVolunteersPerProgram():
     # Get people who participated in events more than once (individual program)
     repeatPerProgramQuery = (EventParticipant.select(fn.CONCAT(User.firstName, " ", User.lastName),Program.programName.alias("programName"),fn.Count(EventParticipant.event_id).alias('event_count'))
                                              .join(Event, on=(EventParticipant.event_id ==Event.id))
-                                             .join(Program, on=(Event.program_id == Program.id))
+                                             .join(Program, on=(Event.program == Program.id))
                                              .join(User, on=(User.username == EventParticipant.user_id))
-                                             .group_by(User.firstName, User.lastName, Event.program_id)
+                                             .group_by(User.firstName, User.lastName, Event.program)
                                              .having(fn.Count(EventParticipant.event_id) > 1)
-                                             .order_by(Event.program_id, User.lastName ))
+                                             .order_by(Event.program, User.lastName ))
         
     return repeatPerProgramQuery.tuples()
 
@@ -80,9 +80,9 @@ def getRetentionRate():
     return  retentionDict
 
 def termParticipation(termDescription):
-    participationQuery = (Event.select(Event.program_id, EventParticipant.user_id.alias('participant'), Program.programName.alias("progName"))
+    participationQuery = (Event.select(Event.program, EventParticipant.user_id.alias('participant'), Program.programName.alias("progName"))
                                       .join(EventParticipant, JOIN.LEFT_OUTER, on=(Event.id == EventParticipant.event))
-                                      .join(Program, on=(Program.id == Event.program_id))
+                                      .join(Program, on=(Program.id == Event.program))
                                       .join(Event, on=(Event.event_id == Event.id))
                                       .join(Term, on=(Event.term_id == Term.id) )
                                       .where(Term.description == termDescription ))

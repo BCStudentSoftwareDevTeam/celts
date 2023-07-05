@@ -23,7 +23,7 @@ def trainedParticipants(programID, currentTerm):
     otherTrainingEvents = (Event.select(Event.id)
             .join(Term)
             .where(
-                Event.program_id == programID,
+                Event.program == programID,
                 (Event.isTraining | Event.isAllVolunteerTraining),
                 Event.term.academicYear == academicYear)
             )
@@ -95,7 +95,7 @@ def unattendedRequiredEvents(program, user):
 
     # Check for events that are prerequisite for program
     requiredEvents = (Event.select(Event)
-                           .where(Event.isTraining == True, Event.program_id == program))
+                           .where(Event.isTraining == True, Event.program == program))
 
     if requiredEvents:
         attendedRequiredEventsList = []
@@ -129,7 +129,7 @@ def getUserParticipatedTrainingEvents(program, user, currentTerm):
                                .join(EventParticipant, JOIN.LEFT_OUTER).switch()
                                .join(Term)
                                .where((Event.isTraining | Event.isAllVolunteerTraining),
-                                      Event.program_id== program,
+                                      Event.program== program,
                                       Event.term.academicYear == academicYear,
                                       EventParticipant.user.is_null(True) | (EventParticipant.user == user)))
 
