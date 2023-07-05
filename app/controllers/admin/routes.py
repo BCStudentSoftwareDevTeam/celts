@@ -158,12 +158,16 @@ def eventDisplay(eventId):
     eventData = model_to_dict(event, recurse=False)
     associatedAttachments = AttachmentUpload.select().where(AttachmentUpload.event == event)
     filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)
+
     image = None
     picurestype = [".jpeg", ".png", ".gif", ".jpg", ".svg", ".webp"]
     for attachment in associatedAttachments:
         for extension in picurestype:
             if (attachment.fileName.endswith(extension)):
-                image = filepaths[attachment.fileName[0]]
+                image = filepaths[attachment.fileName][0]
+        if image:
+            break
+
                 
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()

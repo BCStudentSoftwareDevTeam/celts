@@ -10,13 +10,15 @@
 {% endblock %}
 
 {% block app_content %}
-   
+   {{super()}}
     <div class="container-fluid">
             <div class="row">
+                {% if image %}
                 <div class="col-md-6">
-                    <img src="{{image}}" class="img-fluid">
-                    <!-- Image should be about 1280px x 836px (Width x Height)-->
+                        <img src="{{image}}" class="img-fluid">
+                        <!-- Image should be about 1280px x 836px (Width x Height)-->
                 </div>
+                {% endif %}
                 <div class="col-md-6">
                     <br>
                     <div>   
@@ -24,7 +26,7 @@
                         <h3 id="title">{{event_title}}</h3>
                     </div>
                     <br>
-                    <div style="display: flex; align-items: top;">
+                    <div class="d-flex align-top">
                         <i class="bi bi-calendar" style="margin-right: 10px;"></i>
                         {% set event_date = eventData.startDate %}
                         <div>
@@ -33,7 +35,7 @@
                         </div>    
                     </div>
                     <br>
-                    <div style="display: flex; align-items: top;">
+                    <div class="d-flex align-top">
                         <i class="bi bi-clock" style="margin-right: 10px;"></i>
                         {% set event_time = eventData.timeStart %}
                         <div>
@@ -42,7 +44,7 @@
                         </div>    
                     </div>
                     <br>
-                    <div style="display: flex; align-items: top;">
+                    <div class="d-flex align-top">
                         <i class="bi bi-geo" style="margin-right: 10px;"></i>
                         {% set event_location = eventData.location %}
                         <div>
@@ -53,7 +55,14 @@
                     <br>
                     <div>
                         {% if eventData.isRsvpRequired %}
-                            <button type="submit" class="btn btn-primary" value="{{eventData.id}}" id="rsvpBtn">RSVP</button>
+                            {% if (not isPastEvent) and (not isNewEvent)%}
+                                {% if userHasRSVPed %}
+                                    <button type="submit" class="btn btn-danger" value="{{eventData.id}}" id="removeRsvpBtn">Remove RSVP</button>
+                                {% elif eventData.isRsvpRequired %}
+                                    {% set buttonName = "Join Waitlist" if (eventData.rsvpLimit) and (currentEventRsvpAmount[eventData.id] >= eventData.rsvpLimit) else "RSVP" %}
+                                    <button type="submit" class="btn btn-primary" value="{{eventData.id}}" id="rsvpBtn">{{buttonName}}</button>
+                                {% endif %}
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>
@@ -103,13 +112,18 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="col-sm">
+            <div class="row">
+                <div class="col-md-6">
                     {% if eventData.contactName and eventData.contactEmail %}
-                        <br><h3>Contact Information:</h3>
+                        <h3>Contact Information:</h3>
                         <div>{{eventData.contactName}} - {{eventData.contactEmail}}</div>
+                    {% endif %}
+                    <br>
+                </div>
+                <div class="col-md-6">
+                    {% if programTrainings %}
                         {% if program or not eventData.isAllVolunteerTraining %}
-                            <h3><br>Program Trainings</h3>
+                            <h3>Program Trainings:</h3>
                             {% for training, participated in programTrainings.items() %}
                                 {% if g.current_user.isCeltsAdmin %}
                                 <p>{{training}}</p>
@@ -123,7 +137,8 @@
                             {% endfor %}
                         {% endif %}
                     {% endif %}
-                            
+
+                
                     {% if filepaths.keys()|count %}
                     <div class="form-group mb-5">
                         <label class="mb-2" for= "eventAttachments"><strong>Event Attachments</strong></label>
@@ -138,24 +153,16 @@
                         </table>
                     </div>
                     {% endif %}
-                    <div class="rsvp-btn text-center">
-                        {% if (not isPastEvent) and (not isNewEvent)%}
-                            {% if userHasRSVPed %}
-                                <button type="submit" class="btn btn-danger" value="{{eventData.id}}" id="removeRsvpBtn">Remove RSVP</button>
-                            {% elif eventData.isRsvpRequired %}
-                                {% set buttonName = "Join Waitlist" if (eventData.rsvpLimit) and (currentEventRsvpAmount[eventData.id] >= eventData.rsvpLimit) else "RSVP" %}
-                                <button type="submit" class="btn btn-primary" value="{{eventData.id}}" id="rsvpBtn">{{buttonName}}</button>
-                            {% endif %}
-                        {% endif %}
-                        
-                        {% if g.current_user.isCeltsAdmin or isProgramManager %}
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-eye-fill me-2"></i>
-                            <span class="me-2">Unique Viewers:</span>
-                            <span id="viewCount">{{pageViewsCount}}</span>
-                        </div>
-                        {% endif %}
+                </div>
+                <div class="rsvp-btn text-center">              
+                    {% if g.current_user.isCeltsAdmin or isProgramManager %}
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-eye-fill me-2"></i>
+                        <span class="me-2">Unique Viewers:</span>
+                        <span id="viewCount">{{pageViewsCount}}</span>
                     </div>
+                    {% endif %}
                 </div>
             </div>
+        </div>
 {% endblock %}
