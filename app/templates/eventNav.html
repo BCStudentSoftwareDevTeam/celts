@@ -43,6 +43,9 @@
                     <a class="nav-link {{ 'active' if tabName == 'dietary' }}" href="/event/{{eventData['id']}}/dietary_restrictions" role="tab" aria-selected="{{ 'true' if tabName == 'dietary' else 'false'}}">Dietary Restrictions</a>
                 </li>
                 {% endif %}
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link {{ 'active' if tabName == 'rsvpLog' }}" href="/event/{{eventData['id']}}/rsvp" role="tab" aria-selected="{{ 'true' if tabName == 'rsvpLog' else 'false'}}">RSVP Log</a>
+                </li>
             </ul>
         </div>
 
