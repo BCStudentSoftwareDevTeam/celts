@@ -14,7 +14,7 @@ from app.logic.events import getPreviousRecurringEventData, getEventRsvpCountsFo
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.programManager import ProgramManager
-from app.logic.adminLogs import createLog
+from app.logic.createLogs import createAdminLog, createRsvpLog
 from app.logic.users import getBannedUsers, isBannedFromEvent
 
 
@@ -148,8 +148,13 @@ def addVolunteer(eventId):
 
 @admin_bp.route('/rsvpFromWaitlist/<username>/<eventId>', methods = ['POST'])
 def rsvpFromWaitlist(username, eventId):
-    if g.current_user.isAdmin: 
-        (EventRsvp.update(rsvpWaitlist = False).where(EventRsvp.event_id == eventId, EventRsvp.user_id == username)).execute()
+    event = Event.get_by_id(eventId)
+    isProgramManager = g.current_user.isProgramManagerFor(event.singleProgram)
+    if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager): 
+        waitlistUsers = EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.user == username, EventRsvp.event==eventId).execute()
+        if (waitlistUsers):
+            createRsvpLog(event.id, f"Moved {waitlistUsers[0].user.fullName} from waitlist to RSVP.")
+            (EventRsvp.update(rsvpWaitlist = False).where(EventRsvp.event_id == eventId, EventRsvp.user_id == username)).execute()
     return ""
 
 @admin_bp.route('/addVolunteersToEvent/<username>/<eventId>/isBanned', methods = ['GET'])
@@ -160,7 +165,14 @@ def isVolunteerBanned(username, eventId):
 def removeVolunteerFromEvent():
     user = request.form.get('username')
     eventID = request.form.get('eventId')
-    if g.current_user.isAdmin: 
+    if g.current_user.isAdmin:
+        userInRsvpTable = EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.user == username, EventRsvp.event==eventID).execute()
+        if (userInRsvpTable):
+            rsvpUser = userInRsvpTable[0]
+            if rsvpUser.rsvpWaitlist:
+                createRsvpLog(eventID, f"Removed {rsvpUser.user.fullName} from waitlist.")
+            else:
+                createRsvpLog(eventID, f"Removed {rsvpUser.user.fullName} from RSVP list.")
         (EventParticipant.delete().where(EventParticipant.user==user, EventParticipant.event==eventID)).execute()
         (EventRsvp.delete().where(EventRsvp.user==user, EventRsvp.event==eventID)).execute()
         flash("Volunteer successfully removed", "success")
@@ -192,7 +204,7 @@ def updateProgramManager():
         username = User.get(User.username == data["user_name"])
         program = Program.get_by_id(data['program_id'])
         setProgramManager(data["user_name"], data["program_id"], data["action"])
-        createLog(f'{username.firstName} has been {data["action"]}ed as a Program Manager for {program.programName}')
+        createAdminLog(f'{username.firstName} has been {data["action"]}ed as a Program Manager for {program.programName}')
         return ""
     else:
         abort(403)
