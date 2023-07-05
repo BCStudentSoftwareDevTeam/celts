@@ -47,6 +47,10 @@ def test_saveFiles():
         # test saving 2nd event in a hypothetical recurring series
         handledEventFileRecurring.saveFiles(saveOriginalFile = Event.get_by_id(15))
         assert AttachmentUpload.select().where(AttachmentUpload.event_id == 16, AttachmentUpload.fileName == '15/eventfile.pdf').exists()
+        assert 1 == AttachmentUpload.select().where(AttachmentUpload.event_id == 16, AttachmentUpload.fileName == '15/eventfile.pdf').count()
+        
+        handledEventFileRecurring.saveFiles(saveOriginalFile = Event.get_by_id(15))
+        assert 1 == AttachmentUpload.select().where(AttachmentUpload.event_id == 16, AttachmentUpload.fileName == '15/eventfile.pdf').count()
 
         # test course
         handledCourseFile.saveFiles()
@@ -54,6 +58,7 @@ def test_saveFiles():
 
         # removes saved paths from file directory
         os.remove(handledEventFile.getFileFullPath('15/eventfile.pdf'))
+        os.remove(handledCourseFile.getFileFullPath('coursefile.pdf'))
         
         transaction.rollback()
 
@@ -106,6 +111,7 @@ def test_deleteFile():
         # delete events
         path = handledEventFile.getFileFullPath("15/eventfile.pdf")
 
+        # if multiple event attachments reference the same path, the path is only removed after the final referencing instance has been deleted.
         firstevent = AttachmentUpload.get(AttachmentUpload.event == 15)
         handledEventFile.deleteFile(firstevent.id)
         assert os.path.exists(path)==True

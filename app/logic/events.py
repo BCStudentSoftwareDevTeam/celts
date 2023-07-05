@@ -114,9 +114,6 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
     try:
         events = saveEventToDb(newEventData)
         if attachmentFiles:
-            # print("################################")
-            # print([e for e in events])
-            # print("################################")
             for event in events:
                 addFile= FileHandler(attachmentFiles, eventId=event.id)
                 addFile.saveFiles(saveOriginalFile=events[0])
