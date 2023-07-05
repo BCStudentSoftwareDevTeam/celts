@@ -131,28 +131,26 @@
         <div class="modal fade float-start col" id="modalSubmit" >
           <div class="modal-dialog custom-modal-size">
             <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title"> Upload Excel File</h5>
-            </div>
-            <div class="modal-body d-flex justify-content-between align-items-center">
-              <div class="input-group">
-                <div>
-                  <form method="POST" action="/uploadCourseParticipant" enctype="multipart/form-data">
-                    <label for="addCourseParticipant" class="form-label"></label>
-                    <input class="form-control" type="file" id="addCourseParticipant" name="addCourseParticipant">
-                    <input class="form-control btn btn-primary" type="submit"></input>
-                  </form>
+              <div class="modal-header">
+                <h5 class="modal-title"> Upload Excel File</h5>
+              </div>
+              <form method="POST" action="/uploadCourseParticipant" enctype="multipart/form-data">
+                <div class="modal-body d-flex justify-content-between align-items-center">
+                  <div class="input-group">
+                    <div>
+                        <label for="addCourseParticipant" class="form-label"></label>
+                        <input class="form-control" type="file" id="addCourseParticipant" name="addCourseParticipant"></input>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <br>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
-
-              </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button> 
+                  <label for="addCourseParticipant" class="form-label"></label>
+                  <input class="form-control btn btn-primary position-relative" style = 'width: 75px' type="submit"></input>
+                </div>
+              </form>
             </div>
           </div>
-        </div>
        {% endif %}
         </div>
       </div>
