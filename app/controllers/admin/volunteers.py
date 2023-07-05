@@ -62,14 +62,15 @@ def trackVolunteersPage(eventID):
     # The two unique lists:
     # eventParticipantData & eventRsvpData
 
-    participantsAndRsvp = (eventParticipantData + eventRsvpData)
-    eventVolunteerData = []
-    volunteerUser = []
-    for volunteer in participantsAndRsvp: #NOTE, the rows represented in eventVolunteerData are not from the same table.
-        if volunteer.user not in volunteerUser:
-            eventVolunteerData.append(volunteer)
-            volunteerUser.append(volunteer.user)
+    if event.isPast:
+        eventVolunteerData = eventParticipantData
+        eventNonAttendedData = eventRsvpData
+    else:
+        eventVolunteerData = (eventParticipantData + eventRsvpData)
+        eventNonAttendedData = []
+   
     eventWaitlistData = [volunteer for volunteer in eventVolunteerData if volunteer.rsvpWaitlist]
+
     eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
     recurringEventID = event.recurringId # query Event Table to get recurringId using Event ID.
@@ -81,9 +82,9 @@ def trackVolunteersPage(eventID):
     return render_template("/events/trackVolunteers.html",
                             eventData = eventData,
                             eventVolunteerData = eventVolunteerData,
-                            eventParticipants = eventParticipants,
-                            eventParticipantData = eventParticipantData,
-                            eventRsvpData = eventRsvpData,
+                            eventParticipants = [],
+                            eventNonAttendedData = eventNonAttendedData,
+                            eventWaitlistData = eventWaitlistData,
                             eventLength = eventLengthInHours,
                             event = event,
                             recurringEventID = recurringEventID,
@@ -91,7 +92,6 @@ def trackVolunteersPage(eventID):
                             recurringVolunteers = recurringVolunteers,
                             bannedUsers = bannedUsers,
                             trainedParticipantsList = trainedParticipantsList,
-                            eventWaitlistData = eventWaitlistData,
                             currentRsvpAmount = currentRsvpAmount)
 
 
