@@ -39,26 +39,32 @@ def trainedParticipants(programID, currentTerm):
     attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(allTrainingEvents), eventTrainingDataList)))
     return attendedTraining
 
-def sendUserData(bnumber, eventId, programid):
+def addBnumberAsParticipant(bnumber, eventId):
     """Accepts scan input and signs in the user. If user exists or is already
     signed in will return user and login status"""
     try:
-        signedInUser = User.get(User.bnumber == bnumber)
+        kioskUser = User.get(User.bnumber == bnumber)
     except Exception as e:
         print(e)
         return None, "does not exist"
+
     event = Event.get_by_id(eventId)
-    if not isEligibleForProgram(programid, signedInUser):
+    if not isEligibleForProgram(event.singleProgram, kioskUser):
         userStatus = "banned"
-    elif ((EventParticipant.select(EventParticipant.user)
-       .where(EventParticipant.user == signedInUser, EventParticipant.event==eventId))
-       .exists()):
-        userStatus = "already in"
+
+    elif checkUserVolunteer(kioskUser, event):
+        userStatus = "already signed in"
+
     else:
         userStatus = "success"
+        # We are not using addPersonToEvent to do this because 
+        # that function checks if the event is in the past, but
+        # someone could start signing people up via the kiosk
+        # before an event has started
         totalHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
-        EventParticipant.create (user=signedInUser, event=eventId, hoursEarned=totalHours)
-    return signedInUser, userStatus
+        EventParticipant.create (user=kioskUser, event=event, hoursEarned=totalHours)
+
+    return kioskUser, userStatus
 
 def checkUserRsvp(user,  event):
     return EventRsvp.select().where(EventRsvp.user==user, EventRsvp.event == event).exists()
