@@ -61,15 +61,19 @@ def trackVolunteersPage(eventID):
     eventRsvpData = [rsvpDatum for rsvpDatum in eventRsvpData if rsvpDatum.user not in eventParticipantUsers]
     # The two unique lists:
     # eventParticipantData & eventRsvpData
+    # eventRsvpData has all Rsvpd users that did not also participate. The eventParticipantData has all users that participated.
 
-    if event.isPast:
+    if event.isPast:  # We need to keep the lists separate to put them into two different tables, one for attended and one for liars
         eventVolunteerData = eventParticipantData
         eventNonAttendedData = eventRsvpData
-    else:
-        eventVolunteerData = (eventParticipantData + eventRsvpData)
+        eventWaitlistData = []
+    else:  # Otherwise we need to merge them into a single table for all people who are going to the event, reguardless of if they have attended or not (which should be impossible naturally for an event in the future)
+        eventWaitlistData = [volunteer for volunteer in eventParticipantData + eventRsvpData if volunteer.rsvpWaitlist]
+        eventVolunteerData = [volunteer for volunteer in eventParticipantData + eventRsvpData if volunteer not in eventWaitlistData]
         eventNonAttendedData = []
+        
    
-    eventWaitlistData = [volunteer for volunteer in eventVolunteerData if volunteer.rsvpWaitlist]
+    
 
     eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
@@ -173,7 +177,7 @@ def removeVolunteerFromEvent():
     user = request.form.get('username')
     eventID = request.form.get('eventId')
     if g.current_user.isAdmin:
-        userInRsvpTable = EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.user == username, EventRsvp.event==eventID).execute()
+        userInRsvpTable = EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.user == user, EventRsvp.event==eventID).execute()
         if (userInRsvpTable):
             rsvpUser = userInRsvpTable[0]
             if rsvpUser.rsvpWaitlist:
