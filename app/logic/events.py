@@ -18,7 +18,7 @@ from app.models.requirementMatch import RequirementMatch
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.eventViews import EventView
 
-from app.logic.adminLogs import createLog
+from app.logic.createLogs import createAdminLog
 from app.logic.utils import format24HourTime
 from app.logic.fileHandler import FileHandler
 from app.logic.certification import updateCertRequirementForEvent
@@ -58,9 +58,9 @@ def deleteEvent(eventId):
         program = event.singleProgram
 
         if program:
-            createLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+            createAdminLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
         else:
-            createLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+            createAdminLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
 
         event.delete_instance(recursive = True, delete_nullable = True)
 
