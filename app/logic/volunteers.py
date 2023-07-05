@@ -33,33 +33,29 @@ def updateEventParticipants(participantData):
         raise Exception("Event does not exist.") # ???
         return False
 
-    for user in range(1, len(participantData)):
-        if f'username{user}' in participantData:
-            username = participantData[f'username{user}']
-            userObject = User.get_or_none(User.username==username)
-            eventParticipant = EventParticipant.get_or_none(user=userObject, event=participantData['event'])
-            if userObject:
-                try:
-                    if participantData[f'checkbox_{username}']: #if the user is marked as present
-                        hoursEarned = float(participantData['inputHours_'+ username])
-                        if eventParticipant:
-                            ((EventParticipant
-                                .update({EventParticipant.hoursEarned: hoursEarned})
-                                .where(EventParticipant.event==event.id, EventParticipant.user==userObject.username))
-                                .execute())
-                        else:
-                            EventParticipant.create(user=userObject, event=event, hoursEarned=hoursEarned)
-                except (KeyError):
-                    if eventParticipant:
-                        ((EventParticipant.delete()
-                            .where(
-                                EventParticipant.user==userObject.username,
-                                EventParticipant.event==event.id))
-                            .execute())
+
+    for username in participantData.getlist("username"):
+        userObject = User.get_or_none(User.username==username)
+        eventParticipant = EventParticipant.get_or_none(user=userObject, event=participantData['event'])
+        if userObject:
+            if participantData.get(f'checkbox_{username}'): #if the user is marked as present
+                inputHours = participantData.get(f'inputHours_{username}')
+                hoursEarned = float(inputHours) if inputHours else 0
+                if eventParticipant:
+                    ((EventParticipant
+                        .update({EventParticipant.hoursEarned: hoursEarned})
+                        .where(EventParticipant.event==event.id, EventParticipant.user==userObject.username))
+                        .execute())
+                else:
+                    EventParticipant.create(user=userObject, event=event, hoursEarned=hoursEarned)
             else:
-                return False
+                ((EventParticipant.delete()
+                    .where(
+                        EventParticipant.user==userObject.username,
+                        EventParticipant.event==event.id))
+                    .execute())
         else:
-            break
+            return False
     return True
 
 
