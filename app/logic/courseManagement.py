@@ -5,7 +5,7 @@ from app.models import mainDB
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseQuestion import CourseQuestion
 from app.models.courseStatus import CourseStatus
-from app.logic.adminLogs import createLog
+from app.logic.createLogs import createAdminLog
 from app.logic.fileHandler import FileHandler
 from app.models.course import Course
 from app.models.term import Term
@@ -88,7 +88,7 @@ def updateCourse(courseData, attachment=None):
             CourseInstructor.delete().where(CourseInstructor.course == course).execute()
             for instructor in instructorList:
                 CourseInstructor.create(course=course, user=instructor)
-            createLog(f"Saved SLC proposal: {courseData['courseName']}")
+            createAdminLog(f"Saved SLC proposal: {courseData['courseName']}")
             if attachment:
                 addFile= FileHandler(attachment, courseId=course.id)
                 addFile.saveFiles()

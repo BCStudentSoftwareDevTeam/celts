@@ -1,3 +1,4 @@
+from flask import g
 from peewee import fn, JOIN
 from datetime import date
 from app.models.user import User
@@ -10,6 +11,7 @@ from app.models.eventParticipant import EventParticipant
 from app.logic.users import isEligibleForProgram
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.events import getEventRsvpCountsForTerm
+from app.logic.createLogs import createRsvpLog
 
 def trainedParticipants(programID, currentTerm):
     """
@@ -84,6 +86,12 @@ def addPersonToEvent(user, event):
                 currentRsvp = getEventRsvpCountsForTerm(event.term)
                 waitlist = currentRsvp[event.id] >= event.rsvpLimit if event.rsvpLimit is not None else 0
                 EventRsvp.create(user = user, event = event, rsvpWaitlist = waitlist)
+
+                targetList = "the waitlist" if waitlist else "the RSVP list"
+                if g.current_user.username == user.username:
+                    createRsvpLog(event.id, f"{user.fullName} joined {targetList}.")
+                else:
+                    createRsvpLog(event.id, f"Added {user.fullName} to {targetList}.")
 
         if volunteerExists or rsvpExists:
             return "already in"
