@@ -166,12 +166,13 @@ def removeVolunteerFromEvent():
     user = request.form.get('username')
     eventID = request.form.get('eventId')
     if g.current_user.isAdmin:
-        rsvpUsers = EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.user == username, EventRsvp.event==eventID).execute()
-        if (rsvpUsers):
-            if rsvpUsers[0].rsvpWaitlist:
-                createRsvpLog(eventID, f"Removed {rsvpUsers[0].user.fullName} from waitlist.")
+        userInRsvpTable = EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.user == username, EventRsvp.event==eventID).execute()
+        if (userInRsvpTable):
+            rsvpUser = userInRsvpTable[0]
+            if rsvpUser.rsvpWaitlist:
+                createRsvpLog(eventID, f"Removed {rsvpUser.user.fullName} from waitlist.")
             else:
-                createRsvpLog(eventID, f"Removed {rsvpUsers[0].user.fullName} from RSVP list.")
+                createRsvpLog(eventID, f"Removed {rsvpUser.user.fullName} from RSVP list.")
         (EventParticipant.delete().where(EventParticipant.user==user, EventParticipant.event==eventID)).execute()
         (EventRsvp.delete().where(EventRsvp.user==user, EventRsvp.event==eventID)).execute()
         flash("Volunteer successfully removed", "success")
