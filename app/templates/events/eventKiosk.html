@@ -12,35 +12,6 @@
 {% endblock %}
 
 {% block app_content %}
-  
-<script>
-  function triggerCamera() {
-    // JavaScript code for triggering the camera
-    // Get the result container element (problem is that the result container is the textbox in the HTML div below)
-    // var resultContainer = document.getElementById('result');
-    // Check if the browser supports the getUserMedia method
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      // Request permission to access the camera
-      navigator.mediaDevices.getUserMedia({ video: {facingMode: 'environment'} })
-        .then(function(stream) {
-          // Access to the camera is granted, do something with the stream
-          var videoElement = document.createElement('video');
-          videoElement.srcObject = stream;
-          document.body.appendChild(videoElement);
-          
-          // Optional: Play the video stream
-          videoElement.play();
-        })
-        .catch(function(error) {
-          // An error occurred or the user denied permission, handle the error
-          console.log('Unable to access the camera:', error);
-        });
-    } else {
-      // The getUserMedia method is not supported by the browser
-      console.log('getUserMedia is not supported');
-    }
-  }
-</script>
 
   <div>
     <h1 class="my-5" align="center">{{event.name}}</h1>

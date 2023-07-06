@@ -51,6 +51,72 @@ function eventFlasher(flash_message, status){
 
 }
 
+function triggerCamera() {
+  // Find the textbox element by its ID
+  var textboxElement = document.getElementById('submitScannerData');
+  // Check if the browser supports the getUserMedia method
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    // Request permission to access the camera
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, focusMode: 'continuous' })
+      .then(function(stream) {
+        // Access to the camera is granted, do something with the stream
+        var videoElement = document.createElement('video');
+        videoElement.srcObject = stream;
+        var parentElement = textboxElement.parentNode;
+      
+        // Append the video element to the parent element, right after the camera button
+        parentElement.insertBefore(videoElement, cameraButton.nextSibling);
+
+        // Optional: Play the video stream
+        videoElement.play();
+        // Disable the camera button after displaying the video
+        cameraButton.disabled = true;
+
+        // Configure QuaggaJS to detect barcodes
+        Quagga.init({
+          inputStream: {
+            name: "Live",
+            type: "LiveStream",
+            target: videoElement
+          },
+          decoder: {
+            readers: ['ean_reader', 'code_128_reader', 'ean_8_reader', 'code_39_reader', 'code_39_vin_reader', 'codabar_reader', 'upc_reader', 'upc_e_reader', 'code_93_reader']
+          }
+        }, function(err) {
+          if (err) {
+            console.log('Error initializing Quagga:', err);
+            return;
+          }
+          console.log('Quagga initialized successfully');
+          
+          // Start barcode detection
+          Quagga.start();
+        });
+
+        // Listen for barcode detection events
+        Quagga.onDetected(function(result) {
+          // Handle the detected barcode result
+          console.log('Barcode detected:', result.codeResult.code);
+          
+          // Stop barcode detection
+          Quagga.stop();
+          
+          // Extract the barcode value and do something with it
+          var barcodeValue = result.codeResult.code;
+          textboxElement.value = barcodeValue;
+          // Handle the barcode value as needed
+        });
+      })
+      .catch(function(error) {
+        // An error occurred or the user denied permission, handle the error
+        console.log('Unable to access the camera:', error);
+      });
+  } else {
+    // The getUserMedia method is not supported by the browser
+    console.log('getUserMedia is not supported');
+  }
+}
+
 function submitData(hitEnter = false){
   if(hitEnter){
     $("#flasher").remove()
