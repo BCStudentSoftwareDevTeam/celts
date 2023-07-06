@@ -35,7 +35,7 @@ class Event(baseModel):
 
 #anderson ask to comment out
     # @property
-    # def singleProgram(self):
+    # def program(self):
 
     #     if self._spCache == "Empty":
     #         # countPE = list(Event.select( Event, Program).join(Program).execute())

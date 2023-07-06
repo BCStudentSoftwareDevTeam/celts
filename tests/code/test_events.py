@@ -34,16 +34,16 @@ from app.logic.utils import format24HourTime
 
 #     # # single program
 #     # event = Event.get_by_id(12)
-#     # assert event.singleProgram == Program.get_by_id(3)
+#     # assert event.program == Program.get_by_id(3)
 
 #     # no program
 #     event = Event.get_by_id(13)
-#     assert event.singleProgram == None
+#     assert event.program == None
 #     assert event.noProgram
 
 #     # multi program
 #     event = Event.get_by_id(14)
-#     assert event.singleProgram == None
+#     assert event.program == None
 #     assert not event.noProgram
 
 #     # program/event passed

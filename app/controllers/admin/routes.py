@@ -74,7 +74,7 @@ def createEvent(templateid, programid=None):
     eventData = template.templateData
 
     if program:
-        eventData["program"] = program
+        eventData['program'] = program
 
     if request.method == "GET":
         eventData['contactName'] = "CELTS Admin"
@@ -127,7 +127,9 @@ def createEvent(templateid, programid=None):
     if 'program' in eventData and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
         bonnerCohorts = getBonnerCohorts(limit=5)
-
+    print('hhhhhhhhhhh', eventData)
+    print(eventData['program'].id)
+    print(eventData['program'].programName)
     return render_template(f"/admin/{template.templateFile}",
             template = template,
             eventData = eventData,
@@ -181,7 +183,7 @@ def eventDisplay(eventId):
 
     # make sure our data is the same regardless of GET and POST
     preprocessEventData(eventData)
-    eventData['program'] = event.singleProgram
+    eventData['program'] = event.program
     futureTerms = selectSurroundingTerms(g.current_term)
     userHasRSVPed = checkUserRsvp(g.current_user, event)
     filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)

@@ -275,7 +275,7 @@ def volunteerRegister():
     for the event they have clicked register for.
     """
     event = Event.get_by_id(request.form['id'])
-    program = event.singleProgram
+    program = event.program
     user = g.current_user
 
     isAdded = checkUserRsvp(user, event)
