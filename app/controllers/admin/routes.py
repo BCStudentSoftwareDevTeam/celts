@@ -336,6 +336,51 @@ def addCourseFile():
     
     userName = None
     
+    listParticipant= []
+    listCourse= []
+    listSemester=[]
+    previewParticipants= {}
+    for row in excelSheet.iter_rows():
+        cellVal = row[0].value
+
+        if re.search(termReg, str(cellVal)):
+           previewTerm= cellVal
+
+            # term, tCreated = Term.get_or_create(description=cellVal, year=year, academicYear=academicYear, isSummer=isSummer, isCurrentTerm=False)
+          
+
+        elif re.search(courseReg, str(cellVal)):
+            previewCourse= cellVal
+            previewParticipants[(previewCourse, previewTerm)] = []
+            print(previewParticipants)
+            print("????????????????????????????????????????????????????????????????????????????????????????")
+
+        
+        elif re.search(bnumberReg, str(cellVal)):           
+            previewStudent = row[1].value
+            previewParticipants[(previewCourse, previewTerm)].append(previewStudent)
+            print(previewParticipants)
+            print("..................................................................................")
+
+
+        
+
+
+        
+            #second way---> user = User.get(User.bnumber == cellVal)
+            
+
+            # CourseParticipant.get_or_create(user = user, defaults = {
+            #     "course" : courseGet,
+            #     "hoursEarned" : 2
+            # })
+
+    
+    os.remove(filePath)
+    
+    return redirect(url_for("main.getAllCourseInstructors"))
+
+
     
 
     for row in excelSheet.iter_rows():
