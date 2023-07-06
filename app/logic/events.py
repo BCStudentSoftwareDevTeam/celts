@@ -477,3 +477,6 @@ def getEventRsvpCountsForTerm(term):
     amountAsDict = {event.id: event.count for event in amount}
 
     return amountAsDict
+
+def getEventRsvpCount(eventId):
+    return len(EventRsvp.select().where(EventRsvp.event_id == eventId))

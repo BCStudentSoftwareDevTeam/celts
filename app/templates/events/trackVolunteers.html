@@ -34,7 +34,7 @@
       <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add Volunteers</a>
       <a class="btn btn-warning" role="button" href= "/event/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
     </div>
-    {% if (not event.isPast) and (event.isRsvpRequired) and (event.rsvpLimit is not none) and (currentRsvpAmount[event.id] >= event.rsvpLimit) %}
+    {% if (not event.isPast) and (event.isRsvpRequired) and (event.rsvpLimit is not none) and (currentRsvpAmount >= event.rsvpLimit) %}
     <div class="col-6 text-end">
       <p class="text-danger">RSVP Limit has been reached! Future RSVPs will be added to the Waitlist!</p>
     </div>
@@ -47,7 +47,7 @@
   <div class="accordion" id="table-accordion">
     <div class="accordion-item">
       <h2 class="accordion-header">
-        <button class="accordion-button fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#attended-collapse" aria-expanded="true" aria-controls="attended-collapse">
+        <button class="accordion-button fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#attended-collapse" aria-expanded="true" aria-controls="attended-collapse" {{'disabled' if not eventNonAttendedData and not eventWaitlistData else ''}}>
           RSVP'd and Attended
         </button>
       </h2>
@@ -322,7 +322,7 @@
 </form>
 <!-- Modal -->
 {% set rsvpNeeded  = (event.isRsvpRequired) and (not event.isPast) %}
-{% set rsvpFull = rsvpNeeded and (event.rsvpLimit is not none) and (currentRsvpAmount[event.id] >= event.rsvpLimit) %}
+{% set rsvpFull = rsvpNeeded and (event.rsvpLimit is not none) and (currentRsvpAmount >= event.rsvpLimit) %}
 <div class="modal fade float-start" id="addVolunteerModal" tabindex="-1" aria-labelledby="addVolunteerModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
