@@ -54,7 +54,7 @@
       <div id="attended-collapse" class="accordion-collapse show" data-bs-parent="#table-accordion">
         <div class="accordion-body">
           <!-- Attending Table -->
-          <table class="table" id="trackVolunteerstable" data-entryCount="{{ eventVolunteerData|length }}">
+          <table class="table" id="trackVolunteerstable" data-entry-count="{{ eventVolunteerData|length }}">
             <thead>
               <tr>
                 {% if (not event.isPast) and (event.isRsvpRequired)  %}
@@ -154,8 +154,8 @@
         </div>
       </div>
     </div>
-      <!-- Waitlist Table -->
     {% if event.isRsvpRequired and event.rsvpLimit and not event.isPast and eventWaitlistData %}
+    <!-- Waitlist Table -->
       <div class="accordion-item">
         <h2 class="accordion-header">
           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#waitlisted-collapse">
@@ -165,7 +165,7 @@
         <div class="accordion-collapse collapse" id="waitlisted-collapse" data-bs-parent="#table-accordion">
           <div class="accordion-body">
             <h4>RSVP Waitlist</h4>
-            <table class="table" id="trackWaitlistTable">
+            <table class="table" id="trackWaitlistTable" data-entry-count="{{ eventWaitlistData|length }}">
               <thead>
                 <tr>
                   <th></th>
@@ -220,8 +220,8 @@
         </div>
       </div>
     {% endif %}
-    <!-- Non Attended Table -->
     {% if event.isPast and eventNonAttendedData %}
+    <!-- Non Attended Table -->
     <div class="accordion-item">
       <h2 class="accordion-header">
         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#non-attended-collapse">
@@ -230,7 +230,7 @@
       </h2>
       <div class="accordion-collapse collapse" id="non-attended-collapse" data-bs-parent="#table-accordion">
         <div class="accordion-body">
-          <table class="table" id="trackVolunteerstable" data-entryCount="{{ eventVolunteerData|length }}">
+          <table class="table" id="nonAttendedTable" data-entry-count="{{ eventNonAttendedData|length }}">
             <thead>
               <tr>
                 <th>Name</th>
@@ -242,7 +242,7 @@
                 <th class="noSort">Remove Volunteer</th>
               </tr>
             </thead>
-            <tbody class="align-middle" id="nonAttendedTable">
+            <tbody class="align-middle" id="nonAttendedTableBody">
               {% for participant in eventNonAttendedData %}
                 <tr>
                   <td>
