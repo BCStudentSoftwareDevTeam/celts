@@ -135,18 +135,27 @@
                 <h5 class="modal-title"> Upload Excel File</h5>
               </div>
               <form method="POST" action="/uploadCourseParticipant" enctype="multipart/form-data">
-                <div class="modal-body d-flex justify-content-between align-items-center">
+                <div class="modal-body">
                   <div class="input-group">
-                    <div>
-                        <label for="addCourseParticipant" class="form-label"></label>
-                        <input class="form-control" type="file" id="addCourseParticipant" name="addCourseParticipant"></input>
+                    <div class="row">
+                      <div class="col">  
+
+                      </div>
+                      <div class="col-9">
+                          <label for="addCourseParticipant" class="form-label"></label>
+                          <input class="form-control" type="file" id="addCourseParticipant" name="addCourseParticipant" accept=".xlsx"></input>
+                      </div>
+                      <div class="col-3">
+
+                      </div>
                     </div>
                   </div>
                 </div>
+                <br>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button> 
                   <label for="addCourseParticipant" class="form-label"></label>
-                  <input class="form-control btn btn-primary position-relative" style = 'width: 75px' type="submit"></input>
+                  <input class="form-control btn btn-primary position-relative" id="submitParticipant" disabled style = 'width: 75px' type="submit"></input>
                 </div>
               </form>
             </div>

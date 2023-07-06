@@ -51,17 +51,28 @@ $(document).ready( function () {
 
 
 $("#modalCourseParticipant").on("click", function () {
-
-  console.log("Hi Steve")
-
   $("#modalSubmit").modal("toggle");
-
 });
 
 
-// $("#addNoteButton").click(function () {
-//   $("#noteModal").modal("toggle");
-// });
+const fileInput= $("#addCourseParticipant")
+fileInput.on('change', handleFileSelect)
+
+function handleFileSelect(event){
+  const selectedFile = event.target.files[0];
+
+  if (selectedFile){
+    console.log("My file has been selected", selectedFile.name);
+    $("#submitParticipant").prop('disabled', false)
+  }
+}
+
+
+$(document).ready(function(){
+  $('.btn-secondary[data-bs-dismiss="modal"]').click(function(){
+    location.reload();
+  })
+  })
 
 
 
