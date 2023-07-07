@@ -1,5 +1,6 @@
 import pytest
 from flask import g
+from werkzeug.datastructures import ImmutableMultiDict
 from app import app
 from app.logic.volunteers import getEventLengthInHours, updateEventParticipants, addUserBackgroundCheck
 from app.models.eventParticipant import EventParticipant
@@ -55,13 +56,13 @@ def test_getEventLengthInHours():
 @pytest.mark.integration
 def test_updateEventParticipants():
     # event does not exist
-    participantData = {'inputHours_agliullovak':100, 'checkbox_agliullovak':"on", 'event':100, 'username1': 'agliullovak'}
+    participantData = ImmutableMultiDict({'inputHours_agliullovak':100, 'checkbox_agliullovak':"on", 'event':100, 'username': 'agliullovak'})
     with pytest.raises(Exception, match="Event does not exist."):
         volunteerTableUpdate = updateEventParticipants(participantData)
         assert volunteerTableUpdate == False
 
     # update record if user is marked as present and user record exists in event participant table
-    participantData = {'inputHours_agliullovak':100, 'checkbox_agliullovak':"on", 'event':3, 'username1': 'agliullovak'}
+    participantData = ImmutableMultiDict({'inputHours_agliullovak':100, 'checkbox_agliullovak':"on", 'event':3, 'username': 'agliullovak'})
     volunteerTableUpdate = updateEventParticipants(participantData)
     assert volunteerTableUpdate == True
 
@@ -72,7 +73,7 @@ def test_updateEventParticipants():
     with pytest.raises(DoesNotExist):
         EventParticipant.get(EventParticipant.user=="partont", EventParticipant.event==3)
 
-    participantData = {'inputHours_partont':100, 'checkbox_partont':"on", 'event':3, 'username1': 'partont'}
+    participantData = ImmutableMultiDict({'inputHours_partont':100, 'checkbox_partont':"on", 'event':3, 'username': 'partont'})
     volunteerTableUpdate = updateEventParticipants(participantData)
     assert volunteerTableUpdate == True
 
@@ -84,7 +85,7 @@ def test_updateEventParticipants():
         .execute())
 
     # delete user from event participant table if user is marked absent and they have a record in the table
-    participantData = {'event':3, 'username1': 'agliullovak'}
+    participantData = ImmutableMultiDict({'event':3, 'username': 'agliullovak'})
     volunteerTableUpdate = updateEventParticipants(participantData)
     assert volunteerTableUpdate == True
 

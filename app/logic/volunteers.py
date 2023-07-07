@@ -26,7 +26,7 @@ def updateEventParticipants(participantData):
     """
     Create new entry in event participant table if user does not exist. Otherwise, updates the record.
 
-    param: participantData- a dictionary that contains data from every row of the page along with the associated username.
+    param: participantData- an ImmutableMultiDict that contains data from every row of the page along with the associated username.
     """
     event = Event.get_or_none(Event.id==participantData['event'])
     if not event:
