@@ -24,7 +24,7 @@ from app.models.programManager import ProgramManager
 from app.models.emailTemplate import EmailTemplate
 from app.models.backgroundCheck import BackgroundCheck
 # from app.models.backgroundCheckType import BackgroundCheckType
-from app.models.adminLogs import AdminLogs
+from app.models.adminLog import AdminLog
 from app.models.emailLog import EmailLog
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.certification import Certification
@@ -691,6 +691,21 @@ events = [
         "contactEmail": "testEmail",
         "contactName": "testName"
     },
+    {
+        #Event being created for recurrance events
+        "id": 16,
+        "term": 4,
+        "name": "Training Event",
+        "description": "Test for training",
+        "isTraining": True,
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+        "location": "Alumni Building",
+        "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
+        "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
+        "contactEmail": "testEmail",
+        "contactName": "testName"
+    },
 ]
 Event.insert_many(events).on_conflict_replace().execute()
 
@@ -1257,7 +1272,7 @@ logs = [
    "logContent": "Created Adoption Event."
    }
 ]
-AdminLogs.insert_many(logs).on_conflict_replace().execute()
+AdminLog.insert_many(logs).on_conflict_replace().execute()
 
 files = [
     {

@@ -109,10 +109,11 @@ var participantCount = $('#trackVolunteerstable').attr('data-entryCount');
     let username =  this.id;
     let eventId = $('#eventID').val()
     $.ajax({
-      url: `/removeVolunteerFromEvent/${username}/${eventId}`,
+      url: '/removeVolunteerFromEvent',
       type: "POST",
+      data: {username: username, eventId: eventId},
       success: function(response) {
-        location.reload();
+         location.reload();
       },
       error: function(request, status, error) {
           $(".removeVolunteer").prop("disabled", false)

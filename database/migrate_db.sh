@@ -25,7 +25,7 @@ pem add app.models.programManager.ProgramManager
 pem add app.models.emailLog.EmailLog
 pem add app.models.backgroundCheck.BackgroundCheck
 pem add app.models.backgroundCheckType.BackgroundCheckType
-pem add app.models.adminLogs.AdminLogs
+pem add app.models.adminLog.AdminLog
 pem add app.models.attachmentUpload.AttachmentUpload
 pem add app.models.bonnerCohort.BonnerCohort
 pem add app.models.certification.Certification
@@ -33,6 +33,7 @@ pem add app.models.certificationAttempt.CertificationAttempt
 pem add app.models.certificationRequirement.CertificationRequirement
 pem add app.models.requirementMatch.RequirementMatch
 pem add app.models.eventViews.EventView
+pem add app.models.eventRsvpLog.EventRsvpLog
 
 pem watch
 pem migrate

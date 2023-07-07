@@ -245,7 +245,7 @@ def test_getStudentManagerForEvent():
         #Test data for creating an event
         testEvent = [
         {
-        "id": 16,
+        "id": 17,
         "term": 2,
         "name": "testEvent",
         "description": "testEvent",
