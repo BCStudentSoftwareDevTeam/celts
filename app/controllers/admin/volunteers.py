@@ -59,15 +59,12 @@ def trackVolunteersPage(eventID):
     eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
     eventParticipantUsers = [participantDatum.user for participantDatum in eventParticipantData]
     eventRsvpData = [rsvpDatum for rsvpDatum in eventRsvpData if rsvpDatum.user not in eventParticipantUsers]
-    # The two unique lists:
-    # eventParticipantData & eventRsvpData
-    # eventRsvpData has all Rsvpd users that did not also participate. The eventParticipantData has all users that participated.
 
-    if event.isPast:  # We need to keep the lists separate to put them into two different tables, one for attended and one for liars
+    if event.isPast:
         eventVolunteerData = eventParticipantData
         eventNonAttendedData = eventRsvpData
         eventWaitlistData = []
-    else:  # Otherwise we need to merge them into a single table for all people who are going to the event, reguardless of if they have attended or not (which should be impossible naturally for an event in the future)
+    else:
         eventWaitlistData = [volunteer for volunteer in eventParticipantData + eventRsvpData if volunteer.rsvpWaitlist and event.isRsvpRequired]
         eventVolunteerData = [volunteer for volunteer in eventParticipantData + eventRsvpData if volunteer not in eventWaitlistData]
         eventNonAttendedData = []
