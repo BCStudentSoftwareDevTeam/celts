@@ -93,7 +93,6 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
     # automatically changed from "" to 0
     if eventData["rsvpLimit"] == "":
         eventData["rsvpLimit"] = None
-    print("lalala", eventData['program'])
     newEventData = preprocessEventData(eventData)
     isValid, validationErrorMessage = validateNewEventData(newEventData)
 
@@ -113,11 +112,13 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
         return False, e
 
 def saveEventToDb(newEventData):
-    print("this is the data", newEventData)
     if not newEventData.get('valid', False):
         raise Exception("Unvalidated data passed to saveEventToDb")
 
     isNewEvent = ('id' not in newEventData)
+
+    if not isNewEvent:
+        newEventData['program'] = (Event.get_by_id(newEventData['id'])).program
 
     eventsToCreate = []
     recurringSeriesId = None
@@ -129,7 +130,7 @@ def saveEventToDb(newEventData):
                                 'date':newEventData['startDate'],
                                 "week":1})
     eventRecords = []
-    
+
     for eventInstance in eventsToCreate:
         with mainDB.atomic():
            
@@ -150,13 +151,12 @@ def saveEventToDb(newEventData):
                     "rsvpLimit": newEventData['rsvpLimit'],
                     "endDate": eventInstance['date'],
                     "contactEmail": newEventData['contactEmail'],
-                    "contactName": newEventData['contactName'],
-                    "program" : newEventData['program']
+                    "contactName": newEventData['contactName']
                 }
-            print("aaaaaaa", newEventData['contactName'])
 
             # Create or update the event
             if isNewEvent:
+                eventData['program'] = newEventData['program']
                 eventRecord = Event.create(**eventData)
             else:
                 eventRecord = Event.get_by_id(newEventData['id'])

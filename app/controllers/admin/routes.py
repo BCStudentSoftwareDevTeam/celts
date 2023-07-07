@@ -177,7 +177,6 @@ def eventDisplay(eventId):
 
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
-        print("here is eventData", eventData)
         try:
             savedEvents, validationErrorMessage = attemptSaveEvent(eventData, getFilesFromRequest(request))
 
