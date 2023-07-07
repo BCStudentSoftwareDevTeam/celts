@@ -21,14 +21,12 @@ from app.models.term import Term
 from app.logic.emailHandler import EmailHandler
 
 @pytest.mark.integration
-@pytest.mark.skip(reason="Authentication issues")
+# @pytest.mark.skip(reason="Authentication issues")
 def test_send_email_using_modal():
     pass # For now we are skipping the email tests
     with app.test_request_context():
 
-        app.config.update(
-            MAIL_SUPRESS_SEND = True
-        )
+
         with mainDB.atomic() as transaction:
             # Case 1: Send email with subject and body -- as if email is sent using a modal
             url_domain = urlparse(request.base_url).netloc
@@ -52,7 +50,7 @@ def test_send_email_using_modal():
                 transaction.rollback()
 
 @pytest.mark.integration
-@pytest.mark.skip(reason="Authentication issues")
+# @pytest.mark.skip(reason="Authentication issues")
 def test_sending_automated_email():
     with app.test_request_context():
         with mainDB.atomic() as transaction:
@@ -76,7 +74,7 @@ def test_sending_automated_email():
                 transaction.rollback()
 
 @pytest.mark.integration
-@pytest.mark.skip(reason="Authentication issues")
+# @pytest.mark.skip(reason="Authentication issues")
 def test_update_email_template():
     with app.test_request_context():
         with mainDB.atomic() as transaction:
@@ -98,7 +96,7 @@ def test_update_email_template():
             transaction.rollback()
 
 @pytest.mark.integration
-@pytest.mark.skip(reason="Authentication issues")
+# @pytest.mark.skip(reason="Authentication issues")
 def test_email_log():
     with app.test_request_context():
         with mainDB.atomic() as transaction:
@@ -106,10 +104,9 @@ def test_email_log():
             raw_form_data = {"templateIdentifier": "Test",
                 "programID":"1",
                 "eventID":"1",
-                "recipientsCategory": "RSVP'd",
-                "sender": "ramsayb2"}
+                "recipientsCategory": "RSVP'd"}
 
-            email = EmailHandler(raw_form_data, url_domain, "neillz")
+            email = EmailHandler(raw_form_data, url_domain, "ramsayb2")
 
             with email.mail.record_messages() as outbox:
                 email_sent = email.send_email()

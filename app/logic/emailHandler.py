@@ -222,7 +222,7 @@ class EmailHandler:
                         # [recipient.email],
                         [self.override_all_mail],
                         email_body,
-                        file_attachment = self.getAttachmentFullPath(), #needs to be modified later
+                        attachments = self.getAttachmentFullPath(), #needs to be modified later
                         reply_to = defaultEmailInfo["replyTo"],
                         sender = (defaultEmailInfo["senderName"], defaultEmailInfo["replyTo"])
                     ))
