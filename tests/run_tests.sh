@@ -12,4 +12,6 @@ L_CYAN='\033[1;36m'
 NC='\033[0m' # No Color
 
 echo -e "\n${GREEN}Running tests${NC}, with args ($L_CYAN$FLAGS$NC)"
-python3 -m pytest $FLAGS -m "unit or integration"
+#python3 -m pytest $FLAGS -m "unit or integration"
+coverage run -m pytest $FLAGS -m "unit or integration" 
+
