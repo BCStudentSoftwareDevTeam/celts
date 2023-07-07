@@ -96,7 +96,7 @@
                         name="username"
                         id="{{participant.user.username}}"
                         value="{{participant.user}}" />
-                      {{participant.user.firstName}} {{participant.user.lastName}}
+                      <a href="/profile/{{participant.user}}">{{participant.user.firstName}} {{participant.user.lastName}}</a>
                       {% if participant.user in bannedUsers %}
                         <a href="#" data-toggle="tooltip" data-placement="top" title="User is banned from this program.">
                           <span class="bi bi-x-circle-fill text-danger"></span>
@@ -203,7 +203,7 @@
                   {% endif %}
                   <td>
                     <input class="form-control" type='hidden' name="username" id="{{participant.user.username}}" value="{{participant.user}}" />
-                    {{participant.user.firstName}} {{participant.user.lastName}}
+                    <a href="/profile/{{participant.user}}">{{participant.user.firstName}} {{participant.user.lastName}}</a>
                     {% if participant.user in bannedUsers %}
                       <a href="#" data-toggle="tooltip" data-placement="top" title="User is banned from this program.">
                         <span class="bi bi-x-circle-fill text-danger"></span>
@@ -268,7 +268,7 @@
                       name="username"
                       id="{{participant.user.username}}"
                       value="{{participant.user}}" />
-                    {{participant.user.firstName}} {{participant.user.lastName}}
+                    <a href="/profile/{{participant.user}}">{{participant.user.firstName}} {{participant.user.lastName}}</a>
                     {% if participant.user in bannedUsers %}
                     <a href="#" data-toggle="tooltip" data-placement="top" title="User is banned from this program.">
                       <span class="bi bi-x-circle-fill text-danger"></span>
