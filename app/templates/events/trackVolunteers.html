@@ -63,10 +63,12 @@
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone Number</th>
-                <th class="noSort">Completed Trainings</th>
+                
                 {% if event.isPast %}
                   <th class="noSort">Total Hours</th>
                   <th class="noSort">Attended</th>
+                {% else %}
+                  <th class="noSort">Completed Trainings</th>
                 {% endif %}
                 <th class="noSort">Remove Volunteer</th>
               </tr>
@@ -97,13 +99,6 @@
                     </td>
                     <td>{{participant.user.email}}</td>
                     <td>{{participant.user.phoneNumber}}</td>
-                    <td style="text-align:center">
-                    {% if participant.user.username not in trainedParticipantsList %}
-                      <span class="bi bi-x-lg" aria-label="Did not complete all trainings."></span>
-                    {% else %}
-                      <span class="bi bi-check-lg" aria-label="Completed all trainings."></span>
-                    {% endif %}
-                    </td>
                     {% if event.isPast %}
                       <td>
                         <input
@@ -130,7 +125,15 @@
                             checked
                           {% endif %} />
                       </td>
-                    {% endif %} {# end hiding the hours and attended inputs #}
+                    {% else %} {# end hiding the hours and attended inputs #}
+                      <td style="text-align:center">
+                        {% if participant.user.username not in trainedParticipantsList %}
+                          <span class="bi bi-x-lg" aria-label="Did not complete all trainings."></span>
+                        {% else %}
+                          <span class="bi bi-check-lg" aria-label="Completed all trainings."></span>
+                        {% endif %}
+                      </td>
+                    {% endif %}
                     <td style="text-align:center">
                       <button
                         type="button"
@@ -243,7 +246,6 @@
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone Number</th>
-                <th class="noSort">Completed Trainings</th>
                 <th class="noSort">Total Hours</th>
                 <th class="noSort">Attended</th>
                 <th class="noSort">Remove Volunteer</th>
@@ -268,13 +270,6 @@
                   </td>
                   <td>{{participant.user.email}}</td>
                   <td>{{participant.user.phoneNumber}}</td>
-                  <td style="text-align:center">
-                    {% if participant.user.username not in trainedParticipantsList %}
-                      <span class="bi bi-x-lg" aria-label="Did not complete all trainings."></span>
-                    {% else %}
-                      <span class="bi bi-check-lg" aria-label="Completed all trainings."></span>
-                    {% endif %}
-                  </td>
                   <td>
                   <input
                     class="form-control number-only form-control input-sm"
