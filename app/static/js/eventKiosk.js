@@ -56,8 +56,28 @@ function triggerCamera() {
   var textboxElement = document.getElementById('submitScannerData');
   // Check if the browser supports the getUserMedia method
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    let videoWidth;
+    let videoHeight;
+
+    // Determine the video width and height based on the device's viewport
+    if (window.innerWidth >= 640 && window.innerHeight >= 320) {
+      // If the viewport is large enough, use the ideal width and height
+      videoWidth = 640;
+      videoHeight = 320;
+    } else {
+      // If the viewport is smaller, use reduced width and height
+      videoWidth = window.innerWidth;
+      videoHeight = videoWidth / 1.5;
+    }
+    const scanSound = document.getElementById('scanSound');
+    const videoConstraints = {
+      width: { ideal: videoWidth },
+      height: { ideal: videoHeight },
+      facingMode: 'environment', // Use the rear-facing camera if available
+      focusMode: 'continuous'
+    };
     // Request permission to access the camera
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, focusMode: 'continuous' })
+    navigator.mediaDevices.getUserMedia({ video: videoConstraints })
       .then(function(stream) {
         // Access to the camera is granted, do something with the stream
         var videoElement = document.createElement('video');
@@ -93,8 +113,13 @@ function triggerCamera() {
           Quagga.start();
         });
 
+        function playScanSound() {
+          scanSound.play();
+        }
+
         // Listen for barcode detection events
         Quagga.onDetected(function(result) {
+          playScanSound();
           // Handle the detected barcode result
           console.log('Barcode detected:', result.codeResult.code);
           
