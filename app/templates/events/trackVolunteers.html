@@ -48,7 +48,13 @@
     <div class="accordion-item">
       <h2 class="accordion-header">
         <button class="accordion-button fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#attended-collapse" aria-expanded="true" aria-controls="attended-collapse" {{'disabled' if not eventNonAttendedData and not eventWaitlistData else ''}}>
-          RSVP'd and Attended
+          {% if event.isPast %}
+          Attended Volunteers
+          {% elif event.isRsvpRequired %}
+          RSVP'd Volunteers
+          {% else %}
+          Volunteers
+          {% endif %}
         </button>
       </h2>
       <div id="attended-collapse" class="accordion-collapse show">

@@ -26,6 +26,9 @@ $(document).ready(function() {
         else{
           $('#' + tableID + '_paginate').show();
         }
+      },
+      "language": {
+        "emptyTable": "No Records Found"
       }
     });
     let participantCount = $('#' + tableID).data('entry-count');
