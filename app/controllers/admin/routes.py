@@ -35,6 +35,7 @@ from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
 from openpyxl import load_workbook
+from app.logic.serviceLearningCoursesData import parseUploadedFile, storePreviewParticipants, retrievePreviewParticipants
 
 
 
@@ -326,6 +327,10 @@ def addCourseFile():
     fileData.save(filePath)
     excelData = load_workbook(filename=filePath)
     excelSheet = excelData.active
+ 
+    print("///////////////////////////////////")
+    print(parseUploadedFile(excelSheet))
+    print("///////////////////////////////////////")
 
     termReg = r"\b[a-zA-Z]{3,}\s\d{4}\b" # regular expression to check cells content
     courseReg = r"\b[A-Z]{2,4}\s\d{3}\b"
@@ -333,55 +338,6 @@ def addCourseFile():
 
     isSummer = False
     courseGet = None
-    
-    userName = None
-    
-    listParticipant= []
-    listCourse= []
-    listSemester=[]
-    previewParticipants= {}
-    for row in excelSheet.iter_rows():
-        cellVal = row[0].value
-
-        if re.search(termReg, str(cellVal)):
-           previewTerm= cellVal
-
-            # term, tCreated = Term.get_or_create(description=cellVal, year=year, academicYear=academicYear, isSummer=isSummer, isCurrentTerm=False)
-          
-
-        elif re.search(courseReg, str(cellVal)):
-            previewCourse= cellVal
-            previewParticipants[(previewCourse, previewTerm)] = []
-            print(previewParticipants)
-            print("????????????????????????????????????????????????????????????????????????????????????????")
-
-        
-        elif re.search(bnumberReg, str(cellVal)):           
-            previewStudent = row[1].value
-            previewParticipants[(previewCourse, previewTerm)].append(previewStudent)
-            print(previewParticipants)
-            print("..................................................................................")
-
-
-        
-
-
-        
-            #second way---> user = User.get(User.bnumber == cellVal)
-            
-
-            # CourseParticipant.get_or_create(user = user, defaults = {
-            #     "course" : courseGet,
-            #     "hoursEarned" : 2
-            # })
-
-    
-    os.remove(filePath)
-    
-    return redirect(url_for("main.getAllCourseInstructors"))
-
-
-    
 
     for row in excelSheet.iter_rows():
         cellVal = row[0].value

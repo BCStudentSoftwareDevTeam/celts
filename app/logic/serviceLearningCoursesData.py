@@ -12,6 +12,10 @@ from app.models.term import Term
 from app.models import DoesNotExist
 from app.logic.adminLogs import createLog
 from app.logic.fileHandler import FileHandler
+from flask import flash, abort, jsonify, session, send_file
+import re
+import os
+from openpyxl import load_workbook
 
 def getServiceLearningCoursesData(user):
     """Returns dictionary with data used to populate Service-Learning proposal table"""
@@ -90,3 +94,45 @@ def renewProposal(courseID, term):
                                 user=instructor.user)
 
     return newCourse
+
+
+
+
+def parseUploadedFile():
+    filePath = './app/static/files/Test Document 2.xlsx'
+    excelData = load_workbook(filename=filePath)
+    excelSheet = excelData.active
+    termReg = r"\b[a-zA-Z]{3,}\s\d{4}\b" # regular expression to check cells content
+    courseReg = r"\b[A-Z]{2,4}\s\d{3}\b"
+    bnumberReg = r"\b[B]\d{8}\b"
+
+    previewParticipants= {}
+
+    for row in excelSheet.iter_rows():
+        cellVal = row[0].value
+
+        if re.search(termReg, str(cellVal)):
+           previewTerm= cellVal
+
+        elif re.search(courseReg, str(cellVal)):
+            previewCourse= cellVal
+            previewParticipants[(previewCourse, previewTerm)] = []
+
+        elif re.search(bnumberReg, str(cellVal)):           
+            previewStudent = row[1].value
+            previewParticipants[(previewCourse, previewTerm)].append(previewStudent)
+
+    return previewParticipants
+
+
+def storePreviewParticipants(storedData):
+    session['data'] = storedData
+    return "Data is stored in session."
+
+
+def retrievePreviewParticipants():
+    data = session.get('data')
+    return data
+
+
+
