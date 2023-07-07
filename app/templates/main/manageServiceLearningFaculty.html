@@ -5,7 +5,7 @@
   {{super()}}
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
   <script type="module" src="/static/js/manageServiceLearningFaculty.js"></script>
-  <script src="/static/js/courseManagement.js"></script>
+  <script src="/static/js/slcManagement.js"></script>
 {% endblock %}
 
 {% block styles %}
@@ -58,13 +58,16 @@
               <tr>
                 <td>{{course.courseName}}</td>
                 <td>{{ course.instructors }}</td>
-                <td>{{course.status.status}}</td>
                 <td>
-                  <select class="form-select courseData" id="{{course.id}}" onchange='executeCourseAction(this)'>
+                  <a class="status-key text-dark" id="statusKey" href="javascript:void(0);" data-toggle="popover" title="Status" data-content="{{course.status.status}}">{{course.status.status}}</a>
+                </td>
+                <td>
+                  <select class="form-select courseData" id="{{course.id}}" onchange='changeAction(this)'>
                     <option value="---" disabled selected>Select Action</option>
                     <option value="Review">Review</option>
                     <option value="View">View</option>
                     <option value="Edit">Edit</option>
+                    <option value="Print">Print</option>
                 </td>
               </tr>
               {% endfor %}
@@ -90,12 +93,15 @@
               <tr>
                 <td>{{course.courseName}}</td>
                 <td>{{ course.instructors }}</td>
-                <td>{{course.status.status}}</td>
                 <td>
-                  <select class="form-select" id="{{course.id}}" onchange='executeCourseAction(this)'>
+                  <a class="status-key text-dark" id="statusKey" href="javascript:void(0);" data-toggle="popover" title="Status Key" data-content="{{course.status.status}}">{{course.status.status}}</a>
+                </td>
+                <td>
+                  <select class="form-select" id="{{course.id}}" onchange='changeAction(this)'>
                     <option value="---" disabled selected>Select Action</option>
                     <option value="Review">Review</option>
                     <option value="View">View</option>
+                    <option value="Print">Print</option>
                 </td>
               </tr>
               {% endfor %}
@@ -107,11 +113,11 @@
       <div class="col">
         <div class="float-end">
           <form method="GET" action="/serviceLearning/downloadApprovedCourses/{{term.id}}">
-            <button class="btn btn-primary {{downloadAndSend}}" id="downloadApprovedCoursesBtn" value="{{term.id}}">Download File</button>
+            <button class="btn btn-primary {{downloadAndSend}}" id="downloadApprovedCoursesBtn" value="{{term.id}}">Download Course List</button>
           </form>
         </div>
           <div class="float-end">
-            <a  class="btn btn-primary mr {{downloadAndSend}}" href="mailto:{{(';'.join(instructorEmails))}}?subject=Designated Service-Learning Courses: List of recommended courses for {{term.description}}&body=Hello,%0D%0A%0D%0AI’m writing to submit the list of courses recommended for the Service-Learning Course Designation (meeting the ALE requirement) for the upcoming semester; this list is ready to be shared with COGE. Please find the list of courses in the attached document. The proposals have been reviewed and approved by the Service-Learning Faculty Fellow and Director of CELTS (me).%0D%0A%0D%0AIn addition to these courses, all the courses that have received the Permanent Service-Learning Course Designation that will be taught in the upcoming semester should also have the Service-Learning Course Designation.%0D%0A%0D%0AThank you,%0D%0A%0D%0AAshley"> Send Recommendation </a>
+            <a  class="btn btn-primary mr {{downloadAndSend}}" href="mailto:{{(';'.join(instructorEmails))}}?subject=Designated Service-Learning Courses: List of recommended courses for {{term.description}}&body=Hello,%0D%0A%0D%0AI’m writing to submit the list of courses recommended for the Service-Learning Course Designation (meeting the ALE requirement) for the upcoming semester; this list is ready to be shared with COGE. Please find the list of courses in the attached document. The proposals have been reviewed and approved by the Service-Learning Faculty Fellow and Director of CELTS (me).%0D%0A%0D%0AIn addition to these courses, all the courses that have received the Permanent Service-Learning Course Designation that will be taught in the upcoming semester should also have the Service-Learning Course Designation.%0D%0A%0D%0AThank you,%0D%0A%0D%0AAshley" target="_blank"> Send Recommendation </a>
           </div>
       </div>
        {% endif %}
@@ -125,7 +131,7 @@
               {{ instructorEmails.append(instructor.email) or "" }}
             {% endfor %}
             <div>
-              <a  class="btn btn-primary" href="mailto:{{(';'.join(instructorEmails))}}?subject=Renew Course Proposal"> Email All </a>
+              <a  class="btn btn-primary" href="mailto:{{(';'.join(instructorEmails))}}?subject=Renew Course Proposal" target="_blank"> Email All </a>
             </div>
           </div>
         <div class ="container">
@@ -141,7 +147,7 @@
           <tbody id = "facultyTable">
           {% for instructor in courseInstructors%}
               <tr>
-                <td> {{instructor.firstName }} {{instructor.lastName}}</td>
+                <td><a href="/serviceLearning/courseManagement/{{instructor.username}}"> {{instructor.firstName }} {{instructor.lastName}}</a></td>
                 <td>{{(', '.join(courseInstructors[instructor]))}}</td>
               </tr>
           {% endfor %}
