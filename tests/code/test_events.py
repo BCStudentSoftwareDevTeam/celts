@@ -24,7 +24,7 @@ from app.models.note import Note
 from app.logic.events import getEvents, preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
 from app.logic.events import attemptSaveEvent, saveEventToDb, deleteEvent, getParticipatedEventsForUser
 from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser
-from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm
+from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount
 from app.logic.volunteers import addVolunteerToEventRsvp, updateEventParticipants
 from app.logic.participants import addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser
@@ -861,5 +861,40 @@ def test_getEventRsvpCountsForTerm():
 
         limit = getEventRsvpCountsForTerm(Term.get_by_id(2))
         assert limit[eventWithRsvpLimit.id] == 1
+
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_getEventRsvpCount():
+    with mainDB.atomic() as transaction:
+
+        eventWithRsvp = Event.create(name = "Req and Limit",
+                                    term = 2,
+                                    description = "Event that requries RSVP and has an RSVP limit set.",
+                                    timeStart = "6:00 pm",
+                                    timeEnd = "9:00 pm",
+                                    location = "The Moon",
+                                    isRsvpRequired = 1,
+                                    startDate = "2022-12-19",
+                                    endDate = "2022-12-19",
+                                    )
+        user_list = []
+        for i in range(5):
+            user_list.append(User.create(username = f'rsvpUsr{i}',
+                            firstName = f'RSVP{i}',
+                            lastName = f'Test{i}',
+                            bnumber = f'4861687{i}',
+                            email = f'helloThere{i}@berea.edu',
+                            isStudent = True,
+                            ))
+
+        EventRsvp.create(event=Event.get_by_id(1), user=user_list[0])
+
+        rsvpd_user_count = getEventRsvpCount(eventWithRsvp.id)
+        assert rsvpd_user_count == 0
+        for index, user in enumerate(user_list):
+            EventRsvp.create(event=eventWithRsvp, user=user)
+            rsvpd_user_count = getEventRsvpCount(eventWithRsvp.id)
+            assert rsvpd_user_count == (index + 1)
 
         transaction.rollback()

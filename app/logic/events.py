@@ -479,4 +479,7 @@ def getEventRsvpCountsForTerm(term):
     return amountAsDict
 
 def getEventRsvpCount(eventId):
+    """
+        Returns the number of RSVP'd participants for a given eventId.
+    """
     return len(EventRsvp.select().where(EventRsvp.event_id == eventId))
