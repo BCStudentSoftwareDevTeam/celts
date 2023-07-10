@@ -70,6 +70,10 @@
     <tbody>
         {% for event in events %}
           <tr>
+
+            <!-- {% if (not event.isPast) and (not user.isAdmin)%}
+            {% endif %} --> 
+
             {% if type != "bonner" %}
               {% if event.singleProgram%}
                 <td>{{event.singleProgram.programName}}</td>
