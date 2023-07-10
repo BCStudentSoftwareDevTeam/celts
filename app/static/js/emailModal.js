@@ -16,7 +16,7 @@ function retrieveEmailTemplateData() {
   });
 }
 
-function showEmailModal(eventID, programID, selectedTerm, isPastEvent) {
+function showEmailModal(eventID, programID, selectedTerm, isPastEvent, template=null) {
   $(".modal-body #eventID").val(eventID);
   $(".modal-body #programID").val(programID);
   $(".modal-body #selectedTerm").val(selectedTerm);
@@ -32,9 +32,11 @@ function showEmailModal(eventID, programID, selectedTerm, isPastEvent) {
   }
 
   for (let i=0; i < Object.keys(emailTemplateInfo).length; i++) {
-    let option = `<option value='${emailTemplateInfo[i]['purpose']}'>${emailTemplateInfo[i]['subject']}</option>`;
+    let option = `<option class='testing' value='${emailTemplateInfo[i]['purpose']}'>${emailTemplateInfo[i]['subject']}</option>`;
     $('#templateIdentifier').append(option);
   }
+  if (template) $("#templateIdentifier").val(template);
+  replaceEmailBodyAndSubject();
   fetchEmailLogData().then(() => $('#emailModal').modal('show'));
 }
 
