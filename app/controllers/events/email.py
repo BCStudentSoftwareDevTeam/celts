@@ -21,7 +21,7 @@ def retrieveEmailTemplate():
 def fetchEmailLogData(eventId):
     last_email = EmailHandler.retrieve_last_email(eventId)
     if last_email:
-        return {'last_log': "The last email was sent to " + last_email.recipientsCategory + " on " + last_email.dateSent.strftime('%m/%d/%Y') + " by " + last_email.sender.email  + "." , 'last_log2': " Subject: " + last_email.subject}
+        return {'last_log': "The last email was sent to " + last_email.recipientsCategory + " on " + last_email.dateSent.strftime('%m/%d/%Y') + " by " + last_email.sender  + "." , 'last_log2': " Subject: " + last_email.subject}
     else:
         return {'exists': False}
 
