@@ -63,7 +63,7 @@
         value="{{course.courseAbbreviation}}"
         type="text"
         />
-      <label for="credit">Credit</label>
+      <label for="credit" class="pt-3">Credit</label>
       <input
         class="form-control"
         id="credit"
@@ -72,6 +72,46 @@
         type="number"
         min="0"
         required/>
+        <label for="isRegularlyOccurring" class="pt-3">This course will be taught:</label>
+        <div class="form-group col-md-3">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" id="regularly" name="isRegularlyOccurring" value="1"
+            {{ "checked" if course.isRegularlyOccurring }}>
+            <label class="form-check-label"> Regularly </label>
+          </div>
+        </div>
+        <div class="form-group col-md-9 pb-2">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" id="one-time" name="isRegularlyOccurring" value="0"
+              {{ "checked" if not course.isRegularlyOccurring }}>
+            <label class="form-check-label"> One-Time Special Topics/4-week course offering </label>
+          </div>
+        </div>
+        <label for="syllabus" class="pt-3 mb-2">Please upload a copy of the course syllabus:</label><br>
+        <button class="btn btn-primary mb-2" type="button"id="syllabusUploadButton">Upload</button>
+        {% if filepaths %}
+        <div class="form-group mb-5">
+          <label class="mb-2 courseAttachments" for= "courseAttachments"><strong>Course Attachments</strong></label>
+          <table>
+              {% for key, value in filepaths.items() %}
+                  <tr id="pageAttachment_{{value[1]}}" class="attachmentRow_{{key}}" data-id= "{{key}}">
+                      <td class="pr-5">
+                          <a class="mr-5" href="{{value[0]}}" target="_blank">{{key}}</a>
+                      </td>
+                      <td style="text-align:center">
+                        <button
+                          data-id="{{value[1]}}"
+                          type="button"
+                          class="removeAttachment btn btn-danger btn-sm"
+                          id={{course.id}}>
+                            <i class="bi bi-trash h5 align-middle"></i>
+                        </button>
+                      </td>
+                  </tr>
+              {% endfor %}
+          </table>
+        </div>
+        {% endif %}
     </div>
     <div class="p-2 col-md-6">
       <label for="inputCourseInstructor">When will this course be offered?</label>
@@ -84,35 +124,81 @@
           <option value="{{ term.id }}" {{ "selected" if course.term == term }}> {{ term.description }}</option>
         {% endfor %}
       </select>
-      <label for="courseOccurrence">How often will this course recur?</label>
-      <div class="pb-2">
-          <input
-            value="{{course.courseOccurrence or ''}}"
-            class="form-control"
-            name="courseOccurrence"
-            type="text"/>
-      </div>
-      <span>Are all sections SL?</span>
-      <div class="form-check form-switch pb-4">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          name="slSectionsToggle" {{"checked" if isAllSectionsServiceLearning}}/>
-      </div>
-      <label class="pt-2" for="slDesignation">Sections with SL Designation</label>
-      <textarea
+      <div class="pb-3">
+      <label for="sectionDesignation">Section Designation (if applicable).</label>
+      <input
         class="form-control"
-        id="slDesignation"
-        name="slDesignation"
-        rows="3">{{course.serviceLearningDesignatedSections}}</textarea>
-      <div class="form-check form-switch">
-        <label class="form-label" for="permanentDesignation"><strong>Will this course be a permanently designated service-learning course?</strong></label>
+        id="sectionDesignation"
+        name="sectionDesignation"
+        value="{{course.sectionDesignation}}"
+        type="text"
+        />
+      </div>
+      <div class="form-check form-switch pb-3">
+        <label for="whichAreSL">All sections will have a service-learning designation.</label>
         <input
           class="form-check-input"
           type="checkbox"
-          name="permanentDesignation"
-          id="permanentDesignation"
-          {{"checked" if isPermanentlyDesignated}}/>
+          id="allSectionsSL"
+          name="slSectionsToggle" {{"checked" if course.isAllSectionsServiceLearning}}/>
+      </div>
+      <div class="pb-4" id="slDesignationGroup">
+        <label class="pt-2" for="slDesignation" >Which sections will have a service-learning designation?</label>
+        <textarea
+          class="form-control"
+          id="slDesignation"
+          name="slDesignation"
+          rows="1">{{course.serviceLearningDesignatedSections}}</textarea>
+      </div>
+      <label class="pb-2" for="isPreviouslyApproved">Has this course been previously approved as a service-learning course?</label>
+      <div class="form-group" id="previouslyApprovedGroup">
+        <div class="form-check pb-1">
+          <input class="form-check-input" type="radio" id="previouslyApproved" name="isPreviouslyApproved" value=1
+          {{"checked" if course.isPreviouslyApproved}}>
+            <label class="form-check-label">Yes, this course has been previously approved as a service-learning course.</label>
+        </div>
+        <div class="form-check pb-4">
+          <input class="form-check-input" type="radio" id="notPreviouslyApproved" name="isPreviouslyApproved" value=0
+          {{"checked" if not course.isPreviouslyApproved}}>
+            <label class="form-check-label">No, this course has never been approved as a service-learning course.</label>
+        </div>
+      </div>
+      <div id="previouslyApprovedProposal">
+        <p>When was the course approved previously? Also, please describe the service-learning project you
+        plan for the upcoming course, including identification of the community partner organization(s).</p>
+        <textarea
+          class="form-control"
+          id="previouslyApprovedDescription"
+          name="previouslyApprovedDescription"
+          rows="3">{{course.previouslyApprovedDescription}}</textarea>
+      </div>
+      <label class="pb-2" for="slcComponent">Will this course be taught with a significant service-learning component each time it is taught?</label>
+      <div id="slcComponent">
+        <div class="form-check pb-1">
+          <input class="form-check-input" type="radio" id="hasSlcComponent" name="hasSlcComponent" value=1
+          {{"checked" if course.hasSlcComponent}}>
+            <label class="form-check-label">Yes, this course has a significant service-learning component.</label>
+        </div>
+        <div class="form-check pb-4">
+          <input class="form-check-input" type="radio" id="noSlcComponent" name="hasSlcComponent" value=0
+          {{"checked" if not course.hasSlcComponent}}>
+            <label class="form-check-label">No, this course does not have a significant service-learning component.</label>
+        </div>
+      </div>
+      <div id="permanentDesignationGroup">
+        <label class="pb-2" for="permanentDesignation">Would you like for this course to have a permanent Service-Learning Course Designation (i.e., in the Course Catalog)? (A change in the Catalog description must be approved by COGE.) </label>
+        <div class="form-group" id="permanentDesignation">
+          <div class="form-check pb-1">
+            <input class="form-check-input" type="radio" id="permanentlyDesignated" name="isPermanentlyDesignated" value=1
+            {{"checked" if course.isPermanentlyDesignated}}>
+              <label class="form-check-label">Yes, this this course should be permanently designated as Service-Learning.</label>
+          </div>
+          <div class="form-check pb-4">
+            <input class="form-check-input" type="radio" id="notPermanentlyDesignated" name="isPermanentlyDesignated" value=0
+            {{"checked" if not course.isPermanentlyDesignated}}>
+              <label class="form-check-label">No, this this course should not be permanently designated as Service-Learning.</label>
+          </div>
+        </div>
       </div>
     </div>
   </div>

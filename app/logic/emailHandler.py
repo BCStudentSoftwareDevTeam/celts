@@ -32,7 +32,7 @@ class EmailHandler:
         self.program_ids = None
         self.recipients = None
         self.sl_course_id = None
-        self.attachment_path = app.config['files']['email_attachment_path']
+        self.attachment_path = app.config['files']['base_path'] + app.config['files']['email_attachment_path']
         self.attachment_file = attachment_file
 
     def process_data(self):
@@ -114,7 +114,7 @@ class EmailHandler:
 
     def replace_general_template_placeholders(self, email_body=None):
         """ Replaces all template placeholders except name """
-        event_link = f"{self.url_domain}/eventsList/{self.event.id}/edit"
+        event_link = f"{self.url_domain}/event/{self.event.id}/edit"
 
         new_body = email_body.format(event_name=self.event.name,
             location=self.event.location,

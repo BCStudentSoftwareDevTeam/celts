@@ -1,10 +1,10 @@
 secret_key: "123"
 use_shibboleth: False
-override_file: "local-override.yml"
 default_user: "ramsayb2"
 celts_admin_contact: "celts@berea.edu"
 support_email_contact: "support@bereacollege.onmicrosoft.com"
 show_queries: True
+test_entry: "Default"
 
 db:
     name: "celts"
@@ -20,8 +20,9 @@ tracy:
 
 files:
   base_path: 'app/static/files'
-  email_attachment_path: 'app/static/files/emailattachments'
-  event_attachment_path: 'app/static/files/eventattachments'
+  email_attachment_path: 'emailattachments'
+  event_attachment_path: 'eventattachments'
+  course_attachment_path: 'courseattachments'
 
 MAIL_ENABLED: True
 MAIL_SERVER: "smtp.gmail.com" # use smtp.gmail.com for gmail, mail.berea.edu for Berea
@@ -102,4 +103,19 @@ contributors:
   - name: "Finn Bledsoe"
     role: "Software Engineer"
   - name: "Joey Martin"
+    role: "Software Engineer"
+  - name: "Liliane Azabe "
+    role: "Software Engineer"
+  - name: "Bineta Doucoure"
+    role: "Software Engineer"
+  - name: "Mercy Eze"
+    role: "Software Engineer"
+  - name: "Michel Moncada"
+  - name: "Stevenson Michel"
+    role: "Software Engineer"
+  - name: "Lawrence Hoerst"
+    role: "Software Engineer"
+  - name: "Oluwagbayi Makinde"
+    role: "Software Engineer"
+  - name: "Chris Anderson"
     role: "Software Engineer"

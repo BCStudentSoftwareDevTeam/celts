@@ -2,6 +2,6 @@ from app.models import*
 
 class CourseStatus(baseModel):
     status = CharField()
-    INCOMPLETE = 1
+    IN_PROGRESS = 1
     SUBMITTED = 2
     APPROVED = 3

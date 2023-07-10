@@ -1,0 +1,43 @@
+{% set title = "Rsvp Logs" %}
+{% set page_title = eventData.name %}
+{% set eventPast = event.isPast %}
+{% set tabName = 'rsvpLog' %}
+{% extends "eventNav.html" %}
+
+{% block scripts %}
+  {{super()}}
+  <script type="module" src="/static/js/logs.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+
+  {% block styles %}
+    {{super()}}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+  {% endblock %}
+{% endblock %}
+
+
+{% block app_content %}
+{{super()}}
+<table class="display d-none" id="logsTable">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>User</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+<tbody>
+  {% for entry in allLogs%}
+  <tr>
+    {% set sortDate = entry.createdOn.strftime("%Y/%m/%d/%H/%M")%}
+    {% set displayDate = entry.createdOn.strftime('%m/%d/%Y %I:%M %p')%}
+    <td class="col-2" nowrap data-sort="{{sortDate}}">{{displayDate}}</td>
+    <td class="col-2" nowrap>{{entry.createdBy.fullName}}</td>
+    <td>{{entry.rsvpLogContent|safe}}</td>
+
+ </tr>
+  {%endfor%}
+</tbody>
+
+</table>
+{% endblock %}

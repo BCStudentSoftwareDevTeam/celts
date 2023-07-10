@@ -1,39 +1,45 @@
 {%set title = "SLC Questionnaire"%}
 {% set isViewSlc = 'view' in request.path %}
+{% block styles %}
+<link rel="stylesheet" href="{{url_for('static', filename ='css/slcQuestionnaire.css')}}">
+{% endblock %}
 
 <h2 class="text-center pt-4">New Service-Learning Course</h2>
   <p class="text-center fw-bold"> Please review the <a class="guidelines" href="#">service-learning course guidelines</a> before completing this form </p>
+<p>Referring to the Criteria for Service-Learning Course Designation/ALE Requirement met through Service-Learning, please address the following in a
+   one-page proposal narrative. You might aim for approximately 500 words in total. Attach your syllabus (or the one form the most recent time that the course was taught). If you are in the process of
+   designing the syllabus, please indicate that.</p>
 <div class="pt-4">
-  <label><b>
+  <label class="pb-3"><b>
     1. Indicate the specific course learning objective(s) that will be addressed by the service-learning component.
   </b></label>
   <textarea id="slcQuestionOne" class="form-control textarea" aria-label="With textarea" name="1">{{questionanswers[0]|urlize if isViewSlc else questionanswers[0] if questionanswers}}</textarea>
-  <p class="slcQestionCharCounter">Characters: <span class="slcQuestionCharCount">0</span></p>
+  <p class="slcQuestionWordCounter">Words: <span>0</span></p>
   <label><b>
     2. Describe the method of structured, critical reflection you will use in order to connect the service
     activity or activities to the learning objective(s) of the course.
   </b></label>
   <textarea id="slcQuestionTwo"class="form-control textarea" aria-label="With textarea" name="2">{{questionanswers[1]|urlize if isViewSlc else questionanswers[1] if questionanswers}}</textarea>
-  <p class="slcQestionCharCounter">Characters: <span class="slcQuestionCharCount">0</span></p>
+  <p class="slcQuestionWordCounter">Words : <span>0</span></p>
   <label><b>
     3. Describe the service-learning activity or activities. Indicate the approximate number of hours or
     days of service experience. There is no formal requirement, but the activity must be substantial and
     sustained throughout the semester.
   </b></label>
   <textarea id="slcQuestionThree" class="form-control textarea" aria-label="With textarea" name="3">{{questionanswers[2]|urlize if isViewSlc else questionanswers[2] if questionanswers}}</textarea>
-  <p class="slcQestionCharCounter">Characters: <span class="slcQuestionCharCount">0</span></p>
+  <p class="slcQuestionWordCounter">Words: <span>0</span></p>
   <label><b>
     4. Identify the community partner(s) with whom you will collaborate in order to structure this
     service-learning experience.  How will the community partner(s) be involved in planning, implementation,
     and evaluation?
   </b></label>
   <textarea id="slcQuestionFour" class="form-control textarea" aria-label="With textarea" name="4">{{questionanswers[3]|urlize if isViewSlc else questionanswers[3] if questionanswers}}</textarea>
-  <p class="slcQestionCharCounter">Characters: <span class="slcQuestionCharCount">0</span></p>
+  <p class="slcQuestionWordCounter">Words: <span>0</span></p>
   <label><b>
     5. Describe the final product to be completed by the students. How will this benefit the community?
   </b></label>
   <textarea id="slcQuestionFive" class="form-control textarea" aria-label="With textarea" name="5">{{questionanswers[4]|urlize if isViewSlc else questionanswers[4] if questionanswers}}</textarea>
-  <p class="slcQestionCharCounter">Characters: <span class="slcQuestionCharCount">0</span></p>
+  <p class="slcQuestionWordCounter">Words: <span>0</span></p>
   <label><b>
     6. Indicate how you will assess student learning related to the identified course objective(s) that will
     be enhanced by the service-learning experience. Identify what percentage of the final grade will be based
@@ -41,5 +47,5 @@
     course objective(s).
   </b></label>
   <textarea id="slcQuestionSix" class="form-control textarea" aria-label="With textarea" name="6">{{questionanswers[5]|urlize if isViewSlc else questionanswers[5] if questionanswers}}</textarea>
-  <p class="slcQestionCharCounter">Characters: <span class="slcQuestionCharCount">0</span></p>
+  <p class="slcQuestionWordCounter">Words: <span>0</span></p>
 </div>

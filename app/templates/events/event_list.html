@@ -78,9 +78,9 @@
               {% endif %}
             {% endif %}
             {% if user.isCeltsAdmin or user.isProgramManagerFor(event.singleProgram)%}
-              <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+              <td> <a href="/event/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
             {% else %}
-              <td> <a href="/eventsList/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
+              <td> <a href="/event/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
             {% endif %}
             <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
             <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
@@ -99,7 +99,8 @@
               {% if event.id in rsvpedEventsID %}
                 <button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button>
               {% elif (not event.isPast) and (event.isRsvpRequired) %}
-                <button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button>
+                  {% set buttonName = "Join Waitlist" if (event.rsvpLimit) and (currentEventRsvpAmount[event.id] >= event.rsvpLimit) else "RSVP" %}
+                    <button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">{{buttonName}}</button>
               {% endif %}
               </td>
             {% endif %}
@@ -147,9 +148,9 @@
                     {% for event in events %}
                       <tr>
                           {% if user.isCeltsAdmin or user.isProgramManagerFor(event.singleProgram) %}
-                            <td> <a href="/eventsList/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+                            <td> <a href="/event/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
                           {% else %}
-                            <td> <a href="/eventsList/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
+                            <td> <a href="/event/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
                           {% endif %}
                         <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
                         <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
@@ -169,7 +170,8 @@
                           {% if event.id in rsvpedEventsID %}
                             <button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button>
                           {% elif (not event.isPast) and (event.isRsvpRequired) %}
-                            <button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">RSVP</button>
+                            {% set buttonName = "Join Waitlist" if (event.rsvpLimit) and (currentEventRsvpAmount[event.id] >= event.rsvpLimit) else "RSVP" %}
+                            <button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">{{buttonName}}</button>
                           {% endif %}
                         {% endif %}
                          </td>
