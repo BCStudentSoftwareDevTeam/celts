@@ -41,6 +41,7 @@
     {% endif %}
   </div>
 </div>
+<!-- #################### Attending Table #################### -->
 <form method="post">
   <label class='d-none' id="eventLength">{{eventLength}}</label>
   <input class="form-control" id="eventID" name="event" value="{{event.id}}" type='hidden'>
@@ -59,7 +60,6 @@
       </h2>
       <div id="attended-collapse" class="accordion-collapse show">
         <div class="accordion-body">
-          <!-- Attending Table -->
           <table class="table" id="trackVolunteerstable" data-entry-count="{{ eventVolunteerData|length }}">
             <thead>
               <tr>
@@ -164,8 +164,8 @@
       </div>
     </div>
 </form>
-    {% if event.isRsvpRequired and event.rsvpLimit and not event.isPast and eventWaitlistData %}
-    <!-- Waitlist Table -->
+{% if event.isRsvpRequired and event.rsvpLimit and not event.isPast and eventWaitlistData %}
+<!-- #################  Waitlist Table  ################# -->
 <form method="post">
     <label class='d-none' id="eventLength">{{eventLength}}</label>
     <input class="form-control" id="eventID" name="event" value="{{event.id}}" type='hidden'>
@@ -232,9 +232,9 @@
       </div>
     </div>
 </form>
-    {% endif %}
-    {% if event.isPast and eventNonAttendedData %}
-    <!-- Non Attended Table -->
+{% endif %}
+{% if event.isPast and eventNonAttendedData %}
+<!-- #################  Non Attended Table  ################# -->
 <form method="post">
     <label class='d-none' id="eventLength">{{eventLength}}</label>
     <input class="form-control" id="eventID" name="event" value="{{event.id}}" type='hidden'>
@@ -294,11 +294,7 @@
                     <input
                       type="checkbox"
                       class='attendanceCheck'
-                      name="checkbox_{{participant.user.username}}"
-                      {# TODO: Remove below if statement once working #}
-                      {% if participant.user in eventParticipants %}
-                        checked
-                      {% endif %} />
+                      name="checkbox_{{participant.user.username}}"/>
                   </td>
                   <td style="text-align:center">
                     <button

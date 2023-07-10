@@ -73,7 +73,7 @@ def test_updateEventParticipants():
     with pytest.raises(DoesNotExist):
         EventParticipant.get(EventParticipant.user=="partont", EventParticipant.event==3)
 
-    participantData = ImmutableMultiDict({'inputHours_partont':100, 'checkbox_partont':"on", 'event':3, 'username': 'partont'})
+    participantData = ImmutableMultiDict([('inputHours_partont', 100), ('checkbox_partont', "on"), ('event', 3), ('username', 'partont'), ('username', 'neillz'), ('username', 'ayisie')])
     volunteerTableUpdate = updateEventParticipants(participantData)
     assert volunteerTableUpdate == True
 

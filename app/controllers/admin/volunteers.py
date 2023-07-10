@@ -49,7 +49,6 @@ def trackVolunteersPage(eventID):
     eventData = model_to_dict(event, recurse=False)
     eventData["program"] = event.singleProgram
     trainedParticipantsList = trainedParticipants(event.singleProgram, g.current_term)
-    eventParticipants = getEventParticipants(event)
     isProgramManager = g.current_user.isProgramManagerForEvent(event)
     bannedUsers = [row.user for row in getBannedUsers(event.singleProgram)]
     if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
@@ -82,7 +81,6 @@ def trackVolunteersPage(eventID):
     return render_template("/events/trackVolunteers.html",
                             eventData = eventData,
                             eventVolunteerData = eventVolunteerData,
-                            eventParticipants = [],
                             eventNonAttendedData = eventNonAttendedData,
                             eventWaitlistData = eventWaitlistData,
                             eventLength = eventLengthInHours,
