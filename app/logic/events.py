@@ -117,8 +117,6 @@ def saveEventToDb(newEventData):
 
     isNewEvent = ('id' not in newEventData)
 
-    if not isNewEvent:
-        newEventData['program'] = (Event.get_by_id(newEventData['id'])).program
 
     eventsToCreate = []
     recurringSeriesId = None

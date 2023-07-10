@@ -29,26 +29,10 @@ from app.logic.participants import addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser
 from app.logic.utils import format24HourTime
 
-# @pytest.mark.integration
-# def test_event_model():
-
-#     # # single program
-#     # event = Event.get_by_id(12)
-#     # assert event.program == Program.get_by_id(3)
-
-#     # no program
-#     event = Event.get_by_id(13)
-#     assert event.program == None
-#     assert event.noProgram
-
-#     # multi program
-#     event = Event.get_by_id(14)
-#     assert event.program == None
-#     assert not event.noProgram
-
-#     # program/event passed
-#     event = Event.get_by_id(11)
-#     assert event.isPast
+@pytest.mark.integration
+def test_event_model():
+    event = Event.get_by_id(11)
+    assert event.isPast
 
 @pytest.mark.integration
 def test_eventTemplate_model():
