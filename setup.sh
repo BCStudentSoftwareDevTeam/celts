@@ -26,8 +26,10 @@ python3 -m pip install -r requirements.txt
 
 echo
 if [[ ! -e app/config/local-override.yml ]]; then
-	echo "Remember to edit your specific mail settings and Tracy connection information in 'app/config/local-override.yaml'"
-	echo "tracy:\n  password: replace\n\nMAIL_USERNAME: 'gmail address'\nMAIL_PASSWORD: 'app password'" > app/config/local-override.yml
+	touch app/config/local-override.yml
+	echo "Remember to edit your specific mail settings and MySQL connection information in 'app/config/local-override.yaml'"
+	# echo "Remember to edit your specific mail settings and Tracy connection information in 'app/config/local-override.yaml'"
+	# echo "tracy:\n  password: replace\n\nMAIL_USERNAME: 'gmail address'\nMAIL_PASSWORD: 'app password'" > app/config/local-override.yml
 	echo
 	echo "If your database has not been set up, you will need to run database/reset_database.sh"
 fi
