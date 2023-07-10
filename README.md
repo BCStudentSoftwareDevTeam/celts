@@ -7,6 +7,7 @@
  * python3-dev
  * python3-pip
  * python3-venv
+ * libffi-dev
  * mysql-server
 
 
@@ -26,7 +27,7 @@
 6. Run the app with ```flask run``` in the root directory
 
 ## Testing
-Test should be added in `tests/code/`, logically grouped into files named `test_EXAMPLE.py`. You can run tests individually with `pytest`, or run the entire suite with `tests/run_tests.sh` or `tests/monitor.sh`. `tests/run_tests.sh` will only execute the test suite once, where `tests/monitor.sh` will rerun the test suite everytime a change is made and saved. In most cases, `tests/monitor.sh` should be used over `tests/run_tests.sh`. Where possible, use TDD (Test-Driven Development) and write your test before the code that makes it pass. Follow the Fail - Implement - Pass cycle.
+Tests should be added in `tests/code/`, logically grouped into files named `test_EXAMPLE.py`. You can run tests individually with `pytest`, or run the entire suite with `tests/run_tests.sh` or `tests/monitor.sh`. `tests/run_tests.sh` will only execute the test suite once, where `tests/monitor.sh` will rerun the test suite everytime a change is made and saved. In most cases, `tests/monitor.sh` should be used over `tests/run_tests.sh`. Where possible, use TDD (Test-Driven Development) and write your test before the code that makes it pass. Follow the Fail - Implement - Pass cycle.
 
 When running tests, an optional parameter is available. If you would like to run tests in more detail and see which tests specifically pass and fail run `tests/monitor.sh --verbose`. To test once specific file instead of the whole suite, add the path to the file after a run tests command like so: `tests/monitor.sh tests/code/test_sampleFile.py`. 
 

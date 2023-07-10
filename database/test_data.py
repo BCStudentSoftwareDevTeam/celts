@@ -25,9 +25,9 @@ from app.models.programManager import ProgramManager
 from app.models.emailTemplate import EmailTemplate
 from app.models.backgroundCheck import BackgroundCheck
 # from app.models.backgroundCheckType import BackgroundCheckType
-from app.models.adminLogs import AdminLogs
+from app.models.adminLog import AdminLog
 from app.models.emailLog import EmailLog
-from app.models.eventFile import EventFile
+from app.models.attachmentUpload import AttachmentUpload
 from app.models.certification import Certification
 from app.models.certificationRequirement import CertificationRequirement
 
@@ -61,8 +61,8 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": True,
         "isCeltsStudentStaff": False,
-        "major": None,
-        "classLevel": None,
+        "major": "Computer Science",
+        "classLevel": "Senior",
     },
     {
         "username": "neillz",
@@ -75,8 +75,8 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": True,
-        "major": None,
-        "classLevel": None,
+        "major": "Psychology",
+        "classLevel": "Sophomore",
     },
 
     {
@@ -104,8 +104,8 @@ users = [
         "isFaculty": False,
         "isCeltsAdmin": False,
         "isCeltsStudentStaff": False,
-        "major": None,
-        "classLevel": None,
+        "major": "Chemistry",
+        "classLevel": "Junior",
 
     },
     {
@@ -130,8 +130,8 @@ users = [
         "firstName": "Alex",
         "lastName": "Bryant",
         "isStudent": True,
-        "major": None,
-        "classLevel": None,
+        "major": "Biology",
+        "classLevel": "Senior",
     },
     {
         "username": "partont",
@@ -141,8 +141,8 @@ users = [
         "lastName": "Parton",
         "isStudent": True,
         "phoneNumber": "(859)433-1559",
-        "major": None,
-        "classLevel": None,
+        "major": "Computer Science",
+        "classLevel": "Senior",
     },
     {
         "username": "mupotsal",
@@ -198,6 +198,18 @@ users = [
         "isCeltsStudentStaff": False,
         "major": None,
         "classLevel": None,
+    },
+    {
+        "username": "bledsoef",
+        "bnumber": "B00776544",
+        "email": "bledsoef@berea.edu",
+        "firstName": "Finn",
+        "lastName": "Bledsoe",
+        "phoneNumber": "(123)456-7890",
+        "isCeltsAdmin": False,
+        "isFaculty": True,
+        "isCeltsStudentStaff": False,
+        "isStaff": True,
     },
 ]
 
@@ -667,6 +679,21 @@ events = [
         "contactEmail": "testEmail",
         "contactName": "testName"
     },
+    {
+        #Event being created for recurrance events
+        "id": 16,
+        "term": 4,
+        "name": "Training Event",
+        "description": "Test for training",
+        "isTraining": True,
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+        "location": "Alumni Building",
+        "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
+        "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
+        "contactEmail": "testEmail",
+        "contactName": "testName"
+    },
 ]
 Event.insert_many(events).on_conflict_replace().execute()
 
@@ -857,6 +884,11 @@ courseInstructorRecords = [
         "id": 6,
         "course": 4,
         "user": "qasema"
+    },
+    {
+        "id": 7,
+        "course": 1,
+        "user": "bledsoef"
     }
 
 ]
@@ -896,29 +928,124 @@ CourseParticipant.insert_many(courseHoursEarned).on_conflict_replace().execute()
 courseQuestions = [
     {
     "course":1,
-    "questionContent":" Why are you interested in teaching this course?",
+    "questionContent":"This is testing for the first question.",
     "questionNumber":1,
     },
     {
     "course":1,
-    "questionContent":"Is there anything confusing?",
+    "questionContent":"This is testing for the second question.",
     "questionNumber":2,
     },
-    {
+        {
     "course":1,
-    "questionContent":"How many students willl betaking this course?",
+    "questionContent":"This is testing for the third question.",
     "questionNumber":3,
     },
     {
-    "course":3,
-    "questionContent":" This is another random question",
+    "course":1,
+    "questionContent":"This is testing for the fourth question.",
+    "questionNumber":4,
+    },
+    {
+    "course":1,
+    "questionContent":"This is testing for the fifth question.",
+    "questionNumber":5,
+    },
+    {
+    "course":1,
+    "questionContent":"This is testing for the sixth question.",
+    "questionNumber":6,
+    },
+    {
+    "course":2,
+    "questionContent":"This is testing for the first question.",
+    "questionNumber":1,
+    },
+    {
+    "course":2,
+    "questionContent":"This is testing for the second question.",
+    "questionNumber":2,
+    },
+        {
+    "course":2,
+    "questionContent":"This is testing for the third question.",
+    "questionNumber":3,
+    },
+    {
+    "course":2,
+    "questionContent":"This is testing for the fourth question.",
     "questionNumber":4,
     },
     {
     "course":2,
-    "questionContent":" Why are you interested in teaching this course?",
+    "questionContent":"This is testing for the fifth question.",
     "questionNumber":5,
-    }
+    },
+    {
+    "course":2,
+    "questionContent":"This is testing for the sixth question.",
+    "questionNumber":6,
+    },
+    {
+    "course":3,
+    "questionContent":"This is testing for the first question.",
+    "questionNumber":1,
+    },
+    {
+    "course":3,
+    "questionContent":"This is testing for the second question.",
+    "questionNumber":2,
+    },
+        {
+    "course":3,
+    "questionContent":"This is testing for the third question.",
+    "questionNumber":3,
+    },
+    {
+    "course":3,
+    "questionContent":"This is testing for the fourth question.",
+    "questionNumber":4,
+    },
+    {
+    "course":3,
+    "questionContent":"This is testing for the fifth question.",
+    "questionNumber":5,
+    },
+    {
+    "course":3,
+    "questionContent":"This is testing for the sixth question.",
+    "questionNumber":6,
+    },
+    {
+    "course":4,
+    "questionContent":"This is testing for the first question.",
+    "questionNumber":1,
+    },
+    {
+    "course":4,
+    "questionContent":"This is testing for the second question.",
+    "questionNumber":2,
+    },
+        {
+    "course":4,
+    "questionContent":"This is testing for the third question.",
+    "questionNumber":3,
+    },
+    {
+    "course":4,
+    "questionContent":"This is testing for the fourth question.",
+    "questionNumber":4,
+    },
+    {
+    "course":4,
+    "questionContent":"This is testing for the fifth question.",
+    "questionNumber":5,
+    },
+    {
+    "course":4,
+    "questionContent":"This is testing for the sixth question.",
+    "questionNumber":6,
+    },
 ]
 
 CourseQuestion.insert_many(courseQuestions).on_conflict_replace().execute()
@@ -1190,7 +1317,7 @@ logs = [
    "logContent": "Created Adoption Event."
    }
 ]
-AdminLogs.insert_many(logs).on_conflict_replace().execute()
+AdminLog.insert_many(logs).on_conflict_replace().execute()
 
 files = [
     {
@@ -1202,7 +1329,7 @@ files = [
     "fileName" : "adfsfdhqwre_;ldgfk####l;kgfdg.jpg"
     }
 ]
-EventFile.insert_many(files).on_conflict_replace().execute()
+AttachmentUpload.insert_many(files).on_conflict_replace().execute()
 
 profileNotes = [
     {

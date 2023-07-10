@@ -7,8 +7,11 @@ from app.models.courseStatus import CourseStatus
 from app.models.courseQuestion import CourseQuestion
 from app.models.questionNote import QuestionNote
 from app.models.note import Note
+from app.models.attachmentUpload import AttachmentUpload
 from app.models.term import Term
-from app.logic.adminLogs import createLog
+from app.models import DoesNotExist
+from app.logic.createLogs import createAdminLog
+from app.logic.fileHandler import FileHandler
 
 def getServiceLearningCoursesData(user):
     """Returns dictionary with data used to populate Service-Learning proposal table"""
@@ -39,6 +42,17 @@ def withdrawProposal(courseID):
     """Withdraws proposal of ID passed in. Removes foreign keys first.
     Key Dependencies: QuestionNote, CourseQuestion, CourseParticipant,
     CourseInstructor, Note"""
+
+    # delete syllabus
+    try:
+        syllabi = AttachmentUpload.select().where(AttachmentUpload.course==courseID)
+        for syllabus in syllabi:
+            FileHandler(courseId = courseID).deleteFile(syllabus.id)
+
+    except DoesNotExist:
+        print(f"File, {AttachmentUpload.fileName}, does not exist.")
+
+    # delete course object
     course = Course.get(Course.id == courseID)
     courseName = course.courseName
     questions = CourseQuestion.select().where(CourseQuestion.course == course)
@@ -49,18 +63,20 @@ def withdrawProposal(courseID):
     course.delete_instance(recursive=True)
     for note in notes:
         note.delete_instance()
-    createLog(f"Withdrew SLC proposal: {courseName}")
+
+    createAdminLog(f"Withdrew SLC proposal: {courseName}")
 
 def renewProposal(courseID, term):
     """
     Renews proposal of ID passed in for the selected term.
-    Sets status to incomplete.
+    Sets status to in progress.
     """
     oldCourse = Course.get_by_id(courseID)
     newCourse = Course.get_by_id(courseID)
     newCourse.id = None
     newCourse.term = Term.get_by_id(term)
-    newCourse.status = CourseStatus.INCOMPLETE
+    newCourse.status = CourseStatus.IN_PROGRESS
+    newCourse.isPreviouslyApproved = True
     newCourse.save()
     questions = CourseQuestion.select().where(CourseQuestion.course==oldCourse)
     for question in questions:

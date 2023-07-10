@@ -26,7 +26,7 @@ def test_course_management():
 
         incompleteCourse = Course.create(courseName = "Testing Incomplete",
                                         term = 3,
-                                        status = CourseStatus.INCOMPLETE,
+                                        status = CourseStatus.IN_PROGRESS,
                                         courseCredit = "12",
                                         createdBy = "heggens",
                                         isAllSectionsServiceLearning = 0,

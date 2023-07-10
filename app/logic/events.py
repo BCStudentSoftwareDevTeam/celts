@@ -13,14 +13,12 @@ from app.models.term import Term
 from app.models.programBan import ProgramBan
 from app.models.interest import Interest
 from app.models.eventRsvp import EventRsvp
-from app.models.eventTemplate import EventTemplate
 from app.models.programEvent import ProgramEvent
-from app.models.eventFile import EventFile
 from app.models.requirementMatch import RequirementMatch
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.eventViews import EventView
 
-from app.logic.adminLogs import createLog
+from app.logic.createLogs import createAdminLog
 from app.logic.utils import format24HourTime
 from app.logic.fileHandler import FileHandler
 from app.logic.certification import updateCertRequirementForEvent
@@ -60,9 +58,9 @@ def deleteEvent(eventId):
         program = event.singleProgram
 
         if program:
-            createLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+            createAdminLog(f"Deleted \"{event.name}\" for {program.programName}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
         else:
-            createLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+            createAdminLog(f"Deleted a non-program event, \"{event.name}\", which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
 
         event.delete_instance(recursive = True, delete_nullable = True)
 
@@ -101,8 +99,13 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
     Returns:
     Created events and an error message.
     """
+
+    # Manually set the value of RSVP Limit if it is and empty string since it is
+    # automatically changed from "" to 0
+    if eventData["rsvpLimit"] == "":
+        eventData["rsvpLimit"] = None
+
     newEventData = preprocessEventData(eventData)
-    addfile= FileHandler(attachmentFiles)
     isValid, validationErrorMessage = validateNewEventData(newEventData)
 
     if not isValid:
@@ -110,10 +113,12 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
 
     try:
         events = saveEventToDb(newEventData)
-        if  attachmentFiles:
+        if attachmentFiles:
             for event in events:
-                addfile.saveFilesForEvent(event.id)
-        return events, ""
+                addFile= FileHandler(attachmentFiles, eventId=event.id)
+                addFile.saveFiles(saveOriginalFile=events[0])
+
+        return events, " "
     except Exception as e:
         print(e)
         return False, e
@@ -151,6 +156,7 @@ def saveEventToDb(newEventData):
                     "isService": newEventData['isService'],
                     "startDate": eventInstance['date'],
                     "isAllVolunteerTraining": newEventData['isAllVolunteerTraining'],
+                    "rsvpLimit": newEventData['rsvpLimit'],
                     "endDate": eventInstance['date'],
                     "contactEmail": newEventData['contactEmail'],
                     "contactName": newEventData['contactName']
@@ -265,7 +271,7 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now(), program=None):
 
     if program:
         events = events.where(ProgramEvent.program == program)
-    
+
     events = events.order_by(Event.startDate, Event.name)
 
     events_list = []
@@ -391,7 +397,7 @@ def preprocessEventData(eventData):
         Ensures that the event data dictionary is consistent before it reaches the template or event logic.
 
         - dates should exist and be date objects if there is a value
-        - checkbaxes should be True or False
+        - checkboxes should be True or False
         - if term is given, convert it to a model object
         - times should exist be strings in 24 hour format example: 14:40
         - Look up matching certification requirement if necessary
@@ -451,6 +457,7 @@ def getTomorrowsEvents():
     tomorrowDate = date.today() + timedelta(days=1)
     events = list(Event.select().where(Event.startDate==tomorrowDate))
     return events
+
 def upcomingEventsFirst(EventList):
     """Sorts events so that upcoming events come first and past events come last"""
     sortedList=[]
@@ -462,4 +469,20 @@ def addEventView(viewer,event):
     """This checks if the current user already viewed the event. If not, insert a recored to EventView table"""
     if not viewer.isCeltsAdmin:
          EventView.get_or_create(user = viewer, event = event)   
+
+def getEventRsvpCountsForTerm(term):
+    """
+        Get all of the RSVPs for the events that exist in the term.
+        Returns a dictionary with the event id as the key and the amount of
+        current RSVPs to that event as the pair.
+    """
+    amount = (Event.select(Event, fn.COUNT(EventRsvp.event_id).alias('count'))
+                   .join(EventRsvp, JOIN.LEFT_OUTER)
+                   .where(Event.term == term)
+                   .group_by(Event.id))
+
+    amountAsDict = {event.id: event.count for event in amount}
+
+    return amountAsDict
+
 
