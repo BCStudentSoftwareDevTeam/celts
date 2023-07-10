@@ -64,7 +64,7 @@ $(document).ready(function(){
   $("#addNoteButton").click(function() {
     $("#noteDropdown").show()
     $("#bonnerStatement").hide()
-    $("#VisibilityLabel").show()
+    $("#visibilityLabel").show()
     $("#bonnerInput").prop("checked", false);
     $("#noteModal").modal("toggle");
   
@@ -76,12 +76,12 @@ $(document).ready(function(){
   if (bonnerChecked == 'on') {
     $("#noteDropdown").hide()
     $("#bonnerStatement").show()
-    $("#VisibilityLabel").hide()
+    $("#visibilityLabel").hide()
     $("#bonnerInput").prop("checked", true);
    
   } else {
     $("#bonnerInput").prop("checked", false);
-    $("#VisibilityLabel").show()
+    $("#visibilityLabel").show()
     $("#noteDropdown").show()
     $("#bonnerStatement").hide()
     }});
@@ -90,7 +90,7 @@ $(document).ready(function(){
   $("#addBonnerNoteButton").click(function() {
     $("#bonnerInput").prop("checked", true);
     $("#noteModal").modal("toggle");
-    $("#VisibilityLabel").hide();
+    $("#visibilityLabel").hide();
     $("#noteDropdown").hide();
     $("#bonnerStatement").show() 
  
