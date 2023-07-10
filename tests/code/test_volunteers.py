@@ -73,10 +73,26 @@ def test_updateEventParticipants():
     with pytest.raises(DoesNotExist):
         EventParticipant.get(EventParticipant.user=="partont", EventParticipant.event==3)
 
-    participantData = ImmutableMultiDict([('inputHours_partont', 100), ('checkbox_partont', "on"), ('event', 3), ('username', 'partont'), ('username', 'neillz'), ('username', 'ayisie')])
+
+    # add two users with hours
+    participantData = ImmutableMultiDict([('inputHours_partont', 100), ('checkbox_partont', "on"), ('event', 3), ('username', 'partont'), ('username', 'neillz'), ('inputHours_neillz', 75), ('checkbox_neillz', "on")])
     volunteerTableUpdate = updateEventParticipants(participantData)
     assert volunteerTableUpdate == True
 
+    # check that users were added
+    eventParticipant = EventParticipant.get(EventParticipant.user=="neillz", EventParticipant.event==3)
+    assert eventParticipant.hoursEarned == 75
+    eventParticipant = EventParticipant.get(EventParticipant.user=="partont", EventParticipant.event==3)
+    assert eventParticipant.hoursEarned == 100
+
+    # remove neillz, partont unchanged
+    participantData = ImmutableMultiDict([('inputHours_partont', 100), ('checkbox_partont', "on"), ('event', 3), ('username', 'partont'), ('username', 'neillz')])
+    volunteerTableUpdate = updateEventParticipants(participantData)
+    assert volunteerTableUpdate == True
+
+    # check that neillz was removed and partont remained the same
+    eventParticipant = EventParticipant.get_or_none(EventParticipant.user=="neillz", EventParticipant.event==3)
+    assert eventParticipant == None
     eventParticipant = EventParticipant.get(EventParticipant.user=="partont", EventParticipant.event==3)
     assert eventParticipant.hoursEarned == 100
 
