@@ -74,13 +74,6 @@ class EmailHandler:
         else:
             return [Program.get_by_id(program_id)]
 
-            # so this should essentially return
-            # var = Program.get_by_id(program)
-            # return var.programName ???
-
-
-        # The function above should essentially return just the program name, since an event can only belong to one program.
-
     def update_sender_config(self):
         # We might need this.
         # This functionality should be moved somewhere else.

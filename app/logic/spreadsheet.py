@@ -13,7 +13,7 @@ from app.models.term import Term
 
 
 def volunteerHoursByProgram():
-    query = ((Program.select(Program.programName, fn.SUM(EventParticipant.hoursEarned).alias('sum'))
+    query = ((Program.select(Program.programName, fn.SUM(EventParticipant.hoursEarned).alias('sum')).join(Event)
                      .join(EventParticipant, on=(Event.program== EventParticipant.event))
                      .group_by(Program.programName)
                      .order_by(Program.programName)))
@@ -83,10 +83,9 @@ def termParticipation(termDescription):
     participationQuery = (Event.select(Event.program, EventParticipant.user_id.alias('participant'), Program.programName.alias("progName"))
                                       .join(EventParticipant, JOIN.LEFT_OUTER, on=(Event.id == EventParticipant.event))
                                       .join(Program, on=(Program.id == Event.program))
-                                      .join(Event, on=(Event.event_id == Event.id))
                                       .join(Term, on=(Event.term_id == Term.id) )
                                       .where(Term.description == termDescription ))
-    print(participationQuery)
+
     programParticipationDict = defaultdict(list)
     for result in participationQuery.dicts():
         prog_name = result['progName']

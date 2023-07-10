@@ -44,8 +44,8 @@ def landingPage():
     managerProgramDict = getManagerProgramDict(g.current_user)
 
 
-    programsWithEvents = list(Event.select(Event.program).where(Event.term == g.current_term).distinct())
-    programsWithEventsList = [program.program for program in programsWithEvents]
+    eventsInTerm = list(Event.select().where(Event.term == g.current_term))
+    programsWithEventsList = [program.program for program in eventsInTerm]
 
     return render_template("/main/landingPage.html", managerProgramDict = managerProgramDict,
                                                      term = g.current_term,

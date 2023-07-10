@@ -46,7 +46,6 @@ def kioskSignin():
     eventid = request.form["eventid"]
     bnumber = request.form["bNumber"]
     
-    # Correct query
     programid= Event.select(Event.program). where(Event.id == eventid)
 
     if not bnumber: # Avoids string index out of range error
