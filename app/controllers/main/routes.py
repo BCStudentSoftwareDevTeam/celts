@@ -3,6 +3,8 @@ import datetime
 import json
 from http import cookies
 
+
+from app.logic.serviceLearningCoursesData import storePreviewParticipants
 from app import app
 from app.models.program import Program
 from app.models.event import Event
@@ -390,9 +392,25 @@ def getAllCourseInstructors(term=None):
                                 approvedCourses = approved,
                                 terms = terms,
                                 term = term,
-                                CourseStatus = CourseStatus)
+                                CourseStatus = CourseStatus,
+                                data ={})
     else:
         abort(403)
+
+    # if request.method== 'POST':
+    #     file= request.files['addCourseParticipant']
+    #     if file:
+    # storedInput('/manageServiceLearning')
+    # print(sessionPreview)
+    
+    return render_template('/main/manageServiceLearningFaculty.html',
+                            courseInstructors = courseDict,
+                            unapprovedCourses = unapproved,
+                            approvedCourses = approved,
+                            terms = terms,
+                            term = term,
+                            CourseStatus = CourseStatus,
+                            data = str(session['data']) )
 
 def getRedirectTarget(popTarget=False):
     """

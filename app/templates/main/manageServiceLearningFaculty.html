@@ -162,6 +162,42 @@
           </div>
        {% endif %}
         </div>
+        <!-- modal for Preview -->
+        <div class="modal fade float-start col" id="modalPreview">
+          <div class="modal-dialog custom-modal-size">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title"> Preview File</h5>
+              </div>
+              <form method="GET" action="/manageServiceLearning" enctype="multipart/form-data">
+                <div class="modal-body">
+                  <div class="input-group">
+                    <label for="addCourseParticipant" class="form-label">List of Participants per Course:</label>
+                    <ul>
+                        <!-- {% for key, value in data.items() %}
+                          {{ key[0] }} ({{ key[1] }}): {{ value }}
+                        {% endfor %} -->
+                          {% for key, value in data.items() %}
+                            <li>{{ key[0] }} ({{ key[1] }}): {{ value }}</li
+
+                            
+                            
+                          {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+                <br>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
+                  <label for="previewCourseParticipant" class="form-label"></label>
+                  <input class="form-control btn btn-primary position-relative" id="submitParticipant" disabled
+                    style='width: 75px' type="submit"></input>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        <!-- end preview modal  -->
       </div>
       <div id="wrapper">
         <br>

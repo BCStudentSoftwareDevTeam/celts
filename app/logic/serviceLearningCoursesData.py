@@ -98,8 +98,7 @@ def renewProposal(courseID, term):
 
 
 
-def parseUploadedFile():
-    filePath = './app/static/files/Test Document 2.xlsx'
+def parseUploadedFile(filePath):
     excelData = load_workbook(filename=filePath)
     excelSheet = excelData.active
     termReg = r"\b[a-zA-Z]{3,}\s\d{4}\b" # regular expression to check cells content
@@ -127,12 +126,7 @@ def parseUploadedFile():
 
 def storePreviewParticipants(storedData):
     session['data'] = storedData
-    return "Data is stored in session."
-
-
-def retrievePreviewParticipants():
-    data = session.get('data')
-    return data
+   
 
 
 
