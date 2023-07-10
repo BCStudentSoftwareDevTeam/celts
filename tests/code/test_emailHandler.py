@@ -22,7 +22,6 @@ from app.logic.emailHandler import EmailHandler
 
 @pytest.mark.integration
 def test_send_email_using_modal():
-    pass # For now we are skipping the email tests
     with app.test_request_context():
 
 
