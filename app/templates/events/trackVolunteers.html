@@ -41,6 +41,7 @@
     {% endif %}
   </div>
 </div>
+
 <!-- #################### Attending Table #################### -->
 <form method="post">
   <label class='d-none' id="eventLength">{{eventLength}}</label>
@@ -164,8 +165,9 @@
       </div>
     </div>
 </form>
-{% if event.isRsvpRequired and event.rsvpLimit and not event.isPast and eventWaitlistData %}
+
 <!-- #################  Waitlist Table  ################# -->
+{% if event.isRsvpRequired and event.rsvpLimit and not event.isPast and eventWaitlistData %}
 <form method="post">
     <label class='d-none' id="eventLength">{{eventLength}}</label>
     <input class="form-control" id="eventID" name="event" value="{{event.id}}" type='hidden'>
@@ -233,8 +235,9 @@
     </div>
 </form>
 {% endif %}
-{% if event.isPast and eventNonAttendedData %}
+
 <!-- #################  Non Attended Table  ################# -->
+{% if event.isPast and eventNonAttendedData %}
 <form method="post">
     <label class='d-none' id="eventLength">{{eventLength}}</label>
     <input class="form-control" id="eventID" name="event" value="{{event.id}}" type='hidden'>
@@ -319,7 +322,8 @@
     {% endif %}
   </div>
 </form>
-<!-- Modal -->
+
+<!-- #################  Modal  ################# -->
 {% set rsvpNeeded  = (event.isRsvpRequired) and (not event.isPast) %}
 {% set rsvpFull = rsvpNeeded and (event.rsvpLimit is not none) and (currentRsvpAmount >= event.rsvpLimit) %}
 <div class="modal fade float-start" id="addVolunteerModal" tabindex="-1" aria-labelledby="addVolunteerModalLabel" aria-hidden="true">
