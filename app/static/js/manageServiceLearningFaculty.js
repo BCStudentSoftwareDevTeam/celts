@@ -63,9 +63,31 @@ function handleFileSelect(event){
 
   if (selectedFile){
     console.log("My file has been selected", selectedFile.name);
-    $("#submitParticipant").prop('disabled', false)
+    $("#previewButton").prop('disabled', false);
   }
 }
+
+
+  // $("#previewButton").on("click", function(){
+  //   console.log("Preview is here, ourrrrrrrrrrrrrrrrrrrrrrra")
+  //   $("#modalPreview").modal("toggle");
+  //   // $("#modalPreview").preventDefault();
+  //   });
+
+
+// $("#previewButton").on("click", function () {
+//   $("#modalPreview").modal("toggle");
+// });
+
+
+// $(document).ready(function(){
+//   $("#previewButton").click(function(){
+//     $("#modalPreview").addClass('show d-block');
+//   })
+// })
+
+
+
 
 
 $(document).ready(function(){
@@ -73,6 +95,8 @@ $(document).ready(function(){
     location.reload();
   })
   })
+
+
 
 
 

@@ -105,7 +105,7 @@ def parseUploadedFile(filePath):
     courseReg = r"\b[A-Z]{2,4}\s\d{3}\b"
     bnumberReg = r"\b[B]\d{8}\b"
 
-    previewParticipants= {}
+    previewParticipants = []
 
     for row in excelSheet.iter_rows():
         cellVal = row[0].value
@@ -115,17 +115,17 @@ def parseUploadedFile(filePath):
 
         elif re.search(courseReg, str(cellVal)):
             previewCourse= cellVal
-            previewParticipants[(previewCourse, previewTerm)] = []
+            previewParticipants.append(previewCourse)
+            previewParticipants.append(previewTerm)
 
         elif re.search(bnumberReg, str(cellVal)):           
             previewStudent = row[1].value
-            previewParticipants[(previewCourse, previewTerm)].append(previewStudent)
+            previewParticipants.append(previewStudent)
 
     return previewParticipants
 
 
-def storePreviewParticipants(storedData):
-    session['data'] = storedData
+
    
 
 

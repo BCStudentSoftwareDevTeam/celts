@@ -4,7 +4,7 @@ import json
 from http import cookies
 
 
-from app.logic.serviceLearningCoursesData import storePreviewParticipants
+from app.logic.serviceLearningCoursesData import parseUploadedFile
 from app import app
 from app.models.program import Program
 from app.models.event import Event
@@ -393,15 +393,10 @@ def getAllCourseInstructors(term=None):
                                 terms = terms,
                                 term = term,
                                 CourseStatus = CourseStatus,
-                                data ={})
+                                data =session['data'])
     else:
         abort(403)
 
-    # if request.method== 'POST':
-    #     file= request.files['addCourseParticipant']
-    #     if file:
-    # storedInput('/manageServiceLearning')
-    # print(sessionPreview)
     
     return render_template('/main/manageServiceLearningFaculty.html',
                             courseInstructors = courseDict,

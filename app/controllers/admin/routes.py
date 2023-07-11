@@ -35,7 +35,7 @@ from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
 from openpyxl import load_workbook
-from app.logic.serviceLearningCoursesData import parseUploadedFile, storePreviewParticipants
+from app.logic.serviceLearningCoursesData import parseUploadedFile
 
 
 
@@ -327,6 +327,8 @@ def addCourseFile():
     fileData.save(filePath)
     excelData = load_workbook(filename=filePath)
     excelSheet = excelData.active
+ 
+    
 
     termReg = r"\b[a-zA-Z]{3,}\s\d{4}\b" # regular expression to check cells content
     courseReg = r"\b[A-Z]{2,4}\s\d{3}\b"
@@ -335,13 +337,8 @@ def addCourseFile():
     isSummer = False
     courseGet = None
 
-    
     expectedInput = parseUploadedFile(filePath)
     session['data'] = expectedInput
-
-    print(session['data'])
-    print("///////////////////////////////////////////////////")
-   
 
     for row in excelSheet.iter_rows():
         cellVal = row[0].value
@@ -384,6 +381,9 @@ def addCourseFile():
     os.remove(filePath)
     
     return redirect(url_for("main.getAllCourseInstructors"))
+
+
+
     
 
 @admin_bp.route("/manageBonner")
