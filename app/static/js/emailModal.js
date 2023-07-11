@@ -1,8 +1,10 @@
 $(document).ready(function(){
   retrieveEmailTemplateData();
+
+  $("#beans").on("click", appendToBody)
+
 })
 var emailTemplateInfo;
-var cursorIndex = -1;
 function retrieveEmailTemplateData() {
    $.ajax({
     url: "/retrieveEmailTemplate",
@@ -15,6 +17,20 @@ function retrieveEmailTemplateData() {
     }
   });
 }
+
+// var placeholderData;
+// function retrievePlaceholderData(eventId){
+//   $.ajax({
+//     url: `/retrievePlaceholderData/${eventId}`,
+//     type: "GET",
+//     success: function(placeholderInfo) {
+//       placeholderData = placeholderInfo;
+//     },
+//     error: function(error, status){
+//         console.log(error, status);
+//     }
+//   });
+// }
 
 function showEmailModal(eventID, programID, selectedTerm, isPastEvent, template=null) {
   $(".modal-body #eventID").val(eventID);
@@ -35,24 +51,29 @@ function showEmailModal(eventID, programID, selectedTerm, isPastEvent, template=
     let option = `<option value='${emailTemplateInfo[i]['purpose']}'>${emailTemplateInfo[i]['subject']}</option>`;
     $('#templateIdentifier').append(option);
   }
-  // if (template) $("#templateIdentifier").val(template);
+  if (template) $("#templateIdentifier").val(template);
   // for (let i=0; i < Object.keys(emailTemplateInfo).length; i++) {
   //   let option = `<option value='${emailTemplateInfo[i]['purpose']}'>${emailTemplateInfo[i]['subject']}</option>`;
-
   // }
 
+  $("#body").data("cursor-index", 0);
   replaceEmailBodyAndSubject();
   fetchEmailLogData().then(() => $('#emailModal').modal('show'));
 }
 
-function loseFocus() {
-  cursorIndex = $("#body").selectionStart;
+function saveCursorIndex(){
+  $("#body").data("cursor-index", $("#body")[0].selectionStart);
 }
 
-function appendToBody() {
-  textBody = $("#body").val()
-  console.log(cursorIndex)
-  $("#body").val(textBody.slice(0, cursorIndex) + "Beans" + textBody.slice(cursorIndex))
+function appendToBody() {  // Beans: change name to imply insertion
+  bodyText = $("#body").val();
+  cursorIndex = $("#body").data("cursor-index");
+  console.log(cursorIndex);
+  let metaData = $("#placeholderSelect option:selected" ).val();
+  $("#body").val(bodyText.slice(0, cursorIndex) + metaData + bodyText.slice(cursorIndex));
+  $("#body").data("cursor-index", cursorIndex + metaData.length);
+
+  $("#placeholderSelect").val("")
 }
 
 async function fetchEmailLogData() {
@@ -97,6 +118,7 @@ function replaceEmailBodyAndSubject() {
     if (emailTemplateInfo[i]['purpose'] == selected) {
       $('#subject').val(emailTemplateInfo[i]['subject']);
       $('#body').val(emailTemplateInfo[i]['body']);
+      $("#body").data("cursor-index", emailTemplateInfo[i]['body'].length)
     }
   }
 }

@@ -17,6 +17,9 @@ def retrieveEmailTemplate():
             'body': template.body}
     return templateInfo
 
+@main_bp.route('/retrievePlaceholderData', methods=['GET'])
+
+
 @main_bp.route('/fetchEmailLogData/<eventId>', methods=['GET'])
 def fetchEmailLogData(eventId):
     last_email = EmailHandler.retrieve_last_email(eventId)
