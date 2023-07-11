@@ -21,10 +21,17 @@
                 {% endif %}
                 <div class="col-md-6">
                     <br>
-                    <div>   
-                        {% set event_title = eventData.name %}
-                        <h3 id="title">{{event_title}}</h3>
-                    </div>
+                    {%if g.current_user.isStudent %}
+                        <div>   
+                            {% set event_title = eventData.name %}
+                            <h3 id="title">{{event_title}}:</h3>
+                            {% if eventData.name != 'All Volunteer Training' and eventData['program'] == None %}
+                                <h4 class="text-muted">CELTS-Sponsored Event</h4>
+                            {% elif eventData['program'] %}
+                                <h4 class="text-muted">{{eventData["program"].programName}} Event</h4>
+                            {% endif %}
+                        </div>
+                        {% endif %}
                     <br>
                     <div class="d-flex align-top">
                         <i class="bi bi-calendar" style="margin-right: 10px;"></i>

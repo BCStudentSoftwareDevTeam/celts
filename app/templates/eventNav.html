@@ -1,6 +1,4 @@
 {% extends "base.html"%}
-
-
 {% block app_content %}
     {% block content_pageHeading %}
     <div class="text-center">
@@ -10,12 +8,6 @@
                 <h3>CELTS-Sponsored Event</h3>
             {% elif eventData['program'] %}
                 <h3>{{eventData["program"].programName}} Event</h3>
-            {% endif %}
-        {% elif g.current_user.isStudent %}
-            <h2>{{eventData["program"].programName}} Event</h2>
-            <br>
-            {% if eventData.name != 'All Volunteer Training' and eventData['program'] == None %}
-                <h3>CELTS-Sponsored Event</h3>
             {% endif %}
         {% endif %}
         {% if eventPast %}
