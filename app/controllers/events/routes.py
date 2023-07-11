@@ -45,8 +45,6 @@ def kioskSignin():
     """Utilizes form data and sign in function. Returns correct flasher message."""
     eventid = request.form["eventid"]
     bnumber = request.form["bNumber"]
-    
-    programid= Event.select(Event.program). where(Event.id == eventid)
 
     if not bnumber: # Avoids string index out of range error
         return "", 500

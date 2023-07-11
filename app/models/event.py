@@ -30,7 +30,6 @@ class Event(baseModel):
 
     @property
     def noProgram(self):
-        #Ask Anderson 
         return not self.program_id.exists()
 
     @property
