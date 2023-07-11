@@ -30,7 +30,7 @@ class Event(baseModel):
 
     @property
     def noProgram(self):
-        return not self.program_id.exists()
+        return not self.program_id
 
     @property
     def isPast(self):
