@@ -2,7 +2,7 @@ $(document).ready(function(){
   retrieveEmailTemplateData();
 })
 var emailTemplateInfo;
-
+var cursorIndex = -1;
 function retrieveEmailTemplateData() {
    $.ajax({
     url: "/retrieveEmailTemplate",
@@ -32,12 +32,27 @@ function showEmailModal(eventID, programID, selectedTerm, isPastEvent, template=
   }
 
   for (let i=0; i < Object.keys(emailTemplateInfo).length; i++) {
-    let option = `<option class='testing' value='${emailTemplateInfo[i]['purpose']}'>${emailTemplateInfo[i]['subject']}</option>`;
+    let option = `<option value='${emailTemplateInfo[i]['purpose']}'>${emailTemplateInfo[i]['subject']}</option>`;
     $('#templateIdentifier').append(option);
   }
-  if (template) $("#templateIdentifier").val(template);
+  // if (template) $("#templateIdentifier").val(template);
+  // for (let i=0; i < Object.keys(emailTemplateInfo).length; i++) {
+  //   let option = `<option value='${emailTemplateInfo[i]['purpose']}'>${emailTemplateInfo[i]['subject']}</option>`;
+
+  // }
+
   replaceEmailBodyAndSubject();
   fetchEmailLogData().then(() => $('#emailModal').modal('show'));
+}
+
+function loseFocus() {
+  cursorIndex = $("#body").selectionStart;
+}
+
+function appendToBody() {
+  textBody = $("#body").val()
+  console.log(cursorIndex)
+  $("#body").val(textBody.slice(0, cursorIndex) + "Beans" + textBody.slice(cursorIndex))
 }
 
 async function fetchEmailLogData() {
