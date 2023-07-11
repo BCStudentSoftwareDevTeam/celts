@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from peewee import IntegrityError, DoesNotExist
 from app import app
 from flask import g
+from werkzeug.datastructures import ImmutableMultiDict
 
 from app.models import mainDB
 from app.models.user import User
@@ -145,22 +146,22 @@ def test_addPersonToEvent():
 @pytest.mark.integration
 def test_updateEventParticipants():
     # tests if the volunteer table gets succesfully updated
-    participantData = {'inputHours_agliullovak':100, 'checkbox_agliullovak':"on", 'event':3, 'username1': 'agliullovak'}
+    participantData = ImmutableMultiDict({'inputHours_agliullovak':100, 'checkbox_agliullovak':"on", 'event':3, 'username': 'agliullovak'})
     volunteerTableUpdate = updateEventParticipants(participantData)
     assert volunteerTableUpdate == True
 
     # tests if user does not exist in the database
-    participantData = {'inputHours_jarjug':100, 'checkbox_jarjug':"on", 'event':3, 'username1': 'jarjug'}
+    participantData = ImmutableMultiDict({'inputHours_jarjug':100, 'checkbox_jarjug':"on", 'event':3, 'username': 'jarjug'})
     volunteerTableUpdate = updateEventParticipants(participantData)
     assert volunteerTableUpdate == False
 
     # tests for the case when the checkbox is not checked (user is not present)
-    participantData = {'inputHours_agliullovak':100, 'event':3, 'username1': 'agliullovak'}
+    participantData = ImmutableMultiDict({'inputHours_agliullovak':100, 'event':3, 'username': 'agliullovak'})
     volunteerTableUpdate = updateEventParticipants(participantData)
     assert volunteerTableUpdate == True
 
     #Undo the above test changes
-    participantData = {'inputHours_agliullovak':2, 'checkbox_agliullovak':"on", 'event':3, 'username1': 'agliullovak'}
+    participantData = ImmutableMultiDict({'inputHours_agliullovak':2, 'checkbox_agliullovak':"on", 'event':3, 'username': 'agliullovak'})
 
 @pytest.mark.integration
 def test_trainedParticipants():
