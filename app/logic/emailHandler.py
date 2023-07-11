@@ -72,7 +72,7 @@ class EmailHandler:
         if program_id == 'Unknown' or program_id is None:
             return self.event.program
         else:
-            return Program.get_by_id(program_id)
+            return [Program.get_by_id(program_id)]
 
     def update_sender_config(self):
         # We might need this.
@@ -92,7 +92,7 @@ class EmailHandler:
             recipients = (User.select()
                 .join(Interest)
                 .join(Program, on=(Program.id==Interest.program))
-                .where(Program.id.in_( self.program_ids)))
+                .where(Program.id( self.program_ids)))
         if recipients_category == "RSVP'd":
             recipients = (User.select()
                 .join(EventRsvp)
@@ -105,7 +105,7 @@ class EmailHandler:
 
             sameYearTerms = Term.select().join(Term2, on=(Term.academicYear == Term2.academicYear)).where(Term2.isCurrentTerm == True)
 
-            bannedUsers = ProgramBan.select(ProgramBan.user_id).where((ProgramBan.endDate > datetime.now()) | (ProgramBan.endDate is None), ProgramBan.program_id.in_( self.program_ids))
+            bannedUsers = ProgramBan.select(ProgramBan.user_id).where((ProgramBan.endDate > datetime.now()) | (ProgramBan.endDate is None), ProgramBan.program_id ==self.program_ids)
             allVolunteer = Event.select().where(Event.isAllVolunteerTraining == True, Event.term.in_(sameYearTerms))
             recipients = User.select().join(EventParticipant).where(User.username.not_in(bannedUsers), EventParticipant.event.in_(allVolunteer))
         return [recipient for recipient in recipients]
@@ -203,7 +203,7 @@ class EmailHandler:
         defaultEmailInfo = {"senderName":"Sandesh", "replyTo":self.reply_to}
         template_id, subject, body = self.build_email()
 
-        if self.program_ids:
+        if len(self.program_ids) == 1:
             if self.program_ids.contactEmail:
                 defaultEmailInfo["replyTo"] = self.program_ids.contactEmail
             if self.program_ids.contactName:
