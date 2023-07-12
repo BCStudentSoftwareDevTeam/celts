@@ -85,9 +85,10 @@ $(document).ready(function() {
     calculateRecurringEventFrequency();
   }
 
-    var fileNum = 0;
+    
     $("#attachmentObject").on('change', function() {
       const selectedFiles = $("#attachmentObject").prop('files');
+      var fileNum = 0;
       for (let i = 0; i < selectedFiles.length; i++) {
         const file = selectedFiles[i];
         if (hasUniqueFileName(file.name)){
