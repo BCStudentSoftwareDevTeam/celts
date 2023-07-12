@@ -393,7 +393,9 @@ def getAllCourseInstructors(term=None):
                                 terms = terms,
                                 term = term,
                                 CourseStatus = CourseStatus,
-                                data =session['data'])
+                                data = session.get('data', 'no data available'), 
+                                show_modal=True
+                                )
     else:
         abort(403)
 

@@ -338,49 +338,49 @@ def addCourseFile():
     courseGet = None
 
     expectedInput = parseUploadedFile(filePath)
-    session['data'] = expectedInput
+    session['data'] = ["please stay on the page. I beg you for that"]
 
-    for row in excelSheet.iter_rows():
-        cellVal = row[0].value
+    # for row in excelSheet.iter_rows():
+    #     cellVal = row[0].value
 
-        if re.search(termReg, str(cellVal)):
-            year = cellVal[-4:]
-            if "Fall" in cellVal :
-                academicYear = year + "-" + str(int(year) + 1)
-            elif "Summer" or "May" or "Spring" in cellVal:
-                academicYear=  str(int(year) - 1) + "-" + year
-                if "Summer" in cellVal:
-                    isSummer = True
+    #     if re.search(termReg, str(cellVal)):
+    #         year = cellVal[-4:]
+    #         if "Fall" in cellVal :
+    #             academicYear = year + "-" + str(int(year) + 1)
+    #         elif "Summer" or "May" or "Spring" in cellVal:
+    #             academicYear=  str(int(year) - 1) + "-" + year
+    #             if "Summer" in cellVal:
+    #                 isSummer = True
 
-            term, tCreated = Term.get_or_create(description=cellVal, year=year, academicYear=academicYear, isSummer=isSummer, isCurrentTerm=False)
+    #         term, tCreated = Term.get_or_create(description=cellVal, year=year, academicYear=academicYear, isSummer=isSummer, isCurrentTerm=False)
           
 
-        elif re.search(courseReg, str(cellVal)):
+    #     elif re.search(courseReg, str(cellVal)):
 
-            courseGet, cCreated = Course.get_or_create(courseAbbreviation = cellVal, defaults = {
-                "CourseName" : "",
-                "sectionDesignation" : "",
-                "courseCredit" : "1",
-                "term" : term,
-                "status" : 3,
-                "createdBy" : "heggens",
-                "serviceLearningDesignatedSections" : "",
-                "previouslyApprovedDescription" : ""
-                }
-            ) 
+    #         courseGet, cCreated = Course.get_or_create(courseAbbreviation = cellVal, defaults = {
+    #             "CourseName" : "",
+    #             "sectionDesignation" : "",
+    #             "courseCredit" : "1",
+    #             "term" : term,
+    #             "status" : 3,
+    #             "createdBy" : "heggens",
+    #             "serviceLearningDesignatedSections" : "",
+    #             "previouslyApprovedDescription" : ""
+    #             }
+    #         ) 
         
-        elif re.search(bnumberReg, str(cellVal)):           
-            user = User.get(User.bnumber == cellVal)
+    #     elif re.search(bnumberReg, str(cellVal)):           
+    #         user = User.get(User.bnumber == cellVal)
 
-            CourseParticipant.get_or_create(user = user, defaults = {
-                "course" : courseGet,
-                "hoursEarned" : 2
-            })
+    #         CourseParticipant.get_or_create(user = user, defaults = {
+    #             "course" : courseGet,
+    #             "hoursEarned" : 2
+    #         })
 
     
     os.remove(filePath)
     
-    return redirect(url_for("main.getAllCourseInstructors"))
+    return redirect(url_for("main.getAllCourseInstructors", show_modal=True))
 
 
 

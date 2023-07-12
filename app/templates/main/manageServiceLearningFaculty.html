@@ -157,14 +157,23 @@
                   <label for="addCourseParticipant" class="form-label"></label>
                   <!-- <input class="form-control btn btn-primary position-relative" id="submitParticipant" disabled style = 'width: 75px' type="submit" data-bs-toggle="modal" data-bs-target="#modalPreview"></input> -->
                   <button class="form-control btn btn-success position-relative" id="previewButton" style ='width: 90px' disabled data-bs-toggle="modal" data-bs-target="#modalPreview">Preview</button>
-                </div> 
+                <!-- data-bs-toggle="modal" data-bs-target="#modalPreview" -->
+              </div> 
               </form>
             </div>
           </div>
        {% endif %}
         </div>
+        {%if show_modal and data %}
+        <script>
+          $(document).ready(function (){
+            $('#modalPreview').modal('show d-block')
+            $('#modalPreview').css('display', 'block')
+          });
+        </script>
+        {% endif %}
         <!-- modal for Preview -->
-        <div class="modal fade float-start col" id="modalPreview">
+        <div class="modal fade float-start col " id="modalPreview">
           <div class="modal-dialog custom-modal-size">
             <div class="modal-content">
               <div class="modal-header">
@@ -174,10 +183,12 @@
                 <div class="modal-body">
                   <div class="input-group">
                     <label for="addCourseParticipant" class="form-label">List of Participants per Course:</label>
+                    {% if show_modal and data %}
                     <ul>
                       {% for item in data %}
                         <li>{{ item }}</li>
                       {% endfor %}
+                    {% endif %}
                     </ul>
                   </div>
                 </div>
