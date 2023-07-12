@@ -28,6 +28,12 @@
       </div>
     </div>
   </div>
+  {% if user.isCeltsStudentStaff or user.isAdmin %}
+    <div class="form-check form-switch mb-2">
+      <label class="form-check-label" for="toggleButton">View Past Events</label>
+      <input class="form-check-input" type="checkbox" id="toggleButton">
+    </div>
+  {% endif %}
 </div>
 <div class="row">
   <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
@@ -169,6 +175,20 @@
   <p>No upcoming events for this term</p>
 {% endif %}
 {% endmacro %}
+
+<script>
+  var toggleButton = document.getElementById("toggleButton");
+  toggleButton.addEventListener("change", function() {
+    if (this.checked) {
+      // The toggle button is ON
+      console.log("Toggle button is ON");
+    } else {
+      // The toggle button is OFF
+      console.log("Toggle button is OFF");
+    }
+  });
+</script>
+
 <div class="tab-content" id="pills-tabContent">
   <div class="tab-pane fade show {{'active' if activeTab == 'studentLedEvents' else ''}}" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
     {% if studentLedEvents %}
