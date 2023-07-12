@@ -78,7 +78,6 @@ function showEmailModal(eventID, programID, selectedTerm, isPastEvent, template=
 
   $("#body").data("cursor-index", 0);
   readyTemplateOptions(eventID, template);
-
   readyPlaceholderOptions(eventID);
   fetchEmailLogData().then(() => $('#emailModal').modal('show'));
   
