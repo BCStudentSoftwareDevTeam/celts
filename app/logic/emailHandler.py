@@ -115,7 +115,7 @@ class EmailHandler:
 
 
     def replace_dynamic_placeholders(self, body, *, name):
-        """ Replaces name placeholder with recipient's full name """
+        """ Replaces placeholders that cannot be predetermined on the front-end """
         event_link = f"{self.url_domain}/event/{self.event.id}/view"
         new_body = body.format(name=name, event_link=event_link)
         return new_body
@@ -126,12 +126,9 @@ class EmailHandler:
         email_template = EmailTemplate.get(EmailTemplate.purpose==self.template_identifier) # --Q: should we keep purpose as the identifier?
         template_id = email_template.id
 
-        subject = self.subject if self.subject else email_template.subject
-
-        body = self.body if self.body else email_template.body
 
         self.reply_to = email_template.replyToAddress
-        return (template_id, subject, body)
+        return (template_id, self.subject, self.body)
 
     def getAttachmentFullPath(self, newfile=None):
         """

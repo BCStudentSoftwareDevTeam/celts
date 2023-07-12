@@ -76,10 +76,6 @@ function showEmailModal(eventID, programID, selectedTerm, isPastEvent, template=
   }
 
 
-  
-  // for (let i=0; i < Object.keys(emailTemplateInfo).length; i++) {
-  //   let option = `<option value='${emailTemplateInfo[i]['purpose']}'>${emailTemplateInfo[i]['subject']}</option>`;
-  // }
 
   $("#body").data("cursor-index", 0);
   readyTemplateOptions(eventID, template);
