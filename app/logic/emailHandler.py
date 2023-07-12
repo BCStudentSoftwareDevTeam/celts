@@ -187,7 +187,7 @@ class EmailHandler:
         return (template_id, subject, body)
 
     def send_email(self):
-        defaultEmailInfo = {"senderName":"Sandesh", "replyTo":self.reply_to}
+        defaultEmailInfo = {"senderName":"Sandesh", "replyTo":self.reply_to}  # Beans: We need to change the default senderName on release to be someone from Celts probably
         template_id, subject, body = self.build_email()
 
         if len(self.program_ids) == 1:
