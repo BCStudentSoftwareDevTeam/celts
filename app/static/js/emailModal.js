@@ -1,13 +1,13 @@
 $(document).ready(function(){
-  retrieveEmailTemplateData();
+  
 
   $("#beans").on("click", appendToBody)
 
 })
 var emailTemplateInfo;
-function retrieveEmailTemplateData() {
-   $.ajax({
-    url: "/retrieveEmailTemplate",
+async function retrieveEmailTemplateData(eventId) {
+   await $.ajax({
+    url: `/retrieveEmailTemplate/${eventId}`,
     type: "GET",
     success: function(templateInfo) {
       emailTemplateInfo = templateInfo;
@@ -18,21 +18,49 @@ function retrieveEmailTemplateData() {
   });
 }
 
-// var placeholderData;
-// function retrievePlaceholderData(eventId){
-//   $.ajax({
-//     url: `/retrievePlaceholderData/${eventId}`,
-//     type: "GET",
-//     success: function(placeholderInfo) {
-//       placeholderData = placeholderInfo;
-//     },
-//     error: function(error, status){
-//         console.log(error, status);
-//     }
-//   });
-// }
+var placeholderList;
+async function retrievePlaceholderList(eventId){
+  await $.ajax({
+    url: `/retrievePlaceholderList/${eventId}`,
+    type: "GET",
+    success: function(placeholderInfo) {
+      placeholderList = placeholderInfo;
+    },
+    error: function(error, status){
+        console.log(error, status);
+    }
+  });
+}
+
+function readyTemplateOptions(eventId, template) {
+  $('#templateIdentifier .template-option').remove()
+  
+  retrieveEmailTemplateData(eventId).then(function() {
+    console.log(emailTemplateInfo)
+    for (let i=0; i < Object.keys(emailTemplateInfo).length; i++) {
+      let option = `<option class="template-option" value='${emailTemplateInfo[i]['purpose']}'>${emailTemplateInfo[i]['subject']}</option>`;
+      $('#templateIdentifier').append(option);
+    }
+    if (template) $("#templateIdentifier").val(template);
+    replaceEmailBodyAndSubject();
+  })
+}
+
+function readyPlaceholderOptions(eventId) {
+  $('#placeholderSelect .placeholder-option').remove()
+  retrievePlaceholderList(eventId).then(function() {
+    console.log(placeholderList)
+    for (let i = 0; i < placeholderList.length; i++){
+      let option = '<option class="placeholder-option" value="' + placeholderList[i][1] + '">'+ placeholderList[i][0] +'</option>';
+      $('#placeholderSelect').append(option);
+    }
+  }); 
+}
+
+
 
 function showEmailModal(eventID, programID, selectedTerm, isPastEvent, template=null) {
+  
   $(".modal-body #eventID").val(eventID);
   $(".modal-body #programID").val(programID);
   $(".modal-body #selectedTerm").val(selectedTerm);
@@ -47,18 +75,18 @@ function showEmailModal(eventID, programID, selectedTerm, isPastEvent, template=
     $(".pastEventWarning").prop("hidden", true);
   }
 
-  for (let i=0; i < Object.keys(emailTemplateInfo).length; i++) {
-    let option = `<option value='${emailTemplateInfo[i]['purpose']}'>${emailTemplateInfo[i]['subject']}</option>`;
-    $('#templateIdentifier').append(option);
-  }
-  if (template) $("#templateIdentifier").val(template);
+
+  
   // for (let i=0; i < Object.keys(emailTemplateInfo).length; i++) {
   //   let option = `<option value='${emailTemplateInfo[i]['purpose']}'>${emailTemplateInfo[i]['subject']}</option>`;
   // }
 
   $("#body").data("cursor-index", 0);
-  replaceEmailBodyAndSubject();
+  readyTemplateOptions(eventID, template);
+
+  readyPlaceholderOptions(eventID);
   fetchEmailLogData().then(() => $('#emailModal').modal('show'));
+  
 }
 
 function saveCursorIndex(){

@@ -5,8 +5,8 @@ from app.logic.emailHandler import EmailHandler
 from app.models.program import Program
 from flask import request
 
-@main_bp.route('/retrieveEmailTemplate', methods=['GET'])
-def retrieveEmailTemplate():
+@main_bp.route('/retrieveEmailTemplate/<eventId>', methods=['GET'])
+def retrieveEmailTemplate(eventId):
     templateInfo = {}
     emailTemplates = EmailTemplate.select()
 
@@ -14,10 +14,13 @@ def retrieveEmailTemplate():
         templateInfo[index] = {
             'purpose': template.purpose,
             'subject':template.subject,
-            'body': template.body}
+            'body': EmailHandler.replaceBodyPlaceholders(eventId, template.body)
+            }
     return templateInfo
 
-@main_bp.route('/retrievePlaceholderData', methods=['GET'])
+@main_bp.route('/retrievePlaceholderList/<eventId>', methods=['GET'])
+def retrievePlaceholderList(eventId):
+    return EmailHandler.retrievePlaceholderList(eventId)
 
 
 @main_bp.route('/fetchEmailLogData/<eventId>', methods=['GET'])

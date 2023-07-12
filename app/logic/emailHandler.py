@@ -112,23 +112,12 @@ class EmailHandler:
             recipients = User.select().join(EventParticipant).where(User.username.not_in(bannedUsers), EventParticipant.event.in_(allVolunteer))
         return [recipient for recipient in recipients]
 
-    def replace_general_template_placeholders(self, email_body=None):
-        """ Replaces all template placeholders except name """
-        event_link = f"{self.url_domain}/event/{self.event.id}/edit"
 
-        new_body = email_body.format(event_name=self.event.name,
-            location=self.event.location,
-            start_date=(self.event.startDate).strftime('%m/%d/%Y'),
-            end_date=(self.event.endDate).strftime('%m/%d/%Y'),
-            start_time=(self.event.timeStart).strftime('%I:%M'),
-            end_time=(self.event.timeEnd).strftime('%I:%M'),
-            event_link=event_link,
-            name="{name}")
-        return new_body
 
-    def replace_name_placeholder(self, name, body):
+    def replace_dynamic_placeholders(self, body, *, name):
         """ Replaces name placeholder with recipient's full name """
-        new_body = body.format(name=name)
+        event_link = f"{self.url_domain}/event/{self.event.id}/view"
+        new_body = body.format(name=name, event_link=event_link)
         return new_body
 
     def retrieve_and_modify_email_template(self):
@@ -140,10 +129,9 @@ class EmailHandler:
         subject = self.subject if self.subject else email_template.subject
 
         body = self.body if self.body else email_template.body
-        new_body = self.replace_general_template_placeholders(body)
 
         self.reply_to = email_template.replyToAddress
-        return (template_id, subject, new_body)
+        return (template_id, subject, body)
 
     def getAttachmentFullPath(self, newfile=None):
         """
@@ -215,7 +203,7 @@ class EmailHandler:
             with self.mail.connect() as conn:
                 for recipient in self.recipients:
                     full_name = f'{recipient.firstName} {recipient.lastName}'
-                    email_body = self.replace_name_placeholder(full_name, body)
+                    email_body = self.replace_dynamic_placeholders(body, name=full_name)
 
                     conn.send(Message(
                         subject,
@@ -251,3 +239,33 @@ class EmailHandler:
             return last_email
         except DoesNotExist:
             return None
+  
+
+    @staticmethod
+    def retrievePlaceholderList(eventId):
+        event = Event.get_by_id(eventId)
+        return [
+            ["Name", "{name}"],
+            ["Event Name", event.name],
+            ["Start Date", (event.startDate).strftime('%m/%d/%Y')],
+            ["End Date", (event.endDate).strftime('%m/%d/%Y')],
+            ["Start Time", (event.timeStart).strftime('%I:%M')],
+            ["End Time", (event.timeEnd).strftime('%I:%M')],
+            ["Location", event.location],
+            ["Event Link", "{event_link}"]
+        ]
+
+    @staticmethod
+    def replaceBodyPlaceholders(eventId, email_body):
+        """ Replaces all template placeholders except name and event_link """
+        event = Event.get_by_id(eventId)
+
+        new_body = email_body.format(event_name=event.name,
+            location=event.location,
+            start_date=(event.startDate).strftime('%m/%d/%Y'),
+            end_date=(event.endDate).strftime('%m/%d/%Y'),
+            start_time=(event.timeStart).strftime('%I:%M'),
+            end_time=(event.timeEnd).strftime('%I:%M'),
+            event_link="{event_link}",
+            name="{name}")
+        return new_body
