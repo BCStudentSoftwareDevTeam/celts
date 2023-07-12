@@ -1,7 +1,7 @@
 $(document).ready(function(){
   $("#body").on("blur", saveCursorIndex);
   $("#templateIdentifier").on("change", replaceEmailBodyAndSubject);
-  $("#placeholderSelect").on("change", appendToBody);
+  $("#placeholderSelect").on("change", insertPlaceholder);
   $("#cancel-btn").on("click", () => $('.modal').modal('hide'));
 })
 
@@ -90,7 +90,7 @@ function saveCursorIndex(){
   $("#body").data("cursor-index", $("#body")[0].selectionStart);
 }
 
-function appendToBody() {  // Beans: change name to imply insertion
+function insertPlaceholder() {  // Beans: change name to imply insertion
   bodyText = $("#body").val();
   cursorIndex = $("#body").data("cursor-index");
   console.log(cursorIndex);
