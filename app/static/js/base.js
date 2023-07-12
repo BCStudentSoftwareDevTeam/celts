@@ -123,3 +123,58 @@ function setCharacterLimit(textboxId, labelId){
       $(labelId).text("Remaining Characters: " + 0);
   }
 }
+
+// our function
+function handleFileSelection(fileInputId, attachedObjectId){
+  $("#" + fileInputId).on('change', function() {
+    const selectedFiles = $("#" + fileInputId).prop('files');
+    var fileNum = 0;
+    for (let i = 0; i < selectedFiles.length; i++) {
+      const file = selectedFiles[i];
+      if (hasUniqueFileName(file.name)){
+        let fileName = (file.name.length > 25) ? file.name.slice(0,10) + '...' + file.name.slice(-10) : file.name;
+        let fileExtension = file.name.split(".").pop();
+        let iconClass = '';
+        switch(fileExtension) {
+          case 'jpg': 
+          case 'png':
+          case 'jpeg':
+            iconClass = "bi-file-image";
+            break
+          case 'pdf':
+            iconClass = 'bi-filetype-pdf';
+            break
+          case 'docx':
+            iconClass = 'bi-filetype-docx';
+            break
+          case 'xlsx':
+            iconClass = 'bi-filetype-xlsx';
+            break
+          default:
+            iconClass = 'bi-file-earmark-arrow-up';
+        }
+        $("#attachedObjectContainer").append("<div class='border row p-0 m-0' id='attachedFilesRow" +fileNum+"'> \
+                                                <i class='col-auto fs-3 px-3 bi " + iconClass + "'></i> \
+                                                <div id='attachedFile" + fileNum + "' data-filename='" + file.name + "' class='fileName col-auto pt-2'>" + fileName + "</div> \
+                                                <div class='col' style='text-align:right'> \
+                                                  <div class='btn btn-danger fileHolder p-1 my-1 mx-1' id='trash" + fileNum + "' data-filenum='" + fileNum + "'>\
+                                                    <span class='bi bi-trash fs-6'></span>\
+                                                  </div>\
+                                                </div> \
+                                              </div>")
+        $("#trash"+fileNum).data("file", file);
+        $("#trash"+fileNum).on("click", function() {
+          let elementFileNum = $(this).data('filenum');
+          $("#attachedFilesRow" + elementFileNum).remove();
+          $("#" + fileInputId).prop('files', getSelectedFiles());
+        })
+        fileNum++;
+      }
+      else{
+        msgToast("File with filename '" + file.name + "' has already been added to this event")
+      }
+    }
+    $("#" + fileInputId).prop('files', getSelectedFiles());
+  });
+
+}

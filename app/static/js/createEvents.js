@@ -85,7 +85,8 @@ $(document).ready(function() {
     calculateRecurringEventFrequency();
   }
 
-    
+    // where the function would be, ideally
+        
     $("#attachmentObject").on('change', function() {
       const selectedFiles = $("#attachmentObject").prop('files');
       var fileNum = 0;
