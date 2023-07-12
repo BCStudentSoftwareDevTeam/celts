@@ -26,7 +26,7 @@
             <input id="selectedTerm" name="selectedTerm" class="form-control" value="" type="hidden">
           </div>
           <label for="templateIdentifier" class="form-label my-1 fs-5">Templates</label>
-          <select class="form-select" onchange="replaceEmailBodyAndSubject()" id='templateIdentifier' name="templateIdentifier" aria-label="template-select">
+          <select class="form-select" id='templateIdentifier' name="templateIdentifier" aria-label="template-select">
             <option disabled selected value="">Select a template</option>
           </select>
           <div class="row my-3">
@@ -59,12 +59,12 @@
             <div class="row">
               <label for="body" class="col form-label my-1 fs-5">Email Body</label>
               <div class="form-group col-auto">
-                <select class="form-select" onchange="appendToBody()" id='placeholderSelect' name="placeholderSelect" aria-label="Placeholder Select">
+                <select class="form-select" id='placeholderSelect' name="placeholderSelect" aria-label="Placeholder Select">
                   <option selected disabled value="">Insert Information</option>
                 </select>
               </div>
             </div>
-            <textarea class="form-control my-2" type="textarea" name="body" id="body" maxlength="8000" rows="5" onblur="saveCursorIndex()"
+            <textarea class="form-control my-2" type="textarea" name="body" id="body" maxlength="8000" rows="5"
               placeholder="Type your email message here (Max 8000 characters)" required></textarea>
           </div>
           <input type="file" id="attachmentObject" name="attachmentObject" class="form-control col-sm-6 mt-4 mb-2" multiple/>
@@ -76,7 +76,7 @@
           </div> --> <!-- Commented out for demo purposes FIXME: add this option back and get it to work-->
           <br>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="$('.modal').modal('hide')">Cancel</button>
+            <button type="button" id="cancel-btn" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
             <button type="submit" id="sendEmail" class="btn btn-primary">Send Email</button>
           </div>
         </form>

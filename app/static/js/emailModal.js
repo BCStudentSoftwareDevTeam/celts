@@ -1,9 +1,10 @@
 $(document).ready(function(){
-  
-
-  $("#beans").on("click", appendToBody)
-
+  $("#body").on("blur", saveCursorIndex);
+  $("#templateIdentifier").on("change", replaceEmailBodyAndSubject);
+  $("#placeholderSelect").on("change", appendToBody);
+  $("#cancel-btn").on("click", () => $('.modal').modal('hide'));
 })
+
 var emailTemplateInfo;
 async function retrieveEmailTemplateData(eventId) {
    await $.ajax({
