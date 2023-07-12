@@ -14,7 +14,7 @@ def retrieveEmailTemplate(eventId):
         templateInfo[index] = {
             'purpose': template.purpose,
             'subject':template.subject,
-            'body': EmailHandler.replaceBodyPlaceholders(eventId, template.body)
+            'body': EmailHandler.replaceStaticPlaceholders(eventId, template.body)
             }
     return templateInfo
 
