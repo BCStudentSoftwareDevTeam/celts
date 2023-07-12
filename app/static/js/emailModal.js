@@ -37,7 +37,6 @@ function readyTemplateOptions(eventId, template) {
   $('#templateIdentifier .template-option').remove()
   
   retrieveEmailTemplateData(eventId).then(function() {
-    console.log(emailTemplateInfo)
     for (let i=0; i < Object.keys(emailTemplateInfo).length; i++) {
       let option = `<option class="template-option" value='${emailTemplateInfo[i]['purpose']}'>${emailTemplateInfo[i]['subject']}</option>`;
       $('#templateIdentifier').append(option);
@@ -50,7 +49,6 @@ function readyTemplateOptions(eventId, template) {
 function readyPlaceholderOptions(eventId) {
   $('#placeholderSelect .placeholder-option').remove()
   retrievePlaceholderList(eventId).then(function() {
-    console.log(placeholderList)
     for (let i = 0; i < placeholderList.length; i++){
       let option = '<option class="placeholder-option" value="' + placeholderList[i][1] + '">'+ placeholderList[i][0] +'</option>';
       $('#placeholderSelect').append(option);
