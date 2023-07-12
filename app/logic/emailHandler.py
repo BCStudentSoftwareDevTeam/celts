@@ -114,10 +114,10 @@ class EmailHandler:
 
 
 
-    def replace_dynamic_placeholders(self, body, *, name):
+    def replaceDynamicPlaceholders(self, email_body, *, name):
         """ Replaces placeholders that cannot be predetermined on the front-end """
         event_link = f"{self.url_domain}/event/{self.event.id}/view"
-        new_body = body.format(name=name, event_link=event_link)
+        new_body = email_body.format(name=name, event_link=event_link)
         return new_body
 
     def retrieve_and_modify_email_template(self):
@@ -200,7 +200,7 @@ class EmailHandler:
             with self.mail.connect() as conn:
                 for recipient in self.recipients:
                     full_name = f'{recipient.firstName} {recipient.lastName}'
-                    email_body = self.replace_dynamic_placeholders(body, name=full_name)
+                    email_body = self.replaceDynamicPlaceholders(body, name=full_name)
 
                     conn.send(Message(
                         subject,
@@ -253,8 +253,8 @@ class EmailHandler:
         ]
 
     @staticmethod
-    def replaceBodyPlaceholders(eventId, email_body):
-        """ Replaces all template placeholders except name and event_link """
+    def replaceStaticPlaceholders(eventId, email_body):
+        """ Replaces all template placeholders except for those that can't be known until just before Send-time """
         event = Event.get_by_id(eventId)
 
         new_body = email_body.format(event_name=event.name,
