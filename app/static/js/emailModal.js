@@ -87,14 +87,12 @@ function saveCursorIndex(){
   $("#body").data("cursor-index", $("#body")[0].selectionStart);
 }
 
-function insertPlaceholder() {  // Beans: change name to imply insertion
+function insertPlaceholder() {
   bodyText = $("#body").val();
   cursorIndex = $("#body").data("cursor-index");
-  console.log(cursorIndex);
-  let metaData = $("#placeholderSelect option:selected" ).val();
-  $("#body").val(bodyText.slice(0, cursorIndex) + metaData + bodyText.slice(cursorIndex));
-  $("#body").data("cursor-index", cursorIndex + metaData.length);
-
+  let placeholderValue = $("#placeholderSelect option:selected" ).val();
+  $("#body").val(bodyText.slice(0, cursorIndex) + placeholderValue + bodyText.slice(cursorIndex));
+  $("#body").data("cursor-index", cursorIndex + placeholderValue.length);
   $("#placeholderSelect").val("")
 }
 
