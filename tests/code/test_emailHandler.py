@@ -30,7 +30,6 @@ def test_send_email_using_modal():
             raw_form_data = {"templateIdentifier": "Test",
                 "subject": "Test Email",
                 "body": "Hello {name}",
-                "programID":"1",
                 "eventID":"1",
                 "recipientsCategory": "Interested"}
 
@@ -53,7 +52,6 @@ def test_send_email_using_modal():
 #             # Case 2: Send email without subject and body -- as if email is sent automatically
 #             url_domain = urlparse(request.base_url).netloc
 #             raw_form_data = {"templateIdentifier": "Test",
-#                 "programID":"1",
 #                 "eventID":"1",
 #                 "recipientsCategory": "Interested"}
 
@@ -96,7 +94,6 @@ def test_email_log():
         with mainDB.atomic() as transaction:
             url_domain = urlparse(request.base_url).netloc
             raw_form_data = {"templateIdentifier": "Test",
-                "programID":"1",
                 "eventID":"1",
                 "subject":"Test Email",
                 "body":"We ran out of skeletons. Can you send some more?",
@@ -126,8 +123,7 @@ def test_recipients_eligible_students():
         with mainDB.atomic() as transaction:
             url_domain = urlparse(request.base_url).netloc
             raw_form_data = {"templateIdentifier": "Test",
-                "programID":"3",
-                "eventID":"1",
+                "eventID":"3",
                 "recipientsCategory": "Eligible Students"}
 
             email = EmailHandler(raw_form_data, url_domain, 'ramsayb2')
@@ -147,7 +143,6 @@ def test_recipients_eligible_students():
             # Train ayisie so they show up in the results: NOT banned and IS trained
             newTrainedStudent = EventParticipant.create(user = "ayisie", event = 14)
             email.process_data()
-            print(email.recipients)
             assert email.recipients ==  [User.get_by_id("partont"),User.get_by_id("ayisie")]
             newTrainedStudent.delete_instance()
 
@@ -169,7 +164,6 @@ def test_recipients_eligible_students():
 
             # Test a program that should have nothing in banned users and nothing in All Volunteer:
             raw_form_data = {"templateIdentifier": "Test",
-                "programID":"10",
                 "eventID":"1",
                 "recipientsCategory": "Eligible Students"}
 
@@ -188,7 +182,6 @@ def test_recipients_eligible_students():
             newTrainedStudent = EventParticipant.create(user = "partont", event = allVolunteerEvent)
 
             raw_form_data = {"templateIdentifier": "Test",
-                "programID":"3",
                 "eventID":"1",
                 "recipientsCategory": "Eligible Students"}
 
