@@ -97,7 +97,6 @@ class EmailHandler:
             Term2 = Term.alias()
             
             sameYearTerms = Term.select().join(Term2, on=(Term.academicYear == Term2.academicYear)).where(Term2.isCurrentTerm == True)
-            #sameYearTerms = Term.select().where(Term.isCurrentTerm == True)
 
             bannedUsers = ProgramBan.select(ProgramBan.user_id).where((ProgramBan.endDate > datetime.now()) | (ProgramBan.endDate is None), ProgramBan.program_id == (self.program.id if self.program else ProgramBan.program_id))
             allVolunteer = Event.select().where(Event.isAllVolunteerTraining == True, Event.term.in_(sameYearTerms))
