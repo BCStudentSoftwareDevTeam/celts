@@ -10,7 +10,7 @@ def getManagerProgramDict(user):
     programs = Program.select().order_by(Program.programName)
     if not (user.isAdmin or user.isBonnerScholar):
         programs = programs.where(Program.isBonnerScholars == False)
-        managerRows = managerRows.join(Program).where(ProgramManager.program.isBonnerScholars == False)   # excludes Bonner Program Manager from the manager list.
+        managerRows = managerRows.join(Program).where(ProgramManager.program.isBonnerScholars == False)  
     managerProgramDict = {}
 
     for program in programs:
