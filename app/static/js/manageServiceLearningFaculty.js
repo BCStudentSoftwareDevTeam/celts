@@ -47,9 +47,6 @@ $(document).ready( function () {
   }
 });
 
-
-
-
 $("#modalCourseParticipant").on("click", function () {
   $("#modalSubmit").modal("toggle");
 });
@@ -66,33 +63,17 @@ function handleFileSelect(event){
     $("#previewButton").prop('disabled', false);
   }
 }
-
-
-  // $("#previewButton").on("click", function(){
-  //   console.log("Preview is here, ourrrrrrrrrrrrrrrrrrrrrrra")
-  //   $("#modalPreview").modal("toggle");
-  //   // $("#modalPreview").preventDefault();
-  //   });
-
-
-// $("#previewButton").on("click", function () {
-//   $("#modalPreview").modal("toggle");
-// });
-
-
-// $(document).ready(function(){
-//   $("#previewButton").click(function(){
-//     $("#modalPreview").addClass('show d-block');
-//   })
-// })
-
-
-
+$(document).ready(function () {
+  $('#modalPreview button[data-bs-dismiss="modal"]').click(function () {
+    $('#modalPreview').removeClass('show d-block');
+  });
+});
 
 
 $(document).ready(function(){
-  $('.btn-secondary[data-bs-dismiss="modal"]').click(function(){
-    location.reload();
+  $('#modalSubmit').on('hidden.bs.modal', function () {
+    $('#addCourseParticipant').val('');
+    
   })
   })
 

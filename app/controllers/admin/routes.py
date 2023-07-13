@@ -330,77 +330,14 @@ def addCourseFile():
 
     expectedInput = parseUploadedFile(filePath)
 
-    session['data'] = expectedInput
+    session['dataPreview'] ={
+        'filePathAccessor': filePath,
+        'expectedInputAccessor': expectedInput} 
     
-    os.remove(filePath)
-    
+
     return redirect(url_for("main.getAllCourseInstructors", show_modal = True))
 
-
-@admin_bp.route("/saveCourseParticipant", methods= ["POST"])
-def saveCourseFile():
-    print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
-    print("I SEEEEEEEEEEEEEEEEEEEEEEE YOU")
-    fileData = request.files['addCourseParticipant']
-    filePath = os.path.join(app.config["files"]["base_path"], fileData.filename)
-    fileData.save(filePath)
-    excelData = load_workbook(filename=filePath)
-    excelSheet = excelData.active
-
-    termReg = r"\b[a-zA-Z]{3,}\s\d{4}\b" # regular expression to check cells content
-    courseReg = r"\b[A-Z]{2,4}\s\d{3}\b"
-    bnumberReg = r"\b[B]\d{8}\b"
-
-    isSummer = False
-    courseGet = None
-
-    for row in excelSheet.iter_rows():
-        cellVal = row[0].value
-        print("////////////////////////////////////////////////////////////////////////")
-        print(cellVal)
-        print("***********************************************************************8")
-
-        if re.search(termReg, str(cellVal)):
-            year = cellVal[-4:]
-            if "Fall" in cellVal :
-                academicYear = year + "-" + str(int(year) + 1)
-            elif "Summer" or "May" or "Spring" in cellVal:
-                academicYear=  str(int(year) - 1) + "-" + year
-                if "Summer" in cellVal:
-                    isSummer = True
-
-            term, tCreated = Term.get_or_create(description=cellVal, year=year, academicYear=academicYear, isSummer=isSummer, isCurrentTerm=False)
-          
-
-        elif re.search(courseReg, str(cellVal)):
-
-            courseGet, cCreated = Course.get_or_create(courseAbbreviation = cellVal, defaults = {
-                "CourseName" : "",
-                "sectionDesignation" : "",
-                "courseCredit" : "1",
-                "term" : term,
-                "status" : 3,
-                "createdBy" : "heggens",
-                "serviceLearningDesignatedSections" : "",
-                "previouslyApprovedDescription" : ""
-                }
-            ) 
-        
-        elif re.search(bnumberReg, str(cellVal)):           
-            user = User.get(User.bnumber == cellVal)
-
-            CourseParticipant.get_or_create(user = user, defaults = {
-                "course" : courseGet,
-                "hoursEarned" : 2
-            })
-
     
-    os.remove(filePath)
-    
-    return redirect(url_for("main.getAllCourseInstructors", show_modal = False))
-
-
-
     
 
 @admin_bp.route("/manageBonner")
