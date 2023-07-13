@@ -71,13 +71,13 @@
         {% for event in events %}
           <tr>
             {% if type != "bonner" %}
-              {% if event.singleProgram%}
-                <td>{{event.singleProgram.programName}}</td>
+              {% if event.program%}
+                <td>{{event.program.programName}}</td>
               {% else %}
                 <td>This event does not belong to any program.</td>
               {% endif %}
             {% endif %}
-            {% if user.isCeltsAdmin or user.isProgramManagerFor(event.singleProgram)%}
+            {% if user.isCeltsAdmin or user.isProgramManagerFor(event.program)%}
               <td> <a href="/event/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
             {% else %}
               <td> <a href="/event/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
@@ -147,7 +147,7 @@
                 <tbody>
                     {% for event in events %}
                       <tr>
-                          {% if user.isCeltsAdmin or user.isProgramManagerFor(event.singleProgram) %}
+                          {% if user.isCeltsAdmin or user.isProgramManagerFor(event.program) %}
                             <td> <a href="/event/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
                           {% else %}
                             <td> <a href="/event/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>

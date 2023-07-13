@@ -12,7 +12,6 @@ from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
 from app.models.programBan import ProgramBan
-from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
@@ -43,8 +42,10 @@ def redirectToLogout():
 @main_bp.route('/', methods=['GET'])
 def landingPage():
     managerProgramDict = getManagerProgramDict(g.current_user)
-    programsWithEvents = list(ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event.term == g.current_term).join(Event).distinct())
-    programsWithEventsList = [program.program.id for program in programsWithEvents]
+
+
+    eventsInTerm = list(Event.select().where(Event.term == g.current_term))
+    programsWithEventsList = [program.program for program in eventsInTerm]
 
     return render_template("/main/landingPage.html", managerProgramDict = managerProgramDict,
                                                      term = g.current_term,
@@ -275,7 +276,7 @@ def volunteerRegister():
     for the event they have clicked register for.
     """
     event = Event.get_by_id(request.form['id'])
-    program = event.singleProgram
+    program = event.program
     user = g.current_user
 
     isAdded = checkUserRsvp(user, event)

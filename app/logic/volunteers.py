@@ -2,12 +2,10 @@ from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.event import Event
 from app.models.program import Program
-from app.models.programEvent import ProgramEvent
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.programManager import ProgramManager
 from datetime import datetime, date
 from app.logic.createLogs import createAdminLog
-from app.logic.events import getEvents
 
 def getEventLengthInHours(startTime, endTime, eventDate):
     """
