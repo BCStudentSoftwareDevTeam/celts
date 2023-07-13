@@ -29,9 +29,12 @@
     </div>
   </div>
   {% if user.isCeltsStudentStaff or user.isAdmin %}
-    <div class="form-check form-switch mb-2">
-      <label class="form-check-label" for="toggleButton">View Past Events</label>
-      <input class="form-check-input" type="checkbox" id="toggleButton">
+    <div class="row px-4">
+      <div class = "d-none d-sm-block col"></div>
+      <div class="form-check form-switch mb-2 col-auto">
+        <label class="form-check-label" for="toggleButton">View Past Events</label>
+        <input class="form-check-input" type="checkbox" id="toggleButton">
+      </div>
     </div>
   {% endif %}
 </div>
