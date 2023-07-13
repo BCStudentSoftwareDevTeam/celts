@@ -61,11 +61,6 @@ function format24to12HourTime(timeStr){
 
   }
 
-
-
-
-
-
 /*
  * Run when the webpage is ready for javascript
  */
@@ -74,11 +69,7 @@ $(document).ready(function() {
     calculateRecurringEventFrequency();
   }
 
-    // where the function would be, ideally
-    handleFileSelection ("attachmentObject", "attachedObjectContainer")
-        
-    
-
+    handleFileSelection("attachmentObject", "attachedObjectContainer")
 
     $("#checkRSVP").on("click", function() {
       if ($("#checkRSVP").is(":checked")) {
