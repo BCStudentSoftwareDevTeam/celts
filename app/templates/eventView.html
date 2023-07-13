@@ -15,24 +15,26 @@
             <div class="row">
                 {% if image %}
                 <div class="col-md-6">
-                        <img src="{{image}}" class="img-fluid">
+                        <img src="{{image}}" class="img-fluid pb-2">
                         <!-- Image should be about 1280px x 836px (Width x Height)-->
                 </div>
                 {% endif %}
-                <div class="col-md-6">
-                    <br>
-                    {%if g.current_user.isStudent %}
-                        <div>   
-                            {% set event_title = eventData.name %}
-                            <h3 id="title">{{event_title}}:</h3>
-                            {% if eventData.name != 'All Volunteer Training' and eventData['program'] == None %}
-                                <h4 class="text-muted">CELTS-Sponsored Event</h4>
-                            {% elif eventData['program'] %}
-                                <h4 class="text-muted">{{eventData["program"].programName}} Event</h4>
-                            {% endif %}
-                        </div>
-                        {% endif %}
-                    <br>
+
+                {# We are deciding whether or not to split the event name and 
+                   program display into two divs based on whether we are in the 
+                   student view and whether the event has an image #}
+                {% set fullWidthTitle = not (g.current_user.isAdmin or image) %}
+                <div class="{{ 'col-md-12' if fullWidthTitle else 'col-md-6'}}">
+
+                    {%if not g.current_user.isAdmin %}
+                        {{ eventheader(eventData.name, eventData, 'small') }}
+                    {% endif %}
+
+                    {% if fullWidthTitle %}
+                    </div>
+                    <div class='col-md-6'>
+                    {% endif %}
+
                     <div class="d-flex align-top">
                         <i class="bi bi-calendar" style="margin-right: 10px;"></i>
                         {% set event_date = eventData.startDate %}
@@ -62,7 +64,7 @@
                     <br>
                     <div>
                         {% if eventData.isRsvpRequired %}
-                            {% if (not isPastEvent) and (not isNewEvent)%}
+                            {% if not eventPast %}
                                 {% if userHasRSVPed %}
                                     <button type="submit" class="btn btn-danger" value="{{eventData.id}}" id="removeRsvpBtn">Remove RSVP</button>
                                 {% elif eventData.isRsvpRequired %}
@@ -73,11 +75,8 @@
                         {% endif %}
                     </div>
                 </div>
-            </div>
-        
-            <div class="row">
-                <div class="col">
-                    <h3><br>Description</h3><p>{{eventData.description|urlize}}</p><br>
+                <div class="col-md-6">
+                    <h3>Description</h3><p>{{eventData.description|urlize}}</p><br>
                     {% if eventData.isFoodProvided %}
                         <p>Food will be provided at this event. <a href="/profile/{{g.current_user}}?accordion=dietaryInformation"><br><b>Please fill in any dietary restrictions on your "My profile" page.</b></a></p>
                     {% endif %}

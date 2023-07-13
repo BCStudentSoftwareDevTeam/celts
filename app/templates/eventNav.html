@@ -1,14 +1,20 @@
 {% extends "base.html"%}
+
+{% macro eventheader(page_title, eventData, size) %}
+    {% set bigh = 'h1' if size == 'large' else 'h3' %}
+    {% set smallh = 'h5' if size == 'large' else 'p' %}
+
+    <{{bigh}} class="mb-0" id="title">{{page_title}}</{{bigh}}>
+    {% set programName = "CELTS-Sponsored" if "program" not in eventData else eventData["program"].programName%}
+    {% set prefix = "An" if programName[0] in 'aeiouAEIOU' else "A" %}
+    <{{smallh}} class="text-muted">{{prefix}} {{ programName }} Event</{{smallh}}>
+{% endmacro %}
+
 {% block app_content %}
     {% block content_pageHeading %}
     <div class="text-center">
         {% if g.current_user.isAdmin %}
-            <h1 id="title">{{page_title}}</h1>
-            {% if eventData.name != 'All Volunteer Training' and eventData['program'] == None %}
-                <h3>CELTS-Sponsored Event</h3>
-            {% elif eventData['program'] %}
-                <h3>{{eventData["program"].programName}} Event</h3>
-            {% endif %}
+            {{ eventheader(page_title, eventData, 'large') }}
         {% endif %}
         {% if eventPast %}
         <div class="alert-danger mb-2 pb-2 pt-2" role="alert">This event is in the past.</div>
