@@ -23,7 +23,7 @@ from app.models.course import Course
 from app.models.courseStatus import CourseStatus
 from app.models.courseParticipant import CourseParticipant
 
-
+from app.controllers.main.routes import getAllCourseInstructors
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.adminLogs import createLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
@@ -327,8 +327,25 @@ def addCourseFile():
     fileData.save(filePath)
     excelData = load_workbook(filename=filePath)
     excelSheet = excelData.active
- 
+
+    expectedInput = parseUploadedFile(filePath)
+
+    session['data'] = expectedInput
     
+    os.remove(filePath)
+    
+    return redirect(url_for("main.getAllCourseInstructors", show_modal = True))
+
+
+@admin_bp.route("/saveCourseParticipant", methods= ["POST"])
+def saveCourseFile():
+    print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+    print("I SEEEEEEEEEEEEEEEEEEEEEEE YOU")
+    fileData = request.files['addCourseParticipant']
+    filePath = os.path.join(app.config["files"]["base_path"], fileData.filename)
+    fileData.save(filePath)
+    excelData = load_workbook(filename=filePath)
+    excelSheet = excelData.active
 
     termReg = r"\b[a-zA-Z]{3,}\s\d{4}\b" # regular expression to check cells content
     courseReg = r"\b[A-Z]{2,4}\s\d{3}\b"
@@ -337,50 +354,50 @@ def addCourseFile():
     isSummer = False
     courseGet = None
 
-    expectedInput = parseUploadedFile(filePath)
-    session['data'] = ["please stay on the page. I beg you for that"]
+    for row in excelSheet.iter_rows():
+        cellVal = row[0].value
+        print("////////////////////////////////////////////////////////////////////////")
+        print(cellVal)
+        print("***********************************************************************8")
 
-    # for row in excelSheet.iter_rows():
-    #     cellVal = row[0].value
+        if re.search(termReg, str(cellVal)):
+            year = cellVal[-4:]
+            if "Fall" in cellVal :
+                academicYear = year + "-" + str(int(year) + 1)
+            elif "Summer" or "May" or "Spring" in cellVal:
+                academicYear=  str(int(year) - 1) + "-" + year
+                if "Summer" in cellVal:
+                    isSummer = True
 
-    #     if re.search(termReg, str(cellVal)):
-    #         year = cellVal[-4:]
-    #         if "Fall" in cellVal :
-    #             academicYear = year + "-" + str(int(year) + 1)
-    #         elif "Summer" or "May" or "Spring" in cellVal:
-    #             academicYear=  str(int(year) - 1) + "-" + year
-    #             if "Summer" in cellVal:
-    #                 isSummer = True
-
-    #         term, tCreated = Term.get_or_create(description=cellVal, year=year, academicYear=academicYear, isSummer=isSummer, isCurrentTerm=False)
+            term, tCreated = Term.get_or_create(description=cellVal, year=year, academicYear=academicYear, isSummer=isSummer, isCurrentTerm=False)
           
 
-    #     elif re.search(courseReg, str(cellVal)):
+        elif re.search(courseReg, str(cellVal)):
 
-    #         courseGet, cCreated = Course.get_or_create(courseAbbreviation = cellVal, defaults = {
-    #             "CourseName" : "",
-    #             "sectionDesignation" : "",
-    #             "courseCredit" : "1",
-    #             "term" : term,
-    #             "status" : 3,
-    #             "createdBy" : "heggens",
-    #             "serviceLearningDesignatedSections" : "",
-    #             "previouslyApprovedDescription" : ""
-    #             }
-    #         ) 
+            courseGet, cCreated = Course.get_or_create(courseAbbreviation = cellVal, defaults = {
+                "CourseName" : "",
+                "sectionDesignation" : "",
+                "courseCredit" : "1",
+                "term" : term,
+                "status" : 3,
+                "createdBy" : "heggens",
+                "serviceLearningDesignatedSections" : "",
+                "previouslyApprovedDescription" : ""
+                }
+            ) 
         
-    #     elif re.search(bnumberReg, str(cellVal)):           
-    #         user = User.get(User.bnumber == cellVal)
+        elif re.search(bnumberReg, str(cellVal)):           
+            user = User.get(User.bnumber == cellVal)
 
-    #         CourseParticipant.get_or_create(user = user, defaults = {
-    #             "course" : courseGet,
-    #             "hoursEarned" : 2
-    #         })
+            CourseParticipant.get_or_create(user = user, defaults = {
+                "course" : courseGet,
+                "hoursEarned" : 2
+            })
 
     
     os.remove(filePath)
     
-    return redirect(url_for("main.getAllCourseInstructors", show_modal=True))
+    return redirect(url_for("main.getAllCourseInstructors", show_modal = False))
 
 
 

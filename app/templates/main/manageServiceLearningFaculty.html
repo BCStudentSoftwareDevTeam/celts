@@ -157,38 +157,37 @@
                   <label for="addCourseParticipant" class="form-label"></label>
                   <!-- <input class="form-control btn btn-primary position-relative" id="submitParticipant" disabled style = 'width: 75px' type="submit" data-bs-toggle="modal" data-bs-target="#modalPreview"></input> -->
                   <button class="form-control btn btn-success position-relative" id="previewButton" style ='width: 90px' disabled data-bs-toggle="modal" data-bs-target="#modalPreview">Preview</button>
-                <!-- data-bs-toggle="modal" data-bs-target="#modalPreview" -->
               </div> 
               </form>
             </div>
           </div>
        {% endif %}
         </div>
-        {%if show_modal and data %}
+        <!-- {%if show_modal and data %}
         <script>
           $(document).ready(function (){
             $('#modalPreview').modal('show d-block')
             $('#modalPreview').css('display', 'block')
           });
         </script>
-        {% endif %}
+        {% endif %} -->
         <!-- modal for Preview -->
-        <div class="modal fade float-start col " id="modalPreview">
+        {% set show="fade show d-block" if data else "" %}
+        <div class="modal fade float-start col {{show}}" id="modalPreview">
           <div class="modal-dialog custom-modal-size">
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title"> Preview File</h5>
               </div>
-              <form method="GET" action="/manageServiceLearning" enctype="multipart/form-data">
+              <form method="POST" action="/manageServiceLearning" enctype="multipart/form-data">
                 <div class="modal-body">
                   <div class="input-group">
                     <label for="addCourseParticipant" class="form-label">List of Participants per Course:</label>
-                    {% if show_modal and data %}
                     <ul>
                       {% for item in data %}
                         <li>{{ item }}</li>
                       {% endfor %}
-                    {% endif %}
+
                     </ul>
                   </div>
                 </div>
@@ -196,8 +195,8 @@
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
                   <label for="previewCourseParticipant" class="form-label"></label>
-                  <input class="form-control btn btn-primary position-relative" id="submitParticipant" disabled
-                    style='width: 75px' type="submit"></input>
+                  <!-- <input class="form-control btn btn-primary position-relative" id="submitParticipant" style='width: 75px' type="submit">Save File </input> -->
+                  <button class="form-control btn btn-success position-relative" id="submitParticipant" style ='width: 90px'>Save File</button>
                 </div>
               </form>
             </div>

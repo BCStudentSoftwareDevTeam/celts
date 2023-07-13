@@ -377,6 +377,12 @@ def getAllCourseInstructors(term=None):
     """
     This function selects all the Instructors Name and the previous courses
     """
+    show_modal = request.args.get('show_modal', default=False, type=bool)
+    if show_modal:
+        dataHolder = session['data']
+    else:
+        dataHolder = []
+    
     if g.current_user.isCeltsAdmin:
         setRedirectTarget("/manageServiceLearning")
         courseDict = getCourseDict()
@@ -386,6 +392,9 @@ def getAllCourseInstructors(term=None):
         approved = approvedCourses(term)
         terms = selectSurroundingTerms(g.current_term)
 
+        
+
+
         return render_template('/main/manageServiceLearningFaculty.html',
                                 courseInstructors = courseDict,
                                 unapprovedCourses = unapproved,
@@ -393,8 +402,7 @@ def getAllCourseInstructors(term=None):
                                 terms = terms,
                                 term = term,
                                 CourseStatus = CourseStatus,
-                                data = session.get('data', 'no data available'), 
-                                show_modal=True
+                                data = dataHolder, 
                                 )
     else:
         abort(403)
