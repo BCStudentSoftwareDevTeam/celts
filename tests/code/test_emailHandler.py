@@ -147,6 +147,7 @@ def test_recipients_eligible_students():
             # Train ayisie so they show up in the results: NOT banned and IS trained
             newTrainedStudent = EventParticipant.create(user = "ayisie", event = 14)
             email.process_data()
+            print(email.recipients)
             assert email.recipients ==  [User.get_by_id("partont"),User.get_by_id("ayisie")]
             newTrainedStudent.delete_instance()
 

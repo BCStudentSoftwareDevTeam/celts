@@ -28,7 +28,7 @@ class EmailHandler:
         self.body = None
         self.reply_to = None
         self.event = None
-        self.program_id = None
+        self.program = None
         self.recipients = None
         self.sl_course_id = None
         self.attachment_path = app.config['files']['base_path'] + app.config['files']['email_attachment_path']
@@ -55,7 +55,7 @@ class EmailHandler:
 
         # Program
         if 'programID' in self.raw_form_data:
-            self.program_id = self.fetch_event_programs(self.raw_form_data['programID'])
+            self.program = Program.get_or_none(Program.id == self.event.program_id)
 
         # Recipients
         if 'recipientsCategory' in self.raw_form_data:
@@ -66,13 +66,6 @@ class EmailHandler:
         if 'slCourseId' in self.raw_form_data:
             self.sl_course_id = self.raw_form_data['slCourseId']
 
-    def fetch_event_programs(self, program_id):
-        """ Fetches all the programs of a particular event """
-        # Non-student-led programs have "Unknown" as their id
-        if program_id == 'Unknown' or program_id is None:
-            return self.event.program
-        else:
-            return Program.get_by_id(program_id)
 
     def update_sender_config(self):
         # We might need this.
@@ -92,7 +85,7 @@ class EmailHandler:
             recipients = (User.select()
                 .join(Interest)
                 .join(Program, on=(Program.id==Interest.program))
-                .where(Program.id( self.program_id)))
+                .where(Interest.program_id == self.program))
         if recipients_category == "RSVP'd":
             recipients = (User.select()
                 .join(EventRsvp)
@@ -105,7 +98,7 @@ class EmailHandler:
 
             sameYearTerms = Term.select().join(Term2, on=(Term.academicYear == Term2.academicYear)).where(Term2.isCurrentTerm == True)
 
-            bannedUsers = ProgramBan.select(ProgramBan.user_id).where((ProgramBan.endDate > datetime.now()) | (ProgramBan.endDate is None), ProgramBan.program_id ==self.program_id)
+            bannedUsers = ProgramBan.select(ProgramBan.user_id).where((ProgramBan.endDate > datetime.now()) | (ProgramBan.endDate is None), ProgramBan.program_id ==self.program)
             allVolunteer = Event.select().where(Event.isAllVolunteerTraining == True, Event.term.in_(sameYearTerms))
             recipients = User.select().join(EventParticipant).where(User.username.not_in(bannedUsers), EventParticipant.event.in_(allVolunteer))
         return [recipient for recipient in recipients]
@@ -188,11 +181,11 @@ class EmailHandler:
         defaultEmailInfo = {"senderName":"Sandesh", "replyTo":self.reply_to}  # Beans: We need to change the default senderName on release to be someone from Celts probably
         template_id, subject, body = self.build_email()
 
-        if len(self.program_id) == 1:
-            if self.program_id.contactEmail:
-                defaultEmailInfo["replyTo"] = self.program_id.contactEmail
-            if self.program_id.contactName:
-                defaultEmailInfo["senderName"] = self.program_id.contactName
+        if self.program:
+            if self.program.contactEmail:
+                defaultEmailInfo["replyTo"] = self.program.contactEmail
+            if self.program.contactName:
+                defaultEmailInfo["senderName"] = self.program.contactName
 
         try:
             with self.mail.connect() as conn:
