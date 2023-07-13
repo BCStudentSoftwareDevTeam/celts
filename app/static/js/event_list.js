@@ -41,8 +41,16 @@ function removeRsvpForEvent(eventID){
 
   })
 }
-$(function() {
-  $('.toggle-event').click(function() {
-    $(".showlist").toggleClass('d-none');
-  });
+
+document.getElementById("toggleButton").addEventListener("click", function() {
+  var tableRows = document.getElementsByClassName("showlist");
+
+  for (var i = 0; i < tableRows.length; i++) {
+    var tableRow = tableRows[i];
+    if (tableRow.classList.contains("d-none")) {
+      tableRow.classList.remove("d-none");
+    } else {
+      tableRow.classList.add("d-none");
+    }
+  }
 });
