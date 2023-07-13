@@ -15,7 +15,7 @@ def sendAutomatedEmail(events):
     templateSubject = template.subject
     templateBody = template.body
     for event in events:
-        programId = event.singleProgram
+        programId = event.program
         emailData = {"eventID":event.id,  # creates the email data
                         "programID":programId,
                         "term":currentTerm.id,
