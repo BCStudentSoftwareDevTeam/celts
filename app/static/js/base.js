@@ -124,11 +124,22 @@ function setCharacterLimit(textboxId, labelId){
   }
 }
 
-// our function
-function handleFileSelection(fileInputId, attachedObjectId){
+function hasUniqueFileName(fileName){
+  return $(".fileName[data-filename='" + fileName + "']").length == 0;
+}
+
+function getSelectedFiles(){
+  let _fileHolder = new DataTransfer();
+  $(".fileHolder").each(function(){
+    _fileHolder.items.add($(this).data("file"));
+  });
+  return _fileHolder.files;
+}
+
+function handleFileSelection(fileInputId, attachedObjectContainerId){
   $("#" + fileInputId).on('change', function() {
     const selectedFiles = $("#" + fileInputId).prop('files');
-    var fileNum = 0;
+    console.log("THIS IS WHERE THE CODE IS FAILING AHHHHHHHHHH")
     for (let i = 0; i < selectedFiles.length; i++) {
       const file = selectedFiles[i];
       if (hasUniqueFileName(file.name)){
@@ -153,7 +164,8 @@ function handleFileSelection(fileInputId, attachedObjectId){
           default:
             iconClass = 'bi-file-earmark-arrow-up';
         }
-        $("#attachedObjectContainer").append("<div class='border row p-0 m-0' id='attachedFilesRow" +fileNum+"'> \
+        var fileNum = 0;
+        $("#" + attachedObjectContainerId).append("<div class='border row p-0 m-0' id='attachedFilesRow" +fileNum+"'> \
                                                 <i class='col-auto fs-3 px-3 bi " + iconClass + "'></i> \
                                                 <div id='attachedFile" + fileNum + "' data-filename='" + file.name + "' class='fileName col-auto pt-2'>" + fileName + "</div> \
                                                 <div class='col' style='text-align:right'> \
