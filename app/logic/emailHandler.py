@@ -249,7 +249,8 @@ class EmailHandler:
             ["Start Time", (event.timeStart).strftime('%I:%M')],
             ["End Time", (event.timeEnd).strftime('%I:%M')],
             ["Location", event.location],
-            ["Event Link", "{event_link}"]
+            ["Event Link", "{event_link}"],
+            ["Relative Time", event.relativeTime]
         ]
 
     @staticmethod
@@ -264,5 +265,6 @@ class EmailHandler:
             start_time=(event.timeStart).strftime('%I:%M'),
             end_time=(event.timeEnd).strftime('%I:%M'),
             event_link="{event_link}",
-            name="{name}")
+            name="{name}",
+            relative_time=event.relativeTime)
         return new_body

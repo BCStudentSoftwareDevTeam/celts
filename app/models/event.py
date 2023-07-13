@@ -56,3 +56,15 @@ class Event(baseModel):
     def isFirstRecurringEvent(self):
         firstRecurringEvent = Event.select().where(Event.recurringId==self.recurringId).order_by(Event.id).get()
         return firstRecurringEvent.id == self.id
+
+    @property
+    def relativeTime(self):
+        relativeTime = datetime.combine(self.startDate, self.timeStart) - datetime.now()
+
+        hoursFromNow = relativeTime.seconds/3600
+        if (relativeTime.days):
+            return f"{relativeTime.days} day(s)"
+        else:
+            return f"{hoursFromNow} hour(s)"
+        
+    
