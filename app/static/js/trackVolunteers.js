@@ -108,8 +108,8 @@ $(document).ready(function() {
 
     if (this.checked) {
       $(`#${inputFieldID}`).prop('disabled', false);
-      let eventLength = $("#eventLength").text();
-      $(`#${inputFieldID}`).val(eventLength);
+      let eventLength = $("#eventPost").text();
+      $(`#${inputFieldID}`).val(eventPost);
 
     } else {
       $(`#${inputFieldID}`).prop('disabled', true);
