@@ -21,6 +21,7 @@ class Event(baseModel):
     recurringId = IntegerField(null=True)
     contactEmail = CharField(null=True)
     contactName = CharField(null=True)
+    program = ForeignKeyField(Program, null= True)
 
     _spCache = "Empty"
 
@@ -29,20 +30,7 @@ class Event(baseModel):
 
     @property
     def noProgram(self):
-        return not self.programEvents.exists()
-
-    @property
-    def singleProgram(self):
-        from app.models.programEvent import ProgramEvent
-
-        if self._spCache == "Empty":
-            countPE = list(self.programEvents.select(ProgramEvent, Program).join(Program).execute())
-            if len(countPE) == 1:
-                self._spCache = countPE[0].program
-            else:
-                self._spCache = None
-
-        return self._spCache
+        return not self.program_id
 
     @property
     def isPast(self):

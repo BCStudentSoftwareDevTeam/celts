@@ -68,4 +68,4 @@ class User(baseModel):
 
     def isProgramManagerForEvent(self, event):
         # Looks to see who the Program Manager for a specific event is
-        return self.isProgramManagerFor(event.singleProgram)
+        return self.isProgramManagerFor(event.program)

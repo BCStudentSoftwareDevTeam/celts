@@ -75,7 +75,7 @@ def createEvent(templateid, programid=None):
     eventData = template.templateData
 
     if program:
-        eventData["program"] = program
+        eventData['program'] = program
 
     if request.method == "GET":
         eventData['contactName'] = "CELTS Admin"
@@ -128,7 +128,6 @@ def createEvent(templateid, programid=None):
     if 'program' in eventData and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
         bonnerCohorts = getBonnerCohorts(limit=5)
-
     return render_template(f"/admin/{template.templateFile}",
             template = template,
             eventData = eventData,
@@ -142,7 +141,7 @@ def createEvent(templateid, programid=None):
 def rsvpLogDisplay(eventId):
     event = Event.get_by_id(eventId)
     eventData = model_to_dict(event, recurse=False)
-    eventData['program'] = event.singleProgram
+    eventData['program'] = event.program
     isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
     if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager):
         allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
@@ -175,7 +174,18 @@ def eventDisplay(eventId):
 
     eventData = model_to_dict(event, recurse=False)
     associatedAttachments = AttachmentUpload.select().where(AttachmentUpload.event == event)
+    filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)
 
+    image = None
+    picurestype = [".jpeg", ".png", ".gif", ".jpg", ".svg", ".webp"]
+    for attachment in associatedAttachments:
+        for extension in picurestype:
+            if (attachment.fileName.endswith(extension)):
+                image = filepaths[attachment.fileName][0]
+        if image:
+            break
+
+                
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
         try:
@@ -199,13 +209,13 @@ def eventDisplay(eventId):
 
     # make sure our data is the same regardless of GET and POST
     preprocessEventData(eventData)
-    eventData['program'] = event.singleProgram
+    eventData['program'] = event.program
     futureTerms = selectSurroundingTerms(g.current_term)
-    userHasRSVPed = checkUserRsvp(g.current_user, event)
+    userHasRSVPed = checkUserRsvp(g.current_user, event) 
     filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)
     isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
-
     requirements, bonnerCohorts = [], []
+    
     if eventData['program'] and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
         bonnerCohorts = getBonnerCohorts(limit=5)
@@ -248,6 +258,7 @@ def eventDisplay(eventId):
                                 currentEventRsvpAmount = currentEventRsvpAmount,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths,
+                                image = image,
                                 pageViewsCount= pageViewsCount)
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
