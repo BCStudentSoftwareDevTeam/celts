@@ -14,7 +14,6 @@ from app.models.user import User
 from app.models import mainDB
 from app.models.user import User
 from app.models.event import Event
-from app.models.programEvent import ProgramEvent
 from app.models.eventParticipant import EventParticipant
 from app.models.programBan import ProgramBan
 from app.models.term import Term

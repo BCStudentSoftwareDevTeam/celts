@@ -8,7 +8,6 @@ from app.models.user import User
 from app.models.event import Event
 from app.models.program import Program
 from app.models.programManager import ProgramManager
-from app.models.programEvent import ProgramEvent
 from app.models import mainDB
 from app.models.backgroundCheck import BackgroundCheck
 from datetime import datetime
