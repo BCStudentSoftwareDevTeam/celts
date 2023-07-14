@@ -5,6 +5,7 @@ $(document).ready(function(){
     $("#rsvpBtn").click(function(){
         rsvpForEvent($("#rsvpBtn").val())
     })
+    $("#toggleButton").on("click", toggleButton)
 })
 
 function rsvpForEvent(eventID){
@@ -42,15 +43,24 @@ function removeRsvpForEvent(eventID){
   })
 }
 
-document.getElementById("toggleButton").addEventListener("click", function() {
+function toggleButton(){
+  var toggleButton = document.getElementById("toggleButton");
   var tableRows = document.getElementsByClassName("showlist");
 
-  for (var i = 0; i < tableRows.length; i++) {
-    var tableRow = tableRows[i];
-    if (tableRow.classList.contains("d-none")) {
-      tableRow.classList.remove("d-none");
-    } else {
-      tableRow.classList.add("d-none");
+  if (toggleButton.checked) {
+    for (var i = 0; i < tableRows.length; i++) {
+      var tableRow = tableRows[i];
+      if (tableRow.classList.contains("d-none")) {
+        tableRow.classList.remove("d-none");
+      }
+    }
+  } else {
+    for (var i = 0; i < tableRows.length; i++) {
+      var tableRow = tableRows[i];
+      if (!tableRow.classList.contains("d-none")) {
+        tableRow.classList.add("d-none");
+      }
     }
   }
-});
+}
+
