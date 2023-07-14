@@ -77,10 +77,10 @@
         </tr>
       </thead>
       <tbody>
+        {% if events[-1].isPast %}          
+          <tr> There are no upcoming events for this term. </tr>
+        {% endif %}
         {% for event in events %}
-          {% if events[events.index(event)] == events[0] and events[events.index(event)].isPast %}
-            <tr> No upcoming events for this term </tr>
-          {% endif %}
           <tr>
             {% if event and not event.isPast %}
               {% if type != "bonner" and type != "studentLed" %}
