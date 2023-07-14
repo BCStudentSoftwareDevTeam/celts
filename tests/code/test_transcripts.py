@@ -7,7 +7,6 @@ from app.logic.transcript import *
 from app.models.user import User
 from app.models.courseParticipant import CourseParticipant
 from app.models.event import Event
-from app.models.programEvent import ProgramEvent
 from app.logic.events import deleteEvent
 
 @pytest.fixture(autouse=True)
@@ -37,8 +36,9 @@ def setup():
                               isService = 0,
                               startDate =  "2021-12-12",
                               endDate =  "2021-12-13",
-                              recurringId = None)
-    ProgramEvent.create(program=2, event=newTrainingEvent)
+                              recurringId = None,
+                              program_id=2)
+
     EventParticipant.create(user = testUser,
                             event = newTrainingEvent,
                             attended = True,
@@ -57,9 +57,9 @@ def setup():
                               isService = 0,
                               startDate =  "2021-12-12",
                               endDate =  "2021-12-13",
-                              recurringId = None)
-
-    ProgramEvent.create(program=5, event=newBonnerEvent)
+                              recurringId = None,
+                              program_id= 5)
+    
     EventParticipant.create(user = testUser,
                             event = newBonnerEvent,
                             attended = True,
@@ -97,8 +97,9 @@ def setup():
                               isService = 0,
                               startDate =  "2021-12-12",
                               endDate =  "2021-12-13",
-                              recurringId = None)
-    ProgramEvent.create(program=1, event=newProgramEvent)
+                              recurringId = None,
+                              program_id= 1)
+
     EventParticipant.create(user = testUser,
                             event = newProgramEvent,
                             attended = True,
