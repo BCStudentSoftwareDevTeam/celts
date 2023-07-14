@@ -27,13 +27,15 @@ def test_send_email_using_modal():
         with mainDB.atomic() as transaction:
             # Case 1: Send email with subject and body -- as if email is sent using a modal
             url_domain = urlparse(request.base_url).netloc
-            raw_form_data = {"templateIdentifier": "Test",
+            raw_form_data = {
+                "templateIdentifier": "Test",
+                "emailSender": "neillz",
                 "subject": "Test Email",
                 "body": "Hello {name}",
                 "eventID":"1",
                 "recipientsCategory": "Interested"}
 
-            email = EmailHandler(raw_form_data, url_domain, "neillz")
+            email = EmailHandler(raw_form_data, url_domain)
 
             with email.mail.record_messages() as outbox:
                 email_sent = email.send_email()
@@ -52,10 +54,11 @@ def test_send_email_using_modal():
 #             # Case 2: Send email without subject and body -- as if email is sent automatically
 #             url_domain = urlparse(request.base_url).netloc
 #             raw_form_data = {"templateIdentifier": "Test",
+#                 "emailSender": "neillz"
 #                 "eventID":"1",
 #                 "recipientsCategory": "Interested"}
 
-#             email = EmailHandler(raw_form_data, url_domain, "neillz")
+#             email = EmailHandler(raw_form_data, url_domain)
 
 #             with email.mail.record_messages() as outbox:
 #                 email_sent = email.send_email()
@@ -72,19 +75,20 @@ def test_update_email_template():
     with app.test_request_context():
         with mainDB.atomic() as transaction:
             url_domain = urlparse(request.base_url).netloc
-            raw_form_data = {"templateIdentifier": "Test2",
+            raw_form_data = {
+                "templateIdentifier": "Test2",
+                "emailSender": "neillz",
                 "subject":"This is only a test",
-                "body":"Hello {name}, Regards",
-                "replyTo": "test.email@gmail.comm"}
+                "body":"Hello {name}, Regards"}
 
-            email = EmailHandler(raw_form_data, url_domain, "neillz")
+            email = EmailHandler(raw_form_data, url_domain)
             email.update_email_template()
 
             new_email_template = EmailTemplate.get(EmailTemplate.purpose==raw_form_data['templateIdentifier'])
 
             assert new_email_template.subject == raw_form_data['subject']
             assert new_email_template.body == raw_form_data['body']
-            assert new_email_template.replyToAddress == raw_form_data['replyTo']
+            assert new_email_template.replyToAddress == "neillz@berea.edu"
 
             transaction.rollback()
 
@@ -93,13 +97,15 @@ def test_email_log():
     with app.test_request_context():
         with mainDB.atomic() as transaction:
             url_domain = urlparse(request.base_url).netloc
-            raw_form_data = {"templateIdentifier": "Test",
+            raw_form_data = {
+                "templateIdentifier": "Test",
+                "emailSender": "ramsayb2",
                 "eventID":"1",
                 "subject":"Test Email",
                 "body":"We ran out of skeletons. Can you send some more?",
                 "recipientsCategory": "RSVP'd"}
 
-            email = EmailHandler(raw_form_data, url_domain, "ramsayb2")
+            email = EmailHandler(raw_form_data, url_domain)
 
             with email.mail.record_messages() as outbox:
                 email_sent = email.send_email()
@@ -122,11 +128,13 @@ def test_recipients_eligible_students():
     with app.test_request_context():
         with mainDB.atomic() as transaction:
             url_domain = urlparse(request.base_url).netloc
-            raw_form_data = {"templateIdentifier": "Test",
+            raw_form_data = {
+                "templateIdentifier": "Test",
+                "emailSender": 'ramsayb2',
                 "eventID":"3",
                 "recipientsCategory": "Eligible Students"}
 
-            email = EmailHandler(raw_form_data, url_domain, 'ramsayb2')
+            email = EmailHandler(raw_form_data, url_domain)
             email.process_data()
             assert email.recipients == []
 
@@ -163,13 +171,13 @@ def test_recipients_eligible_students():
             transaction.rollback()
 
             # Test a program that should have nothing in banned users and nothing in All Volunteer:
-            raw_form_data = {"templateIdentifier": "Test",
+            raw_form_data = {
+                "templateIdentifier": "Test",
+                "emailSender": User.get_by_id('ramsayb2'),             
                 "eventID":"1",
                 "recipientsCategory": "Eligible Students"}
 
-            testSender = User.get_by_id('ramsayb2')
-
-            email = EmailHandler(raw_form_data, url_domain, testSender)
+            email = EmailHandler(raw_form_data, url_domain)
             email.process_data()
             assert email.recipients == []
 
@@ -181,13 +189,14 @@ def test_recipients_eligible_students():
             allVolunteerEvent = Event.get_by_id(14)
             newTrainedStudent = EventParticipant.create(user = "partont", event = allVolunteerEvent)
 
-            raw_form_data = {"templateIdentifier": "Test",
+            raw_form_data = {
+                "templateIdentifier": "Test",
+                "emailSender": User.get_by_id('ramsayb2'),
                 "eventID":"1",
                 "recipientsCategory": "Eligible Students"}
 
-            testSender = User.get_by_id('ramsayb2')
 
-            email = EmailHandler(raw_form_data, url_domain, testSender)
+            email = EmailHandler(raw_form_data, url_domain)
             email.process_data()
             assert email.recipients == [User.get_by_id("partont")]
 
