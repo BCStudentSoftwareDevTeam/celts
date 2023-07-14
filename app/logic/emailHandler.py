@@ -54,7 +54,7 @@ class EmailHandler:
             self.event = event
 
         # Program
-        if 'programID' in self.raw_form_data:
+        if self.event:
             self.program = Program.get_or_none(Program.id == self.event.program_id)
 
         # Recipients
@@ -95,13 +95,13 @@ class EmailHandler:
             # all terms with the same accademic year as the current term,
             # the allVolunteer training term then needs to be in that query
             Term2 = Term.alias()
-
+            
             sameYearTerms = Term.select().join(Term2, on=(Term.academicYear == Term2.academicYear)).where(Term2.isCurrentTerm == True)
 
-            bannedUsers = ProgramBan.select(ProgramBan.user_id).where((ProgramBan.endDate > datetime.now()) | (ProgramBan.endDate is None), ProgramBan.program_id ==self.program)
+            bannedUsers = ProgramBan.select(ProgramBan.user_id).where((ProgramBan.endDate > datetime.now()) | (ProgramBan.endDate is None), ProgramBan.program_id == (self.program.id if self.program else ProgramBan.program_id))
             allVolunteer = Event.select().where(Event.isAllVolunteerTraining == True, Event.term.in_(sameYearTerms))
             recipients = User.select().join(EventParticipant).where(User.username.not_in(bannedUsers), EventParticipant.event.in_(allVolunteer))
-        return [recipient for recipient in recipients]
+        return list(recipients)
 
 
 
