@@ -26,7 +26,7 @@ class EmailHandler:
         self.template_identifier = None
         self.subject = None
         self.body = None
-        self.reply_to = None
+        self.reply_to = app.config['MAIL_REPLY_TO_ADDRESS']
         self.event = None
         self.program = None
         self.recipients = None
@@ -42,12 +42,6 @@ class EmailHandler:
         if 'subject' in self.raw_form_data:
             self.subject = self.raw_form_data['subject']
 
-        if 'body' in self.raw_form_data:
-            self.body = self.raw_form_data['body']
-
-        if 'replyTo' in self.raw_form_data:
-            self.reply_to = self.raw_form_data['replyTo']
-
         # Event
         if 'eventID' in self.raw_form_data:
             event = Event.get_by_id(self.raw_form_data['eventID'])
@@ -56,6 +50,12 @@ class EmailHandler:
         # Program
         if self.event:
             self.program = Program.get_or_none(Program.id == self.event.program_id)
+
+        if 'emailSender' in self.raw_form_data:
+            self.sender, self.reply_to = getReplyAddress()
+
+        if 'body' in self.raw_form_data:
+            self.body = self.raw_form_data['body'] + f"\n\n[Replies are sent to {self.reply_to}]"
 
         # Recipients
         if 'recipientsCategory' in self.raw_form_data:
@@ -66,6 +66,24 @@ class EmailHandler:
         if 'slCourseId' in self.raw_form_data:
             self.sl_course_id = self.raw_form_data['slCourseId']
 
+
+    def getReplyAddress(self):
+        sending_user=self.raw_form_data['emailSender']
+        if "Program Manager":
+            if self.program:
+                if self.program.contactEmail:
+                    defaultEmailInfo["replyTo"] = self.program.contactEmail
+                if self.program.contactName:
+                    defaultEmailInfo["senderName"] = self.program.contactName
+            self.sender = sending_user
+            return (sending_user, "celts@berea.edu") #Placeholder until we get celts email
+        elif "Celts Admin":
+            self.sender = sending_user
+            return (sending_user, "celts@berea.edu") #Placeholder until we get celts email
+        else:
+            userobj = User.get_or_none(sending_user)
+            sending_user = f"{userobj.firstName} {userobj.lastName}"
+            return (sending_user, userobj.email)
 
     def update_sender_config(self):
         # We might need this.
@@ -178,14 +196,10 @@ class EmailHandler:
         return (template_id, subject, body)
 
     def send_email(self):
-        defaultEmailInfo = {"senderName":"Sandesh", "replyTo":self.reply_to}  # Beans: We need to change the default senderName on release to be someone from Celts probably
+        defaultEmailInfo = {"senderName":self.sender, "replyTo":self.reply_to}  # Beans: We need to change the default senderName on release to be someone from Celts probably
         template_id, subject, body = self.build_email()
 
-        if self.program:
-            if self.program.contactEmail:
-                defaultEmailInfo["replyTo"] = self.program.contactEmail
-            if self.program.contactName:
-                defaultEmailInfo["senderName"] = self.program.contactName
+
 
         try:
             with self.mail.connect() as conn:
@@ -199,9 +213,10 @@ class EmailHandler:
                         [self.override_all_mail],
                         email_body,
                         attachments = self.getAttachmentFullPath(), #needs to be modified later
-                        reply_to = defaultEmailInfo["replyTo"],
-                        sender = (defaultEmailInfo["senderName"], defaultEmailInfo["replyTo"])
+                        reply_to = self.program.contactEmail or defaultEmailInfo["replyTo"],
+                        sender = (self.program.contactName or defaultEmailInfo["senderName"], self.program.contactEmail or defaultEmailInfo["replyTo"])
                     ))
+            print(defaultEmailInfo)
             self.store_sent_email(subject, template_id)
             return True
         except Exception as e:

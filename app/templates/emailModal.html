@@ -44,7 +44,7 @@
                 {% set user = g.current_user %}
                 <option {{ 'selected' if user.CeltsStudentStaff }}>CELTS Student Staff</option>
                 <option {{ 'selected' if user.isCeltsAdmin else 'hidden' }}>CELTS Admins</option>
-                <option value="{{user.email}}">
+                <option value="{{user.username}}">
                   {{user.firstName}} {{user.lastName}} (Currently Logged In)
                 </option>
               </select>
