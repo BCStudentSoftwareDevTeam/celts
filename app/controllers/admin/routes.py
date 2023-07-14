@@ -174,7 +174,18 @@ def eventDisplay(eventId):
 
     eventData = model_to_dict(event, recurse=False)
     associatedAttachments = AttachmentUpload.select().where(AttachmentUpload.event == event)
+    filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)
 
+    image = None
+    picurestype = [".jpeg", ".png", ".gif", ".jpg", ".svg", ".webp"]
+    for attachment in associatedAttachments:
+        for extension in picurestype:
+            if (attachment.fileName.endswith(extension)):
+                image = filepaths[attachment.fileName][0]
+        if image:
+            break
+
+                
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
         try:
@@ -200,11 +211,11 @@ def eventDisplay(eventId):
     preprocessEventData(eventData)
     eventData['program'] = event.program
     futureTerms = selectSurroundingTerms(g.current_term)
-    userHasRSVPed = checkUserRsvp(g.current_user, event)
+    userHasRSVPed = checkUserRsvp(g.current_user, event) 
     filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)
     isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
-
     requirements, bonnerCohorts = [], []
+    
     if eventData['program'] and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
         bonnerCohorts = getBonnerCohorts(limit=5)
@@ -247,6 +258,7 @@ def eventDisplay(eventId):
                                 currentEventRsvpAmount = currentEventRsvpAmount,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths,
+                                image = image,
                                 pageViewsCount= pageViewsCount)
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
