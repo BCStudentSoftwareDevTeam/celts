@@ -137,8 +137,10 @@ function getSelectedFiles(){
 }
 
 function handleFileSelection(fileInputId, attachedObjectContainerId){
-  $("#"+fileInputId).on('change', function() {
-    const selectedFiles = $("#" + fileInputId).prop('files');
+  var fileBoxId = "#" + fileInputId
+  var objectContainerId = "#" + attachedObjectContainerId
+  $(fileBoxId).on('change', function() {
+    const selectedFiles = $(fileBoxId).prop('files');
     for (let i = 0; i < selectedFiles.length; i++){
       const file = selectedFiles[i];
       if (hasUniqueFileName(file.name)){
@@ -163,33 +165,32 @@ function handleFileSelection(fileInputId, attachedObjectContainerId){
           default:
             iconClass = 'bi-file-earmark-arrow-up';
         }
-        let fileNum = $("#" + fileInputId).data("file-num")
-        console.log(fileNum)
-        $("#" + attachedObjectContainerId).append("<div class='border row p-0 m-0' id='attachedFilesRow" +fileNum+"'> \
+        let trashNum = ($(objectContainerId+ " .row").length)
+        var fullTrashId = "#trash" + trashNum
+        $(objectContainerId).append("<div class='border row p-0 m-0' id='attachedFilesRow" +trashNum+"'> \
                                                 <i class='col-auto fs-3 px-3 bi " + iconClass + "'></i> \
-                                                <div id='attachedFile" + fileNum + "' data-filename='" + file.name + "' class='fileName col-auto pt-2'>" + fileName + "</div> \
+                                                <div id='attachedFile" + trashNum + "' data-filename='" + file.name + "' class='fileName col-auto pt-2'>" + fileName + "</div> \
                                                 <div class='col' style='text-align:right'> \
-                                                  <div class='btn btn-danger fileHolder p-1 my-1 mx-1' id='trash" + fileNum + "' data-filenum='" + fileNum + "'>\
+                                                  <div class='btn btn-danger fileHolder p-1 my-1 mx-1' id='trash" + trashNum + "' data-filenum='" + trashNum + "'>\
                                                     <span class='bi bi-trash fs-6'></span>\
                                                   </div>\
                                                 </div> \
                                               </div>")
-        $("#trash"+fileNum).data("file", file);
-        console.log("#trash" + fileNum)
-        $("#trash"+fileNum).data("file-container-id", attachedObjectContainerId);
-        $("#trash"+fileNum).on("click", function() {
+        $(fullTrashId).data("file", file);
+        $(fullTrashId).data("file-container-id", attachedObjectContainerId);
+        $(fullTrashId).on("click", function() {
           let elementFileNum = $(this).data('filenum');
           let attachedObjectContainerId = $(this).data('file-container-id');
           $("#"+ attachedObjectContainerId + " #attachedFilesRow" + elementFileNum).remove();
-          $("#" + fileInputId).prop('files', getSelectedFiles());
+          $(fileBoxId).prop('files', getSelectedFiles());
         })
-        $("#" + fileInputId).data("file-num", $("#" + fileInputId).data("file-num") + 1)
+        $(fileBoxId).data("file-num", $(fileBoxId).data("file-num") + 1)
       }
       else{
         msgToast("File with filename '" + file.name + "' has already been added to this event")
       }
     }
-    $("#" + fileInputId).prop('files', getSelectedFiles());
+    $(fileBoxId).prop('files', getSelectedFiles());
   });
 
 }

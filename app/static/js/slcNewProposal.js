@@ -4,41 +4,6 @@ var currentTab = 0; // Current tab is set to be the first tab (0)
 
 $(document).ready(function(e) {
   handleFileSelection("attachmentObject", "attachedObjectContainer")
-  // disableSyllabusUploadFile()
-  // $(".removeAttachment").on("click", function(){
-
-  //   let fileId=  $(this).data("id")
-  //   let fileData = {fileId : fileId,
-  //                     courseId:this.id}
-  //   $.ajax({
-  //     type:"POST",
-  //     url: "/deleteCourseFile",
-  //     data: fileData, //get the startDate, endDate and name as a dictionary
-  //     success: function(){
-  //         $("#modalAttachment_"+fileId).remove()
-  //         $("#pageAttachment_"+fileId).remove()
-  //         currentTab = 1;
-
-  //     },
-  //     error: function(error){
-  //         msgFlash(error)
-  //     }
-  //     });
-  // });
-
-
-  // $("#attachmentObject").on('fileloaded', function() {
-  //   enableSyllabusUploadFile()
-  // })
-
-  // $("#syllabusUploadButton").on("click", function() {
-  //   saveCourseData('/serviceLearning/saveProposal', function() {})
-  //   $("#syllabusUploadModal").modal("toggle")
-  // })
-
-  // $("#attachmentObject").fileinput({
-  //   allowedFileExtensions:["pdf","jpg","png","gif", "csv", "docx", "jpg", "jpeg", "jfif"]
-  // })
 
   // set up the current tab and button state
   if(window.location.href.includes("upload")) {
