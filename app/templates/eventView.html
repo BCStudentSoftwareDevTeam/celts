@@ -15,8 +15,8 @@
             <div class="row">
                 {% if image %}
                 <div class="col-md-6">
-                        <img src="{{image}}" class="img-fluid pb-2">
                         <!-- Image should be about 1280px x 836px (Width x Height)-->
+                        <img src="{{image}}" class="img-fluid pb-2">
                 </div>
                 {% endif %}
 
@@ -27,7 +27,7 @@
                 <div class="{{ 'col-md-12' if fullWidthTitle else 'col-md-6'}}">
 
                     {%if not g.current_user.isAdmin %}
-                        {{ eventheader(eventData.name, eventData, 'small') }}
+                        {{ eventheader(eventData.name, eventData, 'small', isNewEvent) }}
                     {% endif %}
 
                     {% if fullWidthTitle %}
