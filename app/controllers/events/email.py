@@ -5,6 +5,21 @@ from app.logic.emailHandler import EmailHandler
 from app.models.program import Program
 from flask import request
 
+@main_bp.route('/retrieveSenderList/<eventId>', methods=['GET'])
+def retrieveSenderList(eventId): # Beans: get the program managers based on the eventId. Also get the correct program email using the eventId
+
+    programOption = ["Adopt A Grandparent (agp@berea.edu)", "agp"]
+    studentStaffOptions = [
+        ["Bob (bob@berea.edu)", "bob"],
+        ["Steve (steve@berea.edu)", "steve"]
+    ]
+    return [
+        ["CELTS (celts@berea.edu)", "celts"],
+        programOption,
+        *studentStaffOptions
+        ]
+
+
 @main_bp.route('/retrieveEmailTemplate/<eventId>', methods=['GET'])
 def retrieveEmailTemplate(eventId):
     templateInfo = {}
