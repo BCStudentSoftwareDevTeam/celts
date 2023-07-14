@@ -40,6 +40,7 @@ from app.logic.courseManagement import unapprovedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
 from app.logic.certification import getCertRequirementsWithCompletion
 from openpyxl import load_workbook
+from app.logic.serviceLearningCoursesData import pushDataToDatabase
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
@@ -382,11 +383,12 @@ def getAllCourseInstructors(term=None):
     This function selects all the Instructors Name and the previous courses
     """
     show_modal = request.args.get('show_modal', default=False, type=bool)
-    if show_modal:
-        dataHolder = session['dataPreview'].get('expectedInputAccessor')
+    
+    if show_modal and 'dataPreview' in session:
+        dataHolder = session['dataPreview']
     else:
         dataHolder = []
-    
+
     if g.current_user.isCeltsAdmin:
         setRedirectTarget("/manageServiceLearning")
         courseDict = getCourseDict()
@@ -397,57 +399,14 @@ def getAllCourseInstructors(term=None):
         terms = selectSurroundingTerms(g.current_term)
 
         if request.method =='POST' and "submitParticipant" in request.form:
-            filePathSession= session['dataPreview'].get('filePathAccessor')
-            excelData = load_workbook(filename=filePathSession)
-            excelSheet = excelData.active
-
-            termReg = r"\b[a-zA-Z]{3,}\s\d{4}\b" # regular expression to check cells content
-            courseReg = r"\b[A-Z]{2,4}\s\d{3}\b"
-            bnumberReg = r"\b[B]\d{8}\b"
-
-            isSummer = False
-            courseGet = None
-
-            for row in excelSheet.iter_rows():
-                cellVal = row[0].value
-                if re.search(termReg, str(cellVal)):
-                    year = cellVal[-4:]
-                    if "Fall" in cellVal :
-                        academicYear = year + "-" + str(int(year) + 1)
-                    elif "Summer" or "May" or "Spring" in cellVal:
-                        academicYear=  str(int(year) - 1) + "-" + year
-                        if "Summer" in cellVal:
-                            isSummer = True
-                    year= int(year)
-                    term, tCreated = Term.get_or_create(description=cellVal, year=year, academicYear=academicYear, isSummer=isSummer, isCurrentTerm=False)
-                
-
-                elif re.search(courseReg, str(cellVal)):
-
-                    courseGet, cCreated = Course.get_or_create(courseAbbreviation = cellVal, defaults = {
-                        "CourseName" : "",
-                        "sectionDesignation" : "",
-                        "courseCredit" : "1",
-                        "term" : term,
-                        "status" : 3,
-                        "createdBy" : "heggens",
-                        "serviceLearningDesignatedSections" : "",
-                        "previouslyApprovedDescription" : ""
-                        }
-                    ) 
-                
-                elif re.search(bnumberReg, str(cellVal)):           
-                    user = User.get(User.bnumber == cellVal)
-
-                    CourseParticipant.get_or_create(user = user, defaults = {
-                        "course" : courseGet,
-                        "hoursEarned" : 2
-                    })
-
+            pushDataToDatabase(session['dataPreview'])
             session.pop('dataPreview')
+            session.pop('listofBnumber_students')
             dataHolder =[]
-
-
+            flash('File saved successfully!', 'success')
+            return redirect(url_for('main.getAllCourseInstructors'))
+      
+      
         return render_template('/main/manageServiceLearningFaculty.html',
                                 courseInstructors = courseDict,
                                 unapprovedCourses = unapproved,

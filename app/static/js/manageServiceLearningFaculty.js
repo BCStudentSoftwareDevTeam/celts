@@ -77,6 +77,16 @@ $(document).ready(function(){
   })
   })
 
+  $("#cancelModal").click(function(){
+    $.ajax({
+      url: "/deleteUploadedFile",
+      type: 'POST',
+      error: function(error, status){
+        console.log(error, status)
+      }
+    });
+  })
+
 
 
 

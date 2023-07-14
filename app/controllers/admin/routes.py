@@ -325,20 +325,22 @@ def addCourseFile():
     fileData = request.files['addCourseParticipant']
     filePath = os.path.join(app.config["files"]["base_path"], fileData.filename)
     fileData.save(filePath)
-    excelData = load_workbook(filename=filePath)
-    excelSheet = excelData.active
-
-    expectedInput = parseUploadedFile(filePath)
-
-    session['dataPreview'] ={
-        'filePathAccessor': filePath,
-        'expectedInputAccessor': expectedInput} 
+    listOfParticipants = parseUploadedFile(filePath)
+    session['dataPreview'] = listOfParticipants[0]
+    session['listofBnumber_students'] = listOfParticipants[1]
+    os.remove(filePath)
     
-
     return redirect(url_for("main.getAllCourseInstructors", show_modal = True))
 
-    
-    
+@admin_bp.route("/deleteUploadedFile", methods= ["POST"])
+def deleteCourseFile():
+    try:
+        session.pop('dataPreview')
+        session.pop('listofBnumber_students')
+    except KeyError:
+        pass
+
+    return ""
 
 @admin_bp.route("/manageBonner")
 def manageBonner():

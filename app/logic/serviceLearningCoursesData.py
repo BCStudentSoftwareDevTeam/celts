@@ -106,24 +106,79 @@ def parseUploadedFile(filePath):
     bnumberReg = r"\b[B]\d{8}\b"
 
     previewParticipants = []
+    individualCourse = []
+    listOfStudentsBnumber = []
 
     for row in excelSheet.iter_rows():
         cellVal = row[0].value
 
         if re.search(termReg, str(cellVal)):
-           previewTerm= cellVal
+            previewTerm = cellVal  
 
         elif re.search(courseReg, str(cellVal)):
-            previewCourse= cellVal
-            previewParticipants.append(previewCourse)
-            previewParticipants.append(previewTerm)
+            previewCourse = cellVal
+            individualCourse = []
+            previewParticipants.append(individualCourse)
+            individualCourse.append(previewCourse)
+            individualCourse.append(previewTerm)
 
-        elif re.search(bnumberReg, str(cellVal)):           
+        elif re.search(bnumberReg, str(cellVal)):      
+                
             previewStudent = row[1].value
-            previewParticipants.append(previewStudent)
+            individualStudent = {
+                "bnumber": cellVal,
+                "student_name": previewStudent            
+                }
+            listOfStudentsBnumber.append(individualStudent)
+            individualCourse.append(previewStudent)
 
-    return previewParticipants
+    return previewParticipants, listOfStudentsBnumber
 
+
+
+
+def pushDataToDatabase(listOfParticipants):
+    isSummer = False
+    courseGet = None
+
+    listOfBnumbers = session['listofBnumber_students']
+    for courseInfo in listOfParticipants:
+        termOfCourse = courseInfo[1]
+        year = termOfCourse[-4:]
+        if "Fall" in termOfCourse :
+            academicYear = year + "-" + str(int(year) + 1)
+        elif "Summer" or "May" or "Spring" in termOfCourse:
+            academicYear=  str(int(year) - 1) + "-" + year
+            if "Summer" in termOfCourse:
+                isSummer = True
+
+        year = int(year)
+        term, tCreated = Term.get_or_create(description=termOfCourse, year=year, academicYear=academicYear, isSummer=isSummer, isCurrentTerm=False)
+    
+        
+
+        courseNumber = courseInfo[0]
+        courseGet, cCreated = Course.get_or_create(courseAbbreviation = courseNumber, defaults = {
+                "CourseName" : "",
+                "sectionDesignation" : "",
+                "courseCredit" : "1",
+                "term" : term,
+                "status" : 3,
+                "createdBy" : "heggens",
+                "serviceLearningDesignatedSections" : "",
+                "previouslyApprovedDescription" : ""
+                }
+            ) 
+        restOfStudents = courseInfo[2:]
+        for studentDict in listOfBnumbers:
+            bnumberStudent = studentDict["bnumber"]
+
+            user = User.get(User.bnumber == bnumberStudent)
+            CourseParticipant.get_or_create(user = user, defaults = {
+                "course" : courseGet,
+                "hoursEarned" : 2
+            })        
+            
 
 
    

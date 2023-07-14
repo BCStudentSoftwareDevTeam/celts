@@ -133,6 +133,7 @@
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title">Upload Excel File</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <form method="POST" action="/uploadCourseParticipant" enctype="multipart/form-data">
                 <div class="modal-body">
@@ -165,30 +166,34 @@
         </div>
     
         <!-- modal for Preview -->
-        {% set show="fade show d-block" if data else "" %}
+        {% set show="show d-block" if data else "" %}
         <div class="modal fade float-start col {{show}}" id="modalPreview">
+          <form method="POST" action="/manageServiceLearning" enctype="multipart/form-data">
           <div class="modal-dialog custom-modal-size">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title"> Preview File</h5>
+                <h5 class="modal-title">List of Participants</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
-              <form method="POST" action="/manageServiceLearning" enctype="multipart/form-data">
                 <div class="modal-body">
                   <div class="input-group">
-                    <label for="addCourseParticipant" class="form-label">List of Participants per Course:</label>
+                    <label for="addCourseParticipant" class="form-label"></label>
                     <ul>
                       {% for item in data %}
-                        <li>{{ item }}</li>
+                      <b>{{ item[0] ~ " "'-' " "~ item[1] }}</b>
+                        {% for element in item[2:] %}
+                        <li style="padding-left: 20px;">{{ element }}</li>
+                        {% endfor %}
                       {% endfor %}
-
                     </ul>
                   </div>
                 </div>
                 <br>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" id= "cancelModal">Cancel</button>
+                  {% if data %}
+                  <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModal" id= "cancelModal">Cancel</button>
+                  {% endif %}
                   <label for="previewCourseParticipant" class="form-label"></label>
-                  <!-- <input class="form-control btn btn-primary position-relative" id="submitParticipant" style='width: 75px' type="submit">Save File </input> -->
                   <button type = "submit" name = "submitParticipant" class="form-control btn btn-success position-relative" id="submitParticipant" style ='width: 90px'>Save File</button>
                 </div>
               </form>
@@ -196,6 +201,17 @@
           </div>
 
         <!-- end preview modal  -->
+      <div class="flash-messages">
+          {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                  <ul class="flash-list">
+                      {% for message in messages %}
+                          <li class="flash-item">{{ message }}</li>
+                      {% endfor %}
+                  </ul>
+              {% endif %}
+          {% endwith %}
+      </div>
       </div>
       <div id="wrapper">
         <br>
