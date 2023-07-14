@@ -2,12 +2,10 @@ from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.event import Event
 from app.models.program import Program
-from app.models.programEvent import ProgramEvent
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.programManager import ProgramManager
 from datetime import datetime, date
 from app.logic.createLogs import createAdminLog
-from app.logic.events import getEvents
 
 def getEventLengthInHours(startTime, endTime, eventDate):
     """
@@ -26,40 +24,36 @@ def updateEventParticipants(participantData):
     """
     Create new entry in event participant table if user does not exist. Otherwise, updates the record.
 
-    param: participantData- a dictionary that contains data from every row of the page along with the associated username.
+    param: participantData- an ImmutableMultiDict that contains data from every row of the page along with the associated username.
     """
     event = Event.get_or_none(Event.id==participantData['event'])
     if not event:
         raise Exception("Event does not exist.") # ???
         return False
 
-    for user in range(1, len(participantData)):
-        if f'username{user}' in participantData:
-            username = participantData[f'username{user}']
-            userObject = User.get_or_none(User.username==username)
-            eventParticipant = EventParticipant.get_or_none(user=userObject, event=participantData['event'])
-            if userObject:
-                try:
-                    if participantData[f'checkbox_{username}']: #if the user is marked as present
-                        hoursEarned = float(participantData['inputHours_'+ username])
-                        if eventParticipant:
-                            ((EventParticipant
-                                .update({EventParticipant.hoursEarned: hoursEarned})
-                                .where(EventParticipant.event==event.id, EventParticipant.user==userObject.username))
-                                .execute())
-                        else:
-                            EventParticipant.create(user=userObject, event=event, hoursEarned=hoursEarned)
-                except (KeyError):
-                    if eventParticipant:
-                        ((EventParticipant.delete()
-                            .where(
-                                EventParticipant.user==userObject.username,
-                                EventParticipant.event==event.id))
-                            .execute())
+
+    for username in participantData.getlist("username"):
+        userObject = User.get_or_none(User.username==username)
+        eventParticipant = EventParticipant.get_or_none(user=userObject, event=participantData['event'])
+        if userObject:
+            if participantData.get(f'checkbox_{username}'): #if the user is marked as present
+                inputHours = participantData.get(f'inputHours_{username}')
+                hoursEarned = float(inputHours) if inputHours else 0
+                if eventParticipant:
+                    ((EventParticipant
+                        .update({EventParticipant.hoursEarned: hoursEarned})
+                        .where(EventParticipant.event==event.id, EventParticipant.user==userObject.username))
+                        .execute())
+                else:
+                    EventParticipant.create(user=userObject, event=event, hoursEarned=hoursEarned)
             else:
-                return False
+                ((EventParticipant.delete()
+                    .where(
+                        EventParticipant.user==userObject.username,
+                        EventParticipant.event==event.id))
+                    .execute())
         else:
-            break
+            return False
     return True
 
 
