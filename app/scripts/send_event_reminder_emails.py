@@ -24,11 +24,12 @@ def sendEventReminderEmail(events):
         emailData = {"eventID":event.id,  # creates the email data
                         "programID":programId,
                         "term":currentTerm.id,
+                        "emailSender":"Reminder Automation",
                         "templateIdentifier":"Reminder",
                         "recipientsCategory":"Interested",
                         "subject":templateSubject,
                         "body":templateBody}
-        sendEmail = EmailHandler(emailData, gethost(), "Reminder Automation")
+        sendEmail = EmailHandler(emailData, gethost())
         sendEmail.send_email()
         counter += 1
     return counter
