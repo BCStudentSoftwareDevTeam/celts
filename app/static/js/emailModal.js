@@ -5,6 +5,20 @@ $(document).ready(function(){
   $("#cancel-btn").on("click", () => $('.modal').modal('hide'));
 })
 
+var senderList;
+async function retrieveSenderList(eventId){
+  await $.ajax({
+    url: `/retrieveSenderList/${eventId}`,
+    type: "GET",
+    success: function(senderInfo) {
+      senderList = senderInfo;
+    },
+    error: function(error, status){
+        console.log(error, status);
+    }
+  });
+}
+
 var emailTemplateInfo;
 async function retrieveEmailTemplateData(eventId) {
    await $.ajax({
@@ -29,6 +43,16 @@ async function retrievePlaceholderList(eventId){
     },
     error: function(error, status){
         console.log(error, status);
+    }
+  });
+}
+
+function readySenderOptions(eventId){
+  $("#emailSender .sender-option").remove();
+  retrieveSenderList(eventId).then(function() { // Beans: The first element in the sublist should be the username of the email. The second should be the Name and then the email.
+    for (let i=0; i < senderList.length; i++) {
+      let option = '<option class="sender-option" value="' + senderList[i][1] + '">'+ senderList[i][0] +'</option>';
+      $('#emailSender').append(option);
     }
   });
 }
@@ -77,6 +101,7 @@ function showEmailModal(eventID, programID, selectedTerm, isPastEvent, template=
 
 
   $("#body").data("cursor-index", 0);
+  readySenderOptions(eventID);
   readyTemplateOptions(eventID, template);
   readyPlaceholderOptions(eventID);
   fetchEmailLogData().then(() => $('#emailModal').modal('show'));

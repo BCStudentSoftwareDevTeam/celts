@@ -42,9 +42,9 @@
               <label for="emailSender" class="form-label my-1 fs-5">From</label>
               <select class='form-select' id="emailSender" name="emailSender" aria-label="email sender">
                 {% set user = g.current_user %}
-                <option {{ 'selected' if user.CeltsStudentStaff }}>CELTS Student Staff</option>
-                <option {{ 'selected' if user.isCeltsAdmin else 'hidden' }}>CELTS Admins</option>
-                <option value="{{user.username}}">
+                <option class="sender-option" {{ 'selected' if user.CeltsStudentStaff }}>Program</option>
+                <option class="sender-option">CELTS</option>
+                <option class="sender-option" value="{{user.username}}">
                   {{user.firstName}} {{user.lastName}} (Currently Logged In)
                 </option>
               </select>
