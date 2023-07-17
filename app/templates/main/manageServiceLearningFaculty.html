@@ -186,9 +186,10 @@
                   <div>
                     <label for="addCourseParticipant" class="form-label"></label>
                       {% for item in data %}
-                      <div><b>{{ item[0] ~ " "'-' " "~ item[1] }}</b></div>
+                      <div><b>{{ item[0][0]}}</b></div>
+                        <div {% if "ERROR:" in item[1] %} class= "text-danger" {% endif %}><b>{{item[1]}} </b></div>
                         {% for element in item[2:] %}
-                        <div>{{ element }}</div>
+                        <div {% if "ERROR:" in element %} class= "text-danger" {% endif %}>{{ element }}</div>
                         {% endfor %}
                       {% endfor %}
                   </div>
@@ -199,9 +200,10 @@
                   <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModal" id= "cancelModal">Cancel</button>
                   {% endif %}
                   <label for="previewCourseParticipant" class="form-label"></label>
-                  {% if not errorFlag %}
-                  <button type = "submit" name = "submitParticipant" class="form-control btn btn-success position-relative" id="submitParticipant" style ='width: 90px'>Save File</button>
-                  {% endif %}
+                  {% set disableSave = "disabled" if errorFlag else "" %}
+                  <button type = "submit" name = "submitParticipant" class="form-control btn btn-success position-relative" {{disableSave}} id="submitParticipant" style ='width: 90px'>Save File</button>
+                 
+
                 </div>
               </form>
             </div>

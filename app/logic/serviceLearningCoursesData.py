@@ -118,9 +118,10 @@ def parseUploadedFile(filePath):
             previewTerm = ''
             hasTerm = Term.get_or_none(Term.description == cellVal)
             if hasTerm:
-                previewTerm = cellVal  
+                previewTerm = cellVal 
+                 
             else:
-                previewTerm = f"The term {cellVal} does not exist."
+                previewTerm = f"ERROR: The term {cellVal} does not exist."
                 errorFlag = True
 
         elif re.search(courseReg, str(cellVal)):
@@ -128,16 +129,16 @@ def parseUploadedFile(filePath):
             hasCourse = Course.get_or_none(Course.courseAbbreviation == cellVal)
 
             if hasCourse:
-                previewCourse = hasCourse
+                previewCourse = hasCourse.courseName 
             else:
                 previewCourse = f"course {cellVal} will be newly created."
+
             individualCourse = []
-            previewParticipants.append(individualCourse)
-            individualCourse.append(previewCourse)
+            individualCourse.append([previewCourse, cellVal])
             individualCourse.append(previewTerm)
+            previewParticipants.append(individualCourse)
             
-            
-            
+                
 
         elif re.search(bnumberReg, str(cellVal)):      
             
@@ -154,13 +155,15 @@ def parseUploadedFile(filePath):
                 previewStudent = row[1].value
                 individualStudent = {
                     "bnumber": f"A student with bnumber {cellVal} doesn't exist.",
-                    "student_name": f"{previewStudent} is not in the database."         
+                    "student_name": f"{previewStudent} does not exist."         
                     }
                 listOfStudentsBnumber.append(individualStudent)
-                individualCourse.append(previewStudent)
+                individualCourse.append(f"ERROR: {previewStudent} does not exist.")
                 errorFlag = True
 
-       
+    print("+++++++++++++++++++++++++++++")
+    print(previewParticipants)
+    print("+++++++++++++++++++++++++++++")
 
     return previewParticipants, listOfStudentsBnumber, errorFlag # Throw error
 
@@ -187,7 +190,7 @@ def pushDataToDatabase(listOfParticipants):
     
         
 
-        courseNumber = courseInfo[0]
+        courseNumber = courseInfo[0][1]
         courseGet, cCreated = Course.get_or_create(courseAbbreviation = courseNumber, defaults = {
                 "CourseName" : "",
                 "sectionDesignation" : "",
