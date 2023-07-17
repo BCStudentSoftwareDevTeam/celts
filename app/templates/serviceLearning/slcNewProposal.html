@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% block app_content %}
-<form id="slcNewProposal" method="post" action="/serviceLearning/newProposal">
+<form id="slcNewProposal" enctype="multipart/form-data" method="post" action="/serviceLearning/newProposal" role="form">
   <div class="tab">
       {% include "serviceLearning/slcGuidelines.html" %}
   </div>

@@ -95,7 +95,8 @@ def slcCreateCourse():
 def slcSaveContinue():
     """Will update the the course proposal and return an empty string since ajax request needs a response
     Also, it updates the course status as 'in progress'"""
-    course = updateCourse(request.form.copy())
+    print(request.data, "skadowwww")
+    course = updateCourse(request.form.copy(), attachments=getFilesFromRequest(request))
 
     if not course:
         flash("Error saving changes", "danger")

@@ -7,6 +7,7 @@ from app.models.courseQuestion import CourseQuestion
 from app.models.courseStatus import CourseStatus
 from app.logic.createLogs import createAdminLog
 from app.logic.fileHandler import FileHandler
+from app.logic.utils import getFilesFromRequest
 from app.models.course import Course
 from app.models.term import Term
 from app.models.user import User
@@ -53,11 +54,12 @@ def createCourse(creator="No user provided"):
 
     return course
 
-def updateCourse(courseData, attachment=None):
+def updateCourse(courseData, attachments=None):
     """
         This function will take in courseData for the SLC proposal page and a dictionary
         of instuctors assigned to the course and update the information in the db.
     """
+    print(attachments, "TAKE ON MEEEEEEEEEEEEEEEEE")
     with mainDB.atomic() as transaction:
         try:
             course = Course.get_by_id(courseData['courseID'])
@@ -89,11 +91,12 @@ def updateCourse(courseData, attachment=None):
             for instructor in instructorList:
                 CourseInstructor.create(course=course, user=instructor)
             createAdminLog(f"Saved SLC proposal: {courseData['courseName']}")
-            if attachment:
-                addFile= FileHandler(attachment, courseId=course.id)
+            if attachments:
+                addFile= FileHandler(attachments, courseId=course.id)
                 addFile.saveFiles()
             return Course.get_by_id(course.id)
         except Exception as e:
+            print("444444444444444444444444444444444444444444444444444444444")
             print(e)
             transaction.rollback()
             return False
