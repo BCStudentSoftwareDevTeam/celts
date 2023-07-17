@@ -33,11 +33,11 @@
 
             </tr>
             {% for instructor in courseInstructor %}
-            <tr data-username="{{instructor.user.username}}">
+            <tr>
               <td>
                 <p class="mb-0">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user.email}})</p>
                   <input type="text" style="border: none" size="14" class="form-control-sm" id="inputPhoneNumber-{{instructor.user}}" name="courseInstructorPhone" aria-label="Instructor Phone" data-value="{{instructor.user.phoneNumber}}" value="{{instructor.user.phoneNumber}}" placeholder="Phone Number" />
-                  <a class="text-decoration-none primary editButton" tabindex="0" data-username="{{instructor.user}}"  id="editButton-{{instructor.user}}"  type="button">Edit</a>
+                  <a class="text-decoration-none primary editButton" tabindex="0" id="editButton-{{instructor.user}}"  type="button">Edit</a>
               </td>
               <td class="align-middle">
                   <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
