@@ -181,7 +181,6 @@ function displayCorrectTab(navigateTab) {
 
   if (currentTab >= allTabs.length) {
       $("#nextButton").prop("disabled", true)
-      addInstructorsToForm()
       $("#slcNewProposal").submit();
       return false;
   }
@@ -301,12 +300,6 @@ function validateForm() {
 // Instructor manipulation functions
 // -------------------------------------
 //
-function addInstructorsToForm() {
-    var form = $("#slcNewProposal");
-    $.each(getCourseInstructors(), function(idx,username) {
-        form.append($("<input type='hidden' name='instructor[]' value='" + username + "'>"));
-    });
-}
 
 function getRowUsername(element) {
     return $(element).closest("tr").data("username")

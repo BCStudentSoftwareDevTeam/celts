@@ -95,7 +95,6 @@ def slcCreateCourse():
 def slcSaveContinue():
     """Will update the the course proposal and return an empty string since ajax request needs a response
     Also, it updates the course status as 'in progress'"""
-    print(request.data, "skadowwww")
     course = updateCourse(request.form.copy(), attachments=getFilesFromRequest(request))
 
     if not course:
@@ -108,23 +107,23 @@ def slcSaveContinue():
         return redirect('/serviceLearning/courseManagement')
     return redirect(f'/serviceLearning/editProposal/{request.form["courseID"]}?tab=2')
 
-# @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
-# def slcCreateOrEdit():
-#     if request.method == "POST":
-#         course = updateCourse(request.form.copy())
-#         if not course:
-#             flash("Error saving changes", "danger")
-#         else:
-#             if getRedirectTarget(False):
-#                 return redirect('' + getRedirectTarget(True) + '')
-#             return redirect('/serviceLearning/courseManagement')
+@serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
+def slcCreateOrEdit():
+    if request.method == "POST":
+        course = updateCourse(request.form.copy())
+        if not course:
+            flash("Error saving changes", "danger")
+        else:
+            if getRedirectTarget(False):
+                return redirect('' + getRedirectTarget(True) + '')
+            return redirect('/serviceLearning/courseManagement')
 
-#     terms = Term.select().where(Term.year >= g.current_term.year)
-#     courseData = None
-#     return render_template('serviceLearning/slcNewProposal.html',
-#                 terms = terms,
-#                 courseData = courseData,
-#                 redirectTarget = getRedirectTarget(True))
+    terms = Term.select().where(Term.year >= g.current_term.year)
+    courseData = None
+    return render_template('serviceLearning/slcNewProposal.html',
+                terms = terms,
+                courseData = courseData,
+                redirectTarget = getRedirectTarget(True))
 
 @serviceLearning_bp.route('/serviceLearning/approveCourse', methods=['POST'])
 def approveCourse():
