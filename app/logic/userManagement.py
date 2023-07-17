@@ -70,36 +70,18 @@ def addNextTerm():
 
     return newTerm
 
-def addOldTerm():
-    newSemesterMap = {"Spring":"Summer",
-                    "Summer":"Fall",
-                    "Fall":"Spring"}
-    terms = list(Term.select().order_by(Term.id))
-    oldTerm = terms[-1]
-    prevSemester, prevYear = oldTerm.description.split()
-
-    academicYear = ""
-    newYear = int(prevYear) + 1 if prevSemester == "Fall" else int(prevYear)
+def addOldTerm(description):
+    prevSemester, year = description.split()
     if prevSemester == "Fall" :
-        academicYear = prevYear + "-" + str(int(prevYear) + 1)
+        academicYear = year + "-" + str(int(year) + 1)
     elif prevSemester == "Summer" or "May" or "Spring" :
         academicYear=  str(int(year) - 1) + "-" + year
 
-        if prevSemester =="Summer" :
-            isSummer = True
-
-    newDescription = newSemesterMap[prevSemester] + " " + str(newYear)
-    newAY = oldTerm.academicYear
-
-    if prevSemester == "Summer": # we only change academic year when the latest term in the table is Summer
-        year1, year2 = oldTerm.academicYear.split("-")
-        newAY = year2 + "-" + str(int(year2)+1)
-
     createdOldTerm = Term.create(
-            description=newDescription,
-            year=newYear,
-            academicYear=newAY,
-            isSummer="Summer" in newDescription.split())
+            description=description,
+            year=year,
+            academicYear=academicYear,
+            isSummer="Summer" in description.split())
     createdOldTerm.save()
 
     return createdOldTerm

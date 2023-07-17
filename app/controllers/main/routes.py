@@ -41,6 +41,7 @@ from app.logic.utils import selectSurroundingTerms
 from app.logic.certification import getCertRequirementsWithCompletion
 from openpyxl import load_workbook
 from app.logic.serviceLearningCoursesData import pushDataToDatabase
+from app.logic.userManagement import addOldTerm
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
