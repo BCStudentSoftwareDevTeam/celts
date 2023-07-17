@@ -108,31 +108,61 @@ def parseUploadedFile(filePath):
     previewParticipants = []
     individualCourse = []
     listOfStudentsBnumber = []
+    errorFlag = False
+
 
     for row in excelSheet.iter_rows():
         cellVal = row[0].value
 
         if re.search(termReg, str(cellVal)):
-            previewTerm = cellVal  
+            previewTerm = ''
+            hasTerm = Term.get_or_none(Term.description == cellVal)
+            if hasTerm:
+                previewTerm = cellVal  
+            else:
+                previewTerm = f"The term {cellVal} does not exist."
+                errorFlag = True
 
         elif re.search(courseReg, str(cellVal)):
-            previewCourse = cellVal
+            previewCourse = ''
+            hasCourse = Course.get_or_none(Course.courseAbbreviation == cellVal)
+
+            if hasCourse:
+                previewCourse = hasCourse
+            else:
+                previewCourse = f"course {cellVal} will be newly created."
             individualCourse = []
             previewParticipants.append(individualCourse)
             individualCourse.append(previewCourse)
             individualCourse.append(previewTerm)
+            
+            
+            
 
         elif re.search(bnumberReg, str(cellVal)):      
-                
-            previewStudent = row[1].value
-            individualStudent = {
-                "bnumber": cellVal,
-                "student_name": previewStudent            
-                }
-            listOfStudentsBnumber.append(individualStudent)
-            individualCourse.append(previewStudent)
+            
+            hasUser = User.get_or_none(User.bnumber == cellVal)
 
-    return previewParticipants, listOfStudentsBnumber
+            if hasUser:
+                individualStudent = {
+                    "bnumber": hasUser.bnumber,
+                    "student_name": hasUser.firstName + hasUser.lastName          
+                    }
+                listOfStudentsBnumber.append(individualStudent)
+                individualCourse.append(f"{hasUser.firstName} {hasUser.lastName}" )
+            else:
+                previewStudent = row[1].value
+                individualStudent = {
+                    "bnumber": f"A student with bnumber {cellVal} doesn't exist.",
+                    "student_name": f"{previewStudent} is not in the database."         
+                    }
+                listOfStudentsBnumber.append(individualStudent)
+                individualCourse.append(previewStudent)
+                errorFlag = True
+
+       
+
+    return previewParticipants, listOfStudentsBnumber, errorFlag # Throw error
 
 
 

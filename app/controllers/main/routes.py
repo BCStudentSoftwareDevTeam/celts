@@ -389,6 +389,11 @@ def getAllCourseInstructors(term=None):
     else:
         dataHolder = []
 
+    if 'errorFlag' in session:
+        errorFlag = session['errorFlag']
+    else:
+        errorFlag = ''
+
     if g.current_user.isCeltsAdmin:
         setRedirectTarget("/manageServiceLearning")
         courseDict = getCourseDict()
@@ -406,6 +411,7 @@ def getAllCourseInstructors(term=None):
             flash('File saved successfully!', 'success')
             return redirect(url_for('main.getAllCourseInstructors'))
       
+        
       
         return render_template('/main/manageServiceLearningFaculty.html',
                                 courseInstructors = courseDict,
@@ -415,6 +421,7 @@ def getAllCourseInstructors(term=None):
                                 term = term,
                                 CourseStatus = CourseStatus,
                                 data = dataHolder, 
+                                errorFlag = errorFlag
                                 )
     else:
         abort(403)

@@ -10,6 +10,8 @@ $(document).ready( function () {
          $('.dataTables_filter').addClass('float-start');
        }
     }
+    
+
   });
   $("#downloadApprovedCoursesBtn").click(function () {
     let termID = $("#downloadApprovedCoursesBtn").val();

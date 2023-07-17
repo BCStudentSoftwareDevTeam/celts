@@ -328,6 +328,7 @@ def addCourseFile():
     listOfParticipants = parseUploadedFile(filePath)
     session['dataPreview'] = listOfParticipants[0]
     session['listofBnumber_students'] = listOfParticipants[1]
+    session['errorFlag'] = listOfParticipants[2]
     os.remove(filePath)
     
     return redirect(url_for("main.getAllCourseInstructors", show_modal = True))
