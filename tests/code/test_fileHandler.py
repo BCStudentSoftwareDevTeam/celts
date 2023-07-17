@@ -35,6 +35,16 @@ def test_getFileFullPath():
     filePath = handledCourseFile.getFileFullPath(courseFileStorageObject[0].filename)
     assert filePath == 'app/static/files/courseattachments/1/coursefile.pdf'
 
+@pytest.mark.integration
+def test_makingdirectory():
+    #Testing that the file is created and it exists
+    with mainDB.atomic() as transaction:
+        
+        handledEventFile.makeDirectory()
+        handledEventFile.makeDirectory()
+
+        
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_saveFiles():
