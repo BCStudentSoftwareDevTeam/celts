@@ -20,11 +20,10 @@ class FileHandler:
         try:
             extraDir = str(self.eventId) if self.eventId else ""
             os.makedirs(os.path.join(self.path, extraDir))
-        # Passing if the error is 17
+        # Occurs when we try to create a directory that already exists
         except OSError as e:
             if e.errno != 17:
                 pass
-            # Perform additional error handling if needed
         
 
     def getFileFullPath(self, newfilename = ''):
@@ -42,7 +41,7 @@ class FileHandler:
             pass
         except FileExistsError:
             pass
-
+  
         return filePath
 
     def saveFiles(self, saveOriginalFile=None):
@@ -69,13 +68,12 @@ class FileHandler:
                         AttachmentUpload.create(course = self.courseId, fileName = file.filename)
                         saveFileToFilesystem = file.filename
                 
-                # Creating directory and saving file for events and courses
+                # Creating directory and save the file to the filesystem if 'saveFileToFilesystem' is True.
                 if saveFileToFilesystem:
                     self.makeDirectory()
                     file.save(self.getFileFullPath(newfilename = saveFileToFilesystem))        
                         
         except AttributeError: # will pass if there is no attachment to save
-            
             pass
 
     def retrievePath(self,files):

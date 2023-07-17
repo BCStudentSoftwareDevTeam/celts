@@ -38,13 +38,12 @@ def test_getFileFullPath():
 @pytest.mark.integration
 def test_makingdirectory():
     #Testing that the file is created and it exists
-    with mainDB.atomic() as transaction:
         
-        handledEventFile.makeDirectory()
-        handledEventFile.makeDirectory()
+    handledEventFile.makeDirectory()
+    handledEventFile.makeDirectory() 
+    assert os.path.exists('app/static/files/eventattachments/15')==True
+    
 
-        
-        transaction.rollback()
 
 @pytest.mark.integration
 def test_saveFiles():
