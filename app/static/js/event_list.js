@@ -43,24 +43,51 @@ function removeRsvpForEvent(eventID){
   })
 }
 
-function toggleButton(){
-  var toggleButton = document.getElementById("toggleButton");
-  var tableRows = document.getElementsByClassName("showlist");
 
-  if (toggleButton.checked) {
-    for (var i = 0; i < tableRows.length; i++) {
-      var tableRow = tableRows[i];
-      if (tableRow.classList.contains("d-none")) {
-        tableRow.classList.remove("d-none");
-      }
+$(document).ready(function(){
+  localStorage.removeItem("toggleState");
+  var toggleButton = $("#toggleButton");
+  toggleButton.prop("checked", false);
+  toggleRows(false)
+
+  toggleButton.on("change", function(){
+    var isChecked = $(this).prop("checked");
+    toggleRows(isChecked)
+
+    localStorage.setItem("toggleState", isChecked ? "checked" : "unchecked")
+  });
+  function toggleRows(isChecked) {
+    var tableRows = $(".showlist");
+    if (isChecked){
+      tableRows.removeClass("d-none");
     }
-  } else {
-    for (var i = 0; i < tableRows.length; i++) {
-      var tableRow = tableRows[i];
-      if (!tableRow.classList.contains("d-none")) {
-        tableRow.classList.add("d-none");
-      }
+    else{
+      tableRows.addClass("d-none")
     }
   }
-}
+})
+
+
+// function toggleButton(){
+  
+  
+
+//   if (toggleButton.is(":checked")){
+//     tableRows.each(function() {
+//       var tableRow = $(this);
+//       if (tableRow.hasClass("d-none")) {
+//         tableRow.removeClass("d-none");
+//       }
+//     });
+//   }
+
+//   else {
+//     tableRows.each(function() {
+//       var tableRow= $(this);
+//       if(!tableRow.hasClass("d-none")) {
+//         tableRow.addClass("d-none");
+//       }
+//     });
+//   }
+// }
 
