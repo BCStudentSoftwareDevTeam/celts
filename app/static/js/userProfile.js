@@ -99,15 +99,17 @@ $(document).ready(function(){
   $('#addNoteForm').submit(function(event) {
     event.preventDefault()
     let username = $("#notesSaveButton").data('username')
+    let isBonner = $("#bonnerInput").is(":checked")
     $.ajax({
       method: "POST",
       url:  "/profile/addNote",
       data: {"username": username,
              "visibility": $("#noteDropdown").val(),
              "noteTextbox": $("#addNoteTextArea").val(),
-             "bonner": $("#bonnerInput").is(":checked") ? "yes":"no"},
+             "bonner": isBonner ? "yes" : "no"},
       success: function(response) {
-        reloadWithAccordion("notes")
+        target = isBonner ? "bonner" : "notes"
+        reloadWithAccordion(target)
       }
     });
 });
