@@ -32,6 +32,9 @@ $(document).ready(function(){
     }).attr('readonly','readonly');
   });
 
+    /*
+     * Ban Functionality
+     */
   $(".ban").click(function() {
     var banButton = $("#banButton")
     var banEndDateDiv = $("#banEndDate") // Div containing the datepicker in the ban modal
@@ -61,40 +64,65 @@ $(document).ready(function(){
 
   });
 
-  $("#addNoteButton").click(function() {
-    $("#noteDropdown").show()
-    $("#bonnerStatement").hide()
-    $("#visibilityLabel").show()
-    $("#bonnerInput").prop("checked", false);
-    $("#noteModal").modal("toggle");
-  
+
+  $("#banNoteTxtArea, #banEndDatepicker").on('input' , function (e) { //This is the if statement the placeholder in line 45 is for #PLCHLD1
+    var enableButton = ($("#banNoteTxtArea").val() && $("#banEndDatepicker").val());
+    $("#banButton").prop("disabled", !enableButton);
   });
 
-  $("#addVisibility").click(function() { 
-    var bonnerChecked = $("input[name='bonner']:checked").val()
+  $("#banButton").click(function (){
+     $("#banButton").prop("disabled", true)
+    var username = $(this).data("username") //Expected to be the unique username of a user in the database
+    var route = ($(this).data("banOrUnban")).toLowerCase() //Expected to be "ban" or "unban"
+    var program = $(this).data("programID") //Expected to be a program's primary ID
+    $.ajax({
+      method: "POST",
+      url:  "/" + username + "/" + route + "/" + program,
+      data: {"note": $("#banNoteTxtArea").val(),
+             "endDate":$("#banEndDatepicker").val() //Expected to be a date in this format YYYY-MM-DD
+            },
+      success: function(response) {
+        reloadWithAccordion("programTable")
+      }
+    });
+  });
+
+    /*
+     * Note Functionality
+     */
+    function bonnerNoteOff() {
+        $("#bonnerInput").prop("checked", false);
+        $("#noteDropdown").show()
+        $("#bonnerStatement").hide()
+        $("#visibilityLabel").show()
+    }
+
+    function bonnerNoteOn() {
+        $("#bonnerInput").prop("checked", true);
+        $("#noteDropdown").hide()
+        $("#bonnerStatement").show()
+        $("#visibilityLabel").hide()
+    }
+
+    $("#addNoteButton").click(function() {
+        bonnerNoteOff()
+        $("#noteModal").modal("toggle")
+    });
+
+    $("#addVisibility").click(function() { 
+        var bonnerChecked = $("input[name='bonner']:checked").val()
     
-  if (bonnerChecked == 'on') {
-    $("#noteDropdown").hide()
-    $("#bonnerStatement").show()
-    $("#visibilityLabel").hide()
-    $("#bonnerInput").prop("checked", true);
-   
-  } else {
-    $("#bonnerInput").prop("checked", false);
-    $("#visibilityLabel").show()
-    $("#noteDropdown").show()
-    $("#bonnerStatement").hide()
-    }});
-  
+        if (bonnerChecked == 'on') {
+            bonnerNoteOn()
+        } else {
+            bonnerNoteOff()
+        }
+    });
 
-  $("#addBonnerNoteButton").click(function() {
-    $("#bonnerInput").prop("checked", true);
-    $("#noteModal").modal("toggle");
-    $("#visibilityLabel").hide();
-    $("#noteDropdown").hide();
-    $("#bonnerStatement").show() 
- 
-  });
+    $("#addBonnerNoteButton").click(function() {
+        bonnerNoteOn()
+        $("#noteModal").modal("toggle");
+    });
 
   $('#addNoteForm').submit(function(event) {
     event.preventDefault()
@@ -127,73 +155,55 @@ $(document).ready(function(){
     });
   });
 
-  $("#banNoteTxtArea, #banEndDatepicker").on('input' , function (e) { //This is the if statement the placeholder in line 45 is for #PLCHLD1
-    var enableButton = ($("#banNoteTxtArea").val() && $("#banEndDatepicker").val());
-    $("#banButton").prop("disabled", !enableButton);
-  });
+    /*
+     * Background Check Functionality
+     */
+    // Updates the Background check of a volunteer in the database
+    $(".savebtn").click(function () { 
+        $(this).prop("disabled", true);
+        let bgCheckType = $(this).data("id")
 
-  $("#banButton").click(function (){
-     $("#banButton").prop("disabled", true)
-    var username = $(this).data("username") //Expected to be the unique username of a user in the database
-    var route = ($(this).data("banOrUnban")).toLowerCase() //Expected to be "ban" or "unban"
-    var program = $(this).data("programID") //Expected to be a program's primary ID
-    $.ajax({
-      method: "POST",
-      url:  "/" + username + "/" + route + "/" + program,
-      data: {"note": $("#banNoteTxtArea").val(),
-             "endDate":$("#banEndDatepicker").val() //Expected to be a date in this format YYYY-MM-DD
-            },
-      success: function(response) {
-        reloadWithAccordion("programTable")
-      }
+        var bgStatusInput = $("#" + bgCheckType)
+        var bgDateInput = $("#" + bgCheckType + "_date")
+
+        let bgDate =  bgDateInput.val()
+        let bgStatus = $("[data-id=" + bgCheckType + "]").val()
+
+        if (bgStatus == '') {
+          bgStatusInput.focus()
+          bgStatusInput.addClass("invalid");
+          window.setTimeout(() => bgStatusInput.removeClass("invalid"), 1000);
+          $(this).prop("disabled", false);
+          return false
+        }
+
+        if (bgDate == ''){
+          bgDateInput.focus()
+          bgDateInput.addClass("invalid");
+          window.setTimeout(() => bgDateInput.removeClass("invalid"), 1000);
+          $(this).prop("disabled", false);
+          return false
+        }
+
+        let data = {
+            bgStatus: bgStatus,      // Expected to be one of the three background check statuses
+            user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
+            bgType: $(this).attr("id"),       // Expected to be the ID of a background check in the database
+            bgDate: bgDate  // Expected to be the date of the background check completion or '' if field is empty
+        }
+        $.ajax({
+          url: "/addBackgroundCheck",
+          type: "POST",
+          data: data,
+          success: function(s){
+            var date = new Date(data.bgDate + " 12:00").toLocaleDateString()
+            reloadWithAccordion("background")
+          },
+          error: function(error, status){
+              console.log(error, status)
+          }
+        })
     });
-  });
-
-  $(".savebtn").click(function () { // Updates the Background check of a volunteer in the database
-    $(this).prop("disabled", true);
-    let bgCheckType = $(this).data("id")
-
-    var bgStatusInput = $("#" + bgCheckType)
-    var bgDateInput = $("#" + bgCheckType + "_date")
-
-    let bgDate =  bgDateInput.val()
-    let bgStatus = $("[data-id=" + bgCheckType + "]").val()
-
-    if (bgStatus == '') {
-      bgStatusInput.focus()
-      bgStatusInput.addClass("invalid");
-      window.setTimeout(() => bgStatusInput.removeClass("invalid"), 1000);
-      $(this).prop("disabled", false);
-      return false
-    }
-
-    if (bgDate == ''){
-      bgDateInput.focus()
-      bgDateInput.addClass("invalid");
-      window.setTimeout(() => bgDateInput.removeClass("invalid"), 1000);
-      $(this).prop("disabled", false);
-      return false
-    }
-
-    let data = {
-        bgStatus: bgStatus,      // Expected to be one of the three background check statuses
-        user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
-        bgType: $(this).attr("id"),       // Expected to be the ID of a background check in the database
-        bgDate: bgDate  // Expected to be the date of the background check completion or '' if field is empty
-    }
-    $.ajax({
-      url: "/addBackgroundCheck",
-      type: "POST",
-      data: data,
-      success: function(s){
-        var date = new Date(data.bgDate + " 12:00").toLocaleDateString()
-        reloadWithAccordion("background")
-      },
-      error: function(error, status){
-          console.log(error, status)
-      }
-    })
-  });
 
   $("#bgHistoryTable").on("click", "#deleteBgHistory", function() {
     let data = {
