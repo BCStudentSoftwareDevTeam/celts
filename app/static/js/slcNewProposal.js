@@ -6,8 +6,9 @@ $(document).ready(function(e) {
   handleFileSelection("attachmentObject", "attachedObjectContainer")
 
   // set up the current tab and button state
-  if(window.location.href.includes("upload")) {
-    currentTab = 1
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('tab')){
+    currentTab = Number(urlParams.get('tab'));
   }
 
   showTab(currentTab);
@@ -80,6 +81,7 @@ $(document).ready(function(e) {
   });
 
   $("#saveContinue").on("click", function() {
+    $('#slcNewProposal').attr("action", "/serviceLearning/saveProposal")
       if(readOnly()) {
           let allTabs = $(".tab");
           displayCorrectTab(1)
@@ -90,26 +92,11 @@ $(document).ready(function(e) {
               // TODO nothing?
           }
       }
-
-      //this will save the change from the current page and move to the next page
-      let allTabs = $(".tab");
-      if (currentTab == (allTabs.length - 2)) {
-
-        saveCourseData("/serviceLearning/saveContinue", function() {
-            displayCorrectTab(1);
-        })
-      }
-      else if (currentTab == (allTabs.length - 1)){
-        saveCourseData("/serviceLearning/saveExit", function() {
-            window.location.replace("/serviceLearning/courseManagement");
-        });
-    }
   });
 
-  $("#saveExit").on("click", function() {
-    saveCourseData("/serviceLearning/saveExit", function() {
-      window.location.replace("/serviceLearning/courseManagement");
-  });
+  $('#saveExit').on("click", function(){
+    console.log("save exit")
+    $('#slcNewProposal').attr("action", "/serviceLearning/saveExit")
   })
 
   $("#exitButton").on("click", function() {
@@ -350,7 +337,6 @@ function createNewRow(selectedInstructor) {
   let editLink = newRow.find("td:eq(0) a")
   editLink.attr("id", "editButton-" + username);
 
-  newRow.attr("data-username", username)
   editLink.attr("data-username", username)
   newRow.prop("hidden", false);
   lastRow.after(newRow);
@@ -361,6 +347,8 @@ function createNewRow(selectedInstructor) {
   if (username){
     setupPhoneNumber(edit, input)
   }
+
+  $("#instructorTableNames").append('<input hidden name="instructor[]" value="' + username + '"/>')
 }
 
 function getCourseInstructors() {

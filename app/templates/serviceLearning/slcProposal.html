@@ -21,11 +21,11 @@
           </tr>
         </thead>
         <tbody>
-            <tr data-username="" hidden>
+            <tr hidden>
                 <td>
                   <p class="mb-0"></p>
                     <input type="text" style="border: none" size="14" class="form-control-sm" id="" name="courseInstructorPhone" aria-label="Instructor Phone" data-value="" value="" placeholder="Phone Number" />
-                    <a class="text-decoration-none primary editButton" tabindex="0" data-username=""  id=""  type="button">Edit</a>
+                    <a class="text-decoration-none primary editButton" tabindex="0" id=""  type="button">Edit</a>
                 </td>
                 <td class="align-middle">
                     <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
@@ -48,6 +48,11 @@
         </tbody>
 
       </table>
+      <div id='instructorTableNames'>
+        {% for instructor in courseInstructor %}
+        <input hidden name="instructor[]" value='{{instructor.user.username}}'/>
+        {% endfor %}
+      </div>
       <label for="courseName" class="pt-3">Course Name</label>
       <input
         class="form-control"
@@ -92,38 +97,8 @@
           <input type="file" class="form-control" id="attachmentObject" name="attachmentObject" multiple accept= ".png, .jpg, .pdf, .jpeg, .docx, .xlsx"/>
           <div id="attachedObjectContainer" class="py-0 px-0"></div>
         </div>
-        {% if filepaths %}
-          <div class="form-group mb-5">
-              <label class="mb-2" for= "eventAttachments"><strong>Event Attachments</strong></label>
-              <table>
-                  {% for key, value in filepaths.items() %}
-                      <tr id="attachment_{{value[1]}}" class="attachmentRow_{{key}}" data-id= "{{key}}">
-                          <td class="pr-5">
-                              <a class="mr-5 fileName" data-filename='{{key}}' href="{{value[0]}}" target="_blank">{{key}}</a>
-                          </td>
-                          <td style="text-align:center">
-                            <button
-                              data-id="{{value[1]}}"
-                              type="button"
-                              class="removeAttachment btn btn-danger btn-sm"
-                              id={{eventData.id}}>
-                                <i class="bi bi-trash h5 align-middle"></i>
-                            </button>
-                          </td>
-                      </tr>
-                  {% endfor %}
-              </table>
-            </div>
-          {% endif %}
 
-
-
-        <!--We are going to replace the upload button with the new "choose file" input here, and add its functionality in the JavaScript-->
-        <!-- <button class="btn btn-primary mb-2" type="button"id="syllabusUploadButton">Upload</button> -->
-
-        
-
-        <!--Additionally, we are going to get rid of (or modify) this filepaths condition here, as it is the old way of showing added attachments-->
+      
         {% if filepaths %}
         <div class="form-group mb-5">
           <label class="mb-2 courseAttachments" for= "courseAttachments"><strong>Course Attachments</strong></label>
@@ -147,9 +122,6 @@
           </table>
         </div>
         {% endif %}
-
-        <!--And finally, we are going to get rid of the modal in the other page-->
-
 
 
     </div>
