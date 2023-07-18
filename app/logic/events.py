@@ -139,7 +139,6 @@ def saveEventToDb(newEventData):
                     "timeStart": newEventData['timeStart'],
                     "timeEnd": newEventData['timeEnd'],
                     "location": newEventData['location'],
-                    "recurringId": recurringSeriesId,
                     "isFoodProvided" : newEventData['isFoodProvided'],
                     "isTraining": newEventData['isTraining'],
                     "isRsvpRequired": newEventData['isRsvpRequired'],
@@ -155,6 +154,7 @@ def saveEventToDb(newEventData):
             # Create or update the event
             if isNewEvent:
                 eventData['program'] = newEventData['program']
+                eventData['recurringId'] = recurringSeriesId
                 eventRecord = Event.create(**eventData)
             else:
                 eventRecord = Event.get_by_id(newEventData['id'])
