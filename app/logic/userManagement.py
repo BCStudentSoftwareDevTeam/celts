@@ -65,23 +65,35 @@ def addNextTerm():
             description=newDescription,
             year=newYear,
             academicYear=newAY,
-            isSummer="Summer" in newDescription.split())
+            isSummer="Summer" in newDescription.split(),
+            )
     newTerm.save()
 
     return newTerm
 
 def addOldTerm(description):
-    prevSemester, year = description.split()
-    if prevSemester == "Fall" :
+    semester, year = description.split()
+    if 'May' in semester:
+        semester = "Summer"
+    if semester == "Fall":
         academicYear = year + "-" + str(int(year) + 1)
-    elif prevSemester == "Summer" or "May" or "Spring" :
+    elif semester == "Summer" or "Spring":
         academicYear=  str(int(year) - 1) + "-" + year
 
+    isSummer = "Summer" in semester
+
+    
+
+    orderTerm = year + Term.convertTerm(semester)
+    
+                
     createdOldTerm = Term.create(
-            description=description,
+            description=f"{semester} {year}",
             year=year,
             academicYear=academicYear,
-            isSummer="Summer" in description.split())
+            isSummer=isSummer,
+            termOrder=orderTerm)
+    
     createdOldTerm.save()
 
     return createdOldTerm
