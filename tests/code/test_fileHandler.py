@@ -41,7 +41,7 @@ def test_makingdirectory():
         
     handledEventFile.makeDirectory()
     handledEventFile.makeDirectory() 
-    assert os.path.exists('app/static/files/eventattachments/15')==True
+    assert os.path.exists('app/static/files/eventattachments/15')== True
     
 
 
