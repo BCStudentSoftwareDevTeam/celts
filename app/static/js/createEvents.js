@@ -207,25 +207,6 @@ $(document).ready(function() {
      $("#hiddenFacilitatorArray").attr("value", facilitatorArray);
      $(this).closest("tr").remove();
   });
-  $(".removeAttachment").on("click", function(){
-
-    let fileId=  $(this).data("id")
-    let fileData = {fileId : fileId,
-                      eventId:this.id}
-      $.ajax({
-        type:"POST",
-        url: "/deleteEventFile",
-        data: fileData, //get the startDate, endDate and name as a dictionary
-        success: function(){
-            msgFlash("Attachment removed successfully")
-            $("#attachment_"+fileId).remove()
-
-        },
-            error: function(error){
-                msgFlash(error)
-        }
-        });
-    });
   $("#endDatePicker").change(function(){
      updateDate(this)
   });
