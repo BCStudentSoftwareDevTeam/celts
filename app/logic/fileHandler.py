@@ -22,9 +22,7 @@ class FileHandler:
             os.makedirs(os.path.join(self.path, extraDir))
         # Occurs when we try to create a directory that already exists
         except OSError as e:
-            if e.errno == 17:
-                pass
-            else:
+            if e.errno != 17:
                 print(f'Fail to create directory: {e}')
         
 
