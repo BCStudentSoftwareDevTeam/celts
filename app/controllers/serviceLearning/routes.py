@@ -262,7 +262,7 @@ def uploadCourseFile():
 @serviceLearning_bp.route("/deleteCourseFile", methods=["POST"])
 def deleteCourseFile():
     fileData= request.form
-    courseFile=FileHandler(courseId=fileData["courseId"])
+    courseFile=FileHandler(courseId=fileData["databaseId"])
     courseFile.deleteFile(fileData["fileId"])
     return ""
 
