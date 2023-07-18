@@ -28,7 +28,7 @@
       </div>
     </div>
   </div>
-  {% if user.isAdmin %}
+  {% if selectedTerm == g.current_term and user.isAdmin %}
     <div class="row px-4">
       <div class = "d-none d-sm-block col "></div>
       <div class="form-check form-switch mb-2 col-auto">
@@ -77,8 +77,8 @@
         </tr>
       </thead>
       <tbody>
-        {% if events[-1].isPast %}          
-          <tr> There are no upcoming events for this term </tr>
+        {% if selectedTerm == g.current_term and events[-1].isPast %}          
+          <tr> There are no upcoming events for this program </tr>
         {% endif %}
         {% for event in events %}
           <tr>
@@ -161,7 +161,7 @@
     </table>
   </div>
 {% else %}
-  <p>No upcoming events for this term</p>
+    <p>There are no events for this program</p>
 {% endif %}
 {% endmacro %}
 
