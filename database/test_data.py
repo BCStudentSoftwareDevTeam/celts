@@ -325,47 +325,45 @@ terms = [
         "year": 2020,
         "academicYear": "2020-2021",
         "isSummer": False,
-        "isCurrentTerm": False
+        "isCurrentTerm": False,
+        "termOrder": "2020-3"
     },
     {
         "id": 2,
-        "description": "Spring A 2021",
+        "description": "Spring 2021",
         "year": 2021,
         "academicYear": "2020-2021",
         "isSummer": False,
-        "isCurrentTerm": False
+        "isCurrentTerm": False,
+        "termOrder": "2021-1"
     },
+    
     {
         "id": 3,
-        "description": "Spring B 2021",
-        "year": 2021,
-        "academicYear": "2020-2021",
-        "isSummer": False,
-        "isCurrentTerm": False
-    },
-    {
-        "id": 4,
         "description": "Summer 2021",
         "year": 2021,
         "academicYear": "2020-2021",
         "isSummer": True,
-        "isCurrentTerm": True
+        "isCurrentTerm": True,
+        "termOrder": "2021-2"
     },
     {
-        "id": 5,
+        "id": 4,
         "description": "Fall 2021",
         "year": 2021,
         "academicYear": "2021-2022",
         "isSummer": False,
-        "isCurrentTerm": False
+        "isCurrentTerm": False,
+        "termOrder": "2021-3"
     },
     {
-        "id": 6,
+        "id": 5,
         "description": "Spring 2022",
         "year": 2022,
         "academicYear": "2021-2022",
         "isSummer": False,
-        "isCurrentTerm": False
+        "isCurrentTerm": False,
+        "termOrder": "2022-1"
     },
 
 ]

@@ -49,31 +49,31 @@ def addNextTerm():
     newSemesterMap = {"Spring":"Summer",
                     "Summer":"Fall",
                     "Fall":"Spring"}
-    terms = list(Term.select().order_by(Term.id))
+    terms = list(Term.select().order_by(Term.termOrder))
     prevTerm = terms[-1]
     prevSemester, prevYear = prevTerm.description.split()
 
     newYear = int(prevYear) + 1 if prevSemester == "Fall" else int(prevYear)
     newDescription = newSemesterMap[prevSemester] + " " + str(newYear)
-    newAY = prevTerm.academicYear
-
-    if prevSemester == "Summer": # we only change academic year when the latest term in the table is Summer
+    newAY = prevTerm.academicYear   
+    if prevSemester == "Summer ": # we only change academic year when the latest term in the table is Summer
         year1, year2 = prevTerm.academicYear.split("-")
         newAY = year2 + "-" + str(int(year2)+1)
 
     semester = newDescription.split()[0]
+    summer= "Summer" in semester
 
     newTerm = Term.create(
             description=newDescription,
             year=newYear,
             academicYear=newAY,
-            isSummer="Summer" in semester,
-            termOrder=newYear+Term.convertTerm(semester))
+            isSummer= summer,
+            termOrder=Term.convertTerm(newDescription))
     newTerm.save()
 
     return newTerm
 
-def addOldTerm(description):
+def addPastTerm(description):
     semester, year = description.split()
     if 'May' in semester:
         semester = "Summer"
@@ -83,21 +83,17 @@ def addOldTerm(description):
         academicYear=  str(int(year) - 1) + "-" + year
 
     isSummer = "Summer" in semester
-
+   
+    newDescription=f"{semester} {year}"
+    orderTerm = Term.convertTerm(newDescription)
     
-
-    orderTerm = year + Term.convertTerm(semester)
-    
-                
     createdOldTerm = Term.create(
-            description=f"{semester} {year}",
+            description= newDescription,
             year=year,
             academicYear=academicYear,
             isSummer=isSummer,
             termOrder=orderTerm)
-    
-    createdOldTerm.save()
-
+    createdOldTerm.save() 
     return createdOldTerm
 
 def changeProgramInfo(newProgramName, newContactEmail, newContactName, newLocation, programId):

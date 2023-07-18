@@ -387,8 +387,10 @@ def getAllCourseInstructors(term=None):
     
     if show_modal and 'dataPreview' in session:
         dataHolder = session['dataPreview']
+        termHolder = session['termDict']
     else:
         dataHolder = []
+        termHolder = []
 
     if 'errorFlag' in session:
         errorFlag = session['errorFlag']
@@ -422,7 +424,8 @@ def getAllCourseInstructors(term=None):
                                 term = term,
                                 CourseStatus = CourseStatus,
                                 data = dataHolder, 
-                                errorFlag = errorFlag
+                                errorFlag = errorFlag,
+                                termHolder= termHolder
                                 )
     else:
         abort(403)

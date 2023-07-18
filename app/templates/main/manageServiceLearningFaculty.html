@@ -185,13 +185,18 @@
                 <div class="modal-body">
                   <div>
                     <label for="addCourseParticipant" class="form-label"></label>
-                      {% for item in data %}
-                      <div><b>{{ item[0][0]}}</b></div>
-                        <div {% if "ERROR:" in item[1] %} class= "text-danger" {% endif %}><b>{{item[1]}} </b></div>
-                        {% for element in item[2:] %}
-                        <div {% if "ERROR:" in element %} class= "text-danger" {% endif %}>{{ element }}</div>
+                      {% for key in termHolder %}
+                      <div class="h4"><b><u>{{key}}:</u></b></div>
+                        {% for item in termHolder[key]%}
+                          <div {% if "ERROR:" in item %} class= "text-danger" {% endif %}><b>{{item}} </b></div>
+                          {% for element in termHolder[key][item] %}
+                          <div {% if "ERROR:" in element %} class= "text-danger" {% endif %}>{{ element }}</div>
+                          {% endfor %}
                         {% endfor %}
-                      {% endfor %}
+                        <hr>
+                      {% endfor%}
+
+
                   </div>
                 </div>
                 <br>

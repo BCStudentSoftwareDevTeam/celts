@@ -16,7 +16,7 @@ from flask import flash, abort, jsonify, session, send_file
 import re
 import os
 from openpyxl import load_workbook
-from app.logic.userManagement import addOldTerm
+from app.logic.userManagement import addPastTerm
 
 def getServiceLearningCoursesData(user):
     """Returns dictionary with data used to populate Service-Learning proposal table"""
@@ -110,6 +110,10 @@ def parseUploadedFile(filePath):
     individualCourse = []
     listOfStudentsBnumber = []
     errorFlag = False
+    termDictionary= {}
+    previewTerm = ''
+    previewCourse = ''
+    previewStudent= ''
 
 
     for row in excelSheet.iter_rows():
@@ -120,25 +124,31 @@ def parseUploadedFile(filePath):
             hasTerm = Term.get_or_none(Term.description == cellVal)
             if hasTerm:
                 previewTerm = cellVal 
-                 
+            elif list(Term.select().order_by(Term.termOrder))[-1].termOrder > Term.convertTerm(cellVal):
+                previewTerm = cellVal
             else:
                 previewTerm = f"ERROR: The term {cellVal} does not exist."
                 errorFlag = True
+
+            termDictionary[previewTerm]= {}
+
+            
 
         elif re.search(courseReg, str(cellVal)):
             previewCourse = ''
             hasCourse = Course.get_or_none(Course.courseAbbreviation == cellVal)
 
             if hasCourse:
-                previewCourse = hasCourse.courseName 
+                previewCourse = hasCourse.courseName or cellVal 
             else:
-                previewCourse = f"course {cellVal} will be newly created."
+                previewCourse = cellVal
 
             individualCourse = []
             individualCourse.append([previewCourse, cellVal])
             individualCourse.append(previewTerm)
             previewParticipants.append(individualCourse)
-            
+            termDictionary[previewTerm][previewCourse]=[]
+           
                 
 
         elif re.search(bnumberReg, str(cellVal)):      
@@ -161,12 +171,9 @@ def parseUploadedFile(filePath):
                 listOfStudentsBnumber.append(individualStudent)
                 individualCourse.append(f"ERROR: {previewStudent} does not exist.")
                 errorFlag = True
+            termDictionary[previewTerm][previewCourse].append(f"{hasUser.firstName} {hasUser.lastName}")
 
-    print("+++++++++++++++++++++++++++++")
-    print(previewParticipants)
-    print("+++++++++++++++++++++++++++++")
-
-    return previewParticipants, listOfStudentsBnumber, errorFlag # Throw error
+    return previewParticipants, listOfStudentsBnumber, errorFlag, termDictionary # Throw error
 
 
 
@@ -178,18 +185,9 @@ def pushDataToDatabase(listOfParticipants):
     listOfBnumbers = session['listofBnumber_students']
     for courseInfo in listOfParticipants:
         termOfCourse = courseInfo[1]
-        year = termOfCourse[-4:]
-        if "Fall" in termOfCourse :
-            academicYear = year + "-" + str(int(year) + 1)
-        elif "Summer" or "May" or "Spring" in termOfCourse:
-            academicYear=  str(int(year) - 1) + "-" + year
-            if "Summer" in termOfCourse:
-                isSummer = True
-
-        year = int(year)
-        term, tCreated = Term.get_or_create(description=termOfCourse, year=year, academicYear=academicYear, isSummer=isSummer, isCurrentTerm=False)
-    
-        
+        term = Term.get_or_none(description=termOfCourse) 
+        if not term :
+            term=addPastTerm(termOfCourse)
 
         courseNumber = courseInfo[0][1]
         courseGet, cCreated = Course.get_or_create(courseAbbreviation = courseNumber, defaults = {
