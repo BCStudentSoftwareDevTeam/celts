@@ -61,12 +61,14 @@ def addNextTerm():
         year1, year2 = prevTerm.academicYear.split("-")
         newAY = year2 + "-" + str(int(year2)+1)
 
+    semester = newDescription.split()[0]
+
     newTerm = Term.create(
             description=newDescription,
             year=newYear,
             academicYear=newAY,
-            isSummer="Summer" in newDescription.split(),
-            )
+            isSummer="Summer" in semester,
+            termOrder=newYear+Term.convertTerm(semester))
     newTerm.save()
 
     return newTerm
