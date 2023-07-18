@@ -108,7 +108,7 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
 
         return events, " "
     except Exception as e:
-        print(e)
+        print(f'Failed attemptSaveEvent() with Exception:{e}')
         return False, e
 
 def saveEventToDb(newEventData):
