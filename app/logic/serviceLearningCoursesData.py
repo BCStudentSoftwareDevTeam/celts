@@ -16,6 +16,7 @@ from flask import flash, abort, jsonify, session, send_file
 import re
 import os
 from openpyxl import load_workbook
+from app.logic.userManagement import addOldTerm
 
 def getServiceLearningCoursesData(user):
     """Returns dictionary with data used to populate Service-Learning proposal table"""
