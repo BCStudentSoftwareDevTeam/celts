@@ -226,8 +226,7 @@ function showTab(currentTab) {
         $("#submitAndApproveButton").show();
         $("#nextButton").text("Submit Proposal");
         $("#nextButton").show();
-        $("#saveContinue").text("Save and Exit");
-        $("#saveExit").hide()
+        $("#saveContinue").hide();
         $("#exitButton").hide()
         if(readOnly()) {
             $("#nextButton").text("Next");
