@@ -123,6 +123,9 @@ def getUserBGCheckHistory(username):
     return bgHistory
 
 def addProfileNote(visibility, bonner, noteTextbox, username):
+    if bonner:
+        visibility = 1 # bonner notes are always admins and the student
+
     noteForDb = Note.create(createdBy = g.current_user,
                             createdOn = datetime.datetime.now(),
                             noteContent = noteTextbox,

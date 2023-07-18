@@ -155,7 +155,7 @@ def viewUsersProfile(username):
                 currentDateTime = datetime.datetime.now(),
                 profileNotes = profileNotes,
                 bonnerRequirements = bonnerRequirements,
-                userDiet = userDiet
+                userDiet = userDiet                
             )
     abort(403)
 
