@@ -46,7 +46,6 @@ def getUsernameFromEmail(email):
     return email.split("@")[0]
 
 def getFilesFromRequest(request):
-    print(request.files, "kamemememem")
     attachmentFiles = request.files.getlist("attachmentObject")
     fileDoesNotExist = attachmentFiles[0].content_type == "application/octet-stream"
     if fileDoesNotExist:
