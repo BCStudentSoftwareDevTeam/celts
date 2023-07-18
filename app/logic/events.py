@@ -448,6 +448,7 @@ def upcomingEventsFirst(EventList):
         sortedList.append(EventList[0])
         del EventList[0]
     return EventList+sortedList[::-1]
+
 def addEventView(viewer,event):
     """This checks if the current user already viewed the event. If not, insert a recored to EventView table"""
     if not viewer.isCeltsAdmin:
