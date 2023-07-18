@@ -22,8 +22,10 @@ class FileHandler:
             os.makedirs(os.path.join(self.path, extraDir))
         # Occurs when we try to create a directory that already exists
         except OSError as e:
-            if e.errno != 17:
+            if e.errno == 17:
                 pass
+            else:
+                print(f'Fail to create directory: {e}')
         
 
     def getFileFullPath(self, newfilename = ''):
@@ -68,7 +70,6 @@ class FileHandler:
                         AttachmentUpload.create(course = self.courseId, fileName = file.filename)
                         saveFileToFilesystem = file.filename
                 
-                # Creating directory and save the file to the filesystem if 'saveFileToFilesystem' is True.
                 if saveFileToFilesystem:
                     self.makeDirectory()
                     file.save(self.getFileFullPath(newfilename = saveFileToFilesystem))        
