@@ -3,7 +3,7 @@ import searchUser from './searchUser.js'
 var currentTab = 0; // Current tab is set to be the first tab (0)
 
 $(document).ready(function(e) {
-  handleFileSelection("attachmentObject", "attachedObjectContainer")
+  handleFileSelection("attachmentObject")
 
   // set up the current tab and button state
   const urlParams = new URLSearchParams(window.location.search);

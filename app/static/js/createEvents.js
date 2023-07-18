@@ -69,7 +69,7 @@ $(document).ready(function() {
     calculateRecurringEventFrequency();
   }
 
-    handleFileSelection("attachmentObject", "attachedObjectContainer")
+    handleFileSelection("attachmentObject")
 
     $("#checkRSVP").on("click", function() {
       if ($("#checkRSVP").is(":checked")) {

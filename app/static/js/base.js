@@ -137,8 +137,10 @@ function getSelectedFiles(){
   return _fileHolder.files;
 }
 
-function handleFileSelection(fileInputId, attachedObjectContainerId){
+function handleFileSelection(fileInputId){
   var fileBoxId = "#" + fileInputId
+  var attachedObjectContainerId = fileInputId + "Container"
+  $(fileBoxId).after(`<div id="`+attachedObjectContainerId+`" class="py-0 px-0"></div>`)
   var objectContainerId = "#" + attachedObjectContainerId
   $(fileBoxId).on('change', function() {
     const selectedFiles = $(fileBoxId).prop('files');
