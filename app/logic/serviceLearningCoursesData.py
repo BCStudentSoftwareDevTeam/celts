@@ -113,7 +113,8 @@ def parseUploadedFile(filePath):
     termDictionary= {}
     previewTerm = ''
     previewCourse = ''
-    previewStudent= ''
+    studentValue= ''
+
 
 
     for row in excelSheet.iter_rows():
@@ -161,7 +162,9 @@ def parseUploadedFile(filePath):
                     "student_name": hasUser.firstName + hasUser.lastName          
                     }
                 listOfStudentsBnumber.append(individualStudent)
-                individualCourse.append(f"{hasUser.firstName} {hasUser.lastName}" )
+                studentValue =f"{hasUser.firstName} {hasUser.lastName}"
+                individualCourse.append(studentValue)
+                
             else:
                 previewStudent = row[1].value
                 individualStudent = {
@@ -169,9 +172,10 @@ def parseUploadedFile(filePath):
                     "student_name": f"{previewStudent} does not exist."         
                     }
                 listOfStudentsBnumber.append(individualStudent)
-                individualCourse.append(f"ERROR: {previewStudent} does not exist.")
+                studentValue = f"ERROR: {previewStudent} does not exist."
+                individualCourse.append(studentValue)
                 errorFlag = True
-            termDictionary[previewTerm][previewCourse].append(f"{hasUser.firstName} {hasUser.lastName}")
+            termDictionary[previewTerm][previewCourse].append(studentValue)
 
     return previewParticipants, listOfStudentsBnumber, errorFlag, termDictionary # Throw error
 
