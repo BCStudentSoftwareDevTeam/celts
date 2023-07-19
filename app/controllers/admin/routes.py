@@ -34,7 +34,7 @@ from app.logic.participants import getEventParticipants, getUserParticipatedTrai
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
-from app.logic.serviceLearningCoursesData import parseUploadedFile
+from app.logic.serviceLearningCoursesData import parseUploadedFile, sessionCleaner
 
 
 
@@ -362,10 +362,7 @@ def addCourseFile():
 @admin_bp.route("/deleteUploadedFile", methods= ["POST"])
 def deleteCourseFile():
     try:
-        session.pop('dataPreview')
-        session.pop('listofBnumber_students')
-        session.pop('errorFlag')
-        session.pop('termDict')
+        sessionCleaner()
     except KeyError:
         pass
 

@@ -4,8 +4,8 @@ from app.models import mainDB
 from app.models.user import User
 from app.models.term import Term
 from app.logic.utils import selectSurroundingTerms
-from app.logic.userManagement import addCeltsAdmin, removeCeltsAdmin,addCeltsStudentStaff, removeCeltsStudentStaff, changeCurrentTerm, addNextTerm
-
+from app.logic.userManagement import addCeltsAdmin, removeCeltsAdmin,addCeltsStudentStaff, removeCeltsStudentStaff
+from app.logic.term import addNextTerm, changeCurrentTerm
 
 @pytest.mark.integration
 def test_selectSurroundingTerms():

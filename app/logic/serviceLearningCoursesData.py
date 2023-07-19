@@ -16,7 +16,7 @@ from flask import flash, abort, jsonify, session, send_file
 import re
 import os
 from openpyxl import load_workbook
-from app.logic.userManagement import addPastTerm
+from app.logic.term import addPastTerm
 
 def getServiceLearningCoursesData(user):
     """Returns dictionary with data used to populate Service-Learning proposal table"""
@@ -132,10 +132,9 @@ def parseUploadedFile(filePath):
             previewCourse = ''
             hasCourse = Course.get_or_none(Course.courseAbbreviation == cellVal)
 
-            if hasCourse:
-                previewCourse = hasCourse.courseName or cellVal 
-            else:
-                previewCourse = cellVal
+            previewCourse = cellVal
+            if hasCourse and hasCourse.courseName:
+                previewCourse = hasCourse.courseName
 
             individualCourse = []
             individualCourse.append([previewCourse, cellVal])
@@ -199,3 +198,9 @@ def pushDataToDatabase(listOfParticipants):
                 "course" : courseGet,
                 "hoursEarned" : 2
             })
+
+def sessionCleaner():
+    session.pop('dataPreview')
+    session.pop('listofBnumber_students')
+    session.pop('errorFlag')
+    session.pop('termDict')

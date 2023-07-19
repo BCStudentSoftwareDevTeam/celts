@@ -71,7 +71,6 @@ function handleFileSelect(event){
   const selectedFile = event.target.files[0];
 
   if (selectedFile){
-    console.log("My file has been selected", selectedFile.name);
     $("#previewButton").prop('disabled', false);
   }
 }
