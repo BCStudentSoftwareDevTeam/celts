@@ -12,7 +12,6 @@ from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
 from app.models.programBan import ProgramBan
-from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
@@ -34,6 +33,7 @@ from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import unapprovedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
 from app.logic.certification import getCertRequirementsWithCompletion
+from app.logic.createLogs import createRsvpLog, createAdminLog
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
@@ -42,8 +42,10 @@ def redirectToLogout():
 @main_bp.route('/', methods=['GET'])
 def landingPage():
     managerProgramDict = getManagerProgramDict(g.current_user)
-    programsWithEvents = list(ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event.term == g.current_term).join(Event).distinct())
-    programsWithEventsList = [program.program.id for program in programsWithEvents]
+
+
+    eventsInTerm = list(Event.select().where(Event.term == g.current_term))
+    programsWithEventsList = [event.program for event in eventsInTerm if not event.isPast]
 
     return render_template("/main/landingPage.html", managerProgramDict = managerProgramDict,
                                                      term = g.current_term,
@@ -153,7 +155,7 @@ def viewUsersProfile(username):
                 currentDateTime = datetime.datetime.now(),
                 profileNotes = profileNotes,
                 bonnerRequirements = bonnerRequirements,
-                userDiet = userDiet
+                userDiet = userDiet                
             )
     abort(403)
 
@@ -200,7 +202,7 @@ def ban(program_id, username):
         banUser(program_id, username, banNote, banEndDate, g.current_user)
         programInfo = Program.get(int(program_id))
         flash("Successfully banned the volunteer", "success")
-        createLog(f'Banned {username} from {programInfo.programName} until {banEndDate}.')
+        createAdminLog(f'Banned {username} from {programInfo.programName} until {banEndDate}.')
         return "Successfully banned the volunteer."
     except Exception as e:
         print("Error while updating ban", e)
@@ -220,7 +222,7 @@ def unban(program_id, username):
     try:
         unbanUser(program_id, username, unbanNote, g.current_user)
         programInfo = Program.get(int(program_id))
-        createLog(f'Unbanned {username} from {programInfo.programName}.')
+        createAdminLog(f'Unbanned {username} from {programInfo.programName}.')
         flash("Successfully unbanned the volunteer", "success")
         return "Successfully unbanned the volunteer"
 
@@ -274,7 +276,7 @@ def volunteerRegister():
     for the event they have clicked register for.
     """
     event = Event.get_by_id(request.form['id'])
-    program = event.singleProgram
+    program = event.program
     user = g.current_user
 
     isAdded = checkUserRsvp(user, event)
@@ -309,8 +311,9 @@ def RemoveRSVP():
     event = Event.get_by_id(eventData['id'])
 
     currentRsvpParticipant = EventRsvp.get(EventRsvp.user == g.current_user, EventRsvp.event == event)
+    logBody = "withdrew from the waitlist" if currentRsvpParticipant.rsvpWaitlist else "un-RSVP'd"
     currentRsvpParticipant.delete_instance()
-
+    createRsvpLog(event.id, f"{g.current_user.fullName} {logBody}.")
     flash("Successfully unregistered for event!", "success")
     if 'from' in eventData:
         if eventData['from'] == 'ajax':

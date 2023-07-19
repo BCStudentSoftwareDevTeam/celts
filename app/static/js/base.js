@@ -12,9 +12,10 @@ function msgFlash(flash_message, status){
 
 }
 $(document).ready(function() {
-    $("#userSelect").on('change', function() {
-        $("#userSelectForm").submit();
+    $("select[name='newuser']").on('change', function(e) {
+        $(e.target).parent().submit();
     });
+
     $(".alert").delay(5000).fadeOut();
 
     toastElementList = [].slice.call(document.querySelectorAll('.toast'))

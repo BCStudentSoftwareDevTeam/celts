@@ -1,3 +1,4 @@
+from flask import g
 from peewee import fn, JOIN
 from datetime import date
 from app.models.user import User
@@ -5,11 +6,11 @@ from app.models.event import Event
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.models.program import Program
-from app.models.programEvent import ProgramEvent
 from app.models.eventParticipant import EventParticipant
 from app.logic.users import isEligibleForProgram
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.events import getEventRsvpCountsForTerm
+from app.logic.createLogs import createRsvpLog
 
 def trainedParticipants(programID, currentTerm):
     """
@@ -22,10 +23,9 @@ def trainedParticipants(programID, currentTerm):
     # Reset program eligibility each term for all other trainings
 
     otherTrainingEvents = (Event.select(Event.id)
-            .join(ProgramEvent).switch()
             .join(Term)
             .where(
-                ProgramEvent.program == programID,
+                Event.program == programID,
                 (Event.isTraining | Event.isAllVolunteerTraining),
                 Event.term.academicYear == academicYear)
             )
@@ -37,26 +37,32 @@ def trainedParticipants(programID, currentTerm):
     attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(allTrainingEvents), eventTrainingDataList)))
     return attendedTraining
 
-def sendUserData(bnumber, eventId, programid):
+def addBnumberAsParticipant(bnumber, eventId):
     """Accepts scan input and signs in the user. If user exists or is already
     signed in will return user and login status"""
     try:
-        signedInUser = User.get(User.bnumber == bnumber)
+        kioskUser = User.get(User.bnumber == bnumber)
     except Exception as e:
         print(e)
         return None, "does not exist"
+
     event = Event.get_by_id(eventId)
-    if not isEligibleForProgram(programid, signedInUser):
+    if not isEligibleForProgram(event.program, kioskUser):
         userStatus = "banned"
-    elif ((EventParticipant.select(EventParticipant.user)
-       .where(EventParticipant.user == signedInUser, EventParticipant.event==eventId))
-       .exists()):
-        userStatus = "already in"
+
+    elif checkUserVolunteer(kioskUser, event):
+        userStatus = "already signed in"
+
     else:
         userStatus = "success"
+        # We are not using addPersonToEvent to do this because 
+        # that function checks if the event is in the past, but
+        # someone could start signing people up via the kiosk
+        # before an event has started
         totalHours = getEventLengthInHours(event.timeStart, event.timeEnd,  event.startDate)
-        EventParticipant.create (user=signedInUser, event=eventId, hoursEarned=totalHours)
-    return signedInUser, userStatus
+        EventParticipant.create (user=kioskUser, event=event, hoursEarned=totalHours)
+
+    return kioskUser, userStatus
 
 def checkUserRsvp(user,  event):
     return EventRsvp.select().where(EventRsvp.user==user, EventRsvp.event == event).exists()
@@ -77,6 +83,7 @@ def addPersonToEvent(user, event):
         rsvpExists = checkUserRsvp(user, event)
         if event.isPast:
             if not volunteerExists:
+                # We duplicate these two lines in addBnumberAsParticipant
                 eventHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
                 EventParticipant.create(user = user, event = event, hoursEarned = eventHours)
         else:
@@ -84,6 +91,12 @@ def addPersonToEvent(user, event):
                 currentRsvp = getEventRsvpCountsForTerm(event.term)
                 waitlist = currentRsvp[event.id] >= event.rsvpLimit if event.rsvpLimit is not None else 0
                 EventRsvp.create(user = user, event = event, rsvpWaitlist = waitlist)
+
+                targetList = "the waitlist" if waitlist else "the RSVP list"
+                if g.current_user.username == user.username:
+                    createRsvpLog(event.id, f"{user.fullName} joined {targetList}.")
+                else:
+                    createRsvpLog(event.id, f"Added {user.fullName} to {targetList}.")
 
         if volunteerExists or rsvpExists:
             return "already in"
@@ -97,8 +110,7 @@ def unattendedRequiredEvents(program, user):
 
     # Check for events that are prerequisite for program
     requiredEvents = (Event.select(Event)
-                           .join(ProgramEvent)
-                           .where(Event.isTraining == True, ProgramEvent.program == program))
+                           .where(Event.isTraining == True, Event.program == program))
 
     if requiredEvents:
         attendedRequiredEventsList = []
@@ -128,12 +140,11 @@ def getUserParticipatedTrainingEvents(program, user, currentTerm):
     """
     academicYear = currentTerm.academicYear
 
-    programTrainings = (Event.select(Event, ProgramEvent, Term, EventParticipant)
+    programTrainings = (Event.select(Event, Term, EventParticipant)
                                .join(EventParticipant, JOIN.LEFT_OUTER).switch()
-                               .join(ProgramEvent).switch()
                                .join(Term)
                                .where((Event.isTraining | Event.isAllVolunteerTraining),
-                                      ProgramEvent.program == program,
+                                      Event.program== program,
                                       Event.term.academicYear == academicYear,
                                       EventParticipant.user.is_null(True) | (EventParticipant.user == user)))
 

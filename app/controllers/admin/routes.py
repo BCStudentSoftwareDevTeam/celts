@@ -10,7 +10,8 @@ from app.models.program import Program
 from app.models.event import Event
 from app.models.user import User
 from app.models.eventTemplate import EventTemplate
-from app.models.adminLogs import AdminLogs
+from app.models.adminLog import AdminLog
+from app.models.eventRsvpLog import EventRsvpLog
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.bonnerCohort import BonnerCohort
 from app.models.certification import Certification
@@ -18,7 +19,7 @@ from app.models.user import User
 from app.models.eventViews import EventView
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
-from app.logic.adminLogs import createLog
+from app.logic.createLogs import createAdminLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
@@ -73,8 +74,7 @@ def createEvent(templateid, programid=None):
     # Get the data from the form or from the template
     eventData = template.templateData
 
-    if program:
-        eventData["program"] = program
+    eventData['program'] = program
 
     if request.method == "GET":
         eventData['contactName'] = "CELTS Admin"
@@ -107,11 +107,11 @@ def createEvent(templateid, programid=None):
 
             if program:
                 if len(savedEvents) > 1:
-                    createLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
+                    createAdminLog(f"Created a recurring event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}. The last event in the series will be on {datetime.strftime(savedEvents[-1].startDate, '%m/%d/%Y')}.")
                 else:
-                    createLog(f"Created <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
+                    createAdminLog(f"Created <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a> for {program.programName}, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
             else:
-                createLog(f"Created a non-program event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
+                createAdminLog(f"Created a non-program event, <a href=\"{url_for('admin.eventDisplay', eventId = savedEvents[0].id)}\">{savedEvents[0].name}</a>, with a start date of {datetime.strftime(eventData['startDate'], '%m/%d/%Y')}.")
 
             return redirect(url_for("admin.eventDisplay", eventId = savedEvents[0].id))
         else:
@@ -124,10 +124,9 @@ def createEvent(templateid, programid=None):
     futureTerms = selectSurroundingTerms(g.current_term, prevTerms=0)
 
     requirements, bonnerCohorts = [], []
-    if 'program' in eventData and eventData['program'].isBonnerScholars:
+    if eventData['program'] is not None and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
         bonnerCohorts = getBonnerCohorts(limit=5)
-
     return render_template(f"/admin/{template.templateFile}",
             template = template,
             eventData = eventData,
@@ -135,6 +134,23 @@ def createEvent(templateid, programid=None):
             requirements = requirements,
             bonnerCohorts = bonnerCohorts,
             isProgramManager = isProgramManager)
+
+
+@admin_bp.route('/event/<eventId>/rsvp', methods=['GET'])
+def rsvpLogDisplay(eventId):
+    event = Event.get_by_id(eventId)
+    eventData = model_to_dict(event, recurse=False)
+    eventData['program'] = event.program
+    isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
+    if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager):
+        allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
+        return render_template("/events/rsvpLog.html",
+                                event = event,
+                                eventData = eventData,
+                                allLogs = allLogs)
+    else:
+        abort(403)
+
 
 @admin_bp.route('/event/<eventId>/view', methods=['GET'])
 @admin_bp.route('/event/<eventId>/edit', methods=['GET','POST'])
@@ -157,7 +173,18 @@ def eventDisplay(eventId):
 
     eventData = model_to_dict(event, recurse=False)
     associatedAttachments = AttachmentUpload.select().where(AttachmentUpload.event == event)
+    filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)
 
+    image = None
+    picurestype = [".jpeg", ".png", ".gif", ".jpg", ".svg", ".webp"]
+    for attachment in associatedAttachments:
+        for extension in picurestype:
+            if (attachment.fileName.endswith(extension)):
+                image = filepaths[attachment.fileName][0]
+        if image:
+            break
+
+                
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
         try:
@@ -181,25 +208,25 @@ def eventDisplay(eventId):
 
     # make sure our data is the same regardless of GET and POST
     preprocessEventData(eventData)
-    eventData['program'] = event.singleProgram
+    eventData['program'] = event.program
     futureTerms = selectSurroundingTerms(g.current_term)
-    userHasRSVPed = checkUserRsvp(g.current_user, event)
-    isPastEvent = event.isPast
+    userHasRSVPed = checkUserRsvp(g.current_user, event) 
     filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)
     isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
-
     requirements, bonnerCohorts = [], []
+    
     if eventData['program'] and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
         bonnerCohorts = getBonnerCohorts(limit=5)
-
+    
     rule = request.url_rule
+
     # Event Edit
     if 'edit' in rule.rule:
         return render_template("admin/createEvent.html",
                                 eventData = eventData,
                                 futureTerms=futureTerms,
-                                isPastEvent = isPastEvent,
+                                event = event,
                                 requirements = requirements,
                                 bonnerCohorts = bonnerCohorts,
                                 userHasRSVPed = userHasRSVPed,
@@ -224,12 +251,13 @@ def eventDisplay(eventId):
         UserParticipatedTrainingEvents = getUserParticipatedTrainingEvents(eventData['program'], g.current_user, g.current_term)
         return render_template("eventView.html",
                                 eventData = eventData,
-                                isPastEvent = isPastEvent,
+                                event = event,
                                 userHasRSVPed = userHasRSVPed,
                                 programTrainings = UserParticipatedTrainingEvents,
                                 currentEventRsvpAmount = currentEventRsvpAmount,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths,
+                                image = image,
                                 pageViewsCount= pageViewsCount)
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
@@ -272,9 +300,13 @@ def addRecurringEvents():
 @admin_bp.route('/userProfile', methods=['POST'])
 def userProfile():
     volunteerName= request.form.copy()
-    username = volunteerName['searchStudentsInput'].strip("()")
-    user=username.split('(')[-1]
-    return redirect(url_for('main.viewUsersProfile', username=user))
+    if volunteerName['searchStudentsInput']:
+        username = volunteerName['searchStudentsInput'].strip("()")
+        user=username.split('(')[-1]
+        return redirect(url_for('main.viewUsersProfile', username=user))
+    else:
+        flash(f"Please enter the first name or the username of the student you would like to search for.", category='danger')
+        return redirect(url_for('admin.studentSearchPage'))
 
 @admin_bp.route('/search_student', methods=['GET'])
 def studentSearchPage():
@@ -292,7 +324,7 @@ def addParticipants():
 @admin_bp.route('/adminLogs', methods = ['GET', 'POST'])
 def adminLogs():
     if g.current_user.isCeltsAdmin:
-        allLogs = AdminLogs.select(AdminLogs, User).join(User).order_by(AdminLogs.createdOn.desc())
+        allLogs = AdminLog.select(AdminLog, User).join(User).order_by(AdminLog.createdOn.desc())
         return render_template("/admin/adminLogs.html",
                                 allLogs = allLogs)
     else:

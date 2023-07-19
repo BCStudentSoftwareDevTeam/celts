@@ -2,6 +2,9 @@ from pprint import isrecursive
 import pytest
 from datetime import datetime, timedelta
 from peewee import IntegrityError, DoesNotExist
+from app import app
+from flask import g
+from werkzeug.datastructures import ImmutableMultiDict
 
 from app.models import mainDB
 from app.models.user import User
@@ -9,9 +12,8 @@ from app.models.event import Event
 from app.models.term import Term
 from app.models.program import Program
 from app.models.eventParticipant import EventParticipant
-from app.models.programEvent import ProgramEvent
 from app.logic.volunteers import getEventLengthInHours, updateEventParticipants
-from app.logic.participants import unattendedRequiredEvents, sendUserData, getEventParticipants, trainedParticipants, getUserParticipatedTrainingEvents, checkUserRsvp, checkUserVolunteer, addPersonToEvent
+from app.logic.participants import unattendedRequiredEvents, addBnumberAsParticipant, getEventParticipants, trainedParticipants, getUserParticipatedTrainingEvents, checkUserRsvp, checkUserVolunteer, addPersonToEvent
 from app.models.eventRsvp import EventRsvp
 
 @pytest.mark.integration
@@ -84,79 +86,81 @@ def test_checkUserVolunteer():
 @pytest.mark.integration
 def test_addPersonToEvent():
     with mainDB.atomic() as transaction:
-        yesterday = datetime.today() - timedelta(days=1)
-        newEvent = Event.create(name = "Test event 1234", term = 2,
-                                startDate=yesterday.date(),
-                                endDate=yesterday.date(),
-                                isRsvpRequired = True)
-        
-        newEvent = Event.get(name="Test event 1234")
+        with app.app_context():
+            g.current_user = User.get_by_id("ramsayb2")
+            yesterday = datetime.today() - timedelta(days=1)
+            newEvent = Event.create(name = "Test event 1234", term = 2,
+                                    startDate=yesterday.date(),
+                                    endDate=yesterday.date(),
+                                    isRsvpRequired = True)
+            
+            newEvent = Event.get(name="Test event 1234")
 
-        user = User.get_by_id("ramsayb2")
-        userAdded = addPersonToEvent(user, newEvent)
-        assert userAdded == True, "User was not added"
-        assert checkUserVolunteer(user, newEvent), "No Volunteer record was added"
-        assert not checkUserRsvp(user, newEvent), "An RSVP record was added instead"
-        transaction.rollback()
+            user = User.get_by_id("ramsayb2")
+            userAdded = addPersonToEvent(user, newEvent)
+            assert userAdded == True, "User was not added"
+            assert checkUserVolunteer(user, newEvent), "No Volunteer record was added"
+            assert not checkUserRsvp(user, newEvent), "An RSVP record was added instead"
+            transaction.rollback()
 
-        tomorrow = datetime.today() + timedelta(days=1)
-        newEvent = Event.create(name = "Test event 1234", term = 2,
-                                startDate=tomorrow.date(),
-                                endDate=tomorrow.date(),
-                                isRsvpRequired = True)
-        
-        newEvent = Event.get(name="Test event 1234")
+            tomorrow = datetime.today() + timedelta(days=1)
+            newEvent = Event.create(name = "Test event 1234", term = 2,
+                                    startDate=tomorrow.date(),
+                                    endDate=tomorrow.date(),
+                                    isRsvpRequired = True)
+            
+            newEvent = Event.get(name="Test event 1234")
 
-        userAdded = addPersonToEvent(user, newEvent)
-        assert userAdded == True, "User was not added"
-        assert checkUserRsvp(user, newEvent), "No RSVP record was added"
-        assert not checkUserVolunteer(user, newEvent), "A Volunteer record was added instead"
-        transaction.rollback()
+            userAdded = addPersonToEvent(user, newEvent)
+            assert userAdded == True, "User was not added"
+            assert checkUserRsvp(user, newEvent), "No RSVP record was added"
+            assert not checkUserVolunteer(user, newEvent), "A Volunteer record was added instead"
+            transaction.rollback()
 
-        tomorrow = datetime.today() + timedelta(days=1)
-        testWaitlistEvent = Event.create(name = "Waitlist Event",
-                                         term = 2,
-                                         startDate = tomorrow.date(),
-                                         endDate = tomorrow.date(),
-                                         isRsvpRequired = True,
-                                         rsvpLimit = 1)
-        waitlistEvent = Event.get(name="Waitlist Event")
-        rsvpUser = User.get_by_id("ayisie")
-        
-        addRsvp = addPersonToEvent(rsvpUser, waitlistEvent)
-        rsvpNoWaitlist = list(EventRsvp.select().where(EventRsvp.event_id == testWaitlistEvent.id, EventRsvp.rsvpWaitlist == False))
-        assert addRsvp == True
-        assert len(rsvpNoWaitlist) == 1
+            tomorrow = datetime.today() + timedelta(days=1)
+            testWaitlistEvent = Event.create(name = "Waitlist Event",
+                                            term = 2,
+                                            startDate = tomorrow.date(),
+                                            endDate = tomorrow.date(),
+                                            isRsvpRequired = True,
+                                            rsvpLimit = 1)
+            waitlistEvent = Event.get(name="Waitlist Event")
+            rsvpUser = User.get_by_id("ayisie")
+            
+            addRsvp = addPersonToEvent(rsvpUser, waitlistEvent)
+            rsvpNoWaitlist = list(EventRsvp.select().where(EventRsvp.event_id == testWaitlistEvent.id, EventRsvp.rsvpWaitlist == False))
+            assert addRsvp == True
+            assert len(rsvpNoWaitlist) == 1
 
-        waitlistUser = User.get_by_id("partont")
-        addWaitlist = addPersonToEvent(waitlistUser, waitlistEvent)
-        rsvpWaitlist = EventRsvp.select().where(EventRsvp.event_id == testWaitlistEvent.id, EventRsvp.rsvpWaitlist == True)
-        
-        assert addWaitlist == True
-        assert len(rsvpWaitlist) == 1
-        assert len(rsvpNoWaitlist) == 1
+            waitlistUser = User.get_by_id("partont")
+            addWaitlist = addPersonToEvent(waitlistUser, waitlistEvent)
+            rsvpWaitlist = EventRsvp.select().where(EventRsvp.event_id == testWaitlistEvent.id, EventRsvp.rsvpWaitlist == True)
+            
+            assert addWaitlist == True
+            assert len(rsvpWaitlist) == 1
+            assert len(rsvpNoWaitlist) == 1
         
         transaction.rollback()
 
 @pytest.mark.integration
 def test_updateEventParticipants():
     # tests if the volunteer table gets succesfully updated
-    participantData = {'inputHours_agliullovak':100, 'checkbox_agliullovak':"on", 'event':3, 'username1': 'agliullovak'}
+    participantData = ImmutableMultiDict({'inputHours_agliullovak':100, 'checkbox_agliullovak':"on", 'event':3, 'username': 'agliullovak'})
     volunteerTableUpdate = updateEventParticipants(participantData)
     assert volunteerTableUpdate == True
 
     # tests if user does not exist in the database
-    participantData = {'inputHours_jarjug':100, 'checkbox_jarjug':"on", 'event':3, 'username1': 'jarjug'}
+    participantData = ImmutableMultiDict({'inputHours_jarjug':100, 'checkbox_jarjug':"on", 'event':3, 'username': 'jarjug'})
     volunteerTableUpdate = updateEventParticipants(participantData)
     assert volunteerTableUpdate == False
 
     # tests for the case when the checkbox is not checked (user is not present)
-    participantData = {'inputHours_agliullovak':100, 'event':3, 'username1': 'agliullovak'}
+    participantData = ImmutableMultiDict({'inputHours_agliullovak':100, 'event':3, 'username': 'agliullovak'})
     volunteerTableUpdate = updateEventParticipants(participantData)
     assert volunteerTableUpdate == True
 
     #Undo the above test changes
-    participantData = {'inputHours_agliullovak':2, 'checkbox_agliullovak':"on", 'event':3, 'username1': 'agliullovak'}
+    participantData = ImmutableMultiDict({'inputHours_agliullovak':2, 'checkbox_agliullovak':"on", 'event':3, 'username': 'agliullovak'})
 
 @pytest.mark.integration
 def test_trainedParticipants():
@@ -205,7 +209,8 @@ def test_trainedParticipants():
     assert attendedPreq == [khatts]
 
     with mainDB.atomic() as transaction:
-        ProgramEvent.create(program = 3, event=14) # require AVT
+        Event.update(program = 3).where(Event.id== 14).execute() # require AVT
+        
         attendedPreq = trainedParticipants(3, currentTerm)
         assert attendedPreq == []   # no user has completed both AVT and ACT for program 3
 
@@ -265,17 +270,17 @@ def test_unattendedRequiredEvents():
     assert unattendedEvents == ['Empty Bowls Spring Event 1']
 
 @pytest.mark.integration
-def test_sendUserData():
+def test_addBnumberAsParticipant():
     # Tests the Kiosk
     # user is banned
     with mainDB.atomic() as transaction:
-        signedInUser, userStatus = sendUserData("B00739736", 2, 1)
+        signedInUser, userStatus = addBnumberAsParticipant("B00739736", 2)
         assert userStatus == "banned"
 
 
         # user is already signed in
-        signedInUser, userStatus = sendUserData("B00751360", 2, 1)
-        assert userStatus == "already in"
+        signedInUser, userStatus = addBnumberAsParticipant("B00751360", 2)
+        assert userStatus == "already signed in"
 
         # user is eligible but the user is not in EventParticipant and EventRsvp
         signedInUser = User.get(User.bnumber=="B00759117")
@@ -283,7 +288,7 @@ def test_sendUserData():
             EventParticipant.get(EventParticipant.user==signedInUser, EventParticipant.event==2)
             EventRsvp.get(EventRsvp.user==signedInUser, EventRsvp.event==2)
 
-            signedInUser, userStatus = sendUserData("B00759117", 2, 1)
+            signedInUser, userStatus = addBnumberAsParticipant("B00759117", 2)
             assert userStatus == "success"
 
             participant = EventParticipant.select().where(EventParticipant.event==2, EventParticipant.user==signedInUser)
@@ -328,15 +333,13 @@ def test_getUserParticipatedTrainingEvents():
                                       isTraining = 1,
                                       isService = 0,
                                       startDate= "2021-12-12",
-                                      recurringId = None)
-        ProgramEvent.create(program = Program.get_by_id(8),
-                            event = testingEvent)
+                                      recurringId = None,
+                                      program = Program.get_by_id(8))
 
         allProgramTrainings = (Event.select()
-                                   .join(ProgramEvent).switch()
                                    .join(Term)
                                    .where(Event.isTraining == True,
-                                          ProgramEvent.program == Program.get_by_id(2),
+                                          Event.program == Program.get_by_id(2),
                                           Event.term.academicYear == academicYear)
                               )
         listOfProgramTrainings = [programTraining for programTraining in allProgramTrainings]
@@ -381,12 +384,11 @@ def test_getUserParticipatedTrainingEvents():
                                       isTraining = 1,
                                       isService = 0,
                                       startDate= "2023-12-12",
-                                      recurringId = None)
-        ProgramEvent.create(program = Program.get_by_id(8),
-                            event = testingEvent)
+                                      recurringId = None,
+                                      program = Program.get_by_id(8))
 
         # If the event has not occured yet, assert their participated status for that event == None
-        allProgramTrainings = Event.select().join(ProgramEvent).where(Event.isTraining == 1, ProgramEvent.program == Program.get_by_id(8))
+        allProgramTrainings = Event.select().where(Event.isTraining == 1, Event.program == Program.get_by_id(8))
         listOfProgramTrainings = [programTraining for programTraining in allProgramTrainings]
         programTrainings = getUserParticipatedTrainingEvents(Program.get_by_id(8), User.get_by_id("ramsayb2"), currentTerm)
         for training in programTrainings.keys():
