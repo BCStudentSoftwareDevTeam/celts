@@ -62,7 +62,6 @@ def addNextTerm():
 
     semester = newDescription.split()[0]
     summer= "Summer" in semester
-
     newTerm = Term.create(
             description=newDescription,
             year=newYear,
@@ -83,7 +82,6 @@ def addPastTerm(description):
         academicYear=  str(int(year) - 1) + "-" + year
 
     isSummer = "Summer" in semester
-   
     newDescription=f"{semester} {year}"
     orderTerm = Term.convertTerm(newDescription)
     
@@ -127,4 +125,3 @@ def getAllowedTemplates(currentUser):
         return EventTemplate.select().where(EventTemplate.isVisible==True).order_by(EventTemplate.name)
     else:
         return []
-        

@@ -96,9 +96,6 @@ def renewProposal(courseID, term):
 
     return newCourse
 
-
-
-
 def parseUploadedFile(filePath):
     excelData = load_workbook(filename=filePath)
     excelSheet = excelData.active
@@ -114,8 +111,6 @@ def parseUploadedFile(filePath):
     previewTerm = ''
     previewCourse = ''
     studentValue= ''
-
-
 
     for row in excelSheet.iter_rows():
         cellVal = row[0].value
@@ -133,8 +128,6 @@ def parseUploadedFile(filePath):
 
             termDictionary[previewTerm]= {}
 
-            
-
         elif re.search(courseReg, str(cellVal)):
             previewCourse = ''
             hasCourse = Course.get_or_none(Course.courseAbbreviation == cellVal)
@@ -150,8 +143,6 @@ def parseUploadedFile(filePath):
             previewParticipants.append(individualCourse)
             termDictionary[previewTerm][previewCourse]=[]
            
-                
-
         elif re.search(bnumberReg, str(cellVal)):      
             
             hasUser = User.get_or_none(User.bnumber == cellVal)
@@ -178,9 +169,6 @@ def parseUploadedFile(filePath):
             termDictionary[previewTerm][previewCourse].append(studentValue)
 
     return previewParticipants, listOfStudentsBnumber, errorFlag, termDictionary # Throw error
-
-
-
 
 def pushDataToDatabase(listOfParticipants):
     isSummer = False
@@ -213,11 +201,4 @@ def pushDataToDatabase(listOfParticipants):
             CourseParticipant.get_or_create(user = user, defaults = {
                 "course" : courseGet,
                 "hoursEarned" : 2
-            })        
-            
-
-
-   
-
-
-
+            })

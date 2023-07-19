@@ -409,11 +409,11 @@ def getAllCourseInstructors(term=None):
             pushDataToDatabase(session['dataPreview'])
             session.pop('dataPreview')
             session.pop('listofBnumber_students')
+            session.pop('errorFlag')
+            session.pop('termDict')
             dataHolder =[]
             flash('File saved successfully!', 'success')
             return redirect(url_for('main.getAllCourseInstructors'))
-      
-        
       
         return render_template('/main/manageServiceLearningFaculty.html',
                                 courseInstructors = courseDict,
@@ -427,10 +427,7 @@ def getAllCourseInstructors(term=None):
                                 termHolder= termHolder
                                 )
     else:
-        abort(403)
-
-    
- 
+        abort(403) 
 
 def getRedirectTarget(popTarget=False):
     """

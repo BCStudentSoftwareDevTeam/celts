@@ -60,5 +60,3 @@ class Term(baseModel):
                 return year + "-2"
             case "Fall":
                 return year + '-3'
-                
-            
