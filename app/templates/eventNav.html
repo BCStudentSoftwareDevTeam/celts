@@ -1,20 +1,22 @@
 {% extends "base.html"%}
 
-{% macro eventheader(page_title, eventData, size) %}
+{% macro eventheader(page_title, eventData, size, isNewEvent) %}
     {% set bigh = 'h1' if size == 'large' else 'h3' %}
     {% set smallh = 'h5' if size == 'large' else 'p' %}
 
     <{{bigh}} class="mb-0" id="title">{{page_title}}</{{bigh}}>
-    {% set programName = "CELTS-Sponsored" if "program" not in eventData else eventData["program"].programName%}
-    {% set prefix = "An" if programName[0] in 'aeiouAEIOU' else "A" %}
-    <{{smallh}} class="text-muted">{{prefix}} {{ programName }} Event</{{smallh}}>
+    {% if not isNewEvent %}
+        {% set programName = "CELTS-Sponsored" if eventData["program"] == None else eventData["program"].programName %}
+        {% set prefix = "An" if programName[0] in 'aeiouAEIOU' else "A" %}
+        <{{smallh}} class="text-muted">{{prefix}} {{ programName }} Event</{{smallh}}>
+    {% endif %}
 {% endmacro %}
 
 {% block app_content %}
     {% block content_pageHeading %}
     <div class="text-center">
         {% if g.current_user.isAdmin %}
-            {{ eventheader(page_title, eventData, 'large') }}
+            {{ eventheader(page_title, eventData, 'large', isNewEvent) }}
         {% endif %}
         {% if eventPast %}
         <div class="alert-danger mb-2 pb-2 pt-2" role="alert">This event is in the past.</div>

@@ -46,7 +46,7 @@ templates = [
         "id": 2,
         "name": "All Volunteer Training",
         "tag": "all-volunteer",
-        "templateJSON": '{"name": "All Volunteer Training","description": "Training for all CELTS programs", "isTraining": true, "isService": false, "isRequired": true, "isAllVolunteerTraining": true}',
+        "templateJSON": '{"name": "All Volunteer Training","description": "Training for all CELTS programs", "isTraining": true, "isService": false, "isRequired": true, "isAllVolunteerTraining": true, "rsvpLimit": ""}',
         "templateFile": "createEvent.html",
         "isVisible": True
     },
@@ -54,7 +54,7 @@ templates = [
         "id": 3,
         "name": "CELTS-Sponsored Event",
         "tag": "no-program",
-        "templateJSON": "{}",
+        "templateJSON":'{}',
         "templateFile": "createEvent.html",
         "isVisible": True
     },

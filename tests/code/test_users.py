@@ -109,8 +109,14 @@ def test_addUserProfileNote():
             g.current_user = "ramsayb2"
             profileNote = addProfileNote(1, True, "Test profile note", "neillz")
             assert profileNote == ProfileNote.get_by_id(profileNote.id)
+
             profileNote2 = addProfileNote(3, False, "Test profile note 2", "ramsayb2")
             assert profileNote2 == ProfileNote.get_by_id(profileNote2.id)
+            assert profileNote2.viewTier == 3
+
+            profileNote3 = addProfileNote(3, True, "Test profile note 3", "ramsayb2")
+            assert profileNote3 == ProfileNote.get_by_id(profileNote3.id)
+            assert profileNote3.viewTier == 1
         transaction.rollback()
 
 @pytest.mark.integration

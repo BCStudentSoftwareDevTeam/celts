@@ -45,7 +45,7 @@ def landingPage():
 
 
     eventsInTerm = list(Event.select().where(Event.term == g.current_term))
-    programsWithEventsList = [program.program for program in eventsInTerm]
+    programsWithEventsList = [event.program for event in eventsInTerm if not event.isPast]
 
     return render_template("/main/landingPage.html", managerProgramDict = managerProgramDict,
                                                      term = g.current_term,
@@ -155,7 +155,7 @@ def viewUsersProfile(username):
                 currentDateTime = datetime.datetime.now(),
                 profileNotes = profileNotes,
                 bonnerRequirements = bonnerRequirements,
-                userDiet = userDiet
+                userDiet = userDiet                
             )
     abort(403)
 
