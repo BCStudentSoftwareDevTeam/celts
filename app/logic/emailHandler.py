@@ -77,9 +77,11 @@ class EmailHandler:
             programEmail = programObject.contactEmail
             if programEmail:
                 return (programObject.programName, programEmail, programEmail)
+        elif self.sender_username.upper() == "CELTS"
+            return ("CELTS", "celts@berea.edu", "celts@berea.edu")
         elif userobj:
             return (f"{userobj.firstName} {userobj.lastName}", userobj.email, userobj.email)
-        return (None, None, None) # If the sender is not a user, default to be from the generic CELTS email
+        return (None, None, None) # If the sender is not a program or user, use default values.
 
     def update_sender_config(self):
         # We might need this.
@@ -192,7 +194,7 @@ class EmailHandler:
         return (template_id, subject, body)
 
     def send_email(self):
-        defaultEmailInfo = {"senderName":"CELTS" "replyTo":"celts@berea.edu" "senderAddress":"celts@berea.edu"}  # Beans: We need to change the default senderName on release to be someone from Celts probably
+        defaultEmailInfo = {"senderName":"CELTS", "replyTo":"celts@berea.edu", "senderAddress":"celts@berea.edu"}  # Beans: We need to change the default senderName on release to be someone from Celts probably
         template_id, subject, body = self.build_email()
 
 
