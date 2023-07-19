@@ -79,7 +79,7 @@ class EmailHandler:
                 return (programObject.programName, programEmail, programEmail)
         elif userobj:
             return (f"{userobj.firstName} {userobj.lastName}", userobj.email, userobj.email)
-        return ("CELTS", "celts@berea.edu", "celts@berea.edu") # If the sender is not a user, default to be from the generic CELTS email
+        return (None, None, None) # If the sender is not a user, default to be from the generic CELTS email
 
     def update_sender_config(self):
         # We might need this.
@@ -192,7 +192,7 @@ class EmailHandler:
         return (template_id, subject, body)
 
     def send_email(self):
-        defaultEmailInfo = {"senderName":self.sender_name, "replyTo":self.reply_to}  # Beans: We need to change the default senderName on release to be someone from Celts probably
+        defaultEmailInfo = {"senderName":"CELTS" "replyTo":"celts@berea.edu" "senderAddress":"celts@berea.edu"}  # Beans: We need to change the default senderName on release to be someone from Celts probably
         template_id, subject, body = self.build_email()
 
 
@@ -209,8 +209,8 @@ class EmailHandler:
                         [self.override_all_mail],
                         email_body, #+ f"\n\n[Replies are sent to {self.reply_to}]"
                         attachments = self.getAttachmentFullPath(), #needs to be modified later
-                        reply_to = self.program.contactEmail or defaultEmailInfo["replyTo"],
-                        sender = (self.program.contactName or defaultEmailInfo["senderName"], self.program.contactEmail or defaultEmailInfo["replyTo"])
+                        reply_to = self.reply_to or defaultEmailInfo["replyTo"],
+                        sender = (self.sender_name or defaultEmailInfo["senderName"], self.sender_address or defaultEmailInfo["senderAddress"])
                     ))
             self.store_sent_email(subject, template_id)
             return True
