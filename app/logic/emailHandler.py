@@ -77,7 +77,7 @@ class EmailHandler:
             programEmail = programObject.contactEmail
             if programEmail:
                 return (programObject.programName, programEmail, programEmail)
-        elif self.sender_username.upper() == "CELTS"
+        elif self.sender_username.upper() == "CELTS":
             return ("CELTS", "celts@berea.edu", "celts@berea.edu")
         elif userobj:
             return (f"{userobj.firstName} {userobj.lastName}", userobj.email, userobj.email)
