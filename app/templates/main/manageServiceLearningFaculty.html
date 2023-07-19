@@ -173,7 +173,6 @@
         
 
         <!-- modal for Preview -->
-        {% set show="show d-block" if data else "" %}
         <div class="modal fade float-start col" id="modalPreview">
           <form method="POST" action="/manageServiceLearning" enctype="multipart/form-data">
           <div class="modal-dialog custom-modal-size">
@@ -182,18 +181,18 @@
                 <h5 class="modal-title">List of Participants</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
-                <div class="modal-body">
+                <div class="modal-body py-0">
                   <div>
                     <label for="addCourseParticipant" class="form-label"></label>
                       {% for key in termHolder %}
-                      <div class="h4"><b><u>{{key}}:</u></b></div>
+                      <div class="h5"><b>{{key}}:</b></div>
                         {% for item in termHolder[key]%}
                           <div {% if "ERROR:" in item %} class= "text-danger" {% endif %}><b>{{item}} </b></div>
                           {% for element in termHolder[key][item] %}
                           <div {% if "ERROR:" in element %} class= "text-danger" {% endif %}>{{ element }}</div>
                           {% endfor %}
                         {% endfor %}
-                        <hr>
+                        {% if not loop.last %}<hr>{% endif %}
                       {% endfor%}
 
 

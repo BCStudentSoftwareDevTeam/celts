@@ -26,7 +26,7 @@ def test_getServiceLearningCoursesData():
     assert 'Brian Ramsay' in courseDict[2]['faculty']
     assert ['Brian Ramsay', 'Zach Neill'] == courseDict[2]['faculty']
     assert "Submitted" == courseDict[2]['status']
-    assert 'Spring A 2021' in courseDict[2]['term'].description
+    assert 'Spring 2021' in courseDict[2]['term'].description
     assert "Scott Heggen"  == courseDict[2]['creator']
 
     courseDict = getServiceLearningCoursesData('heggens')
@@ -34,7 +34,7 @@ def test_getServiceLearningCoursesData():
     assert 'Scott Heggen' in courseDict[3]['faculty']
     assert not ['Brian Ramsay', 'Zach Neill'] == courseDict[3]['faculty']
     assert "Approved" == courseDict[3]['status']
-    assert 'Summer 2021' in courseDict[3]['term'].description
+    assert 'Fall 2021' in courseDict[3]['term'].description
     assert "Brian Ramsay"  == courseDict[3]['creator']
 
     courseDict = getServiceLearningCoursesData('heggens')
@@ -42,7 +42,7 @@ def test_getServiceLearningCoursesData():
     assert 'Scott Heggen' not in courseDict[4]['faculty']
     assert ['Brian Ramsay', 'Ala Qasem'] == courseDict[4]['faculty']
     assert "In Progress" == courseDict[4]['status']
-    assert 'Spring A 2021' in courseDict[4]['term'].description
+    assert 'Spring 2021' in courseDict[4]['term'].description
     assert "Scott Heggen"  == courseDict[4]['creator']
 
 @pytest.mark.integration

@@ -10,16 +10,16 @@ from app.logic.userManagement import addCeltsAdmin, removeCeltsAdmin,addCeltsStu
 @pytest.mark.integration
 def test_selectSurroundingTerms():
     listOfTerms = selectSurroundingTerms(Term.get_by_id(3))
-    assert 9 == len(listOfTerms)
+    assert 8 == len(listOfTerms)
 
     listOfTerms = selectSurroundingTerms(Term.get_by_id(3), prevTerms=0)
-    assert [3,4,5,6,7,8,9] == [t.id for t in listOfTerms]
+    assert [3,4,5,6,7,8] == [t.id for t in listOfTerms]
 
     listOfTerms = selectSurroundingTerms(Term.get_by_id(3), prevTerms=1)
-    assert [2,3,4,5,6,7,8,9] == [t.id for t in listOfTerms]
+    assert [2,3,4,5,6,7,8] == [t.id for t in listOfTerms]
 
     listOfTerms = selectSurroundingTerms(Term.get_by_id(3), prevTerms=-1)
-    assert [4,5,6,7,8,9] == [t.id for t in listOfTerms]
+    assert [4,5,6,7,8] == [t.id for t in listOfTerms]
 
 def test_changeCurrentTerm():
     # test via g.current_term
@@ -47,7 +47,7 @@ def test_invalidTermInputs():
 @pytest.mark.integration
 def test_addNextTerm():
     with mainDB.atomic() as transaction:
-        testTerm = Term.create(description="Summer 2022",year=2022, academicYear= "2021-2022", isSummer=True,isCurrentTerm=True)
+        testTerm = Term.create(description="Summer 2022",year=2022, academicYear= "2021-2022", isSummer=True, isCurrentTerm=True, termOrder = Term.convertTerm("Summer 2022"))
         testTerm.save()
 
         addNextTerm()
@@ -55,17 +55,17 @@ def test_addNextTerm():
         # for the first test,  make sure we're using the db properly
         terms = list(Term.select().order_by(Term.id))
         newTerm = terms[-1]
-        assert newTerm.description == "Fall 2022"
-        assert newTerm.year == 2022
+        assert newTerm.description == "Summer 2023"
+        assert newTerm.year == 2023
         assert newTerm.academicYear == "2022-2023"
-        assert not newTerm.isSummer
+        assert newTerm.isSummer
         assert not newTerm.isCurrentTerm
 
         transaction.rollback()
 
 
     with mainDB.atomic() as transaction:
-        testTerm = Term.create(description="Fall 2029",year=2029, academicYear= "2029-2030", isSummer=False,isCurrentTerm=False)
+        testTerm = Term.create(description="Fall 2029",year=2029, academicYear= "2029-2030", isSummer=False,isCurrentTerm=False, termOrder = Term.convertTerm("Fall 2029"))
         testTerm.save()
 
         newTerm = addNextTerm()
@@ -79,13 +79,13 @@ def test_addNextTerm():
 
 
     with mainDB.atomic() as transaction:
-        testTerm = Term.create(description="Spring 2022",year=2022, academicYear= "2021-2022", isSummer=False,isCurrentTerm=False)
+        testTerm = Term.create(description="Spring 2024",year=2022, academicYear= "2023-2024", isSummer=False,isCurrentTerm=False, termOrder = Term.convertTerm("Spring 2024") )
         testTerm.save()
 
         newTerm = addNextTerm()
-        assert newTerm.description == "Summer 2022"
-        assert newTerm.year == 2022
-        assert newTerm.academicYear == "2021-2022"
+        assert newTerm.description == "Summer 2024"
+        assert newTerm.year == 2024
+        assert newTerm.academicYear == "2023-2024"
         assert newTerm.isSummer
         assert not newTerm.isCurrentTerm
 
@@ -110,10 +110,9 @@ def test_getStartofCurrentAcademicYear():
     # Case3: current term is Summer 2021
     currentTerm = Term.get_by_id(4)
     fallTerm = currentTerm.academicYearStartingTerm
-
-    assert fallTerm.year == 2020
-    assert fallTerm.description == "Fall 2020"
-    assert fallTerm.academicYear == "2020-2021"
+    assert fallTerm.year == 2021
+    assert fallTerm.description == "Fall 2021"
+    assert fallTerm.academicYear == "2021-2022"
     
     # Case4: current term has no earlier term, just return itself
     newTerm = Term.create(description="Summer 2020", year=2020, academicYear="2019-2020",isSummer=1,isCurrentTerm=0)

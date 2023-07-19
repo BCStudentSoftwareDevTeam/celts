@@ -168,12 +168,10 @@ def parseUploadedFile(filePath):
                 errorFlag = True
             termDictionary[previewTerm][previewCourse].append(studentValue)
 
-    return previewParticipants, listOfStudentsBnumber, errorFlag, termDictionary # Throw error
+    return previewParticipants, listOfStudentsBnumber, errorFlag, termDictionary
 
 def pushDataToDatabase(listOfParticipants):
-    isSummer = False
     courseGet = None
-
     listOfBnumbers = session['listofBnumber_students']
     for courseInfo in listOfParticipants:
         termOfCourse = courseInfo[1]
@@ -182,7 +180,7 @@ def pushDataToDatabase(listOfParticipants):
             term=addPastTerm(termOfCourse)
 
         courseNumber = courseInfo[0][1]
-        courseGet, cCreated = Course.get_or_create(courseAbbreviation = courseNumber, defaults = {
+        courseGet = Course.get_or_create(courseAbbreviation = courseNumber, defaults = {
                 "CourseName" : "",
                 "sectionDesignation" : "",
                 "courseCredit" : "1",
@@ -193,7 +191,6 @@ def pushDataToDatabase(listOfParticipants):
                 "previouslyApprovedDescription" : ""
                 }
             ) 
-        restOfStudents = courseInfo[2:]
         for studentDict in listOfBnumbers:
             bnumberStudent = studentDict["bnumber"]
 
