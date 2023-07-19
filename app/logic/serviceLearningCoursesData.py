@@ -12,7 +12,7 @@ from app.models.term import Term
 from app.models import DoesNotExist
 from app.logic.createLogs import createAdminLog
 from app.logic.fileHandler import FileHandler
-from flask import flash, abort, jsonify, session, send_file
+from flask import flash, abort, jsonify, session, send_file, g
 import re
 import os
 from openpyxl import load_workbook
@@ -169,9 +169,8 @@ def parseUploadedFile(filePath):
             
     return previewParticipants, listOfStudentsBnumber, errorFlag, termDictionary
 
-def pushDataToDatabase(listOfParticipants):
+def pushDataToDatabase(listOfParticipants,listOfBnumbers):
     courseGet = None
-    listOfBnumbers = session['listofBnumber_students']
     for courseInfo in listOfParticipants:
         termOfCourse = courseInfo[1]
         term = Term.get_or_none(description=termOfCourse) 
@@ -185,7 +184,7 @@ def pushDataToDatabase(listOfParticipants):
                 "courseCredit" : "1",
                 "term" : term,
                 "status" : 3,
-                "createdBy" : "heggens",
+                "createdBy" : g.current_user,
                 "serviceLearningDesignatedSections" : "",
                 "previouslyApprovedDescription" : ""
                 }

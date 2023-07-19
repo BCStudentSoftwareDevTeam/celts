@@ -404,7 +404,7 @@ def getAllCourseInstructors(term=None):
         terms = selectSurroundingTerms(g.current_term)
 
         if request.method =='POST' and "submitParticipant" in request.form:
-            pushDataToDatabase(session['dataPreview'])
+            pushDataToDatabase(session['dataPreview'],session['listofBnumber_students'])
             sessionCleaner()
             dataHolder =[]
             flash('File saved successfully!', 'success')
