@@ -202,7 +202,7 @@ def getTrainingEvents(term, user):
     if hideBonner:
         trainingQuery = trainingQuery.where(Program.isBonnerScholars == False)
 
-    return upcomingEventsFirst(list(trainingQuery.execute()))
+    return list(trainingQuery.execute())
 
 def getBonnerEvents(term):
 
@@ -212,7 +212,7 @@ def getBonnerEvents(term):
                                             Event.term == term)
                                      .order_by(Event.startDate, Event.timeStart)
                                      .execute())
-    return upcomingEventsFirst(bonnerScholarsEvents)
+    return bonnerScholarsEvents
 
 def getOtherEvents(term):
     """
@@ -233,7 +233,7 @@ def getOtherEvents(term):
                             .order_by(Event.startDate, Event.timeStart, Event.id)
                             .execute())
 
-    return upcomingEventsFirst(otherEvents)
+    return otherEvents
 
 def getUpcomingEventsForUser(user, asOf=datetime.datetime.now(), program=None):
     """
@@ -440,14 +440,6 @@ def getTomorrowsEvents():
     tomorrowDate = date.today() + timedelta(days=1)
     events = list(Event.select().where(Event.startDate==tomorrowDate))
     return events
-
-def upcomingEventsFirst(EventList):
-    """Sorts events so that upcoming events come first and past events come last"""
-    sortedList=[]
-    while len(EventList)>=1 and EventList[0].isPast :
-        sortedList.append(EventList[0])
-        del EventList[0]
-    return EventList+sortedList[::-1]
 
 def addEventView(viewer,event):
     """This checks if the current user already viewed the event. If not, insert a recored to EventView table"""

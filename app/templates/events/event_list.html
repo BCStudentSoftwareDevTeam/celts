@@ -77,16 +77,18 @@
       </tr>
     </thead>
     <tbody>
-        {% if selectedTerm == g.current_term and events[-1].isPast %}          
-          <tr> There are no upcoming events for this program </tr>
-        {% endif %}
-        {% for event in events %}
+      {% if selectedTerm == g.current_term and events[-1].isPast %}          
+        <tr> There are no upcoming events for this program </tr>
+      {% endif %}
+      {% for event in events %}
+        {% if selectedTerm != g.current_term %}
+          <tr class="table-light showlist"></tr>
+        {% else %}
           {% if event.isPast %}
-            {% if selectedTerm != g.current_term %}
-              <tr class="table-light showlist"></tr>
-            {% else %}
-              <tr class="table-light showlist" style="display: none;">
-            {% endif %}
+            <tr class="table-light showlist" style="display: none;" id = "currentTermTable">
+          {% else %}
+            <tr class="table-light showlist"></tr>
+          {% endif %}
             {% if type != "bonner" %}
               {% if event.program%}
                 <td class="text-secondary">{{event.program.programName}}</td>
@@ -157,6 +159,8 @@
           </div>
         {% endfor %}
       </div>
+    {% else %}
+    <tr> There are no events for this program </tr>
     {% endif %}
   </div>
   <div class="tab-pane fade show" id="pills-training" role="tabpanel" aria-labelledby="pills-training-tab">
