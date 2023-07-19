@@ -81,7 +81,7 @@ $(document).ready(function(e) {
   });
 
   $("#saveContinue").on("click", function() {
-    $('#slcNewProposal').attr("action", "/serviceLearning/saveProposal")
+    
       if(readOnly()) {
           let allTabs = $(".tab");
           displayCorrectTab(1)
@@ -92,11 +92,19 @@ $(document).ready(function(e) {
               // TODO nothing?
           }
       }
+      else{
+        console.log("saveContinue clicked")
+        if (!validateForm()) return;
+        $('#slcNewProposal').attr("action", "/serviceLearning/saveProposal")
+        $('#slcNewProposal').submit()
+      }
   });
 
   $('#saveExit').on("click", function(){
-    console.log("save exit")
+    console.log("saveExit clicked")
+    if (!validateForm()) return;
     $('#slcNewProposal').attr("action", "/serviceLearning/saveExit")
+    $('#slcNewProposal').submit()
   })
 
   $("#exitButton").on("click", function() {
@@ -114,7 +122,9 @@ $(document).ready(function(e) {
   // Add course instructor event handlers
   // -----------------------------------------
       $("#instructorTable").on("click", "#remove", function() {
-          $(this).closest("tr").remove();
+        let closestRow =  $(this).closest("tr")
+        $("#instructorTableNames input[value="+closestRow.data('username')+"]").remove()
+        closestRow.remove();
       });
       $("#courseInstructor").on('input', function() {
           searchUser("courseInstructor", createNewRow, true, null, "instructor");
@@ -260,12 +270,12 @@ function saveCourseData(url, successCallback) {
 }
 
 function validateForm() {
-    // This function ensures our form fields are valid
-    // Returns true if we are just viewing a form
-    // TODO: Generalize form validation to include textareas and selects
+  // This function ensures our form fields are valid
+  // Returns true if we are just viewing a form
+  // TODO: Generalize form validation to include textareas and selects
 
-    if (readOnly())
-        return true;
+  if (readOnly())
+      return true;
 
   let valid = true;
 
@@ -345,9 +355,7 @@ function createNewRow(selectedInstructor) {
 
 function getCourseInstructors() {
   // get usernames out of the table rows into an array
-  return $("#instructorTable tr")
-                .map((i,el) => $(el).data('username')).get()
-                .filter(val => (val))
+  return $("#instructorTableNames input").map((i,el) => $(el).val())
 }
 
 function disableSyllabusUploadFile() {
