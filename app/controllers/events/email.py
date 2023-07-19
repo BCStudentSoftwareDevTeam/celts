@@ -4,7 +4,8 @@ from app.models.event import Event
 from app.controllers.main import main_bp
 from app.logic.emailHandler import EmailHandler
 from app.models.program import Program
-from flask import request, g
+from flask import request, flash, g, redirect, url_for
+from urllib.parse import urlparse
 
 @main_bp.route('/email', methods=['POST'])
 def email():
@@ -28,7 +29,7 @@ def email():
 
 @main_bp.route('/retrieveSenderList/<eventId>', methods=['GET'])
 def retrieveSenderList(eventId):
-    senderOptions = [["CELTS (celts@berea.edu)", "celts"]]
+    senderOptions = [["CELTS (celts@berea.edu)", "Celts"]]
 
     event = Event.get_by_id(eventId)
     if event.program_id:
