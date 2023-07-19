@@ -417,7 +417,7 @@ def getAllCourseInstructors(term=None):
                                 terms = terms,
                                 term = term,
                                 CourseStatus = CourseStatus,
-                                data = dataHolder, 
+                                filePreview = dataHolder, 
                                 errorFlag = errorFlag,
                                 termHolder= termHolder
                                 )

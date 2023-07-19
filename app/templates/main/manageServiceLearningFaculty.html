@@ -6,7 +6,7 @@
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
   <script type="module" src="/static/js/manageServiceLearningFaculty.js"></script>
   <script src="/static/js/slcManagement.js"></script>
-  {% if data %}
+  {% if filePreview %}
   <script>
   $(document).ready(function(){
      $("#modalPreview").modal('show')
@@ -200,7 +200,7 @@
                 </div>
                 <br>
                 <div class="modal-footer">
-                  {% if data %}
+                  {% if filePreview %}
                   <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModal" id= "cancelModal">Cancel</button>
                   {% endif %}
                   <label for="previewCourseParticipant" class="form-label"></label>

@@ -356,6 +356,8 @@ def addCourseFile():
     session['errorFlag'] = listOfParticipants[2]
     session['termDict']= listOfParticipants[3]
     os.remove(filePath)
+    print('*************************************')
+    print(session['dataPreview'])
     
     return redirect(url_for("main.getAllCourseInstructors", show_modal = True))
 

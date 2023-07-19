@@ -166,7 +166,7 @@ def parseUploadedFile(filePath):
                 individualCourse.append(studentValue)
                 errorFlag = True
             termDictionary[previewTerm][previewCourse].append(studentValue)
-
+            
     return previewParticipants, listOfStudentsBnumber, errorFlag, termDictionary
 
 def pushDataToDatabase(listOfParticipants):
@@ -195,7 +195,7 @@ def pushDataToDatabase(listOfParticipants):
 
             user = User.get(User.bnumber == bnumberStudent)
             CourseParticipant.get_or_create(user = user, defaults = {
-                "course" : courseGet,
+                "course" : courseGet[0],
                 "hoursEarned" : 2
             })
 
