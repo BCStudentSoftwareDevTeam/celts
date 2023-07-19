@@ -13,6 +13,16 @@ $(document).ready( function () {
     
 
   });
+
+  $('#modalPreview button[data-bs-dismiss="modal"]').click(function () {
+    $('#modalPreview').removeClass('show d-block');
+  });
+   
+  $('#modalSubmit').on('hidden.bs.modal', function () {
+    $('#addCourseParticipant').val('');
+    
+  })
+
   $("#downloadApprovedCoursesBtn").click(function () {
     let termID = $("#downloadApprovedCoursesBtn").val();
     $.ajax({
@@ -65,19 +75,6 @@ function handleFileSelect(event){
     $("#previewButton").prop('disabled', false);
   }
 }
-$(document).ready(function () {
-  $('#modalPreview button[data-bs-dismiss="modal"]').click(function () {
-    $('#modalPreview').removeClass('show d-block');
-  });
-});
-
-
-$(document).ready(function(){
-  $('#modalSubmit').on('hidden.bs.modal', function () {
-    $('#addCourseParticipant').val('');
-    
-  })
-  })
 
   $("#cancelModal").click(function(){
     $.ajax({

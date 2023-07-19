@@ -5,7 +5,6 @@ from playhouse.shortcuts import model_to_dict, dict_to_model
 import json
 from datetime import datetime, date
 import os
-import re
 
 from app import app
 from app.models.program import Program
@@ -35,7 +34,6 @@ from app.logic.participants import getEventParticipants, getUserParticipatedTrai
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
-from openpyxl import load_workbook
 from app.logic.serviceLearningCoursesData import parseUploadedFile
 
 
@@ -366,6 +364,8 @@ def deleteCourseFile():
     try:
         session.pop('dataPreview')
         session.pop('listofBnumber_students')
+        session.pop('errorFlag')
+        session.pop('termDict')
     except KeyError:
         pass
 

@@ -1,8 +1,6 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for, session
 import datetime
 import json
-import os 
-import re
 from http import cookies
 
 
@@ -38,7 +36,6 @@ from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import unapprovedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
 from app.logic.certification import getCertRequirementsWithCompletion
-from openpyxl import load_workbook
 from app.logic.serviceLearningCoursesData import pushDataToDatabase
 from app.logic.createLogs import createRsvpLog, createAdminLog
 
