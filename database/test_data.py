@@ -8,7 +8,6 @@ from app.models.user import User
 from app.models.bonnerCohort import BonnerCohort
 from app.models.term import Term
 from app.models.program import Program
-from app.models.programEvent import ProgramEvent
 from app.models.event import Event
 from app.models.programBan import ProgramBan
 from app.models.course import Course
@@ -25,7 +24,7 @@ from app.models.programManager import ProgramManager
 from app.models.emailTemplate import EmailTemplate
 from app.models.backgroundCheck import BackgroundCheck
 # from app.models.backgroundCheckType import BackgroundCheckType
-from app.models.adminLogs import AdminLogs
+from app.models.adminLog import AdminLog
 from app.models.emailLog import EmailLog
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.certification import Certification
@@ -477,7 +476,9 @@ events = [
         "startDate": datetime.strptime("2021 10 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 1
+        
     },
     {
         "id": 2,
@@ -491,7 +492,9 @@ events = [
         "startDate": datetime.strptime("2021 11 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 1
+        
     },
     {
         "id": 3,
@@ -505,7 +508,8 @@ events = [
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 3
     },
     {
         "id": 4,
@@ -519,7 +523,8 @@ events = [
         "startDate": datetime.strptime("2021 6 25","%Y %m %d"),
         "endDate": datetime.strptime("2021 6 25","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 2
     },
     {
         "id": 5,
@@ -533,7 +538,8 @@ events = [
         "startDate": datetime.strptime("2021 6 18","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 2
     },
     {
         "id": 6,
@@ -547,7 +553,8 @@ events = [
         "startDate": datetime.strptime("2021 08 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 9 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 3
     },
     {
         "id": 7,
@@ -561,7 +568,8 @@ events = [
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 1
     },
     {
         "id": 8,
@@ -575,7 +583,8 @@ events = [
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 2
     },
     {
         "id": 9,
@@ -589,7 +598,8 @@ events = [
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 2
 
     },
     {
@@ -604,7 +614,8 @@ events = [
         "startDate": datetime.strptime("2021 1 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 3
     },
     {
         "id": 11,
@@ -632,7 +643,8 @@ events = [
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 3
     },
     {
         "id": 13,
@@ -677,65 +689,23 @@ events = [
         "contactEmail": "testEmail",
         "contactName": "testName"
     },
+    {
+        #Event being created for recurrance events
+        "id": 16,
+        "term": 4,
+        "name": "Training Event",
+        "description": "Test for training",
+        "isTraining": True,
+        "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
+        "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
+        "location": "Alumni Building",
+        "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
+        "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
+        "contactEmail": "testEmail",
+        "contactName": "testName"
+    },
 ]
 Event.insert_many(events).on_conflict_replace().execute()
-
-program_events = [
-    {
-        "event_id": 1,
-        "program_id": 1
-    },
-    {
-        "event_id": 2,
-        "program_id": 1
-    },
-    {
-        "event_id": 3,
-        "program_id": 3
-    },
-    {
-        "event_id": 4,
-        "program_id": 2
-    },
-    {
-        "event_id": 5,
-        "program_id": 2
-    },
-    {
-        "event_id": 6,
-        "program_id": 3
-    },
-    {
-        "event_id": 7,
-        "program_id": 1
-    },
-    {
-        "event_id": 8,
-        "program_id": 2
-    },
-    {
-        "event_id": 9,
-        "program_id": 2
-    },
-    {
-        "event_id": 10,
-        "program_id": 3
-    },
-    {
-        "event_id": 12,
-        "program_id": 3
-    },
-
-    {
-        "event_id": 14,
-        "program_id": 5
-    },
-    {
-        "event_id": 14,
-        "program_id": 6
-    },
-]
-ProgramEvent.insert_many(program_events).on_conflict_replace().execute()
 
 notes = [
     {
@@ -1300,7 +1270,7 @@ logs = [
    "logContent": "Created Adoption Event."
    }
 ]
-AdminLogs.insert_many(logs).on_conflict_replace().execute()
+AdminLog.insert_many(logs).on_conflict_replace().execute()
 
 files = [
     {

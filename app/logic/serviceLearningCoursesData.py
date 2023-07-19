@@ -10,7 +10,7 @@ from app.models.note import Note
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.term import Term
 from app.models import DoesNotExist
-from app.logic.adminLogs import createLog
+from app.logic.createLogs import createAdminLog
 from app.logic.fileHandler import FileHandler
 from flask import flash, abort, jsonify, session, send_file
 import re
@@ -69,7 +69,7 @@ def withdrawProposal(courseID):
     for note in notes:
         note.delete_instance()
 
-    createLog(f"Withdrew SLC proposal: {courseName}")
+    createAdminLog(f"Withdrew SLC proposal: {courseName}")
 
 def renewProposal(courseID, term):
     """
