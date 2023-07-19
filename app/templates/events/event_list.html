@@ -82,7 +82,11 @@
         {% endif %}
         {% for event in events %}
           {% if event.isPast %}
-          <tr class="table-light showlist" style="display: none;">
+            {% if selectedTerm != g.current_term %}
+              <tr class="table-light showlist"></tr>
+            {% else %}
+              <tr class="table-light showlist" style="display: none;">
+            {% endif %}
             {% if type != "bonner" %}
               {% if event.program%}
                 <td class="text-secondary">{{event.program.programName}}</td>
