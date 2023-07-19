@@ -93,7 +93,6 @@ $(document).ready(function(e) {
           }
       }
       else{
-        console.log("saveContinue clicked")
         if (!validateForm()) return;
         $('#slcNewProposal').attr("action", "/serviceLearning/saveProposal")
         $('#slcNewProposal').submit()
@@ -101,7 +100,6 @@ $(document).ready(function(e) {
   });
 
   $('#saveExit').on("click", function(){
-    console.log("saveExit clicked")
     if (!validateForm()) return;
     $('#slcNewProposal').attr("action", "/serviceLearning/saveExit")
     $('#slcNewProposal').submit()
