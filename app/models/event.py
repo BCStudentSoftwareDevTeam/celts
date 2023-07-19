@@ -49,10 +49,19 @@ class Event(baseModel):
     def relativeTime(self):
         relativeTime = datetime.combine(self.startDate, self.timeStart) - datetime.now()
 
-        hoursFromNow = relativeTime.seconds/3600
-        if (relativeTime.days):
-            return f"{relativeTime.days} day(s)"
+        secondsFromNow = relativeTime.seconds
+        minutesFromNow = secondsFromNow // 60
+        hoursFromNow = minutesFromNow // 60
+        daysFromNow = relativeTime.days
+        if self.isPast:
+            return ""
+        elif (daysFromNow):
+            return f"{daysFromNow} day" + ("s" if daysFromNow > 1 else "")
+        elif hoursFromNow:
+            return f"{hoursFromNow} hour" + ("s" if hoursFromNow > 1 else "")
+        elif minutesFromNow:
+            return f"{minutesFromNow} minute" + ("s" if minutesFromNow > 1 else "")
         else:
-            return f"{hoursFromNow} hour(s)"
+            return f"happening now"
         
     
