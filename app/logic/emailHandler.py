@@ -75,12 +75,11 @@ class EmailHandler:
         userobj = User.get_or_none(User.username == self.sender_username)
         if programObject:
             programEmail = programObject.contactEmail
-            if programEmail:
-                return (programObject.programName, programEmail, programEmail)
+            return (programObject.programName, programEmail, programEmail)
         elif self.sender_username.upper() == "CELTS":
             return ("CELTS", "celts@berea.edu", "celts@berea.edu")
         elif userobj:
-            return (f"{userobj.firstName} {userobj.lastName}", userobj.email, userobj.email)
+            return (f"{userobj.fullName}", userobj.email, userobj.email)
         return (None, None, None) # If the sender is not a program or user, use default values.
 
     def update_sender_config(self):
@@ -204,7 +203,8 @@ class EmailHandler:
                 for recipient in self.recipients:
                     full_name = f'{recipient.firstName} {recipient.lastName}'
                     email_body = self.replaceDynamicPlaceholders(body, name=full_name)
-
+                    print(self.sender_name)
+                    print("#"*1000)
                     conn.send(Message(
                         subject,
                         # [recipient.email],
