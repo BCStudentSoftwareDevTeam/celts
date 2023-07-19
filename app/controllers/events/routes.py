@@ -13,25 +13,6 @@ from app.controllers.events import email
 from app.logic.emailHandler import EmailHandler
 from app.logic.participants import addBnumberAsParticipant
 
-@events_bp.route('/email', methods=['POST'])
-def email():
-    raw_form_data = request.form.copy()
-    attachments = request.files.getlist('attachmentObject')
-    if "@" in raw_form_data['emailSender']:
-        # when people are sending emails as themselves (using mailto) --- Q: are we still going with the mailto option?
-        pass
-    else:
-        url_domain = urlparse(request.base_url).netloc
-        mail = EmailHandler(raw_form_data, url_domain, attachment_file=attachments)
-        mail_sent = mail.send_email()
-
-        if mail_sent:
-            message, status = 'Email successfully sent!', 'success'
-        else:
-            message, status = 'Error sending email', 'danger'
-        flash(message, status)
-        return redirect(url_for("main.events", selectedTerm = raw_form_data['selectedTerm']))
-
 @events_bp.route('/event/<eventid>/kiosk', methods=['GET'])
 def loadKiosk(eventid):
     """Renders kiosk for specified event."""

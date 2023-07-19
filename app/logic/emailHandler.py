@@ -55,7 +55,7 @@ class EmailHandler:
 
         if 'emailSender' in self.raw_form_data:
             self.sender_username = self.raw_form_data['emailSender']
-            self.sender_name, self.reply_to = self.getReplyInfo()
+            self.sender_name, self.sender_address, self.reply_to = self.getReplyInfo()
 
         if 'body' in self.raw_form_data:
             self.body = self.raw_form_data['body']
@@ -71,11 +71,15 @@ class EmailHandler:
 
 
     def getReplyInfo(self):
+        programObject = Program.get_or_none(Program.programName == self.sender_username)
         userobj = User.get_or_none(User.username == self.sender_username)
-        if userobj:
-            return (f"{userobj.firstName} {userobj.lastName}", userobj.email)
-        else:
-            return ("CELTS", "celts@berea.edu") # If the sender is not a user, default to be from the generic CELTS email
+        if programObject:
+            programEmail = programObject.contactEmail
+            if programEmail:
+                return (programObject.programName, programEmail, programEmail)
+        elif userobj:
+            return (f"{userobj.firstName} {userobj.lastName}", userobj.email, userobj.email)
+        return ("CELTS", "celts@berea.edu", "celts@berea.edu") # If the sender is not a user, default to be from the generic CELTS email
 
     def update_sender_config(self):
         # We might need this.

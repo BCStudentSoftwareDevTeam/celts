@@ -4,23 +4,43 @@ from app.models.event import Event
 from app.controllers.main import main_bp
 from app.logic.emailHandler import EmailHandler
 from app.models.program import Program
-from flask import request
+from flask import request, g
+
+@main_bp.route('/email', methods=['POST'])
+def email():
+    raw_form_data = request.form.copy()
+    attachments = request.files.getlist('attachmentObject')
+    if "@" in raw_form_data['emailSender']:
+        # when people are sending emails as themselves (using mailto) --- Q: are we still going with the mailto option?
+        pass
+    else:
+        url_domain = urlparse(request.base_url).netloc
+        mail = EmailHandler(raw_form_data, url_domain, attachment_file=attachments)
+        mail_sent = mail.send_email()
+
+        if mail_sent:
+            message, status = 'Email successfully sent!', 'success'
+        else:
+            message, status = 'Error sending email', 'danger'
+        flash(message, status)
+        return redirect(url_for("main.events", selectedTerm = raw_form_data['selectedTerm']))
+
 
 @main_bp.route('/retrieveSenderList/<eventId>', methods=['GET'])
-def retrieveSenderList(eventId): # Beans: get the program managers based on the eventId. Also get the correct program email using the eventId
+def retrieveSenderList(eventId):
     senderOptions = [["CELTS (celts@berea.edu)", "celts"]]
 
     event = Event.get_by_id(eventId)
     if event.program_id:
         programEmail = event.program.contactEmail if event.program.contactEmail else "No Program Email Found"
         programOption = [f"{event.program.programName} ({programEmail})", event.program.contactEmail.split("@")[0]]
-        senderOptions += programOption
+        senderOptions.append(programOption)
 
-    studentStaffOptions = [
-        ["Bob (bob@berea.edu)", "bob"],
-        ["Steve (steve@berea.edu)", "steve"]
-    ]
-    senderOptions += studentStaffOptions
+    studentStaffOptions = []
+    senderOptions.extend(studentStaffOptions)
+
+    currentUserOption = [f"Current User ({g.current_user.email})", g.current_user.username]
+    senderOptions.append(currentUserOption)
 
     return senderOptions
 
