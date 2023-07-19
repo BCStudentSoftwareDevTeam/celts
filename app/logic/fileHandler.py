@@ -15,11 +15,16 @@ class FileHandler:
             # eventID is not included in the path, because it is now a part of the attachment filename.
             self.path = os.path.join(self.path, app.config['files']['event_attachment_path'])
         
+    def makeDirectory(self):
+        # Creating the directory when call in saveFiles
         try:
             extraDir = str(self.eventId) if self.eventId else ""
             os.makedirs(os.path.join(self.path, extraDir))
-        except:
-            print("Directory exists.")
+        # Occurs when we try to create a directory that already exists
+        except OSError as e:
+            if e.errno != 17:
+                print(f'Fail to create directory: {e}')
+        
 
     def getFileFullPath(self, newfilename = ''):
         """
@@ -36,31 +41,37 @@ class FileHandler:
             pass
         except FileExistsError:
             pass
-
+  
         return filePath
 
     def saveFiles(self, saveOriginalFile=None):
         """ Saves the attachment in the app/static/files/eventattachments/ or courseattachements/ directory """
         try:
             for file in self.files:
+                saveFileToFilesystem = None
                 if self.eventId:
                     attachmentName = str(saveOriginalFile.id) + "/" +  file.filename
 
                     # isFileInEvent checks if the attachment exists in the database under that eventId and filename.
-                    isFileInEvent = AttachmentUpload.select().where(AttachmentUpload.event == self.eventId,
+                    isFileInEvent = AttachmentUpload.select().where(AttachmentUpload.event_id == self.eventId,
                                                                     AttachmentUpload.fileName == attachmentName).exists()
                     if not isFileInEvent:
                         AttachmentUpload.create(event = self.eventId, fileName = attachmentName)
 
                         # Only save the file if our event is on its own, or the first of a recurring series
-                        if saveOriginalFile and saveOriginalFile.id == self.eventId:       
-                            file.save(self.getFileFullPath(newfilename = attachmentName))
+                        if saveOriginalFile and saveOriginalFile.id == self.eventId:
+                            saveFileToFilesystem = attachmentName
  
                 elif self.courseId:
                     isFileInCourse = AttachmentUpload.select().where(AttachmentUpload.course == self.courseId, AttachmentUpload.fileName == file.filename).exists()
                     if not isFileInCourse:
                         AttachmentUpload.create(course = self.courseId, fileName = file.filename)
-                        file.save(self.getFileFullPath(newfilename = file.filename))
+                        saveFileToFilesystem = file.filename
+                
+                if saveFileToFilesystem:
+                    self.makeDirectory()
+                    file.save(self.getFileFullPath(newfilename = saveFileToFilesystem))        
+                        
         except AttributeError: # will pass if there is no attachment to save
             pass
 
