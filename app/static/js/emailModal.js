@@ -50,7 +50,7 @@ async function retrievePlaceholderList(eventId){
 
 function readySenderOptions(eventId){
   $("#emailSender .sender-option").remove();
-  retrieveSenderList(eventId).then(function() { // Beans: The first element in the sublist should be the username of the email. The second should be the Name and then the email.
+  retrieveSenderList(eventId).then(function() {
     for (let i=0; i < senderList.length; i++) {
       let option = '<option class="sender-option" value="' + senderList[i][1] + '">'+ senderList[i][0] +'</option>';
       $('#emailSender').append(option);
