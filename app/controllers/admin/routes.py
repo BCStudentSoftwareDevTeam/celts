@@ -74,8 +74,7 @@ def createEvent(templateid, programid=None):
     # Get the data from the form or from the template
     eventData = template.templateData
 
-    if program:
-        eventData['program'] = program
+    eventData['program'] = program
 
     if request.method == "GET":
         eventData['contactName'] = "CELTS Admin"
@@ -125,7 +124,7 @@ def createEvent(templateid, programid=None):
     futureTerms = selectSurroundingTerms(g.current_term, prevTerms=0)
 
     requirements, bonnerCohorts = [], []
-    if 'program' in eventData and eventData['program'].isBonnerScholars:
+    if eventData['program'] is not None and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
         bonnerCohorts = getBonnerCohorts(limit=5)
     return render_template(f"/admin/{template.templateFile}",

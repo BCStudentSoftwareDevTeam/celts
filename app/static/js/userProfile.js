@@ -3,6 +3,7 @@ $(document).ready(function(){
   $(".notifyInput").click(function updateInterest(){
     var programID = $(this).data("programid");
     var username = $(this).data('username');
+    
 
     var interest = $(this).is(':checked');
     var routeUrl = interest ? "addInterest" : "removeInterest";
@@ -31,6 +32,9 @@ $(document).ready(function(){
     }).attr('readonly','readonly');
   });
 
+    /*
+     * Ban Functionality
+     */
   $(".ban").click(function() {
     var banButton = $("#banButton")
     var banEndDateDiv = $("#banEndDate") // Div containing the datepicker in the ban modal
@@ -60,43 +64,6 @@ $(document).ready(function(){
 
   });
 
-  $("#addNoteButton").click(function() {
-    $("#noteModal").modal("toggle");
-  });
-
-  $("#addBonnerNoteButton").click(function() {
-    $("#noteModal").modal("toggle");
-    $("#bonnerInput").attr("checked", true)
-  });
-
-  $('#addNoteForm').submit(function(event) {
-    event.preventDefault()
-    let username = $("#notesSaveButton").data('username')
-    $.ajax({
-      method: "POST",
-      url:  "/profile/addNote",
-      data: {"username": username,
-             "visibility": $("#noteDropdown").val(),
-             "noteTextbox": $("#addNoteTextArea").val(),
-             "bonner": $("#bonnerInput").is(":checked") ? "yes":"no"},
-      success: function(response) {
-        reloadWithAccordion("notes")
-      }
-    });
-});
-
-  $(".deleteNoteButton").click(function() {
-    let username = $(this).data('username')
-    let noteid = $(this).data('noteid')
-    $.ajax({
-      method: "POST",
-      url:  "/" + username + "/deleteNote",
-      data: {"id": noteid},
-      success: function(response) {
-        reloadWithAccordion("notes")
-      }
-    });
-  });
 
   $("#banNoteTxtArea, #banEndDatepicker").on('input' , function (e) { //This is the if statement the placeholder in line 45 is for #PLCHLD1
     var enableButton = ($("#banNoteTxtArea").val() && $("#banEndDatepicker").val());
@@ -120,51 +87,123 @@ $(document).ready(function(){
     });
   });
 
-  $(".savebtn").click(function () { // Updates the Background check of a volunteer in the database
-    $(this).prop("disabled", true);
-    let bgCheckType = $(this).data("id")
-
-    var bgStatusInput = $("#" + bgCheckType)
-    var bgDateInput = $("#" + bgCheckType + "_date")
-
-    let bgDate =  bgDateInput.val()
-    let bgStatus = $("[data-id=" + bgCheckType + "]").val()
-
-    if (bgStatus == '') {
-      bgStatusInput.focus()
-      bgStatusInput.addClass("invalid");
-      window.setTimeout(() => bgStatusInput.removeClass("invalid"), 1000);
-      $(this).prop("disabled", false);
-      return false
+    /*
+     * Note Functionality
+     */
+    function bonnerNoteOff() {
+        $("#bonnerInput").prop("checked", false);
+        $("#noteDropdown").show()
+        $("#bonnerStatement").hide()
+        $("#visibilityLabel").show()
     }
 
-    if (bgDate == ''){
-      bgDateInput.focus()
-      bgDateInput.addClass("invalid");
-      window.setTimeout(() => bgDateInput.removeClass("invalid"), 1000);
-      $(this).prop("disabled", false);
-      return false
+    function bonnerNoteOn() {
+        $("#bonnerInput").prop("checked", true);
+        $("#noteDropdown").hide()
+        $("#bonnerStatement").show()
+        $("#visibilityLabel").hide()
     }
 
-    let data = {
-        bgStatus: bgStatus,      // Expected to be one of the three background check statuses
-        user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
-        bgType: $(this).attr("id"),       // Expected to be the ID of a background check in the database
-        bgDate: bgDate  // Expected to be the date of the background check completion or '' if field is empty
-    }
+    $("#addNoteButton").click(function() {
+        bonnerNoteOff()
+        $("#noteModal").modal("toggle")
+    });
+
+    $("#addVisibility").click(function() { 
+        var bonnerChecked = $("input[name='bonner']:checked").val()
+    
+        if (bonnerChecked == 'on') {
+            bonnerNoteOn()
+        } else {
+            bonnerNoteOff()
+        }
+    });
+
+    $("#addBonnerNoteButton").click(function() {
+        bonnerNoteOn()
+        $("#noteModal").modal("toggle");
+    });
+
+  $('#addNoteForm').submit(function(event) {
+    event.preventDefault()
+    let username = $("#notesSaveButton").data('username')
+    let isBonner = $("#bonnerInput").is(":checked")
     $.ajax({
-      url: "/addBackgroundCheck",
-      type: "POST",
-      data: data,
-      success: function(s){
-        var date = new Date(data.bgDate + " 12:00").toLocaleDateString()
-        reloadWithAccordion("background")
-      },
-      error: function(error, status){
-          console.log(error, status)
+      method: "POST",
+      url:  "/profile/addNote",
+      data: {"username": username,
+             "visibility": $("#noteDropdown").val(),
+             "noteTextbox": $("#addNoteTextArea").val(),
+             "bonner": isBonner ? "yes" : "no"},
+      success: function(response) {
+        target = isBonner ? "bonner" : "notes"
+        reloadWithAccordion(target)
       }
-    })
+    });
+});
+
+  $(".deleteNoteButton").click(function() {
+    let username = $(this).data('username')
+    let noteid = $(this).data('noteid')
+    $.ajax({
+      method: "POST",
+      url:  "/" + username + "/deleteNote",
+      data: {"id": noteid},
+      success: function(response) {
+        reloadWithAccordion("notes")
+      }
+    });
   });
+
+    /*
+     * Background Check Functionality
+     */
+    // Updates the Background check of a volunteer in the database
+    $(".savebtn").click(function () { 
+        $(this).prop("disabled", true);
+        let bgCheckType = $(this).data("id")
+
+        var bgStatusInput = $("#" + bgCheckType)
+        var bgDateInput = $("#" + bgCheckType + "_date")
+
+        let bgDate =  bgDateInput.val()
+        let bgStatus = $("[data-id=" + bgCheckType + "]").val()
+
+        if (bgStatus == '') {
+          bgStatusInput.focus()
+          bgStatusInput.addClass("invalid");
+          window.setTimeout(() => bgStatusInput.removeClass("invalid"), 1000);
+          $(this).prop("disabled", false);
+          return false
+        }
+
+        if (bgDate == ''){
+          bgDateInput.focus()
+          bgDateInput.addClass("invalid");
+          window.setTimeout(() => bgDateInput.removeClass("invalid"), 1000);
+          $(this).prop("disabled", false);
+          return false
+        }
+
+        let data = {
+            bgStatus: bgStatus,      // Expected to be one of the three background check statuses
+            user: $(this).data("username"),   // Expected to be the username of a volunteer in the database
+            bgType: $(this).attr("id"),       // Expected to be the ID of a background check in the database
+            bgDate: bgDate  // Expected to be the date of the background check completion or '' if field is empty
+        }
+        $.ajax({
+          url: "/addBackgroundCheck",
+          type: "POST",
+          data: data,
+          success: function(s){
+            var date = new Date(data.bgDate + " 12:00").toLocaleDateString()
+            reloadWithAccordion("background")
+          },
+          error: function(error, status){
+              console.log(error, status)
+          }
+        })
+    });
 
   $("#bgHistoryTable").on("click", "#deleteBgHistory", function() {
     let data = {
