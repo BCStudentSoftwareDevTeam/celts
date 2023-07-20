@@ -3,6 +3,7 @@ $(document).ready(function(){
   $("#templateIdentifier").on("change", replaceEmailBodyAndSubject);
   $("#placeholderSelect").on("change", insertPlaceholder);
   $("#cancel-btn").on("click", () => $('.modal').modal('hide'));
+  handleFileSelection("attachmentObject");
 })
 
 var senderList;
