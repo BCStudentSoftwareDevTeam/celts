@@ -16,11 +16,12 @@ class FileHandler:
             self.path = os.path.join(self.path, app.config['files']['event_attachment_path'])
         
     def makeDirectory(self):
-        # Creating the directory when call in saveFiles
+        # This creates a directory. 
+        # Created to remove duplicates when an event is recurring.
         try:
             extraDir = str(self.eventId) if self.eventId else ""
             os.makedirs(os.path.join(self.path, extraDir))
-        # Occurs when we try to create a directory that already exists
+        # Error 17 Occurs when we try to create a directory that already exists
         except OSError as e:
             if e.errno != 17:
                 print(f'Fail to create directory: {e}')
