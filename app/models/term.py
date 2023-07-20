@@ -53,10 +53,9 @@ class Term(baseModel):
     @staticmethod
     def convertTerm(description):
         semester,year = description.split()
-        match semester:
-            case "Spring":
-                return year + "-1"
-            case "Summer":
-                return year + "-2"
-            case "Fall":
-                return year + '-3'
+        if semester == "Spring":
+            return year + "-1"
+        elif semester == "Summer":
+            return year + "-2"
+        elif semester ==  "Fall":
+            return year + '-3'
