@@ -173,7 +173,7 @@ def test_recipients_eligible_students():
             # Test a program that should have nothing in banned users and nothing in All Volunteer:
             raw_form_data = {
                 "templateIdentifier": "Test",
-                "emailSender": User.get_by_id('ramsayb2'),             
+                "emailSender": 'ramsayb2',             
                 "eventID":"1",
                 "recipientsCategory": "Eligible Students"}
 
@@ -191,7 +191,7 @@ def test_recipients_eligible_students():
 
             raw_form_data = {
                 "templateIdentifier": "Test",
-                "emailSender": User.get_by_id('ramsayb2'),
+                "emailSender": 'ramsayb2',
                 "eventID":"1",
                 "recipientsCategory": "Eligible Students"}
 
