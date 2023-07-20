@@ -25,7 +25,7 @@
                 <td>
                   <p class="mb-0"></p>
                     <input type="text" style="border: none" size="14" class="form-control-sm" id="" name="courseInstructorPhone" aria-label="Instructor Phone" data-value="" value="" placeholder="Phone Number" />
-                    <a class="text-decoration-none primary editButton" tabindex="0" data-username=""  id=""  type="button">Edit</a>
+                    <a class="text-decoration-none primary editButton" tabindex="0" data-username="" id=""  type="button">Edit</a>
                 </td>
                 <td class="align-middle">
                     <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
@@ -37,7 +37,7 @@
               <td>
                 <p class="mb-0">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user.email}})</p>
                   <input type="text" style="border: none" size="14" class="form-control-sm" id="inputPhoneNumber-{{instructor.user}}" name="courseInstructorPhone" aria-label="Instructor Phone" data-value="{{instructor.user.phoneNumber}}" value="{{instructor.user.phoneNumber}}" placeholder="Phone Number" />
-                  <a class="text-decoration-none primary editButton" tabindex="0" data-username="{{instructor.user}}"  id="editButton-{{instructor.user}}"  type="button">Edit</a>
+                  <a class="text-decoration-none primary editButton" tabindex="0" data-username="{{instructor.user.username}}" id="editButton-{{instructor.user}}" type="button">Edit</a>
               </td>
               <td class="align-middle">
                   <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
@@ -48,6 +48,11 @@
         </tbody>
 
       </table>
+      <div id='instructorTableNames'>
+        {% for instructor in courseInstructor %}
+        <input hidden name="instructor[]" value='{{instructor.user.username}}'/>
+        {% endfor %}
+      </div>
       <label for="courseName" class="pt-3">Course Name</label>
       <input
         class="form-control"
@@ -87,31 +92,20 @@
             <label class="form-check-label"> One-Time Special Topics/4-week course offering </label>
           </div>
         </div>
-        <label for="syllabus" class="pt-3 mb-2">Please upload a copy of the course syllabus:</label><br>
-        <button class="btn btn-primary mb-2" type="button"id="syllabusUploadButton">Upload</button>
+        <div class="form-group mb-5">
+          <label for="syllabus" class="pt-3 mb-2">Please upload a copy of the course syllabus:</label><br>
+          <input type="file" class="form-control" id="attachmentObject" name="attachmentObject" multiple accept= ".png, .jpg, .pdf, .jpeg, .docx, .xlsx"/>
+        </div>
+
+      
         {% if filepaths %}
         <div class="form-group mb-5">
-          <label class="mb-2 courseAttachments" for= "courseAttachments"><strong>Course Attachments</strong></label>
-          <table>
-              {% for key, value in filepaths.items() %}
-                  <tr id="pageAttachment_{{value[1]}}" class="attachmentRow_{{key}}" data-id= "{{key}}">
-                      <td class="pr-5">
-                          <a class="mr-5" href="{{value[0]}}" target="_blank">{{key}}</a>
-                      </td>
-                      <td style="text-align:center">
-                        <button
-                          data-id="{{value[1]}}"
-                          type="button"
-                          class="removeAttachment btn btn-danger btn-sm"
-                          id={{course.id}}>
-                            <i class="bi bi-trash h5 align-middle"></i>
-                        </button>
-                      </td>
-                  </tr>
-              {% endfor %}
-          </table>
+          {% from 'displayFilesMacro.html' import displayFiles %}
+          {{ displayFiles(filepaths, 'Course Attachments', '/deleteCourseFile', course.id) }}
         </div>
         {% endif %}
+
+
     </div>
     <div class="p-2 col-md-6">
       <label for="inputCourseInstructor">When will this course be offered?</label>
