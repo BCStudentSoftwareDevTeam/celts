@@ -1,3 +1,6 @@
+from flask import session
+from playhouse.shortcuts import model_to_dict
+from app.logic.createLogs import createAdminLog
 from app.models.term import Term
 
 def addNextTerm():
