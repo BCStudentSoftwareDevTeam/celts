@@ -25,7 +25,7 @@ def addNextTerm():
                           year=newYear,
                           academicYear=newAY,
                           isSummer= summer,
-                          termOrder=Term.convertTerm(newDescription))
+                          termOrder=Term.convertDescriptionToTermOrder(newDescription))
     newTerm.save()
 
     return newTerm
@@ -41,7 +41,7 @@ def addPastTerm(description):
 
     isSummer = "Summer" in semester
     newDescription=f"{semester} {year}"
-    orderTerm = Term.convertTerm(newDescription)
+    orderTerm = Term.convertDescriptionToTermOrder(newDescription)
     
     createdOldTerm = Term.create(description= newDescription,
                                  year=year,

@@ -23,9 +23,9 @@ function rsvpForEvent(eventID){
     }
   });
 }
-function addCourseFile(addCourseParticipant) {
+function addCourseFile(addCourseParticipants) {
   addCourseInfo = {
-    id: addCourseParticipant,
+    id: addCourseParticipants,
     from: 'ajax'
   }
 

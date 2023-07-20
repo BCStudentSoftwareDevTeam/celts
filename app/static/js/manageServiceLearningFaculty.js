@@ -38,25 +38,6 @@ $(document).ready( function () {
 
     })
   });
-  function removeRsvpForEvent(eventID) {
-    removeRsvpInfo = {
-      id: eventID,
-      from: 'ajax'
-    }
-
-    $.ajax({
-      url: "/rsvpRemove",
-      type: "POST",
-      data: removeRsvpInfo,
-      success: function (s) {
-        location.reload()
-      },
-      error: function (error, status) {
-        console.log(error, status)
-      }
-
-    })
-  }
 });
 
 $("#modalCourseParticipant").on("click", function () {
@@ -64,7 +45,7 @@ $("#modalCourseParticipant").on("click", function () {
 });
 
 
-const fileInput= $("#addCourseParticipant")
+const fileInput= $("#addCourseParticipants")
 fileInput.on('change', handleFileSelect)
 
 function handleFileSelect(event){
@@ -75,7 +56,7 @@ function handleFileSelect(event){
   }
 }
 
-$("#cancelModal").click(function(){
+$("#cancelModalPreview").click(function(){
   $.ajax({
     url: "/deleteUploadedFile",
     type: 'POST',

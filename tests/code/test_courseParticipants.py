@@ -9,7 +9,7 @@ from app.models.user import User
 from app.logic.serviceLearningCoursesData import parseUploadedFile, pushCourseParticipantsToDatabase
 
 @pytest.mark.integration
-def test_PushDataToDatabase():
+def test_pushDataToDatabase():
     
     with mainDB.atomic() as transaction:
         termDict = {'Fall 2019' : {'CSC 226' : [['Ebenezer Ayisi', 'B00739736'], ['Finn Bledsoe', 'B00776544']]},

@@ -13,7 +13,7 @@ from app.models import DoesNotExist
 from app.logic.createLogs import createAdminLog
 from app.logic.fileHandler import FileHandler
 from flask import flash, abort, jsonify, session, send_file, g
-import re
+import re as regex
 import os
 from openpyxl import load_workbook
 from app.logic.term import addPastTerm
@@ -110,19 +110,19 @@ def parseUploadedFile(filePath):
     for row in excelSheet.iter_rows():
         cellVal = row[0].value
 
-        if re.search(termReg, str(cellVal)):
+        if regex.search(termReg, str(cellVal)):
             previewTerm = ''
             hasTerm = Term.get_or_none(Term.description == cellVal)
             if hasTerm:
                 previewTerm = cellVal 
-            elif list(Term.select().order_by(Term.termOrder))[-1].termOrder > Term.convertTerm(cellVal):
+            elif list(Term.select().order_by(Term.termOrder))[-1].termOrder > Term.convertDescriptionToTermOrder(cellVal):
                 previewTerm = cellVal
             else:
                 previewTerm = f"ERROR: The term {cellVal} does not exist."
                 errorFlag = True
             termDictionary[previewTerm]= {}
 
-        elif re.search(courseReg, str(cellVal)):
+        elif regex.search(courseReg, str(cellVal)):
             previewCourse = ''
             hasCourse = Course.get_or_none(Course.courseAbbreviation == cellVal)
             previewCourse = cellVal
@@ -131,7 +131,7 @@ def parseUploadedFile(filePath):
 
             termDictionary[previewTerm][previewCourse]=[]
            
-        elif re.search(bnumberReg, str(cellVal)):      
+        elif regex.search(bnumberReg, str(cellVal)):      
             hasUser = User.get_or_none(User.bnumber == cellVal)
             if hasUser:
                 studentValue =f"{hasUser.firstName} {hasUser.lastName}"
@@ -169,4 +169,4 @@ def pushCourseParticipantsToDatabase(termDict):
 
 def sessionCleaner():
     session.pop('errorFlag')
-    session.pop('termDict')
+    session.pop("termDict")

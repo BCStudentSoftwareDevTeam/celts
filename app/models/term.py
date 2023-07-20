@@ -51,7 +51,7 @@ class Term(baseModel):
         return False
 
     @staticmethod
-    def convertTerm(description):
+    def convertDescriptionToTermOrder(description):
         semester,year = description.split()
         if semester == "Spring":
             return year + "-1"

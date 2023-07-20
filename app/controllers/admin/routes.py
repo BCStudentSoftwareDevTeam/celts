@@ -347,7 +347,7 @@ def deleteEventFile():
 
 @admin_bp.route("/uploadCourseParticipant", methods= ["POST"])
 def addCourseFile():
-    fileData = request.files['addCourseParticipant']
+    fileData = request.files['addCourseParticipants']
     filePath = os.path.join(app.config["files"]["base_path"], fileData.filename)
     fileData.save(filePath)
     listOfParticipants = parseUploadedFile(filePath)

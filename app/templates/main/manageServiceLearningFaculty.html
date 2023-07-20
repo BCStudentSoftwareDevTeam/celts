@@ -150,8 +150,8 @@
 
                       </div>
                       <div class="col-9">
-                          <label for="addCourseParticipant" class="form-label"></label>
-                          <input class="form-control" type="file" id="addCourseParticipant" name="addCourseParticipant" accept=".xlsx"></input>
+                          <label for="addCourseParticipants" class="form-label"></label>
+                          <input class="form-control" type="file" id="addCourseParticipants" name="addCourseParticipants" accept=".xlsx"></input>
                       </div>
                       <div class="col-3">
 
@@ -162,7 +162,7 @@
                 <br>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button> 
-                  <label for="addCourseParticipant" class="form-label"></label>
+                  <label for="addCourseParticipants" class="form-label"></label>
                   <button class="form-control btn btn-success position-relative" id="previewButton" style ='width: 90px' disabled >Preview</button>
               </div> 
               </form>
@@ -183,7 +183,7 @@
               </div>
                 <div class="modal-body py-0">
                   <div>
-                    <label for="addCourseParticipant" class="form-label"></label>
+                    <label for="addCourseParticipants" class="form-label"></label>
                       {% for term in termHolder %}
                       <div class="h5" {% if "ERROR:" in term %} class= "text-danger" {% endif %}><b>{{term}}:</b></div>
                         {% for course in termHolder[term]%}
@@ -201,7 +201,7 @@
                 <br>
                 <div class="modal-footer">
                   {% if termHolder %}
-                  <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModal" id= "cancelModal">Cancel</button>
+                  <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalPreview" id= "cancelModalPreview">Cancel</button>
                   {% endif %}
                   <label for="previewCourseParticipant" class="form-label"></label>
                   {% set disableSave = "disabled" if errorFlag else "" %}

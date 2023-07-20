@@ -785,7 +785,7 @@ courses = [
     {
         "id": 3,
         "courseName": "French Help",
-        "term": 4,
+        "term": 3,
         "status": 3,
         "courseCredit": "",
         "createdBy": "ramsayb2",

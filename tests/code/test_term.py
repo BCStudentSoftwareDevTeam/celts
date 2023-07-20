@@ -47,12 +47,12 @@ def test_invalidTermInputs():
 @pytest.mark.integration
 def test_addNextTerm():
     with mainDB.atomic() as transaction:
-        testTerm = Term.create(description="Summer 2022",year=2022, academicYear= "2021-2022", isSummer=True, isCurrentTerm=True, termOrder = Term.convertTerm("Summer 2022"))
+        testTerm = Term.create(description="Summer 2022",year=2022, academicYear= "2021-2022", isSummer=True, isCurrentTerm=True, termOrder = Term.convertDescriptionToTermOrder("Summer 2022"))
         testTerm.save()
 
         addNextTerm()
 
-        # for the first test,  make sure we're using the db properly
+       
         terms = list(Term.select().order_by(Term.id))
         newTerm = terms[-1]
         assert newTerm.description == "Summer 2023"
@@ -65,7 +65,7 @@ def test_addNextTerm():
 
 
     with mainDB.atomic() as transaction:
-        testTerm = Term.create(description="Fall 2029",year=2029, academicYear= "2029-2030", isSummer=False,isCurrentTerm=False, termOrder = Term.convertTerm("Fall 2029"))
+        testTerm = Term.create(description="Fall 2029",year=2029, academicYear= "2029-2030", isSummer=False,isCurrentTerm=False, termOrder = Term.convertDescriptionToTermOrder("Fall 2029"))
         testTerm.save()
 
         newTerm = addNextTerm()
@@ -79,7 +79,7 @@ def test_addNextTerm():
 
 
     with mainDB.atomic() as transaction:
-        testTerm = Term.create(description="Spring 2024",year=2022, academicYear= "2023-2024", isSummer=False,isCurrentTerm=False, termOrder = Term.convertTerm("Spring 2024") )
+        testTerm = Term.create(description="Spring 2024",year=2022, academicYear= "2023-2024", isSummer=False,isCurrentTerm=False, termOrder = Term.convertDescriptionToTermOrder("Spring 2024") )
         testTerm.save()
 
         newTerm = addNextTerm()
