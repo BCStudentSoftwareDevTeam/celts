@@ -2,7 +2,7 @@ $(document).ready(function(){
   $("#body").on("blur", saveCursorIndex);
   $("#templateIdentifier").on("change", replaceEmailBodyAndSubject);
   $("#placeholderSelect").on("change", insertPlaceholder);
-  $("#cancel-btn").on("click", () => $('.modal').modal('hide'));
+  $("#closeModal").on("click", () => $('.modal').modal('hide'));
   handleFileSelection("attachmentObject");
 })
 

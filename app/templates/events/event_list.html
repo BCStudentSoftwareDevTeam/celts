@@ -137,10 +137,7 @@
                     {{program.programName}}
             </button>
           </h2>
-          <div id="accordion__body_{{program}}_num_{{ loop.index }}"
-              class="accordion-collapse collapse {{'show' if programID == program.id else ''}}"
-              aria-labelledby="accordion__header_{{program}}"
-              data-bs-parent="#categoryAccordion">
+          <div id="accordion__body_{{program}}_num_{{ loop.index }}" class="accordion-collapse collapse {{'show' if programID == program.id else ''}}" aria-labelledby="accordion__header_{{program}}" data-bs-parent="#categoryAccordion">
               {{createTable(events, "student")}}
           </div>
         </div>

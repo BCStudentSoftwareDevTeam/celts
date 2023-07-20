@@ -73,15 +73,15 @@ class EmailHandler:
 
     def getReplyInfo(self):
         programObject = Program.get_or_none(Program.programName == self.sender_username)
-        userobj = User.get_or_none(User.username == self.sender_username)
+        userObj = User.get_or_none(User.username == self.sender_username)
         if programObject:
             programEmail = programObject.contactEmail
             return (programObject.programName, programEmail, programEmail)
         elif self.sender_username.upper() == "CELTS":
             return ("CELTS", "celts@berea.edu", "celts@berea.edu")
-        elif userobj:
-            return (f"{userobj.fullName}", userobj.email, userobj.email)
-        return (None, None, None) # If the sender is not a program or user, use default values.
+        elif userObj:
+            return (f"{userObj.fullName}", userObj.email, userObj.email)
+        return (None, None, None) # If the email is not being sent from a program or user, use default values.
 
     def update_sender_config(self):
         # We might need this.

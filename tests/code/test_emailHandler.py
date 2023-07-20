@@ -45,29 +45,7 @@ def test_send_email_using_modal():
                 assert outbox[0].body == "Hello Sreynit Khatt"
 
                 transaction.rollback()
-
-# @pytest.mark.integration
-# def test_sending_automated_email():
-#     with app.test_request_context():
-#         with mainDB.atomic() as transaction:
-#             # Case 2: Send email without subject and body -- as if email is sent automatically
-#             url_domain = urlparse(request.base_url).netloc
-#             raw_form_data = {"templateIdentifier": "Test",
-#                              "emailSender": "neillz"
-#                              "eventID":"1",
-#                              "recipientsCategory": "Interested"}
-
-#             email = EmailHandler(raw_form_data, url_domain)
-
-#             with email.mail.record_messages() as outbox:
-#                 email_sent = email.send_email()
-#                 assert email_sent == True
-
-#                 assert len(outbox) == 2
-#                 assert outbox[0].subject == "Test Email"
-#                 assert outbox[0].body == "Hello Sreynit Khatt, This is a test event named Empty Bowls Spring Event 1 located in Seabury Center. Other info: 10/12/2021-06/12/2022 and this 06:00-09:00."
-
-#                 transaction.rollback()
+                
 
 @pytest.mark.integration
 def test_update_email_template():
