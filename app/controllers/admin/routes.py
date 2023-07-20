@@ -341,7 +341,7 @@ def adminLogs():
 @admin_bp.route("/deleteEventFile", methods=["POST"])
 def deleteEventFile():
     fileData= request.form
-    eventfile=FileHandler(eventId=fileData["eventId"])
+    eventfile=FileHandler(eventId=fileData["databaseId"])
     eventfile.deleteFile(fileData["fileId"])
     return ""
 
