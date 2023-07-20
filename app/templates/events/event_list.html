@@ -28,7 +28,7 @@
       </div>
     </div>
   </div>
-  {% if selectedTerm == g.current_term and user.isAdmin %}
+  {% if user.isAdmin %}
     <div class="row px-4">
       <div class = "d-none d-sm-block col "></div>
       <div class="form-check form-switch mb-2 col-auto">
@@ -81,9 +81,6 @@
         <tr> There are no upcoming events for this program </tr>
       {% endif %}
       {% for event in events %}
-        {% if selectedTerm != g.current_term %}
-          <tr class="table-light showlist"></tr>
-        {% else %}
           {% if event.isPast %}
             <tr class="table-light showlist" style="display: none;" id = "currentTermTable">
           {% else %}
@@ -124,7 +121,6 @@
               </td>
             {% endif %}
           </tr>
-          {% endif %}
         {% endfor %}
      </tbody>
    </table>
