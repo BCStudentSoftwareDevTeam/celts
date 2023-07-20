@@ -26,7 +26,7 @@ $(document).ready(function() {
     }
   });
 });
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {  
   const emailSelectedButton = document.getElementById("emailSelectedButton");
   const selectAllOthersButton = document.getElementById("selectAllOthersButton");
   const instructorCheckboxes = document.querySelectorAll(".instructorCheckbox");
