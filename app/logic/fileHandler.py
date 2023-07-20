@@ -25,6 +25,7 @@ class FileHandler:
         except OSError as e:
             if e.errno != 17:
                 print(f'Fail to create directory: {e}')
+                raise e
         
 
     def getFileFullPath(self, newfilename = ''):
