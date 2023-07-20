@@ -12,11 +12,9 @@ from app.logic.serviceLearningCoursesData import parseUploadedFile, pushCoursePa
 def test_PushDataToDatabase():
     
     with mainDB.atomic() as transaction:
-        termDict = {
-            'Fall 2019' : {'CSC 226' : [['Ebenezer Ayisi', 'B00739736'], ['Finn Bledsoe', 'B00776544']]},
-            'Spring 2020' : {'HIS 236' : [['Alex Bryant', 'B00708826']]},
-            'Summer 2021' : {'CSC 450' : [['Tyler Parton', 'B00751360']]}
-                    }
+        termDict = {'Fall 2019' : {'CSC 226' : [['Ebenezer Ayisi', 'B00739736'], ['Finn Bledsoe', 'B00776544']]},
+                    'Spring 2020' : {'HIS 236' : [['Alex Bryant', 'B00708826']]},
+                    'Summer 2021' : {'CSC 450' : [['Tyler Parton', 'B00751360']]}}
 
         assert Term.get_or_none(Term.description =="Fall 2019") == None
         assert Term.get_or_none(Term.description == "Spring 2020") == None

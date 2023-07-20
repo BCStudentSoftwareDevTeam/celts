@@ -34,13 +34,12 @@ def getServiceLearningCoursesData(user):
         faculty = [f"{instructor.user.firstName} {instructor.user.lastName}" for instructor in otherInstructors]
 
 
-        courseDict[course.id] = {
-        "id":course.id,
-        "creator":f"{course.createdBy.firstName} {course.createdBy.lastName}",
-        "name":course.courseName,
-        "faculty": faculty,
-        "term": course.term,
-        "status": course.status.status}
+        courseDict[course.id] = {"id":course.id,
+                                 "creator":f"{course.createdBy.firstName} {course.createdBy.lastName}",
+                                 "name":course.courseName,
+                                 "faculty": faculty,
+                                 "term": course.term,
+                                 "status": course.status.status}
     return courseDict
 
 def withdrawProposal(courseID):
@@ -62,9 +61,9 @@ def withdrawProposal(courseID):
     courseName = course.courseName
     questions = CourseQuestion.select().where(CourseQuestion.course == course)
     notes = list(Note.select(Note.id)
-                .join(QuestionNote)
-                .where(QuestionNote.question.in_(questions))
-                .distinct())
+                     .join(QuestionNote)
+                     .where(QuestionNote.question.in_(questions))
+                     .distinct())
     course.delete_instance(recursive=True)
     for note in notes:
         note.delete_instance()
@@ -151,23 +150,21 @@ def pushCourseParticipantsToDatabase(termDict):
             termObj = addPastTerm(term)
 
         for course in termDict[term]:
-            courseObj = Course.get_or_create(courseAbbreviation = course, defaults = {
-                "CourseName" : "",
-                "sectionDesignation" : "",
-                "courseCredit" : "1",
-                "term" : termObj,
-                "status" : 3,
-                "createdBy" : g.current_user,
-                "serviceLearningDesignatedSections" : "",
-                "previouslyApprovedDescription" : ""
-                })
+            courseObj = Course.get_or_create(courseAbbreviation = course, 
+                        defaults = {"CourseName" : "",
+                                    "sectionDesignation" : "",
+                                    "courseCredit" : "1",
+                                    "term" : termObj,
+                                    "status" : 3,
+                                    "createdBy" : g.current_user,
+                                    "serviceLearningDesignatedSections" : "",
+                                    "previouslyApprovedDescription" : "" })
             
             for student, bNumber in termDict[term][course]:
                 userObj = User.get(User.bnumber == bNumber)
-                CourseParticipant.get_or_create(user = userObj, defaults = {
-                "course" : courseObj[0],
-                "hoursEarned" : 2
-                })
+                CourseParticipant.get_or_create(user = userObj, 
+                                                defaults = {"course" : courseObj[0],
+                                                            "hoursEarned" : 2})
 
 
 def sessionCleaner():

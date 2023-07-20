@@ -5,8 +5,8 @@ from app.models.term import Term
 
 def addNextTerm():
     newSemesterMap = {"Spring":"Summer",
-                    "Summer":"Fall",
-                    "Fall":"Spring"}
+                      "Summer":"Fall",
+                      "Fall":"Spring"}
     terms = list(Term.select().order_by(Term.termOrder))
     prevTerm = terms[-1]
     prevSemester, prevYear = prevTerm.description.split()
@@ -21,12 +21,11 @@ def addNextTerm():
 
     semester = newDescription.split()[0]
     summer= "Summer" in semester
-    newTerm = Term.create(
-            description=newDescription,
-            year=newYear,
-            academicYear=newAY,
-            isSummer= summer,
-            termOrder=Term.convertTerm(newDescription))
+    newTerm = Term.create(description=newDescription,
+                          year=newYear,
+                          academicYear=newAY,
+                          isSummer= summer,
+                          termOrder=Term.convertTerm(newDescription))
     newTerm.save()
 
     return newTerm
@@ -44,12 +43,11 @@ def addPastTerm(description):
     newDescription=f"{semester} {year}"
     orderTerm = Term.convertTerm(newDescription)
     
-    createdOldTerm = Term.create(
-            description= newDescription,
-            year=year,
-            academicYear=academicYear,
-            isSummer=isSummer,
-            termOrder=orderTerm)
+    createdOldTerm = Term.create(description= newDescription,
+                                 year=year,
+                                 academicYear=academicYear,
+                                 isSummer=isSummer,
+                                 termOrder=orderTerm)
     createdOldTerm.save() 
     return createdOldTerm
 
