@@ -19,14 +19,11 @@ $(document).ready(function(){
     });
     function toggleRows(isChecked) {
       var tableRows = $(".showlist");
-      console.log("list has been accessed")
       if (isChecked){
         tableRows.show();
-        console.log("table list is displayed")
       }
       else{
         tableRows.hide();
-        console.log("table list is hidden")
       }
     }
 })
