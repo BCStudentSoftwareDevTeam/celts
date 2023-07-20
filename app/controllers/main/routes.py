@@ -379,7 +379,7 @@ def getAllCourseInstructors(term=None):
     This function selects all the Instructors Name and the previous courses
     """
     if g.current_user.isCeltsAdmin:
-        setRedirectTarget("/manageServiceLearning")
+        setRedirectTarget(request.full_path)
         courseDict = getCourseDict()
 
         term = Term.get_or_none(Term.id == term) or g.current_term

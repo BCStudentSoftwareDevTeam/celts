@@ -90,6 +90,15 @@ def slcCreateCourse():
 
     return redirect(url_for('serviceLearning.slcEditProposal', courseID = course.id))
 
+
+@serviceLearning_bp.route('/serviceLearning/exit', methods=['GET'])
+def slcExitView():
+    if getRedirectTarget():
+        return redirect(getRedirectTarget(True))
+    else:
+        return redirect("/serviceLearning/courseManagement")
+
+
 @serviceLearning_bp.route('/serviceLearning/saveExit', methods=['POST'])
 @serviceLearning_bp.route('/serviceLearning/saveProposal', methods=['POST'])
 def slcSaveContinue():
@@ -104,7 +113,9 @@ def slcSaveContinue():
         course.save()
         flash(f"Proposal has been saved.", "success")
     if request.path == "/serviceLearning/saveExit":
-        return redirect('/serviceLearning/courseManagement')
+        if getRedirectTarget():
+            return redirect(getRedirectTarget(True))
+        return redirect("/serviceLearning/courseManagement")
     return redirect(f'/serviceLearning/editProposal/{request.form["courseID"]}?tab=2')
 
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])

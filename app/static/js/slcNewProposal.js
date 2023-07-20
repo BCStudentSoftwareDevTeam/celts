@@ -106,7 +106,7 @@ $(document).ready(function(e) {
   })
 
   $("#exitButton").on("click", function() {
-    window.location.replace("/serviceLearning/courseManagement")
+    window.location.replace('/serviceLearning/exit')
   })
 
   if(!readOnly()) {
