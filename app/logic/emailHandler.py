@@ -1,6 +1,6 @@
 from datetime import datetime
 from peewee import DoesNotExist, JOIN
-from flask_mail import Mail, Message
+from flask_mail import Mail, Message, Attachment
 import os
 
 from app import app
@@ -34,6 +34,7 @@ class EmailHandler:
         self.recipients = None
         self.sl_course_id = None
         self.attachment_path = app.config['files']['base_path'] + app.config['files']['email_attachment_path']
+        self.attachment_filepaths = []
         self.attachment_file = attachment_file
 
     def process_data(self):
@@ -163,6 +164,7 @@ class EmailHandler:
                 attachmentFullPath = self.getAttachmentFullPath(newfile = file)
                 if attachmentFullPath:
                     file.save(attachmentFullPath) # saves attachment in directory
+                    self.attachment_filepaths.append(attachmentFullPath)
 
         except AttributeError: # will pass if there is no attachment to save
             pass
@@ -196,21 +198,22 @@ class EmailHandler:
         defaultEmailInfo = {"senderName":"CELTS", "replyTo":"celts@berea.edu", "senderAddress":"celts@berea.edu"}  # Beans: We need to change the default senderName on release to be someone from Celts probably
         template_id, subject, body = self.build_email()
 
-
+        attachmentList = []
+        for i, filepath in enumerate(self.attachment_filepaths):
+            with app.open_resource(filepath[4:]) as file:
+                attachmentList.append(Attachment(filename=filepath.split('/')[-1], content_type=self.attachment_file[i].content_type, data=file.read()))
 
         try:
             with self.mail.connect() as conn:
                 for recipient in self.recipients:
                     full_name = f'{recipient.firstName} {recipient.lastName}'
                     email_body = self.replaceDynamicPlaceholders(body, name=full_name)
-                    print(self.sender_name)
-                    print("#"*1000)
                     conn.send(Message(
                         subject,
                         # [recipient.email],
                         [self.override_all_mail],
-                        email_body, #+ f"\n\n[Replies are sent to {self.reply_to}]"
-                        attachments = self.getAttachmentFullPath(), #needs to be modified later
+                        email_body,
+                        attachments = attachmentList,
                         reply_to = self.reply_to or defaultEmailInfo["replyTo"],
                         sender = (self.sender_name or defaultEmailInfo["senderName"], self.sender_address or defaultEmailInfo["senderAddress"])
                     ))
