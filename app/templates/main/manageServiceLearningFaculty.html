@@ -123,39 +123,43 @@
        {% endif %}
         </div>
       </div>
-      <div id="wrapper">
-          <h1 class="text-center pt-1 pb-4">Service-Learning Faculty</h1>
-          <div style="text-align:right; position:relative; top: 38px; z-index:1;" >
-            {% set instructorEmails = [] %}
-            {% for instructor in courseInstructors%}
-              {{ instructorEmails.append(instructor.email) or "" }}
-            {% endfor %}
-            <div>
-              <a  class="btn btn-primary" href="mailto:{{(';'.join(instructorEmails))}}?subject=Renew Course Proposal" target="_blank"> Email All </a>
-            </div>
-          </div>
-        <div class ="container">
-          <a class="skipContent" href="#backButton" tabindex="1" style="top:8%">Click to Skip</a>
-          <div class="contributors" align="center">
-        <table class="table table-striped" id="SLCProposalTable">
+    <div id="wrapper">
+      <h1 class="text-center pt-1 pb-4">Service-Learning Faculty</h1>
+      <div style="text-align:right; position:relative; top: 38px; z-index:1;">
+        {% set instructorEmails = [] %}
+        {% for instructor in courseInstructors %}
+          {{ instructorEmails.append(instructor.email) or "" }}
+        {% endfor %}
+        <div>
+          <button class="btn btn-primary" id="emailSelectedButton">Email Selected</button>
+          <button class="btn btn-primary" id="selectAllOthersButton">Select All</button>
+        </div>
+      </div>
+      <div class="container">
+        <a class="skipContent" href="#backButton" tabindex="1" style="top:8%">Click to Skip</a>
+        <div class="contributors" align="center">
+          <table class="table table-striped" id="SLCProposalTable">
             <thead>
               <tr class="header">
-                <th scope = "col">Name</th>
-                <th scope = "col">Prev Classes</th>
+                <th scope="col">Name</th>
+                <th scope="col">Prev Classes</th>
               </tr>
             </thead>
-          <tbody id = "facultyTable">
-          {% for instructor in courseInstructors%}
+            <tbody id="facultyTable">
+              {% for instructor in courseInstructors %}
               <tr>
-                <td><a href="/serviceLearning/courseManagement/{{instructor.username}}"> {{instructor.firstName }} {{instructor.lastName}}</a></td>
-                <td>{{(', '.join(courseInstructors[instructor]))}}</td>
+                <td>
+                  <input type="checkbox" class="instructorCheckbox" data-email="{{ instructor.email }}">
+                  <a href="/serviceLearning/courseManagement/{{ instructor.username }}">{{ instructor.firstName }} {{ instructor.lastName }}</a>
+                </td>
+                <td>{{ (', '.join(courseInstructors[instructor])) }}</td>
               </tr>
-          {% endfor %}
-          </tbody>
-        </table>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
-</div>
 <div id="review-modal"></div>
 {% endblock %}

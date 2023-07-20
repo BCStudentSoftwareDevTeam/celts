@@ -26,6 +26,30 @@ $(document).ready(function() {
     }
   });
 });
+document.addEventListener("DOMContentLoaded", function () {
+  const emailSelectedButton = document.getElementById("emailSelectedButton");
+  const selectAllOthersButton = document.getElementById("selectAllOthersButton");
+  const instructorCheckboxes = document.querySelectorAll(".instructorCheckbox");
+
+  emailSelectedButton.addEventListener("click", function () {
+    const selectedEmails = Array.from(instructorCheckboxes)
+      .filter((checkbox) => checkbox.checked)
+      .map((checkbox) => checkbox.getAttribute("data-email"))
+      .join(";");
+
+    if (selectedEmails) {
+      window.location.href = `mailto:${selectedEmails}?subject=Renew Course Proposal`;
+    } else {
+      alert("Please select at least one instructor to email.");
+    }
+  });
+
+  selectAllOthersButton.addEventListener("click", function () {
+    instructorCheckboxes.forEach((checkbox) => {
+      checkbox.checked = checkbox;
+    });
+  });
+});
 
 
 function resetAllSelections(){
