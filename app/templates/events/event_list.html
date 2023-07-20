@@ -28,7 +28,7 @@
       </div>
     </div>
   </div>
-  {% if selectedTerm == g.current_term and user.isAdmin %}
+  {% if user.isAdmin %}
     <div class="row px-4">
       <div class = "d-none d-sm-block col "></div>
       <div class="form-check form-switch mb-2 col-auto">
@@ -83,9 +83,10 @@
       {% for event in events %}
         {% if selectedTerm != g.current_term %}
           <tr class="table-light showlist"></tr>
+          <div>Table has been visited</div>
         {% else %}
           {% if event.isPast %}
-            <tr class="table-light showlist" style="display: none;" id = "currentTermTable">
+            <tr class="table-light showlist" style="display: none;">
           {% else %}
             <tr class="table-light showlist"></tr>
           {% endif %}
