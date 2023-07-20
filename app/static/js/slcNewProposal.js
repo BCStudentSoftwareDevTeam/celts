@@ -3,45 +3,12 @@ import searchUser from './searchUser.js'
 var currentTab = 0; // Current tab is set to be the first tab (0)
 
 $(document).ready(function(e) {
-  disableSyllabusUploadFile()
-  $(".removeAttachment").on("click", function(){
-
-    let fileId=  $(this).data("id")
-    let fileData = {fileId : fileId,
-                      courseId:this.id}
-    $.ajax({
-      type:"POST",
-      url: "/deleteCourseFile",
-      data: fileData, //get the startDate, endDate and name as a dictionary
-      success: function(){
-          $("#modalAttachment_"+fileId).remove()
-          $("#pageAttachment_"+fileId).remove()
-          currentTab = 1;
-
-      },
-      error: function(error){
-          msgFlash(error)
-      }
-      });
-  });
-
-
-  $("#attachmentObject").on('fileloaded', function() {
-    enableSyllabusUploadFile()
-  })
-
-  $("#syllabusUploadButton").on("click", function() {
-    saveCourseData('/serviceLearning/saveProposal', function() {})
-    $("#syllabusUploadModal").modal("toggle")
-  })
-
-  $("#attachmentObject").fileinput({
-    allowedFileExtensions:["pdf","jpg","png","gif", "csv", "docx", "jpg", "jpeg", "jfif"]
-  })
+  handleFileSelection("attachmentObject")
 
   // set up the current tab and button state
-  if(window.location.href.includes("upload")) {
-    currentTab = 1
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('tab')){
+    currentTab = Number(urlParams.get('tab'));
   }
 
   showTab(currentTab);
@@ -114,6 +81,7 @@ $(document).ready(function(e) {
   });
 
   $("#saveContinue").on("click", function() {
+    
       if(readOnly()) {
           let allTabs = $(".tab");
           displayCorrectTab(1)
@@ -124,30 +92,21 @@ $(document).ready(function(e) {
               // TODO nothing?
           }
       }
-
-      //this will save the change from the current page and move to the next page
-      let allTabs = $(".tab");
-      if (currentTab == (allTabs.length - 2)) {
-
-        saveCourseData("/serviceLearning/saveContinue", function() {
-            displayCorrectTab(1);
-        })
+      else{
+        if (!validateForm()) return;
+        $('#slcNewProposal').attr("action", "/serviceLearning/saveProposal")
+        $('#slcNewProposal').submit()
       }
-      else if (currentTab == (allTabs.length - 1)){
-        saveCourseData("/serviceLearning/saveExit", function() {
-            window.location.replace("/serviceLearning/courseManagement");
-        });
-    }
   });
 
-  $("#saveExit").on("click", function() {
-    saveCourseData("/serviceLearning/saveExit", function() {
-      window.location.replace("/serviceLearning/courseManagement");
-  });
+  $('#saveExit').on("click", function(){
+    if (!validateForm()) return;
+    $('#slcNewProposal').attr("action", "/serviceLearning/saveExit")
+    $('#slcNewProposal').submit()
   })
 
   $("#exitButton").on("click", function() {
-    window.location.replace("/serviceLearning/courseManagement")
+    window.location.replace('/serviceLearning/exit')
   })
 
   if(!readOnly()) {
@@ -161,7 +120,9 @@ $(document).ready(function(e) {
   // Add course instructor event handlers
   // -----------------------------------------
       $("#instructorTable").on("click", "#remove", function() {
-          $(this).closest("tr").remove();
+        let closestRow =  $(this).closest("tr")
+        $("#instructorTableNames input[value="+closestRow.data('username')+"]").remove()
+        closestRow.remove();
       });
       $("#courseInstructor").on('input', function() {
           searchUser("courseInstructor", createNewRow, true, null, "instructor");
@@ -228,7 +189,6 @@ function displayCorrectTab(navigateTab) {
 
   if (currentTab >= allTabs.length) {
       $("#nextButton").prop("disabled", true)
-      addInstructorsToForm()
       $("#slcNewProposal").submit();
       return false;
   }
@@ -274,8 +234,7 @@ function showTab(currentTab) {
         $("#submitAndApproveButton").show();
         $("#nextButton").text("Submit Proposal");
         $("#nextButton").show();
-        $("#saveContinue").text("Save and Exit");
-        $("#saveExit").hide()
+        $("#saveContinue").hide();
         $("#exitButton").hide()
         if(readOnly()) {
             $("#nextButton").text("Next");
@@ -309,12 +268,12 @@ function saveCourseData(url, successCallback) {
 }
 
 function validateForm() {
-    // This function ensures our form fields are valid
-    // Returns true if we are just viewing a form
-    // TODO: Generalize form validation to include textareas and selects
+  // This function ensures our form fields are valid
+  // Returns true if we are just viewing a form
+  // TODO: Generalize form validation to include textareas and selects
 
-    if (readOnly())
-        return true;
+  if (readOnly())
+      return true;
 
   let valid = true;
 
@@ -348,12 +307,6 @@ function validateForm() {
 // Instructor manipulation functions
 // -------------------------------------
 //
-function addInstructorsToForm() {
-    var form = $("#slcNewProposal");
-    $.each(getCourseInstructors(), function(idx,username) {
-        form.append($("<input type='hidden' name='instructor[]' value='" + username + "'>"));
-    });
-}
 
 function getRowUsername(element) {
     return $(element).closest("tr").data("username")
@@ -384,7 +337,6 @@ function createNewRow(selectedInstructor) {
   let editLink = newRow.find("td:eq(0) a")
   editLink.attr("id", "editButton-" + username);
 
-  newRow.attr("data-username", username)
   editLink.attr("data-username", username)
   newRow.prop("hidden", false);
   lastRow.after(newRow);
@@ -395,13 +347,13 @@ function createNewRow(selectedInstructor) {
   if (username){
     setupPhoneNumber(edit, input)
   }
+
+  $("#instructorTableNames").append('<input hidden name="instructor[]" value="' + username + '"/>')
 }
 
 function getCourseInstructors() {
   // get usernames out of the table rows into an array
-  return $("#instructorTable tr")
-                .map((i,el) => $(el).data('username')).get()
-                .filter(val => (val))
+  return $("#instructorTableNames input").map((i,el) => $(el).val())
 }
 
 function disableSyllabusUploadFile() {
