@@ -5,13 +5,11 @@ $(document).ready(function(){
     $("#rsvpBtn").click(function(){
         rsvpForEvent($("#rsvpBtn").val())
     })
-    $("#toggleButton").on("click", toggleButton)
-    localStorage.removeItem("toggleState");
-    var toggleButton = $("#toggleButton");
-    toggleButton.prop("checked", false);
+    var viewPastEventsToggle = $("#viewPastEventsToggle");
+    viewPastEventsToggle.prop("checked", false);
     toggleRows(false)
 
-    toggleButton.on("change", function(){
+    viewPastEventsToggle.on("change", function(){
       var isChecked = $(this).prop("checked");
       toggleRows(isChecked)
 
@@ -27,7 +25,6 @@ $(document).ready(function(){
       }
     }
 })
-
 
 function rsvpForEvent(eventID){
   rsvpInfo = {id: eventID,
