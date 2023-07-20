@@ -351,14 +351,10 @@ def addCourseFile():
     filePath = os.path.join(app.config["files"]["base_path"], fileData.filename)
     fileData.save(filePath)
     listOfParticipants = parseUploadedFile(filePath)
-    session['dataPreview'] = listOfParticipants[0]
-    session['listofBnumber_students'] = listOfParticipants[1]
-    session['errorFlag'] = listOfParticipants[2]
-    session['termDict']= listOfParticipants[3]
+    session['errorFlag'] = listOfParticipants[0]
+    session['termDict']= listOfParticipants[1]
     os.remove(filePath)
-    print('*************************************')
-    print(session['dataPreview'])
-    
+
     return redirect(url_for("main.getAllCourseInstructors", show_modal = True))
 
 @admin_bp.route("/deleteUploadedFile", methods= ["POST"])

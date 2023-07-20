@@ -3,9 +3,6 @@ import datetime
 import json
 from http import cookies
 
-
-
-from app.logic.serviceLearningCoursesData import parseUploadedFile
 from app import app
 from app.models.program import Program
 from app.models.event import Event
@@ -36,7 +33,7 @@ from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import unapprovedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
 from app.logic.certification import getCertRequirementsWithCompletion
-from app.logic.serviceLearningCoursesData import pushDataToDatabase, sessionCleaner
+from app.logic.serviceLearningCoursesData import pushCourseParticipantsToDatabase, sessionCleaner
 from app.logic.createLogs import createRsvpLog, createAdminLog
 
 @main_bp.route('/logout', methods=['GET'])
@@ -384,11 +381,9 @@ def getAllCourseInstructors(term=None):
     """
     show_modal = request.args.get('show_modal', default=False, type=bool)
     
-    if show_modal and 'dataPreview' in session:
-        dataHolder = session['dataPreview']
+    if show_modal and 'termDict' in session:
         termHolder = session['termDict']
     else:
-        dataHolder = []
         termHolder = []
 
     errorFlag = session.get('errorFlag')
@@ -404,9 +399,8 @@ def getAllCourseInstructors(term=None):
         terms = selectSurroundingTerms(g.current_term)
 
         if request.method =='POST' and "submitParticipant" in request.form:
-            pushDataToDatabase(session['dataPreview'],session['listofBnumber_students'])
+            pushCourseParticipantsToDatabase(session['termDict'])
             sessionCleaner()
-            dataHolder =[]
             flash('File saved successfully!', 'success')
             return redirect(url_for('main.getAllCourseInstructors'))
       
@@ -416,8 +410,7 @@ def getAllCourseInstructors(term=None):
                                 approvedCourses = approved,
                                 terms = terms,
                                 term = term,
-                                CourseStatus = CourseStatus,
-                                filePreview = dataHolder, 
+                                CourseStatus = CourseStatus, 
                                 errorFlag = errorFlag,
                                 termHolder= termHolder
                                 )

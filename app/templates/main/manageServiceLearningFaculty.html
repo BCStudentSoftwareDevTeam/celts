@@ -6,7 +6,7 @@
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
   <script type="module" src="/static/js/manageServiceLearningFaculty.js"></script>
   <script src="/static/js/slcManagement.js"></script>
-  {% if filePreview %}
+  {% if termHolder %}
   <script>
   $(document).ready(function(){
      $("#modalPreview").modal('show')
@@ -184,12 +184,12 @@
                 <div class="modal-body py-0">
                   <div>
                     <label for="addCourseParticipant" class="form-label"></label>
-                      {% for key in termHolder %}
-                      <div class="h5"><b>{{key}}:</b></div>
-                        {% for item in termHolder[key]%}
-                          <div {% if "ERROR:" in item %} class= "text-danger" {% endif %}><b>{{item}} </b></div>
-                          {% for element in termHolder[key][item] %}
-                          <div {% if "ERROR:" in element %} class= "text-danger" {% endif %}>{{ element }}</div>
+                      {% for term in termHolder %}
+                      <div class="h5" {% if "ERROR:" in term %} class= "text-danger" {% endif %}><b>{{term}}:</b></div>
+                        {% for course in termHolder[term]%}
+                          <div><b>{{course}}</b></div>
+                          {% for student in termHolder[term][course] %}
+                          <div {% if "ERROR:" in student[0] %} class= "text-danger" {% endif %}>{{ student[0] }}</div>
                           {% endfor %}
                         {% endfor %}
                         {% if not loop.last %}<hr>{% endif %}
@@ -200,7 +200,7 @@
                 </div>
                 <br>
                 <div class="modal-footer">
-                  {% if filePreview %}
+                  {% if termHolder %}
                   <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModal" id= "cancelModal">Cancel</button>
                   {% endif %}
                   <label for="previewCourseParticipant" class="form-label"></label>

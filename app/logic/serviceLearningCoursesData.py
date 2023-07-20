@@ -102,10 +102,6 @@ def parseUploadedFile(filePath):
     termReg = r"\b[a-zA-Z]{3,}\s\d{4}\b" # regular expression to check cells content
     courseReg = r"\b[A-Z]{2,4}\s\d{3}\b"
     bnumberReg = r"\b[B]\d{8}\b"
-
-    previewParticipants = []
-    individualCourse = []
-    listOfStudentsBnumber = []
     errorFlag = False
     termDictionary= {}
     previewTerm = ''
@@ -125,81 +121,55 @@ def parseUploadedFile(filePath):
             else:
                 previewTerm = f"ERROR: The term {cellVal} does not exist."
                 errorFlag = True
-
             termDictionary[previewTerm]= {}
 
         elif re.search(courseReg, str(cellVal)):
             previewCourse = ''
             hasCourse = Course.get_or_none(Course.courseAbbreviation == cellVal)
-
             previewCourse = cellVal
             if hasCourse and hasCourse.courseName:
                 previewCourse = hasCourse.courseName
 
-            individualCourse = []
-            individualCourse.append([previewCourse, cellVal])
-            individualCourse.append(previewTerm)
-            previewParticipants.append(individualCourse)
             termDictionary[previewTerm][previewCourse]=[]
            
         elif re.search(bnumberReg, str(cellVal)):      
-            
             hasUser = User.get_or_none(User.bnumber == cellVal)
-
             if hasUser:
-                individualStudent = {
-                    "bnumber": hasUser.bnumber,
-                    "student_name": hasUser.firstName + hasUser.lastName          
-                    }
-                listOfStudentsBnumber.append(individualStudent)
                 studentValue =f"{hasUser.firstName} {hasUser.lastName}"
-                individualCourse.append(studentValue)
-                
             else:
-                previewStudent = row[1].value
-                individualStudent = {
-                    "bnumber": f"A student with bnumber {cellVal} doesn't exist.",
-                    "student_name": f"{previewStudent} does not exist."         
-                    }
-                listOfStudentsBnumber.append(individualStudent)
+                previewStudent = row[1].value                
                 studentValue = f"ERROR: {previewStudent} does not exist."
-                individualCourse.append(studentValue)
                 errorFlag = True
-            termDictionary[previewTerm][previewCourse].append(studentValue)
+            termDictionary[previewTerm][previewCourse].append([studentValue, cellVal])
             
-    return previewParticipants, listOfStudentsBnumber, errorFlag, termDictionary
+    return errorFlag, termDictionary
 
-def pushDataToDatabase(listOfParticipants,listOfBnumbers):
-    courseGet = None
-    for courseInfo in listOfParticipants:
-        termOfCourse = courseInfo[1]
-        term = Term.get_or_none(description=termOfCourse) 
-        if not term :
-            term=addPastTerm(termOfCourse)
+def pushCourseParticipantsToDatabase(termDict):
+    for term in termDict:
+        termObj = Term.get_or_none(description = term)
+        if termObj == None:
+            termObj = addPastTerm(term)
 
-        courseNumber = courseInfo[0][1]
-        courseGet = Course.get_or_create(courseAbbreviation = courseNumber, defaults = {
+        for course in termDict[term]:
+            courseObj = Course.get_or_create(courseAbbreviation = course, defaults = {
                 "CourseName" : "",
                 "sectionDesignation" : "",
                 "courseCredit" : "1",
-                "term" : term,
+                "term" : termObj,
                 "status" : 3,
                 "createdBy" : g.current_user,
                 "serviceLearningDesignatedSections" : "",
                 "previouslyApprovedDescription" : ""
-                }
-            ) 
-        for studentDict in listOfBnumbers:
-            bnumberStudent = studentDict["bnumber"]
-
-            user = User.get(User.bnumber == bnumberStudent)
-            CourseParticipant.get_or_create(user = user, defaults = {
-                "course" : courseGet[0],
+                })
+            
+            for student, bNumber in termDict[term][course]:
+                userObj = User.get(User.bnumber == bNumber)
+                CourseParticipant.get_or_create(user = userObj, defaults = {
+                "course" : courseObj[0],
                 "hoursEarned" : 2
-            })
+                })
+
 
 def sessionCleaner():
-    session.pop('dataPreview')
-    session.pop('listofBnumber_students')
     session.pop('errorFlag')
     session.pop('termDict')
