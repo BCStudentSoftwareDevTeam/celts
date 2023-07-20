@@ -44,7 +44,6 @@
 
 <!-- #################### Attending Table #################### -->
 <form method="post">
-  <label class='d-none' id="eventLength">{{eventLength}}</label>
   <input class="form-control" id="eventID" name="event" value="{{event.id}}" type='hidden'>
   <div class="accordion" id="table-accordion">
     <div class="accordion-item">
@@ -330,8 +329,8 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        {% set modalTitle = "Add Volunteer to Waitlist" if rsvpFull else("Add Volunteers to RSVP" if rsvpNeeded else "Add Volunteers") %}
-        <h5 class="modal-title" id="exampleModalLabel">{{modalTitle}}</h5>
+        {% set modalTitle = "Add Volunteers to Waitlist" if rsvpFull else("Add Volunteers to RSVP" if rsvpNeeded else "Add Volunteers") %}
+        <h5 class="modal-title">{{modalTitle}}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">

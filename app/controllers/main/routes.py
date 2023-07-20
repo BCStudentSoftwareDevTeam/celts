@@ -45,7 +45,7 @@ def landingPage():
 
 
     eventsInTerm = list(Event.select().where(Event.term == g.current_term))
-    programsWithEventsList = [program.program for program in eventsInTerm]
+    programsWithEventsList = [event.program for event in eventsInTerm if not event.isPast]
 
     return render_template("/main/landingPage.html", managerProgramDict = managerProgramDict,
                                                      term = g.current_term,
@@ -379,7 +379,7 @@ def getAllCourseInstructors(term=None):
     This function selects all the Instructors Name and the previous courses
     """
     if g.current_user.isCeltsAdmin:
-        setRedirectTarget("/manageServiceLearning")
+        setRedirectTarget(request.full_path)
         courseDict = getCourseDict()
 
         term = Term.get_or_none(Term.id == term) or g.current_term
