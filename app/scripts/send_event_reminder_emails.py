@@ -22,13 +22,13 @@ def sendEventReminderEmail(events):
     for event in events:
         programId = event.program
         emailData = {"eventID":event.id,  # creates the email data
-                        "programID":programId,
-                        "term":currentTerm.id,
-                        "emailSender":"Reminder Automation",
-                        "templateIdentifier":"Reminder",
-                        "recipientsCategory":"Interested",
-                        "subject":templateSubject,
-                        "body":templateBody}
+                     "programID":programId,
+                     "term":currentTerm.id,
+                     "emailSender":"Reminder Automation",
+                     "templateIdentifier":"Reminder",
+                     "recipientsCategory":"Interested",
+                     "subject":templateSubject,
+                     "body":templateBody}
         sendEmail = EmailHandler(emailData, gethost())
         sendEmail.send_email()
         counter += 1

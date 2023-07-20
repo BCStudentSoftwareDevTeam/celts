@@ -265,12 +265,12 @@ class EmailHandler:
         event = Event.get_by_id(eventId)
 
         new_body = email_body.format(event_name=event.name,
-            location=event.location,
-            start_date=(event.startDate).strftime('%m/%d/%Y'),
-            end_date=(event.endDate).strftime('%m/%d/%Y'),
-            start_time=(event.timeStart).strftime('%I:%M'),
-            end_time=(event.timeEnd).strftime('%I:%M'),
-            event_link="{event_link}",
-            name="{name}",
-            relative_time=event.relativeTime)
+                                     location=event.location,
+                                     start_date=(event.startDate).strftime('%m/%d/%Y'),
+                                     end_date=(event.endDate).strftime('%m/%d/%Y'),
+                                     start_time=(event.timeStart).strftime('%I:%M'),
+                                     end_time=(event.timeEnd).strftime('%I:%M'),
+                                     event_link="{event_link}",
+                                     name="{name}",
+                                     relative_time=event.relativeTime)
         return new_body
