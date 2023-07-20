@@ -91,17 +91,11 @@
               {% endif %}
             {% endif %}
             {% if user.isCeltsAdmin or user.isProgramManagerFor(event.program)%}
-              {% if event.isPast %}
-                <td> <a href="/event/{{event.id}}/edit" class="link-secondary">{{event.name}}</a></td>
-              {% else %}
-                <td> <a href="/event/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
-              {% endif %}
+              {% set link_class = 'link-secondary' if event.isPast else 'link-primary' %}
+                <td><a href="/event/{{event.id}}/edit" class="{{link_class}}">{{event.name}}</a></td>
             {% else %}
-              {% if event.isPast %}
-                <td> <a href="/event/{{event.id}}/view" class="link-secondary">{{event.name}}</a></td>
-              {% else %}
-                <td> <a href="/event/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
-              {% endif %}
+              {% set link_class = 'link-secondary' if event.isPast else 'link-primary' %}
+              <td><a href="/event/{{event.id}}/view" class="{{link_class}}">{{event.name}}</a></td>
             {% endif %}
             <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
             <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
@@ -111,15 +105,11 @@
                 {% if event.isPast %}
                   {% set isPastEvent = "true" %}
                 {% endif %}
-                {% if event.isPast %}
-                  <button class="btn btn-secondary" onclick="showEmailModal({{event.id}}, 'Unknown', {{selectedTerm}}, {{isPastEvent}})">
-                    <span class="bi bi-envelope-fill"> Email</span>
-                  </button>
-                {% else %}
-                  <button class="btn btn-primary" onclick="showEmailModal({{event.id}}, 'Unknown', {{selectedTerm}}, {{isPastEvent}})">
-                    <span class="bi bi-envelope-fill"> Invite</span>
-                  </button>
-                {% endif %}
+                {% set btn_class = 'btn-secondary' if event.isPast else 'btn-primary' %}
+                {% set btn_text = 'Email' if event.isPast else 'Invite' %}
+                <button class="btn {{btn_class}}" onclick="showEmailModal({{event.id}}, 'Unknown', {{ selectedTerm }}, {{ isPastEvent }})">
+                  <span class="bi bi-envelope-fill"> {{btn_text}}</span>
+                </button>                
               </td>
             {% else %}
               <td>
@@ -134,8 +124,9 @@
           </tr>
       {% endfor %}
       {% if selectedTerm == g.current_term and events[-1].isPast %}          
-        <tr class>
-          <td colspan="4" class="p-3" > There are no upcoming events for this program </td>
+        <tr>
+          {% set colspan_value = 5 if type == 'bonner' else 6 %}
+          <td colspan="{{colspan_value}}" class="p-3">There are no upcoming events for this program</td>
         </tr>
       {% endif %}
      </tbody>
