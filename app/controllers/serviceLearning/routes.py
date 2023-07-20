@@ -90,12 +90,21 @@ def slcCreateCourse():
 
     return redirect(url_for('serviceLearning.slcEditProposal', courseID = course.id))
 
+
+@serviceLearning_bp.route('/serviceLearning/exit', methods=['GET'])
+def slcExitView():
+    if getRedirectTarget():
+        return redirect(getRedirectTarget(True))
+    else:
+        return redirect("/serviceLearning/courseManagement")
+
+
 @serviceLearning_bp.route('/serviceLearning/saveExit', methods=['POST'])
 @serviceLearning_bp.route('/serviceLearning/saveProposal', methods=['POST'])
 def slcSaveContinue():
     """Will update the the course proposal and return an empty string since ajax request needs a response
     Also, it updates the course status as 'in progress'"""
-    course = updateCourse(request.form.copy())
+    course = updateCourse(request.form.copy(), attachments=getFilesFromRequest(request))
 
     if not course:
         flash("Error saving changes", "danger")
@@ -103,7 +112,11 @@ def slcSaveContinue():
         course.status = CourseStatus.IN_PROGRESS
         course.save()
         flash(f"Proposal has been saved.", "success")
-    return ""
+    if request.path == "/serviceLearning/saveExit":
+        if getRedirectTarget():
+            return redirect(getRedirectTarget(True))
+        return redirect("/serviceLearning/courseManagement")
+    return redirect(f'/serviceLearning/editProposal/{request.form["courseID"]}?tab=2')
 
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcCreateOrEdit():
@@ -260,7 +273,7 @@ def uploadCourseFile():
 @serviceLearning_bp.route("/deleteCourseFile", methods=["POST"])
 def deleteCourseFile():
     fileData= request.form
-    courseFile=FileHandler(courseId=fileData["courseId"])
+    courseFile=FileHandler(courseId=fileData["databaseId"])
     courseFile.deleteFile(fileData["fileId"])
     return ""
 
