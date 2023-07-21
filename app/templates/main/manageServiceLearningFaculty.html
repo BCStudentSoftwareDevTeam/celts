@@ -192,7 +192,7 @@
                 <div>
                   <label for="addCourseParticipants" class="form-label"></label>
                   {% for term in courseParticipantPreview %}
-                    <div class="h3" {% if "ERROR:" in term %} class="text-danger" {% endif %}><b>{{term}}</b></div>
+                    <div class="h3 {% if 'ERROR:' in term %}text-danger{% endif %}"><b>{{term}}</b></div>
                     {% for course in courseParticipantPreview[term]%}
                       <div><b>{{course}}:</b></div>
                       {% for student in courseParticipantPreview[term][course] %}

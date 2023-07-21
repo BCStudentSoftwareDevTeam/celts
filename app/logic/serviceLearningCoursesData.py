@@ -116,6 +116,9 @@ def parseUploadedFile(filePath):
             hasTerm = Term.get_or_none(Term.description == cellVal)
             if hasTerm:
                 previewTerm = cellVal 
+            elif cellVal.split()[0] not in ["Summer", "Spring", "Fall", "May"]:
+                previewTerm = f"ERROR: {cellVal} is not valid."
+                errorFlag = True
             elif list(Term.select().order_by(Term.termOrder))[-1].termOrder > Term.convertDescriptionToTermOrder(cellVal):
                 previewTerm = cellVal
             else:
