@@ -20,6 +20,43 @@ from app.models.term import Term
 from app.logic.emailHandler import EmailHandler
 
 @pytest.mark.integration
+def test_placeholder_logic():
+    
+    assert True
+
+@pytest.mark.integration
+def test_getSenderInfo():
+
+    raw_form_data_list = []
+    expected_sender_info_list = []
+    
+    # Adds program info
+    raw_form_data_list.append({"emailSender": "Berea Buddies"})
+    expected_sender_info_list.append(("Berea Buddies", "bereabuddies@berea.edu", "bereabuddies@berea.edu"))
+
+    # Adds CELTS info
+    raw_form_data_list.append({"emailSender": "celts"})
+    expected_sender_info_list.append(("CELTS", "celts@berea.edu", "celts@berea.edu"))
+
+    # Adds user info
+    raw_form_data_list.append({"emailSender": "ramsayb2"})
+    expected_sender_info_list.append(("Brian Ramsay", "ramsayb2@berea.edu", "ramsayb2@berea.edu"))
+
+    # Adds program info
+    raw_form_data_list.append({"emailSender": "RONALDDDDDDDDDDDDDDDDD"})
+    expected_sender_info_list.append((None, None, None))
+
+    for form_data, expected_sender_info in zip(raw_form_data_list, expected_sender_info_list):
+        email = EmailHandler(form_data, "")
+
+        email.process_data()
+
+        assert email.getSenderInfo() == expected_sender_info
+        assert email.sender_name == expected_sender_info[0]
+        assert email.sender_address == expected_sender_info[1]
+        assert email.reply_to == expected_sender_info[2]
+
+@pytest.mark.integration
 def test_send_email_using_modal():
     with app.test_request_context():
 

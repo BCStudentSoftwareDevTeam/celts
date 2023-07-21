@@ -40,7 +40,9 @@ class EmailHandler:
     def process_data(self):
         """ Processes raw data and stores it in class variables to be used by other methods """
         # Email Template Data
-        self.template_identifier = self.raw_form_data['templateIdentifier']
+        # Template Identifier
+        if 'templateIdentifier' in self.raw_form_data:
+            self.template_identifier = self.raw_form_data['templateIdentifier']
 
         if 'subject' in self.raw_form_data:
             self.subject = self.raw_form_data['subject']
@@ -69,7 +71,6 @@ class EmailHandler:
         # Service-Learning Course
         if 'slCourseId' in self.raw_form_data:
             self.sl_course_id = self.raw_form_data['slCourseId']
-
 
     def getSenderInfo(self):
         programObject = Program.get_or_none(Program.programName == self.sender_username)

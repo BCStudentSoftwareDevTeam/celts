@@ -388,7 +388,7 @@ programs = [
         "programDescription": "The Berea Buddies program is dedicated to establishing long-term mentorships between Berea youth (Little Buddies) and Berea College students (Big Buddies). Volunteers serve children by offering them friendship and quality time. Big and Little Buddies meet each other every Monday or Tuesday during the academic year, except on school and national holidays, to enjoy structured activities around campus.",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "contactEmail": "",
+        "contactEmail": "bereabuddies@berea.edu",
         "contactName": ""
 
     },
@@ -399,7 +399,7 @@ programs = [
         "programDescription": "Adopt-a-Grandparent (AGP) is an outreach program for Berea elders. The program matches college student volunteers with residents of local long-term care centers. Volunteers visit with residents for at least an hour per week, and participate in special monthly programs.",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "contactEmail": "agp@berea.edu",
+        "contactEmail": "",
         "contactName": ""
     },
     {
