@@ -25,13 +25,11 @@ $(document).ready(function() {
       }
     }
   });
-});
-document.addEventListener("DOMContentLoaded", function () {  
-  const emailSelectedButton = document.getElementById("emailSelectedButton");
-  const selectAllOthersButton = document.getElementById("selectAllOthersButton");
-  const instructorCheckboxes = document.querySelectorAll(".instructorCheckbox");
+  const emailSelectedButton = $("#emailSelectedButton");
+  const selectAllOthersButton = $("#selectAllOthersButton");
+  const instructorCheckboxes = $(".instructorCheckbox");
 
-  emailSelectedButton.addEventListener("click", function () {
+  emailSelectedButton.on("click", function () {
     const selectedEmails = Array.from(instructorCheckboxes)
       .filter((checkbox) => checkbox.checked)
       .map((checkbox) => checkbox.getAttribute("data-email"))
@@ -44,13 +42,19 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  selectAllOthersButton.addEventListener("click", function () {
-    instructorCheckboxes.forEach((checkbox) => {
-      checkbox.checked = checkbox;
+  selectAllOthersButton.on("click", function () {
+    let uncheckedBoxFound = false;
+    for (let checkboxNum = 0; checkboxNum < instructorCheckboxes.length; checkboxNum++){
+      if (instructorCheckboxes[checkboxNum].checked == false){
+        uncheckedBoxFound = true;
+        break
+      }
+    }
+    instructorCheckboxes.each((i, checkbox) => {
+      checkbox.checked = uncheckedBoxFound;
     });
   });
 });
-
 
 function resetAllSelections(){
   $('.form-select').val('---');
