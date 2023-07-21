@@ -56,7 +56,7 @@ class EmailHandler:
 
         if 'emailSender' in self.raw_form_data:
             self.sender_username = self.raw_form_data['emailSender']
-            self.sender_name, self.sender_address, self.reply_to = self.getReplyInfo()
+            self.sender_name, self.sender_address, self.reply_to = self.getSenderInfo()
 
         if 'body' in self.raw_form_data:
             self.body = self.raw_form_data['body']
@@ -71,7 +71,7 @@ class EmailHandler:
             self.sl_course_id = self.raw_form_data['slCourseId']
 
 
-    def getReplyInfo(self):
+    def getSenderInfo(self):
         programObject = Program.get_or_none(Program.programName == self.sender_username)
         userObj = User.get_or_none(User.username == self.sender_username)
         if programObject:
