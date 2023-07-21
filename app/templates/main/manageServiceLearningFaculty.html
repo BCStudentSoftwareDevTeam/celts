@@ -6,7 +6,7 @@
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
   <script type="module" src="/static/js/manageServiceLearningFaculty.js"></script>
   <script src="/static/js/slcManagement.js"></script>
-  {% if termHolder %}
+  {% if courseParticipantPreview %}
     <script>
       $(document).ready(function () {
         $("#modalPreview").modal('show')
@@ -191,30 +191,35 @@
               <div class="modal-body py-0">
                 <div>
                   <label for="addCourseParticipants" class="form-label"></label>
-                  {% for term in termHolder %}
-                    <div class="h5" {% if "ERROR:" in term %} class="text-danger" {% endif %}><b>{{term}}:</b></div>
-                    {% for course in termHolder[term]%}
-                      <div><b>{{course}}</b></div>
-                      {% for student in termHolder[term][course] %}
-                        <div {% if "ERROR:" in student[0] %} class="text-danger" {% endif %}>{{ student[0] }}</div>
+                  {% for term in courseParticipantPreview %}
+                    <div class="h3" {% if "ERROR:" in term %} class="text-danger" {% endif %}><b>{{term}}</b></div>
+                    {% for course in courseParticipantPreview[term]%}
+                      <div><b>{{course}}:</b></div>
+                      {% for student in courseParticipantPreview[term][course] %}
+                        <div {% if "ERROR:" in student[0] %} class="text-danger" {% endif %}>&ensp;&ensp;-{{ student[0] }}</div>
                       {% endfor %}
                     {% endfor %}
                     {% if not loop.last %}
                       <hr>
                     {% endif %}
                   {% endfor%}
+                  {% if errorList %}
+                    <hr>                    
+                    {% for error in errorList %}
+                      <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                  {% endif %}
                 </div>
               </div>
               <br>
               <div class="modal-footer">
-                {% if termHolder %}
-                <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal"
-                  name="cancelModalPreview" id="cancelModalPreview">Cancel</button>
+                {% if courseParticipantPreview %}
+                  <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal"
+                    name="cancelModalPreview" id="cancelModalPreview">Cancel</button>
                 {% endif %}
                 <label for="previewCourseParticipant" class="form-label"></label>
                 {% set disableSave = "disabled" if errorFlag else "" %}
-                <button type="submit" name="submitParticipant" class="form-control btn btn-success position-relative"
-                  {{disableSave}} id="submitParticipant" style='width: 90px'>Save File</button>
+                <button type="submit" name="submitParticipant" class="form-control btn btn-success position-relative" {{disableSave}} id="submitParticipant" style='width: 90px'>Save File</button>
               </div>
         </form>
       </div>

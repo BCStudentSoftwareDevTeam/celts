@@ -11,7 +11,7 @@ from app.logic.serviceLearningCoursesData import parseUploadedFile, pushCoursePa
 def test_pushDataToDatabase():
     
     with mainDB.atomic() as transaction:
-        termDict = {'Fall 2019' : {'CSC 226' : [['Ebenezer Ayisi', 'B00739736'], ['Finn Bledsoe', 'B00776544']]},
+        courseParticipantPreview = {'Fall 2019' : {'CSC 226' : [['Ebenezer Ayisi', 'B00739736'], ['Finn Bledsoe', 'B00776544']]},
                     'Spring 2020' : {'HIS 236' : [['Alex Bryant', 'B00708826']]},
                     'Summer 2021' : {'CSC 450' : [['Tyler Parton', 'B00751360']]}}
 
@@ -27,7 +27,7 @@ def test_pushDataToDatabase():
 
         with app.app_context():
             g.current_user="ramsayb2" 
-            pushCourseParticipantsToDatabase(termDict)
+            pushCourseParticipantsToDatabase(courseParticipantPreview)
 
         assert len(list(CourseParticipant.select())) == 9
 
@@ -64,21 +64,21 @@ def test_parseUpload():
     result = parseUploadedFile(valid_file_path)
     assert isinstance(result, tuple)
     assert len(result) == 2
-    errorFlag, termDictionary = result
+    errorFlag, courseParticipantPreview = result
 
     assert not errorFlag
-    assert isinstance(termDictionary, dict)
-    assert len(termDictionary) == 4
+    assert isinstance(courseParticipantPreview, dict)
+    assert len(courseParticipantPreview) == 4
 
     invalid_file_path = 'tests/parseUpload_InvalidTest.xlsx'  
     result = parseUploadedFile(invalid_file_path)
     assert isinstance(result, tuple)
     assert len(result) == 2
-    errorFlag, termDictionary = result
+    errorFlag, courseParticipantPreview = result
 
     assert errorFlag == False
-    assert isinstance(termDictionary, dict)
-    assert len(termDictionary) == 4
+    assert isinstance(courseParticipantPreview, dict)
+    assert len(courseParticipantPreview) == 4
 
 
 

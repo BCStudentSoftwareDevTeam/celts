@@ -101,10 +101,12 @@ def parseUploadedFile(filePath):
     courseReg = r"\b[A-Z]{2,4}\s\d{3}\b"
     bnumberReg = r"\b[B]\d{8}\b"
     errorFlag = False
-    termDictionary= {}
+    courseParticipantPreview= {}
+    errorList = []
     previewTerm = ''
     previewCourse = ''
     studentValue= ''
+    cellRow = 1
 
     for row in excelSheet.iter_rows():
         cellVal = row[0].value
@@ -119,7 +121,7 @@ def parseUploadedFile(filePath):
             else:
                 previewTerm = f"ERROR: The term {cellVal} does not exist."
                 errorFlag = True
-            termDictionary[previewTerm]= {}
+            courseParticipantPreview[previewTerm]= {}
 
         elif regex.search(courseReg, str(cellVal)):
             previewCourse = ''
@@ -128,7 +130,7 @@ def parseUploadedFile(filePath):
             if hasCourse and hasCourse.courseName:
                 previewCourse = hasCourse.courseName
 
-            termDictionary[previewTerm][previewCourse]=[]
+            courseParticipantPreview[previewTerm][previewCourse]=[]
            
         elif regex.search(bnumberReg, str(cellVal)):      
             hasUser = User.get_or_none(User.bnumber == cellVal)
@@ -138,17 +140,24 @@ def parseUploadedFile(filePath):
                 previewStudent = row[1].value                
                 studentValue = f"ERROR: {previewStudent} does not exist."
                 errorFlag = True
-            termDictionary[previewTerm][previewCourse].append([studentValue, cellVal])
+            courseParticipantPreview[previewTerm][previewCourse].append([studentValue, cellVal])
             
-    return errorFlag, termDictionary
+        elif cellVal != '' and cellVal != None:
+            errorList.append(f'ERROR: {cellVal} in row {cellRow} of the Excel document is not a valid value.')
+            errorFlag = True
+            print(f"printing in  SLCD {errorFlag}")
+        
+        cellRow += 1
 
-def pushCourseParticipantsToDatabase(termDict):
-    for term in termDict:
+    return errorFlag, courseParticipantPreview, errorList
+
+def pushCourseParticipantsToDatabase(courseParticipantPreview):
+    for term in courseParticipantPreview:
         termObj = Term.get_or_none(description = term)
         if termObj == None:
             termObj = addPastTerm(term)
 
-        for course in termDict[term]:
+        for course in courseParticipantPreview[term]:
             courseObj = Course.get_or_create(courseAbbreviation = course, 
                         defaults = {"CourseName" : "",
                                     "sectionDesignation" : "",
@@ -159,7 +168,7 @@ def pushCourseParticipantsToDatabase(termDict):
                                     "serviceLearningDesignatedSections" : "",
                                     "previouslyApprovedDescription" : "" })
             
-            for student, bNumber in termDict[term][course]:
+            for student, bNumber in courseParticipantPreview[term][course]:
                 userObj = User.get(User.bnumber == bNumber)
                 CourseParticipant.get_or_create(user = userObj, 
                                                 defaults = {"course" : courseObj[0],
@@ -168,4 +177,5 @@ def pushCourseParticipantsToDatabase(termDict):
 
 def sessionCleaner():
     session.pop('errorFlag')
-    session.pop("termDict")
+    session.pop('courseParticipantPreview')
+    session.pop('errorList')

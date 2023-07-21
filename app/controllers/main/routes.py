@@ -379,15 +379,16 @@ def getAllCourseInstructors(term=None):
     """
     This function selects all the Instructors Name and the previous courses
     """
-    show_modal = request.args.get('show_modal', default=False, type=bool)
+    show_preview_modal = request.args.get('show_preview_modal', default=False, type=bool)
     
-    if show_modal and 'termDict' in session:
-        termHolder = session['termDict']
+    if show_preview_modal and 'courseParticipantPreview' in session:
+        courseParticipantPreview = session['courseParticipantPreview']
     else:
-        termHolder = []
+        courseParticipantPreview = []
 
     errorFlag = session.get('errorFlag')
-
+    errorList = session.get('errorList')
+    print(f'printing at route{errorFlag}')
 
     if g.current_user.isCeltsAdmin:
         setRedirectTarget(request.full_path)
@@ -399,7 +400,7 @@ def getAllCourseInstructors(term=None):
         terms = selectSurroundingTerms(g.current_term)
 
         if request.method =='POST' and "submitParticipant" in request.form:
-            pushCourseParticipantsToDatabase(session['termDict'])
+            pushCourseParticipantsToDatabase(session['courseParticipantPreview'])
             sessionCleaner()
             flash('File saved successfully!', 'success')
             return redirect(url_for('main.getAllCourseInstructors'))
@@ -412,7 +413,8 @@ def getAllCourseInstructors(term=None):
                                 term = term,
                                 CourseStatus = CourseStatus, 
                                 errorFlag = errorFlag,
-                                termHolder= termHolder
+                                courseParticipantPreview= courseParticipantPreview,
+                                errorList = errorList
                                 )
     else:
         abort(403) 
