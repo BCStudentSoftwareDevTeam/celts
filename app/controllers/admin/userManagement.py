@@ -1,4 +1,4 @@
-from flask import Flask, make_response, render_template,request, flash, g, json, abort, redirect, url_for
+from flask import render_template,request, flash, g, abort, redirect, url_for
 import re
 from app.controllers.admin import admin_bp
 from app.models.user import User
@@ -7,7 +7,6 @@ from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCe
 from app.logic.userManagement import changeProgramInfo
 from app.logic.utils import selectSurroundingTerms
 from app.logic.term import addNextTerm, changeCurrentTerm
-from app.models.term import Term
 
 @admin_bp.route('/admin/manageUsers', methods = ['POST'])
 def manageUsers():

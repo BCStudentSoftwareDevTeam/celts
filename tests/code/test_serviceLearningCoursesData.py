@@ -1,7 +1,6 @@
 import pytest
 
-from flask import Flask, g
-from datetime import datetime
+from flask import g
 from peewee import DoesNotExist
 
 from app import app
@@ -9,7 +8,6 @@ from app.models import mainDB
 from app.models.term import Term
 from app.models.user import User
 from app.models.course import Course
-from app.models.course import CourseStatus
 from app.models.courseParticipant import CourseParticipant
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseQuestion import CourseQuestion
