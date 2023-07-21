@@ -33,7 +33,7 @@ from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import unapprovedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
 from app.logic.certification import getCertRequirementsWithCompletion
-from app.logic.serviceLearningCoursesData import pushCourseParticipantsToDatabase, sessionCleaner
+from app.logic.serviceLearningCoursesData import pushCourseParticipantsToDatabase,courseParticipantPreviewSessionCleaner
 from app.logic.createLogs import createRsvpLog, createAdminLog
 
 @main_bp.route('/logout', methods=['GET'])
@@ -400,7 +400,7 @@ def getAllCourseInstructors(term=None):
 
         if request.method =='POST' and "submitParticipant" in request.form:
             pushCourseParticipantsToDatabase(session['courseParticipantPreview'])
-            sessionCleaner()
+            courseParticipantPreviewSessionCleaner()
             flash('File saved successfully!', 'success')
             return redirect(url_for('main.getAllCourseInstructors'))
       

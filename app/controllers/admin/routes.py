@@ -28,7 +28,7 @@ from app.logic.participants import getUserParticipatedTrainingEvents, checkUserR
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
-from app.logic.serviceLearningCoursesData import parseUploadedFile, sessionCleaner
+from app.logic.serviceLearningCoursesData import parseUploadedFile, courseParticipantPreviewSessionCleaner
 
 
 
@@ -344,19 +344,14 @@ def addCourseFile():
     fileData = request.files['addCourseParticipants']
     filePath = os.path.join(app.config["files"]["base_path"], fileData.filename)
     fileData.save(filePath)
-    listOfParticipants = parseUploadedFile(filePath)
-    session['errorFlag'] = listOfParticipants[0]
-    session['courseParticipantPreview']= listOfParticipants[1]
-    session['errorList'] = listOfParticipants[2]
+    (session['errorFlag'], session['courseParticipantPreview'], session['errorList'])  = parseUploadedFile(filePath)
     os.remove(filePath)
-
-    print(f"printing in  sessionGet route {session['errorFlag']}")
     return redirect(url_for("main.getAllCourseInstructors", show_preview_modal = True))
 
 @admin_bp.route("/deleteUploadedFile", methods= ["POST"])
 def deleteCourseFile():
     try:
-        sessionCleaner()
+        courseParticipantPreviewSessionCleaner()
     except KeyError:
         pass
 

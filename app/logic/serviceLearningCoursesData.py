@@ -173,11 +173,10 @@ def pushCourseParticipantsToDatabase(courseParticipantPreview):
             for student, bNumber in courseParticipantPreview[term][course]:
                 userObj = User.get(User.bnumber == bNumber)
                 CourseParticipant.get_or_create(user = userObj, 
-                                                defaults = {"course" : courseObj[0],
-                                                            "hoursEarned" : 2})
+                                                defaults = {"course" : courseObj[0]})
 
 
-def sessionCleaner():
+def courseParticipantPreviewSessionCleaner():
     session.pop('errorFlag')
     session.pop('courseParticipantPreview')
     session.pop('errorList')
