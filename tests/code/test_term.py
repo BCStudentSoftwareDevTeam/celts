@@ -1,11 +1,8 @@
 import pytest
-
 from app.models import mainDB
 from app.models.term import Term
 from app.logic.utils import selectSurroundingTerms
 from app.logic.term import addNextTerm, changeCurrentTerm, addPastTerm
-
-
 
 @pytest.mark.integration
 def test_selectSurroundingTerms():
@@ -52,7 +49,6 @@ def test_addNextTerm():
 
         addNextTerm()
 
-       
         terms = list(Term.select().order_by(Term.id))
         newTerm = terms[-1]
         assert newTerm.description == "Summer 2023"
@@ -62,7 +58,6 @@ def test_addNextTerm():
         assert not newTerm.isCurrentTerm
 
         transaction.rollback()
-
 
     with mainDB.atomic() as transaction:
         testTerm = Term.create(description="Fall 2029",year=2029, academicYear= "2029-2030", isSummer=False,isCurrentTerm=False, termOrder = Term.convertDescriptionToTermOrder("Fall 2029"))
@@ -76,7 +71,6 @@ def test_addNextTerm():
         assert not newTerm.isCurrentTerm
 
         transaction.rollback()
-
 
     with mainDB.atomic() as transaction:
         testTerm = Term.create(description="Spring 2024",year=2022, academicYear= "2023-2024", isSummer=False,isCurrentTerm=False, termOrder = Term.convertDescriptionToTermOrder("Spring 2024") )

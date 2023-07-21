@@ -5,7 +5,6 @@ from app.models import mainDB
 from app.models.term import Term 
 from app.models.course import Course
 from app.models.courseParticipant import CourseParticipant
-from app.models.user import User
 from app.logic.serviceLearningCoursesData import parseUploadedFile, pushCourseParticipantsToDatabase
 
 @pytest.mark.integration

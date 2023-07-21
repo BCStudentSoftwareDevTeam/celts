@@ -12,9 +12,8 @@ from app.models.term import Term
 from app.models import DoesNotExist
 from app.logic.createLogs import createAdminLog
 from app.logic.fileHandler import FileHandler
-from flask import flash, abort, jsonify, session, send_file, g
+from flask import session, g
 import re as regex
-import os
 from openpyxl import load_workbook
 from app.logic.term import addPastTerm
 

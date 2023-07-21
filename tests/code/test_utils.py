@@ -1,5 +1,4 @@
 import pytest
-
 from app.models import mainDB
 from app.models.term import Term
 
