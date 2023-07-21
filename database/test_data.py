@@ -399,7 +399,7 @@ programs = [
         "programDescription": "Adopt-a-Grandparent (AGP) is an outreach program for Berea elders. The program matches college student volunteers with residents of local long-term care centers. Volunteers visit with residents for at least an hour per week, and participate in special monthly programs.",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "contactEmail": "",
+        "contactEmail": "agp@berea.edu",
         "contactName": ""
     },
     {
