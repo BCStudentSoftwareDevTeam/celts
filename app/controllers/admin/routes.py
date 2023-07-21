@@ -1,9 +1,9 @@
-from flask import request, render_template, url_for, g, Flask, redirect
+from flask import request, render_template, url_for, g, redirect
 from flask import flash, abort, jsonify, session, send_file
 from peewee import DoesNotExist, fn, IntegrityError
-from playhouse.shortcuts import model_to_dict, dict_to_model
+from playhouse.shortcuts import model_to_dict
 import json
-from datetime import datetime, date
+from datetime import datetime
 import os
 
 from app import app
@@ -18,19 +18,13 @@ from app.models.bonnerCohort import BonnerCohort
 from app.models.certification import Certification
 from app.models.user import User
 from app.models.eventViews import EventView
-from app.models.term import Term
-from app.models.course import Course
-from app.models.courseStatus import CourseStatus
-from app.models.courseParticipant import CourseParticipant
 
-from app.controllers.main.routes import getAllCourseInstructors
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createAdminLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
-from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm
-from app.logic.participants import getEventParticipants, getUserParticipatedTrainingEvents, checkUserRsvp, checkUserVolunteer
+from app.logic.participants import getUserParticipatedTrainingEvents, checkUserRsvp
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
