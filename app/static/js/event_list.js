@@ -6,15 +6,27 @@ $(document).ready(function(){
         rsvpForEvent($("#rsvpBtn").val())
     })
     var viewPastEventsToggle = $("#viewPastEventsToggle");
+  
+
     viewPastEventsToggle.prop("checked", false);
-    toggleRows(false)
+    toggleRows(false);  
+
+    // data-isPastTerm="{{(selectedTerm != g.current_term)}}"
+    // isPastTerm = viewPastEventsToggle.data("ispastterm");
+
+    viewPastEventsToggle.prop("checked", g_isPastTerm);
+    if (g_isPastTerm){
+      toggleRows(true)
+    }
+      
 
     viewPastEventsToggle.on("change", function(){
       var isChecked = $(this).prop("checked");
-      toggleRows(isChecked)
+      toggleRows(isChecked);
 
       localStorage.setItem("toggleState", isChecked ? "checked" : "unchecked")
     });
+
     function toggleRows(isChecked) {
       var tableRows = $(".showlist");
       if (isChecked){

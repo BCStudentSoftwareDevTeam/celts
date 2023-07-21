@@ -177,4 +177,7 @@
   </div>
 </div>
 {% include 'emailModal.html' %}
+<script>
+  var g_isPastTerm = {{"true" if (selectedTerm != g.current_term) else "false" }};
+</script>
 {% endblock %}
