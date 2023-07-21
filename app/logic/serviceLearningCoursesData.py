@@ -145,7 +145,6 @@ def parseUploadedFile(filePath):
         elif cellVal != '' and cellVal != None:
             errorList.append(f'ERROR: {cellVal} in row {cellRow} of the Excel document is not a valid value.')
             errorFlag = True
-            print(f"printing in  SLCD {errorFlag}")
         
         cellRow += 1
 

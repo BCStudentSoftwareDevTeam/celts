@@ -388,7 +388,6 @@ def getAllCourseInstructors(term=None):
 
     errorFlag = session.get('errorFlag')
     errorList = session.get('errorList')
-    print(f'printing at route{errorFlag}')
 
     if g.current_user.isCeltsAdmin:
         setRedirectTarget(request.full_path)

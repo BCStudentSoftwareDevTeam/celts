@@ -63,20 +63,22 @@ def test_parseUpload():
     valid_file_path = 'tests/parseUpload_ValidTest.xlsx'  
     result = parseUploadedFile(valid_file_path)
     assert isinstance(result, tuple)
-    assert len(result) == 2
-    errorFlag, courseParticipantPreview = result
+    assert len(result) == 3
+    errorFlag, courseParticipantPreview, errorList = result
 
     assert not errorFlag
+    assert not errorList
     assert isinstance(courseParticipantPreview, dict)
     assert len(courseParticipantPreview) == 4
 
     invalid_file_path = 'tests/parseUpload_InvalidTest.xlsx'  
     result = parseUploadedFile(invalid_file_path)
     assert isinstance(result, tuple)
-    assert len(result) == 2
-    errorFlag, courseParticipantPreview = result
+    assert len(result) == 3
+    errorFlag, courseParticipantPreview, errorList = result
 
-    assert errorFlag == False
+    assert errorFlag
+    assert errorList
     assert isinstance(courseParticipantPreview, dict)
     assert len(courseParticipantPreview) == 4
 
