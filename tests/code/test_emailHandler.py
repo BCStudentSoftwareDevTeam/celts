@@ -20,10 +20,12 @@ from app.models.term import Term
 from app.logic.emailHandler import EmailHandler
 
 @pytest.mark.integration
-def test_placeholder_logic():
-    
-    assert True
+def test_replaceStaticPlaceholders():
+    body = EmailHandler.replaceStaticPlaceholders(1, "location= {location}, start_date= {start_date}, end_date= {end_date}, start_time= {start_time}, end_time= {end_time}")
+    assert body == "location= Seabury Center, start_date= 10/12/2021, end_date= 06/12/2022, start_time= 06:00, end_time= 09:00"
 
+    body = EmailHandler.replaceStaticPlaceholders(2, "location= {location}, start_date= {start_date}, end_date= {end_date}, start_time= {start_time}, end_time= {end_time}")
+    assert body == "location= Berea Community School, start_date= 11/12/2021, end_date= 06/12/2022, start_time= 06:00, end_time= 09:00"
 @pytest.mark.integration
 def test_getSenderInfo():
 
