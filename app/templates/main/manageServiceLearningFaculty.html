@@ -182,7 +182,7 @@
       <!-- modal for Preview -->
       <div class="modal fade float-start col" id="modalPreview">
         <form method="POST" action="/manageServiceLearning" enctype="multipart/form-data">
-          <div class="modal-dialog custom-modal-size">
+          <div class="modal-dialog {% if errorList %} modal-lg {% endif %} custom-modal-size">
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title">List of Participants</h5>
@@ -206,7 +206,7 @@
                   {% if errorList %}
                     <hr>                    
                     {% for error in errorList %}
-                      <div class="text-danger">{{ error }}</div>
+                      <div class="text-danger" nowrap>{{ error }}</div>
                     {% endfor %}
                   {% endif %}
                 </div>
