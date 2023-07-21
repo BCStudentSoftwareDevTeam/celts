@@ -55,7 +55,7 @@ class Term(baseModel):
         semester,year = description.split()
         if semester == "Spring":
             return year + "-1"
-        elif semester == "Summer":
+        elif semester == "Summer" or "May":
             return year + "-2"
         elif semester ==  "Fall":
             return year + '-3'
