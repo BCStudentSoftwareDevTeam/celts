@@ -66,7 +66,7 @@
   <table class="table">
     <thead>
       <tr>
-        {% if type != "bonner" %}
+        {% if type != "bonner" and type != "studentLed" %}
         <th scope="col">Program</th>
         {% endif %}
         <th scope="col">Event Name</th>
@@ -83,7 +83,7 @@
           {% else %}
             <tr class="">
           {% endif %}
-            {% if type != "bonner" %}
+            {% if type != "bonner" and type != "studentLed" %}
               {% if event.program%}
                 <td class="text-dark">{{event.program.programName}}</td>
               {% else %}
@@ -125,7 +125,7 @@
       {% endfor %}
       {% if selectedTerm == g.current_term and events[-1].isPast %}          
         <tr>
-          {% set colspan_value = 5 if type == 'bonner' else 6 %}
+          {% set colspan_value = 5 if type == 'bonner' or type == 'studentLed' else 6 %}
           <td colspan="{{colspan_value}}" class="p-3">There are no upcoming events for this program</td>
         </tr>
       {% endif %}
