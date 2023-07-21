@@ -162,7 +162,7 @@ def pushCourseParticipantsToDatabase(courseParticipantPreview):
                                     "sectionDesignation" : "",
                                     "courseCredit" : "1",
                                     "term" : termObj,
-                                    "status" : 3,
+                                    "status" : 4,
                                     "createdBy" : g.current_user,
                                     "serviceLearningDesignatedSections" : "",
                                     "previouslyApprovedDescription" : "" })
