@@ -223,7 +223,7 @@ $(document).ready(function(){
       }
     })
   });
-  // Popover functionalitie
+  // Popover functionality
     var requiredTraining = $(".trainingPopover");
     requiredTraining.popover({
        trigger: "hover",

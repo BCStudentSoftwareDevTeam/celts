@@ -39,7 +39,15 @@ $(document).ready(function() {
   $("table").each(initializeTable)
   
   
-
+  var requiredTraining = $(".trainingPopover");
+    requiredTraining.popover({
+       trigger: "hover",
+       sanitize: false,
+       html: true,
+       content: function() {
+            return $(this).attr('data-content');
+        }
+  });
 
   // Search functionalities from the volunteer table in the UI
     $("#trackVolunteersInput").on("keyup", function() {
