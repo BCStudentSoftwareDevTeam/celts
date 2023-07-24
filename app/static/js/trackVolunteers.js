@@ -18,6 +18,7 @@ $(document).ready(function() {
     let table =  $('#' + tableID).DataTable({
       "fnDrawCallback": function(oSettings) {
         let participantCount = $('#' + tableID).data('entry-count');
+        initializeTrainingPopovers();
         $("#" + tableID + " .removeVolunteer").on("click", removeVolunteer); // we need to rebind this as new rows become visible
         let displayedRows = $('#' + tableID + ' tr').length; // This is actually the number of displayed particpants plus one extra row for the column labels
         if (displayedRows > participantCount){
@@ -37,17 +38,7 @@ $(document).ready(function() {
     }
   }
   $("table").each(initializeTable)
-  
-  
-  var requiredTraining = $(".trainingPopover");
-    requiredTraining.popover({
-       trigger: "hover",
-       sanitize: false,
-       html: true,
-       content: function() {
-            return $(this).attr('data-content');
-        }
-  });
+
 
   // Search functionalities from the volunteer table in the UI
     $("#trackVolunteersInput").on("keyup", function() {
@@ -172,6 +163,18 @@ $(document).ready(function() {
       $("#addVolunteerModal input[type=checkbox]").prop('checked', true);
       updateSelectVolunteer();
   });
+
+  function initializeTrainingPopovers(){
+    $(".trainingPopover").popover({
+      trigger: "hover",
+      sanitize: false,
+      html: true,
+      content: function() {
+          return $(this).attr('data-content');
+      }
+    });
+  }
+  
 
   function handleBanned(username, eventId, index){
     $.ajax({
