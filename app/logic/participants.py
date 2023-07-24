@@ -144,16 +144,15 @@ def getUserParticipatedTrainingEvents(program, user, currentTerm):
                                .join(EventParticipant, JOIN.LEFT_OUTER).switch()
                                .join(Term)
                                .where((Event.isTraining | Event.isAllVolunteerTraining),
-                                      Event.program== program,
-                                      Event.term.academicYear == academicYear,
-                                      EventParticipant.user.is_null(True) | (EventParticipant.user == user)))
+                                      Event.program == program,
+                                      Event.term.academicYear == academicYear))
 
     UserParticipatedTrainingEvents = {}
     for training in programTrainings.objects():
         if training.startDate > date.today():
             isRsvpd = EventRsvp.select().where(EventRsvp.user_id == user.username, EventRsvp.event_id == training.id).exists()
             didParticipate = [None, training.startDate.strftime("%m/%d/%Y"), isRsvpd]
-        elif training.user:
+        elif training.user == user.username:
             didParticipate = True
         else:
             didParticipate = False
