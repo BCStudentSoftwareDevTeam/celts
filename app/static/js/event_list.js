@@ -11,15 +11,12 @@ $(document).ready(function(){
     viewPastEventsToggle.prop("checked", false);
     toggleRows(false);  
 
-    // data-isPastTerm="{{(selectedTerm != g.current_term)}}"
-    // isPastTerm = viewPastEventsToggle.data("ispastterm");
-
     viewPastEventsToggle.prop("checked", g_isPastTerm);
     if (g_isPastTerm){
       toggleRows(true)
+      viewPastEventsToggle.prop("disabled", true);
     }
       
-
     viewPastEventsToggle.on("change", function(){
       var isChecked = $(this).prop("checked");
       toggleRows(isChecked);
