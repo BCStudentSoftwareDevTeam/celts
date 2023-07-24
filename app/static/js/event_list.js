@@ -6,16 +6,9 @@ $(document).ready(function(){
         rsvpForEvent($("#rsvpBtn").val())
     })
     var viewPastEventsToggle = $("#viewPastEventsToggle");
-  
-
-    viewPastEventsToggle.prop("checked", false);
-    toggleRows(false);  
-
     viewPastEventsToggle.prop("checked", g_isPastTerm);
-    if (g_isPastTerm){
-      toggleRows(true)
-      viewPastEventsToggle.prop("disabled", true);
-    }
+    toggleRows(g_isPastTerm);
+    viewPastEventsToggle.prop("disabled", g_isPastTerm);    
       
     viewPastEventsToggle.on("change", function(){
       var isChecked = $(this).prop("checked");
@@ -28,12 +21,11 @@ $(document).ready(function(){
       var tableRows = $(".showlist");
       if (isChecked){
         tableRows.show();
-      }
-      else{
+      } else {
         tableRows.hide();
       }
     }
-})
+  });
 
 function rsvpForEvent(eventID){
   rsvpInfo = {id: eventID,
