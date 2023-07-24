@@ -64,10 +64,10 @@ def test_parseUpload():
     result = parseUploadedFile(valid_file_path)
     assert isinstance(result, tuple)
     assert len(result) == 3
-    errorFlag, courseParticipantPreview, errorList = result
+    errorFlag, courseParticipantPreview, previewCourseDisplayList = result
 
     assert not errorFlag
-    assert not errorList
+    assert previewCourseDisplayList
     assert isinstance(courseParticipantPreview, dict)
     assert len(courseParticipantPreview) == 4
 
@@ -75,10 +75,10 @@ def test_parseUpload():
     result = parseUploadedFile(invalid_file_path)
     assert isinstance(result, tuple)
     assert len(result) == 3
-    errorFlag, courseParticipantPreview, errorList = result
+    errorFlag, courseParticipantPreview, previewCourseDisplayList = result
 
     assert errorFlag
-    assert errorList
+    assert previewCourseDisplayList
     assert isinstance(courseParticipantPreview, dict)
     assert len(courseParticipantPreview) == 4
 

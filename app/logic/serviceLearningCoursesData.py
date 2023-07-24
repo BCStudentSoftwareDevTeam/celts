@@ -99,14 +99,16 @@ def parseUploadedFile(filePath):
     excelSheet = excelData.active
     errorFlag = False
     courseParticipantPreview= {}
-    errorList = []
     previewTerm = ''
     previewCourse = ''
     studentValue= ''
     cellRow = 1
+    previewCourseDisplayList = []
+    
 
     for row in excelSheet.iter_rows():
         cellVal = row[0].value
+        displayRow  = ''
         termReg = r"\b[a-zA-Z]{3,}\s\d{4}\b" # regular expression to check cells content
         courseReg = r"\b[A-Z]{2,4}\s\d{3}\b"
         bnumberReg = r"\b[B]\d{8}\b"
@@ -115,32 +117,38 @@ def parseUploadedFile(filePath):
             if cellVal.split()[0] not in ["Summer", "Spring", "Fall", "May"]:
                 previewTerm = f"ERROR: {cellVal} is not valid."
                 errorFlag = True 
+                displayRow = f"ERROR-{previewTerm}"
             else:
                 previousTerm = list(Term.select().order_by(Term.termOrder))[-1].termOrder > Term.convertDescriptionToTermOrder(cellVal)
                 hasTerm = Term.get_or_none(Term.description == cellVal)
                 if hasTerm or previousTerm:
                     previewTerm = cellVal 
+                    displayRow = f"TERM-{previewTerm}"
                 else:
                     previewTerm = f"ERROR: The term {cellVal} does not exist."
                     errorFlag = True
+                    displayRow = f"ERROR-{previewTerm}"
             courseParticipantPreview[previewTerm]= {}
 
         elif regex.search(courseReg, str(cellVal)):
             hasCourse = Course.get_or_none(Course.courseAbbreviation == cellVal)
-            previewCourse = cellVal
+            previewCourse = f'{cellVal} will be created'
             if hasCourse and hasCourse.courseName:
-                previewCourse = hasCourse.courseName
+                previewCourse = f"{cellVal} matched to the course {hasCourse.courseName}"
             if not courseParticipantPreview.get(previewTerm):
                 courseParticipantPreview[previewTerm]= {}
-            courseParticipantPreview[previewTerm][previewCourse]=[]
+            courseParticipantPreview[previewTerm][cellVal]=[]
+            displayRow = f"COURSE-{previewCourse}"
 
         elif regex.search(bnumberReg, str(cellVal)):      
             hasUser = User.get_or_none(User.bnumber == cellVal)
             if hasUser:
-                studentValue =f"{hasUser.firstName} {hasUser.lastName}"
+                studentValue = f"{hasUser.firstName} {hasUser.lastName}"
+                displayRow = f"STUDENT-{studentValue}"
             else:             
-                studentValue = f"ERROR: {row[1].value} does not exist."
+                studentValue = f'ERROR: {row[1].value} with B# "{row[0].value}" does not exist.'
                 errorFlag = True
+                displayRow = f"ERROR-{studentValue}"
             if not courseParticipantPreview.get(previewTerm):
                 courseParticipantPreview[previewTerm]= {}
             if not courseParticipantPreview[previewTerm].get(previewCourse):
@@ -148,12 +156,16 @@ def parseUploadedFile(filePath):
             courseParticipantPreview[previewTerm][previewCourse].append([studentValue, cellVal])
             
         elif cellVal != '' and cellVal != None:
-            errorList.append(f'ERROR: {cellVal} in row {cellRow} of the Excel document is not a valid value.')
+            errorText = (f'ERROR: {cellVal} in row {cellRow} of the Excel document is not a valid value.')
             errorFlag = True
+            displayRow = f"ERROR-{errorText}"
         
+        if displayRow : 
+            previewCourseDisplayList.append(displayRow)
+
         cellRow += 1
 
-    return errorFlag, courseParticipantPreview, errorList
+    return errorFlag, courseParticipantPreview, previewCourseDisplayList
 
 def saveCourseParticipantsToDatabase(courseParticipantPreview):
     for term in courseParticipantPreview:
@@ -179,4 +191,4 @@ def saveCourseParticipantsToDatabase(courseParticipantPreview):
 def courseParticipantPreviewSessionCleaner():
     session.pop('errorFlag')
     session.pop('courseParticipantPreview')
-    session.pop('errorList')
+    session.pop('previewCourseDisplayList')

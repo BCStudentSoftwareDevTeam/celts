@@ -387,7 +387,7 @@ def getAllCourseInstructors(term=None):
         courseParticipantPreview = []
 
     errorFlag = session.get('errorFlag')
-    errorList = session.get('errorList')
+    previewParticipantDisplayList = session.get('previewCourseDisplayList')
 
     if g.current_user.isCeltsAdmin:
         setRedirectTarget(request.full_path)
@@ -413,7 +413,7 @@ def getAllCourseInstructors(term=None):
                                 CourseStatus = CourseStatus, 
                                 previewParticipantsErrorFlag = errorFlag,
                                 courseParticipantPreview= courseParticipantPreview,
-                                previewParticipantsErrorList = errorList
+                                previewParticipantDisplayList = previewParticipantDisplayList
                                 )
     else:
         abort(403) 

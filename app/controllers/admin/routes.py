@@ -344,7 +344,7 @@ def addCourseFile():
     fileData = request.files['addCourseParticipants']
     filePath = os.path.join(app.config["files"]["base_path"], fileData.filename)
     fileData.save(filePath)
-    (session['errorFlag'], session['courseParticipantPreview'], session['errorList'])  = parseUploadedFile(filePath)
+    (session['errorFlag'], session['courseParticipantPreview'], session['previewCourseDisplayList']) = parseUploadedFile(filePath)
     os.remove(filePath)
     return redirect(url_for("main.getAllCourseInstructors", showPreviewModal = True))
 
