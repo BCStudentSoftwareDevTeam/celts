@@ -100,8 +100,8 @@ def parseUploadedFile(filePath):
     errorFlag = False
     courseParticipantPreview= {}
     errorList = []
-    previewTerm = 'ERROR:There was an error identifying a term'
-    previewCourse = 'ERROR:There was an error identifying a course'
+    previewTerm = ''
+    previewCourse = ''
     studentValue= ''
     cellRow = 1
 
@@ -112,16 +112,17 @@ def parseUploadedFile(filePath):
         bnumberReg = r"\b[B]\d{8}\b"
 
         if regex.search(termReg, str(cellVal)):
-            hasTerm = Term.get_or_none(Term.description == cellVal)
-            previousTerm = list(Term.select().order_by(Term.termOrder))[-1].termOrder > Term.convertDescriptionToTermOrder(cellVal)
-            if hasTerm or previousTerm:
-                previewTerm = cellVal 
-            elif cellVal.split()[0] not in ["Summer", "Spring", "Fall", "May"]:
+            if cellVal.split()[0] not in ["Summer", "Spring", "Fall", "May"]:
                 previewTerm = f"ERROR: {cellVal} is not valid."
-                errorFlag = True
+                errorFlag = True 
             else:
-                previewTerm = f"ERROR: The term {cellVal} does not exist."
-                errorFlag = True
+                previousTerm = list(Term.select().order_by(Term.termOrder))[-1].termOrder > Term.convertDescriptionToTermOrder(cellVal)
+                hasTerm = Term.get_or_none(Term.description == cellVal)
+                if hasTerm or previousTerm:
+                    previewTerm = cellVal 
+                else:
+                    previewTerm = f"ERROR: The term {cellVal} does not exist."
+                    errorFlag = True
             courseParticipantPreview[previewTerm]= {}
 
         elif regex.search(courseReg, str(cellVal)):
