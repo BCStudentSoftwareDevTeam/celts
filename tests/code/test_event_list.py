@@ -177,7 +177,6 @@ def test_training_events(training_events):
 
         notBonnerList = [testNotBonnerTraining]
         bonnerList = [testNotBonnerTraining, testBonnerTraining]
-
         assert notBonnerList == getTrainingEvents(testTerm, userFaculty)
         assert notBonnerList == getTrainingEvents(testTerm, userNotBonnerScholar)
         assert notBonnerList == getTrainingEvents(testTerm, userStaff)
@@ -196,7 +195,6 @@ def test_bonner_events(special_bonner):
 def test_getOtherEvents(special_otherEvents):
     otherEvent = special_otherEvents
     otherEvents = [Event.get_by_id(11), Event.get_by_id(7), otherEvent]
-    
     assert otherEvents == getOtherEvents(4)
 
 @pytest.mark.integration
