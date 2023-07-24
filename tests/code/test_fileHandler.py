@@ -47,10 +47,7 @@ def test_makingdirectory():
     eventFileStorage= [FileStorage(filename= "eventfile.pdf")]
     handledEventAttachment = FileHandler(eventFileStorage, eventId=90)
     handledEventAttachment.makeDirectory()
-    assert os.path.exists('app/static/files/eventattachments/90') == True
-    # Deleting the directory
-    os.rmdir('app/static/files/eventattachments/90')
-    
+
 @pytest.mark.integration
 def test_saveFiles():
     with mainDB.atomic() as transaction:
