@@ -125,7 +125,6 @@ def parseUploadedFile(filePath):
             courseParticipantPreview[previewTerm]= {}
 
         elif regex.search(courseReg, str(cellVal)):
-            previewCourse = ''
             hasCourse = Course.get_or_none(Course.courseAbbreviation == cellVal)
             previewCourse = cellVal
             if hasCourse and hasCourse.courseName:

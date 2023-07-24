@@ -10,8 +10,8 @@ class Course(baseModel):
     sectionDesignation = CharField()
     courseCredit = FloatField()
     term = ForeignKeyField(Term, null = True)
-    status = ForeignKeyField(CourseStatus, null = True) # column temporary allowed to be empty
-    createdBy = ForeignKeyField(User, null = True) # column temporary allowed to be empty
+    status = ForeignKeyField(CourseStatus)
+    createdBy = ForeignKeyField(User)
     serviceLearningDesignatedSections = TextField()
     previouslyApprovedDescription = TextField()
     isPermanentlyDesignated = BooleanField(default=False)
