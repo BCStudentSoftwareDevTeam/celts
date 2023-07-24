@@ -151,7 +151,8 @@ def getUserParticipatedTrainingEvents(program, user, currentTerm):
     UserParticipatedTrainingEvents = {}
     for training in programTrainings.objects():
         if training.startDate > date.today():
-            didParticipate = [None, training.startDate.strftime("%m/%d/%Y")]
+            isRsvpd = EventRsvp.select().where(EventRsvp.user_id == user.username, EventRsvp.event_id == training.id).exists()
+            didParticipate = [None, training.startDate.strftime("%m/%d/%Y"), isRsvpd]
         elif training.user:
             didParticipate = True
         else:

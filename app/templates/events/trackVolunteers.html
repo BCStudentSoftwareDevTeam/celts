@@ -133,29 +133,13 @@
                       </td>
                     {% else %} {# end hiding the hours and attended inputs #}
                       <td style="text-align:center">
-                        {% macro trainingListView() %}
-                        <!-- Beans, This macro needs a permanent home -->
-                          {% if completedTrainingInfo[participant.user.username] %}
-                            {% for trainings, participated in completedTrainingInfo[participant.user.username].items() %}
-                              {% if participated == 1 %}
-                                <p><b>{{trainings}}</b>: <br>Attended</p>
-                              {% elif participated == 0 %}
-                                <p><b>{{trainings}}</b>: <br>Not attended</p>
-                              {% elif not participated[0] %}
-                                <p><b>{{trainings}}</b>: <br>Takes place on {{participated[1]}}</p>
-                              {% endif%}
-                            {% endfor %}
-                          {% else %}
-                            <p>No trainings for this program.</p>
-                          {% endif %}
-                        {% endmacro %}
-                        <!-- This is the end of the macro that needs a home -->
+                        {% from 'trainingsHoverMacro.html' import trainingsHover %}
                         {% if participant.user.username not in trainedParticipantsList %}
                           <span class="bi bi-x-lg" aria-label="Did not complete all trainings."></span> &nbsp&nbsp
-                          <a class="trainingPopover" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
+                          <a class="trainingPopover" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingsHover(completedTrainingInfo[participant.user.username])}}">View</a>
                         {% else %}
                           <span class="bi bi-check-lg" aria-label="Completed all trainings."></span> &nbsp&nbsp
-                          <a class="trainingPopover" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
+                          <a class="trainingPopover" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingsHover(completedTrainingInfo[participant.user.username])}}">View</a>
                         {% endif %}
                       </td>
                     {% endif %}

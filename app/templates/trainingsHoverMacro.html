@@ -1,0 +1,19 @@
+{% macro trainingsHover(trainingData) %}
+    {% if trainingData %}
+    {% for trainings, participated in trainingData.items() %}
+        {% if participated == 1 %}
+        <p><b>{{trainings}}</b>: <br>Attended</p>
+        {% elif participated == 0 %}
+        <p><b>{{trainings}}</b>: <br>Not attended</p>
+        {% elif not participated[0] %}
+        {% if participated[2] %}
+            <p><b>{{trainings}}</b>: <br>Rsvp'd for training on {{participated[1]}}</p>
+        {% else %}
+        <p><b>{{trainings}}</b>: <br>Not Rsvp'd for training on {{participated[1]}}</p>
+        {% endif %}
+        {% endif%}
+    {% endfor %}
+    {% else %}
+    <p>No trainings for this program.</p>
+    {% endif %}
+{% endmacro %}
