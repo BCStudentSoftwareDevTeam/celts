@@ -129,7 +129,6 @@ def parseUploadedFile(filePath):
             previewCourse = cellVal
             if hasCourse and hasCourse.courseName:
                 previewCourse = hasCourse.courseName
-
             courseParticipantPreview[previewTerm][previewCourse]=[]
            
         elif regex.search(bnumberReg, str(cellVal)):      
