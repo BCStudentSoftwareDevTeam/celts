@@ -44,6 +44,10 @@ $("#modalCourseParticipant").on("click", function () {
   $("#modalSubmit").modal("toggle");
 });
 
+$('#closeAddCourseParticipants').on('click', function () {
+  $('#addCourseParticipants')[0].form.reset()
+  $('#previewButton').prop('disabled', true)
+})
 
 const fileInput= $("#addCourseParticipants")
 fileInput.on('change', handleFileSelect)
