@@ -1,3 +1,6 @@
+from flask import session, g
+import re as regex
+from openpyxl import load_workbook
 from app.models.course import Course
 from app.models.user import User
 from app.models.term import Term
@@ -12,9 +15,6 @@ from app.models.term import Term
 from app.models import DoesNotExist
 from app.logic.createLogs import createAdminLog
 from app.logic.fileHandler import FileHandler
-from flask import session, g
-import re as regex
-from openpyxl import load_workbook
 from app.logic.term import addPastTerm
 
 def getServiceLearningCoursesData(user):
@@ -135,9 +135,8 @@ def parseUploadedFile(filePath):
             hasUser = User.get_or_none(User.bnumber == cellVal)
             if hasUser:
                 studentValue =f"{hasUser.firstName} {hasUser.lastName}"
-            else:
-                previewStudent = row[1].value                
-                studentValue = f"ERROR: {previewStudent} does not exist."
+            else:             
+                studentValue = f"ERROR: {row[1].value} does not exist."
                 errorFlag = True
             courseParticipantPreview[previewTerm][previewCourse].append([studentValue, cellVal])
             
@@ -149,7 +148,7 @@ def parseUploadedFile(filePath):
 
     return errorFlag, courseParticipantPreview, errorList
 
-def pushCourseParticipantsToDatabase(courseParticipantPreview):
+def saveCourseParticipantsToDatabase(courseParticipantPreview):
     for term in courseParticipantPreview:
         termObj = Term.get_or_none(description = term) or addPastTerm(term)
 

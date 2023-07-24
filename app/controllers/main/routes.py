@@ -33,7 +33,7 @@ from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import unapprovedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
 from app.logic.certification import getCertRequirementsWithCompletion
-from app.logic.serviceLearningCoursesData import pushCourseParticipantsToDatabase,courseParticipantPreviewSessionCleaner
+from app.logic.serviceLearningCoursesData import saveCourseParticipantsToDatabase,courseParticipantPreviewSessionCleaner
 from app.logic.createLogs import createRsvpLog, createAdminLog
 
 @main_bp.route('/logout', methods=['GET'])
@@ -399,7 +399,7 @@ def getAllCourseInstructors(term=None):
         terms = selectSurroundingTerms(g.current_term)
 
         if request.method =='POST' and "submitParticipant" in request.form:
-            pushCourseParticipantsToDatabase(session['courseParticipantPreview'])
+            saveCourseParticipantsToDatabase(session['courseParticipantPreview'])
             courseParticipantPreviewSessionCleaner()
             flash('File saved successfully!', 'success')
             return redirect(url_for('main.getAllCourseInstructors'))
@@ -411,9 +411,9 @@ def getAllCourseInstructors(term=None):
                                 terms = terms,
                                 term = term,
                                 CourseStatus = CourseStatus, 
-                                errorFlag = errorFlag,
+                                previewParticipantsErrorFlag = errorFlag,
                                 courseParticipantPreview= courseParticipantPreview,
-                                errorList = errorList
+                                previewParticipantsErrorList = errorList
                                 )
     else:
         abort(403) 

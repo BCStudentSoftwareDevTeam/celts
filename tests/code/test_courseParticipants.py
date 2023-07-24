@@ -5,15 +5,15 @@ from app.models import mainDB
 from app.models.term import Term 
 from app.models.course import Course
 from app.models.courseParticipant import CourseParticipant
-from app.logic.serviceLearningCoursesData import parseUploadedFile, pushCourseParticipantsToDatabase
+from app.logic.serviceLearningCoursesData import parseUploadedFile, saveCourseParticipantsToDatabase
 
 @pytest.mark.integration
 def test_pushDataToDatabase():
     
     with mainDB.atomic() as transaction:
         courseParticipantPreview = {'Fall 2019' : {'CSC 226' : [['Ebenezer Ayisi', 'B00739736'], ['Finn Bledsoe', 'B00776544']]},
-                    'Spring 2020' : {'HIS 236' : [['Alex Bryant', 'B00708826']]},
-                    'Summer 2021' : {'CSC 450' : [['Tyler Parton', 'B00751360']]}}
+                                    'Spring 2020' : {'HIS 236' : [['Alex Bryant', 'B00708826']]},
+                                    'Summer 2021' : {'CSC 450' : [['Tyler Parton', 'B00751360']]}}
 
         assert Term.get_or_none(Term.description =="Fall 2019") == None
         assert Term.get_or_none(Term.description == "Spring 2020") == None
@@ -27,7 +27,7 @@ def test_pushDataToDatabase():
 
         with app.app_context():
             g.current_user="ramsayb2" 
-            pushCourseParticipantsToDatabase(courseParticipantPreview)
+            saveCourseParticipantsToDatabase(courseParticipantPreview)
 
         assert len(list(CourseParticipant.select())) == 9
 
@@ -60,7 +60,7 @@ def test_pushDataToDatabase():
 
 @pytest.mark.integration
 def test_parseUpload():
-    valid_file_path = 'tests/parseUpload_ValidTest.xlsx'  
+    valid_file_path = 'tests/files/parseUpload_ValidTest.xlsx'  
     result = parseUploadedFile(valid_file_path)
     assert isinstance(result, tuple)
     assert len(result) == 3
@@ -71,7 +71,7 @@ def test_parseUpload():
     assert isinstance(courseParticipantPreview, dict)
     assert len(courseParticipantPreview) == 4
 
-    invalid_file_path = 'tests/parseUpload_InvalidTest.xlsx'  
+    invalid_file_path = 'tests/files/parseUpload_InvalidTest.xlsx'  
     result = parseUploadedFile(invalid_file_path)
     assert isinstance(result, tuple)
     assert len(result) == 3

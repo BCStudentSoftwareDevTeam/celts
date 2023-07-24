@@ -182,7 +182,7 @@
       <!-- modal for Preview -->
       <div class="modal fade float-start col" id="modalPreview">
         <form method="POST" action="/manageServiceLearning" enctype="multipart/form-data">
-          <div class="modal-dialog {% if errorFlag %} modal-lg {% endif %} custom-modal-size">
+          <div class="modal-dialog {% if previewParticipantsErrorFlag %} modal-lg {% endif %} custom-modal-size">
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title">List of Participants</h5>
@@ -203,9 +203,9 @@
                       <hr>
                     {% endif %}
                   {% endfor%}
-                  {% if errorList %}
+                  {% if previewParticipantsErrorList %}
                     <hr>                    
-                    {% for error in errorList %}
+                    {% for error in previewParticipantsErrorList %}
                       <div class="text-danger" nowrap>{{ error }}</div>
                     {% endfor %}
                   {% endif %}
@@ -218,7 +218,7 @@
                     name="cancelModalPreview" id="cancelModalPreview">Cancel</button>
                 {% endif %}
                 <label for="previewCourseParticipant" class="form-label"></label>
-                {% set disableSave = "disabled" if errorFlag else "" %}
+                {% set disableSave = "disabled" if previewParticipantsErrorFlag else "" %}
                 <button type="submit" name="submitParticipant" class="form-control btn btn-success position-relative" {{disableSave}} id="submitParticipant" style='width: 90px'>Save File</button>
               </div>
         </form>
