@@ -72,7 +72,6 @@ def trackVolunteersPage(eventID):
         eventNonAttendedData = []
         
     program = event.program
-    print(program.programName)
 
     completedTrainingInfo = {}
     for eventParticipant in eventVolunteerData + eventNonAttendedData + eventWaitlistData:
@@ -96,7 +95,7 @@ def trackVolunteersPage(eventID):
                             recurringEventStartDate = recurringEventStartDate,
                             recurringVolunteers = recurringVolunteers,
                             bannedUsers = bannedUsers,
-                            trainedParticipantsList = trainedParticipantsList,  # This parameter should be merged with 
+                            trainedParticipantsList = trainedParticipantsList,
                             completedTrainingInfo = completedTrainingInfo,
                             currentRsvpAmount = currentRsvpAmount)
 
