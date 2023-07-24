@@ -100,8 +100,8 @@ def parseUploadedFile(filePath):
     errorFlag = False
     courseParticipantPreview= {}
     errorList = []
-    previewTerm = ''
-    previewCourse = ''
+    previewTerm = 'ERROR:There was an error identifying a term'
+    previewCourse = 'ERROR:There was an error identifying a course'
     studentValue= ''
     cellRow = 1
 
@@ -129,8 +129,13 @@ def parseUploadedFile(filePath):
             previewCourse = cellVal
             if hasCourse and hasCourse.courseName:
                 previewCourse = hasCourse.courseName
-            courseParticipantPreview[previewTerm][previewCourse]=[]
-           
+
+            try:
+                courseParticipantPreview[previewTerm][previewCourse]=[]
+            except KeyError:
+                courseParticipantPreview[previewTerm]= {}
+                courseParticipantPreview[previewTerm][previewCourse]=[]
+
         elif regex.search(bnumberReg, str(cellVal)):      
             hasUser = User.get_or_none(User.bnumber == cellVal)
             if hasUser:
@@ -138,7 +143,13 @@ def parseUploadedFile(filePath):
             else:             
                 studentValue = f"ERROR: {row[1].value} does not exist."
                 errorFlag = True
-            courseParticipantPreview[previewTerm][previewCourse].append([studentValue, cellVal])
+            
+            try:
+                courseParticipantPreview[previewTerm][previewCourse].append([studentValue, cellVal])
+            except KeyError:
+                courseParticipantPreview[previewTerm]= {}
+                courseParticipantPreview[previewTerm][previewCourse]=[]
+                courseParticipantPreview[previewTerm][previewCourse].append([studentValue, cellVal])
             
         elif cellVal != '' and cellVal != None:
             errorList.append(f'ERROR: {cellVal} in row {cellRow} of the Excel document is not a valid value.')
