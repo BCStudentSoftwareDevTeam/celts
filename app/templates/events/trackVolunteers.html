@@ -135,19 +135,15 @@
                       <td style="text-align:center">
                         {% macro trainingListView() %}
                         <!-- Beans, This macro needs a permanent home -->
-                          {% if trainingList %}
-                            {% for trainings, participated in trainingList.items() %}
-                              {% if g.current_user.isCeltsAdmin %}
-                                <li>{{trainings}}</li>
-                              {% else %}
-                                {% if participated == 1 %}
-                                  <p><b>{{trainings}}</b>: <br>Attended</p>
-                                {% elif participated == 0 %}
-                                  <p><b>{{trainings}}</b>: <br>Not attended</p>
-                                {% elif not participated[0] %}
-                                  <p><b>{{trainings}}</b>: <br>Takes place on {{participated[1]}}</p>
-                                {% endif%}
-                              {% endif %}
+                          {% if completedTrainingInfo[participant.user.username] %}
+                            {% for trainings, participated in completedTrainingInfo[participant.user.username].items() %}
+                              {% if participated == 1 %}
+                                <p><b>{{trainings}}</b>: <br>Attended</p>
+                              {% elif participated == 0 %}
+                                <p><b>{{trainings}}</b>: <br>Not attended</p>
+                              {% elif not participated[0] %}
+                                <p><b>{{trainings}}</b>: <br>Takes place on {{participated[1]}}</p>
+                              {% endif%}
                             {% endfor %}
                           {% else %}
                             <p>No trainings for this program.</p>

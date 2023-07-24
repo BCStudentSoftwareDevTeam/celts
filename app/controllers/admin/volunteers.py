@@ -72,7 +72,11 @@ def trackVolunteersPage(eventID):
         eventNonAttendedData = []
         
     program = event.program
-    UserParticipatedTrainingEvents = getUserParticipatedTrainingEvents(program, g.current_user, g.current_term)
+    print(program.programName)
+
+    completedTrainingInfo = {}
+    for eventParticipant in eventVolunteerData + eventNonAttendedData + eventWaitlistData:
+        completedTrainingInfo[eventParticipant.user_id] = getUserParticipatedTrainingEvents(program, eventParticipant.user, g.current_term)
 
     eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
@@ -93,7 +97,7 @@ def trackVolunteersPage(eventID):
                             recurringVolunteers = recurringVolunteers,
                             bannedUsers = bannedUsers,
                             trainedParticipantsList = trainedParticipantsList,  # This parameter should be merged with 
-                            trainingList= UserParticipatedTrainingEvents,
+                            completedTrainingInfo = completedTrainingInfo,
                             currentRsvpAmount = currentRsvpAmount)
 
 
