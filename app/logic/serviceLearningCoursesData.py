@@ -97,9 +97,6 @@ def renewProposal(courseID, term):
 def parseUploadedFile(filePath):
     excelData = load_workbook(filename=filePath)
     excelSheet = excelData.active
-    termReg = r"\b[a-zA-Z]{3,}\s\d{4}\b" # regular expression to check cells content
-    courseReg = r"\b[A-Z]{2,4}\s\d{3}\b"
-    bnumberReg = r"\b[B]\d{8}\b"
     errorFlag = False
     courseParticipantPreview= {}
     errorList = []
@@ -110,17 +107,18 @@ def parseUploadedFile(filePath):
 
     for row in excelSheet.iter_rows():
         cellVal = row[0].value
+        termReg = r"\b[a-zA-Z]{3,}\s\d{4}\b" # regular expression to check cells content
+        courseReg = r"\b[A-Z]{2,4}\s\d{3}\b"
+        bnumberReg = r"\b[B]\d{8}\b"
 
         if regex.search(termReg, str(cellVal)):
-            previewTerm = ''
             hasTerm = Term.get_or_none(Term.description == cellVal)
-            if hasTerm:
+            previousTerm = list(Term.select().order_by(Term.termOrder))[-1].termOrder > Term.convertDescriptionToTermOrder(cellVal)
+            if hasTerm or previousTerm:
                 previewTerm = cellVal 
             elif cellVal.split()[0] not in ["Summer", "Spring", "Fall", "May"]:
                 previewTerm = f"ERROR: {cellVal} is not valid."
                 errorFlag = True
-            elif list(Term.select().order_by(Term.termOrder))[-1].termOrder > Term.convertDescriptionToTermOrder(cellVal):
-                previewTerm = cellVal
             else:
                 previewTerm = f"ERROR: The term {cellVal} does not exist."
                 errorFlag = True
@@ -155,9 +153,7 @@ def parseUploadedFile(filePath):
 
 def pushCourseParticipantsToDatabase(courseParticipantPreview):
     for term in courseParticipantPreview:
-        termObj = Term.get_or_none(description = term)
-        if termObj == None:
-            termObj = addPastTerm(term)
+        termObj = Term.get_or_none(description = term) or addPastTerm(term)
 
         for course in courseParticipantPreview[term]:
             courseObj = Course.get_or_create(courseAbbreviation = course, 

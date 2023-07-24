@@ -379,9 +379,9 @@ def getAllCourseInstructors(term=None):
     """
     This function selects all the Instructors Name and the previous courses
     """
-    show_preview_modal = request.args.get('show_preview_modal', default=False, type=bool)
+    showPreviewModal = request.args.get('showPreviewModal', default=False, type=bool)
     
-    if show_preview_modal and 'courseParticipantPreview' in session:
+    if showPreviewModal and 'courseParticipantPreview' in session:
         courseParticipantPreview = session['courseParticipantPreview']
     else:
         courseParticipantPreview = []

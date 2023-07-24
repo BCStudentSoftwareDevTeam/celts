@@ -346,7 +346,7 @@ def addCourseFile():
     fileData.save(filePath)
     (session['errorFlag'], session['courseParticipantPreview'], session['errorList'])  = parseUploadedFile(filePath)
     os.remove(filePath)
-    return redirect(url_for("main.getAllCourseInstructors", show_preview_modal = True))
+    return redirect(url_for("main.getAllCourseInstructors", showPreviewModal = True))
 
 @admin_bp.route("/deleteUploadedFile", methods= ["POST"])
 def deleteCourseFile():
