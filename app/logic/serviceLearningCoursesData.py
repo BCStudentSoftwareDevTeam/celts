@@ -172,15 +172,16 @@ def saveCourseParticipantsToDatabase(courseParticipantPreview):
         termObj = Term.get_or_none(description = term) or addPastTerm(term)
 
         for course in courseParticipantPreview[term]:
-            courseObj = Course.get_or_create(courseAbbreviation = course, 
-                        defaults = {"CourseName" : "",
-                                    "sectionDesignation" : "",
-                                    "courseCredit" : "1",
-                                    "term" : termObj,
-                                    "status" : 4,
-                                    "createdBy" : g.current_user,
-                                    "serviceLearningDesignatedSections" : "",
-                                    "previouslyApprovedDescription" : "" })
+            courseObj = Course.get_or_create(courseAbbreviation = course,
+                                             term = termObj.id, 
+                                             defaults = {"CourseName" : "",
+                                                         "sectionDesignation" : "",
+                                                         "courseCredit" : "1",
+                                                         "term" : termObj,
+                                                         "status" : 4,
+                                                         "createdBy" : g.current_user,
+                                                         "serviceLearningDesignatedSections" : "",
+                                                         "previouslyApprovedDescription" : "" })
             
             for student, bNumber in courseParticipantPreview[term][course]:
                 userObj = User.get(User.bnumber == bNumber)
