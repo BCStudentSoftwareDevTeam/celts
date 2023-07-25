@@ -160,7 +160,7 @@ def parseUploadedFile(filePath):
             errorFlag = True
             displayRow = f"ERROR-{errorText}"
         
-        if displayRow : 
+        if displayRow: 
             previewCourseDisplayList.append(displayRow)
 
         cellRow += 1
@@ -186,7 +186,7 @@ def saveCourseParticipantsToDatabase(courseParticipantPreview):
             for student, bNumber in courseParticipantPreview[term][course]:
                 userObj = User.get(User.bnumber == bNumber)
                 CourseParticipant.get_or_create(user = userObj,
-                                                course_id = courseObj[0].id,
+                                                course = courseObj[0],
                                                 defaults = {"course" : courseObj[0]})
 
 
