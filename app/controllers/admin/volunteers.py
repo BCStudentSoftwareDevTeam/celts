@@ -9,7 +9,7 @@ from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours, addUserBackgroundCheck, setProgramManager
-from app.logic.participants import trainedParticipants, getEventParticipants, addPersonToEvent, getUserParticipatedTrainingEvents
+from app.logic.participants import trainedParticipants, getEventParticipants, addPersonToEvent, getParticipationStatusForTrainings
 from app.logic.events import getPreviousRecurringEventData, getEventRsvpCount
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
@@ -74,7 +74,7 @@ def trackVolunteersPage(eventID):
     program = event.program
 
     allReleventUsers = [participant.user for participant in eventVolunteerData + eventNonAttendedData + eventWaitlistData]
-    completedTrainingInfo = getUserParticipatedTrainingEvents(program, allReleventUsers, event.term)
+    completedTrainingInfo = getParticipationStatusForTrainings(program, allReleventUsers, event.term)
 
     eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
