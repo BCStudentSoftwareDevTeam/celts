@@ -173,7 +173,7 @@ def saveCourseParticipantsToDatabase(courseParticipantPreview):
 
         for course in courseParticipantPreview[term]:
             courseObj = Course.get_or_create(courseAbbreviation = course,
-                                             term = termObj.id, 
+                                             term = termObj, 
                                              defaults = {"CourseName" : "",
                                                          "sectionDesignation" : "",
                                                          "courseCredit" : "1",
