@@ -1,35 +1,34 @@
-{% set title = "Event Kiosk"%}
-{% extends "base.html"%}
+{% set title = "Event Kiosk" %}
+{% extends "base.html" %}
 {% block scripts %}
-  {{super()}}
+  {{ super() }}
+  <script src="https://unpkg.com/html5-qrcode"></script>
   <script src="/static/js/eventKiosk.js"></script>
-
 {% endblock %}
 
 {% block styles %}
-  {{super()}}
-
+  {{ super() }}
 {% endblock %}
 
 {% block app_content %}
 
   <div>
-    <h1 class="my-5" align="center">{{event.name}}</h1>
-    <h2 class="m-5" align="center">{{bNumberToUser}}</h2>
+    <h1 class="my-5" align="center">{{ event.name }}</h1>
+    <h2 class="m-5" align="center">{{ bNumberToUser }}</h2>
   </div>
   <div id="signinData" class="mx-auto px-5 mb-2">
     <div class="input-group">
       <audio id="scanSound" src="https://mingosounds.com/wp-content/uploads/2022/02/Barcode-scanner-beep-sound.mp3"></audio>
-      <input type="text" id="submitScannerData" name="bNumber" class="form-control input-lg" oninput="submitData()" style="font-size: 2rem;" placeholder="Enter scanner data" autofocus/>
-      <button type="button" class="btn btn-primary" id="cameraButton" onclick="triggerCamera()"><span class="bi bi-camera"></span></button>
+      <div id="qr-reader" style="width:500px"></div>
+      <div id="qr-reader-results"></div>
     </div>
   </div>
   <div class="form-check form-switch mx-5 position-absolute end-0">
     <input class="form-check-input mt-2" type="checkbox" id="fullscreenCheck" onclick="toggleFullscreen()">
     <label class="form-check-label" id="fullscreenLabel" for="fullscreenCheck">Toggle Full Screen</label>
-    <a class="btn btn-primary ms-3" href="/event/{{event.id}}/track_volunteers" role="button">Back</a>
+    <a class="btn btn-primary ms-3" href="/event/{{ event.id }}/track_volunteers" role="button">Back</a>
   </div>
 
-  <input type="hidden" value="{{eventid}}" id="eventid">
+  <input type="hidden" value="{{ eventid }}" id="eventid">
 
-  {% endblock %}
+{% endblock %}
