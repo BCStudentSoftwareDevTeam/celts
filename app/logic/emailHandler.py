@@ -54,7 +54,7 @@ class EmailHandler:
 
         # Program
         if self.event:
-            self.program = Program.get_or_none(Program.id == self.event.program_id)
+            self.program = self.event.program
 
         if 'emailSender' in self.raw_form_data:
             self.sender_username = self.raw_form_data['emailSender']
@@ -102,7 +102,7 @@ class EmailHandler:
             recipients = (User.select()
                 .join(Interest)
                 .join(Program, on=(Program.id==Interest.program))
-                .where(Interest.program_id == self.program))
+                .where(Interest.program == self.program))
         if recipients_category == "RSVP'd":
             recipients = (User.select()
                 .join(EventRsvp)
@@ -115,7 +115,7 @@ class EmailHandler:
             
             sameYearTerms = Term.select().join(Term2, on=(Term.academicYear == Term2.academicYear)).where(Term2.isCurrentTerm == True)
 
-            bannedUsers = ProgramBan.select(ProgramBan.user_id).where((ProgramBan.endDate > datetime.now()) | (ProgramBan.endDate is None), ProgramBan.program_id == (self.program.id if self.program else ProgramBan.program_id))
+            bannedUsers = ProgramBan.select(ProgramBan.user).where((ProgramBan.endDate > datetime.now()) | (ProgramBan.endDate is None), ProgramBan.program == (self.program if self.program else ProgramBan.program))
             allVolunteer = Event.select().where(Event.isAllVolunteerTraining == True, Event.term.in_(sameYearTerms))
             recipients = User.select().join(EventParticipant).where(User.username.not_in(bannedUsers), EventParticipant.event.in_(allVolunteer))
         return list(recipients)
