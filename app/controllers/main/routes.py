@@ -226,7 +226,7 @@ def unban(program_id, username):
         return "Successfully unbanned the volunteer"
 
     except Exception as e:
-        print("Error  while updating Unban", e)
+        print("Error while updating Unban", e)
         flash("Failed to unban the volunteer", "danger")
         return "Failed to unban the volunteer", 500
 

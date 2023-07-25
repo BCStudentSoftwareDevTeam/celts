@@ -159,7 +159,6 @@ def getUserParticipatedTrainingEvents(program, userList, currentTerm):
         except AttributeError:
             trainingData[training] = trainingData.get(training, [])
 
-    print(trainingData)
     # Dict; key: username; value: tuple consisting of (trainingObj, didAttend/didRsvp, optional date str if event is in future)
     result = {}  # Beans- rename this dict
     for user in userList:
