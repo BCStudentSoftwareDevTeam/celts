@@ -3,8 +3,8 @@ show_queries: False
 
 MAIL_ENABLED: True
 MAIL_SERVER: "mail.berea.edu"
-MAIL_PORT: 25
-MAIL_USERNAME: 'ssdt'
+MAIL_PORT: 587
+MAIL_USERNAME: 'ssdt@berea.edu'
 MAIL_PASSWORD: ''
 MAIL_USE_TLS: True
 MAIL_USE_SSL: False
