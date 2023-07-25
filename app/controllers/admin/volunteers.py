@@ -73,9 +73,8 @@ def trackVolunteersPage(eventID):
         
     program = event.program
 
-    completedTrainingInfo = {}
-    for eventParticipant in eventVolunteerData + eventNonAttendedData + eventWaitlistData:
-        completedTrainingInfo[eventParticipant.user_id] = getUserParticipatedTrainingEvents(program, eventParticipant.user, event.term)
+    allReleventUsers = [participant.user for participant in eventVolunteerData + eventNonAttendedData + eventWaitlistData]
+    completedTrainingInfo = getUserParticipatedTrainingEvents(program, allReleventUsers, event.term)
 
     eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
