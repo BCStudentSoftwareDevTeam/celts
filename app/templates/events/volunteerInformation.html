@@ -1,0 +1,126 @@
+{% set title = "Volunteer Information" %}
+{% set page_title = eventData.name %}
+{% set eventPast = event.isPast %}
+{% set tabName = 'dietary' %}
+{% extends "eventNav.html" %}
+
+
+{% block app_content %}
+
+{{super()}}
+
+<div id = "volunteerInformationcheck">
+  <div class="row">
+    <div class="col">
+      <input type="checkbox" name="selected_items" id="rsvpSelect">
+      <label for="rsvpSelect">RSVP Information</label><br>  
+    </div>
+    <div class="col"></div>
+    <div class="col">
+      <input type="checkbox" name="selected_items" id= "dietRestrictionSelect">
+      <label>Dietary Restriction</label><br>
+    </div>
+    <div class="col">
+      <input type="checkbox" name="selected_items" id="contactSelect">
+      <label>Phone Number</label><br>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <input type="checkbox" name="selected_items" id="waitlistSelect">
+      <label>Waitlist</label><br>
+    </div>
+    <div class="col"></div>
+    <div class="col">
+      <input type="checkbox" name="selected_items" id="emergencySelect">
+      <label>Emergency Contacts</label><br>
+    </div>
+    <div class="col">
+      <input type="checkbox" name="selected_items" id="emailSelect">
+      <label>Email</label><br>
+    </div>
+  </div>
+</div>
+
+
+{% if volunteerUser or waitlistUser %} 
+<div id = "show-rsvp" > 
+    <table class="table table-striped" style="font-size: 1.1em" id="volunteerInformationTable">
+      <thead>
+        <tr> 
+          <th>Name</th>
+          <th class="dietRestrictionSelect">Dietary Restriction</th>
+          <th class="contactSelect">Phone Number</th>
+          <th class="emailSelect">Email</th>
+          <th class="emergencySelect">Emergency Contact</th>
+        </tr>
+      </thead>
+      <tbody id="attendingTable">
+        {% for participant in volunteerUser %}  
+        <tr>
+          <td class="col-1" nowrap><b>{{participant.firstName}} {{participant.lastName}}</b></td>
+          <td class="col dietRestrictionSelect">{{participant.dietRestriction}}</td>
+          <td class="col contactSelect">{{participant.phoneNumber}}</td>
+          <td class="col emailSelect">{{participant.email}}</td>
+          <td class="col emergencySelect">PlaceHolder for Emergency Contacts</td>
+        </tr>
+        {% endfor %}
+        {% for participant in waitlistUser %}
+        {% endfor %}
+      </tbody>
+    </table>
+</div>
+<div id="show-waitlist">
+  {% for info in waitlistUser %}
+
+  {% endfor %}
+</div>
+{% endif %}
+
+
+
+{% if volunteerUser or (waitlistUser and event.isPast) %}
+  {% if event.isPast %}
+    <h3>Volunteer Dietary Restrictions</h3>
+  {% else %}
+    <h3>RSVP</h3>
+  {% endif %}
+  <table class="table table-striped" style="font-size: 1.1em" id="attendingDietaryRestrictionsTable">
+    <tbody id="attendingDietaryTable">
+      {% for participant in volunteerUser %}
+        <tr>
+          <td class="col-1" nowrap><b>{{participant.firstName}} {{participant.lastName}}</b></td>
+          <td class="col">{{participant.dietRestriction}}</td>
+          <td> 
+        </tr>
+      {% endfor %}
+      {% for participant in waitlistUser %}
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+
+{% if waitlistUser and not event.isPast %}
+  <br>
+  <h3>Waitlist</h3>
+  <table class="table table-striped" style="font-size: 1.1em" id="waitlistDietaryRestrictionsTable">
+    <tbody id="waitlistDietaryTable">
+      {% for participant in waitlistUser %}
+        <tr>
+          <td class="col-1" nowrap><b>{{participant.firstName}} {{participant.lastName}}</b></td>
+          <td class="col">{{participant.dietRestriction}}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+
+
+{% if event.isPast and not volunteerUser %}
+  <h3>Attendees had no dietary restrictions.</h3>
+{% else %}
+  {% if not volunteerUser and not waitlistUser %}
+    <h3>Volunteers have no dietary restrictions.</h3>
+  {% endif %}
+{% endif %}
+{% endblock %}

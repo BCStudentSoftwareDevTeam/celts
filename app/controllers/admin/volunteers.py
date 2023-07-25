@@ -26,6 +26,7 @@ def getVolunteers(query):
 
 @admin_bp.route('/event/<eventID>/track_volunteers', methods=['POST'])
 def updateVolunteerTable(eventID):
+    print("########################################################")
     try:
         event = Event.get_by_id(eventID)
     except DoesNotExist as e:
@@ -97,8 +98,8 @@ def trackVolunteersPage(eventID):
 
 
 
-@admin_bp.route('/event/<eventID>/dietary_restrictions', methods=['GET'])
-def dietaryRestrictionsPage(eventID):
+@admin_bp.route('/event/<eventID>/volunteer_information', methods=['GET'])
+def volunteerInformationPage(eventID):
     try:
         event = Event.get_by_id(eventID)
     except DoesNotExist as e:
@@ -114,15 +115,15 @@ def dietaryRestrictionsPage(eventID):
     participantsAndRsvp = (eventParticipantData + eventRsvpData)
 
     #get unique list of users for each category waitlist/notwaitlist
-    volunteerUser = list(set([obj.user for obj in participantsAndRsvp if not obj.rsvpWaitlist and obj.user.dietRestriction]))
-    waitlistUser = list(set([obj.user for obj in participantsAndRsvp if obj.rsvpWaitlist and obj.user.dietRestriction]))
+    volunteerUser = list(set([obj.user for obj in participantsAndRsvp if not obj.rsvpWaitlist]))
+    waitlistUser = list(set([obj.user for obj in participantsAndRsvp if obj.rsvpWaitlist]))
 
 
     eventData = model_to_dict(event, recurse=False)
     eventData["program"] = event.program
 
 
-    return render_template("/events/dietaryRestrictions.html",
+    return render_template("/events/volunteerInformation.html",
                             volunteerUser = volunteerUser,
                             waitlistUser = waitlistUser,
                             event = event,
