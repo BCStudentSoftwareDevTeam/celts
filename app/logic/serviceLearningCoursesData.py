@@ -185,7 +185,8 @@ def saveCourseParticipantsToDatabase(courseParticipantPreview):
             
             for student, bNumber in courseParticipantPreview[term][course]:
                 userObj = User.get(User.bnumber == bNumber)
-                CourseParticipant.get_or_create(user = userObj, 
+                CourseParticipant.get_or_create(user = userObj,
+                                                course_id = courseObj[0].id,
                                                 defaults = {"course" : courseObj[0]})
 
 
