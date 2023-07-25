@@ -43,11 +43,16 @@ $(document).ready(function() {
   });
 
   selectAllOthersButton.on("click", function () {
+    var myButton = document.getElementById('selectAllOthersButton');
     let uncheckedBoxFound = false;
     for (let checkboxNum = 0; checkboxNum < instructorCheckboxes.length; checkboxNum++){
       if (instructorCheckboxes[checkboxNum].checked == false){
+        myButton.innerText = "Unselect All"
         uncheckedBoxFound = true;
         break
+      }
+      else {
+        myButton.textContent = "Select All"
       }
     }
     instructorCheckboxes.each((i, checkbox) => {
