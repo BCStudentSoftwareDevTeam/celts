@@ -248,7 +248,7 @@ def eventDisplay(eventId):
 
         currentEventRsvpAmount = getEventRsvpCountsForTerm(g.current_term)
 
-        UserParticipatedTrainingEvents = getUserParticipatedTrainingEvents(eventData['program'], g.current_user, g.current_term)
+        UserParticipatedTrainingEvents = getUserParticipatedTrainingEvents(eventData['program'], [g.current_user], g.current_term)
         return render_template("eventView.html",
                                 eventData = eventData,
                                 event = event,

@@ -349,7 +349,7 @@ def test_getUserParticipatedTrainingEvents():
         # If the user has participated in every training, assert their participated status for that training == 1
         for training in listOfProgramTrainings:
             EventParticipant.create(user = User.get_by_id("ramsayb2"), event = training)
-        programTrainings = getUserParticipatedTrainingEvents(Program.get_by_id(2), User.get_by_id("ramsayb2"), currentTerm)
+        programTrainings = getUserParticipatedTrainingEvents(Program.get_by_id(2), [User.get_by_id("ramsayb2")], currentTerm)
         for training in programTrainings.keys():
             assert programTrainings[training] == 1
         transaction.rollback()
@@ -360,7 +360,7 @@ def test_getUserParticipatedTrainingEvents():
             if (counter % 2) == 0:
                 EventParticipant.create(user = User.get_by_id("ramsayb2"), event = training)
 
-        programTrainings = getUserParticipatedTrainingEvents(Program.get_by_id(2), User.get_by_id("ramsayb2"), currentTerm)
+        programTrainings = getUserParticipatedTrainingEvents(Program.get_by_id(2), [User.get_by_id("ramsayb2")], currentTerm)
         for counter, training in enumerate(programTrainings.keys()):
             if (counter % 2) == 0:
                 assert programTrainings[training] == 1
@@ -369,7 +369,7 @@ def test_getUserParticipatedTrainingEvents():
         transaction.rollback()
 
         # If the user has not participated in any trainings, assert their participated status for that training == 1
-        programTrainings = getUserParticipatedTrainingEvents(Program.get_by_id(2), User.get_by_id("ramsayb2"), currentTerm)
+        programTrainings = getUserParticipatedTrainingEvents(Program.get_by_id(2), [User.get_by_id("ramsayb2")], currentTerm)
         for training in programTrainings.keys():
             assert programTrainings[training] == 0
         transaction.rollback()
@@ -390,7 +390,7 @@ def test_getUserParticipatedTrainingEvents():
         # If the event has not occured yet, assert their participated status for that event == None
         allProgramTrainings = Event.select().where(Event.isTraining == 1, Event.program == Program.get_by_id(8))
         listOfProgramTrainings = [programTraining for programTraining in allProgramTrainings]
-        programTrainings = getUserParticipatedTrainingEvents(Program.get_by_id(8), User.get_by_id("ramsayb2"), currentTerm)
+        programTrainings = getUserParticipatedTrainingEvents(Program.get_by_id(8), [User.get_by_id("ramsayb2")], currentTerm)
         for training in programTrainings.keys():
             assert programTrainings[training][0] == None
             assert programTrainings[training][1] == datetime.strptime(testingEvent.startDate, "%Y-%m-%d").strftime("%m/%d/%Y")

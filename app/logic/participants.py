@@ -148,38 +148,24 @@ def getUserParticipatedTrainingEvents(program, userList, currentTerm):
                                       Event.program == program,
                                       Event.term.academicYear == academicYear))
 
+    print([training for training in programTrainings])
+
     # Create a dictionary where the trainings are the keys and values are a list of those who attended
     trainingData = {}
-    for training in programTrainings:  # For all of the trainings that are held by the requested program
-        if training.isPast:  # If the training has happened
-            trainingData[training] = trainingData.get(training, []) + [training.eventparticipant.user_id]  # Append the training's list in the dict with the participated status.
-        else:  # The training has yet to happen
-            trainingData[training] = trainingData.get(training, []) + [training.eventrsvp.user_id]  # Append the training's list with the rsvp status
+    for training in programTrainings:
+        try:
+            if training.isPast:
+                trainingData[training] = trainingData.get(training, []) + [training.eventparticipant.user_id]
+            else:  # The training has yet to happen
+                trainingData[training] = trainingData.get(training, []) + [training.eventrsvp.user_id]
+        except AttributeError:
+            trainingData[training] = trainingData.get(training, [])
 
     print(trainingData)
     # Dict; key: username; value: tuple consisting of (trainingObj, didAttend/didRsvp, optional date str if event is in future)
     result = {}  # Beans- rename this dict
     for user in userList:
         for training, attendeeList in trainingData.items():
-            if training.isPast:
-                result[user.username] = result.get(user.username, []) + [(training, user.username in attendeeList)]
-            # else:
-            #     result[user.username] = result.get(user.username, []) + [(training, user.username in attendeeList)]
-
-                
+            result[user.username] = result.get(user.username, []) + [(training, user.username in attendeeList)]
 
     return result
-        
-
-    # UserParticipatedTrainingEvents = []
-    # for training in programTrainings.objects():
-    #     print(training)
-    #     if training.startDate > date.today():
-    #         isRsvpd = EventRsvp.select().where(EventRsvp.user_id == user.username, EventRsvp.event_id == training.id).exists()
-    #         didParticipate = [None, training.startDate.strftime("%m/%d/%Y"), isRsvpd]
-    #     elif training.user == user.username:
-    #         didParticipate = True
-    #     else:
-    #         didParticipate = False
-    #     UserParticipatedTrainingEvents.append((training.name, didParticipate))
-    # return UserParticipatedTrainingEvents

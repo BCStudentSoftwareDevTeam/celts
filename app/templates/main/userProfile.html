@@ -146,7 +146,7 @@
             </thead>
             <tbody>
               {% for row in eligibilityTable %}
-                {% set trainingList = row['trainingList'] %}
+                {% set trainingList = row['trainingList'][volunteer.username] %}
                 {% set checked = "" %}
                 {% if row.program in programsInterested %}
                   {% set checked = "checked" %}
