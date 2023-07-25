@@ -75,14 +75,19 @@ class EmailHandler:
     def getSenderInfo(self):
         programObject = Program.get_or_none(Program.programName == self.sender_username)
         userObj = User.get_or_none(User.username == self.sender_username)
+        senderInfo = [None, None, None]
         if programObject:
             programEmail = programObject.contactEmail
-            return (programObject.programName, programEmail, programEmail)
+            senderInfo = [programObject.programName, programEmail, programEmail]
         elif self.sender_username.upper() == "CELTS":
-            return ("CELTS", "celts@berea.edu", "celts@berea.edu")
+            senderInfo = ["CELTS", "celts@berea.edu", "celts@berea.edu"]
         elif userObj:
-            return (f"{userObj.fullName}", userObj.email, userObj.email)
-        return (None, None, None) # If the email is not being sent from a program or user, use default values.
+            senderInfo = [f"{userObj.fullName}", userObj.email, userObj.email]
+        # overwrite the sender info with intentional keys in the raw form data.
+        get = self.raw_form_data.get
+        senderInfo = [get('sender_name') or senderInfo[0], get('sender_address') or senderInfo[1], get('reply_to') or senderInfo[2]]
+
+        return senderInfo # If the email is not being sent from a program or user, use default values.
 
     def update_sender_config(self):
         # We might need this.
@@ -133,10 +138,11 @@ class EmailHandler:
 
         email_template = EmailTemplate.get(EmailTemplate.purpose==self.template_identifier) # --Q: should we keep purpose as the identifier?
         template_id = email_template.id
-
+        
+        body = EmailHandler.replaceStaticPlaceholders(self.event.id, self.body)
 
         self.reply_to = email_template.replyToAddress
-        return (template_id, self.subject, self.body)
+        return (template_id, self.subject, body)
 
     def getAttachmentFullPath(self, newfile=None):
         """

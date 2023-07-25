@@ -25,6 +25,7 @@ def sendEventReminderEmail(events):
                      "programID":programId,
                      "term":currentTerm.id,
                      "emailSender":"Reminder Automation",
+                     "sender_name":"Reminder Automation",
                      "templateIdentifier":"Reminder",
                      "recipientsCategory":"Interested",
                      "subject":templateSubject,
