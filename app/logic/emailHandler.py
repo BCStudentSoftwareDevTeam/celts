@@ -196,7 +196,7 @@ class EmailHandler:
         return (template_id, subject, body)
 
     def send_email(self):
-        defaultEmailInfo = {"senderName":"CELTS", "replyTo":"celts@berea.edu", "senderAddress":"celts@berea.edu"} 
+        defaultEmailInfo = {"senderName":"CELTS", "replyTo":app.config['celts_admin_contact'], "senderAddress":app.config['celts_admin_contact']} 
         template_id, subject, body = self.build_email()
 
         attachmentList = []
