@@ -324,47 +324,45 @@ terms = [
         "year": 2020,
         "academicYear": "2020-2021",
         "isSummer": False,
-        "isCurrentTerm": False
+        "isCurrentTerm": False,
+        "termOrder": "2020-3"
     },
     {
         "id": 2,
-        "description": "Spring A 2021",
+        "description": "Spring 2021",
         "year": 2021,
         "academicYear": "2020-2021",
         "isSummer": False,
-        "isCurrentTerm": False
+        "isCurrentTerm": False,
+        "termOrder": "2021-1"
     },
+    
     {
         "id": 3,
-        "description": "Spring B 2021",
-        "year": 2021,
-        "academicYear": "2020-2021",
-        "isSummer": False,
-        "isCurrentTerm": False
-    },
-    {
-        "id": 4,
         "description": "Summer 2021",
         "year": 2021,
         "academicYear": "2020-2021",
         "isSummer": True,
-        "isCurrentTerm": True
+        "isCurrentTerm": True,
+        "termOrder": "2021-2"
     },
     {
-        "id": 5,
+        "id": 4,
         "description": "Fall 2021",
         "year": 2021,
         "academicYear": "2021-2022",
         "isSummer": False,
-        "isCurrentTerm": False
+        "isCurrentTerm": False,
+        "termOrder": "2021-3"
     },
     {
-        "id": 6,
+        "id": 5,
         "description": "Spring 2022",
         "year": 2022,
         "academicYear": "2021-2022",
         "isSummer": False,
-        "isCurrentTerm": False
+        "isCurrentTerm": False,
+        "termOrder": "2022-1"
     },
 
 ]
@@ -765,6 +763,7 @@ courses = [
     {
         "id": 1,
         "courseName": "Databases",
+        "courseAbbreviation": "",
         "term": 3,
         "status": 1,
         "courseCredit": "",
@@ -776,6 +775,7 @@ courses = [
     {
         "id": 2,
         "courseName": "Spanish Help",
+        "courseAbbreviation": "SPN 104",
         "term": 2,
         "status": 2,
         "courseCredit": "",
@@ -786,8 +786,9 @@ courses = [
     },
     {
         "id": 3,
-        "courseName": "French Help",
-        "term": 4,
+        "courseName": "Frenchy Help",
+        "courseAbbreviation": "FRN 103",
+        "term": 3,
         "status": 3,
         "courseCredit": "",
         "createdBy": "ramsayb2",
@@ -798,6 +799,7 @@ courses = [
     {
         "id": 4,
         "courseName": "Testing",
+        "courseAbbreviation": "",
         "term": 2,
         "status": 1,
         "courseCredit": "",
