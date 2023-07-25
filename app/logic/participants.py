@@ -148,8 +148,6 @@ def getUserParticipatedTrainingEvents(program, userList, currentTerm):
                                       Event.program == program,
                                       Event.term.academicYear == academicYear))
 
-    print([training for training in programTrainings])
-
     # Create a dictionary where the trainings are the keys and values are a list of those who attended
     trainingData = {}
     for training in programTrainings:
