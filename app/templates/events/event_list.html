@@ -28,6 +28,15 @@
       </div>
     </div>
   </div>
+  {% if user.isAdmin %}
+    <div class="row px-4">
+      <div class = "d-none d-sm-block col "></div>
+      <div class="form-check form-switch mb-2 col-auto">
+        <label class="form-check-label" for="viewPastEventsToggle">View Past Events</label>
+        <input class="form-check-input" type="checkbox" id="viewPastEventsToggle" autocomplete="off">
+      </div>
+    </div>
+  {% endif %}
 </div>
 <div class="row">
   <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
@@ -54,10 +63,10 @@
 {% macro createTable(events, type) %}
 {% if events|count %}
 <div class="table-responsive">
-  <table class="table table-striped">
+  <table class="table">
     <thead>
       <tr>
-        {% if type != "bonner" %}
+        {% if type != "bonner" and type != "studentLed" %}
         <th scope="col">Program</th>
         {% endif %}
         <th scope="col">Event Name</th>
@@ -68,31 +77,39 @@
       </tr>
     </thead>
     <tbody>
-        {% for event in events %}
-          <tr>
-            {% if type != "bonner" %}
+      {% for event in events %}
+          {% if event.isPast %}
+            <tr class="table-light showlist" style="display: none;">
+          {% else %}
+            <tr class="">
+          {% endif %}
+            {% if type != "bonner" and type != "studentLed" %}
               {% if event.program%}
-                <td>{{event.program.programName}}</td>
+                <td class="text-dark">{{event.program.programName}}</td>
               {% else %}
-                <td>This event does not belong to any program.</td>
+                <td class="text-dark">This event does not belong to any program.</td>
               {% endif %}
             {% endif %}
             {% if user.isCeltsAdmin or user.isProgramManagerFor(event.program)%}
-              <td> <a href="/event/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
+              {% set link_class = 'link-secondary' if event.isPast else 'link-primary' %}
+                <td><a href="/event/{{event.id}}/edit" class="{{link_class}}">{{event.name}}</a></td>
             {% else %}
-              <td> <a href="/event/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
+              {% set link_class = 'link-secondary' if event.isPast else 'link-primary' %}
+              <td><a href="/event/{{event.id}}/view" class="{{link_class}}">{{event.name}}</a></td>
             {% endif %}
             <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
             <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
-            <td>{{event.location}}</td>
+            <td class="text-dark">{{event.location}}</td>
             {% if user.isAdmin %}
               <td>
                 {% if event.isPast %}
                   {% set isPastEvent = "true" %}
                 {% endif %}
-                <button class="btn btn-primary" onclick="showEmailModal({{event.id}}, 'Unknown', {{selectedTerm}}, {{isPastEvent}})">
-                  <span class="bi bi-envelope-fill"> Invite</span>
-                </button>
+                {% set btn_class = 'btn-secondary' if event.isPast else 'btn-primary' %}
+                {% set btn_text = 'Email' if event.isPast else 'Invite' %}
+                <button class="btn {{btn_class}}" onclick="showEmailModal({{event.id}}, 'Unknown', {{ selectedTerm }}, {{ isPastEvent }})">
+                  <span class="bi bi-envelope-fill"> {{btn_text}}</span>
+                </button>                
               </td>
             {% else %}
               <td>
@@ -105,14 +122,21 @@
               </td>
             {% endif %}
           </tr>
-        {% endfor %}
+      {% endfor %}
+      {% if selectedTerm == g.current_term and events[-1].isPast %}          
+        <tr>
+          {% set colspan_value = 5 if type == 'bonner' or type == 'studentLed' else 6 %}
+          <td colspan="{{colspan_value}}" class="p-3">There are no upcoming events for this program</td>
+        </tr>
+      {% endif %}
      </tbody>
    </table>
  </div>
 {% else %}
-  <p>No upcoming events for this term</p>
+  <p>There are no events for this program</p>
 {% endif %}
 {% endmacro %}
+
 <div class="tab-content" id="pills-tabContent">
   <div class="tab-pane fade show {{'active' if activeTab == 'studentLedEvents' else ''}}" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
     {% if studentLedEvents %}
@@ -133,59 +157,13 @@
                 class="accordion-collapse collapse {{'show' if programID == program.id else ''}}"
                 aria-labelledby="accordion__header_{{program}}"
                 data-bs-parent="#categoryAccordion">
-            <div class="accordion-body table-responsive">
-              <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th scope="col">Event Name</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Time</th>
-                    <th scope="col">Location</th>
-                    <th scope="col"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                    {% for event in events %}
-                      <tr>
-                          {% if user.isCeltsAdmin or user.isProgramManagerFor(event.program) %}
-                            <td> <a href="/event/{{event.id}}/edit" class="link-primary">{{event.name}}</a></td>
-                          {% else %}
-                            <td> <a href="/event/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
-                          {% endif %}
-                        <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
-                        <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
-                        <td>{{event.location}}</td>
-                        {% if user.isAdmin %}
-                          <td>
-                            {% if event.isPast %}
-                              {% set isPastEvent = "true" %}
-                            {% endif %}
-                            <button class="btn btn-primary"
-                            onclick="showEmailModal({{event.id}}, {{program.id}}, {{selectedTerm}}, {{isPastEvent}})">
-                              <span class="bi bi-envelope-fill"> Invite</span>
-                            </button>
-                          </td>
-                        {% else %}
-                         <td>
-                          {% if event.id in rsvpedEventsID %}
-                            <button type="button" class="btn btn-danger" onclick="removeRsvpForEvent({{event.id}})">Remove RSVP</button>
-                          {% elif (not event.isPast) and (event.isRsvpRequired) %}
-                            {% set buttonName = "Join Waitlist" if (event.rsvpLimit) and (currentEventRsvpAmount[event.id] >= event.rsvpLimit) else "RSVP" %}
-                            <button type="button" class="btn btn-primary" onclick="rsvpForEvent({{event.id}})">{{buttonName}}</button>
-                          {% endif %}
-                        {% endif %}
-                         </td>
-                      </tr>
-                    {% endfor %}
-                </tbody>
-              </table>
+                {{createTable(events, "studentLed")}}
             </div>
           </div>
-        </div>
-    {% endfor %}
-    </div>
+        {% endfor %}
+      </div>
     {% else %}
-      <p>No upcoming events for this term</p>
+    <tr> There are no events for this program </tr>
     {% endif %}
   </div>
   <div class="tab-pane fade show" id="pills-training" role="tabpanel" aria-labelledby="pills-training-tab">
@@ -199,4 +177,7 @@
   </div>
 </div>
 {% include 'emailModal.html' %}
+<script>
+  var g_isPastTerm = {{"true" if (selectedTerm != g.current_term) else "false" }};
+</script>
 {% endblock %}
