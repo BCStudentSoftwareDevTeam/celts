@@ -763,6 +763,7 @@ courses = [
     {
         "id": 1,
         "courseName": "Databases",
+        "courseAbbreviation": "",
         "term": 3,
         "status": 1,
         "courseCredit": "",
@@ -774,6 +775,7 @@ courses = [
     {
         "id": 2,
         "courseName": "Spanish Help",
+        "courseAbbreviation": "SPN 104",
         "term": 2,
         "status": 2,
         "courseCredit": "",
@@ -784,7 +786,8 @@ courses = [
     },
     {
         "id": 3,
-        "courseName": "French Help",
+        "courseName": "Frenchy Help",
+        "courseAbbreviation": "FRN 103",
         "term": 3,
         "status": 3,
         "courseCredit": "",
@@ -796,6 +799,7 @@ courses = [
     {
         "id": 4,
         "courseName": "Testing",
+        "courseAbbreviation": "",
         "term": 2,
         "status": 1,
         "courseCredit": "",
