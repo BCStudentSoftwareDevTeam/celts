@@ -125,7 +125,7 @@ def parseUploadedFile(filePath):
                     previewTerm = cellVal 
                     displayRow = f"TERM-{previewTerm}"
                 else:
-                    previewTerm = f"ERROR: The term {cellVal} does not exist."
+                    previewTerm = f"ERROR: The term {cellVal} does not exist and cannot be automatically created."
                     errorFlag = True
                     displayRow = f"ERROR-{previewTerm}"
             courseParticipantPreview[previewTerm]= {}
@@ -156,7 +156,7 @@ def parseUploadedFile(filePath):
             courseParticipantPreview[previewTerm][previewCourse].append([studentValue, cellVal])
             
         elif cellVal != '' and cellVal != None:
-            errorText = (f'ERROR: {cellVal} in row {cellRow} of the Excel document is not a valid value.')
+            errorText = f'ERROR: {cellVal} in row {cellRow} of the Excel document is not a valid value.'
             errorFlag = True
             displayRow = f"ERROR-{errorText}"
         

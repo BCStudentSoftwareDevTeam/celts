@@ -28,7 +28,7 @@
     <form id="termSelector" action="" method="post">
       <select class="w-25" id="selectTerm" onchange="formSubmit(this.value)">
         {% for t in terms %}
-        <option value="{{t.id}}" {{ "selected" if t.id==term.id }}> {{ t.description }}</option>
+          <option value="{{t.id}}" {{ "selected" if t.id==term.id }}> {{ t.description }}</option>
         {% endfor %}
       </select>
     </form>
@@ -42,7 +42,7 @@
         <div class="col">
           <div align="right">
             <form method="post" action="/serviceLearning/createCourse">
-              <button class="btn btn-success btn-sm mr" type='Submit'>Add Course </button>
+              <button class="btn btn-success btn-sm mr" type='Submit'>Add Course</button>
             </form>
           </div>
         </div>
@@ -193,8 +193,9 @@
                   <label for="addCourseParticipants" class="form-label"></label>
                   {% if previewParticipantDisplayList %}
                     {% for line in previewParticipantDisplayList %}
-                      {% set splitRow= line.split("-") %}
+                      {% set splitRow = line.split("-") %}
                       {% if splitRow[0] == "TERM" %}
+                        {% if not loop.first %}<hr>{% endif %}
                         <div class = "h3"><b>{{splitRow[1]}}</b></div>
                       {% endif %}
                       {% if splitRow[0] == "COURSE" %}
@@ -212,10 +213,7 @@
               </div>
               <br>
               <div class="modal-footer">
-                {% if courseParticipantPreview %}
-                  <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal"
-                    name="cancelModalPreview" id="cancelModalPreview">Cancel</button>
-                {% endif %}
+                <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalPreview" id="cancelModalPreview">Cancel</button>
                 <label for="previewCourseParticipant" class="form-label"></label>
                 {% set disableSave = "disabled" if previewParticipantsErrorFlag else "" %}
                 <button type="submit" name="submitParticipant" class="form-control btn btn-success position-relative" {{disableSave}} id="submitParticipant" style='width: 90px'>Save File</button>
