@@ -68,7 +68,7 @@ def trackVolunteersPage(eventID):
         eventWaitlistData = []
     else:
         eventWaitlistData = [volunteer for volunteer in eventParticipantData + eventRsvpData if volunteer.rsvpWaitlist and event.isRsvpRequired]
-        eventVolunteerData = [volunteer for volunteer in eventParticipantData + eventRsvpData if volunteer not in eventWaitlistData]
+        eventVolunteerData = [volunteer for volunteer in eventRsvpData if volunteer not in eventWaitlistData]
         eventNonAttendedData = []
         
     program = event.program
