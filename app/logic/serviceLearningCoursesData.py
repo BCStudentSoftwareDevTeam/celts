@@ -109,11 +109,16 @@ def parseUploadedFile(filePath):
     for row in excelSheet.iter_rows():
         cellVal = row[0].value
         displayRow  = ''
-        termReg = r"\b[a-zA-Z]{3,}\s\d{4}\b" # regular expression to check cells content
-        courseReg = r"\b[A-Z]{2,4}\s\d{3}\b"
-        bnumberReg = r"\b[B]\d{8}\b"
+        termReg = r"\b[a-zA-Z]{3,}( [AB])? \d{4}\b" # Checks for 3 or more letters followed by zero or one space and A or B followed by a single space character followed by 4 digits. For Example: Fall 2020 or Spring B 2021
+        courseReg = r"\b[A-Z]{2,4} \d{3}\b" # Checks for between 2-4 capital letters followed by a single space followed by 3 digits. For Example: CSC 226
+        bnumberReg = r"\b[B]\d{8}\b" # Checks for a capital B followed by 8 digits. For Example B00123456
 
         if regex.search(termReg, str(cellVal)):
+            if "Spring A" in cellVal or "Spring B" in cellVal:
+                cellVal = "Spring " + cellVal.split()[-1]
+            if "Fall A" in cellVal or "Fall B" in cellVal:
+                cellVal = "Fall " + cellVal.split()[-1]
+                
             if cellVal.split()[0] not in ["Summer", "Spring", "Fall", "May"]:
                 previewTerm = f"ERROR: {cellVal} is not valid."
                 errorFlag = True 

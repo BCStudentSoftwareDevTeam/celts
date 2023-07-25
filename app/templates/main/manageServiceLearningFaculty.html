@@ -196,7 +196,7 @@
                       {% set splitRow = line.split("-") %}
                       {% if splitRow[0] == "TERM" %}
                         {% if not loop.first %}<hr>{% endif %}
-                        <div class = "h3"><b>{{splitRow[1]}}</b></div>
+                        <h3><b>{{splitRow[1]}}</b></h3>
                       {% endif %}
                       {% if splitRow[0] == "COURSE" %}
                         <div><b>{{splitRow[1]}}:</b></div>
