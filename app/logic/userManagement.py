@@ -53,7 +53,8 @@ def changeProgramInfo(newProgramName, newContactEmail, newContactName, newLocati
 def getAllowedPrograms(currentUser):
     """Returns a list of all visible programs depending on who the current user is."""
     if currentUser.isCeltsAdmin:
-        return Program.select().order_by(Program.programName)
+        # Beans: ask if this where clause is an acceptable way to filter out the celts sponsored event from appearing in the list of programs
+        return Program.select().where(Program.programName != "CELTS-Sponsored Event").order_by(Program.programName)  
     else:
         return Program.select().join(ProgramManager).where(ProgramManager.user==currentUser).order_by(Program.programName)
 
