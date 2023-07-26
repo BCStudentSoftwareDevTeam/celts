@@ -130,7 +130,7 @@ class EmailHandler:
     def replaceDynamicPlaceholders(self, email_body, *, name):
         """ Replaces placeholders that cannot be predetermined on the front-end """
         event_link = f"{self.url_domain}/event/{self.event.id}/view"
-        new_body = email_body.format(name=name, event_link=event_link)
+        new_body = email_body.format(recipient_name=name, event_link=event_link)
         return new_body
 
     def retrieve_and_modify_email_template(self):
@@ -255,7 +255,7 @@ class EmailHandler:
     def retrievePlaceholderList(eventId):
         event = Event.get_by_id(eventId)
         return [
-            ["Name", "{name}"],
+            ["Recipient Name", "{recipient_name}"],
             ["Event Name", event.name],
             ["Start Date", (event.startDate).strftime('%m/%d/%Y')],
             ["End Date", (event.endDate).strftime('%m/%d/%Y')],
@@ -278,6 +278,6 @@ class EmailHandler:
                                      start_time=(event.timeStart).strftime('%I:%M'),
                                      end_time=(event.timeEnd).strftime('%I:%M'),
                                      event_link="{event_link}",
-                                     name="{name}",
+                                     recipient_name="{recipient_name}",
                                      relative_time=event.relativeTime)
         return new_body
