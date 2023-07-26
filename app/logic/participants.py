@@ -159,10 +159,10 @@ def getParticipationStatusForTrainings(program, userList, currentTerm):
         except AttributeError:
             trainingData[training] = trainingData.get(training, [])
 
-    # Dict; key: username; value: tuple consisting of (trainingObj, didAttend/didRsvp, optional date str if event is in future)
-    result = {}  # Beans- rename this dict
+    # Create a dictionary binding usernames to tuples. The tuples consist of the training (event object) and whether or not they attended it (bool)
+    userParticipationStatus = {}
     for user in userList:
         for training, attendeeList in trainingData.items():
-            result[user.username] = result.get(user.username, []) + [(training, user.username in attendeeList)]
+            userParticipationStatus[user.username] = userParticipationStatus.get(user.username, []) + [(training, user.username in attendeeList)]
 
-    return result
+    return userParticipationStatus
