@@ -18,10 +18,10 @@
   </div>
   <div id="signinData" class="mx-auto px-5 mb-2">
     <div class="input-group">
-      <audio id="scanSound" src="https://mingosounds.com/wp-content/uploads/2022/02/Barcode-scanner-beep-sound.mp3"></audio>
-      <div id="qr-reader" style="width:500px"></div>
-      <div id="qr-reader-results"></div>
+      <input type="text" id="submitScannerData" name="bNumber" class="form-control input-lg" oninput="submitData()" style="font-size: 2rem;" placeholder="Enter scanner data" autofocus/>
+      <button class="qr-reader btn-success"><span  class="bi bi-camera"></span></button>
     </div>
+    <div id="qr-reader"></div>
   </div>
   <div class="form-check form-switch mx-5 position-absolute end-0">
     <input class="form-check-input mt-2" type="checkbox" id="fullscreenCheck" onclick="toggleFullscreen()">

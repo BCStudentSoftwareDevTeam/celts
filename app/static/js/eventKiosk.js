@@ -50,21 +50,43 @@ function eventFlasher(flash_message, status){
     }
 
 }
-var resultContainer = document.getElementById('qr-reader-results');
-var lastResult, countResults = 0;
 
-function onScanSuccess(decodedText, decodedResult) {
-    if (decodedText !== lastResult) {
-        ++countResults;
-        lastResult = decodedText;
-        // Handle on success condition with the decoded message.
-        console.log(`Scan result ${decodedText}`, decodedResult);
-    }
-}
+$('.qr-reader').on("click", function() {
+  $('#qr-reader').toggle()
+  var lastResult, countResults = 0;
+  function onScanSuccess(decodedText, decodedResult) {
+      if (decodedText !== lastResult) {
+          ++countResults;
+          lastResult = decodedText;
+          // Handle on success condition with the decoded message.
+          console.log(`Scan result ${decodedText}`, decodedResult);
+          
+          $("#submitScannerData").val(decodedText)
+          submitData(true);
+      }
+  }
+  let qrboxFunction = function(viewfinderWidth, viewfinderHeight) {
+    let minEdgePercentage = 0.9; // 90%
+    let minEdgeSize = Math.min(viewfinderWidth, viewfinderHeight);
+    let qrboxSize = Math.floor(minEdgeSize * minEdgePercentage);
+    return {
+        width: qrboxSize,
+        height: qrboxSize
+    };
+  }
+  var html5QrcodeScanner = new Html5QrcodeScanner(
+      "qr-reader", { fps: 15, qrbox : qrboxFunction, preferFrontCamera: false });
+  html5QrcodeScanner.render(onScanSuccess);
 
-var html5QrcodeScanner = new Html5QrcodeScanner(
-    "qr-reader", { fps: 10, qrbox: 250 });
-html5QrcodeScanner.render(onScanSuccess);
+  $('#html5-qrcode-button-camera-stop').on("click", function() {
+    $('#qr-reader').hide()
+    })
+  })
+
+
+
+
+
 
 function submitData(hitEnter = false){
   if(hitEnter){
