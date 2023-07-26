@@ -23,7 +23,7 @@ from app.logic.createLogs import createAdminLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm
+from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm
 from app.logic.participants import getEventParticipants, getUserParticipatedTrainingEvents, checkUserRsvp, checkUserVolunteer
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
@@ -260,6 +260,18 @@ def eventDisplay(eventId):
                                 image = image,
                                 pageViewsCount= pageViewsCount)
 
+
+@admin_bp.route('/event/<eventId>/cancel', methods=['POST'])
+def cancelRoute(eventId):
+    try:
+        cancelEvent(eventId)
+        flash("Event successfully canceled.", "success")
+        return redirect(url_for("main.events", selectedTerm=g.current_term))
+
+    except Exception as e:
+        print('Error while canceling event:', e)
+        return "", 500
+    
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
     try:

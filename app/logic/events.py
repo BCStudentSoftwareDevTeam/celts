@@ -21,6 +21,15 @@ from app.logic.utils import format24HourTime
 from app.logic.fileHandler import FileHandler
 from app.logic.certification import updateCertRequirementForEvent
 
+def cancelEvent(eventId):
+    """
+    Cancels an event.
+    """
+    event = Event.get_or_none(Event.id == eventId)
+    if event: 
+        event.isCanceled = True
+        event.save()
+
 def deleteEvent(eventId):
     """
     Deletes an event, if it is a recurring event, rename all following events

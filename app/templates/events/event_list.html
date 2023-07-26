@@ -81,7 +81,11 @@
           {% if event.isPast %}
             <tr class="table-light showlist" style="display: none;">
           {% else %}
-            <tr class="">
+              {% if event.isCanceled and not (user.isCeltsAdmin or user.isProgramManagerFor(event.program)) %}
+                <tr class="table-light showlist" style="display: none;">
+              {% else %}
+                <tr class="">
+              {% endif %}
           {% endif %}
             {% if type != "bonner" and type != "studentLed" %}
               {% if event.program%}
@@ -94,8 +98,7 @@
               {% set link_class = 'link-secondary' if event.isPast else 'link-primary' %}
                 <td><a href="/event/{{event.id}}/edit" class="{{link_class}}">{{event.name}}</a></td>
             {% else %}
-              {% set link_class = 'link-secondary' if event.isPast else 'link-primary' %}
-              <td><a href="/event/{{event.id}}/view" class="{{link_class}}">{{event.name}}</a></td>
+              <td><a href="/event/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
             {% endif %}
             <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
             <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
@@ -105,8 +108,8 @@
                 {% if event.isPast %}
                   {% set isPastEvent = "true" %}
                 {% endif %}
-                {% set btn_class = 'btn-secondary' if event.isPast else 'btn-primary' %}
-                {% set btn_text = 'Email' if event.isPast else 'Invite' %}
+                {% set btn_class = 'btn-secondary' if event.isPast or event.isCanceled else 'btn-primary' %}
+                {% set btn_text = 'Email' if event.isPast or event.isCanceled else 'Invite' %}
                 <button class="btn {{btn_class}}" onclick="showEmailModal({{event.id}}, 'Unknown', {{ selectedTerm }}, {{ isPastEvent }})">
                   <span class="bi bi-envelope-fill"> {{btn_text}}</span>
                 </button>                

@@ -22,6 +22,7 @@ class Event(baseModel):
     contactEmail = CharField(null=True)
     contactName = CharField(null=True)
     program = ForeignKeyField(Program, null= True)
+    isCanceled = BooleanField(default=False)
 
     _spCache = "Empty"
 
@@ -44,3 +45,5 @@ class Event(baseModel):
     def isFirstRecurringEvent(self):
         firstRecurringEvent = Event.select().where(Event.recurringId==self.recurringId).order_by(Event.id).get()
         return firstRecurringEvent.id == self.id
+    
+
