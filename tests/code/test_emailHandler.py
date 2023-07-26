@@ -82,7 +82,7 @@ def test_send_email_using_modal():
             raw_form_data = {"templateIdentifier": "Test",
                              "emailSender": "neillz",
                              "subject": "Test Email",
-                             "body": "Hello {name}",
+                             "body": "Hello {recipient_name}",
                              "eventID":"1",
                              "recipientsCategory": "Interested"}
 
@@ -107,7 +107,7 @@ def test_update_email_template():
             raw_form_data = {"templateIdentifier": "Test2",
                              "emailSender": "neillz",
                              "subject":"This is only a test",
-                             "body":"Hello {name}, Regards"}
+                             "body":"Hello {recipient_name}, Regards"}
 
             email = EmailHandler(raw_form_data, url_domain)
             email.update_email_template()
