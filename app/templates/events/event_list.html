@@ -5,6 +5,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script src="/static/js/event_list.js"></script>
+  <script src="/static/js/emailModal.js"></script>
 {% endblock %}
 {% block styles %}
   {{super()}}
@@ -60,6 +61,7 @@
   </li>
   </ul>
 </div>
+
 {% macro createTable(events, type) %}
 {% if events|count %}
 <div class="table-responsive">
@@ -104,10 +106,13 @@
               <td>
                 {% if event.isPast %}
                   {% set isPastEvent = "true" %}
+                {% else %}
+                  {% set isPastEvent = "false" %}
                 {% endif %}
+                {% set defaultTemplate = "Test" %} {# The default template is set via the purpose column of the corresponding template #}
                 {% set btn_class = 'btn-secondary' if event.isPast else 'btn-primary' %}
                 {% set btn_text = 'Email' if event.isPast else 'Invite' %}
-                <button class="btn {{btn_class}}" onclick="showEmailModal({{event.id}}, 'Unknown', {{ selectedTerm }}, {{ isPastEvent }})">
+                <button class="btn {{btn_class}}" onclick="showEmailModal({{event.id}}, 'Unknown', {{ selectedTerm }}, {{ isPastEvent }}, '{{defaultTemplate}}')">
                   <span class="bi bi-envelope-fill"> {{btn_text}}</span>
                 </button>                
               </td>
@@ -132,10 +137,12 @@
      </tbody>
    </table>
  </div>
-{% else %}
+{% elif type != "studentLed" %}
   <p>There are no events for this program</p>
 {% endif %}
 {% endmacro %}
+
+<!-- #############  Student Led Services  ############# -->
 
 <div class="tab-content" id="pills-tabContent">
   <div class="tab-pane fade show {{'active' if activeTab == 'studentLedEvents' else ''}}" id="pills-student-led" role="tabpanel" aria-labelledby="pills-student-led-tab">
