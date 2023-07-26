@@ -176,14 +176,27 @@ def saveEventToDb(newEventData):
 
     return eventRecords
 
-def getStudentLedEvents(term):
+def getStudentLedEvents(term, userState):
 
-    studentLedEvents = list(Event.select(Event, Program)
-                             .join(Program)
-                             .where(Program.isStudentLed,
-                                    Event.term == term)
-                             .order_by(Event.startDate, Event.timeStart)
-                             .execute())
+    # if current_user is student, include Event.isCanceled == False in query
+    # else (which means that the current_user is an admin, leave the query as it is)
+    if userState == "student":
+        studentLedEvents = list(Event.select(Event, Program)
+                                .join(Program)
+                                .where(Program.isStudentLed,
+                                        Event.term == term, Event.isCanceled == False)
+                                .order_by(Event.startDate, Event.timeStart)
+                                .execute())
+        
+
+    else:
+        studentLedEvents = list(Event.select(Event, Program)
+                                .join(Program)
+                                .where(Program.isStudentLed,
+                                        Event.term == term)
+                                .order_by(Event.startDate, Event.timeStart)
+                                .execute())
+
     programs = {}
 
     for event in studentLedEvents:

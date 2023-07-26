@@ -68,6 +68,11 @@ def events(selectedTerm, activeTab, programID):
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
     term = Term.get_by_id(currentTerm)
+    if g.current_user.isAdmin or g.current_user.isCeltsAdmin:
+        userState = "admin"
+    else:
+        userState = "student"
+    
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     studentLedEvents = getStudentLedEvents(term)
     trainingEvents = getTrainingEvents(term, g.current_user)
