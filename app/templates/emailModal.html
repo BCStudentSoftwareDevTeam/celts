@@ -1,4 +1,4 @@
-<script src="/static/js/emailModal.js"></script>
+
 
 <div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-lg">
@@ -26,15 +26,15 @@
             <input id="selectedTerm" name="selectedTerm" class="form-control" value="" type="hidden">
           </div>
           <label for="templateIdentifier" class="form-label my-1 fs-5">Templates</label>
-          <select class="form-select" onchange="replaceEmailBodyAndSubject()" id='templateIdentifier' name="templateIdentifier" aria-label="template-select">
-            <option disabled selected val="">Select a template</option>
+          <select class="form-select" id='templateIdentifier' name="templateIdentifier" aria-label="template-select">
+            <option disabled selected value="">Select a template</option>
           </select>
           <div class="row my-3">
             <div class="col-sm-6 form-group">
               <label for="emailRecipients" class="form-label my-1 fs-5">To</label>
               <select class='form-select' id="emailRecipients" name="recipientsCategory" aria-label="email recipients">
                 <option value="Interested">Interested</option>
-                <<option value="Eligible Students">Eligible Students</option>
+                <option value="Eligible Students">Eligible Students</option>
                 <option value="RSVP'd">RSVP'd</option>
               </select>
             </div>
@@ -42,9 +42,9 @@
               <label for="emailSender" class="form-label my-1 fs-5">From</label>
               <select class='form-select' id="emailSender" name="emailSender" aria-label="email sender">
                 {% set user = g.current_user %}
-                <option {{ 'selected' if user.CeltsStudentStaff }}>CELTS Student Staff</option>
-                <option {{ 'selected' if user.isCeltsAdmin else 'hidden' }}>CELTS Admins</option>
-                <option value="{{user.email}}">
+                <option class="sender-option" {{ 'selected' if user.CeltsStudentStaff }}>Program</option>
+                <option class="sender-option">CELTS</option>
+                <option class="sender-option" value="{{user.username}}">
                   {{user.firstName}} {{user.lastName}} (Currently Logged In)
                 </option>
               </select>
@@ -54,12 +54,20 @@
             <label for="subject" class="form-label my-1 fs-5">Subject</label>
             <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject" required>
           </div>
+
           <div class="mt-3">
-            <label for="body" class="form-label my-1 fs-5">Email Body</label>
-            <textarea class="form-control" type="textarea" name="body" id="body" maxlength="8000" rows="5"
-              placeholder="Type your email message here (Max 8000 characters)"></textarea>
+            <div class="row">
+              <label for="body" class="col form-label my-1 fs-5">Email Body</label>
+              <div class="form-group col-auto">
+                <select class="form-select" id='placeholderSelect' name="placeholderSelect" aria-label="Placeholder Select">
+                  <option selected disabled value="">Insert Information</option>
+                </select>
+              </div>
+            </div>
+            <textarea class="form-control my-2" type="textarea" name="body" id="body" maxlength="8000" rows="5"
+              placeholder="Type your email message here (Max 8000 characters)" required></textarea>
           </div>
-          <input type="file" id="attachmentObject" name="attachmentObject" class="form-control col-sm-6 mt-4 mb-2" multiple/>
+          <input type="file" id="attachmentObject" name="attachmentObject" class="form-control col-sm-6 mt-4" multiple/>
           <!-- <div class="text-wrap">
             <input class="form-check-input me-1" type="checkbox" value="True" id="sendIndividually" name="sendIndividually">
             <!-- <label class="form-check-label" white-space="normal" for="sendIndividually">
@@ -68,7 +76,7 @@
           </div> --> <!-- Commented out for demo purposes FIXME: add this option back and get it to work-->
           <br>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="$('.modal').modal('hide')">Cancel</button>
+            <button type="button" id="closeModal" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
             <button type="submit" id="sendEmail" class="btn btn-primary">Send Email</button>
           </div>
         </form>
