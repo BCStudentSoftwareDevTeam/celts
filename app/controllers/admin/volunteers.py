@@ -26,7 +26,6 @@ def getVolunteers(query):
 
 @admin_bp.route('/event/<eventID>/track_volunteers', methods=['POST'])
 def updateVolunteerTable(eventID):
-    print("########################################################")
     try:
         event = Event.get_by_id(eventID)
     except DoesNotExist as e:
@@ -72,8 +71,7 @@ def trackVolunteersPage(eventID):
         eventVolunteerData = [volunteer for volunteer in eventParticipantData + eventRsvpData if volunteer not in eventWaitlistData]
         eventNonAttendedData = []
         
-   
-    
+
 
     eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
@@ -113,19 +111,23 @@ def volunteerInformationPage(eventID):
     eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
     eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
     participantsAndRsvp = (eventParticipantData + eventRsvpData)
-
-    #get unique list of users for each category waitlist/notwaitlist
+    eventParticipantUsers = [participantDatum.user for participantDatum in eventParticipantData]
+    eventNonAttendedData = [rsvpDatum for rsvpDatum in eventRsvpData if rsvpDatum.user not in eventParticipantUsers]
+    
+    #get unique list of users for each category waitlist/notwaitlist,rsvped/attended
     volunteerUser = list(set([obj.user for obj in participantsAndRsvp if not obj.rsvpWaitlist]))
     waitlistUser = list(set([obj.user for obj in participantsAndRsvp if obj.rsvpWaitlist]))
-
+    rsvpUser = list(set([obj.user for obj in eventRsvpData if not obj.rsvpWaitlist ]))
+    attendedUser= list(set([obj.user for obj in eventParticipantData if not eventNonAttendedData]))
 
     eventData = model_to_dict(event, recurse=False)
     eventData["program"] = event.program
 
-
     return render_template("/events/volunteerInformation.html",
                             volunteerUser = volunteerUser,
                             waitlistUser = waitlistUser,
+                            attendedUser= attendedUser,
+                            rsvpUser= rsvpUser,
                             event = event,
                             eventData = eventData)
 

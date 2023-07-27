@@ -3,17 +3,11 @@
 {% set eventPast = event.isPast %}
 {% set tabName = 'dietary' %}
 {% extends "eventNav.html" %}
-<style>
-  @media print{    
-    .non_print *{
-      display: none;
-    }
-    .print_content{
-      display: block;
-    }
 
-  }
-</style>
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="app/static/css/volunteerInformation.css">
+{% endblock %}
 
 {% block scripts %}
 {{super()}}
@@ -24,26 +18,26 @@
 
 {{super()}}
 
-<div class="non_print" id="volunteerInformationcheck">
+<div class="noprint" id="volunteerInformationcheck">
   <div class="row">
     <div class="col">
       <label for="exampleInputEmail1"><b>Volunteer Groups:</b></label><br>
-      <input class="displayCheckbox" type="checkbox" name="selected_items" id="rsvpSelect" checked>
+      <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="rsvpSelect" checked>
       <label for="rsvpSelect">RSVP Information</label><br>
-      <input class="displayCheckbox" type="checkbox" name="selected_items" id="waitlistSelect" checked>
+      <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="waitlistSelect" checked>
       <label for="waitlistSelect">Waitlist</label><br>
-      <input class="displayCheckbox" type="checkbox" name="selected_items" id="attendedSelect" checked>
+      <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="attendedSelect" checked>
       <label for="attendedSelect">Attended</label><br>
     </div>
     <div class=" col">
       <label for="exampleInputEmail1"><b>Included Information:</b></label><br>
-      <input class="displayCheckbox" type="checkbox" name="selected_items" id="dietRestrictionSelect" checked>
+      <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="dietRestrictionSelect" checked>
       <label for="dietRestrictionSelect">Dietary Restriction</label><br>
-      <input class="displayCheckbox" type="checkbox" name="selected_items" id="emergencySelect" checked>
+      <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="emergencySelect" checked>
       <label for="emergencySelect">Emergency Contacts</label><br>
-      <input class="displayCheckbox" type="checkbox" name="selected_items" id="phoneSelect" checked>
+      <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="phoneSelect" checked>
       <label for="phoneSelect">Phone Number</label><br>
-      <input class="displayCheckbox" type="checkbox" name="selected_items" id="emailSelect" checked>
+      <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="emailSelect" checked>
       <label for="emailSelect">Email</label><br>
     </div>
     <div class="col align-items-end">
@@ -54,19 +48,19 @@
 <hr>
 {% if volunteerUser or waitlistUser %}
 <div class="print_content" id="volunteerInformationTable">
-  <div class="row" id="volunteerInformation">
-    {% for participant in volunteerUser %}
-    <div class="rsvpSelect col-12 col-md-6">
+  <div class="row print_content" id="volunteerInformation">
+    {% for participant in rsvpUser %}
+    <div class="rsvpSelect col-12 col-md-6 print_content">
       <h4 nowrap><b>{{participant.firstName}} {{participant.lastName}}</b></h4>
       <ul>
-        <div class="phoneSelect" nowrap>{{participant.phoneNumber}}</div>
-        <div class="emailSelect" nowrap>{{participant.email}}</div>
-        <div class="emergencySelect">Emergency Contact: PlaceHolder for Emergency Contacts</div>
-        <div class="dietRestrictionSelect">Dietary Restrictions: {{participant.dietRestriction}}</div>
+        <div class="phoneSelect print_content" nowrap>{{participant.phoneNumber}}</div>
+        <div class="emailSelect print_content" nowrap>{{participant.email}}</div>
+        <div class="emergencySelect print_content">Emergency Contact: PlaceHolder for Emergency Contacts</div>
+        <div class="dietRestrictionSelect print_content">Dietary Restrictions: {{participant.dietRestriction}}</div>
       </ul>
     </div>
     {% endfor %}
-    {% for info in waitlistUser %}
+    {% for participant in waitlistUser %}
     <div class="waitlistSelect col-12 col-md-6">
       <h4 nowrap><b>{{participant.firstName}} {{participant.lastName}}</b></h4>
       <ul>
@@ -77,10 +71,20 @@
       </ul>
     </div>
     {% endfor %}
+    {% for participant in attendedUser%}
+      <div class="attendedSelect col-12 col-md-6">
+        <h4 nowrap><b>{{participant.firstName}} {{participant.lastName}}</b></h4>
+        <ul>
+          <div class="phoneSelect" nowrap>{{participant.phoneNumber}}</div>
+          <div class="emailSelect" nowrap>{{participant.email}}</div>
+          <div class="emergencySelect">Emergency Contact: PlaceHolder for Emergency Contacts</div>
+          <div class="dietRestrictionSelect">Dietary Restrictions: {{participant.dietRestriction}}</div>
+        </ul>
+      </div>
+    {% endfor %}
   </div>
 </div>
 {% endif %}
-
 
 
 {% if event.isPast and not volunteerUser %}
