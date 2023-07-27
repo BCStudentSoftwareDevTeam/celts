@@ -59,7 +59,7 @@ templates = [
         "tag": "no-program",
         "templateJSON":'{}',
         "templateFile": "createEvent.html",
-        "isVisible": False
+        "isVisible": True
     },
 
 ]

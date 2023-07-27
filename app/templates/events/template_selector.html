@@ -6,9 +6,8 @@
 <div class="card m-auto" style="width: 400px;">
     <div class="templateList">
       {% for template in templates %}
-      <a href="/eventTemplates/{{template.id}}/create" class="list-group-item list-group-item-action">{{ template.name }}</a>
+      <a href="/eventTemplates/{{template.id}}/{{celtsSponsoredProgram.id}}/create" class="list-group-item list-group-item-action">{{ template.name }}</a>
       {% endfor %}
-      <a href="/eventTemplates/3/{{celtsSponsoredProgram.id}}/create" class="list-group-item list-group-item-action">{{ celtsSponsoredProgram.programName }}</a>  {# This has a program so we need to define it separately #}
     </div>
   {% for program in programs %}
   <a href="/eventTemplates/1/{{program.id}}/create" class="list-group-item list-group-item-action">{{ program.programName }}</a>
