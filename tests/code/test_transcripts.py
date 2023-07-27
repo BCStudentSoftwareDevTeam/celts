@@ -216,7 +216,6 @@ def testingGetAllEventTranscript():
     # ensures the results of both child function appear in the same dictionary
     assert not emptyAllEventDict
     assert allEventDict
-    print(allEventDict)
     assert checkingProgram in [t for t in allEventDict] and termInfo in allEventDict["CELTS Sponsored Events"]
 
 

@@ -56,7 +56,7 @@ def test_getEventLengthInHours():
 @pytest.mark.integration
 def test_checkUserRsvp():
     with mainDB.atomic() as transaction:
-        newEvent = Event.create(term = 2)
+        newEvent = Event.create(term = 2, program = 9)
         user = User.get_by_id("ramsayb2")
 
         rsvpExists = checkUserRsvp(user, newEvent)
@@ -71,7 +71,7 @@ def test_checkUserRsvp():
 @pytest.mark.integration
 def test_checkUserVolunteer():
     with mainDB.atomic() as transaction:
-        newEvent = Event.create(term = 2)
+        newEvent = Event.create(term = 2, program = 9)
         user = User.get_by_id("ramsayb2")
 
         rsvpExists = checkUserRsvp(user, newEvent)
@@ -92,7 +92,8 @@ def test_addPersonToEvent():
             newEvent = Event.create(name = "Test event 1234", term = 2,
                                     startDate=yesterday.date(),
                                     endDate=yesterday.date(),
-                                    isRsvpRequired = True)
+                                    isRsvpRequired = True,
+                                    program = 9)
             
             newEvent = Event.get(name="Test event 1234")
 
@@ -107,7 +108,8 @@ def test_addPersonToEvent():
             newEvent = Event.create(name = "Test event 1234", term = 2,
                                     startDate=tomorrow.date(),
                                     endDate=tomorrow.date(),
-                                    isRsvpRequired = True)
+                                    isRsvpRequired = True,
+                                    program = 9)
             
             newEvent = Event.get(name="Test event 1234")
 
@@ -123,7 +125,8 @@ def test_addPersonToEvent():
                                             startDate = tomorrow.date(),
                                             endDate = tomorrow.date(),
                                             isRsvpRequired = True,
-                                            rsvpLimit = 1)
+                                            rsvpLimit = 1,
+                                            program = 9)
             waitlistEvent = Event.get(name="Waitlist Event")
             rsvpUser = User.get_by_id("ayisie")
             
