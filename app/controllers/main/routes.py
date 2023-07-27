@@ -160,6 +160,13 @@ def viewUsersProfile(username):
             )
     abort(403)
 
+@main_bp.route('/profile/<username>/emergencyInformation', methods=['GET', 'POST'])
+def EmergencyContactInfo(username):
+    """
+    This loads the Emergency Contact and Insurance Information Page
+    """
+    return render_template ("/main/emergencyInfo.html")
+
 @main_bp.route('/profile/addNote', methods=['POST'])
 def addNote():
     """

@@ -28,11 +28,12 @@
     <div>{{volunteer.classLevel}}</div> 
     {% endif %}
   </div>
-  <div class="col-12">
-    <div>
+  <div class="row">
+    <div class="col-md-6 col-lg-3">
       <input type="text" style="border: none" size="14" class="bfh-phone" data-value="{{volunteer.phoneNumber}}" id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
       <a class="text-decoration-none primary editButton" tabindex="0" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
-    </div>
+    </div> &nbsp;
+    <div class="col-md-6 col-lg-3"> <a href="/profile/{{volunteer.username}}/emergencyInformation"> Emergency Information </a></div>
   </div>
   <a align="right" href="/profile/{{volunteer.username}}/serviceTranscript">View Service Transcript</a>
 </div>
