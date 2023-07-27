@@ -5,3 +5,4 @@ class CourseStatus(baseModel):
     IN_PROGRESS = 1
     SUBMITTED = 2
     APPROVED = 3
+    IMPORTED = 4 

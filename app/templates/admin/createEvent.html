@@ -269,45 +269,22 @@
         <h5 class="modal-title" id="warningModel">Cancel Event</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-        <!-- {% if eventData.recurringId%} -->
-        <!-- <div class="modal-body">
-          <div class= "container-fluid">
-            <p>This action is irreversible.</p>
-            <div class="d-grid gap-2">
-                <form action="/event/{{eventData.id}}/delete" method='post'>
-                  <button type="submit" class="btn btn-danger">Delete This Event</button>
-                </form>
-
-                <form action="/event/{{eventData.id}}/deleteEventAndAllFollowing" method='post'>
-                    <button type="submit" class="btn btn-danger">Delete This and All Following</button>
-                </form>
-
-                <form action="/event/{{eventData.id}}/deleteAllRecurring" method='post'>
-                    <button type="submit" class="btn btn-danger">Delete Series </button>
-                </form>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer justify-content-between">
+      <div class="modal-body">
+        <p> Are you sure you want to cancel this event? </p>
+      </div>
+      <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-       </div>
-        {% else %} -->
-        <div class="modal-body">
-          <p> Are you sure you want to cancel this event? </p>
-        </div>
-        <div class="modal-footer justify-content-between">
-           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-           <form action="/event/{{eventData.id}}/cancel" method='post'>
-               <button type="submit" class="btn btn-warning">Cancel</button>
-           </form>
-        </div>
-        {% endif %}
-       <div>
-         <input type="hidden" value="{{eventData.id}}" name="id">
-       </div>
+          <form action="/event/{{eventData.id}}/cancel" method='post'>
+              <button type="submit" class="btn btn-warning">Cancel</button>
+          </form>
+      </div>
+      {% endif %}
+      <div>
+        <input type="hidden" value="{{eventData.id}}" name="id">
       </div>
     </div>
   </div>
+</div>
 
 <!-- Modal for Delete Event -->
 <div class="modal fade" id="deleteWarning" tabindex="-1" aria-labelledby="warningModel" aria-hidden="true">

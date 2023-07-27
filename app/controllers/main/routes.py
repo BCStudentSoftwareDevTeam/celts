@@ -33,6 +33,7 @@ from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import unapprovedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
 from app.logic.certification import getCertRequirementsWithCompletion
+from app.logic.serviceLearningCoursesData import saveCourseParticipantsToDatabase,courseParticipantPreviewSessionCleaner
 from app.logic.createLogs import createRsvpLog, createAdminLog
 
 @main_bp.route('/logout', methods=['GET'])
@@ -383,25 +384,44 @@ def getAllCourseInstructors(term=None):
     """
     This function selects all the Instructors Name and the previous courses
     """
+    showPreviewModal = request.args.get('showPreviewModal', default=False, type=bool)
+    
+    if showPreviewModal and 'courseParticipantPreview' in session:
+        courseParticipantPreview = session['courseParticipantPreview']
+    else:
+        courseParticipantPreview = []
+
+    errorFlag = session.get('errorFlag')
+    previewParticipantDisplayList = session.get('previewCourseDisplayList')
+
     if g.current_user.isCeltsAdmin:
         setRedirectTarget(request.full_path)
         courseDict = getCourseDict()
-
         term = Term.get_or_none(Term.id == term) or g.current_term
 
         unapproved = unapprovedCourses(term)
         approved = approvedCourses(term)
         terms = selectSurroundingTerms(g.current_term)
 
+        if request.method =='POST' and "submitParticipant" in request.form:
+            saveCourseParticipantsToDatabase(session['courseParticipantPreview'])
+            courseParticipantPreviewSessionCleaner()
+            flash('File saved successfully!', 'success')
+            return redirect(url_for('main.getAllCourseInstructors'))
+      
         return render_template('/main/manageServiceLearningFaculty.html',
                                 courseInstructors = courseDict,
                                 unapprovedCourses = unapproved,
                                 approvedCourses = approved,
                                 terms = terms,
                                 term = term,
-                                CourseStatus = CourseStatus)
+                                CourseStatus = CourseStatus, 
+                                previewParticipantsErrorFlag = errorFlag,
+                                courseParticipantPreview= courseParticipantPreview,
+                                previewParticipantDisplayList = previewParticipantDisplayList
+                                )
     else:
-        abort(403)
+        abort(403) 
 
 def getRedirectTarget(popTarget=False):
     """

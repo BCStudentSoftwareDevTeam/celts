@@ -1,7 +1,6 @@
 import pytest
 
-from flask import Flask, g
-from datetime import datetime
+from flask import g
 from peewee import DoesNotExist
 
 from app import app
@@ -9,7 +8,6 @@ from app.models import mainDB
 from app.models.term import Term
 from app.models.user import User
 from app.models.course import Course
-from app.models.course import CourseStatus
 from app.models.courseParticipant import CourseParticipant
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseQuestion import CourseQuestion
@@ -26,7 +24,7 @@ def test_getServiceLearningCoursesData():
     assert 'Brian Ramsay' in courseDict[2]['faculty']
     assert ['Brian Ramsay', 'Zach Neill'] == courseDict[2]['faculty']
     assert "Submitted" == courseDict[2]['status']
-    assert 'Spring A 2021' in courseDict[2]['term'].description
+    assert 'Spring 2021' in courseDict[2]['term'].description
     assert "Scott Heggen"  == courseDict[2]['creator']
 
     courseDict = getServiceLearningCoursesData('heggens')
@@ -42,7 +40,7 @@ def test_getServiceLearningCoursesData():
     assert 'Scott Heggen' not in courseDict[4]['faculty']
     assert ['Brian Ramsay', 'Ala Qasem'] == courseDict[4]['faculty']
     assert "In Progress" == courseDict[4]['status']
-    assert 'Spring A 2021' in courseDict[4]['term'].description
+    assert 'Spring 2021' in courseDict[4]['term'].description
     assert "Scott Heggen"  == courseDict[4]['creator']
 
 @pytest.mark.integration

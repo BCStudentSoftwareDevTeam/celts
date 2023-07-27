@@ -1,9 +1,10 @@
-from flask import request, render_template, url_for, g, Flask, redirect
+from flask import request, render_template, url_for, g, redirect
 from flask import flash, abort, jsonify, session, send_file
 from peewee import DoesNotExist, fn, IntegrityError
-from playhouse.shortcuts import model_to_dict, dict_to_model
+from playhouse.shortcuts import model_to_dict
 import json
-from datetime import datetime, date
+from datetime import datetime
+import os
 
 from app import app
 from app.models.program import Program
@@ -21,13 +22,14 @@ from app.models.eventViews import EventView
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createAdminLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
-from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm
-from app.logic.participants import getEventParticipants, getUserParticipatedTrainingEvents, checkUserRsvp, checkUserVolunteer
+from app.logic.participants import getUserParticipatedTrainingEvents, checkUserRsvp
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
+from app.logic.serviceLearningCoursesData import parseUploadedFile, courseParticipantPreviewSessionCleaner
+
 
 
 @admin_bp.route('/switch_user', methods=['POST'])
@@ -347,6 +349,24 @@ def deleteEventFile():
     fileData= request.form
     eventfile=FileHandler(eventId=fileData["databaseId"])
     eventfile.deleteFile(fileData["fileId"])
+    return ""
+
+@admin_bp.route("/uploadCourseParticipant", methods= ["POST"])
+def addCourseFile():
+    fileData = request.files['addCourseParticipants']
+    filePath = os.path.join(app.config["files"]["base_path"], fileData.filename)
+    fileData.save(filePath)
+    (session['errorFlag'], session['courseParticipantPreview'], session['previewCourseDisplayList']) = parseUploadedFile(filePath)
+    os.remove(filePath)
+    return redirect(url_for("main.getAllCourseInstructors", showPreviewModal = True))
+
+@admin_bp.route("/deleteUploadedFile", methods= ["POST"])
+def deleteCourseFile():
+    try:
+        courseParticipantPreviewSessionCleaner()
+    except KeyError:
+        pass
+
     return ""
 
 @admin_bp.route("/manageBonner")
