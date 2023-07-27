@@ -115,10 +115,12 @@ def volunteerInformationPage(eventID):
     eventNonAttendedData = [rsvpDatum for rsvpDatum in eventRsvpData if rsvpDatum.user not in eventParticipantUsers]
     
     #get unique list of users for each category waitlist/notwaitlist,rsvped/attended
-    volunteerUser = list(set([obj.user for obj in participantsAndRsvp if not obj.rsvpWaitlist]))
+    volunteerUser = list(set([obj.user for obj in eventParticipantData if not obj.rsvpWaitlist]))
     waitlistUser = list(set([obj.user for obj in participantsAndRsvp if obj.rsvpWaitlist]))
     rsvpUser = list(set([obj.user for obj in eventRsvpData if not obj.rsvpWaitlist ]))
     attendedUser= list(set([obj.user for obj in eventParticipantData if not eventNonAttendedData]))
+    print(attendedUser)
+    print(">>>>>>>>>>>>>>>>>>>>>>>>")
 
     eventData = model_to_dict(event, recurse=False)
     eventData["program"] = event.program
