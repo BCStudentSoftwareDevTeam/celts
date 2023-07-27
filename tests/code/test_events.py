@@ -405,7 +405,7 @@ def test_deleteEvent():
                                       startDate = "2021-12-12",
                                       endDate = "2022-6-12",
                                       recurringId = None,
-                                      program_id = 9)
+                                      program = 9)
 
         testingEvent = Event.get(Event.name == "Testing delete event")
         eventId = testingEvent.id
@@ -668,7 +668,7 @@ def test_volunteerHistory():
                                 startDate = "2021-12-12",
                                 endDate = "2021-12-13",
                                 isAllVolunteerTraining = False,
-                                program_id = participatedProgram)
+                                program = participatedProgram)
         # Create a non-program event in the past that the test user will have
         # participated in
         participatedEvent = Event.create(name = "Attended event",
