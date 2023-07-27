@@ -21,7 +21,7 @@
         {% if eventPast %}
             <div class="alert-danger mb-2 pb-2 pt-2" role="alert">This event is in the past.</div>
         {% endif %}
-        {% if event.isCanceled %}
+        {% if eventData.isCanceled %}
             <div class="alert-warning mb-2 pb-2 pt-2" role="alert">This event has been canceled.</div>
         {% endif %}
 
