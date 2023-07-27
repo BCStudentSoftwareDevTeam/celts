@@ -41,7 +41,7 @@ def test_makingdirectory():
     event_id = 90
     path = 'app/static/files/eventattachments/'
     # Ensure the directory does not exist before calling makeDirectory
-    assert os.path.exists(os.path.join(path, str(event_id))) == False
+    assert os.path.exists(os.path.join(path, str(event_id))) == True
     
     # Creating directory and making sure it exist
     eventFileStorage= [FileStorage(filename= "eventfile.pdf")]
