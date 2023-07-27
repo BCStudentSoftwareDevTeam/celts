@@ -639,7 +639,8 @@ events = [
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 9
     },
     {
         "id": 12,
@@ -660,7 +661,7 @@ events = [
         "id": 13,
         "term": 3,
         "name": "Community Clean Up",
-        "description": "This event doesn't belong to any program",
+        "description": "This event doesn't belong to any major program",
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
@@ -668,7 +669,8 @@ events = [
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 9
     },
     {
         "id": 14,
@@ -683,7 +685,8 @@ events = [
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 9
     },
     {
         "id": 15,
@@ -697,7 +700,8 @@ events = [
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 9
     },
     {
         #Event being created for recurrance events
@@ -712,7 +716,8 @@ events = [
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 9
     },
 ]
 Event.insert_many(events).on_conflict_replace().execute()
