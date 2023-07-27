@@ -81,11 +81,7 @@
           {% if event.isPast %}
             <tr class="table-light showlist" style="display: none;">
           {% else %}
-              {% if event.isCanceled and not (user.isCeltsAdmin or user.isProgramManagerFor(event.program)) %}
-                <tr class="table-light showlist" style="display: none;">
-              {% else %}
-                <tr class="">
-              {% endif %}
+            <tr class="">
           {% endif %}
             {% if type != "bonner" and type != "studentLed" %}
               {% if event.program%}
