@@ -36,7 +36,15 @@ $(document).ready(function() {
       .join(";");
 
     if (selectedEmails) {
-      window.location.href = `mailto:${selectedEmails}?subject=Renew Course Proposal`;
+      const windowRef = window.open(`mailto:${selectedEmails}?subject=Renew Course Proposal`, '_blank');
+  
+      windowRef.focus();
+    
+      setTimeout(function(){
+        if(!windowRef.document) {
+            windowRef.close();
+        }
+      }, 500);
     } else {
       alert("Please select at least one instructor to email.");
     }
@@ -59,6 +67,7 @@ $(document).ready(function() {
       checkbox.checked = uncheckedBoxFound;
     });
   });
+  
 });
 
 function resetAllSelections(){

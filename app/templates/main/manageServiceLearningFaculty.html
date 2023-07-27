@@ -125,13 +125,13 @@
       </div>
     <div id="wrapper">
       <h1 class="text-center pt-1 pb-4">Service-Learning Faculty</h1>
-      <div class="btn btn-primary; position:relative; top: 38px; z-index:1;">
+      <div class="btn" style=" text-align:right; position:relative; top: 38px; z-index:1;">
         {% set instructorEmails = [] %}
         {% for instructor in courseInstructors %}
           {{ instructorEmails.append(instructor.email) or "" }}
         {% endfor %}
         <div>
-          <button class="btn btn-primary" id="emailSelectedButton">Email Selected</button>
+          <button class="btn btn-primary" id="emailSelectedButton"> Email Selected</button>
           <button class="btn btn-primary" id="selectAllOthersButton">Select All</button>
         </div>
       </div>
@@ -150,7 +150,7 @@
               <tr>
                 <td>
                   <input type="checkbox" class="instructorCheckbox" data-email="{{ instructor.email }}">
-                  <a href="/serviceLearning/courseManagement/{{ instructor.username }}">{{ instructor.firstName }} {{ instructor.lastName }}</a>
+                  <a href="/serviceLearning/courseManagement/{{ instructor.username }}"> {{ instructor.firstName }} {{ instructor.lastName }}</a>
                 </td>
                 <td>{{ (', '.join(courseInstructors[instructor])) }}</td>
               </tr>
