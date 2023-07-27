@@ -19,8 +19,12 @@
             {{ eventheader(page_title, eventData, 'large', isNewEvent) }}
         {% endif %}
         {% if eventPast %}
-        <div class="alert-danger mb-2 pb-2 pt-2" role="alert">This event is in the past.</div>
+            <div class="alert-danger mb-2 pb-2 pt-2" role="alert">This event is in the past.</div>
         {% endif %}
+        {% if event.isCanceled %}
+            <div class="alert-warning mb-2 pb-2 pt-2" role="alert">This event has been canceled.</div>
+        {% endif %}
+
     </div>
     {% endblock %}
 

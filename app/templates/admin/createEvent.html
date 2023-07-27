@@ -251,13 +251,11 @@
         </div>
     <div class="row justify-content-left mt-2">
           <div class="col-md-6 offset-md-3">
-            {% if event %}
-              <div class="text-center">
-                <button type="button" class="btn btn-secondary bordered-element m-2" data-bs-toggle="modal" data-bs-target="#cancelWarning">Cancel Event</button>
-              </div>
-            {% endif %}
             <div class="text-center">
               <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteWarning">Delete</button>
+              {% if event and not event.isCanceled %}
+                <button type="button" class="btn btn-warning bordered-element m-2" data-bs-toggle="modal" data-bs-target="#cancelWarning">Cancel</button>
+              {% endif %}
               <input type="submit" class="btn btn-primary" value="Save" />
             </div>
           </div>
@@ -295,12 +293,12 @@
        </div>
         {% else %} -->
         <div class="modal-body">
-          <p> Are you sure you want to cancel this event? <br> An email will be sent to everyone who RSVP'd. </p>
+          <p> Are you sure you want to cancel this event? </p>
         </div>
         <div class="modal-footer justify-content-between">
            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
            <form action="/event/{{eventData.id}}/cancel" method='post'>
-               <button type="submit" class="btn btn-danger">Cancel Event</button>
+               <button type="submit" class="btn btn-warning">Cancel</button>
            </form>
         </div>
         {% endif %}
