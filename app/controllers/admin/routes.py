@@ -60,7 +60,7 @@ def templateSelect():
 
 @admin_bp.route('/eventTemplates/<templateid>/create', methods=['GET','POST'])
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
-def createEvent(templateid, programid=None):
+def createEvent(templateid, programid=9):
     if not (g.current_user.isAdmin or g.current_user.isProgramManagerFor(programid)):
         abort(403)
 
