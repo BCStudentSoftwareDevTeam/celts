@@ -118,7 +118,8 @@ def setup():
                               isService = 0,
                               startDate =  "2021-12-12",
                               endDate =  "2021-12-13",
-                              recurringId = None)
+                              recurringId = None,
+                              program_id = 9)
     EventParticipant.create(user = testUser,
                             event = newNonProgramEvent,
                             attended = True,
@@ -215,6 +216,7 @@ def testingGetAllEventTranscript():
     # ensures the results of both child function appear in the same dictionary
     assert not emptyAllEventDict
     assert allEventDict
+    print(allEventDict)
     assert checkingProgram in [t for t in allEventDict] and termInfo in allEventDict["CELTS Sponsored Events"]
 
 

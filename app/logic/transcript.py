@@ -11,7 +11,7 @@ from peewee import DoesNotExist, fn, JOIN
 
 def getOtherEventsTranscript(username):
     """
-    Returns a Other Events query object containing all the non-program
+    Returns a Other Events query object containing all the other-program
     events for the current user.
     """
 
@@ -20,7 +20,7 @@ def getOtherEventsTranscript(username):
                     .join(Program, JOIN.LEFT_OUTER).switch(Event)
                     .join(Term)
                     .where(EventParticipant.user==username,
-                    Event.program == None)
+                    Event.program == 9)
                     .group_by(Event.term)
                   )
 
@@ -36,7 +36,8 @@ def getProgramTranscript(username):
     EventData = (Event
         .select(Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
         .join(EventParticipant)
-        .where(EventParticipant.user == username)
+        .where(EventParticipant.user == username, 
+        Event.program != 9)
         .group_by(Event.program, Event.term)
         .order_by(Event.term)
         .having(fn.SUM(EventParticipant.hoursEarned > 0)))
