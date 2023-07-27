@@ -5,6 +5,7 @@ class Term(baseModel):
     academicYear = CharField()
     isSummer = BooleanField(default=False)
     isCurrentTerm = BooleanField(default=False)
+    termOrder = CharField()
 
     _cache = None
 
@@ -48,3 +49,13 @@ class Term(baseModel):
                 elif ("Spring" in currentTerm.description):
                     return True
         return False
+
+    @staticmethod
+    def convertDescriptionToTermOrder(description):
+        semester,year = description.split()
+        if semester == "Spring":
+            return year + "-1"
+        elif semester == "Summer" or semester == "May":
+            return year + "-2"
+        elif semester ==  "Fall":
+            return year + '-3'

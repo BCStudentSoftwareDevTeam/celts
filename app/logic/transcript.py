@@ -1,7 +1,6 @@
 from app.models.course import Course
 from app.models.courseParticipant import CourseParticipant
 from app.models.program import Program
-from app.models.programEvent import ProgramEvent
 from app.models.courseInstructor import CourseInstructor
 from app.models.user import User
 from app.models.term import Term
@@ -18,11 +17,10 @@ def getOtherEventsTranscript(username):
 
     otherEventsData = list(EventParticipant.select(Event, Term, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
                     .join(Event)
-                    .join(ProgramEvent, JOIN.LEFT_OUTER)
                     .join(Program, JOIN.LEFT_OUTER).switch(Event)
                     .join(Term)
                     .where(EventParticipant.user==username,
-                    ProgramEvent.program == None)
+                    Event.program == None)
                     .group_by(Event.term)
                   )
 
@@ -34,22 +32,20 @@ def getProgramTranscript(username):
     current user.
     """
     # Add up hours earned in a term for each program they've participated in
-    programData = (ProgramEvent
-        .select(Program, Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
-        .join(Program)
-        .switch(ProgramEvent)
-        .join(Event)
+    
+    EventData = (Event
+        .select(Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
         .join(EventParticipant)
         .where(EventParticipant.user == username)
-        .group_by(Program, Event.term)
+        .group_by(Event.program, Event.term)
         .order_by(Event.term)
         .having(fn.SUM(EventParticipant.hoursEarned > 0)))
     transcriptData = {}
-    for program in programData:
-        if program.program in transcriptData:
-            transcriptData[program.program].append([program.event.term.description, program.hoursEarned])
+    for event in EventData:
+        if event.program in transcriptData:
+            transcriptData[event.program].append([event.term.description, event.hoursEarned])
         else:
-            transcriptData[program.program] = [[program.event.term.description, program.hoursEarned]]
+            transcriptData[event.program] = [[event.term.description, event.hoursEarned]]
     return transcriptData
 
 def getAllEventTranscript(username):

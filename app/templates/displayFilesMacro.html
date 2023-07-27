@@ -1,0 +1,23 @@
+{% macro displayFiles(filepaths, titleName, deleteLink, databaseId)  %}
+<label class="mb-2"><strong>{{titleName}}</strong></label>
+<table>
+    {% for key, value in filepaths.items() %}
+        <tr id="attachment_{{value[1]}}" class="attachmentRow_{{key}}" data-id= "{{key}}">
+            <td class="pr-5">
+            {% set filename = key[:8]+ "..." +key[-10:] if key| length > 25 else key  %}
+                <a class="mr-5 fileName" data-filename='{{key}}' href="{{value[0]}}" target="_blank">{{filename}}</a>
+            </td>
+            <td style="text-align:center">
+            <button
+                data-id="{{value[1]}}"
+                data-delete-url="{{deleteLink}}"
+                data-database-id= '{{databaseId}}'
+                type="button"
+                class="removeAttachment btn btn-danger btn-sm">
+                <i class="bi bi-trash h5 align-middle"></i>
+            </button>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+{% endmacro %}

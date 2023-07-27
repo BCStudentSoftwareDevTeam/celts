@@ -10,5 +10,5 @@ class EmailLog(baseModel):
     recipientsCategory = CharField()
     recipients = CharField()
     dateSent = DateTimeField()
-    sender = ForeignKeyField(User)
+    sender = CharField()
     attachmentName = CharField(null=True)

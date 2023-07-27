@@ -61,7 +61,7 @@ def isBannedFromEvent(username, eventId):
     """
     This function returns whether the user is banned from the program associated with an event.
     """
-    program = Event.get_by_id(eventId).singleProgram
+    program = Event.get_by_id(eventId).program
     user = User.get(User.username == username)
     return not isEligibleForProgram(program, user)
 
@@ -123,6 +123,9 @@ def getUserBGCheckHistory(username):
     return bgHistory
 
 def addProfileNote(visibility, bonner, noteTextbox, username):
+    if bonner:
+        visibility = 1 # bonner notes are always admins and the student
+
     noteForDb = Note.create(createdBy = g.current_user,
                             createdOn = datetime.datetime.now(),
                             noteContent = noteTextbox,

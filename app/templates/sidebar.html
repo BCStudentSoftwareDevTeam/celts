@@ -78,8 +78,8 @@
     <hr>
     {% if env != 'production' %}
         <h6>Current User: {{g.current_user.username}}</h6>
-        <form action="/switch_user" method="POST" id="userSelectForm">
-          <select name="newuser" class="form-select" style="margin-bottom: 10px" id="userSelect">
+        <form action="/switch_user" method="POST" name="userSelectForm">
+          <select name="newuser" class="form-select" style="margin-bottom: 10px" onchange="this.form.submit()">>
             <option {{"selected" if g.current_user.username == config.default_user }} value="{{config.default_user}}">Default User: {{config.default_user}}</option>
             <option {{"selected" if g.current_user.username == "ramsayb2"}} value="ramsayb2">Admin: ramsayb2</option>
             <option {{"selected" if g.current_user.username == "neillz"}} value="neillz">Student Staff: neillz</option>

@@ -7,16 +7,14 @@ from collections import defaultdict
 from app import app
 from app.models.eventParticipant import EventParticipant
 from app.models.user import User
-from app.models.programEvent import ProgramEvent
 from app.models.program import Program
 from app.models.event import Event
 from app.models.term import Term
 
 
 def volunteerHoursByProgram():
-    query = ((Program.select(Program.programName, fn.SUM(EventParticipant.hoursEarned).alias('sum'))
-                     .join(ProgramEvent)
-                     .join(EventParticipant, on=(ProgramEvent.event == EventParticipant.event))
+    query = ((Program.select(Program.programName, fn.SUM(EventParticipant.hoursEarned).alias('sum')).join(Event)
+                     .join(EventParticipant, on=(Event.program== EventParticipant.event))
                      .group_by(Program.programName)
                      .order_by(Program.programName)))
 
@@ -50,12 +48,12 @@ def volunteerMajorAndClass(column, reorderClassLevel=False):
 def repeatVolunteersPerProgram():
     # Get people who participated in events more than once (individual program)
     repeatPerProgramQuery = (EventParticipant.select(fn.CONCAT(User.firstName, " ", User.lastName),Program.programName.alias("programName"),fn.Count(EventParticipant.event_id).alias('event_count'))
-                                             .join(ProgramEvent, on=(EventParticipant.event_id == ProgramEvent.event_id))
-                                             .join(Program, on=(ProgramEvent.program_id == Program.id))
+                                             .join(Event, on=(EventParticipant.event_id ==Event.id))
+                                             .join(Program, on=(Event.program == Program.id))
                                              .join(User, on=(User.username == EventParticipant.user_id))
-                                             .group_by(User.firstName, User.lastName, ProgramEvent.program_id)
+                                             .group_by(User.firstName, User.lastName, Event.program)
                                              .having(fn.Count(EventParticipant.event_id) > 1)
-                                             .order_by(ProgramEvent.program_id, User.lastName ))
+                                             .order_by(Event.program, User.lastName ))
         
     return repeatPerProgramQuery.tuples()
 
@@ -82,13 +80,12 @@ def getRetentionRate():
     return  retentionDict
 
 def termParticipation(termDescription):
-    participationQuery = (ProgramEvent.select(ProgramEvent.program_id, EventParticipant.user_id.alias('participant'), Program.programName.alias("progName"))
-                                      .join(EventParticipant, JOIN.LEFT_OUTER, on=(ProgramEvent.event == EventParticipant.event))
-                                      .join(Program, on=(Program.id == ProgramEvent.program_id))
-                                      .join(Event, on=(ProgramEvent.event_id == Event.id))
+    participationQuery = (Event.select(Event.program, EventParticipant.user_id.alias('participant'), Program.programName.alias("progName"))
+                                      .join(EventParticipant, JOIN.LEFT_OUTER, on=(Event.id == EventParticipant.event))
+                                      .join(Program, on=(Program.id == Event.program))
                                       .join(Term, on=(Event.term_id == Term.id) )
                                       .where(Term.description == termDescription ))
-    print(participationQuery)
+
     programParticipationDict = defaultdict(list)
     for result in participationQuery.dicts():
         prog_name = result['progName']

@@ -9,4 +9,4 @@ then
 	#BUILD="all";
 fi
 
-ptw --verbose -c --runner "bash tests/run_tests.sh $BUILD" --ignore database/ --ext=".py,.sh,.html"
+ptw --verbose -c --runner "bash tests/run_tests.sh $BUILD" --ignore database/ --ext=".py,.sh,.html,.yml"

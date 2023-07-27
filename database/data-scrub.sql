@@ -11,3 +11,6 @@ UPDATE note set noteContent='Notes are not visible except in the production envi
 
 -- randomize program ban users
 UPDATE programban set user_id=(SELECT username from user ORDER BY RAND() LIMIT 1)
+
+-- reset phone numbers
+UPDATE user set phoneNumber='(111)111-1111' where phoneNumber is not null

@@ -12,7 +12,6 @@ from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.interest import Interest
 from app.models.programBan import ProgramBan
-from app.models.programEvent import ProgramEvent
 from app.models.term import Term
 from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
@@ -34,6 +33,7 @@ from app.logic.manageSLFaculty import getCourseDict
 from app.logic.courseManagement import unapprovedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
 from app.logic.certification import getCertRequirementsWithCompletion
+from app.logic.serviceLearningCoursesData import saveCourseParticipantsToDatabase,courseParticipantPreviewSessionCleaner
 from app.logic.createLogs import createRsvpLog, createAdminLog
 
 @main_bp.route('/logout', methods=['GET'])
@@ -43,8 +43,10 @@ def redirectToLogout():
 @main_bp.route('/', methods=['GET'])
 def landingPage():
     managerProgramDict = getManagerProgramDict(g.current_user)
-    programsWithEvents = list(ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event.term == g.current_term).join(Event).distinct())
-    programsWithEventsList = [program.program.id for program in programsWithEvents]
+
+
+    eventsInTerm = list(Event.select().where(Event.term == g.current_term))
+    programsWithEventsList = [event.program for event in eventsInTerm if not event.isPast]
 
     return render_template("/main/landingPage.html", managerProgramDict = managerProgramDict,
                                                      term = g.current_term,
@@ -154,7 +156,7 @@ def viewUsersProfile(username):
                 currentDateTime = datetime.datetime.now(),
                 profileNotes = profileNotes,
                 bonnerRequirements = bonnerRequirements,
-                userDiet = userDiet
+                userDiet = userDiet                
             )
     abort(403)
 
@@ -275,7 +277,7 @@ def volunteerRegister():
     for the event they have clicked register for.
     """
     event = Event.get_by_id(request.form['id'])
-    program = event.singleProgram
+    program = event.program
     user = g.current_user
 
     isAdded = checkUserRsvp(user, event)
@@ -377,25 +379,44 @@ def getAllCourseInstructors(term=None):
     """
     This function selects all the Instructors Name and the previous courses
     """
-    if g.current_user.isCeltsAdmin:
-        setRedirectTarget("/manageServiceLearning")
-        courseDict = getCourseDict()
+    showPreviewModal = request.args.get('showPreviewModal', default=False, type=bool)
+    
+    if showPreviewModal and 'courseParticipantPreview' in session:
+        courseParticipantPreview = session['courseParticipantPreview']
+    else:
+        courseParticipantPreview = []
 
+    errorFlag = session.get('errorFlag')
+    previewParticipantDisplayList = session.get('previewCourseDisplayList')
+
+    if g.current_user.isCeltsAdmin:
+        setRedirectTarget(request.full_path)
+        courseDict = getCourseDict()
         term = Term.get_or_none(Term.id == term) or g.current_term
 
         unapproved = unapprovedCourses(term)
         approved = approvedCourses(term)
         terms = selectSurroundingTerms(g.current_term)
 
+        if request.method =='POST' and "submitParticipant" in request.form:
+            saveCourseParticipantsToDatabase(session['courseParticipantPreview'])
+            courseParticipantPreviewSessionCleaner()
+            flash('File saved successfully!', 'success')
+            return redirect(url_for('main.getAllCourseInstructors'))
+      
         return render_template('/main/manageServiceLearningFaculty.html',
                                 courseInstructors = courseDict,
                                 unapprovedCourses = unapproved,
                                 approvedCourses = approved,
                                 terms = terms,
                                 term = term,
-                                CourseStatus = CourseStatus)
+                                CourseStatus = CourseStatus, 
+                                previewParticipantsErrorFlag = errorFlag,
+                                courseParticipantPreview= courseParticipantPreview,
+                                previewParticipantDisplayList = previewParticipantDisplayList
+                                )
     else:
-        abort(403)
+        abort(403) 
 
 def getRedirectTarget(popTarget=False):
     """

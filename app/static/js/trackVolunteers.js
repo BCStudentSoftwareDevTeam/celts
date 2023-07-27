@@ -10,24 +10,35 @@ $(document).ready(function() {
     sanitize: false,
     html: true,
     content: "Previous Volunteer"
-});
-
-var participantCount = $('#trackVolunteerstable').attr('data-entryCount');
-  var table =  $('#trackVolunteerstable').DataTable({
-    "fnDrawCallback": function(oSettings) {
-      $(".removeVolunteer").on("click", removeVolunteer); // we need to rebind this as new rows become visible
-      let displayedRows = $('#trackVolunteerstable tr').length; // This is actually the number of displayed particpants plus one extra row for the column labels
-      if (displayedRows > participantCount){
-        $('.dataTables_paginate').hide();
-      }
-      else{
-        $('.dataTables_paginate').show();
-      }
-    }
   });
-  if (participantCount < 11){
-    $('.dataTables_length').hide();
+
+  
+  function initializeTable(){
+    let tableID = this.id
+    let table =  $('#' + tableID).DataTable({
+      "fnDrawCallback": function(oSettings) {
+        let participantCount = $('#' + tableID).data('entry-count');
+        $("#" + tableID + " .removeVolunteer").on("click", removeVolunteer); // we need to rebind this as new rows become visible
+        let displayedRows = $('#' + tableID + ' tr').length; // This is actually the number of displayed particpants plus one extra row for the column labels
+        if (displayedRows > participantCount){
+          $('#' + tableID + '_paginate').hide();
+        }
+        else{
+          $('#' + tableID + '_paginate').show();
+        }
+      },
+      "language": {
+        "emptyTable": "No Records Found"
+      }
+    });
+    let participantCount = $('#' + tableID).data('entry-count');
+    if (participantCount < 11){
+      $('#' + tableID + '_length').hide();
+    }
   }
+  $("table").each(initializeTable)
+  
+  
 
 
   // Search functionalities from the volunteer table in the UI
