@@ -28,15 +28,15 @@
       </div>
       <div class="card-footer text-center">
         {% if not program.isBonnerScholars %}
-          {% if program.id in programsWithEventsList %}
-            <a class="btn btn-primary m-auto eventsListButton" data-term="{{term.id}}" data-program_id="{{program.id}}">View Events</a>
+          {% if program in programsWithEventsList %}
+            <a class="btn btn-primary m-auto eventsListButton" data-term="{{term.id}}" data-program_id="{{program.id}}">View Upcoming Events</a>
           {% else %}
             <a class="btn btn-secondary m-auto disabled">No Upcoming Events</a>
           {% endif %}
         {% else %}
           {% if g.current_user.isBonnerScholar %}
-            {% if program.id in programsWithEventsList %}
-              <a class="btn btn-primary m-auto eventsListButton" data-term="{{term.id}}" data-program_id="{{program.id}}">View Events</a>
+            {% if program in programsWithEventsList %}
+              <a class="btn btn-primary m-auto eventsListButton" data-term="{{term.id}}" data-program_id="{{program.id}}">View Upcoming Events</a>
             {% else %}
               <a class="btn btn-secondary m-auto disabled">No Upcoming Events</a>
             {% endif %}

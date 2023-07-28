@@ -6,28 +6,31 @@ from app.models.backgroundCheckType import BackgroundCheckType
 
 terms = [
     {
-        "id": 7,
+        "id": 6,
         "description": "Summer 2022",
         "year": 2022,
         "academicYear": "2021-2022",
         "isSummer": True,
-        "isCurrentTerm": False
+        "isCurrentTerm": False,
+        "termOrder": "2022-2"
     },
     {
-        "id": 8,
+        "id": 7,
         "description": "Fall 2022",
         "year": 2022,
         "academicYear": "2022-2023",
         "isSummer": False,
-        "isCurrentTerm": False
+        "isCurrentTerm": False,
+        "termOrder": "2022-3"
     },
     {
-        "id": 9,
+        "id": 8,
         "description": "Spring 2023",
         "year": 2023,
         "academicYear": "2022-2023",
         "isSummer": False,
-        "isCurrentTerm": False
+        "isCurrentTerm": False,
+        "termOrder": "2023-1"
     },
 ]
 Term.insert_many(terms).on_conflict_replace().execute()
@@ -46,7 +49,7 @@ templates = [
         "id": 2,
         "name": "All Volunteer Training",
         "tag": "all-volunteer",
-        "templateJSON": '{"name": "All Volunteer Training","description": "Training for all CELTS programs", "isTraining": true, "isService": false, "isRequired": true, "isAllVolunteerTraining": true}',
+        "templateJSON": '{"name": "All Volunteer Training","description": "Training for all CELTS programs", "isTraining": true, "isService": false, "isRequired": true, "isAllVolunteerTraining": true, "rsvpLimit": ""}',
         "templateFile": "createEvent.html",
         "isVisible": True
     },
@@ -54,7 +57,7 @@ templates = [
         "id": 3,
         "name": "CELTS-Sponsored Event",
         "tag": "no-program",
-        "templateJSON": "{}",
+        "templateJSON":'{}',
         "templateFile": "createEvent.html",
         "isVisible": True
     },
@@ -95,6 +98,10 @@ coursestatus = [
     {
         "id": 3,
         "status": "Approved"
+    },
+    {
+        "id": 4,
+        "status": "Imported"
     }
 ]
 CourseStatus.insert_many(coursestatus).on_conflict_replace().execute()

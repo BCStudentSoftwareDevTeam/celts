@@ -1,3 +1,34 @@
+
+#########################################################
+# Create a database backup and then migrate the database
+#########################################################
+
+if [ "$1" == "backup" ]
+then
+	# Get credentials
+	echo -n "Database/Schema Name: "
+	read DB
+
+	echo -n "Application User: "
+	read USER
+
+	echo -n "Application Password: "
+	read -s PASS
+	echo
+
+	CONN="-u $USER"
+
+	BACKUP_DIR="tmp-backups"
+	mkdir "$BACKUP_DIR"
+	BACKUP_FILE="$BACKUP_DIR/`date +%F`-backup.sql"
+
+	echo -n -e "\nCreating database backup $BACKUP_FILE ... "
+	export MYSQL_PWD="$PASS"
+	mysqldump $CONN $DB > $BACKUP_FILE
+	export MYSQL_PWD=""
+	echo -e "done.\n"
+fi
+
 pem init
 
 #pem add app.models.[filename].[classname]
@@ -14,7 +45,6 @@ pem add app.models.note.Note
 pem add app.models.outsideParticipant.OutsideParticipant
 pem add app.models.partner.Partner
 pem add app.models.program.Program
-pem add app.models.programEvent.ProgramEvent
 pem add app.models.user.User
 pem add app.models.programBan.ProgramBan
 pem add app.models.courseInstructor.CourseInstructor

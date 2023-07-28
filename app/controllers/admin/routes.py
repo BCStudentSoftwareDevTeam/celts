@@ -1,9 +1,10 @@
-from flask import request, render_template, url_for, g, Flask, redirect
+from flask import request, render_template, url_for, g, redirect
 from flask import flash, abort, jsonify, session, send_file
 from peewee import DoesNotExist, fn, IntegrityError
-from playhouse.shortcuts import model_to_dict, dict_to_model
+from playhouse.shortcuts import model_to_dict
 import json
-from datetime import datetime, date
+from datetime import datetime
+import os
 
 from app import app
 from app.models.program import Program
@@ -21,13 +22,14 @@ from app.models.eventViews import EventView
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createAdminLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
-from app.logic.volunteers import getEventLengthInHours
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm
-from app.logic.participants import getEventParticipants, getUserParticipatedTrainingEvents, checkUserRsvp, checkUserVolunteer
+from app.logic.participants import getUserParticipatedTrainingEvents, checkUserRsvp
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
+from app.logic.serviceLearningCoursesData import parseUploadedFile, courseParticipantPreviewSessionCleaner
+
 
 
 @admin_bp.route('/switch_user', methods=['POST'])
@@ -74,8 +76,7 @@ def createEvent(templateid, programid=None):
     # Get the data from the form or from the template
     eventData = template.templateData
 
-    if program:
-        eventData["program"] = program
+    eventData['program'] = program
 
     if request.method == "GET":
         eventData['contactName'] = "CELTS Admin"
@@ -125,10 +126,9 @@ def createEvent(templateid, programid=None):
     futureTerms = selectSurroundingTerms(g.current_term, prevTerms=0)
 
     requirements, bonnerCohorts = [], []
-    if 'program' in eventData and eventData['program'].isBonnerScholars:
+    if eventData['program'] is not None and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
         bonnerCohorts = getBonnerCohorts(limit=5)
-
     return render_template(f"/admin/{template.templateFile}",
             template = template,
             eventData = eventData,
@@ -142,7 +142,7 @@ def createEvent(templateid, programid=None):
 def rsvpLogDisplay(eventId):
     event = Event.get_by_id(eventId)
     eventData = model_to_dict(event, recurse=False)
-    eventData['program'] = event.singleProgram
+    eventData['program'] = event.program
     isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
     if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager):
         allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
@@ -175,7 +175,18 @@ def eventDisplay(eventId):
 
     eventData = model_to_dict(event, recurse=False)
     associatedAttachments = AttachmentUpload.select().where(AttachmentUpload.event == event)
+    filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)
 
+    image = None
+    picurestype = [".jpeg", ".png", ".gif", ".jpg", ".svg", ".webp"]
+    for attachment in associatedAttachments:
+        for extension in picurestype:
+            if (attachment.fileName.endswith(extension)):
+                image = filepaths[attachment.fileName][0]
+        if image:
+            break
+
+                
     if request.method == "POST": # Attempt to save form
         eventData = request.form.copy()
         try:
@@ -199,13 +210,13 @@ def eventDisplay(eventId):
 
     # make sure our data is the same regardless of GET and POST
     preprocessEventData(eventData)
-    eventData['program'] = event.singleProgram
+    eventData['program'] = event.program
     futureTerms = selectSurroundingTerms(g.current_term)
-    userHasRSVPed = checkUserRsvp(g.current_user, event)
+    userHasRSVPed = checkUserRsvp(g.current_user, event) 
     filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)
     isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
-
     requirements, bonnerCohorts = [], []
+    
     if eventData['program'] and eventData['program'].isBonnerScholars:
         requirements = getCertRequirements(Certification.BONNER)
         bonnerCohorts = getBonnerCohorts(limit=5)
@@ -248,6 +259,7 @@ def eventDisplay(eventId):
                                 currentEventRsvpAmount = currentEventRsvpAmount,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths,
+                                image = image,
                                 pageViewsCount= pageViewsCount)
 
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
@@ -323,8 +335,26 @@ def adminLogs():
 @admin_bp.route("/deleteEventFile", methods=["POST"])
 def deleteEventFile():
     fileData= request.form
-    eventfile=FileHandler(eventId=fileData["eventId"])
+    eventfile=FileHandler(eventId=fileData["databaseId"])
     eventfile.deleteFile(fileData["fileId"])
+    return ""
+
+@admin_bp.route("/uploadCourseParticipant", methods= ["POST"])
+def addCourseFile():
+    fileData = request.files['addCourseParticipants']
+    filePath = os.path.join(app.config["files"]["base_path"], fileData.filename)
+    fileData.save(filePath)
+    (session['errorFlag'], session['courseParticipantPreview'], session['previewCourseDisplayList']) = parseUploadedFile(filePath)
+    os.remove(filePath)
+    return redirect(url_for("main.getAllCourseInstructors", showPreviewModal = True))
+
+@admin_bp.route("/deleteUploadedFile", methods= ["POST"])
+def deleteCourseFile():
+    try:
+        courseParticipantPreviewSessionCleaner()
+    except KeyError:
+        pass
+
     return ""
 
 @admin_bp.route("/manageBonner")

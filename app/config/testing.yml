@@ -7,6 +7,8 @@ celts_admin_contact: "celts@berea.edu"
 show_queries: True
 test_entry: "Testing"
 
+MAIL_SUPPRESS_SEND: True
+
 db:
     name: "celts"
     host: "db"

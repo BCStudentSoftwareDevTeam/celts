@@ -1,6 +1,6 @@
 from flask import request, render_template, redirect, url_for, request, flash, abort, g, json, jsonify
 from datetime import datetime
-from peewee import DoesNotExist
+from peewee import DoesNotExist, JOIN
 from playhouse.shortcuts import model_to_dict
 from app.controllers.admin import admin_bp
 from app.models.event import Event
@@ -10,7 +10,7 @@ from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours, addUserBackgroundCheck, setProgramManager
 from app.logic.participants import trainedParticipants, getEventParticipants, addPersonToEvent
-from app.logic.events import getPreviousRecurringEventData, getEventRsvpCountsForTerm
+from app.logic.events import getPreviousRecurringEventData, getEventRsvpCount
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.programManager import ProgramManager
@@ -47,36 +47,45 @@ def trackVolunteersPage(eventID):
         print(f"No event found for {eventID}", e)
         abort(404)
     eventData = model_to_dict(event, recurse=False)
-    eventData["program"] = event.singleProgram
-    trainedParticipantsList = trainedParticipants(event.singleProgram, g.current_term)
+    
+    eventData["program"] = event.program
+    trainedParticipantsList = trainedParticipants(event.program, g.current_term)
     eventParticipants = getEventParticipants(event)
+
     isProgramManager = g.current_user.isProgramManagerForEvent(event)
-    bannedUsers = [row.user for row in getBannedUsers(event.singleProgram)]
+    bannedUsers = [row.user for row in getBannedUsers(event.program)]
     if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
         abort(403)
 
-    eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
     eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
-    participantsAndRsvp = (eventParticipantData + eventRsvpData)
-    eventVolunteerData = []
-    volunteerUser = []
-    for volunteer in participantsAndRsvp:
-        if volunteer.user not in volunteerUser:
-            eventVolunteerData.append(volunteer)
-            volunteerUser.append(volunteer.user)
-    eventWaitlistData = [volunteer for volunteer in eventVolunteerData if volunteer.rsvpWaitlist]
+    eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
+    eventParticipantUsers = [participantDatum.user for participantDatum in eventParticipantData]
+    eventRsvpData = [rsvpDatum for rsvpDatum in eventRsvpData if rsvpDatum.user not in eventParticipantUsers]
+
+    if event.isPast:
+        eventVolunteerData = eventParticipantData
+        eventNonAttendedData = eventRsvpData
+        eventWaitlistData = []
+    else:
+        eventWaitlistData = [volunteer for volunteer in eventParticipantData + eventRsvpData if volunteer.rsvpWaitlist and event.isRsvpRequired]
+        eventVolunteerData = [volunteer for volunteer in eventParticipantData + eventRsvpData if volunteer not in eventWaitlistData]
+        eventNonAttendedData = []
+        
+   
+    
+
     eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
     recurringEventID = event.recurringId # query Event Table to get recurringId using Event ID.
     recurringEventStartDate = event.startDate
     recurringVolunteers = getPreviousRecurringEventData(recurringEventID)
 
-    currentRsvpAmount = getEventRsvpCountsForTerm(g.current_term)
-
+    currentRsvpAmount = getEventRsvpCount(event.id)
     return render_template("/events/trackVolunteers.html",
                             eventData = eventData,
                             eventVolunteerData = eventVolunteerData,
-                            eventParticipants = eventParticipants,
+                            eventNonAttendedData = eventNonAttendedData,
+                            eventWaitlistData = eventWaitlistData,
                             eventLength = eventLengthInHours,
                             event = event,
                             recurringEventID = recurringEventID,
@@ -84,7 +93,6 @@ def trackVolunteersPage(eventID):
                             recurringVolunteers = recurringVolunteers,
                             bannedUsers = bannedUsers,
                             trainedParticipantsList = trainedParticipantsList,
-                            eventWaitlistData = eventWaitlistData,
                             currentRsvpAmount = currentRsvpAmount)
 
 
@@ -111,7 +119,7 @@ def dietaryRestrictionsPage(eventID):
 
 
     eventData = model_to_dict(event, recurse=False)
-    eventData["program"] = event.singleProgram
+    eventData["program"] = event.program
 
 
     return render_template("/events/dietaryRestrictions.html",
@@ -149,7 +157,7 @@ def addVolunteer(eventId):
 @admin_bp.route('/rsvpFromWaitlist/<username>/<eventId>', methods = ['POST'])
 def rsvpFromWaitlist(username, eventId):
     event = Event.get_by_id(eventId)
-    isProgramManager = g.current_user.isProgramManagerFor(event.singleProgram)
+    isProgramManager = g.current_user.isProgramManagerFor(event.program)
     if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager): 
         waitlistUsers = EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.user == username, EventRsvp.event==eventId).execute()
         if (waitlistUsers):
@@ -166,7 +174,7 @@ def removeVolunteerFromEvent():
     user = request.form.get('username')
     eventID = request.form.get('eventId')
     if g.current_user.isAdmin:
-        userInRsvpTable = EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.user == username, EventRsvp.event==eventID).execute()
+        userInRsvpTable = EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.user == user, EventRsvp.event==eventID).execute()
         if (userInRsvpTable):
             rsvpUser = userInRsvpTable[0]
             if rsvpUser.rsvpWaitlist:

@@ -8,7 +8,6 @@ from app.models.user import User
 from app.models.bonnerCohort import BonnerCohort
 from app.models.term import Term
 from app.models.program import Program
-from app.models.programEvent import ProgramEvent
 from app.models.event import Event
 from app.models.programBan import ProgramBan
 from app.models.course import Course
@@ -325,47 +324,45 @@ terms = [
         "year": 2020,
         "academicYear": "2020-2021",
         "isSummer": False,
-        "isCurrentTerm": False
+        "isCurrentTerm": False,
+        "termOrder": "2020-3"
     },
     {
         "id": 2,
-        "description": "Spring A 2021",
+        "description": "Spring 2021",
         "year": 2021,
         "academicYear": "2020-2021",
         "isSummer": False,
-        "isCurrentTerm": False
+        "isCurrentTerm": False,
+        "termOrder": "2021-1"
     },
+    
     {
         "id": 3,
-        "description": "Spring B 2021",
-        "year": 2021,
-        "academicYear": "2020-2021",
-        "isSummer": False,
-        "isCurrentTerm": False
-    },
-    {
-        "id": 4,
         "description": "Summer 2021",
         "year": 2021,
         "academicYear": "2020-2021",
         "isSummer": True,
-        "isCurrentTerm": True
+        "isCurrentTerm": True,
+        "termOrder": "2021-2"
     },
     {
-        "id": 5,
+        "id": 4,
         "description": "Fall 2021",
         "year": 2021,
         "academicYear": "2021-2022",
         "isSummer": False,
-        "isCurrentTerm": False
+        "isCurrentTerm": False,
+        "termOrder": "2021-3"
     },
     {
-        "id": 6,
+        "id": 5,
         "description": "Spring 2022",
         "year": 2022,
         "academicYear": "2021-2022",
         "isSummer": False,
-        "isCurrentTerm": False
+        "isCurrentTerm": False,
+        "termOrder": "2022-1"
     },
 
 ]
@@ -389,7 +386,7 @@ programs = [
         "programDescription": "The Berea Buddies program is dedicated to establishing long-term mentorships between Berea youth (Little Buddies) and Berea College students (Big Buddies). Volunteers serve children by offering them friendship and quality time. Big and Little Buddies meet each other every Monday or Tuesday during the academic year, except on school and national holidays, to enjoy structured activities around campus.",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "contactEmail": "",
+        "contactEmail": "bereabuddies@berea.edu",
         "contactName": ""
 
     },
@@ -479,7 +476,9 @@ events = [
         "startDate": datetime.strptime("2021 10 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 1
+        
     },
     {
         "id": 2,
@@ -493,7 +492,9 @@ events = [
         "startDate": datetime.strptime("2021 11 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 1
+        
     },
     {
         "id": 3,
@@ -507,7 +508,8 @@ events = [
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 3
     },
     {
         "id": 4,
@@ -521,7 +523,8 @@ events = [
         "startDate": datetime.strptime("2021 6 25","%Y %m %d"),
         "endDate": datetime.strptime("2021 6 25","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 2
     },
     {
         "id": 5,
@@ -535,7 +538,8 @@ events = [
         "startDate": datetime.strptime("2021 6 18","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 2
     },
     {
         "id": 6,
@@ -549,7 +553,8 @@ events = [
         "startDate": datetime.strptime("2021 08 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 9 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 3
     },
     {
         "id": 7,
@@ -563,7 +568,8 @@ events = [
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 1
     },
     {
         "id": 8,
@@ -577,7 +583,8 @@ events = [
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 2
     },
     {
         "id": 9,
@@ -591,7 +598,8 @@ events = [
         "startDate": datetime.strptime("2021 12 12","%Y %m %d"),
         "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 2
 
     },
     {
@@ -606,7 +614,8 @@ events = [
         "startDate": datetime.strptime("2021 1 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 3
     },
     {
         "id": 11,
@@ -634,7 +643,8 @@ events = [
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 3
     },
     {
         "id": 13,
@@ -697,63 +707,6 @@ events = [
 ]
 Event.insert_many(events).on_conflict_replace().execute()
 
-program_events = [
-    {
-        "event_id": 1,
-        "program_id": 1
-    },
-    {
-        "event_id": 2,
-        "program_id": 1
-    },
-    {
-        "event_id": 3,
-        "program_id": 3
-    },
-    {
-        "event_id": 4,
-        "program_id": 2
-    },
-    {
-        "event_id": 5,
-        "program_id": 2
-    },
-    {
-        "event_id": 6,
-        "program_id": 3
-    },
-    {
-        "event_id": 7,
-        "program_id": 1
-    },
-    {
-        "event_id": 8,
-        "program_id": 2
-    },
-    {
-        "event_id": 9,
-        "program_id": 2
-    },
-    {
-        "event_id": 10,
-        "program_id": 3
-    },
-    {
-        "event_id": 12,
-        "program_id": 3
-    },
-
-    {
-        "event_id": 14,
-        "program_id": 5
-    },
-    {
-        "event_id": 14,
-        "program_id": 6
-    },
-]
-ProgramEvent.insert_many(program_events).on_conflict_replace().execute()
-
 notes = [
     {
         "id": 1,
@@ -810,6 +763,7 @@ courses = [
     {
         "id": 1,
         "courseName": "Databases",
+        "courseAbbreviation": "",
         "term": 3,
         "status": 1,
         "courseCredit": "",
@@ -821,6 +775,7 @@ courses = [
     {
         "id": 2,
         "courseName": "Spanish Help",
+        "courseAbbreviation": "SPN 104",
         "term": 2,
         "status": 2,
         "courseCredit": "",
@@ -831,8 +786,9 @@ courses = [
     },
     {
         "id": 3,
-        "courseName": "French Help",
-        "term": 4,
+        "courseName": "Frenchy Help",
+        "courseAbbreviation": "FRN 103",
+        "term": 3,
         "status": 3,
         "courseCredit": "",
         "createdBy": "ramsayb2",
@@ -843,6 +799,7 @@ courses = [
     {
         "id": 4,
         "courseName": "Testing",
+        "courseAbbreviation": "",
         "term": 2,
         "status": 1,
         "courseCredit": "",
@@ -1215,7 +1172,7 @@ emailTemplates = [
     {
     #'id': 1,
     'subject': 'Test Email',
-    'body': 'Hello {name}, This is a test event named {event_name} located in {location}. Other info: {start_date}-{end_date} and this {start_time}-{end_time}.',
+    'body': 'Hello {recipient_name}, This is a test event named {event_name} located in {location}. Other info: {start_date}-{end_date} and this {start_time}-{end_time}.',
     'action': 'sent',
     'purpose': 'Test',
     'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
@@ -1223,14 +1180,14 @@ emailTemplates = [
     {
     #'id': 2,
     'subject': 'Test Email 2',
-    'body': 'Hello {name}, This is another test event named {event_name} located in {location}. Other info: {start_date}-{end_date} and this {start_time}-{end_time}. The link is {event_link}',
+    'body': 'Hello {recipient_name}, This is another test event named {event_name} located in {location}. Other info: {start_date}-{end_date} and this {start_time}-{end_time}. The link is {event_link}',
     'action': 'sent',
     'purpose': 'Test2',
     'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
     },
     {
     'subject': 'Event Reminder',
-    'body': 'Hello! This is a reminder that you have an event coming up tomorrow, {start_date}. The event is {event_name} and it will be taking place at {location} from {start_time}-{end_time}. The link is {event_link}.',
+    'body': 'Hello! This is a reminder that you have an event coming up tomorrow, {start_date}. The event is {event_name} and it will be taking place at {location} from {start_time}-{end_time}. The link is {event_link}. The event is scheduled to happen {relative_time} from now.',
     'action': 'sent',
     'purpose': 'Reminder',
     'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
