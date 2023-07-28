@@ -98,9 +98,9 @@
             {% else %}
               <td><a href="/event/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
             {% endif %}
-            <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
-            <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
-            <td class="text-dark">{{event.location}}</td>
+              <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
+              <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
+              <td class="text-dark">{{event.location}}</td>
             {% if user.isAdmin %}
               <td>
                 {% if event.isPast %}

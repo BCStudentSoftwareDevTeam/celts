@@ -252,11 +252,11 @@
     <div class="row justify-content-left mt-2">
           <div class="col-md-6 offset-md-3">
             <div class="text-center">
-              <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteWarning">Delete</button>
-              {% if event and not event.isCanceled %}
-                <button type="button" class="btn btn-warning bordered-element m-2" data-bs-toggle="modal" data-bs-target="#cancelWarning">Cancel</button>
-              {% endif %}
               <input type="submit" class="btn btn-primary" value="Save" />
+              {% if event and not event.isCanceled %}
+                <button type="button" class="btn btn-warning bordered-element m-2" data-bs-toggle="modal" data-bs-target="#cancelWarning">Cancel Event</button>
+              {% endif %}
+              <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteWarning">Delete Event</button>
             </div>
           </div>
     </div>
@@ -270,15 +270,14 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <p> Are you sure you want to cancel this event? </p>
+        <p> Are you sure you want to cancel this event? <br> By cancelling this event, the information about it will be retained for any future reference.</p>
       </div>
       <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <form action="/event/{{eventData.id}}/cancel" method='post'>
-              <button type="submit" class="btn btn-warning">Cancel</button>
+              <button type="submit" class="btn btn-warning">Cancel Event</button>
           </form>
       </div>
-      {% endif %}
       <div>
         <input type="hidden" value="{{eventData.id}}" name="id">
       </div>
@@ -297,7 +296,7 @@
         {% if eventData.recurringId%}
         <div class="modal-body">
           <div class= "container-fluid">
-            <p>This action is irreversible.</p>
+            <p>This action is irreversible. <br> By deleting this event, all information regarding this event will be entirely removed from the website. </p>
             <div class="d-grid gap-2">
                 <form action="/event/{{eventData.id}}/delete" method='post'>
                   <button type="submit" class="btn btn-danger">Delete This Event</button>
@@ -318,7 +317,7 @@
        </div>
         {% else %}
         <div class="modal-body">
-          <p>This action is irreversible.</p>
+          <p>This action is irreversible. <br> By deleting this event, all information regarding this event will be entirely removed from the website. </p>
         </div>
         <div class="modal-footer justify-content-between">
            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
