@@ -53,51 +53,54 @@
       </div>
     </div>
   </div>
+ 
   <hr>
 
   <div id="volunteerInformationToPrint">
-  {% set combinedParticipants = attendedUser + rsvpUser %}
-  {% set printedNames = [] %}
-  {% set uniqueParticipants = combinedParticipants | unique %}
-  {% for participant in uniqueParticipants %}
-    {% set isAttended = participant in attendedUser %}
-    {% set isRSVPed = participant in rsvpUser %}
-    {% set isWaitlist = participant in waitlistUser %}
+    {% set combinedParticipants = attendedUser + rsvpUser %}
+    {% set printedNames = [] %}
+    {% set uniqueParticipants = combinedParticipants | unique %}
+    <div class=" row">
+      {% for participant in uniqueParticipants %}
+      {% set isAttended = participant in attendedUser %}
+      {% set isRSVPed = participant in rsvpUser %}
+      {% set isWaitlist = participant in waitlistUser %}
     
-    {% if isRSVPed %}
-      <div class="rsvpSelect col-12 col-md-6 volunteerInfoEntries" data-user="{{participant.username}}">
-        <h4 nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></h4>
-        <ul>
-          <div class="phoneSelect" nowrap>{{ participant.phoneNumber }}</div>
-          <div class="emailSelect" nowrap>{{ participant.email }}</div>
-          <!-- <div class="emergencySelect">Emergency Contact: PlaceHolder for Emergency Contacts</div> -->
-          <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction }}</div>
-        </ul>
-      </div>
-    {% endif %}
-    {% if isAttended%}
-      <div class="attendedSelect col-12 col-md-6 volunteerInfoEntries" data-user="{{participant.username}}">
-        <h4 nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></h4>
-        <ul>
-          <div class="phoneSelect" nowrap>{{ participant.phoneNumber }}</div>
-          <div class="emailSelect" nowrap>{{ participant.email }}</div>
-          <!-- <div class="emergencySelect">Emergency Contact: PlaceHolder for Emergency Contacts</div> -->
-          <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction }}</div>
-        </ul>
-      </div>
-    {% endif %}
-    {% if isWaitlist %}
-      <div class="waitlistSelect col-12 col-md-6 volunteerInfoEntries" data-user="{{participant.username}}">
-        <h4 nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></h4>
-        <ul>
-          <div class="phoneSelect" nowrap>{{ participant.phoneNumber }}</div>
-          <div class="emailSelect" nowrap>{{ participant.email }}</div>
-          <!-- <div class="emergencySelect">Emergency Contact: PlaceHolder for Emergency Contacts</div> -->
-          <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction }}</div>
-        </ul>
-      </div>
-    {% endif %}
-  {% endfor %}
+      {% if isRSVPed %}
+        <div class="rsvpSelect col-12 col-md-6 volunteerInfoEntries" data-user="{{participant.username}}">
+          <h4 nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></h4>
+          <ul>
+            <div class="phoneSelect" nowrap>{{ participant.phoneNumber }}</div>
+            <div class="emailSelect" nowrap>{{ participant.email }}</div>
+            <!-- <div class="emergencySelect">Emergency Contact: PlaceHolder for Emergency Contacts</div> -->
+            <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction }}</div>
+          </ul>
+        </div>
+      {% endif %}
+      {% if isAttended%}
+        <div class="attendedSelect col-12 col-md-6 volunteerInfoEntries" data-user="{{participant.username}}">
+          <h4 nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></h4>
+          <ul>
+            <div class="phoneSelect" nowrap>{{ participant.phoneNumber }}</div>
+            <div class="emailSelect" nowrap>{{ participant.email }}</div>
+            <!-- <div class="emergencySelect">Emergency Contact: PlaceHolder for Emergency Contacts</div> -->
+            <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction }}</div>
+          </ul>
+        </div>
+      {% endif %}
+      {% if isWaitlist %}
+        <div class="waitlistSelect col-12 col-md-6 volunteerInfoEntries" data-user="{{participant.username}}">
+          <h4 nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></h4>
+          <ul>
+            <div class="phoneSelect" nowrap>{{ participant.phoneNumber }}</div>
+            <div class="emailSelect" nowrap>{{ participant.email }}</div>
+            <!-- <div class="emergencySelect">Emergency Contact: PlaceHolder for Emergency Contacts</div> -->
+            <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction }}</div>
+          </ul>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
   </div>
 {% else %}
   <h3>No volunteer information available for this event.</h3>
