@@ -58,7 +58,7 @@ pem add app.models.backgroundCheck.BackgroundCheck
 pem add app.models.backgroundCheckType.BackgroundCheckType
 pem add app.models.adminLog.AdminLog
 pem add app.models.attachmentUpload.AttachmentUpload
-pem add app.models.emergencyInfo.EmergencyInfo
+pem add app.models.emergencyContact.EmergencyContact
 pem add app.models.insuranceInfo.InsuranceInfo
 pem add app.models.bonnerCohort.BonnerCohort
 pem add app.models.certification.Certification

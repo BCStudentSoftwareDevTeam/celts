@@ -1,7 +1,7 @@
 from app.models import *
 from app.models.user import User
 
-class EmergencyInfo(baseModel):
+class EmergencyContact(baseModel):
     user = ForeignKeyField(User)
     name = CharField(null=True)
     relationship = CharField(null=True)
