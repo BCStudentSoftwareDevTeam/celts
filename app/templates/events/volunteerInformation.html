@@ -4,11 +4,6 @@
 {% set tabName = 'dietary' %}
 {% extends "eventNav.html" %}
 
-{% block styles %}
-{{super()}}
-<link rel="stylesheet" href="app/static/css/volunteerInformation.css">
-{% endblock %}
-
 {% block scripts %}
 {{super()}}
 <script type="module" src="/static/js/volunteerInformation.js"></script>
@@ -17,6 +12,10 @@
 {% block app_content %}
 
 {{super()}}
+<div class="form-check form-switch mb-2 " >
+  <label class="form-check-label" for="tableCardToggle" id="tableCardToggleLabel">Table View</label>
+  <input class="form-check-input" type="checkbox" id="tableCardToggle" autocomplete="off">
+</div>
 
 
 {% if attendedUser or waitlistUser or rsvpUser %}
@@ -41,9 +40,7 @@
         <label><b>Included Information:</b></label><br>
         <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="dietRestrictionSelect" checked>
         <label for="dietRestrictionSelect">Dietary Restriction</label><br>
-        <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="emergencySelect" checked>
-        <!-- <label for="emergencySelect">Emergency Contacts</label><br>
-        <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="phoneSelect" checked> -->
+        <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="phoneSelect" checked>
         <label for="phoneSelect">Phone Number</label><br>
         <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="emailSelect" checked>
         <label for="emailSelect">Email</label><br>
@@ -56,7 +53,7 @@
  
   <hr>
 
-  <div id="volunteerInformationToPrint">
+  <div id="volunteerInformationCardToPrint">
     {% set combinedParticipants = attendedUser + rsvpUser %}
     {% set printedNames = [] %}
     {% set uniqueParticipants = combinedParticipants | unique %}
@@ -72,7 +69,6 @@
           <ul>
             <div class="phoneSelect" nowrap>{{ participant.phoneNumber }}</div>
             <div class="emailSelect" nowrap>{{ participant.email }}</div>
-            <!-- <div class="emergencySelect">Emergency Contact: PlaceHolder for Emergency Contacts</div> -->
             <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction }}</div>
           </ul>
         </div>
@@ -83,7 +79,6 @@
           <ul>
             <div class="phoneSelect" nowrap>{{ participant.phoneNumber }}</div>
             <div class="emailSelect" nowrap>{{ participant.email }}</div>
-            <!-- <div class="emergencySelect">Emergency Contact: PlaceHolder for Emergency Contacts</div> -->
             <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction }}</div>
           </ul>
         </div>
@@ -94,14 +89,64 @@
           <ul>
             <div class="phoneSelect" nowrap>{{ participant.phoneNumber }}</div>
             <div class="emailSelect" nowrap>{{ participant.email }}</div>
-            <!-- <div class="emergencySelect">Emergency Contact: PlaceHolder for Emergency Contacts</div> -->
             <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction }}</div>
           </ul>
         </div>
       {% endif %}
-    {% endfor %}
+      {% endfor %}
+    </div>
   </div>
-  </div>
+       
+      <table id ="volunteerInformationTableToPrint">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th class="phoneSelect">Phone Number</th>
+            <th class="emailSelect">Email</th>
+            <th class="dietRestrictionSelect">Dietary Restriction</th>
+          </tr>
+        </thead>
+          {% set combinedParticipants = attendedUser + rsvpUser %}
+          {% set printedNames = [] %}
+          {% set uniqueParticipants = combinedParticipants | unique %}
+          {% for participant in uniqueParticipants %}
+            {% set isAttended = participant in attendedUser %}
+            {% set isRSVPed = participant in rsvpUser %}
+            {% set isWaitlist = participant in waitlistUser %}
+        <tbody>
+          {% if isRSVPed %}
+          <tr class="rsvpSelect volunteerInfoEntries" data-user="{{participant.username}}">
+            <td nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></td>
+            <td class="phoneSelect" nowrap>{{ participant.phoneNumber }}</td>
+            <td class="emailSelect" nowrap>{{ participant.email }}</td>
+            <td class="dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction }}</td>
+          </tr>
+          {% endif %}
+          {% if isAttended%}
+          <tr class="attendedSelect volunteerInfoEntries" data-user="{{participant.username}}">
+            <td nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></td>
+            <td class="phoneSelect" nowrap>{{ participant.phoneNumber }}</td>
+            <td class="emailSelect" nowrap>{{ participant.email }}</td>
+            <td class="dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction }}</td>
+          </tr>
+          {% endif %}
+          {% if isWaitlist %}
+          <tr class="waitlistSelect volunteerInfoEntries" data-user="{{participant.username}}">
+            <td nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></td>
+            <td class="phoneSelect" nowrap>{{ participant.phoneNumber }}</td>
+            <td class="emailSelect" nowrap>{{ participant.email }}</td>
+            <td class="dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction }}</td>
+          </tr>
+          {% endif %}
+
+        </tbody>
+      {% endfor %}
+      </table>
+
+
+
+    
+  
 {% else %}
   <h3>No volunteer information available for this event.</h3>
 {% endif %}
