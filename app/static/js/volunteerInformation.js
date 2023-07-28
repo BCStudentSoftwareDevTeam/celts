@@ -1,14 +1,20 @@
 $(document).ready(function () {
 	$('#printVolunteerInfo').on('click', function () {
-		var win = window.open();
-		self.focus();
-		win.document.open();
-		win.document.write("<html><body>");
-		win.document.write($('#volunteerInformationToPrint').html());
-		win.document.write('</body></html>');
-		win.document.close();
-		win.print();
-		win.close();
+		$('#volunteerInformationToPrint').siblings().hide()
+		$('#volunteerInformationToPrint').parents().siblings().hide()
+		// $("#volunteerInformationToPrint").appendTo('body')
+		window.print()
+		
+		$("body").show()
+		// var win = window.open();
+		// self.focus();
+		// win.document.open();
+		// win.document.write("<html><body>");
+		// win.document.write($('#volunteerInformationToPrint').html());
+		// win.document.write('</body></html>');
+		// win.document.close();
+		// win.print();
+		// win.close();
 	})
 	$(".displayCheckbox").on('change', function(){
 		$(".displayCheckbox").each(function() {
