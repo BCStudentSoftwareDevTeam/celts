@@ -169,46 +169,44 @@ def emergencyContactInfo(username):
     This loads the Emergency Contact
     """
     if request.method == 'GET':
+        contactInfo = EmergencyContact.get_or_none(EmergencyContact.user_id == username)
         return render_template ("/main/emergencyContactInfo.html",
-                                user=User.get_by_id(username),  # We need a check if this is null, the page should abort with a 404 error
+                                username=username,
+                                contactInfo=contactInfo,
                                 viewOnly = False
                                 )
+    
     elif request.method == 'POST':
-        # Save the data
-        return
+        contactInfo = EmergencyContact.get_or_none(EmergencyContact.user_id == username)
+        if contactInfo:
+            contactInfo.update(**request.form).execute()
+        else:
+            EmergencyContact.create(user = username, **request.form)
+        return redirect (f"/profile/{username}")
 
 @main_bp.route('/profile/<username>/insuranceInfo', methods=['GET', 'POST'])
 def insuranceInfo(username):
     """
     This loads the Insurance Information Page
     """
-
-    # Save the form data
-    if request.method == 'POST':
-        info = InsuranceInfo.get_or_none(InsuranceInfo.user_id == username)
-        if info:
-            info.update(**request.form).execute()
-        else:
-            InsuranceInfo.create(user = username, **request.form)
-
-
-    userInsuranceInfo = InsuranceInfo.get_or_none(InsuranceInfo.user == username)
-
-
     if request.method == 'GET':
+        userInsuranceInfo = InsuranceInfo.get_or_none(InsuranceInfo.user == username)
         return render_template ("/main/insuranceInfo.html",
                                 username = username,
                                 userInsuranceInfo = userInsuranceInfo,
                                 viewOnly = False
                                 )
-    
+
+    # Save the form data
     elif request.method == 'POST':
+        info = InsuranceInfo.get_or_none(InsuranceInfo.user_id == username)
+        if info:
+            info.update(**request.form).execute()
+        else:
+            InsuranceInfo.create(user = username, **request.form)
         flash('Insurance information saved successfully!', 'success') 
-        return render_template ("/main/insuranceInfo.html",
-                                username = username,
-                                userInsuranceInfo=userInsuranceInfo,
-                                viewOnly = False
-                                )
+        return redirect (f"/profile/{username}")
+
 
 
 @main_bp.route('/profile/addNote', methods=['POST'])
