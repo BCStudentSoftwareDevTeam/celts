@@ -104,7 +104,6 @@ def volunteerInformationPage(eventID):
         print(f"No event found for {eventID}", e)
         abort(404)
 
-
     if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerForEvent(event))):
         abort(403)
 
@@ -118,7 +117,7 @@ def volunteerInformationPage(eventID):
     volunteerUser = list(set([obj.user for obj in eventParticipantData if not obj.rsvpWaitlist]))
     waitlistUser = list(set([obj.user for obj in participantsAndRsvp if obj.rsvpWaitlist]))
     rsvpUser = list(set([obj.user for obj in eventRsvpData if not obj.rsvpWaitlist ]))
-    attendedUser= list(set([obj.user for obj in eventParticipantData if not eventNonAttendedData]))
+    attendedUser= list(set([obj.user for obj in eventParticipantData if obj.user not in eventNonAttendedData]))
     print(attendedUser)
     print(">>>>>>>>>>>>>>>>>>>>>>>>")
 

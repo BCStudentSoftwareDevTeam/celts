@@ -4,7 +4,7 @@ $(document).ready(function () {
 		self.focus();
 		win.document.open();
 		win.document.write("<html><body>");
-		win.document.write($('#volunteerInformationTable').html());
+		win.document.write($('#volunteerInformationToPrint').html());
 		win.document.write('</body></html>');
 		win.document.close();
 		win.print();
