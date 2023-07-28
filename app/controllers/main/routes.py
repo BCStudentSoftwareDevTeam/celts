@@ -69,16 +69,12 @@ def events(selectedTerm, activeTab, programID):
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
     term = Term.get_by_id(currentTerm)
-    if g.current_user.isAdmin:
-        userState = "admin"
-    else:
-        userState = "student"
     
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
-    studentLedEvents = getStudentLedEvents(term, userState)
-    trainingEvents = getTrainingEvents(term, g.current_user, userState)
-    bonnerEvents = getBonnerEvents(term, userState)
-    otherEvents = getOtherEvents(term, userState)
+    studentLedEvents = getStudentLedEvents(term)
+    trainingEvents = getTrainingEvents(term, g.current_user)
+    bonnerEvents = getBonnerEvents(term)
+    otherEvents = getOtherEvents(term)
 
     return render_template("/events/event_list.html",
         selectedTerm = term,

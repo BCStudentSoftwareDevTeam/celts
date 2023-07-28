@@ -177,11 +177,11 @@ def test_training_events(training_events):
 
         notBonnerList = [testNotBonnerTraining]
         bonnerList = [testNotBonnerTraining, testBonnerTraining]
-        assert notBonnerList == getTrainingEvents(testTerm, userFaculty, "admin")
-        assert notBonnerList == getTrainingEvents(testTerm, userNotBonnerScholar, "student")
-        assert notBonnerList == getTrainingEvents(testTerm, userStaff, "admin")
-        assert bonnerList == getTrainingEvents(testTerm, userCeltsAdmin, "admin")
-        assert bonnerList == getTrainingEvents(testTerm, userBonnerScholar, "student")
+        assert notBonnerList == getTrainingEvents(testTerm, userFaculty)
+        assert notBonnerList == getTrainingEvents(testTerm, userNotBonnerScholar)
+        assert notBonnerList == getTrainingEvents(testTerm, userStaff)
+        assert bonnerList == getTrainingEvents(testTerm, userCeltsAdmin)
+        assert bonnerList == getTrainingEvents(testTerm, userBonnerScholar)
 
         transaction.rollback()
 
@@ -189,13 +189,13 @@ def test_training_events(training_events):
 def test_bonner_events(special_bonner):
     bonner = special_bonner
     allBonnerProgram = [bonner]
-    assert allBonnerProgram == getBonnerEvents(2, "student")
+    assert allBonnerProgram == getBonnerEvents(2)
 
 @pytest.mark.integration
 def test_getOtherEvents(special_otherEvents):
     otherEvent = special_otherEvents
     otherEvents = [Event.get_by_id(11), Event.get_by_id(7), otherEvent]
-    assert otherEvents == getOtherEvents(4, "admin")
+    assert otherEvents == getOtherEvents(4)
 
 @pytest.mark.integration
 def test_eventViewCount():

@@ -176,26 +176,13 @@ def saveEventToDb(newEventData):
 
     return eventRecords
 
-def getStudentLedEvents(term, userState):
-
-    # if current_user is student, include Event.isCanceled == False in query
-    # else (which means that the current_user is an admin, leave the query as it is)
-    if userState == "student":
-        studentLedEvents = list(Event.select(Event, Program)
-                                .join(Program)
-                                .where(Program.isStudentLed,
-                                        Event.term == term, Event.isCanceled == False)
-                                .order_by(Event.startDate, Event.timeStart)
-                                .execute())
-        
-
-    else:
-        studentLedEvents = list(Event.select(Event, Program)
-                                .join(Program)
-                                .where(Program.isStudentLed,
-                                        Event.term == term)
-                                .order_by(Event.startDate, Event.timeStart)
-                                .execute())
+def getStudentLedEvents(term):
+    studentLedEvents = list(Event.select(Event, Program)
+                            .join(Program)
+                            .where(Program.isStudentLed,
+                                    Event.term == term)
+                            .order_by(Event.startDate, Event.timeStart)
+                            .execute())
 
     programs = {}
 
@@ -204,7 +191,7 @@ def getStudentLedEvents(term, userState):
 
     return programs
 
-def getTrainingEvents(term, user, userState):
+def getTrainingEvents(term, user):
     """
         The allTrainingsEvent query is designed to select and count eventId's after grouping them
         together by id's of similiar value. The query will then return the event that is associated
@@ -214,18 +201,11 @@ def getTrainingEvents(term, user, userState):
         user: expected to be the current user
         return: a list of all trainings the user can view
     """
-    if userState == "student":
-        trainingQuery = (Event.select(Event).distinct()
-                            .join(Program, JOIN.LEFT_OUTER)
-                            .where(Event.isTraining == True,
-                                    Event.term == term, Event.isCanceled == False)
-                            .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate, Event.timeStart))
-    else:
-        trainingQuery = (Event.select(Event).distinct()
-                            .join(Program, JOIN.LEFT_OUTER)
-                            .where(Event.isTraining == True,
-                                    Event.term == term)
-                            .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate, Event.timeStart))
+    trainingQuery = (Event.select(Event).distinct()
+                        .join(Program, JOIN.LEFT_OUTER)
+                        .where(Event.isTraining == True,
+                                Event.term == term)
+                        .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate, Event.timeStart))
 
     hideBonner = (not user.isAdmin) and not (user.isStudent and user.isBonnerScholar)
     if hideBonner:
@@ -233,26 +213,16 @@ def getTrainingEvents(term, user, userState):
 
     return list(trainingQuery.execute())
 
-def getBonnerEvents(term, userState):
-    # if current_user is student, include Event.isCanceled == False in query
-    # else (which means that the current_user is an admin, leave the query as it is)
-    if userState == "student":
-        bonnerScholarsEvents = list(Event.select(Event, Program.id.alias("program_id"))
-                                        .join(Program)
-                                        .where(Program.isBonnerScholars,
-                                                Event.term == term, Event.isCanceled == False)
-                                        .order_by(Event.startDate, Event.timeStart)
-                                        .execute())
-    else:
-            bonnerScholarsEvents = list(Event.select(Event, Program.id.alias("program_id"))
-                                        .join(Program)
-                                        .where(Program.isBonnerScholars,
-                                                Event.term == term)
-                                        .order_by(Event.startDate, Event.timeStart)
-                                        .execute())
+def getBonnerEvents(term):
+    bonnerScholarsEvents = list(Event.select(Event, Program.id.alias("program_id"))
+                                .join(Program)
+                                .where(Program.isBonnerScholars,
+                                        Event.term == term)
+                                .order_by(Event.startDate, Event.timeStart)
+                                .execute())
     return bonnerScholarsEvents
 
-def getOtherEvents(term, userState):
+def getOtherEvents(term):
     """
     Get the list of the events not caught by other functions to be displayed in
     the Other Events section of the Events List page.
@@ -260,29 +230,17 @@ def getOtherEvents(term, userState):
     """
     # Gets all events that are not associated with a program and are not trainings
     # Gets all events that have a program but don't fit anywhere
-    if userState == "student":
-        otherEvents = list(Event.select(Event, Program)
-                                .join(Program, JOIN.LEFT_OUTER)
-                                .where(Event.term == term,
-                                    Event.isTraining == False,
-                                    Event.isAllVolunteerTraining == False,
-                                    Event.isCanceled == False,
-                                    ((Event.program == None) |
-                                    ((Program.isStudentLed == False) &
-                                    (Program.isBonnerScholars == False))))
-                                .order_by(Event.startDate, Event.timeStart, Event.id)
-                                .execute())
-    else:
-        otherEvents = list(Event.select(Event, Program)
-                            .join(Program, JOIN.LEFT_OUTER)
-                            .where(Event.term == term,
-                                Event.isTraining == False,
-                                Event.isAllVolunteerTraining == False,
-                                ((Event.program == None) |
-                                ((Program.isStudentLed == False) &
-                                (Program.isBonnerScholars == False))))
-                            .order_by(Event.startDate, Event.timeStart, Event.id)
-                            .execute())
+    
+    otherEvents = list(Event.select(Event, Program)
+                        .join(Program, JOIN.LEFT_OUTER)
+                        .where(Event.term == term,
+                            Event.isTraining == False,
+                            Event.isAllVolunteerTraining == False,
+                            ((Event.program == None) |
+                            ((Program.isStudentLed == False) &
+                            (Program.isBonnerScholars == False))))
+                        .order_by(Event.startDate, Event.timeStart, Event.id)
+                        .execute())
 
     return otherEvents
 

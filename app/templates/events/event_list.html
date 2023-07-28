@@ -81,9 +81,9 @@
     <tbody>
       {% for event in events %}
           {% if event.isPast %}
-            <tr class="table-light showlist" style="display: none;">
+            <tr height = '50' class="table-light showlist" style="display: none;">
           {% else %}
-            <tr class="">
+            <tr height = '50' class="">
           {% endif %}
             {% if type != "bonner" and type != "studentLed" %}
               {% if event.program%}
@@ -98,9 +98,13 @@
             {% else %}
               <td><a href="/event/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
             {% endif %}
-              <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
-              <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
-              <td class="text-dark">{{event.location}}</td>
+              {% if not user.isAdmin and event.isCanceled %}
+                <td colspan = 3 >This Event Has Been Canceled. Check your Email</td>
+              {% else %}
+                <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
+                <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
+                <td class="text-dark">{{event.location}}</td>
+              {% endif %}
             {% if user.isAdmin %}
               <td>
                 {% if event.isPast %}
