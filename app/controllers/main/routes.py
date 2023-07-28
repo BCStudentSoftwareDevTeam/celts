@@ -1,4 +1,5 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for, session
+from peewee import JOIN
 import datetime
 import json
 from http import cookies
@@ -20,6 +21,8 @@ from app.models.programManager import ProgramManager
 from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
 from app.models.certification import Certification
+from app.models.emergencyContact import EmergencyContact
+from app.models.insuranceInfo import InsuranceInfo
 
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
@@ -180,40 +183,31 @@ def insuranceInfo(username):
     This loads the Insurance Information Page
     """
 
-    class DummyInsuranceInfo:  # Beans: A dummy class to simulate how the database table will act
-        def __init__(self, *, policyType, policyHolderName, policyHolderRelationship, insuranceCompany, policyNumber, groupNumber, healthIssues):
-            self.policyType = policyType
-            self.policyHolderName = policyHolderName
-            self.policyHolderRelationship = policyHolderRelationship
-            self.insuranceCompany = insuranceCompany
-            self.policyNumber = policyNumber
-            self.groupNumber = groupNumber
-            self.healthIssues = healthIssues
+    # Save the form data
+    if request.method == 'POST':
+        info = InsuranceInfo.get_or_none(InsuranceInfo.user_id == username)
+        if info:
+            info.update(**request.form).execute()
+        else:
+            InsuranceInfo.create(user = username, **request.form)
 
-    userInsuranceInfo = DummyInsuranceInfo(policyType = 0,
-                                           policyHolderName = 'Lawrence Hoerst',
-                                           policyHolderRelationship = 'man with insurance I can use',
-                                           insuranceCompany = 'The United States Medical Company',
-                                           policyNumber = '123445',
-                                           groupNumber = '543221',
-                                           healthIssues = "I'm allergic to corn chips dipped in peanut butter.")
+
+    userInsuranceInfo = InsuranceInfo.get_or_none(InsuranceInfo.user == username)
+
 
     if request.method == 'GET':
         return render_template ("/main/insuranceInfo.html",
-                                user=User.get_by_id(username),  # We need a check if this is null, the page should abort with a 404 error
-                                viewOnly = False,
-                                insuranceInfo = userInsuranceInfo
+                                username = username,
+                                userInsuranceInfo = userInsuranceInfo,
+                                viewOnly = False
                                 )
     
     elif request.method == 'POST':
-        # We need to save the data
-        print(request.form) # beans
-        print('*'*1000)
-        flash('Insurance information saved successfully!', 'success')
+        flash('Insurance information saved successfully!', 'success') 
         return render_template ("/main/insuranceInfo.html",
-                                user=User.get_by_id(username),  # We need a check if this is null, the page should abort with a 404 error
-                                viewOnly = False,
-                                insuranceInfo = userInsuranceInfo
+                                username = username,
+                                userInsuranceInfo=userInsuranceInfo,
+                                viewOnly = False
                                 )
 
 
