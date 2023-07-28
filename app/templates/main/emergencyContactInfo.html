@@ -1,0 +1,66 @@
+{% set title = "User Profile" %}
+{% extends "base.html" %}
+
+{% block app_content %}
+
+<div class="text-center">
+    <h1> Emergency Contact</h1> <br>
+</div>
+
+
+<form enctype="multipart/form-data" role='form' action='/profile/{{user.username}}/emergencyContact' method='POST'>
+    <div class='row'>
+        <!--Left side-->
+        <div class='col-md-6'>
+
+            <div class='form-group mb-4'>
+                <label class='form-label' for='name'><strong> Contact Name </strong></label>
+                <input class='form-control' type='text' id='name' name='emergencyContactName'/>
+            </div>
+
+            <div class='form-group mb-4'>
+                <label class='form-label' for='relationship'><strong> Relationship to You </strong></label>
+                <input class='form-control' type='text' id='relationship' name='emergencyContactRelationship'/>
+            </div>
+            <div class='form-group mb-4'>
+                <label class='form-label' for='email'><strong> Email Address </strong></label>
+                <input class='form-control' type='text' id='email' name='emergencyContactEmail'/>
+            </div>
+
+        </div>
+
+
+
+        <!--Right side-->
+
+
+        <div class='col-md-6'>
+
+            <div class='form-group mb-4'>
+                <label class='form-label' for='cellPhone'><strong> Cell Phone Number </strong></label>
+                <input class='form-control' type='text' id='cellPhone' name='emergencyContactCellPhone'/>
+            </div>
+            <div class='form-group mb-4'>
+                <label class='form-label' for='workPhone'><strong> Work Phone Number </strong></label>
+                <input class='form-control' type='text' id='workPhone' name='emergencyContactWorkPhone'/>
+            </div>
+            <div class='form-group mb-4'>
+                <label class='form-label' for='cellPhone'><strong> Cell Phone </strong></label>
+                <input class='form-control' type='text' id='cellPhone' name='emergencyContactCellPhone'/>
+            </div>
+        </div>
+
+
+        <!--Bottom-->
+        <div class='form-group'>
+            <label class='form-label' for='address'><strong> Home Address </strong></label>
+            <input class='form-control' type='text' id='address' name='emergencyContactAddress'/>
+        </div>
+
+    </div>
+</form>
+
+
+
+
+{% endblock %}

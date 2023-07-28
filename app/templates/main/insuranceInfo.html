@@ -1,0 +1,78 @@
+{% set title = "User Profile" %}
+{% extends "base.html" %}
+
+{% block app_content %}
+
+<div class="text-center">
+    <h1> Insurance Information </h1> <br>
+</div>
+
+
+<form enctype="multipart/form-data" role='form' action='/profile/{{user.username}}/insuranceInfo' method='POST'>
+    <div class='row'>
+        <!--Left half-->
+        <div class='col-md-6'>
+            
+            <div class='form-group mb-4'>
+                <label class='form-label' for='insuranceType'><strong> Type of Insurance </strong></label>
+                <select class='form-select' id='insuranceType' name='insuranceType' value="{{insuranceInfo.policyType}}" required>
+                    <option disabled value='' {{'selected' if not insuranceInfo.policyType else ''}}>Select a Type of Insurance</option>
+                    <option value='1'>Berea College Health Insurance</option>
+                    <option value='2'>Parent Or Guardian's Insurance</option>
+                    <option value='3'>Other Insurance</option>
+                </select>
+            </div>
+
+            <div class='form-group mb-4'>
+                <label class='form-label' for='name'><strong> Name of Policy Holder </strong></label>
+                <input class='form-control' type='text' id='name' name='holderName' value="{{insuranceInfo.policyHolderName}}"/>
+            </div>
+
+            <div class='form-group mb-4'>
+                <label class='form-label' for='relationship'><strong> Relationship to You </strong></label>
+                <input class='form-control' type='text' id='relationship' name='holderRelationship' value="{{insuranceInfo.policyHolderRelationship}}"/>
+            </div>
+
+        </div>
+
+
+        <!--Right half-->
+        <div class='col-md-6'>
+
+            <div class='form-group mb-4'>
+                <label class='form-label' for='insuranceCompany'><strong> Insurance Company </strong></label>
+                <input class='form-control' type='text' id='insuranceCompany' name='insuranceCompany' value="{{insuranceInfo.insuranceCompany}}"/>
+            </div>
+            <div class='form-group mb-4'>
+                <label class='form-label' for='policyNumber'><strong> Policy Number </strong></label>
+                <input class='form-control' type='text' id='policyNumber' name='insurancePolicyNumber' value="{{insuranceInfo.policyNumber}}"/>
+            </div>
+            <div class='form-group mb-4'>
+                <label class='form-label' for='groupNumber'><strong> Group Number (if applicable)</strong></label>
+                <input class='form-control' type='text' id='groupNumber' name='insuranceGroupNumber' value="{{insuranceInfo.groupNumber}}"/>
+            </div>
+        </div>
+
+
+        <!--Bottom-->
+        <div class='form-group'>
+            <label class='form-label' for='releventConditions'><strong> Please list any health issues that the Berea College CELTS program staff need to know about </strong></label>
+            <textarea rows='8' class='form-control' type='text' id='releventConditions' name='releventConditions'>{{insuranceInfo.healthIssues}}</textarea>
+        </div>
+
+    </div>
+
+    <br>
+
+    <div class='form-group' style='text-align:right'>
+        <a href='/profile/{{user.username}}' class='btn btn-secondary'>Cancel</a>
+        <button class='btn btn-primary' type='submit'> Save & Exit </button>
+    </div>
+
+
+</form>
+
+
+
+
+{% endblock %}
