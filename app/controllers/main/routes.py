@@ -160,12 +160,62 @@ def viewUsersProfile(username):
             )
     abort(403)
 
-@main_bp.route('/profile/<username>/emergencyInformation', methods=['GET', 'POST'])
-def EmergencyContactInfo(username):
+@main_bp.route('/profile/<username>/emergencyContact', methods=['GET', 'POST'])
+def emergencyContactInfo(username):
     """
-    This loads the Emergency Contact and Insurance Information Page
+    This loads the Emergency Contact
     """
-    return render_template ("/main/emergencyInfo.html")
+    if request.method == 'GET':
+        return render_template ("/main/emergencyContactInfo.html",
+                                user=User.get_by_id(username),  # We need a check if this is null, the page should abort with a 404 error
+                                viewOnly = False
+                                )
+    elif request.method == 'POST':
+        # Save the data
+        return
+
+@main_bp.route('/profile/<username>/insuranceInfo', methods=['GET', 'POST'])
+def insuranceInfo(username):
+    """
+    This loads the Insurance Information Page
+    """
+
+    class DummyInsuranceInfo:  # Beans: A dummy class to simulate how the database table will act
+        def __init__(self, *, policyType, policyHolderName, policyHolderRelationship, insuranceCompany, policyNumber, groupNumber, healthIssues):
+            self.policyType = policyType
+            self.policyHolderName = policyHolderName
+            self.policyHolderRelationship = policyHolderRelationship
+            self.insuranceCompany = insuranceCompany
+            self.policyNumber = policyNumber
+            self.groupNumber = groupNumber
+            self.healthIssues = healthIssues
+
+    userInsuranceInfo = DummyInsuranceInfo(policyType = 0,
+                                           policyHolderName = 'Lawrence Hoerst',
+                                           policyHolderRelationship = 'man with insurance I can use',
+                                           insuranceCompany = 'The United States Medical Company',
+                                           policyNumber = '123445',
+                                           groupNumber = '543221',
+                                           healthIssues = "I'm allergic to corn chips dipped in peanut butter.")
+
+    if request.method == 'GET':
+        return render_template ("/main/insuranceInfo.html",
+                                user=User.get_by_id(username),  # We need a check if this is null, the page should abort with a 404 error
+                                viewOnly = False,
+                                insuranceInfo = userInsuranceInfo
+                                )
+    
+    elif request.method == 'POST':
+        # We need to save the data
+        print(request.form) # beans
+        print('*'*1000)
+        flash('Insurance information saved successfully!', 'success')
+        return render_template ("/main/insuranceInfo.html",
+                                user=User.get_by_id(username),  # We need a check if this is null, the page should abort with a 404 error
+                                viewOnly = False,
+                                insuranceInfo = userInsuranceInfo
+                                )
+
 
 @main_bp.route('/profile/addNote', methods=['POST'])
 def addNote():
