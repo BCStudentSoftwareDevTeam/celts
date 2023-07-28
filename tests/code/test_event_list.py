@@ -65,7 +65,7 @@ def special_otherEvents():
 def test_studentled_events(training_events):
     studentLed = training_events
     allStudentLedProgram = {studentLed.program: [studentLed]}
-    assert allStudentLedProgram == getStudentLedEvents(2, "student")
+    assert allStudentLedProgram == getStudentLedEvents(2)
 
 @pytest.mark.integration
 def test_training_events(training_events):
