@@ -10,20 +10,62 @@ $(document).ready( function () {
          $('.dataTables_filter').addClass('float-none');
        }
     }
+    
+
   });
-    $("#downloadApprovedCoursesBtn").click(function(){
-        let termID = $("#downloadApprovedCoursesBtn").val();
-        $.ajax({
-            url:`/serviceLearning/downloadApprovedCourses/${termID}`,
-            type:"GET",
-            success: function(response){
-              callback(response);
-            },
-            error: function(response){
-                console.log(response)
-            },
+
+  $('#modalPreview button[data-bs-dismiss="modal"]').click(function () {
+    $('#modalPreview').removeClass('show d-block');
+  });
+   
+  $('#modalSubmit').on('hidden.bs.modal', function () {
+    $('#addCourseParticipant').val('');
+    
+  })
+
+  $("#downloadApprovedCoursesBtn").click(function () {
+    let termID = $("#downloadApprovedCoursesBtn").val();
+    $.ajax({
+      url: `/serviceLearning/downloadApprovedCourses/${termID}`,
+      type: "GET",
+      success: function (response) {
+        callback(response);
+      },
+      error: function (response) {
+        console.log(response)
+      },
 
 
-        })
     })
+  });
 });
+
+$("#modalCourseParticipant").on("click", function () {
+  $("#modalSubmit").modal("toggle");
+});
+
+$('#closeAddCourseParticipants').on('click', function () {
+  $('#addCourseParticipants')[0].form.reset()
+  $('#previewButton').prop('disabled', true)
+})
+
+const fileInput= $("#addCourseParticipants")
+fileInput.on('change', handleFileSelect)
+
+function handleFileSelect(event){
+  const selectedFile = event.target.files[0];
+
+  if (selectedFile){
+    $("#previewButton").prop('disabled', false);
+  }
+}
+
+$("#cancelModalPreview").click(function(){
+  $.ajax({
+    url: "/deleteUploadedFile",
+    type: 'POST',
+    error: function(error, status){
+      console.log(error, status)
+    }
+  });
+})
