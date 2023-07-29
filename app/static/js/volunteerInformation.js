@@ -16,25 +16,28 @@ $(document).ready(function () {
 	})
 	$('#printVolunteerInfo').on('click', function () {
 		let contentToPrint, contentToHide
+		let tableContent = $("#volunteerInformationTableToPrint")
+		let cardContent = $("#volunteerInformationCardToPrint")
 		if ($('#tableCardToggle').is(':checked')) {
-			contentToPrint = $("#volunteerInformationTableToPrint")
-			contentToHide = $("#volunteerInformationCardToPrint")
+			contentToPrint = tableContent
+			contentToHide = cardContent
 		} else {
-			contentToPrint = $("#volunteerInformationCardToPrint")
-			contentToHide = $("#volunteerInformationTableToPrint")
+			contentToPrint = cardContent
+			contentToHide = tableContent
 		}
 		contentToPrint.siblings().hide()
 		contentToPrint.parents().siblings().hide()
-		if (contentToPrint.length > 1) {
-			contentToPrint.css('column-count', '2');	
-		} 
+		// // let checkContentLength = $("#"+cardContent[0].id+" .volunteerInfoEntries").length
+		// // console.log((contentToPrint == cardContent) && (checkContentLength > 1))
+		// if (contentToPrint == cardContent) {
+		contentToPrint.css('column-count', '2');
+		contentToPrint.css("break-inside", "avoid");
+		// } 
 		window.print()
 		contentToPrint.siblings().show()
 		contentToPrint.parents().siblings().show()
 		contentToPrint.css('column-count', '1');
 		contentToHide.hide()
-		
-		
 	})
 	$(".displayCheckbox").on('change', function () {
 		getCheckBoxes()
@@ -48,15 +51,12 @@ $(document).ready(function () {
 			if (!currentEntry.is(":hidden")) {
 				if (shownUsers.includes(currentEntry.data("user"))) {
 					currentEntry.hide()
-				}
-				else {
+				} else {
 					shownUsers.push(currentEntry.data("user"))
 				}
-
 			}
 		}
 	}
-	
 	function getCheckBoxes() {
 		$(".displayCheckbox").each(function () {
 			let checkboxId = this.id;
@@ -68,6 +68,44 @@ $(document).ready(function () {
 			}
 		})
 	}
+	$("#sortFirstName").on('click', function() {
+		let $sortedTable = $("#volunteerInformationTableToPrint");
+		let $entriesTable = $sortedTable.find(".volunteerInfoEntries");
+	
+		$entriesTable.sort(function (a, b) {
+			return a.dataset.fullname.localeCompare(b.dataset.fullname);
+		});
+	
+		$entriesTable.appendTo($sortedTable);
+
+		let $sortedCards = $("#volunteerInformationCardToPrint .sort-here");
+		let $entriesCards = $sortedCards.find(".volunteerInfoEntries");
+	
+		$entriesCards.sort(function (a, b) {
+			return a.dataset.fullname.localeCompare(b.dataset.fullname);
+		});
+	
+		$entriesCards.appendTo($sortedCards);
+	});
+	$("#sortUsername").on("click", function() {
+		let $sortedTable = $("#volunteerInformationTableToPrint");
+		let $entriesTable = $sortedTable.find(".volunteerInfoEntries");
+	
+		$entriesTable.sort(function (a, b) {
+			return a.dataset.user.localeCompare(b.dataset.user);
+		});
+	
+		$entriesTable.appendTo($sortedTable);
+
+		let $sortedCards = $("#volunteerInformationCardToPrint .sort-here");
+		let $entriesCards = $sortedCards.find(".volunteerInfoEntries");
+	
+		$entriesCards.sort(function (a, b) {
+			return a.dataset.user.localeCompare(b.dataset.user);
+		});
+	
+		$entriesCards.appendTo($sortedCards);
+	})
 	getCheckBoxes()
 	updateTable()
 })
