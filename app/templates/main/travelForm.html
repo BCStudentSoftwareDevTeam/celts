@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+
+
+{% block app_content %}
+
+<div class= "w-100 d-print-block">
+    <div class='text-center'>
+        <h2>Berea College CELTS Travel Form</h2>
+        <h2>Student Responsibility and Insurance</h2>
+        <h2>Statement</h2>
+    </div>
+
+    <a> 
+        As a voluntary participant in Berea College CELTS programs, I acknowledge and agree to the following: 
+    </a>    
+
+    <a> 
+        I will comply with the “Student Conduct Regulations” as stated in the Berea College Student Handbook 
+        (<u>https://berea.smartcatalogiq.com/en/current/student-handbook/</u>) and all other published policies of the College, 
+        including all of CELTS' and Berea College's COVID-19 Policies.
+    </a>
+    <br> <br>
+    <a> 
+        I will also comply with the policies of behavior in the program as administered by CELTS Staff as representatives of Berea
+        College. I understand that CELTS staff persons have the authority to discontinue my participation in the program, if it is
+        judged my conduct is unacceptable.
+    </a>
+    <br> <br>
+    <a> 
+        I understand that travel presents certain inherent health risks. I am aware of my own medical/psychological needs and
+        have consulted with a doctor about any health factor, medical or psychological, that might affect my ability to
+        participate fully in the program. I have informed the appropriate CELTS Staff, in writing, of any conditions that could
+        require special medical procedures while traveling.
+    </a>
+    <br> <br>
+    <a> 
+        In the event of injury or illness that prevents me from making decisions about medical treatment, program personnel
+        will make every practical effort to obtain prior authorization from the party identified as my emergency contact.
+    </a>
+    <br> <br>
+    <a>
+        <strong>
+            In all emergencies when prior authorization cannot be obtained from my emergency contact, I authorize any official
+            representative of Berea College to secure medical treatment on my behalf, including surgery and the administration
+            of an anesthetic, and I accept all financial responsibility for such treatment.
+        </strong>
+    </a>
+    <br> <br>
+    <a>
+        I understand that I am required to have adequate health, accident, disability and hospitalization insurance to cover
+        myself during participation in the program, and I have such insurance.
+    </a>
+    <br> <br>
+    <a>
+        I understand that activities and travel during free time in the program and following end of the program are at my own
+        risk and expense. I agree to inform the Program Coordinator of my travel plans and understand that Berea College is not
+        responsible for me while I am traveling independently during such free time.
+    </a>
+    <br> <br>
+    <a>
+        I further understand that I am solely responsible for any and all costs and consequences arising out of my voluntary or
+        involuntary withdrawal from the program prior to its completion, including withdrawal caused by illness or disciplinary
+        action by representative(s) of Berea College.
+    </a>
+    <br> <br>
+    <a>
+        In consideration of being afforded the opportunity to participate in this program, I, for myself, my heirs, successor or
+        assigns, hereby release and hold harmless Berea College, its Board of Trustees, officers, agents, employees, students,
+        and representatives from any and all claims, demands, causes of action or damages which may accrue on account of
+        bodily or personal injury, property damage, or death arising out of my participation in the program, including damages,
+        injury or death arising from the negligence of the aforesaid. 
+    </a>
+    <br> <br>
+    <a>
+        I have read and understand the provisions of this form and agree to be bound thereby.
+    </a>
+    <br> <br>
+
+    <hr class='print-d-block'>
+    
+    <div class='row'>
+        <div class='col'> Signature of Student Participant </div>
+        <div class='col'> Printed name of Student Participant</div>  
+        <div class='col'> Date </div> 
+    </div>
+
+
+    <br>
+
+    <pre>Student Name:<u> {{contactInfo.name}}{{' ' * (66 - (contactInfo.name | length))}}</u></pre>
+    
+    <a>
+        <strong>
+            Emergency Contact Information:
+        </strong>
+    </a>
+    <br><br> {# Beans: make all of these lines the same length by modifying 66 #}
+    <pre>Name:<u> {{contactInfo.name}}{{' ' * (66 - (contactInfo.name | length))}}</u></pre>
+    <pre>Relationship:<u> {{contactInfo.relationship}}{{' ' * (66 - (contactInfo.relationship | length))}}</u></pre>
+    <pre>Address:<u> {{contactInfo.homeAddress}}{{' ' * (66 - (contactInfo.homeAddress | length))}}</u></pre>
+    <pre>Home Phone Number:<u> {{contactInfo.homePhone}}{{' ' * (66 - (contactInfo.homePhone | length))}}</u></pre>
+    <pre>Work Phone Number:<u> {{contactInfo.workPhone}}{{' ' * (66 - (contactInfo.workPhone | length))}}</u></pre>
+    <pre>Cell Phone Number:<u> {{contactInfo.cellPhone}}{{' ' * (66 - (contactInfo.cellPhone | length))}}</u></pre>
+    <pre>Email Address:<u> {{contactInfo.emailAddress}}{{' ' * (66 - (contactInfo.emailAddress | length))}}</u></pre>
+
+
+    <a>
+        <strong>
+            Insurance Information:
+        </strong>
+    </a>
+    <br>
+    <a>While traveling in this program I will be covered by the following insurance plan(s):</a> <br>
+    <a>(Please initial by the program that applies to you)</a> <br> <br>
+
+    {# Test that this works once there is real table data #}
+    <pre><u>  {{insuranceInfo.user.firstName[0] + insuranceInfo.user.lastName[0] if insuranceInfo.insuranceType == 1 else '  '}}  </u> Berea College Health Insurance</pre> <br>
+    <pre><u>  {{insuranceInfo.user.firstName[0] + insuranceInfo.user.lastName[0] if insuranceInfo.insuranceType == 2 else '  '}}  </u> Parent or Guardian's insurance</pre> <br>
+    <pre><u>  {{insuranceInfo.user.firstName[0] + insuranceInfo.user.lastName[0] if insuranceInfo.insuranceType == 3 else '  '}}  </u> Other Insurance</pre> <br> 
+
+    {# Beans: make all of these lines the same length by modifying 66 #}
+    <a>Name of Policy Holder:</a><u> {{insuranceInfo.policyHolderName}}<pre>{{' ' * (66 - (insuranceInfo.policyHolderName | length))}}</pre></u>
+    <pre>Relationship to you:<u> {{insuranceInfo.policyHolderRelationship}}{{' ' * (66 - (insuranceInfo.policyHolderRelationship | length))}}</u></pre>
+    <pre>Insurance Company:<u> {{insuranceInfo.insuranceCompany}}{{' ' * (66 - (insuranceInfo.insuranceCompany | length))}}</u></pre>
+    <pre>Policy Number:<u> {{insuranceInfo.policyNumber}}{{' ' * (66 - (insuranceInfo.policyNumber | length))}}</u></pre>
+    <pre>Group Number (if applicable):<u> {{insuranceInfo.groupNumber}}{{' ' * (66 - (insuranceInfo.groupNumber | length))}}</u></pre>
+    <br>
+    <a>
+        Please list any Health Issues that the Berea College CELTS program staff need to know (use additional sheets, if needed
+        and update as appropriate):
+    </a>
+    <pre><u> {{insuranceInfo.healthIssues}}{{' ' * (66 - (insuranceInfo.healthIssues | length))}}</u></pre>
+</div>
+
+
+
+{% endblock %}
+
+
+
+
+
+
+
+

@@ -227,6 +227,34 @@ def insuranceInfo(username):
         flash('Insurance information saved successfully!', 'success') 
         return redirect (f"/profile/{username}")
 
+@main_bp.route('/profile/<username>/travelForm', methods=['GET', 'POST'])
+def travelForm(username):
+
+    # Beans: Delete these two classes once we have database information to read from
+    class temp_contactinfo:
+        name = 'Beans man'
+        relationship = 'My relationship'
+        homePhone = 'my home phone'
+        workPhone = 'my work phone'
+        cellPhone = 'my cell phone'
+        emailAddress = 'beaner@gmail.com'
+        homeAddress = 'home address'
+
+    class temp_insuranceinfo:
+        insuranceType = "1"
+        policyHolderName = "My dad"
+        policyHolderRelationship = "Brother"
+        insuranceCompany = "Family insurance"
+        policyNumber = "11111111"
+        groupNumber = "22222 The group"
+        healthIssues = "I ain't got none"
+        
+
+    return render_template ('/main/travelForm.html',
+                            username = username,  # Beans: Remove this after testing
+                            contactInfo = temp_contactinfo,  # Beans: make meaningful
+                            insuranceInfo = temp_insuranceinfo  # Beans: make meaningful
+                            )
 
 
 @main_bp.route('/profile/addNote', methods=['POST'])
