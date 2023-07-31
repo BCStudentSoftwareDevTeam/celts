@@ -95,14 +95,14 @@
             Emergency Contact Information:
         </strong>
     </a>
-    <br><br>{% set whiteSpace = '_' * 66 %}
-    <a>Name: <u>{{contactInfo.name if contactInfo.name else '_' * 66}}</u></a><br><br>
-    <a>Relationship: <u>{{contactInfo.relationship if contactInfo.relationship else '_' * 66}}</u></a><br><br>
-    <a>Address: <u>{{contactInfo.homeAddress if contactInfo.homeAddress else '_' * 66}}</u></a><br><br>
-    <a>Home Phone Number: <u>{{contactInfo.homePhone if contactInfo.homePhone else '_' * 66}}</u></a><br><br>
-    <a>Work Phone Number: <u>{{contactInfo.workPhone if contactInfo.workPhone else '_' * 66}}</u></a><br><br>
-    <a>Cell Phone Number: <u>{{contactInfo.cellPhone if contactInfo.cellPhone else '_' * 66}}</u></a><br><br>
-    <a>Email Address: <u>{{contactInfo.emailAddress if contactInfo.emailAddress else '_' * 66}}</u></a><br><br>
+    <br><br> {# Beans: make all of these lines the same length by modifying 66 #}
+    <a>Name: <u>&nbsp;{{contactInfo.name}}{{('&nbsp;' * (66 - (contactInfo.name | length))) | safe}}</u></a><br><br>
+    <a>Relationship: <u>&nbsp;{{contactInfo.relationship}}{{('&nbsp;' * (66 - (contactInfo.relationship | length))) | safe}}</u></a><br><br>
+    <a>Address: <u>&nbsp;{{contactInfo.homeAddress}}{{('&nbsp;' * (66 - (contactInfo.homeAddress | length))) | safe}}</u></a><br><br>
+    <a>Home Phone Number: <u>&nbsp;{{contactInfo.homePhone}}{{('&nbsp;' * (66 - (contactInfo.homePhone | length))) | safe}}</u></a><br><br>
+    <a>Work Phone Number: <u>&nbsp;{{contactInfo.workPhone}}{{('&nbsp;' * (66 - (contactInfo.workPhone | length))) | safe}}</u></a><br><br>
+    <a>Cell Phone Number: <u>&nbsp;{{contactInfo.cellPhone}}{{('&nbsp;' * (66 - (contactInfo.cellPhone | length))) | safe}}</u></a><br><br>
+    <a>Email Address: <u>&nbsp;{{contactInfo.emailAddress}}{{('&nbsp;' * (66 - (contactInfo.emailAddress | length))) | safe}}</u></a><br><br>
 
 
     <a>
