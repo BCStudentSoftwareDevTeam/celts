@@ -119,7 +119,7 @@ def setup():
                               startDate =  "2021-12-12",
                               endDate =  "2021-12-13",
                               recurringId = None,
-                              program = 9)
+                              program = Program.OTHERCELTSSPONSORED)
     EventParticipant.create(user = testUser,
                             event = newNonProgramEvent,
                             attended = True,

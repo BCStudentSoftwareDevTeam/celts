@@ -454,7 +454,7 @@ programs = [
         "id": 9,
         "programName": "CELTS-Sponsored Event",
         "programUrl": "https://www.berea.edu/celts/",
-        "programDescription": "This program hosts a myriad of different celts sponsored events that are not held by any other program.",
+        "programDescription": "This program hosts a myriad of different celts sponsored events that are not owned by any other program.",
         "isStudentLed": False,
         "isBonnerScholars": False,
         "contactEmail": "",

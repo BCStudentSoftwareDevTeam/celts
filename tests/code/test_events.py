@@ -405,7 +405,7 @@ def test_deleteEvent():
                                       startDate = "2021-12-12",
                                       endDate = "2022-6-12",
                                       recurringId = None,
-                                      program = 9)
+                                      program = Program.OTHERCELTSSPONSORED)
 
         testingEvent = Event.get(Event.name == "Testing delete event")
         eventId = testingEvent.id
@@ -510,7 +510,7 @@ def test_upcomingEvents():
                                  location = "The moon",
                                  startDate = testDate,
                                  endDate = testDate + timedelta(days=1),
-                                 program = 9)
+                                 program = Program.OTHERCELTSSPONSORED)
 
          # Create a new Program to create the new Program Event off of so the
         # user can mark interest for it
@@ -680,7 +680,7 @@ def test_volunteerHistory():
                                 startDate = "2021-12-12",
                                 endDate = "2021-12-13",
                                 isAllVolunteerTraining = False,
-                                program = 9)
+                                program = Program.OTHERCELTSSPONSORED)
 
         # Add the created user as a participnt to the created program event
         EventParticipant.create(user = user , event = participatedProgramEvent.id)
@@ -750,7 +750,7 @@ def test_getPreviousRecurringEventData():
                                       startDate = "2021-12-5",
                                       endDate = "2022-12-5",
                                       recurringId = 3,
-                                      program = 9)
+                                      program = Program.OTHERCELTSSPONSORED)
         testingEvent2 = Event.create(name = "Testing delete event",
                                       term = 2,
                                       description = "This Event is Created to be Deleted.",
@@ -763,7 +763,7 @@ def test_getPreviousRecurringEventData():
                                       startDate = "2022-12-12",
                                       endDate = "2022-12-12",
                                       recurringId = 3,
-                                      program = 9)
+                                      program = Program.OTHERCELTSSPONSORED)
         testingEvent3 = Event.create(name = "Testing delete event",
                                       term = 2,
                                       description = "This Event is Created to be Deleted.",
@@ -776,7 +776,7 @@ def test_getPreviousRecurringEventData():
                                       startDate = "2022-12-19",
                                       endDate = "2022-12-19",
                                       recurringId = 3,
-                                      program = 9)
+                                      program = Program.OTHERCELTSSPONSORED)
 
         testingParticipant1 = EventParticipant.create(user = User.get_by_id("neillz"),
                                                     event = testingEvent2.id,
@@ -807,7 +807,7 @@ def test_getEventRsvpCountsForTerm():
                                           rsvpLimit = 4,
                                           startDate = "2022-12-19",
                                           endDate = "2022-12-19",
-                                          program = 9)
+                                          program = Program.OTHERCELTSSPONSORED)
 
         testUserToRsvp = User.create(username = 'rsvpUsr',
                                      firstName = 'RSVP',
@@ -840,7 +840,7 @@ def test_getEventRsvpCount():
                                     isRsvpRequired = 1,
                                     startDate = "2022-12-19",
                                     endDate = "2022-12-19",
-                                    program = 9)
+                                    program = Program.OTHERCELTSSPONSORED)
         user_list = []
         for i in range(5):
             user_list.append(User.create(username = f'rsvpUsr{i}',
