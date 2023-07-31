@@ -4,7 +4,9 @@ $(document).keydown(function(e){
     toggleFullscreen();
   }
   else if(e.key === "Enter") {
-      submitData(true);
+      submitData(true)
+      $('.qr-reader-button').function(true)
+      ;
   }
 });
 // Source: https://stackoverflow.com/questions/1125084/how-to-make-the-window-full-screen-with-javascript-stretching-all-over-the-screen
@@ -51,7 +53,8 @@ function eventFlasher(flash_message, status){
 
 }
 
-$('.qr-reader').on("click", function() {
+$('.qr-reader-button').on("click", function() {
+  //  Opens the camera to scan the ID
   $('#qr-reader').toggle()
   var lastResult, countResults = 0;
   function onScanSuccess(decodedText, decodedResult) {
@@ -80,13 +83,9 @@ $('.qr-reader').on("click", function() {
 
   $('#html5-qrcode-button-camera-stop').on("click", function() {
     $('#qr-reader').hide()
-    })
+    
   })
-
-
-
-
-
+})
 
 function submitData(hitEnter = false){
   if(hitEnter){
@@ -130,16 +129,16 @@ function hideElements(hide) {
   if (hide == true) {
 
     $("footer").hide();
-    $("button").animate({ opacity: 0 }, 1);
-    $("button").css("width", "0");
-    $("button").prop("disabled", true);
+    $("kiosk-hide").animate({ opacity: 0 }, 1);
+    $("kiosk-hide").css("width", "0");
+    $("kiosk-hide").prop("disabled", true);
     $("a").hide();
     $("nav").css("width", "0");
   } else {
     $("footer").show();
-    $("button").css("width", "inherit");
-    $("button").animate({ opacity: 1 }, 1);
-    $("button").prop("disabled", false);
+    $("kiosk-hide").css("width", "inherit");
+    $("kiosk-hide").animate({ opacity: 1 }, 1);
+    $("kiosk-hide").prop("disabled", false);
     $("a").show();
     $("nav").css("width", "inherit");
   }

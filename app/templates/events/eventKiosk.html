@@ -18,15 +18,15 @@
   </div>
   <div id="signinData" class="mx-auto px-5 mb-2">
     <div class="input-group">
-      <input type="text" id="submitScannerData" name="bNumber" class="form-control input-lg" oninput="submitData()" style="font-size: 2rem;" placeholder="Enter scanner data" autofocus/>
-      <button class="qr-reader btn-success"><span  class="bi bi-camera"></span></button>
+      <input type="text" id="submitScannerData" name="bNumber" class="form-control input-lg" oninput="submitData()" style="font-size: 2rem;" placeholder="B-number ">
+      <button id ='button-camera' class="qr-reader-button btn-success btn-lg"><span  class="bi bi-camera"></span></button>
     </div>
-    <div id="qr-reader"></div>
+    <div id="qr-reader" style="display:none"></div>
   </div>
   <div class="form-check form-switch mx-5 position-absolute end-0">
     <input class="form-check-input mt-2" type="checkbox" id="fullscreenCheck" onclick="toggleFullscreen()">
     <label class="form-check-label" id="fullscreenLabel" for="fullscreenCheck">Toggle Full Screen</label>
-    <a class="btn btn-primary ms-3" href="/event/{{ event.id }}/track_volunteers" role="button">Back</a>
+    <a class ="btn btn-secondary ms-3 kiosk-hide" href="/event/{{ event.id }}/track_volunteers" role="button">Previous</a>
   </div>
 
   <input type="hidden" value="{{ eventid }}" id="eventid">
