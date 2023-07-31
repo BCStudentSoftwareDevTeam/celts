@@ -262,11 +262,11 @@
     </div>
 </form>
 <!-- Modal for Cancel Event -->
-<div class="modal fade" id="cancelWarning" tabindex="-1" aria-labelledby="warningModel" aria-hidden="true">
+<div class="modal fade" id="cancelWarning" tabindex="-1" aria-labelledby="cancelModel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="warningModel">Cancel Event</h5>
+        <h5 class="modal-title" id="cancelModel">Cancel Event</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -279,7 +279,7 @@
           </form>
       </div>
       <div>
-        <input type="hidden" value="{{eventData.id}}" name="id">
+        <input type="hidden" value="{{eventData.id}}" name="cancel_id">
       </div>
     </div>
   </div>
@@ -296,7 +296,7 @@
         {% if eventData.recurringId%}
         <div class="modal-body">
           <div class= "container-fluid">
-            <p>This action is irreversible. <br> By deleting this event, all information regarding this event will be entirely removed from the website. </p>
+            <p>This action is irreversible. <br> By deleting this event, all information regarding this event will be removed from the website. </p>
             <div class="d-grid gap-2">
                 <form action="/event/{{eventData.id}}/delete" method='post'>
                   <button type="submit" class="btn btn-danger">Delete This Event</button>
@@ -317,7 +317,7 @@
        </div>
         {% else %}
         <div class="modal-body">
-          <p>This action is irreversible. <br> By deleting this event, all information regarding this event will be entirely removed from the website. </p>
+          <p>This action is irreversible. <br> By deleting this event, all information regarding this event will be removed from the website. </p>
         </div>
         <div class="modal-footer justify-content-between">
            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
