@@ -235,9 +235,9 @@ def travelForm(username):
         name = None
         relationship = 'My relationship'
         homePhone = 'my home phone'
-        workPhone = 'my work phone'
+        workPhone = None
         cellPhone = 'my cell phone'
-        emailAddress = 'beaner@gmail.com'
+        emailAddress = None
         homeAddress = 'home address'
 
     class temp_insuranceinfo:
