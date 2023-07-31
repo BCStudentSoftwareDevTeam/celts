@@ -3,10 +3,11 @@ from app.models.user import User
 
 class EmergencyContact(baseModel):
     user = ForeignKeyField(User)
-    name = CharField(null=True)
-    relationship = CharField(null=True)
-    homePhone = CharField(null=True)
-    workPhone = CharField(null=True)
-    cellPhone = CharField(null=True)
-    emailAddress = CharField(null=True)
-    homeAddress = CharField(null=True)
+    name = CharField(default='')
+    relationship = CharField(default='')
+    homePhone = CharField(default='')
+    workPhone = CharField(default='')
+    cellPhone = CharField(default='')
+    emailAddress = CharField(default='')
+    homeAddress = CharField(default='')
+    
