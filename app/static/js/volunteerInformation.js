@@ -10,8 +10,6 @@ $(document).ready(function () {
 		} else {
 			$("#tableCardToggle").text("Card View")
 		}
-			
-		console.log($("#tableCardToggleLabel").text())
 		updateTable()
 	})
 	$('#printVolunteerInfo').on('click', function () {
@@ -83,4 +81,5 @@ $(document).ready(function () {
 	getCheckBoxes()
 	updateTable()
 	sortVolunteers()
+
 })
