@@ -114,7 +114,6 @@ def volunteerInformationPage(eventID):
     eventNonAttendedData = [obj.user for obj in eventRsvpData if obj.user not in eventParticipantUsers]
     
     #get unique list of users for each category waitlist/notwaitlist,rsvped/attended
-    volunteerUser = list(set([obj.user for obj in eventParticipantData if not obj.rsvpWaitlist]))
     waitlistUser = list(set([obj.user for obj in participantsAndRsvp if obj.rsvpWaitlist]))
     rsvpUser = list(set([obj.user for obj in eventRsvpData if not obj.rsvpWaitlist ]))
     attendedUser= list(set([obj.user for obj in eventParticipantData if obj.user not in eventNonAttendedData]))
@@ -123,7 +122,6 @@ def volunteerInformationPage(eventID):
     eventData["program"] = event.program
 
     return render_template("/events/volunteerInformation.html",
-                            volunteerUser = volunteerUser,
                             waitlistUser = waitlistUser,
                             attendedUser= attendedUser,
                             rsvpUser= rsvpUser,
