@@ -5,28 +5,13 @@
 {% extends "eventNav.html" %}
 
 {% block styles %}
-{{super()}}
-<style>
-  @media print{
-    #volunteerInformationCardToPrint {
-      column-count: 2;
-    }
-    .print-column {
-        column-count: 1;
-        column-gap: 20px;
-        break-inside: avoid;
-    }
-    #volunteerInformationTableToPrint {
-       position:fixed;
-       left:10px;
-    }
-  }
-</style>
+  {{super()}}
+  <link rel="stylesheet" href="{{url_for('static', filename ='css/volunteerInformation.css') }}?u={{lastStaticUpdate}}">
 {% endblock %}
 
 {% block scripts %}
-{{super()}}
-<script type="module" src="/static/js/volunteerInformation.js"></script>
+  {{super()}}
+  <script type="module" src="/static/js/volunteerInformation.js"></script>
 {% endblock %}
 
 {% block app_content %}
@@ -62,11 +47,15 @@
         <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="emailSelect" checked>
         <label for="emailSelect">Email</label><br>
       </div>
-      <div class="col-2 mb-2 float-right" >
-        <button class="btn btn-primary" id="tableCardToggle">Table View</button>
-      </div>
-      <div class="col-auto align-items-end">
-        <button id="printVolunteerInfo" class="btn-primary btn">Print</button>
+      <div class="col-12 col-md">
+        <div class="row">
+          <div class="col-auto mb-2 float-right" >
+            <button class="btn btn-primary" id="tableCardToggle" nowrap>Table View</button>
+          </div>
+          <div class="col-auto align-items-end">
+            <button id="printVolunteerInfo" class="btn-primary btn">Print</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

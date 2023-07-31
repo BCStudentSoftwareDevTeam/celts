@@ -1,0 +1,17 @@
+
+@media print {
+    #volunteerInformationCardToPrint {
+        column-count: 2;
+    }
+
+    .print-column {
+        column-count: 1;
+        column-gap: 20px;
+        break-inside: avoid;
+    }
+
+    #volunteerInformationTableToPrint {
+        position: fixed;
+        left: 10px;
+    }
+}

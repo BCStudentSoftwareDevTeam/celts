@@ -4,13 +4,12 @@ $(document).ready(function () {
 		$("#volunteerInformationCardToPrint").toggle()
 		$("#volunteerInformationTableToPrint").toggle()
 
-		
 		if ($("#tableCardToggle").text() == "Card View") {
 			$("#tableCardToggle").text("Table View")
 		} else {
 			$("#tableCardToggle").text("Card View")
 		}
-		updateTable()
+		hideDuplicateVolunteers()
 	})
 	$('#printVolunteerInfo').on('click', function () {
 		let contentToPrint;
@@ -28,9 +27,9 @@ $(document).ready(function () {
 	})
 	$(".displayCheckbox").on('change', function () {
 		getCheckBoxes()
-		updateTable()
+		hideDuplicateVolunteers()
 	})
-	function updateTable() {
+	function hideDuplicateVolunteers() {
 		let allEntries = $(".volunteerInfoEntries")
 		let shownUsers = []
 		for (let i = 0; i < allEntries.length; i++) {
@@ -79,7 +78,7 @@ $(document).ready(function () {
 		entriesCards.appendTo(sortedCards);
 	};
 	getCheckBoxes()
-	updateTable()
+	hideDuplicateVolunteers()
 	sortVolunteers()
 
 })
