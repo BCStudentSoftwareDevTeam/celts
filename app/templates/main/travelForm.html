@@ -1,15 +1,21 @@
 {% extends "base.html" %}
 
-
+{% block styles%}
+{{ super()}}
+<link rel="stylesheet" href="{{url_for('static', filename = 'css/travelForm.css')  }}?u={{lastStaticUpdate}}">
+{% endblock %}
 
 {% block app_content %}
-
 <div class= "w-100 d-print-block">
-    <div class='text-center'>
-        <h2>Berea College CELTS Travel Form</h2>
-        <h2>Student Responsibility and Insurance</h2>
-        <h2>Statement</h2>
-    </div>
+    <div>
+        {% set width = 161 %}
+        <img src="{{url_for('static', filename='images/logos/celts_vertical_b&w.png')}}" class="" width ="{{width}}" height="{{width * (199/192)}}">
+        <div class='text-center'>
+            <h2>Berea College CELTS Travel Form</h2>
+            <h2>Student Responsibility and Insurance</h2>
+            <h2>Statement</h2>
+        </div>
+    </div> 
 
     <a> 
         As a voluntary participant in Berea College CELTS programs, I acknowledge and agree to the following: 
@@ -77,8 +83,8 @@
     </a>
     <br> <br>
 
-    <hr class='print-d-block'>
-    
+    <a>{{"_" * 120}}</a>
+
     <div class='row'>
         <div class='col'> Signature of Student Participant </div>
         <div class='col'> Printed name of Student Participant</div>  
@@ -88,7 +94,7 @@
 
     <br>
 
-    <pre>Student Name:<u></u></pre>
+    <a>Student Name:<u></u></a><br><br>
     
     <a>
         <strong>
@@ -116,22 +122,25 @@
     <a>(Please initial by the program that applies to you)</a> <br> <br>
 
     {# Test that this works once there is real table data #}
-    <pre><u>  {{insuranceInfo.user.firstName[0] + insuranceInfo.user.lastName[0] if insuranceInfo.insuranceType == 1 else '  '}}  </u> Berea College Health Insurance</pre> <br>
-    <pre><u>  {{insuranceInfo.user.firstName[0] + insuranceInfo.user.lastName[0] if insuranceInfo.insuranceType == 2 else '  '}}  </u> Parent or Guardian's insurance</pre> <br>
-    <pre><u>  {{insuranceInfo.user.firstName[0] + insuranceInfo.user.lastName[0] if insuranceInfo.insuranceType == 3 else '  '}}  </u> Other Insurance</pre> <br> 
+    <a><u>&nbsp;&nbsp;{{insuranceInfo.user.firstName[0] + insuranceInfo.user.lastName[0] if insuranceInfo.insuranceType == 1 else '&nbsp;&nbsp;' | safe}}&nbsp;&nbsp;</u> Berea College Health Insurance</a> <br>
+    <a><u>&nbsp;&nbsp;{{insuranceInfo.user.firstName[0] + insuranceInfo.user.lastName[0] if insuranceInfo.insuranceType == 2 else '&nbsp;&nbsp;' | safe}}&nbsp;&nbsp;</u> Parent or Guardian's insurance</a> <br>
+    <a><u>&nbsp;&nbsp;{{insuranceInfo.user.firstName[0] + insuranceInfo.user.lastName[0] if insuranceInfo.insuranceType == 3 else '&nbsp;&nbsp;' | safe}}&nbsp;&nbsp;</u> Other Insurance</a> <br><br>
 
     {# Beans: make all of these lines the same length by modifying 66 #}
-    <a>Name of Policy Holder:</a><u> {{insuranceInfo.policyHolderName}}<pre>{{' ' * (66 - (insuranceInfo.policyHolderName | length))}}</pre></u>
-    <pre>Relationship to you:<u> {{insuranceInfo.policyHolderRelationship}}{{' ' * (66 - (insuranceInfo.policyHolderRelationship | length))}}</u></pre>
-    <pre>Insurance Company:<u> {{insuranceInfo.insuranceCompany}}{{' ' * (66 - (insuranceInfo.insuranceCompany | length))}}</u></pre>
-    <pre>Policy Number:<u> {{insuranceInfo.policyNumber}}{{' ' * (66 - (insuranceInfo.policyNumber | length))}}</u></pre>
-    <pre>Group Number (if applicable):<u> {{insuranceInfo.groupNumber}}{{' ' * (66 - (insuranceInfo.groupNumber | length))}}</u></pre>
+    <a>Name of Policy Holder: <u>&nbsp;{{insuranceInfo.policyHolderName}}{{('&nbsp;' * (66 - (insuranceInfo.policyHolderName | length))) | safe}}</u></a><br><br> 
+    <a>Relationship to you: <u>&nbsp;{{insuranceInfo.policyHolderRelationship}}{{('&nbsp;' * (66 - (insuranceInfo.policyHolderRelationship | length))) | safe}}</u></a><br><br>
+    <a>Insurance Company: <u>&nbsp;{{insuranceInfo.insuranceCompany}}{{('&nbsp;' * (66 - (insuranceInfo.insuranceCompany | length))) | safe}}</u></a><br><br>
+    <a>Policy Number: <u>&nbsp;{{insuranceInfo.policyNumber}}{{('&nbsp;' * (66 - (insuranceInfo.policyNumber | length))) | safe}}</u></a><br><br>
+    <a>Group Number (if applicable): <u>&nbsp;{{insuranceInfo.groupNumber}}{{('&nbsp;' * (66 - (insuranceInfo.groupNumber | length))) | safe}}</u></a><br><br>
     <br>
     <a>
         Please list any Health Issues that the Berea College CELTS program staff need to know (use additional sheets, if needed
         and update as appropriate):
     </a>
-    <pre><u> {{insuranceInfo.healthIssues}}{{' ' * (66 - (insuranceInfo.healthIssues | length))}}</u></pre>
+    <br>
+    <a id= "healthIssues"><u>{{insuranceInfo.healthIssues}} {{("&nbsp;" * 400)  | safe }} 
+        {{("&nbsp;" * 400)  | safe }}
+        {{("&nbsp;" * 400)  | safe }}</u></a>
 </div>
 
 {% endblock %}

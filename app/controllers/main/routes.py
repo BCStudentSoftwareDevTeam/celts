@@ -247,7 +247,7 @@ def travelForm(username):
         insuranceCompany = "Family insurance"
         policyNumber = "11111111"
         groupNumber = "22222 The group"
-        healthIssues = "I ain't got none"
+        healthIssues = "I ain't got none" * 1000
         
 
     return render_template ('/main/travelForm.html',
