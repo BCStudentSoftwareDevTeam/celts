@@ -1,43 +1,32 @@
 $(document).ready(function () {
 	$("#volunteerInformationTableToPrint").hide()
-	$("#tableCardToggle").on('change', function () {
+	$("#tableCardToggle").on('click', function () {
 		$("#volunteerInformationCardToPrint").toggle()
 		$("#volunteerInformationTableToPrint").toggle()
 
 		
-		if ($("#tableCardToggleLabel").text() == "Card View") {
-			$("#tableCardToggleLabel").text("Table View")
+		if ($("#tableCardToggle").text() == "Card View") {
+			$("#tableCardToggle").text("Table View")
 		} else {
-			$("#tableCardToggleLabel").text("Card View")
+			$("#tableCardToggle").text("Card View")
 		}
 			
 		console.log($("#tableCardToggleLabel").text())
 		updateTable()
 	})
 	$('#printVolunteerInfo').on('click', function () {
-		let contentToPrint, contentToHide
-		let tableContent = $("#volunteerInformationTableToPrint")
-		let cardContent = $("#volunteerInformationCardToPrint")
-		if ($('#tableCardToggle').is(':checked')) {
-			contentToPrint = tableContent
-			contentToHide = cardContent
+		let contentToPrint;
+		let tableContent = $("#volunteerInformationTableToPrint");
+		let cardContent = $("#volunteerInformationCardToPrint");
+		if ($('#tableCardToggle').text()=='Card View') {
+			contentToPrint = tableContent;
 		} else {
-			contentToPrint = cardContent
-			contentToHide = tableContent
+			contentToPrint = cardContent;
 		}
-		contentToPrint.siblings().hide()
-		contentToPrint.parents().siblings().hide()
-		// // let checkContentLength = $("#"+cardContent[0].id+" .volunteerInfoEntries").length
-		// // console.log((contentToPrint == cardContent) && (checkContentLength > 1))
-		// if (contentToPrint == cardContent) {
-		contentToPrint.css('column-count', '2');
-		contentToPrint.css("break-inside", "avoid");
-		// } 
-		window.print()
-		contentToPrint.siblings().show()
-		contentToPrint.parents().siblings().show()
-		contentToPrint.css('column-count', '1');
-		contentToHide.hide()
+		contentToPrint.siblings().addClass('d-print-none')
+		contentToPrint.removeClass('d-print-none')
+		contentToPrint.addClass('d-print-block')
+		window.print();
 	})
 	$(".displayCheckbox").on('change', function () {
 		getCheckBoxes()
@@ -68,44 +57,30 @@ $(document).ready(function () {
 			}
 		})
 	}
-	$("#sortFirstName").on('click', function() {
-		let $sortedTable = $("#volunteerInformationTableToPrint");
-		let $entriesTable = $sortedTable.find(".volunteerInfoEntries");
+	function sortVolunteers() {
+		let sortedTable = $("#volunteerInformationTableToPrint");
+		let entriesTable = sortedTable.find(".volunteerInfoEntries");
 	
-		$entriesTable.sort(function (a, b) {
-			return a.dataset.fullname.localeCompare(b.dataset.fullname);
+		entriesTable.sort(function (a, b) {
+			let textA = a.getElementsByClassName('nameSelect')[0].innerText
+			let textB = b.getElementsByClassName('nameSelect')[0].innerText
+			return textA.localeCompare(textB);
 		});
 	
-		$entriesTable.appendTo($sortedTable);
+		entriesTable.appendTo(sortedTable);
 
-		let $sortedCards = $("#volunteerInformationCardToPrint .sort-here");
-		let $entriesCards = $sortedCards.find(".volunteerInfoEntries");
+		let sortedCards = $("#volunteerInformationCardToPrint .sort-here");
+		let entriesCards = sortedCards.find(".volunteerInfoEntries");
 	
-		$entriesCards.sort(function (a, b) {
-			return a.dataset.fullname.localeCompare(b.dataset.fullname);
+		entriesCards.sort(function (a, b) {
+			let textA = a.getElementsByClassName('nameSelect')[0].innerText
+			let textB = b.getElementsByClassName('nameSelect')[0].innerText
+			return textA.localeCompare(textB);
 		});
 	
-		$entriesCards.appendTo($sortedCards);
-	});
-	$("#sortUsername").on("click", function() {
-		let $sortedTable = $("#volunteerInformationTableToPrint");
-		let $entriesTable = $sortedTable.find(".volunteerInfoEntries");
-	
-		$entriesTable.sort(function (a, b) {
-			return a.dataset.user.localeCompare(b.dataset.user);
-		});
-	
-		$entriesTable.appendTo($sortedTable);
-
-		let $sortedCards = $("#volunteerInformationCardToPrint .sort-here");
-		let $entriesCards = $sortedCards.find(".volunteerInfoEntries");
-	
-		$entriesCards.sort(function (a, b) {
-			return a.dataset.user.localeCompare(b.dataset.user);
-		});
-	
-		$entriesCards.appendTo($sortedCards);
-	})
+		entriesCards.appendTo(sortedCards);
+	};
 	getCheckBoxes()
 	updateTable()
+	sortVolunteers()
 })

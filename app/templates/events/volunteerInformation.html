@@ -4,6 +4,22 @@
 {% set tabName = 'dietary' %}
 {% extends "eventNav.html" %}
 
+{% block styles %}
+{{super()}}
+<style>
+  @media print{
+    #volunteerInformationCardToPrint {
+      column-count: 2;
+    }
+    .print-column {
+        column-count: 1;
+        column-gap: 20px;
+        break-inside: avoid;
+    }
+  }
+</style>
+{% endblock %}
+
 {% block scripts %}
 {{super()}}
 <script type="module" src="/static/js/volunteerInformation.js"></script>
@@ -42,18 +58,11 @@
         <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="emailSelect" checked>
         <label for="emailSelect">Email</label><br>
       </div>
-      <div class="col-2 form-check form-switch mb-2 float-right" >
-        <label class="form-check-label" for="tableCardToggle" id="tableCardToggleLabel">Table View</label>
-        <input class="form-check-input" type="checkbox" id="tableCardToggle" autocomplete="off">
+      <div class="col-2 mb-2 float-right" >
+        <button class="btn btn-primary" id="tableCardToggle">Table View</button>
       </div>
       <div class="col-auto align-items-end">
         <button id="printVolunteerInfo" class="btn-primary btn">Print</button>
-      </div>
-      <div class="col-auto align-items-end">
-        <button id="sortFirstName" class="btn-primary btn sortButtons">Sort By First Name</button>
-      </div>
-      <div class="col-auto align-items-end">
-        <button id="sortUsername" class="btn-primary btn sortButtons">Sort By Username</button>
       </div>
     </div>
   </div>
@@ -65,14 +74,14 @@
     {% set combinedParticipants = attendedUser + rsvpUser %}
     {% set printedNames = [] %}
     {% set uniqueParticipants = combinedParticipants | unique %}
-      {% for participant in uniqueParticipants %}
+    {% for participant in uniqueParticipants %}
       {% set isAttended = participant in attendedUser %}
       {% set isRSVPed = participant in rsvpUser %}
       {% set isWaitlist = participant in waitlistUser %}
     
       {% if isRSVPed %}
-        <div class="rsvpSelect col-12 col-md-6 volunteerInfoEntries" data-user="{{participant.username}}" data-fullname="{{ participant.firstName }} {{ participant.lastName }}">
-          <h4 nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></h4>
+        <div class="rsvpSelect col-12 col-md-6 volunteerInfoEntries print-column" data-user="{{participant.username}}">
+          <h4 class="nameSelect" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></h4>
           <ul>
             <div class="phoneSelect" nowrap>{{ participant.phoneNumber }}</div>
             <div class="emailSelect" nowrap>{{ participant.email }}</div>
@@ -81,8 +90,8 @@
         </div>
       {% endif %}
       {% if isAttended%}
-        <div class="attendedSelect col-12 col-md-6 volunteerInfoEntries" data-user="{{participant.username}}" data-fullname="{{ participant.firstName }} {{ participant.lastName }}">
-          <h4 nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></h4>
+        <div class="attendedSelect col-12 col-md-6 volunteerInfoEntries print-column" data-user="{{participant.username}}">
+          <h4 class="nameSelect" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></h4>
           <ul>
             <div class="phoneSelect" nowrap>{{ participant.phoneNumber }}</div>
             <div class="emailSelect" nowrap>{{ participant.email }}</div>
@@ -91,8 +100,8 @@
         </div>
       {% endif %}
       {% if isWaitlist %}
-        <div class="waitlistSelect col-12 col-md-6 volunteerInfoEntries" data-user="{{participant.username}}" data-fullname="{{ participant.firstName }} {{ participant.lastName }}">
-          <h4 nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></h4>
+        <div class="waitlistSelect col-12 col-md-6 volunteerInfoEntries print-column" data-user="{{participant.username}}">
+          <h4 class="nameSelect" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></h4>
           <ul>
             <div class="phoneSelect" nowrap>{{ participant.phoneNumber }}</div>
             <div class="emailSelect" nowrap>{{ participant.email }}</div>
@@ -100,7 +109,7 @@
           </ul>
         </div>
       {% endif %}
-      {% endfor %}
+    {% endfor %}
     </div>
   </div>
       <table class="fs-5" id ="volunteerInformationTableToPrint">
@@ -121,27 +130,27 @@
             {% set isWaitlist = participant in waitlistUser %}
         <tbody>
           {% if isRSVPed %}
-          <tr class="rsvpSelect volunteerInfoEntries" data-user="{{participant.username}}" data-fullname="{{ participant.firstName }} {{ participant.lastName }}">
-            <td class="border p-1 px-3" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></td>
+          <tr class="rsvpSelect volunteerInfoEntries" data-user="{{participant.username}}">
+            <td class="border p-1 px-3 nameSelect" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></td>
             <td class="border p-1 px-3 phoneSelect" nowrap>{{ participant.phoneNumber }}</td>
             <td class="border p-1 px-3 emailSelect" nowrap>{{ participant.email }}</td>
-            <td class="border p-1 px-3 dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction }}</td>
+            <td class="border p-1 px-3 dietRestrictionSelect">{{ participant.dietRestriction }}</td>
           </tr>
           {% endif %}
           {% if isAttended%}
-          <tr class="attendedSelect volunteerInfoEntries" data-user="{{participant.username}}" data-fullname="{{ participant.firstName }} {{ participant.lastName }}">
-            <td class="border p-1 px-3" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></td>
+          <tr class="attendedSelect volunteerInfoEntries" data-user="{{participant.username}}">
+            <td class="border p-1 px-3 nameSelect" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></td>
             <td class="border p-1 px-3 phoneSelect" nowrap>{{ participant.phoneNumber }}</td>
             <td class="border p-1 px-3 emailSelect" nowrap>{{ participant.email }}</td>
-            <td class="border p-1 px-3 dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction }}</td>
+            <td class="border p-1 px-3 dietRestrictionSelect">{{ participant.dietRestriction }}</td>
           </tr>
           {% endif %}
           {% if isWaitlist %}
-          <tr class="waitlistSelect volunteerInfoEntries" data-user="{{participant.username}}" data-fullname="{{ participant.firstName }} {{ participant.lastName }}">
-            <td class="border p-1 px-3" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></td>
+          <tr class="waitlistSelect volunteerInfoEntries" data-user="{{participant.username}}">
+            <td class="border p-1 px-3 nameSelect" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></td>
             <td class="border p-1 px-3 phoneSelect" nowrap>{{ participant.phoneNumber }}</td>
             <td class="border p-1 px-3 emailSelect" nowrap>{{ participant.email }}</td>
-            <td class="border p-1 px-3 dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction }}</td>
+            <td class="border p-1 px-3 dietRestrictionSelect">{{ participant.dietRestriction }}</td>
           </tr>
           {% endif %}
         </tbody>
