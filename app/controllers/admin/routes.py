@@ -271,7 +271,6 @@ def eventDisplay(eventId):
 
 @admin_bp.route('/event/<eventId>/cancel', methods=['POST'])
 def cancelRoute(eventId):
-    print(request.referrer)
     try:
         cancelEvent(eventId)
         return redirect(request.referrer)
