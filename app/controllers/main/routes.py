@@ -232,7 +232,7 @@ def travelForm(username):
 
     # Beans: Delete these two classes once we have database information to read from
     class temp_contactinfo:
-        name = 'Beans man'
+        name = None
         relationship = 'My relationship'
         homePhone = 'my home phone'
         workPhone = 'my work phone'

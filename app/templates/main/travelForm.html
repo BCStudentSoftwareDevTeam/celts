@@ -88,21 +88,21 @@
 
     <br>
 
-    <pre>Student Name:<u> {{contactInfo.name}}{{' ' * (66 - (contactInfo.name | length))}}</u></pre>
+    <pre>Student Name:<u></u></pre>
     
     <a>
         <strong>
             Emergency Contact Information:
         </strong>
     </a>
-    <br><br> {# Beans: make all of these lines the same length by modifying 66 #}
-    <pre>Name:<u> {{contactInfo.name}}{{' ' * (66 - (contactInfo.name | length))}}</u></pre>
-    <pre>Relationship:<u> {{contactInfo.relationship}}{{' ' * (66 - (contactInfo.relationship | length))}}</u></pre>
-    <pre>Address:<u> {{contactInfo.homeAddress}}{{' ' * (66 - (contactInfo.homeAddress | length))}}</u></pre>
-    <pre>Home Phone Number:<u> {{contactInfo.homePhone}}{{' ' * (66 - (contactInfo.homePhone | length))}}</u></pre>
-    <pre>Work Phone Number:<u> {{contactInfo.workPhone}}{{' ' * (66 - (contactInfo.workPhone | length))}}</u></pre>
-    <pre>Cell Phone Number:<u> {{contactInfo.cellPhone}}{{' ' * (66 - (contactInfo.cellPhone | length))}}</u></pre>
-    <pre>Email Address:<u> {{contactInfo.emailAddress}}{{' ' * (66 - (contactInfo.emailAddress | length))}}</u></pre>
+    <br><br>{% set whiteSpace = '_' * 66 %}
+    <a>Name: <u>{{contactInfo.name if contactInfo.name else '_' * 66}}</u></a><br><br>
+    <a>Relationship: <u>{{contactInfo.relationship if contactInfo.relationship else '_' * 66}}</u></a><br><br>
+    <a>Address: <u>{{contactInfo.homeAddress if contactInfo.homeAddress else '_' * 66}}</u></a><br><br>
+    <a>Home Phone Number: <u>{{contactInfo.homePhone if contactInfo.homePhone else '_' * 66}}</u></a><br><br>
+    <a>Work Phone Number: <u>{{contactInfo.workPhone if contactInfo.workPhone else '_' * 66}}</u></a><br><br>
+    <a>Cell Phone Number: <u>{{contactInfo.cellPhone if contactInfo.cellPhone else '_' * 66}}</u></a><br><br>
+    <a>Email Address: <u>{{contactInfo.emailAddress if contactInfo.emailAddress else '_' * 66}}</u></a><br><br>
 
 
     <a>
