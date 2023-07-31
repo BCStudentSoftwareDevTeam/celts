@@ -98,8 +98,9 @@
             {% else %}
               <td><a href="/event/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
             {% endif %}
-              {% if not user.isAdmin and event.isCanceled %}
-                <td colspan = 3 >This event has been canceled. Contact CELTS if you have any questions.</td>
+            {% set ProgramManager = 'programmanager' if isProgramManager  else 'CELTS' %}
+              {% if event.isCanceled %}
+                <td colspan = 3 >This event has been canceled. Contact {{ProgramManager}} if you have any questions.</td>
               {% else %}
                 <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
                 <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>

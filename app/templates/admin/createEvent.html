@@ -270,7 +270,8 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <p> Are you sure you want to cancel this event? <br> By proceeding with the cancellation, you understand that this event will no longer take place on the proposed date, but the event information will be kept for potential future use or reference.</p>
+        <p> Are you sure you want to cancel this event?</p>
+        <p> A canceled event will no longer take place during its scheduled time but the information will be kept for future reference.</p>
       </div>
       <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -296,7 +297,8 @@
         {% if eventData.recurringId%}
         <div class="modal-body">
           <div class= "container-fluid">
-            <p>This action is irreversible. <br> By deleting this event, all information regarding this event will be removed from the website. </p>
+            <p>This action is irreversible. </p> 
+            <p>By deleting this event, all information regarding this event will be removed from the website. </p>
             <div class="d-grid gap-2">
                 <form action="/event/{{eventData.id}}/delete" method='post'>
                   <button type="submit" class="btn btn-danger">Delete This Event</button>

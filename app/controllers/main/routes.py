@@ -45,7 +45,7 @@ def landingPage():
     managerProgramDict = getManagerProgramDict(g.current_user)
 
 
-    eventsInTerm = list(Event.select().where(Event.term == g.current_term))
+    eventsInTerm = list(Event.select().where(Event.term == g.current_term, Event.isCanceled == False))
     programsWithEventsList = [event.program for event in eventsInTerm if not event.isPast]
 
     return render_template("/main/landingPage.html", managerProgramDict = managerProgramDict,

@@ -178,11 +178,11 @@ def saveEventToDb(newEventData):
 
 def getStudentLedEvents(term):
     studentLedEvents = list(Event.select(Event, Program)
-                            .join(Program)
-                            .where(Program.isStudentLed,
-                                    Event.term == term)
-                            .order_by(Event.startDate, Event.timeStart)
-                            .execute())
+                                 .join(Program)
+                                 .where(Program.isStudentLed,
+                                        Event.term == term)
+                                 .order_by(Event.startDate, Event.timeStart)
+                                 .execute())
 
     programs = {}
 
@@ -202,10 +202,10 @@ def getTrainingEvents(term, user):
         return: a list of all trainings the user can view
     """
     trainingQuery = (Event.select(Event).distinct()
-                        .join(Program, JOIN.LEFT_OUTER)
-                        .where(Event.isTraining == True,
-                                Event.term == term)
-                        .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate, Event.timeStart))
+                          .join(Program, JOIN.LEFT_OUTER)
+                          .where(Event.isTraining == True,
+                                 Event.term == term)
+                          .order_by(Event.isAllVolunteerTraining.desc(), Event.startDate, Event.timeStart))
 
     hideBonner = (not user.isAdmin) and not (user.isStudent and user.isBonnerScholar)
     if hideBonner:
@@ -215,11 +215,11 @@ def getTrainingEvents(term, user):
 
 def getBonnerEvents(term):
     bonnerScholarsEvents = list(Event.select(Event, Program.id.alias("program_id"))
-                                .join(Program)
-                                .where(Program.isBonnerScholars,
-                                        Event.term == term)
-                                .order_by(Event.startDate, Event.timeStart)
-                                .execute())
+                                     .join(Program)
+                                     .where(Program.isBonnerScholars,
+                                            Event.term == term)
+                                     .order_by(Event.startDate, Event.timeStart)
+                                     .execute())
     return bonnerScholarsEvents
 
 def getOtherEvents(term):
@@ -234,11 +234,11 @@ def getOtherEvents(term):
     otherEvents = list(Event.select(Event, Program)
                         .join(Program, JOIN.LEFT_OUTER)
                         .where(Event.term == term,
-                            Event.isTraining == False,
-                            Event.isAllVolunteerTraining == False,
-                            ((Event.program == None) |
-                            ((Program.isStudentLed == False) &
-                            (Program.isBonnerScholars == False))))
+                               Event.isTraining == False,
+                               Event.isAllVolunteerTraining == False,
+                               ((Event.program == None) |
+                               ((Program.isStudentLed == False) &
+                               (Program.isBonnerScholars == False))))
                         .order_by(Event.startDate, Event.timeStart, Event.id)
                         .execute())
 

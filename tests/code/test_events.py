@@ -414,7 +414,7 @@ def test_cancelEvent():
             g.current_user = User.get_by_id("ramsayb2")
             cancelEvent(eventId)
             event = Event.get(Event.id == eventId)
-        assert event.isCanceled == True
+        assert event.isCanceled
         transaction.rollback()
 
 
