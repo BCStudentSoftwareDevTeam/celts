@@ -96,13 +96,13 @@
         </strong>
     </a>
     <br><br> {# Beans: make all of these lines the same length by modifying 66 #}
-    <pre>Name:<u> {{contactInfo.name}}{{' ' * (66 - (contactInfo.name | length))}}</u></pre>
-    <pre>Relationship:<u> {{contactInfo.relationship}}{{' ' * (66 - (contactInfo.relationship | length))}}</u></pre>
-    <pre>Address:<u> {{contactInfo.homeAddress}}{{' ' * (66 - (contactInfo.homeAddress | length))}}</u></pre>
-    <pre>Home Phone Number:<u> {{contactInfo.homePhone}}{{' ' * (66 - (contactInfo.homePhone | length))}}</u></pre>
-    <pre>Work Phone Number:<u> {{contactInfo.workPhone}}{{' ' * (66 - (contactInfo.workPhone | length))}}</u></pre>
-    <pre>Cell Phone Number:<u> {{contactInfo.cellPhone}}{{' ' * (66 - (contactInfo.cellPhone | length))}}</u></pre>
-    <pre>Email Address:<u> {{contactInfo.emailAddress}}{{' ' * (66 - (contactInfo.emailAddress | length))}}</u></pre>
+    <a>Name: <u>&nbsp;{{contactInfo.name}}{{('&nbsp;' * (66 - (contactInfo.name | length))) | safe}}</u></a><br><br>
+    <a>Relationship: <u>&nbsp;{{contactInfo.relationship}}{{('&nbsp;' * (66 - (contactInfo.relationship | length))) | safe}}</u></a><br><br>
+    <a>Address: <u>&nbsp;{{contactInfo.homeAddress}}{{('&nbsp;' * (66 - (contactInfo.homeAddress | length))) | safe}}</u></a><br><br>
+    <a>Home Phone Number: <u>&nbsp;{{contactInfo.homePhone}}{{('&nbsp;' * (66 - (contactInfo.homePhone | length))) | safe}}</u></a><br><br>
+    <a>Work Phone Number: <u>&nbsp;{{contactInfo.workPhone}}{{('&nbsp;' * (66 - (contactInfo.workPhone | length))) | safe}}</u></a><br><br>
+    <a>Cell Phone Number: <u>&nbsp;{{contactInfo.cellPhone}}{{('&nbsp;' * (66 - (contactInfo.cellPhone | length))) | safe}}</u></a><br><br>
+    <a>Email Address: <u>&nbsp;{{contactInfo.emailAddress}}{{('&nbsp;' * (66 - (contactInfo.emailAddress | length))) | safe}}</u></a><br><br>
 
 
     <a>
