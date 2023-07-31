@@ -196,15 +196,11 @@ def test_trainedParticipants():
     attendedPreq = trainedParticipants(3, currentTerm)
     assert attendedPreq == [khatts]
 
-    currentTerm = Term.get_by_id(2) # Spring A 2021
+    currentTerm = Term.get_by_id(2) # Spring 2021
     attendedPreq = trainedParticipants(3, currentTerm)
     assert attendedPreq == [khatts]
 
-    currentTerm = Term.get_by_id(3) # Spring B 2021
-    attendedPreq = trainedParticipants(3, currentTerm)
-    assert attendedPreq == [khatts]
-
-    currentTerm = Term.get_by_id(4) # Summer 2021
+    currentTerm = Term.get_by_id(3) # Summer 2021
     attendedPreq = trainedParticipants(3, currentTerm)
     assert attendedPreq == [khatts]
 
