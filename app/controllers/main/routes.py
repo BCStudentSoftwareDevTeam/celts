@@ -232,12 +232,12 @@ def travelForm(username):
 
     # Beans: Delete these two classes once we have database information to read from
     class temp_contactinfo:
-        name = None
+        name = 'some dude'
         relationship = 'My relationship'
         homePhone = 'my home phone'
-        workPhone = None
+        workPhone = 'unemployed activities'
         cellPhone = 'my cell phone'
-        emailAddress = None
+        emailAddress = 'siuu@gmail.com'
         homeAddress = 'home address'
 
     class temp_insuranceinfo:

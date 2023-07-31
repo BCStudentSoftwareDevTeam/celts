@@ -96,6 +96,7 @@
         </strong>
     </a>
     <br><br> {# Beans: make all of these lines the same length by modifying 66 #}
+    {% set name = contactInfo.name if contactInfo.name else "" %}
     <a>Name: <u>&nbsp;{{contactInfo.name}}{{('&nbsp;' * (66 - (contactInfo.name | length))) | safe}}</u></a><br><br>
     <a>Relationship: <u>&nbsp;{{contactInfo.relationship}}{{('&nbsp;' * (66 - (contactInfo.relationship | length))) | safe}}</u></a><br><br>
     <a>Address: <u>&nbsp;{{contactInfo.homeAddress}}{{('&nbsp;' * (66 - (contactInfo.homeAddress | length))) | safe}}</u></a><br><br>
@@ -132,8 +133,6 @@
     </a>
     <pre><u> {{insuranceInfo.healthIssues}}{{' ' * (66 - (insuranceInfo.healthIssues | length))}}</u></pre>
 </div>
-
-
 
 {% endblock %}
 
