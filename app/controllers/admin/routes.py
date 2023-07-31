@@ -271,10 +271,10 @@ def eventDisplay(eventId):
 
 @admin_bp.route('/event/<eventId>/cancel', methods=['POST'])
 def cancelRoute(eventId):
+    print(request.referrer)
     try:
         cancelEvent(eventId)
-        flash("Event successfully canceled.", "success")
-        return redirect(url_for("main.events", selectedTerm=g.current_term))
+        return redirect(request.referrer)
 
     except Exception as e:
         print('Error while canceling event:', e)
