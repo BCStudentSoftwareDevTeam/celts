@@ -4,7 +4,7 @@
 {% block app_content %}
 
 <div class="text-center">
-    <h1> Insurance Information </h1> <br>
+    <h1> Insurance Information {{readOnly}} </h1> <br>
 </div>
 
 
@@ -16,7 +16,7 @@
             <div class='form-group mb-4'>
                 <label class='form-label' for='insuranceType'><strong> Type of Insurance </strong></label>
                 {% set insuranceType = userInsuranceInfo.insuranceType if userInsuranceInfo else 0 %}
-                <select class='form-select' id='insuranceType' name='insuranceType' required>
+                <select {{'disabled' if readOnly else ''}} class='form-select' id='insuranceType' name='insuranceType' required>
                     <option disabled value='' {{'selected' if not insuranceType else ''}}>Select a Type of Insurance</option>
                     <option {{'selected' if insuranceType == 1 else '' }} value='1'>Berea College Health Insurance</option>
                     <option {{'selected' if insuranceType == 2 else '' }} value='2'>Parent Or Guardian's Insurance</option>
@@ -26,12 +26,12 @@
 
             <div class='form-group mb-4'>
                 <label class='form-label' for='name'><strong> Name of Policy Holder </strong></label>
-                <input class='form-control' type='text' id='name' name='policyHolderName' value="{{userInsuranceInfo.policyHolderName if userInsuranceInfo else ''}}"/>
+                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='name' name='policyHolderName' value="{{userInsuranceInfo.policyHolderName if userInsuranceInfo else ''}}"/>
             </div>
 
             <div class='form-group mb-4'>
                 <label class='form-label' for='relationship'><strong> Relationship to You </strong></label>
-                <input class='form-control' type='text' id='relationship' name='policyHolderRelationship' value="{{userInsuranceInfo.policyHolderRelationship if userInsuranceInfo else ''}}"/>
+                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='relationship' name='policyHolderRelationship' value="{{userInsuranceInfo.policyHolderRelationship if userInsuranceInfo else ''}}"/>
             </div>
 
         </div>
@@ -42,15 +42,15 @@
 
             <div class='form-group mb-4'>
                 <label class='form-label' for='insuranceCompany'><strong> Insurance Company </strong></label>
-                <input class='form-control' type='text' id='insuranceCompany' name='insuranceCompany' value="{{userInsuranceInfo.insuranceCompany if userInsuranceInfo else ''}}"/>
+                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='insuranceCompany' name='insuranceCompany' value="{{userInsuranceInfo.insuranceCompany if userInsuranceInfo else ''}}"/>
             </div>
             <div class='form-group mb-4'>
                 <label class='form-label' for='policyNumber'><strong> Policy Number </strong></label>
-                <input class='form-control' type='text' id='policyNumber' name='policyNumber' value="{{userInsuranceInfo.policyNumber if userInsuranceInfo else ''}}"/>
+                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='policyNumber' name='policyNumber' value="{{userInsuranceInfo.policyNumber if userInsuranceInfo else ''}}"/>
             </div>
             <div class='form-group mb-4'>
                 <label class='form-label' for='groupNumber'><strong> Group Number (if applicable)</strong></label>
-                <input class='form-control' type='text' id='groupNumber' name='groupNumber' value="{{userInsuranceInfo.groupNumber if userInsuranceInfo else ''}}"/>
+                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='groupNumber' name='groupNumber' value="{{userInsuranceInfo.groupNumber if userInsuranceInfo else ''}}"/>
             </div>
         </div>
 
@@ -58,7 +58,7 @@
         <!--Bottom-->
         <div class='form-group'>
             <label class='form-label' for='healthIssues'><strong> Please list any health issues that the Berea College CELTS program staff need to know about </strong></label>
-            <textarea rows='8' class='form-control' type='text' id='healthIssues' name='healthIssues'>{{userInsuranceInfo.healthIssues}}</textarea>
+            <textarea {{'disabled' if readOnly else ''}} rows='8' class='form-control' type='text' id='healthIssues' name='healthIssues'>{{userInsuranceInfo.healthIssues}}</textarea>
         </div>
 
     </div>
@@ -66,8 +66,12 @@
     <br>
 
     <div class='form-group' style='text-align:right'>
-        <a href='/profile/{{username}}' class='btn btn-secondary'>Cancel</a>
-        <button class='btn btn-primary' type='submit'> Save & Exit </button>
+        {% if readOnly %}
+            <a href='/profile/{{username}}' class='btn btn-primary'>Exit</a>
+        {% else %}
+            <a href='/profile/{{username}}' class='btn btn-secondary'>Cancel</a>
+            <button class='btn btn-primary' type='submit'> Save & Exit </button>
+        {% endif %}
     </div>
 
 

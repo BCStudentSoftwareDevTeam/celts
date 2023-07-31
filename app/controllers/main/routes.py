@@ -166,17 +166,29 @@ def viewUsersProfile(username):
 @main_bp.route('/profile/<username>/emergencyContact', methods=['GET', 'POST'])
 def emergencyContactInfo(username):
     """
-    This loads the Emergency Contact
+    This loads the Emergency Contact Page
     """
+    if not (g.current_user.username == username or g.current_user.isAdmin):
+        abort(403)
+
+
     if request.method == 'GET':
+
+        # Beans: Q, Should student staff be able to see the emergency contact and insurance info of everyone?
+        readOnly = False if g.current_user.username == username else True
+        
+
         contactInfo = EmergencyContact.get_or_none(EmergencyContact.user_id == username)
         return render_template ("/main/emergencyContactInfo.html",
                                 username=username,
                                 contactInfo=contactInfo,
-                                viewOnly = False
+                                readOnly = readOnly
                                 )
     
     elif request.method == 'POST':
+        if g.current_user != username:
+            abort(403)
+
         contactInfo = EmergencyContact.get_or_none(EmergencyContact.user_id == username)
         if contactInfo:
             contactInfo.update(**request.form).execute()
@@ -189,16 +201,24 @@ def insuranceInfo(username):
     """
     This loads the Insurance Information Page
     """
+    if not (g.current_user.username == username or g.current_user.isAdmin):
+            abort(403)
+
     if request.method == 'GET':
+        # Beans: Q, Should student staff be able to see the emergency contact and insurance info of everyone?
+        readOnly = False if g.current_user.username == username else True
         userInsuranceInfo = InsuranceInfo.get_or_none(InsuranceInfo.user == username)
         return render_template ("/main/insuranceInfo.html",
                                 username = username,
                                 userInsuranceInfo = userInsuranceInfo,
-                                viewOnly = False
+                                readOnly = readOnly
                                 )
 
     # Save the form data
     elif request.method == 'POST':
+        if g.current_user != username:
+            abort(403)
+
         info = InsuranceInfo.get_or_none(InsuranceInfo.user_id == username)
         if info:
             info.update(**request.form).execute()

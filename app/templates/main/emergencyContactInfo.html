@@ -4,7 +4,7 @@
 {% block app_content %}
 
 <div class="text-center">
-    <h1> Emergency Contact</h1> <br>
+    <h1> Emergency Contact </h1> <br>
 </div>
 
 
@@ -15,16 +15,16 @@
 
             <div class='form-group mb-4'>
                 <label class='form-label' for='name'><strong> Contact Name </strong></label>
-                <input class='form-control' type='text' id='name' value="{{contactInfo.name if contactInfo else ''}}" name='emergencyContactName'/>
+                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='name' value="{{contactInfo.name if contactInfo else ''}}" name='name'/>
             </div>
 
             <div class='form-group mb-4'>
                 <label class='form-label' for='relationship'><strong> Relationship to You </strong></label>
-                <input class='form-control' type='text' id='relationship' value="{{contactInfo.relationship if contactInfo else ''}}" name='emergencyContactRelationship'/>
+                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='relationship' value="{{contactInfo.relationship if contactInfo else ''}}" name='relationship'/>
             </div>
             <div class='form-group mb-4'>
                 <label class='form-label' for='email'><strong> Email Address </strong></label>
-                <input class='form-control' type='text' id='email' value="{{contactInfo.emailAddress if contactInfo else ''}}" name='emergencyContactEmail'/>
+                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='email' value="{{contactInfo.emailAddress if contactInfo else ''}}" name='emailAddress'/>
             </div>
 
         </div>
@@ -38,23 +38,23 @@
 
             <div class='form-group mb-4'>
                 <label class='form-label' for='cellPhone'><strong> Cell Phone Number </strong></label>
-                <input class='form-control' type='text' id='cellPhone' name='emergencyContactCellPhone'/>
+                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='cellPhone' value="{{contactInfo.cellPhone if contactInfo else ''}}" name='cellPhone'/>
             </div>
             <div class='form-group mb-4'>
                 <label class='form-label' for='workPhone'><strong> Work Phone Number </strong></label>
-                <input class='form-control' type='text' id='workPhone' name='emergencyContactWorkPhone'/>
+                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='workPhone' value="{{contactInfo.workPhone if contactInfo else ''}}" name='workPhone'/>
             </div>
             <div class='form-group mb-4'>
-                <label class='form-label' for='cellPhone'><strong> Cell Phone </strong></label>
-                <input class='form-control' type='text' id='cellPhone' name='emergencyContactCellPhone'/>
+                <label class='form-label' for='cellPhone'><strong> Home Phone </strong></label>
+                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='homePhone' value="{{contactInfo.homePhone if contactInfo else ''}}" name='homePhone'/>
             </div>
         </div>
 
-
+       
         <!--Bottom-->
         <div class='form-group'>
             <label class='form-label' for='address'><strong> Home Address </strong></label>
-            <input class='form-control' type='text' id='address' name='emergencyContactAddress'/>
+            <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='address' value="{{contactInfo.homeAddress if contactInfo else ''}}" name='homeAddress'/>
         </div>
 
     </div>
@@ -62,8 +62,12 @@
     <br>
 
     <div class='form-group' style='text-align:right'>
-        <a href='/profile/{{username}}' class='btn btn-secondary'>Cancel</a>
-        <button class='btn btn-primary' type='submit'> Save & Exit </button>
+        {% if readOnly %}
+            <a href='/profile/{{username}}' class='btn btn-primary'>Exit</a>            
+        {% else %}
+            <a href='/profile/{{username}}' class='btn btn-secondary'>Cancel</a>
+            <button class='btn btn-primary' type='submit'> Save & Exit </button>
+        {% endif %}
     </div>
 
 </form>
