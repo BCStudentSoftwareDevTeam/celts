@@ -75,11 +75,10 @@ def events(selectedTerm, activeTab, programID):
     trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
-    
+
     managersProgramDict = getManagerProgramDict(g.current_user)
-    managers = [{id[0].id: id[1]['managers']} for id in managersProgramDict.items()]
-    print("////////////////////////////////////////////////////////////////////////")
-    print(managers)
+    managersList = [id[1] for id in managersProgramDict.items()]
+
     return render_template("/events/event_list.html",
                             selectedTerm = term,
                             studentLedEvents = studentLedEvents,
@@ -93,7 +92,7 @@ def events(selectedTerm, activeTab, programID):
                             user = g.current_user,
                             activeTab = activeTab,
                             programID = int(programID),
-                            managers = managers
+                            managersList = managersList
                             )
 
 @main_bp.route('/profile/<username>', methods=['GET'])
@@ -149,22 +148,27 @@ def viewUsersProfile(username):
         userDiet = [note.dietRestriction for note in userDietQuery]
 
         bonnerRequirements = getCertRequirementsWithCompletion(certification=Certification.BONNER, username=volunteer)
+
+        managersProgramDict = getManagerProgramDict(g.current_user)
+        managersList = [id[1] for id in managersProgramDict.items()]
+    
         return render_template ("/main/userProfile.html",
-                programs = programs,
-                programsInterested = programsInterested,
-                upcomingEvents = upcomingEvents,
-                participatedEvents = participatedEvents,
-                rsvpedEvents = rsvpedEvents,
-                permissionPrograms = permissionPrograms,
-                eligibilityTable = eligibilityTable,
-                volunteer = volunteer,
-                backgroundTypes = backgroundTypes,
-                allBackgroundHistory = allBackgroundHistory,
-                currentDateTime = datetime.datetime.now(),
-                profileNotes = profileNotes,
-                bonnerRequirements = bonnerRequirements,
-                userDiet = userDiet                
-            )
+                                programs = programs,
+                                programsInterested = programsInterested,
+                                upcomingEvents = upcomingEvents,
+                                participatedEvents = participatedEvents,
+                                rsvpedEvents = rsvpedEvents,
+                                permissionPrograms = permissionPrograms,
+                                eligibilityTable = eligibilityTable,
+                                volunteer = volunteer,
+                                backgroundTypes = backgroundTypes,
+                                allBackgroundHistory = allBackgroundHistory,
+                                currentDateTime = datetime.datetime.now(),
+                                profileNotes = profileNotes,
+                                bonnerRequirements = bonnerRequirements,
+                                userDiet = userDiet,
+                                managersList = managersList                
+                            )
     abort(403)
 
 @main_bp.route('/profile/addNote', methods=['POST'])

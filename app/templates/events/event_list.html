@@ -98,9 +98,9 @@
             {% else %}
               <td><a href="/event/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
             {% endif %}
-            
               {% if event.isCanceled %}
-                {% set ProgramManager = managers[event.program.id] if managers is defined else "CULKTKKTT" %}
+                {% set ListOfManagers = managersList[event.program.id] if managersList %}
+                {% set ProgramManager = ListOfManagers["managers"] if ListOfManagers is defined else "CELTS" %}
                   <td colspan = 3 >This event has been canceled. Contact <a href="mailto:{{ProgramManager}}">{{ProgramManager}}</a> if you have any questions.</td>
               {% else %}
               {% set id = event.id %}

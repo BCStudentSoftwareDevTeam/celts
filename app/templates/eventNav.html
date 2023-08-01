@@ -18,10 +18,14 @@
         {% if g.current_user.isAdmin %}
             {{ eventheader(page_title, eventData, 'large', isNewEvent) }}
         {% endif %}
-        {% if eventPast %}
+        {% if eventPast and eventData.isCanceled %}
+            <div class="alert-dark mb-2 pb-2 pt-2" role="alert">
+                <p>This event is in the past.</p>
+                <p>*** Note that this event was canceled</p>
+            </div>
+        {% elif eventPast %}
             <div class="alert-danger mb-2 pb-2 pt-2" role="alert">This event is in the past.</div>
-        {% endif %}
-        {% if eventData.isCanceled %}
+        {% elif eventData.isCanceled %}
             <div class="alert-warning mb-2 pb-2 pt-2" role="alert">This event has been canceled.</div>
         {% endif %}
 
