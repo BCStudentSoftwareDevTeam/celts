@@ -1,8 +1,9 @@
 $(document).ready(function () {
-	$("#volunteerInformationTableToPrint").hide()
+	
+	$("#volunteerInformationCardToPrint").toggle()
 	$("#tableCardToggle").on('click', function () {
 		$("#volunteerInformationCardToPrint").toggle()
-		$("#volunteerInformationTableToPrint").toggle()
+		$("#volunteerInformationTableToPrint_wrapper").toggle()
 
 		if ($("#tableCardToggle").text() == "Card View") {
 			$("#tableCardToggle").text("Table View")
@@ -13,7 +14,7 @@ $(document).ready(function () {
 	})
 	$('#printVolunteerInfo').on('click', function () {
 		let contentToPrint;
-		let tableContent = $("#volunteerInformationTableToPrint");
+		let tableContent = $("#volunteerInformationTableToPrint_wrapper");
 		let cardContent = $("#volunteerInformationCardToPrint");
 		if ($('#tableCardToggle').text()=='Card View') {
 			contentToPrint = tableContent;
@@ -55,7 +56,7 @@ $(document).ready(function () {
 		})
 	}
 	function sortVolunteers() {
-		let sortedTable = $("#volunteerInformationTableToPrint");
+		let sortedTable = $("#volunteerInformationTableToPrint_wrapper");
 		let entriesTable = sortedTable.find(".volunteerInfoEntries");
 	
 		entriesTable.sort(function (a, b) {
@@ -80,5 +81,5 @@ $(document).ready(function () {
 	getCheckBoxes()
 	hideDuplicateVolunteers()
 	sortVolunteers()
-
+	$('#volunteerInformationTableToPrint').DataTable({"ordering": true});
 })

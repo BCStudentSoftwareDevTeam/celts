@@ -7,11 +7,13 @@
 {% block styles %}
 {{super()}}
 <link rel="stylesheet" href="{{url_for('static', filename ='css/volunteerInformation.css') }}?u={{lastStaticUpdate}}">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.min.css">
 {% endblock %}
 
 {% block scripts %}
 {{super()}}
 <script type="module" src="/static/js/volunteerInformation.js"></script>
+<script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
 {% endblock %}
 
 {% block app_content %}
@@ -20,22 +22,26 @@
 
 
 
+
+
 {% if attendedUser or waitlistUser or rsvpUser %}
+{% macro createCheckbox(checkboxName) %}
+    {% set labelText = "RSVP Information" if checkboxName == 'rsvp' else 'Waitlist' if checkboxName == 'waitlist' else 'Attended' %}
+    <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="{{checkboxName}}Select" checked>
+    <label for="{{checkboxName}}Select">{{labelText}}</label><br>
+{% endmacro %}
 <div class="noprint" id="volunteerInformationcheck">
   <div class="row">
     <div class="col">
       <label><b>Volunteer Groups:</b></label><br>
       {% if rsvpUser %}
-        <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="rsvpSelect" checked>
-        <label for="rsvpSelect">RSVP Information</label><br>
+         {{createCheckbox('rsvp')}}
       {% endif %}
       {% if waitlistUser %}
-        <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="waitlistSelect" checked>
-        <label for="waitlistSelect">Waitlist</label><br>
+        {{createCheckbox('waitlsit')}}
       {% endif %}
       {% if attendedUser %}
-        <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="attendedSelect" checked>
-        <label for="attendedSelect">Attended</label><br>
+        {{createCheckbox('attended')}}
       {% endif %}
     </div>
     <div class="col">
@@ -50,7 +56,7 @@
     <div class="col-12 col-md">
       <div class="row">
         <div class="col-auto mb-2 float-right">
-          <button class="btn btn-primary" id="tableCardToggle" nowrap>Table View</button>
+          <button class="btn btn-primary" id="tableCardToggle" nowrap>Card View</button>
         </div>
         <div class="col-auto align-items-end">
           <button id="printVolunteerInfo" class="btn-primary btn">Print</button>
@@ -62,92 +68,79 @@
 
 <hr>
 
+
 <div id="volunteerInformationCardToPrint">
   <div class="row sort-here">
     {% set combinedParticipants = attendedUser + rsvpUser %}
     {% set printedNames = [] %}
     {% set uniqueParticipants = combinedParticipants | unique %}
     {% for participant in uniqueParticipants %}
+      {% macro createCards(volunteerType) %}
+        <div class="{{volunteerType}}Select col-12 col-md-6 volunteerInfoEntries print-column" data-user="{{participant.username}}">
+          <h4 class="nameSelect" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></h4>
+          <ul>
+            <div class="phoneSelect" nowrap>{{ participant.phoneNumber }}</div>
+            <div class="emailSelect" nowrap>{{ participant.email }}</div>
+            <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction }}</div>
+          </ul>
+        </div>
+      {% endmacro %}
       {% set isAttended = participant in attendedUser %}
       {% set isRSVPed = participant in rsvpUser %}
       {% set isWaitlist = participant in waitlistUser %}
 
       {% if isRSVPed %}
-        <div class="rsvpSelect col-12 col-md-6 volunteerInfoEntries print-column" data-user="{{participant.username}}">
-          <h4 class="nameSelect" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></h4>
-          <ul>
-            <div class="phoneSelect" nowrap>{{ participant.phoneNumber }}</div>
-            <div class="emailSelect" nowrap>{{ participant.email }}</div>
-            <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction }}</div>
-          </ul>
-        </div>
+        {{createCards('rsvp')}}
       {% endif %}
       {% if isAttended%}
-        <div class="attendedSelect col-12 col-md-6 volunteerInfoEntries print-column" data-user="{{participant.username}}">
-          <h4 class="nameSelect" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></h4>
-          <ul>
-            <div class="phoneSelect" nowrap>{{ participant.phoneNumber }}</div>
-            <div class="emailSelect" nowrap>{{ participant.email }}</div>
-            <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction }}</div>
-          </ul>
-        </div>
+        {{createCards('attended')}}
       {% endif %}
       {% if isWaitlist %}
-        <div class="waitlistSelect col-12 col-md-6 volunteerInfoEntries print-column" data-user="{{participant.username}}">
-          <h4 class="nameSelect" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></h4>
-          <ul>
-            <div class="phoneSelect" nowrap>{{ participant.phoneNumber }}</div>
-            <div class="emailSelect" nowrap>{{ participant.email }}</div>
-            <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction }}</div>
-          </ul>
-        </div>
+        {{createCards('waitlist')}}
       {% endif %}
     {% endfor %}
   </div>
 </div>
-<table class="fs-5" id="volunteerInformationTableToPrint">
+
+
+<table id="volunteerInformationTableToPrint">
   <thead>
     <tr>
-      <th class="border p-2 text-center">Name</th>
-      <th class="border p-2 text-center phoneSelect">Phone Number</th>
-      <th class="border p-2 text-center emailSelect">Email</th>
-      <th class="border p-2 text-center dietRestrictionSelect">Dietary Restriction</th>
+      <th class="text-center">Name</th>
+      <th class="phoneSelect">Phone Number</th>
+      <th class="emailSelect">Email</th>
+      <th class="dietRestrictionSelect">Dietary Restriction</th>
     </tr>
   </thead>
   {% set combinedParticipants = attendedUser + rsvpUser %}
   {% set printedNames = [] %}
   {% set uniqueParticipants = combinedParticipants | unique %}
-  {% for participant in uniqueParticipants %}
-    {% set isAttended = participant in attendedUser %}
-    {% set isRSVPed = participant in rsvpUser %}
-    {% set isWaitlist = participant in waitlistUser %}
-    <tbody>
-      {% if isRSVPed %}
-        <tr class="rsvpSelect volunteerInfoEntries" data-user="{{participant.username}}">
-          <td class="border p-1 px-3 nameSelect" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></td>
-          <td class="border p-1 px-3 phoneSelect" nowrap>{{ participant.phoneNumber }}</td>
-          <td class="border p-1 px-3 emailSelect" nowrap>{{ participant.email }}</td>
-          <td class="border p-1 px-3 dietRestrictionSelect">{{ participant.dietRestriction }}</td>
+  <tbody>
+    {% for participant in uniqueParticipants %}
+      {% macro createTable(volunteerType) %}
+        <tr class="{{volunteerType}}Select volunteerInfoEntries" data-user="{{participant.username}}">
+          <td class="nameSelect" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></td>
+          <td class="phoneSelect" nowrap>{{ participant.phoneNumber }}</td>
+          <td class="emailSelect" nowrap>{{ participant.email }}</td>
+          <td class="dietRestrictionSelect">{{ participant.dietRestriction }}</td>
         </tr>
-      {% endif %}
-      {% if isAttended%}
-        <tr class="attendedSelect volunteerInfoEntries" data-user="{{participant.username}}">
-          <td class="border p-1 px-3 nameSelect" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></td>
-          <td class="border p-1 px-3 phoneSelect" nowrap>{{ participant.phoneNumber }}</td>
-          <td class="border p-1 px-3 emailSelect" nowrap>{{ participant.email }}</td>
-          <td class="border p-1 px-3 dietRestrictionSelect">{{ participant.dietRestriction }}</td>
-        </tr>
-      {% endif %}
-      {% if isWaitlist %}
-        <tr class="waitlistSelect volunteerInfoEntries" data-user="{{participant.username}}">
-          <td class="border p-1 px-3 nameSelect" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></td>
-          <td class="border p-1 px-3 phoneSelect" nowrap>{{ participant.phoneNumber }}</td>
-          <td class="border p-1 px-3 emailSelect" nowrap>{{ participant.email }}</td>
-          <td class="border p-1 px-3 dietRestrictionSelect">{{ participant.dietRestriction }}</td>
-        </tr>
-      {% endif %}
-    </tbody>
-  {% endfor %}
+      {% endmacro %}
+      {% set isAttended = participant in attendedUser %}
+      {% set isRSVPed = participant in rsvpUser %}
+      {% set isWaitlist = participant in waitlistUser %}
+      
+        {% if isRSVPed %}
+          {{createTable('rsvp')}}
+        {% endif %}
+        {% if isAttended%}
+          {{createTable('attended')}}
+        {% endif %}
+        {% if isWaitlist %}
+          {{createTable('waitlist')}}
+        {% endif %}
+      
+    {% endfor %}
+  </tbody>
 </table>
 
 {% else %}
