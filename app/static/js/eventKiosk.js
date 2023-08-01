@@ -4,7 +4,6 @@ $(document).keydown(function(e){
     toggleFullscreen();
   }
   else if(e.key === "Enter") {
-      submitData(true)
       $('.qr-reader-button').function(true)
       ;
   }
@@ -58,16 +57,18 @@ $('.qr-reader-button').on("click", function() {
   $('#qr-reader').toggle()
   let lastResult, countResults = 0;
   function onScanSuccess(decodedText, decodedResult) {
-      if (decodedText !== lastResult) {
-          ++countResults;
+    console.log('id code', decodedText)
+      if (decodedText && decodedText.length > 9 && decodedText !== lastResult) {
           lastResult = decodedText;
-          // Handle on success condition with the decoded message.
-          console.log(`Scan result ${decodedText}`, decodedResult);
+        
           
           $("#submitScannerData").val(decodedText)
           submitData(true);
+      } else {
+          // Handle the case where the scanned data is not a full B-number.
+        console.log("Invalid B-number:", decodedText);
+       }
       }
-  }
   let qrboxFunction = function(viewfinderWidth, viewfinderHeight) {
     let minEdgePercentage = 0.9; // 90%
     let minEdgeSize = Math.min(viewfinderWidth, viewfinderHeight);
@@ -97,32 +98,30 @@ function submitData(hitEnter = false){
         "eventid": $("#eventid").val(),
         "bNumber": $("#submitScannerData").val()
       },
-      success: function(decodedText) {
+      success: function(resultID) {
         flasherStatus = "success"
-        if (decodedText.status == "already signed in") {
-          message = decodedText.user + " Already Signed In!"
+        if (resultID.status == "already signed in") {
+          message = resultID.user + " Already Signed In!"
           flasherStatus = "warning"
 
-        } else if (decodedText.status === "banned") {
-          message = decodedText.user + " is ineligible."
+        } else if (resultID.status === "banned") {
+          message = resultID.user + " is ineligible."
           flasherStatus = "danger"
           
-        } else if (decodedText.status === "does not exist") {
+        } else if (resultID.status === "does not exist") {
           message = "User does not exist"
           flasherStatus = "danger"
           
         } else {
-          message = decodedText.user + " Successfully Signed In!"
+          message = resultID.user + " Successfully Signed In!"
         }
         eventFlasher(message, flasherStatus);
         $("#submitScannerData").val("").blur();
-        $('#submitScannerData').focus();
       },
       error: function(request, status, error) {
         console.log(status, error);
         eventFlasher("See Attendant; Unable to Sign In.", "danger");
         $("#submitScannerData").val("").blur();
-        $('#submitScannerData').focus();
       }
     })
   }
