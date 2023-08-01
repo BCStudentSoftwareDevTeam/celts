@@ -138,9 +138,12 @@
         and update as appropriate):
     </a>
     <br>
-    <a id= "healthIssues"><u>{{insuranceInfo.healthIssues}} {{("&nbsp;" * 400)  | safe }} 
-        {{("&nbsp;" * 400)  | safe }}
-        {{("&nbsp;" * 400)  | safe }}</u></a>
+    <!-- {% set lineCharLength = 87 %}
+    {% for lineNum in range((insuranceInfo.healthIssues | length)//lineCharLength) %}
+        {% set lineStart = lineNum * lineCharLength %}
+        <div class='line'>{{insuranceInfo.healthIssues[lineStart:lineStart+lineCharLength]}}</div>
+    {% endfor %} -->
+    <div id="healthIssues" class='d-print-block'>{{insuranceInfo.healthIssues}}</div>
 </div>
 
 {% endblock %}

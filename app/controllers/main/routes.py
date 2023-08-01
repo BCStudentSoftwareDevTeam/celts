@@ -247,7 +247,7 @@ def travelForm(username):
         insuranceCompany = "Family insurance"
         policyNumber = "11111111"
         groupNumber = "22222 The group"
-        healthIssues = "I ain't got none" * 1000
+        healthIssues = "My name is Mis Fortunate and I'm allergic to just about everything on the planet. I'm allergic to grass and sunlight so I'll only be volunteering in the evenings and when there's concrete or tile. Of course, if it's ceramic tile I'll break out in hives. Therefore, I will be unavailable during any work involving tile of this variety." * 3
         
 
     return render_template ('/main/travelForm.html',
