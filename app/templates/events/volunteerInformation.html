@@ -71,7 +71,7 @@
 
 <div id="volunteerInformationCardToPrint">
   <div class="row sort-here">
-    {% set combinedParticipants = attendedUser + rsvpUser %}
+    {% set combinedParticipants = attendedUser + rsvpUser + waitlistUser %}
     {% set printedNames = [] %}
     {% set uniqueParticipants = combinedParticipants | unique %}
     {% for participant in uniqueParticipants %}
@@ -112,7 +112,7 @@
       <th class="dietRestrictionSelect">Dietary Restriction</th>
     </tr>
   </thead>
-  {% set combinedParticipants = attendedUser + rsvpUser %}
+  {% set combinedParticipants = attendedUser + rsvpUser + waitlistUser %}
   {% set printedNames = [] %}
   {% set uniqueParticipants = combinedParticipants | unique %}
   <tbody>
