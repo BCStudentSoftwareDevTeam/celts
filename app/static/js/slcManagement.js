@@ -31,9 +31,9 @@ $(document).ready(function() {
 
   emailSelectedButton.on("click", function () {
     const selectedEmails = Array.from(instructorCheckboxes)
-      .filter((checkbox) => checkbox.checked)
-      .map((checkbox) => checkbox.getAttribute("data-email"))
-      .join(";");
+                                .filter((checkbox) => checkbox.checked)
+                                .map((checkbox) => checkbox.getAttribute("data-email"))
+                                .join(";");
 
     if (selectedEmails) {
       const windowRef = window.open(`mailto:${selectedEmails}?subject=Renew Course Proposal`, '_blank');
@@ -46,15 +46,15 @@ $(document).ready(function() {
         }
       }, 500);
     } else {
-      alert("Please select at least one instructor to email.");
+      flash("Please select at least one instructor to email.");
     }
   });
 
   selectAllOthersButton.on("click", function () {
-    var myButton = document.getElementById('selectAllOthersButton');
+    let myButton = $('#selectAllOthersButton');
     let uncheckedBoxFound = false;
     for (let checkboxNum = 0; checkboxNum < instructorCheckboxes.length; checkboxNum++){
-      if (instructorCheckboxes[checkboxNum].checked == false){
+      if (instructorCheckboxes[checkboxNum].checked != true){
         myButton.innerText = "Unselect All"
         uncheckedBoxFound = true;
         break
