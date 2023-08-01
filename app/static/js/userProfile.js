@@ -281,3 +281,10 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
       }
   })
 }
+
+$(document).ready(function(){
+  $("#printButton").on("click", function() {
+    let username = $(this).data('username')
+    printDocument(`/profile/${username}/travelForm`)
+  })
+});

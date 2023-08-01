@@ -35,9 +35,15 @@
     </div> &nbsp;
     <div class="col-md-6 col-lg-3 text-nowrap"> <a href="/profile/{{volunteer.username}}/emergencyContact">Emergency Contact</a>&nbsp;<a>&</a>&nbsp;<a href='/profile/{{volunteer.username}}/insuranceInfo'>Insurance Info</a></div>
   </div>
-  <a align="right" href="/profile/{{volunteer.username}}/serviceTranscript">View Service Transcript</a>
+  <div class="row pb-2">
+    <div class="col"><button class="btn-primary" data-username = '{{volunteer.username}}' id="printButton"> Print Travel Form </button></div>
+    <div class="col-auto"><a align="right" href="/profile/{{volunteer.username}}/serviceTranscript">View Service Transcript</a></div>
+  </div>
+  
 </div>
 <div class="accordion" id="userProfile">
+
+
 
 <!-- ################# Upcoming Events ################ -->
   <div class="accordion-item">
