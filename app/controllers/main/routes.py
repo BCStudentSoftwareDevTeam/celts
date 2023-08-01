@@ -76,6 +76,8 @@ def events(selectedTerm, activeTab, programID):
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
 
+    session['adminVerificator'] = True if g.current_user.isAdmin else False
+
     managersProgramDict = getManagerProgramDict(g.current_user)
     managersList = [id[1] for id in managersProgramDict.items()]
 

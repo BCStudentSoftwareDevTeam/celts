@@ -243,16 +243,10 @@ def eventDisplay(eventId):
 
         # Identify the next event in a recurring series
         if event.recurringId:
-            eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId).order_by(Event.startDate))
+            eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId, Event.isCanceled == False).order_by(Event.startDate))
             eventIndex = eventSeriesList.index(event)
-            # Find the next uncanceled event
-            nextUncanceledEvent = None
-            for nextEvent in eventSeriesList[eventIndex + 1:]:
-                if not nextEvent.isCanceled:  
-                    nextUncanceledEvent = nextEvent
-                    break
-            if nextUncanceledEvent:
-                eventData["nextRecurringEvent"] = nextUncanceledEvent
+            if len(eventSeriesList) != (eventIndex + 1):
+                eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
         
         currentEventRsvpAmount = getEventRsvpCountsForTerm(g.current_term)
 
@@ -271,13 +265,18 @@ def eventDisplay(eventId):
 
 @admin_bp.route('/event/<eventId>/cancel', methods=['POST'])
 def cancelRoute(eventId):
-    try:
-        cancelEvent(eventId)
-        return redirect(request.referrer)
+    adminPermission = session.get("adminVerificator")
+    if adminPermission:
+        try:
+            cancelEvent(eventId)
+            return redirect(request.referrer)
 
-    except Exception as e:
-        print('Error while canceling event:', e)
-        return "", 500
+        except Exception as e:
+            print('Error while canceling event:', e)
+            return "", 500
+        
+    else:
+        return "Permission Denied", 403
     
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
