@@ -1,5 +1,6 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for, session
 from peewee import JOIN
+from playhouse.shortcuts import model_to_dict
 import datetime
 import json
 from http import cookies
@@ -186,7 +187,7 @@ def emergencyContactInfo(username):
                                 )
     
     elif request.method == 'POST':
-        if g.current_user != username:
+        if g.current_user.username != username:
             abort(403)
 
         contactInfo = EmergencyContact.get_or_none(EmergencyContact.user_id == username)
@@ -216,7 +217,7 @@ def insuranceInfo(username):
 
     # Save the form data
     elif request.method == 'POST':
-        if g.current_user != username:
+        if g.current_user.username != username:
             abort(403)
 
         info = InsuranceInfo.get_or_none(InsuranceInfo.user_id == username)
@@ -230,30 +231,18 @@ def insuranceInfo(username):
 @main_bp.route('/profile/<username>/travelForm', methods=['GET', 'POST'])
 def travelForm(username):
 
-    # Beans: Delete these two classes once we have database information to read from
-    class temp_contactinfo:
-        name = 'some dude'
-        relationship = 'My relationship'
-        homePhone = 'my home phone'
-        workPhone = 'unemployed activities'
-        cellPhone = 'my cell phone'
-        emailAddress = 'siuu@gmail.com'
-        homeAddress = 'home address'
-
-    class temp_insuranceinfo:
-        insuranceType = "1"
-        policyHolderName = "My dad"
-        policyHolderRelationship = "Brother"
-        insuranceCompany = "Family insurance"
-        policyNumber = "11111111"
-        groupNumber = "22222 The group"
-        healthIssues = "My name is Mis Fortunate and I'm allergic to just about everything on the planet. I'm allergic to grass and sunlight so I'll only be volunteering in the evenings and when there's concrete or tile. Of course, if it's ceramic tile I'll break out in hives. Therefore, I will be unavailable during any work involving tile of this variety." * 3
-        
+   
+    user = (User.select(User, EmergencyContact, InsuranceInfo)
+                .join(EmergencyContact, JOIN.LEFT_OUTER).switch()
+                .join(InsuranceInfo, JOIN.LEFT_OUTER)
+                .where(User.username == username).limit(1))
+    if not list(user):
+        abort(400)  # Beans: What's the error code for bad user input?
+    userData = list(user.dicts())[0]
+    userData = {key: value if value else '' for (key, value) in userData.items()}
 
     return render_template ('/main/travelForm.html',
-                            username = username,  # Beans: Remove this after testing
-                            contactInfo = temp_contactinfo,  # Beans: make meaningful
-                            insuranceInfo = temp_insuranceinfo  # Beans: make meaningful
+                            userData = userData
                             )
 
 

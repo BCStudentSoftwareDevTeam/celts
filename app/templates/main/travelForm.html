@@ -83,8 +83,13 @@
     </a>
     <br> <br>
 
-    <a>{{"_" * 120}}</a>
-
+    {% set fullName = userData.firstName + ' ' + userData.lastName %}
+    <div id='signatureRow' class='row'>
+        <div class='col'></div> 
+        <div class='col'>{{fullName}}</div>
+        <div class='col'></div>
+    </div>
+    
     <div class='row'>
         <div class='col'> Signature of Student Participant </div>
         <div class='col'> Printed name of Student Participant</div>  
@@ -94,7 +99,8 @@
 
     <br>
 
-    <a>Student Name:<u></u></a><br><br>
+    
+    <a>Student Name: <u>&nbsp;{{fullName}}{{('&nbsp;' * (66 - (fullName | length))) | safe}}</u></a><br><br>
     
     <a>
         <strong>
@@ -102,14 +108,14 @@
         </strong>
     </a>
     <br><br> {# Beans: make all of these lines the same length by modifying 66 #}
-    {% set name = contactInfo.name if contactInfo.name else "" %}
-    <a>Name: <u>&nbsp;{{contactInfo.name}}{{('&nbsp;' * (66 - (contactInfo.name | length))) | safe}}</u></a><br><br>
-    <a>Relationship: <u>&nbsp;{{contactInfo.relationship}}{{('&nbsp;' * (66 - (contactInfo.relationship | length))) | safe}}</u></a><br><br>
-    <a>Address: <u>&nbsp;{{contactInfo.homeAddress}}{{('&nbsp;' * (66 - (contactInfo.homeAddress | length))) | safe}}</u></a><br><br>
-    <a>Home Phone Number: <u>&nbsp;{{contactInfo.homePhone}}{{('&nbsp;' * (66 - (contactInfo.homePhone | length))) | safe}}</u></a><br><br>
-    <a>Work Phone Number: <u>&nbsp;{{contactInfo.workPhone}}{{('&nbsp;' * (66 - (contactInfo.workPhone | length))) | safe}}</u></a><br><br>
-    <a>Cell Phone Number: <u>&nbsp;{{contactInfo.cellPhone}}{{('&nbsp;' * (66 - (contactInfo.cellPhone | length))) | safe}}</u></a><br><br>
-    <a>Email Address: <u>&nbsp;{{contactInfo.emailAddress}}{{('&nbsp;' * (66 - (contactInfo.emailAddress | length))) | safe}}</u></a><br><br>
+    {% set name = userData.name if userData.name else "" %}
+    <a>Name: <u>&nbsp;{{userData.name}}{{('&nbsp;' * (66 - (userData.name | length))) | safe}}</u></a><br><br>
+    <a>Relationship: <u>&nbsp;{{userData.relationship}}{{('&nbsp;' * (66 - (userData.relationship | length))) | safe}}</u></a><br><br>
+    <a>Address: <u>&nbsp;{{userData.homeAddress}}{{('&nbsp;' * (66 - (userData.homeAddress | length))) | safe}}</u></a><br><br>
+    <a>Home Phone Number: <u>&nbsp;{{userData.homePhone}}{{('&nbsp;' * (66 - (userData.homePhone | length))) | safe}}</u></a><br><br>
+    <a>Work Phone Number: <u>&nbsp;{{userData.workPhone}}{{('&nbsp;' * (66 - (userData.workPhone | length))) | safe}}</u></a><br><br>
+    <a>Cell Phone Number: <u>&nbsp;{{userData.cellPhone}}{{('&nbsp;' * (66 - (userData.cellPhone | length))) | safe}}</u></a><br><br>
+    <a>Email Address: <u>&nbsp;{{userData.emailAddress}}{{('&nbsp;' * (66 - (userData.emailAddress | length))) | safe}}</u></a><br><br>
 
 
     <a>
@@ -122,16 +128,16 @@
     <a>(Please initial by the program that applies to you)</a> <br> <br>
 
     {# Test that this works once there is real table data #}
-    <a><u>&nbsp;&nbsp;{{insuranceInfo.user.firstName[0] + insuranceInfo.user.lastName[0] if insuranceInfo.insuranceType == 1 else '&nbsp;&nbsp;' | safe}}&nbsp;&nbsp;</u> Berea College Health Insurance</a> <br>
-    <a><u>&nbsp;&nbsp;{{insuranceInfo.user.firstName[0] + insuranceInfo.user.lastName[0] if insuranceInfo.insuranceType == 2 else '&nbsp;&nbsp;' | safe}}&nbsp;&nbsp;</u> Parent or Guardian's insurance</a> <br>
-    <a><u>&nbsp;&nbsp;{{insuranceInfo.user.firstName[0] + insuranceInfo.user.lastName[0] if insuranceInfo.insuranceType == 3 else '&nbsp;&nbsp;' | safe}}&nbsp;&nbsp;</u> Other Insurance</a> <br><br>
+    <a><u>&nbsp;&nbsp;{{userData.firstName[0] + userData.lastName[0] if userData.insuranceType == 1 else '&nbsp;&nbsp;' | safe}}&nbsp;&nbsp;</u> Berea College Health Insurance</a> <br>
+    <a><u>&nbsp;&nbsp;{{userData.firstName[0] + userData.lastName[0] if userData.insuranceType == 2 else '&nbsp;&nbsp;' | safe}}&nbsp;&nbsp;</u> Parent or Guardian's insurance</a> <br>
+    <a><u>&nbsp;&nbsp;{{userData.firstName[0] + userData.lastName[0] if userData.insuranceType == 3 else '&nbsp;&nbsp;' | safe}}&nbsp;&nbsp;</u> Other Insurance</a> <br><br>
 
     {# Beans: make all of these lines the same length by modifying 66 #}
-    <a>Name of Policy Holder: <u>&nbsp;{{insuranceInfo.policyHolderName}}{{('&nbsp;' * (66 - (insuranceInfo.policyHolderName | length))) | safe}}</u></a><br><br> 
-    <a>Relationship to you: <u>&nbsp;{{insuranceInfo.policyHolderRelationship}}{{('&nbsp;' * (66 - (insuranceInfo.policyHolderRelationship | length))) | safe}}</u></a><br><br>
-    <a>Insurance Company: <u>&nbsp;{{insuranceInfo.insuranceCompany}}{{('&nbsp;' * (66 - (insuranceInfo.insuranceCompany | length))) | safe}}</u></a><br><br>
-    <a>Policy Number: <u>&nbsp;{{insuranceInfo.policyNumber}}{{('&nbsp;' * (66 - (insuranceInfo.policyNumber | length))) | safe}}</u></a><br><br>
-    <a>Group Number (if applicable): <u>&nbsp;{{insuranceInfo.groupNumber}}{{('&nbsp;' * (66 - (insuranceInfo.groupNumber | length))) | safe}}</u></a><br><br>
+    <a>Name of Policy Holder: <u>&nbsp;{{userData.policyHolderName}}{{('&nbsp;' * (66 - (userData.policyHolderName | length))) | safe}}</u></a><br><br> 
+    <a>Relationship to you: <u>&nbsp;{{userData.policyHolderRelationship}}{{('&nbsp;' * (66 - (userData.policyHolderRelationship | length))) | safe}}</u></a><br><br>
+    <a>Insurance Company: <u>&nbsp;{{userData.insuranceCompany}}{{('&nbsp;' * (66 - (userData.insuranceCompany | length))) | safe}}</u></a><br><br>
+    <a>Policy Number: <u>&nbsp;{{userData.policyNumber}}{{('&nbsp;' * (66 - (userData.policyNumber | length))) | safe}}</u></a><br><br>
+    <a>Group Number (if applicable): <u>&nbsp;{{userData.groupNumber}}{{('&nbsp;' * (66 - (userData.groupNumber | length))) | safe}}</u></a><br><br>
     <br>
     <a>
         Please list any Health Issues that the Berea College CELTS program staff need to know (use additional sheets, if needed
@@ -139,11 +145,11 @@
     </a>
     <br>
     <!-- {% set lineCharLength = 87 %}
-    {% for lineNum in range((insuranceInfo.healthIssues | length)//lineCharLength) %}
+    {% for lineNum in range((userData.healthIssues | length)//lineCharLength) %}
         {% set lineStart = lineNum * lineCharLength %}
-        <div class='line'>{{insuranceInfo.healthIssues[lineStart:lineStart+lineCharLength]}}</div>
+        <div class='line'>{{userData.healthIssues[lineStart:lineStart+lineCharLength]}}</div>
     {% endfor %} -->
-    <div id="healthIssues" class='d-print-block'>{{insuranceInfo.healthIssues}}</div>
+    <div class='underlined d-print-block'>{{userData.healthIssues}}</div>
 </div>
 
 {% endblock %}
