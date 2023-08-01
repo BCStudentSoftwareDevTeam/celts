@@ -68,27 +68,33 @@ def events(selectedTerm, activeTab, programID):
     participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
-    term = Term.get_by_id(currentTerm)
+    term = Term.get_by_id(currentTerm) 
     
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     studentLedEvents = getStudentLedEvents(term)
     trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
-
+    
+    managersProgramDict = getManagerProgramDict(g.current_user)
+    managers = [{id[0].id: id[1]['managers']} for id in managersProgramDict.items()]
+    print("////////////////////////////////////////////////////////////////////////")
+    print(managers)
     return render_template("/events/event_list.html",
-        selectedTerm = term,
-        studentLedEvents = studentLedEvents,
-        trainingEvents = trainingEvents,
-        bonnerEvents = bonnerEvents,
-        otherEvents = otherEvents,
-        listOfTerms = listOfTerms,
-        rsvpedEventsID = rsvpedEventsID,
-        currentEventRsvpAmount = currentEventRsvpAmount,
-        currentTime = currentTime,
-        user = g.current_user,
-        activeTab = activeTab,
-        programID = int(programID))
+                            selectedTerm = term,
+                            studentLedEvents = studentLedEvents,
+                            trainingEvents = trainingEvents,
+                            bonnerEvents = bonnerEvents,
+                            otherEvents = otherEvents,
+                            listOfTerms = listOfTerms,
+                            rsvpedEventsID = rsvpedEventsID,
+                            currentEventRsvpAmount = currentEventRsvpAmount,
+                            currentTime = currentTime,
+                            user = g.current_user,
+                            activeTab = activeTab,
+                            programID = int(programID),
+                            managers = managers
+                            )
 
 @main_bp.route('/profile/<username>', methods=['GET'])
 def viewUsersProfile(username):
