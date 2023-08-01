@@ -56,7 +56,7 @@ function eventFlasher(flash_message, status){
 $('.qr-reader-button').on("click", function() {
   //  Opens the camera to scan the ID
   $('#qr-reader').toggle()
-  var lastResult, countResults = 0;
+  let lastResult, countResults = 0;
   function onScanSuccess(decodedText, decodedResult) {
       if (decodedText !== lastResult) {
           ++countResults;
@@ -77,7 +77,7 @@ $('.qr-reader-button').on("click", function() {
         height: qrboxSize
     };
   }
-  var html5QrcodeScanner = new Html5QrcodeScanner(
+  let html5QrcodeScanner = new Html5QrcodeScanner(
       "qr-reader", { fps: 15, qrbox : qrboxFunction, preferFrontCamera: false });
   html5QrcodeScanner.render(onScanSuccess);
 
