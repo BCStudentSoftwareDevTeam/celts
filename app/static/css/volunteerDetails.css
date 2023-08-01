@@ -1,7 +1,7 @@
 
 @media print {
     #volunteerInformationCardToPrint {
-        -webkit-column-count: 2;
+        column-count: 2;
     }
 
     .print-column {
@@ -13,5 +13,13 @@
     #volunteerInformationTableToPrint {
         position: fixed;
         left: 10px;
+        height: 100% !important;
+
     }
+    /* body,html {
+        height: 100% !important; 
+        width: 100% !important;
+        overflow: visible !important;
+        display: inline-block;
+    } */
 }

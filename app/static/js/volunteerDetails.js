@@ -24,7 +24,7 @@ $(document).ready(function () {
 		contentToPrint.siblings().addClass('d-print-none');
 		contentToPrint.removeClass('d-print-none');
 		$(".always-print").removeClass('d-print-none');
-		contentToPrint.addClass('d-print-block');
+		contentToPrint.addClass('d-print-inline');
 		let getTableLength = volunteerInfoTable.page.len();
 		let getTablePage = volunteerInfoTable.page();
 		volunteerInfoTable.page.len(-1).draw();
