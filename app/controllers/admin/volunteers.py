@@ -24,7 +24,7 @@ def getVolunteers(query):
 
     return json.dumps(searchUsers(query))
 
-@admin_bp.route('/event/<eventID>/track_volunteers', methods=['POST'])
+@admin_bp.route('/event/<eventID>/manage_volunteers', methods=['POST'])
 def updateVolunteerTable(eventID):
     try:
         event = Event.get_by_id(eventID)
@@ -37,10 +37,10 @@ def updateVolunteerTable(eventID):
         flash("Volunteer table succesfully updated", "success")
     else:
         flash("Error adding volunteer", "danger")
-    return redirect(url_for("admin.trackVolunteersPage", eventID=eventID))
+    return redirect(url_for("admin.manageVolunteersPage", eventID=eventID))
 
-@admin_bp.route('/event/<eventID>/track_volunteers', methods=['GET'])
-def trackVolunteersPage(eventID):
+@admin_bp.route('/event/<eventID>/manage_volunteers', methods=['GET'])
+def manageVolunteersPage(eventID):
     try:
         event = Event.get_by_id(eventID)
     except DoesNotExist as e:
@@ -80,7 +80,7 @@ def trackVolunteersPage(eventID):
     recurringVolunteers = getPreviousRecurringEventData(recurringEventID)
 
     currentRsvpAmount = getEventRsvpCount(event.id)
-    return render_template("/events/trackVolunteers.html",
+    return render_template("/events/manageVolunteers.html",
                             eventData = eventData,
                             eventVolunteerData = eventVolunteerData,
                             eventNonAttendedData = eventNonAttendedData,
@@ -96,8 +96,8 @@ def trackVolunteersPage(eventID):
 
 
 
-@admin_bp.route('/event/<eventID>/volunteer_information', methods=['GET'])
-def volunteerInformationPage(eventID):
+@admin_bp.route('/event/<eventID>/volunteer_details', methods=['GET'])
+def volunteerDetailsPage(eventID):
     try:
         event = Event.get_by_id(eventID)
     except DoesNotExist as e:
@@ -121,7 +121,7 @@ def volunteerInformationPage(eventID):
     eventData = model_to_dict(event, recurse=False)
     eventData["program"] = event.program
 
-    return render_template("/events/volunteerInformation.html",
+    return render_template("/events/volunteerDetails.html",
                             waitlistUser = waitlistUser,
                             attendedUser= attendedUser,
                             rsvpUser= rsvpUser,
@@ -152,7 +152,7 @@ def addVolunteer(eventId):
     if 'ajax' in request.form and request.form['ajax']:
         return ''
 
-    return redirect(url_for('admin.trackVolunteersPage', eventID = eventId))
+    return redirect(url_for('admin.manageVolunteersPage', eventID = eventId))
 
 @admin_bp.route('/rsvpFromWaitlist/<username>/<eventId>', methods = ['POST'])
 def rsvpFromWaitlist(username, eventId):

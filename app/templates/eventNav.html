@@ -36,10 +36,10 @@
                     <a class="nav-link {{ 'active' if tabName == 'edit' }}" href="/event/{{eventData['id']}}/edit" role="tab" aria-selected="{{ 'true' if tabName == 'edit' else 'false'}}">Edit Event</a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link {{ 'active' if tabName == 'trackVolunteers' }}" href="/event/{{eventData['id']}}/track_volunteers" role="tab" aria-selected="{{ 'true' if tabName == 'trackVolunteers' else 'false'}}">Track Volunteers</a>
+                    <a class="nav-link {{ 'active' if tabName == 'manageVolunteers' }}" href="/event/{{eventData['id']}}/manage_volunteers" role="tab" aria-selected="{{ 'true' if tabName == 'manageVolunteers' else 'false'}}">Manage Volunteers</a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link {{ 'active' if tabName == 'dietary' }}" href="/event/{{eventData['id']}}/volunteer_information" role="tab" aria-selected="{{ 'true' if tabName == 'dietary' else 'false'}}">Volunteer Information</a>
+                    <a class="nav-link {{ 'active' if tabName == 'details' }}" href="/event/{{eventData['id']}}/volunteer_details" role="tab" aria-selected="{{ 'true' if tabName == 'details' else 'false'}}">Volunteer Details</a>
                 </li>
                 <li class="nav-item" role="presentation">
                     <a class="nav-link {{ 'active' if tabName == 'rsvpLog' }}" href="/event/{{eventData['id']}}/rsvp" role="tab" aria-selected="{{ 'true' if tabName == 'rsvpLog' else 'false'}}">RSVP Log</a>

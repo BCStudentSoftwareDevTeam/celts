@@ -16,15 +16,21 @@ $(document).ready(function () {
 		let contentToPrint;
 		let tableContent = $("#volunteerInformationTableToPrint_wrapper");
 		let cardContent = $("#volunteerInformationCardToPrint");
-		if ($('#tableCardToggle').text()=='Card View') {
+		if ($('#tableCardToggle').text() == 'Card View') {
 			contentToPrint = tableContent;
 		} else {
 			contentToPrint = cardContent;
 		}
-		contentToPrint.siblings().addClass('d-print-none')
-		contentToPrint.removeClass('d-print-none')
-		contentToPrint.addClass('d-print-block')
+		contentToPrint.siblings().addClass('d-print-none');
+		contentToPrint.removeClass('d-print-none');
+		$(".always-print").removeClass('d-print-none');
+		contentToPrint.addClass('d-print-block');
+		let getTableLength = volunteerInfoTable.page.len();
+		let getTablePage = volunteerInfoTable.page();
+		volunteerInfoTable.page.len(-1).draw();
 		window.print();
+		volunteerInfoTable.page.len(getTableLength).draw();
+		volunteerInfoTable.page(getTablePage).draw('page');
 	})
 	$(".displayCheckbox").on('change', function () {
 		getCheckBoxes()
@@ -81,5 +87,8 @@ $(document).ready(function () {
 	getCheckBoxes()
 	hideDuplicateVolunteers()
 	sortVolunteers()
-	$('#volunteerInformationTableToPrint').DataTable({"ordering": true});
-})
+	var volunteerInfoTable= $('#volunteerInformationTableToPrint').DataTable({ "ordering": true });
+	volunteerInfoTable.on('draw.dt', function (){
+		getCheckBoxes()
+	});
+});
