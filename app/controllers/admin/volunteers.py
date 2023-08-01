@@ -110,8 +110,6 @@ def volunteerInformationPage(eventID):
     eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event))
     eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
     participantsAndRsvp = (eventParticipantData + eventRsvpData)
-    print('/'*100)
-    print(participantsAndRsvp)
     eventParticipantUsers = [obj.user for obj in eventParticipantData]
     eventNonAttendedData = [obj.user for obj in eventRsvpData if obj.user not in eventParticipantUsers]
     
