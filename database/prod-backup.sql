@@ -391,7 +391,7 @@ CREATE TABLE `coursestatus` (
 
 LOCK TABLES `coursestatus` WRITE;
 /*!40000 ALTER TABLE `coursestatus` DISABLE KEYS */;
-INSERT INTO `coursestatus` VALUES (1,'Incomplete'),(2,'Submitted'),(3,'Approved');
+INSERT INTO `coursestatus` VALUES (1,'Incomplete'),(2,'Submitted'),(3,'Approved'), (4,'Imported');
 /*!40000 ALTER TABLE `coursestatus` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -990,6 +990,7 @@ CREATE TABLE `term` (
   `academicYear` varchar(255) NOT NULL,
   `isSummer` tinyint(1) NOT NULL,
   `isCurrentTerm` tinyint(1) NOT NULL,
+  `termOrder` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1000,7 +1001,7 @@ CREATE TABLE `term` (
 
 LOCK TABLES `term` WRITE;
 /*!40000 ALTER TABLE `term` DISABLE KEYS */;
-INSERT INTO `term` VALUES (7,'Summer 2022',2022,'2021-2022',1,0),(8,'Fall 2022',2022,'2022-2023',0,0),(9,'Spring 2023',2023,'2022-2023',0,0),(10,'Summer 2023',2023,'2022-2023',1,1),(11,'Fall 2023',2023,'2023-2024',0,0);
+INSERT INTO `term` VALUES (7,'Summer 2022',2022,'2021-2022',1,0,""),(8,'Fall 2022',2022,'2022-2023',0,0,""),(9,'Spring 2023',2023,'2022-2023',0,0,""),(10,'Summer 2023',2023,'2022-2023',1,1,""),(11,'Fall 2023',2023,'2023-2024',0,0,"");
 /*!40000 ALTER TABLE `term` ENABLE KEYS */;
 UNLOCK TABLES;
 
