@@ -169,7 +169,7 @@ def emergencyContactInfo(username):
     """
     This loads the Emergency Contact Page
     """
-    if not (g.current_user.username == username or g.current_user.isAdmin):
+    if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
         abort(403)
 
 
@@ -207,7 +207,7 @@ def insuranceInfo(username):
     """
     This loads the Insurance Information Page
     """
-    if not (g.current_user.username == username or g.current_user.isAdmin):
+    if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
             abort(403)
 
     if request.method == 'GET':
