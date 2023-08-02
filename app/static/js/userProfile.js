@@ -33,11 +33,11 @@ $(document).ready(function(){
       window.location.href = `/profile/${username}/emergencyContact`
     } else if (profileAction == "Insurance Information"){
       window.location.href = `/profile/${username}/insuranceInfo`
+    } else if(profileAction == "Print Travel Form"){
+      printDocument(`/profile/${username}/travelForm`)
     } else if (profileAction == "View Service Transcript"){
       window.location.href = `/profile/${username}/serviceTranscript`
-    } else if(profileAction == "Print Travel Form"){
-      printDocument(`/profile/${username}/insuranceInfo`)
-    }
+    } 
     $(this).val('')
   }
 
