@@ -27,10 +27,10 @@
 
 {% if attendedUser or waitlistUser or rsvpUser %}
 <div class="d-none d-print-block always-print row"> 
-  <img class="col" src="/static/images/logos/celts_logo_white.png" alt="CELTS-image" width="230">
-  <h3 class="col"> Volunteer Details for {{event.name}}<br>
+  <img class="col logoImage" src="/static/images/logos/celts_logo.png" alt="CELTS-image" width="230">
+  <h5 class="col"> Volunteer Details for {{event.name}}<br>
     Start Date: {{event.startDate}}<br>  
-    Start Time: {{event.timeStart}}</h3><br>
+    Start Time: {{event.timeStart}}</h5><br>
 </div>
 
 {% macro createCheckbox(checkboxName) %}
@@ -86,7 +86,7 @@
     {% set uniqueParticipants = combinedParticipants | unique %}
     {% for participant in uniqueParticipants %}
       {% macro createCards(volunteerType) %}
-        <div class="{{volunteerType}}Select col-12 col-md-6 volunteerInfoEntries print-column" data-user="{{participant.username}}">
+        <div class="{{volunteerType}}Select col-12 col-md-6 volunteerInfoEntries print-column" data-user="{{participant.username}}" nowrap>
           <h4 class="nameSelect" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></h4>
           <ul>
             <div class="barcodeSelect bnumber-barcode" nowrap>{{participant.bnumber}}</div>

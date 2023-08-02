@@ -2,8 +2,10 @@
 @media print {
 
     #volunteerInformationCardToPrint {
-        -webkit-column-count: 2;
-    }
+        -webkit-column-count: 2; 
+        -moz-column-count: 2;  
+        display: inline-block;
+    }    
     
     body {
         width: 100%;
@@ -12,7 +14,10 @@
     .print-column {
         column-count: 1;
         column-gap: 20px;
+        page-break-inside: avoid;
         break-inside: avoid;
+        
+        
     }
 
     #volunteerInformationTableToPrint_wrapper {
@@ -48,9 +53,10 @@
         
     }
 
+
 }
 
 .bnumber-barcode {
     font-family: 'Libre Barcode 39';
-    font-size: 40px;
+    font-size: 30px;
 }

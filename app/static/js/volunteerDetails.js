@@ -33,7 +33,6 @@ $(document).ready(function () {
 	})
 	$(".displayCheckbox").on('change', function () {
 		getCheckBoxes()
-		hideDuplicateVolunteers()
 	})
 	function hideDuplicateVolunteers() {
 		let allEntries = $(".volunteerInfoEntries")
@@ -59,6 +58,7 @@ $(document).ready(function () {
 				$("." + checkboxId).hide()
 			}
 		})
+		hideDuplicateVolunteers()
 	}
 	function sortVolunteers() {
 		let sortedTable = $("#volunteerInformationTableToPrint_wrapper");
