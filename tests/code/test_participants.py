@@ -383,7 +383,7 @@ def test_getParticipationStatusForTrainings():
                                       recurringId = None,
                                       program = Program.get_by_id(8))
 
-        # If the event has not occured yet, assert that someone who has rsvp'd is true and someone who hasn't is false
+        # If the event has not occurred yet, assert that someone who has rsvp'd is true and someone who hasn't is false
         EventRsvp.create(user = User.get_by_id("ramsayb2"), event = testingEvent)
         programTrainings = getParticipationStatusForTrainings(Program.get_by_id(8), [User.get_by_id('ramsayb2'), User.get_by_id('neillz')], currentTerm)
         for training, attended in programTrainings['ramsayb2']:
