@@ -453,7 +453,7 @@ programs = [
     {
         "id": 9,
         "programName": "CELTS-Sponsored Event",
-        "programUrl": "https://www.berea.edu/celts/",
+        "programUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service",
         "programDescription": "This program hosts a myriad of different celts sponsored events that are not owned by any other program.",
         "isStudentLed": False,
         "isBonnerScholars": False,
