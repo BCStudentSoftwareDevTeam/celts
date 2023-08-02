@@ -338,7 +338,7 @@ def test_getParticipationStatusForTrainings():
         allProgramTrainings = (Event.select()
                                    .join(Term)
                                    .where(Event.isTraining == True,
-                                          Event.program == Program.get_by_id(2),
+                                         (Event.program == Program.get_by_id(2)) | (Event.isAllVolunteerTraining == True),
                                           Event.term.academicYear == academicYear)
                               )
         listOfProgramTrainings = [programTraining for programTraining in allProgramTrainings]
@@ -373,8 +373,15 @@ def test_getParticipationStatusForTrainings():
             assert attended == 0
         transaction.rollback()
 
+        futureYear = 2030
+        futureTerm = Term.create(description = 'A test term in the future',
+                                  year = 2030,
+                                  academicYear = f"{futureYear}-{futureYear+1}",
+                                  isSummer = False,
+                                  isCurrentTerm = False,
+                                  termOrder = f"{futureYear}-1")
         testingEvent = Event.create(name = "Testing delete event",
-                                      term = currentTerm,
+                                      term = futureTerm,
                                       description= "This Event is Created to be Deleted.",
                                       timeStart= "06:00 PM",
                                       timeEnd= "09:00 PM",
@@ -382,13 +389,14 @@ def test_getParticipationStatusForTrainings():
                                       isRsvpRequired = 0,
                                       isTraining = 1,
                                       isService = 0,
-                                      startDate= "2023-12-12",
+                                      startDate= f"{futureYear}-12-12",
                                       recurringId = None,
                                       program = Program.get_by_id(8))
 
+          
         # If the event has not occurred yet, assert that someone who has rsvp'd is true and someone who hasn't is false
         EventRsvp.create(user = User.get_by_id("ramsayb2"), event = testingEvent)
-        programTrainings = getParticipationStatusForTrainings(Program.get_by_id(8), [User.get_by_id('ramsayb2'), User.get_by_id('neillz')], currentTerm)
+        programTrainings = getParticipationStatusForTrainings(Program.get_by_id(8), [User.get_by_id('ramsayb2'), User.get_by_id('neillz')], futureTerm)
         for training, attended in programTrainings['ramsayb2']:
             assert attended == 1
         for training, attended in programTrainings['neillz']:
