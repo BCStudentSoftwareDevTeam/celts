@@ -1,11 +1,29 @@
 $(document).ready(function(){
-  retrieveEmailTemplateData();
+  $("#body").on("blur", saveCursorIndex);
+  $("#templateIdentifier").on("change", replaceEmailBodyAndSubject);
+  $("#placeholderSelect").on("change", insertPlaceholder);
+  $("#closeModal").on("click", () => $('.modal').modal('hide'));
+  handleFileSelection("attachmentObject");
 })
-var emailTemplateInfo;
 
-function retrieveEmailTemplateData() {
-   $.ajax({
-    url: "/retrieveEmailTemplate",
+var senderList;
+async function retrieveSenderList(eventId){
+  await $.ajax({
+    url: `/retrieveSenderList/${eventId}`,
+    type: "GET",
+    success: function(senderInfo) {
+      senderList = senderInfo;
+    },
+    error: function(error, status){
+        console.log(error, status);
+    }
+  });
+}
+
+var emailTemplateInfo;
+async function retrieveEmailTemplateData(eventId) {
+   await $.ajax({
+    url: `/retrieveEmailTemplate/${eventId}`,
     type: "GET",
     success: function(templateInfo) {
       emailTemplateInfo = templateInfo;
@@ -16,7 +34,57 @@ function retrieveEmailTemplateData() {
   });
 }
 
-function showEmailModal(eventID, programID, selectedTerm, isPastEvent) {
+var placeholderList;
+async function retrievePlaceholderList(eventId){
+  await $.ajax({
+    url: `/retrievePlaceholderList/${eventId}`,
+    type: "GET",
+    success: function(placeholderInfo) {
+      placeholderList = placeholderInfo;
+    },
+    error: function(error, status){
+        console.log(error, status);
+    }
+  });
+}
+
+function readySenderOptions(eventId){
+  $("#emailSender .sender-option").remove();
+  retrieveSenderList(eventId).then(function() {
+    for (let i=0; i < senderList.length; i++) {
+      let option = '<option class="sender-option" value="' + senderList[i][1] + '">'+ senderList[i][0] +'</option>';
+      $('#emailSender').append(option);
+    }
+  });
+}
+
+function readyTemplateOptions(eventId, template) {
+  $('#templateIdentifier .template-option').remove()
+  
+  retrieveEmailTemplateData(eventId).then(function() {
+    for (let i=0; i < Object.keys(emailTemplateInfo).length; i++) {
+      let option = `<option class="template-option" value='${emailTemplateInfo[i]['purpose']}'>${emailTemplateInfo[i]['subject']}</option>`;
+      $('#templateIdentifier').append(option);
+    }
+    if (template) $("#templateIdentifier").val(template);
+    replaceEmailBodyAndSubject();
+  })
+}
+
+function readyPlaceholderOptions(eventId) {
+  $('#placeholderSelect .placeholder-option').remove()
+  retrievePlaceholderList(eventId).then(function() {
+    for (let i = 0; i < placeholderList.length; i++){
+      let option = '<option class="placeholder-option" value="' + placeholderList[i][1] + '">'+ placeholderList[i][0] +'</option>';
+      $('#placeholderSelect').append(option);
+    }
+  }); 
+}
+
+
+
+function showEmailModal(eventID, programID, selectedTerm, isPastEvent, template=null) {
+  
   $(".modal-body #eventID").val(eventID);
   $(".modal-body #programID").val(programID);
   $(".modal-body #selectedTerm").val(selectedTerm);
@@ -31,11 +99,27 @@ function showEmailModal(eventID, programID, selectedTerm, isPastEvent) {
     $(".pastEventWarning").prop("hidden", true);
   }
 
-  for (let i=0; i < Object.keys(emailTemplateInfo).length; i++) {
-    let option = `<option value='${emailTemplateInfo[i]['purpose']}'>${emailTemplateInfo[i]['subject']}</option>`;
-    $('#templateIdentifier').append(option);
-  }
+
+
+  $("#body").data("cursor-index", 0);
+  readySenderOptions(eventID);
+  readyTemplateOptions(eventID, template);
+  readyPlaceholderOptions(eventID);
   fetchEmailLogData().then(() => $('#emailModal').modal('show'));
+  
+}
+
+function saveCursorIndex(){
+  $("#body").data("cursor-index", $("#body")[0].selectionStart);
+}
+
+function insertPlaceholder() {
+  bodyText = $("#body").val();
+  cursorIndex = $("#body").data("cursor-index");
+  let placeholderValue = $("#placeholderSelect option:selected" ).val();
+  $("#body").val(bodyText.slice(0, cursorIndex) + placeholderValue + bodyText.slice(cursorIndex));
+  $("#body").data("cursor-index", cursorIndex + placeholderValue.length);
+  $("#placeholderSelect").val("")
 }
 
 async function fetchEmailLogData() {
@@ -80,6 +164,7 @@ function replaceEmailBodyAndSubject() {
     if (emailTemplateInfo[i]['purpose'] == selected) {
       $('#subject').val(emailTemplateInfo[i]['subject']);
       $('#body').val(emailTemplateInfo[i]['body']);
+      $("#body").data("cursor-index", emailTemplateInfo[i]['body'].length)
     }
   }
 }

@@ -386,7 +386,7 @@ programs = [
         "programDescription": "The Berea Buddies program is dedicated to establishing long-term mentorships between Berea youth (Little Buddies) and Berea College students (Big Buddies). Volunteers serve children by offering them friendship and quality time. Big and Little Buddies meet each other every Monday or Tuesday during the academic year, except on school and national holidays, to enjoy structured activities around campus.",
         "isStudentLed": True,
         "isBonnerScholars": False,
-        "contactEmail": "",
+        "contactEmail": "bereabuddies@berea.edu",
         "contactName": ""
 
     },
@@ -1172,7 +1172,7 @@ emailTemplates = [
     {
     #'id': 1,
     'subject': 'Test Email',
-    'body': 'Hello {name}, This is a test event named {event_name} located in {location}. Other info: {start_date}-{end_date} and this {start_time}-{end_time}.',
+    'body': 'Hello {recipient_name}, This is a test event named {event_name} located in {location}. Other info: {start_date}-{end_date} and this {start_time}-{end_time}.',
     'action': 'sent',
     'purpose': 'Test',
     'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
@@ -1180,14 +1180,14 @@ emailTemplates = [
     {
     #'id': 2,
     'subject': 'Test Email 2',
-    'body': 'Hello {name}, This is another test event named {event_name} located in {location}. Other info: {start_date}-{end_date} and this {start_time}-{end_time}. The link is {event_link}',
+    'body': 'Hello {recipient_name}, This is another test event named {event_name} located in {location}. Other info: {start_date}-{end_date} and this {start_time}-{end_time}. The link is {event_link}',
     'action': 'sent',
     'purpose': 'Test2',
     'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
     },
     {
     'subject': 'Event Reminder',
-    'body': 'Hello! This is a reminder that you have an event coming up tomorrow, {start_date}. The event is {event_name} and it will be taking place at {location} from {start_time}-{end_time}. The link is {event_link}.',
+    'body': 'Hello! This is a reminder that you have an event coming up tomorrow, {start_date}. The event is {event_name} and it will be taking place at {location} from {start_time}-{end_time}. The link is {event_link}. The event is scheduled to happen {relative_time} from now.',
     'action': 'sent',
     'purpose': 'Reminder',
     'replyToAddress': 'j5u6j9w6v1h0p3g1@bereacs.slack.com'
