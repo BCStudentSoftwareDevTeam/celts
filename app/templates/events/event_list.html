@@ -86,10 +86,10 @@
             <tr class="">
           {% endif %}
             {% if type != "bonner" and type != "studentLed" %}
-              {% if event.program%}
-                <td class="text-dark">{{event.program.programName}}</td>
-              {% else %}
+              {% if event.isAllVolunteerTraining %}
                 <td class="text-dark">This event does not belong to any program.</td>
+              {% else %}
+                <td class="text-dark">{{event.program.programName}}</td>
               {% endif %}
             {% endif %}
             {% if user.isCeltsAdmin or user.isProgramManagerFor(event.program)%}

@@ -14,6 +14,8 @@ class Program(baseModel):
     contactEmail = CharField(null=True,default='')
     defaultLocation = CharField(null=True,default='')
 
+    OTHERCELTSSPONSORED = 9
+
     @property
     def url(self):
 

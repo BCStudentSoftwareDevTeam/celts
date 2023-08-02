@@ -56,7 +56,8 @@ def special_otherEvents():
                                        location = "moon",
                                        isTraining = False,
                                        startDate = "2021-12-12",
-                                       endDate = "2021-12-13")
+                                       endDate = "2021-12-13",
+                                       program = Program.OTHERCELTSSPONSORED)
 
         yield nonProgramEvent
         nonProgramEvent.delete_instance()
@@ -208,7 +209,8 @@ def test_eventViewCount():
                                  location = "basement",
                                  isTraining = True,
                                  startDate = "2021-12-12",
-                                 endDate = "2021-12-13")
+                                 endDate = "2021-12-13",
+                                 program = Program.OTHERCELTSSPONSORED)
         
         viewer = User.create(username = "eventViewer",
                              bnumber = "B000000000",

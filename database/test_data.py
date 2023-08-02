@@ -451,6 +451,16 @@ programs = [
         "contactName": ""
     },
     {
+        "id": 9,
+        "programName": "CELTS-Sponsored Event",
+        "programUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service",
+        "programDescription": "This program hosts a myriad of different celts sponsored events that are not owned by any other program.",
+        "isStudentLed": False,
+        "isBonnerScholars": False,
+        "contactEmail": "",
+        "contactName": ""
+    },
+    {
         "id": 10,
         "programName": "Berea Tutoring",
         "programUrl": "https://www.berea.edu/celts/community-service-programs/volunteer-opportunities/berea-tutoring-program/",
@@ -629,7 +639,8 @@ events = [
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 9
     },
     {
         "id": 12,
@@ -650,7 +661,7 @@ events = [
         "id": 13,
         "term": 3,
         "name": "Community Clean Up",
-        "description": "This event doesn't belong to any program",
+        "description": "This event doesn't belong to any major program",
         "isTraining": False,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
@@ -658,7 +669,8 @@ events = [
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 9
     },
     {
         "id": 14,
@@ -673,7 +685,8 @@ events = [
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 9
     },
     {
         "id": 15,
@@ -687,7 +700,8 @@ events = [
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 9
     },
     {
         #Event being created for recurrance events
@@ -702,7 +716,8 @@ events = [
         "startDate": datetime.strptime("2021 6 12","%Y %m %d"),
         "endDate": datetime.strptime("2021 7 12","%Y %m %d"),
         "contactEmail": "testEmail",
-        "contactName": "testName"
+        "contactName": "testName",
+        "program": 9
     },
 ]
 Event.insert_many(events).on_conflict_replace().execute()

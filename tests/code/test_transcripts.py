@@ -37,7 +37,7 @@ def setup():
                               startDate =  "2021-12-12",
                               endDate =  "2021-12-13",
                               recurringId = None,
-                              program_id=2)
+                              program=2)
 
     EventParticipant.create(user = testUser,
                             event = newTrainingEvent,
@@ -58,7 +58,7 @@ def setup():
                               startDate =  "2021-12-12",
                               endDate =  "2021-12-13",
                               recurringId = None,
-                              program_id= 5)
+                              program= 5)
     
     EventParticipant.create(user = testUser,
                             event = newBonnerEvent,
@@ -98,7 +98,7 @@ def setup():
                               startDate =  "2021-12-12",
                               endDate =  "2021-12-13",
                               recurringId = None,
-                              program_id= 1)
+                              program= 1)
 
     EventParticipant.create(user = testUser,
                             event = newProgramEvent,
@@ -118,7 +118,8 @@ def setup():
                               isService = 0,
                               startDate =  "2021-12-12",
                               endDate =  "2021-12-13",
-                              recurringId = None)
+                              recurringId = None,
+                              program = Program.OTHERCELTSSPONSORED)
     EventParticipant.create(user = testUser,
                             event = newNonProgramEvent,
                             attended = True,
