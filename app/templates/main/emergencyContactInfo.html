@@ -30,7 +30,7 @@
             </div>
             <div class='form-group mb-4'>
                 <label class='form-label' for='email'><strong> Email Address </strong></label>
-                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='email' value="{{contactInfo.emailAddress if contactInfo else ''}}" name='emailAddress'/>
+                <input {{'disabled' if readOnly else ''}} class='form-control' type='email' id='email' value="{{contactInfo.emailAddress if contactInfo else ''}}" name='emailAddress'/>
             </div>
 
         </div>
@@ -44,15 +44,15 @@
 
             <div class='form-group mb-4'>
                 <label class='form-label' for='cellPhone'><strong> Cell Phone Number </strong></label>
-                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='cellPhone' value="{{contactInfo.cellPhone if contactInfo else ''}}" name='cellPhone'/>
+                <input {{'disabled' if readOnly else ''}} class='form-control phone-input' type='text' id='cellPhone' value="{{contactInfo.cellPhone if contactInfo else ''}}" name='cellPhone'/>
             </div>
             <div class='form-group mb-4'>
                 <label class='form-label' for='workPhone'><strong> Work Phone Number </strong></label>
-                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='workPhone' value="{{contactInfo.workPhone if contactInfo else ''}}" name='workPhone'/>
+                <input {{'disabled' if readOnly else ''}} class='form-control phone-input' type='text' id='workPhone' value="{{contactInfo.workPhone if contactInfo else ''}}" name='workPhone'/>
             </div>
             <div class='form-group mb-4'>
                 <label class='form-label' for='cellPhone'><strong> Home Phone </strong></label>
-                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='homePhone' value="{{contactInfo.homePhone if contactInfo else ''}}" name='homePhone'/>
+                <input {{'disabled' if readOnly else ''}} class='form-control phone-input' type='text' id='homePhone' value="{{contactInfo.homePhone if contactInfo else ''}}" name='homePhone'/>
             </div>
         </div>
 
@@ -72,7 +72,7 @@
             <a href='/profile/{{username}}' class='btn btn-primary'>Exit</a>           
         {% else %}
             <a id='exit' href='/profile/{{username}}' class='btn btn-secondary'>Exit</a> {# beans: Should this button say save without exiting? #}
-            <a id='saveExit' class='btn btn-primary' type='submit'> Save & Exit </a>
+            <a id='saveExit' class='btn btn-primary'> Save & Exit </a>
             <a id='saveContinue' class='btn btn-primary'>Continue to Insurance Info</a>
         {% endif %}
     </div>
