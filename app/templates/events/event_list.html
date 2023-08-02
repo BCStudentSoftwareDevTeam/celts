@@ -101,7 +101,7 @@
               {% if event.isCanceled %}
                 {% set ListOfManagers = managersList[event.program.id] if managersList %}
                 {% set programManager = ListOfManagers["managers"] if ListOfManagers is defined else "CELTS" %}
-                  <td colspan = 3 >This event has been canceled. Contact <a href="mailto:{{programManager}}">{{programManager}}</a> if you have any questions.</td>
+                  <td colspan = 3 >This event has been canceled. Contact <a href="mailto:{{programManager}}" class="text-dark">{{programManager}}</a> if you have any questions.</td>
               {% else %}
               {% set id = event.id %}
                 <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
