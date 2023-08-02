@@ -79,7 +79,6 @@ def events(selectedTerm, activeTab, programID):
     session['adminVerificator'] = True if g.current_user.isAdmin else False
 
     managersProgramDict = getManagerProgramDict(g.current_user)
-    managersList = [id[1] for id in managersProgramDict.items()]
 
     return render_template("/events/event_list.html",
                             selectedTerm = term,
@@ -94,7 +93,7 @@ def events(selectedTerm, activeTab, programID):
                             user = g.current_user,
                             activeTab = activeTab,
                             programID = int(programID),
-                            managersList = managersList
+                            managersProgramDict = managersProgramDict
                             )
 
 @main_bp.route('/profile/<username>', methods=['GET'])
