@@ -23,9 +23,10 @@
 {% endblock %}
 
 {% block app_content %}
-
-
 {{super()}}
+
+{% from 'trainingsHoverMacro.html' import trainingsHover %}
+
 <label class='d-none' id="eventLength">{{eventLength}}</label>
 <input class="form-control" id="event" name="event" value="{{event}}" type='hidden' />
 <div class="flex-container" style="padding: 5px;">
@@ -133,7 +134,6 @@
                       </td>
                     {% else %} {# end hiding the hours and attended inputs #}
                       <td style="text-align:center">
-                        {% from 'trainingsHoverMacro.html' import trainingsHover %}
                         {% if participant.user.username not in trainedParticipantsList %}
                           <span class="bi bi-x-lg" aria-label="Did not complete all trainings."></span> &nbsp&nbsp
                           <a class="trainingPopover" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingsHover(completedTrainingInfo[participant.user.username])}}">View</a>
@@ -218,9 +218,11 @@
                   <td>{{participant.user.phoneNumber}}</td>
                   <td style="text-align:center">
                     {% if participant.user.username not in trainedParticipantsList %}
-                      <span class="bi bi-x-lg" aria-label="Did not complete all trainings."></span>
+                      <span class="bi bi-x-lg" aria-label="Did not complete all trainings."></span> &nbsp&nbsp
+                      <a class="trainingPopover" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingsHover(completedTrainingInfo[participant.user.username])}}">View</a>
                     {% else %}
-                      <span class="bi bi-check-lg" aria-label="Completed all trainings."></span>
+                      <span class="bi bi-check-lg" aria-label="Completed all trainings."></span> &nbsp&nbsp
+                      <a class="trainingPopover" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingsHover(completedTrainingInfo[participant.user.username])}}">View</a>
                     {% endif %}
                   </td>
                   <td style="text-align:center">
