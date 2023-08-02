@@ -243,11 +243,16 @@ def eventDisplay(eventId):
 
         # Identify the next event in a recurring series
         if event.recurringId:
-            eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId, Event.isCanceled == False).order_by(Event.startDate))
+            eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId).order_by(Event.startDate))
             eventIndex = eventSeriesList.index(event)
-            if len(eventSeriesList) != (eventIndex + 1):
-                eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
-        
+            nextUncanceledEvent = None
+            for nextEvent in eventSeriesList[eventIndex + 1:]:
+                if not nextEvent.isCanceled:
+                    nextUncanceledEvent = nextEvent
+                    break
+            if nextUncanceledEvent:
+                eventData["nextRecurringEvent"] = nextUncanceledEvent
+            
         currentEventRsvpAmount = getEventRsvpCountsForTerm(g.current_term)
 
         UserParticipatedTrainingEvents = getUserParticipatedTrainingEvents(eventData['program'], g.current_user, g.current_term)
