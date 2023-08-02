@@ -99,9 +99,11 @@
               <td><a href="/event/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
             {% endif %}
               {% if event.isCanceled %}
-                {% set ListOfManagers = managersList[event.program.id] if managersList %}
-                {% set programManager = ListOfManagers["managers"] if ListOfManagers is defined else "CELTS" %}
-                  <td colspan = 3 >This event has been canceled. Contact <a href="mailto:{{programManager}}">{{programManager}}</a> if you have any questions.</td>
+                {% if managersProgramDict[event.program] and managersProgramDict[event.program]["managers"] | length > 2 %} 
+                  <td colspan = 3 >This event has been canceled. Contact <a href="mailto:{{managersProgramDict[event.program]["managers"]}}">{{managersProgramDict[event.program]["managers"]}}</a> if you have any questions.</td>
+                {% else %}
+                  <td colspan = 3 >This event has been canceled. Contact <a href="mailto:{{"CELTS"}}">CELTS</a> if you have any questions.</td>
+                {% endif %}
               {% else %}
               {% set id = event.id %}
                 <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
