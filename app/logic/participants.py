@@ -131,24 +131,24 @@ def getEventParticipants(event):
 
     return {p.user: p.hoursEarned for p in eventParticipants}
 
-def getParticipationStatusForTrainings(program, userList, currentTerm):
+def getParticipationStatusForTrainings(program, userList, term):
     """
     This function returns a dictionary of all trainings for a program and
     whether the current user participated in them.
 
     :returns: trainings for program and if the user participated
     """
-    academicYear = currentTerm.academicYear
+    academicYear = term.academicYear
 
     programTrainings = (Event.select(Event, Term, EventParticipant, EventRsvp)
                                .join(EventParticipant, JOIN.LEFT_OUTER).switch()
                                .join(EventRsvp, JOIN.LEFT_OUTER).switch()
                                .join(Term)
                                .where(Event.isTraining,
-                                      Event.program == program,
-                                      Event.term.academicYear == academicYear))
+                                     (Event.program == program) | (Event.isAllVolunteerTraining == 1),
+                                      Event.term.academicYear == academicYear)) 
 
-    # Create a dictionary where the trainings are the keys and values are a list of those who attended
+    # Create a dictionary where the keys are trainings and values are a list of those who attended
     trainingData = {}
     for training in programTrainings:
         try:
@@ -158,7 +158,6 @@ def getParticipationStatusForTrainings(program, userList, currentTerm):
                 trainingData[training] = trainingData.get(training, []) + [training.eventrsvp.user_id]
         except AttributeError:
             trainingData[training] = trainingData.get(training, [])
-
     # Create a dictionary binding usernames to tuples. The tuples consist of the training (event object) and whether or not they attended it (bool)
     userParticipationStatus = {}
     for user in userList:
