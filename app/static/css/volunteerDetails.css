@@ -16,7 +16,7 @@
         column-gap: 20px;
         page-break-inside: avoid;
         break-inside: avoid;
-        
+        size: landscape;
         
     }
 
@@ -24,6 +24,7 @@
         width: 160%;
         height: 100%;
         font-size: 12pt;
+        size: landscape;
     }
 
     #volunteerInformationTableToPrint {
