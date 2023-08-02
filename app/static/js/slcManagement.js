@@ -55,12 +55,12 @@ $(document).ready(function() {
     let uncheckedBoxFound = false;
     for (let checkboxNum = 0; checkboxNum < instructorCheckboxes.length; checkboxNum++){
       if (instructorCheckboxes[checkboxNum].checked != true){
-        myButton.innerText = "Unselect All"
+        $('#selectAllOthersButton').text( "Unselect All")
         uncheckedBoxFound = true;
         break
       }
       else {
-        myButton.textContent = "Select All"
+        $('#selectAllOthersButton').text( "Select All") 
       }
     }
     instructorCheckboxes.each((i, checkbox) => {
