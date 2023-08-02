@@ -195,7 +195,12 @@ def emergencyContactInfo(username):
             contactInfo.update(**request.form).execute()
         else:
             EmergencyContact.create(user = username, **request.form)
-        return redirect (f"/profile/{username}")
+        flash('Emergency contact information saved successfully!', 'success') 
+        
+        if request.args.get('action') == 'exit':
+            return redirect (f"/profile/{username}")
+        else:
+            return redirect (f"/profile/{username}/insuranceInfo")
 
 @main_bp.route('/profile/<username>/insuranceInfo', methods=['GET', 'POST'])
 def insuranceInfo(username):
@@ -226,7 +231,12 @@ def insuranceInfo(username):
         else:
             InsuranceInfo.create(user = username, **request.form)
         flash('Insurance information saved successfully!', 'success') 
-        return redirect (f"/profile/{username}")
+            
+
+        if request.args.get('action') == 'exit':
+            return redirect (f"/profile/{username}")
+        else:
+            return redirect (f"/profile/{username}/emergencyContact")
 
 @main_bp.route('/profile/<username>/travelForm', methods=['GET', 'POST'])
 def travelForm(username):

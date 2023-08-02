@@ -1,14 +1,22 @@
 {% set title = "User Profile" %}
 {% extends "base.html" %}
 
+{% block scripts %}
+    {{super()}}
+    <script type="text/javascript" src="{{url_for('static', filename='js/insuranceInfo.js') }}?u={{lastStaticUpdate}}"></script>
+{% endblock %}
+
+
+
 {% block app_content %}
 
 <div class="text-center">
     <h1> Insurance Information </h1> <br>
 </div>
 
+<div id='username' hidden value='{{userInsuranceInfo.user}}'></div>
 
-<form enctype="multipart/form-data" role='form' action='/profile/{{username}}/insuranceInfo' method='POST'>
+<form id='insuranceForm' enctype="multipart/form-data" role='form' method='POST'>
     <div class='row'>
         <!--Left half-->
         <div class='col-md-6'>
@@ -33,7 +41,6 @@
                 <label class='form-label' for='relationship'><strong> Holder's Relationship to You </strong></label>
                 <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='relationship' name='policyHolderRelationship' value="{{userInsuranceInfo.policyHolderRelationship if userInsuranceInfo else ''}}"/>
             </div>
-
         </div>
 
 
@@ -69,8 +76,9 @@
         {% if readOnly %}
             <a href='/profile/{{username}}' class='btn btn-primary'>Exit</a>
         {% else %}
-            <a href='/profile/{{username}}' class='btn btn-secondary'>Cancel</a>
-            <button class='btn btn-primary' type='submit'> Save & Exit </button>
+            <a id='exit' href='/profile/{{username}}' class='btn btn-secondary'>Exit</a> {# beans: Should this button say save without exiting? #}
+            <a id='saveExit' class='btn btn-primary'> Save & Exit </a>
+            <a id='saveContinue' class='btn btn-primary'>Continue to Emergency Contact</a>
         {% endif %}
     </div>
 
