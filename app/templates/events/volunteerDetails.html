@@ -8,6 +8,7 @@
 {{super()}}
 <link rel="stylesheet" href="{{url_for('static', filename ='css/volunteerDetails.css') }}?u={{lastStaticUpdate}}">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.min.css">
+<link href='https://fonts.googleapis.com/css?family=Libre Barcode 39' rel='stylesheet'>
 {% endblock %}
 
 {% block scripts %}
@@ -25,8 +26,11 @@
 
 
 {% if attendedUser or waitlistUser or rsvpUser %}
-<div class="d-none d-print-block always-print"> 
-  <h6> Volunteer Details for {{event.name}} on {{event.startDate}} at {{event.timeStart}}</h6><br>
+<div class="d-none d-print-block always-print row"> 
+  <img class="col" src="/static/images/logos/celts_logo_white.png" alt="CELTS-image" width="230">
+  <h3 class="col"> Volunteer Details for {{event.name}}<br>
+    Start Date: {{event.startDate}}<br>  
+    Start Time: {{event.timeStart}}</h3><br>
 </div>
 
 {% macro createCheckbox(checkboxName) %}
@@ -56,6 +60,8 @@
       <label for="phoneSelect">Phone Number</label><br>
       <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="emailSelect" checked>
       <label for="emailSelect">Email</label><br>
+      <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="barcodeSelect" checked>
+      <label for="barcodeSelect">B-Number Barcode</label><br>
     </div>
     <div class="col-12 col-md">
       <div class="row">
@@ -73,7 +79,7 @@
 <hr>
 
 
-<div id="volunteerInformationCardToPrint">
+<div class="d-print-block" id="volunteerInformationCardToPrint">
   <div class="row sort-here">
     {% set combinedParticipants = attendedUser + rsvpUser + waitlistUser %}
     {% set printedNames = [] %}
@@ -83,9 +89,10 @@
         <div class="{{volunteerType}}Select col-12 col-md-6 volunteerInfoEntries print-column" data-user="{{participant.username}}">
           <h4 class="nameSelect" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></h4>
           <ul>
-            <div class="phoneSelect" nowrap>{{ participant.phoneNumber if participant.phoneNumber else "No number"}}</div>
+            <div class="barcodeSelect bnumber-barcode" nowrap>{{participant.bnumber}}</div>
+            <div class="phoneSelect" nowrap>{{ participant.phoneNumber if participant.phoneNumber else "No phone number"}}</div>
             <div class="emailSelect" nowrap>{{ participant.email }}</div>
-            <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction }}</div>
+            <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction if participant.dietRestriction else "None Specified" }}</div>
           </ul>
         </div>
       {% endmacro %}
@@ -107,7 +114,7 @@
 </div>
 
 
-<table class=" table table-striped" id="volunteerInformationTableToPrint">
+<table class="table table-striped d-print-table" id="volunteerInformationTableToPrint">
   <thead>
     <tr>
       <th class="text-center">Name</th>
@@ -126,7 +133,7 @@
           <td class="nameSelect" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></td>
           <td class="phoneSelect" nowrap>{{ participant.phoneNumber if participant.phoneNumber else "" }}</td>
           <td class="emailSelect" nowrap>{{ participant.email }}</td>
-          <td class="dietRestrictionSelect">{{ participant.dietRestriction }}</td>
+          <td class="dietRestrictionSelect">{{ participant.dietRestriction if participant.dietRestriction else ''}}</td>
         </tr>
       {% endmacro %}
       {% set isAttended = participant in attendedUser %}
