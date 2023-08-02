@@ -37,9 +37,11 @@
     <div class="col-auto pe-0 ">
       <select data-username="{{volunteer.username}}" id="actions" class=form-select align="right">
         <option value="" selected disabled hidden>Choose an Action</option>
+        {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
         <option value="Emergency Contact"> {{'Edit' if volunteer == g.current_user else 'View'}} Emergency Contact </option>
         <option value="Insurance Information"> {{'Edit' if volunteer == g.current_user else 'View'}} Insurance Information </option>
         <option value="Print Travel Form"> Print Travel Form </option>
+        {% endif %}
         <option value="View Service Transcript"> View Service Transcript </option>
       </select>
     </div>

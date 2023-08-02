@@ -240,7 +240,8 @@ def insuranceInfo(username):
 
 @main_bp.route('/profile/<username>/travelForm', methods=['GET', 'POST'])
 def travelForm(username):
-
+    if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
+        abort(403)
    
     user = (User.select(User, EmergencyContact, InsuranceInfo)
                 .join(EmergencyContact, JOIN.LEFT_OUTER).switch()
