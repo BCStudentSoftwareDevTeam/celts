@@ -18,9 +18,14 @@
         {% if g.current_user.isAdmin %}
             {{ eventheader(page_title, eventData, 'large', isNewEvent) }}
         {% endif %}
-        {% set alertClass = "alert-danger" if eventPast and eventData.isCanceled or eventpast else "alert-warning"%}
-        {% set alertMessage = "This is a past event and it was canceled" if eventPast and eventData.isCanceled else "This event is in the past" if eventPast else "This event has been canceled" if eventData.isCanceled %}
-        <div class = "{{ alertClass }} mb-2 pb-2 pt-2" role="alert">{{ alertMessage }}</div>
+        {% set alertClass = "alert-danger" if eventPast else "alert-warning"%}
+        {% if eventPast and eventData.isCanceled %}
+            <div class = "{{alertClass}} mb-2 pb-2 pt-2" role="alert">This is a past event and it was canceled</div>
+        {% elif eventPast %}
+            <div class = "{{alertClass}} mb-2 pb-2 pt-2" role="alert">This is a past event</div>
+        {% elif eventData.isCanceled %}
+            <div class = "{{alertClass}} mb-2 pb-2 pt-2" role="alert">This event has been canceled</div>
+        {% endif %}
     </div>
     {% endblock %}
 
