@@ -174,11 +174,7 @@ def emergencyContactInfo(username):
 
 
     if request.method == 'GET':
-
-        # Beans: Q, Should student staff be able to see the emergency contact and insurance info of everyone?
         readOnly = False if g.current_user.username == username else True
-        
-
         contactInfo = EmergencyContact.get_or_none(EmergencyContact.user_id == username)
         return render_template ("/main/emergencyContactInfo.html",
                                 username=username,
@@ -212,7 +208,6 @@ def insuranceInfo(username):
             abort(403)
 
     if request.method == 'GET':
-        # Beans: Q, Should student staff be able to see the emergency contact and insurance info of everyone?
         readOnly = False if g.current_user.username == username else True
         userInsuranceInfo = InsuranceInfo.get_or_none(InsuranceInfo.user == username)
         return render_template ("/main/insuranceInfo.html",
