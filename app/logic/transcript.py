@@ -11,7 +11,7 @@ from peewee import DoesNotExist, fn, JOIN
 
 def getOtherEventsTranscript(username):
     """
-    Returns a Other Events query object containing all the other-program
+    Returns an Other Events query object containing all the other-program
     events for the current user.
     """
 
