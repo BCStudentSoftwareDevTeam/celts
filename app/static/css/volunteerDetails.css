@@ -53,11 +53,27 @@
         display: flex;
         
     }
-
+    
 
 }
 
 .bnumber-barcode {
     font-family: 'Libre Barcode 39';
     font-size: 30px;
+}
+
+.logoImage {
+    width: 50%;
+}
+
+#volunteerInformationCardToPrint, .bNumberSelect {
+    display: none;
+}
+
+.custom-odd td {
+    background-color: #f8f9fa;
+}
+
+.custom-even td {
+    background-color: #fff;
 }

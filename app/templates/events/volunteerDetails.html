@@ -26,9 +26,9 @@
 
 
 {% if attendedUser or waitlistUser or rsvpUser %}
-<div class="d-none d-print-block always-print row"> 
-  <img class="col logoImage" src="/static/images/logos/celts_logo.png" alt="CELTS-image" width="50%" height="50%">
-  <h5 class="col"> Volunteer Details for {{event.name}}<br>
+<div class="d-none d-print-block always-print"> 
+  <img class="logoImage" src="/static/images/logos/celts_logo.png" alt="CELTS-image">
+  <h5> Volunteer Details for {{event.name}}<br>
     Start Date: {{event.startDate}}<br>  
     Start Time: {{event.timeStart}}</h5><br>
 </div>
@@ -60,8 +60,8 @@
       <label for="phoneSelect">Phone Number</label><br>
       <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="emailSelect" checked>
       <label for="emailSelect">Email</label><br>
-      <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="barcodeSelect" checked>
-      <label for="barcodeSelect">B-Number Barcode</label><br>
+      <input class="displayCheckbox noprint bNumberSelect" type="checkbox" name="selected_items" id="barcodeSelect" checked>
+      <label class="bNumberSelect" for="barcodeSelect">B-Number Barcode</label><br>
     </div>
     <div class="col-12 col-md">
       <div class="row">
@@ -114,7 +114,7 @@
 </div>
 
 
-<table class="table table-striped d-print-table" id="volunteerInformationTableToPrint">
+<table class="table d-print-table" id="volunteerInformationTableToPrint">
   <thead>
     <tr>
       <th class="text-center">Name</th>

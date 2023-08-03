@@ -1,14 +1,14 @@
 $(document).ready(function () {
-	
-	$("#volunteerInformationCardToPrint").toggle()
 	$("#tableCardToggle").on('click', function () {
 		$("#volunteerInformationCardToPrint").toggle()
 		$("#volunteerInformationTableToPrint_wrapper").toggle()
 
 		if ($("#tableCardToggle").text() == "Card View") {
 			$("#tableCardToggle").text("Table View")
+			$(".bNumberSelect").toggle()
 		} else {
 			$("#tableCardToggle").text("Card View")
+			$(".bNumberSelect").toggle()
 		}
 		hideDuplicateVolunteers()
 	})
@@ -39,7 +39,7 @@ $(document).ready(function () {
 		let shownUsers = []
 		for (let i = 0; i < allEntries.length; i++) {
 			let currentEntry = $(allEntries[i])
-			if (!currentEntry.is(":hidden")) {
+			if (currentEntry.is(":visible")) {
 				if (shownUsers.includes(currentEntry.data("user"))) {
 					currentEntry.hide()
 				} else {
@@ -47,6 +47,7 @@ $(document).ready(function () {
 				}
 			}
 		}
+		stripeVolunteerInfoTable()
 	}
 	function getCheckBoxes() {
 		$(".displayCheckbox").each(function () {
@@ -59,6 +60,7 @@ $(document).ready(function () {
 			}
 		})
 		hideDuplicateVolunteers()
+
 	}
 	function sortVolunteers() {
 		let sortedTable = $("#volunteerInformationTableToPrint_wrapper");
@@ -83,11 +85,21 @@ $(document).ready(function () {
 	
 		entriesCards.appendTo(sortedCards);
 	};
+
+	function stripeVolunteerInfoTable() {
+		$('#volunteerInformationTableToPrint .volunteerInfoEntries').removeClass('custom-odd custom-even')
+		$('#volunteerInformationTableToPrint .volunteerInfoEntries:visible').each(function (i,e) {
+			$(e).addClass(i % 2 ? 'custom-odd' : 'custom-even')
+		})
+	}
+
 	getCheckBoxes()
 	hideDuplicateVolunteers()
 	sortVolunteers()
-	var volunteerInfoTable= $('#volunteerInformationTableToPrint').DataTable({ "ordering": true });
+	var volunteerInfoTable= $('#volunteerInformationTableToPrint').DataTable({ stripeClasses: []});
 	volunteerInfoTable.on('draw.dt', function (){
+		console.log("Draw Event")
 		getCheckBoxes()
+		stripeVolunteerInfoTable()
 	});
 });
