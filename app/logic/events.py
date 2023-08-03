@@ -273,10 +273,10 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now(), program=None):
     # removes all recurring events except for the next upcoming one
     for event in events:
         if event.recurringId:
-            if event.recurringId not in shown_recurring_event_list:
-                events_list.append(event)
-                shown_recurring_event_list.append(event.recurringId)
-
+            if not event.isCanceled:
+                if event.recurringId not in shown_recurring_event_list:
+                    events_list.append(event)
+                    shown_recurring_event_list.append(event.recurringId)
         else:
             events_list.append(event)
 
