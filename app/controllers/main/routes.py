@@ -174,7 +174,7 @@ def emergencyContactInfo(username):
 
 
     if request.method == 'GET':
-        readOnly = False if g.current_user.username == username else True
+        readOnly = g.current_user.username != username
         contactInfo = EmergencyContact.get_or_none(EmergencyContact.user_id == username)
         return render_template ("/main/emergencyContactInfo.html",
                                 username=username,
@@ -208,7 +208,7 @@ def insuranceInfo(username):
             abort(403)
 
     if request.method == 'GET':
-        readOnly = False if g.current_user.username == username else True
+        readOnly = g.current_user.username != username
         userInsuranceInfo = InsuranceInfo.get_or_none(InsuranceInfo.user == username)
         return render_template ("/main/insuranceInfo.html",
                                 username = username,
