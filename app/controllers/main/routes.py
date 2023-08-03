@@ -195,6 +195,7 @@ def emergencyContactInfo(username):
             contactInfo.update(**request.form).execute()
         else:
             EmergencyContact.create(user = username, **request.form)
+        createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
         flash('Emergency contact information saved successfully!', 'success') 
         
         if request.args.get('action') == 'exit':
@@ -230,8 +231,8 @@ def insuranceInfo(username):
             info.update(**request.form).execute()
         else:
             InsuranceInfo.create(user = username, **request.form)
+        createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
         flash('Insurance information saved successfully!', 'success') 
-            
 
         if request.args.get('action') == 'exit':
             return redirect (f"/profile/{username}")
