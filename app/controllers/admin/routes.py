@@ -270,8 +270,7 @@ def eventDisplay(eventId):
 
 @admin_bp.route('/event/<eventId>/cancel', methods=['POST'])
 def cancelRoute(eventId):
-    adminPermission = session.get("adminVerificator")
-    if adminPermission:
+    if g.current_user.isAdmin:
         try:
             cancelEvent(eventId)
             return redirect(request.referrer)
@@ -281,7 +280,7 @@ def cancelRoute(eventId):
             return "", 500
         
     else:
-        return "Permission Denied", 403
+        abort(403)
     
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
