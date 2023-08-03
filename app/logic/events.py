@@ -30,6 +30,12 @@ def cancelEvent(eventId):
         event.isCanceled = True
         event.save()
 
+    program = event.program
+    if program:
+        createAdminLog(f"Canceled \"{event.name}\" for {program.programName}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+    else:
+        createAdminLog(f"Canceled a non-program event, \"{event.name}\", which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+
 def deleteEvent(eventId):
     """
     Deletes an event, if it is a recurring event, rename all following events
