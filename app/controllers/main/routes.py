@@ -75,9 +75,7 @@ def events(selectedTerm, activeTab, programID):
     trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
-
-    session['adminVerificator'] = True if g.current_user.isAdmin else False
-
+    
     managersProgramDict = getManagerProgramDict(g.current_user)
 
     return render_template("/events/event_list.html",

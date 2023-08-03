@@ -232,15 +232,15 @@ def getOtherEvents(term):
     # Gets all events that have a program but don't fit anywhere
     
     otherEvents = list(Event.select(Event, Program)
-                        .join(Program, JOIN.LEFT_OUTER)
-                        .where(Event.term == term,
-                               Event.isTraining == False,
-                               Event.isAllVolunteerTraining == False,
-                               ((Event.program == None) |
-                               ((Program.isStudentLed == False) &
-                               (Program.isBonnerScholars == False))))
-                        .order_by(Event.startDate, Event.timeStart, Event.id)
-                        .execute())
+                            .join(Program, JOIN.LEFT_OUTER)
+                            .where(Event.term == term,
+                                   Event.isTraining == False,
+                                   Event.isAllVolunteerTraining == False,
+                                   ((Event.program == None) |
+                                   ((Program.isStudentLed == False) &
+                                   (Program.isBonnerScholars == False))))
+                            .order_by(Event.startDate, Event.timeStart, Event.id)
+                            .execute())
 
     return otherEvents
 
