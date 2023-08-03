@@ -105,7 +105,6 @@
                   <td colspan = 3 >This event has been canceled. Contact <a href="mailto:celts@berea.edu;" class="text-dark">CELTS</a> if you have any questions.</td>
                 {% endif %}
               {% else %}
-              {% set id = event.id %}
                 <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
                 <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}} - {{event.timeEnd.strftime('%-I:%M %p')}}</td>
                 <td class="text-dark">{{event.location}}</td>
