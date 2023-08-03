@@ -179,7 +179,7 @@ def emergencyContactInfo(username):
         return render_template ("/main/emergencyContactInfo.html",
                                 username=username,
                                 contactInfo=contactInfo,
-                                readOnly = readOnly
+                                readOnly=readOnly
                                 )
     
     elif request.method == 'POST':
@@ -211,9 +211,9 @@ def insuranceInfo(username):
         readOnly = g.current_user.username != username
         userInsuranceInfo = InsuranceInfo.get_or_none(InsuranceInfo.user == username)
         return render_template ("/main/insuranceInfo.html",
-                                username = username,
-                                userInsuranceInfo = userInsuranceInfo,
-                                readOnly = readOnly
+                                username=username,
+                                userInsuranceInfo=userInsuranceInfo,
+                                readOnly=readOnly
                                 )
 
     # Save the form data

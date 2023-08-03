@@ -12,7 +12,7 @@
     <h1> Emergency Contact </h1> <br>
 </div>
 
-<div id='username' hidden value='{{username}}'></div>
+<input id='username' hidden value='{{username}}'></input>
 
 <form id='contactForm' enctype="multipart/form-data" role='form' action='/profile/{{username}}/emergencyContact' method='POST'>
     <div class='row'>
@@ -67,7 +67,7 @@
 
     <br>
 
-    <div class='form-group' style='text-align:right'>
+    <div class='form-group text-end'>
         {% if readOnly %}
             <a href='/profile/{{username}}' class='btn btn-primary'>Exit</a>           
         {% else %}

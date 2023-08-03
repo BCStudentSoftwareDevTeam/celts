@@ -76,7 +76,7 @@ function processPhoneSetup (editButtonId, phoneInputId, username, action) {
 function printDocument(path){
   // KNOWN ISSUE: Firefox and Chrome load pages differently, due to this we had to add a timeout that as a hack workaround 
   // but it still has some issues. 
-  var printProposal = window.open(path);
+  const printProposal = window.open(path);
   setTimeout(function () {
             printProposal.print();
             var timeoutInterval = setInterval(function() {
