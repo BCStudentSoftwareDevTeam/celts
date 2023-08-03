@@ -107,7 +107,7 @@
             Emergency Contact Information:
         </strong>
     </a>
-    <br><br> {# Beans: make all of these lines the same length by modifying 66 #}
+    <br><br>
     {% set name = userData.name if userData.name else "" %}
     <a>Name: <u>&nbsp;{{userData.name}}{{('&nbsp;' * (66 - (userData.name | length))) | safe}}</u></a><br><br>
     <a>Relationship: <u>&nbsp;{{userData.relationship}}{{('&nbsp;' * (66 - (userData.relationship | length))) | safe}}</u></a><br><br>
@@ -127,12 +127,12 @@
     <a>While traveling in this program I will be covered by the following insurance plan(s):</a> <br>
     <a>(Please initial by the program that applies to you)</a> <br> <br>
 
-    {# Test that this works once there is real table data #}
+
     <a><u>&nbsp;&nbsp;{{userData.firstName[0] + userData.lastName[0] if userData.insuranceType == 1 else '&nbsp;&nbsp;' | safe}}&nbsp;&nbsp;</u> Berea College Health Insurance</a> <br>
     <a><u>&nbsp;&nbsp;{{userData.firstName[0] + userData.lastName[0] if userData.insuranceType == 2 else '&nbsp;&nbsp;' | safe}}&nbsp;&nbsp;</u> Parent or Guardian's insurance</a> <br>
     <a><u>&nbsp;&nbsp;{{userData.firstName[0] + userData.lastName[0] if userData.insuranceType == 3 else '&nbsp;&nbsp;' | safe}}&nbsp;&nbsp;</u> Other Insurance</a> <br><br>
 
-    {# Beans: make all of these lines the same length by modifying 66 #}
+    
     <a>Name of Policy Holder: <u>&nbsp;{{userData.policyHolderName}}{{('&nbsp;' * (66 - (userData.policyHolderName | length))) | safe}}</u></a><br><br> 
     <a>Relationship to you: <u>&nbsp;{{userData.policyHolderRelationship}}{{('&nbsp;' * (66 - (userData.policyHolderRelationship | length))) | safe}}</u></a><br><br>
     <a>Insurance Company: <u>&nbsp;{{userData.insuranceCompany}}{{('&nbsp;' * (66 - (userData.insuranceCompany | length))) | safe}}</u></a><br><br>

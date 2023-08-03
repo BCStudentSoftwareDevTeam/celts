@@ -249,7 +249,7 @@ def travelForm(username):
                 .join(InsuranceInfo, JOIN.LEFT_OUTER)
                 .where(User.username == username).limit(1))
     if not list(user):
-        abort(400)  # Beans: What's the error code for bad user input?
+        abort(404)
     userData = list(user.dicts())[0]
     userData = {key: value if value else '' for (key, value) in userData.items()}
 
