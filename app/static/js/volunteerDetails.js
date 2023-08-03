@@ -102,4 +102,5 @@ $(document).ready(function () {
 		getCheckBoxes()
 		stripeVolunteerInfoTable()
 	});
+	stripeVolunteerInfoTable()
 });
