@@ -3,6 +3,7 @@
 
 {% block scripts %}
     {{super()}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
     <script type="text/javascript" src="{{url_for('static', filename='js/emergencyContactInfo.js') }}?u={{lastStaticUpdate}}"></script>
 {% endblock %}
 

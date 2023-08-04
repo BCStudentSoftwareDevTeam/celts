@@ -1,5 +1,7 @@
 $(document).ready(function(){
 
+    $('input.phone-input').inputmask('(999)-999-9999')
+
     $('input.phone-input').on('input', function(){
         let matches = $(this).val().match(/\d/g);
         let digits = matches?matches.length:0;
