@@ -118,8 +118,7 @@ def setup():
                               isService = 0,
                               startDate =  "2021-12-12",
                               endDate =  "2021-12-13",
-                              recurringId = None,
-                              program = Program.OTHERCELTSSPONSORED)
+                              recurringId = None)
     EventParticipant.create(user = testUser,
                             event = newNonProgramEvent,
                             attended = True,
