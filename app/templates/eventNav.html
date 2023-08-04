@@ -22,11 +22,11 @@
         {% set display = "" if eventPast or eventData.isCanceled else "d-none"%}
         <div class = "{{alertClass}} {{display}} mb-2 pb-2 pt-2" role="alert">
         {% if eventPast and eventData.isCanceled %}
-            This is a past event and it was canceled
+            This is a past event and it was canceled.
         {% elif eventPast %}
-            This is a past event
+            This is a past event.
         {% elif eventData.isCanceled %}
-            This event has been canceled
+            This event has been canceled.
         {% endif %}
         </div>
     </div>

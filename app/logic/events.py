@@ -33,9 +33,9 @@ def cancelEvent(eventId):
 
     program = event.program
     if program:
-        createAdminLog(f"Canceled <a href= \"{url_for('admin.eventDisplay', eventId = event)}\" > \"{event.name}\" </a> for {program.programName}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+        createAdminLog(f"Canceled <a href= \"{url_for('admin.eventDisplay', eventId = event)}\" >{event.name}</a> for {program.programName}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
     else:
-        createAdminLog(f"Canceled a non-program event, <a href= \"{url_for('admin.eventDisplay', eventId = event)}\" > \"{event.name}\"  </a>, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+        createAdminLog(f"Canceled a non-program event, <a href= \"{url_for('admin.eventDisplay', eventId = event)}\" >{event.name}</a>, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
 
 def deleteEvent(eventId):
     """
@@ -285,7 +285,8 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now(), program=None):
                     events_list.append(event)
                     shown_recurring_event_list.append(event.recurringId)
         else:
-            events_list.append(event)
+            if not event.isCanceled:
+                events_list.append(event)
 
     return events_list
 
