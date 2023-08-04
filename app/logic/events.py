@@ -227,7 +227,7 @@ def getOtherEvents(term):
                             .where(Event.term == term,
                                    Event.isTraining == False,
                                    Event.isAllVolunteerTraining == False,
-                                   ((Event.program_id == 9) |
+                                   ((Program.isOtherCeltsSponsored) |
                                    ((Program.isStudentLed == False) &
                                    (Program.isBonnerScholars == False))))
                             .order_by(Event.startDate, Event.timeStart, Event.id)
