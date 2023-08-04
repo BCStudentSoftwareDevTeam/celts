@@ -57,7 +57,6 @@ $('.qr-reader-button').on("click", function() {
   $('#qr-reader').toggle()
   let lastResult, countResults = 0;
   function onScanSuccess(decodedText, decodedResult) {
-    console.log('id code', decodedText)
       if (decodedText && decodedText.length > 9 && decodedText !== lastResult) {
           lastResult = decodedText;
         
@@ -65,8 +64,8 @@ $('.qr-reader-button').on("click", function() {
           $("#submitScannerData").val(decodedText)
           submitData(true);
       } else {
-          // Handle the case where the scanned data is not a full B-number.
-        console.log("Invalid B-number:", decodedText);
+        message = decodedText + " Invalid B-number"
+        flasherStatus = "danger"
        }
       }
   let qrboxFunction = function(viewfinderWidth, viewfinderHeight) {
