@@ -410,14 +410,13 @@ def test_cancelEvent():
         eventId = testingEvent.id
         
 
-        with app.app_context():
+        with app.test_request_context():
             g.current_user = User.get_by_id("ramsayb2")
             cancelEvent(eventId)
         
         event = Event.get(Event.id == eventId)
         assert event.isCanceled
         transaction.rollback()
-
 
 
 @pytest.mark.integration
