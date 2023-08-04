@@ -615,8 +615,8 @@ events = [
     {
         "id": 10,
         "term": 1,
-        "name": "All Celts Training",
-        "description": "Training event for all CELTS programs",
+        "name": "Adopt-a-Grandparent Training",
+        "description": "Training event for the Adopt-a-Grandparent program.",
         "isTraining": True,
         "timeStart": datetime.strptime("6:00 pm", "%I:%M %p"),
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
