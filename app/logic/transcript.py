@@ -33,11 +33,11 @@ def getProgramTranscript(username):
     """
     # Add up hours earned in a term for each program they've participated in
     
+    OTHERCELTSSPONSORED = 9
     EventData = (Event
         .select(Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
         .join(EventParticipant)
-        .where(EventParticipant.user == username, 
-        Event.program != 9)
+        .where(EventParticipant.user == username, Event.program != OTHERCELTSSPONSORED)
         .group_by(Event.program, Event.term)
         .order_by(Event.term)
         .having(fn.SUM(EventParticipant.hoursEarned > 0)))
