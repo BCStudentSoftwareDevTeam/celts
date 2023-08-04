@@ -118,7 +118,8 @@ def setup():
                               isService = 0,
                               startDate =  "2021-12-12",
                               endDate =  "2021-12-13",
-                              recurringId = None)
+                              recurringId = None,
+                              program = 9)
     EventParticipant.create(user = testUser,
                             event = newNonProgramEvent,
                             attended = True,

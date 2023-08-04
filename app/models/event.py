@@ -21,7 +21,7 @@ class Event(baseModel):
     recurringId = IntegerField(null=True)
     contactEmail = CharField(null=True)
     contactName = CharField(null=True)
-    program = ForeignKeyField(Program, default=9)
+    program = ForeignKeyField(Program, null=False)
 
     _spCache = "Empty"
 

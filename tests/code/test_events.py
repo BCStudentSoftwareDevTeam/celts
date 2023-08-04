@@ -404,7 +404,8 @@ def test_deleteEvent():
                                       isService = 0,
                                       startDate = "2021-12-12",
                                       endDate = "2022-6-12",
-                                      recurringId = None)
+                                      recurringId = None,
+                                      program = 9)
 
         testingEvent = Event.get(Event.name == "Testing delete event")
         eventId = testingEvent.id
@@ -508,7 +509,8 @@ def test_upcomingEvents():
                                  description = "Test upcoming no program event.",
                                  location = "The moon",
                                  startDate = testDate,
-                                 endDate = testDate + timedelta(days=1))
+                                 endDate = testDate + timedelta(days=1),
+                                 program = 9)
 
          # Create a new Program to create the new Program Event off of so the
         # user can mark interest for it
@@ -677,7 +679,8 @@ def test_volunteerHistory():
                                 location = "The moon",
                                 startDate = "2021-12-12",
                                 endDate = "2021-12-13",
-                                isAllVolunteerTraining = False)
+                                isAllVolunteerTraining = False,
+                                program = 9)
 
         # Add the created user as a participnt to the created program event
         EventParticipant.create(user = user , event = participatedProgramEvent.id)
@@ -746,7 +749,8 @@ def test_getPreviousRecurringEventData():
                                       isService = 0,
                                       startDate = "2021-12-5",
                                       endDate = "2022-12-5",
-                                      recurringId = 3)
+                                      recurringId = 3,
+                                      program = 9)
         testingEvent2 = Event.create(name = "Testing delete event",
                                       term = 2,
                                       description = "This Event is Created to be Deleted.",
@@ -758,7 +762,8 @@ def test_getPreviousRecurringEventData():
                                       isService = 0,
                                       startDate = "2022-12-12",
                                       endDate = "2022-12-12",
-                                      recurringId = 3)
+                                      recurringId = 3,
+                                      program = 9)
         testingEvent3 = Event.create(name = "Testing delete event",
                                       term = 2,
                                       description = "This Event is Created to be Deleted.",
@@ -770,7 +775,8 @@ def test_getPreviousRecurringEventData():
                                       isService = 0,
                                       startDate = "2022-12-19",
                                       endDate = "2022-12-19",
-                                      recurringId = 3)
+                                      recurringId = 3,
+                                      program = 9)
 
         testingParticipant1 = EventParticipant.create(user = User.get_by_id("neillz"),
                                                     event = testingEvent2.id,
@@ -800,7 +806,8 @@ def test_getEventRsvpCountsForTerm():
                                           isRsvpRequired = 1,
                                           rsvpLimit = 4,
                                           startDate = "2022-12-19",
-                                          endDate = "2022-12-19")
+                                          endDate = "2022-12-19",
+                                          program = 9)
 
         testUserToRsvp = User.create(username = 'rsvpUsr',
                                      firstName = 'RSVP',
@@ -832,7 +839,8 @@ def test_getEventRsvpCount():
                                     location = "The Moon",
                                     isRsvpRequired = 1,
                                     startDate = "2022-12-19",
-                                    endDate = "2022-12-19")
+                                    endDate = "2022-12-19",
+                                    program = 9)
         user_list = []
         for i in range(5):
             user_list.append(User.create(username = f'rsvpUsr{i}',
