@@ -56,7 +56,7 @@ def test_getEventLengthInHours():
 @pytest.mark.integration
 def test_checkUserRsvp():
     with mainDB.atomic() as transaction:
-        newEvent = Event.create(term = 2, program = Program.OTHERCELTSSPONSORED)
+        newEvent = Event.create(term = 2)
         user = User.get_by_id("ramsayb2")
 
         rsvpExists = checkUserRsvp(user, newEvent)
@@ -71,7 +71,7 @@ def test_checkUserRsvp():
 @pytest.mark.integration
 def test_checkUserVolunteer():
     with mainDB.atomic() as transaction:
-        newEvent = Event.create(term = 2, program = Program.OTHERCELTSSPONSORED)
+        newEvent = Event.create(term = 2)
         user = User.get_by_id("ramsayb2")
 
         rsvpExists = checkUserRsvp(user, newEvent)
@@ -92,8 +92,7 @@ def test_addPersonToEvent():
             newEvent = Event.create(name = "Test event 1234", term = 2,
                                     startDate=yesterday.date(),
                                     endDate=yesterday.date(),
-                                    isRsvpRequired = True,
-                                    program = Program.OTHERCELTSSPONSORED)
+                                    isRsvpRequired = True)
             
             newEvent = Event.get(name="Test event 1234")
 
@@ -108,8 +107,7 @@ def test_addPersonToEvent():
             newEvent = Event.create(name = "Test event 1234", term = 2,
                                     startDate=tomorrow.date(),
                                     endDate=tomorrow.date(),
-                                    isRsvpRequired = True,
-                                    program = Program.OTHERCELTSSPONSORED)
+                                    isRsvpRequired = True)
             
             newEvent = Event.get(name="Test event 1234")
 
@@ -125,8 +123,7 @@ def test_addPersonToEvent():
                                             startDate = tomorrow.date(),
                                             endDate = tomorrow.date(),
                                             isRsvpRequired = True,
-                                            rsvpLimit = 1,
-                                            program = Program.OTHERCELTSSPONSORED)
+                                            rsvpLimit = 1)
             waitlistEvent = Event.get(name="Waitlist Event")
             rsvpUser = User.get_by_id("ayisie")
             

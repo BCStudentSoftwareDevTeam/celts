@@ -10,11 +10,10 @@ class Program(baseModel):
     partner = ForeignKeyField(Partner, null=True)
     isStudentLed = BooleanField(default=False)
     isBonnerScholars = BooleanField(default=False)
+    isOtherCeltsSponsored = BooleanField(default=False)
     contactName = CharField(null=True,default='')
     contactEmail = CharField(null=True,default='')
     defaultLocation = CharField(null=True,default='')
-
-    OTHERCELTSSPONSORED = 9
 
     @property
     def url(self):
