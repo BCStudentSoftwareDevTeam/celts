@@ -49,7 +49,7 @@ def trackVolunteersPage(eventID):
     eventData = model_to_dict(event, recurse=False)
     
     eventData["program"] = event.program
-    trainedParticipantsList = trainedParticipants(event.program, g.current_term)
+    trainedParticipantsList = trainedParticipants(event.program, event.term)
     eventParticipants = getEventParticipants(event)
 
     isProgramManager = g.current_user.isProgramManagerForEvent(event)
