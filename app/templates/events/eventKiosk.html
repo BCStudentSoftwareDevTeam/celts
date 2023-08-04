@@ -23,12 +23,12 @@
     </div>
     <div id="qr-reader" style="display:none"></div>
   </div>
-  <div class="form-check form-switch mx-5 position-absolute end-0">
-    <input class="form-check-input mt-2" type="checkbox" id="fullscreenCheck" onclick="toggleFullscreen()">
-    <label class="form-check-label" id="fullscreenLabel" for="fullscreenCheck">Toggle Full Screen</label>
-    <a class ="btn btn-secondary ms-3 kiosk-hide" href="/event/{{ event.id }}/track_volunteers" role="button">Previous</a>
+  <div class="row px-5 mx-auto">
+    <a class =" col-auto btn btn-secondary  kiosk-hide mt-0" href="/event/{{ event.id }}/track_volunteers" role="button">Previous</a>
+    <div class= "col"> </div> 
+    <div class="form-check form-switch mt-2 col-auto">
+      <input class="form-check-input " type="checkbox" id="fullscreenCheck" onclick="toggleFullscreen()">
+      <label class=" form-check-label" id="fullscreenLabel" for="fullscreenCheck">Toggle Full Screen</label> 
+    </div>
   </div>
-
-  <input type="hidden" value="{{ eventid }}" id="eventid">
-
 {% endblock %}
