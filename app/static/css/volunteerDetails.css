@@ -1,39 +1,27 @@
 
 @media print {
-
-    @page{
+    @page {
         size:landscape;
     }
-    #volunteerInformationCardToPrint {
-        -webkit-column-count: 2; 
-        -moz-column-count: 2;  
-        display: inline-block;
-    }    
-    
-    body {
-        width: 100%;
-    }
 
+    #volunteerInformationCardToPrint {
+        -webkit-column-count: 3; 
+        column-count: 3;  
+        display: inline-block;
+        font-size: 15pt;
+        width: 180%;
+    }
+    
     .print-column {
         column-count: 1;
         column-gap: 20px;
         page-break-inside: avoid;
         break-inside: avoid;
-        size: landscape;
-        
-    }
-
-    #volunteerInformationTableToPrint_wrapper {
-        width: 160%;
-        height: 100%;
-        font-size: 12pt;
-        size: landscape;
     }
 
     #volunteerInformationTableToPrint {
         -webkit-border-collapse: collapse;
-        width: 100%;
-        height: 100%;
+        width: 180%;
         -webkit-print-color-adjust:exact;
         color-adjust:exact;
     }
@@ -42,36 +30,23 @@
         break-inside: avoid;
     }
 
-    #volunteerInformationTableToPrint table {
-        width: 100%;
-    }
-
     .dataTables_info, .dataTables_length, .dataTables_filter, .dataTables_paginate {
         display:none;
     }  
 
     body {
-        display: flex;
-        
-    }
-    img {
-        float: left;
-        margin-right: 10px; /* Optional: Add some spacing between the image and text */
+        display: flex;  
     }
 
     hr {
         border-top: solid 1px #000 !important;
+        width: 180%;
       }
-
 }
 
 .bnumber-barcode {
     font-family: 'Libre Barcode 39';
     font-size: 30px;
-}
-
-.logoImage {
-    width: 100%;
 }
 
 #volunteerInformationCardToPrint, .bNumberSelect {
