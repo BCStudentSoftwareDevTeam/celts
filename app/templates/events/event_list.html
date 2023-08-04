@@ -87,7 +87,7 @@
           {% endif %}
             {% if type != "bonner" and type != "studentLed" %}
               {% if event.isAllVolunteerTraining %}
-                <td class="text-dark">This event does not belong to any program.</td>
+                <td class="text-dark">This is an All Volunteer training</td>
               {% else %}
                 <td class="text-dark">{{event.program.programName}}</td>
               {% endif %}

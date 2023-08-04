@@ -23,13 +23,11 @@ def trainedParticipants(programID, targetTerm):
 
     # Reset program eligibility each term for all other trainings
 
-    isReleventAllVolunteer = (Event.isAllVolunteerTraining) & (Event.term.academicYear == academicYear)
-    isReleventProgramTraining = (Event.program == programID) & (Event.term == targetTerm) & (Event.isTraining)
+    isRelevantAllVolunteer = (Event.isAllVolunteerTraining) & (Event.term.academicYear == academicYear)
+    isRelevantProgramTraining = (Event.program == programID) & (Event.term == targetTerm) & (Event.isTraining)
     otherTrainingEvents = (Event.select(Event.id)
                                 .join(Term)
-                                .where(isReleventAllVolunteer | isReleventProgramTraining))
-    print(list(otherTrainingEvents)) # beans
-    print('*'*1000)
+                                .where(isRelevantAllVolunteer | isRelevantProgramTraining))
     allTrainingEvents = set(otherTrainingEvents)
     eventTrainingDataList = [participant.user for participant in (
         EventParticipant.select().where(EventParticipant.event.in_(allTrainingEvents))
