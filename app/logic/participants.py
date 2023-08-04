@@ -12,24 +12,24 @@ from app.logic.volunteers import getEventLengthInHours
 from app.logic.events import getEventRsvpCountsForTerm
 from app.logic.createLogs import createRsvpLog
 
-def trainedParticipants(programID, currentTerm):
+def trainedParticipants(programID, targetTerm):
     """
     This function tracks the users who have attended every Prerequisite
     event and adds them to a list that will not flag them when tracking hours.
+    Returns a list of user objects who've completed all training events.
     """
 
-    academicYear = currentTerm.academicYear
+    academicYear = targetTerm.academicYear
 
     # Reset program eligibility each term for all other trainings
 
+    isReleventAllVolunteer = (Event.isAllVolunteerTraining) & (Event.term.academicYear == academicYear)
+    isReleventTraining = (Event.program == programID) & (Event.term == targetTerm) & (Event.isTraining)
     otherTrainingEvents = (Event.select(Event.id)
-            .join(Term)
-            .where(
-                Event.program == programID,
-                (Event.isTraining | Event.isAllVolunteerTraining),
-                Event.term.academicYear == academicYear)
-            )
-
+                                .join(Term)
+                                .where(isReleventAllVolunteer | isReleventTraining))
+    print(list(otherTrainingEvents)) # beans
+    print('*'*1000)
     allTrainingEvents = set(otherTrainingEvents)
     eventTrainingDataList = [participant.user for participant in (
         EventParticipant.select().where(EventParticipant.event.in_(allTrainingEvents))
