@@ -21,16 +21,16 @@
 
             <div class='form-group mb-4'>
                 <label class='form-label' for='name'><strong> Contact Name </strong></label>
-                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='name' value="{{contactInfo.name if contactInfo else ''}}" name='name'/>
+                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='emergencyContactName' value="{{contactInfo.name if contactInfo else ''}}" name='name'/>
             </div>
 
             <div class='form-group mb-4'>
                 <label class='form-label' for='relationship'><strong> Relationship to You </strong></label>
-                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='relationship' value="{{contactInfo.relationship if contactInfo else ''}}" name='relationship'/>
+                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='emergencyContactRelationship' value="{{contactInfo.relationship if contactInfo else ''}}" name='relationship'/>
             </div>
             <div class='form-group mb-4'>
                 <label class='form-label' for='email'><strong> Email Address </strong></label>
-                <input {{'disabled' if readOnly else ''}} class='form-control' type='email' id='email' value="{{contactInfo.emailAddress if contactInfo else ''}}" name='emailAddress'/>
+                <input {{'disabled' if readOnly else ''}} class='form-control' type='email' id='emergencyContactEmail' value="{{contactInfo.emailAddress if contactInfo else ''}}" name='emailAddress'/>
             </div>
 
         </div>
@@ -44,15 +44,15 @@
 
             <div class='form-group mb-4'>
                 <label class='form-label' for='cellPhone'><strong> Cell Phone Number </strong></label>
-                <input {{'disabled' if readOnly else ''}} class='form-control phone-input' type='text' id='cellPhone' value="{{contactInfo.cellPhone if contactInfo else ''}}" name='cellPhone'/>
+                <input {{'disabled' if readOnly else ''}} class='form-control phone-input' type='text' id='emergencyContactCell' value="{{contactInfo.cellPhone if contactInfo else ''}}" name='cellPhone'/>
             </div>
             <div class='form-group mb-4'>
                 <label class='form-label' for='workPhone'><strong> Work Phone Number </strong></label>
-                <input {{'disabled' if readOnly else ''}} class='form-control phone-input' type='text' id='workPhone' value="{{contactInfo.workPhone if contactInfo else ''}}" name='workPhone'/>
+                <input {{'disabled' if readOnly else ''}} class='form-control phone-input' type='text' id='emergencyContactWork' value="{{contactInfo.workPhone if contactInfo else ''}}" name='workPhone'/>
             </div>
             <div class='form-group mb-4'>
                 <label class='form-label' for='cellPhone'><strong> Home Phone </strong></label>
-                <input {{'disabled' if readOnly else ''}} class='form-control phone-input' type='text' id='homePhone' value="{{contactInfo.homePhone if contactInfo else ''}}" name='homePhone'/>
+                <input {{'disabled' if readOnly else ''}} class='form-control phone-input' type='text' id='emergencyContactHome' value="{{contactInfo.homePhone if contactInfo else ''}}" name='homePhone'/>
             </div>
         </div>
 
@@ -60,7 +60,7 @@
         <!--Bottom-->
         <div class='form-group'>
             <label class='form-label' for='address'><strong> Home Address </strong></label>
-            <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='address' value="{{contactInfo.homeAddress if contactInfo else ''}}" name='homeAddress'/>
+            <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='emergencyContactAddress' value="{{contactInfo.homeAddress if contactInfo else ''}}" name='homeAddress'/>
         </div>
 
     </div>
