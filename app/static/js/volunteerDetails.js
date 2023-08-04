@@ -98,7 +98,6 @@ $(document).ready(function () {
 	sortVolunteers()
 	var volunteerInfoTable= $('#volunteerInformationTableToPrint').DataTable({ stripeClasses: []});
 	volunteerInfoTable.on('draw.dt', function (){
-		console.log("Draw Event")
 		getCheckBoxes()
 		stripeVolunteerInfoTable()
 	});

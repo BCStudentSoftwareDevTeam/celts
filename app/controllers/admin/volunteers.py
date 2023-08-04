@@ -57,8 +57,8 @@ def manageVolunteersPage(eventID):
     if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
         abort(403)
 
-    eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
-    eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
+    eventParticipantData = list(EventParticipant.select(EventParticipant, User).where(EventParticipant.event==event).join(User))
+    eventRsvpData = list(EventRsvp.select(EventRsvp, User).where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime).join(User))
     eventParticipantUsers = [participantDatum.user for participantDatum in eventParticipantData]
     eventRsvpData = [rsvpDatum for rsvpDatum in eventRsvpData if rsvpDatum.user not in eventParticipantUsers]
 
