@@ -24,10 +24,10 @@ def trainedParticipants(programID, targetTerm):
     # Reset program eligibility each term for all other trainings
 
     isReleventAllVolunteer = (Event.isAllVolunteerTraining) & (Event.term.academicYear == academicYear)
-    isReleventTraining = (Event.program == programID) & (Event.term == targetTerm) & (Event.isTraining)
+    isReleventProgramTraining = (Event.program == programID) & (Event.term == targetTerm) & (Event.isTraining)
     otherTrainingEvents = (Event.select(Event.id)
                                 .join(Term)
-                                .where(isReleventAllVolunteer | isReleventTraining))
+                                .where(isReleventAllVolunteer | isReleventProgramTraining))
     print(list(otherTrainingEvents)) # beans
     print('*'*1000)
     allTrainingEvents = set(otherTrainingEvents)
@@ -140,13 +140,14 @@ def getParticipationStatusForTrainings(program, userList, term):
     """
     academicYear = term.academicYear
 
+
+    isReleventAllVolunteer = (Event.isAllVolunteerTraining) & (Event.term.academicYear == academicYear)
+    isReleventProgramTraining = (Event.program == program) & (Event.term == term) & (Event.isTraining)
     programTrainings = (Event.select(Event, Term, EventParticipant, EventRsvp)
                                .join(EventParticipant, JOIN.LEFT_OUTER).switch()
                                .join(EventRsvp, JOIN.LEFT_OUTER).switch()
                                .join(Term)
-                               .where(Event.isTraining,
-                                     (Event.program == program) | (Event.isAllVolunteerTraining == 1),
-                                      Event.term.academicYear == academicYear)) 
+                               .where(isReleventAllVolunteer | isReleventProgramTraining))
 
     # Create a dictionary where the keys are trainings and values are a list of those who attended
     trainingData = {}
