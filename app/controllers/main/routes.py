@@ -1,4 +1,6 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for, session
+from peewee import JOIN
+from playhouse.shortcuts import model_to_dict
 import datetime
 import json
 from http import cookies
@@ -20,6 +22,8 @@ from app.models.programManager import ProgramManager
 from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
 from app.models.certification import Certification
+from app.models.emergencyContact import EmergencyContact
+from app.models.insuranceInfo import InsuranceInfo
 
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
@@ -45,7 +49,7 @@ def landingPage():
     managerProgramDict = getManagerProgramDict(g.current_user)
 
 
-    eventsInTerm = list(Event.select().where(Event.term == g.current_term))
+    eventsInTerm = list(Event.select().where(Event.term == g.current_term, Event.isCanceled == False))
     programsWithEventsList = [event.program for event in eventsInTerm if not event.isPast]
 
     return render_template("/main/landingPage.html", managerProgramDict = managerProgramDict,
@@ -68,26 +72,31 @@ def events(selectedTerm, activeTab, programID):
     participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
-    term = Term.get_by_id(currentTerm)
+    term = Term.get_by_id(currentTerm) 
+    
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     studentLedEvents = getStudentLedEvents(term)
     trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
+    
+    managersProgramDict = getManagerProgramDict(g.current_user)
 
     return render_template("/events/event_list.html",
-        selectedTerm = term,
-        studentLedEvents = studentLedEvents,
-        trainingEvents = trainingEvents,
-        bonnerEvents = bonnerEvents,
-        otherEvents = otherEvents,
-        listOfTerms = listOfTerms,
-        rsvpedEventsID = rsvpedEventsID,
-        currentEventRsvpAmount = currentEventRsvpAmount,
-        currentTime = currentTime,
-        user = g.current_user,
-        activeTab = activeTab,
-        programID = int(programID))
+                            selectedTerm = term,
+                            studentLedEvents = studentLedEvents,
+                            trainingEvents = trainingEvents,
+                            bonnerEvents = bonnerEvents,
+                            otherEvents = otherEvents,
+                            listOfTerms = listOfTerms,
+                            rsvpedEventsID = rsvpedEventsID,
+                            currentEventRsvpAmount = currentEventRsvpAmount,
+                            currentTime = currentTime,
+                            user = g.current_user,
+                            activeTab = activeTab,
+                            programID = int(programID),
+                            managersProgramDict = managersProgramDict
+                            )
 
 @main_bp.route('/profile/<username>', methods=['GET'])
 def viewUsersProfile(username):
@@ -142,23 +151,117 @@ def viewUsersProfile(username):
         userDiet = [note.dietRestriction for note in userDietQuery]
 
         bonnerRequirements = getCertRequirementsWithCompletion(certification=Certification.BONNER, username=volunteer)
+
+        managersProgramDict = getManagerProgramDict(g.current_user)
+        managersList = [id[1] for id in managersProgramDict.items()]
+    
         return render_template ("/main/userProfile.html",
-                programs = programs,
-                programsInterested = programsInterested,
-                upcomingEvents = upcomingEvents,
-                participatedEvents = participatedEvents,
-                rsvpedEvents = rsvpedEvents,
-                permissionPrograms = permissionPrograms,
-                eligibilityTable = eligibilityTable,
-                volunteer = volunteer,
-                backgroundTypes = backgroundTypes,
-                allBackgroundHistory = allBackgroundHistory,
-                currentDateTime = datetime.datetime.now(),
-                profileNotes = profileNotes,
-                bonnerRequirements = bonnerRequirements,
-                userDiet = userDiet                
-            )
+                                programs = programs,
+                                programsInterested = programsInterested,
+                                upcomingEvents = upcomingEvents,
+                                participatedEvents = participatedEvents,
+                                rsvpedEvents = rsvpedEvents,
+                                permissionPrograms = permissionPrograms,
+                                eligibilityTable = eligibilityTable,
+                                volunteer = volunteer,
+                                backgroundTypes = backgroundTypes,
+                                allBackgroundHistory = allBackgroundHistory,
+                                currentDateTime = datetime.datetime.now(),
+                                profileNotes = profileNotes,
+                                bonnerRequirements = bonnerRequirements,
+                                userDiet = userDiet,
+                                managersList = managersList                
+                            )
     abort(403)
+
+@main_bp.route('/profile/<username>/emergencyContact', methods=['GET', 'POST'])
+def emergencyContactInfo(username):
+    """
+    This loads the Emergency Contact Page
+    """
+    if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
+        abort(403)
+
+
+    if request.method == 'GET':
+        readOnly = g.current_user.username != username
+        contactInfo = EmergencyContact.get_or_none(EmergencyContact.user_id == username)
+        return render_template ("/main/emergencyContactInfo.html",
+                                username=username,
+                                contactInfo=contactInfo,
+                                readOnly=readOnly
+                                )
+    
+    elif request.method == 'POST':
+        if g.current_user.username != username:
+            abort(403)
+
+        contactInfo = EmergencyContact.get_or_none(EmergencyContact.user_id == username)
+        if contactInfo:
+            contactInfo.update(**request.form).execute()
+        else:
+            EmergencyContact.create(user = username, **request.form)
+        createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
+        flash('Emergency contact information saved successfully!', 'success') 
+        
+        if request.args.get('action') == 'exit':
+            return redirect (f"/profile/{username}")
+        else:
+            return redirect (f"/profile/{username}/insuranceInfo")
+
+@main_bp.route('/profile/<username>/insuranceInfo', methods=['GET', 'POST'])
+def insuranceInfo(username):
+    """
+    This loads the Insurance Information Page
+    """
+    if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
+            abort(403)
+
+    if request.method == 'GET':
+        readOnly = g.current_user.username != username
+        userInsuranceInfo = InsuranceInfo.get_or_none(InsuranceInfo.user == username)
+        return render_template ("/main/insuranceInfo.html",
+                                username=username,
+                                userInsuranceInfo=userInsuranceInfo,
+                                readOnly=readOnly
+                                )
+
+    # Save the form data
+    elif request.method == 'POST':
+        if g.current_user.username != username:
+            abort(403)
+
+        info = InsuranceInfo.get_or_none(InsuranceInfo.user_id == username)
+        if info:
+            info.update(**request.form).execute()
+        else:
+            InsuranceInfo.create(user = username, **request.form)
+        createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
+        flash('Insurance information saved successfully!', 'success') 
+
+        if request.args.get('action') == 'exit':
+            return redirect (f"/profile/{username}")
+        else:
+            return redirect (f"/profile/{username}/emergencyContact")
+
+@main_bp.route('/profile/<username>/travelForm', methods=['GET', 'POST'])
+def travelForm(username):
+    if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
+        abort(403)
+   
+    user = (User.select(User, EmergencyContact, InsuranceInfo)
+                .join(EmergencyContact, JOIN.LEFT_OUTER).switch()
+                .join(InsuranceInfo, JOIN.LEFT_OUTER)
+                .where(User.username == username).limit(1))
+    if not list(user):
+        abort(404)
+    userData = list(user.dicts())[0]
+    userData = {key: value if value else '' for (key, value) in userData.items()}
+
+    return render_template ('/main/travelForm.html',
+                            userData = userData
+                            )
+
 
 @main_bp.route('/profile/addNote', methods=['POST'])
 def addNote():

@@ -172,7 +172,7 @@ def test_training_events(training_events):
                                            isStudent = True,
                                            isFaculty = False,
                                            isStaff = False,
-                                           isCeltsAdmin = False,
+                                           isCeltsAdmin = False, 
                                            isCeltsStudentStaff = False)
 
         notBonnerList = [testNotBonnerTraining]
