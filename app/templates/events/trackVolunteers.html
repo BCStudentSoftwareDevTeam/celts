@@ -242,7 +242,7 @@
     <div class="accordion-item">
       <h2 class="accordion-header">
         <button class="accordion-button collapsed fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#non-attended-collapse">
-          Non-Attended Volunteers
+          RSVP and Waitlist
         </button>
       </h2>
       <div class="accordion-collapse collapse" id="non-attended-collapse">
@@ -278,7 +278,7 @@
                   </td>
                   <td>{{participant.user.email}}</td>
                   <td>{{participant.user.phoneNumber}}</td>
-                  <td>{{ 'Waitlist' if participant.rsvpWaitlist else 'Rsvp' }}</td>
+                  <td>{{ 'Waitlist' if participant.rsvpWaitlist else 'RSVP' }}</td>
                   <td>
                   <input
                     class="form-control number-only form-control input-sm"

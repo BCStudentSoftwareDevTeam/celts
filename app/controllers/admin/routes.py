@@ -23,7 +23,7 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createAdminLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm
+from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm
 from app.logic.participants import getEventParticipants, getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
@@ -245,7 +245,9 @@ def eventDisplay(eventId):
 
         # Identify the next event in a recurring series
         if event.recurringId:
-            eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId).order_by(Event.startDate))
+            eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId)
+                                        .where((Event.isCanceled == False) | (Event.id == event.id))
+                                        .order_by(Event.startDate))
             eventIndex = eventSeriesList.index(event)
             if len(eventSeriesList) != (eventIndex + 1):
                 eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
@@ -264,6 +266,21 @@ def eventDisplay(eventId):
                                 image = image,
                                 pageViewsCount= pageViewsCount)
 
+
+@admin_bp.route('/event/<eventId>/cancel', methods=['POST'])
+def cancelRoute(eventId):
+    if g.current_user.isAdmin:
+        try:
+            cancelEvent(eventId)
+            return redirect(request.referrer)
+
+        except Exception as e:
+            print('Error while canceling event:', e)
+            return "", 500
+        
+    else:
+        abort(403)
+    
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
     try:
