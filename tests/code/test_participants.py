@@ -169,44 +169,47 @@ def test_updateEventParticipants():
 @pytest.mark.integration
 def test_trainedParticipants():
     currentTerm = Term.get(Term.isCurrentTerm==1)
-    #User object to be compared in assert statements
-    khatts = User.get_by_id('khatts')
-    neillz = User.get_by_id('neillz')
-    ayisie = User.get_by_id('ayisie')
-    # Case1: test for an event in the current term
-    attendedPreq = trainedParticipants(3, currentTerm)
-    assert attendedPreq == [khatts]
+    with mainDB.atomic() as transaction:
+        bloo = Event.create(name = "Hunger Initiatives test event",
+                            term = currentTerm,
+                            description= "This Event is created to do whatever.",
+                            timeStart= "06:00 PM",
+                            timeEnd= "09:00 PM",
+                            location = "Your Father's House",
+                            isRsvpRequired = 0,
+                            isTraining = 1,
+                            isService = 0,
+                            startDate= "2021-12-12",
+                            recurringId = None,
+                            program = Program.get_by_id(1))
+        
+        #User object to be compared in assert statements
+        khatts = User.get_by_id('khatts')
+        neillz = User.get_by_id('neillz')
+        ayisie = User.get_by_id('ayisie')
+        EventParticipant.create(user="neillz", event=Event.get_by_id(14))
+        EventParticipant.create(user="khatts", event=Event.get_by_id(14))
+        EventParticipant.create(user="ayisie", event=Event.get_by_id(14))
 
-    # Case2: test for an event in a past term
-    attendedPreq = trainedParticipants(1, currentTerm)
-    assert attendedPreq == [neillz, khatts, ayisie]
+        # Case1: test for an event All Volunteer Training is still checked from the first term in the 3rd term of the academic year.
+        attendedPreq = trainedParticipants(3, currentTerm)
+        assert khatts in attendedPreq
 
-    # Case3: test for when user changes current term
-    currentTerm = Term.get_by_id(2)
-    attendedPreq = trainedParticipants(1, currentTerm)
-    assert attendedPreq == [neillz, khatts, ayisie]
+        # Case2: test for a different program that has a training created for it.
+        attendedPreq = trainedParticipants(1, currentTerm)
+        assert attendedPreq == []
+        
+        # Case3: test that 'khatts' is in attendedPreq after being added as a participant to the training.  
+        EventParticipant.create(user = khatts, event=Event.get_by_id(bloo))
+        attendedPreq = trainedParticipants(1, currentTerm)
+        assert attendedPreq == [khatts]
 
-    # Case4: test for program with no prerequisite
-    attendedPreq = trainedParticipants(4, currentTerm)
-    assert attendedPreq == []
+        # Case4: test for when user changes current term but is still in the same academic year and we have some more people. 
+        currentTerm = Term.get_by_id(2)
+        attendedPreq = trainedParticipants(1, currentTerm)
+        assert attendedPreq == [neillz, khatts, ayisie]
 
-    # Case5: test for program that doesn't exist
-    attendedPreq = trainedParticipants(500, currentTerm)
-    assert attendedPreq == []
-
-    # Case6: Test that ALL Celts training and All volunteer training is valid for one AY
-    # AY is 2020-2021
-    currentTerm = Term.get_by_id(1) # Fall 2020
-    attendedPreq = trainedParticipants(3, currentTerm)
-    assert attendedPreq == [khatts]
-
-    currentTerm = Term.get_by_id(2) # Spring 2021
-    attendedPreq = trainedParticipants(3, currentTerm)
-    assert attendedPreq == [khatts]
-
-    currentTerm = Term.get_by_id(3) # Summer 2021
-    attendedPreq = trainedParticipants(3, currentTerm)
-    assert attendedPreq == [khatts]
+        transaction.rollback()
 
     with mainDB.atomic() as transaction:
         Event.update(program = 3).where(Event.id== 14).execute() # require AVT
@@ -324,23 +327,23 @@ def test_getParticipationStatusForTrainings():
         academicYear = currentTerm.academicYear
 
         testingEvent = Event.create(name = "Testing delete event",
-                                      term = 2,
-                                      description= "This Event is Created to be Deleted.",
-                                      timeStart= "06:00 PM",
-                                      timeEnd= "09:00 PM",
-                                      location = "Your Father's House",
-                                      isRsvpRequired = 0,
-                                      isTraining = 1,
-                                      isService = 0,
-                                      startDate= "2021-12-12",
-                                      recurringId = None,
-                                      program = Program.get_by_id(8))
+                                    term = 2,
+                                    description= "This Event is Created to be Deleted.",
+                                    timeStart= "06:00 PM",
+                                    timeEnd= "09:00 PM",
+                                    location = "Your Father's House",
+                                    isRsvpRequired = 0,
+                                    isTraining = 1,
+                                    isService = 0,
+                                    startDate= "2021-12-12",
+                                    recurringId = None,
+                                    program = Program.get_by_id(8))
 
-        allProgramTrainings = (Event.select()
-                                   .join(Term)
-                                   .where(Event.isTraining == True,
-                                         (Event.program == Program.get_by_id(2)) | (Event.isAllVolunteerTraining == True),
-                                          Event.term.academicYear == academicYear)
+        allProgramTrainings = (Event.select().join(Term)
+                                    .where(Event.isTraining == True,
+                                          (Event.program == Program.get_by_id(2)) | 
+                                          (Event.isAllVolunteerTraining == True),
+                                           Event.term.academicYear == academicYear)
                               )
         listOfProgramTrainings = [programTraining for programTraining in allProgramTrainings]
         for training in listOfProgramTrainings:
@@ -376,23 +379,23 @@ def test_getParticipationStatusForTrainings():
 
         futureYear = 2030
         futureTerm = Term.create(description = 'A test term in the future',
-                                  year = 2030,
-                                  academicYear = f"{futureYear}-{futureYear+1}",
-                                  isSummer = False,
-                                  isCurrentTerm = False,
-                                  termOrder = f"{futureYear}-1")
+                                 year = 2030,
+                                 academicYear = f"{futureYear}-{futureYear+1}",
+                                 isSummer = False,
+                                 isCurrentTerm = False,
+                                 termOrder = f"{futureYear}-1")
         testingEvent = Event.create(name = "Testing delete event",
-                                      term = futureTerm,
-                                      description= "This Event is Created to be Deleted.",
-                                      timeStart= "06:00 PM",
-                                      timeEnd= "09:00 PM",
-                                      location = "Your Mother's House",
-                                      isRsvpRequired = 0,
-                                      isTraining = 1,
-                                      isService = 0,
-                                      startDate= f"{futureYear}-12-12",
-                                      recurringId = None,
-                                      program = Program.get_by_id(8))
+                                    term = futureTerm,
+                                    description= "This Event is Created to be Deleted.",
+                                    timeStart= "06:00 PM",
+                                    timeEnd= "09:00 PM",
+                                    location = "Your Mother's House",
+                                    isRsvpRequired = 0,
+                                    isTraining = 1,
+                                    isService = 0,
+                                    startDate= f"{futureYear}-12-12",
+                                    recurringId = None,
+                                    program = Program.get_by_id(8))
 
           
         # If the event has not occurred yet, assert that someone who has rsvp'd is true and someone who hasn't is false

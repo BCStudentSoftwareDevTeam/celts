@@ -20,7 +20,6 @@ def trainedParticipants(programID, targetTerm):
     """
 
     academicYear = targetTerm.academicYear
-
     # Reset program eligibility each term for all other trainings
 
     isRelevantAllVolunteer = (Event.isAllVolunteerTraining) & (Event.term.academicYear == academicYear)
@@ -28,6 +27,7 @@ def trainedParticipants(programID, targetTerm):
     otherTrainingEvents = (Event.select(Event.id)
                                 .join(Term)
                                 .where(isRelevantAllVolunteer | isRelevantProgramTraining))
+
     allTrainingEvents = set(otherTrainingEvents)
     eventTrainingDataList = [participant.user for participant in (
         EventParticipant.select().where(EventParticipant.event.in_(allTrainingEvents))
@@ -139,13 +139,13 @@ def getParticipationStatusForTrainings(program, userList, term):
     academicYear = term.academicYear
 
 
-    isReleventAllVolunteer = (Event.isAllVolunteerTraining) & (Event.term.academicYear == academicYear)
-    isReleventProgramTraining = (Event.program == program) & (Event.term == term) & (Event.isTraining)
+    isRelevantAllVolunteer = (Event.isAllVolunteerTraining) & (Event.term.academicYear == academicYear)
+    isRelevantProgramTraining = (Event.program == program) & (Event.term == term) & (Event.isTraining)
     programTrainings = (Event.select(Event, Term, EventParticipant, EventRsvp)
-                               .join(EventParticipant, JOIN.LEFT_OUTER).switch()
-                               .join(EventRsvp, JOIN.LEFT_OUTER).switch()
-                               .join(Term)
-                               .where(isReleventAllVolunteer | isReleventProgramTraining))
+                             .join(EventParticipant, JOIN.LEFT_OUTER).switch()
+                             .join(EventRsvp, JOIN.LEFT_OUTER).switch()
+                             .join(Term)
+                             .where(isRelevantAllVolunteer | isRelevantProgramTraining))
 
     # Create a dictionary where the keys are trainings and values are a list of those who attended
     trainingData = {}
