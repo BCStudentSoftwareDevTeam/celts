@@ -27,45 +27,6 @@ $(document).ready(function() {
       }
     }
   });
-  const instructorCheckboxes = $(".instructorCheckbox");
-
-  $("#emailSelectedButton").on("click", function () {
-    const selectedEmails = Array.from(instructorCheckboxes)
-                                .filter((checkbox) => checkbox.checked)
-                                .map((checkbox) => checkbox.getAttribute("data-email"))
-                                .join(";");
-
-    if (selectedEmails.length) {
-      const windowRef = window.open(`mailto:${selectedEmails}?subject=Renew Course Proposal`, '_blank');
-      windowRef.focus();
-    
-      setTimeout(function(){
-        if(!windowRef.document) {
-            windowRef.close();
-        }
-      }, 500);
-    }
-  });
-
-  const selectAll = $("#selectAllOthersButton");
-  selectAll.on("click", function () {
-    let myButton = selectAll;
-    let uncheckedBoxFound = false;
-    for (let checkboxNum = 0; checkboxNum < instructorCheckboxes.length; checkboxNum++){
-      if (instructorCheckboxes[checkboxNum].checked != true){
-        selectAll.text( "Unselect All")
-        uncheckedBoxFound = true;
-        break
-      }
-      else {
-        selectAll.text( "Select All") 
-      }
-    }
-    instructorCheckboxes.each((i, checkbox) => {
-      checkbox.checked = uncheckedBoxFound;
-    });
-  });
-  
 });
 
 function resetAllSelections(){
@@ -136,46 +97,46 @@ function withdraw(){
 };
 
 function changeTerm() {
-  $('form').submit();
+    $('form').submit();
 };
 
 function formSubmit(el) {
-$("#termSelector").attr('action', '/manageServiceLearning/' + el);
-$("#termSelector").submit()
+    $("#termSelector").attr('action', '/manageServiceLearning/' + el);
+    $("#termSelector").submit()
 };
 
 function reviewCourses(courseID) {
-$.ajax({
-  url: "/proposalReview/",
-  type: "POST",
-  data: {"course_id":courseID},
-  success: function(modal_html) {
-    $("#review-modal").html(modal_html)
-    $("#proposal_view").modal('show')
-  }
-})
+    $.ajax({
+      url: "/proposalReview/",
+      type: "POST",
+      data: {"course_id":courseID},
+      success: function(modal_html) {
+        $("#review-modal").html(modal_html)
+        $("#proposal_view").modal('show')
+      }
+    })
 }
 
 function approveProposal(el){
-let courseID = $(el).data("id")
-$.ajax({
-  url: '/serviceLearning/approveCourse',
-  type: "POST",
-  data: {"courseID":courseID},
-  success: function(){
-    location.reload()
-  }
-})
+    let courseID = $(el).data("id")
+    $.ajax({
+      url: '/serviceLearning/approveCourse',
+      type: "POST",
+      data: {"courseID":courseID},
+      success: function(){
+        location.reload()
+      }
+    })
 }
 
 function unapproveProposal(el){
-let courseID = $(el).data("id")
-$.ajax({
-  url: '/serviceLearning/unapproveCourse',
-  type: "POST",
-  data: {"courseID":courseID},
-  success: function(){
-    location.reload()
-  }
-})
+    let courseID = $(el).data("id")
+    $.ajax({
+      url: '/serviceLearning/unapproveCourse',
+      type: "POST",
+      data: {"courseID":courseID},
+      success: function(){
+        location.reload()
+      }
+    })
 }
