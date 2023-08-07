@@ -32,10 +32,8 @@ def cancelEvent(eventId):
         event.save()
 
     program = event.program
-    if program:
-        createAdminLog(f"Canceled <a href= \"{url_for('admin.eventDisplay', eventId = event)}\" >{event.name}</a> for {program.programName}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
-    else:
-        createAdminLog(f"Canceled a non-program event, <a href= \"{url_for('admin.eventDisplay', eventId = event)}\" >{event.name}</a>, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+    createAdminLog(f"Canceled <a href= \"{url_for('admin.eventDisplay', eventId = event)}\" >{event.name}</a> for {program.programName}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+
 
 def deleteEvent(eventId):
     """
