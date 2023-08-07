@@ -1,3 +1,4 @@
+from flask import  url_for
 from peewee import DoesNotExist, fn, JOIN
 from dateutil import parser
 from datetime import timedelta, date
@@ -20,6 +21,21 @@ from app.logic.createLogs import createAdminLog
 from app.logic.utils import format24HourTime
 from app.logic.fileHandler import FileHandler
 from app.logic.certification import updateCertRequirementForEvent
+
+def cancelEvent(eventId):
+    """
+    Cancels an event.
+    """
+    event = Event.get_or_none(Event.id == eventId)
+    if event: 
+        event.isCanceled = True
+        event.save()
+
+    program = event.program
+    if program:
+        createAdminLog(f"Canceled <a href= \"{url_for('admin.eventDisplay', eventId = event)}\" >{event.name}</a> for {program.programName}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+    else:
+        createAdminLog(f"Canceled a non-program event, <a href= \"{url_for('admin.eventDisplay', eventId = event)}\" >{event.name}</a>, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
 
 def deleteEvent(eventId):
     """
@@ -168,13 +184,13 @@ def saveEventToDb(newEventData):
     return eventRecords
 
 def getStudentLedEvents(term):
-
     studentLedEvents = list(Event.select(Event, Program)
-                             .join(Program)
-                             .where(Program.isStudentLed,
-                                    Event.term == term)
-                             .order_by(Event.startDate, Event.timeStart)
-                             .execute())
+                                 .join(Program)
+                                 .where(Program.isStudentLed,
+                                        Event.term == term)
+                                 .order_by(Event.startDate, Event.timeStart)
+                                 .execute())
+
     programs = {}
 
     for event in studentLedEvents:
@@ -205,7 +221,6 @@ def getTrainingEvents(term, user):
     return list(trainingQuery.execute())
 
 def getBonnerEvents(term):
-
     bonnerScholarsEvents = list(Event.select(Event, Program.id.alias("program_id"))
                                      .join(Program)
                                      .where(Program.isBonnerScholars,
@@ -222,6 +237,7 @@ def getOtherEvents(term):
     """
     # Gets all events that are not associated with a program and are not trainings
     # Gets all events that have a program but don't fit anywhere
+    
     otherEvents = list(Event.select(Event, Program)
                             .join(Program, JOIN.LEFT_OUTER)
                             .where(Event.term == term,
@@ -264,12 +280,13 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now(), program=None):
     # removes all recurring events except for the next upcoming one
     for event in events:
         if event.recurringId:
-            if event.recurringId not in shown_recurring_event_list:
-                events_list.append(event)
-                shown_recurring_event_list.append(event.recurringId)
-
+            if not event.isCanceled:
+                if event.recurringId not in shown_recurring_event_list:
+                    events_list.append(event)
+                    shown_recurring_event_list.append(event.recurringId)
         else:
-            events_list.append(event)
+            if not event.isCanceled:
+                events_list.append(event)
 
     return events_list
 

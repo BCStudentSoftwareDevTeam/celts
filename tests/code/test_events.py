@@ -21,7 +21,7 @@ from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
 
 from app.logic.events import preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
-from app.logic.events import attemptSaveEvent, saveEventToDb, deleteEvent, getParticipatedEventsForUser
+from app.logic.events import attemptSaveEvent, saveEventToDb, cancelEvent, deleteEvent, getParticipatedEventsForUser
 from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser
 from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount
 from app.logic.volunteers import addVolunteerToEventRsvp, updateEventParticipants
@@ -388,6 +388,36 @@ def test_saveEventToDb_update():
         
 
         transaction.rollback()
+
+@pytest.mark.integration
+def test_cancelEvent():
+     with mainDB.atomic() as transaction:
+        # creates an event 
+        testingEvent = Event.create(name = "Testing canceled event",
+                                      term = 2,
+                                      description = "This Event is Created to be Canceled.",
+                                      timeStart = "07:00 PM",
+                                      timeEnd = "10:00 PM",
+                                      location = "Somewhere",
+                                      isRsvpRequired = 0,
+                                      isTraining = 0,
+                                      isService = 0,
+                                      startDate = "2021-12-12",
+                                      endDate = "2022-6-12",
+                                      isCanceled = False)
+        
+        testingEvent = Event.get(Event.name == "Testing canceled event")
+        eventId = testingEvent.id
+        
+
+        with app.test_request_context():
+            g.current_user = User.get_by_id("ramsayb2")
+            cancelEvent(eventId)
+        
+        event = Event.get(Event.id == eventId)
+        assert event.isCanceled
+        transaction.rollback()
+
 
 @pytest.mark.integration
 def test_deleteEvent():
