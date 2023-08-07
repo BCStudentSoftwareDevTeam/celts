@@ -73,6 +73,19 @@ function processPhoneSetup (editButtonId, phoneInputId, username, action) {
   }
 }
 
+function printDocument(path){
+  // KNOWN ISSUE: Firefox and Chrome load pages differently, due to this we had to add a timeout that as a hack workaround 
+  // but it still has some issues. 
+  const printProposal = window.open(path);
+  setTimeout(function () {
+            printProposal.print();
+            var timeoutInterval = setInterval(function() {
+              printProposal.close();
+              // No clearing the interval on purpose becuase firefox needs it to repeat.
+            }, 30);
+        }, 100);
+}
+
 function validatePhoneNumber(editButtonId, phoneInputId, username) {
 
   // Save the phone number

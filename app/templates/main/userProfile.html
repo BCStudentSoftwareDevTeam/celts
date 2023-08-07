@@ -28,15 +28,29 @@
     <div>{{volunteer.classLevel}}</div> 
     {% endif %}
   </div>
-  <div class="col-12">
-    <div>
+  <div class="row pb-2 pe-0">
+    <div class="col-md-6 col-lg-3">
       <input type="text" style="border: none" size="14" class="bfh-phone" data-value="{{volunteer.phoneNumber}}" id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
       <a class="text-decoration-none primary editButton" tabindex="0" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
+    </div> &nbsp;
+    <div class="col"></div>
+    <div class="col-auto pe-0 ">
+      <select data-username="{{volunteer.username}}" id="actions" class=form-select align="right">
+        <option value="" selected disabled hidden>Choose an Action</option>
+        {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
+            <option value="Emergency Contact"> {{'Edit' if volunteer == g.current_user else 'View'}} Emergency Contact </option>
+            <option value="Insurance Information"> {{'Edit' if volunteer == g.current_user else 'View'}} Insurance Information </option>
+            <option value="Print Travel Form"> Print Travel Form </option>
+        {% endif %}
+        <option value="View Service Transcript"> View Service Transcript </option>
+      </select>
     </div>
   </div>
-  <a align="right" href="/profile/{{volunteer.username}}/serviceTranscript">View Service Transcript</a>
+  
 </div>
 <div class="accordion" id="userProfile">
+
+
 
 <!-- ################# Upcoming Events ################ -->
   <div class="accordion-item">

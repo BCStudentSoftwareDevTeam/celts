@@ -1,4 +1,6 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for, session
+from peewee import JOIN
+from playhouse.shortcuts import model_to_dict
 import datetime
 import json
 from http import cookies
@@ -20,6 +22,8 @@ from app.models.programManager import ProgramManager
 from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
 from app.models.certification import Certification
+from app.models.emergencyContact import EmergencyContact
+from app.models.insuranceInfo import InsuranceInfo
 
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
@@ -169,6 +173,95 @@ def viewUsersProfile(username):
                                 managersList = managersList                
                             )
     abort(403)
+
+@main_bp.route('/profile/<username>/emergencyContact', methods=['GET', 'POST'])
+def emergencyContactInfo(username):
+    """
+    This loads the Emergency Contact Page
+    """
+    if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
+        abort(403)
+
+
+    if request.method == 'GET':
+        readOnly = g.current_user.username != username
+        contactInfo = EmergencyContact.get_or_none(EmergencyContact.user_id == username)
+        return render_template ("/main/emergencyContactInfo.html",
+                                username=username,
+                                contactInfo=contactInfo,
+                                readOnly=readOnly
+                                )
+    
+    elif request.method == 'POST':
+        if g.current_user.username != username:
+            abort(403)
+
+        contactInfo = EmergencyContact.get_or_none(EmergencyContact.user_id == username)
+        if contactInfo:
+            contactInfo.update(**request.form).execute()
+        else:
+            EmergencyContact.create(user = username, **request.form)
+        createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
+        flash('Emergency contact information saved successfully!', 'success') 
+        
+        if request.args.get('action') == 'exit':
+            return redirect (f"/profile/{username}")
+        else:
+            return redirect (f"/profile/{username}/insuranceInfo")
+
+@main_bp.route('/profile/<username>/insuranceInfo', methods=['GET', 'POST'])
+def insuranceInfo(username):
+    """
+    This loads the Insurance Information Page
+    """
+    if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
+            abort(403)
+
+    if request.method == 'GET':
+        readOnly = g.current_user.username != username
+        userInsuranceInfo = InsuranceInfo.get_or_none(InsuranceInfo.user == username)
+        return render_template ("/main/insuranceInfo.html",
+                                username=username,
+                                userInsuranceInfo=userInsuranceInfo,
+                                readOnly=readOnly
+                                )
+
+    # Save the form data
+    elif request.method == 'POST':
+        if g.current_user.username != username:
+            abort(403)
+
+        info = InsuranceInfo.get_or_none(InsuranceInfo.user_id == username)
+        if info:
+            info.update(**request.form).execute()
+        else:
+            InsuranceInfo.create(user = username, **request.form)
+        createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
+        flash('Insurance information saved successfully!', 'success') 
+
+        if request.args.get('action') == 'exit':
+            return redirect (f"/profile/{username}")
+        else:
+            return redirect (f"/profile/{username}/emergencyContact")
+
+@main_bp.route('/profile/<username>/travelForm', methods=['GET', 'POST'])
+def travelForm(username):
+    if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
+        abort(403)
+   
+    user = (User.select(User, EmergencyContact, InsuranceInfo)
+                .join(EmergencyContact, JOIN.LEFT_OUTER).switch()
+                .join(InsuranceInfo, JOIN.LEFT_OUTER)
+                .where(User.username == username).limit(1))
+    if not list(user):
+        abort(404)
+    userData = list(user.dicts())[0]
+    userData = {key: value if value else '' for (key, value) in userData.items()}
+
+    return render_template ('/main/travelForm.html',
+                            userData = userData
+                            )
+
 
 @main_bp.route('/profile/addNote', methods=['POST'])
 def addNote():

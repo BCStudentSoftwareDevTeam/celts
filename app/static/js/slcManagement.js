@@ -54,7 +54,7 @@ function changeAction(action){
   } else if(courseAction == "Edit"){
     location = '/serviceLearning/editProposal/' + courseID;
   } else if(courseAction == "Print"){
-    slcPrintPDF(courseID)
+    printDocument(`/serviceLearning/print/${courseID}`)
   } else if (courseAction == "Review"){
     reviewCourses(courseID)
   }
@@ -92,18 +92,6 @@ function withdraw(){
     }
   })
 };
-function slcPrintPDF(courseID){
-  // KNOWN ISSUE: Firefox and Chrome load pages differently, due to this we had to add a timeout that as a hack workaround 
-  // but it still has some issues. 
-  var printProposal = window.open('/serviceLearning/print/' + courseID);
-  setTimeout(function () {
-            printProposal.print();
-            var timeoutInterval = setInterval(function() {
-              printProposal.close();
-              // No clearing the interval on purpose becuase firefox needs it to repeat.
-            }, 30);
-        }, 100);
-}
 
 function changeTerm() {
   $('form').submit();
