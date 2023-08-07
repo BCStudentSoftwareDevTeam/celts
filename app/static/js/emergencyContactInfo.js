@@ -33,6 +33,9 @@ $(document).ready(function(){
     function formIsValid(){
         let invalidInputs = $('input').map(function(i, e){
             if (! e.checkValidity()) {
+                if(e.id == "emergencyContactEmail") {
+                    this.setCustomValidity('Please enter a valid email address.')    
+                }
                 e.reportValidity()
                 return e
             }
