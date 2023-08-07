@@ -331,7 +331,7 @@ def serviceTranscript(username):
 
     slCourses = getSlCourseTranscript(username)
     totalHours = getTotalHours(username)
-    allEventTranscript = getAllEventTranscript(username)
+    allEventTranscript = getProgramTranscript(username)
     startDate = getStartYear(username)
 
     return render_template('main/serviceTranscript.html',
