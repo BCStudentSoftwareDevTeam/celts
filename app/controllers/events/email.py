@@ -32,7 +32,7 @@ def retrieveSenderList(eventId):
     senderOptions = [["CELTS (celts@berea.edu)", "Celts"]]
 
     event = Event.get_by_id(eventId)
-    if event.program_id != 9:
+    if event.program_id:
         programEmail = event.program.contactEmail if event.program.contactEmail else "No Program Email Found"
         programOption = [f"{event.program.programName} ({programEmail})", event.program.programName]
         senderOptions.append(programOption)

@@ -48,7 +48,7 @@ def switchUser():
 def templateSelect():
     if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
         allprograms = getAllowedPrograms(g.current_user)
-        celtsSponsoredProgram = Program.get(Program.programName == 'CELTS-Sponsored Event')
+        celtsSponsoredProgram = Program.get(Program.isOtherCeltsSponsored)
         visibleTemplates = getAllowedTemplates(g.current_user)
         return render_template("/events/template_selector.html",
                                 programs=allprograms,
@@ -58,9 +58,8 @@ def templateSelect():
         abort(403)
 
 
-@admin_bp.route('/eventTemplates/<templateid>/create', methods=['GET','POST'])
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
-def createEvent(templateid, programid=9):
+def createEvent(templateid, programid):
     if not (g.current_user.isAdmin or g.current_user.isProgramManagerFor(programid)):
         abort(403)
 

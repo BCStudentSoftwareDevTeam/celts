@@ -2,7 +2,6 @@ import pytest
 from datetime import date, datetime, timedelta
 
 from app.models import mainDB
-from app.models.program import Program
 from app.models.event import Event
 from app.logic.events import getTomorrowsEvents
 from app.scripts.send_event_reminder_emails import sendEventReminderEmail
@@ -26,7 +25,7 @@ def test_sendEventReminderEmail():
                                 startDate=  tomorrow,
                                 endDate= "2022-12-19",
                                 recurringId = 0,
-                                program = Program.OTHERCELTSSPONSORED)
+                                program = 9)
         tomorrowEvents = getTomorrowsEvents()
         emailsSent = sendEventReminderEmail(tomorrowEvents)
         assert emailsSent == 1
@@ -43,7 +42,7 @@ def test_sendEventReminderEmail():
                                 startDate=  tomorrow,
                                 endDate= "2022-12-19",
                                 recurringId = 0,
-                                program = Program.OTHERCELTSSPONSORED)
+                                program = 9)
         tomorrowEvents = getTomorrowsEvents()
         emailsSent = sendEventReminderEmail(tomorrowEvents)
         assert emailsSent == 2
