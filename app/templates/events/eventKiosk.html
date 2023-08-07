@@ -18,8 +18,9 @@
   </div>
   <div id="signinData" class="mx-auto px-5 mb-2">
     <div class="input-group">
-      <input type="text" id="submitScannerData" name="bNumber" class="form-control input-lg" oninput="submitData()" style="font-size: 2rem;" placeholder="B-number ">
-      <button id ='button-camera' class="qr-reader-button btn-success btn-lg"><span  class="bi bi-camera"></span></button>
+      <input type="hidden" id="eventid" name="eventid" value="{{event.id}}" />
+      <input type="text" id="submitScannerData" name="bNumber" class="form-control input-lg"style="font-size: 2rem;" placeholder="Enter B#">
+      <button id ='camera-button' class="qr-reader-button btn-success btn-lg"><span  class="bi bi-camera"></span></button>
     </div>
     <div id="qr-reader" style="display:none"></div>
   </div>
