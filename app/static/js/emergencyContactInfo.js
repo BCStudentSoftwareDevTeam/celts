@@ -2,6 +2,11 @@ $(document).ready(function(){
 
     $('input.phone-input').inputmask('(999)-999-9999')
 
+    $('#emergencyContactEmail').on('input', function(){
+        if($(this).val() == '') {
+            this.setCustomValidity('')
+        }
+    });
     $('input.phone-input').on('input', function(){
         let matches = $(this).val().match(/\d/g);
         let digits = matches?matches.length:0;
@@ -9,7 +14,7 @@ $(document).ready(function(){
             this.setCustomValidity('')
         }
         else{
-            this.setCustomValidity('Please Enter a Valid Phone Number')    
+            this.setCustomValidity('Please enter a valid phone number.')    
             this.reportValidity()        
         }
     })
