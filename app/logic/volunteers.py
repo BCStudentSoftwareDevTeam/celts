@@ -40,18 +40,15 @@ def updateEventParticipants(participantData):
                 inputHours = participantData.get(f'inputHours_{username}')
                 hoursEarned = float(inputHours) if inputHours else 0
                 if eventParticipant:
-                    ((EventParticipant
-                        .update({EventParticipant.hoursEarned: hoursEarned})
-                        .where(EventParticipant.event==event.id, EventParticipant.user==userObject.username))
-                        .execute())
+                    ((EventParticipant.update({EventParticipant.hoursEarned: hoursEarned})
+                                      .where(EventParticipant.event==event.id, EventParticipant.user==userObject.username))
+                                      .execute())
                 else:
                     EventParticipant.create(user=userObject, event=event, hoursEarned=hoursEarned)
             else:
                 ((EventParticipant.delete()
-                    .where(
-                        EventParticipant.user==userObject.username,
-                        EventParticipant.event==event.id))
-                    .execute())
+                                  .where(EventParticipant.user==userObject.username, EventParticipant.event==event.id))
+                                  .execute())
         else:
             return False
     return True
