@@ -18,26 +18,25 @@ $(document).ready(function() {
     content: function() {
       if ($(this).attr('data-content') == "Submitted") {
         return "This proposal has been submitted and is waiting on CELTS review."
+
       } else if ($(this).attr('data-content') == "Approved") {
         return "This proposal has been approved by CELTS."
+
       } else if ($(this).attr('data-content') == "In Progress") {
         return "This proposal has not been submitted for review."
       }
     }
   });
-  const emailSelectedButton = $("#emailSelectedButton");
-  const selectAllOthersButton = $("#selectAllOthersButton");
   const instructorCheckboxes = $(".instructorCheckbox");
 
-  emailSelectedButton.on("click", function () {
+  $("#emailSelectedButton").on("click", function () {
     const selectedEmails = Array.from(instructorCheckboxes)
                                 .filter((checkbox) => checkbox.checked)
                                 .map((checkbox) => checkbox.getAttribute("data-email"))
                                 .join(";");
 
-    if (selectedEmails) {
+    if (selectedEmails.length) {
       const windowRef = window.open(`mailto:${selectedEmails}?subject=Renew Course Proposal`, '_blank');
-  
       windowRef.focus();
     
       setTimeout(function(){
@@ -45,22 +44,21 @@ $(document).ready(function() {
             windowRef.close();
         }
       }, 500);
-    } else {
-      flash("Please select at least one instructor to email.");
     }
   });
 
-  selectAllOthersButton.on("click", function () {
-    let myButton = $('#selectAllOthersButton');
+  const selectAll = $("#selectAllOthersButton");
+  selectAll.on("click", function () {
+    let myButton = selectAll;
     let uncheckedBoxFound = false;
     for (let checkboxNum = 0; checkboxNum < instructorCheckboxes.length; checkboxNum++){
       if (instructorCheckboxes[checkboxNum].checked != true){
-        $('#selectAllOthersButton').text( "Unselect All")
+        selectAll.text( "Unselect All")
         uncheckedBoxFound = true;
         break
       }
       else {
-        $('#selectAllOthersButton').text( "Select All") 
+        selectAll.text( "Select All") 
       }
     }
     instructorCheckboxes.each((i, checkbox) => {
@@ -74,12 +72,14 @@ function resetAllSelections(){
   $('.form-select').val('---');
   $('#renewBtn').prop('disabled', true);
 }
+
 function updateRenewModal(courseID){
   // updates renewModal with the course's information
   $("#renewName").text($("#name-" + courseID).text())
   $("#renewFaculty").text($("#faculty-" + courseID).text())
   $("#renewStatus").text($("#status-" + courseID).text())
 }
+
 function changeAction(action){
   courseID = action.id;
   courseAction = action.value
