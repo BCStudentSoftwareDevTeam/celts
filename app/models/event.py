@@ -22,6 +22,7 @@ class Event(baseModel):
     contactEmail = CharField(null=True)
     contactName = CharField(null=True)
     program = ForeignKeyField(Program, null= True)
+    isCanceled = BooleanField(default=False)
 
     _spCache = "Empty"
 

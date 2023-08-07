@@ -49,7 +49,7 @@ def landingPage():
     managerProgramDict = getManagerProgramDict(g.current_user)
 
 
-    eventsInTerm = list(Event.select().where(Event.term == g.current_term))
+    eventsInTerm = list(Event.select().where(Event.term == g.current_term, Event.isCanceled == False))
     programsWithEventsList = [event.program for event in eventsInTerm if not event.isPast]
 
     return render_template("/main/landingPage.html", managerProgramDict = managerProgramDict,
@@ -72,26 +72,31 @@ def events(selectedTerm, activeTab, programID):
     participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
-    term = Term.get_by_id(currentTerm)
+    term = Term.get_by_id(currentTerm) 
+    
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     studentLedEvents = getStudentLedEvents(term)
     trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
+    
+    managersProgramDict = getManagerProgramDict(g.current_user)
 
     return render_template("/events/event_list.html",
-        selectedTerm = term,
-        studentLedEvents = studentLedEvents,
-        trainingEvents = trainingEvents,
-        bonnerEvents = bonnerEvents,
-        otherEvents = otherEvents,
-        listOfTerms = listOfTerms,
-        rsvpedEventsID = rsvpedEventsID,
-        currentEventRsvpAmount = currentEventRsvpAmount,
-        currentTime = currentTime,
-        user = g.current_user,
-        activeTab = activeTab,
-        programID = int(programID))
+                            selectedTerm = term,
+                            studentLedEvents = studentLedEvents,
+                            trainingEvents = trainingEvents,
+                            bonnerEvents = bonnerEvents,
+                            otherEvents = otherEvents,
+                            listOfTerms = listOfTerms,
+                            rsvpedEventsID = rsvpedEventsID,
+                            currentEventRsvpAmount = currentEventRsvpAmount,
+                            currentTime = currentTime,
+                            user = g.current_user,
+                            activeTab = activeTab,
+                            programID = int(programID),
+                            managersProgramDict = managersProgramDict
+                            )
 
 @main_bp.route('/profile/<username>', methods=['GET'])
 def viewUsersProfile(username):
@@ -146,22 +151,27 @@ def viewUsersProfile(username):
         userDiet = [note.dietRestriction for note in userDietQuery]
 
         bonnerRequirements = getCertRequirementsWithCompletion(certification=Certification.BONNER, username=volunteer)
+
+        managersProgramDict = getManagerProgramDict(g.current_user)
+        managersList = [id[1] for id in managersProgramDict.items()]
+    
         return render_template ("/main/userProfile.html",
-                programs = programs,
-                programsInterested = programsInterested,
-                upcomingEvents = upcomingEvents,
-                participatedEvents = participatedEvents,
-                rsvpedEvents = rsvpedEvents,
-                permissionPrograms = permissionPrograms,
-                eligibilityTable = eligibilityTable,
-                volunteer = volunteer,
-                backgroundTypes = backgroundTypes,
-                allBackgroundHistory = allBackgroundHistory,
-                currentDateTime = datetime.datetime.now(),
-                profileNotes = profileNotes,
-                bonnerRequirements = bonnerRequirements,
-                userDiet = userDiet
-            )
+                                programs = programs,
+                                programsInterested = programsInterested,
+                                upcomingEvents = upcomingEvents,
+                                participatedEvents = participatedEvents,
+                                rsvpedEvents = rsvpedEvents,
+                                permissionPrograms = permissionPrograms,
+                                eligibilityTable = eligibilityTable,
+                                volunteer = volunteer,
+                                backgroundTypes = backgroundTypes,
+                                allBackgroundHistory = allBackgroundHistory,
+                                currentDateTime = datetime.datetime.now(),
+                                profileNotes = profileNotes,
+                                bonnerRequirements = bonnerRequirements,
+                                userDiet = userDiet,
+                                managersList = managersList                
+                            )
     abort(403)
 
 @main_bp.route('/profile/<username>/emergencyContact', methods=['GET', 'POST'])
