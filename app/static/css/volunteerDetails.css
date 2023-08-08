@@ -47,7 +47,7 @@
 }
 
 .bnumber-barcode:before { content: "*"; }
-.bnumber-barcode:after { content: "*"; }
+.bnumber-barcode:after { content: "01*"; }
 .bnumber-barcode {
     font-family: 'Libre Barcode 39';
     font-size: 60px;
