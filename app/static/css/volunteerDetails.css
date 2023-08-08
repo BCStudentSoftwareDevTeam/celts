@@ -4,8 +4,8 @@
     }
 
     #volunteerInformationCardToPrint {
-        -webkit-column-count: 3; 
-        column-count: 3;  
+        -webkit-column-count: 2; 
+        column-count: 2;  
         display: inline-block;
         font-size: 15pt;
         width: 180%;
@@ -40,12 +40,18 @@
     hr {
         border-top: solid 1px #000 !important;
         width: 180%;
-      }
+    }
+    table.dataTable thead .sorting {
+        background-image: None !important
+    }
 }
 
+.bnumber-barcode:before { content: "*"; }
+.bnumber-barcode:after { content: "*"; }
 .bnumber-barcode {
     font-family: 'Libre Barcode 39';
-    font-size: 30px;
+    font-size: 60px;
+    margin-bottom: -30px;
 }
 
 #volunteerInformationCardToPrint, .bNumberSelect {
