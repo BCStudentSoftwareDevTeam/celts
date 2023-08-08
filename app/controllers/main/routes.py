@@ -4,6 +4,7 @@ from playhouse.shortcuts import model_to_dict
 import datetime
 import json
 from http import cookies
+from functools import reduce
 
 from app import app
 from app.models.program import Program
@@ -135,16 +136,19 @@ def viewUsersProfile(username):
             notes = list(ProgramBan.select(ProgramBan, Note)
                                     .join(Note, on=(ProgramBan.banNote == Note.id))
                                     .where(ProgramBan.user == volunteer,
-                                              ProgramBan.program == program,
-                                              ProgramBan.endDate > datetime.datetime.now()).execute())
+                                           ProgramBan.program == program,
+                                           ProgramBan.endDate > datetime.datetime.now()).execute())
             userParticipatedTrainingEvents = getParticipationStatusForTrainings(program, [volunteer], g.current_term)
-            allTrainingsComplete = False not in [attended for event, attended in userParticipatedTrainingEvents[username]]  # Did volunteer attend all events
+            try: 
+                allTrainingsComplete = reduce(lambda x, y: x[1] and y[1], userParticipatedTrainingEvents[username]) # Did volunteer attend all events
+            except KeyError:
+                allTrainingsComplete = []
             noteForDict = notes[-1].banNote.noteContent if notes else ""
             eligibilityTable.append({"program": program,
-                                   "completedTraining": allTrainingsComplete,
-                                   "trainingList": userParticipatedTrainingEvents,
-                                   "isNotBanned": True if not notes else False,
-                                   "banNote": noteForDict})
+                                     "completedTraining": allTrainingsComplete,
+                                     "trainingList": userParticipatedTrainingEvents,
+                                     "isNotBanned": True if not notes else False,
+                                     "banNote": noteForDict})
         profileNotes = ProfileNote.select().where(ProfileNote.user == volunteer)
         userDietQuery = User.select().where(User.username == username)
         userDiet = [note.dietRestriction for note in userDietQuery]
