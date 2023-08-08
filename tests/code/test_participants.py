@@ -389,11 +389,12 @@ def test_getParticipationStatusForTrainings():
                                     recurringId = None,
                                     program = Program.get_by_id(8))
 
-        allProgramTrainings = (Event.select().join(Term)
+        allProgramTrainings = (Event.select()
+                                    .join(Term)
                                     .where(Event.isTraining == True,
                                           (Event.program == Program.get_by_id(2)) | 
                                           (Event.isAllVolunteerTraining == True),
-                                           Event.term.academicYear == academicYear)
+                                           Event.term.academicYear == academicYear).order_by(Event.startDate)
                               )
         listOfProgramTrainings = [programTraining for programTraining in allProgramTrainings]
         for training in listOfProgramTrainings:
