@@ -191,17 +191,17 @@ def test_trainedParticipants():
         # Create a new training event in program 1 so that it will also be a requirement to attend any 
         # event in program 1. 
         hungerInitiativesTraining = Event.create(name = "Hunger Initiatives test event",
-                            term = currentTerm,
-                            description= "This Event is created to do whatever.",
-                            timeStart= "06:00 PM",
-                            timeEnd= "09:00 PM",
-                            location = "Your Father's House",
-                            isRsvpRequired = 0,
-                            isTraining = 1,
-                            isService = 0,
-                            startDate= "2021-12-12",
-                            recurringId = None,
-                            program = Program.get_by_id(1))
+                                                 term = currentTerm,
+                                                 description= "This Event is created to do whatever.",
+                                                 timeStart= "06:00 PM",
+                                                 timeEnd= "09:00 PM",
+                                                 location = "The Sun",
+                                                 isRsvpRequired = 0,
+                                                 isTraining = 1,
+                                                 isService = 0,
+                                                 startDate= "2021-12-12",
+                                                 recurringId = None,
+                                                 program = Program.get_by_id(1))
         
         # Case2: Check that nobody meets the requriements to attend an event for a program that has a training 
         # required on top of the All Volunteer training. 
@@ -219,17 +219,41 @@ def test_trainedParticipants():
         attendedPreq = trainedParticipants(1, currentTerm)
         assert attendedPreq == [neillz, khatts, ayisie]
 
-        # Case4: For the same program as the previous case, change the term (while staying in the same academic year) 
+        # Create a training event that will be canceled to verify the canceled event will not be a prerequisite.
+        hiTrainingToCancel = Event.create(name = "Hunger Initiatives test event that will be canceled",
+                                          term = currentTerm,
+                                          description= "This Event is created to do be canceled.",
+                                          timeStart= "06:00 PM",
+                                          timeEnd= "09:00 PM",
+                                          location = "The Moon",
+                                          isRsvpRequired = 0,
+                                          isTraining = 1,
+                                          isService = 0,
+                                          startDate= "2021-12-12",
+                                          recurringId = None,
+                                          program = Program.get_by_id(1))
+        
+        # Case5: veryify nobody is able attend an event from program one.
+        attendedPreq = trainedParticipants(1, currentTerm)
+        assert attendedPreq == []
+
+        # Case6: Cancel the new training and verify everyone now meets the prerequisites again. 
+        Event.update(isCanceled = True).where(Event.id == hiTrainingToCancel.id).execute()
+        attendedPreq = trainedParticipants(1, currentTerm)
+        assert attendedPreq == [neillz, khatts, ayisie]
+
+        # Case7: For the same program as the previous case, change the term (while staying in the same academic year) 
         # and verify all the All Volunteer participants created above meet the prerequisites since the only requirement 
         # now is the All Volunteer Training. 
         currentTerm = Term.get_by_id(2)
         attendedPreq = trainedParticipants(1, currentTerm)
         assert attendedPreq == [neillz, khatts, ayisie]
 
-        # Case5: In a different academic year make sure nobody meets the prerequisites for a program
+        # Case8: In a different academic year make sure nobody meets the prerequisites for a program
         currentTerm = Term.get_by_id(7)
         attendedPreq = trainedParticipants(1, currentTerm)
         assert attendedPreq == []
+
 
         transaction.rollback()
 

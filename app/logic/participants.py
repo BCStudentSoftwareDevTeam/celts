@@ -22,11 +22,11 @@ def trainedParticipants(programID, targetTerm):
     academicYear = targetTerm.academicYear
     # Reset program eligibility each term for all other trainings
 
-    isRelevantAllVolunteer = (Event.isAllVolunteerTraining) & (Event.term.academicYear == academicYear)
-    isRelevantProgramTraining = (Event.program == programID) & (Event.term == targetTerm) & (Event.isTraining)
+    isRelevantAllVolunteer = (Event.isAllVolunteerTraining) & (Event.term.academicYear == academicYear) 
+    isRelevantProgramTraining = (Event.program == programID) & (Event.term == targetTerm) & (Event.isTraining) 
     otherTrainingEvents = (Event.select(Event.id)
                                 .join(Term)
-                                .where(isRelevantAllVolunteer | isRelevantProgramTraining))
+                                .where(isRelevantAllVolunteer | isRelevantProgramTraining & (Event.isCanceled != True)))
 
     allTrainingEvents = set(otherTrainingEvents)
     eventTrainingDataList = [participant.user for participant in (
@@ -145,7 +145,7 @@ def getParticipationStatusForTrainings(program, userList, term):
                              .join(EventParticipant, JOIN.LEFT_OUTER).switch()
                              .join(EventRsvp, JOIN.LEFT_OUTER).switch()
                              .join(Term)
-                             .where(isRelevantAllVolunteer | isRelevantProgramTraining))
+                             .where(isRelevantAllVolunteer | isRelevantProgramTraining & (Event.isCanceled != True)))
 
     # Create a dictionary where the keys are trainings and values are a list of those who attended
     trainingData = {}
