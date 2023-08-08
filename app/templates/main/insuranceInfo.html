@@ -1,0 +1,94 @@
+{% set title = "User Profile" %}
+{% extends "base.html" %}
+
+{% block scripts %}
+    {{super()}}
+    <script type="text/javascript" src="{{url_for('static', filename='js/insuranceInfo.js') }}?u={{lastStaticUpdate}}"></script>
+{% endblock %}
+
+
+
+{% block app_content %}
+
+<div class="text-center">
+    <h1> Insurance Information </h1> <br>
+</div>
+
+<input id='username' hidden value='{{username}}'></input>
+
+<form id='insuranceForm' enctype="multipart/form-data" role='form' method='POST'>
+    <div class='row'>
+        <!--Left half-->
+        <div class='col-md-6'>
+            
+            <div class='form-group mb-4'>
+                <label class='form-label' for='insuranceType'><strong> Type of Insurance </strong></label>
+                {% set insuranceType = userInsuranceInfo.insuranceType if userInsuranceInfo else 0 %}
+                <select {{'disabled' if readOnly else ''}} class='form-select' id='insuranceType' name='insuranceType' required>
+                    <option disabled value='' {{'selected' if not insuranceType else ''}}>Select a Type of Insurance</option>
+                    <option {{'selected' if insuranceType == 1 else '' }} value='1'>Berea College Health Insurance</option>
+                    <option {{'selected' if insuranceType == 2 else '' }} value='2'>Parent Or Guardian's Insurance</option>
+                    <option {{'selected' if insuranceType == 3 else '' }} value='3'>Other Insurance</option>
+                </select>
+            </div>
+
+            <div class='form-group mb-4'>
+                <label class='form-label' for='name'><strong> Name of Policy Holder </strong></label>
+                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='policyHolderName' name='policyHolderName' value="{{userInsuranceInfo.policyHolderName if userInsuranceInfo else ''}}"/>
+            </div>
+
+            <div class='form-group mb-4'>
+                <label class='form-label' for='relationship'><strong> Holder's Relationship to You </strong></label>
+                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='policyHolderRelationship' name='policyHolderRelationship' value="{{userInsuranceInfo.policyHolderRelationship if userInsuranceInfo else ''}}"/>
+            </div>
+        </div>
+
+
+        <!--Right half-->
+        <div class='col-md-6'>
+
+            <div class='form-group mb-4'>
+                <label class='form-label' for='insuranceCompany'><strong> Insurance Company </strong></label>
+                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='insuranceCompany' name='insuranceCompany' value="{{userInsuranceInfo.insuranceCompany if userInsuranceInfo else ''}}"/>
+            </div>
+            <div class='form-group mb-4'>
+                <label class='form-label' for='policyNumber'><strong> Policy Number </strong></label>
+                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='insurancePolicyNumber' name='policyNumber' value="{{userInsuranceInfo.policyNumber if userInsuranceInfo else ''}}"/>
+            </div>
+            <div class='form-group mb-4'>
+                <label class='form-label' for='groupNumber'><strong> Group Number (if applicable)</strong></label>
+                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='insuranceGroupNumber' name='groupNumber' value="{{userInsuranceInfo.groupNumber if userInsuranceInfo else ''}}"/>
+            </div>
+        </div>
+
+
+        <!--Bottom-->
+        <div class='form-group'>
+            <label class='form-label' for='healthIssues'><strong> Please list any health issues that the Berea College CELTS program staff need to know about </strong></label>
+            <textarea {{'disabled' if readOnly else ''}} rows='8' class='form-control' type='text' id='additionalHealthIssues' name='healthIssues'>{{userInsuranceInfo.healthIssues}}</textarea>
+        </div>
+
+    </div>
+
+    <br>
+
+    <div class='row'>
+        <div class='form-group col-auto'>
+            <a id='exit' href='/profile/{{username}}' class='btn btn-secondary text-start'>{{'Exit' if readOnly else 'Cancel'}}</a>
+        </div>
+        <div class='col'></div>
+        <div class='form-group col-auto'>
+            {% if not readOnly %}
+                <a id='saveExit' class='btn btn-primary'> Save & Exit </a>
+                <a id='saveContinue' class='btn btn-primary'>Continue to Emergency Contact</a>
+            {% endif %}
+        </div>
+    </div>
+
+
+</form>
+
+
+
+
+{% endblock %}

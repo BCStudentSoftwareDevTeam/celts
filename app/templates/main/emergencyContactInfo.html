@@ -1,0 +1,89 @@
+{% set title = "User Profile" %}
+{% extends "base.html" %}
+
+{% block scripts %}
+    {{super()}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/emergencyContactInfo.js') }}?u={{lastStaticUpdate}}"></script>
+{% endblock %}
+
+{% block app_content %}
+
+<div class="text-center">
+    <h1> Emergency Contact </h1> <br>
+</div>
+
+<input id='username' hidden value='{{username}}'></input>
+
+<form id='contactForm' role='form' action='/profile/{{username}}/emergencyContact' method='POST' novalidate>
+    <div class='row'>
+        <!--Left side-->
+        <div class='col-md-6'>
+
+            <div class='form-group mb-4'>
+                <label class='form-label' for='name'><strong> Contact Name </strong></label>
+                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='emergencyContactName' value="{{contactInfo.name if contactInfo else ''}}" name='name'/>
+            </div>
+
+            <div class='form-group mb-4'>
+                <label class='form-label' for='relationship'><strong> Relationship to You </strong></label>
+                <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='emergencyContactRelationship' value="{{contactInfo.relationship if contactInfo else ''}}" name='relationship'/>
+            </div>
+            <div class='form-group mb-4'>
+                <label class='form-label' for='email' ><strong> Email Address </strong></label>
+                <input {{'disabled' if readOnly else ''}} class='form-control' data-inputmask-alias="email" type='email' id='emergencyContactEmail' value="{{contactInfo.emailAddress if contactInfo else ''}}" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" name='emailAddress' />
+            </div>
+
+        </div>
+
+
+
+        <!--Right side-->
+
+
+        <div class='col-md-6'>
+
+            <div class='form-group mb-4'>
+                <label class='form-label' for='cellPhone'><strong> Cell Phone Number </strong></label>
+                <input {{'disabled' if readOnly else ''}} class='form-control phone-input' type='text' id='emergencyContactCell' value="{{contactInfo.cellPhone if contactInfo else ''}}" name='cellPhone'/>
+            </div>
+            <div class='form-group mb-4'>
+                <label class='form-label' for='workPhone'><strong> Work Phone Number </strong></label>
+                <input {{'disabled' if readOnly else ''}} class='form-control phone-input' type='text' id='emergencyContactWork' value="{{contactInfo.workPhone if contactInfo else ''}}" name='workPhone'/>
+            </div>
+            <div class='form-group mb-4'>
+                <label class='form-label' for='cellPhone'><strong> Home Phone </strong></label>
+                <input {{'disabled' if readOnly else ''}} class='form-control phone-input' type='text' id='emergencyContactHome' value="{{contactInfo.homePhone if contactInfo else ''}}" name='homePhone'/>
+            </div>
+        </div>
+
+       
+        <!--Bottom-->
+        <div class='form-group'>
+            <label class='form-label' for='address'><strong> Home Address </strong></label>
+            <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='emergencyContactAddress' value="{{contactInfo.homeAddress if contactInfo else ''}}" name='homeAddress'/>
+        </div>
+
+    </div>
+
+    <br>
+    
+    <div class='row'>
+        <div class='form-group col-auto'>
+            <a id='exit' href='/profile/{{username}}' class='btn btn-secondary text-start'>{{'Exit' if readOnly else 'Cancel'}}</a>
+        </div>
+        <div class='col'></div>
+        <div class='form-group col-auto'>
+            {% if not readOnly %}
+                <a id='saveExit' class='btn btn-primary'> Save &amp; Exit </a>
+                <a id='saveContinue' class='btn btn-primary'>Continue to Insurance Info</a>
+            {% endif %}
+        </div>
+    </div>
+
+</form>
+
+
+
+
+{% endblock %}
