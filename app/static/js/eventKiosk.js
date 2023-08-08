@@ -39,7 +39,7 @@ $(document).ready(function(e) {
         };
       }
       let scanner = new Html5QrcodeScanner("qr-reader", { 
-                  fps: 15, 
+                  fps: 2, 
                   qrbox: qrboxFunction, 
                   preferFrontCamera: false,
                   facingMode: { exact: "environment" },
