@@ -178,13 +178,13 @@ def test_trainedParticipants():
         neillz = User.get_by_id('neillz')
         ayisie = User.get_by_id('ayisie')
 
-        # add 3 volunteers to the all volunteer that is in the 2020-2021 academic year.
+        # add 3 volunteers to the all volunteer training that is in the 2020-2021 academic year.
         EventParticipant.create(user = neillz, event = allVolunteerTraining)
         EventParticipant.create(user = khatts, event = allVolunteerTraining)
         EventParticipant.create(user = ayisie, event = allVolunteerTraining)
 
-        # Case1: For a program that does not have a training other than the All Volunteer Training verify that a 
-        # volunteer meets the prerequisites to attend. 
+        # Case1: khatts meets the requierments at attend an event in program 3 since all that is 
+        # requiered is the all volunteer training.
         attendedPreq = trainedParticipants(3, currentTerm)
         assert khatts in attendedPreq
 
@@ -203,23 +203,7 @@ def test_trainedParticipants():
                                                  recurringId = None,
                                                  program = Program.get_by_id(1))
         
-        # Case2: Check that nobody meets the requriements to attend an event for a program that has a training 
-        # required on top of the All Volunteer training. 
-        attendedPreq = trainedParticipants(1, currentTerm)
-        assert attendedPreq == []
-        
-        # Case3: Add an event participant to the new training and veryify that they now meet all the prerequisites.   
-        EventParticipant.create(user = khatts, event=Event.get_by_id(hungerInitiativesTraining))
-        attendedPreq = trainedParticipants(1, currentTerm)
-        assert attendedPreq == [khatts]
-
-        # Case4: Same as case 3 execept with more people meeting the prerequisites. 
-        EventParticipant.create(user = neillz, event=Event.get_by_id(hungerInitiativesTraining))
-        EventParticipant.create(user = ayisie, event=Event.get_by_id(hungerInitiativesTraining))
-        attendedPreq = trainedParticipants(1, currentTerm)
-        assert attendedPreq == [neillz, khatts, ayisie]
-
-        # Create a training event that will be canceled to verify the canceled event will not be a prerequisite.
+        # Create a new training event that will be canceled to verify the canceled event will not be a prerequisite.
         hiTrainingToCancel = Event.create(name = "Hunger Initiatives test event that will be canceled",
                                           term = currentTerm,
                                           description= "This Event is created to do be canceled.",
@@ -233,23 +217,61 @@ def test_trainedParticipants():
                                           recurringId = None,
                                           program = Program.get_by_id(1))
         
-        # Case5: veryify nobody is able attend an event from program one.
+        # To meet the requierments to participante in an event from program one, a volunteer needs to attend 
+        # the all volunteer training, hungerInitiativesTraining, and hiTrainingToCancel.
+
+        # Case2: Nobody meets the requierments to attend an event in program 1 since they are missing two trainings.
+        attendedPreq = trainedParticipants(1, currentTerm)
+        assert attendedPreq == []
+        
+        # Case3: Add khatts as a participant of hungerInitativesTraining and verify they do not meet the 
+        # requierments to attend an event in program one since they still have not attended hiTrainingToCancel. 
+        EventParticipant.create(user = khatts, event=Event.get_by_id(hungerInitiativesTraining))
         attendedPreq = trainedParticipants(1, currentTerm)
         assert attendedPreq == []
 
-        # Case6: Cancel the new training and verify everyone now meets the prerequisites again. 
+        # Case4: Cancel hiTrainingToCancel and verify khatts now meets the requierments to participante in an 
+        # event from program 1.
         Event.update(isCanceled = True).where(Event.id == hiTrainingToCancel.id).execute()
         attendedPreq = trainedParticipants(1, currentTerm)
-        assert attendedPreq == [neillz, khatts, ayisie]
+        assert attendedPreq == [khatts]
+        
+        # Case5: Add neillz and ayisie as participants to the canceled hiTrainingToCancel and verify that 
+        # kahtts is still the only volunteer that meets the requierments to attend an event from program 1. 
+        EventParticipant.create(user = neillz, event=Event.get_by_id(hiTrainingToCancel))
+        EventParticipant.create(user = ayisie, event=Event.get_by_id(hiTrainingToCancel))
+        attendedPreq = trainedParticipants(1, currentTerm)
+        assert attendedPreq == [khatts]
 
-        # Case7: For the same program as the previous case, change the term (while staying in the same academic year) 
-        # and verify all the All Volunteer participants created above meet the prerequisites since the only requirement 
-        # now is the All Volunteer Training. 
+        # Case 6: Uncancel hiTrainingToCancel and verify that nobody meets the requirements to attend an event 
+        # that is a part of program 1. 
+        Event.update(isCanceled = False).where(Event.id == hiTrainingToCancel.id).execute()
+        attendedPreq = trainedParticipants(1, currentTerm)
+        assert attendedPreq == []
+
+        # Case 7: Add neillz and ayisie as participants to hungerInitiativesTraining and verify they are the only 
+        # ones that meet the requierments to participate in an event from program 1. 
+        EventParticipant.create(user = neillz, event=Event.get_by_id(hungerInitiativesTraining))
+        EventParticipant.create(user = ayisie, event=Event.get_by_id(hungerInitiativesTraining))
+        attendedPreq = trainedParticipants(1, currentTerm)
+        assert attendedPreq == [neillz, ayisie]
+        
+        # Manually remove all relevant participant records to make sure they are not being taken into account for the next test. 
+        (EventParticipant.delete().where(EventParticipant.user== neillz, EventParticipant.event==hungerInitiativesTraining.id).execute())
+        (EventParticipant.delete().where(EventParticipant.user== khatts, EventParticipant.event==hungerInitiativesTraining.id).execute())
+        (EventParticipant.delete().where(EventParticipant.user== ayisie, EventParticipant.event==hungerInitiativesTraining.id).execute())
+        (EventParticipant.delete().where(EventParticipant.user== neillz, EventParticipant.event==hiTrainingToCancel.id).execute())
+        (EventParticipant.delete().where(EventParticipant.user== ayisie, EventParticipant.event==hiTrainingToCancel.id).execute())
+
+        # Case8: Set currentTerm to the next term (which is in the same academic year) and verify that all the volunteers 
+        # meet the requierments to participante in an event from program 1. The only training that should carry over across 
+        # terms is the all volunteer training. 
         currentTerm = Term.get_by_id(2)
         attendedPreq = trainedParticipants(1, currentTerm)
         assert attendedPreq == [neillz, khatts, ayisie]
 
-        # Case8: In a different academic year make sure nobody meets the prerequisites for a program
+        # Case9: Set currentTerm to a future term that is in a different academic year and verify that nobody 
+        # meets the requierments to attend and event from program 1. 
         currentTerm = Term.get_by_id(7)
         attendedPreq = trainedParticipants(1, currentTerm)
         assert attendedPreq == []
