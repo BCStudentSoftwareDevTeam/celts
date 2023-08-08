@@ -52,7 +52,7 @@ $(document).ready(function(e) {
       window.setTimeout(function() {
           $('#html5-qrcode-button-camera-stop').on("click", function() {
             $('#qr-reader').toggle()
-          })}, 400);
+          })}, 500);
     })
 
 });
