@@ -142,7 +142,7 @@ def viewUsersProfile(username):
             try: 
                 allTrainingsComplete = reduce(lambda x, y: x[1] and y[1], userParticipatedTrainingEvents[username]) # Did volunteer attend all events
             except KeyError:
-                allTrainingsComplete = []
+                allTrainingsComplete = False
             noteForDict = notes[-1].banNote.noteContent if notes else ""
             eligibilityTable.append({"program": program,
                                      "completedTraining": allTrainingsComplete,

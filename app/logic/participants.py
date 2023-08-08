@@ -29,9 +29,7 @@ def trainedParticipants(programID, targetTerm):
                                 .where(isRelevantAllVolunteer | isRelevantProgramTraining, (Event.isCanceled != True)))
 
     allTrainingEvents = set(otherTrainingEvents)
-    eventTrainingDataList = [participant.user for participant in (
-        EventParticipant.select().where(EventParticipant.event.in_(allTrainingEvents))
-        )]
+    eventTrainingDataList = [participant.user for participant in (EventParticipant.select().where(EventParticipant.event.in_(allTrainingEvents)))]
     attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(allTrainingEvents), eventTrainingDataList)))
     return attendedTraining
 
