@@ -170,7 +170,27 @@ def test_updateEventParticipants():
 def test_trainedParticipants():
     currentTerm = Term.get(Term.isCurrentTerm==1)
     with mainDB.atomic() as transaction:
-        bloo = Event.create(name = "Hunger Initiatives test event",
+        
+        allVolunteerTraining = Event.get_by_id(14)
+
+        #User object to be compared in assert statements
+        khatts = User.get_by_id('khatts')
+        neillz = User.get_by_id('neillz')
+        ayisie = User.get_by_id('ayisie')
+
+        # add 3 volunteers to the all volunteer that is in the 2020-2021 academic year.
+        EventParticipant.create(user = neillz, event = allVolunteerTraining)
+        EventParticipant.create(user = khatts, event = allVolunteerTraining)
+        EventParticipant.create(user = ayisie, event = allVolunteerTraining)
+
+        # Case1: For a program that does not have a training other than the All Volunteer Training verify that a 
+        # volunteer meets the prerequisites to attend. 
+        attendedPreq = trainedParticipants(3, currentTerm)
+        assert khatts in attendedPreq
+
+        # Create a new training event in program 1 so that it will also be a requirement to attend any 
+        # event in program 1. 
+        hungerInitiativesTraining = Event.create(name = "Hunger Initiatives test event",
                             term = currentTerm,
                             description= "This Event is created to do whatever.",
                             timeStart= "06:00 PM",
@@ -183,51 +203,35 @@ def test_trainedParticipants():
                             recurringId = None,
                             program = Program.get_by_id(1))
         
-        #User object to be compared in assert statements
-        khatts = User.get_by_id('khatts')
-        neillz = User.get_by_id('neillz')
-        ayisie = User.get_by_id('ayisie')
-        EventParticipant.create(user="neillz", event=Event.get_by_id(14))
-        EventParticipant.create(user="khatts", event=Event.get_by_id(14))
-        EventParticipant.create(user="ayisie", event=Event.get_by_id(14))
-
-        # Case1: test for an event All Volunteer Training is still checked from the first term in the 3rd term of the academic year.
-        attendedPreq = trainedParticipants(3, currentTerm)
-        assert khatts in attendedPreq
-
-        # Case2: test for a different program that has a training created for it.
+        # Case2: Check that nobody meets the requriements to attend an event for a program that has a training 
+        # required on top of the All Volunteer training. 
         attendedPreq = trainedParticipants(1, currentTerm)
         assert attendedPreq == []
         
-        # Case3: test that 'khatts' is in attendedPreq after being added as a participant to the training.  
-        EventParticipant.create(user = khatts, event=Event.get_by_id(bloo))
+        # Case3: Add an event participant to the new training and veryify that they now meet all the prerequisites.   
+        EventParticipant.create(user = khatts, event=Event.get_by_id(hungerInitiativesTraining))
         attendedPreq = trainedParticipants(1, currentTerm)
         assert attendedPreq == [khatts]
 
-        # Case4: test for when user changes current term but is still in the same academic year and we have some more people. 
+        # Case4: Same as case 3 execept with more people meeting the prerequisites. 
+        EventParticipant.create(user = neillz, event=Event.get_by_id(hungerInitiativesTraining))
+        EventParticipant.create(user = ayisie, event=Event.get_by_id(hungerInitiativesTraining))
+        attendedPreq = trainedParticipants(1, currentTerm)
+        assert attendedPreq == [neillz, khatts, ayisie]
+
+        # Case4: For the same program as the previous case, change the term (while staying in the same academic year) 
+        # and verify all the All Volunteer participants created above meet the prerequisites since the only requirement 
+        # now is the All Volunteer Training. 
         currentTerm = Term.get_by_id(2)
         attendedPreq = trainedParticipants(1, currentTerm)
         assert attendedPreq == [neillz, khatts, ayisie]
 
-        transaction.rollback()
-
-    with mainDB.atomic() as transaction:
-        Event.update(program = 3).where(Event.id== 14).execute() # require AVT
-        
-        attendedPreq = trainedParticipants(3, currentTerm)
-        assert attendedPreq == []   # no user has completed both AVT and ACT for program 3
-
-        EventParticipant.create(user="khatts", event=14)
-        attendedPreq = trainedParticipants(3, currentTerm)
-        assert attendedPreq == [khatts]   # "khatts" has completed both AVT and ACT for program 3
+        # Case5: In a different academic year make sure nobody meets the prerequisites for a program
+        currentTerm = Term.get_by_id(7)
+        attendedPreq = trainedParticipants(1, currentTerm)
+        assert attendedPreq == []
 
         transaction.rollback()
-
-    # Neither AVT nor ACT is required
-    currentTerm = Term.get_by_id(6)
-    attendedPreq = trainedParticipants(4, currentTerm)
-    assert attendedPreq == []
-
 
 # tests for unattendedRequiredEvents
 @pytest.mark.integration
