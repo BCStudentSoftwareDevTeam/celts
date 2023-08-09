@@ -130,16 +130,16 @@
                     {% if programTrainings %}
                         {% if program or not eventData.isAllVolunteerTraining %}
                             <h3>Program Trainings:</h3>
-                            {% for training, participated in programTrainings.items() %}
-                                {% if g.current_user.isCeltsAdmin %}
-                                <p>{{training}}</p>
-                                {% elif participated == 1 %}
-                                    <p><b>{{training}}</b>: Attended</p>
-                                {% elif participated == 0 %}
-                                    <p><b>{{training}}</b>: Not attended</p>
-                                {% else %}
-                                    <p><b>{{training}}</b>: Upcoming</p>
-                                {% endif%}
+                            {% for training, events in programTrainings.items() %}
+                                {% for eventObj, attended in events %}
+                                    {% if g.current_user.isCeltsAdmin %}
+                                        <p>{{eventObj.name}}</p>
+                                    {% elif attended %}
+                                        <p><b>{{eventObj.name}}</b>: Attended</p>
+                                    {% else %}
+                                        <p><b>{{eventObj.name}}</b>: Not attended</p>
+                                    {% endif%}
+                                {% endfor %}
                             {% endfor %}
                         {% endif %}
                     {% endif %}
