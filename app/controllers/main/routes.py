@@ -4,7 +4,6 @@ from playhouse.shortcuts import model_to_dict
 import datetime
 import json
 from http import cookies
-from functools import reduce
 
 from app import app
 from app.models.program import Program
@@ -140,7 +139,7 @@ def viewUsersProfile(username):
                                            ProgramBan.endDate > datetime.datetime.now()).execute())
             userParticipatedTrainingEvents = getParticipationStatusForTrainings(program, [volunteer], g.current_term)
             try: 
-                allTrainingsComplete = reduce(lambda x, y: x[1] and y[1], userParticipatedTrainingEvents[username]) # Did volunteer attend all events
+                allTrainingsComplete = False not in [attended for event, attended in userParticipatedTrainingEvents[username]] # Did volunteer attend all events
             except KeyError:
                 allTrainingsComplete = False
             noteForDict = notes[-1].banNote.noteContent if notes else ""
