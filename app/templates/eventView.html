@@ -131,10 +131,10 @@
                         {% if program or not eventData.isAllVolunteerTraining %}
                             <h3>Program Trainings:</h3>
                             {% for training, events in programTrainings.items() %}
-                                {% for eventObj,tupleBool in events %}
+                                {% for eventObj, attended in events %}
                                     {% if g.current_user.isCeltsAdmin %}
                                         <p>{{eventObj.name}}</p>
-                                    {% elif tupleBool %}
+                                    {% elif attended %}
                                         <p><b>{{eventObj.name}}</b>: Attended</p>
                                     {% else %}
                                         <p><b>{{eventObj.name}}</b>: Not attended</p>
