@@ -19,19 +19,21 @@ def trainedParticipants(programID, targetTerm):
     Returns a list of user objects who've completed all training events.
     """
 
-    academicYear = targetTerm.academicYear
     # Reset program eligibility each term for all other trainings
-
-    isRelevantAllVolunteer = (Event.isAllVolunteerTraining) & (Event.term.academicYear == academicYear) 
+    isRelevantAllVolunteer = (Event.isAllVolunteerTraining) & (Event.term.academicYear == targetTerm.academicYear) 
     isRelevantProgramTraining = (Event.program == programID) & (Event.term == targetTerm) & (Event.isTraining) 
-    otherTrainingEvents = (Event.select(Event.id)
-                                .join(Term)
-                                .where(isRelevantAllVolunteer | isRelevantProgramTraining, (Event.isCanceled != True)))
+    allTrainings = (Event.select()
+                         .join(Term)
+                         .where(isRelevantAllVolunteer | isRelevantProgramTraining, 
+                                Event.isCanceled == False))
 
-    allTrainingEvents = set(otherTrainingEvents)
-    eventTrainingDataList = [participant.user for participant in (EventParticipant.select().where(EventParticipant.event.in_(allTrainingEvents)))]
-    attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(allTrainingEvents), eventTrainingDataList)))
-    return attendedTraining
+    fullyTrainedUsers = (User.select()
+                             .join(EventParticipant)
+                             .where(EventParticipant.event.in_(allTrainings))
+                             .group_by(EventParticipant.user)
+                             .having(fn.Count(EventParticipant.user) == len(allTrainings)))
+
+    return list(fullyTrainedUsers)
 
 def addBnumberAsParticipant(bnumber, eventId):
     """Accepts scan input and signs in the user. If user exists or is already
@@ -134,10 +136,7 @@ def getParticipationStatusForTrainings(program, userList, term):
 
     :returns: trainings for program and if the user participated
     """
-    academicYear = term.academicYear
-
-
-    isRelevantAllVolunteer = (Event.isAllVolunteerTraining) & (Event.term.academicYear == academicYear)
+    isRelevantAllVolunteer = (Event.isAllVolunteerTraining) & (Event.term.academicYear == term.academicYear)
     isRelevantProgramTraining = (Event.program == program) & (Event.term == term) & (Event.isTraining)
     programTrainings = (Event.select(Event, Term, EventParticipant, EventRsvp)
                              .join(EventParticipant, JOIN.LEFT_OUTER).switch()
