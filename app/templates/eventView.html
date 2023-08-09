@@ -130,16 +130,19 @@
                     {% if programTrainings %}
                         {% if program or not eventData.isAllVolunteerTraining %}
                             <h3>Program Trainings:</h3>
-                            {% for training, participated in programTrainings.items() %}
-                                {% if g.current_user.isCeltsAdmin %}
-                                <p>{{training}}</p>
-                                {% elif participated == 1 %}
-                                    <p><b>{{training}}</b>: Attended</p>
-                                {% elif participated == 0 %}
-                                    <p><b>{{training}}</b>: Not attended</p>
-                                {% else %}
-                                    <p><b>{{training}}</b>: Upcoming</p>
-                                {% endif%}
+                            {% for training, events in programTrainings.items() %}
+                                {% for trainingTuple in events %}
+                                    {% set eventObj, tupleBool = trainingTuple %}
+                                    {% if g.current_user.isCeltsAdmin %}
+                                    <p>{{eventObj.name}}</p>
+                                    {% elif tupleBool == 1 %}
+                                    <p><b>{{eventObj.name}}</b>: Attended</p>
+                                    {% elif tupleBool == 0 %}
+                                    <p><b>{{eventObj.name}}</b>: Not attended</p>
+                                    {% else %}
+                                    <p><b>{{eventObj.name}}</b>: Upcoming</p>
+                                    {% endif%}
+                                {% endfor %}
                             {% endfor %}
                         {% endif %}
                     {% endif %}
