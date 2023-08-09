@@ -9,7 +9,7 @@ $(document).ready(function(){
             url: deleteLink,
             data: fileData, //get the startDate, endDate and name as a dictionary
             success: function(){
-                msgFlash("Attachment removed successfully")
+                msgFlash("Attachment removed successfully", "success")
                 $("#attachment_"+fileId).remove()
         
             },
