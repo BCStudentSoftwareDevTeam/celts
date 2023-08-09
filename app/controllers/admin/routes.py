@@ -48,11 +48,10 @@ def switchUser():
 def templateSelect():
     if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
         allprograms = getAllowedPrograms(g.current_user)
-        celtsSponsoredProgram = Program.get(Program.isOtherCeltsSponsored)
         visibleTemplates = getAllowedTemplates(g.current_user)
         return render_template("/events/template_selector.html",
                                 programs=allprograms,
-                                celtsSponsoredProgram = celtsSponsoredProgram,
+                                celtsSponsoredProgram = Program.get(Program.isOtherCeltsSponsored),
                                 templates=visibleTemplates)
     else:
         abort(403)
