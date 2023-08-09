@@ -18,8 +18,10 @@ $(document).ready(function() {
     content: function() {
       if ($(this).attr('data-content') == "Submitted") {
         return "This proposal has been submitted and is waiting on CELTS review."
+
       } else if ($(this).attr('data-content') == "Approved") {
         return "This proposal has been approved by CELTS."
+
       } else if ($(this).attr('data-content') == "In Progress") {
         return "This proposal has not been submitted for review."
       }
@@ -27,17 +29,18 @@ $(document).ready(function() {
   });
 });
 
-
 function resetAllSelections(){
   $('.form-select').val('---');
   $('#renewBtn').prop('disabled', true);
 }
+
 function updateRenewModal(courseID){
   // updates renewModal with the course's information
   $("#renewName").text($("#name-" + courseID).text())
   $("#renewFaculty").text($("#faculty-" + courseID).text())
   $("#renewStatus").text($("#status-" + courseID).text())
 }
+
 function changeAction(action){
   courseID = action.id;
   courseAction = action.value
@@ -94,46 +97,46 @@ function withdraw(){
 };
 
 function changeTerm() {
-  $('form').submit();
+    $('form').submit();
 };
 
 function formSubmit(el) {
-$("#termSelector").attr('action', '/manageServiceLearning/' + el);
-$("#termSelector").submit()
+    $("#termSelector").attr('action', '/manageServiceLearning/' + el);
+    $("#termSelector").submit()
 };
 
 function reviewCourses(courseID) {
-$.ajax({
-  url: "/proposalReview/",
-  type: "POST",
-  data: {"course_id":courseID},
-  success: function(modal_html) {
-    $("#review-modal").html(modal_html)
-    $("#proposal_view").modal('show')
-  }
-})
+    $.ajax({
+      url: "/proposalReview/",
+      type: "POST",
+      data: {"course_id":courseID},
+      success: function(modal_html) {
+        $("#review-modal").html(modal_html)
+        $("#proposal_view").modal('show')
+      }
+    })
 }
 
 function approveProposal(el){
-let courseID = $(el).data("id")
-$.ajax({
-  url: '/serviceLearning/approveCourse',
-  type: "POST",
-  data: {"courseID":courseID},
-  success: function(){
-    location.reload()
-  }
-})
+    let courseID = $(el).data("id")
+    $.ajax({
+      url: '/serviceLearning/approveCourse',
+      type: "POST",
+      data: {"courseID":courseID},
+      success: function(){
+        location.reload()
+      }
+    })
 }
 
 function unapproveProposal(el){
-let courseID = $(el).data("id")
-$.ajax({
-  url: '/serviceLearning/unapproveCourse',
-  type: "POST",
-  data: {"courseID":courseID},
-  success: function(){
-    location.reload()
-  }
-})
+    let courseID = $(el).data("id")
+    $.ajax({
+      url: '/serviceLearning/unapproveCourse',
+      type: "POST",
+      data: {"courseID":courseID},
+      success: function(){
+        location.reload()
+      }
+    })
 }
