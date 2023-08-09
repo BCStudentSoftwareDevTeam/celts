@@ -132,7 +132,7 @@ def viewUsersProfile(username):
 
         eligibilityTable = []
         for program in programs:
-            notes = list(ProgramBan.select(ProgramBan, Note)
+            banNotes = list(ProgramBan.select(ProgramBan, Note)
                                     .join(Note, on=(ProgramBan.banNote == Note.id))
                                     .where(ProgramBan.user == volunteer,
                                            ProgramBan.program == program,
@@ -142,11 +142,11 @@ def viewUsersProfile(username):
                 allTrainingsComplete = False not in [attended for event, attended in userParticipatedTrainingEvents[username]] # Did volunteer attend all events
             except KeyError:
                 allTrainingsComplete = False
-            noteForDict = notes[-1].banNote.noteContent if notes else ""
+            noteForDict = banNotes[-1].banNote.noteContent if banNotes else ""
             eligibilityTable.append({"program": program,
                                      "completedTraining": allTrainingsComplete,
                                      "trainingList": userParticipatedTrainingEvents,
-                                     "isNotBanned": True if not notes else False,
+                                     "isNotBanned": (not banNotes),
                                      "banNote": noteForDict})
         profileNotes = ProfileNote.select().where(ProfileNote.user == volunteer)
         userDietQuery = User.select().where(User.username == username)
