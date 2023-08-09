@@ -24,7 +24,7 @@ def getVolunteers(query):
 
     return json.dumps(searchUsers(query))
 
-@admin_bp.route('/event/<eventID>/track_volunteers', methods=['POST'])
+@admin_bp.route('/event/<eventID>/manage_volunteers', methods=['POST'])
 def updateVolunteerTable(eventID):
     try:
         event = Event.get_by_id(eventID)
@@ -37,10 +37,10 @@ def updateVolunteerTable(eventID):
         flash("Volunteer table succesfully updated", "success")
     else:
         flash("Error adding volunteer", "danger")
-    return redirect(url_for("admin.trackVolunteersPage", eventID=eventID))
+    return redirect(url_for("admin.manageVolunteersPage", eventID=eventID))
 
-@admin_bp.route('/event/<eventID>/track_volunteers', methods=['GET'])
-def trackVolunteersPage(eventID):
+@admin_bp.route('/event/<eventID>/manage_volunteers', methods=['GET'])
+def manageVolunteersPage(eventID):
     try:
         event = Event.get_by_id(eventID)
     except DoesNotExist as e:
@@ -57,8 +57,8 @@ def trackVolunteersPage(eventID):
     if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
         abort(403)
 
-    eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
-    eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
+    eventParticipantData = list(EventParticipant.select(EventParticipant, User).join(User).where(EventParticipant.event==event))
+    eventRsvpData = list(EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
     eventParticipantUsers = [participantDatum.user for participantDatum in eventParticipantData]
     eventRsvpData = [rsvpDatum for rsvpDatum in eventRsvpData if rsvpDatum.user not in eventParticipantUsers]
 
@@ -83,7 +83,7 @@ def trackVolunteersPage(eventID):
     recurringVolunteers = getPreviousRecurringEventData(recurringEventID)
 
     currentRsvpAmount = getEventRsvpCount(event.id)
-    return render_template("/events/trackVolunteers.html",
+    return render_template("/events/manageVolunteers.html",
                             eventData = eventData,
                             eventVolunteerData = eventVolunteerData,
                             eventNonAttendedData = eventNonAttendedData,
@@ -100,34 +100,35 @@ def trackVolunteersPage(eventID):
 
 
 
-@admin_bp.route('/event/<eventID>/dietary_restrictions', methods=['GET'])
-def dietaryRestrictionsPage(eventID):
+@admin_bp.route('/event/<eventID>/volunteer_details', methods=['GET'])
+def volunteerDetailsPage(eventID):
     try:
         event = Event.get_by_id(eventID)
     except DoesNotExist as e:
         print(f"No event found for {eventID}", e)
         abort(404)
 
-
     if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerForEvent(event))):
         abort(403)
 
-    eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
+    eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event))
     eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
     participantsAndRsvp = (eventParticipantData + eventRsvpData)
-
-    #get unique list of users for each category waitlist/notwaitlist
-    volunteerUser = list(set([obj.user for obj in participantsAndRsvp if not obj.rsvpWaitlist and obj.user.dietRestriction]))
-    waitlistUser = list(set([obj.user for obj in participantsAndRsvp if obj.rsvpWaitlist and obj.user.dietRestriction]))
-
+    eventParticipantUsers = [obj.user for obj in eventParticipantData]
+    eventNonAttendedData = [obj.user for obj in eventRsvpData if obj.user not in eventParticipantUsers]
+    
+    #get unique list of users for each category waitlist/notwaitlist,rsvped/attended
+    waitlistUser = list(set([obj.user for obj in participantsAndRsvp if obj.rsvpWaitlist]))
+    rsvpUser = list(set([obj.user for obj in eventRsvpData if not obj.rsvpWaitlist ]))
+    attendedUser= list(set([obj.user for obj in eventParticipantData if obj.user not in eventNonAttendedData]))
 
     eventData = model_to_dict(event, recurse=False)
     eventData["program"] = event.program
 
-
-    return render_template("/events/dietaryRestrictions.html",
-                            volunteerUser = volunteerUser,
+    return render_template("/events/volunteerDetails.html",
                             waitlistUser = waitlistUser,
+                            attendedUser= attendedUser,
+                            rsvpUser= rsvpUser,
                             event = event,
                             eventData = eventData)
 
@@ -155,7 +156,7 @@ def addVolunteer(eventId):
     if 'ajax' in request.form and request.form['ajax']:
         return ''
 
-    return redirect(url_for('admin.trackVolunteersPage', eventID = eventId))
+    return redirect(url_for('admin.manageVolunteersPage', eventID = eventId))
 
 @admin_bp.route('/rsvpFromWaitlist/<username>/<eventId>', methods = ['POST'])
 def rsvpFromWaitlist(username, eventId):

@@ -34,7 +34,7 @@ print("Inserting data for demo and testing purposes.")
 users = [
     {
         "username": "ramsayb2",
-        "bnumber": "B00173723",
+        "bnumber": "B00763721",
         "email": "ramsayb2@berea.edu",
         "phoneNumber": "(555)555-5555",
         "firstName": "Brian",
