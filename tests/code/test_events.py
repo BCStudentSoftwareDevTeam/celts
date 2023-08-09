@@ -343,7 +343,8 @@ def test_saveEventToDb_update():
         beforeUpdate = Event.get_by_id(eventId)
         assert beforeUpdate.name == "First Meetup"
 
-        # Change description, the value of isAllVolunteerTraining, and certRequirement on event 4
+        # Verify description, cerRequirement, and isRsvpRequried are updated for event 4 and 
+        # program, isAllVolunteerTraining, and recurringId are not updated.  
         newEventData = {
                         "id": 4,
                         "program": 1,
@@ -356,9 +357,9 @@ def test_saveEventToDb_update():
                         "location": "House",
                         'isFoodProvided': False,
                         'isRecurring': True,
-                        'recurringId': 2,
+                        'recurringId': 3,
                         'isTraining': True,
-                        'isRsvpRequired': False,
+                        'isRsvpRequired': True,
                         'rsvpLimit': None,
                         'isAllVolunteerTraining': True,
                         'isService': False,
@@ -374,7 +375,11 @@ def test_saveEventToDb_update():
             saveEventToDb(newEventData)
         afterUpdate = Event.get_by_id(newEventData['id'])
         assert afterUpdate.description == "This is a Test"
-        assert afterUpdate.isAllVolunteerTraining == True
+        assert afterUpdate.isRsvpRequired == True
+        
+        assert afterUpdate.program == Program.get_by_id(2)
+        assert afterUpdate.recurringId is None
+        assert afterUpdate.isAllVolunteerTraining == False
         assert RequirementMatch.select().where(RequirementMatch.event == afterUpdate,
                                                RequirementMatch.requirement == 9).exists()
         

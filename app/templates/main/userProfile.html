@@ -160,41 +160,19 @@
             </thead>
             <tbody>
               {% for row in eligibilityTable %}
-                {% set trainingList = row['trainingList'] %}
-                {% macro trainingListView() %}
-                  {% if trainingList %}
-                    {% for trainings, participated in trainingList.items() %}
-                      {% if g.current_user.isCeltsAdmin %}
-                        <li>{{trainings}}</li>
-                      {% else %}
-                        {% if participated == 1 %}
-                          <p><b>{{trainings}}</b>: <br>Attended</p>
-                        {% elif participated == 0 %}
-                          <p><b>{{trainings}}</b>: <br>Not attended</p>
-                        {% elif not participated[0] %}
-                          <p><b>{{trainings}}</b>: <br>Takes place on {{participated[1]}}</p>
-                        {% endif%}
-                      {% endif %}
-                    {% endfor %}
-                  {% else %}
-                    <p>No trainings for this program.</p>
-                  {% endif %}
-                {% endmacro %}
+                {% set trainingList = row['trainingList'][volunteer.username] %}
                 {% set checked = "" %}
                 {% if row.program in programsInterested %}
                   {% set checked = "checked" %}
                 {% endif %}
+                {% from 'trainingsHoverMacro.html' import trainingsHover %}
                 <tr>
                   <td><a href="{{row.program.url}}" id="programNameTable">{{row.program.programName}}</a></td>
                   <td><input class="form-check-input notifyInput" id="notifyInput" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>
                   <td>
-                    {% if row.completedTraining or not trainingList %}
-                      <i class="bi bi-check-lg"></i> &nbsp&nbsp
-                      <a class="trainingPopover" id="{{row.program.id}}" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
-                    {% else %}
-                      <i class="bi bi-x-lg"></i> &nbsp&nbsp
-                      <a class="trainingPopover" id="{{row.program.id}}" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
-                    {% endif %}
+                    {% set hasCompletedAllTrainings = row.completedTraining %}
+                    <i class="bi bi-{{'check' if hasCompletedAllTrainings else 'x'}}-lg"></i> &nbsp&nbsp
+                    <a class="trainingPopover" id="{{row.program.id}}" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingsHover(trainingList)}}">View</a>
                   </td>
                   {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
                     {% if row.isNotBanned %}

@@ -28,7 +28,7 @@ from app.models.insuranceInfo import InsuranceInfo
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, updateDietInfo
-from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getUserParticipatedTrainingEvents, checkUserRsvp, addPersonToEvent
+from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
@@ -132,20 +132,22 @@ def viewUsersProfile(username):
 
         eligibilityTable = []
         for program in programs:
-            notes = list(ProgramBan.select(ProgramBan, Note)
+            banNotes = list(ProgramBan.select(ProgramBan, Note)
                                     .join(Note, on=(ProgramBan.banNote == Note.id))
                                     .where(ProgramBan.user == volunteer,
-                                              ProgramBan.program == program,
-                                              ProgramBan.endDate > datetime.datetime.now()).execute())
-
-            UserParticipatedTrainingEvents = getUserParticipatedTrainingEvents(program, g.current_user, g.current_term)
-            allTrainingsComplete = not len([event for event in UserParticipatedTrainingEvents.values() if event != True])
-            noteForDict = notes[-1].banNote.noteContent if notes else ""
+                                           ProgramBan.program == program,
+                                           ProgramBan.endDate > datetime.datetime.now()).execute())
+            userParticipatedTrainingEvents = getParticipationStatusForTrainings(program, [volunteer], g.current_term)
+            try: 
+                allTrainingsComplete = False not in [attended for event, attended in userParticipatedTrainingEvents[username]] # Did volunteer attend all events
+            except KeyError:
+                allTrainingsComplete = False
+            noteForDict = banNotes[-1].banNote.noteContent if banNotes else ""
             eligibilityTable.append({"program": program,
-                                   "completedTraining": allTrainingsComplete,
-                                   "trainingList": UserParticipatedTrainingEvents,
-                                   "isNotBanned": True if not notes else False,
-                                   "banNote": noteForDict})
+                                     "completedTraining": allTrainingsComplete,
+                                     "trainingList": userParticipatedTrainingEvents,
+                                     "isNotBanned": (not banNotes),
+                                     "banNote": noteForDict})
         profileNotes = ProfileNote.select().where(ProfileNote.user == volunteer)
         userDietQuery = User.select().where(User.username == username)
         userDiet = [note.dietRestriction for note in userDietQuery]
@@ -331,7 +333,7 @@ def unban(program_id, username):
         return "Successfully unbanned the volunteer"
 
     except Exception as e:
-        print("Error  while updating Unban", e)
+        print("Error while updating Unban", e)
         flash("Failed to unban the volunteer", "danger")
         return "Failed to unban the volunteer", 500
 

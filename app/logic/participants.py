@@ -12,30 +12,28 @@ from app.logic.volunteers import getEventLengthInHours
 from app.logic.events import getEventRsvpCountsForTerm
 from app.logic.createLogs import createRsvpLog
 
-def trainedParticipants(programID, currentTerm):
+def trainedParticipants(programID, targetTerm):
     """
     This function tracks the users who have attended every Prerequisite
     event and adds them to a list that will not flag them when tracking hours.
+    Returns a list of user objects who've completed all training events.
     """
 
-    academicYear = currentTerm.academicYear
-
     # Reset program eligibility each term for all other trainings
+    isRelevantAllVolunteer = (Event.isAllVolunteerTraining) & (Event.term.academicYear == targetTerm.academicYear) 
+    isRelevantProgramTraining = (Event.program == programID) & (Event.term == targetTerm) & (Event.isTraining) 
+    allTrainings = (Event.select()
+                         .join(Term)
+                         .where(isRelevantAllVolunteer | isRelevantProgramTraining, 
+                                Event.isCanceled == False))
 
-    otherTrainingEvents = (Event.select(Event.id)
-            .join(Term)
-            .where(
-                Event.program == programID,
-                (Event.isTraining | Event.isAllVolunteerTraining),
-                Event.term.academicYear == academicYear)
-            )
+    fullyTrainedUsers = (User.select()
+                             .join(EventParticipant)
+                             .where(EventParticipant.event.in_(allTrainings))
+                             .group_by(EventParticipant.user)
+                             .having(fn.Count(EventParticipant.user) == len(allTrainings)))
 
-    allTrainingEvents = set(otherTrainingEvents)
-    eventTrainingDataList = [participant.user for participant in (
-        EventParticipant.select().where(EventParticipant.event.in_(allTrainingEvents))
-        )]
-    attendedTraining = list(dict.fromkeys(filter(lambda user: eventTrainingDataList.count(user) == len(allTrainingEvents), eventTrainingDataList)))
-    return attendedTraining
+    return list(fullyTrainedUsers)
 
 def addBnumberAsParticipant(bnumber, eventId):
     """Accepts scan input and signs in the user. If user exists or is already
@@ -131,30 +129,35 @@ def getEventParticipants(event):
 
     return {p.user: p.hoursEarned for p in eventParticipants}
 
-def getUserParticipatedTrainingEvents(program, user, currentTerm):
+def getParticipationStatusForTrainings(program, userList, term):
     """
     This function returns a dictionary of all trainings for a program and
     whether the current user participated in them.
 
     :returns: trainings for program and if the user participated
     """
-    academicYear = currentTerm.academicYear
+    isRelevantAllVolunteer = (Event.isAllVolunteerTraining) & (Event.term.academicYear == term.academicYear)
+    isRelevantProgramTraining = (Event.program == program) & (Event.term == term) & (Event.isTraining)
+    programTrainings = (Event.select(Event, Term, EventParticipant, EventRsvp)
+                             .join(EventParticipant, JOIN.LEFT_OUTER).switch()
+                             .join(EventRsvp, JOIN.LEFT_OUTER).switch()
+                             .join(Term)
+                             .where(isRelevantAllVolunteer | isRelevantProgramTraining, (Event.isCanceled != True)).order_by(Event.startDate))
 
-    programTrainings = (Event.select(Event, Term, EventParticipant)
-                               .join(EventParticipant, JOIN.LEFT_OUTER).switch()
-                               .join(Term)
-                               .where((Event.isTraining | Event.isAllVolunteerTraining),
-                                      Event.program== program,
-                                      Event.term.academicYear == academicYear,
-                                      EventParticipant.user.is_null(True) | (EventParticipant.user == user)))
+    # Create a dictionary where the keys are trainings and values are a list of those who attended
+    trainingData = {}
+    for training in programTrainings:
+        try:
+            if training.isPast:
+                trainingData[training] = trainingData.get(training, []) + [training.eventparticipant.user_id]
+            else:  # The training has yet to happen
+                trainingData[training] = trainingData.get(training, []) + [training.eventrsvp.user_id]
+        except AttributeError:
+            trainingData[training] = trainingData.get(training, [])
+    # Create a dictionary binding usernames to tuples. The tuples consist of the training (event object) and whether or not they attended it (bool)
+    userParticipationStatus = {}
+    for user in userList:
+        for training, attendeeList in trainingData.items():
+            userParticipationStatus[user.username] = userParticipationStatus.get(user.username, []) + [(training, user.username in attendeeList)]
 
-    UserParticipatedTrainingEvents = {}
-    for training in programTrainings.objects():
-        if training.startDate > date.today():
-            didParticipate = [None, training.startDate.strftime("%m/%d/%Y")]
-        elif training.user:
-            didParticipate = True
-        else:
-            didParticipate = False
-        UserParticipatedTrainingEvents[training.name] = didParticipate
-    return UserParticipatedTrainingEvents
+    return userParticipationStatus

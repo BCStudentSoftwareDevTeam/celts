@@ -158,17 +158,18 @@ def saveEventToDb(newEventData):
                     "isRsvpRequired": newEventData['isRsvpRequired'],
                     "isService": newEventData['isService'],
                     "startDate": eventInstance['date'],
-                    "isAllVolunteerTraining": newEventData['isAllVolunteerTraining'],
                     "rsvpLimit": newEventData['rsvpLimit'],
                     "endDate": eventInstance['date'],
                     "contactEmail": newEventData['contactEmail'],
                     "contactName": newEventData['contactName']
                 }
 
-            # Create or update the event
+            # The three fields below are only relevant during event creation so we only set/change them when 
+            # it is a new event. 
             if isNewEvent:
                 eventData['program'] = newEventData['program']
                 eventData['recurringId'] = recurringSeriesId
+                eventData["isAllVolunteerTraining"] = newEventData['isAllVolunteerTraining']
                 eventRecord = Event.create(**eventData)
             else:
                 eventRecord = Event.get_by_id(newEventData['id'])

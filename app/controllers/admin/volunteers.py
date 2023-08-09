@@ -9,7 +9,7 @@ from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours, addUserBackgroundCheck, setProgramManager
-from app.logic.participants import trainedParticipants, getEventParticipants, addPersonToEvent
+from app.logic.participants import trainedParticipants, getEventParticipants, addPersonToEvent, getParticipationStatusForTrainings
 from app.logic.events import getPreviousRecurringEventData, getEventRsvpCount
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
@@ -49,7 +49,7 @@ def manageVolunteersPage(eventID):
     eventData = model_to_dict(event, recurse=False)
     
     eventData["program"] = event.program
-    trainedParticipantsList = trainedParticipants(event.program, g.current_term)
+    trainedParticipantsList = trainedParticipants(event.program, event.term)
     eventParticipants = getEventParticipants(event)
 
     isProgramManager = g.current_user.isProgramManagerForEvent(event)
@@ -68,10 +68,13 @@ def manageVolunteersPage(eventID):
         eventWaitlistData = []
     else:
         eventWaitlistData = [volunteer for volunteer in eventParticipantData + eventRsvpData if volunteer.rsvpWaitlist and event.isRsvpRequired]
-        eventVolunteerData = [volunteer for volunteer in eventParticipantData + eventRsvpData if volunteer not in eventWaitlistData]
+        eventVolunteerData = [volunteer for volunteer in eventRsvpData if volunteer not in eventWaitlistData]
         eventNonAttendedData = []
         
+    program = event.program
 
+    allRelevantUsers = [participant.user for participant in eventVolunteerData + eventNonAttendedData + eventWaitlistData]
+    completedTrainingInfo = getParticipationStatusForTrainings(program, allRelevantUsers, event.term)
 
     eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
@@ -92,6 +95,7 @@ def manageVolunteersPage(eventID):
                             recurringVolunteers = recurringVolunteers,
                             bannedUsers = bannedUsers,
                             trainedParticipantsList = trainedParticipantsList,
+                            completedTrainingInfo = completedTrainingInfo,
                             currentRsvpAmount = currentRsvpAmount)
 
 
