@@ -4,6 +4,7 @@ from app.logic.transcript import *
 from app.models.user import User
 from app.models.courseParticipant import CourseParticipant
 from app.models.event import Event
+from app.models import mainDB
 
 @pytest.fixture(autouse=True)
 def setup():
@@ -185,3 +186,24 @@ def testingTotalHours():
     assert totalHours["totalCourseHours"] == 3
     assert totalHours["totalEventHours"] == 8
     assert totalHours["totalHours"] == 11
+
+@pytest.mark.integration
+def test_getStartYear():
+    with mainDB.atomic() as transaction:
+        # Multiple Courses and Events
+        newCourse = Course.create(term = 5, status=1, createdBy='ramsayb2')
+        CourseParticipant.create(course=newCourse, user='namet', hoursEarned=3.0)
+        assert getStartYear('namet') == 2020
+
+        # Event Participant with no Course Participant
+        CourseParticipant.delete().where(CourseParticipant.user == 'namet').execute()
+        assert getStartYear('namet') == 2020
+
+        # No Activity
+        EventParticipant.delete().where(EventParticipant.user == 'namet').execute()
+        assert getStartYear('namet') == "N/A"
+
+        # Course Participant with no Event Participant
+        CourseParticipant.create(course=newCourse, user='namet', hoursEarned=3.0)
+        assert getStartYear('namet') == 2022
+

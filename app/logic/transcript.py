@@ -47,8 +47,10 @@ def getTotalHours(username):
     """
     Get the toal hours from events and courses combined.
     """
-    eventHours = EventParticipant.select(fn.SUM(EventParticipant.hoursEarned)).where(EventParticipant.user == username).scalar()
-    courseHours =  CourseParticipant.select(fn.SUM(CourseParticipant.hoursEarned)).where(CourseParticipant.user == username).scalar()
+    eventHours = (EventParticipant.select(fn.SUM(EventParticipant.hoursEarned))
+                                 .where(EventParticipant.user == username)).scalar()
+    courseHours =  (CourseParticipant.select(fn.SUM(CourseParticipant.hoursEarned))
+                                    .where(CourseParticipant.user == username)).scalar()
 
     allHours = {"totalEventHours": (eventHours or 0),
                 "totalCourseHours": (courseHours or 0),
@@ -63,13 +65,13 @@ def getStartYear(username):
     startDate = (EventParticipant.select(Term.year)
                                  .join(Event)
                                  .join(Term).where(EventParticipant.user == username)
-                                 + CourseParticipant.select(Term.year)
+               + CourseParticipant.select(Term.year)
                                  .join(Course)
                                  .join(Term)
                                  .where(CourseParticipant.user == username)
-                                 ).order_by(Event.term.year)
+                ).order_by(Event.term.year).first()
 
-    startDate = startDate.first()
     if startDate:
         return startDate.event.term.year
+
     return "N/A"
