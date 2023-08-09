@@ -394,17 +394,18 @@ def test_cancelEvent():
      with mainDB.atomic() as transaction:
         # creates an event 
         testingEvent = Event.create(name = "Testing canceled event",
-                                      term = 2,
-                                      description = "This Event is Created to be Canceled.",
-                                      timeStart = "07:00 PM",
-                                      timeEnd = "10:00 PM",
-                                      location = "Somewhere",
-                                      isRsvpRequired = 0,
-                                      isTraining = 0,
-                                      isService = 0,
-                                      startDate = "2021-12-12",
-                                      endDate = "2022-6-12",
-                                      isCanceled = False)
+                                    term = 2,
+                                    description = "This Event is Created to be Canceled.",
+                                    timeStart = "07:00 PM",
+                                    timeEnd = "10:00 PM",
+                                    location = "Somewhere",
+                                    isRsvpRequired = 0,
+                                    isTraining = 0,
+                                    isService = 0,
+                                    startDate = "2021-12-12",
+                                    endDate = "2022-6-12",
+                                    isCanceled = False,
+                                    program = 2)
         
         testingEvent = Event.get(Event.name == "Testing canceled event")
         eventId = testingEvent.id
@@ -424,17 +425,18 @@ def test_deleteEvent():
     with mainDB.atomic() as transaction:
         # creates non recurring event
         testingEvent = Event.create(name = "Testing delete event",
-                                      term = 2,
-                                      description = "This Event is Created to be Deleted.",
-                                      timeStart = "06:00 PM",
-                                      timeEnd = "09:00 PM",
-                                      location = "No Where",
-                                      isRsvpRequired = 0,
-                                      isTraining = 0,
-                                      isService = 0,
-                                      startDate = "2021-12-12",
-                                      endDate = "2022-6-12",
-                                      recurringId = None)
+                                    term = 2,
+                                    description = "This Event is Created to be Deleted.",
+                                    timeStart = "06:00 PM",
+                                    timeEnd = "09:00 PM",
+                                    location = "No Where",
+                                    isRsvpRequired = 0,
+                                    isTraining = 0,
+                                    isService = 0,
+                                    startDate = "2021-12-12",
+                                    endDate = "2022-6-12",
+                                    recurringId = None,
+                                    program = 9)
 
         testingEvent = Event.get(Event.name == "Testing delete event")
         eventId = testingEvent.id
@@ -442,12 +444,12 @@ def test_deleteEvent():
         # tests deletion of standard event
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
-            deletingEvent = deleteEvent(eventId)
+            deleteEvent(eventId)
         assert Event.get_or_none(Event.id == eventId) is None
 
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
-            deletingEvent = deleteEvent(eventId)
+            deleteEvent(eventId)
         assert Event.get_or_none(Event.id == eventId) is None
         transaction.rollback()
 
@@ -484,7 +486,7 @@ def test_deleteEvent():
 
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
-            deletingEvent = deleteEvent(createdEvents[0])
+            deleteEvent(createdEvents[0])
 
         # check how many events exist after event deletion and make sure they are linear
         recurringEventsAfter = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.recurringId))
@@ -507,14 +509,14 @@ def test_deleteEvent():
 
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
-            deletingEvent = deleteEventAndAllFollowing(eventIdToDelete)
+            deleteEventAndAllFollowing(eventIdToDelete)
             totalRecurringEventsAfter = len(Event.select().where(Event.recurringId == recurringId))
         assert (totalRecurringEvents - eventPlusAllRecurringEventsAfter) == totalRecurringEventsAfter
         transaction.rollback()
 
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
-            deletingSeries = deleteAllRecurringEvents(eventIdToDelete)
+            deleteAllRecurringEvents(eventIdToDelete)
             newTotalRecurringEvents = len(Event.select().where(Event.recurringId == recurringId))
         assert newTotalRecurringEvents == 0
 
@@ -538,7 +540,8 @@ def test_upcomingEvents():
                                  description = "Test upcoming no program event.",
                                  location = "The moon",
                                  startDate = testDate,
-                                 endDate = testDate + timedelta(days=1))
+                                 endDate = testDate + timedelta(days=1),
+                                 program = 9)
 
          # Create a new Program to create the new Program Event off of so the
         # user can mark interest for it
@@ -632,8 +635,7 @@ def test_upcomingEvents():
                                    createdOn = dayBeforeTestDate,
                                    noteContent = "The test user is unbanned.",
                                    isPrivate = 0)
-        (ProgramBan.update(endDate = dayBeforeTestDate,
-                           unbanNote = noteForUnban)
+        (ProgramBan.update(endDate = dayBeforeTestDate,unbanNote = noteForUnban)
                    .where(ProgramBan.program == programForBanning.id,
                           ProgramBan.user == user.username).execute())
 
@@ -641,7 +643,7 @@ def test_upcomingEvents():
 
         # user has RSVPd and is Interested
         EventRsvp.create(event=noProgram, user=user)
-        eventsInUserInterestAndRsvp = getUpcomingEventsForUser(user, asOf = testDate)
+        getUpcomingEventsForUser(user, asOf = testDate)
 
         interestAndRsvp = eventsInUserInterestedProgram + [noProgram]
         for event in eventsInUserInterestedProgram:
@@ -670,44 +672,45 @@ def test_volunteerHistory():
 
         # Create a user to run the tests with
         user = User.create(username = 'usrtst',
-                              firstName = 'Test',
-                              lastName = 'User',
-                              bnumber = '03522492',
-                              email = 'usert@berea.deu',
-                              isStudent = True)
+                           firstName = 'Test',
+                           lastName = 'User',
+                           bnumber = '03522492',
+                           email = 'usert@berea.deu',
+                           isStudent = True)
 
 
         # Create a program that will have the program event created off of it
         participatedProgram = Program.create(id = 13,
-                                            programName = "BOO",
-                                            isStudentLed = False,
-                                            isBonnerScholars = False,
-                                            contactEmail = "test@email",
-                                            contactName = "testName",)
+                                             programName = "BOO",
+                                             isStudentLed = False,
+                                             isBonnerScholars = False,
+                                             contactEmail = "test@email",
+                                             contactName = "testName",)
         
         # Create a program event in the past that the test user will have
         # participated in
         participatedProgramEvent = Event.create(name = "Attended program event",
-                                term = 2,
-                                description = "Test attended program event.",
-                                timeStart = "18:00:00",
-                                timeEnd = "21:00:00",
-                                location = "The moon",
-                                startDate = "2021-12-12",
-                                endDate = "2021-12-13",
-                                isAllVolunteerTraining = False,
-                                program_id = participatedProgram)
+                                                term = 2,
+                                                description = "Test attended program event.",
+                                                timeStart = "18:00:00",
+                                                timeEnd = "21:00:00",
+                                                location = "The moon",
+                                                startDate = "2021-12-12",
+                                                endDate = "2021-12-13",
+                                                isAllVolunteerTraining = False,
+                                                program = participatedProgram)
         # Create a non-program event in the past that the test user will have
         # participated in
         participatedEvent = Event.create(name = "Attended event",
-                                term = 2,
-                                description = "Test attended event.",
-                                timeStart = "18:00:00",
-                                timeEnd = "21:00:00",
-                                location = "The moon",
-                                startDate = "2021-12-12",
-                                endDate = "2021-12-13",
-                                isAllVolunteerTraining = False)
+                                         term = 2,
+                                         description = "Test attended event.",
+                                         timeStart = "18:00:00",
+                                         timeEnd = "21:00:00",
+                                         location = "The moon",
+                                         startDate = "2021-12-12",
+                                         endDate = "2021-12-13",
+                                         isAllVolunteerTraining = False,
+                                         program = 9)
 
         # Add the created user as a participnt to the created program event
         EventParticipant.create(user = user , event = participatedProgramEvent.id)
@@ -766,51 +769,54 @@ def test_getPreviousRecurringEventData():
     with mainDB.atomic() as transaction:
 
         testingEvent1 = Event.create(name = "Testing delete event",
-                                      term = 2,
-                                      description = "This Event is Created to be Deleted.",
-                                      timeStart = "6:00 pm",
-                                      timeEnd = "9:00 pm",
-                                      location = "No Where",
-                                      isRsvpRequired = 0,
-                                      isTraining = 0,
-                                      isService = 0,
-                                      startDate = "2021-12-5",
-                                      endDate = "2022-12-5",
-                                      recurringId = 3)
+                                     term = 2,
+                                     description = "This Event is Created to be Deleted.",
+                                     timeStart = "6:00 pm",
+                                     timeEnd = "9:00 pm",
+                                     location = "No Where",
+                                     isRsvpRequired = 0,
+                                     isTraining = 0,
+                                     isService = 0,
+                                     startDate = "2021-12-5",
+                                     endDate = "2022-12-5",
+                                     recurringId = 3,
+                                     program = 9)
         testingEvent2 = Event.create(name = "Testing delete event",
-                                      term = 2,
-                                      description = "This Event is Created to be Deleted.",
-                                      timeStart = "6:00 pm",
-                                      timeEnd = "9:00 pm",
-                                      location = "No Where",
-                                      isRsvpRequired = 0,
-                                      isTraining = 0,
-                                      isService = 0,
-                                      startDate = "2022-12-12",
-                                      endDate = "2022-12-12",
-                                      recurringId = 3)
+                                     term = 2,
+                                     description = "This Event is Created to be Deleted.",
+                                     timeStart = "6:00 pm",
+                                     timeEnd = "9:00 pm",
+                                     location = "No Where",
+                                     isRsvpRequired = 0,
+                                     isTraining = 0,
+                                     isService = 0,
+                                     startDate = "2022-12-12",
+                                     endDate = "2022-12-12",
+                                     recurringId = 3,
+                                     program = 9)
         testingEvent3 = Event.create(name = "Testing delete event",
-                                      term = 2,
-                                      description = "This Event is Created to be Deleted.",
-                                      timeStart = "6:00 pm",
-                                      timeEnd = "9:00 pm",
-                                      location = "No Where",
-                                      isRsvpRequired = 0,
-                                      isTraining = 0,
-                                      isService = 0,
-                                      startDate = "2022-12-19",
-                                      endDate = "2022-12-19",
-                                      recurringId = 3)
+                                     term = 2,
+                                     description = "This Event is Created to be Deleted.",
+                                     timeStart = "6:00 pm",
+                                     timeEnd = "9:00 pm",
+                                     location = "No Where",
+                                     isRsvpRequired = 0,
+                                     isTraining = 0,
+                                     isService = 0,
+                                     startDate = "2022-12-19",
+                                     endDate = "2022-12-19",
+                                     recurringId = 3,
+                                     program = 9)
 
-        testingParticipant1 = EventParticipant.create(user = User.get_by_id("neillz"),
-                                                    event = testingEvent2.id,
-                                                    hoursEarned = None)
-        testingParticipant2 = EventParticipant.create(user = User.get_by_id("ramsayb2"),
-                                                    event = testingEvent2.id,
-                                                    hoursEarned = None)
-        testingParticipant3 = EventParticipant.create(user = User.get_by_id("khatts"),
-                                                    event = testingEvent2.id,
-                                                    hoursEarned = None)
+        EventParticipant.create(user = User.get_by_id("neillz"),
+                                                      event = testingEvent2.id,
+                                                      hoursEarned = None)
+        EventParticipant.create(user = User.get_by_id("ramsayb2"),
+                                                      event = testingEvent2.id,
+                                                      hoursEarned = None)
+        EventParticipant.create(user = User.get_by_id("khatts"),
+                                                      event = testingEvent2.id,
+                                                      hoursEarned = None)
 
         val = getPreviousRecurringEventData(testingEvent3.recurringId)
         assert val[0].username == "neillz"
@@ -831,7 +837,7 @@ def test_getEventRsvpCountsForTerm():
                                           rsvpLimit = 4,
                                           startDate = "2022-12-19",
                                           endDate = "2022-12-19",
-                                          )
+                                          program = 9)
 
         testUserToRsvp = User.create(username = 'rsvpUsr',
                                      firstName = 'RSVP',
@@ -856,23 +862,23 @@ def test_getEventRsvpCount():
     with mainDB.atomic() as transaction:
 
         eventWithRsvp = Event.create(name = "Req and Limit",
-                                    term = 2,
-                                    description = "Event that requries RSVP and has an RSVP limit set.",
-                                    timeStart = "6:00 pm",
-                                    timeEnd = "9:00 pm",
-                                    location = "The Moon",
-                                    isRsvpRequired = 1,
-                                    startDate = "2022-12-19",
-                                    endDate = "2022-12-19",
-                                    )
+                                     term = 2,
+                                     description = "Event that requries RSVP and has an RSVP limit set.",
+                                     timeStart = "6:00 pm",
+                                     timeEnd = "9:00 pm",
+                                     location = "The Moon",
+                                     isRsvpRequired = 1,
+                                     startDate = "2022-12-19",
+                                     endDate = "2022-12-19",
+                                     program = 9)
         user_list = []
         for i in range(5):
             user_list.append(User.create(username = f'rsvpUsr{i}',
-                            firstName = f'RSVP{i}',
-                            lastName = f'Test{i}',
-                            bnumber = f'4861687{i}',
-                            email = f'helloThere{i}@berea.edu',
-                            isStudent = True,
+                             firstName = f'RSVP{i}',
+                             lastName = f'Test{i}',
+                             bnumber = f'4861687{i}',
+                             email = f'helloThere{i}@berea.edu',
+                             isStudent = True,
                             ))
 
         EventRsvp.create(event=Event.get_by_id(1), user=user_list[0])

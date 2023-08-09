@@ -86,11 +86,7 @@
             <tr height = '50' class="">
           {% endif %}
             {% if type != "bonner" and type != "studentLed" %}
-              {% if event.program%}
-                <td class="text-dark">{{event.program.programName}}</td>
-              {% else %}
-                <td class="text-dark">This event does not belong to any program.</td>
-              {% endif %}
+              <td class="text-dark">{{event.program.programName}}</td>
             {% endif %}
             {% if user.isCeltsAdmin or user.isProgramManagerFor(event.program)%}
               {% set link_class = 'link-secondary' if event.isPast else 'link-primary' %}
