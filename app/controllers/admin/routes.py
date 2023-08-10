@@ -252,12 +252,13 @@ def eventDisplay(eventId):
 
         currentEventRsvpAmount = getEventRsvpCountsForTerm(g.current_term)
 
-        UserParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], g.current_term)
+        userParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], g.current_term)
+
         return render_template("eventView.html",
                                 eventData = eventData,
                                 event = event,
                                 userHasRSVPed = userHasRSVPed,
-                                programTrainings = UserParticipatedTrainingEvents,
+                                programTrainings = userParticipatedTrainingEvents,
                                 currentEventRsvpAmount = currentEventRsvpAmount,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths,
