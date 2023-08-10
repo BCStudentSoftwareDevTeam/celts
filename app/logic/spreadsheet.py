@@ -12,6 +12,15 @@ from app.models.event import Event
 from app.models.term import Term
 
 
+def getUniqueVolunteers():
+
+    uniqueVolunteers = (EventParticipant.select(fn.DISTINCT(EventParticipant.user_id), fn.CONCAT(User.firstName, ' ', User.lastName))
+                                        .join(User).switch(EventParticipant)
+                                        .join(Event)
+                                        .join(Term)
+                                        .where(Term.academicYear == "2022-2023"))
+    
+    return uniqueVolunteers.tuples()
 def volunteerHoursByProgram():
     query = ((Program.select(Program.programName, fn.SUM(EventParticipant.hoursEarned).alias('sum')).join(Event)
                      .join(EventParticipant, on=(Event.program== EventParticipant.event))
@@ -218,20 +227,22 @@ def create_spreadsheet():
     filepath = app.config['files']['base_path'] + '/volunteer_data.xlsx'
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
 
-    hoursByProgramColumns = ["Program", "Hours"]
-    volunteerMajorColumns = ["Major", "Count"]
-    volunteerClassColumns = ["Class Level", "Count"]
-    repeatProgramEventVolunteerColumns = ["Volunteer", "Program Name", "Event Count"]
-    repeatAllProgramVolunteerColumns = ["Volunteer", "Number of Events"]
-    volunteerProgramRetentionRateAcrossTermColumns = ["Program", "Retention Rate"]
+    # hoursByProgramColumns = ["Program", "Hours"]
+    # volunteerMajorColumns = ["Major", "Count"]
+    # volunteerClassColumns = ["Class Level", "Count"]
+    # repeatProgramEventVolunteerColumns = ["Volunteer", "Program Name", "Event Count"]
+    # repeatAllProgramVolunteerColumns = ["Volunteer", "Number of Events"]
+    # volunteerProgramRetentionRateAcrossTermColumns = ["Program", "Retention Rate"]
 
-    makeDataXls(volunteerHoursByProgram(), hoursByProgramColumns, "Total Hours By Program", workbook)
-    makeDataXls(volunteerMajorAndClass(User.major), volunteerMajorColumns, "Volunteers By Major", workbook)
-    makeDataXls(volunteerMajorAndClass(User.classLevel, reorderClassLevel=True), volunteerClassColumns, "Volunteers By Class Level", workbook)
-    makeDataXls(repeatVolunteersPerProgram(), repeatProgramEventVolunteerColumns, "Repeat Volunteers Per Program", workbook)
-    makeDataXls(repeatVolunteers(), repeatAllProgramVolunteerColumns, "Repeat Volunteers All Programs", workbook)
-    makeDataXls(getRetentionRate(), volunteerProgramRetentionRateAcrossTermColumns, "Retention Rate By Semester", workbook)
+    # makeDataXls(volunteerHoursByProgram(), hoursByProgramColumns, "Total Hours By Program", workbook)
+    # makeDataXls(volunteerMajorAndClass(User.major), volunteerMajorColumns, "Volunteers By Major", workbook)
+    # makeDataXls(volunteerMajorAndClass(User.classLevel, reorderClassLevel=True), volunteerClassColumns, "Volunteers By Class Level", workbook)
+    # makeDataXls(repeatVolunteersPerProgram(), repeatProgramEventVolunteerColumns, "Repeat Volunteers Per Program", workbook)
+    # makeDataXls(repeatVolunteers(), repeatAllProgramVolunteerColumns, "Repeat Volunteers All Programs", workbook)
+    # makeDataXls(getRetentionRate(), volunteerProgramRetentionRateAcrossTermColumns, "Retention Rate By Semester", workbook)
 
+    uniqueVolunteersColumns = ["Username", "Full Name"]
+    makeDataXls(getUniqueVolunteers(), uniqueVolunteersColumns, "Unique Volunteers", workbook)
     workbook.close()
 
     return filepath
