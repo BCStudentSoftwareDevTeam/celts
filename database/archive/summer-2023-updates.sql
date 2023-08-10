@@ -23,4 +23,5 @@ alter table term modify column termOrder varchar(255) not null;
 
 -- Email Log sender change (bug in peewee-migrations?)
 alter table emaillog add sender varchar(255) not null;
+alter table emaillog drop constraint emaillog_ibfk_3;
 alter table emaillog drop column sender_id;
