@@ -650,7 +650,7 @@ CREATE TABLE `eventtemplate` (
 
 LOCK TABLES `eventtemplate` WRITE;
 /*!40000 ALTER TABLE `eventtemplate` DISABLE KEYS */;
-INSERT INTO `eventtemplate` VALUES (1,'Single Program','single-program','{}','createEvent.html',0),(2,'All Volunteer Training','all-volunteer','{\"name\": \"All Volunteer Training\",\"description\": \"Training for all CELTS programs\", \"isTraining\": true, \"isService\": false, \"isRequired\": true, \"isAllVolunteerTraining\": true}','createEvent.html',1),(3,'CELTS-Sponsored Event','no-program','{}','createEvent.html',1);
+INSERT INTO `eventtemplate` VALUES (1,'Single Program','single-program','{}','createEvent.html',0),(2,'All Volunteer Training','all-volunteer','{\"name\": \"All Volunteer Training\",\"description\": \"Training for all CELTS programs\", \"isTraining\": true, \"isService\": false, \"isRequired\": true, \"isAllVolunteerTraining\": true}','createEvent.html',1);
 /*!40000 ALTER TABLE `eventtemplate` ENABLE KEYS */;
 UNLOCK TABLES;
 
