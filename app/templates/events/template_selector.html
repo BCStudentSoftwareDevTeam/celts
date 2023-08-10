@@ -6,7 +6,7 @@
 <div class="card m-auto" style="width: 400px;">
     <div class="templateList">
       {% for template in templates %}
-      <a href="/eventTemplates/{{template.id}}/create" class="list-group-item list-group-item-action">{{ template.name }}</a>
+      <a href="/eventTemplates/{{template.id}}/{{celtsSponsoredProgram.id}}/create" class="list-group-item list-group-item-action">{{ template.name }}</a>
       {% endfor %}
     </div>
   {% for program in programs %}

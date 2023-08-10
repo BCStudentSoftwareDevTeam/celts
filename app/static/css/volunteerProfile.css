@@ -5,3 +5,22 @@
 .ongoing-event{
     opacity:0.6;
 }
+
+dt { 
+    font-weight: normal;
+    padding: 5px; 
+    padding-bottom:0px; 
+}
+dd { 
+    font-size:.9em;
+    padding: 5px; 
+    padding-top:0px; 
+}
+#printButton{
+    font-size: 15px;
+}
+
+.bonnerNotes dd:nth-of-type(even) { background-color:#f2f2f2; } 
+.bonnerNotes dt:nth-of-type(even) { background-color:#f2f2f2; } 
+.bonnerNotes dd:nth-of-type(odd) { background-color:#FFF; } 
+.bonnerNotes dt:nth-of-type(odd) { background-color:#FFF; } 

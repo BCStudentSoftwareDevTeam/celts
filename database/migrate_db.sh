@@ -45,7 +45,6 @@ pem add app.models.note.Note
 pem add app.models.outsideParticipant.OutsideParticipant
 pem add app.models.partner.Partner
 pem add app.models.program.Program
-pem add app.models.programEvent.ProgramEvent
 pem add app.models.user.User
 pem add app.models.programBan.ProgramBan
 pem add app.models.courseInstructor.CourseInstructor
@@ -59,6 +58,8 @@ pem add app.models.backgroundCheck.BackgroundCheck
 pem add app.models.backgroundCheckType.BackgroundCheckType
 pem add app.models.adminLog.AdminLog
 pem add app.models.attachmentUpload.AttachmentUpload
+pem add app.models.emergencyContact.EmergencyContact
+pem add app.models.insuranceInfo.InsuranceInfo
 pem add app.models.bonnerCohort.BonnerCohort
 pem add app.models.certification.Certification
 pem add app.models.certificationAttempt.CertificationAttempt

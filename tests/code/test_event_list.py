@@ -1,7 +1,6 @@
 import pytest
 from peewee import DoesNotExist
 from app.models import mainDB
-from app.models.programEvent import ProgramEvent
 from app.models.program import Program
 from app.models.event import Event
 from app.models.bonnerCohort import BonnerCohort
@@ -23,12 +22,11 @@ def training_events():
                              location = "basement",
                              isTraining = True,
                              startDate = "2021-12-12",
-                             endDate = "2021-12-13")
+                             endDate = "2021-12-13",
+                             program = 2)
 
-    testProgramEvent = ProgramEvent.create(program = 2 , event = testEvent)
-
-    yield testProgramEvent
-    testEvent.delete_instance(testProgramEvent)
+    yield testEvent
+    testEvent.delete_instance(testEvent)
 
 @pytest.mark.integration
 @pytest.fixture
@@ -40,12 +38,12 @@ def special_bonner():
                                timeEnd = "22:00:00",
                                location = "moon",
                                startDate = "2021-12-12",
-                               endDate = "2021-12-13")
+                               endDate = "2021-12-13",
+                               program = 5)
 
-    specialForBonner = ProgramEvent.create(program = 5, event = bonnerEvent)
 
-    yield specialForBonner
-    bonnerEvent.delete_instance(specialForBonner)
+    yield bonnerEvent
+    bonnerEvent.delete_instance(bonnerEvent)
 
 @pytest.mark.integration
 @pytest.fixture
@@ -58,7 +56,8 @@ def special_otherEvents():
                                        location = "moon",
                                        isTraining = False,
                                        startDate = "2021-12-12",
-                                       endDate = "2021-12-13")
+                                       endDate = "2021-12-13",
+                                       program = 9)
 
         yield nonProgramEvent
         nonProgramEvent.delete_instance()
@@ -66,8 +65,7 @@ def special_otherEvents():
 @pytest.mark.integration
 def test_studentled_events(training_events):
     studentLed = training_events
-    allStudentLedProgram = {studentLed.program: [studentLed.event]}
-
+    allStudentLedProgram = {studentLed.program: [studentLed]}
     assert allStudentLedProgram == getStudentLedEvents(2)
 
 @pytest.mark.integration
@@ -84,7 +82,7 @@ def test_training_events(training_events):
                                            isStudentLed = False,
                                            isBonnerScholars = True,
                                            contactName = "Jesus Christ",
-                                           contactEmail = "christj@test.com")
+                                           contactEmail = "christj@test.com",)
         
         testNotBonnerProgram = Program.create(programName = "Test Not Bonner",
                                               partner = None,
@@ -101,7 +99,8 @@ def test_training_events(training_events):
                                           location = "basement",
                                           isTraining = True,
                                           startDate = "1919-12-13",
-                                          endDate = "1919-12-14")
+                                          endDate = "1919-12-14",
+                                          program = testBonnerProgram.id)
        
         testNotBonnerTraining = Event.create(name = "Bonner Test Training",
                                              term = testTerm,
@@ -111,11 +110,9 @@ def test_training_events(training_events):
                                              location = "basement",
                                              isTraining = True,
                                              startDate = "1919-12-12",
-                                             endDate = "1919-12-13")
-        
-        ProgramEvent.create(program = testBonnerProgram.id, event = testBonnerTraining)
-        ProgramEvent.create(program = testNotBonnerProgram.id, event = testNotBonnerTraining)
-        ProgramEvent.create(program = 1, event = testNotBonnerTraining)
+                                             endDate = "1919-12-13",
+                                             program = testNotBonnerProgram.id)
+   
 
         userFaculty = User.create(username = "TestNotBonner",
                                   bnumber = "B000000000",
@@ -176,12 +173,11 @@ def test_training_events(training_events):
                                            isStudent = True,
                                            isFaculty = False,
                                            isStaff = False,
-                                           isCeltsAdmin = False,
+                                           isCeltsAdmin = False, 
                                            isCeltsStudentStaff = False)
 
         notBonnerList = [testNotBonnerTraining]
         bonnerList = [testNotBonnerTraining, testBonnerTraining]
-
         assert notBonnerList == getTrainingEvents(testTerm, userFaculty)
         assert notBonnerList == getTrainingEvents(testTerm, userNotBonnerScholar)
         assert notBonnerList == getTrainingEvents(testTerm, userStaff)
@@ -193,15 +189,13 @@ def test_training_events(training_events):
 @pytest.mark.integration
 def test_bonner_events(special_bonner):
     bonner = special_bonner
-    allBonnerProgram = [bonner.event]
-
+    allBonnerProgram = [bonner]
     assert allBonnerProgram == getBonnerEvents(2)
 
 @pytest.mark.integration
 def test_getOtherEvents(special_otherEvents):
     otherEvent = special_otherEvents
     otherEvents = [Event.get_by_id(11), Event.get_by_id(7), otherEvent]
-    
     assert otherEvents == getOtherEvents(4)
 
 @pytest.mark.integration
@@ -215,7 +209,8 @@ def test_eventViewCount():
                                  location = "basement",
                                  isTraining = True,
                                  startDate = "2021-12-12",
-                                 endDate = "2021-12-13")
+                                 endDate = "2021-12-13",
+                                 program = 9)
         
         viewer = User.create(username = "eventViewer",
                              bnumber = "B000000000",

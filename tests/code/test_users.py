@@ -14,7 +14,6 @@ from app.models.user import User
 from app.models.programManager import ProgramManager
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.event import Event
-from app.models.programEvent import ProgramEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, getBannedUsers, isBannedFromEvent, updateDietInfo
 from app.logic.volunteers import addUserBackgroundCheck
 
@@ -110,8 +109,14 @@ def test_addUserProfileNote():
             g.current_user = "ramsayb2"
             profileNote = addProfileNote(1, True, "Test profile note", "neillz")
             assert profileNote == ProfileNote.get_by_id(profileNote.id)
+
             profileNote2 = addProfileNote(3, False, "Test profile note 2", "ramsayb2")
             assert profileNote2 == ProfileNote.get_by_id(profileNote2.id)
+            assert profileNote2.viewTier == 3
+
+            profileNote3 = addProfileNote(3, True, "Test profile note 3", "ramsayb2")
+            assert profileNote3 == ProfileNote.get_by_id(profileNote3.id)
+            assert profileNote3.viewTier == 1
         transaction.rollback()
 
 @pytest.mark.integration
@@ -255,14 +260,15 @@ def test_getStudentManagerForEvent():
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Seabury Center",
         "startDate": datetime.strptime("2021 10 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
+        "program": 9
         }
         ]
 
         Event.insert_many(testEvent).on_conflict_replace().execute() #Inserts new row into Event table
 
-        #Inserts new row into ProgramEvent table
-        ProgramEvent.create(program=13, event=16)
+        #Inserts new row into Event table
+        Event.update(program_id=13).where(Event.id == 16).execute()
 
         # This user will not be a program manager
         testUserData = [

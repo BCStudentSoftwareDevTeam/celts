@@ -1,0 +1,369 @@
+{% set title = "Manage Volunteers" %}
+{% set page_title = eventData.name %}
+{% set eventPast = event.isPast %}
+{% set tabName = 'manageVolunteers' %}
+{% extends "eventNav.html" %}
+
+
+{% block scripts %}
+  {{super()}}
+  <script type="module" src="/static/js/manageVolunteers.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/r-2.2.9/datatables.min.js"></script>
+{% endblock %}
+
+
+
+
+
+{% block styles %}
+
+  {{super()}}
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/r-2.2.9/datatables.min.css"/>
+
+{% endblock %}
+
+{% block app_content %}
+{{super()}}
+
+{% from 'trainingsHoverMacro.html' import trainingsHover %}
+
+<label class='d-none' id="eventLength">{{eventLength}}</label>
+<input class="form-control" id="event" name="event" value="{{event}}" type='hidden' />
+<div class="flex-container" style="padding: 5px;">
+  <div class='form-group d-flex row'>
+    <div class="col-6 px-1">
+      <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add Volunteers</a>
+      <a class="btn btn-warning" role="button" href= "/event/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
+    </div>
+    {% if (not event.isPast) and (event.isRsvpRequired) and (event.rsvpLimit is not none) and (currentRsvpAmount >= event.rsvpLimit) %}
+    <div class="col-6 text-end">
+      <p class="text-danger">RSVP Limit has been reached! Future RSVPs will be added to the Waitlist!</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- #################### Attending Table #################### -->
+<form method="post">
+  <input class="form-control" id="eventID" name="event" value="{{event.id}}" type='hidden'>
+  <div class="accordion" id="table-accordion">
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#attended-collapse" aria-expanded="true" aria-controls="attended-collapse" {{'disabled' if not eventNonAttendedData and not eventWaitlistData else ''}}>
+          {% if event.isPast %}
+          Attended Volunteers
+          {% elif event.isRsvpRequired %}
+          RSVP'd Volunteers
+          {% else %}
+          Volunteers
+          {% endif %}
+        </button>
+      </h2>
+      <div id="attended-collapse" class="accordion-collapse show">
+        <div class="accordion-body">
+          <table class="table" id="trackVolunteerstable" data-entry-count="{{ eventVolunteerData|length }}">
+            <thead>
+              <tr>
+                {% if (not event.isPast) and (event.isRsvpRequired)  %}
+                  <th>RSVP Time</th>
+                {% endif %}
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                
+                {% if event.isPast %}
+                  <th class="noSort">Total Hours</th>
+                  <th class="noSort">Attended</th>
+                {% else %}
+                  <th class="noSort">Completed Trainings</th>
+                {% endif %}
+                <th class="noSort">Remove Volunteer</th>
+              </tr>
+            </thead>
+            <tbody class="align-middle" id="volunteerTable">
+              {% if eventVolunteerData %}
+                {% for participant in eventVolunteerData %}
+                  <tr>
+                    {% if (not event.isPast) and (event.isRsvpRequired)  %}
+                      <td>
+                        {# This only works because we are assuming that all participants are RSVP entries #}
+                        {{ participant.rsvpTime.strftime('%b %-d %-I:%M %p') }}
+                      </td>
+                    {% endif %}
+                    <td>
+                      <input
+                        class="form-control"
+                        type='hidden'
+                        name="username"
+                        id="{{participant.user.username}}"
+                        value="{{participant.user}}" />
+                      <a href="/profile/{{participant.user}}">{{participant.user.firstName}} {{participant.user.lastName}}</a>
+                      {% if participant.user in bannedUsers %}
+                        <a href="#" data-toggle="tooltip" data-placement="top" title="User is banned from this program.">
+                          <span class="bi bi-x-circle-fill text-danger"></span>
+                        </a>
+                      {% endif %}
+                    </td>
+                    <td>{{participant.user.email}}</td>
+                    <td>{{participant.user.phoneNumber}}</td>
+                    {% if event.isPast %}
+                      <td>
+                        <input
+                          class="form-control number-only form-control input-sm"
+                          id="inputHours_{{participant.user.username}}"
+                          name="inputHours_{{participant.user.username}}"
+                          style="max-width: 90px;"
+                          type ="number"
+                          min="0"
+                          step="0.01"
+                            {% if participant.hoursEarned == None %}
+                              value=""
+                            {% else %}
+                              value="{{participant.hoursEarned}}"
+                            {% endif %}
+                        />
+                      </td>
+                      <td style="text-align:center">
+                        <input
+                          type="checkbox"
+                          class='attendanceCheck'
+                          name="checkbox_{{participant.user.username}}"
+                          {% if event.isPast %}
+                            checked
+                          {% endif %} />
+                      </td>
+                    {% else %} {# end hiding the hours and attended inputs #}
+                      <td style="text-align:center">
+                        {% set isTrained = participant.user in trainedParticipantsList %}
+                        {% set trainingStatus = 'Completed all trainings.' if isTrained else 'Did not complete all trainings.' %}
+                        <span class="bi bi-{{'check' if isTrained else 'x'}}-lg" aria-label="{{trainingStatus}}"></span> &nbsp&nbsp
+                        <a class="trainingPopover" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingsHover(completedTrainingInfo[participant.user.username])}}">View</a>
+                      </td>
+                    {% endif %}
+                    <td style="text-align:center">
+                      <button
+                        type="button"
+                        class="removeVolunteer btn btn-danger btn-sm"
+                        id="{{participant.user.username}}"
+                        aria-label="remove volunteer">
+                        <span class="bi bi-trash h5 align-middle"></span>
+                      </button>
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% endif %}
+            </tbody>
+          </table>
+          {% if event.isPast %}
+            <div class="row">
+              <div class="col"></div>
+              <button type="submit" class="btn btn-primary float-end nowrap col-auto mx-3">Save</button>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+</form>
+
+<!-- #################  Waitlist Table  ################# -->
+{% if event.isRsvpRequired and event.rsvpLimit and not event.isPast and eventWaitlistData %}
+<form method="post">
+    <label class='d-none' id="eventLength">{{eventLength}}</label>
+    <input class="form-control" id="eventID" name="event" value="{{event.id}}" type='hidden'>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#waitlisted-collapse">
+          Waitlisted Volunteers
+        </button>
+      </h2>
+      <div class="accordion-collapse collapse" id="waitlisted-collapse">
+        <div class="accordion-body">
+          <table class="table" id="trackWaitlistTable" data-entry-count="{{ eventWaitlistData|length }}">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Waitlist Time</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th class="noSort">Completed Trainings</th>
+                <th class="noSort">Remove From Waitlist</th>
+              </tr>
+            </thead>
+            <tbody class="align-middle" id="waitlistTable">
+              {% for participant in eventWaitlistData %}
+                <tr>
+                  <td>
+                    <button class="btn btn-primary text-nowrap" value="{{participant.user.username}}" id="addRsvpFromWaitlistBtn" type="submit">Add to RSVP</button>
+                  </td>
+                  {% if (not event.isPast) and (event.isRsvpRequired)  %}
+                  <td>
+                    {# This only works because we are assuming that all participants are RSVP entries #}
+                    {{ participant.rsvpTime.strftime('%b %-d %-I:%M %p') }}
+                  </td>
+                  {% endif %}
+                  <td>
+                    <input class="form-control" type='hidden' name="username" id="{{participant.user.username}}" value="{{participant.user}}" />
+                    <a href="/profile/{{participant.user}}">{{participant.user.firstName}} {{participant.user.lastName}}</a>
+                    {% if participant.user in bannedUsers %}
+                      <a href="#" data-toggle="tooltip" data-placement="top" title="User is banned from this program.">
+                        <span class="bi bi-x-circle-fill text-danger"></span>
+                      </a>
+                    {% endif %}
+                  </td>
+                  <td>{{participant.user.email}}</td>
+                  <td>{{participant.user.phoneNumber}}</td>
+                  <td style="text-align:center">
+                    {% set isTrained = participant.user in trainedParticipantsList %}
+                    {% set trainingStatus = 'Completed all trainings.' if isTrained else 'Did not complete all trainings.' %}
+                    <span class="bi bi-{{'check' if isTrained else 'x'}}-lg" aria-label="{{trainingStatus}}"></span> &nbsp&nbsp
+                    <a class="trainingPopover" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingsHover(completedTrainingInfo[participant.user.username])}}">View</a>
+                  </td>
+                  <td style="text-align:center">
+                    <button type="button" class="removeVolunteer btn btn-danger btn-sm" id="{{participant.user.username}}" aria-label="remove volunteer">
+                      <span class="bi bi-trash h5 align-middle"></span>
+                    </button>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+</form>
+{% endif %}
+
+<!-- #################  Non Attended Table  ################# -->
+{% if event.isPast and eventNonAttendedData %}
+<form method="post">
+    <label class='d-none' id="eventLength">{{eventLength}}</label>
+    <input class="form-control" id="eventID" name="event" value="{{event.id}}" type='hidden'>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#non-attended-collapse">
+          RSVP and Waitlist
+        </button>
+      </h2>
+      <div class="accordion-collapse collapse" id="non-attended-collapse">
+        <div class="accordion-body">
+          <table class="table" id="nonAttendedTable" data-entry-count="{{ eventNonAttendedData|length }}">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Reservation Type</th>
+                <th class="noSort">Total Hours</th>
+                <th class="noSort">Attended</th>
+                <th class="noSort">Remove Volunteer</th>
+              </tr>
+            </thead>
+            <tbody class="align-middle" id="nonAttendedTableBody">
+              {% for participant in eventNonAttendedData %}
+                <tr>
+                  <td>
+                    <input
+                      class="form-control"
+                      type='hidden'
+                      name="username"
+                      id="{{participant.user.username}}"
+                      value="{{participant.user}}" />
+                    <a href="/profile/{{participant.user}}">{{participant.user.firstName}} {{participant.user.lastName}}</a>
+                    {% if participant.user in bannedUsers %}
+                    <a href="#" data-toggle="tooltip" data-placement="top" title="User is banned from this program.">
+                      <span class="bi bi-x-circle-fill text-danger"></span>
+                    </a>
+                    {% endif %} 
+                  </td>
+                  <td>{{participant.user.email}}</td>
+                  <td>{{participant.user.phoneNumber}}</td>
+                  <td>{{ 'Waitlist' if participant.rsvpWaitlist else 'RSVP' }}</td>
+                  <td>
+                  <input
+                    class="form-control number-only form-control input-sm"
+                    id="inputHours_{{participant.user.username}}"
+                    name="inputHours_{{participant.user.username}}"
+                    style="max-width: 90px;"
+                    type ="number"
+                    min="0"
+                    step="0.01"
+                    disabled 
+                  />
+                  </td>
+                  <td style="text-align:center">
+                    <input
+                      type="checkbox"
+                      class='attendanceCheck'
+                      name="checkbox_{{participant.user.username}}"/>
+                  </td>
+                  <td style="text-align:center">
+                    <button
+                      type="button"
+                      class="removeVolunteer btn btn-danger btn-sm"
+                      id="{{participant.user.username}}"
+                      aria-label="remove volunteer">
+                      <span class="bi bi-trash h5 align-middle"></span>
+                    </button>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <div class="row">
+            <div class="col"></div>
+            <button type="submit" class="btn btn-primary float-end text-nowrap col-auto mx-3">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</form>
+
+<!-- #################  Modal  ################# -->
+{% set rsvpNeeded  = (event.isRsvpRequired) and (not event.isPast) %}
+{% set rsvpFull = rsvpNeeded and (event.rsvpLimit is not none) and (currentRsvpAmount >= event.rsvpLimit) %}
+<div class="modal fade float-start" id="addVolunteerModal" tabindex="-1" aria-labelledby="addVolunteerModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        {% set modalTitle = "Add Volunteers to Waitlist" if rsvpFull else("Add Volunteers to RSVP" if rsvpNeeded else "Add Volunteers") %}
+        <h5 class="modal-title">{{modalTitle}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group">
+          <div class="form-group input-group-x form-outline ui-widget" style="width:80%;">
+            <input type="input" id="addVolunteerInput" class="form-control" placeholder="Search" autocomplete="off"/>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm">
+            <i class="bi bi-search ms-0"></i>
+          </button>
+        </div>
+        <ul class="list-unstyled mx-3 mt-2" id= "addVolunteerList">
+          {% if event.isRecurring and not event.isFirstRecurringEvent%}
+            {% if recurringVolunteers %}
+              {%for participant in recurringVolunteers%}
+                <li>
+                  <input class="recurringVolunteer" type="checkbox" id ="recurringVolunteerCheckbox_{{loop.index}}" name="volunteer[]" value= {{participant}} />
+                  <label class="form-check-label" for="recurringVolunteerCheckbox_{{loop.index}}"> {{participant.firstName}} {{participant.lastName}}</label>
+                  <label class="text-dark" data-toggle="previousVolunteerHover">*</label>
+                </li>
+              {% endfor %}
+            {% endif %}
+          {% endif %}
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Close</button>
+        {% if event.isRecurring and recurringVolunteers and not event.isFirstRecurringEvent  %}
+        <button type="button" id = "selectAllVolunteers" class="btn btn-primary" >Select All</button>
+        {% endif %}
+        {% set buttonName = "Add to Waitlist" if rsvpFull else ("Add RSVP" if rsvpNeeded else "Add Participant") %}
+        <button id="addVolunteersButton" type="button" class="btn btn-success" disabled>{{buttonName}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
