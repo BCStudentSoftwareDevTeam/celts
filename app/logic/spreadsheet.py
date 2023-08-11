@@ -18,7 +18,8 @@ def getUniqueVolunteers():
                                         .join(User).switch(EventParticipant)
                                         .join(Event)
                                         .join(Term)
-                                        .where(Term.academicYear == "2022-2023"))
+                                        .where(Term.academicYear == "2022-2023")
+                                        .order_by(EventParticipant.user_id))
     
     return uniqueVolunteers.tuples()
 
@@ -31,8 +32,19 @@ def totalVolunteerHours():
 def volunteerProgramHours():
     # Show all volunteers for a program with how many hours they volunteerd for individually
     # sum indiviual hours for program
-    
-    return []
+    hoursForProgram = volunteerHoursByProgram()
+
+    # idk = (EventParticipant.select(Program.id, fn.DISTINCT(EventParticipant.user_id), fn.COUNT(EventParticipant.hoursEarned))
+    #                        .join(Event)
+    #                        .join(Program)
+    #                        .where(Event.program_id == Program.id))
+
+    idk = (EventParticipant.select(Program.programName, EventParticipant.user_id, fn.SUM(EventParticipant.hoursEarned))
+                           .join(Event, on=(EventParticipant.event_id == Event.id))
+                           .join(Program, on=(Event.program_id == Program.id))
+                           .group_by(Program.programName, EventParticipant.user_id))
+
+    return idk.tuples()
 
 def onlyCompletedAllVolunteer():
     # Return volunteers that only attended the All Volunteer Training and then nothing else
@@ -42,7 +54,7 @@ def onlyCompletedAllVolunteer():
                                .join(Term)
                                .where(Event.name != "All Volunteer Training", Term.academicYear == "2022-2023"))
 
-    onlyAllVolunteer = (EventParticipant.select(fn.CONCAT(User.firstName, " ", User.lastName))
+    onlyAllVolunteer = (EventParticipant.select(EventParticipant.user_id, fn.CONCAT(User.firstName, " ", User.lastName))
                                         .join(User).switch(EventParticipant)
                                         .join(Event)
                                         .join(Term)
@@ -272,12 +284,11 @@ def create_spreadsheet():
 
     uniqueVolunteersColumns = ["Username", "Full Name"]
     makeDataXls(getUniqueVolunteers(), uniqueVolunteersColumns, "Unique Volunteers", workbook)
-    # totalVolunteerHoursColumns = ["Total Volunteer Hours"]
-    # makeDataXls(totalVolunteerHours(), totalVolunteerHoursColumns, "Total Hours", workbook)
-    volunteerProgramHoursColumns = [ "User Name", "Volunteer Hours"]
-    makeDataXls(volunteerProgramHours(), volunteerProgramHoursColumns, "Something", workbook)
-    fuck = [" "]
-    makeDataXls(onlyCompletedAllVolunteer(), fuck, "A Duck", workbook)
+    totalVolunteerHoursColumns = ["Total Volunteer Hours"]
+    makeDataXls(totalVolunteerHours(), totalVolunteerHoursColumns, "Total Hours", workbook)
+    volunteerProgramHoursColumns = [ "Program Name", "Vollunteer Username", "Volunteer Hours"]
+    makeDataXls(volunteerProgramHours(), volunteerProgramHoursColumns, "Volunteer Hours By Program", workbook)
+    makeDataXls(onlyCompletedAllVolunteer(), ["Username","Full Name "], "Only All Volunteer Training", workbook)
     
     workbook.close()
 
