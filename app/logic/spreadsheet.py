@@ -21,9 +21,38 @@ def getUniqueVolunteers():
                                         .where(Term.academicYear == "2022-2023"))
     
     return uniqueVolunteers.tuples()
+
+def totalVolunteerHours(): 
+    
+    query = (EventParticipant.select(fn.SUM(EventParticipant.hoursEarned)))
+
+    return query.tuples()
+
+def volunteerProgramHours():
+    # Show all volunteers for a program with how many hours they volunteerd for individually
+    # sum indiviual hours for program
+    
+    return []
+
+def onlyCompletedAllVolunteer():
+    # Return volunteers that only attended the All Volunteer Training and then nothing else
+
+    subOnly = (EventParticipant.select(EventParticipant.user_id)
+                               .join(Event)
+                               .join(Term)
+                               .where(Event.name != "All Volunteer Training", Term.academicYear == "2022-2023"))
+
+    onlyAllVolunteer = (EventParticipant.select(fn.CONCAT(User.firstName, " ", User.lastName))
+                                        .join(User).switch(EventParticipant)
+                                        .join(Event)
+                                        .join(Term)
+                                        .where(Event.name == "All Volunteer Training", Term.academicYear == "2022-2023", EventParticipant.user_id.not_in(subOnly)))
+
+    return onlyAllVolunteer.tuples()
+
 def volunteerHoursByProgram():
     query = ((Program.select(Program.programName, fn.SUM(EventParticipant.hoursEarned).alias('sum')).join(Event)
-                     .join(EventParticipant, on=(Event.program== EventParticipant.event))
+                     .join(EventParticipant, on=(Event.id == EventParticipant.event_id))
                      .group_by(Program.programName)
                      .order_by(Program.programName)))
 
@@ -227,14 +256,14 @@ def create_spreadsheet():
     filepath = app.config['files']['base_path'] + '/volunteer_data.xlsx'
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
 
-    # hoursByProgramColumns = ["Program", "Hours"]
+    hoursByProgramColumns = ["Program", "Hours"]
     # volunteerMajorColumns = ["Major", "Count"]
     # volunteerClassColumns = ["Class Level", "Count"]
     # repeatProgramEventVolunteerColumns = ["Volunteer", "Program Name", "Event Count"]
     # repeatAllProgramVolunteerColumns = ["Volunteer", "Number of Events"]
     # volunteerProgramRetentionRateAcrossTermColumns = ["Program", "Retention Rate"]
 
-    # makeDataXls(volunteerHoursByProgram(), hoursByProgramColumns, "Total Hours By Program", workbook)
+    makeDataXls(volunteerHoursByProgram(), hoursByProgramColumns, "Total Hours By Program", workbook)
     # makeDataXls(volunteerMajorAndClass(User.major), volunteerMajorColumns, "Volunteers By Major", workbook)
     # makeDataXls(volunteerMajorAndClass(User.classLevel, reorderClassLevel=True), volunteerClassColumns, "Volunteers By Class Level", workbook)
     # makeDataXls(repeatVolunteersPerProgram(), repeatProgramEventVolunteerColumns, "Repeat Volunteers Per Program", workbook)
@@ -243,6 +272,13 @@ def create_spreadsheet():
 
     uniqueVolunteersColumns = ["Username", "Full Name"]
     makeDataXls(getUniqueVolunteers(), uniqueVolunteersColumns, "Unique Volunteers", workbook)
+    # totalVolunteerHoursColumns = ["Total Volunteer Hours"]
+    # makeDataXls(totalVolunteerHours(), totalVolunteerHoursColumns, "Total Hours", workbook)
+    volunteerProgramHoursColumns = [ "User Name", "Volunteer Hours"]
+    makeDataXls(volunteerProgramHours(), volunteerProgramHoursColumns, "Something", workbook)
+    fuck = [" "]
+    makeDataXls(onlyCompletedAllVolunteer(), fuck, "A Duck", workbook)
+    
     workbook.close()
 
     return filepath

@@ -39,5 +39,6 @@ fi
 
 export FLASK_APP=run.py
 export FLASK_ENV=development
+export FLASK_DEBUG=1
 export FLASK_RUN_PORT=8080
 export FLASK_RUN_HOST=0.0.0.0   # To allow external routing to the application for development
