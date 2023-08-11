@@ -32,12 +32,6 @@ def totalVolunteerHours():
 def volunteerProgramHours():
     # Show all volunteers for a program with how many hours they volunteerd for individually
     # sum indiviual hours for program
-    hoursForProgram = volunteerHoursByProgram()
-
-    # idk = (EventParticipant.select(Program.id, fn.DISTINCT(EventParticipant.user_id), fn.COUNT(EventParticipant.hoursEarned))
-    #                        .join(Event)
-    #                        .join(Program)
-    #                        .where(Event.program_id == Program.id))
 
     idk = (EventParticipant.select(Program.programName, EventParticipant.user_id, fn.SUM(EventParticipant.hoursEarned))
                            .join(Event, on=(EventParticipant.event_id == Event.id))
@@ -286,7 +280,7 @@ def create_spreadsheet():
     makeDataXls(getUniqueVolunteers(), uniqueVolunteersColumns, "Unique Volunteers", workbook)
     totalVolunteerHoursColumns = ["Total Volunteer Hours"]
     makeDataXls(totalVolunteerHours(), totalVolunteerHoursColumns, "Total Hours", workbook)
-    volunteerProgramHoursColumns = [ "Program Name", "Vollunteer Username", "Volunteer Hours"]
+    volunteerProgramHoursColumns = [ "Program Name", "Volunteer Username", "Volunteer Hours"]
     makeDataXls(volunteerProgramHours(), volunteerProgramHoursColumns, "Volunteer Hours By Program", workbook)
     makeDataXls(onlyCompletedAllVolunteer(), ["Username","Full Name "], "Only All Volunteer Training", workbook)
     
