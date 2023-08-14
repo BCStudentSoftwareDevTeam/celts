@@ -39,7 +39,6 @@ from app.logic.utils import selectSurroundingTerms
 from app.logic.certification import getCertRequirementsWithCompletion
 from app.logic.serviceLearningCoursesData import saveCourseParticipantsToDatabase,courseParticipantPreviewSessionCleaner
 from app.logic.createLogs import createRsvpLog, createAdminLog
-from app.logic.spreadsheet import create_spreadsheet
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
@@ -52,7 +51,6 @@ def landingPage():
 
     eventsInTerm = list(Event.select().where(Event.term == g.current_term, Event.isCanceled == False))
     programsWithEventsList = [event.program for event in eventsInTerm if not event.isPast]
-    create_spreadsheet()
 
     return render_template("/main/landingPage.html", managerProgramDict = managerProgramDict,
                                                      term = g.current_term,

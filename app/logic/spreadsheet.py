@@ -30,29 +30,27 @@ def totalVolunteerHours():
     return query.tuples()
 
 def volunteerProgramHours():
-    # Show all volunteers for a program with how many hours they volunteerd for individually
-    # sum indiviual hours for program
 
-    idk = (EventParticipant.select(Program.programName, EventParticipant.user_id, fn.SUM(EventParticipant.hoursEarned))
-                           .join(Event, on=(EventParticipant.event_id == Event.id))
-                           .join(Program, on=(Event.program_id == Program.id))
-                           .group_by(Program.programName, EventParticipant.user_id))
+    volunteerProgramHours = (EventParticipant.select(Program.programName, EventParticipant.user_id, fn.SUM(EventParticipant.hoursEarned))
+                                             .join(Event, on=(EventParticipant.event_id == Event.id))
+                                             .join(Program, on=(Event.program_id == Program.id))
+                                             .group_by(Program.programName, EventParticipant.user_id))
 
-    return idk.tuples()
+    return volunteerProgramHours.tuples()
 
 def onlyCompletedAllVolunteer():
     # Return volunteers that only attended the All Volunteer Training and then nothing else
 
-    subOnly = (EventParticipant.select(EventParticipant.user_id)
-                               .join(Event)
-                               .join(Term)
-                               .where(Event.name != "All Volunteer Training", Term.academicYear == "2022-2023"))
+    subQuery = (EventParticipant.select(EventParticipant.user_id)
+                                .join(Event)
+                                .join(Term)
+                                .where(Event.name != "All Volunteer Training", Term.academicYear == "2022-2023"))
 
     onlyAllVolunteer = (EventParticipant.select(EventParticipant.user_id, fn.CONCAT(User.firstName, " ", User.lastName))
                                         .join(User).switch(EventParticipant)
                                         .join(Event)
                                         .join(Term)
-                                        .where(Event.name == "All Volunteer Training", Term.academicYear == "2022-2023", EventParticipant.user_id.not_in(subOnly)))
+                                        .where(Event.name == "All Volunteer Training", Term.academicYear == "2022-2023", EventParticipant.user_id.not_in(subQuery)))
 
     return onlyAllVolunteer.tuples()
 
@@ -64,12 +62,8 @@ def volunteerHoursByProgram():
 
     return query.tuples()
 
-# def volunteerHoursAllPrograms():
-#     totalHoursAllProgram = float(EventParticipant.select(fn.Sum(fn.Coalesce(EventParticipant.hoursEarned, 0))).scalar())
-
-#     return totalHoursAllProgram
-
 def volunteerMajorAndClass(column, reorderClassLevel=False):
+
     majorAndClass = (User.select(Case(None, ((column.is_null(), "Unknown"),), column), fn.COUNT(fn.DISTINCT(EventParticipant.user_id)).alias('count'))
                          .join(EventParticipant, on=(User.username == EventParticipant.user_id))
                          .group_by(column))
@@ -86,7 +80,6 @@ def volunteerMajorAndClass(column, reorderClassLevel=False):
     else: 
         majorAndClass = majorAndClass.order_by(column.asc(nulls = 'LAST'))
          
-
     return majorAndClass.tuples()
 
 def repeatVolunteersPerProgram():
@@ -263,26 +256,26 @@ def create_spreadsheet():
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
 
     hoursByProgramColumns = ["Program", "Hours"]
-    # volunteerMajorColumns = ["Major", "Count"]
-    # volunteerClassColumns = ["Class Level", "Count"]
-    # repeatProgramEventVolunteerColumns = ["Volunteer", "Program Name", "Event Count"]
-    # repeatAllProgramVolunteerColumns = ["Volunteer", "Number of Events"]
-    # volunteerProgramRetentionRateAcrossTermColumns = ["Program", "Retention Rate"]
+    volunteerMajorColumns = ["Major", "Count"]
+    volunteerClassColumns = ["Class Level", "Count"]
+    repeatProgramEventVolunteerColumns = ["Volunteer", "Program Name", "Event Count"]
+    repeatAllProgramVolunteerColumns = ["Volunteer", "Number of Events"]
+    volunteerProgramRetentionRateAcrossTermColumns = ["Program", "Retention Rate"]
+    uniqueVolunteersColumns = ["Username", "Full Name"]
+    totalVolunteerHoursColumns = ["Total Volunteer Hours"]
+    volunteerProgramHoursColumns = [ "Program Name", "Volunteer Username", "Volunteer Hours"]
+    onlyCompletedAllVolunteerColumns = ["Username","Full Name "]
 
     makeDataXls(volunteerHoursByProgram(), hoursByProgramColumns, "Total Hours By Program", workbook)
-    # makeDataXls(volunteerMajorAndClass(User.major), volunteerMajorColumns, "Volunteers By Major", workbook)
-    # makeDataXls(volunteerMajorAndClass(User.classLevel, reorderClassLevel=True), volunteerClassColumns, "Volunteers By Class Level", workbook)
-    # makeDataXls(repeatVolunteersPerProgram(), repeatProgramEventVolunteerColumns, "Repeat Volunteers Per Program", workbook)
-    # makeDataXls(repeatVolunteers(), repeatAllProgramVolunteerColumns, "Repeat Volunteers All Programs", workbook)
-    # makeDataXls(getRetentionRate(), volunteerProgramRetentionRateAcrossTermColumns, "Retention Rate By Semester", workbook)
-
-    uniqueVolunteersColumns = ["Username", "Full Name"]
+    makeDataXls(volunteerMajorAndClass(User.major), volunteerMajorColumns, "Volunteers By Major", workbook)
+    makeDataXls(volunteerMajorAndClass(User.classLevel, reorderClassLevel=True), volunteerClassColumns, "Volunteers By Class Level", workbook)
+    makeDataXls(repeatVolunteersPerProgram(), repeatProgramEventVolunteerColumns, "Repeat Volunteers Per Program", workbook)
+    makeDataXls(repeatVolunteers(), repeatAllProgramVolunteerColumns, "Repeat Volunteers All Programs", workbook)
+    makeDataXls(getRetentionRate(), volunteerProgramRetentionRateAcrossTermColumns, "Retention Rate By Semester", workbook)
     makeDataXls(getUniqueVolunteers(), uniqueVolunteersColumns, "Unique Volunteers", workbook)
-    totalVolunteerHoursColumns = ["Total Volunteer Hours"]
     makeDataXls(totalVolunteerHours(), totalVolunteerHoursColumns, "Total Hours", workbook)
-    volunteerProgramHoursColumns = [ "Program Name", "Volunteer Username", "Volunteer Hours"]
     makeDataXls(volunteerProgramHours(), volunteerProgramHoursColumns, "Volunteer Hours By Program", workbook)
-    makeDataXls(onlyCompletedAllVolunteer(), ["Username","Full Name "], "Only All Volunteer Training", workbook)
+    makeDataXls(onlyCompletedAllVolunteer(), onlyCompletedAllVolunteerColumns , "Only All Volunteer Training", workbook)
     
     workbook.close()
 
