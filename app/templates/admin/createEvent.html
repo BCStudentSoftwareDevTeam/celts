@@ -222,7 +222,7 @@
                     {% set hide = "" if eventData.isRsvpRequired else "display: none" %}
                     <div class="form-group" id="limitGroup" style= "{{hide}}">
                       <label class="form-label mt-2" for='limitRsvp'><strong>Attendance Limit</strong></label>
-                      <input class="form-control mb-2" type="number" id="limitRsvp" name="rsvpLimit" value="{{eventData.rsvpLimit}}" placeholder="No Limit"></input>
+                      <input class="form-control mb-2" type="number" id="limitRsvp" name="rsvpLimit" value="{{eventData.rsvpLimit}}" min="0" placeholder="No Limit"></input>
                     </div>
                     <label class="custom-control-label" for="checkFood"><strong>This event will provide food.</strong></label>
                     <input class="form-check-input" type="checkbox" id="checkFood" name="isFoodProvided" {{"checked" if eventData.isFoodProvided}}/>
