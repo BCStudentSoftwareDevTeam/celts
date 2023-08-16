@@ -53,14 +53,6 @@ templates = [
         "templateFile": "createEvent.html",
         "isVisible": True
     },
-    {
-        "id": 3,
-        "name": "CELTS-Sponsored Event",
-        "tag": "no-program",
-        "templateJSON":'{}',
-        "templateFile": "createEvent.html",
-        "isVisible": True
-    },
 
 ]
 EventTemplate.insert_many(templates).on_conflict_replace().execute()

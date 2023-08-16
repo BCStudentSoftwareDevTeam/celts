@@ -3,6 +3,7 @@ from peewee import DoesNotExist, fn, JOIN
 from dateutil import parser
 from datetime import timedelta, date
 import datetime
+from collections import defaultdict
 from werkzeug.datastructures import MultiDict
 from app.models import mainDB
 from app.models.user import User
@@ -196,6 +197,27 @@ def getStudentLedEvents(term):
         programs.setdefault(event.program, []).append(event)
 
     return programs
+
+def getUpcomingEventsCount(term):
+    """
+        Return a count of all upcoming events for each student led program.
+    """
+    
+    bla = (Program.select(Program.id.alias("program"), fn.COUNT(Event.id).alias("eventCount"))
+                  .join(Event, on=(Program.id == Event.program_id))
+                  .where(Program.isStudentLed,
+                         Event.term == term,
+                         Event.endDate >= datetime.datetime.now())
+                   .group_by(Program.id))
+    
+    countDict = {}
+
+    for count in bla:
+        countDict.setdefault(count.program, []).append(count.eventCount)
+
+    print(countDict)
+
+    return countDict
 
 def getTrainingEvents(term, user):
     """
