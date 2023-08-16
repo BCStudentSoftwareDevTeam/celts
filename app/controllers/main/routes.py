@@ -76,9 +76,7 @@ def events(selectedTerm, activeTab, programID):
     
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     studentLedEvents = getStudentLedEvents(term)
-    countStudentLedEvents = getUpcomingEventsCount(term)
-    print("#################")
-    print(getUpcomingEventsCount(term))
+    countUpcomingStudentLedEvents = getUpcomingEventsCount(term, currentTime)
     trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
@@ -99,7 +97,7 @@ def events(selectedTerm, activeTab, programID):
                             activeTab = activeTab,
                             programID = int(programID),
                             managersProgramDict = managersProgramDict,
-                            countStudentLedEvents = countStudentLedEvents
+                            countUpcomingStudentLedEvents = countUpcomingStudentLedEvents
                             )
 
 @main_bp.route('/profile/<username>', methods=['GET'])

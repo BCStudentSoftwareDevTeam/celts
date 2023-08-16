@@ -198,22 +198,22 @@ def getStudentLedEvents(term):
 
     return programs
 
-def getUpcomingEventsCount(term):
+def getUpcomingEventsCount(term, currentTime):
     """
         Return a count of all upcoming events for each student led program.
     """
     
-    bla = (Program.select(Program.id.alias("program"), fn.COUNT(Event.id).alias("eventCount"))
+    upcomingCount = (Program.select(Program.id, fn.COUNT(Event.id).alias("eventCount"))
                   .join(Event, on=(Program.id == Event.program_id))
                   .where(Program.isStudentLed,
                          Event.term == term,
-                         Event.endDate >= datetime.datetime.now())
+                         Event.endDate >= currentTime)
                    .group_by(Program.id))
     
     countDict = {}
 
-    for count in bla:
-        countDict.setdefault(count.program, []).append(count.eventCount)
+    for count in upcomingCount:
+        countDict[count.id] = count.eventCount
 
     print(countDict)
 
