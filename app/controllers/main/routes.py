@@ -559,9 +559,9 @@ def getDietInfo():
     if (g.current_user.username == user) or g.current_user.isAdmin:
         updateDietInfo(user, dietInfo)
         if len(dietInfo) > 0:
-            createAdminLog(f"Updated his dietary restrictions to {dietInfo}.") if dietInfo.strip() else None
+            createAdminLog(f"Updated his dietary restrictions to {dietInfo}.") if dietInfo.strip() else None 
         else:
-            createAdminLog(f"Deleted all his dietary restrictions.") 
+            createAdminLog(f"Deleted all his dietary restrictions.")
 
 
     return " "
