@@ -198,28 +198,26 @@ def getStudentLedEvents(term):
 
     return programs
 
-def getUpcomingEventsCount(term, currentTime):
+def getUpcomingStudentLedCount(term, currentTime):
     """
         Return a count of all upcoming events for each student led program.
     """
     
     upcomingCount = (Program.select(Program.id, fn.COUNT(Event.id).alias("eventCount"))
-                  .join(Event, on=(Program.id == Event.program_id))
-                  .where(Program.isStudentLed,
-                         Event.term == term,
-                         Event.endDate >= currentTime,
-                         Event.timeEnd >= currentTime,
-                         Event.isCanceled == False)
-                   .group_by(Program.id))
+                            .join(Event, on=(Program.id == Event.program_id))
+                            .where(Program.isStudentLed,
+                                    Event.term == term,
+                                    Event.endDate >= currentTime,
+                                    Event.timeEnd >= currentTime,
+                                    Event.isCanceled == False)
+                            .group_by(Program.id))
     
-    countDict = {}
+    programCountDict = {}
 
-    for count in upcomingCount:
-        countDict[count.id] = count.eventCount
+    for programCount in upcomingCount:
+        programCountDict[programCount.id] = programCount.eventCount
 
-    print(countDict)
-
-    return countDict
+    return programCountDict
 
 def getTrainingEvents(term, user):
     """

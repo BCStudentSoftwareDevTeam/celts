@@ -76,7 +76,7 @@ def events(selectedTerm, activeTab, programID):
     
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     studentLedEvents = getStudentLedEvents(term)
-    countUpcomingStudentLedEvents = getUpcomingEventsCount(term, currentTime)
+    countUpcomingStudentLedEvents = getUpcomingStudentLedCount(term, currentTime)
     trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
