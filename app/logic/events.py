@@ -207,7 +207,9 @@ def getUpcomingEventsCount(term, currentTime):
                   .join(Event, on=(Program.id == Event.program_id))
                   .where(Program.isStudentLed,
                          Event.term == term,
-                         Event.endDate >= currentTime)
+                         Event.endDate >= currentTime,
+                         Event.timeEnd >= currentTime,
+                         Event.isCanceled == False)
                    .group_by(Program.id))
     
     countDict = {}
