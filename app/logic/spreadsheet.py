@@ -14,7 +14,7 @@ from app.models.term import Term
 
 def getUniqueVolunteers():
 
-    uniqueVolunteers = (EventParticipant.select(fn.DISTINCT(EventParticipant.user_id), fn.CONCAT(User.firstName, ' ', User.lastName))
+    uniqueVolunteers = (EventParticipant.select(fn.DISTINCT(EventParticipant.user_id), fn.CONCAT(User.firstName, ' ', User.lastName), User.bnumber)
                                         .join(User).switch(EventParticipant)
                                         .join(Event)
                                         .join(Term)
@@ -261,7 +261,7 @@ def create_spreadsheet():
     repeatProgramEventVolunteerColumns = ["Volunteer", "Program Name", "Event Count"]
     repeatAllProgramVolunteerColumns = ["Volunteer", "Number of Events"]
     volunteerProgramRetentionRateAcrossTermColumns = ["Program", "Retention Rate"]
-    uniqueVolunteersColumns = ["Username", "Full Name"]
+    uniqueVolunteersColumns = ["Username", "Full Name", "B-Number"]
     totalVolunteerHoursColumns = ["Total Volunteer Hours"]
     volunteerProgramHoursColumns = [ "Program Name", "Volunteer Username", "Volunteer Hours"]
     onlyCompletedAllVolunteerColumns = ["Username","Full Name "]
