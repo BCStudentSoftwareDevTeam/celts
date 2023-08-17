@@ -3,7 +3,6 @@ from peewee import DoesNotExist, fn, JOIN
 from dateutil import parser
 from datetime import timedelta, date
 import datetime
-from collections import defaultdict
 from werkzeug.datastructures import MultiDict
 from app.models import mainDB
 from app.models.user import User
