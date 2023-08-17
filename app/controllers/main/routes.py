@@ -555,13 +555,14 @@ def getDietInfo():
     dietaryInfo = request.form
     user = dietaryInfo["user"]
     dietInfo = dietaryInfo["dietInfo"]
-   
+    
     if (g.current_user.username == user) or g.current_user.isAdmin:
         updateDietInfo(user, dietInfo)
+        userInfo = User.get(User.username == user) 
         if len(dietInfo) > 0:
-            createAdminLog(f"Updated his dietary restrictions to {dietInfo}.") if dietInfo.strip() else None 
+            createAdminLog(f"Updated {userInfo.fullName}'s dietary restrictions to {dietInfo}.") if dietInfo.strip() else None 
         else:
-            createAdminLog(f"Deleted all his dietary restrictions.")
+            createAdminLog(f"Deleted all {userInfo.fullName}'s dietary restrictions dietary restrictions.")
 
 
     return " "
