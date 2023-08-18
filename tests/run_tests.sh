@@ -4,7 +4,7 @@ fi
 
 FLASK_ENV="testing"
 
-FLAGS="$1 --capture=no --disable-pytest-warnings --strict-markers --tb=line -rs --ignore=database/test_data.py --ignore=tests/mail_test.py --ignore=db_test.py"
+FLAGS="$1 --capture=no --disable-pytest-warnings --strict-markers --tb=line -rs --ignore=database/test_data.py --ignore=tests/mail_test.py --ignore=db_test.py --ignore=app/scripts"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
