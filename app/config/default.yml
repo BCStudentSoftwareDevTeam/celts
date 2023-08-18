@@ -19,6 +19,10 @@ tracy:
     user: "ute_limited"
     password: "OVERRIDE"
 
+ldap:
+    user: "BPLP"
+    password: "OVERRIDE"
+
 files:
   base_path: 'app/static/files'
   email_attachment_path: 'emailattachments'
