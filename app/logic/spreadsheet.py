@@ -23,6 +23,18 @@ def getUniqueVolunteers():
     
     return uniqueVolunteers.tuples()
 
+def getVolunteerProgramEventByTerm(term):
+# Volunteers by term for each event the participated in for wich program. user: program, event, term
+
+    bloo = (EventParticipant.select(fn.CONCAT(User.firstName, ' ', User.lastName), EventParticipant.user_id, Program.programName, Event.name)
+                            .join(User).switch(EventParticipant)
+                            .join(Event)
+                            .join(Program)
+                            .where(Event.term_id == term)
+                            .order_by(EventParticipant.user_id))
+    
+    return bloo.tuples()
+
 def totalVolunteerHours(): 
     
     query = (EventParticipant.select(fn.SUM(EventParticipant.hoursEarned)))
@@ -265,6 +277,8 @@ def create_spreadsheet():
     totalVolunteerHoursColumns = ["Total Volunteer Hours"]
     volunteerProgramHoursColumns = [ "Program Name", "Volunteer Username", "Volunteer Hours"]
     onlyCompletedAllVolunteerColumns = ["Username","Full Name "]
+    volunteerProgramEventByTerm = ["Full Name", "Username", "Program Name", "Event Name"]
+
 
     makeDataXls(volunteerHoursByProgram(), hoursByProgramColumns, "Total Hours By Program", workbook)
     makeDataXls(volunteerMajorAndClass(User.major), volunteerMajorColumns, "Volunteers By Major", workbook)
@@ -276,6 +290,7 @@ def create_spreadsheet():
     makeDataXls(totalVolunteerHours(), totalVolunteerHoursColumns, "Total Hours", workbook)
     makeDataXls(volunteerProgramHours(), volunteerProgramHoursColumns, "Volunteer Hours By Program", workbook)
     makeDataXls(onlyCompletedAllVolunteer(), onlyCompletedAllVolunteerColumns , "Only All Volunteer Training", workbook)
+    makeDataXls(getVolunteerProgramEventByTerm(Term.get_by_id(8)), volunteerProgramEventByTerm, "Fall 2022", workbook)
     
     workbook.close()
 
