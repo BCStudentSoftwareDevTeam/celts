@@ -149,8 +149,6 @@ def viewUsersProfile(username):
                                      "isNotBanned": (not banNotes),
                                      "banNote": noteForDict})
         profileNotes = ProfileNote.select().where(ProfileNote.user == volunteer)
-        userDietQuery = User.select().where(User.username == username)
-        userDiet = [note.dietRestriction for note in userDietQuery]
 
         bonnerRequirements = getCertRequirementsWithCompletion(certification=Certification.BONNER, username=volunteer)
 
@@ -171,7 +169,6 @@ def viewUsersProfile(username):
                                 currentDateTime = datetime.datetime.now(),
                                 profileNotes = profileNotes,
                                 bonnerRequirements = bonnerRequirements,
-                                userDiet = userDiet,
                                 managersList = managersList                
                             )
     abort(403)
