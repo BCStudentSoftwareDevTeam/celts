@@ -382,7 +382,7 @@
           <form>
             <div class="form-group">
               <label for="usr">Please enter any dietary restrictions you have:</label>
-              <textarea class="form-control" id="diet">{%for diet in userDiet%}{{diet}}{%endfor%}</textarea>
+              <textarea class="form-control" id="diet" placeholder="Dietary Restrictions">{%for diet in userDiet%}{%if diet and diet != "None"%}{{diet}}{%endif%}{%endfor%}</textarea>
             </div>
             <br>
             <button type="button" class="saveDiet btn btn-primary" data-user="{{volunteer.username}}">Save</button>
