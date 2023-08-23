@@ -142,16 +142,33 @@ def addVolunteer(eventId):
     usernameList = request.form.getlist("volunteer[]")
 
     successfullyAddedVolunteer = False
+    alreadyAddedList = []
+    addedSuccessfullyList = []
+    errorList = []
+    
     for user in usernameList:
         userObj = User.get_by_id(user)
         successfullyAddedVolunteer = addPersonToEvent(userObj, event)
         if successfullyAddedVolunteer == "already in":
-            flash(f"{userObj.fullName} already in table.", "warning")
+            alreadyAddedList.append(userObj.fullName)
         else:
             if successfullyAddedVolunteer:
-                flash(f"{userObj.fullName} added successfully.", "success")
+                addedSuccessfullyList.append(userObj.fullName)
             else:
-                flash(f"Error when adding {userObj.fullName} to event." ,"danger")
+                errorList.append(userObj.fullName)
+
+    volunteers = ""
+    if alreadyAddedList:
+        volunteers = ", ".join(vol for vol in alreadyAddedList)
+        flash(f"{volunteers} already in table.", "warning")
+
+    if addedSuccessfullyList:
+        volunteers = ", ".join(vol for vol in addedSuccessfullyList)
+        flash(f"{volunteers} added successfully.", "success")
+    
+    if errorList:
+        volunteers = ", ".join(vol for vol in errorList)
+        flash(f"{volunteers} to event.", "danger")
 
     if 'ajax' in request.form and request.form['ajax']:
         return ''
