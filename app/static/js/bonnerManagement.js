@@ -57,13 +57,27 @@ $(document).ready(function(){
 /* Add a new requirements row and focus it */
 function addRequirement() {
     var table = $("#requirements");
-    var newRow = table.find("tbody tr:last-child").clone()
-    newRow.data("id", "X");
-    newRow.find("input").val("");
-
-    newRow.find("select.frequency-select option:first-child").attr('selected', true);
-    newRow.find("select.required-select option:last-child").attr('selected', true);
-
+    var newRow = $(
+        '<tr data-id="X">' +
+        '  <td class="align-middle drag-handle"><img src="static/drag-handle.jpg" width="24" height="24" /></td>' +
+        '  <td><input class="form-control" value=""></td>' +
+        '  <td>' +
+        '    <select class="form-select required-select">' +
+        '      <option selected>Required</option>' +
+        '      <option>Optional</option>' +
+        '    </select>' +
+        '  </td>' +
+        '  <td>' +
+        '    <select class="flex-column form-select empty frequency-select" name="frequency_X">' +
+        '      <option selected>Frequency</option>' +
+        '      <option value="once">Once</option>' +
+        '      <option value="annual">Annual</option>' +
+        '      <option value="term">Every Term</option>' +
+        '    </select>' +
+        '  </td>' +
+        '  <td><button type="button" class="btn btn-danger">Remove</button></td>' +
+        '</tr>'
+      );
     table.append(newRow)
     addRequirementsRowHandlers()
     newRow.find("input").focus()
