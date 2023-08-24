@@ -51,6 +51,10 @@ $(document).ready(function(){
         disableSave();
         saveRequirements()
     });
+    /* I don't think there's really a bug in your solution. When you delete, it saves, but only if you hit the "Save Changes" button.
+    The ajax request runs on the "Save changes" button, and its functionality is right above this comment.
+    We should have the logic run when you hit the "Delete" button. I tried it, but couldn't get it to work. */
+
 });
 /** End onready ****************************/
 
