@@ -168,7 +168,7 @@ def addVolunteer(eventId):
     
     if errorList:
         volunteers = ", ".join(vol for vol in errorList)
-        flash(f"{volunteers} to event.", "danger")
+        flash(f"Error when adding {volunteers} to event.", "danger")
 
     if 'ajax' in request.form and request.form['ajax']:
         return ''
