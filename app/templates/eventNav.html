@@ -1,0 +1,60 @@
+{% extends "base.html"%}
+
+{% macro eventheader(page_title, eventData, size, isNewEvent) %}
+    {% set bigh = 'h1' if size == 'large' else 'h3' %}
+    {% set smallh = 'h5' if size == 'large' else 'p' %}
+
+    <{{bigh}} class="mb-0" id="title">{{page_title}}</{{bigh}}>
+    {% if not isNewEvent %}
+        {% set programName = "CELTS-Sponsored" if eventData["program"] == None else eventData["program"].programName %}
+        {% set prefix = "An" if programName[0] in 'aeiouAEIOU' else "A" %}
+        <{{smallh}} class="text-muted">{{prefix}} {{ programName }} Event</{{smallh}}>
+    {% endif %}
+{% endmacro %}
+
+{% block app_content %}
+    {% block content_pageHeading %}
+    <div class="text-center">
+        {% if g.current_user.isAdmin %}
+            {{ eventheader(page_title, eventData, 'large', isNewEvent) }}
+        {% endif %}
+        {% set alertClass = "alert-danger" if eventPast else "alert-warning"%}
+        {% set display = "" if eventPast or eventData.isCanceled else "d-none"%}
+        <div class = "{{alertClass}} {{display}} mb-2 pb-2 pt-2" role="alert">
+        {% if eventPast and eventData.isCanceled %}
+            This is a past event and it was canceled.
+        {% elif eventPast %}
+            This is a past event.
+        {% elif eventData.isCanceled %}
+            This event has been canceled.
+        {% endif %}
+        </div>
+    </div>
+    {% endblock %}
+
+    {% block navbar %}
+        {% if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerFor(eventData['program'])) %}
+
+        <div class="btn-group">
+            <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link {{ 'active' if tabName == 'view' }}" href="/event/{{eventData['id']}}/view" role="tab" aria-selected="{{ 'true' if tabName == 'view' else 'false'}}">View Event</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link {{ 'active' if tabName == 'edit' }}" href="/event/{{eventData['id']}}/edit" role="tab" aria-selected="{{ 'true' if tabName == 'edit' else 'false'}}">Edit Event</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link {{ 'active' if tabName == 'manageVolunteers' }}" href="/event/{{eventData['id']}}/manage_volunteers" role="tab" aria-selected="{{ 'true' if tabName == 'manageVolunteers' else 'false'}}">Manage Volunteers</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link {{ 'active' if tabName == 'details' }}" href="/event/{{eventData['id']}}/volunteer_details" role="tab" aria-selected="{{ 'true' if tabName == 'details' else 'false'}}">Volunteer Details</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link {{ 'active' if tabName == 'rsvpLog' }}" href="/event/{{eventData['id']}}/rsvp" role="tab" aria-selected="{{ 'true' if tabName == 'rsvpLog' else 'false'}}">RSVP Log</a>
+                </li>
+            </ul>
+        </div>
+
+        {% endif %}
+    {% endblock %}
+{% endblock %}

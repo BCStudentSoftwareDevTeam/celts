@@ -3,95 +3,141 @@ import searchUser from './searchUser.js'
 var currentTab = 0; // Current tab is set to be the first tab (0)
 
 $(document).ready(function(e) {
-    // set up the current tab and button state
-    showTab(currentTab);
+  handleFileSelection("attachmentObject")
 
-    // Update display if we are viewing only
-    if (readOnly()){
-        disableInput()
+  // set up the current tab and button state
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('tab')){
+    currentTab = Number(urlParams.get('tab'));
+  }
 
-    }
+  showTab(currentTab);
 
-    // set up phone numbers
-    $("input[name=courseInstructorPhone]").inputmask('(999)-999-9999');
+  // Update display if we are viewing only
+  if (readOnly()){
+      disableInput()
+  }
 
-    // Add button event handlers
-    // -----------------------------------------
-    $("a.guidelines").on("click", function() {
-        let allTabs = $(".tab");
-        if (currentTab == (allTabs.length - 2)) {
-          displayCorrectTab(-1);
-        }
-        else if (currentTab == (allTabs.length - 1)){
-          displayCorrectTab(-2);
-        }
-        return false;
-    });
+  // set up phone numbers
+  $("input[name=courseInstructorPhone]").inputmask('(999)-999-9999');
 
-    $("#previousButton").on("click", function() {
+  // Add button event handlers
+  // -----------------------------------------
+  $("a.guidelines").on("click", function() {
+      let allTabs = $(".tab");
+      if (currentTab == (allTabs.length - 2)) {
         displayCorrectTab(-1);
-    });
-
-    $("#nextButton").on("click", function() {
-        displayCorrectTab(1);
-    });
-
-    $("#cancelButton").on("click", function() {
-        window.location.replace($(this).val());
-    });
-
-    $("#saveContinue").on("click", function() {
-        if(readOnly()) {
-            let allTabs = $(".tab");
-            displayCorrectTab(1)
-            if (currentTab == (allTabs.length - 2)) {
-              displayCorrectTab(1);
-            }
-            else if (currentTab == (allTabs.length - 1)){
-                // TODO nothing?
-            }
-        }
-
-        //this will save the change from the current page and move to the next page
-        saveCourseData("/serviceLearning/saveProposal", function() {
-            let allTabs = $(".tab");
-            if (currentTab == (allTabs.length - 2)) {
-              displayCorrectTab(1);
-            }
-            else if (currentTab == (allTabs.length - 1)){
-              window.location.replace("/serviceLearning/courseManagement");
-            }
-            msgFlash("Changes saved!", "success")
-        });
-    });
-
-    if(!readOnly()) {
-        $("#submitAndApproveButton").click(function(){
-            $("#submitAndApproveButton").prop("disabled", true)
-            saveCourseData("/serviceLearning/approveCourse", function(response) {
-                window.location.replace("/manageServiceLearning")
-            })
-        });
-
-    // Add course instructor event handlers
-    // -----------------------------------------
-        $("#instructorTable").on("click", "#remove", function() {
-            $(this).closest("tr").remove();
-        });
-        $("#courseInstructor").on('input', function() {
-            searchUser("courseInstructor", createNewRow, true, null, "instructor");
-        });
-
-        // for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
-        $('#instructorTable tr').each(function(){
-          var username = getRowUsername(this)
-          var edit = "#editButton-" + username
-          var input = "#inputPhoneNumber-" + username
-          if (username){
-            setupPhoneNumber(edit, input)
-          }
-        })
+      }
+      else if (currentTab == (allTabs.length - 1)){
+        displayCorrectTab(-2);
+      }
+      return false;
+  });
+  // one-time check to set the initial state
+  if ($("#allSectionsSL").is(":checked")) {
+    $("#slDesignationGroup").hide();
+  }
+  $("#allSectionsSL").on("click", function() {
+    if ($("#allSectionsSL").is(":checked")) {
+      $("#slDesignationGroup").hide();
     }
+    else {
+      $("#slDesignationGroup").show();
+    }
+  })
+  if ($("#noSlcComponent").is(":checked")) {
+    $("#permanentDesignationGroup").hide();
+  }
+  $("#slcComponent").on("click", function() {
+    if ($("#noSlcComponent").is(":checked")) {
+      $("#permanentDesignationGroup").hide();
+    }
+    else {
+      $("#permanentDesignationGroup").show();
+    }
+  })
+  if ($("#notPreviouslyApproved").is(":checked")) {
+    $("#previouslyApprovedProposal").hide();
+  }
+  $("#previouslyApprovedGroup").on("click", function() {
+    if ($("#notPreviouslyApproved").is(":checked")) {
+      $("#previouslyApprovedProposal").hide();
+    }
+    else {
+      $("#previouslyApprovedProposal").show();
+    }
+  })
+
+  $("#previousButton").on("click", function() {
+      displayCorrectTab(-1);
+  });
+
+  $("#nextButton").on("click", function() {
+      displayCorrectTab(1);
+  });
+
+  $("#cancelButton").on("click", function() {
+      window.location.replace($(this).val());
+  });
+
+  $("#saveContinue").on("click", function() {
+    
+      if(readOnly()) {
+          let allTabs = $(".tab");
+          displayCorrectTab(1)
+          if (currentTab == (allTabs.length - 2)) {
+            displayCorrectTab(1);
+          }
+          else if (currentTab == (allTabs.length - 1)){
+              // TODO nothing?
+          }
+      }
+      else{
+        if (!validateForm()) return;
+        $('#slcNewProposal').attr("action", "/serviceLearning/saveProposal")
+        $('#slcNewProposal').submit()
+      }
+  });
+
+  $('#saveExit').on("click", function(){
+    if (!validateForm()) return;
+    $('#slcNewProposal').attr("action", "/serviceLearning/saveExit")
+    $('#slcNewProposal').submit()
+  })
+
+  $("#exitButton").on("click", function() {
+    window.location.replace('/serviceLearning/exit')
+  })
+
+  if(!readOnly()) {
+      $("#submitAndApproveButton").click(function(){
+          $("#submitAndApproveButton").prop("disabled", true)
+          saveCourseData("/serviceLearning/approveCourse", function(response) {
+              window.location.replace("/manageServiceLearning")
+          })
+      });
+
+  // Add course instructor event handlers
+  // -----------------------------------------
+      $("#instructorTable").on("click", "#remove", function() {
+        let closestRow =  $(this).closest("tr")
+        $("#instructorTableNames input[value="+closestRow.data('username')+"]").remove()
+        closestRow.remove();
+      });
+      $("#courseInstructor").on('input', function() {
+          searchUser("courseInstructor", createNewRow, true, null, "instructor");
+      });
+
+      // for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
+      $('#instructorTable tr').each(function(){
+        var username = getRowUsername(this)
+        var edit = "#editButton-" + username
+        var input = "#inputPhoneNumber-" + username
+        if (username){
+          setupPhoneNumber(edit, input)
+        }
+      })
+  }
 })
 
 // display functions
@@ -108,10 +154,11 @@ function disableInput() {
     $("#slcQuestionFive").replaceWith( "<ul>" + $( "#slcQuestionFive" ).text() + "</ul>" );
     $("#slcQuestionSix").replaceWith( "<ul>" + $( "#slcQuestionSix" ).text() + "</ul>" );
     $(".view").prop("disabled", true);
+    $("#syllabusUploadButton").prop("disabled", true);
     $("#submitAndApproveButton").hide();
     $(".editButton").hide()
     $(".removeButton").hide()
-    $(".slcQuestionCharCount, .slcQestionCharCounter" ).replaceWith( " ");
+    $(".slcQuestionWordCounter").replaceWith(" ");
 }
 
 
@@ -142,7 +189,6 @@ function displayCorrectTab(navigateTab) {
 
   if (currentTab >= allTabs.length) {
       $("#nextButton").prop("disabled", true)
-      addInstructorsToForm()
       $("#slcNewProposal").submit();
       return false;
   }
@@ -162,6 +208,8 @@ function showTab(currentTab) {
         $("#nextButton").text("Next");
         $("#nextButton").show();
         $("#saveContinue").hide();
+        $("#saveExit").hide()
+        $("#exitButton").hide()
         break;
     case 1: // Second page
         $("#cancelButton").hide();
@@ -169,25 +217,31 @@ function showTab(currentTab) {
         $("#submitAndApproveButton").hide();
         $("#nextButton").hide();
         $("#saveContinue").show();
-        $("#saveContinue").text("Save and Continue");
+        $("#saveContinue").text("Next");
+        $("#saveExit").show()
+        $("#exitButton").hide()
         if(readOnly()) {
             $("#nextButton").show();
             $("#saveContinue").hide();
+            $("#saveExit").hide()
+            $(".removeAttachment").hide()
+            $("#exitButton").hide()
         }
         break;
     case 2: // Third page
         $("#cancelButton").hide();
         $("#previousButton").show();
         $("#submitAndApproveButton").show();
-        $("#nextButton").text("Submit");
+        $("#nextButton").text("Submit Proposal");
         $("#nextButton").show();
-        $("#saveContinue").text("Save for Later");
+        $("#saveContinue").hide();
+        $("#exitButton").hide()
         if(readOnly()) {
             $("#nextButton").text("Next");
             $("#nextButton").hide();
-            $("#saveContinue").hide();
             $("#submitAndApproveButton").hide();
-        }
+            $("#exitButton").show()
+          }
         break;
     }
 
@@ -214,12 +268,12 @@ function saveCourseData(url, successCallback) {
 }
 
 function validateForm() {
-    // This function ensures our form fields are valid
-    // Returns true if we are just viewing a form
-    // TODO: Generalize form validation to include textareas and selects
+  // This function ensures our form fields are valid
+  // Returns true if we are just viewing a form
+  // TODO: Generalize form validation to include textareas and selects
 
-    if (readOnly())
-        return true;
+  if (readOnly())
+      return true;
 
   let valid = true;
 
@@ -253,12 +307,6 @@ function validateForm() {
 // Instructor manipulation functions
 // -------------------------------------
 //
-function addInstructorsToForm() {
-    var form = $("#slcNewProposal");
-    $.each(getCourseInstructors(), function(idx,username) {
-        form.append($("<input type='hidden' name='instructor[]' value='" + username + "'>"));
-    });
-}
 
 function getRowUsername(element) {
     return $(element).closest("tr").data("username")
@@ -289,7 +337,6 @@ function createNewRow(selectedInstructor) {
   let editLink = newRow.find("td:eq(0) a")
   editLink.attr("id", "editButton-" + username);
 
-  newRow.attr("data-username", username)
   editLink.attr("data-username", username)
   newRow.prop("hidden", false);
   lastRow.after(newRow);
@@ -300,22 +347,40 @@ function createNewRow(selectedInstructor) {
   if (username){
     setupPhoneNumber(edit, input)
   }
+
+  $("#instructorTableNames").append('<input hidden name="instructor[]" value="' + username + '"/>')
 }
 
 function getCourseInstructors() {
   // get usernames out of the table rows into an array
-  return $("#instructorTable tr")
-                .map((i,el) => $(el).data('username')).get()
-                .filter(val => (val))
+  return $("#instructorTableNames input").map((i,el) => $(el).val())
 }
 
+function disableSyllabusUploadFile() {
+  $("#fileUpload").prop("disabled", true);
+}
+
+function enableSyllabusUploadFile() {
+    $("#fileUpload").prop("disabled", false);
+}
 
 const textareas = $(".textarea");
-const slcQuestionCharCount = $(".slcQuestionCharCount");
+const slcQuestionWordCount = $(".slcQuestionWordCounter span")
 
-textareas.each(function(index, textarea) {
-  $(textarea).on("input", function() {
-    $(slcQuestionCharCount[index]).html($(textarea).val().length);
+function calculateCountWords(text){
+  const words = text.split(/\s+/);
+  return words.length - 1;
+}
+
+textareas.each(function(index, textarea){
+  $(textarea).on("input", function(){
+    const wordCount = calculateCountWords($(textarea).val());
+    $(slcQuestionWordCount[index]).html(wordCount);
+
   });
-  $(slcQuestionCharCount[index]).html($(textarea).val().length);
+  const initialWordCount = calculateCountWords($(textarea).val());
+  $(slcQuestionWordCount[index]).html(initialWordCount);
 });
+
+
+

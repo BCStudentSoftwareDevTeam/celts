@@ -6,7 +6,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <table class="table table-striped ml-4" id="myTable">
+          <table class="table table-striped ml-4" id="SLCProposalTable">
             <tbody id="facultyTable">
               <tr>
                 <td class="fw-bold">Course Name</td>
@@ -33,12 +33,16 @@
                 <td class="fw-bold">Term</td>
                 <td>{{course.term.description}}</td>
               </tr>
-              {% if course.courseOccurrence %}
-                  <tr>
-                      <td class="fw-bold">Occurrence</td>
-                      <td>{{course.courseOccurrence}}</td>
-                  </tr>
-              {% endif %}
+              <tr>
+                  <td class="fw-bold">Occurrence</td>
+                  <td>
+                    {% if course.isRegularlyOccurring == True %}
+                      Regularly
+                    {% else %}
+                      One-time special topics/4-week course offering
+                    {% endif %}
+                  </td>
+              </tr>
               <tr>
                 <td class="fw-bold">Status</td>
                 <td>{{course.status.status}}</td>

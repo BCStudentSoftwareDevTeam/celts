@@ -1,10 +1,9 @@
 from datetime import datetime
 from peewee import DoesNotExist, JOIN
-from flask_mail import Mail, Message
+from flask_mail import Mail, Message, Attachment
 import os
 
 from app import app
-from app.models.programEvent import ProgramEvent
 from app.models.interest import Interest
 from app.models.user import User
 from app.models.program import Program
@@ -17,37 +16,36 @@ from app.models.programBan import ProgramBan
 from app.models.term import Term
 
 class EmailHandler:
-    def __init__(self, raw_form_data, url_domain, sender_object, attachment_file=None):
+    def __init__(self, raw_form_data, url_domain, attachment_file=[]):
 
         self.mail = Mail(app)
         self.raw_form_data = raw_form_data
         self.url_domain = url_domain
         self.override_all_mail = app.config['MAIL_OVERRIDE_ALL']
-        self.sender = sender_object
+        self.sender_username = None
+        self.sender_name = None
+        self.sender_address = None
+        self.reply_to = app.config['MAIL_REPLY_TO_ADDRESS']
         self.template_identifier = None
         self.subject = None
         self.body = None
-        self.reply_to = None
         self.event = None
-        self.program_ids = None
+        self.program = None
         self.recipients = None
         self.sl_course_id = None
-        self.attachment_path = app.config['files']['email_attachment_path']
+        self.attachment_path = app.config['files']['base_path'] + app.config['files']['email_attachment_path']
+        self.attachment_filepaths = []
         self.attachment_file = attachment_file
 
     def process_data(self):
         """ Processes raw data and stores it in class variables to be used by other methods """
         # Email Template Data
-        self.template_identifier = self.raw_form_data['templateIdentifier']
+        # Template Identifier
+        if 'templateIdentifier' in self.raw_form_data:
+            self.template_identifier = self.raw_form_data['templateIdentifier']
 
         if 'subject' in self.raw_form_data:
             self.subject = self.raw_form_data['subject']
-
-        if 'body' in self.raw_form_data:
-            self.body = self.raw_form_data['body']
-
-        if 'replyTo' in self.raw_form_data:
-            self.reply_to = self.raw_form_data['replyTo']
 
         # Event
         if 'eventID' in self.raw_form_data:
@@ -55,8 +53,15 @@ class EmailHandler:
             self.event = event
 
         # Program
-        if 'programID' in self.raw_form_data:
-            self.program_ids = self.fetch_event_programs(self.raw_form_data['programID'])
+        if self.event:
+            self.program = self.event.program
+
+        if 'emailSender' in self.raw_form_data:
+            self.sender_username = self.raw_form_data['emailSender']
+            self.sender_name, self.sender_address, self.reply_to = self.getSenderInfo()
+
+        if 'body' in self.raw_form_data:
+            self.body = self.raw_form_data['body']
 
         # Recipients
         if 'recipientsCategory' in self.raw_form_data:
@@ -67,14 +72,22 @@ class EmailHandler:
         if 'slCourseId' in self.raw_form_data:
             self.sl_course_id = self.raw_form_data['slCourseId']
 
-    def fetch_event_programs(self, program_id):
-        """ Fetches all the programs of a particular event """
-        # Non-student-led programs have "Unknown" as their id
-        if program_id == 'Unknown' or program_id is None:
-            programEvents = ProgramEvent.select(ProgramEvent.program).where(ProgramEvent.event==self.event.id)
-            return [program.program for program in programEvents.objects()]
-        else:
-            return [Program.get_by_id(program_id)]
+    def getSenderInfo(self):
+        programObject = Program.get_or_none(Program.programName == self.sender_username)
+        userObj = User.get_or_none(User.username == self.sender_username)
+        senderInfo = [None, None, None]
+        if programObject:
+            programEmail = programObject.contactEmail
+            senderInfo = [programObject.programName, programEmail, programEmail]
+        elif self.sender_username.upper() == "CELTS":
+            senderInfo = ["CELTS", "celts@berea.edu", "celts@berea.edu"]
+        elif userObj:
+            senderInfo = [f"{userObj.fullName}", userObj.email, userObj.email]
+        # overwrite the sender info with intentional keys in the raw form data.
+        get = self.raw_form_data.get
+        senderInfo = [get('sender_name') or senderInfo[0], get('sender_address') or senderInfo[1], get('reply_to') or senderInfo[2]]
+
+        return senderInfo # If the email is not being sent from a program or user, use default values.
 
     def update_sender_config(self):
         # We might need this.
@@ -94,7 +107,7 @@ class EmailHandler:
             recipients = (User.select()
                 .join(Interest)
                 .join(Program, on=(Program.id==Interest.program))
-                .where(Program.id.in_([p.id for p in self.program_ids])))
+                .where(Interest.program == self.program))
         if recipients_category == "RSVP'd":
             recipients = (User.select()
                 .join(EventRsvp)
@@ -104,31 +117,20 @@ class EmailHandler:
             # all terms with the same accademic year as the current term,
             # the allVolunteer training term then needs to be in that query
             Term2 = Term.alias()
-
+            
             sameYearTerms = Term.select().join(Term2, on=(Term.academicYear == Term2.academicYear)).where(Term2.isCurrentTerm == True)
 
-            bannedUsers = ProgramBan.select(ProgramBan.user_id).where((ProgramBan.endDate > datetime.now()) | (ProgramBan.endDate is None), ProgramBan.program_id.in_([p.id for p in self.program_ids]))
+            bannedUsers = ProgramBan.select(ProgramBan.user).where((ProgramBan.endDate > datetime.now()) | (ProgramBan.endDate is None), ProgramBan.program == (self.program if self.program else ProgramBan.program))
             allVolunteer = Event.select().where(Event.isAllVolunteerTraining == True, Event.term.in_(sameYearTerms))
             recipients = User.select().join(EventParticipant).where(User.username.not_in(bannedUsers), EventParticipant.event.in_(allVolunteer))
-        return [recipient for recipient in recipients]
+        return list(recipients)
 
-    def replace_general_template_placeholders(self, email_body=None):
-        """ Replaces all template placeholders except name """
-        event_link = f"{self.url_domain}/eventsList/{self.event.id}/edit"
 
-        new_body = email_body.format(event_name=self.event.name,
-            location=self.event.location,
-            start_date=(self.event.startDate).strftime('%m/%d/%Y'),
-            end_date=(self.event.endDate).strftime('%m/%d/%Y'),
-            start_time=(self.event.timeStart).strftime('%I:%M'),
-            end_time=(self.event.timeEnd).strftime('%I:%M'),
-            event_link=event_link,
-            name="{name}")
-        return new_body
 
-    def replace_name_placeholder(self, name, body):
-        """ Replaces name placeholder with recipient's full name """
-        new_body = body.format(name=name)
+    def replaceDynamicPlaceholders(self, email_body, *, name):
+        """ Replaces placeholders that cannot be predetermined on the front-end """
+        event_link = f"{self.url_domain}/event/{self.event.id}/view"
+        new_body = email_body.format(recipient_name=name, event_link=event_link)
         return new_body
 
     def retrieve_and_modify_email_template(self):
@@ -136,14 +138,11 @@ class EmailHandler:
 
         email_template = EmailTemplate.get(EmailTemplate.purpose==self.template_identifier) # --Q: should we keep purpose as the identifier?
         template_id = email_template.id
-
-        subject = self.subject if self.subject else email_template.subject
-
-        body = self.body if self.body else email_template.body
-        new_body = self.replace_general_template_placeholders(body)
+        
+        body = EmailHandler.replaceStaticPlaceholders(self.event.id, self.body)
 
         self.reply_to = email_template.replyToAddress
-        return (template_id, subject, new_body)
+        return (template_id, self.subject, body)
 
     def getAttachmentFullPath(self, newfile=None):
         """
@@ -172,6 +171,7 @@ class EmailHandler:
                 attachmentFullPath = self.getAttachmentFullPath(newfile = file)
                 if attachmentFullPath:
                     file.save(attachmentFullPath) # saves attachment in directory
+                    self.attachment_filepaths.append(attachmentFullPath)
 
         except AttributeError: # will pass if there is no attachment to save
             pass
@@ -191,7 +191,7 @@ class EmailHandler:
             recipientsCategory = self.recipients_category,
             recipients = ", ".join(recipient.email for recipient in self.recipients),
             dateSent = date_sent,
-            sender = self.sender,
+            sender = self.sender_username,
             attachmentNames = attachmentNames)
 
     def build_email(self):
@@ -202,29 +202,27 @@ class EmailHandler:
         return (template_id, subject, body)
 
     def send_email(self):
-        defaultEmailInfo = {"senderName":"Sandesh", "replyTo":self.reply_to}
+        defaultEmailInfo = {"senderName":"CELTS", "replyTo":app.config['celts_admin_contact'], "senderAddress":app.config['celts_admin_contact']} 
         template_id, subject, body = self.build_email()
 
-        if len(self.program_ids) == 1:
-            if self.program_ids[0].contactEmail:
-                defaultEmailInfo["replyTo"] = self.program_ids[0].contactEmail
-            if self.program_ids[0].contactName:
-                defaultEmailInfo["senderName"] = self.program_ids[0].contactName
+        attachmentList = []
+        for i, filepath in enumerate(self.attachment_filepaths):
+            with app.open_resource(filepath[4:]) as file:
+                attachmentList.append(Attachment(filename=filepath.split('/')[-1], content_type=self.attachment_file[i].content_type, data=file.read()))
 
         try:
             with self.mail.connect() as conn:
                 for recipient in self.recipients:
                     full_name = f'{recipient.firstName} {recipient.lastName}'
-                    email_body = self.replace_name_placeholder(full_name, body)
-
+                    email_body = self.replaceDynamicPlaceholders(body, name=full_name)
                     conn.send(Message(
                         subject,
                         # [recipient.email],
                         [self.override_all_mail],
                         email_body,
-                        file_attachment = self.getAttachmentFullPath(), #needs to be modified later
-                        reply_to = defaultEmailInfo["replyTo"],
-                        sender = (defaultEmailInfo["senderName"], defaultEmailInfo["replyTo"])
+                        attachments = attachmentList,
+                        reply_to = self.reply_to or defaultEmailInfo["replyTo"],
+                        sender = (self.sender_name or defaultEmailInfo["senderName"], self.sender_address or defaultEmailInfo["senderAddress"])
                     ))
             self.store_sent_email(subject, template_id)
             return True
@@ -251,3 +249,35 @@ class EmailHandler:
             return last_email
         except DoesNotExist:
             return None
+  
+
+    @staticmethod
+    def retrievePlaceholderList(eventId):
+        event = Event.get_by_id(eventId)
+        return [
+            ["Recipient Name", "{recipient_name}"],
+            ["Event Name", event.name],
+            ["Start Date", (event.startDate).strftime('%m/%d/%Y')],
+            ["End Date", (event.endDate).strftime('%m/%d/%Y')],
+            ["Start Time", (event.timeStart).strftime('%I:%M')],
+            ["End Time", (event.timeEnd).strftime('%I:%M')],
+            ["Location", event.location],
+            ["Event Link", "{event_link}"],
+            ["Relative Time", event.relativeTime]
+        ]
+
+    @staticmethod
+    def replaceStaticPlaceholders(eventId, email_body):
+        """ Replaces all template placeholders except for those that can't be known until just before Send-time """
+        event = Event.get_by_id(eventId)
+
+        new_body = email_body.format(event_name=event.name,
+                                     location=event.location,
+                                     start_date=(event.startDate).strftime('%m/%d/%Y'),
+                                     end_date=(event.endDate).strftime('%m/%d/%Y'),
+                                     start_time=(event.timeStart).strftime('%I:%M'),
+                                     end_time=(event.timeEnd).strftime('%I:%M'),
+                                     event_link="{event_link}",
+                                     recipient_name="{recipient_name}",
+                                     relative_time=event.relativeTime)
+        return new_body

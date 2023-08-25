@@ -3,16 +3,19 @@
 {% block scripts %}
   {{super()}}
   <script type="module" src="{{url_for('static', filename ='js/slcNewProposal.js') }}"></script>
+  <script type="module" src="/static/js/displayFilesMacro.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.0/js/fileinput.min.js"></script>
 {% endblock %}
 
 {% block styles %}
   {{super()}}
   <link rel="stylesheet" href="{{url_for('static', filename ='css/slcNewProposal.css')}}">
+  <link href="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.0/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
 {% endblock %}
 
 {% block app_content %}
-<form id="slcNewProposal" method="post" action="/serviceLearning/newProposal">
+<form id="slcNewProposal" enctype="multipart/form-data" method="post" action="/serviceLearning/newProposal" role="form">
   <div class="tab">
       {% include "serviceLearning/slcGuidelines.html" %}
   </div>
@@ -24,7 +27,7 @@
   </div>
   <div class="row align-items-end pt-5 pb-5">
     <div class="col">
-      <button class="btn btn-primary" type="button" id="previousButton">Previous</button>
+      <button class="btn btn-secondary" type="button" id="previousButton">Previous</button>
       <button class="btn btn-danger" value="{{ redirectTarget }}" type="button" id="cancelButton">Cancel</button>
     </div>
     <div class="col stepsIndicator">
@@ -33,12 +36,15 @@
       <span class="step"></span>
     </div>
     <div class="col" align="right">
-      <button class="btn btn-primary" type="button" id="saveContinue">Save and Continue</button>
+      <button class="btn btn-primary" type="button" id="saveExit">Save and Exit</button>
+      <button class="btn btn-primary" type="button" id="saveContinue">Next</button>
       <button class="btn btn-primary" type="button" id="nextButton">Next</button>
+      <button class="btn btn-primary" type="button" id="exitButton">Exit</button>
       {% if g.current_user.isCeltsAdmin %}
         <button class="btn btn-success" type="button" id="submitAndApproveButton">Submit and Approve</button>
       {% endif %}
     </div>
   </div>
 </form>
+
  {% endblock %}

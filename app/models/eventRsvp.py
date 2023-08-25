@@ -7,6 +7,8 @@ class EventRsvp(baseModel):
     user = ForeignKeyField(User)
     event = ForeignKeyField(Event, backref="rsvps")
     rsvpTime = DateTimeField(default=datetime.now)
+    rsvpWaitlist = BooleanField(default=False)
+
 
     class Meta:
         indexes = ( (('user', 'event'), True), )

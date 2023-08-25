@@ -1,0 +1,25 @@
+{% macro trainingsHover(trainingList) %}
+    {% if trainingList %}
+        {% for training, rsvpdOrAttended in trainingList %}
+            {% set trainingName = training.name %}
+            {% if training.isPast %}
+                {% set didAttend = rsvpdOrAttended %}
+                {% if didAttend %}
+                    <p><b>{{trainingName}}</b>: <br>Attended</p>
+                {% else %}
+                    <p><b>{{trainingName}}</b>: <br>Not attended</p>
+                {% endif %}
+            {% else %}
+                {% set isRsvpd = rsvpdOrAttended %}
+                {% set date = training.startDate.strftime("%m/%d/%Y") %}
+                {% if isRsvpd %}
+                    <p><b>{{trainingName}}</b>: <br>Rsvp'd for training on {{date}}</p>
+                {% else %}
+                    <p><b>{{trainingName}}</b>: <br>Not Rsvp'd for training on {{date}}</p>
+                {% endif %}
+            {% endif%}
+        {% endfor %}
+    {% else %}
+    <p>This program has no required trainings.</p>
+    {% endif %}
+{% endmacro %}

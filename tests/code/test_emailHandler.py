@@ -14,32 +14,79 @@ from app.models.user import User
 from app.models import mainDB
 from app.models.user import User
 from app.models.event import Event
-from app.models.programEvent import ProgramEvent
 from app.models.eventParticipant import EventParticipant
 from app.models.programBan import ProgramBan
 from app.models.term import Term
 from app.logic.emailHandler import EmailHandler
 
 @pytest.mark.integration
-@pytest.mark.skip(reason="Authentication issues")
+def test_replaceStaticPlaceholders():
+    body = EmailHandler.replaceStaticPlaceholders(1, "location= {location}, start_date= {start_date}, end_date= {end_date}, start_time= {start_time}, end_time= {end_time}")
+    assert body == "location= Seabury Center, start_date= 10/12/2021, end_date= 06/12/2022, start_time= 06:00, end_time= 09:00"
+
+    body = EmailHandler.replaceStaticPlaceholders(2, "location= {location}, start_date= {start_date}, end_date= {end_date}, start_time= {start_time}, end_time= {end_time}")
+    assert body == "location= Berea Community School, start_date= 11/12/2021, end_date= 06/12/2022, start_time= 06:00, end_time= 09:00"
+    
+@pytest.mark.integration
+def test_getSenderInfo():
+
+    raw_form_data_list = []
+    expected_sender_info_list = []
+    
+    # Adds program info
+    raw_form_data_list.append({"emailSender": "Berea Buddies"})
+    expected_sender_info_list.append(["Berea Buddies", "bereabuddies@berea.edu", "bereabuddies@berea.edu"])
+
+    # Adds CELTS info
+    raw_form_data_list.append({"emailSender": "celts"})
+    expected_sender_info_list.append(["CELTS", "celts@berea.edu", "celts@berea.edu"])
+
+    # Adds user info
+    raw_form_data_list.append({"emailSender": "ramsayb2"})
+    expected_sender_info_list.append(["Brian Ramsay", "ramsayb2@berea.edu", "ramsayb2@berea.edu"])
+
+    # Adds program info
+    raw_form_data_list.append({"emailSender": "RONALDDDDDDDDDDDDDDDDD"})
+    expected_sender_info_list.append([None, None, None])
+
+    for form_data, expected_sender_info in zip(raw_form_data_list, expected_sender_info_list):
+        email = EmailHandler(form_data, "")
+
+        email.process_data()
+
+        assert email.getSenderInfo() == expected_sender_info
+        assert email.sender_name == expected_sender_info[0]
+        assert email.sender_address == expected_sender_info[1]
+        assert email.reply_to == expected_sender_info[2]
+
+    # tests to see that we can overwrite sender name address and the reply_to address
+    raw_form_data = {"emailSender": "CELTS",
+                     "sender_name": "i", 
+                     "sender_address": "don't", 
+                     "reply_to": "care"}
+
+    email = EmailHandler(raw_form_data, "")
+    email.process_data()
+    assert email.sender_name == "i"
+    assert email.sender_address == "don't"
+    assert email.reply_to == "care"
+
+@pytest.mark.integration
 def test_send_email_using_modal():
-    pass # For now we are skipping the email tests
     with app.test_request_context():
 
-        app.config.update(
-            MAIL_SUPRESS_SEND = True
-        )
+
         with mainDB.atomic() as transaction:
             # Case 1: Send email with subject and body -- as if email is sent using a modal
             url_domain = urlparse(request.base_url).netloc
             raw_form_data = {"templateIdentifier": "Test",
-                "subject": "Test Email",
-                "body": "Hello {name}",
-                "programID":"1",
-                "eventID":"1",
-                "recipientsCategory": "Interested"}
+                             "emailSender": "neillz",
+                             "subject": "Test Email",
+                             "body": "Hello {recipient_name}",
+                             "eventID":"1",
+                             "recipientsCategory": "Interested"}
 
-            email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
+            email = EmailHandler(raw_form_data, url_domain)
 
             with email.mail.record_messages() as outbox:
                 email_sent = email.send_email()
@@ -50,66 +97,42 @@ def test_send_email_using_modal():
                 assert outbox[0].body == "Hello Sreynit Khatt"
 
                 transaction.rollback()
+                
 
 @pytest.mark.integration
-@pytest.mark.skip(reason="Authentication issues")
-def test_sending_automated_email():
-    with app.test_request_context():
-        with mainDB.atomic() as transaction:
-            # Case 2: Send email without subject and body -- as if email is sent automatically
-            url_domain = urlparse(request.base_url).netloc
-            raw_form_data = {"templateIdentifier": "Test",
-                "programID":"1",
-                "eventID":"1",
-                "recipientsCategory": "Interested"}
-
-            email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
-
-            with email.mail.record_messages() as outbox:
-                email_sent = email.send_email()
-                assert email_sent == True
-
-                assert len(outbox) == 2
-                assert outbox[0].subject == "Test Email"
-                assert outbox[0].body == "Hello Sreynit Khatt, This is a test event named Empty Bowls Spring Event 1 located in Seabury Center. Other info: 10/12/2021-06/12/2022 and this 06:00-09:00."
-
-                transaction.rollback()
-
-@pytest.mark.integration
-@pytest.mark.skip(reason="Authentication issues")
 def test_update_email_template():
     with app.test_request_context():
         with mainDB.atomic() as transaction:
             url_domain = urlparse(request.base_url).netloc
             raw_form_data = {"templateIdentifier": "Test2",
-                "subject":"This is only a test",
-                "body":"Hello {name}, Regards",
-                "replyTo": "test.email@gmail.comm"}
+                             "emailSender": "neillz",
+                             "subject":"This is only a test",
+                             "body":"Hello {recipient_name}, Regards"}
 
-            email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
+            email = EmailHandler(raw_form_data, url_domain)
             email.update_email_template()
 
             new_email_template = EmailTemplate.get(EmailTemplate.purpose==raw_form_data['templateIdentifier'])
 
             assert new_email_template.subject == raw_form_data['subject']
             assert new_email_template.body == raw_form_data['body']
-            assert new_email_template.replyToAddress == raw_form_data['replyTo']
+            assert new_email_template.replyToAddress == "neillz@berea.edu"
 
             transaction.rollback()
 
 @pytest.mark.integration
-@pytest.mark.skip(reason="Authentication issues")
 def test_email_log():
     with app.test_request_context():
         with mainDB.atomic() as transaction:
             url_domain = urlparse(request.base_url).netloc
             raw_form_data = {"templateIdentifier": "Test",
-                "programID":"1",
-                "eventID":"1",
-                "recipientsCategory": "RSVP'd",
-                "sender": User.get_by_id("ramsayb2")}
+                             "emailSender": "ramsayb2",
+                             "eventID":"1",
+                             "subject":"Test Email",
+                             "body":"We ran out of skeletons. Can you send some more?",
+                             "recipientsCategory": "RSVP'd"}
 
-            email = EmailHandler(raw_form_data, url_domain, User.get_by_id("neillz"))
+            email = EmailHandler(raw_form_data, url_domain)
 
             with email.mail.record_messages() as outbox:
                 email_sent = email.send_email()
@@ -124,7 +147,7 @@ def test_email_log():
 
             rsvp_users = EventRsvp.select().where(EventRsvp.event_id==1)
             assert emailLog.recipients == ", ".join(user.user.email for user in rsvp_users)
-            assert emailLog.sender == User.get_by_id("ramsayb2")
+            assert emailLog.sender == "ramsayb2"
             transaction.rollback()
 
 @pytest.mark.integration
@@ -133,13 +156,11 @@ def test_recipients_eligible_students():
         with mainDB.atomic() as transaction:
             url_domain = urlparse(request.base_url).netloc
             raw_form_data = {"templateIdentifier": "Test",
-                "programID":"3",
-                "eventID":"1",
-                "recipientsCategory": "Eligible Students"}
+                             "emailSender": 'ramsayb2',
+                             "eventID":"3",
+                             "recipientsCategory": "Eligible Students"}
 
-            testSender = User.get_by_id('ramsayb2')
-
-            email = EmailHandler(raw_form_data, url_domain, testSender)
+            email = EmailHandler(raw_form_data, url_domain)
             email.process_data()
             assert email.recipients == []
 
@@ -177,13 +198,11 @@ def test_recipients_eligible_students():
 
             # Test a program that should have nothing in banned users and nothing in All Volunteer:
             raw_form_data = {"templateIdentifier": "Test",
-                "programID":"10",
-                "eventID":"1",
-                "recipientsCategory": "Eligible Students"}
+                             "emailSender": 'ramsayb2',             
+                             "eventID":"1",
+                             "recipientsCategory": "Eligible Students"}
 
-            testSender = User.get_by_id('ramsayb2')
-
-            email = EmailHandler(raw_form_data, url_domain, testSender)
+            email = EmailHandler(raw_form_data, url_domain)
             email.process_data()
             assert email.recipients == []
 
@@ -196,13 +215,12 @@ def test_recipients_eligible_students():
             newTrainedStudent = EventParticipant.create(user = "partont", event = allVolunteerEvent)
 
             raw_form_data = {"templateIdentifier": "Test",
-                "programID":"3",
-                "eventID":"1",
-                "recipientsCategory": "Eligible Students"}
+                             "emailSender": 'ramsayb2',
+                             "eventID":"1",
+                             "recipientsCategory": "Eligible Students"}
 
-            testSender = User.get_by_id('ramsayb2')
 
-            email = EmailHandler(raw_form_data, url_domain, testSender)
+            email = EmailHandler(raw_form_data, url_domain)
             email.process_data()
             assert email.recipients == [User.get_by_id("partont")]
 
@@ -225,7 +243,7 @@ def test_recipients_eligible_students():
 @pytest.mark.integration
 def test_get_last_email():
     last_email = EmailHandler.retrieve_last_email(5)
-    assert last_email.sender.username == "neillz"
+    assert last_email.sender == "neillz"
     assert last_email.subject == "Time Change for {event_name}"
     assert last_email.templateUsed.subject == "Test Email 2"
     assert last_email.recipientsCategory == "RSVP'd"

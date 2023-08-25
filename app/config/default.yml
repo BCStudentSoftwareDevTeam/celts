@@ -1,10 +1,11 @@
 secret_key: "123"
 use_shibboleth: False
-override_file: "local-override.yml"
 default_user: "ramsayb2"
+
 celts_admin_contact: "celts@berea.edu"
 support_email_contact: "support@bereacollege.onmicrosoft.com"
 show_queries: True
+test_entry: "Default"
 
 db:
     name: "celts"
@@ -16,33 +17,33 @@ tracy:
     name: "UTE"
     host: "timemachine1sql.berea.edu"
     user: "ute_limited"
-    password: "password"
+    password: "OVERRIDE"
+
+ldap:
+    user: "BPLP"
+    password: "OVERRIDE"
 
 files:
   base_path: 'app/static/files'
-  email_attachment_path: 'app/static/files/emailattachments'
-  event_attachment_path: 'app/static/files/eventattachments'
+  email_attachment_path: 'emailattachments'
+  event_attachment_path: 'eventattachments'
+  course_attachment_path: 'courseattachments'
 
 MAIL_ENABLED: True
 MAIL_SERVER: "smtp.gmail.com" # use smtp.gmail.com for gmail, mail.berea.edu for Berea
 MAIL_PORT: 465                # use port 465 for gmail, use 25 for Berea
-MAIL_USERNAME: 'IsaacandGarrettWereHere@gmail.com'
-MAIL_PASSWORD: 'qfhmjbupaqbpiudy' # normal password is Summer2022!
-MAIL_DEFAULT_SENDER: 'IsaacandGarrettWereHere@gmail.com'
-admin_username: 'IsaacandGarrettWereHere@gmail.com'      # add the email of the sender (Admin) (for gmail)
-admin_password: 'qfhmjbupaqbpiudy'             # Add the password of the sender (for gmail)
-staff_username: 'sceggenh@gmail.com'   # the email of the sender (celtsStudentStaff)
-staff_password: 'celtsTest2'
-MAIL_SUPRESS_SEND: False
+MAIL_USERNAME: '' # Add your gmail username and password to local-override.yml
+MAIL_PASSWORD: '' # For gmail, turn on 2-factor and create an application password
 MAIL_USE_TLS: False
-MAIL_USE_SSL: True
-MAIL_OVERRIDE_ALL: "j5u6j9w6v1h0p3g1@bereacs.slack.com"
-MAIL_REPLY_TO_ADDRESS: "j5u6j9w6v1h0p3g1@bereacs.slack.com"
+MAIL_USE_SSL: True  # True for gmail, False for mail.berea.edu
+MAIL_DEFAULT_SENDER: 'support@bereacollege.onmicrosoft.com'
+MAIL_OVERRIDE_ALL: "celts-aaaacl2oi7xuiw3eaqsvbo6zmu@studentprogrammers.slack.com"
+MAIL_REPLY_TO_ADDRESS: "celts-aaaacl2oi7xuiw3eaqsvbo6zmu@studentprogrammers.slack.com"
 
 
 contributors:
   - name: "Scott Heggen"
-    role: Team Lead
+    role: "Team Lead"
   - name: "Brian Ramsay"
     role: "Team Lead"
   - name: "Alex Bryant"
@@ -102,4 +103,19 @@ contributors:
   - name: "Finn Bledsoe"
     role: "Software Engineer"
   - name: "Joey Martin"
+    role: "Software Engineer"
+  - name: "Liliane Azabe "
+    role: "Software Engineer"
+  - name: "Bineta Doucoure"
+    role: "Software Engineer"
+  - name: "Mercy Eze"
+    role: "Software Engineer"
+  - name: "Michel Moncada"
+  - name: "Stevenson Michel"
+    role: "Software Engineer"
+  - name: "Lawrence Hoerst"
+    role: "Software Engineer"
+  - name: "Oluwagbayi Makinde"
+    role: "Software Engineer"
+  - name: "Chris Anderson"
     role: "Software Engineer"

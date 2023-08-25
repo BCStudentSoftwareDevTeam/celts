@@ -3,7 +3,7 @@
 
 {% block scripts %}
   {{super()}}
-  <script type="module" src="/static/js/adminLogs.js"></script>
+  <script type="module" src="/static/js/logs.js"></script>
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
 
   {% block styles %}
@@ -14,7 +14,7 @@
 {% block app_content %}
 
 <h1 class="text-center mb-3">Admin Logs</h1>
-<table class="display" id="logsTable">
+<table class="display d-none" id="logsTable">
   <thead>
     <tr>
       <th>Date</th>

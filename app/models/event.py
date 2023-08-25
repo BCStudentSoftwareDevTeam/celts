@@ -15,11 +15,14 @@ class Event(baseModel):
     isRsvpRequired = BooleanField(default=False)
     isService = BooleanField(default=False)
     isAllVolunteerTraining = BooleanField(default=False)
+    rsvpLimit = IntegerField(null=True)
     startDate = DateField()
     endDate = DateField(null=True)
     recurringId = IntegerField(null=True)
     contactEmail = CharField(null=True)
     contactName = CharField(null=True)
+    program = ForeignKeyField(Program)
+    isCanceled = BooleanField(default=False)
 
     _spCache = "Empty"
 
@@ -28,20 +31,7 @@ class Event(baseModel):
 
     @property
     def noProgram(self):
-        return not self.programEvents.exists()
-
-    @property
-    def singleProgram(self):
-        from app.models.programEvent import ProgramEvent
-
-        if self._spCache == "Empty":
-            countPE = list(self.programEvents.select(ProgramEvent, Program).join(Program).execute())
-            if len(countPE) == 1:
-                self._spCache = countPE[0].program
-            else:
-                self._spCache = None
-
-        return self._spCache
+        return not self.program_id
 
     @property
     def isPast(self):
@@ -55,3 +45,24 @@ class Event(baseModel):
     def isFirstRecurringEvent(self):
         firstRecurringEvent = Event.select().where(Event.recurringId==self.recurringId).order_by(Event.id).get()
         return firstRecurringEvent.id == self.id
+
+    @property
+    def relativeTime(self):
+        relativeTime = datetime.combine(self.startDate, self.timeStart) - datetime.now()
+
+        secondsFromNow = relativeTime.seconds
+        minutesFromNow = secondsFromNow // 60
+        hoursFromNow = minutesFromNow // 60
+        daysFromNow = relativeTime.days
+        if self.isPast:
+            return ""
+        elif (daysFromNow):
+            return f"{daysFromNow} day" + ("s" if daysFromNow > 1 else "")
+        elif hoursFromNow:
+            return f"{hoursFromNow} hour" + ("s" if hoursFromNow > 1 else "")
+        elif minutesFromNow:
+            return f"{minutesFromNow} minute" + ("s" if minutesFromNow > 1 else "")
+        else:
+            return f"happening now"
+        
+    

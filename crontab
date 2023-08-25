@@ -1,0 +1,36 @@
+##   CRONTAB HINTS AND TIPS
+##   
+##   
+##   Entry              Description     Equivalent To
+##   @yearly (or @annually)     Run once a year at midnight in the morning of January 1         0 0 1 1 *
+##   @monthly   Run once a month at midnight in the morning of the first of the month   0 0 1 * *
+##   @weekly    Run once a week at midnight in the morning of Sunday    0 0 * * 0
+##   @daily             Run once a day at midnight      0 0 * * *
+##   @hourly    Run once an hour at the beginning of the hour   0 * * * *
+##   @reboot    Run at startup  @reboot
+##   
+##   *    *    *    *    *  command to be executed
+##   ┬    ┬    ┬    ┬    ┬
+##   │    │    │    │    │
+##   │    │    │    │    │
+##   │    │    │    │    └───── day of week (0 - 7) (0 or 7 are Sunday, or use names)
+##   │    │    │    └────────── month (1 - 12)
+##   │    │    └─────────────── day of month (1 - 31)
+##   │    └──────────────────── hour (0 - 23)
+##   └───────────────────────── min (0 - 59)
+##   
+##   
+##   
+##   The following example will run each 10 minutes
+##   */10 * * * * /usr/bin/somedirectory/somecommand
+
+##   Disable E-mail notifications
+MAILTO=""
+
+## Send reminders about the next day's events
+## Assumes cron is running as the same user as the application
+#0 8 * * *
+#cd www; . venv/bin/activate; venv/bin/python -c "from app.scripts.send_event_reminder_emails import main; main()"
+
+0 4 * * *
+cd www; . venv/bin/activate; venv/bin/python -c "python app/scripts/import_users.py"

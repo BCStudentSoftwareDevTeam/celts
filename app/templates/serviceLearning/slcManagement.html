@@ -8,10 +8,11 @@
 {% block app_content %}
 <input id="username" type="hidden" value='{{user.username}}'>
 <h1 class="text-center mb-2">{{user.firstName}} {{user.lastName}}'s SLC Proposals</h1>
-<div align="right">
-  <form method="post" action="/serviceLearning/createCourse" >
-    <button class="btn btn-primary" type = 'Submit'>Create Course Proposal</button>
-  </form>
+<div class="text-center">
+  <p class="mb-0">If you would like to see the Service-Learning Course Designation form before starting, you can download it <a href="/static/files/serviceLearningProposalForm/slCourseDesignationProposalForm.doc">here</a>.</p>
+  <p class="mb-0">You can save and come back to a form at any time by clicking one of the <b>Save</b> buttons. </p>
+  <p class="mb-2">For a copy of your proposal form, select the <b>Print</b> option using the <b>Action</b> menu.</p>
+
 </div>
 <div class="table-responsive" id="proposalTable">
   <table class="table table-striped">
@@ -28,12 +29,12 @@
     <tbody>
       {% for course in courseDict %}
         <tr>
-          <td>{{courseDict[course]['name']}}</td>
-          <td>{{courseDict[course]['creator']}}</td>
-          <td>{{courseDict[course]['faculty']|join(", ")}}</td>
-          <td>{{courseDict[course]['term'].description}}</td>
-          <td>{{courseDict[course]['status']}}</td>
+          <td id="name-{{courseDict[course]['id']}}">{{courseDict[course]['name']}}</td>
+          <td id="creator-{{courseDict[course]['id']}}">{{courseDict[course]['creator']}}</td>
+          <td id="faculty-{{courseDict[course]['id']}}">{{courseDict[course]['faculty']|join(", ")}}</td>
+          <td id="term-{{courseDict[course]['id']}}">{{courseDict[course]['term'].description}}</td>
           <td>
+<<<<<<< HEAD
               <select class="form-select courseData" id="{{courseDict[course]['id']}}" onchange='changeAction(this)'>
                 <option value="---" disabled selected>Select Action</option>
                 <option value="Renew">Renew</option>
@@ -42,15 +43,34 @@
                 <option value="Edit">Edit</option>
 
 
+=======
+            <a class="status-key text-dark" id="status-{{courseDict[course]['id']}}" href="javascript:void(0);" data-toggle="popover" title="Status" data-content="{{courseDict[course]['status']}}">{{courseDict[course]['status']}}</a>
+          </td>
+          <td>
+            <select class="form-select courseData" id="{{courseDict[course]['id']}}" onchange='changeAction(this)'>
+              <option value="---" disabled selected>Select Action</option>
+              <option value="Renew">Renew</option>
+              <option value="View">View</option>
+              <option value="Withdraw">Withdraw</option>
+              <option value="Edit">Edit</option>
+              <option value="Print">Print</option>
+>>>>>>> 616794fb99d64820c34c87a314a6e511976ef90c
             </select>
           </td>
         </tr>
+
       {% endfor %}
     </tbody>
   </table>
+  <input id="courseID" type="hidden">
   {% if not courseDict %}
     <p class="text-center">{{user.firstName}} {{user.lastName}} has no associated course proposals.</p>
   {% endif %}
+</div>
+<div align="right">
+  <form method="post" action="/serviceLearning/createCourse" >
+    <button class="btn btn-primary" type = 'Submit'>Create Course Proposal</button>
+  </form>
 </div>
 <div class="modal fade" id="withdrawModal" tabindex="-1" aria-labelledby="withdrawModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -60,21 +80,19 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <input id="courseID" type="hidden" value="">
         <p>Are you sure you want to withdraw this service-learning course proposal?<br><br>
           <span class="text-danger bi bi-exclamation-triangle-fill"></span>
           <b>Note: This action is irreversible. Once withdrawn, the proposal will be forever deleted.</b>
         </p>
       </div>
-      <div class="modal-footer">
+      <div class="modal-footer justify-content-between">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         <button type="button" class="btn btn-primary" id="withdrawBtn">Withdraw</button>
       </div>
     </div>
   </div>
 </div>
-{% for course in courseDict %}
-<div class="modal fade" id="course-{{courseDict[course]['id']}}" tabindex="-1" aria-labelledby="renewModalLabel" aria-hidden="true">
+<div class="modal fade" id="renewModal" tabindex="-1" aria-labelledby="renewModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -82,39 +100,35 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body table-responsive">
-          <table class="table table-striped ml-4" id="myTable">
+          <table class="table table-striped ml-4" id="SLCProposalTable">
             <tbody id="facultyTable">
               <tr>
                 <td class="fw-bold">Course Name</td>
-                <td> {{courseDict[course]['name']}}</td>
+                <td id="renewName"></td>
               </tr>
               <tr>
                 <td class="fw-bold"> Instructor(s)</td>
-                <td>
-                  {{courseDict[course]['faculty']|join(", ")}}
-                </td>
+                <td id="renewFaculty"></td>
               </tr>
               <tr>
                 <td class="fw-bold">Status</td>
-                <td>{{courseDict[course]['status']}}</td>
+                <td id="renewStatus"></td>
               </tr>
             </tbody>
           </table>
-        <input id="courseID" type="hidden" value="">
         <p>Choose a term for the new course:</p>
-        <select class="form-select courseRenewal" id="renewCourse-{{courseDict[course]['id']}}">
+        <select class="form-select courseRenewal" id="renewTerm">
           <option value="---" disabled selected>Select Term</option>
           {% for term in termList %}
-          <option id="termSelect" value="{{term}}">{{term.description}}</option>
+          <option value="{{term}}">{{term.description}}</option>
           {% endfor %}
         </select>
       </div>
-      <div class="modal-footer">
+      <div class="modal-footer justify-content-between">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary" onclick="renew()">Renew</button>
+        <button type="button" class="btn btn-primary" id="renewBtn" disabled>Renew</button>
       </div>
     </div>
   </div>
 </div>
-{% endfor %}
 {% endblock %}

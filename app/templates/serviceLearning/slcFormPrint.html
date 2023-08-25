@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('static', filename ='css/slcPrintForm.css') }}?u={{lastStaticUpdate}}">
+{% endblock %}
+
+{% block app_content %}
+<div class= "w-100 d-print-block">
+  <div class="text-center">
+    <img src="{{url_for('static', filename='images/logos/celts_logo.png')}}" width ="269" height="90">
+    <h6>
+      <br><b>Service-Learning Course Designation/<br>Active Learning Experience (ALE) Requirements Met Through Service-Learning</b>
+    </h6>
+    <h6 class="m-3"><b>CRITERIA AND PROPOSAL FORM</b></h6>
+  </div>
+  <p>
+    <b>SERVICE-LEARNING</b> at Berea College is an educational experience based upon a collaborative partnership between College and community. Learning through service enables students to apply academic knowledge and critical-thinking skills to meet genuine community needs. Through reflection and assessment, students gain deeper understanding of course content and the importance of civic engagement.
+  </p>
+  <p>
+    All Designated Service-Learning Courses will meet the <b>Active Learning Experience (ALE)</b> Requirement.
+  </p>
+  <p class="mb-4">
+    If you have questions about the criteria for Service-Learning Courses, please call Ashley Cochrane at x. 3605.
+  </p>
+
+  <table class="table table-bordered">
+    <tr>
+      <td>
+        <h6 class="text-center"><b>Criteria for the Service-Learning Course Designation/ALE Requirement met through Service-Learning</b></h6>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <h6 class="text-center mb-1"><b>Student Learning Outcomes</b></h6>
+        <p class="mb-1">Students will be able to:</p>
+        <ul class="mb-0">
+          <li>
+            Apply academic knowledge and critical-thinking skills to meet genuine community needs.
+          </li>
+          <li>
+            Demonstrate deeper understanding of specific course learning objectives appropriate to the experience.
+          </li>
+          <li>
+            Reflect critically on multiple facets of their experience, on the connections between theory and practice, and between learning inside and outside the classroom.
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <h6 class="text-center mb-1"><b>Service-Learning Experience</b></h6>
+        <ul class="mb-0">
+          <li>
+            Faculty will identify one or more course learning objectives that students will address through their service work in the community.
+          </li>
+          <li>
+            Together, the community partner and faculty member will identify community needs and will structure a service-learning experience designed to address those needs.
+          </li>Criteria and Proposal Form
+          <li>
+            Service-Learning activities will be integrated into course work and will serve as the pedagogical method for the specified service-learning course objective(s). As such, all students in the course will participate in the service-learning activities.
+          </li>
+          <li>
+            The service-learning experience will be substantial and sustained throughout the course, involving active student engagement.
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <h6 class="text-center mb-1"><b>Community Partnerships</b></h6>
+        <ul class="mb-0">
+          <li>
+            Faculty will identify and designate an appropriate community partner(s) in order for course learning objectives to be met.
+          </li>
+          <li class="mb-1">
+            All partners will be involved in the planning, implementation, and evaluation of the structured service-learning experience.
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <h6 class="text-center mb-1"><b>Reflection and Assessment</b></h6>
+        <ul class="mb-0">
+          <li>
+            Faculty will infuse critical reflection throughout the service-learning experience; the reflection will create the connection among service work, course objectives, and student learning outcomes.
+          </li>
+          <li>
+            Evaluative criteria for service-learning reflection will be included in the syllabi, including the percentage that reflection will represent in the final grade.
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <h6 class="text-center mb-1"><b>Summary Presentation and Assessment</b></h6>
+        <ul class="mb-0">
+          <li>
+            The service-learning experience will result in a summary presentation, performance, exhibition, and/or other synthesizing project completed by the students engaged in the experience.
+          </li>
+          <li >
+            Evaluative criteria of the final project will be included in the syllabi, including the percentage that the summary presentation or synthesizing project will represent in the final grade.
+          </li>
+        </ul>
+      </td>
+    </tr>
+  </table>
+  <div class= "text-center">
+    <p class="mb-1"><strong >PROPOSAL FOR SERVICE-LEARNING COURSE DESIGNATION/ALE REQUIREMENT MET THROUGH SERVICE-LEARNING</strong></p>
+    <p>Email proposal form to <b>ashley_cochrane@berea.edu</b></p>
+  </div>
+  <p>Approved courses will be listed in the Schedule of Classes as service-learning courses that meet the ALE requirement.</p>
+  <p class="mb-0"><b>Note:</b> If this course has previously been approved as a service-learning course, please complete only Part A of this form, indicating that this is a resubmission of an approved service-learning course. If the course has not previously been approved as a service-learning course, please complete both Parts A and B.</p>
+  <hr>
+
+  <h6 class="mb-0"><b>PART A</b></h6>
+  <table>
+    <tbody>
+      <tr>
+        <td>
+          <p class="mb-1"><b>Course Instructor Name:</b></p>
+        </td>
+        <td>
+          {% for instructor in pdfInstructor %}
+            {{instructor.user.firstName}} {{instructor.user.lastName}}
+          {% endfor %}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p class="info-field"><b>Course Instructor Phone(s): </b></p>
+        </td>
+        <td>
+          {% for instructor in pdfInstructor %}
+            {{instructor.user.phoneNumber}}
+          {% endfor %}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p class="info-field"><b>Full Course Name:</b> </p>
+        </td>
+        <td>
+          {{course.courseName}}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p class="info-field"><b>Course Abbreviation/Number: </b></p>
+        </td>
+        <td>
+          {% set abbreviation = course.courseAbbreviation if course.courseAbbreviation != "" else "_________________________" %}
+          {{abbreviation}}
+        </td>
+        <td>
+          <p class="info-field"><b>Credit: </b>{{course.courseCredit}}</p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          {% set designation = course.sectionDesignation if course.sectionDesignation != "" else "_________________________" %}
+          <p class="info-field"><b>Section Designation (if applicable):</b> </p>
+        </td>
+        <td>
+          {{designation}}
+        </td>
+        <td>
+          {% set all = "Yes" if course.isAllSectionsServiceLearning else "No" %}
+          <p class="info-field"><b>Is service-learning included in all sections?</b> {{all}}</p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p class="info-field"><b>When will the course be offered?</b></p>
+        </td>
+        <td>
+          {{course.term.description}}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          {% set occurrence = "Regularly" if course.isRegularlyOccurring else "On a one-time basis" %}
+          <p class="info-field"><b>This course will be taught:</b></p>
+        </td>
+        <td>
+          {{occurrence}}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  {% set component = "Yes" if course.hasSlcComponent else "No" %}
+  <p class="info-field"><b>Will this course be taught with a significant service-learning component each time it is taught? </b> {{component}}</p>
+
+  {% set permanent = "Yes" if course.isPermanentlyDesignated else "No" %}
+  <p><b><i>If yes, would you like for this course to have a permanent Service-Learning Course Designation (i.e., in the Course Catalog)? (A change in the Catalog description must be approved by COGE.)</i></b> {{permanent}}</p>
+  {% set previously = "Yes" if course.isPreviouslyApproved else "No" %}
+  <p class="info-field"><b>Has this course previously been approved as a service-learning course?</b> {{previously}}</p>
+  <p class="info-field"><b><i>If yes, when was the course approved previously? Also, please describe the service-learning project you plan for the upcoming course, including indentification of the community partner organization(s).</i></b></p>
+  <p class="info-field">{{course.previouslyApprovedDescription}}</p>
+
+  <p class="info-field"><b>Please attach the syllabus for the course.</b></p>
+  <hr>
+  <h6 class="mb-0"><b>PART B</b></h6>
+  <p>You do not need to complete Part B if this is a resubmission of a previously approved service-learning course, unless there are significant changes to the course since the last time it was taught.</p>
+  <p>Referring to the <b>Criteria for the Service-Learning Course Designation/ALE Requirement met through Service-Learning,</b> please address the following in a one-page proposal narrative.  Attach your syllabus (or the one from the most recent time that the course was taught).  If you are in the process of designing the syllabus, please indicate that.</p>
+  <ol>
+    <li>
+      Indicate the specific course learning objective(s) that will be addressed by the service-learning component.
+      <p class="mt-1">{{questionanswers[0]}}</p>
+    </li>
+    <li>
+      Describe the method of structured, critical reflection you will use in order to connect the service activity or activities to the learning objective(s) of the course.
+      <p class="mt-1">{{questionanswers[1]}}</p>
+    </li>
+    <li>
+      Describe the service-learning activity or activities.  Indicate the approximate number of hours or days of service experience. There is no formal requirement, but the activity must be substantial and sustained throughout the semester.
+      <p class="mt-1">{{questionanswers[2]}}</p>
+    </li>
+    <li>
+      Identify the community partner(s) with whom you will collaborate in order to structure this service-learning experience.  How will the community partner(s) be involved in planning, implementation, and evaluation?
+      <p class="mt-1">{{questionanswers[3]}}</p>
+    </li>
+    <li>
+      Describe the final product to be completed by the students.  How will this benefit the community?
+      <p class="mt-1">{{questionanswers[4]}}</p>
+    </li>
+    <li>
+      Indicate how you will assess student learning related to the identified course objective(s) that will be enhanced by the service-learning experience. Identify what percentage of the final grade will be based on the assessment of reflection, the final product, and other forms of assessment related to the identified course objective(s).
+      <p class="mt-1">{{questionanswers[5]}}</p>
+    </li>
+  </ol>
+</div>
+ {% endblock %}

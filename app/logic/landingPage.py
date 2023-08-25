@@ -5,11 +5,12 @@ from app.models.program import Program
 
 
 def getManagerProgramDict(user):
-    if user.isAdmin or user.isBonnerScholar:
-        programs = Program.select()
-    else:
-        programs = Program.select().where(Program.isBonnerScholars == False)
-    managerRows = list(ProgramManager.select())
+    
+    managerRows = ProgramManager.select()
+    programs = Program.select().order_by(Program.programName)
+    if not (user.isAdmin or user.isBonnerScholar):
+        programs = programs.where(Program.isBonnerScholars == False)
+        managerRows = managerRows.join(Program).where(ProgramManager.program.isBonnerScholars == False)  
     managerProgramDict = {}
 
     for program in programs:

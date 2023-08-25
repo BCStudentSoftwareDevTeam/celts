@@ -14,17 +14,16 @@ from app.models.eventTemplate import EventTemplate
 from app.models.requirementMatch import RequirementMatch
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.program import Program
-from app.models.programEvent import ProgramEvent
 from app.models.programBan import ProgramBan
 from app.models.term import Term
 from app.models.interest import Interest
 from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
 
-from app.logic.events import getEvents, preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
-from app.logic.events import attemptSaveEvent, saveEventToDb, deleteEvent, getParticipatedEventsForUser
+from app.logic.events import preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
+from app.logic.events import attemptSaveEvent, saveEventToDb, cancelEvent, deleteEvent, getParticipatedEventsForUser
 from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser
-from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents
+from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount
 from app.logic.volunteers import addVolunteerToEventRsvp, updateEventParticipants
 from app.logic.participants import addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser
@@ -32,52 +31,8 @@ from app.logic.utils import format24HourTime
 
 @pytest.mark.integration
 def test_event_model():
-
-    # single program
-    event = Event.get_by_id(12)
-    assert event.singleProgram == Program.get_by_id(3)
-
-    # no program
-    event = Event.get_by_id(13)
-    assert event.singleProgram == None
-    assert event.noProgram
-
-    # multi program
-    event = Event.get_by_id(14)
-    assert event.singleProgram == None
-    assert not event.noProgram
-
-    # program/event passed
     event = Event.get_by_id(11)
     assert event.isPast
-
-@pytest.mark.integration
-def test_getAllEvents():
-
-    # No program is given, get all events
-    events = getEvents()
-
-    assert len(events) > 0
-
-    assert events[0].description == "Empty Bowls Spring 2021"
-    assert events[1].description == "Will donate Food to Community"
-    assert events[2].description == "Lecture on adoption"
-
-@pytest.mark.integration
-def test_getEventsWithProgram():
-
-    # Single program
-    events = getEvents(program_id = 2)
-
-    assert len(events) > 0
-    assert events[0].description == "Berea Buddies First Meetup"
-
-@pytest.mark.integration
-def test_getEventsInvalidProgram():
-
-    # Invalid program
-    with pytest.raises(DoesNotExist):
-        getEvents(program_id="asdf")
 
 @pytest.mark.integration
 def test_eventTemplate_model():
@@ -301,16 +256,9 @@ def test_calculateRecurringEventFrequency():
 @pytest.mark.integration
 def test_attemptSaveEvent():
     # This test duplicates some of the saving tests, but with raw data, like from a form
-    eventData =  {'isRsvpRequired':False, 'isService':False,
-                  'isTraining':True, 'isRecurring':True, 'recurringId':0,
-                  'startDate': '2021-12-12',
-                  'endDate': '2021-06-12', 'programId':1, 'location':"a big room",
-                  'timeEnd':'09:00 PM', 'timeStart':'06:00 PM',
-                  'description':"Empty Bowls Spring 2021",
-                  'name':'Empty Bowls Spring','term':1,'contactName':"Monkey D. Luffy",
-                  'contactEmail': 'strawhats@hotmail.com'}
     eventInfo =  { 'isTraining':'on', 'isRecurring':False, 'recurringId':None,
                    'startDate': '2021-12-12',
+                   'rsvpLimit': None,
                    'endDate':'2022-06-12', 'location':"a big room",
                    'timeEnd':'09:00 PM', 'timeStart':'06:00 PM',
                    'description':"Empty Bowls Spring 2021",
@@ -337,7 +285,7 @@ def test_attemptSaveEvent():
 @pytest.mark.integration
 def test_saveEventToDb_create():
 
-    eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'isService':False,
+    eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False,
                   'isTraining':True, 'isRecurring':False,'isAllVolunteerTraining': True, 'recurringId':None, 'startDate': parser.parse('2021-12-12'),
                    'endDate':parser.parse('2022-06-12'), 'location':"a big room",
                    'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
@@ -364,7 +312,7 @@ def test_saveEventToDb_create():
             g.current_user = User.get_by_id("ramsayb2")
             createdEvents = saveEventToDb(eventInfo)
         assert len(createdEvents) == 1
-        assert createdEvents[0].singleProgram.id == 1
+        assert createdEvents[0].program.id == 1 # 
 
         transaction.rollback()
 
@@ -372,7 +320,7 @@ def test_saveEventToDb_create():
 def test_saveEventToDb_recurring():
     with mainDB.atomic() as transaction:
         with app.app_context():
-            eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'isService':False, 'isAllVolunteerTraining': True,
+            eventInfo =  {'isFoodProvided': False, 'isRsvpRequired':False, 'rsvpLimit': None, 'isService':False, 'isAllVolunteerTraining': True,
                           'isTraining':True, 'isRecurring': True, 'recurringId':1, 'startDate': parser.parse('12-12-2021'),
                            'endDate':parser.parse('01-18-2022'), 'location':"this is only a test",
                            'timeEnd':'09:00 PM', 'timeStart':'06:00 PM', 'description':"Empty Bowls Spring 2021",
@@ -395,6 +343,8 @@ def test_saveEventToDb_update():
         beforeUpdate = Event.get_by_id(eventId)
         assert beforeUpdate.name == "First Meetup"
 
+        # Verify description, cerRequirement, and isRsvpRequried are updated for event 4 and 
+        # program, isAllVolunteerTraining, and recurringId are not updated.  
         newEventData = {
                         "id": 4,
                         "program": 1,
@@ -407,9 +357,10 @@ def test_saveEventToDb_update():
                         "location": "House",
                         'isFoodProvided': False,
                         'isRecurring': True,
-                        'recurringId': 2,
+                        'recurringId': 3,
                         'isTraining': True,
-                        'isRsvpRequired': False,
+                        'isRsvpRequired': True,
+                        'rsvpLimit': None,
                         'isAllVolunteerTraining': True,
                         'isService': False,
                         "startDate": "2021-12-12",
@@ -418,62 +369,79 @@ def test_saveEventToDb_update():
                         "contactEmail": "goatpiece@berea.edu",
                         "valid": True
                     }
+        
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
-            eventFunction = saveEventToDb(newEventData)
+            saveEventToDb(newEventData)
         afterUpdate = Event.get_by_id(newEventData['id'])
         assert afterUpdate.description == "This is a Test"
-        assert afterUpdate.isAllVolunteerTraining == True
+        assert afterUpdate.isRsvpRequired == True
+        
+        assert afterUpdate.program == Program.get_by_id(2)
+        assert afterUpdate.recurringId is None
+        assert afterUpdate.isAllVolunteerTraining == False
         assert RequirementMatch.select().where(RequirementMatch.event == afterUpdate,
                                                RequirementMatch.requirement == 9).exists()
+        
+        newEventData['description'] = "Berea Buddies First Meetup"
 
-        newEventData = {
-                        "id": 4,
-                        "program": 1,
-                        "term": 1,
-                        "name": "First Meetup",
-                        "description": "Berea Buddies First Meetup",
-                        "timeStart": "06:00 PM",
-                        "timeEnd": "09:00 PM",
-                        "location": "House",
-                        'isFoodProvided': False,
-                        'isRecurring': True,
-                        'recurringId': 3,
-                        'isTraining': True,
-                        'isRsvpRequired': False,
-                        'isAllVolunteerTraining': False,
-                        'isService': 5,
-                        "startDate": "2021-12-12",
-                        "endDate": "2022-6-12",
-                        "contactName": "Monkey D. Luffy",
-                        "contactEmail": "goatpiece@berea.edu",
-                        "valid": True
-                    }
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
-            eventFunction = saveEventToDb(newEventData)
+            saveEventToDb(newEventData)
         afterUpdate = Event.get_by_id(newEventData['id'])
-
         assert afterUpdate.description == "Berea Buddies First Meetup"
+        
 
         transaction.rollback()
+
+@pytest.mark.integration
+def test_cancelEvent():
+     with mainDB.atomic() as transaction:
+        # creates an event 
+        testingEvent = Event.create(name = "Testing canceled event",
+                                    term = 2,
+                                    description = "This Event is Created to be Canceled.",
+                                    timeStart = "07:00 PM",
+                                    timeEnd = "10:00 PM",
+                                    location = "Somewhere",
+                                    isRsvpRequired = 0,
+                                    isTraining = 0,
+                                    isService = 0,
+                                    startDate = "2021-12-12",
+                                    endDate = "2022-6-12",
+                                    isCanceled = False,
+                                    program = 2)
+        
+        testingEvent = Event.get(Event.name == "Testing canceled event")
+        eventId = testingEvent.id
+        
+
+        with app.test_request_context():
+            g.current_user = User.get_by_id("ramsayb2")
+            cancelEvent(eventId)
+        
+        event = Event.get(Event.id == eventId)
+        assert event.isCanceled
+        transaction.rollback()
+
 
 @pytest.mark.integration
 def test_deleteEvent():
     with mainDB.atomic() as transaction:
         # creates non recurring event
         testingEvent = Event.create(name = "Testing delete event",
-                                      term = 2,
-                                      description = "This Event is Created to be Deleted.",
-                                      timeStart = "06:00 PM",
-                                      timeEnd = "09:00 PM",
-                                      location = "No Where",
-                                      isRsvpRequired = 0,
-                                      isTraining = 0,
-                                      isService = 0,
-                                      startDate = "2021-12-12",
-                                      endDate = "2022-6-12",
-                                      recurringId = None)
+                                    term = 2,
+                                    description = "This Event is Created to be Deleted.",
+                                    timeStart = "06:00 PM",
+                                    timeEnd = "09:00 PM",
+                                    location = "No Where",
+                                    isRsvpRequired = 0,
+                                    isTraining = 0,
+                                    isService = 0,
+                                    startDate = "2021-12-12",
+                                    endDate = "2022-6-12",
+                                    recurringId = None,
+                                    program = 9)
 
         testingEvent = Event.get(Event.name == "Testing delete event")
         eventId = testingEvent.id
@@ -481,18 +449,19 @@ def test_deleteEvent():
         # tests deletion of standard event
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
-            deletingEvent = deleteEvent(eventId)
+            deleteEvent(eventId)
         assert Event.get_or_none(Event.id == eventId) is None
 
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
-            deletingEvent = deleteEvent(eventId)
+            deleteEvent(eventId)
         assert Event.get_or_none(Event.id == eventId) is None
         transaction.rollback()
 
         # creates a recurring event
         eventInfo =  {'isFoodProvided': False,
                       'isRsvpRequired': False,
+                      'rsvpLimit': None,
                       'isService': False,
                       'isAllVolunteerTraining': True,
                       'isTraining': True,
@@ -522,7 +491,7 @@ def test_deleteEvent():
 
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
-            deletingEvent = deleteEvent(createdEvents[0])
+            deleteEvent(createdEvents[0])
 
         # check how many events exist after event deletion and make sure they are linear
         recurringEventsAfter = list(Event.select().where(Event.recurringId==recurringId).order_by(Event.recurringId))
@@ -545,14 +514,14 @@ def test_deleteEvent():
 
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
-            deletingEvent = deleteEventAndAllFollowing(eventIdToDelete)
+            deleteEventAndAllFollowing(eventIdToDelete)
             totalRecurringEventsAfter = len(Event.select().where(Event.recurringId == recurringId))
         assert (totalRecurringEvents - eventPlusAllRecurringEventsAfter) == totalRecurringEventsAfter
         transaction.rollback()
 
         with app.app_context():
             g.current_user = User.get_by_id("ramsayb2")
-            deletingSeries = deleteAllRecurringEvents(eventIdToDelete)
+            deleteAllRecurringEvents(eventIdToDelete)
             newTotalRecurringEvents = len(Event.select().where(Event.recurringId == recurringId))
         assert newTotalRecurringEvents == 0
 
@@ -576,49 +545,10 @@ def test_upcomingEvents():
                                  description = "Test upcoming no program event.",
                                  location = "The moon",
                                  startDate = testDate,
-                                 endDate = testDate + timedelta(days=1))
+                                 endDate = testDate + timedelta(days=1),
+                                 program = 9)
 
-        # Create a Program Event to show up when the user marks interest in a
-        # new program
-        newProgramEvent = Event.create(name = "Upcoming event with program",
-                                       term = 2,
-                                       description = "Test upcoming program event.",
-                                       location = "The sun",
-                                       startDate = testDate,
-                                       endDate = testDate + timedelta(days=1))
-
-        newBannedProgramEvent = Event.create(name = "Upcoming event with banned program",
-                                             term = 2,
-                                             description = "Test upcoming banned program event.",
-                                             location = "The moon",
-                                             startDate = testDate,
-                                             endDate = testDate + timedelta(days=1))
-
-        newRecurringEvent = Event.create(name = "Recurring Event Test",
-                                         term = 2,
-                                         description = "Test upcoming program event.",
-                                         location = "The sun",
-                                         startDate = date(2021,12,12),
-                                         endDate = date(2021,12,14),
-                                         recurringId = 1)
-
-        newRecurringSecond = Event.create(name = "Recurring second event",
-                                          term = 2,
-                                          description = "Test upcoming program event.",
-                                          location = "The sun",
-                                          startDate = date(2021,12,14),
-                                          endDate = date(2021,12,15),
-                                          recurringId = 1)
-
-        newRecurringDifferentId = Event.create(name = "Recurring different Id",
-                                               term = 2,
-                                               description = "Test upcoming program event.",
-                                               location = "The sun",
-                                               startDate = date(2021,12,13),
-                                               endDate = date(2021,12,13),
-                                               recurringId = 2)
-
-        # Create a new Program to create the new Program Event off of so the
+         # Create a new Program to create the new Program Event off of so the
         # user can mark interest for it
         programForInterest = Program.create(id = 13,
                                             programName = "BOO",
@@ -638,12 +568,53 @@ def test_upcomingEvents():
                                            isBonnerScholars = False,
                                            contactEmail = "test@email",
                                            contactName = "testName")
+        
+        
+        
+        # Create a Program Event to show up when the user marks interest in a
+        # new program
+        newProgramEvent = Event.create(name = "Upcoming event with program",
+                                       term = 2,
+                                       description = "Test upcoming program event.",
+                                       location = "The sun",
+                                       startDate = testDate,
+                                       endDate = testDate + timedelta(days=1),
+                                       program = programForInterest2)
 
-        ProgramEvent.create(program = programForInterest, event = newRecurringEvent)
-        ProgramEvent.create(program = programForInterest, event = newRecurringSecond)
-        ProgramEvent.create(program = programForInterest, event = newRecurringDifferentId)
-        ProgramEvent.create(program = programForInterest2, event = newProgramEvent)
-        ProgramEvent.create(program = programForBanning, event = newBannedProgramEvent)
+        newBannedProgramEvent = Event.create(name = "Upcoming event with banned program",
+                                             term = 2,
+                                             description = "Test upcoming banned program event.",
+                                             location = "The moon",
+                                             startDate = testDate,
+                                             endDate = testDate + timedelta(days=1),
+                                             program= programForBanning)
+
+        newRecurringEvent = Event.create(name = "Recurring Event Test",
+                                         term = 2,
+                                         description = "Test upcoming program event.",
+                                         location = "The sun",
+                                         startDate = date(2021,12,12),
+                                         endDate = date(2021,12,14),
+                                         recurringId = 1,
+                                         program= programForInterest)
+
+        newRecurringSecond = Event.create(name = "Recurring second event",
+                                          term = 2,
+                                          description = "Test upcoming program event.",
+                                          location = "The sun",
+                                          startDate = date(2021,12,14),
+                                          endDate = date(2021,12,15),
+                                          recurringId = 1,
+                                          program= programForInterest)
+
+        newRecurringDifferentId = Event.create(name = "Recurring different Id",
+                                               term = 2,
+                                               description = "Test upcoming program event.",
+                                               location = "The sun",
+                                               startDate = date(2021,12,13),
+                                               endDate = date(2021,12,13),
+                                               recurringId = 2,
+                                               program= programForInterest)
 
         # User has not RSVPd and is Interested
         addUserInterest(programForInterest.id, user)
@@ -669,8 +640,7 @@ def test_upcomingEvents():
                                    createdOn = dayBeforeTestDate,
                                    noteContent = "The test user is unbanned.",
                                    isPrivate = 0)
-        (ProgramBan.update(endDate = dayBeforeTestDate,
-                           unbanNote = noteForUnban)
+        (ProgramBan.update(endDate = dayBeforeTestDate,unbanNote = noteForUnban)
                    .where(ProgramBan.program == programForBanning.id,
                           ProgramBan.user == user.username).execute())
 
@@ -678,7 +648,7 @@ def test_upcomingEvents():
 
         # user has RSVPd and is Interested
         EventRsvp.create(event=noProgram, user=user)
-        eventsInUserInterestAndRsvp = getUpcomingEventsForUser(user, asOf = testDate)
+        getUpcomingEventsForUser(user, asOf = testDate)
 
         interestAndRsvp = eventsInUserInterestedProgram + [noProgram]
         for event in eventsInUserInterestedProgram:
@@ -707,43 +677,45 @@ def test_volunteerHistory():
 
         # Create a user to run the tests with
         user = User.create(username = 'usrtst',
-                              firstName = 'Test',
-                              lastName = 'User',
-                              bnumber = '03522492',
-                              email = 'usert@berea.deu',
-                              isStudent = True)
+                           firstName = 'Test',
+                           lastName = 'User',
+                           bnumber = '03522492',
+                           email = 'usert@berea.deu',
+                           isStudent = True)
 
+
+        # Create a program that will have the program event created off of it
+        participatedProgram = Program.create(id = 13,
+                                             programName = "BOO",
+                                             isStudentLed = False,
+                                             isBonnerScholars = False,
+                                             contactEmail = "test@email",
+                                             contactName = "testName",)
+        
         # Create a program event in the past that the test user will have
         # participated in
         participatedProgramEvent = Event.create(name = "Attended program event",
-                                term = 2,
-                                description = "Test attended program event.",
-                                timeStart = "18:00:00",
-                                timeEnd = "21:00:00",
-                                location = "The moon",
-                                startDate = "2021-12-12",
-                                endDate = "2021-12-13",
-                                isAllVolunteerTraining = False)
+                                                term = 2,
+                                                description = "Test attended program event.",
+                                                timeStart = "18:00:00",
+                                                timeEnd = "21:00:00",
+                                                location = "The moon",
+                                                startDate = "2021-12-12",
+                                                endDate = "2021-12-13",
+                                                isAllVolunteerTraining = False,
+                                                program = participatedProgram)
         # Create a non-program event in the past that the test user will have
         # participated in
         participatedEvent = Event.create(name = "Attended event",
-                                term = 2,
-                                description = "Test attended event.",
-                                timeStart = "18:00:00",
-                                timeEnd = "21:00:00",
-                                location = "The moon",
-                                startDate = "2021-12-12",
-                                endDate = "2021-12-13",
-                                isAllVolunteerTraining = False)
-        # Create a program that will have the program event created off of it
-        participatedProgram = Program.create(id = 13,
-                                            programName = "BOO",
-                                            isStudentLed = False,
-                                            isBonnerScholars = False,
-                                            contactEmail = "test@email",
-                                            contactName = "testName")
-
-        ProgramEvent.create(program = participatedProgram, event = participatedProgramEvent)
+                                         term = 2,
+                                         description = "Test attended event.",
+                                         timeStart = "18:00:00",
+                                         timeEnd = "21:00:00",
+                                         location = "The moon",
+                                         startDate = "2021-12-12",
+                                         endDate = "2021-12-13",
+                                         isAllVolunteerTraining = False,
+                                         program = 9)
 
         # Add the created user as a participnt to the created program event
         EventParticipant.create(user = user , event = participatedProgramEvent.id)
@@ -802,54 +774,125 @@ def test_getPreviousRecurringEventData():
     with mainDB.atomic() as transaction:
 
         testingEvent1 = Event.create(name = "Testing delete event",
-                                      term = 2,
-                                      description = "This Event is Created to be Deleted.",
-                                      timeStart = "6:00 pm",
-                                      timeEnd = "9:00 pm",
-                                      location = "No Where",
-                                      isRsvpRequired = 0,
-                                      isTraining = 0,
-                                      isService = 0,
-                                      startDate = "2021-12-5",
-                                      endDate = "2022-12-5",
-                                      recurringId = 3)
+                                     term = 2,
+                                     description = "This Event is Created to be Deleted.",
+                                     timeStart = "6:00 pm",
+                                     timeEnd = "9:00 pm",
+                                     location = "No Where",
+                                     isRsvpRequired = 0,
+                                     isTraining = 0,
+                                     isService = 0,
+                                     startDate = "2021-12-5",
+                                     endDate = "2022-12-5",
+                                     recurringId = 3,
+                                     program = 9)
         testingEvent2 = Event.create(name = "Testing delete event",
-                                      term = 2,
-                                      description = "This Event is Created to be Deleted.",
-                                      timeStart = "6:00 pm",
-                                      timeEnd = "9:00 pm",
-                                      location = "No Where",
-                                      isRsvpRequired = 0,
-                                      isTraining = 0,
-                                      isService = 0,
-                                      startDate = "2022-12-12",
-                                      endDate = "2022-12-12",
-                                      recurringId = 3)
+                                     term = 2,
+                                     description = "This Event is Created to be Deleted.",
+                                     timeStart = "6:00 pm",
+                                     timeEnd = "9:00 pm",
+                                     location = "No Where",
+                                     isRsvpRequired = 0,
+                                     isTraining = 0,
+                                     isService = 0,
+                                     startDate = "2022-12-12",
+                                     endDate = "2022-12-12",
+                                     recurringId = 3,
+                                     program = 9)
         testingEvent3 = Event.create(name = "Testing delete event",
-                                      term = 2,
-                                      description = "This Event is Created to be Deleted.",
-                                      timeStart = "6:00 pm",
-                                      timeEnd = "9:00 pm",
-                                      location = "No Where",
-                                      isRsvpRequired = 0,
-                                      isTraining = 0,
-                                      isService = 0,
-                                      startDate = "2022-12-19",
-                                      endDate = "2022-12-19",
-                                      recurringId = 3)
+                                     term = 2,
+                                     description = "This Event is Created to be Deleted.",
+                                     timeStart = "6:00 pm",
+                                     timeEnd = "9:00 pm",
+                                     location = "No Where",
+                                     isRsvpRequired = 0,
+                                     isTraining = 0,
+                                     isService = 0,
+                                     startDate = "2022-12-19",
+                                     endDate = "2022-12-19",
+                                     recurringId = 3,
+                                     program = 9)
 
-        testingParticipant1 = EventParticipant.create(user = User.get_by_id("neillz"),
-                                                    event = testingEvent2.id,
-                                                    hoursEarned = None)
-        testingParticipant2 = EventParticipant.create(user = User.get_by_id("ramsayb2"),
-                                                    event = testingEvent2.id,
-                                                    hoursEarned = None)
-        testingParticipant3 = EventParticipant.create(user = User.get_by_id("khatts"),
-                                                    event = testingEvent2.id,
-                                                    hoursEarned = None)
+        EventParticipant.create(user = User.get_by_id("neillz"),
+                                                      event = testingEvent2.id,
+                                                      hoursEarned = None)
+        EventParticipant.create(user = User.get_by_id("ramsayb2"),
+                                                      event = testingEvent2.id,
+                                                      hoursEarned = None)
+        EventParticipant.create(user = User.get_by_id("khatts"),
+                                                      event = testingEvent2.id,
+                                                      hoursEarned = None)
 
         val = getPreviousRecurringEventData(testingEvent3.recurringId)
         assert val[0].username == "neillz"
         assert val[1].username == "ramsayb2"
         assert val[2].username == "khatts"
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_getEventRsvpCountsForTerm():
+    with mainDB.atomic() as transaction:
+        eventWithRsvpLimit = Event.create(name = "Req and Limit",
+                                          term = 2,
+                                          description = "Event that requries RSVP and has an RSVP limit set.",
+                                          timeStart = "6:00 pm",
+                                          timeEnd = "9:00 pm",
+                                          location = "The Moon",
+                                          isRsvpRequired = 1,
+                                          rsvpLimit = 4,
+                                          startDate = "2022-12-19",
+                                          endDate = "2022-12-19",
+                                          program = 9)
+
+        testUserToRsvp = User.create(username = 'rsvpUsr',
+                                     firstName = 'RSVP',
+                                     lastName = 'Test',
+                                     bnumber = '48616874',
+                                     email = 'helloThere@berea.edu',
+                                     isStudent = True,
+                                     )
+
+        limit = getEventRsvpCountsForTerm(Term.get_by_id(2))
+        assert limit[eventWithRsvpLimit.id] == 0
+
+        EventRsvp.create(event=eventWithRsvpLimit, user=testUserToRsvp)
+
+        limit = getEventRsvpCountsForTerm(Term.get_by_id(2))
+        assert limit[eventWithRsvpLimit.id] == 1
+
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_getEventRsvpCount():
+    with mainDB.atomic() as transaction:
+
+        eventWithRsvp = Event.create(name = "Req and Limit",
+                                     term = 2,
+                                     description = "Event that requries RSVP and has an RSVP limit set.",
+                                     timeStart = "6:00 pm",
+                                     timeEnd = "9:00 pm",
+                                     location = "The Moon",
+                                     isRsvpRequired = 1,
+                                     startDate = "2022-12-19",
+                                     endDate = "2022-12-19",
+                                     program = 9)
+        user_list = []
+        for i in range(5):
+            user_list.append(User.create(username = f'rsvpUsr{i}',
+                             firstName = f'RSVP{i}',
+                             lastName = f'Test{i}',
+                             bnumber = f'4861687{i}',
+                             email = f'helloThere{i}@berea.edu',
+                             isStudent = True,
+                            ))
+
+        EventRsvp.create(event=Event.get_by_id(1), user=user_list[0])
+
+        rsvpd_user_count = getEventRsvpCount(eventWithRsvp.id)
+        assert rsvpd_user_count == 0
+        for index, user in enumerate(user_list):
+            EventRsvp.create(event=eventWithRsvp, user=user)
+            rsvpd_user_count = getEventRsvpCount(eventWithRsvp.id)
+            assert rsvpd_user_count == (index + 1)
+
         transaction.rollback()

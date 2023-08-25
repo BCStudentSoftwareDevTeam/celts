@@ -1,5 +1,8 @@
 {% set title = eventData.name %}
-{% extends "base.html" %}
+{% set page_title = eventData.name %}
+{% set eventPast = event.isPast %}
+{% set tabName = 'view' %}
+{% extends "eventNav.html"%}
 
 {% block scripts %}
     {{super()}}
@@ -7,52 +10,91 @@
 {% endblock %}
 
 {% block app_content %}
-    <div class="text-center mb-3">
-    {% set page_title = eventData.name %}
-        <h1 id="title">{{page_title}}</h1>
-        {% if eventData.name != 'All Volunteer Training' and eventData.program == None %}
-          <h3>CELTS-Sponsored Event</h3>
-        {% elif eventData.program %}
-          <h3>{{eventData["program"].programName}} Event</h3>
-        {% endif %}
-    {% if isPastEvent %}
-        <div class="alert-danger pb-2 pt-2" role="alert">This event is in the past.</div>
-    {% endif %}
-    </div>
-    {% if g.current_user.isCeltsAdmin or isProgramManager %}
-        <div class="btn-group">
-          <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <a class="nav-link active" href="#" role="tab" aria-selected="true">View Event</a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link" href="/eventsList/{{eventData.id}}/track_volunteers" role="tab" aria-selected="false">Track Volunteers</a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link" href="/eventsList/{{eventData.id}}/edit" role="tab" aria-selected="false">Edit Event</a>
-            </li>
-          </ul>
-         </div> <br />
-    {% endif %}
-    {% if isPastEvent %}
-        <p class="heading-size"><b>{{eventData.name}}</b> took place on <b>{{eventData.startDate}}</b> from <b>{{eventData.timeStart}}</b> to <b>{{eventData.timeEnd}}</b> and was located in <b>{{eventData.location}}</b>.</p>
-    {% else %}
-        <p class="heading-size"><b>{{eventData.name}}</b> will take place on <b>{{eventData.startDate}}</b> from <b>{{eventData.timeStart}}</b> to <b>{{eventData.timeEnd}}</b> and will be located in <b>{{eventData.location}}</b>.</p>
-    {% endif %}
+   {{super()}}
+    <div class="container-fluid">
             <div class="row">
+                {% if image %}
                 <div class="col-md-6">
-                    <h3><br>Description</h3><p>{{eventData.description|urlize}}</p><br>
+                        <!-- Image should be about 1280px x 836px (Width x Height)-->
+                        <img src="{{image}}" class="img-fluid pb-2">
+                </div>
+                {% endif %}
+
+                {# We are deciding whether or not to split the event name and 
+                   program display into two divs based on whether we are in the 
+                   student view and whether the event has an image #}
+                {% set fullWidthTitle = not (g.current_user.isAdmin or image) %}
+                <div class="{{ 'col-md-12' if fullWidthTitle else 'col-md-6'}}">
+
+                    {%if not g.current_user.isAdmin %}
+                        {{ eventheader(eventData.name, eventData, 'small', isNewEvent) }}
+                    {% endif %}
+
+                    {% if fullWidthTitle %}
+                    </div>
+                    <div class='col-md-6'>
+                    {% endif %}
+
+                    <div class="d-flex align-top">
+                        <i class="bi bi-calendar" style="margin-right: 10px;"></i>
+                        {% set event_date = eventData.startDate %}
+                        <div>
+                            <h5 id="date" style="margin: 0;"> Date:</h5>
+                            <p style="margin: 0;">{{event_date}}</p>
+                        </div>    
+                    </div>
+                    <br>
+                    <div class="d-flex align-top">
+                        <i class="bi bi-clock" style="margin-right: 10px;"></i>
+                        {% set event_time = eventData.timeStart %}
+                        <div>
+                            <h5 id="time" style="margin: 0;">Time:</h5>
+                            <p style="margin: 0;">{{eventData.timeStart}} - {{eventData.timeEnd}}</p>
+                        </div>    
+                    </div>
+                    <br>
+                    <div class="d-flex align-top">
+                        <i class="bi bi-geo" style="margin-right: 10px;"></i>
+                        {% set event_location = eventData.location %}
+                        <div>
+                            <h5 id="location"style="margin: 0;">Location:</h5>   
+                            <p style="margin: 0;">{{eventData.location}}</p> 
+                        </div>            
+                    </div>
+                    <br>
+                    <div>
+                        {% if eventData.isRsvpRequired %}
+                            {% if not eventPast %}
+                                {% if userHasRSVPed %}
+                                    <button type="submit" class="btn btn-danger" value="{{eventData.id}}" id="removeRsvpBtn">Remove RSVP</button>
+                                {% elif eventData.isRsvpRequired %}
+                                    {% set buttonName = "Join Waitlist" if (eventData.rsvpLimit) and (currentEventRsvpAmount[eventData.id] >= eventData.rsvpLimit) else "RSVP" %}
+                                    <button type="submit" class="btn btn-primary" value="{{eventData.id}}" id="rsvpBtn">{{buttonName}}</button>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h3>Description</h3><p>{{eventData.description|urlize}}</p><br>
                     {% if eventData.isFoodProvided %}
-                        <p>Food will be provided at this event. <a href="/profile/{{g.current_user}}?accordion=dietaryInformation"><b>Please fill in any dietary restrictions on your "My profile" page.</b></a></p>
+                        <p>Food will be provided at this event. <a href="/profile/{{g.current_user}}?accordion=dietaryInformation"><br><b>Please fill in any dietary restrictions on your "My profile" page.</b></a></p>
                     {% endif %}
                     {% if eventData.isService %}
                         <p>This event earns service hours.</p>
                     {% else %}
                         <p>This event does not earn service hours.</p>
                     {% endif %}
-
-                    {% if eventData.isRsvpRequired %}
-                        <p>This event requires RSVP.</p>
+                    {% if eventData.isRsvpRequired and eventData.rsvpLimit %}
+                      {% if currentEventRsvpAmount[eventData.id] >= eventData.rsvpLimit %}
+                        <p>All RSVP spots are full. Feel free to join the waitlist in case more space is made available or someone is unable to attend. </p>
+                      {% elif eventData.rsvpLimit - currentEventRsvpAmount[eventData.id] == 1 %}
+                        <p>This event requires RSVP. There is {{eventData.rsvpLimit - currentEventRsvpAmount[eventData.id]}} open spot remaining out of {{eventData.rsvpLimit}}.</p>
+                      {% else %}
+                        <p>This event requires RSVP. There are {{eventData.rsvpLimit - currentEventRsvpAmount[eventData.id]}} open spots remaining out of {{eventData.rsvpLimit}}.</p>
+                      {% endif %}
+                    {% elif eventData.isRsvpRequired %}
+                      <p>This event requires RSVP.</p>
                     {% else %}
                         <p>This event does not require RSVP.</p>
                     {% endif %}
@@ -60,9 +102,9 @@
                     {% if eventData.recurringId %}
                         <p>This event is a recurring event.
                             {% if eventData.nextRecurringEvent %}
-                            The next event in the series occurs on <a href="/eventsList/{{eventData.nextRecurringEvent.id}}/view"><b>{{eventData.nextRecurringEvent.startDate.strftime("%B %-d")}}.</b></a>
+                                The next event in the series occurs on <a href="/event/{{eventData.nextRecurringEvent.id}}/view"><b>{{eventData.nextRecurringEvent.startDate.strftime("%B %-d")}}.</b></a>
                             {% else %}
-                            <b>However, this is the last event in the series.</b>
+                                <b>However, this is the last event in the series.</b>
                             {% endif %}
                         </p>
                     {% endif %}
@@ -74,54 +116,59 @@
                     {% if eventData['certRequirement'] %}
                         <p>This event satisfies the {{eventData['certRequirement'].name}} requirement for the Bonner program.</p>
                     {% endif %}
-
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    {% if eventData.contactName and eventData.contactEmail %}
+                        <h3>Contact Information:</h3>
+                        <div>{{eventData.contactName}} - <a href="mailto:{{eventData.contactEmail}}" class="text-dark">{{eventData.contactEmail}}</a></div>
+                    {% endif %}
+                    <br>
                 </div>
                 <div class="col-md-6">
-                    <div class="col-sm">
-                        {% if eventData.contactName and eventData.contactEmail %}
-                            <br><h3>Contact Information:</h3>
-                                <div>{{eventData.contactName}} - {{eventData.contactEmail}}</div>
-                        {% endif %}
+                    {% if programTrainings %}
                         {% if program or not eventData.isAllVolunteerTraining %}
-                            <h3><br>Program Trainings</h3>
-                                  {% for training, participated in programTrainings.items() %}
-                                      {% if g.current_user.isCeltsAdmin %}
-                                        <p>{{training}}</p>
-                                      {% else %}
-                                      {% if participated == 1 %}
-                                              <p><b>{{training}}</b>: Attended</p>
-                                          {% elif participated == 0 %}
-                                              <p><b>{{training}}</b>: Not attended</p>
-                                          {% else %}
-                                              <p><b>{{training}}</b>: Upcoming</p>
-                                          {% endif%}
-                                      {% endif %}
-                                  {% endfor %}
-                            {% endif %}
-                          </div>
-                      </div>
+                            <h3>Program Trainings:</h3>
+                            {% for training, events in programTrainings.items() %}
+                                {% for eventObj, attended in events %}
+                                    {% if g.current_user.isCeltsAdmin %}
+                                        <p>{{eventObj.name}}</p>
+                                    {% elif attended %}
+                                        <p><b>{{eventObj.name}}</b>: Attended</p>
+                                    {% else %}
+                                        <p><b>{{eventObj.name}}</b>: Not attended</p>
+                                    {% endif%}
+                                {% endfor %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endif %}
+
+                
+                    {% if filepaths.keys()|count %}
+                    <div class="form-group mb-5">
+                        <label class="mb-2" for= "eventAttachments"><strong>Event Attachments</strong></label>
+                        <table>
+                            {% for key, value in filepaths.items() %}
+                                <tr id="attachment_{{value[1]}}" class="attachmentRow_{{key}}" data-id= "{{key}}">
+                                    <td class="pr-5">
+                                        <a class="mr-5" href="{{value[0]|replace('#','%23')}}" target="_blank">{{key}}</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="rsvp-btn text-center">              
+                    {% if g.current_user.isCeltsAdmin or isProgramManager %}
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-eye-fill me-2"></i>
+                        <span class="me-2">Unique Viewers:</span>
+                        <span id="viewCount">{{pageViewsCount}}</span>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
-            {% if filepaths.keys()|count %}
-            <div class="form-group mb-5">
-                <label class="mb-2" for= "eventAttachments"><strong>Event Attachments</strong></label>
-                <table>
-                    {% for key, value in filepaths.items() %}
-                        <tr id="attachment_{{value[1]}}" class="attachmentRow_{{key}}" data-id= "{{key}}">
-                            <td class="pr-5">
-                                <a class="mr-5" href="{{value[0]}}" target="_blank">{{key}}</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            </div>
-            {% endif %}
-            <div class="rsvp-btn text-center">
-              {% if (not isPastEvent) and (not isNewEvent)%}
-                  {% if userHasRSVPed %}
-                    <button type="submit" class="btn btn-danger" value="{{eventData.id}}" id="removeRsvpBtn">Remove RSVP</button>
-                  {% elif eventData.isRsvpRequired %}
-                    <button type="submit" class="btn btn-primary" value="{{eventData.id}}" id="rsvpBtn">RSVP</button>
-                 {% endif %}
-              {% endif %}
-            </div>
+        </div>
 {% endblock %}

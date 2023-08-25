@@ -1,4 +1,4 @@
-from flask import request, render_template, g, url_for, abort, redirect, flash, session, send_from_directory, send_file
+from flask import request, render_template, g, url_for, abort, redirect, flash, session, send_from_directory, send_file, jsonify
 from werkzeug.utils import safe_join
 import os
 from peewee import *
@@ -8,10 +8,9 @@ from app.models.course import Course
 from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
 from app.models.courseQuestion import CourseQuestion
-from app.models.courseParticipant import CourseParticipant
-from app.logic.utils import selectSurroundingTerms
-from app.logic.searchUsers import searchUsers
-from app.logic.utils import selectSurroundingTerms
+from app.models.attachmentUpload import AttachmentUpload
+from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
+from app.logic.fileHandler import FileHandler
 from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal, renewProposal
 from app.logic.courseManagement import updateCourse, createCourse
 from app.logic.downloadFile import *
@@ -23,29 +22,33 @@ from app.controllers.serviceLearning import serviceLearning_bp
 @serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
 @serviceLearning_bp.route('/serviceLearning/courseManagement/<username>', methods = ['GET'])
 def serviceCourseManagement(username=None):
-    if g.current_user.isStudent:
-        abort(403)
-    if g.current_user.isCeltsAdmin or g.current_user.isFaculty:
-        setRedirectTarget("/serviceLearning/courseManagement")
+    try:
         user = User.get(User.username==username) if username else g.current_user
+    except DoesNotExist:
+        abort(404)
+    
+    isRequestingForSelf = g.current_user == user 
+    if g.current_user.isCeltsAdmin or (g.current_user.isFaculty and isRequestingForSelf):
+        setRedirectTarget(request.full_path)
         courseDict = getServiceLearningCoursesData(user)
         termList = selectSurroundingTerms(g.current_term, prevTerms=0)
-        status = CourseStatus.select
         return render_template('serviceLearning/slcManagement.html',
             user=user,
             courseDict=courseDict,
             termList=termList)
     else:
-        flash("Unauthorized to view page", 'warning')
-        return redirect(url_for('main.events', selectedTerm=g.current_term))
+        abort(403)
+        
 
 @serviceLearning_bp.route('/serviceLearning/viewProposal/<courseID>', methods=['GET'])
+@serviceLearning_bp.route('/serviceLearning/editProposal/upload/<courseID>', methods=['GET'])
 @serviceLearning_bp.route('/serviceLearning/editProposal/<courseID>', methods=['GET'])
 def slcEditProposal(courseID):
     """
         Route for editing proposals, it will fill the form with the data found in the database
         given a courseID.
     """
+<<<<<<< HEAD
     if g.current_user.isCeltsAdmin or g.current_user.isFaculty:
         course = Course.get_by_id(courseID)
         questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
@@ -70,6 +73,42 @@ def slcEditProposal(courseID):
                                     isAllSectionsServiceLearning = isAllSectionsServiceLearning,
                                     isPermanentlyDesignated = isPermanentlyDesignated,
                                     redirectTarget=getRedirectTarget())
+=======
+    instructors = CourseInstructor.select().where(CourseInstructor.course==courseID)
+    courseInstructors = [instructor.user for instructor in instructors]
+    isCourseCreator = Course.select().where(Course.createdBy == g.current_user, Course.id==courseID).exists()
+
+    if g.current_user.isCeltsAdmin or g.current_user in courseInstructors or isCourseCreator:
+        course = Course.get_by_id(courseID)
+        courseStatus = CourseStatus.get_by_id(course.status)
+        courseStatusInt = courseStatus.get_id()
+        approved = 3
+        # Condition to check the route you are comming from
+        if courseStatusInt==approved and request.path == f"/serviceLearning/editProposal/{courseID}":
+            return redirect(f"/serviceLearning/viewProposal/{courseID}")
+        else:
+            statusOfCourse = Course.select(Course.status)
+            questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
+            questionanswers = [question.questionContent for question in questionData]
+            courseInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
+            associatedAttachments = AttachmentUpload.select().where(AttachmentUpload.course == course.id)
+
+            filepaths = FileHandler(courseId=course.id).retrievePath(associatedAttachments)
+
+            terms = selectSurroundingTerms(g.current_term, 0)
+            return render_template('serviceLearning/slcNewProposal.html',
+                                        course = course,
+                                        questionanswers = questionanswers,
+                                        terms = terms,
+                                        statusOfCourse = statusOfCourse,
+                                        courseStatus = courseStatus,
+                                        courseInstructor = courseInstructor,
+                                        filepaths = filepaths,
+                                        redirectTarget=getRedirectTarget())
+    else:
+        abort(403)
+        
+>>>>>>> 616794fb99d64820c34c87a314a6e511976ef90c
 
 @serviceLearning_bp.route('/serviceLearning/createCourse', methods=['POST'])
 def slcCreateCourse():
@@ -79,23 +118,43 @@ def slcCreateCourse():
     return redirect(url_for('serviceLearning.slcEditProposal', courseID = course.id))
 
 
+@serviceLearning_bp.route('/serviceLearning/exit', methods=['GET'])
+def slcExitView():
+    if getRedirectTarget():
+        return redirect(getRedirectTarget(True))
+    else:
+        return redirect("/serviceLearning/courseManagement")
+
+
+@serviceLearning_bp.route('/serviceLearning/saveExit', methods=['POST'])
 @serviceLearning_bp.route('/serviceLearning/saveProposal', methods=['POST'])
 def slcSaveContinue():
     """Will update the the course proposal and return an empty string since ajax request needs a response
-    Also, it updates the course status as 'Incomplete'"""
-    course = updateCourse(request.form.copy())
-    course.status = CourseStatus.INCOMPLETE
-    course.save()
+    Also, it updates the course status as 'in progress'"""
+    course = updateCourse(request.form.copy(), attachments=getFilesFromRequest(request))
 
-    return ""
+    if not course:
+        flash("Error saving changes", "danger")
+    else:
+        course.status = CourseStatus.IN_PROGRESS
+        course.save()
+        flash(f"Proposal has been saved.", "success")
+    if request.path == "/serviceLearning/saveExit":
+        if getRedirectTarget():
+            return redirect(getRedirectTarget(True))
+        return redirect("/serviceLearning/courseManagement")
+    return redirect(f'/serviceLearning/editProposal/{request.form["courseID"]}?tab=2')
 
 @serviceLearning_bp.route('/serviceLearning/newProposal', methods=['GET', 'POST'])
 def slcCreateOrEdit():
     if request.method == "POST":
         course = updateCourse(request.form.copy())
-        if getRedirectTarget(False):
-            return redirect('' + getRedirectTarget(True) + '')
-        return redirect('/serviceLearning/courseManagement')
+        if not course:
+            flash("Error saving changes", "danger")
+        else:
+            if getRedirectTarget(False):
+                return redirect('' + getRedirectTarget(True) + '')
+            return redirect('/serviceLearning/courseManagement')
 
     terms = Term.select().where(Term.year >= g.current_term.year)
     courseData = None
@@ -182,8 +241,9 @@ def renewCourse(courseID, termID):
     """
     instructors = CourseInstructor.select().where(CourseInstructor.course==courseID)
     courseInstructors = [instructor.user for instructor in instructors]
+    isCourseCreator = Course.select().where(Course.createdBy == g.current_user, Course.id==courseID).exists()
     try:
-        if g.current_user.isCeltsAdmin or g.current_user in courseInstructors:
+        if g.current_user.isCeltsAdmin or g.current_user in courseInstructors or isCourseCreator:
             renewedProposal = renewProposal(courseID, termID)
             flash("Course successfully renewed", 'success')
             return str(renewedProposal.id)
@@ -194,6 +254,55 @@ def renewCourse(courseID, termID):
         flash("Renewal Unsuccessful", 'warning')
 
     return "", 500
+
+@serviceLearning_bp.route('/serviceLearning/print/<courseID>', methods=['GET'])
+def printCourse(courseID):
+    """
+    This function will print a PDF of an SLC proposal.
+    """
+    instructors = CourseInstructor.select().where(CourseInstructor.course==courseID)
+    courseInstructors = [instructor.user for instructor in instructors]
+    isCreator = Course.select().where(Course.createdBy == g.current_user, Course.id==courseID).exists()
+    if g.current_user.isCeltsAdmin or g.current_user in courseInstructors or isCreator:
+        try:
+            course = Course.get_by_id(courseID)
+            pdfCourse = Course.select().where(Course.id == courseID)
+            pdfInstructor = CourseInstructor.select().where(CourseInstructor.course == courseID)
+            pdfQuestions = (CourseQuestion.select().where(CourseQuestion.course == course))
+            questionanswers = [question.questionContent for question in pdfQuestions]
+
+            return render_template('serviceLearning/slcFormPrint.html',
+                                    course = course,
+                                    pdfCourse = pdfCourse,
+                                    pdfInstructor = pdfInstructor,
+                                    pdfQuestions = pdfQuestions,
+                                    questionanswers=questionanswers
+                                    )
+        except Exception as e:
+            flash("An error was encountered when printing, please try again.", 'warning')
+            print(e)
+            return "", 500
+    else:
+        abort(403)
+
+@serviceLearning_bp.route("/uploadCourseFile", methods=['GET', "POST"])
+def uploadCourseFile():
+    try:
+        attachment = getFilesFromRequest(request)
+        courseID = request.form["courseID"]
+        addFile= FileHandler(attachment, courseId=courseID)
+        addFile.saveFiles()
+    except:
+        flash("No file selected.", "warning")
+    return redirect('/serviceLearning/editProposal/upload/'+courseID)
+
+
+@serviceLearning_bp.route("/deleteCourseFile", methods=["POST"])
+def deleteCourseFile():
+    fileData= request.form
+    courseFile=FileHandler(courseId=fileData["databaseId"])
+    courseFile.deleteFile(fileData["fileId"])
+    return ""
 
 @serviceLearning_bp.route('/serviceLearning/downloadApprovedCourses/<termID>', methods = ['GET'])
 def downloadApprovedCourses(termID):
