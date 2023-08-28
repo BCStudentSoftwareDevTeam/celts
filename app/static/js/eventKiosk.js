@@ -74,7 +74,7 @@ function submitData(){
           flasherStatus = "warning"
 
         } else if (resultID.status === "banned") {
-          message = "Please contact administrator."
+          message = "Please see administrator."
           flasherStatus = "danger"
           
         } else if (resultID.status === "does not exist") {
