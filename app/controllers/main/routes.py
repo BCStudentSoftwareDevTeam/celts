@@ -47,8 +47,6 @@ def redirectToLogout():
 @main_bp.route('/', methods=['GET'])
 def landingPage():
     managerProgramDict = getManagerProgramDict(g.current_user)
-
-
     eventsInTerm = list(Event.select().where(Event.term == g.current_term, Event.isCanceled == False))
     programsWithEventsList = [event.program for event in eventsInTerm if not event.isPast]
 
@@ -76,6 +74,7 @@ def events(selectedTerm, activeTab, programID):
     
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     studentLedEvents = getStudentLedEvents(term)
+    countUpcomingStudentLedEvents = getUpcomingStudentLedCount(term, currentTime)
     trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
@@ -95,7 +94,8 @@ def events(selectedTerm, activeTab, programID):
                             user = g.current_user,
                             activeTab = activeTab,
                             programID = int(programID),
-                            managersProgramDict = managersProgramDict
+                            managersProgramDict = managersProgramDict,
+                            countUpcomingStudentLedEvents = countUpcomingStudentLedEvents
                             )
 
 @main_bp.route('/profile/<username>', methods=['GET'])
@@ -149,14 +149,12 @@ def viewUsersProfile(username):
                                      "isNotBanned": (not banNotes),
                                      "banNote": noteForDict})
         profileNotes = ProfileNote.select().where(ProfileNote.user == volunteer)
-        userDietQuery = User.select().where(User.username == username)
-        userDiet = [note.dietRestriction for note in userDietQuery]
 
         bonnerRequirements = getCertRequirementsWithCompletion(certification=Certification.BONNER, username=volunteer)
 
         managersProgramDict = getManagerProgramDict(g.current_user)
         managersList = [id[1] for id in managersProgramDict.items()]
-    
+
         return render_template ("/main/userProfile.html",
                                 programs = programs,
                                 programsInterested = programsInterested,
@@ -171,7 +169,6 @@ def viewUsersProfile(username):
                                 currentDateTime = datetime.datetime.now(),
                                 profileNotes = profileNotes,
                                 bonnerRequirements = bonnerRequirements,
-                                userDiet = userDiet,
                                 managersList = managersList                
                             )
     abort(403)
@@ -555,7 +552,14 @@ def getDietInfo():
     dietaryInfo = request.form
     user = dietaryInfo["user"]
     dietInfo = dietaryInfo["dietInfo"]
+    
     if (g.current_user.username == user) or g.current_user.isAdmin:
         updateDietInfo(user, dietInfo)
+        userInfo = User.get(User.username == user) 
+        if len(dietInfo) > 0:
+            createAdminLog(f"Updated {userInfo.fullName}'s dietary restrictions to {dietInfo}.") if dietInfo.strip() else None 
+        else:
+            createAdminLog(f"Deleted all {userInfo.fullName}'s dietary restrictions dietary restrictions.")
+
 
     return " "
