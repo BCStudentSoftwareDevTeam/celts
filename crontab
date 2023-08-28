@@ -32,5 +32,4 @@ MAILTO=""
 #0 8 * * *
 #cd www; . venv/bin/activate; venv/bin/python -c "from app.scripts.send_event_reminder_emails import main; main()"
 
-0 4 * * *
-cd www; . venv/bin/activate; venv/bin/python -c "python app/scripts/import_users.py"
+0 4 * * * cd www; . venv/bin/activate; python app/scripts/import_users.py > /home/celts/cron.log 2>&1
