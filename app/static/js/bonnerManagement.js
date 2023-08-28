@@ -51,6 +51,7 @@ $(document).ready(function(){
         disableSave();
         saveRequirements()
     });
+
 });
 /** End onready ****************************/
 
@@ -157,6 +158,10 @@ function addRequirementsRowHandlers() {
     // enable the remove button
     $("#requirements button").click(function(e) {
         enableSave();
-        $(e.target.closest('tr')).fadeOut(function() { this.remove() });
+
+        // Only remove if it isn't the last row
+        if($("#requirements tbody tr").length > 1) {
+            $(e.target.closest('tr')).fadeOut(function() { this.remove() });
+        }
     });
 }

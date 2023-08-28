@@ -176,6 +176,7 @@ CREATE TABLE `certification` (
 
 LOCK TABLES `certification` WRITE;
 /*!40000 ALTER TABLE `certification` DISABLE KEYS */;
+INSERT INTO `certification` VALUES (1,'Bonner',0),(2,'CESC Minor',0),(3,'CPR',0),(4,'Confidentiality',0),(5,'I9',0);
 /*!40000 ALTER TABLE `certification` ENABLE KEYS */;
 UNLOCK TABLES;
 
