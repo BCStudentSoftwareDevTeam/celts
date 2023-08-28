@@ -197,6 +197,27 @@ def getStudentLedEvents(term):
 
     return programs
 
+def getUpcomingStudentLedCount(term, currentTime):
+    """
+        Return a count of all upcoming events for each student led program.
+    """
+    
+    upcomingCount = (Program.select(Program.id, fn.COUNT(Event.id).alias("eventCount"))
+                            .join(Event, on=(Program.id == Event.program_id))
+                            .where(Program.isStudentLed,
+                                    Event.term == term,
+                                    Event.endDate >= currentTime,
+                                    Event.timeEnd >= currentTime,
+                                    Event.isCanceled == False)
+                            .group_by(Program.id))
+    
+    programCountDict = {}
+
+    for programCount in upcomingCount:
+        programCountDict[programCount.id] = programCount.eventCount
+
+    return programCountDict
+
 def getTrainingEvents(term, user):
     """
         The allTrainingsEvent query is designed to select and count eventId's after grouping them
