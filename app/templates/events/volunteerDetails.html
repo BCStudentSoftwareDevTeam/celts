@@ -20,7 +20,7 @@
 {########################### Display macros ###########################}
 {% macro createCard(participant, volunteerType) %}
   
-    <div class="{{volunteerType}}Select col-12 col-md-6 volunteerInfoEntries print-column" data-user="{{participant.username}}" nowrap>
+    <div class="{{volunteerType}}Select col-12 col-md-6 volunteerInfoEntries print-column" data-user="{{participant.user.username}}" nowrap>
       <h4 class="nameSelect" nowrap><b>{{ participant.user.firstName }} {{ participant.user.lastName }}</b></h4>
       <ul>
         <div class="barcodeSelect bnumber-barcode" nowrap>{{participant.user.bnumber[1:]}}</div>
@@ -34,8 +34,7 @@
 {% endmacro %}
 
 {% macro createTable(participant, volunteerType) %}
-
-    <tr class="{{volunteerType}}Select volunteerInfoEntries" data-user="{{participant.username}}">
+    <tr class="{{volunteerType}}Select volunteerInfoEntries" data-user="{{participant.user.username}}">
       <td class="nameSelect" nowrap><b>{{ participant.user.firstName }} {{ participant.user.lastName }}</b></td>
       <td class="phoneSelect" nowrap>{{ participant.user.phoneNumber if participant.user.phoneNumber else "" }}</td>
       <td class="emailSelect" nowrap>{{ participant.user.email }}</td>
