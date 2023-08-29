@@ -14,7 +14,7 @@ $(document).ready(function(){
       var isChecked = $(this).prop("checked");
       toggleRows(isChecked);
 
-      localStorage.setItem("toggleState", isChecked ? "checked" : "unchecked");
+      localStorage.setItem("toggleState", isChecked ? "checked" : "unchecked" + termOrder);
     });
 
     function toggleRows(isChecked) {

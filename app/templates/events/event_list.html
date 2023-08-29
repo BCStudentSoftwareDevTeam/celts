@@ -195,7 +195,7 @@
 </div>
 {% include 'emailModal.html' %}
 <script>
-  termOrder = Term.convertDescriptionToTermOrder(newDescription)
+  termOrder = Term.isFutureTerm();
   var g_isPastTerm = {{"true" if selectedTerm != termOrder else "false" }};
 </script>
 {% endblock %}
