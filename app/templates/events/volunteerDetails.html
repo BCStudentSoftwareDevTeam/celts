@@ -26,6 +26,8 @@
         <div class="phoneSelect" nowrap>{{ participant.phoneNumber if participant.phoneNumber else "No phone number"}}</div>
         <div class="emailSelect" nowrap>{{ participant.email }}</div>
         <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction if participant.dietRestriction else "None Specified" }}</div>
+        {% set emergencyName, emergencyNumber = participant.getEmergencyContact() %}
+        <td class="emergencyContactSelect">Emergency Contact:{{emergencyName}} {{emergencyNumber}}</td>
       </ul>
     </div>
 {% endmacro %}
@@ -36,6 +38,8 @@
       <td class="phoneSelect" nowrap>{{ participant.phoneNumber if participant.phoneNumber else "" }}</td>
       <td class="emailSelect" nowrap>{{ participant.email }}</td>
       <td class="dietRestrictionSelect">{{ participant.dietRestriction if participant.dietRestriction else ''}}</td>
+      {% set emergencyName, emergencyNumber = participant.getEmergencyContact() %}
+      <td class="emergencyContactSelect">{{emergencyName}}: {{emergencyNumber}}</td>
     </tr>
 {% endmacro %}
 
@@ -91,6 +95,8 @@
           <label><b>Included Information:</b></label><br>
           <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="dietRestrictionSelect" checked>
           <label for="dietRestrictionSelect">Dietary Restriction</label><br>
+          <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="emergencyContactSelect" checked>
+          <label for="emergencyContactSelect">Emergency Contact</label><br>
           <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="phoneSelect" checked>
           <label for="phoneSelect">Phone Number</label><br>
           <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="emailSelect" checked>
@@ -126,6 +132,7 @@
           <th class="phoneSelect">Phone Number</th>
           <th class="emailSelect">Email</th>
           <th class="dietRestrictionSelect">Dietary Restriction</th>
+          <th class="emergencyContactSelect">Emergency Contact</th>
         </tr>
       </thead>
       <tbody>

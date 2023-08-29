@@ -1,6 +1,7 @@
 from app.models import *
 
 
+
 class User(baseModel):
     username = CharField(primary_key = True)
     bnumber = CharField(unique = True)
@@ -69,3 +70,14 @@ class User(baseModel):
     def isProgramManagerForEvent(self, event):
         # Looks to see who the Program Manager for a specific event is
         return self.isProgramManagerFor(event.program)
+
+    def getEmergencyContact(self):
+        
+        from app.models.emergencyContact import EmergencyContact # Must defer import until now to avoid circular reference
+        useremergencyContact = EmergencyContact.get_or_none(user=self.username)
+        if useremergencyContact:
+            emergencyName = useremergencyContact.name or None
+            emergencyNumber = useremergencyContact.cellPhone or EmergencyContact.homePhone or EmergencyContact.workPhone or None
+        else:
+            emergencyName, emergencyNumber = None, None
+        return emergencyName, emergencyNumber
