@@ -7,6 +7,7 @@ from app.models.event import Event
 from app.models.program import Program
 from app.models.user import User
 from app.models.eventParticipant import EventParticipant
+from app.models.emergencyContact import EmergencyContact
 from app.logic.searchUsers import searchUsers
 from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours, addUserBackgroundCheck, setProgramManager
 from app.logic.participants import trainedParticipants, getEventParticipants, addPersonToEvent, getParticipationStatusForTrainings
@@ -111,16 +112,16 @@ def volunteerDetailsPage(eventID):
     if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerForEvent(event))):
         abort(403)
 
-    eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event))
-    eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event))
+    eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event).join(EmergencyContact, JOIN.LEFT_OUTER, on=(EmergencyContact.user==EventRsvp.user)))
+    eventParticipantData = list(EventParticipant.select().where(EventParticipant.event==event).join(EmergencyContact, JOIN.LEFT_OUTER, on=(EmergencyContact.user==EventParticipant.user)))
     participantsAndRsvp = (eventParticipantData + eventRsvpData)
-    eventParticipantUsers = [obj.user for obj in eventParticipantData]
-    eventNonAttendedData = [obj.user for obj in eventRsvpData if obj.user not in eventParticipantUsers]
+    eventParticipantUsers = [obj for obj in eventParticipantData]
+    eventNonAttendedData = [obj for obj in eventRsvpData if obj not in eventParticipantUsers]
     
     #get unique list of users for each category waitlist/notwaitlist,rsvped/attended
-    waitlistUser = list(set([obj.user for obj in participantsAndRsvp if obj.rsvpWaitlist]))
-    rsvpUser = list(set([obj.user for obj in eventRsvpData if not obj.rsvpWaitlist ]))
-    attendedUser= list(set([obj.user for obj in eventParticipantData if obj.user not in eventNonAttendedData]))
+    waitlistUser = list(set([obj for obj in participantsAndRsvp if obj.rsvpWaitlist]))
+    rsvpUser = list(set([obj for obj in eventRsvpData if not obj.rsvpWaitlist ]))
+    attendedUser= list(set([obj for obj in eventParticipantData if obj not in eventNonAttendedData]))
 
     eventData = model_to_dict(event, recurse=False)
     eventData["program"] = event.program

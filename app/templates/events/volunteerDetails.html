@@ -19,26 +19,28 @@
 
 {########################### Display macros ###########################}
 {% macro createCard(participant, volunteerType) %}
+  
     <div class="{{volunteerType}}Select col-12 col-md-6 volunteerInfoEntries print-column" data-user="{{participant.username}}" nowrap>
-      <h4 class="nameSelect" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></h4>
+      <h4 class="nameSelect" nowrap><b>{{ participant.user.firstName }} {{ participant.user.lastName }}</b></h4>
       <ul>
-        <div class="barcodeSelect bnumber-barcode" nowrap>{{participant.bnumber[1:]}}</div>
-        <div class="phoneSelect" nowrap>{{ participant.phoneNumber if participant.phoneNumber else "No phone number"}}</div>
-        <div class="emailSelect" nowrap>{{ participant.email }}</div>
-        <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction if participant.dietRestriction else "None Specified" }}</div>
-        {% set emergencyName, emergencyNumber = participant.getEmergencyContact %}
+        <div class="barcodeSelect bnumber-barcode" nowrap>{{participant.user.bnumber[1:]}}</div>
+        <div class="phoneSelect" nowrap>{{ participant.user.phoneNumber if participant.user.phoneNumber else "No phone number"}}</div>
+        <div class="emailSelect" nowrap>{{ participant.user.email }}</div>
+        <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.user.dietRestriction if participant.user.dietRestriction else "None Specified" }}</div>
+        {% set emergencyName, emergencyNumber = participant.user.getEmergencyContact %}
         <div class="emergencyContactSelect">Emergency Contact: {{emergencyName if emergencyName else ""}} {{emergencyNumber if emergencyNumber else ""}}  {{"None Specified" if (not emergencyName and not emergencyNumber)}}</div>
       </ul>
     </div>
 {% endmacro %}
 
 {% macro createTable(participant, volunteerType) %}
+
     <tr class="{{volunteerType}}Select volunteerInfoEntries" data-user="{{participant.username}}">
-      <td class="nameSelect" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></td>
-      <td class="phoneSelect" nowrap>{{ participant.phoneNumber if participant.phoneNumber else "" }}</td>
-      <td class="emailSelect" nowrap>{{ participant.email }}</td>
-      <td class="dietRestrictionSelect">{{ participant.dietRestriction if participant.dietRestriction else ''}}</td>
-      {% set emergencyName, emergencyNumber = participant.getEmergencyContact %}
+      <td class="nameSelect" nowrap><b>{{ participant.user.firstName }} {{ participant.user.lastName }}</b></td>
+      <td class="phoneSelect" nowrap>{{ participant.user.phoneNumber if participant.user.phoneNumber else "" }}</td>
+      <td class="emailSelect" nowrap>{{ participant.user.email }}</td>
+      <td class="dietRestrictionSelect">{{ participant.user.dietRestriction if participant.user.dietRestriction else ''}}</td>
+      {% set emergencyName, emergencyNumber = participant.user.getEmergencyContact %}
       <td class="emergencyContactSelect">{{emergencyName if emergencyName else ""}} {{emergencyNumber if emergencyNumber else ""}}</td>
     </tr>
 {% endmacro %}
