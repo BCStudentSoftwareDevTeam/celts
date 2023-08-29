@@ -206,8 +206,8 @@ def getUpcomingStudentLedCount(term, currentTime):
                             .join(Event, on=(Program.id == Event.program_id))
                             .where(Program.isStudentLed,
                                     Event.term == term,
-                                    Event.endDate >= currentTime,
-                                    Event.timeEnd >= currentTime,
+                                    (Event.startDate >= currentTime) | 
+                                    ((Event.startDate == currentTime) & (Event.timeStart >= currentTime)),
                                     Event.isCanceled == False)
                             .group_by(Program.id))
     
