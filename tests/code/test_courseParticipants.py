@@ -12,9 +12,14 @@ from app.logic.serviceLearningCoursesData import parseUploadedFile, saveCoursePa
 def test_pushDataToDatabase():
     
     with mainDB.atomic() as transaction:
-        cpPreview = {'Fall 2019' : {'courses': {'CSC 226' : {'students': [['Ebenezer Ayisi', 'ayisie'], ['Finn Bledsoe', 'bledsoef']]}}},
-                     'Spring 2020' : {'courses': {'HIS 236' : { 'students':[['Alex Bryant', 'bryanta']]}}},
-                     'Summer 2021' : {'courses': {'CSC 450' : { 'students':[['Tyler Parton', 'partont']]}}}
+        cpPreview = {'Fall 2019' : {'courses': {'CSC 226' : {'students': [
+                        {"user":"ayisie","displayMsg":"Ebenezer Ayisi","errorMsg":""},
+                        {"user":"bledsoef","displayMsg":"Finn Bledsoe","errorMsg":""}
+                        ]}}},
+                     'Spring 2020' : {'courses': {'HIS 236' : { 'students':[
+                         {"user":"bryanta","displayMsg":"Alex Bryant","errorMsg":""}]}}},
+                     'Summer 2021' : {'courses': {'CSC 450' : { 'students':[
+                         {"user":"partont","displayMsg":"Tyler Parton","errorMsg":""}]}}},
                      }
 
         assert Term.get_or_none(Term.description =="Fall 2019") == None
@@ -78,13 +83,14 @@ def test_parseUpload():
                 "displayMsg": "CSC 226 will be created.",
                 "errorMsg": "",
                 "students": [
-                    ('agliullovak',"Karina Agliullova"),
-                    ("ayisie","Ebenezer Ayisi")],
+                    {"user":"agliullovak","displayMsg":"Karina Agliullova","errorMsg":""},
+                    {"user":"ayisie","displayMsg":"Ebenezer Ayisi","errorMsg":""}
+                    ]
             },
             'FRN 103': {
                 "displayMsg": "FRN 103 matched to the existing course Frenchy Help.",
                 "errorMsg": "",
-                "students": [("bryanta","Alex Bryant")]
+                "students":[{"user":"bryanta","displayMsg":"Alex Bryant","errorMsg":""}]
             }
         }
     }
@@ -98,5 +104,8 @@ def test_parseUpload():
     #print(result)
     #print(errors)
 
-    assert len(errors) == 1
+    # all the errors are there
+    assert len(errors) == 2
+    # but some errors are general
+    assert len([e for e in errors if e[1] == 1]) == 1
     assert len(result) == 4

@@ -106,7 +106,8 @@ def parseUploadedFile(filePath):
     'displayMsg' and 'errorMsg', and a 'courses' key whose value is 
     a dictionary with keys for the courses in the term. Each course 
     has a 'displayMsg' and 'errorMsg' key, and a 'students' key 
-    that has a list of tuples of the username and display message.
+    that has a list of dictionaries with 'user', 'displayMsg', and 
+    'errorMsg' keys.
     E.g.,
     {
         "Fall 2021": {
@@ -117,15 +118,23 @@ def parseUploadedFile(filePath):
                     "displayMsg: "CSC 330 will be created",
                     "errorMsg: "",
                     "students": [
-                        ('ramsayb2', 'Brian Ramsay'),
-                        ('B0073235', 'ERROR: B0073235 does not exist!')]
+                        {'user':'ramsayb2', 
+                         'displayMsg': 'Brian Ramsay',
+                         'errorMsg': ''},
+                        {'user':'B0073235', 
+                         'displayMsg': '',
+                         'errorMsg': 'ERROR: B0073235 does not exist!'}]
                 },
                 "CSC 226": {
                     "displayMsg": "CSC 226 matched to existing course 'Data Structures'.",
                     "errorMsg": "",
                     "students": [
-                        ('ramsayb2', 'Brian Ramsay'),
-                        ('lamichhanes', 'Sandesh Lamichhane')]
+                        {'user':'ramsayb2', 
+                         'displayMsg': 'Brian Ramsay',
+                         'errorMsg': ''},
+                        {'user':'lamichhanes', 
+                         'displayMsg': 'Sandesh Lamichhane',
+                         'errorMsg': ''}]
                 }
            }
         }
@@ -171,7 +180,7 @@ def parseUploadedFile(filePath):
                 'courses': {}
             }
             if errorMsg:
-                errors.append(errorMsg)
+                errors.append((errorMsg,0))
 
         # Look for a Course. Examples: FRN134 CSC 226
         elif regex.search(r"\b[A-Z]{2,4} ?\d{3}\b", str(cellVal)):
@@ -191,6 +200,8 @@ def parseUploadedFile(filePath):
                 'errorMsg': errorMsg,
                 'students': []
             }
+            if errorMsg:
+                errors.append((errorMsg,0))
 
         # Look for a B-Number. Example: B00123456
         elif regex.search(r"\b[B]\d{8}\b", str(cellVal)):      
@@ -205,10 +216,15 @@ def parseUploadedFile(filePath):
                 else:             
                     errorMsg = f'ERROR: {row[1].value} with B# "{row[0].value}" does not exist.'
 
-            result[term]['courses'][course]['students'].append((existingUser or cellVal, errorMsg or displayMsg))
+            result[term]['courses'][course]['students'].append({
+                'user': (existingUser or cellVal),
+                'displayMsg': displayMsg,
+                'errorMsg': errorMsg})
+            if errorMsg:
+                errors.append((errorMsg,0))
             
         elif cellVal: # but didn't match the regex
-            errors.append(f'ERROR: {cellVal} in row {cellRow} of the Excel document does not appear to be a term, course, or B#.')
+            errors.append((f'ERROR: "{cellVal}" in row {cellRow} of the Excel document does not appear to be a term, course, or valid B#.',1))
         
 
     return result, errors
@@ -237,9 +253,10 @@ def saveCourseParticipantsToDatabase(cpPreview):
                              "serviceLearningDesignatedSections" : "",
                              "previouslyApprovedDescription" : "" })[0]
 
-            for (name, username) in courseinfo['students']:
-                if "ERROR" in username:
-                    print(f"Unable to save student {name}. {username}")
+            for userDict in courseinfo['students']:
+                if userDict['errorMsg']:
+                    print(f"Unable to save student. {userDict['errorMsg']}")
                     continue
 
-                CourseParticipant.get_or_create(user=username, course=courseObj)
+                CourseParticipant.get_or_create(user=userDict['user'], 
+                                                course=courseObj)

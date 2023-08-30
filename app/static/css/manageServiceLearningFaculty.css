@@ -1,3 +1,19 @@
 .mr{
     margin-right: 16px;
 }
+
+a.studentview {
+    font-size: .8em;
+}
+
+h6 {
+    margin-top:.5rem;
+    margin-bottom: 0;
+}
+
+ul {
+    padding-left: .5rem;
+}
+li {
+    list-style: none;
+}
