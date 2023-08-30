@@ -183,15 +183,12 @@
           <div class="modal-body">
             <div class="input-group">
               <div class="row">
-                <div class="col">
-                </div>
+                <div class="col"></div>
                 <div class="col-9">
                   <label for="addCourseParticipants" class="form-label"></label>
-                  <input class="form-control" type="file" id="addCourseParticipants" name="addCourseParticipants"
-                    accept=".xlsx"></input>
+                  <input class="form-control" type="file" id="addCourseParticipants" name="addCourseParticipants" accept=".xlsx"></input>
                 </div>
-                <div class="col-3">
-                </div>
+                <div class="col-3"></div>
               </div>
             </div>
           </div>
@@ -204,6 +201,45 @@
         </form>
       </div>
     </div>
+  </div>
+
+  <!-- modal for Preview -->
+  <div class="modal fade float-start col" id="modalPreview">
+    <form method="POST" action="/manageServiceLearning" enctype="multipart/form-data">
+      <div class="modal-dialog {% if cpPreviewErrors|count %} modal-lg {% endif %} custom-modal-size">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">List of Participants</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body py-0">
+            <div>
+              <label for="addCourseParticipants" class="form-label"></label>
+            {% for termt, courses in cpPreview.items() %}
+            {{ "<hr>" if not loop.first else "" }}
+                <h4>{{termt[0]}}</h4>
+                {% for courset, students in courses %}
+                    <h6><b>{{courset[1]}}</b></h6>
+                    {% for studentt in students %}
+                    <div>&ensp;&ensp;{{studentt[1]}}</div>
+                    {% endfor %}
+                {% endfor %}
+                {% for errormsg in cpErrors %}
+                    <div class="text-danger">{{errormsg}}</div>
+                {% endfor %}
+            {% endfor %}
+            </div>
+          </div>
+          <br>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalPreview" id="cancelModalPreview">Cancel</button>
+            <label for="previewCourseParticipant" class="form-label"></label>
+            {% set disableSave = "disabled" if cpPreviewErrors|count else "" %}
+            <button type="submit" name="submitParticipant" class="form-control btn btn-success position-relative" {{disableSave}} id="submitParticipant" style='width: 90px'>Save File</button>
+          </div>
+        </div>
+      </div>
+    </form>
   </div>
 
   <!-- modal for Preview -->
