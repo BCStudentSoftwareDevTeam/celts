@@ -101,9 +101,6 @@ def test_parseUpload():
     assert len(result) == 2
     result, errors = result
 
-    #print(result)
-    #print(errors)
-
     # all the errors are there
     assert len(errors) == 2
     # but some errors are general

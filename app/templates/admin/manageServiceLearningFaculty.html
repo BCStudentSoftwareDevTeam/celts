@@ -239,9 +239,9 @@
                             <h6><b>{{courseDict['displayMsg']}}</b></h6>
                             <span class="{{"text-danger" if errorcount else ""}}">Imported {{count - errorcount}} students out of {{count}}</span>
                             <a href="javascript:void(0)" class="studentview" data-course="{{course|replace(' ','')}}">View</a>
+
                             <!-- Students -->
                             <ul id="{{course|replace(' ','')}}_students" style="display:none">
-
                                 {% for userDict in courseDict['students'] %}
                                 <li class="{{"text-danger" if userDict['errorMsg'] else ''}}">&nbsp;{{userDict['displayMsg'] if userDict['displayMsg'] else userDict['errorMsg']}}</li>
                                 {% endfor %}
