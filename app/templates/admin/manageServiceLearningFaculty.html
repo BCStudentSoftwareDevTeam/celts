@@ -212,19 +212,25 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body py-0">
-            <div>
+            <br>
+            <!-- General Errors -->
             {% for errortuple in cpPreviewErrors %}
                 {% if errortuple[1] %}
                 <p class="text-danger">{{errortuple[0]}}</p>
                 {% endif %}
             {% endfor %}
+
+            <!-- Terms -->
             {% for term, termDict in cpPreview.items() %}
                 {{"<hr>"|safe if not loop.first else "" }}
                 {% if termDict['errorMsg'] %}
                     <h4>{{termDict['errorMsg']}}</h4>
                 {% else %}
                     <h4>{{term}}</h4>
+
+                    <!-- Courses -->
                     {% for course, courseDict in termDict['courses'].items() %}
+                    <div class="course-container {{loop.cycle('odd','even')}}">
                         {% if courseDict['errorMsg'] %}
                             <h6 class="text-danger">{{courseDict['errorMsg']}}</h6>
                         {% else %}
@@ -233,6 +239,7 @@
                             <h6><b>{{courseDict['displayMsg']}}</b></h6>
                             <span class="{{"text-danger" if errorcount else ""}}">Imported {{count - errorcount}} students out of {{count}}</span>
                             <a href="javascript:void(0)" class="studentview" data-course="{{course|replace(' ','')}}">View</a>
+                            <!-- Students -->
                             <ul id="{{course|replace(' ','')}}_students" style="display:none">
 
                                 {% for userDict in courseDict['students'] %}
@@ -240,17 +247,16 @@
                                 {% endfor %}
                             </ul>
                         {% endif %}
+                        </div>
                     {% endfor %}
                 {% endif %}
             {% endfor %}
-            </div>
           </div>
           <br>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalPreview" id="cancelModalPreview">Cancel</button>
-            <label for="previewCourseParticipant" class="form-label"></label>
             {% set disableSave = "disabled" if cpPreviewErrors|count else "" %}
-            <button type="submit" name="submitParticipant" class="form-control btn btn-success position-relative" {{disableSave}} id="submitParticipant" style='width: 90px'>Save File</button>
+            <button type="submit" name="submitParticipant" class="btn btn-success" {{disableSave}} id="submitParticipant">Save File</button>
           </div>
         </div>
       </div>
@@ -289,9 +295,8 @@
           <br>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalPreview" id="cancelModalPreview">Cancel</button>
-            <label for="previewCourseParticipant" class="form-label"></label>
             {% set disableSave = "disabled" if previewParticipantsErrorFlag else "" %}
-            <button type="submit" name="submitParticipant" class="form-control btn btn-success position-relative" {{disableSave}} id="submitParticipant" style='width: 90px'>Save File</button>
+            <button type="submit" name="submitParticipant" class="btn btn-success" {{disableSave}} id="submitParticipant">Save File</button>
           </div>
         </div>
       </div>

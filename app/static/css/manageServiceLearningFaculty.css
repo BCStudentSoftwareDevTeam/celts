@@ -13,7 +13,17 @@ h6 {
 
 ul {
     padding-left: .5rem;
+    margin-bottom:0px;
 }
 li {
     list-style: none;
+}
+
+.course-container {
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.course-container.even {
+    background-color: #f2f2f2; /* from the table striping odd color */
 }

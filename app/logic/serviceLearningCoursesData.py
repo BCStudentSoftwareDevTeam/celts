@@ -99,9 +99,11 @@ def parseUploadedFile(filePath):
     Parse an Excel document at the given `filePath` for courses and
     course participants.
 
-    The return value will be a tuple. The first value is a list of 
-    error messages that do not fit known terms, courses, or 
-    participants. The second value is a dictionary keyed the term 
+    The return value will be a tuple. The second value is a list of 
+    error message tuples. The first tuple value is the error message, 
+    and the second is a 0 or 1 indicating whether the error is a 
+    'general' error - 1 - or an error on a specific course, term, or 
+    person.  The first value is a dictionary keyed by the term 
     description. Each value is another dictionary, with a key for 
     'displayMsg' and 'errorMsg', and a 'courses' key whose value is 
     a dictionary with keys for the courses in the term. Each course 
