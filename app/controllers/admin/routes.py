@@ -395,7 +395,7 @@ def manageServiceLearningCourses(term=None):
 
     setRedirectTarget(request.full_path)
 
-    return render_template('/main/manageServiceLearningFaculty.html',
+    return render_template('/admin/manageServiceLearningFaculty.html',
                             courseInstructors = courseDict,
                             unapprovedCourses = unapproved,
                             approvedCourses = approved,
