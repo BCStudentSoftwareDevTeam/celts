@@ -113,7 +113,7 @@ def viewUsersProfile(username):
         else:
             abort(403)  # Error 403 if non admin/student-staff user trys to access via url
 
-    if (g.current_user == volunteer) or g.current_user.isAdmin:
+    if (g.current_user == volunteer) or g.current_user.isAdmin or g.current_user.isCeltsStudentAdmin:
         upcomingEvents = getUpcomingEventsForUser(volunteer)
         participatedEvents = getParticipatedEventsForUser(volunteer)
         programs = Program.select()

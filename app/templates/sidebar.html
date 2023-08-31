@@ -26,7 +26,7 @@
       </li>
       {% endif %}
 
-      {% if g.current_user.isAdmin %}
+      {% if g.current_user.isAdmin or g.current_user.isCeltsStudentAdmin %}
       <li>
         <a href="/eventTemplates" class="nav-link text-white {{'active' if 'eventTemplates' in request.path}}" {{"aria-current='page'" if 'eventTemplates' in request.path}}>
           Create Event
@@ -38,7 +38,7 @@
         </a>
       </li>
       <li>
-        {% if not g.current_user.isCeltsStudentStaff %}
+        {% if not g.current_user.isCeltsStudentStaff or  g.current_user.isCeltsStudentAdmin %}
         <a href="/serviceLearning/courseManagement" class="nav-link text-white {{'active' if request.path =='/serviceLearning/courseManagement'}}" {{"aria-current='page'" if request.path =='/serviceLearning/courseManagement'}}>
           Course Proposals
         </a>

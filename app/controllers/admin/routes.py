@@ -46,7 +46,7 @@ def switchUser():
 
 @admin_bp.route('/eventTemplates')
 def templateSelect():
-    if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff:
+    if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff or g.current_user.isCeltsStudentAdmin :
         allprograms = getAllowedPrograms(g.current_user)
         visibleTemplates = getAllowedTemplates(g.current_user)
         return render_template("/events/template_selector.html",
@@ -59,7 +59,7 @@ def templateSelect():
 
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
 def createEvent(templateid, programid):
-    if not (g.current_user.isAdmin or g.current_user.isProgramManagerFor(programid)):
+    if not (g.current_user.isAdmin or g.current_user.isCeltsStudentAdmin or g.current_user.isProgramManagerFor(programid)):
         abort(403)
 
     # Validate given URL
@@ -268,7 +268,7 @@ def eventDisplay(eventId):
 
 @admin_bp.route('/event/<eventId>/cancel', methods=['POST'])
 def cancelRoute(eventId):
-    if g.current_user.isAdmin:
+    if g.current_user.isAdmin or g.current_user.isCeltsStudentAdmin:
         try:
             cancelEvent(eventId)
             return redirect(request.referrer)
@@ -330,7 +330,7 @@ def userProfile():
 
 @admin_bp.route('/search_student', methods=['GET'])
 def studentSearchPage():
-    if g.current_user.isAdmin:
+    if g.current_user.isAdmin or g.current_user.isCeltsStudentAdmin:
         return render_template("/admin/searchStudentPage.html")
     abort(403)
 
