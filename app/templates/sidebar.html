@@ -18,7 +18,7 @@
         </a>
       </li>
 
-      {% if g.current_user.isFaculty and not g.current_user.isAdmin%}
+      {% if g.current_user.isFaculty and not g.current_user.isAdmin and not g.current_user.isCeltsStudentAdmin %}
       <li>
         <a href="/serviceLearning/courseManagement" class="nav-link text-white {{'active' if request.path =='/serviceLearning/courseManagement'}}" {{"aria-current='page'" if request.path =='/serviceLearning/courseManagement'}}>
           Course Proposals
@@ -38,7 +38,7 @@
         </a>
       </li>
       <li>
-        {% if not g.current_user.isCeltsStudentStaff or not g.current_user.isCeltsStudentAdmin %}
+        {% if not g.current_user.isCeltsStudentStaff and not g.current_user.isCeltsStudentAdmin %}
         <a href="/serviceLearning/courseManagement" class="nav-link text-white {{'active' if request.path =='/serviceLearning/courseManagement'}}" {{"aria-current='page'" if request.path =='/serviceLearning/courseManagement'}}>
           Course Proposals
         </a>
