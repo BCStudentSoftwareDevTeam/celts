@@ -194,8 +194,10 @@
   </div>
 </div>
 {% include 'emailModal.html' %}
+
 <script>
-  termOrder = Term.isFutureTerm();
-  var g_isPastTerm = {{"true" if selectedTerm != termOrder else "false" }};
+ 
+  var g_isPastTerm ={{"false" if selectedTerm.isFutureTerm or selectedTerm.isCurrentTerm else "true" }};
+ 
 </script>
 {% endblock %}

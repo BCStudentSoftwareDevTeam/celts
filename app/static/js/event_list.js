@@ -8,7 +8,7 @@ $(document).ready(function(){
     var viewPastEventsToggle = $("#viewPastEventsToggle");
     viewPastEventsToggle.prop("checked", g_isPastTerm);
     toggleRows(g_isPastTerm);
-    viewPastEventsToggle.prop("disabled", g_isPastTerm);
+  viewPastEventsToggle.prop("disabled",g_isPastTerm);
 
     viewPastEventsToggle.on("change", function(){
       var isChecked = $(this).prop("checked");
