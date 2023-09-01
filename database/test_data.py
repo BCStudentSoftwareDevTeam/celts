@@ -208,6 +208,7 @@ users = [
         "isCeltsAdmin": False,
         "isFaculty": True,
         "isCeltsStudentStaff": False,
+        "isCeltsStudentAdmin": True,
         "isStaff": True,
     },
 ]
