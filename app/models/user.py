@@ -41,17 +41,6 @@ class User(baseModel):
     @property
     def fullName(self):
         return f"{self.firstName} {self.lastName}"
-    
-    @property
-    def getEmergencyContact(self):
-        from app.models.emergencyContact import EmergencyContact # Must defer import until now to avoid circular reference
-        userEmergencyContact = EmergencyContact.get_or_none(user=self.username)
-        if userEmergencyContact:
-            emergencyName = userEmergencyContact.name or None
-            emergencyNumber = userEmergencyContact.cellPhone or userEmergencyContact.homePhone or userEmergencyContact.workPhone or None
-        else:
-            emergencyName, emergencyNumber = None, None
-        return emergencyName, emergencyNumber
 
     def addProgramManager(self, program):
         # Makes a user a Program Manager
