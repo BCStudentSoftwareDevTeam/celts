@@ -429,7 +429,7 @@ def serviceTranscript(username):
     user = User.get_or_none(User.username == username)
     if user is None:
         abort(404)
-    if user != g.current_user and not g.current_user.isAdmin:
+    if user != g.current_user and not g.current_user.isAdmin and not g.current_user.isCeltsStudentAdmin:
         abort(403)
 
     slCourses = getSlCourseTranscript(username)
