@@ -82,6 +82,7 @@
           <select name="newuser" class="form-select" style="margin-bottom: 10px" onchange="this.form.submit()">>
             <option {{"selected" if g.current_user.username == config.default_user }} value="{{config.default_user}}">Default User: {{config.default_user}}</option>
             <option {{"selected" if g.current_user.username == "ramsayb2"}} value="ramsayb2">Admin: ramsayb2</option>
+            <option {{"selected" if g.current_user.username == "bledsoef"}} value="bledsoef">Student Admin: bledsoef</option>
             <option {{"selected" if g.current_user.username == "neillz"}} value="neillz">Student Staff: neillz</option>
             <option {{"selected" if g.current_user.username == "ayisie"}} value="ayisie">Student: ayisie</option>
             <option {{"selected" if g.current_user.username == "heggens"}} value="heggens">Faculty: heggens</option>
