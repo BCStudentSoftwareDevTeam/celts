@@ -26,7 +26,7 @@
                 {% set fullWidthTitle = not (g.current_user.isAdmin or image) %}
                 <div class="{{ 'col-md-12' if fullWidthTitle else 'col-md-6'}}">
 
-                    {%if not g.current_user.isAdmin %}
+                    {%if not g.current_user.isAdmin or not g.current_user.isCeltsStudentAdmin %}
                         {{ eventheader(eventData.name, eventData, 'small', isNewEvent) }}
                     {% endif %}
 
@@ -132,7 +132,7 @@
                             <h3>Program Trainings:</h3>
                             {% for training, events in programTrainings.items() %}
                                 {% for eventObj, attended in events %}
-                                    {% if g.current_user.isCeltsAdmin %}
+                                    {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentAdmin %}
                                         <p>{{eventObj.name}}</p>
                                     {% elif attended %}
                                         <p><b>{{eventObj.name}}</b>: Attended</p>
@@ -161,7 +161,7 @@
                     {% endif %}
                 </div>
                 <div class="rsvp-btn text-center">              
-                    {% if g.current_user.isCeltsAdmin or isProgramManager %}
+                    {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentAdmin or isProgramManager %}
                     <div class="d-flex align-items-center">
                         <i class="bi bi-eye-fill me-2"></i>
                         <span class="me-2">Unique Viewers:</span>

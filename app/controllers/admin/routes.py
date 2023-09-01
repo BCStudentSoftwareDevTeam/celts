@@ -40,7 +40,6 @@ def switchUser():
 
     print(f"Switching user from {g.current_user} to",request.form['newuser'])
     session['current_user'] = model_to_dict(User.get_by_id(request.form['newuser']))
-    print("======ss")
     return redirect(request.referrer)
 
 
@@ -169,7 +168,7 @@ def eventDisplay(eventId):
         print(f"Unknown event: {eventId}")
         abort(404)
 
-    notPermitted = not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(event))
+    notPermitted = not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(event) or g.current_user.isCeltsStudentAdmin)
     if 'edit' in request.url_rule.rule and notPermitted:
         abort(403)
 
