@@ -24,15 +24,14 @@ from app.models.courseStatus import CourseStatus
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createAdminLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
-from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
+from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
 from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm
 from app.logic.participants import getEventParticipants, getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
-from app.logic.manageSLFaculty import getCourseDict
+from app.logic.manageSLFaculty import getInstructorCourses
 from app.logic.courseManagement import unapprovedCourses, approvedCourses
-from app.logic.utils import getRedirectTarget, setRedirectTarget
 from app.logic.serviceLearningCoursesData import parseUploadedFile, saveCourseParticipantsToDatabase
 
 
@@ -385,23 +384,16 @@ def manageServiceLearningCourses(term=None):
         flash('Courses and participants saved successfully!', 'success')
         return redirect(url_for('admin.manageServiceLearningCourses'))
 
-  
-    courseDict = getCourseDict()
-    term = Term.get_or_none(Term.id == term) or g.current_term
-
-    unapproved = unapprovedCourses(term)
-    approved = approvedCourses(term)
-    terms = selectSurroundingTerms(g.current_term)
+    manageTerm = Term.get_or_none(Term.id == term) or g.current_term
 
     setRedirectTarget(request.full_path)
 
     return render_template('/admin/manageServiceLearningFaculty.html',
-                            courseInstructors = courseDict,
-                            unapprovedCourses = unapproved,
-                            approvedCourses = approved,
-                            terms = terms,
-                            term = term,
-                            CourseStatus = CourseStatus, 
+                            courseInstructors = getInstructorCourses(),
+                            unapprovedCourses = unapprovedCourses(term),
+                            approvedCourses = approvedCourses(term),
+                            terms = selectSurroundingTerms(g.current_term),
+                            term = manageTerm,
                             cpPreview= session.get('cpPreview',{}),
                             cpPreviewErrors = session.get('cpErrors',[])
                            )
