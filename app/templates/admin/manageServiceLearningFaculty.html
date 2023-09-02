@@ -6,7 +6,7 @@
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
   <script type="module" src="/static/js/manageServiceLearningFaculty.js"></script>
   <script src="/static/js/slcManagement.js"></script>
-  {% if previewParticipantDisplayList %}
+  {% if cpPreview %}
     <script>
       $(document).ready(function () {
         $("#modalPreview").modal('show')
@@ -33,7 +33,7 @@
     </form>
   </div>
 
-  {########################### Unapproved Table #################################}
+  {########################### Unapproved Table ###############################}
   <div class="row">
     <h2 class="col">Unapproved</h2>
     <div class="col"align="right">
@@ -139,7 +139,7 @@
   {% endif %}
   </div>
 
-  {########################### Service Learning Faculty #################################}
+  {###################### Service Learning Faculty ############################}
   <h1 class="text-center" style="margin-bottom:-30px">Service-Learning Faculty</h1>
   <div class="btn" style=" text-align:right; position:relative; top: 38px; z-index:1;">
       <button class="btn btn-primary" id="emailSelectedButton"> Email Selected</button>
@@ -169,7 +169,7 @@
   </div>
 
 
-  {########################### Modals #################################}
+  {############################### Modals #####################################}
 
   <!-- Modal for Uploading Course Participants -->
   <div class="modal fade float-start col" id="modalSubmit">
@@ -183,22 +183,18 @@
           <div class="modal-body">
             <div class="input-group">
               <div class="row">
-                <div class="col">
-                </div>
+                <div class="col"></div>
                 <div class="col-9">
                   <label for="addCourseParticipants" class="form-label"></label>
-                  <input class="form-control" type="file" id="addCourseParticipants" name="addCourseParticipants"
-                    accept=".xlsx"></input>
+                  <input class="form-control" type="file" id="addCourseParticipants" name="addCourseParticipants" accept=".xlsx"></input>
                 </div>
-                <div class="col-3">
-                </div>
+                <div class="col-3"></div>
               </div>
             </div>
           </div>
           <br>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" id="closeAddCourseParticipants">Close</button>
-            <label for="addCourseParticipants" class="form-label"></label>
             <button class="form-control btn btn-success position-relative" id="previewButton" style='width: 90px' disabled>Preview</button>
           </div>
         </form>
@@ -209,14 +205,74 @@
   <!-- modal for Preview -->
   <div class="modal fade float-start col" id="modalPreview">
     <form method="POST" action="/manageServiceLearning" enctype="multipart/form-data">
-      <div class="modal-dialog {% if previewParticipantsErrorFlag %} modal-lg {% endif %} custom-modal-size">
+      <div class="modal-dialog {% if cpPreviewErrors|count %} modal-lg {% endif %} custom-modal-size">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">List of Participants</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body py-0">
-              <label for="addCourseParticipants" class="form-label"></label>
+            <br>
+            <!-- General Errors -->
+            {% for errortuple in cpPreviewErrors %}
+                {% if errortuple[1] %}
+                <p class="text-danger">{{errortuple[0]}}</p>
+                {% endif %}
+            {% endfor %}
+
+            <!-- Terms -->
+            {% for term, termDict in cpPreview.items() %}
+                {{"<hr>"|safe if not loop.first else "" }}
+                {% if termDict['errorMsg'] %}
+                    <h4>{{termDict['errorMsg']}}</h4>
+                {% else %}
+                    <h4>{{term}}</h4>
+
+                    <!-- Courses -->
+                    {% for course, courseDict in termDict['courses'].items() %}
+                    <div class="course-container {{loop.cycle('odd','even')}}">
+                        {% if courseDict['errorMsg'] %}
+                            <h6 class="text-danger">{{courseDict['errorMsg']}}</h6>
+                        {% else %}
+                            {% set errorcount = courseDict['students']|selectattr("displayMsg","equalto","")|list|count %}
+                            {% set count = courseDict['students']|count %}
+                            <h6><b>{{courseDict['displayMsg']}}</b></h6>
+                            <span class="{{"text-danger" if errorcount else ""}}">Imported {{count - errorcount}} students out of {{count}}</span>
+                            <a href="javascript:void(0)" class="studentview" data-course="{{course|replace(' ','')}}">View</a>
+
+                            <!-- Students -->
+                            <ul id="{{course|replace(' ','')}}_students" style="display:none">
+                                {% for userDict in courseDict['students'] %}
+                                <li class="{{"text-danger" if userDict['errorMsg'] else ''}}">&nbsp;{{userDict['displayMsg'] if userDict['displayMsg'] else userDict['errorMsg']}}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+          </div>
+          <br>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalPreview" id="cancelModalPreview">Cancel</button>
+            {% set disableSave = "disabled" if cpPreviewErrors|count else "" %}
+            <button type="submit" name="submitParticipant" class="btn btn-success" {{disableSave}} id="submitParticipant">Save File</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- modal for Preview -->
+  <div class="modal fade float-start col" id="modalPreview">
+    <form method="POST" action="/manageServiceLearning" enctype="multipart/form-data">
+      <div class="modal-dialog {% if previewParticipantsErrorFlag %} modal-lg {% endif %} custom-modal-size">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Course to Import</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body py-0">
               {% if previewParticipantDisplayList %}
                 {% for line in previewParticipantDisplayList %}
                   {% set splitRow = line.split("-") %}
@@ -239,9 +295,8 @@
           <br>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalPreview" id="cancelModalPreview">Cancel</button>
-            <label for="previewCourseParticipant" class="form-label"></label>
             {% set disableSave = "disabled" if previewParticipantsErrorFlag else "" %}
-            <button type="submit" name="submitParticipant" class="form-control btn btn-success position-relative" {{disableSave}} id="submitParticipant" style='width: 90px'>Save File</button>
+            <button type="submit" name="submitParticipant" class="btn btn-success" {{disableSave}} id="submitParticipant">Save File</button>
           </div>
         </div>
       </div>
