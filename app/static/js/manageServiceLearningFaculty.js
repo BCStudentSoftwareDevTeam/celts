@@ -92,5 +92,16 @@ $(document).ready( function () {
         }
       });
     })
+
+    $("a.studentview").click(function(e) {
+        let course_id=e.target.getAttribute('data-course');
+        if(e.target.innerHTML == "View") {
+            $(`#${course_id}_students`).show();
+            e.target.innerHTML = "Hide"; 
+        } else {
+            $(`#${course_id}_students`).hide();
+            e.target.innerHTML = "View"; 
+        }
+    });
 });
 

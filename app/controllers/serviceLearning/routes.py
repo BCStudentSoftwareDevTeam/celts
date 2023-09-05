@@ -15,7 +15,7 @@ from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, 
 from app.logic.courseManagement import updateCourse, createCourse
 from app.logic.downloadFile import *
 from app.logic.courseManagement import approvedCourses
-from app.controllers.main.routes import getRedirectTarget, setRedirectTarget
+from app.logic.utils import getRedirectTarget, setRedirectTarget
 from app.controllers.serviceLearning import serviceLearning_bp
 
 
