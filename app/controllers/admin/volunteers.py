@@ -112,8 +112,8 @@ def volunteerDetailsPage(eventID):
     if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerForEvent(event))):
         abort(403)
 
-    eventRsvpData = list(EventRsvp.select(EmergencyContact, EventRsvp).where(EventRsvp.event==event).join(EmergencyContact, JOIN.LEFT_OUTER, on=(EmergencyContact.user==EventRsvp.user)))
-    eventParticipantData = list(EventParticipant.select(EmergencyContact, EventParticipant).where(EventParticipant.event==event).join(EmergencyContact, JOIN.LEFT_OUTER, on=(EmergencyContact.user==EventParticipant.user)))
+    eventRsvpData = list(EventRsvp.select(EmergencyContact, EventRsvp).join(EmergencyContact, JOIN.LEFT_OUTER, on=(EmergencyContact.user==EventRsvp.user)).where(EventRsvp.event==event))
+    eventParticipantData = list(EventParticipant.select(EmergencyContact, EventParticipant).join(EmergencyContact, JOIN.LEFT_OUTER, on=(EmergencyContact.user==EventParticipant.user)).where(EventParticipant.event==event))
     participantsAndRsvp = (eventParticipantData + eventRsvpData)
     eventParticipantUsers = [obj for obj in eventParticipantData]
     eventNonAttendedData = [obj for obj in eventRsvpData if obj not in eventParticipantUsers]
