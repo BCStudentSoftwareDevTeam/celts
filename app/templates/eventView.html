@@ -68,7 +68,7 @@
                                 {% if userHasRSVPed %}
                                     <button type="submit" class="btn btn-danger" value="{{eventData.id}}" id="removeRsvpBtn">Remove RSVP</button>
                                 {% elif eventData.isRsvpRequired %}
-                                    {% set buttonName = "Join Waitlist" if (eventData.rsvpLimit) and (currentEventRsvpAmount[eventData.id] >= eventData.rsvpLimit) else "RSVP" %}
+                                    {% set buttonName = "Join Waitlist" if (eventData.rsvpLimit is not none) and (currentEventRsvpAmount[eventData.id] >= eventData.rsvpLimit) else "RSVP" %}
                                     <button type="submit" class="btn btn-primary" value="{{eventData.id}}" id="rsvpBtn">{{buttonName}}</button>
                                 {% endif %}
                             {% endif %}

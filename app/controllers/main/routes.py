@@ -1,4 +1,4 @@
-from flask import request, render_template, g, abort, flash, redirect, url_for, session
+from flask import request, render_template, g, abort, flash, redirect, url_for
 from peewee import JOIN
 from playhouse.shortcuts import model_to_dict
 import datetime
@@ -19,7 +19,6 @@ from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
 from app.models.profileNote import ProfileNote
 from app.models.programManager import ProgramManager
-from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
 from app.models.certification import Certification
 from app.models.emergencyContact import EmergencyContact
@@ -33,11 +32,8 @@ from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
 from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
-from app.logic.manageSLFaculty import getCourseDict
-from app.logic.courseManagement import unapprovedCourses, approvedCourses
 from app.logic.utils import selectSurroundingTerms
 from app.logic.certification import getCertRequirementsWithCompletion
-from app.logic.serviceLearningCoursesData import saveCourseParticipantsToDatabase,courseParticipantPreviewSessionCleaner
 from app.logic.createLogs import createRsvpLog, createAdminLog
 
 @main_bp.route('/logout', methods=['GET'])
@@ -47,8 +43,6 @@ def redirectToLogout():
 @main_bp.route('/', methods=['GET'])
 def landingPage():
     managerProgramDict = getManagerProgramDict(g.current_user)
-
-
     eventsInTerm = list(Event.select().where(Event.term == g.current_term, Event.isCanceled == False))
     programsWithEventsList = [event.program for event in eventsInTerm if not event.isPast]
 
@@ -68,6 +62,7 @@ def events(selectedTerm, activeTab, programID):
     if selectedTerm:
         currentTerm = selectedTerm
     currentTime = datetime.datetime.now()
+    
     listOfTerms = Term.select()
     participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
@@ -76,6 +71,7 @@ def events(selectedTerm, activeTab, programID):
     
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     studentLedEvents = getStudentLedEvents(term)
+    countUpcomingStudentLedEvents = getUpcomingStudentLedCount(term, currentTime)
     trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
@@ -95,7 +91,8 @@ def events(selectedTerm, activeTab, programID):
                             user = g.current_user,
                             activeTab = activeTab,
                             programID = int(programID),
-                            managersProgramDict = managersProgramDict
+                            managersProgramDict = managersProgramDict,
+                            countUpcomingStudentLedEvents = countUpcomingStudentLedEvents
                             )
 
 @main_bp.route('/profile/<username>', methods=['GET'])
@@ -149,14 +146,12 @@ def viewUsersProfile(username):
                                      "isNotBanned": (not banNotes),
                                      "banNote": noteForDict})
         profileNotes = ProfileNote.select().where(ProfileNote.user == volunteer)
-        userDietQuery = User.select().where(User.username == username)
-        userDiet = [note.dietRestriction for note in userDietQuery]
 
         bonnerRequirements = getCertRequirementsWithCompletion(certification=Certification.BONNER, username=volunteer)
 
         managersProgramDict = getManagerProgramDict(g.current_user)
         managersList = [id[1] for id in managersProgramDict.items()]
-    
+
         return render_template ("/main/userProfile.html",
                                 programs = programs,
                                 programsInterested = programsInterested,
@@ -171,7 +166,6 @@ def viewUsersProfile(username):
                                 currentDateTime = datetime.datetime.now(),
                                 profileNotes = profileNotes,
                                 bonnerRequirements = bonnerRequirements,
-                                userDiet = userDiet,
                                 managersList = managersList                
                             )
     abort(403)
@@ -478,84 +472,19 @@ def reviewProposal():
                             course=course,
                             instructors_data=instructors_data)
 
-@main_bp.route('/manageServiceLearning', methods = ['GET', 'POST'])
-@main_bp.route('/manageServiceLearning/<term>', methods = ['GET', 'POST'])
-def getAllCourseInstructors(term=None):
-    """
-    This function selects all the Instructors Name and the previous courses
-    """
-    showPreviewModal = request.args.get('showPreviewModal', default=False, type=bool)
-    
-    if showPreviewModal and 'courseParticipantPreview' in session:
-        courseParticipantPreview = session['courseParticipantPreview']
-    else:
-        courseParticipantPreview = []
-
-    errorFlag = session.get('errorFlag')
-    previewParticipantDisplayList = session.get('previewCourseDisplayList')
-
-    if g.current_user.isCeltsAdmin:
-        setRedirectTarget(request.full_path)
-        courseDict = getCourseDict()
-        term = Term.get_or_none(Term.id == term) or g.current_term
-
-        unapproved = unapprovedCourses(term)
-        approved = approvedCourses(term)
-        terms = selectSurroundingTerms(g.current_term)
-
-        if request.method =='POST' and "submitParticipant" in request.form:
-            saveCourseParticipantsToDatabase(session['courseParticipantPreview'])
-            courseParticipantPreviewSessionCleaner()
-            flash('File saved successfully!', 'success')
-            return redirect(url_for('main.getAllCourseInstructors'))
-      
-        return render_template('/main/manageServiceLearningFaculty.html',
-                                courseInstructors = courseDict,
-                                unapprovedCourses = unapproved,
-                                approvedCourses = approved,
-                                terms = terms,
-                                term = term,
-                                CourseStatus = CourseStatus, 
-                                previewParticipantsErrorFlag = errorFlag,
-                                courseParticipantPreview= courseParticipantPreview,
-                                previewParticipantDisplayList = previewParticipantDisplayList
-                                )
-    else:
-        abort(403) 
-
-def getRedirectTarget(popTarget=False):
-    """
-    This function returns a string with the URL or route to a page in the Application
-        saved with setRedirectTarget() and is able to pop the value from the session
-        to make it an empty value
-    popTarget: expects a bool value to determine whether or not to reset
-                redirectTarget to an emtpy value
-    return: a string with the URL or route to a page in the application that was
-            saved in setRedirectTarget()
-    """
-    if "redirectTarget" not in session:
-        return ''
-
-    target = session["redirectTarget"]
-    if popTarget:
-        session.pop("redirectTarget")
-    return target
-
-def setRedirectTarget(target):
-    """
-    This function saves the target URL in the session for future redirection
-        to said page
-    target: expects a string that is a URL or a route to a page in the application
-    return: None
-    """
-    session["redirectTarget"] = target
-
 @main_bp.route('/updateDietInformation', methods = ['GET', 'POST'])
 def getDietInfo():
     dietaryInfo = request.form
     user = dietaryInfo["user"]
     dietInfo = dietaryInfo["dietInfo"]
+    
     if (g.current_user.username == user) or g.current_user.isAdmin:
         updateDietInfo(user, dietInfo)
+        userInfo = User.get(User.username == user) 
+        if len(dietInfo) > 0:
+            createAdminLog(f"Updated {userInfo.fullName}'s dietary restrictions to {dietInfo}.") if dietInfo.strip() else None 
+        else:
+            createAdminLog(f"Deleted all {userInfo.fullName}'s dietary restrictions dietary restrictions.")
+
 
     return " "
