@@ -52,8 +52,10 @@ def changeProgramInfo(newProgramName, newContactEmail, newContactName, newLocati
 
 def getAllowedPrograms(currentUser):
     """Returns a list of all visible programs depending on who the current user is."""
-    if currentUser.isCeltsAdmin or currentUser.isCeltsStudentAdmin :
+    if currentUser.isCeltsAdmin:
         return Program.select().order_by(Program.programName)
+    elif currentUser.isCeltsStudentAdmin:
+        return Program.select().where(Program.id !=5).order_by(Program.programName)
     else:
         return Program.select().join(ProgramManager).where(ProgramManager.user==currentUser).order_by(Program.programName)
 
