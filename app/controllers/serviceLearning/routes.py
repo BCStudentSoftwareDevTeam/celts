@@ -26,8 +26,8 @@ def serviceCourseManagement(username=None):
         user = User.get(User.username==username) if username else g.current_user
     except DoesNotExist:
         abort(404)
-    
-    isRequestingForSelf = g.current_user == user 
+
+    isRequestingForSelf = g.current_user == user
     if g.current_user.isCeltsAdmin or (g.current_user.isFaculty and isRequestingForSelf):
         setRedirectTarget(request.full_path)
         courseDict = getServiceLearningCoursesData(user)
@@ -38,7 +38,7 @@ def serviceCourseManagement(username=None):
             termList=termList)
     else:
         abort(403)
-        
+
 
 @serviceLearning_bp.route('/serviceLearning/viewProposal/<courseID>', methods=['GET'])
 @serviceLearning_bp.route('/serviceLearning/editProposal/upload/<courseID>', methods=['GET'])
@@ -48,7 +48,6 @@ def slcEditProposal(courseID):
         Route for editing proposals, it will fill the form with the data found in the database
         given a courseID.
     """
-<<<<<<< HEAD
     if g.current_user.isCeltsAdmin or g.current_user.isFaculty:
         course = Course.get_by_id(courseID)
         questionData = (CourseQuestion.select().where(CourseQuestion.course == course))
@@ -59,7 +58,7 @@ def slcEditProposal(courseID):
         isPermanentlyDesignated = ""
         course.status = CourseStatus.APPROVED
 
-        
+
         if course.isAllSectionsServiceLearning:
             isAllSectionsServiceLearning = True
         if course.isPermanentlyDesignated:
@@ -73,7 +72,7 @@ def slcEditProposal(courseID):
                                     isAllSectionsServiceLearning = isAllSectionsServiceLearning,
                                     isPermanentlyDesignated = isPermanentlyDesignated,
                                     redirectTarget=getRedirectTarget())
-=======
+
     instructors = CourseInstructor.select().where(CourseInstructor.course==courseID)
     courseInstructors = [instructor.user for instructor in instructors]
     isCourseCreator = Course.select().where(Course.createdBy == g.current_user, Course.id==courseID).exists()
@@ -107,8 +106,6 @@ def slcEditProposal(courseID):
                                         redirectTarget=getRedirectTarget())
     else:
         abort(403)
-        
->>>>>>> 616794fb99d64820c34c87a314a6e511976ef90c
 
 @serviceLearning_bp.route('/serviceLearning/createCourse', methods=['POST'])
 def slcCreateCourse():
