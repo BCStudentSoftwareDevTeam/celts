@@ -113,7 +113,7 @@ def viewUsersProfile(username):
         else:
             abort(403)  # Error 403 if non admin/student-staff user trys to access via url
 
-    if (g.current_user == volunteer) or g.current_user.isAdmin or g.current_user.isCeltsStudentAdmin:
+    if (g.current_user == volunteer) or g.current_user.isAdmin:
         upcomingEvents = getUpcomingEventsForUser(volunteer)
         participatedEvents = getParticipatedEventsForUser(volunteer)
         programs = Program.select()
@@ -429,7 +429,7 @@ def serviceTranscript(username):
     user = User.get_or_none(User.username == username)
     if user is None:
         abort(404)
-    if user != g.current_user and not g.current_user.isAdmin and not g.current_user.isCeltsStudentAdmin:
+    if user != g.current_user and not g.current_user.isAdmin:
         abort(403)
 
     slCourses = getSlCourseTranscript(username)

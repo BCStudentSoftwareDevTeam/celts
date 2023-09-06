@@ -27,7 +27,7 @@ class User(baseModel):
         
     @property
     def isAdmin(self):
-        return (self.isCeltsAdmin or self.isCeltsStudentStaff)
+        return (self.isCeltsAdmin or self.isCeltsStudentAdmin or self.isCeltsStudentStaff)
 
     @property
     def isBonnerScholar(self):

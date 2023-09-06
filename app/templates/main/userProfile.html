@@ -152,7 +152,7 @@
                 <th scope="col">Program</th>
                 <th scope="col">Notify</th>
                 <th scope="col">Training</th>
-                {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff%}
+                {% if g.current_user.isAdmin%}
                   <th scope="col">Eligibility</th>
                 {% endif %}
                 <th scope="col"></th>
@@ -492,6 +492,7 @@
                   {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
                     <option value='2'>Admin/Student Staff</option>
                   {% endif %}
+                  <!-- Ala, we mightt need to add something here -->
                   <option value='1' selected>Everyone</option>
                 </select>
                

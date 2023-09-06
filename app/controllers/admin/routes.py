@@ -45,7 +45,7 @@ def switchUser():
 
 @admin_bp.route('/eventTemplates')
 def templateSelect():
-    if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff or g.current_user.isCeltsStudentAdmin :
+    if g.current_user.isAdmin:
         allprograms = getAllowedPrograms(g.current_user)
         visibleTemplates = getAllowedTemplates(g.current_user)
         return render_template("/events/template_selector.html",
@@ -143,7 +143,7 @@ def rsvpLogDisplay(eventId):
     eventData = model_to_dict(event, recurse=False)
     eventData['program'] = event.program
     isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
-    if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager):
+    if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager):
         allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
         return render_template("/events/rsvpLog.html",
                                 event = event,
@@ -168,7 +168,7 @@ def eventDisplay(eventId):
         print(f"Unknown event: {eventId}")
         abort(404)
 
-    notPermitted = not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(event) or g.current_user.isCeltsStudentAdmin)
+    notPermitted = not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(event))
     if 'edit' in request.url_rule.rule and notPermitted:
         abort(403)
 

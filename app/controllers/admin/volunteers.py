@@ -54,7 +54,7 @@ def manageVolunteersPage(eventID):
 
     isProgramManager = g.current_user.isProgramManagerForEvent(event)
     bannedUsers = [row.user for row in getBannedUsers(event.program)]
-    if not (g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
+    if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
         abort(403)
 
     eventParticipantData = list(EventParticipant.select(EventParticipant, User).join(User).where(EventParticipant.event==event))
@@ -108,7 +108,7 @@ def volunteerDetailsPage(eventID):
         print(f"No event found for {eventID}", e)
         abort(404)
 
-    if not (g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerForEvent(event))):
+    if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerForEvent(event))):
         abort(403)
 
     eventRsvpData = list(EventRsvp.select().where(EventRsvp.event==event))
