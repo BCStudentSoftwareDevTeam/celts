@@ -58,7 +58,7 @@ def templateSelect():
 
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
 def createEvent(templateid, programid):
-    if not (g.current_user.isAdmin or g.current_user.isCeltsStudentAdmin or g.current_user.isProgramManagerFor(programid)):
+    if not (g.current_user.isAdmin or g.current_user.isProgramManagerFor(programid)):
         abort(403)
 
     # Validate given URL
@@ -143,7 +143,7 @@ def rsvpLogDisplay(eventId):
     eventData = model_to_dict(event, recurse=False)
     eventData['program'] = event.program
     isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
-    if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager):
+    if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager):
         allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
         return render_template("/events/rsvpLog.html",
                                 event = event,
@@ -168,7 +168,7 @@ def eventDisplay(eventId):
         print(f"Unknown event: {eventId}")
         abort(404)
 
-    notPermitted = not (g.current_user.isCeltsAdmin or g.current_user.isProgramManagerForEvent(event))
+    notPermitted = not (g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentAdmin or g.current_user.isProgramManagerForEvent(event))
     if 'edit' in request.url_rule.rule and notPermitted:
         abort(403)
 
@@ -267,7 +267,7 @@ def eventDisplay(eventId):
 
 @admin_bp.route('/event/<eventId>/cancel', methods=['POST'])
 def cancelRoute(eventId):
-    if g.current_user.isAdmin or g.current_user.isCeltsStudentAdmin:
+    if g.current_user.isAdmin:
         try:
             cancelEvent(eventId)
             return redirect(request.referrer)
@@ -329,7 +329,7 @@ def userProfile():
 
 @admin_bp.route('/search_student', methods=['GET'])
 def studentSearchPage():
-    if g.current_user.isAdmin or g.current_user.isCeltsStudentAdmin:
+    if g.current_user.isAdmin:
         return render_template("/admin/searchStudentPage.html")
     abort(403)
 

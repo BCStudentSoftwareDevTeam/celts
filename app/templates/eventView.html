@@ -26,7 +26,7 @@
                 {% set fullWidthTitle = not (g.current_user.isAdmin or image) %}
                 <div class="{{ 'col-md-12' if fullWidthTitle else 'col-md-6'}}">
 
-                    {%if not g.current_user.isAdmin or not g.current_user.isCeltsStudentAdmin %}
+                    {%if not g.current_user.isAdmin %}
                         {{ eventheader(eventData.name, eventData, 'small', isNewEvent) }}
                     {% endif %}
 

@@ -72,7 +72,7 @@ def removeProgramManagers():
 def updateProgramInfo(programID):
     """Grabs info and then outputs it to logic function"""
     programInfo = request.form # grabs user inputs
-    if g.current_user.isCeltsAdmin:
+    if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentAdmin:
         try:
             changeProgramInfo(programInfo["programName"],  #calls logic function to add data to database
                                     programInfo["contactEmail"],
@@ -94,7 +94,7 @@ def userManagement():
     current_programs = Program.select()
     currentAdmins = list(User.select().where(User.isCeltsAdmin))
     currentStudentStaff = list(User.select().where(User.isCeltsStudentStaff))
-    if g.current_user.isCeltsAdmin:
+    if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentAdmin:
         return render_template('admin/userManagement.html',
                                 terms = terms,
                                 programs = list(current_programs),

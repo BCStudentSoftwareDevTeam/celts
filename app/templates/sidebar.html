@@ -18,7 +18,7 @@
         </a>
       </li>
 
-      {% if g.current_user.isFaculty and not g.current_user.isAdmin and not g.current_user.isCeltsStudentAdmin %}
+      {% if g.current_user.isFaculty and not g.current_user.isAdmin %}
       <li>
         <a href="/serviceLearning/courseManagement" class="nav-link text-white {{'active' if request.path =='/serviceLearning/courseManagement'}}" {{"aria-current='page'" if request.path =='/serviceLearning/courseManagement'}}>
           Course Proposals
@@ -26,7 +26,7 @@
       </li>
       {% endif %}
 
-      {% if g.current_user.isAdmin or g.current_user.isCeltsStudentAdmin %}
+      {% if g.current_user.isAdmin %}
       <li>
         <a href="/eventTemplates" class="nav-link text-white {{'active' if 'eventTemplates' in request.path}}" {{"aria-current='page'" if 'eventTemplates' in request.path}}>
           Create Event
@@ -45,7 +45,7 @@
         {% endif %}
       </li>
       <li>
-        {% if g.current_user.isCeltsAdmin %}
+        {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentAdmin %}
         <nav class="navbar navbar-dark bg-dark">
           <div class="container-fluid">
             <button class="navbar-toggler text-white border-0 fs-6 ps-3 dropdown-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false"
@@ -56,18 +56,23 @@
         </nav>
         <div class="{{ 'collapse-show' if request.path in ['/adminLogs','/manageServiceLearning','/admin','/courseManagement','/manageBonner'] else 'collapse'}}" id="navbarToggleExternalContent">
           <div class="bg-dark ps-3">
-            <a href="/adminLogs" class="nav-link text-white {{ 'active' if request.path =='/adminLogs' }}">
-              Activity Logs
-            </a>
+            {% if g.current_user.isCeltsAdmin and not g.current_user.isCeltsStudentAdmin %}
+              <a href="/adminLogs" class="nav-link text-white {{ 'active' if request.path =='/adminLogs' }}">
+                Activity Logs
+              </a>
+            {% endif %}
             <a href="/admin" class="nav-link text-white {{'active' if request.path =='/admin'}}" {{"aria-current='page'" if request.path =='/admin'}}>
               Settings
             </a>
-            <a href="/manageServiceLearning" class="nav-link text-white {{ 'active' if request.path =='/manageServiceLearning' }}">
-              Course Management
-            </a>
-            <a href="/manageBonner" class="nav-link text-white {{ 'active' if request.path =='/manageBonner' }}">
-              Bonner Management
-            </a>
+            {% if g.current_user.isCeltsAdmin and not g.current_user.isCeltsStudentAdmin %}
+
+              <a href="/manageServiceLearning" class="nav-link text-white {{ 'active' if request.path =='/manageServiceLearning' }}">
+                Course Management
+              </a>
+              <a href="/manageBonner" class="nav-link text-white {{ 'active' if request.path =='/manageBonner' }}">
+                Bonner Management
+              </a>
+              {% endif %}
           </div>
         </div>
         {% endif %}

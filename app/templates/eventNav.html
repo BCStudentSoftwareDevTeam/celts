@@ -15,7 +15,7 @@
 {% block app_content %}
     {% block content_pageHeading %}
     <div class="text-center">
-        {% if g.current_user.isAdmin or g.current_user.isCeltsStudentAdmin %}
+        {% if g.current_user.isAdmin %}
             {{ eventheader(page_title, eventData, 'large', isNewEvent) }}
         {% endif %}
         {% set alertClass = "alert-danger" if eventPast else "alert-warning"%}
@@ -33,7 +33,7 @@
     {% endblock %}
 
     {% block navbar %}
-        {% if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerFor(eventData['program'])) %}
+        {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerFor(eventData['program'])) %}
 
         <div class="btn-group">
             <ul class="nav nav-tabs nav-fill mx-3 mb-3" id="pills-tab" role="tablist">
