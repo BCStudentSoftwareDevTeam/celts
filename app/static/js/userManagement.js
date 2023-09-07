@@ -9,7 +9,7 @@ function callbackStudentStaff(selected){
 $(document).ready(function(){
   // Admin Management
   $("#searchCeltsAdminInput").on("input", function(){
-      searchUser("searchCeltsAdminInput", callbackAdmin, false, null, "instructor")
+      searchUser("searchCeltsAdminInput", callbackAdmin, false, null, "celtsLinkAdmin")
   });
   $("#searchCeltsStudentStaffInput").on("input", function(){
       searchUser("searchCeltsStudentStaffInput", callbackStudentStaff, false, null, "student")
