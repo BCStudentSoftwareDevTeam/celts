@@ -23,29 +23,29 @@ def manageUsers():
         return ("danger", 500)
 
     if method == "addCeltsAdmin":
-        if user.isStudent:
-            flash(user.firstName + " " + user.lastName + " cannot be added as a Celts admin", 'danger')
+        if user.isStudent and not user.isCeltsStudentStaff: 
+            flash(user.firstName + " " + user.lastName + " cannot be added as a CELTS-Link admin", 'danger')
         else:
             if user.isCeltsAdmin:
-                flash(user.firstName + " " + user.lastName + " is already a Celts Admin", 'danger')
-            else:
+                flash(user.firstName + " " + user.lastName + " is already a CELTS-Link Admin", 'danger')
+            else: 
                 addCeltsAdmin(user)
-                flash(user.firstName + " " + user.lastName + " has been added as a Celts Admin", 'success')
+                flash(user.firstName + " " + user.lastName + " has been added as a CELTS-Link Admin", 'success')
     elif method == "addCeltsStudentStaff":
         if not user.isStudent:
-            flash(username + " cannot be added as Celts Student Staff", 'danger')
+            flash(username + " cannot be added as CELTS Student Staff", 'danger')
         else:
             if user.isCeltsStudentStaff:
-                flash(user.firstName + " " + user.lastName + " is already a Celts Student Staff", 'danger')
+                flash(user.firstName + " " + user.lastName + " is already a CELTS Student Staff", 'danger')
             else:
                 addCeltsStudentStaff(user)
-                flash(user.firstName + " " + user.lastName + " has been added as a Celts Student Staff", 'success')
+                flash(user.firstName + " " + user.lastName + " has been added as a CELTS Student Staff", 'success')
     elif method == "removeCeltsAdmin":
         removeCeltsAdmin(user)
-        flash(user.firstName + " " + user.lastName + " is no longer a Celts Admin ", 'success')
+        flash(user.firstName + " " + user.lastName + " is no longer a CELTS Admin ", 'success')
     elif method == "removeCeltsStudentStaff":
         removeCeltsStudentStaff(user)
-        flash(user.firstName + " " + user.lastName + " is no longer a Celts Student Staff", 'success')
+        flash(user.firstName + " " + user.lastName + " is no longer a CELTS Student Staff", 'success')
     return ("success")
 
 @admin_bp.route('/addProgramManagers', methods=['POST'])
@@ -75,10 +75,10 @@ def updateProgramInfo(programID):
     if g.current_user.isCeltsAdmin:
         try:
             changeProgramInfo(programInfo["programName"],  #calls logic function to add data to database
-                                    programInfo["contactEmail"],
-                                    programInfo["contactName"],
-                                    programInfo["location"],
-                                    programID)
+                              programInfo["contactEmail"],
+                              programInfo["contactName"],
+                              programInfo["location"],
+                              programID)
 
             flash("Program updated", "success")
             return redirect(url_for("admin.userManagement", accordion="program"))
