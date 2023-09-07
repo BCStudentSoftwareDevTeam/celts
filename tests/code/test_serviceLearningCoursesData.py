@@ -15,7 +15,7 @@ from app.models.questionNote import QuestionNote
 from app.models.note import Note
 
 from app.logic.serviceLearningCoursesData import withdrawProposal, renewProposal, getServiceLearningCoursesData
-from app.logic.manageSLFaculty import getCourseDict
+from app.logic.manageSLFaculty import getInstructorCourses
 @pytest.mark.integration
 def test_getServiceLearningCoursesData():
     '''tests for the successful implementation of populating the proposal table'''
@@ -154,11 +154,11 @@ def test_renewProposal():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_getCourseDict():
+def test_getInstructorCourses():
     """
     This test is to get the faculty intructors and check their previous courses they taught
     """
-    courseDict = getCourseDict()
+    courseDict = getInstructorCourses()
     currentFaculty = User.get_by_id("ramsayb2")
     currentFacultyCourses = courseDict[currentFaculty]
     assert 'Spanish Help' in currentFacultyCourses

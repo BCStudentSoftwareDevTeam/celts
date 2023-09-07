@@ -31,7 +31,7 @@ def trainedParticipants(programID, targetTerm):
                              .join(EventParticipant)
                              .where(EventParticipant.event.in_(allTrainings))
                              .group_by(EventParticipant.user)
-                             .having(fn.Count(EventParticipant.user) == len(allTrainings)))
+                             .having(fn.Count(EventParticipant.user) == len(allTrainings)).order_by(User.username))
 
     return list(fullyTrainedUsers)
 

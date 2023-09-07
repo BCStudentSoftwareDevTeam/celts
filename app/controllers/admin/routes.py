@@ -17,18 +17,22 @@ from app.models.attachmentUpload import AttachmentUpload
 from app.models.bonnerCohort import BonnerCohort
 from app.models.certification import Certification
 from app.models.user import User
+from app.models.term import Term
 from app.models.eventViews import EventView
+from app.models.courseStatus import CourseStatus
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createAdminLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
-from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
+from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
 from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm
 from app.logic.participants import getEventParticipants, getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
-from app.logic.serviceLearningCoursesData import parseUploadedFile, courseParticipantPreviewSessionCleaner
+from app.logic.manageSLFaculty import getInstructorCourses
+from app.logic.courseManagement import unapprovedCourses, approvedCourses
+from app.logic.serviceLearningCoursesData import parseUploadedFile, saveCourseParticipantsToDatabase
 
 
 
@@ -361,14 +365,42 @@ def addCourseFile():
     fileData = request.files['addCourseParticipants']
     filePath = os.path.join(app.config["files"]["base_path"], fileData.filename)
     fileData.save(filePath)
-    (session['errorFlag'], session['courseParticipantPreview'], session['previewCourseDisplayList']) = parseUploadedFile(filePath)
+    (session['cpPreview'], session['cpErrors']) = parseUploadedFile(filePath)
     os.remove(filePath)
-    return redirect(url_for("main.getAllCourseInstructors", showPreviewModal = True))
+    return redirect(url_for("admin.manageServiceLearningCourses"))
+
+@admin_bp.route('/manageServiceLearning', methods = ['GET', 'POST'])
+@admin_bp.route('/manageServiceLearning/<term>', methods = ['GET', 'POST'])
+def manageServiceLearningCourses(term=None):
+    """
+    The SLC management page for admins
+    """
+    if not g.current_user.isCeltsAdmin:
+        abort(403) 
+
+    if request.method =='POST' and "submitParticipant" in request.form:
+        saveCourseParticipantsToDatabase(session.pop('cpPreview', {}))
+        flash('Courses and participants saved successfully!', 'success')
+        return redirect(url_for('admin.manageServiceLearningCourses'))
+
+    manageTerm = Term.get_or_none(Term.id == term) or g.current_term
+
+    setRedirectTarget(request.full_path)
+
+    return render_template('/admin/manageServiceLearningFaculty.html',
+                            courseInstructors = getInstructorCourses(),
+                            unapprovedCourses = unapprovedCourses(term),
+                            approvedCourses = approvedCourses(term),
+                            terms = selectSurroundingTerms(g.current_term),
+                            term = manageTerm,
+                            cpPreview= session.get('cpPreview',{}),
+                            cpPreviewErrors = session.get('cpErrors',[])
+                           )
 
 @admin_bp.route("/deleteUploadedFile", methods= ["POST"])
-def deleteCourseFile():
+def removeFromSession():
     try:
-        courseParticipantPreviewSessionCleaner()
+        session.pop('cpPreview')
     except KeyError:
         pass
 

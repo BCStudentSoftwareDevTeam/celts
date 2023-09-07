@@ -1,7 +1,10 @@
-import collections.abc as collections
-from peewee import DoesNotExist
-from app.models.term import Term
 from datetime import datetime
+import collections.abc as collections
+
+from flask import session
+from peewee import DoesNotExist
+
+from app.models.term import Term
 
 def selectSurroundingTerms(currentTerm, prevTerms=2):
     """
@@ -52,3 +55,31 @@ def getFilesFromRequest(request):
         attachmentFiles = None
 
     return attachmentFiles
+
+def getRedirectTarget(popTarget=False):
+    """
+    This function returns a string with the URL or route to a page in the Application
+        saved with setRedirectTarget() and is able to pop the value from the session
+        to make it an empty value
+    popTarget: expects a bool value to determine whether or not to reset
+                redirectTarget to an emtpy value
+    return: a string with the URL or route to a page in the application that was
+            saved in setRedirectTarget()
+    """
+    if "redirectTarget" not in session:
+        return ''
+
+    target = session["redirectTarget"]
+    if popTarget:
+        session.pop("redirectTarget")
+    return target
+
+def setRedirectTarget(target):
+    """
+    This function saves the target URL in the session for future redirection
+        to said page
+    target: expects a string that is a URL or a route to a page in the application
+    return: None
+    """
+    session["redirectTarget"] = target
+
