@@ -68,7 +68,7 @@
                                 {% if userHasRSVPed %}
                                     <button type="submit" class="btn btn-danger" value="{{eventData.id}}" id="removeRsvpBtn">Remove RSVP</button>
                                 {% elif eventData.isRsvpRequired %}
-                                    {% set buttonName = "Join Waitlist" if (eventData.rsvpLimit) and (currentEventRsvpAmount[eventData.id] >= eventData.rsvpLimit) else "RSVP" %}
+                                    {% set buttonName = "Join Waitlist" if (eventData.rsvpLimit is not none) and (currentEventRsvpAmount[eventData.id] >= eventData.rsvpLimit) else "RSVP" %}
                                     <button type="submit" class="btn btn-primary" value="{{eventData.id}}" id="rsvpBtn">{{buttonName}}</button>
                                 {% endif %}
                             {% endif %}
@@ -122,7 +122,7 @@
                 <div class="col-md-6">
                     {% if eventData.contactName and eventData.contactEmail %}
                         <h3>Contact Information:</h3>
-                        <div>{{eventData.contactName}} - <a href="mailto:{{eventData.contactEmail}}" class="text-dark">{{eventData.contactEmail}}</a></div>
+                        <div>{{eventData.contactName}} - <a href="mailto:{{eventData.contactEmail}}" target="_blank" class="text-dark">{{eventData.contactEmail}}</a></div>
                     {% endif %}
                     <br>
                 </div>

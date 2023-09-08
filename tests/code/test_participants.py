@@ -254,7 +254,7 @@ def test_trainedParticipants():
         EventParticipant.create(user = neillz, event=Event.get_by_id(hungerInitiativesTraining))
         EventParticipant.create(user = ayisie, event=Event.get_by_id(hungerInitiativesTraining))
         attendedPreq = trainedParticipants(1, currentTerm)
-        assert attendedPreq == [neillz, ayisie]
+        assert attendedPreq == [ayisie,neillz]
         
         # Manually remove all relevant participant records to make sure they are not being taken into account for the next test. 
         (EventParticipant.delete().where(EventParticipant.user== neillz, EventParticipant.event==hungerInitiativesTraining.id).execute())
@@ -268,7 +268,7 @@ def test_trainedParticipants():
         # terms is the all volunteer training. 
         currentTerm = Term.get_by_id(2)
         attendedPreq = trainedParticipants(1, currentTerm)
-        assert attendedPreq == [neillz, khatts, ayisie]
+        assert attendedPreq == [ayisie, khatts, neillz]
 
         # Case9: Set currentTerm to a future term that is in a different academic year and verify that nobody 
         # meets the requirements to attend and event from program 1. 

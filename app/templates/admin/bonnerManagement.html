@@ -134,6 +134,9 @@
                     <tr><th></th><th>Requirement Name</th> <th>Necessity</th> <th>Frequency</th> <th></th></tr>
                 </thead>
                 <tbody>
+                {% if not requirements|count %}
+                    {% set requirements = [{'id':'X','name':"",'isRequired':false,'frequency':''}] %}
+                {% endif %}
                 {% for req in requirements %}
                     <tr data-id="{{req.id}}">
                         <td class="align-middle drag-handle"><img src="static/drag-handle.jpg" width=24 height=24  /></td>
