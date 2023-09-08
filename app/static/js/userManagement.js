@@ -4,7 +4,6 @@ function callbackAdmin(selected){
     submitRequest("addCeltsAdmin", selected.username)
 }
 function callbackStudentStaff(selected){
-    console.log("====")
     submitRequest("addCeltsStudentStaff", selected.username)
 }
 function callbackStudentAdmin(selected){
