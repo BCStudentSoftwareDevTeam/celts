@@ -3,7 +3,7 @@ import re
 from app.controllers.admin import admin_bp
 from app.models.user import User
 from app.models.program import Program
-from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,removeCeltsAdmin,removeCeltsStudentStaff
+from app.logic.userManagement import addCeltsAdmin,addCeltsStudentStaff,addCeltsStudentAdmin ,removeCeltsAdmin,removeCeltsStudentStaff, removeCeltsStudentAdmin
 from app.logic.userManagement import changeProgramInfo
 from app.logic.utils import selectSurroundingTerms
 from app.logic.term import addNextTerm, changeCurrentTerm
@@ -40,12 +40,24 @@ def manageUsers():
             else:
                 addCeltsStudentStaff(user)
                 flash(user.firstName + " " + user.lastName + " has been added as a CELTS Student Staff", 'success')
+    elif method == "addCeltsStudentAdmin":
+        if not user.isStudent:
+            flash(username + " cannot be added as CELTS Student Admin", 'danger')
+        else:
+            if user.isCeltsStudentAdmin:
+                flash(user.firstName + " " + user.lastName + " is already a CELTS Student Admin", 'danger')
+            else:
+                addCeltsStudentAdmin(user)
+                flash(user.firstName + " " + user.lastName + " has been added as a CELTS Student Admin", 'success')
     elif method == "removeCeltsAdmin":
         removeCeltsAdmin(user)
         flash(user.firstName + " " + user.lastName + " is no longer a CELTS Admin ", 'success')
     elif method == "removeCeltsStudentStaff":
         removeCeltsStudentStaff(user)
         flash(user.firstName + " " + user.lastName + " is no longer a CELTS Student Staff", 'success')
+    elif method == "removeCeltsStudentAdmin":
+        removeCeltsStudentAdmin(user)
+        flash(user.firstName + " " + user.lastName + " is no longer a CELTS Student Admin", 'success')
     return ("success")
 
 @admin_bp.route('/addProgramManagers', methods=['POST'])
@@ -94,12 +106,14 @@ def userManagement():
     current_programs = Program.select()
     currentAdmins = list(User.select().where(User.isCeltsAdmin))
     currentStudentStaff = list(User.select().where(User.isCeltsStudentStaff))
+    currentStudentAdmin = list(User.select().where(User.isCeltsStudentAdmin))
     if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentAdmin:
         return render_template('admin/userManagement.html',
                                 terms = terms,
                                 programs = list(current_programs),
                                 currentAdmins = currentAdmins,
                                 currentStudentStaff = currentStudentStaff,
+                                currentStudentAdmin = currentStudentAdmin,
                                 )
     abort(403)
 

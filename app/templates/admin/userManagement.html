@@ -29,7 +29,7 @@
       <div id="collapseOne" class="accordion-collapse collapse {{show}}" aria-labelledby="headingOne" data-bs-parent="#adminManagement">
         <div class="accordion-body">
           <div class="container-fluid col-10">
-            <div class="row d-flex justify-content-center mb-3">
+            <div class="row d-flex mb-3">
               <div class="col-md-6 mb-3">
                 <div>
                   {{createInputsButtons("searchCeltsAdminInput", "Add Celts Admin")}}<br>
@@ -71,6 +71,29 @@
                   </tbody>
                 </table>
               </div>
+
+              <div class="col-md-6 mb-3">
+                <div>
+                  {{createInputsButtons("searchCeltsStudentAdminInput", "Add Celts Student Admin")}}<br>
+                </div>
+                <table class="table mb-3">
+                  <thead>
+                    <tr>
+                      <th colspan="2" scope="col">Current Student Admin</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for studentAdmin in currentStudentAdmin %}
+                      <tr>
+                        <td id="{{studentAdmin.username}}">{{studentAdmin.firstName}} {{studentAdmin.lastName}}</td>
+                        <td><button data-username="{{studentAdmin.username}}" type="button" class="btn btn-danger view removeStudentAdmin">Remove</button></td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+
+
             </div>
           </div>
         </div>
