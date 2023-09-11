@@ -81,7 +81,7 @@ $(document).ready(function(e) {
   });
 
   $("#saveContinue").on("click", function() {
-    
+
       if(readOnly()) {
           let allTabs = $(".tab");
           displayCorrectTab(1)
@@ -121,7 +121,7 @@ $(document).ready(function(e) {
   // -----------------------------------------
       $("#instructorTable").on("click", "#remove", function() {
         let closestRow =  $(this).closest("tr")
-        $("#instructorTableNames input[value="+closestRow.data('username')+"]").remove()
+        let username = closestRow.data('username');
         closestRow.remove();
       });
       $("#courseInstructor").on('input', function() {
@@ -381,6 +381,3 @@ textareas.each(function(index, textarea){
   const initialWordCount = calculateCountWords($(textarea).val());
   $(slcQuestionWordCount[index]).html(initialWordCount);
 });
-
-
-
