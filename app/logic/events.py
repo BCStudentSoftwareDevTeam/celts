@@ -206,8 +206,7 @@ def getUpcomingStudentLedCount(term, currentTime):
                             .join(Event, on=(Program.id == Event.program_id))
                             .where(Program.isStudentLed,
                                     Event.term == term,
-                                    Event.endDate >= currentTime,
-                                    Event.timeEnd >= currentTime,
+                                    (Event.endDate > currentTime) | ((Event.endDate == currentTime) & (Event.timeEnd >= currentTime)),
                                     Event.isCanceled == False)
                             .group_by(Program.id))
     
@@ -215,7 +214,6 @@ def getUpcomingStudentLedCount(term, currentTime):
 
     for programCount in upcomingCount:
         programCountDict[programCount.id] = programCount.eventCount
-
     return programCountDict
 
 def getTrainingEvents(term, user):
