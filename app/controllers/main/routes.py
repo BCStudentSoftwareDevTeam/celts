@@ -192,10 +192,8 @@ def emergencyContactInfo(username):
         if g.current_user.username != username:
             abort(403)
 
-        contactInfo = EmergencyContact.get_or_none(EmergencyContact.user_id == username)
-        if contactInfo:
-            contactInfo.update(**request.form).execute()
-        else:
+        rowsUpdated = EmergencyContact.update(**request.form).where(EmergencyContact.user == username).execute()
+        if not rowsUpdated:
             EmergencyContact.create(user = username, **request.form)
         createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
         flash('Emergency contact information saved successfully!', 'success') 
