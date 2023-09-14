@@ -121,7 +121,6 @@ $(document).ready(function(e) {
   // -----------------------------------------
       $("#instructorTable").on("click", "#remove", function() {
         let closestRow =  $(this).closest("tr")
-        let username = closestRow.data('username');
         closestRow.remove();
       });
       $("#courseInstructor").on('input', function() {
