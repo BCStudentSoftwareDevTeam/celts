@@ -239,7 +239,11 @@
             </div>
             <div class="col-md-6">
               <h5>{{volunteer.firstName}} {{volunteer.lastName}} CELTS Labor History:</h5>
-              
+              {% if laborInfo %}
+                <p>{{laborInfo["positionTitle"]}} {{laborInfo["termName"]}}</p>
+              {% else %}
+                <p>{{volunteer.firstName}} {{volunteer.lastName}} has not CELTS Labor History.</p>
+              {% endif %}
             </div>
           </div>
         </div>
