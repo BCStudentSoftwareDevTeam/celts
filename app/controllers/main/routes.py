@@ -62,20 +62,20 @@ def events(selectedTerm, activeTab, programID):
     if selectedTerm:
         currentTerm = selectedTerm
     currentTime = datetime.datetime.now()
-    
+
     listOfTerms = Term.select()
     participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
-    term = Term.get_by_id(currentTerm) 
-    
+    term = Term.get_by_id(currentTerm)
+
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     studentLedEvents = getStudentLedEvents(term)
     countUpcomingStudentLedEvents = getUpcomingStudentLedCount(term, currentTime)
     trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
-    
+
     managersProgramDict = getManagerProgramDict(g.current_user)
 
     return render_template("/events/event_list.html",
@@ -96,19 +96,36 @@ def events(selectedTerm, activeTab, programID):
                             )
 
 @main_bp.route('/profile/<username>', methods=['GET'])
-def viewUsersProfile(username):
+def viewUsersProfile(username=None, firstName=None):
     """
     This function displays the information of a volunteer to the user
     """
-    try:
-        volunteer = User.get(User.username == username)
-    except Exception as e:
-        if g.current_user.isAdmin:
-            flash(f"{username} does not exist! ", category='danger')
+    if username:
+        # Handle the case when a username is provided
+        try:
+            volunteer = User.get(User.username == username)
+        except User.DoesNotExist:
+            flash(f"{username} does not exist!", category='danger')
             return redirect(url_for('admin.studentSearchPage'))
-        else:
-            abort(403)  # Error 403 if non admin/student-staff user trys to access via url
-
+        except Exception as e:
+            if g.current_user.isAdmin:
+                flash(f"{username} does not exist! ", category='danger')
+                return redirect(url_for('admin.studentSearchPage'))
+            else:
+                abort(403)  # Error 403 if non admin/student-staff user trys to access via url
+    elif firstName:
+    # Handle the case when a firstName is provided
+        try:
+            volunteer = User.get(User.firstName == firstName)
+        except User.DoesNotExist:
+            flash(f"User with firstName {firstName} does not exist!", category='danger')
+            return redirect(url_for('admin.studentSearchPage'))
+        except Exception as e:
+            if g.current_user.isAdmin:
+                flash(f"{firstName} does not exist! ", category='danger')
+                return redirect(url_for('admin.studentSearchPage'))
+            else:
+                abort(403)
     if (g.current_user == volunteer) or g.current_user.isAdmin:
         upcomingEvents = getUpcomingEventsForUser(volunteer)
         participatedEvents = getParticipatedEventsForUser(volunteer)
@@ -135,7 +152,7 @@ def viewUsersProfile(username):
                                            ProgramBan.program == program,
                                            ProgramBan.endDate > datetime.datetime.now()).execute())
             userParticipatedTrainingEvents = getParticipationStatusForTrainings(program, [volunteer], g.current_term)
-            try: 
+            try:
                 allTrainingsComplete = False not in [attended for event, attended in userParticipatedTrainingEvents[username]] # Did volunteer attend all events
             except KeyError:
                 allTrainingsComplete = False
@@ -166,7 +183,7 @@ def viewUsersProfile(username):
                                 currentDateTime = datetime.datetime.now(),
                                 profileNotes = profileNotes,
                                 bonnerRequirements = bonnerRequirements,
-                                managersList = managersList                
+                                managersList = managersList
                             )
     abort(403)
 
@@ -187,7 +204,7 @@ def emergencyContactInfo(username):
                                 contactInfo=contactInfo,
                                 readOnly=readOnly
                                 )
-    
+
     elif request.method == 'POST':
         if g.current_user.username != username:
             abort(403)
@@ -198,8 +215,8 @@ def emergencyContactInfo(username):
         else:
             EmergencyContact.create(user = username, **request.form)
         createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
-        flash('Emergency contact information saved successfully!', 'success') 
-        
+        flash('Emergency contact information saved successfully!', 'success')
+
         if request.args.get('action') == 'exit':
             return redirect (f"/profile/{username}")
         else:
@@ -233,7 +250,7 @@ def insuranceInfo(username):
         else:
             InsuranceInfo.create(user = username, **request.form)
         createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
-        flash('Insurance information saved successfully!', 'success') 
+        flash('Insurance information saved successfully!', 'success')
 
         if request.args.get('action') == 'exit':
             return redirect (f"/profile/{username}")
@@ -244,7 +261,7 @@ def insuranceInfo(username):
 def travelForm(username):
     if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
         abort(403)
-   
+
     user = (User.select(User, EmergencyContact, InsuranceInfo)
                 .join(EmergencyContact, JOIN.LEFT_OUTER).switch()
                 .join(InsuranceInfo, JOIN.LEFT_OUTER)
@@ -477,12 +494,12 @@ def getDietInfo():
     dietaryInfo = request.form
     user = dietaryInfo["user"]
     dietInfo = dietaryInfo["dietInfo"]
-    
+
     if (g.current_user.username == user) or g.current_user.isAdmin:
         updateDietInfo(user, dietInfo)
-        userInfo = User.get(User.username == user) 
+        userInfo = User.get(User.username == user)
         if len(dietInfo) > 0:
-            createAdminLog(f"Updated {userInfo.fullName}'s dietary restrictions to {dietInfo}.") if dietInfo.strip() else None 
+            createAdminLog(f"Updated {userInfo.fullName}'s dietary restrictions to {dietInfo}.") if dietInfo.strip() else None
         else:
             createAdminLog(f"Deleted all {userInfo.fullName}'s dietary restrictions dietary restrictions.")
 
