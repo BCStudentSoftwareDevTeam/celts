@@ -119,7 +119,7 @@ def test_getAllowedPrograms():
     with mainDB.atomic() as transaction:
         # checks the length of all programs an admin has access to and compares that to total programs
         allowedPrograms = len(getAllowedPrograms(User.get_by_id("ramsayb2")))
-        totalPrograms = Program.select().count()
+        totalPrograms = Program.select().count() 
         assert allowedPrograms == totalPrograms
 
         # creates program manager and checks the programs they can access

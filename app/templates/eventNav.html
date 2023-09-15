@@ -18,9 +18,17 @@
         {% if g.current_user.isAdmin %}
             {{ eventheader(page_title, eventData, 'large', isNewEvent) }}
         {% endif %}
-        {% if eventPast %}
-        <div class="alert-danger mb-2 pb-2 pt-2" role="alert">This event is in the past.</div>
+        {% set alertClass = "alert-danger" if eventPast else "alert-warning"%}
+        {% set display = "" if eventPast or eventData.isCanceled else "d-none"%}
+        <div class = "{{alertClass}} {{display}} mb-2 pb-2 pt-2" role="alert">
+        {% if eventPast and eventData.isCanceled %}
+            This is a past event and it was canceled.
+        {% elif eventPast %}
+            This is a past event.
+        {% elif eventData.isCanceled %}
+            This event has been canceled.
         {% endif %}
+        </div>
     </div>
     {% endblock %}
 
@@ -36,13 +44,11 @@
                     <a class="nav-link {{ 'active' if tabName == 'edit' }}" href="/event/{{eventData['id']}}/edit" role="tab" aria-selected="{{ 'true' if tabName == 'edit' else 'false'}}">Edit Event</a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link {{ 'active' if tabName == 'trackVolunteers' }}" href="/event/{{eventData['id']}}/track_volunteers" role="tab" aria-selected="{{ 'true' if tabName == 'trackVolunteers' else 'false'}}">Track Volunteers</a>
+                    <a class="nav-link {{ 'active' if tabName == 'manageVolunteers' }}" href="/event/{{eventData['id']}}/manage_volunteers" role="tab" aria-selected="{{ 'true' if tabName == 'manageVolunteers' else 'false'}}">Manage Volunteers</a>
                 </li>
-                {% if (eventData.isFoodProvided) %}
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link {{ 'active' if tabName == 'dietary' }}" href="/event/{{eventData['id']}}/dietary_restrictions" role="tab" aria-selected="{{ 'true' if tabName == 'dietary' else 'false'}}">Dietary Restrictions</a>
+                    <a class="nav-link {{ 'active' if tabName == 'details' }}" href="/event/{{eventData['id']}}/volunteer_details" role="tab" aria-selected="{{ 'true' if tabName == 'details' else 'false'}}">Volunteer Details</a>
                 </li>
-                {% endif %}
                 <li class="nav-item" role="presentation">
                     <a class="nav-link {{ 'active' if tabName == 'rsvpLog' }}" href="/event/{{eventData['id']}}/rsvp" role="tab" aria-selected="{{ 'true' if tabName == 'rsvpLog' else 'false'}}">RSVP Log</a>
                 </li>

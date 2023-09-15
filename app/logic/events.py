@@ -1,3 +1,4 @@
+from flask import  url_for
 from peewee import DoesNotExist, fn, JOIN
 from dateutil import parser
 from datetime import timedelta, date
@@ -20,6 +21,19 @@ from app.logic.createLogs import createAdminLog
 from app.logic.utils import format24HourTime
 from app.logic.fileHandler import FileHandler
 from app.logic.certification import updateCertRequirementForEvent
+
+def cancelEvent(eventId):
+    """
+    Cancels an event.
+    """
+    event = Event.get_or_none(Event.id == eventId)
+    if event: 
+        event.isCanceled = True
+        event.save()
+
+    program = event.program
+    createAdminLog(f"Canceled <a href= \"{url_for('admin.eventDisplay', eventId = event)}\" >{event.name}</a> for {program.programName}, which had a start date of {datetime.datetime.strftime(event.startDate, '%m/%d/%Y')}.")
+
 
 def deleteEvent(eventId):
     """
@@ -144,17 +158,18 @@ def saveEventToDb(newEventData):
                     "isRsvpRequired": newEventData['isRsvpRequired'],
                     "isService": newEventData['isService'],
                     "startDate": eventInstance['date'],
-                    "isAllVolunteerTraining": newEventData['isAllVolunteerTraining'],
                     "rsvpLimit": newEventData['rsvpLimit'],
                     "endDate": eventInstance['date'],
                     "contactEmail": newEventData['contactEmail'],
                     "contactName": newEventData['contactName']
                 }
 
-            # Create or update the event
+            # The three fields below are only relevant during event creation so we only set/change them when 
+            # it is a new event. 
             if isNewEvent:
                 eventData['program'] = newEventData['program']
                 eventData['recurringId'] = recurringSeriesId
+                eventData["isAllVolunteerTraining"] = newEventData['isAllVolunteerTraining']
                 eventRecord = Event.create(**eventData)
             else:
                 eventRecord = Event.get_by_id(newEventData['id'])
@@ -168,19 +183,38 @@ def saveEventToDb(newEventData):
     return eventRecords
 
 def getStudentLedEvents(term):
-
     studentLedEvents = list(Event.select(Event, Program)
-                             .join(Program)
-                             .where(Program.isStudentLed,
-                                    Event.term == term)
-                             .order_by(Event.startDate, Event.timeStart)
-                             .execute())
+                                 .join(Program)
+                                 .where(Program.isStudentLed,
+                                        Event.term == term)
+                                 .order_by(Event.startDate, Event.timeStart)
+                                 .execute())
+
     programs = {}
 
     for event in studentLedEvents:
         programs.setdefault(event.program, []).append(event)
 
     return programs
+
+def getUpcomingStudentLedCount(term, currentTime):
+    """
+        Return a count of all upcoming events for each student led program.
+    """
+    
+    upcomingCount = (Program.select(Program.id, fn.COUNT(Event.id).alias("eventCount"))
+                            .join(Event, on=(Program.id == Event.program_id))
+                            .where(Program.isStudentLed,
+                                    Event.term == term,
+                                    (Event.endDate > currentTime) | ((Event.endDate == currentTime) & (Event.timeEnd >= currentTime)),
+                                    Event.isCanceled == False)
+                            .group_by(Program.id))
+    
+    programCountDict = {}
+
+    for programCount in upcomingCount:
+        programCountDict[programCount.id] = programCount.eventCount
+    return programCountDict
 
 def getTrainingEvents(term, user):
     """
@@ -205,7 +239,6 @@ def getTrainingEvents(term, user):
     return list(trainingQuery.execute())
 
 def getBonnerEvents(term):
-
     bonnerScholarsEvents = list(Event.select(Event, Program.id.alias("program_id"))
                                      .join(Program)
                                      .where(Program.isBonnerScholars,
@@ -222,12 +255,13 @@ def getOtherEvents(term):
     """
     # Gets all events that are not associated with a program and are not trainings
     # Gets all events that have a program but don't fit anywhere
+    
     otherEvents = list(Event.select(Event, Program)
                             .join(Program, JOIN.LEFT_OUTER)
                             .where(Event.term == term,
                                    Event.isTraining == False,
                                    Event.isAllVolunteerTraining == False,
-                                   ((Event.program == None) |
+                                   ((Program.isOtherCeltsSponsored) |
                                    ((Program.isStudentLed == False) &
                                    (Program.isBonnerScholars == False))))
                             .order_by(Event.startDate, Event.timeStart, Event.id)
@@ -264,12 +298,13 @@ def getUpcomingEventsForUser(user, asOf=datetime.datetime.now(), program=None):
     # removes all recurring events except for the next upcoming one
     for event in events:
         if event.recurringId:
-            if event.recurringId not in shown_recurring_event_list:
-                events_list.append(event)
-                shown_recurring_event_list.append(event.recurringId)
-
+            if not event.isCanceled:
+                if event.recurringId not in shown_recurring_event_list:
+                    events_list.append(event)
+                    shown_recurring_event_list.append(event.recurringId)
         else:
-            events_list.append(event)
+            if not event.isCanceled:
+                events_list.append(event)
 
     return events_list
 

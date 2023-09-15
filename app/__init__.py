@@ -20,6 +20,7 @@ from app.models.term import Term
 from app.models.user import User
 
 from peewee import BaseQuery
+from flask import session
 if app.config['show_queries']:
     old_execute = BaseQuery.execute
     def new_execute(*args, **kwargs):
@@ -53,7 +54,6 @@ app.register_blueprint(serviceLearning_bp)
 def inject_environment():
     return dict( env=get_env() )
 
-from flask import session
 @app.before_request
 def queryCount():
     if session:

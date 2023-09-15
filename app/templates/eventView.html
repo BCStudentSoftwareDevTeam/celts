@@ -72,7 +72,7 @@
                                 {% if userHasRSVPed %}
                                     <button type="submit" class="btn btn-danger" value="{{eventData.id}}" id="removeRsvpBtn">Remove RSVP</button>
                                 {% elif eventData.isRsvpRequired %}
-                                    {% set buttonName = "Join Waitlist" if (eventData.rsvpLimit) and (currentEventRsvpAmount[eventData.id] >= eventData.rsvpLimit) else "RSVP" %}
+                                    {% set buttonName = "Join Waitlist" if (eventData.rsvpLimit is not none) and (currentEventRsvpAmount[eventData.id] >= eventData.rsvpLimit) else "RSVP" %}
                                     <button type="submit" class="btn btn-primary" value="{{eventData.id}}" id="rsvpBtn">{{buttonName}}</button>
                                 {% endif %}
                             {% endif %}
@@ -106,9 +106,9 @@
                     {% if eventData.recurringId %}
                         <p>This event is a recurring event.
                             {% if eventData.nextRecurringEvent %}
-                            The next event in the series occurs on <a href="/event/{{eventData.nextRecurringEvent.id}}/view"><b>{{eventData.nextRecurringEvent.startDate.strftime("%B %-d")}}.</b></a>
+                                The next event in the series occurs on <a href="/event/{{eventData.nextRecurringEvent.id}}/view"><b>{{eventData.nextRecurringEvent.startDate.strftime("%B %-d")}}.</b></a>
                             {% else %}
-                            <b>However, this is the last event in the series.</b>
+                                <b>However, this is the last event in the series.</b>
                             {% endif %}
                         </p>
                     {% endif %}
@@ -126,7 +126,7 @@
                 <div class="col-md-6">
                     {% if eventData.contactName and eventData.contactEmail %}
                         <h3>Contact Information:</h3>
-                        <div>{{eventData.contactName}} - {{eventData.contactEmail}}</div>
+                        <div>{{eventData.contactName}} - <a href="mailto:{{eventData.contactEmail}}" target="_blank" class="text-dark">{{eventData.contactEmail}}</a></div>
                     {% endif %}
                     <br>
                 </div>
@@ -134,16 +134,16 @@
                     {% if programTrainings %}
                         {% if program or not eventData.isAllVolunteerTraining %}
                             <h3>Program Trainings:</h3>
-                            {% for training, participated in programTrainings.items() %}
-                                {% if g.current_user.isCeltsAdmin %}
-                                <p>{{training}}</p>
-                                {% elif participated == 1 %}
-                                    <p><b>{{training}}</b>: Attended</p>
-                                {% elif participated == 0 %}
-                                    <p><b>{{training}}</b>: Not attended</p>
-                                {% else %}
-                                    <p><b>{{training}}</b>: Upcoming</p>
-                                {% endif%}
+                            {% for training, events in programTrainings.items() %}
+                                {% for eventObj, attended in events %}
+                                    {% if g.current_user.isCeltsAdmin %}
+                                        <p>{{eventObj.name}}</p>
+                                    {% elif attended %}
+                                        <p><b>{{eventObj.name}}</b>: Attended</p>
+                                    {% else %}
+                                        <p><b>{{eventObj.name}}</b>: Not attended</p>
+                                    {% endif%}
+                                {% endfor %}
                             {% endfor %}
                         {% endif %}
                     {% endif %}
