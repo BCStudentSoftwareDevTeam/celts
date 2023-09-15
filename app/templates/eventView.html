@@ -7,10 +7,13 @@
 {% block scripts %}
     {{super()}}
     <script src="/static/js/event_list.js"></script>
+    <script var eventDate = "{{ event_date }}";></script>
+    
 {% endblock %}
 
 {% block app_content %}
    {{super()}}
+    <div class="text-center" ></div>
     <div class="container-fluid">
             <div class="row">
                 {% if image %}
@@ -41,6 +44,7 @@
                         <div>
                             <h5 id="date" style="margin: 0;"> Date:</h5>
                             <p style="margin: 0;">{{event_date}}</p>
+                            <p id="countdown" style="margin: 0;">Event is happening <span id="countdown-text"></span></p>            
                         </div>    
                     </div>
                     <br>

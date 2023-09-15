@@ -32,7 +32,7 @@ function rsvpForEvent(eventID){
               from: 'ajax'}
 
   $.ajax({
-    url: "/rsvpForEvent",
+    url: "/rsvpForEvent",   
     type: "POST",
     data: rsvpInfo,
     success: function(s){
@@ -62,5 +62,33 @@ function removeRsvpForEvent(eventID){
   })
 }
 
+  // Calculate and update the countdown
+  function updateCountdown(eventDate) {
+      var now = new Date();
+      var eventTime = new Date(eventDate);
+      var timeRemaining = eventTime - now;
 
+      if (timeRemaining > 0) {
+          var days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+          var hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          var minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+          var seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+          var countdownText = days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+          $("#countdown-text").text(countdownText);
+      } else {
+          $("#countdown-text").text("now!");
+      }
+  }
+
+  // Set the event date (replace this with your actual event date)
+  var eventDate = new Date("2023-12-31T00:00:00Z"); // Replace with your event date
+ 
+  // Initial update
+  updateCountdown(eventDate);
+
+  // Update the countdown every second
+  setInterval(function() {
+      updateCountdown(eventDate);
+  }, 1000)
 
