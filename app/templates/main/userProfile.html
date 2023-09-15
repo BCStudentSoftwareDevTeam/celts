@@ -240,7 +240,9 @@
             <div class="col-md-6">
               <h5>{{volunteer.firstName}} {{volunteer.lastName}} CELTS Labor History:</h5>
               {% if laborInfo %}
-                <p>{{laborInfo["positionTitle"]}} {{laborInfo["termName"]}}</p>
+                {% for position, term in laborInfo.items() %}
+                  <p>{{position}}: {{term|join(", ")}}</p>
+                {% endfor %}
               {% else %}
                 <p>{{volunteer.firstName}} {{volunteer.lastName}} has not CELTS Labor History.</p>
               {% endif %}
