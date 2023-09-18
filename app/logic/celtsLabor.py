@@ -1,4 +1,5 @@
 import requests
+import json
 
 def callLsfApi(bNumber):
     """
@@ -19,11 +20,12 @@ def callLsfApi(bNumber):
             "termCode":201611,
             "termName":"Fall 2016","wls":"5"}]
     """
-
-    lsfUrl = f"http://172.31.2.114:8080/api/usr/{bNumber}"
-    response = requests.get(lsfUrl)
-    return(response.json())
-
+    try: 
+        lsfUrl = f"http://172.31.2.114:8080/api/usr/{bNumber}"
+        response = requests.get(lsfUrl)
+        return(response.json())
+    except json.decoder.JSONDecodeError: 
+        return {}
 
 def getPositionAndTerm(user):
     studentLabor = callLsfApi(user.bnumber)

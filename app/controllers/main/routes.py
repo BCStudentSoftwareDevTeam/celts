@@ -153,7 +153,9 @@ def viewUsersProfile(username):
         managersProgramDict = getManagerProgramDict(g.current_user)
         managersList = [id[1] for id in managersProgramDict.items()]
         
-        laborInfo = getPositionAndTerm(volunteer)
+        laborInfo = {}
+        if volunteer.isCeltsStudentStaff: 
+            laborInfo = getPositionAndTerm(volunteer)
         return render_template ("/main/userProfile.html",
                                 programs = programs,
                                 programsInterested = programsInterested,
