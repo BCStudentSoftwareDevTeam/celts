@@ -1,7 +1,5 @@
 import requests
 
-from app.models.user import User
-
 def callLsfApi(bNumber):
     """
     Make a call to the LSF endpoint which returns every students labor info. 
