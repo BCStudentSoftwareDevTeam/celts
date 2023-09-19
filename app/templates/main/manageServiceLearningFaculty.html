@@ -117,6 +117,41 @@
         </tbody>
       </table>
       {% endif %}
+      <!-- Beans: IMPORTED COURSES -->
+      <h2>Imported</h2>
+      {% if importedCourses | length == 0 %}
+      <h5 class="ms-3">There are no approved courses for {{ term.description }}.</h5>
+      {% else %}
+      <table class="table table-striped border">
+        <thead>
+          <tr>
+            <th class="col-md-1" scope="col">Courses</th>
+            <th class="col-md-1" scope="col">Faculty</th>
+            <th class="col-md-1" scope="col">Status</th>
+            <th class="col-md-1" scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for course in importedCourses %}
+          <tr>
+            <td>{{course.courseName}}</td>
+            <td>{{course.instructors}}</td>
+            <td>
+              <a class="status-key text-dark" id="statusKey" href="javascript:void(0);" data-toggle="popover"
+                title="Status Key" data-content="{{course.status.status}}">{{course.status.status}}</a>
+            </td>
+            <td>
+              <select class="form-select" id="{{course.id}}" onchange='changeAction(this)'>
+                <option value="---" disabled selected>Select Action</option>
+                <option value="Review">Review</option>
+                <option value="View">View</option>
+                <option value="Print">Print</option>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
       {% set downloadAndSend = "disabled" if approvedCourses | length ==0 else "" %}
       {% if term.isCurrentTerm or term.isFutureTerm %}
       <div class="col">

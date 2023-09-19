@@ -30,6 +30,7 @@ def unapprovedCourses(termId):
                   .order_by(Course.status))
 
     return unapprovedCourses
+
 def approvedCourses(termId):
     '''
     Queries the database to get all the neccessary information for
@@ -45,6 +46,21 @@ def approvedCourses(termId):
                         .group_by(Course, Term, CourseStatus))
 
     return approvedCourses
+
+def importedCourses(termId):
+    '''
+    Queries the database to get all the necessary information for 
+    imported courses.
+    '''
+    importedCourses = (Course.select(Course, Term, CourseStatus, fn.GROUP_CONCAT(" " ,User.firstName, " ", User.lastName).alias('instructors'))
+                        .join(CourseInstructor, JOIN.LEFT_OUTER)
+                        .join(User, JOIN.LEFT_OUTER).switch(Course)
+                        .join(CourseStatus).switch(Course)
+                        .join(Term)
+                        .where(Term.id == termId, Course.status == CourseStatus.IMPORTED)
+                        .group_by(Course, Term, CourseStatus))
+
+    return importedCourses
 
 def createCourse(creator="No user provided"):
     """ Create an empty, in progress course """

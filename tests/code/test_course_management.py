@@ -45,7 +45,7 @@ def test_course_management():
         courseindex = unapprovedList.index(submittedCourse)
 
         assert approvedCourse in approvedCourses(termId)
-        assert submittedCourse in unapprovedCourses(termId)
+        assert submittedCourse in unapprovedCourses(termId)  #Beans: Add a test here to test the new importedCourses() function.
         assert incompleteCourse in unapprovedCourses(termId), "unapprovedCourses doesn't include INCOMPLETE proposals"
         assert unapprovedList[courseindex].instructors == " Brian Ramsay, Zach Neill"
 

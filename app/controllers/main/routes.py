@@ -30,7 +30,7 @@ from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
 from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
 from app.logic.manageSLFaculty import getCourseDict
-from app.logic.courseManagement import unapprovedCourses, approvedCourses
+from app.logic.courseManagement import unapprovedCourses, approvedCourses, importedCourses
 from app.logic.utils import selectSurroundingTerms
 from app.logic.certification import getCertRequirementsWithCompletion
 from app.logic.serviceLearningCoursesData import saveCourseParticipantsToDatabase,courseParticipantPreviewSessionCleaner
@@ -396,6 +396,7 @@ def getAllCourseInstructors(term=None):
 
         unapproved = unapprovedCourses(term)
         approved = approvedCourses(term)
+        imported = importedCourses(term)
         terms = selectSurroundingTerms(g.current_term)
 
         if request.method =='POST' and "submitParticipant" in request.form:
@@ -408,6 +409,7 @@ def getAllCourseInstructors(term=None):
                                 courseInstructors = courseDict,
                                 unapprovedCourses = unapproved,
                                 approvedCourses = approved,
+                                importedCourses = imported,
                                 terms = terms,
                                 term = term,
                                 CourseStatus = CourseStatus, 
