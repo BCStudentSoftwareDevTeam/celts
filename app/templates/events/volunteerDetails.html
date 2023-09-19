@@ -27,7 +27,7 @@
         <div class="phoneSelect" nowrap>{{ participant.user.phoneNumber if participant.user.phoneNumber else "No phone number"}}</div>
         <div class="emailSelect" nowrap>{{ participant.user.email }}</div>
         <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.user.dietRestriction if participant.user.dietRestriction else "None Specified" }}</div>
-        <div class="emergencyContactSelect">Emergency Contact: {{participant.emergencycontact.name if participant.emergencycontact}} 
+        <div class="emergencyContactSelect" nowrap>Emergency Contact: {{participant.emergencycontact.name if participant.emergencycontact}} 
           {{participant.emergencycontact.cellPhone or participant.emergencycontact.homePhone or participant.emergencycontact.workPhone if participant.emergencycontact}} 
           {{"None Specified" if not participant.emergencycontact}}</div>
       </ul>
