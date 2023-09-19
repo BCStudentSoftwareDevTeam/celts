@@ -171,7 +171,7 @@ def eventDisplay(eventId):
     except DoesNotExist as e:
         print(f"Unknown event: {eventId}")
         abort(404)
-    notPermitted = not (g.current_user.isCeltsAdmin or ( g.current_user.isCeltsStudentAdmin and event.program != 5 )or g.current_user.isProgramManagerForEvent(event))
+    notPermitted = not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentAdmin and event.program_id != 5) or g.current_user.isProgramManagerForEvent(event))
     if 'edit' in request.url_rule.rule and notPermitted:
         abort(403)
 
