@@ -96,6 +96,10 @@ $(document).ready(function() {
     }
   });
 
+  $("#publishToEngage").click(function() {
+    
+  })
+
 
   $("#allowPastStart").click(function() {
     var allowPast = $("#allowPastStart:checked").val()
