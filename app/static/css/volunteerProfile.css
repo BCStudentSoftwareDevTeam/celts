@@ -16,6 +16,9 @@ dd {
     padding: 5px; 
     padding-top:0px; 
 }
+#printButton{
+    font-size: 15px;
+}
 
 .bonnerNotes dd:nth-of-type(even) { background-color:#f2f2f2; } 
 .bonnerNotes dt:nth-of-type(even) { background-color:#f2f2f2; } 

@@ -6,3 +6,9 @@ function callback(selected) {
 $("#searchStudentsInput").on("input", function() {
   searchUser("searchStudentsInput", callback);
 });
+
+$("#searchIcon").click(function (e) {
+  e.preventDefault();
+  callback($("#searchStudentsInput").val());
+});
+

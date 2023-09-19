@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block styles%}
+{{ super()}}
+<link rel="stylesheet" href="{{url_for('static', filename = 'css/travelForm.css')  }}?u={{lastStaticUpdate}}">
+{% endblock %}
+
+{% block app_content %}
+<div class= "w-100 d-print-block">
+    <div>
+        {% set width = 161 %}
+        <img src="{{url_for('static', filename='images/logos/celts_vertical_b&w.png')}}" class="" width ="{{width}}" height="{{width * (199/192)}}">
+        <div class='text-center'>
+            <h2>Berea College CELTS Travel Form</h2>
+            <h2>Student Responsibility and Insurance</h2>
+            <h2>Statement</h2>
+        </div>
+    </div> 
+
+    <a> 
+        As a voluntary participant in Berea College CELTS programs, I acknowledge and agree to the following: 
+    </a>    
+
+    <a> 
+        I will comply with the “Student Conduct Regulations” as stated in the Berea College Student Handbook 
+        (<u>https://berea.smartcatalogiq.com/en/current/student-handbook/</u>) and all other published policies of the College, 
+        including all of CELTS' and Berea College's COVID-19 Policies.
+    </a>
+    <br> <br>
+    <a> 
+        I will also comply with the policies of behavior in the program as administered by CELTS Staff as representatives of Berea
+        College. I understand that CELTS staff persons have the authority to discontinue my participation in the program, if it is
+        judged my conduct is unacceptable.
+    </a>
+    <br> <br>
+    <a> 
+        I understand that travel presents certain inherent health risks. I am aware of my own medical/psychological needs and
+        have consulted with a doctor about any health factor, medical or psychological, that might affect my ability to
+        participate fully in the program. I have informed the appropriate CELTS Staff, in writing, of any conditions that could
+        require special medical procedures while traveling.
+    </a>
+    <br> <br>
+    <a> 
+        In the event of injury or illness that prevents me from making decisions about medical treatment, program personnel
+        will make every practical effort to obtain prior authorization from the party identified as my emergency contact.
+    </a>
+    <br> <br>
+    <a>
+        <strong>
+            In all emergencies when prior authorization cannot be obtained from my emergency contact, I authorize any official
+            representative of Berea College to secure medical treatment on my behalf, including surgery and the administration
+            of an anesthetic, and I accept all financial responsibility for such treatment.
+        </strong>
+    </a>
+    <br> <br>
+    <a>
+        I understand that I am required to have adequate health, accident, disability and hospitalization insurance to cover
+        myself during participation in the program, and I have such insurance.
+    </a>
+    <br> <br>
+    <a>
+        I understand that activities and travel during free time in the program and following end of the program are at my own
+        risk and expense. I agree to inform the Program Coordinator of my travel plans and understand that Berea College is not
+        responsible for me while I am traveling independently during such free time.
+    </a>
+    <br> <br>
+    <a>
+        I further understand that I am solely responsible for any and all costs and consequences arising out of my voluntary or
+        involuntary withdrawal from the program prior to its completion, including withdrawal caused by illness or disciplinary
+        action by representative(s) of Berea College.
+    </a>
+    <br> <br>
+    <a>
+        In consideration of being afforded the opportunity to participate in this program, I, for myself, my heirs, successor or
+        assigns, hereby release and hold harmless Berea College, its Board of Trustees, officers, agents, employees, students,
+        and representatives from any and all claims, demands, causes of action or damages which may accrue on account of
+        bodily or personal injury, property damage, or death arising out of my participation in the program, including damages,
+        injury or death arising from the negligence of the aforesaid. 
+    </a>
+    <br> <br>
+    <a>
+        I have read and understand the provisions of this form and agree to be bound thereby.
+    </a>
+    <br> <br>
+
+    {% set fullName = userData.firstName + ' ' + userData.lastName %}
+    <div id='signatureRow' class='row'>
+        <div class='col'></div> 
+        <div class='col'>{{fullName}}</div>
+        <div class='col'></div>
+    </div>
+    
+    <div class='row'>
+        <div class='col'> Signature of Student Participant </div>
+        <div class='col'> Printed name of Student Participant</div>  
+        <div class='col'> Date </div> 
+    </div>
+
+
+    <br>
+
+    
+    <a>Student Name: <u>&nbsp;{{fullName}}{{('&nbsp;' * (66 - (fullName | length))) | safe}}</u></a><br><br>
+    
+    <a>
+        <strong>
+            Emergency Contact Information:
+        </strong>
+    </a>
+    <br><br>
+    {% set name = userData.name if userData.name else "" %}
+    <a>Name: <u>&nbsp;{{userData.name}}{{('&nbsp;' * (66 - (userData.name | length))) | safe}}</u></a><br><br>
+    <a>Relationship: <u>&nbsp;{{userData.relationship}}{{('&nbsp;' * (66 - (userData.relationship | length))) | safe}}</u></a><br><br>
+    <a>Address: <u>&nbsp;{{userData.homeAddress}}{{('&nbsp;' * (66 - (userData.homeAddress | length))) | safe}}</u></a><br><br>
+    <a>Home Phone Number: <u>&nbsp;{{userData.homePhone}}{{('&nbsp;' * (66 - (userData.homePhone | length))) | safe}}</u></a><br><br>
+    <a>Work Phone Number: <u>&nbsp;{{userData.workPhone}}{{('&nbsp;' * (66 - (userData.workPhone | length))) | safe}}</u></a><br><br>
+    <a>Cell Phone Number: <u>&nbsp;{{userData.cellPhone}}{{('&nbsp;' * (66 - (userData.cellPhone | length))) | safe}}</u></a><br><br>
+    <a>Email Address: <u>&nbsp;{{userData.emailAddress}}{{('&nbsp;' * (66 - (userData.emailAddress | length))) | safe}}</u></a><br><br>
+
+
+    <a>
+        <strong>
+            Insurance Information:
+        </strong>
+    </a>
+    <br>
+    <a>While traveling in this program I will be covered by the following insurance plan(s):</a> <br>
+    <a>(Please initial by the program that applies to you)</a> <br> <br>
+
+
+    <a><u>&nbsp;&nbsp;{{userData.firstName[0] + userData.lastName[0] if userData.insuranceType == 1 else '&nbsp;&nbsp;' | safe}}&nbsp;&nbsp;</u> Berea College Health Insurance</a> <br>
+    <a><u>&nbsp;&nbsp;{{userData.firstName[0] + userData.lastName[0] if userData.insuranceType == 2 else '&nbsp;&nbsp;' | safe}}&nbsp;&nbsp;</u> Parent or Guardian's insurance</a> <br>
+    <a><u>&nbsp;&nbsp;{{userData.firstName[0] + userData.lastName[0] if userData.insuranceType == 3 else '&nbsp;&nbsp;' | safe}}&nbsp;&nbsp;</u> Other Insurance</a> <br><br>
+
+    
+    <a>Name of Policy Holder: <u>&nbsp;{{userData.policyHolderName}}{{('&nbsp;' * (66 - (userData.policyHolderName | length))) | safe}}</u></a><br><br> 
+    <a>Relationship to you: <u>&nbsp;{{userData.policyHolderRelationship}}{{('&nbsp;' * (66 - (userData.policyHolderRelationship | length))) | safe}}</u></a><br><br>
+    <a>Insurance Company: <u>&nbsp;{{userData.insuranceCompany}}{{('&nbsp;' * (66 - (userData.insuranceCompany | length))) | safe}}</u></a><br><br>
+    <a>Policy Number: <u>&nbsp;{{userData.policyNumber}}{{('&nbsp;' * (66 - (userData.policyNumber | length))) | safe}}</u></a><br><br>
+    <a>Group Number (if applicable): <u>&nbsp;{{userData.groupNumber}}{{('&nbsp;' * (66 - (userData.groupNumber | length))) | safe}}</u></a><br><br>
+    <br>
+    <a>
+        Please list any Health Issues that the Berea College CELTS program staff need to know (use additional sheets, if needed
+        and update as appropriate):
+    </a>
+    <br>
+    <div class='underlined d-print-block'>{{userData.healthIssues}}</div>
+</div>
+
+{% endblock %}
+
+
+
+
+
+
+
+

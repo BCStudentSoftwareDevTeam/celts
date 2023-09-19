@@ -28,15 +28,29 @@
     <div>{{volunteer.classLevel}}</div> 
     {% endif %}
   </div>
-  <div class="col-12">
-    <div>
+  <div class="row pb-2 pe-0">
+    <div class="col-md-6 col-lg-3">
       <input type="text" style="border: none" size="14" class="bfh-phone" data-value="{{volunteer.phoneNumber}}" id="phoneInput" value="{{volunteer.phoneNumber}}" placeholder="Phone Number" />
       <a class="text-decoration-none primary editButton" tabindex="0" id="updatePhone" data-username="{{volunteer.username}}" type="button">Edit</a>
+    </div> &nbsp;
+    <div class="col"></div>
+    <div class="col-auto pe-0 ">
+      <select data-username="{{volunteer.username}}" id="actions" class=form-select align="right">
+        <option value="" selected disabled hidden>Choose an Action</option>
+        {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
+            <option value="Emergency Contact"> {{'Edit' if volunteer == g.current_user else 'View'}} Emergency Contact </option>
+            <option value="Insurance Information"> {{'Edit' if volunteer == g.current_user else 'View'}} Insurance Information </option>
+            <option value="Print Travel Form"> Print Travel Form </option>
+        {% endif %}
+        <option value="View Service Transcript"> View Service Transcript </option>
+      </select>
     </div>
   </div>
-  <a align="right" href="/profile/{{volunteer.username}}/serviceTranscript">View Service Transcript</a>
+  
 </div>
 <div class="accordion" id="userProfile">
+
+
 
 <!-- ################# Upcoming Events ################ -->
   <div class="accordion-item">
@@ -54,25 +68,25 @@
                 <th scope="col">Program</th>
                 <th scope="col">Event Name</th>
                 <th scope="col">Event Date</th>
-                <th scope="col">Start Time</th>
+                <th nowrap scope="col">Start Time</th>
                 <th scope="col">Location</th>
                 <th scope="col">RSVP Status</th>
               </thead>
               {% for event in upcomingEvents %}
-              <tr class="{% if event.startDate == currentDateTime.date() and event.timeStart < currentDateTime.time() %} ongoing-event {% endif %}{% if event.startDate == currentDateTime.date() and not event.timeStart < currentDateTime.time() %} bg-info {% endif %}">
-                    <td>{{event.program.programName if event.program else '--'}}</td>
-                    <td><a href= '/event/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
-                    <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
-                    <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}}</td>
-                    <td>{{event.location}}</td>
-                    {% if (event.isRsvpRequired) and (event.id in rsvpedEvents) %}
-                      <td>You have RSVP'd for this event.</td>
-                    {% elif (event.isRsvpRequired) and (event.id not in rsvpedEvents) %}
-                      <td>You have not RSVP'd for this event.</td>
-                    {% else %}
-                      <td>This event does not require RSVP.</td>
-                    {% endif %}
-                  </tr>
+                <tr class="{% if event.startDate == currentDateTime.date() and event.timeStart < currentDateTime.time() %} ongoing-event {% endif %}{% if event.startDate == currentDateTime.date() and not event.timeStart < currentDateTime.time() %} bg-info {% endif %}">
+                  <td>{{event.program.programName if event.program else '--'}}</td>
+                  <td><a href= '/event/{{event.id}}/view' class="link-primary">{{event.name}}</a></td>
+                  <td nowrap>{{event.startDate.strftime('%m/%d/%Y')}}</td>
+                  <td nowrap>{{event.timeStart.strftime('%-I:%M %p')}}</td>
+                  <td>{{event.location}}</td>
+                  {% if (event.isRsvpRequired) and (event.id in rsvpedEvents) %}
+                    <td>You have RSVP'd for this event.</td>
+                  {% elif (event.isRsvpRequired) and (event.id not in rsvpedEvents) %}
+                    <td>You have not RSVP'd for this event.</td>
+                  {% else %}
+                    <td>This event does not require RSVP.</td>
+                  {% endif %}
+                </tr>
               {% endfor %}
             {% else %}
               <h5>You have no upcoming events.</h5>
@@ -146,41 +160,19 @@
             </thead>
             <tbody>
               {% for row in eligibilityTable %}
-                {% set trainingList = row['trainingList'] %}
-                {% macro trainingListView() %}
-                  {% if trainingList %}
-                    {% for trainings, participated in trainingList.items() %}
-                      {% if g.current_user.isCeltsAdmin %}
-                        <li>{{trainings}}</li>
-                      {% else %}
-                        {% if participated == 1 %}
-                          <p><b>{{trainings}}</b>: <br>Attended</p>
-                        {% elif participated == 0 %}
-                          <p><b>{{trainings}}</b>: <br>Not attended</p>
-                        {% elif not participated[0] %}
-                          <p><b>{{trainings}}</b>: <br>Takes place on {{participated[1]}}</p>
-                        {% endif%}
-                      {% endif %}
-                    {% endfor %}
-                  {% else %}
-                    <p>No trainings for this program.</p>
-                  {% endif %}
-                {% endmacro %}
+                {% set trainingList = row['trainingList'][volunteer.username] %}
                 {% set checked = "" %}
                 {% if row.program in programsInterested %}
                   {% set checked = "checked" %}
                 {% endif %}
+                {% from 'trainingsHoverMacro.html' import trainingsHover %}
                 <tr>
                   <td><a href="{{row.program.url}}" id="programNameTable">{{row.program.programName}}</a></td>
                   <td><input class="form-check-input notifyInput" id="notifyInput" type="checkbox" data-programid="{{row.program.id}}" data-username="{{volunteer.username}}" {{checked}}></td>
                   <td>
-                    {% if row.completedTraining or not trainingList %}
-                      <i class="bi bi-check-lg"></i> &nbsp&nbsp
-                      <a class="trainingPopover" id="{{row.program.id}}" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
-                    {% else %}
-                      <i class="bi bi-x-lg"></i> &nbsp&nbsp
-                      <a class="trainingPopover" id="{{row.program.id}}" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingListView()}}">View</a>
-                    {% endif %}
+                    {% set hasCompletedAllTrainings = row.completedTraining %}
+                    <i class="bi bi-{{'check' if hasCompletedAllTrainings else 'x'}}-lg"></i> &nbsp&nbsp
+                    <a class="trainingPopover" id="{{row.program.id}}" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingsHover(trainingList)}}">View</a>
                   </td>
                   {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
                     {% if row.isNotBanned %}
@@ -390,7 +382,7 @@
           <form>
             <div class="form-group">
               <label for="usr">Please enter any dietary restrictions you have:</label>
-              <textarea class="form-control" id="diet">{%for diet in userDiet%}{{diet}}{%endfor%}</textarea>
+              <textarea class="form-control" id="diet" placeholder="Dietary Restrictions">{%if volunteer.dietRestriction%}{{volunteer.dietRestriction}}{%endif%}</textarea>
             </div>
             <br>
             <button type="button" class="saveDiet btn btn-primary" data-user="{{volunteer.username}}">Save</button>
