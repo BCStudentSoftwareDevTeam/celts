@@ -134,7 +134,7 @@
         <tbody>
           {% for course in importedCourses %}
           <tr>
-            <td>{{course.courseName}}</td>
+            <td>{{course.courseName or (course.courseAbbreviation + " (name unspecified)")}}</td>
             <td>{{course.instructors}}</td>
             <td>
               <a class="status-key text-dark" id="statusKey" href="javascript:void(0);" data-toggle="popover"
