@@ -137,7 +137,8 @@ def parseUploadedFile(filePath):
 
         elif regex.search(courseReg, str(cellVal)):
             hasCourse = Course.get_or_none(Course.courseAbbreviation == cellVal)
-            previewCourse = f'{cellVal} will be created'
+            courseAbbreviation = cellVal
+            previewCourse = f'{courseAbbreviation} will be created'
             if hasCourse and hasCourse.courseName:
                 previewCourse = f"{cellVal} matched to the course {hasCourse.courseName}"
             if not courseParticipantPreview.get(previewTerm):
@@ -156,9 +157,9 @@ def parseUploadedFile(filePath):
                 displayRow = f"ERROR-{studentValue}"
             if not courseParticipantPreview.get(previewTerm):
                 courseParticipantPreview[previewTerm]= {}
-            if not courseParticipantPreview[previewTerm].get(previewCourse):
-                courseParticipantPreview[previewTerm][previewCourse]=[]
-            courseParticipantPreview[previewTerm][previewCourse].append([studentValue, cellVal])
+            if not courseParticipantPreview[previewTerm].get(courseAbbreviation):
+                courseParticipantPreview[previewTerm][courseAbbreviation]=[]
+            courseParticipantPreview[previewTerm][courseAbbreviation].append([studentValue, cellVal])
             
         elif cellVal != '' and cellVal != None:
             errorText = f'ERROR: {cellVal} in row {cellRow} of the Excel document is not a valid value.'
