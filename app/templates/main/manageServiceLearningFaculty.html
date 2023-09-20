@@ -159,17 +159,20 @@
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header"> Edit Course </div>
+            <form enctype="multipart/form-data" role="form" action="wedontknowwhatyouare" method="POST">
+              <div class="modal-body"> Here's how you edit the course 
+                <div class="row px-2 form-group">
+                  <div class="col-auto form-label">Course Name:</div>
+                  <input class="col form-control">
+                </div>
+                
+              </div>
 
-            <div class="modal-body"> Here's how you edit the course 
-
-              
-            </div>
-
-            <div class="modal-footer p-2">
-              <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Cancel</button>
-              <button type="button" class="btn btn-success position-relative">Save</button>
-            </div>
-
+              <div class="modal-footer p-2">
+                <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-success position-relative">Save</button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
