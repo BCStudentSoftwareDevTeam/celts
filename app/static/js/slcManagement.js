@@ -53,6 +53,10 @@ function changeAction(action){
     $('#withdrawModal').modal('show');
   } else if(courseAction == "Edit"){
     location = '/serviceLearning/editProposal/' + courseID;
+  } else if (courseAction == "Alter"){
+    console.log("showing modal");
+    console.log($('#alterModal').get());
+    $('#alterModal').modal('show');
   } else if(courseAction == "Print"){
     slcPrintPDF(courseID)
   } else if (courseAction == "Review"){
