@@ -60,6 +60,14 @@ def test_modifyCeltsStudentStaff():
         transaction.rollback()
 
 @pytest.mark.integration
+def test_modifyCeltsStudentAdmin():
+    with mainDB.atomic() as transaction:
+        user = "bledsoef"
+        UserInTest = User.get(User.username == user)
+        assert userInTest.isCeltsStudentStaff == True
+        transaction.rollback()
+
+@pytest.mark.integration
 def test_changeProgramInfo():
     with mainDB.atomic() as transaction:
 
