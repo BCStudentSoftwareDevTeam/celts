@@ -62,9 +62,21 @@ def test_modifyCeltsStudentStaff():
 @pytest.mark.integration
 def test_modifyCeltsStudentAdmin():
     with mainDB.atomic() as transaction:
-        user = "bledsoef"
-        UserInTest = User.get(User.username == user)
+        user = "makindeo"
+        userInTest = User.get(User.username == user)
+        assert userInTest.isCeltsStudentAdmin == False
+        with app.app_context():
+            g.current_user = "qasema"
+            addCeltsStudentStaff(userInTest)
+        userInTest = User.get(User.username == user)
         assert userInTest.isCeltsStudentStaff == True
+
+        with app.app_context():
+            g.current_user = "qasema"
+            removeCeltsStudentAdmin(userInTest)
+        userInTest = User.get_by_id(user)
+        assert userInTest.isCeltsStudentAdmin == False
+
         transaction.rollback()
 
 @pytest.mark.integration

@@ -26,19 +26,18 @@ def addCeltsStudentAdmin(user):
     user.save()
     createAdminLog(f'Made {user.firstName} {user.lastName} a CELTS student Admin member.')
 
-
 def removeCeltsAdmin(user):
     user = User.get_by_id(user)
     user.isCeltsAdmin = False
     user.save()
     createAdminLog(f'Removed {user.firstName} {user.lastName} from CELTS admins.')
 
-
 def removeCeltsStudentStaff(user):
     user = User.get_by_id(user)
     user.isCeltsStudentStaff = False
     user.save()
     createAdminLog(f'Removed {user.firstName} {user.lastName} from a CELTS student staff member.')
+    
 def removeCeltsStudentAdmin(user):
     user = User.get_by_id(user)
     user.isCeltsStudentAdmin = False

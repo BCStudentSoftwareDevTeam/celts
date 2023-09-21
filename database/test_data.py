@@ -79,6 +79,22 @@ users = [
     },
 
     {
+        "username": "makindeo",
+        "bnumber": "B00719326",
+        "email": "makindeo@berea.edu",
+        "firstName": "Oluwagbayi",
+        "lastName": "Makinde",
+        "phoneNumber": "3026663135",
+        "isCeltsAdmin": False,
+        "isFaculty": False,
+        "isCeltsStudentStaff": True,
+        "isCeltsStudentAdmin": False,
+        "isStaff": True,
+        "major": None,
+        "classLevel": None,
+    },
+
+    {
         "username" : "lamichhanes2",
         "bnumber": "B00733993",
         "email": "lamichhanes2@berea.edu",
@@ -177,7 +193,7 @@ users = [
         "lastName": "Qasem",
         "phoneNumber": "8599723821",
         "isCeltsAdmin": True,
-        "isFaculty": True,
+        "isFaculty": False,
         "isCeltsStudentStaff": False,
         "isStaff": True,
         "major": None,
