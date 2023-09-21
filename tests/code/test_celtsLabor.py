@@ -25,7 +25,21 @@ def demoCallLsfApi(bnumber):
                                   "laborEnd": 12-13-2023,
                                   "jobType": "Primary", 
                                   "wls": "1", 
-                                  "termName": "AY 2022-2023"}]
+                                  "termName": "AY 2022-2023"},
+                                  {"positionTitle": "Fake Position In The Summer",
+                                  "termCode": "202013",
+                                  "laborStart": 12-13-2021,
+                                  "laborEnd": 12-13-2022,
+                                  "jobType": "Primary", 
+                                  "wls": "1", 
+                                  "termName": "AY 2021-2022"},
+                                  {"positionTitle": "Fake Position Not In AY or Summer",
+                                  "termCode": "202004",
+                                  "laborStart": 12-13-2021,
+                                  "laborEnd": 12-13-2022,
+                                  "jobType": "Primary", 
+                                  "wls": "1", 
+                                  "termName": "AY 2021-2022"},]
                                 }
     return fakeLsfData
 
@@ -35,5 +49,7 @@ celtsLabor.callLsfApi = demoCallLsfApi
 def test_getPositionAndTerm():
     volunteer = User.get(User.username == "neillz")
     neillzPositionAndTermInfo = getPositionAndTerm(volunteer)
+
     assert neillzPositionAndTermInfo == {'Fake Position': ['AY 2020-2021', 'AY 2021-2022'], 
-                                         'Fake Position But a Leader': ["AY 2022-2023"]}
+                                         'Fake Position But a Leader': ["AY 2022-2023"],
+                                         'Fake Position In The Summer': ['AY 2021-2022']}
