@@ -1,4 +1,5 @@
 from flask import request, render_template, g, abort, flash, redirect, url_for, session
+from playhouse.shortcuts import model_to_dict
 import datetime
 import json
 from http import cookies
@@ -418,7 +419,44 @@ def getAllCourseInstructors(term=None):
                                 previewParticipantDisplayList = previewParticipantDisplayList
                                 )
     else:
-        abort(403) 
+        abort(403)
+
+@main_bp.route('/manageServiceLearning/imported/<courseID>', methods = ['POST', 'GET'])
+def alterImportedCourse(courseID):
+    """
+    Goals:
+    This route is meant to be called via ajax from the course management page in order to fill out the scanty information
+    we posess on imported courses so that they can edit them in our modal.
+    There are two paths, GET and POST
+
+    GET: On a get we should return a dictionary containing 
+    - course name, 
+    - course abbriviation, 
+    - hours earned on completion, 
+    - list of the instructors
+
+    POST: on a post we should update their course entry into our course table and update all of the previously listed information
+    
+    """
+
+    if request.method == 'GET':
+        try:
+            targetCourse = Course.get_by_id(courseID)
+            return model_to_dict(targetCourse, recurse=False)
+        
+        
+        except Exception as e:
+            flash("Course not found or something else went wrong")  # beans
+            return
+
+
+
+
+    if request.method == 'POST':
+        pass
+
+
+    
 
 def getRedirectTarget(popTarget=False):
     """
