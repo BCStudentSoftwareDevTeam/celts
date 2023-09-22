@@ -15,11 +15,10 @@ def selectSurroundingTerms(currentTerm, prevTerms=2):
     To get only the current and future terms, pass prevTerms=0.
     """
     startTerm = max(1, currentTerm.id - prevTerms)
-    # surroundingTerms = (Term.select()
-    #                         .where(Term.id >= startTerm)
-    #                         .where((Term.year <= currentTerm.year + 2)))
-
-    surroundingTerms = (Term.select().order_by(Term.termOrder))
+    surroundingTerms = (Term.select()
+                            .where(Term.id >= startTerm)
+                            .where((Term.year <= currentTerm.year + 2))
+                            .order_by(Term.termOrder))
 
     return surroundingTerms
 
