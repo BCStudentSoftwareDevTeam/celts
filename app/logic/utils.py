@@ -19,8 +19,8 @@ def selectSurroundingTerms(currentTerm, prevTerms=2):
     #                         .where(Term.id >= startTerm)
     #                         .where((Term.year <= currentTerm.year + 2)))
 
-    surroundingTerms = (Term.select())
-    
+    surroundingTerms = (Term.select().order_by(Term.termOrder))
+
     return surroundingTerms
 
 def getStartofCurrentAcademicYear(currentTerm):
