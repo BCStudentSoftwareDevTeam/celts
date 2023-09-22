@@ -433,12 +433,13 @@ def serviceTranscript(username):
     totalHours = getTotalHours(username)
     allEventTranscript = getProgramTranscript(username)
     startDate = getStartYear(username)
-
+    studentLabor = getPositionAndTerm(user)
     return render_template('main/serviceTranscript.html',
                             allEventTranscript = allEventTranscript,
                             slCourses = slCourses.objects(),
                             totalHours = totalHours,
                             startDate = startDate,
+                            studentLabor = studentLabor,
                             userData = user)
 
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
