@@ -8,7 +8,7 @@
     <div class="card-body">
       <h5 class="card-title">CELTS Labor History:</h5>
       {% for position, term in studentLabor.items() %}
-        <p>{{position}}: {{term|join(", ")}}</p>
+        <p class="card-text">{{position}}: {{term|join(", ")}}</p>
       {% endfor %}
     </div>
   {% endif %}
