@@ -228,9 +228,6 @@ def eventDisplay(eventId):
     rule = request.url_rule
 
     # Event Edit
-    for key, value in filepaths.items():
-        print("=====key:", key)
-        print("======valsss:", (value[-1].isDisplayed))
     if 'edit' in rule.rule:
         return render_template("admin/createEvent.html",
                                 eventData = eventData,
