@@ -54,7 +54,7 @@ class FileHandler:
                     attachmentName = str(saveOriginalFile.id) + "/" +  file.filename
 
                     # isFileInEvent checks if the attachment exists in the database under that eventId and filename.
-                    isFileInEvent = AttachmentUpload.select().where(AttachmentUpload.event_id == self.eventId,
+                    isFileInEvent = AttachmentUpload.select().where(AttachmentUpload.event_id == self.eventId,AttachmentUpload.isDisplayed == True,
                                                                     AttachmentUpload.fileName == attachmentName).exists()
                     if not isFileInEvent:
                         AttachmentUpload.create(event = self.eventId, fileName = attachmentName)
@@ -78,7 +78,9 @@ class FileHandler:
 
     def retrievePath(self,files):
         pathDict={}
+        print('00000000000',files)
         for file in files:
+            
             pathDict[file.fileName] = ((self.path+"/"+ file.fileName)[3:], file)
 
         return pathDict
@@ -94,3 +96,9 @@ class FileHandler:
         if not AttachmentUpload.select().where(AttachmentUpload.fileName == file.fileName).exists():
             path = os.path.join(self.path, file.fileName)
             os.remove(path)
+    
+    def Display_file(self, fileId):
+        file = AttachmentUpload.get_by_id(fileId)
+        AttachmentUpload.update(isDisplayed=True).where(AttachmentUpload.id == fileId).execute()
+        AttachmentUpload.update(isDisplayed=False).where(AttachmentUpload.event == file.event, AttachmentUpload.id != fileId).execute()
+        return 0 

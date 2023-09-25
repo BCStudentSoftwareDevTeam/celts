@@ -185,7 +185,7 @@ def eventDisplay(eventId):
     picurestype = [".jpeg", ".png", ".gif", ".jpg", ".svg", ".webp"]
     for attachment in associatedAttachments:
         for extension in picurestype:
-            if (attachment.fileName.endswith(extension)):
+            if (attachment.fileName.endswith(extension) and attachment.isDisplayed == True):
                 image = filepaths[attachment.fileName][0]
         if image:
             break
@@ -228,6 +228,9 @@ def eventDisplay(eventId):
     rule = request.url_rule
 
     # Event Edit
+    for key, value in filepaths.items():
+        print("=====key:", key)
+        print("======valsss:", (value[-1].isDisplayed))
     if 'edit' in rule.rule:
         return render_template("admin/createEvent.html",
                                 eventData = eventData,
@@ -456,3 +459,11 @@ def saveRequirements(certid):
     newRequirements = updateCertRequirements(certid, request.get_json())
 
     return jsonify([requirement.id for requirement in newRequirements])
+
+
+@admin_bp.route("/displayEventFile", methods=["POST"])
+def displayEventFile():
+    fileData= request.form
+    eventfile=FileHandler(eventId=fileData["id"])
+    eventfile.Display_file(fileData['id'])
+    return ""
