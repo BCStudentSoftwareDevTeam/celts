@@ -78,7 +78,6 @@ class FileHandler:
 
     def retrievePath(self,files):
         pathDict={}
-        print('00000000000',files)
         for file in files:
             
             pathDict[file.fileName] = ((self.path+"/"+ file.fileName)[3:], file)

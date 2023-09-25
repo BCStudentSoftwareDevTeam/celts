@@ -1,6 +1,6 @@
 $(document).ready(function(){
     $(".removeAttachment").on("click", function(){
-        console.log(fileId)
+        let fileId=  $(this).data("id")
         let deleteLink = $(this).data("delete-url")
         let fileData = {fileId : fileId,
                         databaseId:$(this).data('database-id')}
