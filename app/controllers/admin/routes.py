@@ -357,6 +357,18 @@ def deleteCourseFile():
 
     return ""
 
+@admin_bp.route("/editCourseInfo", methods= ["POST"])
+def editImportedCourses():
+    courseName = request.form.get("courseName")
+    courseAbbrev = request.form.get("courseAbbrev")
+    courseHoursEarned = request.form.get("hoursEarned")
+    courseInstructor = request.form.get("courseInstruct")
+    print("$$$$$$$$$$$$$$"*30)
+    print(courseName)
+
+
+    return redirect(url_for("main.getAllCourseInstructors"))
+
 @admin_bp.route("/manageBonner")
 def manageBonner():
     if not g.current_user.isCeltsAdmin:
