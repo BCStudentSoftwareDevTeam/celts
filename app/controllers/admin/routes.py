@@ -390,29 +390,29 @@ def alterImportedCourse(courseID):
 
 
 
-    if request.method == 'POST':
-        courseName = request.form.get("courseName")
-        # courseAbbrev = request.form.get("courseAbbrev")      beans
-        courseHoursEarned = request.form.get("hoursEarned")
-        newCourseInstructors = request.form.get("courseInstructors")
+    # if request.method == 'POST':
+    #     courseName = request.form.get("courseName")
+    #     # courseAbbreviation = request.form.get("courseAbbreviation")      beans
+    #     courseHoursEarned = request.form.get("hoursEarned")
+    #     newCourseInstructors = request.form.get("courseInstructors")
 
 
-        # Update the course information in the DB with the new information
-        Course.update(courseName = courseName, 
-                      # courseAbbreviation = courseAbbrev,
-                      courseCredit = courseHoursEarned
-                      ).where(id=courseID)
+    #     # Update the course information in the DB with the new information
+    #     Course.update(courseName = courseName, 
+    #                   # courseAbbreviation = courseAbbreviation,
+    #                   courseCredit = courseHoursEarned
+    #                   ).where(id=courseID)
         
-        # Update the instructor information in two parts
-        # 1. Remove all instructors in the DB that were removed and not in the list
-        oldInstructors = CourseInstructor.select(CourseInstructor, User).join(User).where(Course.id == courseID)  #beans I have no idea if this works
-        for instructor in oldInstructors:
-            if instructor.user_id not in newCourseInstructors:
-                CourseInstructor.delete_by_id(instructor.id)  #beans I have no idea if this works
+    #     # Update the instructor information in two parts
+    #     # 1. Remove all instructors in the DB that were removed and not in the list
+    #     oldInstructors = CourseInstructor.select(CourseInstructor, User).join(User).where(Course.id == courseID)  #beans I have no idea if this works
+    #     for instructor in oldInstructors:
+    #         if instructor.user_id not in newCourseInstructors:
+    #             CourseInstructor.delete_by_id(instructor.id)  #beans I have no idea if this works
 
-        # 2. Insert all of the instructors that weren't instructors before that are in the list
-        for instructor in newCourseInstructors:
-            CourseInstructor.get_or_create(course_id = courseID, user_id = instructor.id)  #beans I have no idea if this works
+    #     # 2. Insert all of the instructors that weren't instructors before that are in the list
+    #     for instructor in newCourseInstructors:
+    #         CourseInstructor.get_or_create(course_id = courseID, user_id = instructor.id)  #beans I have no idea if this works
 
 
 

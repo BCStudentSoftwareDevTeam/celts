@@ -54,9 +54,8 @@ function changeAction(action){
   } else if(courseAction == "Edit"){
     location = '/serviceLearning/editProposal/' + courseID;
   } else if (courseAction == "Alter"){
-    console.log("showing modal");
-    console.log($('#alterModal').get());
-    $('#alterModal').modal('show');
+    $('#courseID').val(courseID);
+    showImportedCourseModal();
   } else if(courseAction == "Print"){
     slcPrintPDF(courseID)
   } else if (courseAction == "Review"){
@@ -96,6 +95,36 @@ function withdraw(){
     }
   })
 };
+
+
+function getImportedCourseInfo(){
+  courseID = $("#courseID").val();
+   $.ajax({
+    url: `/manageServiceLearning/imported/${courseID}`,
+    type: "GET",
+    success: function(courseDict) {
+      console.log(`Got the course Dict, here it is: ${courseDict}`) // Beans
+      if (!courseDict.empty()){
+        // update the alter imported course modal
+
+
+        $('#courseName').val(courseDict.get('courseName'));
+        $('#courseAbbreviation').val(courseDict.get('courseAbbreviation'));
+        $('#courseCredit').val(courseDict.get('courseCredit'));
+        // Beans: need to update the course instructors. Maybe create a table and add rows to the table in here?
+
+      }
+    }
+  })
+}
+
+async function showImportedCourseModal(){
+  await getImportedCourseInfo();
+  $('#alterModal').modal('show');
+  
+}
+
+
 function slcPrintPDF(courseID){
   // KNOWN ISSUE: Firefox and Chrome load pages differently, due to this we had to add a timeout that as a hack workaround 
   // but it still has some issues. 

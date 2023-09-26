@@ -168,17 +168,17 @@
                 <br>
                 <div class="row ps-0 pe-2 form-group d-flex align-items-end">
                   <label class="col-auto form-label">Course Abbreviation: </label>
-                  <input class="col form-control" disabled name="courseAbbrev">
+                  <input class="col form-control" id="courseAbbreviation" name="courseAbbreviation" disabled>
                 </div>
                 <br>
                 <div class="row ps-0 pe-2 form-group d-flex align-items-end">
                   <label class="col-auto form-label">Hours Earned on Completion: </label>
-                  <input class="col form-control" name="hoursEarned">
+                  <input class="col form-control" id="courseCredit" name="hoursEarned">
                 </div>
                 <br>
                 <div class="row ps-0 pe-2 form-group d-flex align-items-end">
                   <label class="col-auto form-label">Instructors: </label>
-                  <input class="col form-control" name="courseInstructors">
+                  <input class="col form-control" id="courseInstructor" name="courseInstructors">
                 </div>
 
               </div>
@@ -191,7 +191,8 @@
           </div>
         </div>
       </div>
-
+      <input id="courseID" type="hidden">
+      
       {% if term.isCurrentTerm or term.isFutureTerm %}
       <div class="col">
         <div class="float-end">
