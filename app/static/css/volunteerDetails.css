@@ -1,0 +1,67 @@
+@media print {
+    @page {
+        size:landscape;
+    }
+
+    #volunteerInformationCardToPrint {
+        -webkit-column-count: 2; 
+        column-count: 2;  
+        display: inline-block;
+        font-size: 15pt;
+        width: 180%;
+    }
+    
+    .print-column {
+        column-count: 1;
+        column-gap: 20px;
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    #volunteerInformationTableToPrint {
+        -webkit-border-collapse: collapse;
+        width: 180%;
+        -webkit-print-color-adjust:exact;
+        color-adjust:exact;
+    }
+
+    #volunteerInformationTableToPrint tr {
+        break-inside: avoid;
+    }
+
+    .dataTables_info, .dataTables_length, .dataTables_filter, .dataTables_paginate {
+        display:none;
+    }  
+
+    body {
+        display: flex;  
+    }
+
+    hr {
+        border-top: solid 1px #000 !important;
+        width: 180%;
+    }
+    table.dataTable thead .sorting {
+        background-image: None !important
+    }
+}
+
+.bnumber-barcode:before { content: "*"; }
+.bnumber-barcode:after { content: "01*"; }
+.bnumber-barcode {
+    font-family: 'Libre Barcode 39';
+    font-size: 60px;
+    margin-bottom: -30px;
+}
+
+#volunteerInformationCardToPrint, .bNumberSelect {
+    display: none;
+}
+
+.custom-odd td {
+    background-color: #f8f9fa;
+}
+
+.custom-even td {
+    background-color: #fff;
+}

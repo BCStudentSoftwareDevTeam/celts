@@ -24,7 +24,8 @@ def test_sendEventReminderEmail():
                                 isService = 0,
                                 startDate=  tomorrow,
                                 endDate= "2022-12-19",
-                                recurringId = 0)
+                                recurringId = 0,
+                                program = 9)
         tomorrowEvents = getTomorrowsEvents()
         emailsSent = sendEventReminderEmail(tomorrowEvents)
         assert emailsSent == 1
@@ -40,7 +41,8 @@ def test_sendEventReminderEmail():
                                 isService = 0,
                                 startDate=  tomorrow,
                                 endDate= "2022-12-19",
-                                recurringId = 0)
+                                recurringId = 0,
+                                program = 9)
         tomorrowEvents = getTomorrowsEvents()
         emailsSent = sendEventReminderEmail(tomorrowEvents)
         assert emailsSent == 2

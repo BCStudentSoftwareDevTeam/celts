@@ -26,8 +26,7 @@ class FileHandler:
             if e.errno != 17:
                 print(f'Fail to create directory: {e}')
                 raise e
-        
-
+                
     def getFileFullPath(self, newfilename = ''):
         """
         This creates the directory/path for the object from the "Choose File" input in the create event and edit event.

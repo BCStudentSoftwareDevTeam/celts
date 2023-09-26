@@ -1,5 +1,7 @@
 import pytest
 from peewee import DoesNotExist
+from datetime import datetime, date
+
 from app.models import mainDB
 from app.models.program import Program
 from app.models.event import Event
@@ -7,7 +9,7 @@ from app.models.bonnerCohort import BonnerCohort
 from app.models.term import Term
 from app.models.user import User
 from app.models.eventViews import EventView
-from app.logic.events import getStudentLedEvents,  getTrainingEvents, getBonnerEvents, getOtherEvents, addEventView
+from app.logic.events import getStudentLedEvents,  getTrainingEvents, getBonnerEvents, getOtherEvents, addEventView, getUpcomingStudentLedCount
 
 @pytest.mark.integration
 @pytest.fixture
@@ -56,7 +58,8 @@ def special_otherEvents():
                                        location = "moon",
                                        isTraining = False,
                                        startDate = "2021-12-12",
-                                       endDate = "2021-12-13")
+                                       endDate = "2021-12-13",
+                                       program = 9)
 
         yield nonProgramEvent
         nonProgramEvent.delete_instance()
@@ -66,6 +69,87 @@ def test_studentled_events(training_events):
     studentLed = training_events
     allStudentLedProgram = {studentLed.program: [studentLed]}
     assert allStudentLedProgram == getStudentLedEvents(2)
+
+@pytest.mark.integration
+def test_getUpcomingStudentLed_events():
+    with mainDB.atomic() as transaction: 
+        testDate = datetime.strptime("2021-08-01 05:00","%Y-%m-%d %H:%M")
+        currentTestTerm = Term.get_by_id(5)
+
+        # In case any events are put in term 5 in testData, put them into the past.
+        Event.update(startDate = date(2021,7,1), endDate = date(2021,7,1)).where(Event.term_id == 5).execute()
+
+        # Student Led event in the future
+        futureAgpEvent = Event.create(name = "Test future AGP event",
+                                      term = currentTestTerm,
+                                      description = "Test future student led (AGP) event.",
+                                      timeStart = "05:00:00",
+                                      timeEnd = "06:00:00",
+                                      location = "The Moon",
+                                      isTraining = False,
+                                      startDate = "2021-08-02",
+                                      endDate = "2021-08-02",
+                                      program = 3)
+         
+        # Student Led event to be canceled 
+        cancelStudentLed = Event.create(name = "Test AGP event to cancel",
+                                        term = currentTestTerm,
+                                        description = "Test student led (AGP) event that will be canceled.",
+                                        timeStart = "05:00:00",
+                                        timeEnd = "06:00:00",
+                                        location = "The Sun",
+                                        isTraining = False,
+                                        startDate = "2021-08-02",
+                                        endDate = "2021-08-02",
+                                        program = 3)
+        
+        # Student Led event that start in the future but will be moved to the past
+        pastStudentLed = Event.create(name = "Test past AGP event",
+                                        term = currentTestTerm,
+                                        description = "Test student led (AGP) event that will be moved to the past.",
+                                        timeStart = "05:00:00",
+                                        timeEnd = "06:00:00",
+                                        location = "Mars",
+                                        isTraining = False,
+                                        startDate = "2021-08-02",
+                                        endDate = "2021-08-02",
+                                        program = 3)
+        
+        # verify that there are three upcoming events for AGP (program id 3)
+        upcomingStudentLed = getUpcomingStudentLedCount(currentTestTerm, testDate)
+        assert upcomingStudentLed == {3:3}
+
+        # Cancel cancelStudentLed and verify there are only two upcoming events for AGP
+        Event.update(isCanceled = True).where(Event.id == cancelStudentLed.id).execute()
+        upcomingStudentLed = getUpcomingStudentLedCount(currentTestTerm, testDate)
+        assert upcomingStudentLed == {3:2}
+
+        # Move pastStudentLed start date to the same day as testDate and set timeEnd to the time on testDate
+        (Event.update(timeStart = datetime.strptime("03:00", "%H:%M").time(), 
+                      timeEnd = datetime.strptime("04:00", "%H:%M").time(), 
+                      startDate = date(2021,8,1), 
+                      endDate = date(2021,8,1))
+              .where(Event.id == pastStudentLed.id)).execute()
+        
+        upcomingStudentLed = getUpcomingStudentLedCount(currentTestTerm, testDate)
+        assert upcomingStudentLed == {3:1}
+
+        # Create another event in the future for a different program (Buddies)
+        futureBuddiesEvent = Event.create(name = "Test future AGP event",
+                                          term = currentTestTerm,
+                                          description = "Test future student led (AGP) event.",
+                                          timeStart = "05:00:00",
+                                          timeEnd = "06:00:00",
+                                          location = "The Moon",
+                                          isTraining = False,
+                                          startDate = "2021-08-02",
+                                          endDate = "2021-08-02",
+                                          program = 2)
+        
+        upcomingStudentLed = getUpcomingStudentLedCount(currentTestTerm, testDate)
+        assert upcomingStudentLed == {2:1, 3:1}
+
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_training_events(training_events):
@@ -172,7 +256,7 @@ def test_training_events(training_events):
                                            isStudent = True,
                                            isFaculty = False,
                                            isStaff = False,
-                                           isCeltsAdmin = False,
+                                           isCeltsAdmin = False, 
                                            isCeltsStudentStaff = False)
 
         notBonnerList = [testNotBonnerTraining]
@@ -208,7 +292,8 @@ def test_eventViewCount():
                                  location = "basement",
                                  isTraining = True,
                                  startDate = "2021-12-12",
-                                 endDate = "2021-12-13")
+                                 endDate = "2021-12-13",
+                                 program = 9)
         
         viewer = User.create(username = "eventViewer",
                              bnumber = "B000000000",

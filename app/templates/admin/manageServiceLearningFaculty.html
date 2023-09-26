@@ -1,0 +1,307 @@
+{% set title = "Manage Service-Learning Faculty"%}
+{% extends "base.html" %}
+
+{% block scripts %}
+  {{super()}}
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+  <script type="module" src="/static/js/manageServiceLearningFaculty.js"></script>
+  <script src="/static/js/slcManagement.js"></script>
+  {% if cpPreview %}
+    <script>
+      $(document).ready(function () {
+        $("#modalPreview").modal('show')
+      })
+    </script>
+  {% endif %}
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+<link rel="stylesheet" href="{{url_for('static', filename ='css/manageServiceLearningFaculty.css')}}">
+{% endblock %}
+
+{% block app_content %}
+  <h1 class="text-center pb-2">Designated Service-Learning Courses</h1>
+  <div class="text-center">
+    <form id="termSelector" action="" method="post">
+      <select class="w-25" id="selectTerm" onchange="formSubmit(this.value)">
+        {% for t in terms %}
+          <option value="{{t.id}}" {{ "selected" if t.id==term.id }}> {{ t.description }}</option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+
+  {########################### Unapproved Table ###############################}
+  <div class="row">
+    <h2 class="col">Unapproved</h2>
+    <div class="col"align="right">
+        <form method="post" action="/serviceLearning/createCourse">
+          <button class="btn btn-success btn-sm mr" type='Submit'>Add Course</button>
+        </form>
+    </div>
+  </div>
+  {% if unapprovedCourses | length == 0 %}
+    <h5 class="ms-3">There are no unapproved courses for {{ term.description }}.</h5>
+  {% else %}
+    <table class="table table-striped border">
+      <thead>
+        <tr>
+          <th class="col-md-1" scope="col">Courses</th>
+          <th class="col-md-1" scope="col">Faculty</th>
+          <th class="col-md-1" scope="col">Status</th>
+          <th class="col-md-1" scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for course in unapprovedCourses %}
+        <tr>
+          <td>{{course.courseName}}</td>
+          <td>{{ course.instructors }}</td>
+          <td>
+            <a class="status-key text-dark" id="statusKey" href="javascript:void(0);" data-toggle="popover"
+              title="Status" data-content="{{course.status.status}}">{{course.status.status}}</a>
+          </td>
+          <td>
+            <select class="form-select courseData" id="{{course.id}}" onchange='changeAction(this)'>
+              <option value="---" disabled selected>Select Action</option>
+              <option value="Review">Review</option>
+              <option value="View">View</option>
+              <option value="Edit">Edit</option>
+              <option value="Print">Print</option>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+  {########################### Approved Table #################################}
+  <h2>Approved</h2>
+  {% if approvedCourses | length == 0 %}
+      <h5 class="ms-3">There are no approved courses for {{ term.description }}.</h5>
+  {% else %}
+      <table class="table table-striped border">
+        <thead>
+          <tr>
+            <th class="col-md-1" scope="col">Courses</th>
+            <th class="col-md-1" scope="col">Faculty</th>
+            <th class="col-md-1" scope="col">Status</th>
+            <th class="col-md-1" scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for course in approvedCourses %}
+          <tr>
+            <td>{{course.courseName}}</td>
+            <td>{{ course.instructors }}</td>
+            <td>
+              <a class="status-key text-dark" id="statusKey" href="javascript:void(0);" data-toggle="popover"
+                title="Status Key" data-content="{{course.status.status}}">{{course.status.status}}</a>
+            </td>
+            <td>
+              <select class="form-select" id="{{course.id}}" onchange='changeAction(this)'>
+                <option value="---" disabled selected>Select Action</option>
+                <option value="Review">Review</option>
+                <option value="View">View</option>
+                <option value="Print">Print</option>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+  {% endif %}
+
+
+  {########################### Action Buttons #################################}
+  {% set disable_button = "disabled" if approvedCourses | length ==0 else "" %}
+  <div class="mb-5">
+    <form method="GET" action="/serviceLearning/downloadApprovedCourses/{{term.id}}">
+        <button class="float-end btn btn-primary {{disable_button}}" 
+                id="downloadApprovedCoursesBtn" 
+                value="{{term.id}}">Download Course List</button>
+    </form>
+
+  {% if term.isCurrentTerm or term.isFutureTerm %}
+      <a class="btn btn-primary float-end mr {{disable_button}}"
+        href="mailto:{{(';'.join(instructorEmails))}}?subject=Designated Service-Learning Courses: List of recommended courses for {{term.description}}&body=Hello,%0D%0A%0D%0AI’m writing to submit the list of courses recommended for the Service-Learning Course Designation (meeting the ALE requirement) for the upcoming semester; this list is ready to be shared with COGE. Please find the list of courses in the attached document. The proposals have been reviewed and approved by the Service-Learning Faculty Fellow and Director of CELTS (me).%0D%0A%0D%0AIn addition to these courses, all the courses that have received the Permanent Service-Learning Course Designation that will be taught in the upcoming semester should also have the Service-Learning Course Designation.%0D%0A%0D%0AThank you,%0D%0A%0D%0AAshley"
+        target="_blank">Send Recommendation</a>
+
+      <a class="btn btn-primary mr float-end {{disable_button}}"
+        href="mailto:registrar@berea.edu?subject=Requesting%20Student%20Service-Learning%20Course%20participation&body=ADD TEXT"
+        target="_blank">Email registrar</a>
+
+      <button class=" btn btn-primary mr" 
+              id="modalCourseParticipant" 
+              data-bs-toggle="modal"
+              data-bs-target="#modalSubmit">Import Course Participants</button>
+  {% endif %}
+  </div>
+
+  {###################### Service Learning Faculty ############################}
+  <h1 class="text-center" style="margin-bottom:-30px">Service-Learning Faculty</h1>
+  <div class="btn" style=" text-align:right; position:relative; top: 38px; z-index:1;">
+      <button class="btn btn-primary" id="emailSelectedButton"> Email Selected</button>
+      <button class="btn btn-primary" id="selectAllOthersButton">Select All</button>
+  </div>
+  <a class="skipContent" href="#backButton" tabindex="1" style="top:8%">Click to Skip</a>
+  <div class="contributors" align="center">
+      <table class="table table-striped" id="SLCFacultyTable">
+        <thead>
+          <tr class="header">
+            <th scope="col">Name</th>
+            <th scope="col">Prev Classes</th>
+          </tr>
+        </thead>
+        <tbody id="facultyTable">
+          {% for instructor in courseInstructors %}
+          <tr>
+            <td>
+              <input type="checkbox" class="instructorCheckbox" data-email="{{ instructor.email }}">
+              <a href="/serviceLearning/courseManagement/{{ instructor.username }}"> {{ instructor.firstName }} {{ instructor.lastName }}</a>
+            </td>
+            <td>{{ (', '.join(courseInstructors[instructor])) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+  </div>
+
+
+  {############################### Modals #####################################}
+
+  <!-- Modal for Uploading Course Participants -->
+  <div class="modal fade float-start col" id="modalSubmit">
+    <div class="modal-dialog custom-modal-size">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Upload Excel File</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form method="POST" action="/uploadCourseParticipant" enctype="multipart/form-data">
+          <div class="modal-body">
+            <div class="input-group">
+              <div class="row">
+                <div class="col"></div>
+                <div class="col-9">
+                  <label for="addCourseParticipants" class="form-label"></label>
+                  <input class="form-control" type="file" id="addCourseParticipants" name="addCourseParticipants" accept=".xlsx"></input>
+                </div>
+                <div class="col-3"></div>
+              </div>
+            </div>
+          </div>
+          <br>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" id="closeAddCourseParticipants">Close</button>
+            <button class="form-control btn btn-success position-relative" id="previewButton" style='width: 90px' disabled>Preview</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- modal for Preview -->
+  <div class="modal fade float-start col" id="modalPreview">
+    <form method="POST" action="/manageServiceLearning" enctype="multipart/form-data">
+      <div class="modal-dialog {% if cpPreviewErrors|count %} modal-lg {% endif %} custom-modal-size">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">List of Participants</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body py-0">
+            <br>
+            <!-- General Errors -->
+            {% for errortuple in cpPreviewErrors %}
+                {% if errortuple[1] %}
+                <p class="text-danger">{{errortuple[0]}}</p>
+                {% endif %}
+            {% endfor %}
+
+            <!-- Terms -->
+            {% for term, termDict in cpPreview.items() %}
+                {{"<hr>"|safe if not loop.first else "" }}
+                {% if termDict['errorMsg'] %}
+                    <h4>{{termDict['errorMsg']}}</h4>
+                {% else %}
+                    <h4>{{term}}</h4>
+
+                    <!-- Courses -->
+                    {% for course, courseDict in termDict['courses'].items() %}
+                    <div class="course-container {{loop.cycle('odd','even')}}">
+                        {% if courseDict['errorMsg'] %}
+                            <h6 class="text-danger">{{courseDict['errorMsg']}}</h6>
+                        {% else %}
+                            {% set errorcount = courseDict['students']|selectattr("displayMsg","equalto","")|list|count %}
+                            {% set count = courseDict['students']|count %}
+                            <h6><b>{{courseDict['displayMsg']}}</b></h6>
+                            <span class="{{"text-danger" if errorcount else ""}}">Imported {{count - errorcount}} students out of {{count}}</span>
+                            <a href="javascript:void(0)" class="studentview" data-course="{{course|replace(' ','')}}">View</a>
+
+                            <!-- Students -->
+                            <ul id="{{course|replace(' ','')}}_students" style="display:none">
+                                {% for userDict in courseDict['students'] %}
+                                <li class="{{"text-danger" if userDict['errorMsg'] else ''}}">&nbsp;{{userDict['displayMsg'] if userDict['displayMsg'] else userDict['errorMsg']}}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+          </div>
+          <br>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalPreview" id="cancelModalPreview">Cancel</button>
+            {% set disableSave = "disabled" if cpPreviewErrors|count else "" %}
+            <button type="submit" name="submitParticipant" class="btn btn-success" {{disableSave}} id="submitParticipant">Save File</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- modal for Preview -->
+  <div class="modal fade float-start col" id="modalPreview">
+    <form method="POST" action="/manageServiceLearning" enctype="multipart/form-data">
+      <div class="modal-dialog {% if previewParticipantsErrorFlag %} modal-lg {% endif %} custom-modal-size">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Course to Import</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body py-0">
+              {% if previewParticipantDisplayList %}
+                {% for line in previewParticipantDisplayList %}
+                  {% set splitRow = line.split("-") %}
+                  {% if splitRow[0] == "TERM" %}
+                    {% if not loop.first %}<hr>{% endif %}
+                    <h3><b>{{splitRow[1]}}</b></h3>
+                  {% endif %}
+                  {% if splitRow[0] == "COURSE" %}
+                    <div><b>{{splitRow[1]}}:</b></div>
+                  {% endif %}
+                  {% if splitRow[0] == "STUDENT" %}
+                    <div>&ensp;&ensp;{{splitRow[1]}}</div>
+                  {% endif %}
+                  {% if splitRow[0] == "ERROR" %}
+                  <div class="text-danger"><b>{{splitRow[1]}}</b></div>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+          </div>
+          <br>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalPreview" id="cancelModalPreview">Cancel</button>
+            {% set disableSave = "disabled" if previewParticipantsErrorFlag else "" %}
+            <button type="submit" name="submitParticipant" class="btn btn-success" {{disableSave}} id="submitParticipant">Save File</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <!-- end preview modal  -->
+  <div id="review-modal"></div>
+{% endblock %}
