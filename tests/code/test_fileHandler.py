@@ -1,5 +1,6 @@
 import pytest
 import os
+import shutil
 from werkzeug.datastructures import FileStorage
 
 from app import app
@@ -44,8 +45,7 @@ def test_makingdirectory():
     try:
        os.rmdir('app/static/files/eventattachments/90')
     except OSError as e:
-        if e.errno != 2:
-            raise e    
+        shutil.rmtree('app/static/files/eventattachments/90', ignore_errors = True)
     assert os.path.exists(os.path.join(path, str(event_id))) == False
     # Creating directory and making sure it exist
     eventFileStorage= [FileStorage(filename= "eventfile.pdf")]
