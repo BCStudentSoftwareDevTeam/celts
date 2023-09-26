@@ -54,7 +54,7 @@ class FileHandler:
                     attachmentName = str(saveOriginalFile.id) + "/" +  file.filename
 
                     # isFileInEvent checks if the attachment exists in the database under that eventId and filename.
-                    isFileInEvent = AttachmentUpload.select().where(AttachmentUpload.event_id == self.eventId,AttachmentUpload.isDisplayed == True,
+                    isFileInEvent = AttachmentUpload.select().where(AttachmentUpload.event_id == self.eventId,
                                                                     AttachmentUpload.fileName == attachmentName).exists()
                     if not isFileInEvent:
                         AttachmentUpload.create(event = self.eventId, fileName = attachmentName)
