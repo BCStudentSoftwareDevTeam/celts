@@ -65,8 +65,7 @@ function removeRsvpForEvent(eventID){
   // Calculate and update the countdown
   function updateCountdown(eventDate) {
       var now = new Date();
-      var eventTime = new Date(eventDate);
-      var timeRemaining = eventTime - now;
+      var timeRemaining = eventDate - now;
 
       if (timeRemaining > 0) {
           var days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
@@ -77,12 +76,14 @@ function removeRsvpForEvent(eventID){
           var countdownText = days + "d " + hours + "h " + minutes + "m " + seconds + "s";
           $("#countdown-text").text(countdownText);
       } else {
-          $("#countdown-text").text("now!");
+          var countdownText = "now!"
+          $("#countdown-text").text(countdownText);
       }
+      console.log(countdownText);
   }
 
-  // Set the event date (replace this with your actual event date)
-  var eventDate = new Date("2023-12-31T00:00:00Z"); // Replace with your event date
+  // Set the event date
+  var eventDate = new Date($("#countdown").data("event-date")); 
  
   // Initial update
   updateCountdown(eventDate);
