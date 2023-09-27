@@ -62,34 +62,45 @@ function removeRsvpForEvent(eventID){
   })
 }
 
-  // Calculate and update the countdown
-  function updateCountdown(eventDate) {
-      var now = new Date();
-      var timeRemaining = eventDate - now;
+// Calculate and update the countdown
+function updateCountdown(eventDate) {
+  var now = new Date();
+  var timeRemaining = eventDate - now;
 
-      if (timeRemaining > 0) {
-          var days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
-          var hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          var minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-          var seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+  if (timeRemaining > 0) {
+    var days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
 
-          var countdownText = days + "d " + hours + "h " + minutes + "m " + seconds + "s";
-          $("#countdown-text").text(countdownText);
-      } else {
-          var countdownText = "now!"
-          $("#countdown-text").text(countdownText);
-      }
-      console.log(countdownText);
+    var countdownText = '';
+
+    if (days > 1) {
+      countdownText = days + " days";
+    } else if (days === 0) {
+      countdownText = "Tomorrow";
+    } else {
+      countdownText = "Today";
+    }
+
+    $("#countdown-text").text(countdownText);
+  } else {
+    var countdownText = "Now!";
+    $("#countdown-text").text(countdownText);
   }
+  console.log(countdownText);
+}
 
-  // Set the event date
-  var eventDate = new Date($("#countdown").data("event-date")); 
- 
-  // Initial update
+// Set the event date from HTML data attribute
+var eventDate = new Date($("#countdown").data("event-date"));
+
+// Display the event date in Eastern Time (ET)
+var eventDateText = eventDate.toLocaleString('en-US', { timeZone: 'America/New_York' });
+$("#event-date").text(eventDateText);
+
+// Initial update
+updateCountdown(eventDate);
+
+// Update the countdown every second
+setInterval(function() {
   updateCountdown(eventDate);
+}, 1000);
 
-  // Update the countdown every second
-  setInterval(function() {
-      updateCountdown(eventDate);
-  }, 1000)
 
