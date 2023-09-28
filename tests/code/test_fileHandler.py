@@ -150,5 +150,30 @@ def test_deleteFile():
         handledCourseFile.deleteFile(coursefile.id)
         
         assert os.path.exists(path)==False
+@pytest.mark.integration
+def test_displayFile():
+    with mainDB.atomic() as transaction:
+        # create two image files to test the display function 
+        image1 = AttachmentUpload.create(event=15, fileName= 'coverImage.png')
+        image2 = AttachmentUpload.create(event=15, fileName= 'coverImage.svg')
 
+        eventfile = FileHandler(eventId=1)
+
+        # display image1 as an event cover 
+        eventfile.displayFile(image1)
+
+        assert AttachmentUpload.get_by_id(image1).isDisplayed ==True
+        assert AttachmentUpload.get_by_id(image2).isDisplayed ==False
+
+        # display image1 as an event cover 
+        eventfile.displayFile(image2)
+        assert AttachmentUpload.get_by_id(image2).isDisplayed ==True
+        assert AttachmentUpload.get_by_id(image1).isDisplayed ==False
+
+        transaction.rollback()
+
+
+
+
+        
 

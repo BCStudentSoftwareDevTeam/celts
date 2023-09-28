@@ -462,5 +462,5 @@ def saveRequirements(certid):
 def displayEventFile():
     fileData= request.form
     eventfile=FileHandler(eventId=fileData["id"])
-    eventfile.Display_file(fileData['id'])
+    eventfile.displayFile(fileData['id'])
     return ""
