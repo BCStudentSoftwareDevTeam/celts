@@ -68,21 +68,19 @@ function updateCountdown(eventDate) {
   var timeRemaining = eventDate - now;
 
   if (timeRemaining > 0) {
-    var days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+    var days = Math.floor((timeRemaining / (1000 * 60 * 60 * 24))+1);
 
     var countdownText = '';
 
     if (days > 1) {
-      countdownText = days + " days";
-    } else if (days === 0) {
-      countdownText = "Tomorrow";
-    } else {
-      countdownText = "Today";
-    }
+      countdownText = "in " + days + " days";
+    } else if (days === 1) {
+      countdownText = "tomorrow";
+    } 
 
     $("#countdown-text").text(countdownText);
   } else {
-    var countdownText = "Now!";
+    var countdownText = "today!";
     $("#countdown-text").text(countdownText);
   }
   console.log(countdownText);
@@ -97,10 +95,5 @@ $("#event-date").text(eventDateText);
 
 // Initial update
 updateCountdown(eventDate);
-
-// Update the countdown every second
-setInterval(function() {
-  updateCountdown(eventDate);
-}, 1000);
 
 
