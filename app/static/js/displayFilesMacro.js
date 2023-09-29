@@ -29,7 +29,6 @@ $(document).ready(function(){
     
             var attachmentId = $(this).data('id');
             var isChecked = $(this).is(':checked');
-            console.log(isChecked);
     
 
             $.ajax({
