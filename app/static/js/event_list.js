@@ -66,6 +66,7 @@ function removeRsvpForEvent(eventID){
 function updateCountdown(eventDate) {
   var now = new Date();
   var timeRemaining = eventDate - now;
+  
 
   if (timeRemaining > 0) {
     var days = Math.floor((timeRemaining / (1000 * 60 * 60 * 24))+1);
@@ -75,14 +76,19 @@ function updateCountdown(eventDate) {
     if (days > 1) {
       countdownText = "in " + days + " days";
     } else if (days === 1) {
-      countdownText = "tomorrow";
+      countdownText = "is happening tomorrow";
     } 
 
     $("#countdown-text").text(countdownText);
+    if (days = 0) {  
+    var countdownText = "is happening today!";
+    $("#countdown-text").text(countdownText);
+    }
   } else {
-    var countdownText = "today!";
+    var countdownText = "has already passed";
     $("#countdown-text").text(countdownText);
   }
+
   console.log(countdownText);
 }
 
