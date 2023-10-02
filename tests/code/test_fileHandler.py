@@ -166,7 +166,7 @@ def test_displayFile():
         assert AttachmentUpload.get_by_id(image2).isDisplayed ==False
 
         # display image2 as an event cover 
-        eventfile.displayFile(image2)
+        eventfile.changeDisplay(image2)
         assert AttachmentUpload.get_by_id(image2).isDisplayed ==True
         assert AttachmentUpload.get_by_id(image1).isDisplayed ==False
 
