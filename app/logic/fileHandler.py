@@ -95,7 +95,7 @@ class FileHandler:
             path = os.path.join(self.path, file.fileName)
             os.remove(path)
     
-    def displayFile(self, fileId):
+    def changeDisplay(self, fileId):
         file = AttachmentUpload.get_by_id(fileId)
         AttachmentUpload.update(isDisplayed=True).where(AttachmentUpload.id == fileId).execute()
         AttachmentUpload.update(isDisplayed=False).where(AttachmentUpload.event == file.event, AttachmentUpload.id != fileId).execute()
