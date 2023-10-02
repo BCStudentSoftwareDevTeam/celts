@@ -118,11 +118,17 @@ $(document).ready(function(e) {
       });
 
   // Add course instructor event handlers
-  // -----------------------------------------
       $("#instructorTable").on("click", "#remove", function() {
-        let closestRow =  $(this).closest("tr")
+        let closestRow = $(this).closest("tr");
+        let username = closestRow.data('username');
+    
+        if (username) {
+            $("#instructorTableNames input[value="+closestRow.data('username')+"]").remove()
+        }
+    
         closestRow.remove();
-      });
+    });
+    
       $("#courseInstructor").on('input', function() {
           searchUser("courseInstructor", createNewRow, true, null, "instructor");
       });
