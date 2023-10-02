@@ -74,7 +74,7 @@ function updateCountdown(eventDate) {
     var countdownText = '';
 
     if (days > 1) {
-      countdownText = "in " + days + " days";
+      countdownText = "is in " + days + " days";
     } else if (days === 1) {
       countdownText = "is happening tomorrow";
     } 
