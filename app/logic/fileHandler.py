@@ -99,4 +99,4 @@ class FileHandler:
         file = AttachmentUpload.get_by_id(fileId)
         AttachmentUpload.update(isDisplayed=True).where(AttachmentUpload.id == fileId).execute()
         AttachmentUpload.update(isDisplayed=False).where(AttachmentUpload.event == file.event, AttachmentUpload.id != fileId).execute()
-        return 0 
+        return "" 

@@ -39,7 +39,7 @@ $(document).ready(function(){
                     checked: isChecked
                 },
                 success: function(response) {
-                    msgFlash("Attachment is updated successfully", "success")
+                    msgToast("Event Cover ", "Successfully updated the event cover.")
                 },
                 error: function(xhr, status, error) {
                     msgFlash(error)
