@@ -114,21 +114,16 @@ def volunteerDetailsPage(eventID):
 
     eventRsvpData = list(EventRsvp.select(EmergencyContact, EventRsvp).join(EmergencyContact, JOIN.LEFT_OUTER, on=(EmergencyContact.user==EventRsvp.user)).where(EventRsvp.event==event))
     eventParticipantData = list(EventParticipant.select(EmergencyContact, EventParticipant).join(EmergencyContact, JOIN.LEFT_OUTER, on=(EmergencyContact.user==EventParticipant.user)).where(EventParticipant.event==event))
-    participantsAndRsvp = (eventParticipantData + eventRsvpData)
-    eventParticipantUsers = [obj for obj in eventParticipantData]
-    eventNonAttendedData = [obj for obj in eventRsvpData if obj not in eventParticipantUsers]
     
-    #get unique list of users for each category waitlist/notwaitlist,rsvped/attended
-    waitlistUser = list(set([obj for obj in participantsAndRsvp if obj.rsvpWaitlist]))
+    waitlistUser = list(set([obj for obj in eventRsvpData if obj.rsvpWaitlist]))
     rsvpUser = list(set([obj for obj in eventRsvpData if not obj.rsvpWaitlist ]))
-    attendedUser= list(set([obj for obj in eventParticipantData if obj not in eventNonAttendedData]))
 
     eventData = model_to_dict(event, recurse=False)
     eventData["program"] = event.program
 
     return render_template("/events/volunteerDetails.html",
                             waitlistUser = waitlistUser,
-                            attendedUser= attendedUser,
+                            attendedUser= eventParticipantData,
                             rsvpUser= rsvpUser,
                             event = event,
                             eventData = eventData)
