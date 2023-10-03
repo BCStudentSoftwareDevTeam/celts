@@ -30,9 +30,14 @@ def removeCeltsAdmin(user):
 
 def removeCeltsStudentStaff(user):
     user = User.get_by_id(user)
+    programManagerRoles = list([obj.program.programName for obj in ProgramManager.select(Program).join(Program).where(ProgramManager.user == user)])
+    programManagerRoles = ", ".join(programManagerRoles)
+    ProgramManager.delete().where(ProgramManager.user_id == user).execute()
     user.isCeltsStudentStaff = False
     user.save()
-    createAdminLog(f'Removed {user.firstName} {user.lastName} from a CELTS student staff member.')
+    createAdminLog(f'Removed {user.firstName} {user.lastName} from a CELTS student staff member'+ 
+                   (f', and as a manager of {programManagerRoles}.' if programManagerRoles else "."))
+
 
 def changeProgramInfo(newProgramName, newContactEmail, newContactName, newLocation, programId):
     """Updates the program info with a new sender and email."""
