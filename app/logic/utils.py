@@ -17,7 +17,8 @@ def selectSurroundingTerms(currentTerm, prevTerms=2):
     startTerm = max(1, currentTerm.id - prevTerms)
     surroundingTerms = (Term.select()
                             .where(Term.id >= startTerm)
-                            .where((Term.year <= currentTerm.year + 2)))
+                            .where((Term.year <= currentTerm.year + 2))
+                            .order_by(Term.termOrder))
 
     return surroundingTerms
 
