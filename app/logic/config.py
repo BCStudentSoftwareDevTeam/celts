@@ -24,7 +24,10 @@ def deep_update(d, u):
 def load_config_files(app, env):
     
     update_config_from_yaml(app, "default.yml")
-    update_config_from_yaml(app, f"{env}.yml")
+    if env:
+         update_config_from_yaml(app, "development.yml")
+    else:
+        update_config_from_yaml(app, "production.yml")
     update_config_from_yaml(app, "local-override.yml")
 
 def update_config_from_yaml(app, configFile):

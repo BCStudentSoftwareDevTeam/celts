@@ -8,9 +8,10 @@ from app.logic.config import load_config_files
 
 # Initialize our application
 app = Flask(__name__, template_folder="templates")
+debug = os.getenv('FLASK_DEBUG', False)
+app.config['DEBUG'] = debug
+load_config_files(app, debug)
 
-# Set the correct configuration according to the environment
-load_config_files(app, get_env())
 
 # set the secret key after configuration is set up
 app.secret_key = app.config['secret_key']
