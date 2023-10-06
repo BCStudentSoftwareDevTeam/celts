@@ -44,8 +44,8 @@
                         {% set event_date = eventData.startDate %}
                         <div>
                             <h5 id="date" style="margin: 0;"> Date:</h5>
-                            <p style="margin: 0;">{{event_date}}</p>
-                            <p id="countdown" data-event-date="{{event_date}}" data-event-time="{{event_time}}" style="margin: 0;">Event <span id="countdown-text"></span></p>            
+                            <p style="margin: 0;">{{event_date}} </p>
+                            <p id="countdown" data-event-date="{{event_date}}" style="margin: 0;">Event <span id="countdown-text"></span></p>            
                         </div>    
                     </div>
                     <br>
@@ -54,7 +54,7 @@
                         {% set event_time = eventData.timeStart %}
                         <div>
                             <h5 id="time" style="margin: 0;">Time:</h5>
-                            <p style="margin: 0;">{{eventData.timeStart}} - {{eventData.timeEnd}}</p>
+                            <p id="countdownTime" data-event-time="{{event_time}}" style="margin: 0;">{{eventData.timeStart}} - {{eventData.timeEnd}}</p>
                         </div>    
                     </div>
                     <br>
