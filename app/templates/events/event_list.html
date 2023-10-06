@@ -96,7 +96,7 @@
               <td><a href="/event/{{event.id}}/view" class="link-primary">{{event.name}}</a></td>
             {% endif %}
               {% if event.isCanceled %}
-                {% if managersProgramDict[event.program] and managersProgramDict[event.program]["managers"] | length > 2 %} 
+                {% if managersProgramDict[event.program] and managersProgramDict[event.program]["managers"] | length > 2 %}
                   <td colspan = 3 >This event has been canceled. Contact <a href="mailto:{{event.contactEmail}}" class="text-dark">{{managersProgramDict[event.program]["managers"]}}</a> if you have any questions.</td>
                 {% else %}
                   <td colspan = 3 >This event has been canceled. Contact <a href="mailto:celts@berea.edu;" class="text-dark">CELTS</a> if you have any questions.</td>
@@ -118,7 +118,7 @@
                 {% set btn_text = 'Email' if event.isPast or event.isCanceled else 'Invite' %}
                 <button class="btn {{btn_class}}" onclick="showEmailModal({{event.id}}, 'Unknown', {{ selectedTerm }}, {{ isPastEvent }}, '{{defaultTemplate}}')">
                   <span class="bi bi-envelope-fill"> {{btn_text}}</span>
-                </button>                
+                </button>
               </td>
             {% else %}
               <td>
@@ -132,7 +132,7 @@
             {% endif %}
           </tr>
       {% endfor %}
-      {% if selectedTerm == g.current_term and events[-1].isPast %}          
+      {% if selectedTerm == g.current_term and events[-1].isPast %}
         <tr>
           {% set colspan_value = 5 if type == 'bonner' or type == 'studentLed' else 6 %}
           <td colspan="{{colspan_value}}" class="p-3">There are no upcoming events for this program</td>
@@ -167,7 +167,7 @@
                     {% else %}
                         <span class="ms-auto fw-light fst-italic">{{countUpcomingStudentLedEvents[program.id]}} upcoming event{% if countUpcomingStudentLedEvents[program.id] > 1 %}s{% endif %}</span>
                     {% endif %}
-                   
+
             </button>
           </div>
           <div id="accordion__body_{{program}}_num_{{ loop.index }}"
@@ -195,6 +195,6 @@
 </div>
 {% include 'emailModal.html' %}
 <script>
-  var g_isPastTerm = {{"true" if (selectedTerm != g.current_term) else "false" }};
+  var g_isPastTerm ={{"false" if selectedTerm.isFutureTerm or selectedTerm.isCurrentTerm else "true" }};
 </script>
 {% endblock %}
