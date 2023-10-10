@@ -255,6 +255,8 @@
               <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteWarning">Delete Event</button>
               {% if event and not (event.isCanceled or eventPast) %}
                 <button type="button" class="btn btn-warning bordered-element m-2" data-bs-toggle="modal" data-bs-target="#cancelWarning">Cancel Event</button>
+              {% elif event and event.isCanceled %}
+                <button type="button" clas="btn btn-success" data-bs-toggle="modal" data-bs-target="renewWarning">Renew Event</button>
               {% endif %}
               <input type="submit" class="btn btn-primary" value="Save" />
             </div>
@@ -329,6 +331,27 @@
        <div>
          <input type="hidden" value="{{eventData.id}}" name="id">
        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="renewWarning" tabindex="-1" aria-labelledby="renewModel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="renewModel">Renew Event</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p> Are you sure you want to renew this event?</p>
+          <p> A renewed event will use the current events RSVP, and location information to create a new event.</p>
+        </div>
+        <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <form action="/event/{{eventData.id}}/renew" method='post'>
+                <button type="submit" class="btn btn-success">Renew Event</button>
+            </form>
+          </div>
       </div>
     </div>
   </div>
