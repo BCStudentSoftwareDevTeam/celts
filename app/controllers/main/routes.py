@@ -153,8 +153,7 @@ def viewUsersProfile(username):
         managersProgramDict = getManagerProgramDict(g.current_user)
         managersList = [id[1] for id in managersProgramDict.items()]
         
-        # laborInfo = {}
-        # laborInfo = getPositionAndTerm()
+        laborInfo = getPositionAndTerm()
         return render_template ("/main/userProfile.html",
                                 programs = programs,
                                 programsInterested = programsInterested,
@@ -170,7 +169,7 @@ def viewUsersProfile(username):
                                 profileNotes = profileNotes,
                                 bonnerRequirements = bonnerRequirements,
                                 managersList = managersList,
-                                # laborInfo = laborInfo                
+                                laborInfo = laborInfo                
                             )
     abort(403)
 

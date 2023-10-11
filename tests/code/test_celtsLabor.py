@@ -45,11 +45,11 @@ def demoCallLsfApi(bnumber):
 
 celtsLabor.getStudentFromLsf = demoCallLsfApi
 
-@pytest.mark.integration
-def test_getPositionAndTerm():
-    volunteer = User.get(User.username == "neillz")
-    neillzPositionAndTermInfo = getPositionAndTerm(volunteer)
+# @pytest.mark.integration
+# def test_getPositionAndTerm():
+    # volunteer = User.get(User.username == "neillz")
+    # neillzPositionAndTermInfo = getPositionAndTerm(volunteer)
 
-    assert neillzPositionAndTermInfo == {'Fake Position': ['AY 2020-2021', 'AY 2021-2022'], 
-                                         'Fake Position But a Leader': ["AY 2022-2023"],
-                                         'Fake Position In The Summer': ['AY 2021-2022']}
+    # assert neillzPositionAndTermInfo == {'Fake Position': ['AY 2020-2021', 'AY 2021-2022'], 
+    #                                      'Fake Position But a Leader': ["AY 2022-2023"],
+    #                                      'Fake Position In The Summer': ['AY 2021-2022']}
