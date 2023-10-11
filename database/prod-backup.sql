@@ -538,6 +538,20 @@ INSERT INTO `event` VALUES (1,'Stephenson Open House ',8,'17:00:00','19:00:00','
 UNLOCK TABLES;
 
 --
+-- Table structure for table `celtslabor`
+--
+
+CREATE TABLE `celtslabor` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(255) NOT NULL,
+  `positionTitle` varchar(255) NOT NULL,
+  `termName` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `celtslabor_user_id` (`user_id`),
+  CONSTRAINT `celtslabor_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
 -- Table structure for table `eventparticipant`
 --
 
