@@ -38,6 +38,6 @@ MAIL_PASSWORD: 'app password'" > app/config/local-override.yml
 fi
 
 export FLASK_APP=run.py
-export FLASK_DEBUG=1 
+export APP_ENV=development
 export FLASK_RUN_PORT=8080
 export FLASK_RUN_HOST=0.0.0.0   # To allow external routing to the application for development
