@@ -8,7 +8,7 @@ from app.logic.config import load_config_files
 
 # Initialize our application
 app = Flask(__name__, template_folder="templates")
-# debug = os.getenv('FLASK_DEBUG', False)
+
 env = os.environ.get('APP_ENV', 'production')
 
 load_config_files(app, env)
