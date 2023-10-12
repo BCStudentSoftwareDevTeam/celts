@@ -36,4 +36,3 @@ def update_config_from_yaml(app, configFile):
             app.config.update(deep_update(app.config, yaml.load(ymlfile, Loader=yaml.FullLoader)))
         except TypeError:
             print(F"There was an error loading the override config file {configFile}.")
-    

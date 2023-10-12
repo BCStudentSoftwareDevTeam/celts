@@ -14,7 +14,6 @@ env = os.environ.get('APP_ENV', 'development')
 # app.config['APP_ENV'] = env
 load_config_files(app, env)
 
-
 # set the secret key after configuration is set up
 app.secret_key = app.config['secret_key']
 
