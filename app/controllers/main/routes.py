@@ -35,7 +35,6 @@ from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
 from app.logic.utils import selectSurroundingTerms
 from app.logic.certification import getCertRequirementsWithCompletion
 from app.logic.createLogs import createRsvpLog, createAdminLog
-from app.logic.celtsLabor import getPositionAndTerm
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
@@ -153,7 +152,6 @@ def viewUsersProfile(username):
         managersProgramDict = getManagerProgramDict(g.current_user)
         managersList = [id[1] for id in managersProgramDict.items()]
         
-        laborInfo = getPositionAndTerm()
         return render_template ("/main/userProfile.html",
                                 programs = programs,
                                 programsInterested = programsInterested,
@@ -169,7 +167,6 @@ def viewUsersProfile(username):
                                 profileNotes = profileNotes,
                                 bonnerRequirements = bonnerRequirements,
                                 managersList = managersList,
-                                laborInfo = laborInfo                
                             )
     abort(403)
 
@@ -431,13 +428,11 @@ def serviceTranscript(username):
     totalHours = getTotalHours(username)
     allEventTranscript = getProgramTranscript(username)
     startDate = getStartYear(username)
-    studentLabor = getPositionAndTerm(user)
     return render_template('main/serviceTranscript.html',
                             allEventTranscript = allEventTranscript,
                             slCourses = slCourses.objects(),
                             totalHours = totalHours,
                             startDate = startDate,
-                            studentLabor = studentLabor,
                             userData = user)
 
 @main_bp.route('/searchUser/<query>', methods = ['GET'])

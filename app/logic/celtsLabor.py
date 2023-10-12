@@ -6,11 +6,11 @@ from collections import defaultdict
 from app.models.user import User
 from app.models.celtsLabor import CeltsLabor
 
-def getStudentFromLsf():
+def getCeltsLaborFromLsf():
     """
-    Make a call to the LSF endpoint which returns a specific students labor information.  
+        Make a call to the LSF endpoint which returns a specific students labor information.  
 
-    The returned data is a dictionary with B# key and value that is a list of dicts that contain the labor information. 
+        The returned data is a dictionary with B# key and value that is a list of dicts that contain the labor information. 
 
     """
     try: 
@@ -20,44 +20,79 @@ def getStudentFromLsf():
     except json.decoder.JSONDecodeError: 
         return {}
 
-def getPositionAndTerm():
+def parseLsfResponse():
     """
-    Parse the LSF response object so that it is only labor records for summer and academic years.
+        Parse the LSF response object so that it is only labor records for summer and academic years.
 
-    Input: json response object
-
+        Input: JSON response
+                {'B#': [{'positionTitle': 'Position Title',
+                         'termCode': 'Term Code', 
+                         'laborStart': Labor Start Date, 
+                         'laborEnd': Labor End Date, 
+                         'jobType': 'Job Type',
+                         'wls': 'WLS Lvl',
+                         'termName': 'Term Name'}],
+                 'B#': [{'positionTitle': 'Position Title',
+                         'termCode': 'Term Code', 
+                         'laborStart': Labor Start Date, 
+                         'laborEnd': Labor End Date, 
+                         'jobType': 'Job Type',
+                         'wls': 'WLS Lvl',
+                         'termName': 'Term Name'}]}
     """
-    laborDict = getStudentFromLsf()
+    laborDict = getCeltsLaborFromLsf()
 
     sutdentLaborDict = {}
     for key, value in laborDict.items(): 
-        # All term codes for summer end with 13 and all term codes for an academic year end in 00.
         try: 
             username = User.get(bnumber = key)
+            # All term codes for summer end with 13 and all term codes for an academic year end in 00 and those are the only terms we want to record.
             sutdentLaborDict[username] = collapsePositions([p for p in value if str(p["termCode"])[-2:] in ["00","13"]])
         except DoesNotExist: 
             pass
-    saveLaborToDb(sutdentLaborDict)
+        
+    refreshCeltsLaborRecords(sutdentLaborDict)
 
 def collapsePositions(positionList):
+    '''
+        Parse position information from the JSON response and return only the position title and term title 
+
+        Input: [{'positionTitle': 'Position Title',
+                 'termCode': 'Term Code', 
+                 'laborStart': Labor Start Date, 
+                 'laborEnd': Labor End Date, 
+                 'jobType': 'Job Type',
+                 'wls': 'WLS Lvl',
+                 'termName': 'Term Name'}]
+        
+        Returned:{'Position Title': ['Term Name']}
+
+    '''
     positionDict = defaultdict(list)
 
     for position in positionList:
         positionDict[position['positionTitle']].append(position['termName'])
-    
+
     return positionDict
 
-def saveLaborToDb(laborDict):
+def refreshCeltsLaborRecords(laborDict):
     """
-    Save the Labor Position info gotten from LSF to CELTS DB 
+        Input: Dictionary containing CELTS labor information
+                {'username1': {'positionTitle': ['termName'],
+                               'positionTitle': ['termName']},
+                'username2': {'positionTitle': ['termName', 'termName']}
+                }
+
+        Delete records for the students that are currently in the CeltsLabor table
+        if they are also in the laborDict and save content of laborDict to the table. 
     """
     celtsLabor = []
-
     for key, value in laborDict.items():
         for positionTitle, termNames in value.items():
             for termName in termNames: 
                 celtsLabor.append({"user": key,
                                    "positionTitle": positionTitle,
                                    "termName": termName})    
-                             
+
+    CeltsLabor.delete().where(CeltsLabor.user << [username['user'] for username in celtsLabor]).execute()                         
     CeltsLabor.insert_many(celtsLabor).on_conflict_replace().execute()

@@ -29,6 +29,7 @@ from app.models.emailLog import EmailLog
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.certification import Certification
 from app.models.certificationRequirement import CertificationRequirement
+from app.models.celtsLabor import CeltsLabor
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -1334,3 +1335,17 @@ profileNotes = [
     }
 ]
 ProfileNote.insert_many(profileNotes).on_conflict_replace().execute()
+
+celtsLabor = [
+    {
+        "user": "mupotsal",
+        "positionTitle": "Habitat For Humanity Cord.",
+        "termName": "AY 2020 - 2021"
+    },
+    {
+        "user": "ayisie",
+        "positionTitle": "Bonner Manager",
+        "termName": "Summer 2021"
+    }
+]
+CeltsLabor.insert_many(celtsLabor).on_conflict_replace().execute()
