@@ -80,7 +80,7 @@ function updateCountdown(eventDate) {
     } 
 
     $("#countdown-text").text(countdownText);
-    if (days = 0) {  
+    if (timeRemaining <= 0) {  
     var countdownText = "is happening today!";
     $("#countdown-text").text(countdownText);
     }
