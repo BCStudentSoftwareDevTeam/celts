@@ -37,6 +37,7 @@ MAIL_PASSWORD: 'app password'" > app/config/local-override.yml
 	echo "If your database has not been set up, you will need to run database/reset_database.sh"
 fi
 
+
 export FLASK_APP=run.py
 export APP_ENV=development
 export FLASK_RUN_PORT=8080

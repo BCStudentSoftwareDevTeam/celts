@@ -22,12 +22,9 @@ def deep_update(d, u):
     return d
 
 def load_config_files(app, env):
-    
+    # we want to switch between three config files
     update_config_from_yaml(app, "default.yml")
-    if env == 'development':
-         update_config_from_yaml(app, "development.yml")
-    else:
-        update_config_from_yaml(app, "production.yml")
+    update_config_from_yaml(app, f"{env}.yml")
     update_config_from_yaml(app, "local-override.yml")
  
 def update_config_from_yaml(app, configFile):
