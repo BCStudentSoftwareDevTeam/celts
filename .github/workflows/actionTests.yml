@@ -38,7 +38,7 @@ jobs:
     - name: Install dependencies
       run: source setup.sh
     - name: Activate environment and reset database
-      run: . venv/bin/activate && database/reset_database.sh test
+      run: . venv/bin/activate && echo "--${APP_ENV}--" && database/reset_database.sh test
     - name: Run tests
       run: . venv/bin/activate && ./tests/run_tests.sh && coverage html --omit=tests/*
     - name: Deploy code coverage report
