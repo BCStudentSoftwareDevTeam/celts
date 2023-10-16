@@ -57,7 +57,7 @@
       <div class="form-group col-md-6">
           <label class="form-label me-2" for="startDatePicker"><strong>Start Date</strong></label>
           <div class='input-group date' id="startDate">
-              <input autocomplete="off" type='text' class="form-control datePicker readonly" value="{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" name="startDate" placeholder="Pick a start date" id=startDatePicker required>
+              <input autocomplete="off" type='text' class="form-control datePicker" value="{{ eventData.startDate.strftime('%m-%d-%Y') if eventData.startDate and eventData.startDate.strftime else eventData.startDate}}" name="startDate" placeholder="Pick a start date" id=startDatePicker required>
               <div class="input-group-text" id="calendarIconStart">
                   <span><i class="bi bi-calendar-plus-fill"></i></span>
               </div>
@@ -263,7 +263,7 @@
               <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteWarning">Delete Event</button>
               {% if event and not (event.isCanceled or eventPast) %}
                 <button type="button" class="btn btn-warning bordered-element m-2" data-bs-toggle="modal" data-bs-target="#cancelWarning">Cancel Event</button>
-              {% elif event and event.isCanceled %}
+              {% elif event and (event.isCanceled or eventPast) %}
                 <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#renewWarning">Renew Event</button>
               {% endif %}
               <input type="submit" class="btn btn-primary" value="Save" />
@@ -342,7 +342,7 @@
       </div>
     </div>
   </div>
-
+<!-- Modal for Renew Event -->
   <form action="/event/{{eventData.id}}/renew" method='post'>
 
   <div class="modal fade" id="renewWarning" tabindex="-1" aria-labelledby="renewModel" aria-hidden="true">

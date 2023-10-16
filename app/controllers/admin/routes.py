@@ -160,41 +160,47 @@ def rsvpLogDisplay(eventId):
 
 @admin_bp.route('/event/<eventId>/renew', methods=['POST'])
 def renewEvent(eventId):
-    formData=request.form
-    canceledEvent = Event.get_by_id(eventId)
-    rsvpInfo = EventRsvp.select().where(EventRsvp.event == canceledEvent).execute()
-    newEvent = Event(
-                name = canceledEvent.name,
-                term = canceledEvent.term,
-                description = canceledEvent.description,
-                timeStart = formData['timeStart'],
-                timeEnd = formData['timeEnd'],
-                location = formData['location'],
-                isFoodProvided = canceledEvent.isFoodProvided,
-                isTraining = canceledEvent.isTraining,
-                isRsvpRequired = canceledEvent.isRsvpRequired,
-                isService = canceledEvent.isService,
-                isAllVolunteerTraining = canceledEvent.isAllVolunteerTraining,
-                rsvpLimit = canceledEvent.rsvpLimit,
-                startDate = f'{formData["startDate"][-4:]}-{formData["startDate"][0:-5]}',
-                endDate = f'{formData["endDate"][-4:]}-{formData["endDate"][0:-5]}',
-                recurringId = canceledEvent.recurringId,
-                contactEmail = canceledEvent.contactEmail,
-                contactName = canceledEvent.contactName,
-                program = canceledEvent.program,
-                isCanceled = False
-        )
-    newEvent.save()
-    rsvpInfo=[student for student in rsvpInfo]
-    for student in rsvpInfo:
-        newRsvp = EventRsvp(
-                user = student.user,
-                event = newEvent,
-                rsvpTime = student.rsvpTime,
-                rsvpWaitlist = student.rsvpWaitlist
+    try: 
+        formData=request.form
+        canceledEvent = Event.get_by_id(eventId)
+        rsvpInfo = EventRsvp.select().where(EventRsvp.event == canceledEvent).execute()
+        newEvent = Event(
+                    name = canceledEvent.name,
+                    term = canceledEvent.term,
+                    description = canceledEvent.description,
+                    timeStart = formData['timeStart'],
+                    timeEnd = formData['timeEnd'],
+                    location = formData['location'],
+                    isFoodProvided = canceledEvent.isFoodProvided,
+                    isTraining = canceledEvent.isTraining,
+                    isRsvpRequired = canceledEvent.isRsvpRequired,
+                    isService = canceledEvent.isService,
+                    isAllVolunteerTraining = canceledEvent.isAllVolunteerTraining,
+                    rsvpLimit = canceledEvent.rsvpLimit,
+                    startDate = f'{formData["startDate"][-4:]}-{formData["startDate"][0:-5]}',
+                    endDate = f'{formData["endDate"][-4:]}-{formData["endDate"][0:-5]}',
+                    recurringId = canceledEvent.recurringId,
+                    contactEmail = canceledEvent.contactEmail,
+                    contactName = canceledEvent.contactName,
+                    program = canceledEvent.program,
+                    isCanceled = False
             )
-        newRsvp.save()
-    return redirect(url_for('admin.eventDisplay', eventId = newEvent))
+        newEvent.save()
+        rsvpInfo=[student for student in rsvpInfo]
+        for student in rsvpInfo:
+            newRsvp = EventRsvp(
+                    user = student.user,
+                    event = newEvent,
+                    rsvpTime = student.rsvpTime,
+                    rsvpWaitlist = student.rsvpWaitlist
+                )
+            newRsvp.save()
+        flash("Event successfully renewed.", "success")
+        return redirect(url_for('admin.eventDisplay', eventId = newEvent))
+    except Exception as e:
+        print('Error while renewing event:', e)
+        return "", 500
+            
 
 
 @admin_bp.route('/event/<eventId>/view', methods=['GET'])
