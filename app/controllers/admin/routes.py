@@ -10,6 +10,7 @@ from app import app
 from app.models.program import Program
 from app.models.event import Event
 from app.models.eventRsvp import EventRsvp
+from app.models.eventParticipant import EventParticipant
 from app.models.user import User
 from app.models.eventTemplate import EventTemplate
 from app.models.adminLog import AdminLog
@@ -162,39 +163,50 @@ def rsvpLogDisplay(eventId):
 def renewEvent(eventId):
     try: 
         formData=request.form
-        canceledEvent = Event.get_by_id(eventId)
-        rsvpInfo = EventRsvp.select().where(EventRsvp.event == canceledEvent).execute()
+        priorEvent = Event.get_by_id(eventId)
+        rsvpInfo = list(EventRsvp.select().where(EventRsvp.event == priorEvent).execute())
+        participantInfo = list(EventParticipant.select().where(EventParticipant.event == priorEvent).execute())
         newEvent = Event(
-                    name = canceledEvent.name,
-                    term = canceledEvent.term,
-                    description = canceledEvent.description,
+                    name = priorEvent.name,
+                    term = priorEvent.term,
+                    description = priorEvent.description,
                     timeStart = formData['timeStart'],
                     timeEnd = formData['timeEnd'],
                     location = formData['location'],
-                    isFoodProvided = canceledEvent.isFoodProvided,
-                    isTraining = canceledEvent.isTraining,
-                    isRsvpRequired = canceledEvent.isRsvpRequired,
-                    isService = canceledEvent.isService,
-                    isAllVolunteerTraining = canceledEvent.isAllVolunteerTraining,
-                    rsvpLimit = canceledEvent.rsvpLimit,
+                    isFoodProvided = priorEvent.isFoodProvided,
+                    isTraining = priorEvent.isTraining,
+                    isRsvpRequired = priorEvent.isRsvpRequired,
+                    isService = priorEvent.isService,
+                    isAllVolunteerTraining = priorEvent.isAllVolunteerTraining,
+                    rsvpLimit = priorEvent.rsvpLimit,
                     startDate = f'{formData["startDate"][-4:]}-{formData["startDate"][0:-5]}',
                     endDate = f'{formData["endDate"][-4:]}-{formData["endDate"][0:-5]}',
-                    recurringId = canceledEvent.recurringId,
-                    contactEmail = canceledEvent.contactEmail,
-                    contactName = canceledEvent.contactName,
-                    program = canceledEvent.program,
+                    recurringId = priorEvent.recurringId,
+                    contactEmail = priorEvent.contactEmail,
+                    contactName = priorEvent.contactName,
+                    program = priorEvent.program,
                     isCanceled = False
             )
         newEvent.save()
-        rsvpInfo=[student for student in rsvpInfo]
-        for student in rsvpInfo:
-            newRsvp = EventRsvp(
-                    user = student.user,
-                    event = newEvent,
-                    rsvpTime = student.rsvpTime,
-                    rsvpWaitlist = student.rsvpWaitlist
-                )
-            newRsvp.save()
+        if priorEvent.isPast:
+            for student in participantInfo:
+                newRsvp = EventRsvp(
+                        user = student.user,
+                        event = newEvent,
+                        rsvpTime = student.rsvpTime,
+                        rsvpWaitlist = student.rsvpWaitlist
+                    )
+                newRsvp.save()
+        else:
+            for student in rsvpInfo:
+                newRsvp = EventRsvp(
+                        user = student.user,
+                        event = newEvent,
+                        rsvpTime = student.rsvpTime,
+                        rsvpWaitlist = False
+                    )
+                newRsvp.save()
+        
         flash("Event successfully renewed.", "success")
         return redirect(url_for('admin.eventDisplay', eventId = newEvent))
     except Exception as e:
