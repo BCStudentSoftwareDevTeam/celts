@@ -58,9 +58,11 @@ def updateCourse(courseData, attachments=None):
         This function will take in courseData for the SLC proposal page and a dictionary
         of instuctors assigned to the course and update the information in the db.
     """
+    print('=====================0', courseData['courseID'])
     with mainDB.atomic() as transaction:
         try:
             course = Course.get_by_id(courseData['courseID'])
+            print('=====================0')
             for toggler in ["slSectionsToggle", "permanentDesignation"]:
                 courseData.setdefault(toggler, "off")
             (Course.update(courseName=courseData["courseName"],

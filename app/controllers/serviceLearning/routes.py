@@ -102,6 +102,7 @@ def slcExitView():
 @serviceLearning_bp.route('/serviceLearning/saveExit', methods=['POST'])
 @serviceLearning_bp.route('/serviceLearning/saveProposal', methods=['POST'])
 def slcSaveContinue():
+    print("=====")
     """Will update the the course proposal and return an empty string since ajax request needs a response
     Also, it updates the course status as 'in progress'"""
     course = updateCourse(request.form.copy(), attachments=getFilesFromRequest(request))
