@@ -67,8 +67,7 @@ pem add app.models.certificationRequirement.CertificationRequirement
 pem add app.models.requirementMatch.RequirementMatch
 pem add app.models.eventViews.EventView
 pem add app.models.eventRsvpLog.EventRsvpLog
-pem add app.models.minor.Minor
-pem add app.models.minorRequirements.MinorReqs
+pem add app.models.communityEngagementRequest.CommunityEngagementRequest
 
 pem watch
 pem migrate
