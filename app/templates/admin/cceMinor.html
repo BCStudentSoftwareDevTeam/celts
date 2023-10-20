@@ -1,0 +1,61 @@
+{% set title = "Bonner Management" %}
+{% extends "base.html" %}
+
+{% block styles %}
+    {{super()}}
+    <!-- <link rel="stylesheet" href="{{url_for('static', filename ='css/bonner.css') }}?u={{lastStaticUpdate}}"> -->
+{% endblock %}
+
+{% block scripts %}
+    {{super()}}
+    <!-- <script type="module" src="{{url_for('static', filename = 'js/bonnerManagement.js') }}?u={{lastStaticUpdate}}"></script>
+    <script type="module" src="{{url_for('static', filename = 'js/sortable.min.js') }}?u={{lastStaticUpdate}}"></script> -->
+{% endblock %}
+
+{% block app_content %}
+
+    {# Figure out if we are showing a particular tab inside of the accordion #}
+    {% set subtab =  visibleAccordion[7:] if visibleAccordion and "cohort-" in visibleAccordion else "newest" %}
+    {% set visible_tab = subtab if visibleAccordion and subtab == "first" or subtab|int != 0 else "none" %}
+
+    <h1 class="text-center mb-5">CCE Minor Management</h1>
+
+    <h2>Interested Students</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Engagements met</th>
+                <th>Competed</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Data 1</td>
+                <td>Data 2</td>
+                <td>Data 3</td>
+            </tr>
+            <!-- Add more rows as needed -->
+        </tbody>
+    </table>
+
+    <h2>Students who meet engagements</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Engagements met</th>
+                <th>Competed</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Data 1</td>
+                <td>Data 2</td>
+                <td>Data 3</td>
+            </tr>
+            <!-- Add more rows as needed -->
+        </tbody>
+    </table>
+
+{% endblock %}
