@@ -9,16 +9,15 @@ function updateDate(obj) {
   var newMonth = dateToChange.getMonth();
   var newYear = dateToChange.getFullYear();
   var newDay = dateToChange.getDate();
-  console.log($(obj).attr("data-page-location"))
   if(obj.className.includes("startDatePicker")) {
     
-    $("#endDatePicker-"+$(obj).attr("data-page-location")).datepicker({minDate: new Date(  newYear, newMonth, newDay)});
-    $("#endDatePicker-"+$(obj).attr("data-page-location")).datepicker( "option", "minDate", new Date(  newYear, newMonth, newDay));
+    $("#endDatePicker-"+$(obj).data("page-location")).datepicker({minDate: new Date(  newYear, newMonth, newDay)});
+    $("#endDatePicker-"+$(obj).data("page-location")).datepicker( "option", "minDate", new Date(  newYear, newMonth, newDay));
   }
 
   if (obj.className.includes("endDatePicker")) {
-    $("#startDatePicker-"+$(obj).attr("data-page-location")).datepicker({maxDate: new Date(  newYear, newMonth, newDay)});
-    $("#startDatePicker-"+$(obj).attr("data-page-location")).datepicker("option", "maxDate", new Date(  newYear, newMonth, newDay));
+    $("#startDatePicker-"+$(obj).data("page-location")).datepicker({maxDate: new Date(  newYear, newMonth, newDay)});
+    $("#startDatePicker-"+$(obj).data("page-location")).datepicker("option", "maxDate", new Date(  newYear, newMonth, newDay));
   }
 }
 
@@ -41,8 +40,8 @@ function format24to12HourTime(timeStr){
   function calculateRecurringEventFrequency(){
       var eventDatesAndName = {name:$("#inputEventName").val(),
                                isRecurring: true,
-                               startDate:$("#startDatePicker").val(),
-                               endDate:$("#endDatePicker").val()}
+                               startDate:$(".startDatePicker")[0].value,
+                               endDate:$(".endDatePicker")[0].value}
       $.ajax({
         type:"POST",
         url: "/makeRecurringEvents",
@@ -68,7 +67,7 @@ function format24to12HourTime(timeStr){
  * Run when the webpage is ready for javascript
  */
 $(document).ready(function() {
-  if ( $(".startDatePicker").val() != $(".endDatePicker").val()){
+  if ( $(".startDatePicker")[0].value != $(".endDatePicker")[0].value){
     calculateRecurringEventFrequency();
   }
 
@@ -152,16 +151,16 @@ $(document).ready(function() {
   });
 
   $(".startDate").click(function() {
-    $("#startDatePicker-" + $(this).attr("data-page-location")).datepicker().datepicker("show");
+    $("#startDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
   });
 
   $(".endDate").click(function() {
-    $("#endDatePicker-" + $(this).attr("data-page-location")).datepicker().datepicker("show");
+    $("#endDatePicker-" + $(this).data("page-location")).datepicker().datepicker("show");
   });
 
 
   $(".startDatePicker, .endDatePicker").change(function(){
-    if ( $("#" + $(this).id).val() && $("#endDatePicker-" + $(this).attr("data-page-location")).val()){
+    if ( $(this).val() && $("#endDatePicker-" + $(this).data("page-location")).val()){
       calculateRecurringEventFrequency();
     }
   });
@@ -187,7 +186,7 @@ $(document).ready(function() {
         let lastRow = tableBody.find("tr:last");
         let newRow = lastRow.clone();
         newRow.find("td:eq(0) p").text(facilitator);
-        newRow.find("td:eq(0) div button").attr("data-id", username);
+        newRow.find("td:eq(0) div button").data("id", username);
         newRow.find("td:eq(0) div input").attr("id", username);
         newRow.attr("id", username);
         newRow.prop("hidden", false);
