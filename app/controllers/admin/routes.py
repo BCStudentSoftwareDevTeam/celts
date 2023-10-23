@@ -183,7 +183,7 @@ def eventDisplay(eventId):
     picurestype = [".jpeg", ".png", ".gif", ".jpg", ".svg", ".webp"]
     for attachment in associatedAttachments:
         for extension in picurestype:
-            if (attachment.fileName.endswith(extension)):
+            if (attachment.fileName.endswith(extension) and attachment.isDisplayed == True):
                 image = filepaths[attachment.fileName][0]
         if image:
             break
@@ -454,3 +454,11 @@ def saveRequirements(certid):
     newRequirements = updateCertRequirements(certid, request.get_json())
 
     return jsonify([requirement.id for requirement in newRequirements])
+
+
+@admin_bp.route("/displayEventFile", methods=["POST"])
+def displayEventFile():
+    fileData= request.form
+    eventfile=FileHandler(eventId=fileData["id"])
+    eventfile.changeDisplay(fileData['id'])
+    return ""
