@@ -3,7 +3,7 @@
 
 {% block scripts %}
     {{super()}}
-    <script></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/requestOtherEngagement.js') }}?u={{lastStaticUpdate}}"></script>
 {% endblock %}
 
 {% block app_content %}
@@ -13,7 +13,31 @@
       <!--Left half-->
       <div class='col-md-6'>
         <div class='form-group mb-4'>
-            <label></label>
+          <label class='form-label' for='studentUser'> {{ username }} : Other credit </label>
+        </div>
+
+        <div class='form-group mb-4'>
+            <label class='form-label' for='activity'><strong> Activity: </strong>
+              <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='otherActivity' name='otherActivity' value=""/>
+            </label>
+        </div>
+
+        <div class='form-group mb-4'>
+            <label class='form-label' for='activity'><strong> Hours: </strong>
+              <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='hours' name='hours' value=""/>
+            </label>
+        </div>
+
+        <div class='form-group mb-4'>
+            <label class='form-label' for='activity'><strong> Weeks: </strong>
+              <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='weeks' name='weeks' value=""/>
+            </label>
+        </div>
+
+        <div class='form-group mb-4'>
+            <label class='form-label' for='activity'><strong> Program/Company/Sevice: </strong>
+              <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='programCompanyService' name='programCompanyService' value=""/>
+            </label>
         </div>
       </div>
   </div>
