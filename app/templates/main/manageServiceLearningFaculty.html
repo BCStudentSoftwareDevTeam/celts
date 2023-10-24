@@ -161,7 +161,29 @@
             <div class="modal-header"> Edit Course </div>
             <form enctype="multipart/form-data" role="form" action="/manageServiceLearning/imported" method="POST">
               <div class="modal-body"> 
-                <div class="row ps-0 pe-2 form-group d-flex align-items-end">
+                <table class="table table-striped ml-4">
+                  <tbody>
+                    <tr>
+                      <td class="fw-bold">Course Name</td>
+                      <input class="form-control" id="courseName" name="courseName">
+                    </tr>
+                    <tr>
+                      <td class="fw-bold"> Course Abbreviation</td>
+                      <input class="form-control" id="courseAbbreviation" name="courseAbbreviation" disabled>
+                    </tr>
+                    <tr>
+                      <td class="fw-bold">Hours Earned on Completion</td>
+                      <input class="form-control" id="courseCredit" name="hoursEarned">
+                    </tr>
+                    <tr>
+                      <td class="fw-bold">Instructors</td>
+                      <input class="form-control" id="courseInstructor" name="courseInstructors">
+                    </tr>
+                  </tbody>
+                </table>
+
+                <!-- old info design #beans# -->
+                <!-- <div class="row ps-0 pe-2 form-group d-flex align-items-end">
                   <label class="col-auto form-label">Course Name: </label>
                   <input class="col form-control" id="courseName" name="courseName">
                 </div>
@@ -179,7 +201,7 @@
                 <div class="row ps-0 pe-2 form-group d-flex align-items-end">
                   <label class="col-auto form-label">Instructors: </label>
                   <input class="col form-control" id="courseInstructor" name="courseInstructors">
-                </div>
+                </div> -->
 
               </div>
 

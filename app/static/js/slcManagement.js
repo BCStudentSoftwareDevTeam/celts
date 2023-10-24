@@ -104,13 +104,14 @@ function getImportedCourseInfo(){
     type: "GET",
     success: function(courseDict) {
       console.log(`Got the course Dict, here it is: ${courseDict}`) // Beans
-      if (!courseDict.empty()){
+      if (Object.keys(courseDict).length !== 0){
         // update the alter imported course modal
+        
 
 
-        $('#courseName').val(courseDict.get('courseName'));
-        $('#courseAbbreviation').val(courseDict.get('courseAbbreviation'));
-        $('#courseCredit').val(courseDict.get('courseCredit'));
+        $('#courseName').val(courseDict['courseName']);
+        $('#courseAbbreviation').val(courseDict['courseAbbreviation']);
+        $('#courseCredit').val(courseDict['courseCredit']);
         // Beans: need to update the course instructors. Maybe create a table and add rows to the table in here?
 
       }
