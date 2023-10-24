@@ -32,7 +32,7 @@ function rsvpForEvent(eventID){
               from: 'ajax'}
 
   $.ajax({
-    url: "/rsvpForEvent", 
+    url: "/rsvpForEvent",
     type: "POST",
     data: rsvpInfo,
     success: function(s){
@@ -61,5 +61,6 @@ function removeRsvpForEvent(eventID){
 
   })
 }
+
 
 
