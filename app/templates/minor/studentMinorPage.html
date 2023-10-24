@@ -4,25 +4,26 @@
 {% block scripts %}
 {{super()}}
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.5.4/bootstrap-select.js"></script>
-  <!-- <script type="text/javascript" src="{{url_for('static', filename='js/addParticipants.js') }}?u={{lastStaticUpdate}}"></script> -->
+  <script type="text/javascript" src="{{url_for('static', filename='js/studentMinorPage.js') }}?u={{lastStaticUpdate}}"></script>
 {% endblock %}
 
 {% block app_content %}
     <div>
-        <div name="Header" class="row">
+        <input id="username" value="{{user.username}}" hidden/>
+        <div name="Header" class="row gx-5">
             <div class="p-2 border border-dark col-md-auto row">
                 <h2 class="col-md-auto">{{user.firstName}} {{user.lastName}}'s CCE Minor</h2>
-                <p class="col-md-auto p-2">Current status</p>
+                <p class="col-md-auto p-2"><b>Minor Status:</b> {{user.minorStatus}}</p>
             </div>
             <div class="col-md-auto">
-                <p class="p-3">
+                <p class="py-3">
                     Click 
                     <a href="https://berea.smartcatalogiq.com/en/current/catalog/departments-of-study/interdisciplinary-minor/community-and-civic-engagement-minor/">here</a>
                     for more information on the Community and Civic Engagement minor.</p>
             </div>
         </div>
-        <div class="py-5">
-            <input name="expressInterest" id="expressInterest" type="checkbox"/>
+        <div class="py-3">
+            <input name="expressInterest" id="expressInterest" checked={{user.minorInterest}} type="checkbox"/>
             <label for="expressInterest">Indicate interest in doing the minor</label>
         </div>
 

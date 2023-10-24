@@ -1,8 +1,9 @@
 $(document).ready(function(){
     $("#expressInterest").on("click", function() {
-        let username = $("")
+        let username = $("#username").val()
+        let data = {"username":username}
         $.ajax({
-            url: "",
+            url: "/profile/"+username+"/cceMinor",
             type: "POST",
             data: data,
             success: console.log("Successfully updated."),
