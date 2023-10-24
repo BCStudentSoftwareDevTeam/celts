@@ -173,7 +173,7 @@ def renewEvent(eventId):
             if formData['dateEnd']:
                 assert formData['dateStart'] < formData['dateEnd']
         except AssertionError:
-            flash("End time must be after start time", 'warning')
+            flash("End date must be after start date", 'warning')
             return redirect(url_for('admin.eventDisplay', eventId = eventId))
 
 
