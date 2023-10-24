@@ -223,9 +223,6 @@ def renewEvent(eventId):
         
         flash("Event successfully renewed.", "success")
         return redirect(url_for('admin.eventDisplay', eventId = newEvent))
-    except AssertionError:
-        flash("End time must be after start time", 'warning')
-        return redirect(url_for('admin.eventDisplay', eventId = eventId))
 
     except Exception as e:
         flash('Error while renewing event:', e)
