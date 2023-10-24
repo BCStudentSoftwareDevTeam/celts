@@ -502,7 +502,6 @@ def getEventRsvpCount(eventId):
     """
     return len(EventRsvp.select().where(EventRsvp.event_id == eventId))
 
-
 def eventCountDown(event_data):
     start_datetime = datetime.datetime.strptime(event_data['startDate'] + ' ' + event_data['timeStart'], '%m/%d/%Y %I:%M %p')
     current_datetime = datetime.datetime.now()
