@@ -44,7 +44,19 @@
                         {% set event_date = eventData.startDate %}
                         <div>
                             <h5 id="date" style="margin: 0;"> Date:</h5>
-                            <p id="countdown" data-event-date="{{event_date}}" style="margin: 0;" style="margin: 0;">{{event_date}} <span id="countdown-text"></span></p>
+                            <p style="margin: 0;">
+                                {{event_date}}
+                                {% if days < 0 %}
+                                    (Already passed)
+                                {% else %}
+                                    (In
+                                    {% if days >= 1 %}
+                                        {{ days }} {{ 'day' if days == 1 else 'days' }},
+                                    {% endif %}
+                                    {{ hours }} hour{{ 's' if hours != 1 }} and {{ minutes }} minute{{ 's' if minutes != 1 }}
+                                    )
+                                {% endif %}
+                            </p>
                         </div>    
                     </div>
                     <br>

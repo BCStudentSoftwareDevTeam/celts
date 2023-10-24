@@ -25,7 +25,7 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createAdminLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
-from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm
+from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm, eventCountDown
 from app.logic.participants import getEventParticipants, getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
@@ -244,6 +244,8 @@ def eventDisplay(eventId):
         eventData['timeStart'] = event.timeStart.strftime("%-I:%M %p")
         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
         eventData["startDate"] = event.startDate.strftime("%m/%d/%Y")
+        days, hours, minutes = eventCountDown(eventData)
+
 
         # Identify the next event in a recurring series
         if event.recurringId:
@@ -267,7 +269,10 @@ def eventDisplay(eventId):
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths,
                                 image = image,
-                                pageViewsCount= pageViewsCount)
+                                pageViewsCount= pageViewsCount,
+                                days=days, 
+                                hours=hours,
+                                minutes=minutes)
 
 
 @admin_bp.route('/event/<eventId>/cancel', methods=['POST'])
