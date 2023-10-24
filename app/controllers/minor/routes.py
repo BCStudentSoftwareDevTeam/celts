@@ -1,5 +1,5 @@
-from flask import Flask, g
-
+from flask import Flask, g, render_template, request
+from app.models.user import User
 from app.controllers.minor import minor_bp
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
@@ -7,7 +7,10 @@ def viewCceMinor(username):
     """
         Load minor management page with community engagements and summer experience
     """
-    pass
+    user = User.get_by_id(username)
+    # if request.method == 
+    return render_template("minor/studentMinorPage.html",
+                    user=user)
 
 @minor_bp.route('/cceMinor/<username>/identifyCommunityEngagement/<term>', methods=['GET'])
 def identifyCommunityEngagement(username):
@@ -30,7 +33,7 @@ def removeCommunityEngagement(username):
     """
     pass
 
-@minor_bp.route('/cceMinor/<username>/requestOtherCommunityEngagement', methods=['GET,POST'])
+@minor_bp. route('/cceMinor/<username>/requestOtherCommunityEngagement', methods=['GET,POST'])
 def requestOtherCommunityEngagement(username):
     """
         Load the "request other" form and submit it.

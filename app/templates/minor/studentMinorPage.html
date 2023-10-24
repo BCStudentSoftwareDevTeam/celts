@@ -1,0 +1,50 @@
+{%set title = "Student Minor Page"%}
+{% extends "base.html" %}
+
+{% block scripts %}
+{{super()}}
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.5.4/bootstrap-select.js"></script>
+  <!-- <script type="text/javascript" src="{{url_for('static', filename='js/addParticipants.js') }}?u={{lastStaticUpdate}}"></script> -->
+{% endblock %}
+
+{% block app_content %}
+    <div>
+        <div name="Header" class="row">
+            <div class="p-2 border border-dark col-md-auto row">
+                <h2 class="col-md-auto">{{user.firstName}} {{user.lastName}}'s CCE Minor</h2>
+                <p class="col-md-auto p-2">Current status</p>
+            </div>
+            <div class="col-md-auto">
+                <p class="p-3">
+                    Click 
+                    <a href="https://berea.smartcatalogiq.com/en/current/catalog/departments-of-study/interdisciplinary-minor/community-and-civic-engagement-minor/">here</a>
+                    for more information on the Community and Civic Engagement minor.</p>
+            </div>
+        </div>
+        <div class="py-5">
+            <input name="expressInterest" id="expressInterest" type="checkbox"/>
+            <label for="expressInterest">Indicate interest in doing the minor</label>
+        </div>
+
+        <div name="Sustained Community Engagement Section">
+            <div class="row">
+                <h3 class="col-md-auto">Sustained Community Engagement</h3>
+                <button class="col-md-auto btn btn-primary btn-sm">Request Other Experience</button>
+            </div>
+
+            <p class="pt-2">Approximately two hours of engagement over about ten weeks of a semester. Only two engagement activities can be credited in a single semester.</p>
+        </div>
+
+        <div name="Community-Engaged Summer Experience">
+            <h3 class="col-md-auto">Community-Engaged Summer Experience</h3>
+
+            <p class="pt-2">Must include at least 300 hours of work over the span of 8 weeks with a public-facing organization with a focus on applied work.</p>
+            <div class="row pl-5">
+                <input class="col-md-auto mr-3" type="text"/>
+                <button class="col-md-auto btn-primary btn-sm ml-3">Save</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
