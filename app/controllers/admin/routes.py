@@ -163,6 +163,7 @@ def rsvpLogDisplay(eventId):
 def renewEvent(eventId):
     try: 
         formData=request.form
+        assert formData['timeStart'] < formData['timeEnd']
         priorEvent = Event.get_by_id(eventId)
         rsvpInfo = list(EventRsvp.select().where(EventRsvp.event == priorEvent).execute())
         participantInfo = list(EventParticipant.select().where(EventParticipant.event == priorEvent).execute())
@@ -209,8 +210,12 @@ def renewEvent(eventId):
         
         flash("Event successfully renewed.", "success")
         return redirect(url_for('admin.eventDisplay', eventId = newEvent))
+    except AssertionError:
+        flash("End time must be after start time", 'warning')
+        return redirect(url_for('admin.eventDisplay', eventId = eventId))
+
     except Exception as e:
-        print('Error while renewing event:', e)
+        flash('Error while renewing event:', e)
         return "", 500
             
 
