@@ -7,8 +7,7 @@
 {% block scripts %}
     {{super()}}
     <script src="/static/js/event_list.js"></script>
-    <script var eventDate = "{{ event_date }}";></script>
-    <script var eventTime = "{{ event_time}}";></script>
+
     
 {% endblock %}
 
@@ -65,7 +64,7 @@
                         {% set event_time = eventData.timeStart %}
                         <div>
                             <h5 id="time" style="margin: 0;">Time:</h5>
-                            <p id="countdownTime" data-event-time="{{event_time}}" style="margin: 0;">{{eventData.timeStart}} - {{eventData.timeEnd}}</p>
+                            <p style="margin: 0;">{{eventData.timeStart}} - {{eventData.timeEnd}}</p>
                         </div>    
                     </div>
                     <br>
