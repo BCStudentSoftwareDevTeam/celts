@@ -55,6 +55,7 @@ CREATE TABLE `attachmentupload` (
   `event_id` int DEFAULT NULL,
   `course_id` int DEFAULT NULL,
   `fileName` varchar(255) NOT NULL,
+  `isDisplayed` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `attachmentupload_event_id` (`event_id`),
   KEY `attachmentupload_course_id` (`course_id`),
@@ -69,7 +70,7 @@ CREATE TABLE `attachmentupload` (
 
 LOCK TABLES `attachmentupload` WRITE;
 /*!40000 ALTER TABLE `attachmentupload` DISABLE KEYS */;
-INSERT INTO `attachmentupload` VALUES (1,437,NULL,'437/Poster.jpg');
+INSERT INTO `attachmentupload` VALUES (1,437,NULL,'437/Poster.jpg',0);
 /*!40000 ALTER TABLE `attachmentupload` ENABLE KEYS */;
 UNLOCK TABLES;
 
