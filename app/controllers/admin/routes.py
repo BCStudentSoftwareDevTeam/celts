@@ -185,7 +185,7 @@ def eventDisplay(eventId):
     picurestype = [".jpeg", ".png", ".gif", ".jpg", ".svg", ".webp"]
     for attachment in associatedAttachments:
         for extension in picurestype:
-            if (attachment.fileName.endswith(extension)):
+            if (attachment.fileName.endswith(extension) and attachment.isDisplayed == True):
                 image = filepaths[attachment.fileName][0]
         if image:
             break
@@ -430,12 +430,17 @@ def updatecohort(year, method, username):
     if method == "add":
         try:
             BonnerCohort.create(year=year, user=user)
+            flash(f"Successfully added {user.fullName} to {year} Bonner Cohort.", "success")
         except IntegrityError as e:
             # if they already exist, ignore the error
+            flash(f'Error: {user.fullName} already added.', "danger")
             pass
+        
     elif method == "remove":
         BonnerCohort.delete().where(BonnerCohort.user == user, BonnerCohort.year == year).execute()
+        flash(f"Successfully removed {user.fullName} from {year} Bonner Cohort.", "success")
     else:
+        flash(f"Error: {user.fullName} can't be added.", "danger")
         abort(500)
 
     return ""
@@ -456,3 +461,11 @@ def saveRequirements(certid):
     newRequirements = updateCertRequirements(certid, request.get_json())
 
     return jsonify([requirement.id for requirement in newRequirements])
+
+
+@admin_bp.route("/displayEventFile", methods=["POST"])
+def displayEventFile():
+    fileData= request.form
+    eventfile=FileHandler(eventId=fileData["id"])
+    eventfile.changeDisplay(fileData['id'])
+    return ""
