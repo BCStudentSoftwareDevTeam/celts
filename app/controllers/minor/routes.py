@@ -2,12 +2,14 @@ from flask import Flask, g, render_template, request
 from app.logic.minor import updateMinorInterest
 from app.models.user import User
 from app.controllers.minor import minor_bp
+from app.logic.minor import getCommunityEngagementByTerm
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET', "POST"])
 def viewCceMinor(username):
     """
         Load minor management page with community engagements and summer experience
     """
+    getCommunityEngagementByTerm(username)
     user = User.get_by_id(username)
     if request.method == "POST":
         updateMinorInterest(username)

@@ -3,10 +3,10 @@ $(document).ready(function(){
         let username = $("#username").val()
         let data = {"username":username}
         $.ajax({
-            url: "/profile/"+username+"/cceMinor",
+            url: "/cceMinor/"+username+"/indicateInterest",
             type: "POST",
             data: data,
-            success: console.log("Successfully updated."),
+            success: location.reload(),
             error: function(request, status, error) {
              msgFlash("Error saving changes!", "danger")
            }
