@@ -502,14 +502,15 @@ def getEventRsvpCount(eventId):
     """
     return len(EventRsvp.select().where(EventRsvp.event_id == eventId))
 
-def eventCountDown(event_data):
-    start_datetime = datetime.datetime.strptime(event_data['startDate'] + ' ' + event_data['timeStart'], '%m/%d/%Y %I:%M %p')
-    current_datetime = datetime.datetime.now()
+def eventCountDown(eventData, currentDatetime=None):
+    if currentDatetime is None:
+        currentDatetime = datetime.datetime.now()
 
-    time_difference = start_datetime - current_datetime
+    startDatetime = datetime.datetime.strptime(eventData['startDate'] + ' ' + eventData['timeStart'], '%m/%d/%Y %I:%M %p')
+    timeDifference = startDatetime - currentDatetime
 
-    daysRemaining = time_difference.days
-    hoursRemaining, remainder = divmod(time_difference.seconds, 3600)
+    daysRemaining = timeDifference.days
+    hoursRemaining, remainder = divmod(timeDifference.seconds, 3600)
     minutesRemaining = remainder // 60
 
     return daysRemaining, hoursRemaining, minutesRemaining

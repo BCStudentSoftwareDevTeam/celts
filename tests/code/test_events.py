@@ -23,7 +23,7 @@ from app.models.note import Note
 from app.logic.events import preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
 from app.logic.events import attemptSaveEvent, saveEventToDb, cancelEvent, deleteEvent, getParticipatedEventsForUser
 from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser
-from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount
+from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount, eventCountDown
 from app.logic.volunteers import addVolunteerToEventRsvp, updateEventParticipants
 from app.logic.participants import addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser
@@ -896,3 +896,51 @@ def test_getEventRsvpCount():
             assert rsvpd_user_count == (index + 1)
 
         transaction.rollback()
+
+@pytest.mark.integration
+def test_eventCountDownFutureEvent():
+    # Define a custom datetime representing the current time
+    customDatetime = datetime(2023, 10, 25, 8, 0, 0)
+    
+    # Define event data for a future event
+    event_data = {
+        'startDate': '10/26/2023',
+        'timeStart': '10:30 AM'
+    }
+    
+    days, hours, minutes = eventCountDown(event_data, currentDatetime=customDatetime)
+    
+    assert days == 1
+    assert hours == 2
+    assert minutes == 30
+
+@pytest.mark.integration
+def test_eventCountDownFutureEvent():
+    customDatetime = datetime(2023, 10, 20, 18, 25, 0)
+    
+    eventData = {
+        'startDate': '11/21/2023',
+        'timeStart': '5:00 PM'
+    }
+    
+    days, hours, minutes = eventCountDown(eventData, currentDatetime=customDatetime)
+    
+    assert days == 31
+    assert hours == 22
+    assert minutes == 35
+
+@pytest.mark.integration
+def test_eventCountDownPastEvent():
+    customDatetime = datetime(2023, 10, 27, 8, 0, 0)
+    
+    eventData = {
+        'startDate': '10/25/2023',
+        'timeStart': '3:00 PM'
+    }
+    
+    days, hours, minutes = eventCountDown(eventData, currentDatetime=customDatetime)
+    
+    assert days == -2
+    assert hours == 7
+    assert minutes == 0
+
