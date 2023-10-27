@@ -120,6 +120,7 @@ users = [
         "isCeltsStudentStaff": False,
         "major": None,
         "classLevel": None,
+        "minorInterest": 1,
     },
     {
         "username": "bryanta",
@@ -131,6 +132,8 @@ users = [
         "isStudent": True,
         "major": "Biology",
         "classLevel": "Senior",
+        "minorInterest": 1,
+
     },
     {
         "username": "partont",
@@ -142,6 +145,8 @@ users = [
         "phoneNumber": "(859)433-1559",
         "major": "Computer Science",
         "classLevel": "Senior",
+        "minorInterest": 1,
+
     },
     {
         "username": "mupotsal",
@@ -154,6 +159,8 @@ users = [
         "isCeltsStudentStaff": True,
         "major": None,
         "classLevel": None,
+        "minorInterest": 1,
+
     },
     {
         "username": "heggens",
