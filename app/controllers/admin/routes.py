@@ -31,6 +31,7 @@ from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
 from app.logic.serviceLearningCoursesData import parseUploadedFile, courseParticipantPreviewSessionCleaner
+from app.logic.courseManagement import editImportedCourses
 
 
 
@@ -359,12 +360,12 @@ def deleteCourseFile():
 
     return ""
 
-@admin_bp.route('/manageServiceLearning/imported/<courseID>', methods = ['POST', 'GET'])
-def alterImportedCourse(courseID):
+@admin_bp.route('/manageServiceLearning/imported', methods = ['POST', 'GET'])
+def alterImportedCourse(courseID=None):
     """
     Goals:
     This route is meant to be called via ajax from the course management page in order to fill out the scanty information
-    we posess on imported courses so that they can edit them in our modal.
+    we possess on imported courses so that they can edit them in our modal.
     There are two paths, GET and POST
 
     GET: On a get we should return a dictionary containing 
@@ -390,18 +391,46 @@ def alterImportedCourse(courseID):
 
 
 
-    # if request.method == 'POST':
-    #     courseName = request.form.get("courseName")
-    #     # courseAbbreviation = request.form.get("courseAbbreviation")      beans
-    #     courseHoursEarned = request.form.get("hoursEarned")
-    #     newCourseInstructors = request.form.get("courseInstructors")
+    if request.method == 'POST':
+        courseName = request.form.get("courseName")
+        courseAbbreviation = request.form.get("courseAbbreviation")    
+        courseHoursEarned = request.form.get("hoursEarned")
+        newCourseInstructors = request.form.get("courseInstructors")
+        courseData = {
+            "courseName" : courseName,
+            "courseAbbreviation" : courseAbbreviation,
+            "courseHoursEarned" : courseHoursEarned,
+            "listInstructors" : [instructor for instructor in newCourseInstructors.split(", ")]
+        }
 
 
-    #     # Update the course information in the DB with the new information
-    #     Course.update(courseName = courseName, 
-    #                   # courseAbbreviation = courseAbbreviation,
-    #                   courseCredit = courseHoursEarned
-    #                   ).where(id=courseID)
+        print("******************************************************")
+        print(courseData)
+
+
+        editImportedCourses(courseData)
+
+
+        print("************************************************************************************************")
+        print(courseName)
+
+        print("************************************************************************************************")
+        print(courseAbbreviation)
+
+        print("************************************************************************************************")
+        print(courseHoursEarned)
+
+        print("************************************************************************************************")
+        print(newCourseInstructors)
+
+        # Update the course information in the DB with the new information
+        # Course.update(courseName = courseName, 
+        #               courseAbbreviation = courseAbbreviation,
+        #               courseCredit = courseHoursEarned
+        #               ).where(id=courseID)
+                      
+
+        # Update course instructors for a course specified by the courseID
         
     #     # Update the instructor information in two parts
     #     # 1. Remove all instructors in the DB that were removed and not in the list
