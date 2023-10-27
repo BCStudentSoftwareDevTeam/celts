@@ -4,18 +4,17 @@ from app.models.user import User
 from app.controllers.minor import minor_bp
 from app.logic.minor import getCommunityEngagementByTerm
 
-@minor_bp.route('/profile/<username>/cceMinor', methods=['GET', "POST"])
+@minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
     """
         Load minor management page with community engagements and summer experience
     """
-    getCommunityEngagementByTerm(username)
+    terms = getCommunityEngagementByTerm(username)
     user = User.get_by_id(username)
-    if request.method == "POST":
-        updateMinorInterest(username)
         
     return render_template("minor/studentMinorPage.html",
-                    user=user)
+                    user=user,
+                    terms=terms)
 
 @minor_bp.route('/cceMinor/<username>/identifyCommunityEngagement/<term>', methods=['GET'])
 def identifyCommunityEngagement(username):
@@ -51,4 +50,4 @@ def addSummerExperience(username):
 
 @minor_bp.route('/cceMinor/<username>/indicateInterest', methods=['POST'])
 def indicateMinorInterest(username):
-    pass
+    updateMinorInterest(username)

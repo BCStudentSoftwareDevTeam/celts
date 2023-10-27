@@ -34,6 +34,20 @@
             </div>
 
             <p class="pt-2">Approximately two hours of engagement over about ten weeks of a semester. Only two engagement activities can be credited in a single semester.</p>
+            <div>
+                {% for term, engagements in terms.items() %}
+                    <h5>{{term}}</h5>
+                    <ul>
+                    {% for engagement in range(2) %}
+                        {% if engagement >= engagements|length %}
+                            <li><b>Missing engagement</b></li>
+                        {% else %}
+                            <li>{{engagements[engagement]}}</li>
+                        {% endif %}
+                    {% endfor %}
+                    </ul>
+                {% endfor %}
+            </div>
         </div>
 
         <div name="Community-Engaged Summer Experience">
