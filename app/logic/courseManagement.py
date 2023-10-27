@@ -71,27 +71,22 @@ def editImportedCourses(courseData):
         and update the information in the db.
     """
 
-
-    print("**************************************************")
-    print("This line has been hittttttttttttttttttttttttttttttttttttttttttttt")
     with mainDB.atomic() as transaction:
         try:
-            course = Course.get_by_id(courseData['courseID'])
+            courseID = 5
+            course = Course.get_by_id(courseID)
             Course.update(
                 courseName=courseData["courseName"],
-                courseAbbreviation=courseData["courseAbbreviation"],
                 courseCredit=courseData["courseHoursEarned"],
             ).where(Course.id == course.id).execute()
-
-
-            print("**************************************************")
-            print("This line has been hittttttttttttttttttttttttttttttttttttttttttttt")
             
-            # instructorList = []
-            # instructorList = courseData.getlist('listInstructors')
-            # CourseInstructor.delete().where(CourseInstructor.course == course).execute()
-            # for instructor in instructorList:
-            #     CourseInstructor.create(course=course, user=instructor)
+            instructorList = []
+            instructorList = courseData['listInstructors']
+            print(instructorList)
+            CourseInstructor.delete().where(CourseInstructor.course == course).execute()
+            for instructor in instructorList:
+                print(instructor)
+            #   CourseInstructor.create(course=course, user=instructor)
 
             return Course.get_by_id(course.id)
         

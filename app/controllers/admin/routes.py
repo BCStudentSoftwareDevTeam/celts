@@ -403,25 +403,7 @@ def alterImportedCourse(courseID=None):
             "listInstructors" : [instructor for instructor in newCourseInstructors.split(", ")]
         }
 
-
-        print("******************************************************")
-        print(courseData)
-
-
         editImportedCourses(courseData)
-
-
-        print("************************************************************************************************")
-        print(courseName)
-
-        print("************************************************************************************************")
-        print(courseAbbreviation)
-
-        print("************************************************************************************************")
-        print(courseHoursEarned)
-
-        print("************************************************************************************************")
-        print(newCourseInstructors)
 
         # Update the course information in the DB with the new information
         # Course.update(courseName = courseName, 
@@ -442,8 +424,6 @@ def alterImportedCourse(courseID=None):
     #     # 2. Insert all of the instructors that weren't instructors before that are in the list
     #     for instructor in newCourseInstructors:
     #         CourseInstructor.get_or_create(course_id = courseID, user_id = instructor.id)  #beans I have no idea if this works
-
-
 
     return redirect(url_for("main.getAllCourseInstructors"))
 
