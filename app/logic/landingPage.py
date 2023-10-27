@@ -9,7 +9,8 @@ def getManagerProgramDict(user):
     
     managerRows = (ProgramManager.select(ProgramManager, User, Program)
                                  .join(User)
-                                 .switch(ProgramManager).join(Program))
+                                 .switch(ProgramManager)
+                                 .join(Program))
     programs = Program.select().order_by(Program.programName)
     if not (user.isAdmin or user.isBonnerScholar):
         programs = programs.where(Program.isBonnerScholars == False)
