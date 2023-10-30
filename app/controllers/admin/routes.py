@@ -360,7 +360,7 @@ def deleteCourseFile():
 
     return ""
 
-@admin_bp.route('/manageServiceLearning/imported', methods = ['POST', 'GET'])
+@admin_bp.route('/manageServiceLearning/imported/<courseID>', methods = ['POST', 'GET'])
 def alterImportedCourse(courseID=None):
     """
     Goals:
@@ -379,7 +379,7 @@ def alterImportedCourse(courseID=None):
 
     BEANS: This is a big one, we need to abstract most of this functionality into a logic file and test it!!!
     """
-
+    
     if request.method == 'GET':
         try:
             targetCourse = Course.get_by_id(courseID)
