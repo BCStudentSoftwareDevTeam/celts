@@ -58,7 +58,9 @@ def landingPage():
 
     programsWithEventsList = list(programsWithEventsQuery)
 
-    return render_template("/main/landingPage.html", managerProgramDict=managerProgramDict, term=g.current_term,
+    return render_template("/main/landingPage.html", 
+                           managerProgramDict=managerProgramDict,
+                           term=g.current_term,
                            programsWithEventsList=programsWithEventsList)
 
 
