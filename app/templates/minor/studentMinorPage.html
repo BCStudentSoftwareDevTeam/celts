@@ -32,9 +32,47 @@
                 <h3 class="col-md-auto">Sustained Community Engagement</h3>
                 <button class="col-md-auto btn btn-primary btn-sm">Request Other Experience</button>
             </div>
-
             <p class="pt-2">Approximately two hours of engagement over about ten weeks of a semester. Only two engagement activities can be credited in a single semester.</p>
-            <div>
+            <div class="accordion" id="communityEngagement">
+              {% for term, engagements in terms.items() %}
+                <div class="accordion-item">
+                  <h3 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{loop.index}}" aria-expanded="true" aria-controls="collapse{{loop.index}}">
+                      {{term}}
+                    </button>
+                  </h3>
+                  <div id="collapse{{loop.index}}" class="accordion-collapse collapse" aria-labelledby="heading{{loop.index}}"+  data-bs-parent="#adminManagement">
+                    <div class="accordion-body">
+                      <div class="container-fluid col-10">
+                        <div class="row d-flex justify-content-center mb-3">
+                          <div class="col-md-6 mb-3">
+                            <table class="table mb-3">
+                              <thead>
+                                <tr>
+                                  <th scope="col">Engagement Activity</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {% for engagement in engagements %}
+                                   <tr>
+                                     <td id="engagement{{loop.index}}">{{engagement}}</td>
+                                   </tr>
+                                {% endfor %}
+                              </tbody>
+                              </table>
+                          </div>
+                          <div class="col-md-6 mb-3">
+                            Click on an engagement entry to see your event history or course information.
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+              
+            <!-- <div>
                 {% for term, engagements in terms.items() %}
                     <h5>{{term}}</h5>
                     <ul>
@@ -47,7 +85,7 @@
                     {% endfor %}
                     </ul>
                 {% endfor %}
-            </div>
+            </div> -->
         </div>
 
         <div name="Community-Engaged Summer Experience">
