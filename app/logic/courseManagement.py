@@ -85,8 +85,9 @@ def editImportedCourses(courseData):
             print(instructorList)
             CourseInstructor.delete().where(CourseInstructor.course == course).execute()
             for instructor in instructorList:
+                print("*****************************************************")
                 print(instructor)
-            #   CourseInstructor.create(course=course, user=instructor)
+                CourseInstructor.create(course=course, user=instructor)
 
             return Course.get_by_id(course.id)
         
