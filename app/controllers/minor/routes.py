@@ -1,9 +1,10 @@
 from flask import Flask, g, render_template, request
-from app.logic.minor import updateMinorInterest, getProgramEngagementHistory
+from app.logic.minor import updateMinorInterest, getProgramEngagementHistory, getCourseInformation
 from app.models.user import User
 from app.models.course import Course
 from app.controllers.minor import minor_bp
 from app.logic.minor import getCommunityEngagementByTerm
+from playhouse.shortcuts import model_to_dict
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -32,11 +33,9 @@ def getEngagementInformation(username, type, id, term):
     if type == "program":
         information = getProgramEngagementHistory(id, username, term)
     else:
-        information = Course.get_by_id(id)
+        information = getCourseInformation(id)
 
     return information
-
-
 
 @minor_bp.route('/cceMinor/<username>/addCommunityEngagement', methods=['POST'])
 def addCommunityEngagement(username):

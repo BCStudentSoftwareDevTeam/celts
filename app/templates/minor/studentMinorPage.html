@@ -38,7 +38,7 @@
                 <div class="accordion-item">
                   <h3 class="accordion-header" id="headingOne">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{loop.index}}" aria-expanded="true" aria-controls="collapse{{loop.index}}">
-                      {{term}}
+                      {{term[0]}}
                     </button>
                   </h3>
                   <div id="collapse{{loop.index}}" class="accordion-collapse collapse" aria-labelledby="heading{{loop.index}}"+  data-bs-parent="#adminManagement">
@@ -63,7 +63,7 @@
                               </tbody>
                               </table>
                           </div>
-                          <div class="col-md-6 p-3">
+                          <div class="col-md-6 p-3" id="set{{term[1]}}">
                             Click on an engagement entry to see your event history or course information.
                           </div>
                         </div>
@@ -73,21 +73,6 @@
                 </div>
                 {% endfor %}
               </div>
-              
-            <!-- <div>
-                {% for term, engagements in terms.items() %}
-                    <h5>{{term}}</h5>
-                    <ul>
-                    {% for engagement in range(2) %}
-                        {% if engagement >= engagements|length %}
-                            <li><b>Missing engagement</b></li>
-                        {% else %}
-                            <li>{{engagements[engagement]}}</li>
-                        {% endif %}
-                    {% endfor %}
-                    </ul>
-                {% endfor %}
-            </div> -->
         </div>
 
         <div name="Community-Engaged Summer Experience">
