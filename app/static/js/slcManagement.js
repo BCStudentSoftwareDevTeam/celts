@@ -97,32 +97,53 @@ function withdraw(){
 };
 
 
-function getImportedCourseInfo(){
+function getImportedCourseInfo(callback){
   courseID = $("#courseID").val();
-   $.ajax({
+  $.ajax({
     url: `/manageServiceLearning/imported/${courseID}`,
     type: "GET",
-    success: function(courseDict) {
+    success: function(data) { 
+      // Takes in a list of length 2. First element is the courseDict and the second is a list of instructors
+      if (data.length != 2){
+        callback();
+        return;
+      }
+      var courseDict = data[0];
+      var instructorList = data[1];
       console.log(`Got the course Dict, here it is: ${courseDict}`) // Beans
       if (Object.keys(courseDict).length !== 0){
         // update the alter imported course modal
-        
-
-
         $('#courseName').val(courseDict['courseName']);
         $('#courseAbbreviation').val(courseDict['courseAbbreviation']);
         $('#courseCredit').val(courseDict['courseCredit']);
-        // Beans: need to update the course instructors. Maybe create a table and add rows to the table in here?
-
+      }  
+      // Beans: need to update the course instructors. Maybe create a table and add rows to the table in here?
+      // TODO: Continue working on adding the instructors to a table. Also we need to actually pass this data in from the route
+      var htmlInstructorRows = "";
+      for (let instructor in instructorList){
+        htmlInstructorRows += " \
+            <tr data-username='" + instructor.user.username + "'> \
+              <td> \
+                <p class='mb-0'>" + instructor.user.firstName + " " + instructor.user.lastName + " (" + instructor.user.email + ")</p> \
+                  <input type='text' style='border: none' size='14' class='form-control-sm' id='inputPhoneNumber-" + instructor.user + "' name='courseInstructorPhone' aria-label='Instructor Phone' data-value='" + instructor.user.phoneNumber + "' value='" + instructor.user.phoneNumber + "' placeholder='Phone Number' /> \
+                  <a class='text-decoration-none primary editButton' tabindex='0' data-username='" + instructor.user.username + "' id='editButton-" + instructor.user + "' type='button'>Edit</a> \
+              </td> \
+              <td class='align-middle'> \
+                  <button id='remove' type='button' class='btn btn-danger removeButton'>Remove</button> \
+              </td> \
+            </tr>"
       }
+
+      callback();
+      
     }
   })
 }
 
 async function showImportedCourseModal(){
-  await getImportedCourseInfo();
-  $('#alterModal').modal('show');
-  
+  getImportedCourseInfo(function(){  // Since ajax calls send immediately we need following actions called as a callback
+    $('#alterModal').modal('show'); 
+  });
 }
 
 
