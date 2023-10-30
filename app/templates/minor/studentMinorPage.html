@@ -55,13 +55,15 @@
                               <tbody>
                                 {% for engagement in engagements %}
                                    <tr>
-                                     <td id="engagement{{loop.index}}">{{engagement}}</td>
+                                        <td>
+                                            <button id="{{engagement['type']}}{{engagement['id']}}" name="{{engagement['term']}}" type="button" class="btn btn-link" onclick="showEngagementInformation(this)">{{engagement["name"]}}</button>
+                                        </td>
                                    </tr>
                                 {% endfor %}
                               </tbody>
                               </table>
                           </div>
-                          <div class="col-md-6 mb-3">
+                          <div class="col-md-6 p-3">
                             Click on an engagement entry to see your event history or course information.
                           </div>
                         </div>

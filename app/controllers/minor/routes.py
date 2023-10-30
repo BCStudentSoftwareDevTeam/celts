@@ -1,6 +1,7 @@
 from flask import Flask, g, render_template, request
-from app.logic.minor import updateMinorInterest
+from app.logic.minor import updateMinorInterest, getProgramEngagementHistory
 from app.models.user import User
+from app.models.course import Course
 from app.controllers.minor import minor_bp
 from app.logic.minor import getCommunityEngagementByTerm
 
@@ -22,6 +23,20 @@ def identifyCommunityEngagement(username):
         Load all program and course participation records for that term
     """
     pass
+
+@minor_bp.route('/cceMinor/<username>/getEngagementInformation/<type>/<term>/<id>', methods=['GET'])
+def getEngagementInformation(username, type, id, term):
+    """
+        For a particular engagement activity (program or course), get the participation history or course information respectively.
+    """
+    if type == "program":
+        information = getProgramEngagementHistory(id, username, term)
+    else:
+        information = Course.get_by_id(id)
+
+    return information
+
+
 
 @minor_bp.route('/cceMinor/<username>/addCommunityEngagement', methods=['POST'])
 def addCommunityEngagement(username):
