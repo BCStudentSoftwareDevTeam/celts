@@ -47,7 +47,7 @@ def landingPage():
     # Optimize the query to fetch programs with non-canceled, non-past events in the current term
     programsWithEventsList = list(Program.select(Program, Event)
                                          .join(Event)
-                                         .where((Event.term == g.current_term) & (Event.isCanceled == False) & (Event.isPast == False))
+                                         .where((Event.term == g.current_term) and (Event.isCanceled == False) and (Event.isPast == False))
                                          .distinct())  # Ensure only unique programs are included
 
     return render_template("/main/landingPage.html", 
