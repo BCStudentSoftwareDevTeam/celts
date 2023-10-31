@@ -104,35 +104,38 @@ function getImportedCourseInfo(callback){
     type: "GET",
     success: function(data) { 
       // Takes in a list of length 2. First element is the courseDict and the second is a list of instructors
-      if (data.length != 2){
+      if (Object.keys(data).length != 2){
         callback();
         return;
       }
-      var courseDict = data[0];
-      var instructorList = data[1];
-      console.log(`Got the course Dict, here it is: ${courseDict}`) // Beans
-      if (Object.keys(courseDict).length !== 0){
+      var courseData = data.courseData;
+      var courseInstructors = data.courseInstructors;
+      console.log(`Got the course Dict, here it is: ${courseData}`) // Beans
+      if (Object.keys(courseData).length !== 0){
         // update the alter imported course modal
-        $('#courseName').val(courseDict['courseName']);
-        $('#courseAbbreviation').val(courseDict['courseAbbreviation']);
-        $('#courseCredit').val(courseDict['courseCredit']);
+        $('#courseName').val(courseData['courseName']);
+        $('#courseAbbreviation').val(courseData['courseAbbreviation']);
+        $('#courseCredit').val(courseData['courseCredit']);
       }  
       // Beans: need to update the course instructors. Maybe create a table and add rows to the table in here?
       // TODO: Continue working on adding the instructors to a table. Also we need to actually pass this data in from the route
+      console.log(`Got the instructors, here they are: ${courseInstructors}`)
+      console.log(courseInstructors)
       var htmlInstructorRows = "";
-      for (let instructor in instructorList){
+      for (let instructor of courseInstructors){
         htmlInstructorRows += " \
-            <tr data-username='" + instructor.user.username + "'> \
+            <tr data-username='" + instructor['username'] + "'> \
               <td> \
-                <p class='mb-0'>" + instructor.user.firstName + " " + instructor.user.lastName + " (" + instructor.user.email + ")</p> \
-                  <input type='text' style='border: none' size='14' class='form-control-sm' id='inputPhoneNumber-" + instructor.user + "' name='courseInstructorPhone' aria-label='Instructor Phone' data-value='" + instructor.user.phoneNumber + "' value='" + instructor.user.phoneNumber + "' placeholder='Phone Number' /> \
-                  <a class='text-decoration-none primary editButton' tabindex='0' data-username='" + instructor.user.username + "' id='editButton-" + instructor.user + "' type='button'>Edit</a> \
+                <p class='mb-0'>" + instructor['firstName'] + " " + instructor.lastName + " (" + instructor.email + ")</p> \
+                  <input type='text' style='border: none' size='14' class='form-control-sm' id='inputPhoneNumber-" + instructor.username + "' name='courseInstructorPhone' aria-label='Instructor Phone' data-value='" + instructor.phoneNumber + "' value='" + instructor.phoneNumber + "' placeholder='Phone Number' /> \
+                  <a class='text-decoration-none primary editButton' tabindex='0' data-username='" + instructor.username + "' id='editButton-" + instructor.username + "' type='button'>Edit</a> \
               </td> \
               <td class='align-middle'> \
                   <button id='remove' type='button' class='btn btn-danger removeButton'>Remove</button> \
               </td> \
             </tr>"
       }
+      $("#instructorTableBody").append(htmlInstructorRows);
 
       callback();
       

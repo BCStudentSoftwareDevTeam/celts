@@ -382,8 +382,9 @@ def alterImportedCourse(courseID=None):
     
     if request.method == 'GET':
         try:
-            targetCourse = Course.get_by_id(courseID)
-            return jsonify(model_to_dict(targetCourse, recurse=False))
+            courseData = Course.select(Course.courseName, Course.courseAbbreviation, Course.courseCredit).where(Course.id == courseID).dicts().first()
+            courseInstructors = list(CourseInstructor.select(CourseInstructor, User).join(User).where(CourseInstructor.course_id == courseID).dicts())
+            return jsonify(courseData = courseData, courseInstructors = courseInstructors)
         except Exception as e:
             flash("Course not found or something else went wrong")  # beans
             return None
