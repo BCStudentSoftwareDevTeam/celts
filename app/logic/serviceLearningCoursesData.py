@@ -261,4 +261,5 @@ def saveCourseParticipantsToDatabase(cpPreview):
                     continue
 
                 CourseParticipant.get_or_create(user=userDict['user'], 
-                                                course=courseObj)
+                                                course=courseObj,
+                                                hoursEarned=20)
