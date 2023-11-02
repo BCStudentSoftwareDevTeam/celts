@@ -48,7 +48,8 @@ def landingPage():
     programsWithEventsList = list(Program.select(Program, Event)
                                          .join(Event)
                                          .where((Event.term == g.current_term) and (Event.isCanceled == False) and (Event.isPast == False))
-                                         .distinct())  # Ensure only unique programs are included
+                                         .distinct()
+                                         .execute())  # Ensure only unique programs are included
 
     return render_template("/main/landingPage.html", 
                            managerProgramDict=managerProgramDict,
