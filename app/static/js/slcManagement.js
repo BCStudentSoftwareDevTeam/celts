@@ -110,32 +110,30 @@ function getImportedCourseInfo(callback){
       }
       var courseData = data.courseData;
       var courseInstructors = data.courseInstructors;
-      console.log(`Got the course Dict, here it is: ${courseData}`) // Beans
       if (Object.keys(courseData).length !== 0){
         // update the alter imported course modal
         $('#courseName').val(courseData['courseName']);
         $('#courseAbbreviation').val(courseData['courseAbbreviation']);
         $('#courseCredit').val(courseData['courseCredit']);
       }  
-      // Beans: need to update the course instructors. Maybe create a table and add rows to the table in here?
-      // TODO: Continue working on adding the instructors to a table. Also we need to actually pass this data in from the route
-      console.log(`Got the instructors, here they are: ${courseInstructors}`)
-      console.log(courseInstructors)
       var htmlInstructorRows = "";
+      var instructorTableNameInputs = "";
       for (let instructor of courseInstructors){
-        htmlInstructorRows += " \
-            <tr data-username='" + instructor['username'] + "'> \
-              <td> \
-                <p class='mb-0'>" + instructor['firstName'] + " " + instructor.lastName + " (" + instructor.email + ")</p> \
-                  <input type='text' style='border: none' size='14' class='form-control-sm' id='inputPhoneNumber-" + instructor.username + "' name='courseInstructorPhone' aria-label='Instructor Phone' data-value='" + instructor.phoneNumber + "' value='" + instructor.phoneNumber + "' placeholder='Phone Number' /> \
-                  <a class='text-decoration-none primary editButton' tabindex='0' data-username='" + instructor.username + "' id='editButton-" + instructor.username + "' type='button'>Edit</a> \
-              </td> \
-              <td class='align-middle'> \
-                  <button id='remove' type='button' class='btn btn-danger removeButton'>Remove</button> \
-              </td> \
-            </tr>"
+        htmlInstructorRows += `
+            <tr data-username='${instructor['username']}'>
+              <td>
+                <p class='mb-0'> ${instructor.firstName} ${instructor.lastName} (${instructor.email})</p>
+                  <input type='text' style='border: none' size='14' class='form-control-sm' id='inputPhoneNumber-${instructor.username}' name='courseInstructorPhone' aria-label='Instructor Phone' data-value='${instructor.phoneNumber}' value='${instructor.phoneNumber}' placeholder='Phone Number' />
+                  <a class='text-decoration-none primary editButton' tabindex='0' data-username='${instructor.username}' id='editButton-${instructor.username}' type='button'>Edit</a>
+              </td>
+              <td class='align-middle'>
+                  <button id='remove' type='button' class='btn btn-danger removeButton'>Remove</button>
+              </td>
+            </tr>`
+        instructorTableNameInputs += `<input hidden name="instructor[]" value='${instructor.username}'/>`
       }
-      $("#instructorTableBody").append(htmlInstructorRows);
+      $("#instructorTableBody").html(htmlInstructorRows);
+      $("#instructorTableNames").html(instructorTableNameInputs);
 
       callback();
       
