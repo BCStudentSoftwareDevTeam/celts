@@ -1,0 +1,30 @@
+{% set title = "Admin Logs" %}
+{% extends "base.html" %}
+
+{% block scripts %}
+  {{super()}}
+  <script type="module" src="/static/js/spreadsheetMaker.js"></script>
+
+  {% block styles %}
+    {{super()}}
+  {% endblock %}
+{% endblock %}
+{% block app_content %}
+<select id="academicYear">
+	<option value="">Select an academic year</option>
+	{% for academicYear in academicYears %}
+		<option value="{{academicYear}}">{{academicYear}}</option>
+	{% endfor %}
+</select>
+
+
+<select id="academicTerm">
+	<option value="">Select a term</option>
+	{% for term in academicTerms %}
+		<option value="{{term}}">{{term}}</option>
+	{% endfor %}
+</select>
+
+<button class="btn btn-primary" id="createSpreadsheet">Generate Spreadsheet</button>
+
+{% endblock %}
