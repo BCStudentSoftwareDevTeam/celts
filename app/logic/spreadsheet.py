@@ -12,13 +12,13 @@ from app.models.event import Event
 from app.models.term import Term
 
 
-def getUniqueVolunteers():
+def getUniqueVolunteers(academicYear):
 
     uniqueVolunteers = (EventParticipant.select(fn.DISTINCT(EventParticipant.user_id), fn.CONCAT(User.firstName, ' ', User.lastName), User.bnumber)
                                         .join(User).switch(EventParticipant)
                                         .join(Event)
                                         .join(Term)
-                                        .where(Term.academicYear == "2022-2023")
+                                        .where(Term.academicYear == academicYear)
                                         .order_by(EventParticipant.user_id))
     
     return uniqueVolunteers.tuples()
@@ -50,19 +50,19 @@ def volunteerProgramHours():
 
     return volunteerProgramHours.tuples()
 
-def onlyCompletedAllVolunteer():
+def onlyCompletedAllVolunteer(academicYear):
     # Return volunteers that only attended the All Volunteer Training and then nothing else
 
     subQuery = (EventParticipant.select(EventParticipant.user_id)
                                 .join(Event)
                                 .join(Term)
-                                .where(Event.name != "All Volunteer Training", Term.academicYear == "2022-2023"))
+                                .where(Event.name != "All Volunteer Training", Term.academicYear == academicYear))
 
     onlyAllVolunteer = (EventParticipant.select(EventParticipant.user_id, fn.CONCAT(User.firstName, " ", User.lastName))
                                         .join(User).switch(EventParticipant)
                                         .join(Event)
                                         .join(Term)
-                                        .where(Event.name == "All Volunteer Training", Term.academicYear == "2022-2023", EventParticipant.user_id.not_in(subQuery)))
+                                        .where(Event.name == "All Volunteer Training", Term.academicYear == academicYear, EventParticipant.user_id.not_in(subQuery)))
 
     return onlyAllVolunteer.tuples()
 
@@ -115,11 +115,11 @@ def repeatVolunteers():
     
     return repeatAllProgramQuery.tuples()
 
-def getRetentionRate():
+def getRetentionRate(academicYear):
     retentionDict = []
-
-    fallParticipationDict = termParticipation("Fall 2022")
-    springParticipationDict = termParticipation("Spring 2023")  
+    (fall, spring) = academicYear.split("-")
+    fallParticipationDict = termParticipation(f"Fall {fall}")
+    springParticipationDict = termParticipation(f"Spring {spring}")  
 
     # calculate the retention rate using the defined function
     retention_rate_dict = calculateRetentionRate(fallParticipationDict, springParticipationDict)
@@ -263,7 +263,7 @@ def makeDataXls(getData, columnTitles, sheetName, workbook):
         setColumnWidth = max(len(str(x)) for x in columnData)
         worksheet.set_column(column, column, setColumnWidth + 3)
 
-def create_spreadsheet(): 
+def create_spreadsheet(academicYear): 
     filepath = app.config['files']['base_path'] + '/volunteer_data.xlsx'
     workbook = xlsxwriter.Workbook(filepath, {'in_memory': True})
 
@@ -285,12 +285,12 @@ def create_spreadsheet():
     makeDataXls(volunteerMajorAndClass(User.classLevel, reorderClassLevel=True), volunteerClassColumns, "Volunteers By Class Level", workbook)
     makeDataXls(repeatVolunteersPerProgram(), repeatProgramEventVolunteerColumns, "Repeat Volunteers Per Program", workbook)
     makeDataXls(repeatVolunteers(), repeatAllProgramVolunteerColumns, "Repeat Volunteers All Programs", workbook)
-    makeDataXls(getRetentionRate(), volunteerProgramRetentionRateAcrossTermColumns, "Retention Rate By Semester", workbook)
-    makeDataXls(getUniqueVolunteers(), uniqueVolunteersColumns, "Unique Volunteers", workbook)
+    makeDataXls(getRetentionRate(academicYear), volunteerProgramRetentionRateAcrossTermColumns, "Retention Rate By Semester", workbook)
+    makeDataXls(getUniqueVolunteers(academicYear), uniqueVolunteersColumns, "Unique Volunteers", workbook)
     makeDataXls(totalVolunteerHours(), totalVolunteerHoursColumns, "Total Hours", workbook)
     makeDataXls(volunteerProgramHours(), volunteerProgramHoursColumns, "Volunteer Hours By Program", workbook)
-    makeDataXls(onlyCompletedAllVolunteer(), onlyCompletedAllVolunteerColumns , "Only All Volunteer Training", workbook)
-    makeDataXls(getVolunteerProgramEventByTerm(Term.get_by_id(8)), volunteerProgramEventByTerm, "Fall 2022", workbook)
+    makeDataXls(onlyCompletedAllVolunteer(academicYear), onlyCompletedAllVolunteerColumns , "Only All Volunteer Training", workbook)
+    makeDataXls(getVolunteerProgramEventByTerm(Term.get_by_id(8)), volunteerProgramEventByTerm, f"Fall {academicYear.split('-')[0]}", workbook)
     
     workbook.close()
 
