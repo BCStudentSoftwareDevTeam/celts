@@ -103,7 +103,7 @@ function getImportedCourseInfo(callback){
     url: `/manageServiceLearning/imported/${courseID}`,
     type: "GET",
     success: function(data) { 
-      // Takes in a list of length 2. First element is the courseDict and the second is a list of instructors
+      // Takes in a list of length 2. First element is the courseDict and the second is a list of instructors 
       if (Object.keys(data).length != 2){
         callback();
         return;
@@ -120,7 +120,7 @@ function getImportedCourseInfo(callback){
       var instructorTableNameInputs = "";
       for (let instructor of courseInstructors){
         htmlInstructorRows += `
-            <tr data-username='${instructor['username']}'>
+            <tr data-username='${instructor.username}'>
               <td>
                 <p class='mb-0'> ${instructor.firstName} ${instructor.lastName} (${instructor.email})</p>
                   <input type='text' style='border: none' size='14' class='form-control-sm' id='inputPhoneNumber-${instructor.username}' name='courseInstructorPhone' aria-label='Instructor Phone' data-value='${instructor.phoneNumber}' value='${instructor.phoneNumber}' placeholder='Phone Number' />
@@ -134,6 +134,12 @@ function getImportedCourseInfo(callback){
       }
       $("#instructorTableBody").html(htmlInstructorRows);
       $("#instructorTableNames").html(instructorTableNameInputs);
+      $("#instructorTableBody .removeButton").off("click");
+      $("#instructorTableBody .removeButton").on("click", function(){
+          let closestRow =  $(this).closest("tr")
+          $("#instructorTableNames input[value="+closestRow.data('username')+"]").remove()
+          closestRow.remove();
+      });
 
       callback();
       
@@ -141,7 +147,7 @@ function getImportedCourseInfo(callback){
   })
 }
 
-async function showImportedCourseModal(){
+function showImportedCourseModal(){
   getImportedCourseInfo(function(){  // Since ajax calls send immediately we need following actions called as a callback
     $('#alterModal').modal('show'); 
   });
