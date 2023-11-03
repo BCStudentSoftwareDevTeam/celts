@@ -7,6 +7,10 @@ def test_create_spreadsheet():
 	create_spreadsheet("2020-2021")
 
 @pytest.mark.integration
+def test_calculateRetentionRate():
+	pass
+
+@pytest.mark.integration
 def test_removeNullParticipants():
 	pass
 
