@@ -19,4 +19,5 @@ class Course(baseModel):
     isRegularlyOccurring = BooleanField(default=False)
     isPreviouslyApproved = BooleanField(default=False)
     hasSlcComponent = BooleanField(default=False)
+    section = CharField()
 
