@@ -11,38 +11,38 @@ def addCeltsAdmin(user):
     user = User.get_by_id(user)
     user.isCeltsAdmin = True
     user.save()
-    createAdminLog(f'Made {user.firstName} {user.lastName} a CELTS admin member.')
+    createAdminLog(f'Made f"{user.fullName} a CELTS admin member.')
 
 
 def addCeltsStudentStaff(user):
     user = User.get_by_id(user)
     user.isCeltsStudentStaff = True
     user.save()
-    createAdminLog(f'Made {user.firstName} {user.lastName} a CELTS student staff member.')
+    createAdminLog(f'Made f"{user.fullName} a CELTS student staff member.')
 
 def addCeltsStudentAdmin(user):
     user = User.get_by_id(user)
     user.isCeltsStudentAdmin = True
     user.save()
-    createAdminLog(f'Made {user.firstName} {user.lastName} a CELTS student Admin member.')
+    createAdminLog(f'Made {user.fullName} a CELTS student Admin member.')
 
 def removeCeltsAdmin(user):
     user = User.get_by_id(user)
     user.isCeltsAdmin = False
     user.save()
-    createAdminLog(f'Removed {user.firstName} {user.lastName} from CELTS admins.')
+    createAdminLog(f'Removed f"{user.fullName} from CELTS admins.')
 
 def removeCeltsStudentStaff(user):
     user = User.get_by_id(user)
     user.isCeltsStudentStaff = False
     user.save()
-    createAdminLog(f'Removed {user.firstName} {user.lastName} from a CELTS student staff member.')
+    createAdminLog(f'Removed f"{user.fullName} from a CELTS student staff member.')
     
 def removeCeltsStudentAdmin(user):
     user = User.get_by_id(user)
     user.isCeltsStudentAdmin = False
     user.save()
-    createAdminLog(f'Removed {user.firstName} {user.lastName} from a CELTS student Admin member.')
+    createAdminLog(f'Removed f"{user.fullName} from a CELTS student Admin member.')
 
 def changeProgramInfo(newProgramName, newContactEmail, newContactName, newLocation, programId):
     """Updates the program info with a new sender and email."""
