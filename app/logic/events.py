@@ -2,6 +2,7 @@ from flask import  url_for
 from peewee import DoesNotExist, fn, JOIN
 from dateutil import parser
 from datetime import timedelta, date
+from dateutil.relativedelta import relativedelta
 import datetime
 from werkzeug.datastructures import MultiDict
 from app.models import mainDB
@@ -506,11 +507,7 @@ def eventCountDown(eventData, currentDatetime=None):
     if currentDatetime is None:
         currentDatetime = datetime.datetime.now()
 
-    startDatetime = datetime.datetime.strptime(eventData['startDate'] + ' ' + eventData['timeStart'], '%m/%d/%Y %I:%M %p')
-    timeDifference = startDatetime - currentDatetime
+    eventStartDatetime = datetime.datetime.strptime(eventData['startDate'] + ' ' + eventData['timeStart'], '%m/%d/%Y %I:%M %p')
+    delta = relativedelta(eventStartDatetime, currentDatetime)
 
-    daysRemaining = timeDifference.days
-    hoursRemaining, remainder = divmod(timeDifference.seconds, 3600)
-    minutesRemaining = remainder // 60
-
-    return daysRemaining, hoursRemaining, minutesRemaining
+    return delta.days, delta.hours, delta.minutes 
