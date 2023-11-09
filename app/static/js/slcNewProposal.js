@@ -110,33 +110,33 @@ $(document).ready(function(e) {
   })
 
   if(!readOnly()) {
-      $("#submitAndApproveButton").click(function(){
-          $("#submitAndApproveButton").prop("disabled", true)
-          saveCourseData("/serviceLearning/approveCourse", function(response) {
-              window.location.replace("/manageServiceLearning")
-          })
-      });
+    $("#submitAndApproveButton").click(function(){
+        $("#submitAndApproveButton").prop("disabled", true)
+        saveCourseData("/serviceLearning/approveCourse", function(response) {
+            window.location.replace("/manageServiceLearning")
+        })
+    });
 
-  // Add course instructor event handlers
-  // -----------------------------------------
-      $("#instructorTable").on("click", "#remove", function() {
-        let closestRow =  $(this).closest("tr")
-        $("#instructorTableNames input[value="+closestRow.data('username')+"]").remove()
-        closestRow.remove();
-      });
-      $("#courseInstructor").on('input', function() {
-          searchUser("courseInstructor", createNewRow, true, null, "instructor");
-      });
+    // Add course instructor event handlers
+    // -----------------------------------------
+    $("#instructorTable").on("click", "#remove", function() {
+      let closestRow =  $(this).closest("tr")
+      $("#instructorTableNames input[value="+closestRow.data('username')+"]").remove()
+      closestRow.remove();
+    });
+    $("#courseInstructor").on('input', function() {
+        searchUser("courseInstructor", createNewRow, true, null, "instructor");
+    });
 
-      // for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
-      $('#instructorTable tr').each(function(){
-        var username = getRowUsername(this)
-        var edit = "#editButton-" + username
-        var input = "#inputPhoneNumber-" + username
-        if (username){
-          setupPhoneNumber(edit, input)
-        }
-      })
+    // for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
+    $('#instructorTable tr').each(function(){
+      var username = getRowUsername(this)
+      var edit = "#editButton-" + username
+      var input = "#inputPhoneNumber-" + username
+      if (username){
+        setupPhoneNumber(edit, input)
+      }
+    })
   }
 })
 
