@@ -59,7 +59,7 @@ app.register_blueprint(minor_bp)
 # Make 'ENV' a variable everywhere
 @app.context_processor
 def inject_environment():
-    return dict( env=get_env() )
+    return dict( env=new_env() )
 
 @app.before_request
 def queryCount():
