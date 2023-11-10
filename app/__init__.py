@@ -9,13 +9,12 @@ from app.logic.config import load_config_files
 app = Flask(__name__, template_folder="templates")
 
 # Create a new method for returning our environment, stored in APP_ENV
-def new_env():
+def get_environment():
     return os.environ.get('APP_ENV', 'production')
 
-load_config_files(app, new_env())
+load_config_files(app, get_environment())
 # set the secret key after configuration is set up
 app.secret_key = app.config['secret_key']
-
 
 # These imports must happen after configuration
 from app.models.term import Term
