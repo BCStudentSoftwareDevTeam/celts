@@ -1,22 +1,20 @@
 import os
 import pprint
 
-from flask import Flask, render_template, helpers
+from flask import Flask, render_template
 from playhouse.shortcuts import model_to_dict, dict_to_model
 from app.logic.config import load_config_files
 
 # Initialize our application
 app = Flask(__name__, template_folder="templates")
 
-env = os.environ.get('APP_ENV', 'production')
+# Create a new method for returning our environment, stored in APP_ENV
 def new_env():
     return os.environ.get('APP_ENV', 'production')
-helpers.get_env = new_env 
 
 load_config_files(app, new_env())
 # set the secret key after configuration is set up
 app.secret_key = app.config['secret_key']
-# Overwrite the get_env() method to return our environment, stored in APP_ENV
 
 
 # These imports must happen after configuration
