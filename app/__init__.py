@@ -12,7 +12,9 @@ app = Flask(__name__, template_folder="templates")
 def get_environment():
     return os.environ.get('APP_ENV', 'production')
 
-load_config_files(app, get_environment())
+app.env = get_environment()
+load_config_files(app)
+print (" * Environment:", app.env)
 # set the secret key after configuration is set up
 app.secret_key = app.config['secret_key']
 
@@ -56,7 +58,7 @@ app.register_blueprint(minor_bp)
 # Make 'ENV' a variable everywhere
 @app.context_processor
 def inject_environment():
-    return dict( env=new_env() )
+    return dict( env=app.env )
 
 @app.before_request
 def queryCount():
