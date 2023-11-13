@@ -8,11 +8,7 @@ from app.logic.config import load_config_files
 # Initialize our application
 app = Flask(__name__, template_folder="templates")
 
-# Create a new method for returning our environment, stored in APP_ENV
-def get_environment():
-    return os.environ.get('APP_ENV', 'production')
-
-app.env = get_environment()
+app.env = os.environ.get('APP_ENV', 'production')
 load_config_files(app)
 print (" * Environment:", app.env)
 # set the secret key after configuration is set up
