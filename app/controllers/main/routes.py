@@ -23,6 +23,7 @@ from app.models.courseInstructor import CourseInstructor
 from app.models.certification import Certification
 from app.models.emergencyContact import EmergencyContact
 from app.models.insuranceInfo import InsuranceInfo
+from app.models.celtsLabor import CeltsLabor
 
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
@@ -35,6 +36,7 @@ from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
 from app.logic.utils import selectSurroundingTerms
 from app.logic.certification import getCertRequirementsWithCompletion
 from app.logic.createLogs import createRsvpLog, createAdminLog
+from app.logic.celtsLabor import getCeltsLaborHistory
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
@@ -151,6 +153,8 @@ def viewUsersProfile(username):
 
         managersProgramDict = getManagerProgramDict(g.current_user)
         managersList = [id[1] for id in managersProgramDict.items()]
+
+        participatedInLabor = getCeltsLaborHistory(volunteer)
         
         return render_template ("/main/userProfile.html",
                                 programs = programs,
@@ -167,6 +171,7 @@ def viewUsersProfile(username):
                                 profileNotes = profileNotes,
                                 bonnerRequirements = bonnerRequirements,
                                 managersList = managersList,
+                                participatedInLabor = participatedInLabor,
                             )
     abort(403)
 

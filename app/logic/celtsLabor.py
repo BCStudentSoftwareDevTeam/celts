@@ -96,3 +96,13 @@ def refreshCeltsLaborRecords(laborDict):
 
     CeltsLabor.delete().where(CeltsLabor.user << [username['user'] for username in celtsLabor]).execute()                         
     CeltsLabor.insert_many(celtsLabor).on_conflict_replace().execute()
+
+def getCeltsLaborHistory(volunteer):
+    
+    laborHistoryList = list(CeltsLabor.select().where(CeltsLabor.user == volunteer).order_by(CeltsLabor.termName))
+    
+    laborHistoryDict= {}
+    for position in laborHistoryList: 
+        laborHistoryDict[position.positionTitle] = position.termName
+
+    return laborHistoryDict
