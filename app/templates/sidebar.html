@@ -38,7 +38,7 @@
         </a>
       </li>
       <li>
-        {% if not g.current_user.isCeltsStudentStaff and not g.current_user.isCeltsStudentAdmin %}
+        {% if g.current_user.isCeltsAdmin %}
         <a href="/serviceLearning/courseManagement" class="nav-link text-white {{'active' if request.path =='/serviceLearning/courseManagement'}}" {{"aria-current='page'" if request.path =='/serviceLearning/courseManagement'}}>
           Course Proposals
         </a>
@@ -56,7 +56,7 @@
         </nav>
         <div class="{{ 'collapse-show' if request.path in ['/adminLogs','/manageServiceLearning','/admin','/courseManagement','/manageBonner'] else 'collapse'}}" id="navbarToggleExternalContent">
           <div class="bg-dark ps-3">
-            {% if g.current_user.isCeltsAdmin and not g.current_user.isCeltsStudentAdmin %}
+            {% if g.current_user.isCeltsAdmin %}
               <a href="/adminLogs" class="nav-link text-white {{ 'active' if request.path =='/adminLogs' }}">
                 Activity Logs
               </a>
@@ -64,7 +64,7 @@
             <a href="/admin" class="nav-link text-white {{'active' if request.path =='/admin'}}" {{"aria-current='page'" if request.path =='/admin'}}>
               Settings
             </a>
-            {% if g.current_user.isCeltsAdmin and not g.current_user.isCeltsStudentAdmin %}
+            {% if g.current_user.isCeltsAdmin %}
 
               <a href="/manageServiceLearning" class="nav-link text-white {{ 'active' if request.path =='/manageServiceLearning' }}">
                 Course Management
