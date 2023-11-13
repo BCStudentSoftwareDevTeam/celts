@@ -147,7 +147,7 @@ def rsvpLogDisplay(eventId):
     eventData = model_to_dict(event, recurse=False)
     eventData['program'] = event.program
     isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
-    if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager):
+    if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentAdmin or isProgramManager:
         allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
         return render_template("/events/rsvpLog.html",
                                 event = event,
