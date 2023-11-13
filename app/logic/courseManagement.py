@@ -1,4 +1,4 @@
-from flask import flash
+from flask import flash, g
 from peewee import fn, JOIN
 
 from app.models import mainDB
@@ -58,11 +58,9 @@ def updateCourse(courseData, attachments=None):
         This function will take in courseData for the SLC proposal page and a dictionary
         of instuctors assigned to the course and update the information in the db.
     """
-    print('=====================0', courseData['courseID'])
     with mainDB.atomic() as transaction:
         try:
             course = Course.get_by_id(courseData['courseID'])
-            print('=====================0')
             for toggler in ["slSectionsToggle", "permanentDesignation"]:
                 courseData.setdefault(toggler, "off")
             (Course.update(courseName=courseData["courseName"],
@@ -93,8 +91,56 @@ def updateCourse(courseData, attachments=None):
             if attachments:
                 addFile= FileHandler(attachments, courseId=course.id)
                 addFile.saveFiles()
+            if int(courseData['section'])>1:
+                createCourseSection(courseData, course)
+                course.update(section='A').where(Course.id == course.id).execute()
+
+
             return Course.get_by_id(course.id)
         except Exception as e:
             print(e)
             transaction.rollback()
             return False
+
+
+def createCourseSection(courseData, course, attachments=None):
+    for i in range(1, int(courseData['section'])):
+        section_letter = chr(ord('B') + i - 1)  # Convert to letters (A, B, C, ...)
+        # Insert new entry for each section
+        section = Course.create(
+            courseName=courseData["courseName"],
+            courseAbbreviation=courseData["courseAbbreviation"],
+            sectionDesignation=courseData["sectionDesignation"],
+            courseCredit=courseData["credit"],
+            isRegularlyOccurring=int(courseData["isRegularlyOccurring"]),
+            term=courseData['term'],
+            createdBy=g.current_user,
+            status=CourseStatus.SUBMITTED,
+            isPreviouslyApproved=int(courseData["isPreviouslyApproved"]),
+            previouslyApprovedDescription=courseData["previouslyApprovedDescription"],
+            isAllSectionsServiceLearning=("on" in courseData["slSectionsToggle"]),
+            serviceLearningDesignatedSections=courseData["slDesignation"],
+            isPermanentlyDesignated=("on" in courseData["permanentDesignation"]),
+            hasSlcComponent=int(courseData["hasSlcComponent"]),
+            section=section_letter
+        )
+        section.save
+        for i in range(1, 7):
+                (CourseQuestion.update(questionContent=courseData[f"{i}"])
+                               .where((CourseQuestion.questionNumber == i) &
+                                      (CourseQuestion.course==course)).execute())
+        
+        instructorList = []
+        if 'instructor[]' in courseData:
+            instructorList = courseData.getlist('instructor[]')
+        CourseInstructor.delete().where(CourseInstructor.course == course).execute()
+        for instructor in instructorList:
+            CourseInstructor.create(course=section, user=instructor)
+        createAdminLog(f"Saved SLC proposal: {courseData['courseName']}")
+        print("++========================")
+        if attachments:
+            addFile= FileHandler(attachments, courseId=course.id)
+            addFile.saveFiles()
+
+
+    return ''

@@ -70,14 +70,16 @@
         />
 
         <label for="section" class="pt-3">Sections</label>
-      <input
-        class="form-control"
-        id="section"
-        name="section"
-        value="1"
-        type="number"
-        min="0"
-        required/>
+<input
+    class="form-control"
+    id="section"
+    name="section"
+    value="{{ course.section if course.section else '1' }}"
+    type="{{ 'text' if course.section else 'number' }}"
+    min="0"
+    {% if course.section %} readonly {% endif %}
+    required/>
+
 
 
       <label for="credit" class="pt-3">Credit</label>
