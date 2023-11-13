@@ -43,12 +43,19 @@ def redirectToLogout():
 @main_bp.route('/', methods=['GET'])
 def landingPage():
     managerProgramDict = getManagerProgramDict(g.current_user)
-    eventsInTerm = list(Event.select().where(Event.term == g.current_term, Event.isCanceled == False))
-    programsWithEventsList = [event.program for event in eventsInTerm if not event.isPast]
 
-    return render_template("/main/landingPage.html", managerProgramDict = managerProgramDict,
-                                                     term = g.current_term,
-                                                     programsWithEventsList = programsWithEventsList)
+    # Optimize the query to fetch programs with non-canceled, non-past events in the current term
+    programsWithEventsList = list(Program.select(Program, Event)
+                                         .join(Event)
+                                         .where((Event.term == g.current_term) and (Event.isCanceled == False) and (Event.isPast == False))
+                                         .distinct()
+                                         .execute())  # Ensure only unique programs are included
+
+    return render_template("/main/landingPage.html", 
+                           managerProgramDict=managerProgramDict,
+                           term=g.current_term,
+                           programsWithEventsList=programsWithEventsList)
+
 
 @main_bp.route('/goToEventsList/<programID>', methods=['GET'])
 def goToEventsList(programID):
