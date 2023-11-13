@@ -174,7 +174,7 @@
                     <i class="bi bi-{{'check' if hasCompletedAllTrainings else 'x'}}-lg"></i> &nbsp&nbsp
                     <a class="trainingPopover" id="{{row.program.id}}" href="javascript:void(0);" data-toggle="popover" title="Program Trainings" data-content= "{{trainingsHover(trainingList)}}">View</a>
                   </td>
-                  {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
+                  {% if g.current_user.isAdmin %}
                     {% if row.isNotBanned %}
                       <td class="programBan"> Eligible </td>
                       {% set label = "Ban" %}
@@ -492,7 +492,6 @@
                   {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
                     <option value='2'>Admin/Student Staff</option>
                   {% endif %}
-                  <!-- Ala, we mightt need to add something here -->
                   <option value='1' selected>Everyone</option>
                 </select>
                
