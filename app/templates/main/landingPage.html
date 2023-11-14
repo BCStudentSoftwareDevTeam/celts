@@ -19,8 +19,8 @@
         <p class="card-text">{{program.programDescription|truncate(160)}}
           {% if not program.programDescription == program.programDescription|truncate(160) %}
             <a type="button" class="float-end link-primary" data-bs-toggle="modal"
-              data-bs-target="#descriptionModal" data-bs-url="{{program.programUrl}}" data-bs-program="{{program.programName}}"
-              data-bs-image="{{data.image}}" data-bs-description="{{program.programDescription}}" data-bs-id="{{program.id}}" data-bs-list="{{programsWithEventsList}}">
+              data-bs-target="#descriptionModal" data-bs-instagram-url="{{program.instagramUrl}}" data-bs-facebook-url="{{program.facebookUrl}}"data-bs-program="{{program.programName}}"
+              data-bs-website-url="{{program.bereaUrl}}" data-bs-image="{{data.image}}" data-bs-description="{{program.programDescription}}" data-bs-id="{{program.id}}" data-bs-list="{{programsWithEventsList}}">
                 Read more
             </a><br /><br />
           {% endif %}
@@ -61,14 +61,13 @@
           <img id="modalImage" src="" class="img-fluid rounded" alt="program-image">
         </div>
         <p class="mt-3" id="modalDescription"></p>
-        <a type="button" id="modalLearnMore" class="float-start link-primary" href="">
-          <img src="static/images/logos/instagram_logo.png" id="modalLearnMore" class="float-start link-primary" style="height: 30px; width: 30px; margin-right:10px" href="">
+        <a type="button" id="modalLearnMoreWebLink" class="float-end link-primary" href=""> Learn More </a>
+        <a type="button" id="modalLearnMoreInstagram" class="float-start link-primary" href="">
+          <img src="static/images/logos/instagram_logo.png" class="float-start link-primary" style="height: 30px; width: 30px; margin-right:10px">
         </a>
-        <a type="button" id="modalLearnMore" class="float-start link-primary" href="">
-          <img src="static/images/logos/facebook_logo.png" id="modalLearnMore" class="float-start link-primary" style="height: 30px; width: 30px" href="">
+        <a type="button" id="modalLearnMoreFacebook" class="float-start link-primary" href="">
+          <img src="static/images/logos/facebook_logo.png" class="float-start link-primary" style="height: 30px; width: 30px">
         </a>
-
-        
       </div>
       <div class="modal-footer justify-content-between">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
