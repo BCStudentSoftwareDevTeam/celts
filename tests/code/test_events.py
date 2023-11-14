@@ -23,7 +23,7 @@ from app.models.note import Note
 from app.logic.events import preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
 from app.logic.events import attemptSaveEvent, saveEventToDb, cancelEvent, deleteEvent, getParticipatedEventsForUser
 from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser
-from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount
+from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount, copyRSVP
 from app.logic.volunteers import addVolunteerToEventRsvp, updateEventParticipants
 from app.logic.participants import addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser
@@ -894,5 +894,20 @@ def test_getEventRsvpCount():
             EventRsvp.create(event=eventWithRsvp, user=user)
             rsvpd_user_count = getEventRsvpCount(eventWithRsvp.id)
             assert rsvpd_user_count == (index + 1)
+
+        transaction.rollback()
+
+
+@pytest.mark.integration
+def test_copyRSVP():
+    with mainDB.atomic() as transaction:
+        assert len(EventRsvp.select().where(EventRsvp.event_id == 4)) == 0
+
+        priorEvent = Event.get_by_id(2)
+        newEvent = Event.get_by_id(4)
+        
+        copyRSVP(priorEvent, newEvent)
+
+        assert len(EventRsvp.select().where(EventRsvp.event_id == 4)) == 2
 
         transaction.rollback()

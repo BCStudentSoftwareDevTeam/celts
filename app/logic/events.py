@@ -125,13 +125,15 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
         print(f'Failed attemptSaveEvent() with Exception:{e}')
         return False, e
 
-def saveEventToDb(newEventData):
-    if not newEventData.get('valid', False):
+def saveEventToDb(newEventData, renewedEvent = False):
+    
+    if not newEventData.get('valid', False) and not renewedEvent:
         raise Exception("Unvalidated data passed to saveEventToDb")
-
+    
+    
     isNewEvent = ('id' not in newEventData)
 
-
+    
     eventsToCreate = []
     recurringSeriesId = None
     if isNewEvent and newEventData['isRecurring']:
@@ -142,7 +144,6 @@ def saveEventToDb(newEventData):
                                 'date':newEventData['startDate'],
                                 "week":1})
     eventRecords = []
-
     for eventInstance in eventsToCreate:
         with mainDB.atomic():
            
@@ -179,7 +180,6 @@ def saveEventToDb(newEventData):
                 updateCertRequirementForEvent(eventRecord, newEventData['certRequirement'])
 
             eventRecords.append(eventRecord)
-
     return eventRecords
 
 def getStudentLedEvents(term):
@@ -501,3 +501,25 @@ def getEventRsvpCount(eventId):
         Returns the number of RSVP'd participants for a given eventId.
     """
     return len(EventRsvp.select().where(EventRsvp.event_id == eventId))
+
+def copyRSVP(priorEvent, newEvent):
+    rsvpInfo = list(EventRsvp.select().where(EventRsvp.event == priorEvent).execute())
+    participantInfo = list(EventParticipant.select().where(EventParticipant.event == priorEvent).execute())
+    if priorEvent.isPast:
+        for student in participantInfo:
+            newRsvp = EventRsvp(
+                    user = student.user,
+                    event = newEvent,
+                    rsvpTime = datetime.now(),
+                    rsvpWaitlist = student.rsvpWaitlist
+                )
+            newRsvp.save()
+    else:
+        for student in rsvpInfo:
+            newRsvp = EventRsvp(
+                    user = student.user,
+                    event = newEvent,
+                    rsvpTime = student.rsvpTime,
+                    rsvpWaitlist = False
+                )
+            newRsvp.save()
