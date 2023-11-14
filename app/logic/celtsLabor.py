@@ -14,7 +14,8 @@ def getCeltsLaborFromLsf():
 
     """
     try: 
-        lsfUrl = f"http://172.31.2.114:8080/api/org/{2084}"
+        # lsfUrl = f"http://172.31.2.114:8080/api/org/2084"
+        lsfUrl = f"http://10.40.132.89:8080/api/org/2084"
         response = requests.get(lsfUrl)
         return(response.json())
     except json.decoder.JSONDecodeError: 
@@ -42,16 +43,16 @@ def parseLsfResponse():
     """
     laborDict = getCeltsLaborFromLsf()
 
-    sutdentLaborDict = {}
+    studentLaborDict = {}
     for key, value in laborDict.items(): 
         try: 
             username = User.get(bnumber = key)
             # All term codes for summer end with 13 and all term codes for an academic year end in 00 and those are the only terms we want to record.
-            sutdentLaborDict[username] = collapsePositions([p for p in value if str(p["termCode"])[-2:] in ["00","13"]])
+            studentLaborDict[username] = collapsePositions([p for p in value if str(p["termCode"])[-2:] in ["00","13"]])
         except DoesNotExist: 
             pass
-        
-    refreshCeltsLaborRecords(sutdentLaborDict)
+
+    refreshCeltsLaborRecords(studentLaborDict)
 
 def collapsePositions(positionList):
     '''
