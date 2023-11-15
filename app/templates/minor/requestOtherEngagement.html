@@ -3,29 +3,34 @@
 
 {% block scripts %}
     {{super()}}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" src="{{url_for('static', filename='js/requestOtherEngagement.js') }}?u={{lastStaticUpdate}}"></script>
 {% endblock %}
 
 {% block app_content %}
 
 <form id='requestOtherCommEng' enctype="multipart/form-data" role='form' method='POST'>
-  <div class='row'>
+  <div class='row' id="username" value="{{user.username}}">
       <!--Left half-->
-      <div class='col-md-6'>
-        <div class='form-group mb-4'>
-          <label class='form-label' for='studentUser'> {{ username }} : Other credit </label>
-        </div>
 
         <div class='form-group mb-4'>
-            <label class='form-label' for='activity'><strong> Activity: </strong>
-              <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='otherActivity' name='otherActivity' value=""/>
-            </label>
+          <label class='form-label' for='studentUser'> {{ user.firstName }} {{ user.lastName }} : Other credit </label>
         </div>
 
-        <div class='form-group mb-4'>
-            <label class='form-label' for='activity'><strong> Hours: </strong>
-              <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='hours' name='hours' value=""/>
-            </label>
+        <div class="form-row mb-2">
+          <div class="col-md-1">
+            <label class="form-label" for="otherActivity"><strong>Activity:</strong></label>
+          </div>
+          <div class="col-md-4">
+            <input {{'disabled' if readOnly else ''}} class="form-control" type="text" id="otherActivity" name="otherActivity" value=""/>
+          </div>
+
+          <div class="col-md-1">
+            <label class='form-label' for='hours'><strong>Hours:</strong></label>
+          </div>
+          <div class="col-md-4">
+            <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='hours' name='hours' value=""/>
+          </div>
         </div>
 
         <div class='form-group mb-4'>
@@ -44,12 +49,12 @@
           <label class="mb-2" for='attachmentObject'><strong>Upload Files</strong></label>
           <input type="file" class="form-control" id="attachmentObject" name="attachmentObject" multiple accept= ".docx"/>
         </div>
-        
+
         <div class=" form-group mb-6">
           <button class="btn-btn primary" type="submit" id="sendOtherRequest" action="/CCEminor" > Send Other Request</button>
         </div>
       </div>
-  </div>
+
 
 </form>
 

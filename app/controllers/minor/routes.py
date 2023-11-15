@@ -1,7 +1,7 @@
-from flask import Flask, g
-
+from flask import Flask, g, render_template, request
 from app.controllers.minor import minor_bp
 from app.models.user import User
+from app.logic.minor import getCommunityEngagementByTerm
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -31,24 +31,16 @@ def removeCommunityEngagement(username):
     """
     pass
 
-@minor_bp.route('/cceMinor/<username>/requestOtherCommunityEngagement', methods=['GET,POST'])
+@minor_bp.route('/cceMinor/<username>/requestOtherCommunityEngagement', methods=['GET'])
 def requestOtherEngagement(username):
     """
         Load the "request other" form and submit it.
     """
-    if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
-        abort(403)
-    if request.method == 'GET':
-        readOnly = g.current_user.username != username
-        user = User.get_or_none(User.user == username)
-        return render_template ("/minor/requestOtherEngagement.html",
-                                username=username,
-                                user=user,
-                                readOnly=readOnly
-                                )
-    elif request.method == 'POST':
-        if g.current_user.username != username:
-            abort(403)
+    user = User.get_by_id(username)
+
+    return render_template("/minor/requestOtherEngagement.html",
+                            user=user)
+
 
 
 @minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])

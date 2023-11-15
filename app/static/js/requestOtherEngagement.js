@@ -1,28 +1,15 @@
 $(document).ready(function(){
-
-    $('#saveExit').on('click', function(){
-        let username = $('#username').attr('value')
-        $('#requestOtherCommEng').prop('action', `/profile/${username}/requestOtherCommEng?action=exit`)
-        if (formIsValid()){
-            $('#requestOtherCommEng').submit()
+    $("#requestOtherCommEng").on("click", function() {
+    let username = $("#username").val()
+    let data = {"username":username}
+    $.ajax({
+        url: "/cceMinor/"+username+"/requestOtherCommunityEngagement",
+        type: "POST",
+        data: data,
+        success: location.reload(),
+        error: function(request, status, error) {
+          msgFlash("Error saving changes!", "danger")
         }
-    })
-
-    $('#saveContinue').on('click', function(){
-        let username = $('#username').attr('value')
-        $('#requestOtherCommEng').prop('action', `/profile/${username}/requestOtherCommEng?action=continue`)
-        if (formIsValid()){
-            $('#requestOtherCommEng').submit()
-        }
-    })
-
-    function formIsValid(){
-        let invalidInputs = $('input').map(function(i, e){
-            if (! e.checkValidity()) {
-                e.reportValidity()
-                return e
-            }
-        })
-        return invalidInputs.length == 0
-    }
-});
+    });
+  })
+})
