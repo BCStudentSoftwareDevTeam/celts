@@ -321,6 +321,34 @@ reqs = [
           "isRequired": True,
           "order": 1,
         },
+        { "id": 12,
+          "certification": 2,
+          "name": "Community Engagement 1",
+          "frequency": "once",
+          "isRequired": True,
+    
+        },
+        { "id": 14,
+          "certification": 2,
+          "name": "Community Engagement 2",
+          "frequency": "once",
+          "isRequired": True,
+          
+        },
+        { "id": 15,
+          "certification": 2,
+          "name": "Community Engagement 3",
+          "frequency": "once",
+          "isRequired": True,
+           
+        },
+        { "id": 16,
+          "certification": 2,
+          "name": "Summer Program",
+          "frequency": "once",
+          "isRequired": True,
+          
+        },
 ]
 CertificationRequirement.insert_many(reqs).on_conflict_replace().execute()
 

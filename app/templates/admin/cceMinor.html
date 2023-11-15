@@ -35,23 +35,20 @@
                 <td>Data 2</td>
                 <td>Data 3</td>
             </tr>
-            <!-- Add more rows as needed -->
+            
         </tbody>
     </table> <h2>Interested Students</h2>
     <table class="table table-striped">
         <thead>
             <tr>
                 <th>Name</th>
-                <th>requirements met</th>
-                <th>Competed</th>
+              
             </tr>
         </thead>
         <tbody>
             {% for student in studentList %}
                 <tr>
                     <td>{{ student.firstName }} {{ student.lastName }}</td>
-                    <td>data</td>
-                    <td>data</td>
                 </tr>
             {% endfor %}
         </tbody>
