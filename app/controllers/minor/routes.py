@@ -1,7 +1,6 @@
 from flask import Flask, g, render_template, request
 from app.controllers.minor import minor_bp
 from app.models.user import User
-from app.logic.minor import getCommunityEngagementByTerm
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
