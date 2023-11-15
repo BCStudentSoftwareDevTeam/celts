@@ -2,7 +2,7 @@ if [[ `pwd` =~ tests$ ]]; then
     cd ../
 fi
 
-FLASK_ENV="testing"
+APP_ENV="testing"
 
 FLAGS="$1 --capture=no --disable-pytest-warnings --strict-markers --tb=line -rs --ignore=tests/mail_test.py --ignore=db_test.py --ignore=database --ignore=run.py --ignore=app --ignore=venv"
 

@@ -24,7 +24,7 @@ def addCeltsStudentAdmin(user):
     user = User.get_by_id(user)
     user.isCeltsStudentAdmin = True
     user.save()
-    createAdminLog(f'Made {user.fullName} a CELTS student Admin member.')
+    createAdminLog(f'Made {user.fullName} a CELTS student admin member.')
 
 def removeCeltsAdmin(user):
     user = User.get_by_id(user)
@@ -34,15 +34,19 @@ def removeCeltsAdmin(user):
 
 def removeCeltsStudentStaff(user):
     user = User.get_by_id(user)
+    programManagerRoles = list([obj.program.programName for obj in ProgramManager.select(Program).join(Program).where(ProgramManager.user == user)])
+    programManagerRoles = ", ".join(programManagerRoles)
+    ProgramManager.delete().where(ProgramManager.user_id == user).execute()
     user.isCeltsStudentStaff = False
     user.save()
-    createAdminLog(f'Removed f"{user.fullName} from a CELTS student staff member.')
-    
+    createAdminLog(f'Removed {user.firstName} {user.lastName} from a CELTS student staff member'+ 
+                   (f', and as a manager of {programManagerRoles}.' if programManagerRoles else "."))
+
 def removeCeltsStudentAdmin(user):
     user = User.get_by_id(user)
     user.isCeltsStudentAdmin = False
     user.save()
-    createAdminLog(f'Removed f"{user.fullName} from a CELTS student Admin member.')
+    createAdminLog(f'Removed f"{user.fullName} from a CELTS student admin member.')
 
 def changeProgramInfo(newProgramName, newContactEmail, newContactName, newLocation, programId):
     """Updates the program info with a new sender and email."""
