@@ -1028,13 +1028,16 @@ CREATE TABLE `requirementmatch` (
   `requirement_id` int NOT NULL,
   `event_id` int DEFAULT NULL,
   `course_id` int DEFAULT NULL,
+  `engagementRequest_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `requirementmatch_requirement_id` (`requirement_id`),
   KEY `requirementmatch_event_id` (`event_id`),
   KEY `requirementmatch_course_id` (`course_id`),
+  KEY `requirementmatch_engagementRequest_id` (`engagementRequest_id`),
   CONSTRAINT `requirementmatch_ibfk_1` FOREIGN KEY (`requirement_id`) REFERENCES `certificationrequirement` (`id`),
   CONSTRAINT `requirementmatch_ibfk_2` FOREIGN KEY (`event_id`) REFERENCES `event` (`id`),
-  CONSTRAINT `requirementmatch_ibfk_3` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`)
+  CONSTRAINT `requirementmatch_ibfk_3` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`),
+  CONSTRAINT `requirementmatch_ibfk_4` FOREIGN KEY (`engagementRequest_id`) REFERENCES `communityengagementrequest` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
