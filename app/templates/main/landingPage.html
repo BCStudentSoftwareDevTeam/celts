@@ -3,13 +3,14 @@
 {% block scripts %}
   {{super()}}
   <script type="module" src="/static/js/landingPage.js"></script>
+  <link rel="stylesheet" href="/static/css/landingPage.css">
 {% endblock %}
 {% block app_content %}
-<h1 class="text-center mb-5">Welcome to <span><img src="{{url_for('static', filename='images/logos/celts_logo.png')}}" style="width:160px"></span></h1>
+<h1 class="text-center mb-5">Welcome to <span><img src="{{url_for('static', filename='images/logos/celts_logo.png')}}" style="width:200px"></span></h1>
 <div class="d-flex justify-content-center row row-cols-xl-4 row-cols-lg-3 row-cols-md-3 row-cols-1 g-4">
   {% for program, data in managerProgramDict.items() %}
     <div class="card m-2">
-      <div class="mt-1 mx-1 d-flex" style="height:200px">
+      <div class="mt-1 mx-1 d-flex" style="height:200px;">
         <img src="{{data.image}}" class="img-fluid rounded align-self-center m-auto" style="max-height:200px" alt="card-image">
       </div>
       <div class="card-body">
