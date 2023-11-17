@@ -27,7 +27,7 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createAdminLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
-from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm, saveEventToDb, copyRSVP
+from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm, saveEventToDb, copyRsvp
 from app.logic.participants import getEventParticipants, getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
@@ -200,8 +200,10 @@ def renewEvent(eventId):
                     'isRecurring': (True if priorEvent.recurringId else False)
             }, renewedEvent = True)
         
-        copyRSVP(priorEvent, newEvent)
+        copyRsvp(priorEvent, newEvent)
         
+        createAdminLog(f"Renewed {priorEvent.name} as {newEvent.name}.")
+
         flash("Event successfully renewed.", "success")
         return redirect(url_for('admin.eventDisplay', eventId = newEvent))
 

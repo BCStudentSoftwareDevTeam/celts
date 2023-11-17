@@ -17,7 +17,7 @@ from app.models.requirementMatch import RequirementMatch
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.eventViews import EventView
 
-from app.logic.createLogs import createAdminLog
+from app.logic.createLogs import createAdminLog, createRsvpLog
 from app.logic.utils import format24HourTime
 from app.logic.fileHandler import FileHandler
 from app.logic.certification import updateCertRequirementForEvent
@@ -502,18 +502,19 @@ def getEventRsvpCount(eventId):
     """
     return len(EventRsvp.select().where(EventRsvp.event_id == eventId))
 
-def copyRSVP(priorEvent, newEvent):
+def copyRsvp(priorEvent, newEvent):
     rsvpInfo = list(EventRsvp.select().where(EventRsvp.event == priorEvent).execute())
     participantInfo = list(EventParticipant.select().where(EventParticipant.event == priorEvent).execute())
+    rsvpCopies = 0
     if priorEvent.isPast:
         for student in participantInfo:
             newRsvp = EventRsvp(
                     user = student.user,
                     event = newEvent,
-                    rsvpTime = datetime.now(),
                     rsvpWaitlist = student.rsvpWaitlist
                 )
             newRsvp.save()
+            rsvpCopies=len(participantInfo)
     else:
         for student in rsvpInfo:
             newRsvp = EventRsvp(
@@ -523,3 +524,7 @@ def copyRSVP(priorEvent, newEvent):
                     rsvpWaitlist = False
                 )
             newRsvp.save()
+            rsvpCopies=len(rsvpInfo)
+
+    if rsvpCopies:
+        createRsvpLog(newEvent, f"Copied {rsvpCopies} from {priorEvent.name} to {newEvent.name}")

@@ -23,7 +23,7 @@ from app.models.note import Note
 from app.logic.events import preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
 from app.logic.events import attemptSaveEvent, saveEventToDb, cancelEvent, deleteEvent, getParticipatedEventsForUser
 from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser
-from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount, copyRSVP
+from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount, copyRsvp
 from app.logic.volunteers import addVolunteerToEventRsvp, updateEventParticipants
 from app.logic.participants import addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser
@@ -899,15 +899,61 @@ def test_getEventRsvpCount():
 
 
 @pytest.mark.integration
-def test_copyRSVP():
+def test_copyRsvp():
     with mainDB.atomic() as transaction:
-        assert len(EventRsvp.select().where(EventRsvp.event_id == 4)) == 0
+        with app.app_context():
+            ##Check copying past event rsvp
+            g.current_user='heggens'
+            assert len(EventRsvp.select().where(EventRsvp.event_id == 4)) == 0
 
-        priorEvent = Event.get_by_id(2)
-        newEvent = Event.get_by_id(4)
-        
-        copyRSVP(priorEvent, newEvent)
+            copyFromEvent = Event.get_by_id(2)
+            copyToEvent = Event.get_by_id(4)
 
-        assert len(EventRsvp.select().where(EventRsvp.event_id == 4)) == 2
+            copyRsvp(copyFromEvent, copyToEvent)
 
-        transaction.rollback()
+            assert len(EventRsvp.select().where(EventRsvp.event_id == 4)) == 2
+
+            ##Check future past event rsvp
+            futureYear=date.today().year+1
+            
+            futureStartDate = datetime(futureYear,12,19,18,0,0)
+            futureEndDate = datetime(futureYear,12,19,21,0,0)
+            
+            newEvent = Event.create(name = "Req and Limit",
+                         term = 2,
+                         description = "Event that requries RSVP and has an RSVP limit set.",
+                         timeStart = futureStartDate.time(),
+                         timeEnd = futureEndDate.time(),
+                         location = "The Moon",
+                         isRsvpRequired = 1,
+                         startDate = futureStartDate.date(),
+                         endDate = futureEndDate.date(),
+                         program = 9,
+                         isCanceled = True)
+            
+            newEvent.save()
+            EventRsvp.create(user = "neillz",
+                             event = newEvent).save()
+            EventRsvp.create(user = "partont",
+                             event = newEvent).save()
+            
+            newEvent2 = Event.create(name = "Req and Limit",
+                                    term = 2,
+                                    description = "Event that requries RSVP and has an RSVP limit set.",
+                                    timeStart = futureStartDate.time(),
+                                    timeEnd = futureEndDate.time(),
+                                    location = "The Moon",
+                                    isRsvpRequired = 1,
+                                    startDate = futureStartDate.date(),
+                                    endDate = futureEndDate.date(),
+                                    program = 9,
+                                    isCanceled = True)
+
+            newEvent2.save()
+            assert len(EventRsvp.select().where(EventRsvp.event_id == newEvent)) == 2
+            assert len(EventRsvp.select().where(EventRsvp.event_id == newEvent2)) == 0
+            
+            copyRsvp(newEvent, newEvent2) 
+            assert len(EventRsvp.select().where(EventRsvp.event_id == newEvent2)) == 2
+
+            transaction.rollback()
