@@ -527,4 +527,4 @@ def copyRsvp(priorEvent, newEvent):
             rsvpCopies=len(rsvpInfo)
 
     if rsvpCopies:
-        createRsvpLog(newEvent, f"Copied {rsvpCopies} from {priorEvent.name} to {newEvent.name}")
+        createRsvpLog(newEvent, f"Copied {rsvpCopies} Rsvp's from {priorEvent.name} to {newEvent.name}")
