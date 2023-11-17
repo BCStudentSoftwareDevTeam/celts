@@ -199,8 +199,8 @@
   </div>
 <!-- ################# Program Table ################ -->
 
-<!-- ################# Program Manager Section ################ -->
-  {% if participatedInLabor %}
+<!-- ################# CELTS Labor Section ################ -->
+  {% if participatedInLabor or volunteer.isCeltsStudentStaff%}
     <div class="accordion-item">
       <h3 class="accordion-header" id="headingFour">
         {% set focus = "open" if visibleAccordion == "celtsLabor" else "collapsed" %}
@@ -211,12 +211,14 @@
         <div class="accordion-body">
           <!-- This makes sure that the CeltsAdmins can make someone program manager or not.  -->
           <div class="row">
+            {% if participatedInLabor %}
             <div class="col-md-6">
               <h5>CELTS Labor History:</h5>
               {% for program, term in participatedInLabor.items() %}
                 <p>{{term}}: {{program}}</p> 
               {% endfor %}
             </div>
+            {% endif %}
             {% if volunteer.isCeltsStudentStaff %}
             <div class="col-md-6">
               {% if g.current_user.isCeltsAdmin %}
@@ -250,7 +252,7 @@
       </div>
     </div>
   {% endif %}
-<!-- ################# Program Manager Section ################ -->
+<!-- ################# CELTS Labor Section ################ -->
 
 <!-- ################# Background Check Section ################ -->
   {% if g.current_user.isCeltsAdmin %}

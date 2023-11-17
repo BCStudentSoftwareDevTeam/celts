@@ -36,7 +36,7 @@ from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
 from app.logic.utils import selectSurroundingTerms
 from app.logic.certification import getCertRequirementsWithCompletion
 from app.logic.createLogs import createRsvpLog, createAdminLog
-from app.logic.celtsLabor import getCeltsLaborHistory, parseLsfResponse
+from app.logic.celtsLabor import getCeltsLaborHistory
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
@@ -154,7 +154,6 @@ def viewUsersProfile(username):
 
         managersProgramDict = getManagerProgramDict(g.current_user)
         managersList = [id[1] for id in managersProgramDict.items()]
-        parseLsfResponse()
         participatedInLabor = getCeltsLaborHistory(volunteer)
         
         return render_template ("/main/userProfile.html",
