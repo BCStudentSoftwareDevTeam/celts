@@ -920,24 +920,6 @@ def test_copyRsvp():
             futureEndDate = datetime(futureYear,12,19,21,0,0)
             
             newEvent = Event.create(name = "Req and Limit",
-                         term = 2,
-                         description = "Event that requries RSVP and has an RSVP limit set.",
-                         timeStart = futureStartDate.time(),
-                         timeEnd = futureEndDate.time(),
-                         location = "The Moon",
-                         isRsvpRequired = 1,
-                         startDate = futureStartDate.date(),
-                         endDate = futureEndDate.date(),
-                         program = 9,
-                         isCanceled = True)
-            
-            newEvent.save()
-            EventRsvp.create(user = "neillz",
-                             event = newEvent).save()
-            EventRsvp.create(user = "partont",
-                             event = newEvent).save()
-            
-            newEvent2 = Event.create(name = "Req and Limit",
                                     term = 2,
                                     description = "Event that requries RSVP and has an RSVP limit set.",
                                     timeStart = futureStartDate.time(),
@@ -946,8 +928,24 @@ def test_copyRsvp():
                                     isRsvpRequired = 1,
                                     startDate = futureStartDate.date(),
                                     endDate = futureEndDate.date(),
-                                    program = 9,
-                                    isCanceled = True)
+                                    program = 9)
+            
+            newEvent.save()
+            EventRsvp.create(user = "neillz",
+                             event = newEvent).save()
+            EventRsvp.create(user = "partont",
+                             event = newEvent).save()
+            
+            newEvent2 = Event.create(name = "Req and Limit",
+                                     term = 2,
+                                     description = "Event that requries RSVP and has an RSVP limit set.",
+                                     timeStart = futureStartDate.time(),
+                                     timeEnd = futureEndDate.time(),
+                                     location = "The Moon",
+                                     isRsvpRequired = 1,
+                                     startDate = futureStartDate.date(),
+                                     endDate = futureEndDate.date(),
+                                     program = 9)
 
             newEvent2.save()
             assert len(EventRsvp.select().where(EventRsvp.event_id == newEvent)) == 2
