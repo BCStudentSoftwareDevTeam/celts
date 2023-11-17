@@ -1,5 +1,5 @@
 import pytest
-from app.logic.spreadsheet import create_spreadsheet, getRetentionRate
+from app.logic.spreadsheet import create_spreadsheet, getRetentionRate, removeNullParticipants
 
 
 @pytest.mark.integration
@@ -11,8 +11,36 @@ def test_calculateRetentionRate():
 	pass
 
 @pytest.mark.integration
-def test_removeNullParticipants():
-	pass
+def test_removeNullParticipants(self):
+	# Test case 1: Dictionary with null participants
+	input_dict_1 = {
+		'participant1': {'name': 'Alice', 'age': 25},
+		'participant2': None,
+		'participant3': {'name': 'Bob', 'age': 30},
+		'participant4': None
+	}
+	expected_result_1 = {
+		'participant1': {'name': 'Alice', 'age': 25},
+		'participant3': {'name': 'Bob', 'age': 30}
+	}
+	self.assertEqual(removeNullParticipants(input_dict_1), expected_result_1)
+
+	# Test case 2: Dictionary with all non-null participants
+	input_dict_2 = {
+		'participant1': {'name': 'Alice', 'age': 25},
+		'participant3': {'name': 'Bob', 'age': 30}
+	}
+	expected_result_2 = {
+		'participant1': {'name': 'Alice', 'age': 25},
+		'participant3': {'name': 'Bob', 'age': 30}
+	}
+	self.assertEqual(removeNullParticipants(input_dict_2), expected_result_2)
+
+	# Test case 3: Empty dictionary
+	input_dict_3 = {}
+	expected_result_3 = {}
+	self.assertEqual(removeNullParticipants(input_dict_3), expected_result_3)
+
 
 @pytest.mark.integration
 def test_termParticipation():
