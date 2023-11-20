@@ -5,7 +5,9 @@ from app.models.partner import Partner
 
 class Program(baseModel):
     programName = CharField()
-    programUrl = TextField()
+    instagramUrl = TextField()
+    facebookUrl = TextField()
+    bereaUrl = TextField()
     programDescription = TextField()
     partner = ForeignKeyField(Partner, null=True)
     isStudentLed = BooleanField(default=False)
@@ -18,7 +20,7 @@ class Program(baseModel):
     @property
     def url(self):
 
-        return self.programUrl
+        return (self.bereaUrl or self.instagramUrl or self.facebookUrl)
 
     @property
     def description(self):
