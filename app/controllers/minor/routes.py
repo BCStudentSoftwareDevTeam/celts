@@ -14,7 +14,7 @@ def viewCceMinor(username):
     terms = getCommunityEngagementByTerm(username)
     user = User.get_by_id(username)
         
-    return render_template("minor/studentMinorPage.html",
+    return render_template("minor/profile.html",
                     user=user,
                     terms=terms)
 

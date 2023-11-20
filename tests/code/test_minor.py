@@ -14,7 +14,9 @@ def test_getCourseInformation():
                       courseCredit=1.0,
                       term=3,
                       status=1,
-                      createdBy="bledsoef")
+                      createdBy="bledsoef",
+                      serviceLearningDesignatedSections = "",
+                      previouslyApprovedDescription="")
         
         testCourseInstructor = CourseInstructor.create(course=testCourse.id, user="bledsoef")
         
@@ -23,9 +25,7 @@ def test_getCourseInformation():
         testCourseDict = model_to_dict(testCourse)
 
         manualCourseInformation = {"instructors":[testCourseInstructor.user.firstName + " " + testCourseInstructor.user.lastName], "course": testCourseDict}
-        print(manualCourseInformation)
-        print(courseInformation)
-        print(courseInformation == manualCourseInformation)
+
         assert manualCourseInformation == courseInformation
         transaction.rollback()
 
@@ -33,7 +33,30 @@ def test_getCourseInformation():
 @pytest.mark.integration
 def test_updateMinorInterest():
     with mainDB.atomic() as transaction:
-
+        test_user = User.create(
+            username="FINN",
+            firstName="Not",
+            lastName="Yet",
+            email=f"FINN@berea.edu",
+            bnumber="B91111111")
+        
+        user = User.get_by_id("FINN")
+        # make sure users have the default values of false and not interested, respectively
+        assert user.minorInterest == False
+        assert user.minorStatus == "No interest"
+        updateMinorInterest("FINN")
+        
+        user = User.get_by_id("FINN")
+        # make sure updateMinorInterest works correctly
+        assert user.minorInterest == True
+        assert user.minorStatus == "Interested"
+        
+        # verify unchecking box will restore defaults
+        updateMinorInterest("FINN")
+        
+        user = User.get_by_id("FINN")  
+        assert user.minorInterest == False
+        assert user.minorStatus == "No interest"
         transaction.rollback()
 
 @pytest.mark.integration

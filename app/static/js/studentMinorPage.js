@@ -12,6 +12,8 @@ $(document).ready(function(){
           }
       });
     })
+
+    
 })
 
 function showEngagementInformation(row) {
