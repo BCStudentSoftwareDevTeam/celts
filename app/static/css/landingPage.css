@@ -1,6 +1,7 @@
 @media (min-width: 767px) {
   .card {
-    width: 80%;
+    width: 32%;
+    margin: 0 auto;
   }
 }
 
@@ -8,10 +9,4 @@
   @media (max-width: 767px) {
       width: 100%;
     }
-}
-
-.positioned-div {
-  position: relative;
-  top: -20px; /* Adjust as needed */
-  margin-bottom: -30px;
 }
