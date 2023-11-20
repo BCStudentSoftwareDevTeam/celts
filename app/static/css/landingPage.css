@@ -1,12 +1,12 @@
-.row-cols-1 {
-    @media (max-width: 767px) {
-        width: 100%;
-        justify-content: center;
-      }
+@media (min-width: 767px) {
+  .card {
+    width: 32%;
+    margin: 0 auto;
   }
-  
-.img {
-    @media (max-width: 767px) {
-        width: 100vw;
-      }
+}
+
+.row-cols-1 {
+  @media (max-width: 767px) {
+      width: 100%;
+    }
 }

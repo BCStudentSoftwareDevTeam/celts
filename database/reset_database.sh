@@ -68,8 +68,8 @@ fi
 
 # Adding fake data for non-prod, set up admins for prod
 if [ $PRODUCTION -eq 1 ]; then
-	FLASK_ENV=production python3 import_users.py
-	FLASK_ENV=production python3 add_admins.py
+	APP_ENV=production python3 import_users.py
+	APP_ENV=production python3 add_admins.py
 elif [ $BACKUP -ne 1 ]; then
     if [ $TEST -eq 1 ]; then
 	    python3 test_data.py
