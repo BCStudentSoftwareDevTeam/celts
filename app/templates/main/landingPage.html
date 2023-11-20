@@ -10,7 +10,7 @@
 {% endblock %}
 {% block app_content %}
 <h1 class="text-center mb-5">Welcome to <span><img src="{{url_for('static', filename='images/logos/celts_logo.png')}}" style="width:200px"></span></h1>
-<div class="d-flex justify-content-center row row-cols-xl-4 row-cols-lg-3 row-cols-md-3 row-cols-1 g-4">
+<div class="d-flex justify-content-center row row-cols-xl-4 row-cols-lg-3 row-cols-md-2 row-cols-1 g-4">
   {% for program, data in managerProgramDict.items() %}
     <div class="card m-2">
       <div class="mt-1 mx-1 d-flex" style="height:200px">
@@ -67,9 +67,6 @@
           <img id="modalImage" src="" class="img-fluid rounded" alt="program-image">
         </div>
         <p class="mt-3" id="modalDescription"></p>
-<<<<<<< HEAD
-        <a type="button" id="modalLearnMore" class="float-end link-primary" href="">Instagram</a>
-=======
         <a type="button" id="modalLearnMoreWebLink" class="float-end link-primary" href=""> Learn More </a>
         <a type="button" id="modalLearnMoreInstagram" class="float-start link-primary" href="">
           <img src="static/images/logos/instagram_logo.png" class="float-start link-primary" style="height: 30px; width: 30px; margin-right:10px">
@@ -77,7 +74,6 @@
         <a type="button" id="modalLearnMoreFacebook" class="float-start link-primary" href="">
           <img src="static/images/logos/facebook_logo.png" class="float-start link-primary" style="height: 30px; width: 30px">
         </a>
->>>>>>> 368d347a1947a1c82efe70d35c3c79e44ade50b6
       </div>
       <div class="modal-footer justify-content-between">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

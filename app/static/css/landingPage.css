@@ -1,12 +1,20 @@
-@media (min-width: 767px) {
+@media (min-width: 992px) {
   .card {
-    width: 32%;
-    margin: 0 auto;
+    width: 31%;
   }
 }
 
+@media (max-width: 1155px) and (min-width: 576px){
+  .card {
+    width: 40%
+  }
+}
+.row-col-lg-3 {
+
+}
 .row-cols-1 {
   @media (max-width: 767px) {
       width: 100%;
     }
 }
+
