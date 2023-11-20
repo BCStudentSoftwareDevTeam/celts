@@ -1,10 +1,11 @@
 import requests
 import json
 from peewee import DoesNotExist
-
 from collections import defaultdict
+
 from app.models.user import User
 from app.models.celtsLabor import CeltsLabor
+from app.models.term import Term
 
 def getCeltsLaborFromLsf():
     """
@@ -14,8 +15,8 @@ def getCeltsLaborFromLsf():
 
     """
     try: 
-        # lsfUrl = f"http://172.31.2.114:8080/api/org/2084"
-        lsfUrl = f"http://10.40.132.89:8080/api/org/2084"
+        lsfUrl = f"http://172.31.2.114:8080/api/org/2084"
+        # lsfUrl = f"http://10.40.132.89:8080/api/org/2084"
         response = requests.get(lsfUrl)
         return(response.json())
     except json.decoder.JSONDecodeError: 
@@ -72,7 +73,7 @@ def collapsePositions(positionList):
     positionDict = defaultdict(list)
 
     for position in positionList:
-        positionDict[position['positionTitle']].append(position['termName'])
+        positionDict[position['positionTitle']].append(position['termName'].replace("AY ", ""))
 
     return positionDict
 
@@ -87,20 +88,30 @@ def refreshCeltsLaborRecords(laborDict):
         Delete records for the students that are currently in the CeltsLabor table
         if they are also in the laborDict and save content of laborDict to the table. 
     """
+    
     celtsLabor = []
     for key, value in laborDict.items():
         for positionTitle, termNames in value.items():
-            for termName in termNames: 
-                celtsLabor.append({"user": key,
-                                   "positionTitle": positionTitle,
-                                   "termName": termName})    
-
+            for term in termNames: 
+                termTableMatch = Term.select() 
+                if term[0].isalpha(): 
+                    term = termTableMatch.where(Term.description == term)
+                else:
+                    term = termTableMatch.where(Term.academicYear == term, Term.description % "Fall%")
+                try:
+                    celtsLabor.append({"user": key,
+                                    "positionTitle": positionTitle,
+                                    "term": term.get()})    
+                except DoesNotExist:
+                    # TODO: need to remove the need for this except.
+                    pass
+                    
     CeltsLabor.delete().where(CeltsLabor.user << [username['user'] for username in celtsLabor]).execute()                         
     CeltsLabor.insert_many(celtsLabor).on_conflict_replace().execute()
 
 def getCeltsLaborHistory(volunteer):
     
-    laborHistoryList = list(CeltsLabor.select().where(CeltsLabor.user == volunteer).order_by(CeltsLabor.termName))
+    laborHistoryList = list(CeltsLabor.select().where(CeltsLabor.user == volunteer))
     
     laborHistoryDict= {}
     for position in laborHistoryList: 

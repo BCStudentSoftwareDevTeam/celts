@@ -1340,12 +1340,14 @@ celtsLabor = [
     {
         "user": "mupotsal",
         "positionTitle": "Habitat For Humanity Cord.",
-        "termName": "AY 2020 - 2021"
+        "term": 2,
+        "isAcademicYear": True
     },
     {
         "user": "ayisie",
         "positionTitle": "Bonner Manager",
-        "termName": "Summer 2021"
+        "term": 3,
+        "isAcademicYear": False
     }
 ]
 CeltsLabor.insert_many(celtsLabor).on_conflict_replace().execute()
