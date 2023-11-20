@@ -29,6 +29,8 @@ from app.models.emailLog import EmailLog
 from app.models.attachmentUpload import AttachmentUpload
 from app.models.certification import Certification
 from app.models.certificationRequirement import CertificationRequirement
+from app.models.individualRequirement import IndividualRequirement
+
 
 print("Inserting data for demo and testing purposes.")
 users = [
@@ -870,6 +872,39 @@ courses = [
     }
 ]
 Course.insert_many(courses).on_conflict_replace().execute()
+
+individualReqs = [
+        {
+          "username": "ayisie",
+          "program": 2,
+          "course": 1,
+          "term": 3,
+          "requirement": 12,
+          "addedBy": "ramsayb2",
+          "addedOn": "",
+          },  
+            {
+          "username": "ayisie",
+          "program": 2,
+          "course": 1,
+          "term": 3,
+          "requirement": 14,
+          "addedBy": "ramsayb2",
+          "addedOn": "",
+          },  
+
+        { 
+          "username": "khatts",
+          "program": 2,
+          "course": 1,
+          "term": 3,
+          "requirement": 14,
+          "addedBy": "ramsayb2",
+          "addedOn": "",
+        }
+]
+IndividualRequirement.insert_many(individualReqs).on_conflict_replace().execute()
+
 
 courseInstructorRecords = [
     {
