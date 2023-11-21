@@ -1,5 +1,9 @@
 import pytest
-from app.logic.spreadsheet import create_spreadsheet, getRetentionRate, removeNullParticipants
+from app.logic.spreadsheet import create_spreadsheet, getRetentionRate, removeNullParticipants, calculateRetentionRate, termParticipation
+from app.logic.spreadsheet import repeatVolunteers, repeatVolunteersPerProgram, volunteerMajorAndClass, volunteerHoursByProgram, getUniqueVolunteers
+from app.logic.spreadsheet import onlyCompletedAllVolunteer, volunteerProgramHours, totalVolunteerHours, getVolunteerProgramEventByTerm
+from app.models.user import User
+from app.models.term import Term
 
 
 @pytest.mark.integration
@@ -8,7 +12,10 @@ def test_create_spreadsheet():
 
 @pytest.mark.integration
 def test_calculateRetentionRate():
-	pass
+	fall_Dict=({'Adopt-a-Grandparent': ['khatts'], 'CELTS-Sponsored Event': [None]})
+	spring_dict=({'Hunger Initiatives': ['neillz', 'khatts', 'ayisie', 'neillz', 'partont']})
+	assert calculateRetentionRate(fall_Dict,spring_dict) == {'Adopt-a-Grandparent': 0.0, 'CELTS-Sponsored Event': 0.0}
+	
 
 @pytest.mark.integration
 def test_removeNullParticipants(self):
@@ -44,7 +51,9 @@ def test_removeNullParticipants(self):
 
 @pytest.mark.integration
 def test_termParticipation():
-	pass
+	assert termParticipation('Fall 2020')=={'Adopt-a-Grandparent': ['khatts'], 'CELTS-Sponsored Event': [None]}
+
+
 
 @pytest.mark.integration
 def test_getRetentionRate():
@@ -52,36 +61,46 @@ def test_getRetentionRate():
 
 @pytest.mark.integration
 def test_repeatVolunteers():
-	pass
+	assert list(repeatVolunteers().execute()) == [('Sreynit Khatt', 5), ('Zach Neill', 3)]
 
 @pytest.mark.integration
 def test_repeatVolunteersPerProgram():
-	pass
+	assert list(repeatVolunteersPerProgram().execute()) == [('Zach Neill', 'Hunger Initiatives', 2), ('Sreynit Khatt', 'Adopt-a-Grandparent', 3)]
 
 @pytest.mark.integration
 def test_volunteerMajorAndClass():
-	pass
+	assert list(volunteerMajorAndClass(User.major).execute()) == [('Biology', 1), ('Chemistry', 1), ('Computer Science', 2), ('Psychology', 1)]
 
 @pytest.mark.integration
 def test_volunteerHoursByProgram():
-	pass
+	assert list(volunteerHoursByProgram().execute()) == [('Adopt-a-Grandparent', 9.0), ('Berea Buddies', 6.0), ('Hunger Initiatives', 11.0)]
 
 @pytest.mark.integration
 def test_onlyCompletedAllVolunteer():
-	pass
+	assert list(onlyCompletedAllVolunteer("2020-2021").execute()) == []
 
 @pytest.mark.integration
 def test_volunteerProgramHours():
-	pass
+	assert list(volunteerProgramHours().execute()) == ([('Hunger Initiatives', 'neillz', 4.0),
+													  	('Hunger Initiatives', 'khatts', 2.0),
+													    ('Berea Buddies', 'bryanta', 0.0),
+														('Adopt-a-Grandparent', 'khatts', 9.0),
+														('Hunger Initiatives', 'ayisie', None),
+														('Hunger Initiatives', 'partont', 5.0),
+														('Berea Buddies', 'neillz', 3.0),
+														('Berea Buddies', 'khatts', 3.0)])
 
 @pytest.mark.integration
 def test_totalVolunteerHours():
-	pass
+	assert list(totalVolunteerHours().execute()) == [(26.0,)]
+
 
 @pytest.mark.integration
 def test_getVolunteerProgramEventByTerm():
-	pass
+	assert list(getVolunteerProgramEventByTerm(Term.get_by_id(3)).execute()) == (
+												[('Sreynit Khatt', 'khatts', 'Berea Buddies', 'Berea Buddies Second Meeting'),
+												('Zach Neill', 'neillz', 'Berea Buddies', 'Berea Buddies Second Meeting')])
 
 @pytest.mark.integration
 def test_getUniqueVolunteers():
-	pass
+	assert list(getUniqueVolunteers("2021-2022").execute()) == [('bryanta', 'Alex Bryant', 'B00708826'), ('khatts', 'Sreynit Khatt', 'B00759107')]

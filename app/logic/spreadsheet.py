@@ -279,7 +279,7 @@ def create_spreadsheet(academicYear):
     onlyCompletedAllVolunteerColumns = ["Username","Full Name "]
     volunteerProgramEventByTerm = ["Full Name", "Username", "Program Name", "Event Name"]
 
-
+  
     makeDataXls(volunteerHoursByProgram(), hoursByProgramColumns, "Total Hours By Program", workbook)
     makeDataXls(volunteerMajorAndClass(User.major), volunteerMajorColumns, "Volunteers By Major", workbook)
     makeDataXls(volunteerMajorAndClass(User.classLevel, reorderClassLevel=True), volunteerClassColumns, "Volunteers By Class Level", workbook)
