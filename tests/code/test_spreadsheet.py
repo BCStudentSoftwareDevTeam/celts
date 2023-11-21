@@ -1,7 +1,5 @@
 import pytest
-from app.logic.spreadsheet import create_spreadsheet, getRetentionRate, removeNullParticipants, calculateRetentionRate, termParticipation
-from app.logic.spreadsheet import repeatVolunteers, repeatVolunteersPerProgram, volunteerMajorAndClass, volunteerHoursByProgram, getUniqueVolunteers
-from app.logic.spreadsheet import onlyCompletedAllVolunteer, volunteerProgramHours, totalVolunteerHours, getVolunteerProgramEventByTerm
+from app.logic.spreadsheet import *
 from app.models.user import User
 from app.models.term import Term
 
@@ -96,7 +94,7 @@ def test_totalVolunteerHours():
 def test_getVolunteerProgramEventByTerm():
     assert list(getVolunteerProgramEventByTerm(Term.get_by_id(3)).execute()) == (
                                 [('Sreynit Khatt', 'khatts', 'Berea Buddies', 'Berea Buddies Second Meeting'),
-                                ('Zach Neill', 'neillz', 'Berea Buddies', 'Berea Buddies Second Meeting')])
+                                 ('Zach Neill', 'neillz', 'Berea Buddies', 'Berea Buddies Second Meeting')])
 
 @pytest.mark.integration
 def test_getUniqueVolunteers():

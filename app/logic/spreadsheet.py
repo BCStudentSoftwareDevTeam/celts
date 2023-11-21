@@ -290,7 +290,7 @@ def create_spreadsheet(academicYear):
     makeDataXls(totalVolunteerHours(), totalVolunteerHoursColumns, "Total Hours", workbook)
     makeDataXls(volunteerProgramHours(), volunteerProgramHoursColumns, "Volunteer Hours By Program", workbook)
     makeDataXls(onlyCompletedAllVolunteer(academicYear), onlyCompletedAllVolunteerColumns , "Only All Volunteer Training", workbook)
-    makeDataXls(getVolunteerProgramEventByTerm(Term.get_by_id(8)), volunteerProgramEventByTerm, f"Fall {academicYear.split('-')[0]}", workbook)
+    makeDataXls(getVolunteerProgramEventByTerm(Term.get_or_none(f"Fall {academicYear.split('-')[0]}")), volunteerProgramEventByTerm, f"Fall {academicYear.split('-')[0]}", workbook)
     
     workbook.close()
 
