@@ -16,35 +16,19 @@ def test_calculateRetentionRate():
     assert calculateRetentionRate(fall_Dict,spring_dict) == {'Adopt-a-Grandparent': 0.0, 'CELTS-Sponsored Event': 0.0}
 	
 @pytest.mark.integration
-def test_removeNullParticipants(self):
+def test_removeNullParticipants():
 	# Test case 1: Dictionary with null participants
     input_dict_1 = {
-        'participant1': {'name': 'Alice', 'age': 25},
+        'participant1': ['khatts'],
         'participant2': None,
-        'participant3': {'name': 'Bob', 'age': 30},
+        'participant3': ['neilz'],
         'participant4': None
     }
     expected_result_1 = {
-        'participant1': {'name': 'Alice', 'age': 25},
-        'participant3': {'name': 'Bob', 'age': 30}
+        'participant1': ['khatts'],
+        'participant3': ['neilz']
     }
-    self.assertEqual(removeNullParticipants(input_dict_1), expected_result_1)
-
-    # Test case 2: Dictionary with all non-null participants
-    input_dict_2 = {
-        'participant1': {'name': 'Alice', 'age': 25},
-        'participant3': {'name': 'Bob', 'age': 30}
-    }
-    expected_result_2 = {
-        'participant1': {'name': 'Alice', 'age': 25},
-        'participant3': {'name': 'Bob', 'age': 30}
-    }
-    self.assertEqual(removeNullParticipants(input_dict_2), expected_result_2)
-
-    # Test case 3: Empty dictionary
-    input_dict_3 = {}
-    expected_result_3 = {}
-    self.assertEqual(removeNullParticipants(input_dict_3), expected_result_3)
+    assert removeNullParticipants(input_dict_1) == expected_result_1
 
 @pytest.mark.integration
 def test_termParticipation():

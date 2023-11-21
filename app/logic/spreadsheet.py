@@ -145,6 +145,7 @@ def termParticipation(termDescription):
 
 def removeNullParticipants(participant_dict):
     # loop through the dictionary and remove all entries that do not have a participant
+    print(participant_dict)
     return list(filter(lambda participant: bool(participant), participant_dict))
     
 # function to calculate the retention rate for each program
