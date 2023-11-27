@@ -3,8 +3,9 @@ import pytest
 from app.models import mainDB
 from app.models.user import User
 from app.models.celtsLabor import CeltsLabor
+from app.models.term import Term
 
-from app.logic.celtsLabor import parseLsfResponse, collapsePositions, refreshCeltsLaborRecords
+from app.logic.celtsLabor import parseLsfResponse, collapsePositions, refreshCeltsLaborRecords, getCeltsLaborHistory
 from app.logic import celtsLabor
 
 @pytest.mark.integration
@@ -39,10 +40,9 @@ def test_collapsePositions():
                      "termName": "AY 2021-2022"}]
 
     collapsed = collapsePositions(positionList)
-
-    assert collapsed == {'Fake Position': ['AY 2020-2021', 'AY 2021-2022'], 
-                         'Fake Position But a Leader': ['AY 2022-2023'], 
-                         'Fake Position In The Summer': ['AY 2021-2022']}
+    assert collapsed == {'Fake Position': ['2020-2021', '2021-2022'], 
+                         'Fake Position But a Leader': ['2022-2023'], 
+                         'Fake Position In The Summer': ['2021-2022']}
 
 @pytest.mark.integration
 def test_refreshCeltsLaborRecords():
@@ -55,11 +55,11 @@ def test_refreshCeltsLaborRecords():
     from laborDict is now in the table. 
     '''
     
-    laborDict = {"neillz": {'Fake Position': ['AY 2020-2021', 'AY 2021-2022'], 
-                            'Fake Position But a Leader': ['AY 2022-2023'], 
-                            'Fake Position In The Summer': ['AY 2021-2022']
+    laborDict = {"neillz": {'Fake Position': ['2020-2021', '2021-2022'], 
+                            'Fake Position But a Leader': ['2022-2023'], 
+                            'Fake Position In The Summer': ['2021-2022']
                            },
-                 "ayisie": {'Not Bonner Manager': ['AY 2020-2021']}
+                 "ayisie": {'Not Bonner Manager': ['2020-2021']}
                 }
     celtsLaborBase = [row.user for row in CeltsLabor.select()]
     
@@ -67,13 +67,14 @@ def test_refreshCeltsLaborRecords():
     ayisie = User.get_by_id('ayisie')
     neillz = User.get_by_id('neillz')
 
+    summer2021 = Term.get_by_id(3)
     assert ayisie  in celtsLaborBase 
     assert mupotsal in celtsLaborBase 
     assert neillz not in celtsLaborBase
-
     ayisieBasePosition = list(CeltsLabor.select().where(CeltsLabor.user == "ayisie"))
     assert ayisieBasePosition[0].positionTitle == "Bonner Manager"
-    assert ayisieBasePosition[0].termName == "Summer 2021"
+    assert ayisieBasePosition[0].term == summer2021
+    assert ayisieBasePosition[0].isAcademicYear == False
 
     with mainDB.atomic() as transaction:
         refreshCeltsLaborRecords(laborDict)
@@ -85,9 +86,11 @@ def test_refreshCeltsLaborRecords():
 
         # Check that the position record for ayisie in base data is no longer in the table but the new one that 
         # that was passed in with laborDict is. 
+        Fall2020 = Term.get_by_id(1)
         ayisieNewPosition = list(CeltsLabor.select().where(CeltsLabor.user == "ayisie"))
         assert ayisieNewPosition[0].positionTitle == "Not Bonner Manager"
-        assert ayisieNewPosition[0].termName == "AY 2020-2021"
+        assert ayisieNewPosition[0].term == Fall2020
+        assert ayisieNewPosition[0].isAcademicYear == True
         assert "Bonner Manager" not in ayisieNewPosition
 
         transaction.rollback()
@@ -175,7 +178,8 @@ def test_parseLsfResponse():
 
     with mainDB.atomic() as transaction: 
         parseLsfResponse()    
-        
+        Fall2020 = Term.get_by_id(1)
+        Fall2024 = Term.get_by_id(4)
         celtsLaborTest = [row.user for row in CeltsLabor.select()]
         
         assert agliullovak in celtsLaborTest
@@ -187,13 +191,25 @@ def test_parseLsfResponse():
         newZachPositions = list(CeltsLabor.select().where(CeltsLabor.user == "neillz"))
         
         assert newZachPositions[0].positionTitle == "Fake Position"
-        assert newZachPositions[0].termName == "AY 2020-2021"
+        assert newZachPositions[0].term == Fall2020
+        assert newZachPositions[0].isAcademicYear == True
         assert newZachPositions[1].positionTitle == "Fake Position"
-        assert newZachPositions[1].termName == "AY 2021-2022"
-
+        assert newZachPositions[1].term == Fall2024
+        assert newZachPositions[1].isAcademicYear == True
         # Check that "Fake Position Not In AY or Summer" was not added to the table since it was not 
         # held in either of the terms we are wanting to record. 
         for position in newZachPositions:
             assert "Fake Position Not In AY or Summer" not in position.positionTitle
 
         transaction.rollback()
+
+@pytest.mark.integration
+def test_getCeltsLaborHistory():
+    testDataAyisieHistory = {"Bonner Manager": "Summer 2021"}
+    getAyisieHistory = getCeltsLaborHistory(User.get_by_id("ayisie"))
+
+    testDataMupotsalHistory = {"Habitat For Humanity Cord.": "2020-2021"}
+    getMupotsalHistory = getCeltsLaborHistory(User.get_by_id("mupotsal"))
+
+    assert getAyisieHistory == testDataAyisieHistory
+    assert getMupotsalHistory == testDataMupotsalHistory

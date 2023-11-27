@@ -15,8 +15,8 @@ def getCeltsLaborFromLsf():
 
     """
     try: 
-        lsfUrl = f"http://172.31.2.114:8080/api/org/2084"
-        # lsfUrl = f"http://10.40.132.89:8080/api/org/2084"
+        # lsfUrl = f"http://172.31.2.114:8080/api/org/2084"
+        lsfUrl = f"http://10.40.132.89:8080/api/org/2084"
         response = requests.get(lsfUrl)
         return(response.json())
     except json.decoder.JSONDecodeError: 
@@ -98,23 +98,30 @@ def refreshCeltsLaborRecords(laborDict):
                     term = termTableMatch.where(Term.description == term)
                 else:
                     term = termTableMatch.where(Term.academicYear == term, Term.description % "Fall%")
-                # try:
-                celtsLabor.append({"user": key,
-                                "positionTitle": positionTitle,
-                                "term": term.get()})    
-                # except DoesNotExist:
-                #     # TODO: need to remove the need for this except.
-                #     pass
+                try:
+                    laborTerm = term.get()
+                    isAcademicYear = not laborTerm.isSummer
+                    celtsLabor.append({"user": key,
+                                       "positionTitle": positionTitle,
+                                       "term": laborTerm,
+                                       "isAcademicYear": isAcademicYear})    
+                except DoesNotExist:
+                    pass
                     
     CeltsLabor.delete().where(CeltsLabor.user << [username['user'] for username in celtsLabor]).execute()                         
     CeltsLabor.insert_many(celtsLabor).on_conflict_replace().execute()
-
+    
 def getCeltsLaborHistory(volunteer):
     
-    laborHistoryList = list(CeltsLabor.select().where(CeltsLabor.user == volunteer))
+    laborHistoryList = list(CeltsLabor.select(CeltsLabor.positionTitle, 
+                                              Term.description, 
+                                              Term.academicYear, 
+                                              Term.isSummer)
+                                      .join(Term, on=(CeltsLabor.term == Term.id))
+                                      .where(CeltsLabor.user == volunteer))
     
     laborHistoryDict= {}
     for position in laborHistoryList: 
-        laborHistoryDict[position.positionTitle] = position.termName
+        laborHistoryDict[position.positionTitle] = position.term.description if position.term.isSummer else position.term.academicYear
 
     return laborHistoryDict
