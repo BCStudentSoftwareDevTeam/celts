@@ -21,16 +21,15 @@
         <p class="card-subtitle text-muted">
           Managed by: {{data.managers}}</p>
         <p class="card-text mb-3">{{program.programDescription}} </p>
+      </div>
+      <div class="card-footer bg-white">
         <a type="button" class="float-end link-primary" href="{{program.bereaUrl}}" target="_blank"> Learn More </a>
-        <div class="mb-2">
         <a type="button" class="float-start link-primary" href="{{program.instagramUrl}}" target="_blank">
           <img src="static/images/logos/instagram_logo.png" class="float-start link-primary" style="height: 30px; width: 30px; margin-right:10px">
         </a>
         <a type="button" class="float-start link-primary" href="{{program.facebookUrl}}" target="_blank">
           <img src="static/images/logos/facebook_logo.png" class="float-start link-primary" style="height: 30px; width: 30px">
         </a>
-      </div>
-          <!-- STOP TRUNCATING -->
       </div>
       <div class="card-footer text-center">
         {% if not program.isBonnerScholars %}
@@ -51,6 +50,7 @@
           {% endif %}
         {% endif %}
       </div>
+      
     </div>
   {% endfor %}
 </div>
