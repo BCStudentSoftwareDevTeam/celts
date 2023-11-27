@@ -98,13 +98,13 @@ def refreshCeltsLaborRecords(laborDict):
                     term = termTableMatch.where(Term.description == term)
                 else:
                     term = termTableMatch.where(Term.academicYear == term, Term.description % "Fall%")
-                try:
-                    celtsLabor.append({"user": key,
-                                    "positionTitle": positionTitle,
-                                    "term": term.get()})    
-                except DoesNotExist:
-                    # TODO: need to remove the need for this except.
-                    pass
+                # try:
+                celtsLabor.append({"user": key,
+                                "positionTitle": positionTitle,
+                                "term": term.get()})    
+                # except DoesNotExist:
+                #     # TODO: need to remove the need for this except.
+                #     pass
                     
     CeltsLabor.delete().where(CeltsLabor.user << [username['user'] for username in celtsLabor]).execute()                         
     CeltsLabor.insert_many(celtsLabor).on_conflict_replace().execute()
