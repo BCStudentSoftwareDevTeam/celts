@@ -546,11 +546,14 @@ CREATE TABLE `celtslabor` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` varchar(255) NOT NULL,
   `positionTitle` varchar(255) NOT NULL,
-  `termName` varchar(255) NOT NULL,
+  `term_id` int NOT NULL,
+  `isAcademicYear` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `celtslabor_user_id` (`user_id`),
-  CONSTRAINT `celtslabor_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `celtslabor_term_id` (`term_id`),
+  CONSTRAINT `celtslabor_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`username`),
+  CONSTRAINT `celtslabor_ibfk_2` FOREIGN KEY (`term_id`) REFERENCES `term` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Table structure for table `eventparticipant`
