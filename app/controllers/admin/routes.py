@@ -178,7 +178,7 @@ def renewEvent(eventId):
 
 
         priorEvent = Event.get_by_id(eventId)
-        [newEvent] = saveEventToDb({
+        newEvent, message = attemptSaveEvent({
                     'name': priorEvent.name,
                     'term': priorEvent.term,
                     'description': priorEvent.description,
@@ -199,13 +199,17 @@ def renewEvent(eventId):
                     'program': priorEvent.program,
                     'isRecurring': (True if priorEvent.recurringId else False)
             }, renewedEvent = True)
-        
-        copyRsvp(priorEvent, newEvent)
-        
-        createAdminLog(f"Renewed {priorEvent.name} as {newEvent.name}.")
+        print(message)
+        if message:
+            flash(message, "danger")
+            return redirect(url_for('admin.eventDisplay', eventId = priorEvent))
 
+        copyRsvp(priorEvent, newEvent[0])
+
+        createAdminLog(f"Renewed {priorEvent.name} as {newEvent[0].name}.")
         flash("Event successfully renewed.", "success")
-        return redirect(url_for('admin.eventDisplay', eventId = newEvent))
+        return redirect(url_for('admin.eventDisplay', eventId = newEvent[0]))
+
 
     except Exception as e:
         flash('Error while renewing event:', e)

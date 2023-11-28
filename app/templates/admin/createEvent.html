@@ -272,7 +272,7 @@
               <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteWarning">Delete Event</button>
               {% if event and not (event.isCanceled or eventPast) %}
                 <button type="button" class="btn btn-warning bordered-element m-2" data-bs-toggle="modal" data-bs-target="#cancelWarning">Cancel Event</button>
-              {% elif event and (event.isCanceled or eventPast) %}
+              {% elif event and (event.isCanceled) %}
                 <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#renewWarning">Renew Event</button>
               {% endif %}
               <input type="submit" class="btn btn-primary" value="Save" />
