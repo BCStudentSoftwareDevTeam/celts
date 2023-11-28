@@ -17,7 +17,7 @@ from app.models.requirementMatch import RequirementMatch
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.eventViews import EventView
 
-from app.logic.createLogs import createAdminLog
+from app.logic.createLogs import createAdminLog, createRsvpLog
 from app.logic.utils import format24HourTime
 from app.logic.fileHandler import FileHandler
 from app.logic.certification import updateCertRequirementForEvent
@@ -92,7 +92,7 @@ def deleteAllRecurringEvents(eventId):
                 aRecurringEvent.delete_instance(recursive = True)
 
 
-def attemptSaveEvent(eventData, attachmentFiles = None):
+def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
     """
     Tries to save an event to the database:
     Checks that the event data is valid and if it is it continus to saves the new
@@ -108,13 +108,14 @@ def attemptSaveEvent(eventData, attachmentFiles = None):
     if eventData["rsvpLimit"] == "":
         eventData["rsvpLimit"] = None
     newEventData = preprocessEventData(eventData)
+    
     isValid, validationErrorMessage = validateNewEventData(newEventData)
-
+    
     if not isValid:
         return False, validationErrorMessage
 
     try:
-        events = saveEventToDb(newEventData)
+        events = saveEventToDb(newEventData, renewedEvent)
         if attachmentFiles:
             for event in events:
                 addFile= FileHandler(attachmentFiles, eventId=event.id)
@@ -136,13 +137,15 @@ def saveEventToDb(newEventData, renewedEvent = False):
     
     eventsToCreate = []
     recurringSeriesId = None
-    if isNewEvent and newEventData['isRecurring']:
+    if (isNewEvent and newEventData['isRecurring']) and not renewedEvent:
         eventsToCreate = calculateRecurringEventFrequency(newEventData)
         recurringSeriesId = calculateNewrecurringId()
     else:
         eventsToCreate.append({'name': f"{newEventData['name']}",
                                 'date':newEventData['startDate'],
                                 "week":1})
+        if renewedEvent:
+            recurringSeriesId = newEventData.get('recurringId')
     eventRecords = []
     for eventInstance in eventsToCreate:
         with mainDB.atomic():
@@ -350,24 +353,30 @@ def validateNewEventData(data):
 
     if data['timeEnd'] <= data['timeStart']:
         return (False, "Event end time must be after start time.")
-
+    
     # Validation if we are inserting a new event
     if 'id' not in data:
 
-        event = (Event.select()
+        sameEventList = list((Event.select()
                       .where((Event.name == data['name']) &
                              (Event.location == data['location']) &
                              (Event.startDate == data['startDate']) &
-                             (Event.timeStart == data['timeStart'])))
+                             (Event.timeStart == data['timeStart'])).execute()))
+        
+        for item in sameEventList:
+            if item.isCanceled or item.recurringId:
+                sameEventList.remove(item)
 
+        print(sameEventList)
         try:
             Term.get_by_id(data['term'])
         except DoesNotExist as e:
             return (False, f"Not a valid term: {data['term']}")
-
-        if event.exists():
+        print('-'*100)
+        print(data)
+        if sameEventList:
             return (False, "This event already exists")
-
+        
     data['valid'] = True
     return (True, "All inputs are valid.")
 
@@ -502,18 +511,19 @@ def getEventRsvpCount(eventId):
     """
     return len(EventRsvp.select().where(EventRsvp.event_id == eventId))
 
-def copyRSVP(priorEvent, newEvent):
+def copyRsvp(priorEvent, newEvent):
     rsvpInfo = list(EventRsvp.select().where(EventRsvp.event == priorEvent).execute())
     participantInfo = list(EventParticipant.select().where(EventParticipant.event == priorEvent).execute())
+    rsvpCopies = 0
     if priorEvent.isPast:
         for student in participantInfo:
             newRsvp = EventRsvp(
                     user = student.user,
                     event = newEvent,
-                    rsvpTime = datetime.now(),
                     rsvpWaitlist = student.rsvpWaitlist
                 )
             newRsvp.save()
+            rsvpCopies=len(participantInfo)
     else:
         for student in rsvpInfo:
             newRsvp = EventRsvp(
@@ -523,3 +533,7 @@ def copyRSVP(priorEvent, newEvent):
                     rsvpWaitlist = False
                 )
             newRsvp.save()
+            rsvpCopies=len(rsvpInfo)
+
+    if rsvpCopies:
+        createRsvpLog(newEvent, f"Copied {rsvpCopies} Rsvp's from {priorEvent.name} to {newEvent.name}")
