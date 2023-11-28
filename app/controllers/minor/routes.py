@@ -65,3 +65,4 @@ def addSummerExperience(username):
 @minor_bp.route('/cceMinor/<username>/indicateInterest', methods=['POST'])
 def indicateMinorInterest(username):
     updateMinorInterest(username)
+    return ""

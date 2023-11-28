@@ -23,7 +23,7 @@
             </div>
         </div>
         <div class="py-3">
-            <input name="expressInterest" id="expressInterest" checked={{user.minorInterest}} type="checkbox"/>
+            <input name="expressInterest" id="expressInterest" {{ "checked" if user.minorInterest }} type="checkbox"/>
             <label for="expressInterest">Indicate interest in doing the minor</label>
         </div>
 

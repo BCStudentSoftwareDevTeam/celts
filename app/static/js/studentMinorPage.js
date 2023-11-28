@@ -6,8 +6,13 @@ $(document).ready(function(){
           url: "/cceMinor/"+username+"/indicateInterest",
           type: "POST",
           data: data,
-          success: location.reload(),
+          success: function(s) {
+            console.log(s)
+
+            location.reload()
+          },
           error: function(request, status, error) {
+            console.log(error)
             msgFlash("Error saving changes!", "danger")
           }
       });
