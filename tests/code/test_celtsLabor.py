@@ -5,7 +5,7 @@ from app.models.user import User
 from app.models.celtsLabor import CeltsLabor
 from app.models.term import Term
 
-from app.logic.celtsLabor import parseLsfResponse, collapsePositions, refreshCeltsLaborRecords, getCeltsLaborHistory
+from app.logic.celtsLabor import updateCeltsLaborFromLsf, collapsePositions, refreshCeltsLaborRecords, getCeltsLaborHistory
 from app.logic import celtsLabor
 
 @pytest.mark.integration
@@ -155,7 +155,7 @@ def demoLsfData():
 celtsLabor.getCeltsLaborFromLsf = demoLsfData
 
 @pytest.mark.integration
-def test_parseLsfResponse():
+def test_updateCeltsLaborFromLsf():
     '''
     Assert that the CeltsLabor table contains what we expect. 
     
@@ -177,7 +177,7 @@ def test_parseLsfResponse():
     assert partont not in celtsLaborBase
 
     with mainDB.atomic() as transaction: 
-        parseLsfResponse()    
+        updateCeltsLaborFromLsf()    
         Fall2020 = Term.get_by_id(1)
         Fall2024 = Term.get_by_id(4)
         celtsLaborTest = [row.user for row in CeltsLabor.select()]

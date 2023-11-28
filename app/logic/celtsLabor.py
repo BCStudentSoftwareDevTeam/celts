@@ -2,7 +2,7 @@ import requests
 import json
 from peewee import DoesNotExist
 from collections import defaultdict
-
+from app import app
 from app.models.user import User
 from app.models.celtsLabor import CeltsLabor
 from app.models.term import Term
@@ -15,14 +15,13 @@ def getCeltsLaborFromLsf():
 
     """
     try: 
-        # lsfUrl = f"http://172.31.2.114:8080/api/org/2084"
-        lsfUrl = f"http://10.40.132.89:8080/api/org/2084"
+        lsfUrl = app.config['LSF_URL']
         response = requests.get(lsfUrl)
         return(response.json())
     except json.decoder.JSONDecodeError: 
         return {}
 
-def parseLsfResponse():
+def updateCeltsLaborFromLsf():
     """
         Parse the LSF response object so that it is only labor records for summer and academic years.
 
@@ -95,11 +94,11 @@ def refreshCeltsLaborRecords(laborDict):
             for term in termNames: 
                 termTableMatch = Term.select() 
                 if term[0].isalpha(): 
-                    term = termTableMatch.where(Term.description == term)
+                    termMatch = termTableMatch.where(Term.description == term)
                 else:
-                    term = termTableMatch.where(Term.academicYear == term, Term.description % "Fall%")
+                    termMatch = termTableMatch.where(Term.academicYear == term, Term.description % "Fall%")
                 try:
-                    laborTerm = term.get()
+                    laborTerm = termMatch.get()
                     isAcademicYear = not laborTerm.isSummer
                     celtsLabor.append({"user": key,
                                        "positionTitle": positionTitle,
