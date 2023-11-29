@@ -94,11 +94,11 @@ def refreshCeltsLaborRecords(laborDict):
             for term in termNames: 
                 termTableMatch = Term.select() 
                 if term[0].isalpha(): 
-                    termMatch = termTableMatch.where(Term.description == term)
+                    termTableMatch = termTableMatch.where(Term.description == term)
                 else:
-                    termMatch = termTableMatch.where(Term.academicYear == term, Term.description % "Fall%")
+                    termTableMatch = termTableMatch.where(Term.academicYear == term, Term.description % "Fall%")
                 try:
-                    laborTerm = termMatch.get()
+                    laborTerm = termTableMatch.get()
                     isAcademicYear = not laborTerm.isSummer
                     celtsLabor.append({"user": key,
                                        "positionTitle": positionTitle,
