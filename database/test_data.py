@@ -330,16 +330,23 @@ reqs = [
           "isRequired": True,
     
         },
-        { "id": 14,
+        { "id": 13,
           "certification": 2,
           "name": "Community Engagement 2",
           "frequency": "once",
           "isRequired": True,
           
         },
-        { "id": 15,
+        { "id": 14,
           "certification": 2,
           "name": "Community Engagement 3",
+          "frequency": "once",
+          "isRequired": True,
+          
+        },
+        { "id": 15,
+          "certification": 2,
+          "name": "Community Engagement 4",
           "frequency": "once",
           "isRequired": True,
            
@@ -901,7 +908,31 @@ individualReqs = [
           "requirement": 14,
           "addedBy": "ramsayb2",
           "addedOn": "",
+        },
+                    {
+          "username": "bledsoef",
+          "program": 2,
+          "course": 1,
+          "term": 3,
+          "requirement": 14,
+          "addedBy": "ramsayb2",
+          "addedOn": "",
+          },  
+
+        { 
+          "username": "khatts",
+          "program": 2,
+          "course": 1,
+          "term": 3,
+          "requirement": 14,
+          "addedBy": "ramsayb2",
+          "addedOn": "",
         }
+    
+
+
+
+
 ]
 IndividualRequirement.insert_many(individualReqs).on_conflict_replace().execute()
 

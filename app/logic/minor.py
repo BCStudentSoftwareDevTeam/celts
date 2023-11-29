@@ -6,9 +6,6 @@ from peewee import *
 from peewee import JOIN
 from peewee import fn
 
-
-   
-
 def getMinorInterest():
     interestedStudents = User.select(User.firstName, User.lastName).where((User.isStudent == 1) & (User.minorInterest == 1))
 
@@ -16,28 +13,26 @@ def getMinorInterest():
 
     return interestedStudentList
 
-def getEngagedStudents():
-    engagedStudents = (User
-            .select(User.username, User.firstName, User.lastName)
-            .join(IndividualRequirement, on=(User.username == IndividualRequirement.username))
-            .distinct()  # To get unique combinations of students
-            )
-    engagedStudentList = [{'firstName': student.firstName, 'lastName': student.lastName} for student in engagedStudents]
-    print(engagedStudentList)
+def getEngagedStudentsWithRequirementCount():
+    engagedStudentsWithCount = (
+        User
+        .select(User.firstName, User.lastName, fn.COUNT(IndividualRequirement.id).alias('requirementCount'))
+        .join(IndividualRequirement, on=(User.username == IndividualRequirement.username))
+        .group_by(User.username)
+        .order_by(fn.COUNT(IndividualRequirement.id).desc())
+    )
 
-    return engagedStudentList
-
-def getRequirementCount():
-    username_counts = (IndividualRequirement
-                    .select(IndividualRequirement.username, fn.COUNT(IndividualRequirement.username).alias('count_alias'))
-                    .group_by(IndividualRequirement.username))
-
-    # Convert the query results to a list of dictionaries
-    results_list = [
-        {'username': result.username, 'count': result.count_alias}
-        for result in username_counts
+    engagedStudentsList = [
+        {
+            'firstName': student.firstName,
+            'lastName': student.lastName,
+            'requirementCount': student.requirementCount
+        }
+        for student in engagedStudentsWithCount
     ]
 
-    # Display the list of dictionaries
-    print(results_list)
-    return results_list
+    for student in engagedStudentsList:
+        print(f"firstName: {student['firstName']}, lastName: {student['lastName']}, requirementCount: {student['requirementCount']}")
+
+    return engagedStudentsList
+
