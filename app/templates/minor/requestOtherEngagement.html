@@ -12,12 +12,22 @@
 <form id='requestOtherCommEng' enctype="multipart/form-data" role='form' method='GET' action="./requestOtherEngagement.html">
   <div class='row' id="username" value="{{user.username}}">
       <!--Left half-->
-
-      <div class='form-group mb-4'>
-        <label class='form-label' for='studentUser'> {{ user.firstName }} {{ user.lastName }} : Other credit </label>
+      <div class="container text-center">
+        <div class='form-group mb-4'>
+          <h2 class='form-label' for='studentUser'> {{ user.firstName }} {{ user.lastName }} : Other credit </h2>
+        </div>
       </div>
 
       <div class="form-row mb-2">
+        <div class="form-group col-md-4 mb-4">
+          <label class="form-label" for='inputEventTerm'><strong>Term</strong></label>
+            <select class="form-select" name='term' id='inputEventTerm' required>
+              {% for term in futureTerms %}
+                <option value='{{term}}' {{"selected" if term == eventData.term}}>{{term.description}}</option>
+              {% endfor %}
+            </select>
+        </div>
+        
         <div class="col-md-1">
           <label class="form-label" for="otherActivity"><strong>Activity:</strong></label>
         </div>
@@ -39,26 +49,25 @@
             <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='weeks' name='weeks' value=""/>
         </div>
 
-      <div class="col-md-1">
-          <label class='form-label' for='activity'><strong> Program/Company/Sevice: </strong></label>
-      </div>
-      <div class="col-md-4">
-        <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='programCompanyService' name='programCompanyService' value=""/>
-      </div>
-      <br>
-      <div class ="col-md-4">
-        <label class='form-label' for='activity'><strong>Term: </strong></label>
-        <select name="term" id="termForRequestOther">
-          <option value="term">select</option>
-          <option value="Fall">Fall 2023</option>
-          <option value="Spring">Spring 2022</option>
-          <option value="Summer">Summer 2024</option>
-          <option value="May">May 2024</option>
-        </select>
-      </div>
-      <br>
+      <div class="row">
+        <!-- left column -->
+        <div class="col-md-4">
+          <div class="form-group">
+            <label class='form-label' for='activity'><strong> Activity/Service: </strong></label>
+            <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='programCompanyService' name='programCompanyService' value=""/>
+          </div>
+        </div>
 
-      <div class="form-group mb-5">
+        <!-- right column -->
+        <div class="col-md-4">
+          <div class="form-group">
+            <label class='form-label' for='company'><strong> Company/Organization: </strong></label>
+            <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='companyOrganization' name='companyOrganization' value=""/>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group col-md-4 mb-4">
         <label class="mb-2" for='attachmentObject'><strong>Upload Files</strong></label>
         <input type="file" class="form-control" id="attachmentObject" name="attachmentObject" multiple accept= ".docx"/>
       </div>
@@ -70,4 +79,3 @@
   </div>
 </form>
 {% endblock %}
-
