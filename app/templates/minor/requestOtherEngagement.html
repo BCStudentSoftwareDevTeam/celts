@@ -20,10 +20,10 @@
 
       <div class="form-row mb-2">
         <div class="form-group col-md-4 mb-4">
-          <label class="form-label" for='inputEventTerm'><strong>Term</strong></label>
-            <select class="form-select" name='term' id='inputEventTerm' required>
-              {% for term in futureTerms %}
-                <option value='{{term}}' {{"selected" if term == eventData.term}}>{{term.description}}</option>
+          <label class="form-label" for='inputTerm'><strong>Term</strong></label>
+            <select class="form-select" name='term' id='inputTerm' required>
+              {% for term in terms %}
+                <option value='{{term}}'>{{term.description}}</option>
               {% endfor %}
             </select>
         </div>

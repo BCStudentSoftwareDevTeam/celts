@@ -1,6 +1,8 @@
 from flask import Flask, g, render_template, request
 from app.controllers.minor import minor_bp
 from app.models.user import User
+from app.models.term import Term
+from app.logic.utils import selectSurroundingTerms
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -36,9 +38,11 @@ def requestOtherEngagement(username):
         Load the "request other" form and submit it.
     """
     user = User.get_by_id(username)
+    terms = selectSurroundingTerms(g.current_term)
 
     return render_template("/minor/requestOtherEngagement.html",
-                            user=user)
+                            user=user,
+                            terms=terms)
 
 
 
