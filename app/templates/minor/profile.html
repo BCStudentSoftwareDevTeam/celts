@@ -37,11 +37,11 @@
               {% for term, engagements in terms.items() %}
                 <div class="accordion-item">
                   <h3 class="accordion-header" id="headingOne">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{loop.index}}" aria-expanded="true" aria-controls="collapse{{loop.index}}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{loop.index}}" aria-expanded="true" aria-controls="collapse{{loop.index}}">
                       {{term[0]}}
                     </button>
                   </h3>
-                  <div id="collapse{{loop.index}}" class="accordion-collapse collapse" aria-labelledby="heading{{loop.index}}"+  data-bs-parent="#adminManagement">
+                  <div id="collapse{{loop.index}}" class="accordion-collapse collapse" aria-labelledby="heading{{loop.index}}"+  data-bs-parent="#communityEngagement">
                     <div class="accordion-body">
                       <div class="container-fluid col-10">
                         <div class="row d-flex justify-content-center mb-3">
