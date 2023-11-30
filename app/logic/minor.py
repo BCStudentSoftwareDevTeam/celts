@@ -84,7 +84,7 @@ def getCommunityEngagementByTerm(username):
     for event in events:
         terms[(event.term.description, event.term.id)].append({"name":event.program.programName, "id":event.program.id, "type":"program", "term":event.term})
     
-    return terms
+    return dict(sorted(terms.items(), key=lambda x: x[0][1]))
 
 
 
