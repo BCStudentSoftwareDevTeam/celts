@@ -1,19 +1,18 @@
-from flask import Flask, g, render_template, request
+from flask import Flask, g, render_template, request, abort
 from app.logic.minor import updateMinorInterest, getProgramEngagementHistory, getCourseInformation
 from app.models.user import User
-from app.models.course import Course
 from app.controllers.minor import minor_bp
 from app.logic.minor import getCommunityEngagementByTerm
-from playhouse.shortcuts import model_to_dict
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
     """
         Load minor management page with community engagements and summer experience
     """
+    if not (g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff):
+        return abort(403)
     terms = getCommunityEngagementByTerm(username)
     user = User.get_by_id(username)
-        
     return render_template("minor/profile.html",
                     user=user,
                     terms=terms)
