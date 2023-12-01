@@ -902,32 +902,18 @@ def test_getEventRsvpCount():
 def test_copyRsvp():
     with mainDB.atomic() as transaction:
         with app.app_context():
-            ##Check copying past event rsvp
-            g.current_user='heggens'
-            assert len(EventRsvp.select().where(EventRsvp.event_id == 4)) == 0
+            g.current_user ="heggens"
 
-            copyFromEvent = Event.get_by_id(2)
-            copyToEvent = Event.get_by_id(4)
 
-            copyRsvp(copyFromEvent, copyToEvent)
-
-            assert len(EventRsvp.select().where(EventRsvp.event_id == 4)) == 2
-
-            ##Check future past event rsvp
-            futureYear=date.today().year+1
-            
-            futureStartDate = datetime(futureYear,12,19,18,0,0)
-            futureEndDate = datetime(futureYear,12,19,21,0,0)
-            
             newEvent = Event.create(name = "Req and Limit",
                                     term = 2,
                                     description = "Event that requries RSVP and has an RSVP limit set.",
-                                    timeStart = futureStartDate.time(),
-                                    timeEnd = futureEndDate.time(),
+                                    timeStart = "6:00 pm",
+                                    timeEnd = "9:00 pm",
                                     location = "The Moon",
                                     isRsvpRequired = 1,
-                                    startDate = futureStartDate.date(),
-                                    endDate = futureEndDate.date(),
+                                    startDate = "2022-12-19",
+                                    endDate = "2022-12-19",
                                     program = 9)
             
             newEvent.save()
@@ -939,12 +925,12 @@ def test_copyRsvp():
             newEvent2 = Event.create(name = "Req and Limit",
                                      term = 2,
                                      description = "Event that requries RSVP and has an RSVP limit set.",
-                                     timeStart = futureStartDate.time(),
-                                     timeEnd = futureEndDate.time(),
+                                     timeStart = "6:00 pm",
+                                     timeEnd = "9:00 pm",
                                      location = "The Moon",
                                      isRsvpRequired = 1,
-                                     startDate = futureStartDate.date(),
-                                     endDate = futureEndDate.date(),
+                                     startDate = "2022-12-19",
+                                     endDate = "2022-12-19",
                                      program = 9)
 
             newEvent2.save()

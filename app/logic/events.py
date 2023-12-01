@@ -121,7 +121,7 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
                 addFile= FileHandler(attachmentFiles, eventId=event.id)
                 addFile.saveFiles(saveOriginalFile=events[0])
 
-        return events, " "
+        return events, ""
     except Exception as e:
         print(f'Failed attemptSaveEvent() with Exception:{e}')
         return False, e
@@ -367,13 +367,10 @@ def validateNewEventData(data):
             if item.isCanceled or item.recurringId:
                 sameEventList.remove(item)
 
-        print(sameEventList)
         try:
             Term.get_by_id(data['term'])
         except DoesNotExist as e:
             return (False, f"Not a valid term: {data['term']}")
-        print('-'*100)
-        print(data)
         if sameEventList:
             return (False, "This event already exists")
         
@@ -513,27 +510,15 @@ def getEventRsvpCount(eventId):
 
 def copyRsvp(priorEvent, newEvent):
     rsvpInfo = list(EventRsvp.select().where(EventRsvp.event == priorEvent).execute())
-    participantInfo = list(EventParticipant.select().where(EventParticipant.event == priorEvent).execute())
     rsvpCopies = 0
-    if priorEvent.isPast:
-        for student in participantInfo:
-            newRsvp = EventRsvp(
-                    user = student.user,
-                    event = newEvent,
-                    rsvpWaitlist = student.rsvpWaitlist
-                )
-            newRsvp.save()
-            rsvpCopies=len(participantInfo)
-    else:
-        for student in rsvpInfo:
-            newRsvp = EventRsvp(
-                    user = student.user,
-                    event = newEvent,
-                    rsvpTime = student.rsvpTime,
-                    rsvpWaitlist = False
-                )
-            newRsvp.save()
-            rsvpCopies=len(rsvpInfo)
+    for student in rsvpInfo:
+        newRsvp = EventRsvp(
+                user = student.user,
+                event = newEvent,
+                rsvpWaitlist = student.rsvpWaitlist
+            )
+        newRsvp.save()
+        rsvpCopies=len(rsvpInfo)
 
     if rsvpCopies:
         createRsvpLog(newEvent, f"Copied {rsvpCopies} Rsvp's from {priorEvent.name} to {newEvent.name}")

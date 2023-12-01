@@ -199,7 +199,6 @@ def renewEvent(eventId):
                     'program': priorEvent.program,
                     'isRecurring': (True if priorEvent.recurringId else False)
             }, renewedEvent = True)
-        print(message)
         if message:
             flash(message, "danger")
             return redirect(url_for('admin.eventDisplay', eventId = priorEvent))
