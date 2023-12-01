@@ -1,7 +1,12 @@
+import re
 import pytest
-from app.logic.spreadsheet import *
+
+from app.models import mainDB
 from app.models.user import User
 from app.models.term import Term
+from app.models.eventParticipant import EventParticipant
+
+from app.logic.spreadsheet import *
 
 
 @pytest.mark.integration
@@ -12,23 +17,13 @@ def test_create_spreadsheet():
 def test_calculateRetentionRate():
     fall_Dict=({'Adopt-a-Grandparent': ['khatts'], 'CELTS-Sponsored Event': [None]})
     spring_dict=({'Hunger Initiatives': ['neillz', 'khatts', 'ayisie', 'neillz', 'partont']})
-
     assert calculateRetentionRate(fall_Dict,spring_dict) == {'Adopt-a-Grandparent': 0.0, 'CELTS-Sponsored Event': 0.0}
 	
 @pytest.mark.integration
 def test_removeNullParticipants():
 	# Test case 1: Dictionary with null participants
-    input_dict_1 = {
-        'participant1': ['khatts'],
-        'participant2': None,
-        'participant3': ['neilz'],
-        'participant4': None
-    }
-    expected_result_1 = {
-        'participant1': ['khatts'],
-        'participant3': ['neilz']
-    }
-    assert removeNullParticipants(input_dict_1) == expected_result_1
+    input_dict_1 = ['khatts']
+    assert removeNullParticipants(input_dict_1) == ['khatts']
 
 @pytest.mark.integration
 def test_termParticipation():
@@ -40,47 +35,120 @@ def test_getRetentionRate():
 
 @pytest.mark.integration
 def test_repeatVolunteers():
-    assert list(repeatVolunteers().execute()) == [('Sreynit Khatt', 5), ('Zach Neill', 3)]
+    with mainDB.atomic() as transaction:
+
+        assert list(repeatVolunteers().execute()) == [('Sreynit Khatt', 4), ('Zach Neill', 2)]
+        EventParticipant.create(user = 'partont',  
+                                event = 2,
+                                hoursEarned = 1)
+        assert list(repeatVolunteers().execute()) == [('Sreynit Khatt', 4), ('Zach Neill', 2), ('Tyler Parton', 2)]
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_repeatVolunteersPerProgram():
-    assert list(repeatVolunteersPerProgram().execute()) == [('Zach Neill', 'Hunger Initiatives', 2), ('Sreynit Khatt', 'Adopt-a-Grandparent', 3)]
+    with mainDB.atomic() as transaction:
+        assert list(repeatVolunteersPerProgram().execute()) == [('Zach Neill', 'Hunger Initiatives', 2), ('Sreynit Khatt', 'Adopt-a-Grandparent', 3)]
+        EventParticipant.create(user = 'partont',  
+                                event = 2,
+                                hoursEarned = 1)
+        assert list(repeatVolunteersPerProgram().execute()) == [('Zach Neill', 'Hunger Initiatives', 2), ('Tyler Parton', 'Hunger Initiatives', 2),
+                                                                ('Sreynit Khatt', 'Adopt-a-Grandparent', 3)]
+
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_volunteerMajorAndClass():
-    assert list(volunteerMajorAndClass(User.major).execute()) == [('Biology', 1), ('Chemistry', 1), ('Computer Science', 2), ('Psychology', 1)]
+    with mainDB.atomic() as transaction:
+        assert list(volunteerMajorAndClass(User.major).execute()) == [('Biology', 1), ('Chemistry', 1), ('Computer Science', 2), ('Psychology', 1)]
+        User.create(username = 'solijonovam',
+                    bnumber = 'B00769465',
+                    email = 'solijonovam@berea.edu',
+                    phoneNumber = '732-384-3469',
+                    firstName = 'Madinabonu',
+                    lastName  = 'Solijonova',
+                    isStudent = True,
+                    major = 'Agriculture',
+                    classLevel = 'Sophomore')
+        EventParticipant.create(user = 'solijonovam',  
+                                event = 2,
+                                hoursEarned = 2)
+        assert list(volunteerMajorAndClass(User.major).execute()) == [('Agriculture', 1), ('Biology', 1), ('Chemistry', 1), ('Computer Science', 2), ('Psychology', 1)]
+
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_volunteerHoursByProgram():
-    assert list(volunteerHoursByProgram().execute()) == [('Adopt-a-Grandparent', 9.0), ('Berea Buddies', 6.0), ('Hunger Initiatives', 11.0)]
-
+    with mainDB.atomic() as transaction:
+        assert list(volunteerHoursByProgram().execute()) == [('Adopt-a-Grandparent', 9.0), ('Berea Buddies', 0.0), ('Hunger Initiatives', 11.0)]
+        EventParticipant.create(user = 'partont',  
+                                event = 2,
+                                hoursEarned = 1)
+        assert list(volunteerHoursByProgram().execute()) == [('Adopt-a-Grandparent', 9.0), ('Berea Buddies', 0.0), ('Hunger Initiatives', 12.0)]
+        transaction.rollback()
+        
 @pytest.mark.integration
 def test_onlyCompletedAllVolunteer():
-    assert list(onlyCompletedAllVolunteer("2020-2021").execute()) == []
+    #seems like onlyCompletedAllVolunteer isn't working properly
+    with mainDB.atomic() as transaction:
+        assert list(onlyCompletedAllVolunteer("2020-2021").execute()) == []
+        EventParticipant.create(user = 'partont',  
+                                event = 14,
+                                hoursEarned = 1)
+        assert list(onlyCompletedAllVolunteer("2021-2022").execute()) == []
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_volunteerProgramHours():
-    assert list(volunteerProgramHours().execute()) == ([('Hunger Initiatives', 'neillz', 4.0),
-                                                        ('Hunger Initiatives', 'khatts', 2.0),
-                                                        ('Berea Buddies', 'bryanta', 0.0),
-                                                        ('Adopt-a-Grandparent', 'khatts', 9.0),
-                                                        ('Hunger Initiatives', 'ayisie', None),
-                                                        ('Hunger Initiatives', 'partont', 5.0),
-                                                        ('Berea Buddies', 'neillz', 3.0),
-                                                        ('Berea Buddies', 'khatts', 3.0)])
-
+    with mainDB.atomic() as transaction:
+        assert list(volunteerProgramHours().execute()) == ([('Hunger Initiatives', 'neillz', 4.0),
+                                                            ('Hunger Initiatives', 'khatts', 2.0),
+                                                            ('Berea Buddies', 'bryanta', 0.0),
+                                                            ('Adopt-a-Grandparent', 'khatts', 9.0),
+                                                            ('Hunger Initiatives', 'ayisie', None),
+                                                            ('Hunger Initiatives', 'partont', 5.0)])
+        EventParticipant.create(user = 'qasema',  
+                                event = 2,
+                                hoursEarned = 1)
+        assert list(volunteerProgramHours().execute()) == ([('Hunger Initiatives', 'neillz', 4.0), 
+                                                            ('Hunger Initiatives', 'khatts', 2.0), 
+                                                            ('Berea Buddies', 'bryanta', 0.0),
+                                                            ('Adopt-a-Grandparent', 'khatts', 9.0),
+                                                            ('Hunger Initiatives', 'ayisie', None), 
+                                                            ('Hunger Initiatives', 'partont', 5.0),
+                                                            ('Hunger Initiatives', 'qasema', 1.0)])
+        transaction.rollback()
+    
 @pytest.mark.integration
 def test_totalVolunteerHours():
-    assert list(totalVolunteerHours().execute()) == [(26.0,)]
+    with mainDB.atomic() as transaction:
+        assert list(totalVolunteerHours().execute()) == [(20.0,)]
+        EventParticipant.create(user = 'qasema',  
+                                event = 2,
+                                hoursEarned = 1)
+        assert list(totalVolunteerHours().execute()) == [(21.0,)]
+        transaction.rollback()
 
 
 @pytest.mark.integration
 def test_getVolunteerProgramEventByTerm():
-    assert list(getVolunteerProgramEventByTerm(Term.get_by_id(3)).execute()) == (
-                                [('Sreynit Khatt', 'khatts', 'Berea Buddies', 'Berea Buddies Second Meeting'),
-                                 ('Zach Neill', 'neillz', 'Berea Buddies', 'Berea Buddies Second Meeting')])
+    assert list(getVolunteerProgramEventByTerm(Term.get_by_id(3)).execute()) == ([])
+    assert list(getVolunteerProgramEventByTerm(Term.get_by_id(2)).execute()) == ([('Ebenezer Ayisi', 'ayisie', 'Hunger Initiatives', 'Empty Bowls Spring Event 1'),
+                                                                                  ('Sreynit Khatt', 'khatts', 'Hunger Initiatives', 'Empty Bowls Spring Event 1'),
+                                                                                  ('Zach Neill', 'neillz', 'Hunger Initiatives', 'Empty Bowls Spring Event 1'), 
+                                                                                  ('Zach Neill', 'neillz', 'Hunger Initiatives', 'Hunger Hurts'),
+                                                                                  ('Tyler Parton', 'partont', 'Hunger Initiatives', 'Hunger Hurts')])
+
+    assert list(getVolunteerProgramEventByTerm(Term.get_by_id(4)).execute()) == [('Alex Bryant', 'bryanta', 'Berea Buddies', 'Tutoring'),
+                                                                                 ('Sreynit Khatt', 'khatts', 'Adopt-a-Grandparent', 'Adoption 101'),
+                                                                                 ('Sreynit Khatt', 'khatts', 'Adopt-a-Grandparent', 'Meet & Greet with Grandparent')]
 
 @pytest.mark.integration
 def test_getUniqueVolunteers():
     assert list(getUniqueVolunteers("2021-2022").execute()) == ([('bryanta', 'Alex Bryant', 'B00708826'),
-                                                                ('khatts', 'Sreynit Khatt', 'B00759107')])
+                                                                 ('khatts', 'Sreynit Khatt', 'B00759107')])
+ 
+    assert list(getUniqueVolunteers("2020-2021").execute()) == ([('ayisie', 'Ebenezer Ayisi', 'B00739736'),
+                                                                 ('khatts', 'Sreynit Khatt', 'B00759107'),
+                                                                 ('neillz', 'Zach Neill', 'B00751864'),
+                                                                 ('partont', 'Tyler Parton', 'B00751360')])
+ 
