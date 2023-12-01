@@ -928,12 +928,9 @@ individualReqs = [
           "addedBy": "ramsayb2",
           "addedOn": "",
         }
-    
-
-
-
 
 ]
+
 IndividualRequirement.insert_many(individualReqs).on_conflict_replace().execute()
 
 

@@ -1,17 +1,16 @@
-{% set title = "Bonner Management" %}
+{% set title = "CCE Management" %}
 {% extends "base.html" %}
 
-{% block styles %}
-    {{super()}}
-    <!-- <link rel="stylesheet" href="{{url_for('static', filename ='css/bonner.css') }}?u={{lastStaticUpdate}}"> -->
-{% endblock %}
-
 {% block scripts %}
-    {{super()}}
-    <!-- <script type="module" src="{{url_for('static', filename = 'js/bonnerManagement.js') }}?u={{lastStaticUpdate}}"></script>
-    <script type="module" src="{{url_for('static', filename = 'js/sortable.min.js') }}?u={{lastStaticUpdate}}"></script> -->
-{% endblock %}
+  {{super()}}
+  <script type="module" src="/static/js/minorRequirements.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
 
+  {% block styles %}
+    {{super()}}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+  {% endblock %}
+{% endblock %}
 {% block app_content %}
 
     {# Figure out if we are showing a particular tab inside of the accordion #}
@@ -21,7 +20,7 @@
     <h1 class="text-center mb-5">CCE Minor Management</h1>
 
     <h2>Engaged Students</h2>
-    <table class="table table-striped">
+    <table class="display" id="engagedStudentsTable">
         <thead>
             <tr>
                 <th>Name</th>
@@ -38,12 +37,14 @@
             </tr>
             {% endfor %}
         </tbody>
-    </table> <h2>Interested Students</h2>
-    <table class="table table-striped">
+
+    </table>
+
+    <h2>Interested Students</h2>
+    <table class="display" id="interestedStudentsTable">
         <thead>
             <tr>
                 <th>Name</th>
-              
             </tr>
         </thead>
         <tbody>
@@ -54,7 +55,5 @@
             {% endfor %}
         </tbody>
     </table>
-
-
 
 {% endblock %}
