@@ -222,7 +222,7 @@ users = [
         "lastName": "Bledsoe",
         "phoneNumber": "(123)456-7890",
         "isCeltsAdmin": False,
-        "isFaculty": True,
+        "isFaculty": False,
         "isCeltsStudentStaff": False,
         "isCeltsStudentAdmin": True,
         "isStaff": True,
