@@ -12,8 +12,6 @@ $(document).ready(function(){
           msgFlash("Error saving changes!", "danger")
         }
     });
+    handleFileSelection("attachmentObject")
   })
 })
-
-
-

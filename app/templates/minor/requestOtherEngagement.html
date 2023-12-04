@@ -4,6 +4,7 @@
 {% block scripts %}
     {{super()}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module" src="/static/js/displayFilesMacro.js"></script>
     <script type="text/javascript" src="{{url_for('static', filename='js/requestOtherEngagement.js') }}?u={{lastStaticUpdate}}"></script>
 {% endblock %}
 
@@ -27,7 +28,7 @@
               {% endfor %}
             </select>
         </div>
-        
+
         <div class="col-md-1">
           <label class="form-label" for="otherActivity"><strong>Activity:</strong></label>
         </div>
@@ -71,9 +72,15 @@
         <label class="mb-2" for='attachmentObject'><strong>Upload Files</strong></label>
         <input type="file" class="form-control" id="attachmentObject" name="attachmentObject" multiple accept= ".docx"/>
       </div>
+      {% if filepaths %}
+      <div class="form-group col-md-4 mb-4">
+        {% from 'displayFilesMacro.html' import displayFiles %}
+        {{ displayFiles(filepaths, 'File Attachments', '/deleteEventFile', '{{course.id}}') }}
+      </div>
+      {% endif %}
 
-      <div class=" form-group mb-6">
-        <button class="btn-btn primary" type="submit" id="sendOtherRequest" action="/CCEminor">Send Other Request</button>
+      <div class="form-group mb-6">
+        <button class="btn-btn primary" type="submit" id="sendOtherRequest" action="/CCEminor" style="float: right;">Send Other Request</button>
       </div>
     </div>
   </div>
