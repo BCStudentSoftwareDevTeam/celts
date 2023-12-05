@@ -18,13 +18,6 @@
 </select>
 
 
-<select id="academicTerm">
-	<option value="">Select a term</option>
-	{% for term in academicTerms %}
-		<option value="{{term}}">{{term}}</option>
-	{% endfor %}
-</select>
-
 <button class="btn btn-primary" id="createSpreadsheet">Generate Spreadsheet</button>
 
 {% endblock %}
