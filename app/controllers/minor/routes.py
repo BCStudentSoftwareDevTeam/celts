@@ -41,13 +41,16 @@ def requestOtherEngagement(username):
     """
     user = User.get_by_id(username)
     terms = selectSurroundingTerms(g.current_term)
+    term = g.current_term
     # filepaths = handleFileSelection()
     associatedAttachments = AttachmentUpload.select()
-    filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)
+    filepaths = FileHandler(Term.description).retrievePath(associatedAttachments)
 
     return render_template("/minor/requestOtherEngagement.html",
                             user=user,
-                            terms=terms)
+                            terms=terms,
+                            filePath = filepaths,
+                            )
 
 
 
@@ -58,3 +61,10 @@ def addSummerExperience(username):
 @minor_bp.route('/cceMinor/<username>/indicateInterest', methods=['POST'])
 def indicateMinorInterest(username):
     pass
+
+@minor_bp.route("/deleteRequestFile", methods=["POST"])
+def deleteRequestFile():
+    fileData= request.form
+    termFile=FileHandler(termId=fileData["databaseId"])
+    termFile.deleteFile(fileData["fileId"])
+    return ""
