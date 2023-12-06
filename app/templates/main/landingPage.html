@@ -25,7 +25,7 @@
       <div class="card-footer bg-white">
         <a type="button" class="float-end link-primary" href="{{program.bereaUrl}}" target="_blank"> Learn More </a>
         <a type="button" class="float-start link-primary" href="{{program.instagramUrl}}" target="_blank">
-          <img src="static/images/logos/instagram_logo.png" class="float-start link-primary" style="height: 30px; width: 30px; margin-right:10px">
+          <img src="static/images/logos/instagram_logo.png" class="float-start link-primary me-2" style="height: 30px; width: 30px;">
         </a>
         <a type="button" class="float-start link-primary" href="{{program.facebookUrl}}" target="_blank">
           <img src="static/images/logos/facebook_logo.png" class="float-start link-primary" style="height: 30px; width: 30px">
@@ -54,32 +54,5 @@
     </div>
   {% endfor %}
 </div>
-<!-- MODAL -->
-<!-- <div class="modal fade" id="descriptionModal" tabindex="-1" aria-labelledby="descriptionModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalTitle"></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="text-center">
-          <img id="modalImage" src="" class="img-fluid rounded" alt="program-image">
-        </div>
-        <p class="mt-3" id="modalDescription"></p>
-        <a type="button" id="modalLearnMoreWebLink" class="float-end link-primary" href=""> Learn More </a>
-        <a type="button" id="modalLearnMoreInstagram" class="float-start link-primary" href="">
-          <img src="static/images/logos/instagram_logo.png" class="float-start link-primary" style="height: 30px; width: 30px; margin-right:10px">
-        </a>
-        <a type="button" id="modalLearnMoreFacebook" class="float-start link-primary" href="">
-          <img src="static/images/logos/facebook_logo.png" class="float-start link-primary" style="height: 30px; width: 30px">
-        </a>
-      </div>
-      <div class="modal-footer justify-content-between">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary eventsListButton" id="modalProgram" data-term="{{term.id}}" data-program_id="">View Events</button>
-      </div>
-    </div>
-  </div>
-</div>
-{% endblock %} -->
+
+{% endblock %}

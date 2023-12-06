@@ -386,7 +386,7 @@ programs = [
         "id": 2,
         "programName": "Berea Buddies",
         "instagramUrl": "https://www.instagram.com/bereabuddies/",
-        "facebookUrl": "https://www.facebook.com/profile.php?id=100085958053273",
+        "facebookUrl": "https://www.facebook.com/BereaBuddies",
         "bereaUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service/programs/berea-buddies",
         "programDescription": "The Berea Buddies program is dedicated to establishing long-term mentorships between Berea youth (Little Buddies) and Berea College students (Big Buddies). Volunteers serve children by offering them friendship and quality time. Big and Little Buddies meet each other every Monday or Tuesday during the academic year, except on school and national holidays, to enjoy structured activities around campus.",
         "isStudentLed": True,
