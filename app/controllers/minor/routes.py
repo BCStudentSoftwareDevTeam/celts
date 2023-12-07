@@ -9,7 +9,7 @@ def viewCceMinor(username):
     """
         Load minor management page with community engagements and summer experience
     """
-    if not (g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff):
+    if not (g.current_user.isAdmin):
         return abort(403)
     terms = getCommunityEngagementByTerm(username)
     user = User.get_by_id(username)
@@ -50,7 +50,7 @@ def removeCommunityEngagement(username):
     """
     pass
 
-@minor_bp. route('/cceMinor/<username>/requestOtherCommunityEngagement', methods=['GET,POST'])
+@minor_bp.route('/cceMinor/<username>/requestOtherCommunityEngagement', methods=['GET,POST'])
 def requestOtherCommunityEngagement(username):
     """
         Load the "request other" form and submit it.

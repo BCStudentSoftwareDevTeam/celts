@@ -42,7 +42,7 @@
             <option value="Insurance Information"> {{'Edit' if volunteer == g.current_user else 'View'}} Insurance Information </option>
             <option value="Print Travel Form"> Print Travel Form </option>
         {% endif %}
-        {% if g.current_user.isCeltsAdmin or g.current_user.isCeltsStudentStaff %}
+        {% if g.current_user.isAdmin %}
           <option value="Manage CCE Minor"> Manage CCE Minor </option>
         {% endif %}
         <option value="View Service Transcript"> View Service Transcript </option>

@@ -56,7 +56,7 @@ function showEngagementInformation(row) {
         // add a list element to the html for each event in our list of events
         // link to the event view page as well
         for (let i = 0; i < events.length; i++) {
-          html.push(`<li><a href="/event/${events[i]["id"]}/view">${events[i]["name"]}</a></li>`)
+          html.push(`<li><a href="/event/${events[i]["id"]}/view" target="_blank">${events[i]["name"]}</a></li>`)
         }
 
         html.push("</ul>")
@@ -65,9 +65,9 @@ function showEngagementInformation(row) {
         let instructors = response["instructors"]
 
         // add important fields to display
-        html.push(`<h4>${course["courseName"]} Information</h4>`)
+        html.push(`<h4>${course["courseAbbreviation"]}: ${course["courseName"]}</h4>`)
         html.push(`<p><b>Instructors:</b> ${instructors.join(", ")}</p>`)
-        html.push(`<p><b>Section Designation:</b> ${course["sectionDesignation"]}</p>`)
+        html.push(`<p><b>Section Designation:</b> ${course["sectionDesignation"] || "None"}</p>`)
         html.push(`<p><b>Course Credit:</b> ${course["courseCredit"]}</p>`)
         html.push(`<p><b>SLC Component:</b> ${Boolean(course["hasSlcComponent"]) ? "Yes" : "No"}</p>`)
       }

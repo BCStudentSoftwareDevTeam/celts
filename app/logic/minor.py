@@ -7,7 +7,7 @@ from app.models.courseInstructor import CourseInstructor
 from app.models.eventParticipant import EventParticipant
 from collections import defaultdict
 from playhouse.shortcuts import model_to_dict
-from peewee import JOIN
+from peewee import JOIN, fn
 
 def updateMinorInterest(username):
     """
@@ -31,9 +31,10 @@ def getCourseInformation(id):
     # retrieve the course and the course instructors
     course = model_to_dict(Course.get_by_id(id))
 
-    courseInstructors = (CourseInstructor.select(CourseInstructor.user)
-                         .join(Course)
-                         .where(Course.id == id))
+    courseInstructors = (CourseInstructor.select(CourseInstructor, User)
+                                         .join(Course).switch()
+                                         .join(User)
+                                         .where(Course.id == id))
     
     courseInformation = {"instructors": [(instructor.user.firstName + " " + instructor.user.lastName) for instructor in courseInstructors], "course": course}
 
@@ -47,12 +48,13 @@ def getProgramEngagementHistory(program_id, username, term_id):
 
     # execute a query that will retrieve all events in which the user has participated
     # that fall under the provided term and programs.
-    eventsInProgramAndTerm = (Event.select(Event.id, Event.name)
-                               .join(Program, JOIN.LEFT_OUTER).switch()
-                               .join(EventParticipant)
-                               .where(EventParticipant.user == username,
-                                      Event.term == term_id, Program.id == program_id)
-                                      )
+    eventsInProgramAndTerm = (Event.select(Event.id, Event.name, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
+                                   .join(Program).switch()
+                                   .join(EventParticipant)
+                                   .where(EventParticipant.user == username,
+                                          Event.term == term_id,
+                                          Program.id == program_id)
+                             )
     
     program = Program.get_by_id(program_id)
     participatedEvents = {"program":program.programName, "events": [model_to_dict(event) for event in eventsInProgramAndTerm]}
@@ -66,9 +68,9 @@ def getCommunityEngagementByTerm(username):
     Given a username, return all of their community engagements (service learning courses and event participations.)
     """
     courses = (Course.select(Course)
-                       .join(CourseParticipant, on=(Course.id == CourseParticipant.course))
-                       .where(CourseParticipant.user == username)
-                       .group_by(Course.courseName, Course.term))
+                     .join(CourseParticipant, on=(Course.id == CourseParticipant.course))
+                     .where(CourseParticipant.user == username)
+                     .group_by(Course.courseName, Course.term))
     
     # initialize default dict to store term descriptions as keys mapping to each
     # engagement's respective type, name, id, and term.
@@ -76,14 +78,16 @@ def getCommunityEngagementByTerm(username):
     for course in courses:
         terms[(course.term.description, course.term.id)].append({"name":course.courseName, "id":course.id, "type":"course", "term":course.term})
 
-    events = (Event.select(Event)
-                       .join(EventParticipant, on=(Event.id == EventParticipant.event))
-                       .where(EventParticipant.user == username)
-                       .group_by(Event.program, Event.term))
+    events = (Event.select(Event, Program)
+                   .join(EventParticipant, on=(Event.id == EventParticipant.event)).switch()
+                   .join(Program)
+                   .where(EventParticipant.user == username)
+                   .group_by(Event.program, Event.term))
     
     for event in events:
         terms[(event.term.description, event.term.id)].append({"name":event.program.programName, "id":event.program.id, "type":"program", "term":event.term})
     
+    # sorting the terms by the term id
     return dict(sorted(terms.items(), key=lambda x: x[0][1]))
 
 
