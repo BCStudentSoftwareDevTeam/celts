@@ -55,3 +55,10 @@ def addSummerExperience(username):
 @minor_bp.route('/cceMinor/<username>/indicateInterest', methods=['POST'])
 def indicateMinorInterest(username):
     pass
+
+@minor_bp.route("/deleteRequestFile", methods=["POST"])
+def deleteRequestFile():
+    fileData= request.form
+    termFile=FileHandler(termId=fileData["databaseId"])
+    termFile.deleteFile(fileData["fileId"])
+    return ""
