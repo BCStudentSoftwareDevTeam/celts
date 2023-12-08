@@ -2,7 +2,7 @@ from flask import Flask, g, render_template, request
 from app.controllers.minor import minor_bp
 from app.models.user import User
 from app.models.term import Term
-from app.logic.utils import selectSurroundingTerms
+from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.fileHandler import FileHandler
 from app.models.attachmentUpload import AttachmentUpload
 
@@ -41,9 +41,6 @@ def requestOtherEngagement(username):
     """
     user = User.get_by_id(username)
     terms = selectSurroundingTerms(g.current_term)
-    # filepaths = handleFileSelection()
-    associatedAttachments = AttachmentUpload.select()
-    filepaths = FileHandler(eventId=event.id).retrievePath(associatedAttachments)
 
     return render_template("/minor/requestOtherEngagement.html",
                             user=user,
