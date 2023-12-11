@@ -15,4 +15,34 @@ $(document).ready(function(){
     //
     // })
     handleFileSelection("attachmentObject")
-})
+});
+
+$(document).ready(function() {
+    $('#weekInput').on('keypress', function(event) {
+        var charCode = event.which;
+        if (!(charCode >= 48 && charCode <= 57) && charCode !== 8) {
+            event.preventDefault();
+            $('#errorMessage').display();
+        } else {
+            $('#errorMessage').text('');
+        }
+    });
+});
+
+$(document).ready(function() {
+    $('#timeInput').on('input', function() {
+        validateFloatInput($(this));
+    });
+});
+
+function validateFloatInput(input) {
+    var inputValue = input.val();
+    var floatRegex = /^ *-?\d+(\.\d+)? *$/;
+    if (!floatRegex.test(inputValue)) {
+        input.addClass('invalid');
+        input.preventDefault();
+    } else {
+        input.removeClass('invalid');
+    }
+}
+
