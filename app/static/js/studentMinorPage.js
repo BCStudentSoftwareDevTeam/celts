@@ -22,6 +22,7 @@ $(document).ready(function(){
 })
 
 function showEngagementInformation(row) {
+  console.log("hello")
   // get the row object that was clicked on and parse it for the necessary values
   let username = $("#username").val()
   var type = ""
@@ -49,14 +50,16 @@ function showEngagementInformation(row) {
       if (type == "program") {
         let program = response["program"]
         let events = response["events"]
+        let totalHours = response["totalHours"]
 
         html.push(`<h4>${program} History</h4>`)
+        html.push(`Total volunteer hours: ${totalHours}`)
         html.push("<ul>")
 
         // add a list element to the html for each event in our list of events
         // link to the event view page as well
         for (let i = 0; i < events.length; i++) {
-          html.push(`<li><a href="/event/${events[i]["id"]}/view" target="_blank">${events[i]["name"]}</a></li>`)
+          html.push(`<li><a href="/event/${events[i]["id"]}/view" target="_blank">${events[i]["name"]}</a> - ${events[i]["hoursEarned"]} hrs</li>`)
         }
 
         html.push("</ul>")

@@ -57,7 +57,14 @@ def getProgramEngagementHistory(program_id, username, term_id):
                              )
     
     program = Program.get_by_id(program_id)
-    participatedEvents = {"program":program.programName, "events": [model_to_dict(event) for event in eventsInProgramAndTerm]}
+
+    # calculate total amount of hours for the whole program that term
+    totalHours = 0
+    for event in eventsInProgramAndTerm:
+        if event.hoursEarned:
+            totalHours += event.hoursEarned
+    
+    participatedEvents = {"program":program.programName, "events": [event for event in eventsInProgramAndTerm.dicts()], "totalHours": totalHours}
 
     return participatedEvents
 

@@ -54,7 +54,7 @@
                               <tbody>
                                 {% for engagement in engagements %}
                                    <tr>
-                                        <td>
+                                        <td onclick="showEngagementInformation(this)">
                                             <input type="checkbox"/>
                                             <button id="{{engagement['type']}}{{engagement['id']}}" name="{{engagement['term']}}" type="button" class="btn btn-link" onclick="showEngagementInformation(this)">{{engagement["name"]}}</button>
                                         </td>
