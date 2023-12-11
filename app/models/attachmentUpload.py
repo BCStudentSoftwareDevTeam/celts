@@ -9,4 +9,4 @@ class AttachmentUpload(baseModel):
     course = ForeignKeyField(Course, null=True)
     isDisplayed = BooleanField(default=False)
     fileName = CharField()
-    otherExperience = ForeignKeyField(OtherExperience, null=True)
+    # otherExperience = ForeignKeyField(OtherExperience, null=True)
