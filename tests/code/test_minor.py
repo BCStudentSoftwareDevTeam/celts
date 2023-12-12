@@ -89,14 +89,20 @@ def test_getProgramEngagementHistory():
                                     program = 2)
         
         # add the user as a participant of the event
-        EventParticipant.create(user = test_user , event = testingEvent.id)
-        testingEvent = Event.select(Event.id, Event.name).where(Event.id==testingEvent).get()
+        EventParticipant.create(user = test_user, event = testingEvent.id, hoursEarned=4.0)
+        testingEvent = (Event.select(Event.id, Event.name, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
+                                   .join(Program).switch()
+                                   .join(EventParticipant)
+                                   .where(EventParticipant.user == "FINN",
+                                          Event.term == 3,
+                                          Program.id == 2,
+                                          Event.id == testingEvent)
+                             )
         program = Program.get_by_id(2)
 
         # get the actual data from getProgramEngagementHistory
         actual_data = getProgramEngagementHistory(2, "FINN", 3)
-        expected_data = {"program": program.programName, "events": [model_to_dict(testingEvent)]}
-        
+        expected_data = {"program": program.programName, "events": [event for event in testingEvent.dicts()], "totalHours":4.0}
         assert actual_data == expected_data
         transaction.rollback()
 
