@@ -41,7 +41,6 @@ def requestOtherEngagement(username):
     """
     user = User.get_by_id(username)
     terms = selectSurroundingTerms(g.current_term)
-
     return render_template("/minor/requestOtherEngagement.html",
                             user=user,
                             terms=terms)
