@@ -40,6 +40,11 @@
         {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
             <option value="Emergency Contact"> {{'Edit' if volunteer == g.current_user else 'View'}} Emergency Contact </option>
             <option value="Insurance Information"> {{'Edit' if volunteer == g.current_user else 'View'}} Insurance Information </option>
+        {% endif %}
+        {% if g.current_user.isAdmin %}
+          <option value="Manage CCE Minor"> Manage CCE Minor </option>
+        {% endif %}
+        {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
             <option value="Print Travel Form"> Print Travel Form </option>
         {% endif %}
         <option value="View Service Transcript"> View Service Transcript </option>
