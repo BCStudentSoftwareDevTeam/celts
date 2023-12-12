@@ -21,23 +21,11 @@ $(document).ready(function(){
     
 })
 
-function showEngagementInformation(row) {
-  console.log("hello")
+function showEngagementInformation(type, id, term) {
   // get the row object that was clicked on and parse it for the necessary values
   let username = $("#username").val()
-  var type = ""
-  let typeID = String(row.id)
-  let term = row.name
-
-  // determine what the type of engagement we are looking at is
-  if (typeID.startsWith("course")) {
-    type = "course"
-  } else {
-    type = "program"
-  }
 
   // based on how long the type is, get the remaining characters afterwards that represent the id
-  var id = typeID.slice(type.length,typeID.length)
   $.ajax({
     url: `/cceMinor/${username}/getEngagementInformation/${type}/${term}/${id}`,
     type: "GET",
@@ -67,23 +55,31 @@ function showEngagementInformation(row) {
         let course = response["course"]
         let instructors = response["instructors"]
 
+        // only show the course abbreviation and name if they exist, or only show the ones that exist
+        if (course["courseAbbreviation"] && course["courseName"]) {
+          html.push(`<h4>${course["courseAbbreviation"]}: ${course["courseName"]}</h4>`)
+        } else if (course["courseAbbreviation"]) {
+          html.push(`<h4>${course["courseAbbreviation"]}</h4>`)
+        } else {
+          html.push(`<h4>${course["courseName"]}</h4>`)
+        }
         // add important fields to display
-        html.push(`<h4>${course["courseAbbreviation"]}: ${course["courseName"]}</h4>`)
         html.push(`<p><b>Instructors:</b> ${instructors.join(", ")}</p>`)
         html.push(`<p><b>Section Designation:</b> ${course["sectionDesignation"] || "None"}</p>`)
         html.push(`<p><b>Course Credit:</b> ${course["courseCredit"]}</p>`)
         html.push(`<p><b>SLC Component:</b> ${Boolean(course["hasSlcComponent"]) ? "Yes" : "No"}</p>`)
       }
       html.push("</div>")
-
       // modify the displayed html by joining together the list we have been pushing to
       $(`#set${term}`).html(html.join(""))
     },
     error: function(request, status, error) {
       msgFlash("Error displaying information!", "danger")
     }
-});
+  });
+}
 
-
-
+function stopPropagation(event) {
+  // prevent the checkbox from displaying the course/program information
+  event.stopPropagation()
 }

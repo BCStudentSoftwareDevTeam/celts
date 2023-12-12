@@ -2,10 +2,15 @@
 {% extends "base.html" %}
 
 {% block scripts %}
-{{super()}}
+  {{super()}}
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.5.4/bootstrap-select.js"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/studentMinorPage.js') }}?u={{lastStaticUpdate}}"></script>
 {% endblock %}
+
+{% block styles %}
+  {{super()}}
+  <link rel="stylesheet" href="{{url_for('static', filename ='css/minor.css') }}?u={{lastStaticUpdate}}">
+  {% endblock %}
 
 {% block app_content %}
     <div class="row">
@@ -53,10 +58,10 @@
                               </thead>
                               <tbody>
                                 {% for engagement in engagements %}
-                                   <tr>
-                                        <td onclick="showEngagementInformation(this)">
-                                            <input type="checkbox"/>
-                                            <button id="{{engagement['type']}}{{engagement['id']}}" name="{{engagement['term']}}" type="button" class="btn btn-link" onclick="showEngagementInformation(this)">{{engagement["name"]}}</button>
+                                   <tr class="show-pointer" id="{{engagement['type']}}{{engagement['id']}}" name="{{engagement['term']}}" onclick="showEngagementInformation(`{{engagement['type']}}`, `{{engagement['id']}}`, `{{engagement['term']}}`)">
+                                        <td>
+                                            <input onclick="stopPropagation(event)" type="checkbox"/>
+                                            <button id="{{engagement['type']}}{{engagement['id']}}" name="{{engagement['term']}}" type="button" class="btn btn-link">{{engagement["name"]}}</button>
                                         </td>
                                    </tr>
                                 {% endfor %}
