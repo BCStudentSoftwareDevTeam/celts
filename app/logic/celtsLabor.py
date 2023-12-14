@@ -9,19 +9,20 @@ from app.models.term import Term
 
 def getCeltsLaborFromLsf():
     """
-        Make a call to the LSF endpoint which returns a specific students labor information.  
+        Make a call to the LSF endpoint which returns all CELTS student labor records. 
 
         The returned data is a dictionary with B# key and value that is a list of dicts that contain the labor information. 
 
     """
     try: 
-        lsfUrl = app.config['lsf_url']
-        response = requests.get(f"{lsfUrl.strip("/")} + /api/org/2084")
+        lsfUrl = f"{app.config['lsf_url'].strip("/")}/api/org/2084"
+        response = requests.get(lsfUrl)
         return(response.json())
-    except json.decoder.JSONDecodeError: 
+    except json.decoder.JSONDecodeError as e: 
+        print(f'Response from {lsfUrl} was not JSON.\n' + response.text)
         return {}
     except KeyError as e: 
-        print(f'Make sure you have "" set in your local-override config file.')
+        print(f'Make sure you have "lsf_url" set in your local-override config file.')
         raise(e)
 
 def updateCeltsLaborFromLsf():
