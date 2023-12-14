@@ -15,13 +15,13 @@ def getCeltsLaborFromLsf():
 
     """
     try: 
-        lsfUrl = app.config['LSF_URL']
-        response = requests.get(lsfUrl)
+        lsfUrl = app.config['lsf_url']
+        response = requests.get(f"{lsfUrl.strip("/")} + /api/org/2084")
         return(response.json())
     except json.decoder.JSONDecodeError: 
         return {}
     except KeyError as e: 
-        print(f'Make sure you have "LSF_URL" set in your local-override config file.')
+        print(f'Make sure you have "" set in your local-override config file.')
         raise(e)
 
 def updateCeltsLaborFromLsf():
