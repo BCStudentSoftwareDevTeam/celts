@@ -15,10 +15,11 @@ def getCeltsLaborFromLsf():
 
     """
     try: 
-        lsfUrl = f"{app.config['lsf_url'].strip("/")}/api/org/2084"
+        lsfUrl = f"{app.config['lsf_url'].strip('/')}/api/org/2084"
+        lsfUrl = f"http://10.40.132.89:8080/api/org/2084"
         response = requests.get(lsfUrl)
         return(response.json())
-    except json.decoder.JSONDecodeError as e: 
+    except json.decoder.JSONDecodeError: 
         print(f'Response from {lsfUrl} was not JSON.\n' + response.text)
         return {}
     except KeyError as e: 
@@ -46,7 +47,7 @@ def updateCeltsLaborFromLsf():
                          'termName': 'Term Name'}]}
     """
     laborDict = getCeltsLaborFromLsf()
-
+    
     studentLaborDict = {}
     for key, value in laborDict.items(): 
         try: 
