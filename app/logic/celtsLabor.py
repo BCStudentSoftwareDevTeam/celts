@@ -20,6 +20,9 @@ def getCeltsLaborFromLsf():
         return(response.json())
     except json.decoder.JSONDecodeError: 
         return {}
+    except KeyError as e: 
+        print(f'Make sure you have "LSF_URL" set in your local-override config file.')
+        raise(e)
 
 def updateCeltsLaborFromLsf():
     """
