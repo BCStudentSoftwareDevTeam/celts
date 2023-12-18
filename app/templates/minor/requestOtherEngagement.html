@@ -16,7 +16,7 @@
       <!-- Left half -->
       <div class="container text-center">
         <div class='form-group mb-4'>
-          <h2 class='form-label' for='studentUser'> {{ user.firstName }} {{ user.lastName }} : Extra Community Engagement </h2>
+          <h2 class='form-label' for='studentUser'> {{ user.firstName }} {{ user.lastName }} : Other Community Engaged Experience </h2>
         </div>
       </div>
 
@@ -24,7 +24,7 @@
       <div class="col-md-6">
         <div class="form-row mb-2">
           <div class="form-group col-md-6 mb-2">
-            <label class="form-label mb-3" for='inputTerm'><strong>Term</strong></label>
+            <label class="form-label mb-3" for='inputTerm'><strong>Term:</strong></label>
             <select class="form-select" name='term' id='inputTerm' required>
               {% for term in terms %}
                 <option value='{{term}}'>{{term.description}}</option>
@@ -43,11 +43,7 @@
             <label class='form-label mb-3' for='activity'><strong>Description: </strong></label>
             <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='programCompanyService' name='programCompanyService' value=""/>
           </div>
-
           <!-- Add other input boxes as needed -->
-
-          
-          
         </div>
       </div>
 
@@ -91,11 +87,9 @@
         {% endif %}
       </div>
 
-      <div class="col-md-5">
         <div class="form-group mb-8">
-          <button class="btn-btn primary" type="submit" id="sendOtherRequest" action="/CCEminor" style="float: right;">Send Other Request</button>
+          <button class="btn btn-primary" type="submit" id="sendOtherRequest" action="/CCEminor">Send Other Request</button>
         </div>
-      </div>
     </div>
   </div>
 </form>

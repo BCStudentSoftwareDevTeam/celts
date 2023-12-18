@@ -7,8 +7,6 @@ $(document).ready(function(){
           type: "POST",
           data: data,
           success: function(s) {
-            console.log(s)
-
             location.reload()
           },
           error: function(request, status, error) {
