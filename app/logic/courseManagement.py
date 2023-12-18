@@ -64,7 +64,7 @@ def importedCourses(termId):
 
 
 
-def editImportedCourses(courseData):
+def editImportedCourses(courseData, courseID):
     """
         This function will take in courseData for the SLC proposal page and a dictionary
         of instructors assigned to the imported course after that one is edited 
@@ -73,7 +73,6 @@ def editImportedCourses(courseData):
 
     with mainDB.atomic() as transaction:
         try:
-            courseID = 5
             course = Course.get_by_id(courseID)
             Course.update(
                 courseName=courseData["courseName"],

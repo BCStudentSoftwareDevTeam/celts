@@ -1,3 +1,5 @@
+import createNewRow from "./slcNewProposal.js"
+
 $(document).ready(function() {
   // if they decide not to withdraw, change selection back to "select action"
   $('.modal').on('hidden.bs.modal', function () {
@@ -25,6 +27,12 @@ $(document).ready(function() {
       }
     }
   });
+
+
+  $("#courseInstructor").on('input', function() {
+    searchUser("courseInstructor", (e)=>{createNewRow(e, "instructorTable")}, true, null, "instructor");
+  });
+
 });
 
 

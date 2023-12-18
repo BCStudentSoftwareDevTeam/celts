@@ -164,3 +164,21 @@ def test_getCourseDict():
     assert 'Spanish Help' in currentFacultyCourses
     assert 'Databases' in currentFacultyCourses
     assert 'Math' not in currentFacultyCourses
+
+
+# @pytest.mark.integration
+# def test_editImportedCourses():
+#     """
+#     This test is to get the faculty intructors
+#     """
+#     with mainDB.atomic() as transaction:
+#         course = Course.create()
+#         courseData = {}
+#         Course.update(
+#             courseName=courseData["courseName"],
+#             courseCredit=courseData["courseHoursEarned"],
+#         ).where(Course.id == course.id).execute()
+        
+#         instructorList = []
+#         instructorList = courseData['listInstructors']
+#         print(instructorList)

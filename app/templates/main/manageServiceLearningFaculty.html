@@ -224,10 +224,7 @@
                               <td class="align-middle">
                                   <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
                               </td>
-                              <!-- TODO: Continue working on the table and make the remove button functional. 
-                                Try with more than one faculty to see if it works. Also needs to query the server for users |beans-->
                           </tr>
-                          
                       </tbody>
 
                     </table>
@@ -306,9 +303,9 @@
             </form>
           </div>
         </div>
-        {% endif %}
       </div>
-
+      {% endif %}
+      
       <!-- modal for Preview -->
       <div class="modal fade float-start col" id="modalPreview">
         <form method="POST" action="/manageServiceLearning" enctype="multipart/form-data">

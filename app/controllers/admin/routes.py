@@ -404,7 +404,7 @@ def alterImportedCourse(courseID=None):
             "listInstructors" : [instructor for instructor in newCourseInstructors.split(", ")]
         }
 
-        editImportedCourses(courseData)
+        editImportedCourses(courseData, courseID)
 
         # Update the course information in the DB with the new information
         # Course.update(courseName = courseName, 
