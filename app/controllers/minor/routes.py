@@ -1,8 +1,11 @@
 from flask import Flask, g, render_template, request, abort
-from app.logic.minor import updateMinorInterest, getProgramEngagementHistory, getCourseInformation
-from app.models.user import User
 from app.controllers.minor import minor_bp
-from app.logic.minor import getCommunityEngagementByTerm
+from app.models.user import User
+from app.models.term import Term
+from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
+from app.logic.fileHandler import FileHandler
+from app.models.attachmentUpload import AttachmentUpload
+from app.logic.minor import updateMinorInterest, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -39,7 +42,7 @@ def getEngagementInformation(username, type, id, term):
 @minor_bp.route('/cceMinor/<username>/addCommunityEngagement', methods=['POST'])
 def addCommunityEngagement(username):
     """
-        Saving a term participation/activities for sustained community engagement 
+        Saving a term participation/activities for sustained community engagement
     """
     pass
 
@@ -50,12 +53,18 @@ def removeCommunityEngagement(username):
     """
     pass
 
-@minor_bp.route('/cceMinor/<username>/requestOtherCommunityEngagement', methods=['GET,POST'])
-def requestOtherCommunityEngagement(username):
+@minor_bp.route('/cceMinor/<username>/requestOtherCommunityEngagement', methods=['GET'])
+def requestOtherEngagement(username):
     """
         Load the "request other" form and submit it.
     """
-    pass
+    user = User.get_by_id(username)
+    terms = selectSurroundingTerms(g.current_term)
+    return render_template("/minor/requestOtherEngagement.html",
+                            user=user,
+                            terms=terms)
+
+
 
 @minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
 def addSummerExperience(username):
@@ -64,4 +73,10 @@ def addSummerExperience(username):
 @minor_bp.route('/cceMinor/<username>/indicateInterest', methods=['POST'])
 def indicateMinorInterest(username):
     updateMinorInterest(username)
+
+@minor_bp.route("/deleteRequestFile", methods=["POST"])
+def deleteRequestFile():
+    fileData= request.form
+    termFile=FileHandler(termId=fileData["databaseId"])
+    termFile.deleteFile(fileData["fileId"])
     return ""

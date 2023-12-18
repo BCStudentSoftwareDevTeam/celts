@@ -1,0 +1,103 @@
+{% set title = "Request Other Engagement" %}
+{% extends "base.html" %}
+
+{% block scripts %}
+    {{super()}}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module" src="/static/js/displayFilesMacro.js"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/requestOtherEngagement.js') }}?u={{lastStaticUpdate}}"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+{% endblock %}
+
+{% block app_content %}
+
+<form id='requestOtherCommEng' enctype="multipart/form-data" role='form' method='GET' action="./requestOtherEngagement.html">
+  <div class='row' id="username" value="{{user.username}}">
+      <!-- Left half -->
+      <div class="container text-center">
+        <div class='form-group mb-4'>
+          <h2 class='form-label' for='studentUser'> {{ user.firstName }} {{ user.lastName }} : Extra Community Engagement </h2>
+        </div>
+      </div>
+
+      <!-- First Column -->
+      <div class="col-md-6">
+        <div class="form-row mb-2">
+          <div class="form-group col-md-6 mb-2">
+            <label class="form-label mb-3" for='inputTerm'><strong>Term</strong></label>
+            <select class="form-select" name='term' id='inputTerm' required>
+              {% for term in terms %}
+                <option value='{{term}}'>{{term.description}}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-1 mb-2">
+            <label class="form-label" for="otherActivity"><strong>Activity:</strong></label>
+          </div>
+          <div class="col-md-6 mb-3">
+            <input {{'disabled' if readOnly else ''}} class="form-control" type="text" id="otherActivity" name="otherActivity" value=""/>
+          </div>
+
+          <div class="form-group col-md-6 mb-2">
+            <label class='form-label mb-3' for='activity'><strong>Description: </strong></label>
+            <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='programCompanyService' name='programCompanyService' value=""/>
+          </div>
+
+          <!-- Add other input boxes as needed -->
+
+          
+          
+        </div>
+      </div>
+
+      <!-- Second Column -->
+      <div class="col-md-6">
+        <div class="col-md-6 mb-2">
+          <div class="form-group mb-2">
+            <label class='form-label' for='company'><strong> Company/Organization: </strong></label>
+            <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='companyOrganization' name='companyOrganization' value=""/>
+          </div>
+        </div>
+
+        <div class="col-md-1 mb-2">
+          <label class='form-label' for='hours'><strong>Hours:</strong></label>
+        </div>
+        <div class="col-md-6 mb-2" >
+          <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id="timeInput" name='hours' value=""/>
+        </div>
+
+        <div class="col-md-1 mb-2">
+          <label class='form-label' for='activity'><strong> Weeks: </strong></label>
+        </div>
+        <div class="col-md-6">
+          <input {{'disabled' if readOnly else ''}} class='form-control' type='text' id='weekInput' name='weeks' value=""/>
+        </div>
+
+        <!-- Add other input boxes as needed -->
+      </div>
+
+      <!-- Bottom page -->
+      <div class="col-md-12">
+        <div class="form-group col-md-3 mb-2">
+          <label class="mb-3" for='attachmentObject'><strong>Upload Files</strong></label>
+          <input type="file" class="form-control" id="attachmentObject" name="attachmentObject" multiple accept=".docx"/>
+        </div>
+        {% if filepaths %}
+          <div class="form-group col-md-4 mb-4">
+            {% from 'displayFilesMacro.html' import displayFiles %}
+            {{ displayFiles(filepaths,'RequestOtherEngagement', '/deleteRequestFile', term.id) }}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="col-md-5">
+        <div class="form-group mb-8">
+          <button class="btn-btn primary" type="submit" id="sendOtherRequest" action="/CCEminor" style="float: right;">Send Other Request</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+{% endblock %}
