@@ -57,7 +57,26 @@ def test_modifyCeltsStudentStaff():
             with pytest.raises(DoesNotExist):
                 removeCeltsStudentStaff("1234")
 
+        with app.app_context():
+            g.current_user = "ramsayb2"
+
+            user = "neillz"
+            userInTest = User.get(User.username == user)
+            assert userInTest.isCeltsStudentStaff
+            userManagedPrograms = list([obj.program.programName for obj in ProgramManager.select(Program)
+                             .join(Program).where(ProgramManager.user == userInTest)])
+            assert len(userManagedPrograms) == 2
+
+            removeCeltsStudentStaff(userInTest)
+            
+            userInTest = User.get(User.username == user)
+            assert not userInTest.isCeltsStudentStaff
+            userManagedPrograms = list([obj.program.programName for obj in ProgramManager.select(Program)
+                             .join(Program).where(ProgramManager.user == userInTest)])
+            assert len(userManagedPrograms) == 0
+
         transaction.rollback()
+
 
 @pytest.mark.integration
 def test_changeProgramInfo():
@@ -119,7 +138,7 @@ def test_getAllowedPrograms():
     with mainDB.atomic() as transaction:
         # checks the length of all programs an admin has access to and compares that to total programs
         allowedPrograms = len(getAllowedPrograms(User.get_by_id("ramsayb2")))
-        totalPrograms = Program.select().count() 
+        totalPrograms = Program.select().count()
         assert allowedPrograms == totalPrograms
 
         # creates program manager and checks the programs they can access

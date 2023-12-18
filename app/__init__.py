@@ -2,16 +2,15 @@ import os
 import pprint
 
 from flask import Flask, render_template
-from flask.helpers import get_env
 from playhouse.shortcuts import model_to_dict, dict_to_model
 from app.logic.config import load_config_files
 
 # Initialize our application
 app = Flask(__name__, template_folder="templates")
 
-# Set the correct configuration according to the environment
-load_config_files(app, get_env())
-
+app.env = os.environ.get('APP_ENV', 'production')
+load_config_files(app)
+print (" * Environment:", app.env)
 # set the secret key after configuration is set up
 app.secret_key = app.config['secret_key']
 
@@ -55,7 +54,7 @@ app.register_blueprint(minor_bp)
 # Make 'ENV' a variable everywhere
 @app.context_processor
 def inject_environment():
-    return dict( env=get_env() )
+    return dict( env=app.env )
 
 @app.before_request
 def queryCount():

@@ -21,12 +21,12 @@ def deep_update(d, u):
             d = {key: u[key]}
     return d
 
-def load_config_files(app, env):
-    
+def load_config_files(app):
+    # we want to switch between three config files
     update_config_from_yaml(app, "default.yml")
-    update_config_from_yaml(app, f"{env}.yml")
+    update_config_from_yaml(app, f"{app.env}.yml")
     update_config_from_yaml(app, "local-override.yml")
-
+ 
 def update_config_from_yaml(app, configFile):
     """
     Update the application config with a yml file based on the Flask environment.
@@ -36,4 +36,3 @@ def update_config_from_yaml(app, configFile):
             app.config.update(deep_update(app.config, yaml.load(ymlfile, Loader=yaml.FullLoader)))
         except TypeError:
             print(F"There was an error loading the override config file {configFile}.")
-    
