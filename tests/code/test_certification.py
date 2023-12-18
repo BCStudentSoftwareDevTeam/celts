@@ -57,7 +57,7 @@ def test_updateCertRequirements():
         # Removal of missing items
         returnedIds = updateCertRequirements(cprId, [])
         selectedIds = getCertRequirements(certification=cprId)
-        
+
         assert returnedIds == []
         assert selectedIds == []
 
