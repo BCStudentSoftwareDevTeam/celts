@@ -10,7 +10,7 @@ click==8.0.1
 colorama==0.4.4
 coloredlogs==15.0
 configparser==5.0.2
-coverage==7.2.5
+coverage==7.2.7
 crayons==0.4.0
 cryptography==3.4.7
 deepdiff==5.5.0
@@ -33,6 +33,7 @@ importlib-metadata==6.5.0
 iniconfig==1.1.1
 itsdangerous==2.0.1
 Jinja2==3.0.1
+ldap3==2.9.1
 Mako==1.1.4
 MarkupSafe==2.1.1
 more-itertools==8.8.0
@@ -55,7 +56,7 @@ pytest-metadata==1.10.0
 pytest-watch==4.2.0
 python-dateutil==2.8.2
 python-editor==1.0.4
-PyYAML==5.4.1
+PyYAML==6.0.1
 regex ==2023.6.3
 requests==2.25.1
 selenium==3.141.0

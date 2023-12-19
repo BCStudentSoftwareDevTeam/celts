@@ -260,7 +260,8 @@ def test_getStudentManagerForEvent():
         "timeEnd": datetime.strptime("9:00 pm", "%I:%M %p"),
         "location": "Seabury Center",
         "startDate": datetime.strptime("2021 10 12","%Y %m %d"),
-        "endDate": datetime.strptime("2022 6 12","%Y %m %d")
+        "endDate": datetime.strptime("2022 6 12","%Y %m %d"),
+        "program": 9
         }
         ]
 

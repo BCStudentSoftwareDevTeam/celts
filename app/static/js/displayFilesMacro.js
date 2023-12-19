@@ -9,7 +9,7 @@ $(document).ready(function(){
             url: deleteLink,
             data: fileData, //get the startDate, endDate and name as a dictionary
             success: function(){
-                msgFlash("Attachment removed successfully")
+                msgFlash("Attachment removed successfully", "success")
                 $("#attachment_"+fileId).remove()
         
             },
@@ -18,4 +18,35 @@ $(document).ready(function(){
             }
             });
         });
+
+    $('.attachmentCheck').change(function() {
+        // Uncheck all checkboxes
+        $('.attachmentCheck').prop('checked', false);
+        // Check the selected checkbox
+        $(this).prop('checked', true);
+
+        var attachmentId = $(this).data('id');
+        var isChecked = $(this).is(':checked');
+
+
+        $.ajax({
+            url: '/displayEventFile',
+            method: 'POST',
+            data: {
+                id: attachmentId,
+                checked: isChecked
+            },
+            success: function(response) {
+                msgToast("Event Cover ", "Successfully updated the event cover.")
+            },
+            error: function(xhr, status, error) {
+                msgFlash(error)
+                
+            }
+        });
+    });
+
+    
+          
 })
+

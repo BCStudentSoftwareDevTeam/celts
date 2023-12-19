@@ -1,4 +1,5 @@
-from flask import request, render_template, g, abort, flash, redirect, url_for, session
+from flask import request, render_template, g, abort, flash, redirect, url_for
+from peewee import JOIN
 from playhouse.shortcuts import model_to_dict
 import datetime
 import json
@@ -18,24 +19,24 @@ from app.models.eventRsvp import EventRsvp
 from app.models.note import Note
 from app.models.profileNote import ProfileNote
 from app.models.programManager import ProgramManager
-from app.models.courseStatus import CourseStatus
 from app.models.courseInstructor import CourseInstructor
 from app.models.certification import Certification
+from app.models.emergencyContact import EmergencyContact
+from app.models.insuranceInfo import InsuranceInfo
+from app.models.celtsLabor import CeltsLabor
 
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, updateDietInfo
-from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getUserParticipatedTrainingEvents, checkUserRsvp, addPersonToEvent
+from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
 from app.logic.events import *
 from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
 from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
-from app.logic.manageSLFaculty import getCourseDict
-from app.logic.courseManagement import unapprovedCourses, approvedCourses, importedCourses
 from app.logic.utils import selectSurroundingTerms
 from app.logic.certification import getCertRequirementsWithCompletion
-from app.logic.serviceLearningCoursesData import saveCourseParticipantsToDatabase,courseParticipantPreviewSessionCleaner
 from app.logic.createLogs import createRsvpLog, createAdminLog
+from app.logic.celtsLabor import getCeltsLaborHistory
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
@@ -43,15 +44,21 @@ def redirectToLogout():
 
 @main_bp.route('/', methods=['GET'])
 def landingPage():
+
     managerProgramDict = getManagerProgramDict(g.current_user)
 
+    # Optimize the query to fetch programs with non-canceled, non-past events in the current term
+    programsWithEventsList = list(Program.select(Program, Event)
+                                         .join(Event)
+                                         .where((Event.term == g.current_term) and (Event.isCanceled == False) and (Event.isPast == False))
+                                         .distinct()
+                                         .execute())  # Ensure only unique programs are included
 
-    eventsInTerm = list(Event.select().where(Event.term == g.current_term))
-    programsWithEventsList = [event.program for event in eventsInTerm if not event.isPast]
+    return render_template("/main/landingPage.html", 
+                           managerProgramDict=managerProgramDict,
+                           term=g.current_term,
+                           programsWithEventsList=programsWithEventsList)
 
-    return render_template("/main/landingPage.html", managerProgramDict = managerProgramDict,
-                                                     term = g.current_term,
-                                                     programsWithEventsList = programsWithEventsList)
 
 @main_bp.route('/goToEventsList/<programID>', methods=['GET'])
 def goToEventsList(programID):
@@ -65,30 +72,38 @@ def events(selectedTerm, activeTab, programID):
     if selectedTerm:
         currentTerm = selectedTerm
     currentTime = datetime.datetime.now()
+    
     listOfTerms = Term.select()
     participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
-    term = Term.get_by_id(currentTerm)
+    term = Term.get_by_id(currentTerm) 
+    
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     studentLedEvents = getStudentLedEvents(term)
+    countUpcomingStudentLedEvents = getUpcomingStudentLedCount(term, currentTime)
     trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
+    
+    managersProgramDict = getManagerProgramDict(g.current_user)
 
     return render_template("/events/event_list.html",
-        selectedTerm = term,
-        studentLedEvents = studentLedEvents,
-        trainingEvents = trainingEvents,
-        bonnerEvents = bonnerEvents,
-        otherEvents = otherEvents,
-        listOfTerms = listOfTerms,
-        rsvpedEventsID = rsvpedEventsID,
-        currentEventRsvpAmount = currentEventRsvpAmount,
-        currentTime = currentTime,
-        user = g.current_user,
-        activeTab = activeTab,
-        programID = int(programID))
+                            selectedTerm = term,
+                            studentLedEvents = studentLedEvents,
+                            trainingEvents = trainingEvents,
+                            bonnerEvents = bonnerEvents,
+                            otherEvents = otherEvents,
+                            listOfTerms = listOfTerms,
+                            rsvpedEventsID = rsvpedEventsID,
+                            currentEventRsvpAmount = currentEventRsvpAmount,
+                            currentTime = currentTime,
+                            user = g.current_user,
+                            activeTab = activeTab,
+                            programID = int(programID),
+                            managersProgramDict = managersProgramDict,
+                            countUpcomingStudentLedEvents = countUpcomingStudentLedEvents
+                            )
 
 @main_bp.route('/profile/<username>', methods=['GET'])
 def viewUsersProfile(username):
@@ -124,42 +139,133 @@ def viewUsersProfile(username):
 
         eligibilityTable = []
         for program in programs:
-            notes = list(ProgramBan.select(ProgramBan, Note)
+            banNotes = list(ProgramBan.select(ProgramBan, Note)
                                     .join(Note, on=(ProgramBan.banNote == Note.id))
                                     .where(ProgramBan.user == volunteer,
-                                              ProgramBan.program == program,
-                                              ProgramBan.endDate > datetime.datetime.now()).execute())
-
-            UserParticipatedTrainingEvents = getUserParticipatedTrainingEvents(program, g.current_user, g.current_term)
-            allTrainingsComplete = not len([event for event in UserParticipatedTrainingEvents.values() if event != True])
-            noteForDict = notes[-1].banNote.noteContent if notes else ""
+                                           ProgramBan.program == program,
+                                           ProgramBan.endDate > datetime.datetime.now()).execute())
+            userParticipatedTrainingEvents = getParticipationStatusForTrainings(program, [volunteer], g.current_term)
+            try: 
+                allTrainingsComplete = False not in [attended for event, attended in userParticipatedTrainingEvents[username]] # Did volunteer attend all events
+            except KeyError:
+                allTrainingsComplete = False
+            noteForDict = banNotes[-1].banNote.noteContent if banNotes else ""
             eligibilityTable.append({"program": program,
-                                   "completedTraining": allTrainingsComplete,
-                                   "trainingList": UserParticipatedTrainingEvents,
-                                   "isNotBanned": True if not notes else False,
-                                   "banNote": noteForDict})
+                                     "completedTraining": allTrainingsComplete,
+                                     "trainingList": userParticipatedTrainingEvents,
+                                     "isNotBanned": (not banNotes),
+                                     "banNote": noteForDict})
         profileNotes = ProfileNote.select().where(ProfileNote.user == volunteer)
-        userDietQuery = User.select().where(User.username == username)
-        userDiet = [note.dietRestriction for note in userDietQuery]
 
         bonnerRequirements = getCertRequirementsWithCompletion(certification=Certification.BONNER, username=volunteer)
+
+        managersProgramDict = getManagerProgramDict(g.current_user)
+        managersList = [id[1] for id in managersProgramDict.items()]
+        participatedInLabor = getCeltsLaborHistory(volunteer)
+        
         return render_template ("/main/userProfile.html",
-                programs = programs,
-                programsInterested = programsInterested,
-                upcomingEvents = upcomingEvents,
-                participatedEvents = participatedEvents,
-                rsvpedEvents = rsvpedEvents,
-                permissionPrograms = permissionPrograms,
-                eligibilityTable = eligibilityTable,
-                volunteer = volunteer,
-                backgroundTypes = backgroundTypes,
-                allBackgroundHistory = allBackgroundHistory,
-                currentDateTime = datetime.datetime.now(),
-                profileNotes = profileNotes,
-                bonnerRequirements = bonnerRequirements,
-                userDiet = userDiet                
-            )
+                                programs = programs,
+                                programsInterested = programsInterested,
+                                upcomingEvents = upcomingEvents,
+                                participatedEvents = participatedEvents,
+                                rsvpedEvents = rsvpedEvents,
+                                permissionPrograms = permissionPrograms,
+                                eligibilityTable = eligibilityTable,
+                                volunteer = volunteer,
+                                backgroundTypes = backgroundTypes,
+                                allBackgroundHistory = allBackgroundHistory,
+                                currentDateTime = datetime.datetime.now(),
+                                profileNotes = profileNotes,
+                                bonnerRequirements = bonnerRequirements,
+                                managersList = managersList,
+                                participatedInLabor = participatedInLabor,
+                            )
     abort(403)
+
+@main_bp.route('/profile/<username>/emergencyContact', methods=['GET', 'POST'])
+def emergencyContactInfo(username):
+    """
+    This loads the Emergency Contact Page
+    """
+    if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
+        abort(403)
+
+
+    if request.method == 'GET':
+        readOnly = g.current_user.username != username
+        contactInfo = EmergencyContact.get_or_none(EmergencyContact.user_id == username)
+        return render_template ("/main/emergencyContactInfo.html",
+                                username=username,
+                                contactInfo=contactInfo,
+                                readOnly=readOnly
+                                )
+    
+    elif request.method == 'POST':
+        if g.current_user.username != username:
+            abort(403)
+
+        rowsUpdated = EmergencyContact.update(**request.form).where(EmergencyContact.user == username).execute()
+        if not rowsUpdated:
+            EmergencyContact.create(user = username, **request.form)
+        createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
+        flash('Emergency contact information saved successfully!', 'success') 
+        
+        if request.args.get('action') == 'exit':
+            return redirect (f"/profile/{username}")
+        else:
+            return redirect (f"/profile/{username}/insuranceInfo")
+
+@main_bp.route('/profile/<username>/insuranceInfo', methods=['GET', 'POST'])
+def insuranceInfo(username):
+    """
+    This loads the Insurance Information Page
+    """
+    if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
+            abort(403)
+
+    if request.method == 'GET':
+        readOnly = g.current_user.username != username
+        userInsuranceInfo = InsuranceInfo.get_or_none(InsuranceInfo.user == username)
+        return render_template ("/main/insuranceInfo.html",
+                                username=username,
+                                userInsuranceInfo=userInsuranceInfo,
+                                readOnly=readOnly
+                                )
+
+    # Save the form data
+    elif request.method == 'POST':
+        if g.current_user.username != username:
+            abort(403)
+
+        rowsUpdated = InsuranceInfo.update(**request.form).where(InsuranceInfo.user == username).execute()
+        if not rowsUpdated:
+            InsuranceInfo.create(user = username, **request.form)
+        createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
+        flash('Insurance information saved successfully!', 'success') 
+
+        if request.args.get('action') == 'exit':
+            return redirect (f"/profile/{username}")
+        else:
+            return redirect (f"/profile/{username}/emergencyContact")
+
+@main_bp.route('/profile/<username>/travelForm', methods=['GET', 'POST'])
+def travelForm(username):
+    if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
+        abort(403)
+   
+    user = (User.select(User, EmergencyContact, InsuranceInfo)
+                .join(EmergencyContact, JOIN.LEFT_OUTER).switch()
+                .join(InsuranceInfo, JOIN.LEFT_OUTER)
+                .where(User.username == username).limit(1))
+    if not list(user):
+        abort(404)
+    userData = list(user.dicts())[0]
+    userData = {key: value if value else '' for (key, value) in userData.items()}
+
+    return render_template ('/main/travelForm.html',
+                            userData = userData
+                            )
+
 
 @main_bp.route('/profile/addNote', methods=['POST'])
 def addNote():
@@ -229,7 +335,7 @@ def unban(program_id, username):
         return "Successfully unbanned the volunteer"
 
     except Exception as e:
-        print("Error  while updating Unban", e)
+        print("Error while updating Unban", e)
         flash("Failed to unban the volunteer", "danger")
         return "Failed to unban the volunteer", 500
 
@@ -332,9 +438,8 @@ def serviceTranscript(username):
 
     slCourses = getSlCourseTranscript(username)
     totalHours = getTotalHours(username)
-    allEventTranscript = getAllEventTranscript(username)
+    allEventTranscript = getProgramTranscript(username)
     startDate = getStartYear(username)
-
     return render_template('main/serviceTranscript.html',
                             allEventTranscript = allEventTranscript,
                             slCourses = slCourses.objects(),
@@ -374,86 +479,19 @@ def reviewProposal():
                             course=course,
                             instructors_data=instructors_data)
 
-@main_bp.route('/manageServiceLearning', methods = ['GET', 'POST'])
-@main_bp.route('/manageServiceLearning/<term>', methods = ['GET', 'POST'])
-def getAllCourseInstructors(term=None):
-    """
-    This function selects all the Instructors Name and the previous courses
-    """
-    showPreviewModal = request.args.get('showPreviewModal', default=False, type=bool)
-    
-    if showPreviewModal and 'courseParticipantPreview' in session:
-        courseParticipantPreview = session['courseParticipantPreview']
-    else:
-        courseParticipantPreview = []
-
-    errorFlag = session.get('errorFlag')
-    previewParticipantDisplayList = session.get('previewCourseDisplayList')
-
-    if g.current_user.isCeltsAdmin:
-        setRedirectTarget(request.full_path)
-        courseDict = getCourseDict()
-        term = Term.get_or_none(Term.id == term) or g.current_term
-
-        unapproved = unapprovedCourses(term)
-        approved = approvedCourses(term)
-        imported = importedCourses(term)
-        terms = selectSurroundingTerms(g.current_term)
-
-        if request.method =='POST' and "submitParticipant" in request.form:
-            saveCourseParticipantsToDatabase(session['courseParticipantPreview'])
-            courseParticipantPreviewSessionCleaner()
-            flash('File saved successfully!', 'success')
-            return redirect(url_for('main.getAllCourseInstructors'))
-      
-        return render_template('/admin/manageServiceLearningFaculty.html',
-                                courseInstructors = courseDict,
-                                unapprovedCourses = unapproved,
-                                approvedCourses = approved,
-                                importedCourses = imported,
-                                terms = terms,
-                                term = term,
-                                CourseStatus = CourseStatus, 
-                                previewParticipantsErrorFlag = errorFlag,
-                                courseParticipantPreview= courseParticipantPreview,
-                                previewParticipantDisplayList = previewParticipantDisplayList
-                                )
-    else:
-        abort(403)   
-
-def getRedirectTarget(popTarget=False):
-    """
-    This function returns a string with the URL or route to a page in the Application
-        saved with setRedirectTarget() and is able to pop the value from the session
-        to make it an empty value
-    popTarget: expects a bool value to determine whether or not to reset
-                redirectTarget to an emtpy value
-    return: a string with the URL or route to a page in the application that was
-            saved in setRedirectTarget()
-    """
-    if "redirectTarget" not in session:
-        return ''
-
-    target = session["redirectTarget"]
-    if popTarget:
-        session.pop("redirectTarget")
-    return target
-
-def setRedirectTarget(target):
-    """
-    This function saves the target URL in the session for future redirection
-        to said page
-    target: expects a string that is a URL or a route to a page in the application
-    return: None
-    """
-    session["redirectTarget"] = target
-
 @main_bp.route('/updateDietInformation', methods = ['GET', 'POST'])
 def getDietInfo():
     dietaryInfo = request.form
     user = dietaryInfo["user"]
     dietInfo = dietaryInfo["dietInfo"]
+    
     if (g.current_user.username == user) or g.current_user.isAdmin:
         updateDietInfo(user, dietInfo)
+        userInfo = User.get(User.username == user) 
+        if len(dietInfo) > 0:
+            createAdminLog(f"Updated {userInfo.fullName}'s dietary restrictions to {dietInfo}.") if dietInfo.strip() else None 
+        else:
+            createAdminLog(f"Deleted all {userInfo.fullName}'s dietary restrictions dietary restrictions.")
+
 
     return " "

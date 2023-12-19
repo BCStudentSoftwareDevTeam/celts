@@ -1,9 +1,14 @@
 $(document).ready(function(){
+  $("#printButton").on("click", function() {
+        let username = $(this).data('username')
+        printDocument(`/profile/${username}/travelForm`)
+      })
+  $("#actions").on("change", changeAction)
   $("#phoneInput").inputmask('(999)-999-9999');
   $(".notifyInput").click(function updateInterest(){
     var programID = $(this).data("programid");
     var username = $(this).data('username');
-    
+  
 
     var interest = $(this).is(':checked');
     var routeUrl = interest ? "addInterest" : "removeInterest";
@@ -20,6 +25,23 @@ $(document).ready(function(){
       }
     });
   });
+
+  function changeAction(e){
+    let profileAction = $(this).val()
+    let username = $(this).data('username')
+    if (profileAction == "Emergency Contact"){
+      window.location.href = `/profile/${username}/emergencyContact`
+    } else if (profileAction == "Insurance Information"){
+      window.location.href = `/profile/${username}/insuranceInfo`
+    } else if(profileAction == "Print Travel Form"){
+      printDocument(`/profile/${username}/travelForm`)
+    } else if (profileAction == "View Service Transcript"){
+      window.location.href = `/profile/${username}/serviceTranscript`
+    } else if (profileAction == "Manage CCE Minor") {
+      window.location.href = `/profile/${username}/cceMinor`
+    }
+    $(this).val('')
+  }
 
   // This function is to disable all the dates before current date in the ban modal End Date picker
   $(function(){
@@ -223,7 +245,7 @@ $(document).ready(function(){
       }
     })
   });
-  // Popover functionalitie
+  // Popover functionality
     var requiredTraining = $(".trainingPopover");
     requiredTraining.popover({
        trigger: "hover",
@@ -281,3 +303,4 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
       }
   })
 }
+

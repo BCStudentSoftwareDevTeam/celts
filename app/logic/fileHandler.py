@@ -26,8 +26,7 @@ class FileHandler:
             if e.errno != 17:
                 print(f'Fail to create directory: {e}')
                 raise e
-        
-
+                
     def getFileFullPath(self, newfilename = ''):
         """
         This creates the directory/path for the object from the "Choose File" input in the create event and edit event.
@@ -95,3 +94,9 @@ class FileHandler:
         if not AttachmentUpload.select().where(AttachmentUpload.fileName == file.fileName).exists():
             path = os.path.join(self.path, file.fileName)
             os.remove(path)
+    
+    def changeDisplay(self, fileId):
+        file = AttachmentUpload.get_by_id(fileId)
+        AttachmentUpload.update(isDisplayed=False).where(AttachmentUpload.event == file.event, AttachmentUpload.isDisplayed==True).execute()
+        AttachmentUpload.update(isDisplayed=True).where(AttachmentUpload.id == fileId).execute()
+        return "" 

@@ -58,6 +58,8 @@ pem add app.models.backgroundCheck.BackgroundCheck
 pem add app.models.backgroundCheckType.BackgroundCheckType
 pem add app.models.adminLog.AdminLog
 pem add app.models.attachmentUpload.AttachmentUpload
+pem add app.models.emergencyContact.EmergencyContact
+pem add app.models.insuranceInfo.InsuranceInfo
 pem add app.models.bonnerCohort.BonnerCohort
 pem add app.models.certification.Certification
 pem add app.models.certificationAttempt.CertificationAttempt
@@ -65,6 +67,8 @@ pem add app.models.certificationRequirement.CertificationRequirement
 pem add app.models.requirementMatch.RequirementMatch
 pem add app.models.eventViews.EventView
 pem add app.models.eventRsvpLog.EventRsvpLog
+pem add app.models.celtsLabor.CeltsLabor
+pem add app.models.communityEngagementRequest.CommunityEngagementRequest
 
 pem watch
 pem migrate

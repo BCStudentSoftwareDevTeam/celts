@@ -19,19 +19,22 @@ from app.models.certification import Certification
 from app.models.course import Course
 from app.models.courseInstructor import CourseInstructor
 from app.models.user import User
+from app.models.term import Term
 from app.models.eventViews import EventView
+from app.models.courseStatus import CourseStatus
 
 from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createAdminLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
-from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
-from app.logic.events import deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm
-from app.logic.participants import getUserParticipatedTrainingEvents, checkUserRsvp
+from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
+from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm
+from app.logic.participants import getEventParticipants, getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
-from app.logic.serviceLearningCoursesData import parseUploadedFile, courseParticipantPreviewSessionCleaner
-from app.logic.courseManagement import editImportedCourses
+from app.logic.manageSLFaculty import getInstructorCourses
+from app.logic.courseManagement import unapprovedCourses, approvedCourses, editImportedCourses #editImportedcourse is from current branch
+from app.logic.serviceLearningCoursesData import parseUploadedFile, saveCourseParticipantsToDatabase
 
 
 
@@ -54,14 +57,14 @@ def templateSelect():
         visibleTemplates = getAllowedTemplates(g.current_user)
         return render_template("/events/template_selector.html",
                                 programs=allprograms,
+                                celtsSponsoredProgram = Program.get(Program.isOtherCeltsSponsored),
                                 templates=visibleTemplates)
     else:
         abort(403)
 
 
-@admin_bp.route('/eventTemplates/<templateid>/create', methods=['GET','POST'])
 @admin_bp.route('/eventTemplates/<templateid>/<programid>/create', methods=['GET','POST'])
-def createEvent(templateid, programid=None):
+def createEvent(templateid, programid):
     if not (g.current_user.isAdmin or g.current_user.isProgramManagerFor(programid)):
         abort(403)
 
@@ -184,7 +187,7 @@ def eventDisplay(eventId):
     picurestype = [".jpeg", ".png", ".gif", ".jpg", ".svg", ".webp"]
     for attachment in associatedAttachments:
         for extension in picurestype:
-            if (attachment.fileName.endswith(extension)):
+            if (attachment.fileName.endswith(extension) and attachment.isDisplayed == True):
                 image = filepaths[attachment.fileName][0]
         if image:
             break
@@ -246,25 +249,43 @@ def eventDisplay(eventId):
 
         # Identify the next event in a recurring series
         if event.recurringId:
-            eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId).order_by(Event.startDate))
+            eventSeriesList = list(Event.select().where(Event.recurringId == event.recurringId)
+                                        .where((Event.isCanceled == False) | (Event.id == event.id))
+                                        .order_by(Event.startDate))
             eventIndex = eventSeriesList.index(event)
             if len(eventSeriesList) != (eventIndex + 1):
                 eventData["nextRecurringEvent"] = eventSeriesList[eventIndex + 1]
 
         currentEventRsvpAmount = getEventRsvpCountsForTerm(g.current_term)
 
-        UserParticipatedTrainingEvents = getUserParticipatedTrainingEvents(eventData['program'], g.current_user, g.current_term)
+        userParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], g.current_term)
+
         return render_template("eventView.html",
                                 eventData = eventData,
                                 event = event,
                                 userHasRSVPed = userHasRSVPed,
-                                programTrainings = UserParticipatedTrainingEvents,
+                                programTrainings = userParticipatedTrainingEvents,
                                 currentEventRsvpAmount = currentEventRsvpAmount,
                                 isProgramManager = isProgramManager,
                                 filepaths = filepaths,
                                 image = image,
                                 pageViewsCount= pageViewsCount)
 
+
+@admin_bp.route('/event/<eventId>/cancel', methods=['POST'])
+def cancelRoute(eventId):
+    if g.current_user.isAdmin:
+        try:
+            cancelEvent(eventId)
+            return redirect(request.referrer)
+
+        except Exception as e:
+            print('Error while canceling event:', e)
+            return "", 500
+        
+    else:
+        abort(403)
+    
 @admin_bp.route('/event/<eventId>/delete', methods=['POST'])
 def deleteRoute(eventId):
     try:
@@ -347,14 +368,42 @@ def addCourseFile():
     fileData = request.files['addCourseParticipants']
     filePath = os.path.join(app.config["files"]["base_path"], fileData.filename)
     fileData.save(filePath)
-    (session['errorFlag'], session['courseParticipantPreview'], session['previewCourseDisplayList']) = parseUploadedFile(filePath)
+    (session['cpPreview'], session['cpErrors']) = parseUploadedFile(filePath)
     os.remove(filePath)
-    return redirect(url_for("main.getAllCourseInstructors", showPreviewModal = True))
+    return redirect(url_for("admin.manageServiceLearningCourses"))
+
+@admin_bp.route('/manageServiceLearning', methods = ['GET', 'POST'])
+@admin_bp.route('/manageServiceLearning/<term>', methods = ['GET', 'POST'])
+def manageServiceLearningCourses(term=None):
+    """
+    The SLC management page for admins
+    """
+    if not g.current_user.isCeltsAdmin:
+        abort(403) 
+
+    if request.method =='POST' and "submitParticipant" in request.form:
+        saveCourseParticipantsToDatabase(session.pop('cpPreview', {}))
+        flash('Courses and participants saved successfully!', 'success')
+        return redirect(url_for('admin.manageServiceLearningCourses'))
+
+    manageTerm = Term.get_or_none(Term.id == term) or g.current_term
+
+    setRedirectTarget(request.full_path)
+
+    return render_template('/admin/manageServiceLearningFaculty.html',
+                            courseInstructors = getInstructorCourses(),
+                            unapprovedCourses = unapprovedCourses(term),
+                            approvedCourses = approvedCourses(term),
+                            terms = selectSurroundingTerms(g.current_term),
+                            term = manageTerm,
+                            cpPreview= session.get('cpPreview',{}),
+                            cpPreviewErrors = session.get('cpErrors',[])
+                           )
 
 @admin_bp.route("/deleteUploadedFile", methods= ["POST"])
-def deleteCourseFile():
+def removeFromSession():
     try:
-        courseParticipantPreviewSessionCleaner()
+        session.pop('cpPreview')
     except KeyError:
         pass
 
@@ -451,12 +500,17 @@ def updatecohort(year, method, username):
     if method == "add":
         try:
             BonnerCohort.create(year=year, user=user)
+            flash(f"Successfully added {user.fullName} to {year} Bonner Cohort.", "success")
         except IntegrityError as e:
             # if they already exist, ignore the error
+            flash(f'Error: {user.fullName} already added.', "danger")
             pass
+        
     elif method == "remove":
         BonnerCohort.delete().where(BonnerCohort.user == user, BonnerCohort.year == year).execute()
+        flash(f"Successfully removed {user.fullName} from {year} Bonner Cohort.", "success")
     else:
+        flash(f"Error: {user.fullName} can't be added.", "danger")
         abort(500)
 
     return ""
@@ -477,3 +531,11 @@ def saveRequirements(certid):
     newRequirements = updateCertRequirements(certid, request.get_json())
 
     return jsonify([requirement.id for requirement in newRequirements])
+
+
+@admin_bp.route("/displayEventFile", methods=["POST"])
+def displayEventFile():
+    fileData= request.form
+    eventfile=FileHandler(eventId=fileData["id"])
+    eventfile.changeDisplay(fileData['id'])
+    return ""

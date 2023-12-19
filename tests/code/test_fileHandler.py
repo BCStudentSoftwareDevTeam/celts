@@ -1,5 +1,6 @@
 import pytest
 import os
+import shutil
 from werkzeug.datastructures import FileStorage
 
 from app import app
@@ -41,12 +42,16 @@ def test_makingdirectory():
     event_id = 90
     path = 'app/static/files/eventattachments/'
     # Ensure the directory does not exist before calling makeDirectory
+    try:
+       os.rmdir('app/static/files/eventattachments/90')
+    except OSError as e:
+       shutil.rmtree('app/static/files/eventattachments/90', ignore_errors = True)
     assert os.path.exists(os.path.join(path, str(event_id))) == False
-    
     # Creating directory and making sure it exist
     eventFileStorage= [FileStorage(filename= "eventfile.pdf")]
-    handledEventAttachment = FileHandler(eventFileStorage, eventId=90)
+    handledEventAttachment = FileHandler(eventFileStorage, eventId= 90)
     handledEventAttachment.makeDirectory()
+    
     handledEventAttachment.makeDirectory()
     assert os.path.exists('app/static/files/eventattachments/90') == True
     # Deleting the directory
@@ -145,5 +150,30 @@ def test_deleteFile():
         handledCourseFile.deleteFile(coursefile.id)
         
         assert os.path.exists(path)==False
+@pytest.mark.integration
+def test_displayFile():
+    with mainDB.atomic() as transaction:
+        # create two image files to test the display function 
+        image1 = AttachmentUpload.create(event=15, fileName= 'coverImage.png')
+        image2 = AttachmentUpload.create(event=15, fileName= 'coverImage.svg')
 
+        eventfile = FileHandler(eventId=1)
+
+        # display image1 as an event cover 
+        eventfile.changeDisplay(image1)
+
+        assert AttachmentUpload.get_by_id(image1).isDisplayed ==True
+        assert AttachmentUpload.get_by_id(image2).isDisplayed ==False
+
+        # display image2 as an event cover 
+        eventfile.changeDisplay(image2)
+        assert AttachmentUpload.get_by_id(image2).isDisplayed ==True
+        assert AttachmentUpload.get_by_id(image1).isDisplayed ==False
+
+        transaction.rollback()
+
+
+
+
+        
 
