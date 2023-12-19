@@ -1,11 +1,11 @@
-from flask import Flask, g, render_template, request, abort
+from flask import Flask, g, render_template, request, abort, flash, redirect, url_for
 from app.controllers.minor import minor_bp
 from app.models.user import User
 from app.models.term import Term
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.fileHandler import FileHandler
 from app.models.attachmentUpload import AttachmentUpload
-from app.logic.minor import updateMinorInterest, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm
+from app.logic.minor import updateMinorInterest, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, saveOtherEngagementRequest
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -53,13 +53,21 @@ def removeCommunityEngagement(username):
     """
     pass
 
-@minor_bp.route('/cceMinor/<username>/requestOtherCommunityEngagement', methods=['GET'])
+@minor_bp.route('/cceMinor/<username>/requestOtherCommunityEngagement', methods=['GET', 'POST'])
 def requestOtherEngagement(username):
     """
         Load the "request other" form and submit it.
     """
     user = User.get_by_id(username)
     terms = selectSurroundingTerms(g.current_term)
+    
+
+    if request.method == 'POST':
+        flash("Something happend and we hit post", "success")
+        saveOtherEngagementRequest(request.form.copy())
+        return redirect(url_for("minor.viewCceMinor", username=user))
+
+
     return render_template("/minor/requestOtherEngagement.html",
                             user=user,
                             terms=terms)
@@ -76,7 +84,9 @@ def indicateMinorInterest(username):
 
 @minor_bp.route("/deleteRequestFile", methods=["POST"])
 def deleteRequestFile():
+
     fileData= request.form
     termFile=FileHandler(termId=fileData["databaseId"])
     termFile.deleteFile(fileData["fileId"])
+
     return ""

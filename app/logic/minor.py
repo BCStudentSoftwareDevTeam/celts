@@ -5,6 +5,7 @@ from app.models.program import Program
 from app.models.event import Event
 from app.models.courseInstructor import CourseInstructor
 from app.models.eventParticipant import EventParticipant
+from app.models.communityEngagementRequest import CommunityEngagementRequest
 from collections import defaultdict
 from playhouse.shortcuts import model_to_dict
 from peewee import JOIN, fn
@@ -97,5 +98,15 @@ def getCommunityEngagementByTerm(username):
     # sorting the terms by the term id
     return dict(sorted(terms.items(), key=lambda x: x[0][1]))
 
-
-
+def saveOtherEngagementRequest(engagementRequest):
+    requestInfo = engagementRequest
+    requestedThing = {"user": requestInfo['user'],
+                      "experienceName": requestInfo['experience'],
+                      "company": requestInfo['organization'],
+                      "term": requestInfo['term'],
+                      "description": requestInfo['descirption'],
+                      "weeklyHours": requestInfo['hours'],
+                      "weeks": requestInfo['weeks'],
+                      "filename": requestInfo['attachment'],
+                      "status": "Pending"}
+    CommunityEngagementRequest.create(**requestedThing)

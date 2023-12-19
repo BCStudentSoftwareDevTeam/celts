@@ -5,6 +5,7 @@ from app.models.user import User
 class CommunityEngagementRequest(baseModel):
     user = ForeignKeyField(User)
     experienceName = CharField()
+    company = CharField()
     term = ForeignKeyField(Term)
     description = TextField()
     weeklyHours = IntegerField()
