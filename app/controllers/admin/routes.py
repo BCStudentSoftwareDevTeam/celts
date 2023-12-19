@@ -31,7 +31,7 @@ from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
 from app.logic.manageSLFaculty import getInstructorCourses
-from app.logic.courseManagement import unapprovedCourses, approvedCourses
+from app.logic.courseManagement import unapprovedCourses, approvedCourses, importedCourses
 from app.logic.serviceLearningCoursesData import parseUploadedFile, saveCourseParticipantsToDatabase
 
 
@@ -392,6 +392,7 @@ def manageServiceLearningCourses(term=None):
                             courseInstructors = getInstructorCourses(),
                             unapprovedCourses = unapprovedCourses(term),
                             approvedCourses = approvedCourses(term),
+                            importedCourses = importedCourses(term),
                             terms = selectSurroundingTerms(g.current_term),
                             term = manageTerm,
                             cpPreview= session.get('cpPreview',{}),
