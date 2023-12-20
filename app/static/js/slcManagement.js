@@ -56,6 +56,10 @@ function changeAction(action){
     $('#withdrawModal').modal('show');
   } else if(courseAction == "Edit"){
     location = '/serviceLearning/editProposal/' + courseID;
+  } else if (courseAction == "Alter"){ // Beans
+    console.log("showing modal");
+    console.log($('#alterModal').get());
+    $('#alterModal').modal('show');
   } else if(courseAction == "Print"){
     printDocument(`/serviceLearning/print/${courseID}`)
   } else if (courseAction == "Review"){
