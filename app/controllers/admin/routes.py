@@ -10,6 +10,7 @@ from app import app
 from app.models.program import Program
 from app.models.event import Event
 from app.models.user import User
+from app.models.course import Course
 from app.models.eventTemplate import EventTemplate
 from app.models.adminLog import AdminLog
 from app.models.eventRsvpLog import EventRsvpLog
@@ -31,7 +32,7 @@ from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
 from app.logic.manageSLFaculty import getInstructorCourses
-from app.logic.courseManagement import unapprovedCourses, approvedCourses, importedCourses
+from app.logic.courseManagement import unapprovedCourses, approvedCourses, importedCourses, editImportedCourses
 from app.logic.serviceLearningCoursesData import parseUploadedFile, saveCourseParticipantsToDatabase
 
 
@@ -294,6 +295,7 @@ def deleteRoute(eventId):
     except Exception as e:
         print('Error while canceling event:', e)
         return "", 500
+    
 @admin_bp.route('/event/<eventId>/deleteEventAndAllFollowing', methods=['POST'])
 def deleteEventAndAllFollowingRoute(eventId):
     try:
@@ -304,6 +306,7 @@ def deleteEventAndAllFollowingRoute(eventId):
     except Exception as e:
         print('Error while canceling event:', e)
         return "", 500
+    
 @admin_bp.route('/event/<eventId>/deleteAllRecurring', methods=['POST'])
 def deleteAllRecurringEventsRoute(eventId):
     try:
@@ -407,6 +410,64 @@ def removeFromSession():
         pass
 
     return ""
+
+
+@admin_bp.route('/manageServiceLearning/imported/<courseID>', methods = ['POST', 'GET'])
+def alterImportedCourse(courseID=None):
+    """
+    Goals:
+    This route is meant to be called via ajax from the course management page in order to fill out the scanty information
+    we possess on imported courses so that they can edit them in our modal.
+    There are two paths, GET and POST
+    GET: On a get we should return a dictionary containing 
+    - course name, 
+    - course abbreviation, 
+    - hours earned on completion, 
+    - list of the instructors
+    POST: on a post we should update their course entry into our course table and update all of the previously listed information
+    
+    BEANS: This is a big one, we need to abstract most of this functionality into a logic file and test it!!!
+    """
+
+    
+    if request.method == 'GET':
+        try:
+            targetCourse = Course.get_by_id(courseID)
+            return jsonify(model_to_dict(targetCourse, recurse=False))
+        except Exception as e:
+            flash("Course not found or something else went wrong")  # beans
+            return None
+    if request.method == 'POST':
+        courseName = request.form.get("courseName")
+        courseAbbreviation = request.form.get("courseAbbreviation")    
+        courseHoursEarned = request.form.get("hoursEarned")
+        newCourseInstructors = request.form.get("courseInstructors")
+        courseData = {
+            "courseName" : courseName,
+            "courseAbbreviation" : courseAbbreviation,
+            "courseHoursEarned" : courseHoursEarned,
+            "listInstructors" : [instructor for instructor in newCourseInstructors.split(", ")]
+        }
+        editImportedCourses(courseData)
+        # Update the course information in the DB with the new information
+        # Course.update(courseName = courseName, 
+        #               courseAbbreviation = courseAbbreviation,
+        #               courseCredit = courseHoursEarned
+        #               ).where(id=courseID)
+                      
+        # Update course instructors for a course specified by the courseID
+        
+    #     # Update the instructor information in two parts
+    #     # 1. Remove all instructors in the DB that were removed and not in the list
+    #     oldInstructors = CourseInstructor.select(CourseInstructor, User).join(User).where(Course.id == courseID)  #beans I have no idea if this works
+    #     for instructor in oldInstructors:
+    #         if instructor.user_id not in newCourseInstructors:
+    #             CourseInstructor.delete_by_id(instructor.id)  #beans I have no idea if this works
+    #     # 2. Insert all of the instructors that weren't instructors before that are in the list
+    #     for instructor in newCourseInstructors:
+    #         CourseInstructor.get_or_create(course_id = courseID, user_id = instructor.id)  #beans I have no idea if this works
+    return redirect(url_for("admin.manageServiceLearningCourses"))
+
 
 @admin_bp.route("/manageBonner")
 def manageBonner():

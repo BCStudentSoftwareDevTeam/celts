@@ -112,67 +112,86 @@
         </tbody>
       </table>
   {% endif %}
-  
-      <!-- Beans: IMPORTED COURSES -->
-      <h2>Imported</h2>
-      {% if importedCourses | length == 0 %}
-      <h5 class="ms-3">There are no approved courses for {{ term.description }}.</h5>
-      {% else %}
-      <table class="table table-striped border">
-        <thead>
-          <tr>
-            <th class="col-md-1" scope="col">Courses</th>
-            <th class="col-md-1" scope="col">Faculty</th>
-            <th class="col-md-1" scope="col">Status</th>
-            <th class="col-md-1" scope="col">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for course in importedCourses %}
-          <tr>
-            <td>{{course.courseName or (course.courseAbbreviation + " (name unspecified)")}}</td>
-            <td>{{course.instructors}}</td>
-            <td>
-              <a class="status-key text-dark" id="statusKey" href="javascript:void(0);" data-toggle="popover"
-                title="Status Key" data-content="{{course.status.status}}">{{course.status.status}}</a>
-            </td>
-            <td>
-              <select class="form-select" id="{{course.id}}" onchange='changeAction(this)'>
-                <option value="---" disabled selected>Select Action</option>
-                <option value="Alter">Edit</option>
-                <option value="View">View</option>
-                <option value="Print">Print</option>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      {% endif %}
-      {% set downloadAndSend = "disabled" if approvedCourses | length == 0 else "" %}
+
+  <!-- Beans: IMPORTED COURSES -->
+  <h2>Imported</h2>
+  {% if importedCourses | length == 0 %}
+  <h5 class="ms-3">There are no imported courses for {{ term.description }}.</h5>
+  {% else %}
+  <table class="table table-striped border">
+    <thead>
+      <tr>
+        <th class="col-md-1" scope="col">Courses</th>
+        <th class="col-md-1" scope="col">Faculty</th>
+        <th class="col-md-1" scope="col">Status</th>
+        <th class="col-md-1" scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for course in importedCourses %}
+      <tr>
+        <td>{{course.courseName or (course.courseAbbreviation + " (name unspecified)")}}</td>
+        <td>{{course.instructors}}</td>
+        <td>
+          <a class="status-key text-dark" id="statusKey" href="javascript:void(0);" data-toggle="popover"
+            title="Status Key" data-content="{{course.status.status}}">{{course.status.status}}</a>
+        </td>
+        <td>
+          <select class="form-select" id="{{course.id}}" onchange='changeAction(this)'>
+            <option value="---" disabled selected>Select Action</option>
+            <option value="Alter">Edit</option>
+            <option value="View">View</option>
+            <option value="Print">Print</option>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+  {% set downloadAndSend = "disabled" if approvedCourses | length == 0 else "" %} 
 
       <!-- Modal for altering courses -->
       <div class="modal fade" id="alterModal">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header"> Edit Course </div>
-
-            <div class="modal-body"> Here's how you edit the course 
-
-
-            </div>
+            <form enctype="multipart/form-data" role="form" action="/manageServiceLearning/imported" method="POST">
+              <div class="modal-body"> 
+                <table class="table table-striped ml-4">
+                  <tbody>
+                    <tr>
+                      <td class="fw-bold">Course Name</td>
+                      <td><input class="form-control" id="courseName" name="courseName"></td>
+                    </tr>
+                    <tr>
+                      <td class="fw-bold"> Course Abbreviation</td>
+                      <td><input class="input form-control" id="courseAbbreviation" disabled></input></td>
+                    </tr>
+                    <tr>
+                      <td class="fw-bold">Hours Earned on Completion</td>
+                      <td><input class="form-control" id="courseCredit" name="hoursEarned"></td>
+                    </tr>
+                    <tr>
+                      <td class="fw-bold">Instructors</td>
+                      <td><input id="courseInstructor" class="form-control" type="search" placeholder="Search instructor" value=""/></td>
+                      <!-- Start of the copied section #Beans-->
+                      <!-- End of the copied section #Beans-->
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
             <div class="modal-footer p-2">
               <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Cancel</button>
-              <button type="button" class="btn btn-success position-relative">Save</button>
+              <button type="submit" class="btn btn-success position-relative">Save</button>
             </div>
-
-          </div>
+          </form>
         </div>
       </div>
-
+    </div>
 
   {########################### Action Buttons #################################}
-  {% set disable_button = "disabled" if approvedCourses | length ==0 else "" %}
+  {% set disable_button = "disabled" if approvedCourses | length == 0 else "" %}
   <div class="mb-5">
     <form method="GET" action="/serviceLearning/downloadApprovedCourses/{{term.id}}">
         <button class="float-end btn btn-primary {{disable_button}}" 

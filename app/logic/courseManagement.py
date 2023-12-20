@@ -64,6 +64,37 @@ def importedCourses(termId):
     return importedCourses
 
 
+def editImportedCourses(courseData):
+    """
+        This function will take in courseData for the SLC proposal page and a dictionary
+        of instructors assigned to the imported course after that one is edited 
+        and update the information in the db.
+    """
+
+    with mainDB.atomic() as transaction:
+        try:
+            course = Course.get_by_id(courseData['courseID'])
+            Course.update(
+                courseName=courseData["courseName"],
+                courseAbbreviation=courseData["courseAbbreviation"],
+                courseCredit=courseData["courseHoursEarned"],
+            ).where(Course.id == course.id).execute()
+
+
+            # instructorList = []
+            # instructorList = courseData.getlist('listInstructors')
+            # CourseInstructor.delete().where(CourseInstructor.course == course).execute()
+            # for instructor in instructorList:
+            #     CourseInstructor.create(course=course, user=instructor)
+
+            return Course.get_by_id(course.id)
+
+        except Exception as e:
+            print(e)
+            transaction.rollback()
+            return False
+
+
 def createCourse(creator="No user provided"):
     """ Create an empty, in progress course """
     course = Course.create(status=CourseStatus.IN_PROGRESS, createdBy=creator)
