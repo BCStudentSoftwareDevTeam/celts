@@ -165,15 +165,57 @@
                     </tr>
                     <tr>
                       <td class="fw-bold"> Course Abbreviation</td>
-                      <td><input class="input form-control" id="courseAbbreviation" disabled></input></td>
+                      <td><input class="input form-control" id="courseAbbreviation" placeholder="Course Abbrv" disabled></input></td>
                     </tr>
                     <tr>
                       <td class="fw-bold">Hours Earned on Completion</td>
                       <td><input class="form-control" id="courseCredit" name="hoursEarned"></td>
                     </tr>
                     <tr>
-                      <td class="fw-bold">Instructors</td>
-                      <td><input id="courseInstructor" class="form-control" type="search" placeholder="Search instructor" value=""/></td>
+                        <td class="fw-bold">Instructors</td>
+                        <td>
+                        <input id="courseInstructor" class="form-control" type="search" placeholder="Search Instructor" value=""/>
+                        </td>
+
+                        <table
+                            class="table mb-3"
+                            id="instructorTable"
+                            name="instructorTable">
+                            <thead>
+                            <tr>
+                                <th scope="col">Instructor</th>
+                                <th scope="col"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-username="">
+                                    <td>
+                                    <p class="mb-0"></p>
+                                        <input type="text" style="border: none" size="14" class="form-control-sm" id="" name="courseInstructorPhone" aria-label="Instructor Phone" data-value="" value="" placeholder="Phone Number" />
+                                        <a class="text-decoration-none primary editButton" tabindex="0" data-username="" id=""  type="button">Edit</a>
+                                    </td>
+                                    <td class="align-middle">
+                                        <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
+                                    </td>
+
+                                </tr>
+                                {% for instructor in courseInstructor %}
+                                <tr data-username="{{instructor.user.username}}">
+                                <td>
+                                    <p class="mb-0">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user.email}})</p>
+                                    <input type="text" style="border: none" size="14" class="form-control-sm" id="inputPhoneNumber-{{instructor.user}}" name="courseInstructorPhone" aria-label="Instructor Phone" data-value="{{instructor.user.phoneNumber}}" value="{{instructor.user.phoneNumber}}" placeholder="Phone Number" />
+                                    <a class="text-decoration-none primary editButton" tabindex="0" data-username="{{instructor.user.username}}" id="editButton-{{instructor.user}}" type="button">Edit</a>
+                                </td>
+                                <td class="align-middle">
+                                    <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
+                                </td>
+
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+
+                        </table>
+                  
                       <!-- Start of the copied section #Beans-->
                       <!-- End of the copied section #Beans-->
                     </tr>

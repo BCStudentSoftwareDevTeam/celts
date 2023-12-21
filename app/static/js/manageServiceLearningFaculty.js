@@ -1,5 +1,4 @@
 $(document).ready( function () {
-
   /******** Faculty Table Management **************/
   var table = $('#SLCFacultyTable').DataTable({
    "fnDrawCallback": function(oSettings) {
@@ -104,4 +103,5 @@ $(document).ready( function () {
         }
     });
 });
+
 
