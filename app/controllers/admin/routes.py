@@ -412,8 +412,8 @@ def removeFromSession():
     return ""
 
 
-@admin_bp.route('/manageServiceLearning/imported/<courseID>', methods = ['POST', 'GET'])
-def alterImportedCourse(courseID):
+@admin_bp.route('/manageServiceLearning/imported/', methods = ['POST', 'GET'])
+def alterImportedCourse():
     """
     Goals:
     This route is meant to be called via ajax from the course management page in order to fill out the scanty information
@@ -448,29 +448,11 @@ def alterImportedCourse(courseID):
             "courseHoursEarned" : courseHoursEarned,
             "listInstructors" : [instructor for instructor in newCourseInstructors.split(", ")]
         }
-        print("?????????????????????????????????????????????????????????")
-        print(courseData)
-        print(courseID)
 
-        print("?????????????????????????????????????????????????????????")
-        editImportedCourses(courseData)
-        # Update the course information in the DB with the new information
-        # Course.update(courseName = courseName, 
-        #               courseAbbreviation = courseAbbreviation,
-        #               courseCredit = courseHoursEarned
-        #               ).where(id=courseID)
-                      
-        # Update course instructors for a course specified by the courseID
+        editImportedCourses(5, courseData)
         
-    #     # Update the instructor information in two parts
-    #     # 1. Remove all instructors in the DB that were removed and not in the list
-    #     oldInstructors = CourseInstructor.select(CourseInstructor, User).join(User).where(Course.id == courseID)  #beans I have no idea if this works
-    #     for instructor in oldInstructors:
-    #         if instructor.user_id not in newCourseInstructors:
-    #             CourseInstructor.delete_by_id(instructor.id)  #beans I have no idea if this works
-    #     # 2. Insert all of the instructors that weren't instructors before that are in the list
-    #     for instructor in newCourseInstructors:
-    #         CourseInstructor.get_or_create(course_id = courseID, user_id = instructor.id)  #beans I have no idea if this works
+
+
     return redirect(url_for("admin.manageServiceLearningCourses"))
 
 
