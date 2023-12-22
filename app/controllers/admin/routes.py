@@ -412,8 +412,8 @@ def removeFromSession():
     return ""
 
 
-@admin_bp.route('/manageServiceLearning/imported/', methods = ['POST', 'GET'])
-def alterImportedCourse():
+@admin_bp.route('/manageServiceLearning/imported/<courseID>', methods = ['POST', 'GET'])
+def alterImportedCourse(courseID):
     """
     Goals:
     This route is meant to be called via ajax from the course management page in order to fill out the scanty information
@@ -448,7 +448,7 @@ def alterImportedCourse():
             "courseHoursEarned" : courseHoursEarned,
             "listInstructors" : [instructor for instructor in newCourseInstructors.split(", ")]
         }
-
+  
         editImportedCourses(5, courseData)
         
 

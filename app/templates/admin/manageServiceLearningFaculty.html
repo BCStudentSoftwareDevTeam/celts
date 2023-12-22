@@ -201,7 +201,8 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header"> Edit Course </div>
-          <form enctype="multipart/form-data" role="form" action="/manageServiceLearning/imported" method="POST">
+          <form enctype="multipart/form-data" role="form" method="POST">
+            <input type="hidden" id="alterCourseId" name="courseId">
             <div class="modal-body"> 
               <table class="table table-striped ml-4">
                 <tbody>
