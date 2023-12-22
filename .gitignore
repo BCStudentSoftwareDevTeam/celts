@@ -11,3 +11,5 @@ app/static/files/
 local-override.yml
 geckodriver.log
 .coverage
+import_users_log.txt
+
