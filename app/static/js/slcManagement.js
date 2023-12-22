@@ -41,6 +41,15 @@ function updateRenewModal(courseID){
   $("#renewStatus").text($("#status-" + courseID).text())
 }
 
+// function updateAlterModal(courseID) {
+//   let course = courses.find(c => c.id === courseID);
+//   if (course) {
+//     $('#alterModal #courseName').val(course.name);
+//     $('#alterModal #courseAbbreviation').val(course.abbreviation);
+//   }
+// }
+
+
 function changeAction(action){
   courseID = action.id;
   courseAction = action.value
@@ -57,9 +66,7 @@ function changeAction(action){
   } else if(courseAction == "Edit"){
     location = '/serviceLearning/editProposal/' + courseID;
   } else if (courseAction == "Alter"){ // Beans
-    console.log("showing modal");
-    console.log($('#alterModal').get());
-    $('#alterModal').modal('show');
+    showAlterModalWithCourse(courseID);
   } else if(courseAction == "Print"){
     printDocument(`/serviceLearning/print/${courseID}`)
   } else if (courseAction == "Review"){
@@ -100,36 +107,43 @@ function withdraw(){
   })
 };
 
-function getImportedCourseInfo(callback){
-  courseID = $("#courseID").val();
+function showAlterModalWithCourse(courseID) {
+  getImportedCourseInfo(courseID, function() {
+    $('#alterModal #alterCourseId').val(courseID);
+    console.log("I see You")
+    console.log(courseID)
+
+    var formAction = `/manageServiceLearning/imported/${courseID}`;
+    $('#alterModal form').attr('action', formAction);
+
+    $('#alterModal').modal('show');
+  });
+}
+
+
+function getImportedCourseInfo(courseID, callback){
   $.ajax({
     url: `/manageServiceLearning/imported/${courseID}`,
     type: "GET",
     success: function(courseDict) {
+      console.log(JSON.stringify(courseDict))
       console.log(`Got the course Dict, here it is: ${courseDict}`) // Beans
-      if (!courseDict.empty()){
+
       if (Object.keys(courseDict).length !== 0){
         // update the alter imported course modal
-        $('#courseName').val(courseDict.get('courseName'));
-        $('#courseAbbreviation').val(courseDict.get('courseAbbreviation'));
-        $('#courseCredit').val(courseDict.get('courseCredit'));
         $('#courseName').val(courseDict['courseName']);
         $('#courseAbbreviation').val(courseDict['courseAbbreviation']);
         $('#courseCredit').val(courseDict['courseCredit']);
+        console.log("Everything is fine")
+
         // Beans: need to update the course instructors. Maybe create a table and add rows to the table in here?
 
       }
+      if (callback) callback();
     }
-  }})
-}
-async function showImportedCourseModal(){
-  await getImportedCourseInfo();
-  $('#alterModal').modal('show');
-
-  getImportedCourseInfo(function(){  // Since ajax calls send immediately we need following actions called as a callback
-    $('#alterModal').modal('show'); 
   });
 }
+
 
 
 function changeTerm() {

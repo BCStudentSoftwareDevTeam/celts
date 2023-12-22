@@ -428,11 +428,17 @@ def alterImportedCourse(courseID):
     
     BEANS: This is a big one, we need to abstract most of this functionality into a logic file and test it!!!
     """
+    print("//////////////////////////////////////////////////////////")
+    print("Fist test passed")
+    print("//////////////////////////////////////////////////////////")
 
-    
     if request.method == 'GET':
         try:
             targetCourse = Course.get_by_id(courseID)
+            print("//////////////////////////////////////////////////////////")
+            print("Second test passed")
+            print(courseID)
+            print("//////////////////////////////////////////////////////////")
             return jsonify(model_to_dict(targetCourse, recurse=False))
         except Exception as e:
             flash("Course not found or something else went wrong")  # beans
