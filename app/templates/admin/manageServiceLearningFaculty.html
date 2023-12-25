@@ -6,6 +6,7 @@
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
   <script type="module" src="/static/js/manageServiceLearningFaculty.js"></script>
   <script src="/static/js/slcManagement.js"></script>
+  <script src="/static/js/instructorTable.js"></script>
   {% if cpPreview %}
     <script>
       $(document).ready(function () {
@@ -222,8 +223,32 @@
                     <td class="fw-bold">Instructors</td>
                     <td><input id="courseInstructor" class="form-control" type="search" placeholder="Search instructor" name="courseInstructors" value=""/></td>
                     <!-- Start of the copied section #Beans-->
+                    <table class="table mb-3" id="instructorTable" name="instructorTable">
+                      <thead>
+                        <tr>
+                          <th class="py-0" scope="col"></th>
+                          <th class="py-0" scope="col"></th>
+                        </tr>
+                      </thead>
+                      <tbody id="instructorTableBody">
+                          <tr data-username="" >  <!-- This is a hidden table row. To add new rows to the instructor table, we copy this one and fill out the information -->
+                              <td>
+                                <p class="mb-0"></p>
+                                <input type="text" style="border: none" size="14" class="form-control-sm" id="" name="courseInstructorPhone" aria-label="Instructor Phone" data-value="" value="" placeholder="Phone Number" />
+                                <a class="text-decoration-none primary editButton" tabindex="0" data-username="" id=""  type="button">Edit</a>
+                              </td>
+                              <td class="align-middle">
+                                  <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
+                              </td>
+                              <!-- TODO: Continue working on the table and make the remove button functional. 
+                                Try with more than one faculty to see if it works. Also needs to query the server for users |beans-->
+                          </tr>
+                      </tbody>
+                    </table>
+                    <div id='instructorTableNames'></div>
                     <!-- End of the copied section #Beans-->
                   </tr>
+                    <!-- End of the copied section #Beans-->
                 </tbody>
               </table>
             </div>
