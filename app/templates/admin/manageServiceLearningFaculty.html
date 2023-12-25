@@ -44,6 +44,10 @@
           <button class="nav-link active" id="studentLedEvents"
           data-bs-toggle="tab" data-bs-target="#nativeCourseTables" type="button" role="tab" aria-controls="nativeCourseTables" aria-selected="true">Native Courses</button>
         </li>
+        <li class="col-md-3 col-12 nav-item" role="presentation">
+          <button class="nav-link" id="trainingEvents"
+          data-bs-toggle="tab" data-bs-target="#importedCourseTables" type="button" role="tab" aria-controls="importedCourseTables" aria-selected="false">Imported Courses</button>
+        </li>
       </ul>
     </div>
   </nav>
@@ -141,43 +145,57 @@
           {% endfor %}
         </tbody>
       </table>
-  {% endif %}
+      {% endif %}
+      </div>
+    </div>
+
+
+
+    <div class="tab-pane fade" id="importedCourseTables" role="tabpanel">
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <h2>Imported</h2>
+          </div>
+        </div>
+      </div>
 
   <!-- Beans: IMPORTED COURSES -->
-  <h2>Imported</h2>
-  {% if importedCourses | length == 0 %}
-  <h5 class="ms-3">There are no imported courses for {{ term.description }}.</h5>
-  {% else %}
-  <table class="table table-striped border">
-    <thead>
-      <tr>
-        <th class="col-md-1" scope="col">Courses</th>
-        <th class="col-md-1" scope="col">Faculty</th>
-        <th class="col-md-1" scope="col">Status</th>
-        <th class="col-md-1" scope="col">Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for course in importedCourses %}
-      <tr>
-        <td>{{course.courseName or (course.courseAbbreviation + " (name unspecified)")}}</td>
-        <td>{{course.instructors}}</td>
-        <td>
-          <a class="status-key text-dark" id="statusKey" href="javascript:void(0);" data-toggle="popover"
-            title="Status Key" data-content="{{course.status.status}}">{{course.status.status}}</a>
-        </td>
-        <td>
-          <select class="form-select" id="{{course.id}}" onchange='changeAction(this)'>
-            <option value="---" disabled selected>Select Action</option>
-            <option value="Alter">Edit</option>
-            <option value="View">View</option>
-            <option value="Print">Print</option>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% endif %}
+    {% if importedCourses | length == 0 %}
+    <h5 class="ms-3 pb-3">There are no imported courses for {{ term.description }}.</h5>
+    {% else %}
+    <table class="table table-striped border pb-5">
+      <thead>
+        <tr>
+          <th class="col-md-1" scope="col">Courses</th>
+          <th class="col-md-1" scope="col">Faculty</th>
+          <th class="col-md-1" scope="col">Status</th>
+          <th class="col-md-1" scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for course in importedCourses %}
+        <tr>
+          <td>{{course.courseName or (course.courseAbbreviation + " (name unspecified)")}}</td>
+          <td>{{course.instructors}}</td>
+          <td>
+            <a class="status-key text-dark" id="statusKey" href="javascript:void(0);" data-toggle="popover"
+              title="Status Key" data-content="{{course.status.status}}">{{course.status.status}}</a>
+          </td>
+          <td>
+            <select class="form-select" id="{{course.id}}" onchange='changeAction(this)'>
+              <option value="---" disabled selected>Select Action</option>
+              <option value="Alter">Edit</option>
+              <option value="View">View</option>
+              <option value="Print">Print</option>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+    </div>
+  </div>
   {% set downloadAndSend = "disabled" if approvedCourses | length == 0 else "" %} 
 
     <!-- Modal for altering courses -->
@@ -185,7 +203,8 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header"> Edit Course </div>
-          <form enctype="multipart/form-data" role="form" action="/manageServiceLearning/imported" method="POST">
+          <form enctype="multipart/form-data" role="form" method="POST">
+            <input type="hidden" id="alterCourseId" name="courseId">
             <div class="modal-body"> 
               <table class="table table-striped ml-4">
                 <tbody>
@@ -195,7 +214,7 @@
                   </tr>
                   <tr>
                     <td class="fw-bold"> Course Abbreviation</td>
-                    <td><input class="input form-control" id="courseAbbreviation" placeholder="Course Abbrv" disabled></input></td>
+                    <td><input class="input form-control" id="courseAbbreviation" disabled></input></td>
                   </tr>
                   <tr>
                     <td class="fw-bold">Hours Earned on Completion</td>
@@ -213,7 +232,7 @@
                         </tr>
                       </thead>
                       <tbody id="instructorTableBody">
-                          <tr data-username="" >  <!-- This is a hidden table row. To add new rows to the instructor table, we copy this one and fill out the information -->
+                          <tr data-username="" hidden>  <!-- This is a hidden table row. To add new rows to the instructor table, we copy this one and fill out the information -->
                               <td>
                                 <p class="mb-0"></p>
                                 <input type="text" style="border: none" size="14" class="form-control-sm" id="" name="courseInstructorPhone" aria-label="Instructor Phone" data-value="" value="" placeholder="Phone Number" />
@@ -224,52 +243,26 @@
                               </td>
                               <!-- TODO: Continue working on the table and make the remove button functional. 
                                 Try with more than one faculty to see if it works. Also needs to query the server for users |beans-->
-                              {% for instructor in courseInstructor %}
-                              <tr data-username="{{instructor.user.username}}">
-                                <td>
-                                  <p class="mb-0">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user.email}})</p>
-                                    <input type="text" style="border: none" size="14" class="form-control-sm" id="inputPhoneNumber-{{instructor.user}}" name="courseInstructorPhone" aria-label="Instructor Phone" data-value="{{instructor.user.phoneNumber}}" value="{{instructor.user.phoneNumber}}" placeholder="Phone Number" />
-                                    <a class="text-decoration-none primary editButton" tabindex="0" data-username="{{instructor.user.username}}" id="editButton-{{instructor.user}}" type="button">Edit</a>
-                                </td>
-                                <td class="align-middle">
-                                    <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
-                                </td>
-                              </tr>
-                              {% endfor %}
-                          </tr>
-                          </thead>
-                          <tbody>
-                              <tr data-username="">
+                                {% for instructor in courseInstructor %}
+                                <tr data-username="{{instructor.user.username}}">
                                   <td>
-                                  <p class="mb-0"></p>
-                                      <input type="text" style="border: none" size="14" class="form-control-sm" id="" name="courseInstructorPhone" aria-label="Instructor Phone" data-value="" value="" placeholder="Phone Number" />
-                                      <a class="text-decoration-none primary editButton" tabindex="0" data-username="" id=""  type="button">Edit</a>
+                                    <p class="mb-0">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user.email}})</p>
+                                      <input type="text" style="border: none" size="14" class="form-control-sm" id="inputPhoneNumber-{{instructor.user}}" name="courseInstructorPhone" aria-label="Instructor Phone" data-value="{{instructor.user.phoneNumber}}" value="{{instructor.user.phoneNumber}}" placeholder="Phone Number" />
+                                      <a class="text-decoration-none primary editButton" tabindex="0" data-username="{{instructor.user.username}}" id="editButton-{{instructor.user}}" type="button">Edit</a>
                                   </td>
                                   <td class="align-middle">
                                       <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
                                   </td>
-
-                              </tr>
-                              {% for instructor in courseInstructor %}
-                                <tr data-username="{{instructor.user.username}}">
-                                <td>
-                                    <p class="mb-0">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user.email}})</p>
-                                    <input type="text" style="border: none" size="14" class="form-control-sm" id="inputPhoneNumber-{{instructor.user}}" name="courseInstructorPhone" aria-label="Instructor Phone" data-value="{{instructor.user.phoneNumber}}" value="{{instructor.user.phoneNumber}}" placeholder="Phone Number" />
-                                    <a class="text-decoration-none primary editButton" tabindex="0" data-username="{{instructor.user.username}}" id="editButton-{{instructor.user}}" type="button">Edit</a>
-                                </td>
-                                <td class="align-middle">
-                                    <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
-                                </td>
-
+                    
                                 </tr>
-                              {% endfor %}
-                          </tbody>
-
-                      </table>
-                
-                    <!-- Start of the copied section #Beans-->
+                                {% endfor %}
+                          </tr>
+                      </tbody>
+                    </table>
+                    <div id='instructorTableNames'></div>
                     <!-- End of the copied section #Beans-->
                   </tr>
+                    <!-- End of the copied section #Beans-->
                 </tbody>
               </table>
             </div>
@@ -278,10 +271,10 @@
             <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Cancel</button>
             <button type="submit" class="btn btn-success position-relative">Save</button>
           </div>
-          </form>
-        </div>
+        </form>
       </div>
     </div>
+  </div>
 
   {########################### Action Buttons #################################}
   {% set disable_button = "disabled" if approvedCourses | length == 0 else "" %}

@@ -309,7 +309,7 @@ function validateForm() {
 //
 
 function getRowUsername(element) {
-    console.log("function getRowUsername from slcNewProposal is called with", element)
+    console.log("function getRowUsername from instructorTable is called with", element)
     return $(element).closest("tr").data("username")
 }
 
