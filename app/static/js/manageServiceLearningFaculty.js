@@ -1,4 +1,27 @@
+import searchUser from './searchUser.js'
+import createNewRow from "./slcNewProposal.js"
+
 $(document).ready( function () {
+
+  $("#instructorTable").on("click", "#remove", function() {
+    let closestRow =  $(this).closest("tr")
+    $("#instructorTableNames input[value="+closestRow.data('username')+"]").remove()
+    closestRow.remove();
+  });
+  $("#courseInstructor").on('input', function() {
+    searchUser("courseInstructor", (e)=>{createNewRow(e, "instructorTable")}, true, null, "instructor");
+  });
+
+  // for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
+  $('#instructorTable tr').each(function(){
+    var username = getRowUsername(this)
+    var edit = "#editButton-" + username
+    var input = "#inputPhoneNumber-" + username
+    if (username){
+      setupPhoneNumber(edit, input)
+    }
+  })
+
   /******** Faculty Table Management **************/
   var table = $('#SLCFacultyTable').DataTable({
    "fnDrawCallback": function(oSettings) {
