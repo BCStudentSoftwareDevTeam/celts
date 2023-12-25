@@ -5,8 +5,9 @@
   {{super()}}
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
   <script type="module" src="/static/js/manageServiceLearningFaculty.js"></script>
+  <script type="module" src="{{url_for('static', filename ='js/instructorTable.js') }}"></script>
   <script src="/static/js/slcManagement.js"></script>
-  <script src="/static/js/instructorTable.js"></script>
+
   {% if cpPreview %}
     <script>
       $(document).ready(function () {
@@ -221,7 +222,7 @@
                   </tr>
                   <tr>
                     <td class="fw-bold">Instructors</td>
-                    <td><input id="courseInstructor" class="form-control" type="search" placeholder="Search instructor" name="courseInstructors" value=""/></td>
+                    <td><input id="courseInstructor" class="form-control" type="search" placeholder="Search instructor" name="courseInstructor" value=""/></td>
                     <!-- Start of the copied section #Beans-->
                     <table class="table mb-3" id="instructorTable" name="instructorTable">
                       <thead>
@@ -242,6 +243,18 @@
                               </td>
                               <!-- TODO: Continue working on the table and make the remove button functional. 
                                 Try with more than one faculty to see if it works. Also needs to query the server for users |beans-->
+                              {% for instructor in courseInstructor %}
+                              <tr data-username="{{instructor.user.username}}">
+                                <td>
+                                  <p class="mb-0">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user.email}})</p>
+                                    <input type="text" style="border: none" size="14" class="form-control-sm" id="inputPhoneNumber-{{instructor.user}}" name="courseInstructorPhone" aria-label="Instructor Phone" data-value="{{instructor.user.phoneNumber}}" value="{{instructor.user.phoneNumber}}" placeholder="Phone Number" />
+                                    <a class="text-decoration-none primary editButton" tabindex="0" data-username="{{instructor.user.username}}" id="editButton-{{instructor.user}}" type="button">Edit</a>
+                                </td>
+                                <td class="align-middle">
+                                    <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
+                                </td>
+                              </tr>
+                              {% endfor %}
                           </tr>
                       </tbody>
                     </table>

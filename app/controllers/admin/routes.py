@@ -447,7 +447,7 @@ def alterImportedCourse(courseID):
         courseName = request.form.get("courseName")
         courseAbbreviation = request.form.get("courseAbbreviation")    
         courseHoursEarned = request.form.get("hoursEarned")
-        newCourseInstructors = request.form.get("courseInstructors")
+        newCourseInstructors = request.form.get("courseInstructor")
         courseData = {
             "courseName" : courseName,
             "courseAbbreviation" : courseAbbreviation,

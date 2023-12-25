@@ -309,6 +309,7 @@ function validateForm() {
 //
 
 function getRowUsername(element) {
+    console.log("function getRowUsername from slcNewProposal is called with", element)
     return $(element).closest("tr").data("username")
 }
 
@@ -317,6 +318,8 @@ function createNewRow(selectedInstructor) {
   let username = selectedInstructor["username"];
   let phone = selectedInstructor["phoneNumber"];
   let tableBody = $("#instructorTable").find("tbody");
+
+  console.log("From new proposals selected instructors:", selectedInstructor, instructor, username, phone)
   if(tableBody.prop('outerHTML').includes(instructor)){
     msgFlash("Instructor is already added.", "danger");
     return;
