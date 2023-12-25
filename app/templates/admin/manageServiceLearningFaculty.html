@@ -43,10 +43,6 @@
           <button class="nav-link active" id="studentLedEvents"
           data-bs-toggle="tab" data-bs-target="#nativeCourseTables" type="button" role="tab" aria-controls="nativeCourseTables" aria-selected="true">Native Courses</button>
         </li>
-        <li class="col-md-3 col-12 nav-item" role="presentation">
-          <button class="nav-link" id="trainingEvents"
-          data-bs-toggle="tab" data-bs-target="#importedCourseTables" type="button" role="tab" aria-controls="importedCourseTables" aria-selected="false">Imported Courses</button>
-        </li>
       </ul>
     </div>
   </nav>
@@ -233,17 +229,17 @@
 
                                 </tr>
                                 {% for instructor in courseInstructor %}
-                                <tr data-username="{{instructor.user.username}}">
-                                <td>
-                                    <p class="mb-0">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user.email}})</p>
-                                    <input type="text" style="border: none" size="14" class="form-control-sm" id="inputPhoneNumber-{{instructor.user}}" name="courseInstructorPhone" aria-label="Instructor Phone" data-value="{{instructor.user.phoneNumber}}" value="{{instructor.user.phoneNumber}}" placeholder="Phone Number" />
-                                    <a class="text-decoration-none primary editButton" tabindex="0" data-username="{{instructor.user.username}}" id="editButton-{{instructor.user}}" type="button">Edit</a>
-                                </td>
-                                <td class="align-middle">
-                                    <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
-                                </td>
+                                  <tr data-username="{{instructor.user.username}}">
+                                  <td>
+                                      <p class="mb-0">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user.email}})</p>
+                                      <input type="text" style="border: none" size="14" class="form-control-sm" id="inputPhoneNumber-{{instructor.user}}" name="courseInstructorPhone" aria-label="Instructor Phone" data-value="{{instructor.user.phoneNumber}}" value="{{instructor.user.phoneNumber}}" placeholder="Phone Number" />
+                                      <a class="text-decoration-none primary editButton" tabindex="0" data-username="{{instructor.user.username}}" id="editButton-{{instructor.user}}" type="button">Edit</a>
+                                  </td>
+                                  <td class="align-middle">
+                                      <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
+                                  </td>
 
-                                </tr>
+                                  </tr>
                                 {% endfor %}
                             </tbody>
 
