@@ -435,10 +435,7 @@ def alterImportedCourse(courseID):
     if request.method == 'GET':
         try:
             targetCourse = Course.get_by_id(courseID)
-            print("//////////////////////////////////////////////////////////")
-            print("Second test passed")
             print(courseID)
-            print("//////////////////////////////////////////////////////////")
             return jsonify(model_to_dict(targetCourse, recurse=False))
         except Exception as e:
             flash("Course not found or something else went wrong")  # beans
@@ -454,8 +451,12 @@ def alterImportedCourse(courseID):
             "courseHoursEarned" : courseHoursEarned,
             "listInstructors" : [instructor for instructor in newCourseInstructors.split(", ")]
         }
+
+        courseDatum = request.form.copy()
+        print("oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo")
+        print(courseDatum)
   
-        editImportedCourses(5, courseData)
+        editImportedCourses(request.form.copy())
         
 
 

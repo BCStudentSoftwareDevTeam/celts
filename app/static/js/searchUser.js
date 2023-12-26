@@ -1,6 +1,5 @@
 export default function searchUser(inputId, callback, clear=false, parentElementId=null, category = null)
 {
-  console.log("searchUser function is called with", inputId)
   var query = $(`#${inputId}`).val()
   let columnDict = {};
   $(`#${inputId}`).autocomplete({
@@ -13,7 +12,6 @@ export default function searchUser(inputId, callback, clear=false, parentElement
         dataType: "json",
         data:{"category":category},
         success: function(searchResults) {
-          console.log("Ajax response for search instructor is:", searchResults)
           response(Object.entries(searchResults).map( (item) => {
               return {
                 // label: firstName lastName (username)

@@ -110,8 +110,6 @@ function withdraw(){
 function showAlterModalWithCourse(courseID) {
   getImportedCourseInfo(courseID, function() {
     $('#alterModal #alterCourseId').val(courseID);
-    console.log("I see You")
-    console.log(courseID)
 
     var formAction = `/manageServiceLearning/imported/${courseID}`;
     $('#alterModal form').attr('action', formAction);
@@ -134,7 +132,6 @@ function getImportedCourseInfo(courseID, callback){
         $('#courseName').val(courseDict['courseName']);
         $('#courseAbbreviation').val(courseDict['courseAbbreviation']);
         $('#courseCredit').val(courseDict['courseCredit']);
-        console.log("Everything is fine")
 
         // Beans: need to update the course instructors. Maybe create a table and add rows to the table in here?
 

@@ -227,8 +227,8 @@
                     <table class="table mb-3" id="instructorTable" name="instructorTable">
                       <thead>
                         <tr>
-                          <th class="py-0" scope="col"></th>
-                          <th class="py-0" scope="col"></th>
+                          <th scope="col">Instructor</th>
+                          <th scope="col"></th>
                         </tr>
                       </thead>
                       <tbody id="instructorTableBody">
@@ -241,27 +241,25 @@
                               <td class="align-middle">
                                   <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
                               </td>
-                              <!-- TODO: Continue working on the table and make the remove button functional. 
-                                Try with more than one faculty to see if it works. Also needs to query the server for users |beans-->
-                                {% for instructor in courseInstructor %}
-                                <tr data-username="{{instructor.user.username}}">
-                                  <td>
-                                    <p class="mb-0">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user.email}})</p>
-                                      <input type="text" style="border: none" size="14" class="form-control-sm" id="inputPhoneNumber-{{instructor.user}}" name="courseInstructorPhone" aria-label="Instructor Phone" data-value="{{instructor.user.phoneNumber}}" value="{{instructor.user.phoneNumber}}" placeholder="Phone Number" />
-                                      <a class="text-decoration-none primary editButton" tabindex="0" data-username="{{instructor.user.username}}" id="editButton-{{instructor.user}}" type="button">Edit</a>
-                                  </td>
-                                  <td class="align-middle">
-                                      <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
-                                  </td>
-                    
-                                </tr>
-                                {% endfor %}
                           </tr>
+                        <!-- TODO: Continue working on the table and make the remove button functional. 
+                          Try with more than one faculty to see if it works. Also needs to query the server for users |beans-->
+                          {% for instructor in courseInstructor %}
+                          <tr data-username="{{instructor.user.username}}">
+                            <td>
+                              <p class="mb-0">{{instructor.user.firstName}} {{instructor.user.lastName}} ({{instructor.user.email}})</p>
+                                <input type="text" style="border: none" size="14" class="form-control-sm" id="inputPhoneNumber-{{instructor.user}}" name="courseInstructorPhone" aria-label="Instructor Phone" data-value="{{instructor.user.phoneNumber}}" value="{{instructor.user.phoneNumber}}" placeholder="Phone Number" />
+                                <a class="text-decoration-none primary editButton" tabindex="0" data-username="{{instructor.user.username}}" id="editButton-{{instructor.user}}" type="button">Edit</a>
+                            </td>
+                            <td class="align-middle">
+                                <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
+                            </td>
+                          </tr>
+                          {% endfor %}
                       </tbody>
-                    </table>
+                    </tr>
                     <div id='instructorTableNames'></div>
                     <!-- End of the copied section #Beans-->
-                  </tr>
                     <!-- End of the copied section #Beans-->
                 </tbody>
               </table>

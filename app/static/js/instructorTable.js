@@ -9,23 +9,21 @@ $(document).ready(function() {
     });
 
     $("#courseInstructor").on('input', function() {
-        console.log("Input event triggered")
         searchUser("courseInstructor", createNewRow, true, null, "instructor");
     });
     
         // for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
-    $('#instructorTable tr').each(function(){
-        var username = getRowUsername(this)
-        var edit = "#editButton-" + username
-        var input = "#inputPhoneNumber-" + username
-        if (username){
-            setupPhoneNumber(edit, input)
-        }
-    });
+    // $('#instructorTable tr').each(function(){
+    //     var username = getRowUsername(this)
+    //     var edit = "#editButton-" + username
+    //     var input = "#inputPhoneNumber-" + username
+    //     if (username){
+    //         setupPhoneNumber(edit, input)
+    //     }
+    // });
 });
 
 function getRowUsername(element) {
-    console.log("function getRowUsername from instructorTable is called with", element)
     return $(element).closest("tr").data("username")
 }
 

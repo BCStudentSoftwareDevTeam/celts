@@ -64,7 +64,7 @@ def importedCourses(termId):
     return importedCourses
 
 
-def editImportedCourses(courseID, courseData):
+def editImportedCourses(courseData, attachments=None):
     """
         This function will take in courseData for the SLC proposal page and a dictionary
         of instructors assigned to the imported course after that one is edited 
@@ -73,16 +73,14 @@ def editImportedCourses(courseID, courseData):
 
     with mainDB.atomic() as transaction:
         try:
-            course = Course.get_by_id(courseID)
-            Course.update(
+            course = Course.get_by_id(courseData["courseId"])
+            (Course.update(
                 courseName=courseData["courseName"],
-                courseAbbreviation=courseData["courseAbbreviation"],
-                courseCredit=courseData["courseHoursEarned"],
-            ).where(Course.id == course.id).execute()
-
-
-            # instructorList = []
-            # instructorList = courseData.getlist('listInstructors')
+                courseCredit=courseData["hoursEarned"]
+            ).where(Course.id == course.id).execute())
+            
+            # if 'instructor[]' in courseData:
+            #     instructorList = courseData.getlist('instructor')
             # CourseInstructor.delete().where(CourseInstructor.course == course).execute()
             # for instructor in instructorList:
             #     CourseInstructor.create(course=course, user=instructor)
@@ -134,6 +132,10 @@ def updateCourse(courseData, attachments=None):
             instructorList = []
             if 'instructor[]' in courseData:
                 instructorList = courseData.getlist('instructor[]')
+                print("--------------------------------")
+                print(instructorList)
+                print(courseData)
+                print("--------------------------------")
             CourseInstructor.delete().where(CourseInstructor.course == course).execute()
             for instructor in instructorList:
                 CourseInstructor.create(course=course, user=instructor)
