@@ -12,15 +12,15 @@ $(document).ready(function() {
         searchUser("courseInstructor", createNewRow, true, null, "instructor");
     });
     
-        // for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
-    // $('#instructorTable tr').each(function(){
-    //     var username = getRowUsername(this)
-    //     var edit = "#editButton-" + username
-    //     var input = "#inputPhoneNumber-" + username
-    //     if (username){
-    //         setupPhoneNumber(edit, input)
-    //     }
-    // });
+        //for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
+    $('#instructorTable tr').each(function(){
+        var username = getRowUsername(this)
+        var edit = "#editButton-" + username
+        var input = "#inputPhoneNumber-" + username
+        if (username){
+            setupPhoneNumber(edit, input)
+        }
+    });
 });
 
 function getRowUsername(element) {
