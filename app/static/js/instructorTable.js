@@ -10,6 +10,9 @@ $(document).ready(function() {
 
     $("#courseInstructor").on('input', function() {
         searchUser("courseInstructor", createNewRow, true, null, "instructor");
+        setTimeout(function() {
+            $(".ui-autocomplete").css("z-index", 9999);
+        }, 500);
     });
     
         // for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
