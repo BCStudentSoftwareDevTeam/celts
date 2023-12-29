@@ -6,6 +6,7 @@
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
   <script type="module" src="/static/js/manageServiceLearningFaculty.js"></script>
   <script type="module" src="{{url_for('static', filename ='js/instructorTable.js') }}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
   <script src="/static/js/slcManagement.js"></script>
 
   {% if cpPreview %}
@@ -258,7 +259,11 @@
                           {% endfor %}
                       </tbody>
                     </tr>
-                    <div id='instructorTableNames'></div>
+                    <div id='instructorTableNames'>
+                      {% for instructor in courseInstructor %}
+                      <input hidden name="instructor[]" value='{{instructor.user.username}}'/>
+                      {% endfor %}
+                    </div>
                     <!-- End of the copied section #Beans-->
                     <!-- End of the copied section #Beans-->
                 </tbody>

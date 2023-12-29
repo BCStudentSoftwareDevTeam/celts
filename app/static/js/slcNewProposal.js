@@ -125,7 +125,6 @@ $(document).ready(function(e) {
         closestRow.remove();
       });
       $("#courseInstructor").on('input', function() {
-          console.log("Instructor is hit")
           searchUser("courseInstructor", createNewRow, true, null, "instructor");
       });
 
