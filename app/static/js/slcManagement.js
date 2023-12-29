@@ -110,9 +110,12 @@ function withdraw(){
 function showAlterModalWithCourse(courseID) {
   getImportedCourseInfo(courseID, function() {
     $('#alterModal #alterCourseId').val(courseID);
+    termSelect = $('#selectTerm').val;
+    console.log(termSelect);
 
     var formAction = `/manageServiceLearning/imported/${courseID}`;
     $('#alterModal form').attr('action', formAction);
+    
 
     $('#alterModal').modal('show');
   });

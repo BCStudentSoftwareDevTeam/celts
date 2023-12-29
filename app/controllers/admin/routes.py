@@ -428,10 +428,6 @@ def alterImportedCourse(courseID):
     
     BEANS: This is a big one, we need to abstract most of this functionality into a logic file and test it!!!
     """
-    print("//////////////////////////////////////////////////////////")
-    print("Fist test passed")
-    print("//////////////////////////////////////////////////////////")
-
     if request.method == 'GET':
         try:
             targetCourse = Course.get_by_id(courseID)
@@ -440,25 +436,9 @@ def alterImportedCourse(courseID):
         except Exception as e:
             flash("Course not found or something else went wrong")  # beans
             return None
-    if request.method == 'POST':
-        courseName = request.form.get("courseName")
-        courseAbbreviation = request.form.get("courseAbbreviation")    
-        courseHoursEarned = request.form.get("hoursEarned")
-        newCourseInstructors = request.form.get("courseInstructor")
-        courseData = {
-            "courseName" : courseName,
-            "courseAbbreviation" : courseAbbreviation,
-            "courseHoursEarned" : courseHoursEarned,
-            "listInstructors" : [instructor for instructor in newCourseInstructors.split(", ")]
-        }
-
-        courseDatum = request.form.copy()
-        print("oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo")
-        print(courseDatum)
-  
-        editImportedCourses(request.form.copy())
         
-
+    if request.method == 'POST':
+        editImportedCourses(request.form.copy())
 
     return redirect(url_for("admin.manageServiceLearningCourses"))
 

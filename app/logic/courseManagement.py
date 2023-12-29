@@ -78,12 +78,12 @@ def editImportedCourses(courseData, attachments=None):
                 courseName=courseData["courseName"],
                 courseCredit=courseData["hoursEarned"]
             ).where(Course.id == course.id).execute())
-            
-            # if 'instructor[]' in courseData:
-            #     instructorList = courseData.getlist('instructor')
-            # CourseInstructor.delete().where(CourseInstructor.course == course).execute()
-            # for instructor in instructorList:
-            #     CourseInstructor.create(course=course, user=instructor)
+
+            if 'instructor[]' in courseData:
+                instructorList = courseData.getlist('instructor[]')
+            CourseInstructor.delete().where(CourseInstructor.course == course).execute()
+            for instructor in instructorList:
+                CourseInstructor.create(course=course, user=instructor)
 
             return Course.get_by_id(course.id)
 
