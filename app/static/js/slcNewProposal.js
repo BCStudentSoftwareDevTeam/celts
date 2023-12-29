@@ -119,25 +119,25 @@ $(document).ready(function(e) {
 
   // Add course instructor event handlers
   // -----------------------------------------
-      // $("#instructorTable").on("click", "#remove", function() {
-      //   let closestRow =  $(this).closest("tr")
-      //   $("#instructorTableNames input[value="+closestRow.data('username')+"]").remove()
-      //   closestRow.remove();
-      // });
-      // $("#courseInstructor").on('input', function() {
-      //     console.log("Instructor is hit")
-      //     searchUser("courseInstructor", createNewRow, true, null, "instructor");
-      // });
+      $("#instructorTable").on("click", "#remove", function() {
+        let closestRow =  $(this).closest("tr")
+        $("#instructorTableNames input[value="+closestRow.data('username')+"]").remove()
+        closestRow.remove();
+      });
+      $("#courseInstructor").on('input', function() {
+          console.log("Instructor is hit")
+          searchUser("courseInstructor", createNewRow, true, null, "instructor");
+      });
 
-      // // for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
-      // $('#instructorTable tr').each(function(){
-      //   var username = getRowUsername(this)
-      //   var edit = "#editButton-" + username
-      //   var input = "#inputPhoneNumber-" + username
-      //   if (username){
-      //     setupPhoneNumber(edit, input)
-      //   }
-      // })
+      // for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
+      $('#instructorTable tr').each(function(){
+        var username = getRowUsername(this)
+        var edit = "#editButton-" + username
+        var input = "#inputPhoneNumber-" + username
+        if (username){
+          setupPhoneNumber(edit, input)
+        }
+      })
   }
 })
 
