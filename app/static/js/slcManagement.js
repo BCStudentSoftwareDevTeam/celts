@@ -137,12 +137,49 @@ function getImportedCourseInfo(courseID, callback){
         $('#courseCredit').val(courseDict['courseCredit']);
 
         // Beans: need to update the course instructors. Maybe create a table and add rows to the table in here?
+        if (courseDict['instructors'] && courseDict['instructors'].length > 0) {
+          updateInstructorsTable(courseDict['instructors']);
+        }
 
       }
       if (callback) callback();
     }
   });
 }
+
+
+
+
+function updateInstructorsTable(instructors) {
+  // Clear existing table contents except the template row
+  $("#instructorTableBody").find("tr:not(:first)").remove();
+
+  // Add each instructor to the table
+  instructors.forEach(function(instructor) {
+    var newRow = createInstructorRow(instructor);
+    $("#instructorTableBody").append(newRow);
+  });
+}
+
+function createInstructorRow(instructor) {
+  // Create a new row element based on the instructor data
+  var row = `<tr data-username="${instructor.username}">
+               <td>
+                 <p class="mb-0">${instructor.firstName} ${instructor.lastName} (${instructor.email})</p>
+                 <input type="text" style="border: none" size="14" class="form-control-sm" 
+                        name="courseInstructorPhone" aria-label="Instructor Phone" 
+                        value="${instructor.phoneNumber}" placeholder="Phone Number" />
+                 <a class="text-decoration-none primary editButton" tabindex="0" 
+                    data-username="${instructor.username}" type="button">Edit</a>
+               </td>
+               <td class="align-middle">
+                 <button type="button" class="btn btn-danger removeButton">Remove</button>
+               </td>
+             </tr>`;
+  return row;
+}
+
+
 
 
 

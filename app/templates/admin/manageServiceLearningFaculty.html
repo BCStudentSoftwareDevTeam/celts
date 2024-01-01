@@ -240,7 +240,7 @@
                                 <a class="text-decoration-none primary editButton" tabindex="0" data-username="" id=""  type="button">Edit</a>
                               </td>
                               <td class="align-middle">
-                                  <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
+                                  <button type="button" class="btn btn-danger removeButton">Remove</button>
                               </td>
                           </tr>
                         <!-- TODO: Continue working on the table and make the remove button functional. 
@@ -253,19 +253,20 @@
                                 <a class="text-decoration-none primary editButton" tabindex="0" data-username="{{instructor.user.username}}" id="editButton-{{instructor.user}}" type="button">Edit</a>
                             </td>
                             <td class="align-middle">
-                                <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
+                                <button type="button" class="btn btn-danger removeButton">Remove</button>
                             </td>
                           </tr>
                           {% endfor %}
                       </tbody>
-                    </tr>
-                    <div id='instructorTableNames'>
-                      {% for instructor in courseInstructor %}
-                      <input hidden name="instructor[]" value='{{instructor.user.username}}'/>
-                      {% endfor %}
-                    </div>
-                    <!-- End of the copied section #Beans-->
-                    <!-- End of the copied section #Beans-->
+                    </table>
+                  </tr>
+                  <div id='instructorTableNames'>
+                    {% for instructor in courseInstructor %}
+                    <input hidden name="instructor[]" value='{{instructor.user.username}}'/>
+                    {% endfor %}
+                  </div>
+                  <!-- End of the copied section #Beans-->
+                  <!-- End of the copied section #Beans-->
                 </tbody>
               </table>
             </div>
