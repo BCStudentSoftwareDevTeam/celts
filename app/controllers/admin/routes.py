@@ -449,6 +449,8 @@ def alterImportedCourse(courseID):
             return None
         
     if request.method == 'POST':
+        print("..........>>>>>>>>>>>>>>>>>>>>...................>>>>>>>>>>>>>>>>>>>............")
+        print("From the front end I got", request.form.copy())
         editImportedCourses(request.form.copy())
 
     return redirect(url_for("admin.manageServiceLearningCourses"))

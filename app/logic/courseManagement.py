@@ -81,6 +81,10 @@ def editImportedCourses(courseData, attachments=None):
 
             if 'instructor[]' in courseData:
                 instructorList = courseData.getlist('instructor[]')
+            
+            print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+            print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+            print(courseData)
             CourseInstructor.delete().where(CourseInstructor.course == course).execute()
             for instructor in instructorList:
                 CourseInstructor.create(course=course, user=instructor)
