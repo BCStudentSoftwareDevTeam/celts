@@ -104,7 +104,7 @@ def createCourse(creator="No user provided"):
 def updateCourse(courseData, attachments=None):
     """
         This function will take in courseData for the SLC proposal page and a dictionary
-        of instuctors assigned to the course and update the information in the db.
+        of instructors assigned to the course and update the information in the db.
     """
     with mainDB.atomic() as transaction:
         try:

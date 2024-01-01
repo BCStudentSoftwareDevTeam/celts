@@ -120,9 +120,12 @@ $(document).ready(function(e) {
   // Add course instructor event handlers
   // -----------------------------------------
       $("#instructorTable").on("click", "#remove", function() {
+
+        console.log("I see you before")
         let closestRow =  $(this).closest("tr")
         $("#instructorTableNames input[value="+closestRow.data('username')+"]").remove()
         closestRow.remove();
+        console.log("I see you after")
       });
       $("#courseInstructor").on('input', function() {
           searchUser("courseInstructor", createNewRow, true, null, "instructor");
