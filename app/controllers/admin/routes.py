@@ -11,6 +11,7 @@ from app.models.program import Program
 from app.models.event import Event
 from app.models.user import User
 from app.models.course import Course
+from app.models.courseInstructor import CourseInstructor
 from app.models.eventTemplate import EventTemplate
 from app.models.adminLog import AdminLog
 from app.models.eventRsvpLog import EventRsvpLog
@@ -431,8 +432,18 @@ def alterImportedCourse(courseID):
     if request.method == 'GET':
         try:
             targetCourse = Course.get_by_id(courseID)
+
+            targetInstructors = CourseInstructor.select().where(CourseInstructor.course == targetCourse)
+            courseData = model_to_dict(targetCourse, recurse=False)
+            instructors = [model_to_dict(ci.user) for ci in targetInstructors]
+            courseData['instructors'] = instructors
+
+            print("---------------------------------------------------")
+            print(courseData)
             print(courseID)
-            return jsonify(model_to_dict(targetCourse, recurse=False))
+            print(model_to_dict(targetCourse, recurse=False))
+            print("---------------------------------------------------")
+            return jsonify(courseData)
         except Exception as e:
             flash("Course not found or something else went wrong")  # beans
             return None
