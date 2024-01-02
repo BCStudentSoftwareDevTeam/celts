@@ -99,20 +99,43 @@ function withdraw(){
   })
 };
 
+function saveCourseData(url, successCallback) {
+  var formdata = $("form").serialize()
+  var instructordata = $.param({"instructor":getCourseInstructors()})
+  $.ajax({
+      url: url,
+      type: "POST",
+      data: formdata + "&" + instructordata,
+      success: function(response) {
+        if (response.redirect) {
+          // Redirect to the URL provided by the server
+          window.location.href = response.redirect;
+      } else {
+          // Call the successCallback if you have other logic to handle
+          successCallback(response);
+      }
+  },
+      
+      error: function(request, status, error) {
+       msgFlash("Error saving changes!", "danger")
+     }
+});
+}
+
 function showAlterModalWithCourse(courseID) {
   getImportedCourseInfo(courseID, function() {
     $('#alterModal #alterCourseId').val(courseID);
-    // termSelect = $('#selectTerm').val;
-    // console.log(termSelect);
-
-    var formSelector = '#alterModal form';
-    var formdata = $(formSelector).serialize();
-    // var instructordata = $.param({"instructor": getCourseInstructors()});
-    var instructordata = $.param({"instructor":getCourseInstructors()});
-    var combinedData = formdata + instructordata;
-    console.log("this is my combined data: ", combinedData);
 
     var formAction = `/manageServiceLearning/imported/${courseID}`;
+
+    $('#alterModal form').off('submit').on('submit', function(e){
+      e.preventDefault();
+      var formAction = `/manageServiceLearning/imported/${courseID}`;
+      saveCourseData(formAction, function(response) {
+        
+      })
+    })
+
     $('#alterModal form').attr('action', formAction);
     
 
@@ -184,22 +207,13 @@ function createInstructorRow(instructor) {
 //   return $("#instructorTableNames input").map((i,el) => $(el).val())
 // }
 
-
 function getCourseInstructors() {
-  // Get usernames out of the data-username attribute of each row into an array
+  // Assuming instructors' usernames are stored in data-username attribute of table rows
   var instructorUsernames = $("#instructorTableBody tr").map(function() {
-    return $(this).data('username');
-  }).get();
+      return $(this).data('username');
+  }).get(); // .get() converts the jQuery object to a plain JavaScript array
   return instructorUsernames;
 }
-
-
-
-
-
-
-
-
 
 
 function changeTerm() {
