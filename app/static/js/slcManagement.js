@@ -41,14 +41,6 @@ function updateRenewModal(courseID){
   $("#renewStatus").text($("#status-" + courseID).text())
 }
 
-// function updateAlterModal(courseID) {
-//   let course = courses.find(c => c.id === courseID);
-//   if (course) {
-//     $('#alterModal #courseName').val(course.name);
-//     $('#alterModal #courseAbbreviation').val(course.abbreviation);
-//   }
-// }
-
 
 function changeAction(action){
   courseID = action.id;
@@ -110,8 +102,15 @@ function withdraw(){
 function showAlterModalWithCourse(courseID) {
   getImportedCourseInfo(courseID, function() {
     $('#alterModal #alterCourseId').val(courseID);
-    termSelect = $('#selectTerm').val;
-    console.log(termSelect);
+    // termSelect = $('#selectTerm').val;
+    // console.log(termSelect);
+
+    var formSelector = '#alterModal form';
+    var formdata = $(formSelector).serialize();
+    // var instructordata = $.param({"instructor": getCourseInstructors()});
+    var instructordata = $.param({"instructor":getCourseInstructors()});
+    var combinedData = formdata + instructordata;
+    console.log("this is my combined data: ", combinedData);
 
     var formAction = `/manageServiceLearning/imported/${courseID}`;
     $('#alterModal form').attr('action', formAction);
@@ -178,6 +177,26 @@ function createInstructorRow(instructor) {
              </tr>`;
   return row;
 }
+
+
+// function getCourseInstructors() {
+//   // get usernames out of the table rows into an array
+//   return $("#instructorTableNames input").map((i,el) => $(el).val())
+// }
+
+
+function getCourseInstructors() {
+  // Get usernames out of the data-username attribute of each row into an array
+  var instructorUsernames = $("#instructorTableBody tr").map(function() {
+    return $(this).data('username');
+  }).get();
+  return instructorUsernames;
+}
+
+
+
+
+
 
 
 

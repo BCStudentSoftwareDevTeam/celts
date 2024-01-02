@@ -79,15 +79,21 @@ def editImportedCourses(courseData, attachments=None):
                 courseCredit=courseData["hoursEarned"]
             ).where(Course.id == course.id).execute())
 
+            instructorList = []
             if 'instructor[]' in courseData:
                 instructorList = courseData.getlist('instructor[]')
             
-            print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-            print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-            print(courseData)
-            CourseInstructor.delete().where(CourseInstructor.course == course).execute()
-            for instructor in instructorList:
-                CourseInstructor.create(course=course, user=instructor)
+            if instructorList:
+                print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+                print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+                print("We have some instructors, and they are: ", instructorList)
+                CourseInstructor.delete().where(CourseInstructor.course == course).execute()
+                for instructor in instructorList:
+                    CourseInstructor.create(course=course, user=instructor)
+            else:
+                print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+                print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+                print("There is no new instructors")
 
             return Course.get_by_id(course.id)
 
