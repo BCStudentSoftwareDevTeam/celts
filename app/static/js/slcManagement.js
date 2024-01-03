@@ -126,17 +126,16 @@ function showAlterModalWithCourse(courseID) {
   getImportedCourseInfo(courseID, function() {
     $('#alterModal #alterCourseId').val(courseID);
 
-    var formAction = `/manageServiceLearning/imported/${courseID}`;
+    // var formAction = `/manageServiceLearning/imported/${courseID}`;
 
-    $('#alterModal form').off('submit').on('submit', function(e){
-      e.preventDefault();
-      var formAction = `/manageServiceLearning/imported/${courseID}`;
-      saveCourseData(formAction, function(response) {
-        
+    $("#saveImportedCourses").click(function(){
+      $("#saveImportedCourses").prop("disabled", true)
+      saveCourseData("/serviceLearning/imported", function(response) {
+          window.location.replace("/manageServiceLearning")
       })
-    })
+  });
 
-    $('#alterModal form').attr('action', formAction);
+    // $('#alterModal form').attr('action', formAction);
     
 
     $('#alterModal').modal('show');
@@ -202,18 +201,18 @@ function createInstructorRow(instructor) {
 }
 
 
-// function getCourseInstructors() {
-//   // get usernames out of the table rows into an array
-//   return $("#instructorTableNames input").map((i,el) => $(el).val())
-// }
-
 function getCourseInstructors() {
-  // Assuming instructors' usernames are stored in data-username attribute of table rows
-  var instructorUsernames = $("#instructorTableBody tr").map(function() {
-      return $(this).data('username');
-  }).get(); // .get() converts the jQuery object to a plain JavaScript array
-  return instructorUsernames;
+  // get usernames out of the table rows into an array
+  return $("#instructorTableNames input").map((i,el) => $(el).val())
 }
+
+// function getCourseInstructors() {
+//   // Assuming instructors' usernames are stored in data-username attribute of table rows
+//   var instructorUsernames = $("#instructorTableBody tr").map(function() {
+//       return $(this).data('username');
+//   }).get(); // .get() converts the jQuery object to a plain JavaScript array
+//   return instructorUsernames;
+// }
 
 
 function changeTerm() {
@@ -224,6 +223,24 @@ function formSubmit(el) {
     $("#termSelector").attr('action', '/manageServiceLearning/' + el);
     $("#termSelector").submit()
 };
+
+function saveCourseData(url, successCallback) {
+  console.log("Here you are")
+  var formdata = $("form").serialize()
+  var instructordata = $.param({"instructor":getCourseInstructors()})
+  console.log(formdata + "&" + instructordata)
+  $.ajax({
+      url: url,
+      type: "POST",
+      data: formdata + "&" + instructordata,
+      success: successCallback,
+      error: function(request, status, error) {
+       msgFlash("Error saving changes!", "danger")
+     }
+});
+}
+
+
 
 function reviewCourses(courseID) {
     $.ajax({
