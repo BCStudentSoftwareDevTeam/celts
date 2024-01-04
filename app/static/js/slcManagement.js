@@ -104,12 +104,13 @@ function withdraw(){
 
 function showAlterModalWithCourse(courseID) {
   getImportedCourseInfo(courseID, function() {
+    $('#alterModal #alterCourseId').val(courseID);
     
-    $('#remove').click(function() {
-      console.log("Input will be updated")
-      updateInstructorInputs();
-      console.log("Input was updated")
-    })
+    // $('#remove').click(function() {
+    //   console.log("Input will be updated")
+    //   updateInstructorInputs();
+    //   console.log("Input was updated")
+    // })
 
     var formAction = `/manageServiceLearning/imported/${courseID}`;
     
@@ -124,23 +125,23 @@ function showAlterModalWithCourse(courseID) {
 }
 
 
-function updateInstructorInputs() {
-  // Clear existing hidden instructor inputs
-  $('#alterModal form input[name="instructor[]"]').remove();
+// function updateInstructorInputs() {
+//   // Clear existing hidden instructor inputs
+//   $('#alterModal form input[name="instructor[]"]').remove();
 
-  // Get current instructors from the table
-  var instructordata = getCourseInstructors();
-  console.log("Last road: ", instructordata)
+//   // Get current instructors from the table
+//   var instructordata = getCourseInstructors();
+//   console.log("Last road: ", instructordata)
 
-  // Append new hidden inputs for each instructor
-  instructordata.forEach(function(instructor) {
-      $('<input>').attr({
-          type: 'hidden',
-          name: 'instructor[]',
-          value: instructor
-      }).appendTo('#alterModal form');
-  });
-}
+//   // Append new hidden inputs for each instructor
+//   instructordata.forEach(function(instructor) {
+//       $('<input>').attr({
+//           type: 'hidden',
+//           name: 'instructor[]',
+//           value: instructor
+//       }).appendTo('#alterModal form');
+//   });
+// }
 
 
 
@@ -152,6 +153,7 @@ function getImportedCourseInfo(courseID, callback) {
     success: function(courseDict) {
       if (Object.keys(courseDict).length !== 0){
         // update the alter imported course modal
+        $('#instructorsTable').empty();
         $('#courseName').val(courseDict['courseName']);
         $('#courseAbbreviation').val(courseDict['courseAbbreviation']);
         $('#courseCredit').val(courseDict['courseCredit']);

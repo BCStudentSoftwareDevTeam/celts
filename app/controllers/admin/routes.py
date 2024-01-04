@@ -440,7 +440,6 @@ def alterImportedCourse(courseID):
 
             print("---------------------------------------------------")
             print(courseData)
-            print(courseID)
             print(model_to_dict(targetCourse, recurse=False))
             print("---------------------------------------------------")
             return jsonify(courseData)
@@ -449,11 +448,11 @@ def alterImportedCourse(courseID):
             return None
         
     if request.method == 'POST':
-        print("..........>>>>>>>>>>>>>>>>>>>>...................>>>>>>>>>>>>>>>>>>>............")
-        print("From the front end I got", request.form.copy())
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        print("Data was sent in", request.form.copy())
         editImportedCourses(request.form.copy())
 
-    return jsonify({'redirect': '/manageServiceLearningCourses'})
+    return redirect(url_for("admin.manageServiceLearningCourses"))
 
 
 @admin_bp.route("/manageBonner")
