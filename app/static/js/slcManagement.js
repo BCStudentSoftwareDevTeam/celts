@@ -114,7 +114,24 @@ function showAlterModalWithCourse(courseID) {
 
     var formAction = `/manageServiceLearning/imported/${courseID}`;
     
-    $('#alterModal form').attr('action', formAction);
+    // $('#alterModal form').attr('action', formAction);
+
+    $('#alterModal form').on('submit', function(event) {
+      // Prevent the form from submitting immediately
+      event.preventDefault();
+
+    
+      // Execute the updateInstructorsInputs function
+      updateInstructorInputs();
+
+      debugger;
+      var dynamicRoute = `/manageServiceLearning/imported/${courseID}`;
+      $(this).attr('action', dynamicRoute);
+      
+    
+      // Manually submit the form
+      this.submit();
+    });
 
     $('#alterModal').modal('show');
 
@@ -125,23 +142,23 @@ function showAlterModalWithCourse(courseID) {
 }
 
 
-// function updateInstructorInputs() {
-//   // Clear existing hidden instructor inputs
-//   $('#alterModal form input[name="instructor[]"]').remove();
+function updateInstructorInputs() {
+  // Clear existing hidden instructor inputs
+  $('#alterModal form input[name="instructor[]"]').remove();
 
-//   // Get current instructors from the table
-//   var instructordata = getCourseInstructors();
-//   console.log("Last road: ", instructordata)
+  // Get current instructors from the table
+  var instructordata = getCourseInstructors();
+  console.log("Last road: ", instructordata)
 
-//   // Append new hidden inputs for each instructor
-//   instructordata.forEach(function(instructor) {
-//       $('<input>').attr({
-//           type: 'hidden',
-//           name: 'instructor[]',
-//           value: instructor
-//       }).appendTo('#alterModal form');
-//   });
-// }
+  // Append new hidden inputs for each instructor
+  instructordata.forEach(function(instructor) {
+      $('<input>').attr({
+          type: 'hidden',
+          name: 'instructor[]',
+          value: instructor
+      }).appendTo('#alterModal form');
+  });
+}
 
 
 
@@ -202,18 +219,18 @@ function createInstructorRow(instructor) {
 }
 
 
-// function getCourseInstructors() {
-//   // get usernames out of the table rows into an array
-//   return $("#InstructorTableNames input").map((i,el) => $(el).val()).get();
-// }
-
 function getCourseInstructors() {
-  // Assuming instructors' usernames are stored in data-username attribute of table rows
-  var instructorUsernames = $("#instructorTableBody tr").map(function() {
-      return $(this).data('username');
-  }).get(); // .get() converts the jQuery object to a plain JavaScript array
-  return instructorUsernames;
+  // get usernames out of the table rows into an array
+  return $("#InstructorTableNames input").map((i,el) => $(el).val()).get();
 }
+
+// function getCourseInstructors() {
+//   // Assuming instructors' usernames are stored in data-username attribute of table rows
+//   var instructorUsernames = $("#instructorTableBody tr").map(function() {
+//       return $(this).data('username');
+//   }).get(); // .get() converts the jQuery object to a plain JavaScript array
+//   return instructorUsernames;
+// }
 
 
 function changeTerm() {
