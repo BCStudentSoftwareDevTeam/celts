@@ -57,7 +57,6 @@ def test_course_management():
 
         assert approvedCourse in approvedCourses(termId)
         assert submittedCourse in unapprovedCourses(termId)
-        # Beans: Will add a test here to test the new importedCourses() function.
         assert importedCourse in importedCourses(termId)
         assert incompleteCourse in unapprovedCourses(termId), "unapprovedCourses doesn't include INCOMPLETE proposals"
         assert unapprovedList[courseindex].instructors == " Brian Ramsay, Zach Neill"
