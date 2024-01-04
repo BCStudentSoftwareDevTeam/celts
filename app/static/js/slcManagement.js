@@ -219,18 +219,18 @@ function createInstructorRow(instructor) {
 }
 
 
-function getCourseInstructors() {
-  // get usernames out of the table rows into an array
-  return $("#InstructorTableNames input").map((i,el) => $(el).val()).get();
-}
-
 // function getCourseInstructors() {
-//   // Assuming instructors' usernames are stored in data-username attribute of table rows
-//   var instructorUsernames = $("#instructorTableBody tr").map(function() {
-//       return $(this).data('username');
-//   }).get(); // .get() converts the jQuery object to a plain JavaScript array
-//   return instructorUsernames;
+//   // get usernames out of the table rows into an array
+//   return $("#InstructorTableNames input").map((i,el) => $(el).val()).get();
 // }
+
+function getCourseInstructors() {
+  // Assuming instructors' usernames are stored in data-username attribute of table rows
+  var instructorUsernames = $("#instructorTableBody tr").map(function() {
+      return $(this).data('username');
+  }).get(); // .get() converts the jQuery object to a plain JavaScript array
+  return instructorUsernames;
+}
 
 
 function changeTerm() {

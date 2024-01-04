@@ -31,6 +31,15 @@ def test_course_management():
                                         createdBy = "heggens",
                                         isAllSectionsServiceLearning = 0,
                                         isPermanentlyDesignated = 0)
+        
+        importedCourse = Course.create(courseName = "Testing Approved",
+                                        term = 3,
+                                        status = CourseStatus.IMPORTED,
+                                        courseCredit = "4",
+                                        createdBy = "ramsayb2",
+                                        isAllSectionsServiceLearning = 0,
+                                        isPermanentlyDesignated = 0)
+
 
         CourseInstructor.create(course = submittedCourse.id,
                                                     user = 'ramsayb2')
@@ -38,6 +47,8 @@ def test_course_management():
                                                     user = 'neillz')
         CourseInstructor.create(course = approvedCourse.id,
                                                     user = 'ramsayb2')
+        CourseInstructor.create(course = importedCourse.id,
+                                                    user = "ramsayb2")
 
         termId = 3
 
@@ -47,6 +58,7 @@ def test_course_management():
         assert approvedCourse in approvedCourses(termId)
         assert submittedCourse in unapprovedCourses(termId)
         # Beans: Will add a test here to test the new importedCourses() function.
+        assert importedCourse in importedCourses(termId)
         assert incompleteCourse in unapprovedCourses(termId), "unapprovedCourses doesn't include INCOMPLETE proposals"
         assert unapprovedList[courseindex].instructors == " Brian Ramsay, Zach Neill"
 
