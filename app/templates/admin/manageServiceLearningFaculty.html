@@ -240,7 +240,7 @@
                                 <a class="text-decoration-none primary editButton" tabindex="0" data-username="" id=""  type="button">Edit</a>
                               </td>
                               <td class="align-middle">
-                                  <button type="button" class="btn btn-danger removeButton">Remove</button>
+                                  <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
                               </td>
                           </tr>
                         <!-- TODO: Continue working on the table and make the remove button functional. 
@@ -253,7 +253,7 @@
                                 <a class="text-decoration-none primary editButton" tabindex="0" data-username="{{instructor.user.username}}" id="editButton-{{instructor.user}}" type="button">Edit</a>
                             </td>
                             <td class="align-middle">
-                                <button type="button" class="btn btn-danger removeButton">Remove</button>
+                                <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
                             </td>
                           </tr>
                           {% endfor %}
@@ -273,7 +273,7 @@
 
           <div class="modal-footer p-2">
             <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Cancel</button>
-            <button id="saveImportedCourse type="button" class="btn btn-success position-relative">Save</button>
+            <button type="submit" class="btn btn-success position-relative">Save</button>
           </div>
         </form>
       </div>

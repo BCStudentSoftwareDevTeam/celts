@@ -1,13 +1,16 @@
 import searchUser from './searchUser.js'
 
 $(document).ready(function() {
-    $("#instructorTable").on("click", ".removeButton", function() {
-        console.log("IIII seeee you before")
-        let closestRow =  $(this).closest("tr")
-        $("#instructorTableNames input[value="+closestRow.data('username')+"]").remove()
+    $("#instructorTable").on("click", "#remove", function() {
+        let closestRow =  $(this).closest("tr");
+        let username = closestRow.data('username');
+
+        $("#instructorTableNames input[value='" + username + "']").remove();
+        console.log("I see you");
         closestRow.remove();
-        console.log("IIII seeee you after")
     });
+    
+    
 
     $("#courseInstructor").on('input', function() {
         searchUser("courseInstructor", createNewRow, true, null, "instructor");

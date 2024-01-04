@@ -89,7 +89,8 @@ def editImportedCourses(courseData, attachments=None):
                 print("We have some instructors, and they are: ", instructorList)
                 CourseInstructor.delete().where(CourseInstructor.course == course).execute()
                 for instructor in instructorList:
-                    CourseInstructor.create(course=course, user=instructor)
+                    if instructor != "":
+                        CourseInstructor.create(course=course, user=instructor)
             else:
                 print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
                 print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")

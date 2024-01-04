@@ -453,7 +453,7 @@ def alterImportedCourse(courseID):
         print("From the front end I got", request.form.copy())
         editImportedCourses(request.form.copy())
 
-    return jsonify({'redirect': '/manageServiceLearning'})
+    return redirect(url_for("admin.manageServiceLearningCourses"))
 
 
 @admin_bp.route("/manageBonner")
