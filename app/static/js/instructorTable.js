@@ -44,7 +44,6 @@ function createNewRow(selectedInstructor) {
     let phone = selectedInstructor["phoneNumber"];
     let tableBody = $("#instructorTable").find("tbody");
   
-    console.log("From new proposals selected instructors:", selectedInstructor, instructor, username, phone)
     if(tableBody.prop('outerHTML').includes(instructor)){
       msgFlash("Instructor is already added.", "danger");
       return;
