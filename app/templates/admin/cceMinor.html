@@ -31,15 +31,16 @@
         <tbody>
             {% for student in engagedStudentList %}
             <tr>
-                <td>{{ student.firstName }} {{ student.lastName }}</td>
+                <td>
+                    <a href="/profile/{{student.username}}/cceMinor" target="_blank">{{ student.firstName }} {{ student.lastName }}</a>
+                </td>
                 <td>{{ student.requirementCount }}/5 </td>
                 <td>Data 3</td>
             </tr>
             {% endfor %}
         </tbody>
-
     </table>
-
+    <br>
     <h2>Interested Students</h2>
     <table class="display" id="interestedStudentsTable">
         <thead>
@@ -50,7 +51,9 @@
         <tbody>
             {% for student in interestedStudentsList %}
                 <tr>
-                    <td>{{ student.firstName }} {{ student.lastName }}</td>
+                    <td>
+                        <a href="/profile/{{student.username}}/cceMinor" target="_blank">{{ student.firstName }} {{ student.lastName }}</a>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>

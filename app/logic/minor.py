@@ -13,16 +13,16 @@ from app.models.individualRequirement import IndividualRequirement
 from app.models.certificationRequirement import CertificationRequirement
 
 def getMinorInterest():
-    interestedStudents = User.select(User.firstName, User.lastName).where((User.isStudent == 1) & (User.minorInterest == 1))
+    interestedStudents = User.select(User.firstName, User.lastName, User.username).where((User.isStudent == 1) & (User.minorInterest == 1))
 
-    interestedStudentList = [{'firstName': student.firstName, 'lastName': student.lastName} for student in interestedStudents]
+    interestedStudentList = [{'firstName': student.firstName, 'lastName': student.lastName, 'username': student.username} for student in interestedStudents]
 
     return interestedStudentList
 
 def getEngagedStudentsWithRequirementCount():
     engagedStudentsWithCount = (
         User
-        .select(User.firstName, User.lastName, fn.COUNT(IndividualRequirement.id).alias('requirementCount'))
+        .select(User.firstName, User.lastName, User.username, fn.COUNT(IndividualRequirement.id).alias('requirementCount'))
         .join(IndividualRequirement, on=(User.username == IndividualRequirement.username))
         .group_by(User.username)
         .order_by(fn.COUNT(IndividualRequirement.id).desc())
@@ -32,13 +32,14 @@ def getEngagedStudentsWithRequirementCount():
         {
             'firstName': student.firstName,
             'lastName': student.lastName,
+            'username': student.username,
             'requirementCount': student.requirementCount
         }
         for student in engagedStudentsWithCount
     ]
 
     for student in engagedStudentsList:
-        print(f"firstName: {student['firstName']}, lastName: {student['lastName']}, requirementCount: {student['requirementCount']}")
+        print(f"firstName: {student['firstName']}, lastName: {student['lastName']}, username: {student['username']}, requirementCount: {student['requirementCount']}")
 
     return engagedStudentsList
 
