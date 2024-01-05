@@ -57,9 +57,8 @@ function changeAction(action){
     $('#withdrawModal').modal('show');
   } else if(courseAction == "Edit"){
     location = '/serviceLearning/editProposal/' + courseID;
-  } else if (courseAction == "Alter"){ // Beans
+  } else if (courseAction == "Alter"){ 
     showAlterModalWithCourse(courseID);
-     
   } else if(courseAction == "Print"){
     printDocument(`/serviceLearning/print/${courseID}`)
   } else if (courseAction == "Review"){
@@ -99,144 +98,6 @@ function withdraw(){
     }
   })
 };
-
-
-
-function showAlterModalWithCourse(courseID) {
-  getImportedCourseInfo(courseID, function() {
-    $('#alterModal #alterCourseId').val(courseID);
-    
-    // $('#remove').click(function() {
-    //   console.log("Input will be updated")
-    //   updateInstructorInputs();
-    //   console.log("Input was updated")
-    // })
-
-    var formAction = `/manageServiceLearning/imported/${courseID}`;
-    
-    // $('#alterModal form').attr('action', formAction);
-
-    $('#alterModal form').on('submit', function(event) {
-      // Prevent the form from submitting immediately
-      
-
-    
-      // Execute the updateInstructorsInputs function
-      updateInstructorInputs();
-
-      var dynamicRoute = `/manageServiceLearning/imported/${courseID}`;
-      $(this).attr('action', dynamicRoute);
-      
-    });
-
-    $('#alterModal').modal('show');
-
-
-
-
-  });
-}
-
-
-function updateInstructorInputs() {
-  // Clear existing hidden instructor inputs
-  $('#alterModal form input[name="instructor[]"]').remove();
-
-  // Get current instructors from the table
-  var instructordata = getCourseInstructors();
-  console.log("Last road: ", instructordata)
-
-  // Append new hidden inputs for each instructor
-  instructordata.forEach(function(instructor) {
-      $('<input>').attr({
-          type: 'hidden',
-          name: 'instructor[]',
-          value: instructor
-      }).appendTo('#alterModal form');
-  });
-}
-
-
-
-
-function getImportedCourseInfo(courseID, callback) {
-  $.ajax({
-    url: `/manageServiceLearning/imported/${courseID}`,
-    type: "GET",
-    success: function(courseDict) {
-      if (Object.keys(courseDict).length !== 0){
-        // update the alter imported course modal
-        $('#instructorsTable').empty();
-        $('#courseName').val(courseDict['courseName']);
-        $('#courseAbbreviation').val(courseDict['courseAbbreviation']);
-        $('#courseCredit').val(courseDict['courseCredit']);
-
-        // Beans: need to update the course instructors. Maybe create a table and add rows to the table in here?
-        if (courseDict['instructors'] && courseDict['instructors'].length > 0) {
-          updateInstructorsTable(courseDict['instructors']);
-        }
-
-      }
-      if (callback) callback();
-    }
-  });
-}
-
-
-
-
-function updateInstructorsTable(instructors) {
-  // Clear existing table contents except the template row
-  $("#instructorTableBody").find("tr:not(:first)").remove();
-
-  // Add each instructor to the table
-  instructors.forEach(function(instructor) {
-    var newRow = createInstructorRow(instructor);
-    $("#instructorTableBody").append(newRow);
-  });
-}
-
-function createInstructorRow(instructor) {
-  // Create a new row element based on the instructor data
-  var row = `<tr data-username="${instructor.username}">
-               <td>
-                 <p class="mb-0">${instructor.firstName} ${instructor.lastName} (${instructor.email})</p>
-                 <input type="text" style="border: none" size="14" class="form-control-sm" 
-                        name="courseInstructorPhone" aria-label="Instructor Phone" 
-                        value="${instructor.phoneNumber}" placeholder="Phone Number" />
-                 <a class="text-decoration-none primary editButton" tabindex="0" 
-                    data-username="${instructor.username}" type="button">Edit</a>
-               </td>
-               <td class="align-middle">
-                 <button type="button" class="btn btn-danger removeButton">Remove</button>
-               </td>
-             </tr>`;
-  return row;
-}
-
-
-// function getCourseInstructors() {
-//   // get usernames out of the table rows into an array
-//   return $("#InstructorTableNames input").map((i,el) => $(el).val()).get();
-// }
-
-// function getCourseInstructors() {
-//     // Assuming instructors' usernames are stored in data-username attribute of table rows
-//     var instructorUsernames = $("#instructorTableBody tr").map(function() {
-//       return $(this).data('username');
-//   }).get(); // .get() converts the jQuery object to a plain JavaScript array
-//   console.log("Mesdames et Messieurs", instructorUsernames)
-//   return instructorUsernames;
-// }
-
-
-function getCourseInstructors() {
-  var instructorUsernames = $("#instructorTableBody tr").map(function() {
-      return $(this).find('.editButton').data('username');
-  }).get();
-  console.log("Mesdames et Messieurs", instructorUsernames)
-  return instructorUsernames;
-}
 
 
 function changeTerm() {
@@ -283,3 +144,102 @@ function unapproveProposal(el){
       }
     })
 }
+
+
+/************** Imported Courses Modal Stuff **************/
+
+function showAlterModalWithCourse(courseID) {
+  getImportedCourseInfo(courseID, function() {
+    $('#alterModal #alterCourseId').val(courseID);
+    var formAction = `/manageServiceLearning/imported/${courseID}`;
+
+    $('#alterModal form').on('submit', function(event) {
+      updateInstructorList(); // Fetch instructors from tr rows in Instructor Table before sending POST request
+      var dynamicRoute = `/manageServiceLearning/imported/${courseID}`;
+      $(this).attr('action', dynamicRoute);
+    });
+
+    $('#alterModal').modal('show');
+  });
+}
+
+
+function getImportedCourseInfo(courseID, callback) { // This function populates the fields in the modal of a chosen course with preexisting data
+  $.ajax({
+    url: `/manageServiceLearning/imported/${courseID}`,
+    type: "GET",
+    success: function(courseDict) {
+      if (Object.keys(courseDict).length !== 0){
+        // update the imported course modal
+        $('#instructorsTable').empty();
+        $('#courseName').val(courseDict['courseName']);
+        $('#courseAbbreviation').val(courseDict['courseAbbreviation']);
+        $('#courseCredit').val(courseDict['courseCredit']);
+        if (courseDict['instructors'] && courseDict['instructors'].length > 0) {
+          updateInstructorsTable(courseDict['instructors']);
+        }
+      }
+      if (callback) callback();
+    }
+  });
+}
+
+
+// Instructor manipulation functions
+// ---------------------------------
+
+function updateInstructorList() { // This function fetches instructor usernames and attached the list of usernames to the form submission
+  
+  $('#alterModal form input[name="instructor[]"]').remove(); // Clear existing hidden instructor inputs
+  var instructordata = getCourseInstructors(); // Get current instructors from the table
+
+  // Append new hidden inputs for each instructor
+  instructordata.forEach(function(instructor) {
+      $('<input>').attr({
+          type: 'hidden',
+          name: 'instructor[]',
+          value: instructor
+      }).appendTo('#alterModal form');
+  });
+}
+
+
+function updateInstructorsTable(instructors) { // This function creates row(s) for preexisting instructor(s) in the modal
+  // Clear existing table contents except the template row
+  $("#instructorTableBody").find("tr:not(:first)").remove();
+
+  // Add each instructor to the table
+  instructors.forEach(function(instructor) {
+    var newRow = createInstructorRow(instructor);
+    $("#instructorTableBody").append(newRow);
+  });
+}
+
+
+function createInstructorRow(instructor) {
+  // Create a new row element based on the instructor data
+  var row = `<tr data-username="${instructor.username}">
+                <td>
+                  <p class="mb-0">${instructor.firstName} ${instructor.lastName} (${instructor.email})</p>
+                  <input type="text" style="border: none" size="14" class="form-control-sm" 
+                        name="courseInstructorPhone" aria-label="Instructor Phone" 
+                        value="${instructor.phoneNumber}" placeholder="Phone Number" />
+                  <a class="text-decoration-none primary editButton" tabindex="0" 
+                    data-username="${instructor.username}" type="button">Edit</a>
+                </td>
+                <td class="align-middle">
+                  <button type="button" class="btn btn-danger removeButton">Remove</button>
+                </td>
+              </tr>`;
+  return row;
+}
+
+
+function getCourseInstructors() { // this function gets usernames out of the table rows from editButton class and transform the object into an array
+  var instructorUsernames = $("#instructorTableBody tr").map(function() {
+      return $(this).find('.editButton').data('username');
+  }).get();
+  console.log("Mesdames et Messieurs", instructorUsernames)
+  return instructorUsernames;
+}
+

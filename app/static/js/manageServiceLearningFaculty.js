@@ -2,7 +2,7 @@
 
 $(document).ready( function () {
 
-  /******** Faculty Table Management **************/
+  /************** Faculty Table Management **************/
   var table = $('#SLCFacultyTable').DataTable({
    "fnDrawCallback": function(oSettings) {
       $('.dataTables_length').hide();
@@ -39,7 +39,7 @@ $(document).ready( function () {
   });
   
 
-  /******** Preview Events **************/
+  /************** Preview Events **************/
   $('#modalPreview button[data-bs-dismiss="modal"]').click(function () {
     $('#modalPreview').removeClass('show d-block');
   });
@@ -64,7 +64,7 @@ $(document).ready( function () {
     })
   });
 
-  /******** Course Participant Stuff **************/
+  /************** Course Participant Stuff **************/
     $("#modalCourseParticipant").on("click", function () {
       $("#modalSubmit").modal("toggle");
     });

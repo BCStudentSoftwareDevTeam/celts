@@ -307,7 +307,6 @@ function validateForm() {
 
 // Instructor manipulation functions
 // -------------------------------------
-//
 
 function getRowUsername(element) {
     return $(element).closest("tr").data("username")

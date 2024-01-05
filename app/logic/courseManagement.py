@@ -88,10 +88,6 @@ def editImportedCourses(courseData, attachments=None):
                 for instructor in instructorList:
                     if instructor != "":
                         CourseInstructor.create(course=course, user=instructor)
-            else:
-                print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-                print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-                print("There is no new instructors")
 
             return Course.get_by_id(course.id)
 

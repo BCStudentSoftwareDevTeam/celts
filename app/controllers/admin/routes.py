@@ -432,24 +432,19 @@ def alterImportedCourse(courseID):
     if request.method == 'GET':
         try:
             targetCourse = Course.get_by_id(courseID)
-
             targetInstructors = CourseInstructor.select().where(CourseInstructor.course == targetCourse)
             courseData = model_to_dict(targetCourse, recurse=False)
             instructors = [model_to_dict(ci.user) for ci in targetInstructors]
             courseData['instructors'] = instructors
-
-            print("---------------------------------------------------")
-            print(courseData)
-            print(model_to_dict(targetCourse, recurse=False))
-            print("---------------------------------------------------")
+            
             return jsonify(courseData)
+        
         except Exception as e:
-            flash("Course not found or something else went wrong")  # beans
+            flash("Course not found or something else went wrong")
             return None
         
     if request.method == 'POST':
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        print("Data was sent in", request.form.copy())
+        # Update course information in the database
         editImportedCourses(request.form.copy())
 
     return redirect(url_for("admin.manageServiceLearningCourses"))

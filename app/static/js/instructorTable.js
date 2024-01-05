@@ -22,7 +22,7 @@ $(document).ready(function() {
         }, 500);
     });
     
-        //for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
+    //for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
     $('#instructorTable tr').each(function(){
         var username = getRowUsername(this)
         var edit = "#editButton-" + username
@@ -81,11 +81,3 @@ function createNewRow(selectedInstructor) {
   }
 
 
-function getCourseInstructors() {
-    // get usernames out of the table rows into an array
-    return $("#instructorTableNames input").map((i,el) => $(el).val())
-}
-
-
-// Add course instructor event handlers
-// -----------------------------------------

@@ -37,7 +37,7 @@
   </div>
 
 
-  <!-- Beans: Start of the tabs -->
+  <!-- Tabs (Native Courses and Imported Courses) in Course Management page -->
   <nav>
     <div class="row pt-3">
       <ul class="nav nav-tabs nav-fill mx-3 mb-3" role="tablist">
@@ -52,7 +52,7 @@
       </ul>
     </div>
   </nav>
-  <!-- Beans: End tabs -->
+  <!-- End tabs -->
 
 
   <div class="tab-content"> 
@@ -150,8 +150,7 @@
       </div>
     </div>
 
-
-
+    {########################### Imported Table #################################}
     <div class="tab-pane fade" id="importedCourseTables" role="tabpanel">
       <div class="container">
         <div class="row">
@@ -161,7 +160,7 @@
         </div>
       </div>
 
-  <!-- Beans: IMPORTED COURSES -->
+  <!-- IMPORTED COURSES -->
     {% if importedCourses | length == 0 %}
     <h5 class="ms-3 pb-3">There are no imported courses for {{ term.description }}.</h5>
     {% else %}
@@ -224,7 +223,7 @@
                   <tr>
                     <td class="fw-bold">Instructors</td>
                     <td><input id="courseInstructor" class="form-control" type="search" placeholder="Search instructor" value=""/></td>
-                    <!-- Start of the copied section #Beans-->
+                    <!-- Start of Instructor Table -->
                     <table class="table mb-3" id="instructorTable" name="instructorTable">
                       <thead>
                         <tr>
@@ -243,8 +242,7 @@
                                   <button id="remove" type="button" class="btn btn-danger removeButton">Remove</button>
                               </td>
                           </tr>
-                        <!-- TODO: Continue working on the table and make the remove button functional. 
-                          Try with more than one faculty to see if it works. Also needs to query the server for users |beans-->
+  
                           {% for instructor in courseInstructor %}
                           <tr data-username="{{instructor.user.username}}">
                             <td>
@@ -259,14 +257,13 @@
                           {% endfor %}
                       </tbody>
                     </table>
+                    <!-- End of Instructor Table -->
                   </tr>
                   <div id='instructorTableNames'>
                     {% for instructor in courseInstructor %}
                     <input hidden name="instructor[]" value='{{instructor.user.username}}'/>
                     {% endfor %}
                   </div>
-                  <!-- End of the copied section #Beans-->
-                  <!-- End of the copied section #Beans-->
                 </tbody>
               </table>
             </div>
@@ -361,7 +358,7 @@
           <br>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" id="closeAddCourseParticipants">Close</button>
-            <button class="form-control btn btn-success position-relative" id="previewButton" style='width: 90px'>Preview</button>
+            <button class="form-control btn btn-success position-relative" id="previewButton" disabled style='width: 90px'>Preview</button>
           </div>
         </form>
       </div>
