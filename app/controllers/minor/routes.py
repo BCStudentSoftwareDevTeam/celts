@@ -63,7 +63,7 @@ def requestOtherEngagement(username):
     
 
     if request.method == 'POST':
-        flash("Something happend and we hit post", "success")
+        flash("Something happened and we hit post", "success")
         saveOtherEngagementRequest(request.form.copy())
         return redirect(url_for("minor.viewCceMinor", username=user))
 

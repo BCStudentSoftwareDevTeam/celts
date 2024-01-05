@@ -7,6 +7,7 @@ from app.models.program import Program
 from app.models.event import Event
 from app.models.courseParticipant import CourseParticipant
 from app.models.eventParticipant import EventParticipant
+from collections import OrderedDict
 import pytest
 
 @pytest.mark.integration
@@ -148,10 +149,58 @@ def test_getCommunityEngagementByTerm():
         event = Event.get_by_id(testingEvent)
 
         # write out what we expect the result to be
-        expected_result = {("Summer 2021", 3):[{"name":course.courseName, "id":course.id, "type":"course", "term":course.term}], ("Spring 2021", 2):[{"name":event.program.programName, "id":event.program.id, "type":"program", "term":event.term}]}
+        expected_result = OrderedDict({("Spring 2021", 2):[{"name":event.program.programName, "id":event.program.id, "type":"program", "term":event.term}],
+            ("Summer 2021", 3):[{"name":course.courseName, "id":course.id, "type":"course", "term":course.term}]})
         
         # get the actual result from getCommunityEngagementByTerm
         actual_result = dict(getCommunityEngagementByTerm("FINN"))
 
         assert actual_result == expected_result
+        transaction.rollback()
+
+@pytest.mark.integration
+@pytest.mark.integration
+def test_saveOtherEngagementRequest():
+    with mainDB.atomic() as transaction:
+        testInfo = {
+            'user': 'ramsayb2',
+            'experience': 'Test Experience',
+            'term': 3,
+            'description': 'Test Description',
+            'company': 'Test Company',
+            'hours': 5,
+            'weeks': 10,
+            'attachment': 'test_file.txt',
+            'status': 'Pending'
+        }
+
+        # Save the requested event to the database
+        saveOtherEngagementRequest(testInfo)
+
+        expected_values = {
+            'user': testInfo['user'],
+            'experienceName': testInfo['experience'],
+            'term': testInfo['term'],
+            'description': testInfo['description'],
+            'company': testInfo['company'],
+            'weeklyHours': testInfo['hours'],
+            'weeks': testInfo['weeks'],
+            'filename': testInfo['attachment'],
+            'status': testInfo['status']
+        }
+
+        # Get the actual saved request from the database (the most recent one)
+        saved_request_id = CommunityEngagementRequest.select().order_by(CommunityEngagementRequest.id.desc()).first().id
+        saved_request = CommunityEngagementRequest.get_by_id(saved_request_id)
+
+        # Check that the saved request matches the expected values
+        for key, expected_value in expected_values.items():
+            if key == "user":
+                actual_value = getattr(saved_request.user, 'username')
+            elif key == "term":
+                actual_value = getattr(saved_request.term, 'id')
+            else:
+                actual_value = getattr(saved_request, key)
+            assert actual_value == expected_value
+
         transaction.rollback()

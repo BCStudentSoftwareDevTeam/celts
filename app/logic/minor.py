@@ -102,9 +102,9 @@ def saveOtherEngagementRequest(engagementRequest):
     requestInfo = engagementRequest
     requestedThing = {"user": requestInfo['user'],
                       "experienceName": requestInfo['experience'],
-                      "company": requestInfo['organization'],
                       "term": requestInfo['term'],
-                      "description": requestInfo['descirption'],
+                      "description": requestInfo['description'],
+                      "company": requestInfo['company'],
                       "weeklyHours": requestInfo['hours'],
                       "weeks": requestInfo['weeks'],
                       "filename": requestInfo['attachment'],
