@@ -10,5 +10,5 @@ class CommunityEngagementRequest(baseModel):
     description = TextField()
     weeklyHours = IntegerField()
     weeks = IntegerField()
-    filename = CharField()
+    filename = CharField(null=True)
     status = CharField(constraints=[Check("status in ('Approved', 'Pending', 'Denied')")])

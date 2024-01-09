@@ -2,7 +2,7 @@ from flask import Flask, g, render_template, request, abort, flash, redirect, ur
 from app.controllers.minor import minor_bp
 from app.models.user import User
 from app.models.term import Term
-from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
+from app.logic.utils import selectSurroundingTerms
 from app.logic.fileHandler import FileHandler
 from app.models.attachmentUpload import AttachmentUpload
 from app.logic.minor import updateMinorInterest, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, saveOtherEngagementRequest
@@ -64,8 +64,15 @@ def requestOtherEngagement(username):
 
     if request.method == 'POST':
         flash("Something happened and we hit post", "success")
-        saveOtherEngagementRequest(request.form.copy())
-        #How is the supervisor doc file being saved?
+        attachmentName = None
+        attachment = request.files.get("attachment")
+        if attachment:
+                addFile= FileHandler(attachment)
+                addFile.saveFiles()
+                attachmentName = attachment.filename
+        form_data = request.form.copy()
+        form_data["attachment"] = attachmentName
+        saveOtherEngagementRequest(form_data)
         return redirect(url_for("minor.viewCceMinor", username=user))
 
 
