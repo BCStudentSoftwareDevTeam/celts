@@ -65,6 +65,7 @@ def requestOtherEngagement(username):
     if request.method == 'POST':
         flash("Something happened and we hit post", "success")
         saveOtherEngagementRequest(request.form.copy())
+        #How is the supervisor doc file being saved?
         return redirect(url_for("minor.viewCceMinor", username=user))
 
 
