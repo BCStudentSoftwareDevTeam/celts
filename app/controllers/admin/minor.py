@@ -8,7 +8,7 @@ from app.logic.minor import getMinorProgress
 @admin_bp.route('/admin/cceMinor', methods=['GET'])
 def manageMinor():
     if g.current_user.isAdmin:
-        interestedStudents= getMinorInterest()
+        interestedStudents = getMinorInterest()
         sustainedEngagement = getMinorProgress()
 
         return render_template('/admin/cceMinor.html',

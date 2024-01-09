@@ -10,7 +10,7 @@ class IndividualRequirement(baseModel):
     program = ForeignKeyField(Program, null = True)
     course = ForeignKeyField(Course, null = True)
     description = CharField(null = True)
-    username = ForeignKeyField(User, backref='individualRequirement')
+    username = ForeignKeyField(User)
     term = ForeignKeyField(Term, null = True)
     requirement = ForeignKeyField(CertificationRequirement)
     addedBy = ForeignKeyField(User)
