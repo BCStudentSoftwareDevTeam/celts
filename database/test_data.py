@@ -883,8 +883,9 @@ Course.insert_many(courses).on_conflict_replace().execute()
 individualReqs = [
         {
           "username": "ayisie",
-          "program": 2,
+          "program": None,
           "course": 1,
+          "description": None,
           "term": 3,
           "requirement": 12,
           "addedBy": "ramsayb2",
@@ -893,7 +894,8 @@ individualReqs = [
             {
           "username": "ayisie",
           "program": 2,
-          "course": 1,
+          "course": None,
+          "description": None,
           "term": 3,
           "requirement": 14,
           "addedBy": "ramsayb2",
@@ -903,7 +905,8 @@ individualReqs = [
         { 
           "username": "khatts",
           "program": 2,
-          "course": 1,
+          "course": None,
+          "description": None,
           "term": 3,
           "requirement": 14,
           "addedBy": "ramsayb2",
@@ -911,8 +914,9 @@ individualReqs = [
         },
                     {
           "username": "bledsoef",
-          "program": 2,
+          "program": None,
           "course": 1,
+          "description": None,
           "term": 3,
           "requirement": 14,
           "addedBy": "ramsayb2",
@@ -921,10 +925,22 @@ individualReqs = [
 
         { 
           "username": "khatts",
-          "program": 2,
+          "program": None,
           "course": 1,
+          "description": None,
           "term": 3,
           "requirement": 14,
+          "addedBy": "ramsayb2",
+          "addedOn": "",
+        },
+        
+        { 
+          "username": "khatts",
+          "program": None,
+          "course": None,
+          "description": "Name of Summer activity",
+          "term": 3,
+          "requirement": 16,
           "addedBy": "ramsayb2",
           "addedOn": "",
         }

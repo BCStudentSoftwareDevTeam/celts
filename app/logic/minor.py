@@ -1,15 +1,17 @@
 from playhouse.shortcuts import model_to_dict
-from peewee import JOIN, fn
+from peewee import JOIN, fn, Case
 from collections import defaultdict
 
 from app.models.user import User
 from app.models.event import Event
 from app.models.course import Course
 from app.models.program import Program
+from app.models.certification import Certification
 from app.models.courseInstructor import CourseInstructor
 from app.models.eventParticipant import EventParticipant
 from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
+from app.models.certificationRequirement import CertificationRequirement
 from app.models.certificationRequirement import CertificationRequirement
 
 def getMinorInterest():
@@ -19,30 +21,31 @@ def getMinorInterest():
 
     return interestedStudentList
 
-def getEngagedStudentsWithRequirementCount():
-    engagedStudentsWithCount = (
-        User
-        .select(User.firstName, User.lastName, User.username, fn.COUNT(IndividualRequirement.id).alias('requirementCount'))
-        .join(IndividualRequirement, on=(User.username == IndividualRequirement.username))
-        .group_by(User.username)
-        .order_by(fn.COUNT(IndividualRequirement.id).desc())
-    )
+def getMinorProgress():
+    summerCase = Case(None, [(CertificationRequirement.name == "Summer Program", 1)], 0)
 
+    engagedStudentsWithCount = (
+        User.select(User.firstName, User.lastName, User.username, fn.COUNT(IndividualRequirement.id).alias('requirementCount'), fn.SUM(summerCase).alias('hasSummer'))
+            .join(IndividualRequirement, on=(User.username == IndividualRequirement.username))
+            .join(CertificationRequirement, on=(IndividualRequirement.requirement_id == CertificationRequirement.id))
+            .where(CertificationRequirement.certification_id == Certification.CCE)
+            .group_by(User.firstName, User.lastName, User.username)
+            .order_by(fn.COUNT(IndividualRequirement.id).desc())
+    )
+    
     engagedStudentsList = [
         {
+            'username': student.username,
             'firstName': student.firstName,
             'lastName': student.lastName,
-            'username': student.username,
-            'requirementCount': student.requirementCount
+            'requirementCount': student.requirementCount - student.hasSummer,
+            'hasSummer': student.hasSummer
         }
         for student in engagedStudentsWithCount
     ]
 
-    for student in engagedStudentsList:
-        print(f"firstName: {student['firstName']}, lastName: {student['lastName']}, username: {student['username']}, requirementCount: {student['requirementCount']}")
-
     return engagedStudentsList
-
+   
 def updateMinorInterest(username):
     """
     Given a username, update their minor interest and minor status.

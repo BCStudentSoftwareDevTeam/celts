@@ -7,9 +7,10 @@ from app.models.certificationRequirement import CertificationRequirement
 
 
 class IndividualRequirement(baseModel):
-    program = ForeignKeyField(Program)
-    course = ForeignKeyField(Course)
-    username = ForeignKeyField(User)
+    program = ForeignKeyField(Program, null = True)
+    course = ForeignKeyField(Course, null = True)
+    description = CharField(null = True)
+    username = ForeignKeyField(User, backref='individualRequirement')
     term = ForeignKeyField(Term, null = True)
     requirement = ForeignKeyField(CertificationRequirement)
     addedBy = ForeignKeyField(User)

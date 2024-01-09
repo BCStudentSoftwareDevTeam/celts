@@ -19,23 +19,23 @@
 
     <h1 class="text-center mb-5">CCE Minor Management</h1>
 
-    <h2>Engaged Students</h2>
+    <h2>CCE Minor Progress</h2>
     <table class="display" id="engagedStudentsTable">
         <thead>
             <tr>
                 <th>Name</th>
-                <th>requirements met</th>
-                <th>Competed</th>
+                <th>Sustained Engagements</th>
+                <th>Summer Experience</th>
             </tr>
         </thead>
         <tbody>
-            {% for student in engagedStudentList %}
+            {% for student in sustainedEngagement %}
             <tr>
                 <td>
                     <a href="/profile/{{student.username}}/cceMinor" target="_blank">{{ student.firstName }} {{ student.lastName }}</a>
                 </td>
-                <td>{{ student.requirementCount }}/5 </td>
-                <td>Data 3</td>
+                <td>{{ student.requirementCount }}/4 </td>
+                <td>{{ student.hasSummer }}</td>
             </tr>
             {% endfor %}
         </tbody>
