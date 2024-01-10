@@ -2,15 +2,19 @@ import os
 from flask import g
 from app.models.programManager import ProgramManager
 from app.models.program import Program
+from app.models.user import User
 
 
 def getManagerProgramDict(user):
     
-    managerRows = ProgramManager.select()
+    managerRows = (ProgramManager.select(ProgramManager, User, Program)
+                                 .join(User)
+                                 .switch(ProgramManager)
+                                 .join(Program))
     programs = Program.select().order_by(Program.programName)
     if not (user.isAdmin or user.isBonnerScholar):
         programs = programs.where(Program.isBonnerScholars == False)
-        managerRows = managerRows.join(Program).where(ProgramManager.program.isBonnerScholars == False)  
+        managerRows = managerRows.where(ProgramManager.program.isBonnerScholars == False)  
     managerProgramDict = {}
 
     for program in programs:

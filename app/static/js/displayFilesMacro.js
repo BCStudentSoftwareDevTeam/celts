@@ -19,35 +19,33 @@ $(document).ready(function(){
             });
         });
 
+    $('.attachmentCheck').change(function() {
+        // Uncheck all checkboxes
+        $('.attachmentCheck').prop('checked', false);
+        // Check the selected checkbox
+        $(this).prop('checked', true);
 
-    $(document).ready(function() {
-        $('.attachmentCheck').change(function() {
-            // Uncheck all checkboxes
-            $('.attachmentCheck').prop('checked', false);
-            // Check the selected checkbox
-            $(this).prop('checked', true);
-    
-            var attachmentId = $(this).data('id');
-            var isChecked = $(this).is(':checked');
-    
+        var attachmentId = $(this).data('id');
+        var isChecked = $(this).is(':checked');
 
-            $.ajax({
-                url: '/displayEventFile',
-                method: 'POST',
-                data: {
-                    id: attachmentId,
-                    checked: isChecked
-                },
-                success: function(response) {
-                    msgToast("Event Cover ", "Successfully updated the event cover.")
-                },
-                error: function(xhr, status, error) {
-                    msgFlash(error)
-                    
-                }
-            });
+
+        $.ajax({
+            url: '/displayEventFile',
+            method: 'POST',
+            data: {
+                id: attachmentId,
+                checked: isChecked
+            },
+            success: function(response) {
+                msgToast("Event Cover ", "Successfully updated the event cover.")
+            },
+            error: function(xhr, status, error) {
+                msgFlash(error)
+                
+            }
         });
     });
+
     
           
 })
