@@ -70,9 +70,9 @@ def requestOtherEngagement(username):
                 addFile= FileHandler(attachment)
                 addFile.saveFiles()
                 attachmentName = attachment.filename
-        form_data = request.form.copy()
-        form_data["attachment"] = attachmentName
-        saveOtherEngagementRequest(form_data)
+        formData = request.form.copy()
+        formData["attachment"] = attachmentName
+        saveOtherEngagementRequest(formData)
         return redirect(url_for("minor.viewCceMinor", username=user))
 
 
