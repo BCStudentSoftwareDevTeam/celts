@@ -1,27 +1,31 @@
-from app.logic.minor import *
-from peewee import *
-from app.models.course import Course
-from app.models.courseInstructor import CourseInstructor
-from app.models import mainDB
-from app.models.program import Program
-from app.models.event import Event
-from app.models.courseParticipant import CourseParticipant
-from app.models.eventParticipant import EventParticipant
-from collections import OrderedDict
 import pytest
+from peewee import *
+from playhouse.shortcuts import model_to_dict
+from collections import OrderedDict
+from app.models import mainDB
+from app.models.user import User
+from app.models.event import Event
+from app.models.course import Course
+from app.models.program import Program
+from app.models.courseInstructor import CourseInstructor
+from app.models.eventParticipant import EventParticipant
+from app.models.courseParticipant import CourseParticipant
+from app.models.individualRequirement import IndividualRequirement
+from app.models.communityEngagementRequest import CommunityEngagementRequest
+from app.logic.minor import getProgramEngagementHistory, getCourseInformation, updateMinorInterest, getCommunityEngagementByTerm, saveOtherEngagementRequest, getMinorInterest, getMinorProgress
 
 @pytest.mark.integration
 def test_getCourseInformation():
     with mainDB.atomic() as transaction:
         testCourse = Course.create(courseName="test get course information",
-                      courseAbbreviation="TGCI",
-                      sectionDesignation="something",
-                      courseCredit=1.0,
-                      term=3,
-                      status=1,
-                      createdBy="bledsoef",
-                      serviceLearningDesignatedSections = "",
-                      previouslyApprovedDescription="")
+                                   courseAbbreviation="TGCI",
+                                   sectionDesignation="something",
+                                   courseCredit=1.0,
+                                   term=3,
+                                   status=1,
+                                   createdBy="bledsoef",
+                                   serviceLearningDesignatedSections = "",
+                                   previouslyApprovedDescription="")
         
         testCourseInstructor = CourseInstructor.create(course=testCourse.id, user="bledsoef")
         
@@ -38,12 +42,11 @@ def test_getCourseInformation():
 @pytest.mark.integration
 def test_updateMinorInterest():
     with mainDB.atomic() as transaction:
-        test_user = User.create(
-            username="FINN",
-            firstName="Not",
-            lastName="Yet",
-            email=f"FINN@berea.edu",
-            bnumber="B91111111")
+        User.create(username="FINN",
+                    firstName="Not",
+                    lastName="Yet",
+                    email=f"FINN@berea.edu",
+                    bnumber="B91111111")
         
         user = User.get_by_id("FINN")
         # make sure users have the default values of false and not interested, respectively
@@ -68,12 +71,11 @@ def test_updateMinorInterest():
 def test_getProgramEngagementHistory():
     with mainDB.atomic() as transaction:
         # create test objects
-        test_user = User.create(
-            username="FINN",
-            firstName="Not",
-            lastName="Yet",
-            email=f"FINN@berea.edu",
-            bnumber="B91111111")
+        testUser = User.create(username="FINN",
+                                firstName="Not",
+                                lastName="Yet",
+                                email=f"FINN@berea.edu",
+                                bnumber="B91111111")
         
         testingEvent = Event.create(name = "Testing event",
                                     term = 3,
@@ -90,33 +92,32 @@ def test_getProgramEngagementHistory():
                                     program = 2)
         
         # add the user as a participant of the event
-        EventParticipant.create(user = test_user, event = testingEvent.id, hoursEarned=4.0)
+        EventParticipant.create(user = testUser, event = testingEvent.id, hoursEarned=4.0)
         testingEvent = (Event.select(Event.id, Event.name, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
-                                   .join(Program).switch()
-                                   .join(EventParticipant)
-                                   .where(EventParticipant.user == "FINN",
-                                          Event.term == 3,
-                                          Program.id == 2,
-                                          Event.id == testingEvent)
-                             )
+                             .join(Program).switch()
+                             .join(EventParticipant)
+                             .where(EventParticipant.user == "FINN",
+                                    Event.term == 3,
+                                    Program.id == 2,
+                                    Event.id == testingEvent)
+                                    )
         program = Program.get_by_id(2)
 
         # get the actual data from getProgramEngagementHistory
-        actual_data = getProgramEngagementHistory(2, "FINN", 3)
-        expected_data = {"program": program.programName, "events": [event for event in testingEvent.dicts()], "totalHours":4.0}
-        assert actual_data == expected_data
+        actualData = getProgramEngagementHistory(2, "FINN", 3)
+        expectedData = {"program": program.programName, "events": [event for event in testingEvent.dicts()], "totalHours":4.0}
+        assert actualData == expectedData
         transaction.rollback()
 
 @pytest.mark.integration
 def test_getCommunityEngagementByTerm():
     with mainDB.atomic() as transaction:
         # create testing objects
-        test_user = User.create(
-            username="FINN",
-            firstName="Not",
-            lastName="Yet",
-            email=f"FINN@berea.edu",
-            bnumber="B91111111")
+        testUser = User.create(username="FINN",
+                               firstName="Not",
+                               lastName="Yet",
+                               email=f"FINN@berea.edu",
+                               bnumber="B91111111")
         
         testingEvent = Event.create(name = "Testing event",
                                     term = 2,
@@ -133,73 +134,123 @@ def test_getCommunityEngagementByTerm():
                                     program = 2)
         
         testCourse = Course.create(courseName="test get course information",
-                      courseAbbreviation="TGCI",
-                      sectionDesignation="something",
-                      courseCredit=1.0,
-                      term=3,
-                      status=1,
-                      createdBy="bledsoef",
-                      serviceLearningDesignatedSections = "",
-                      previouslyApprovedDescription="")
-        # add the test_user as a participant in the course and event
-        EventParticipant.create(user = test_user , event = testingEvent.id)
-        CourseParticipant.create(course=testCourse, user=test_user, hoursEarned=1.0)
+                                   courseAbbreviation="TGCI",
+                                   sectionDesignation="something",
+                                   courseCredit=1.0,
+                                   term=3,
+                                   status=1,
+                                   createdBy="bledsoef",
+                                   serviceLearningDesignatedSections = "",
+                                   previouslyApprovedDescription="")
+        
+        # add the testUser as a participant in the course and event
+        EventParticipant.create(user = testUser , event = testingEvent.id)
+        CourseParticipant.create(course=testCourse, user=testUser, hoursEarned=1.0)
 
         course = Course.get_by_id(testCourse)
         event = Event.get_by_id(testingEvent)
 
         # write out what we expect the result to be
-        expected_result = OrderedDict({("Spring 2021", 2):[{"name":event.program.programName, "id":event.program.id, "type":"program", "term":event.term}],
-            ("Summer 2021", 3):[{"name":course.courseName, "id":course.id, "type":"course", "term":course.term}]})
+        expectedResult = OrderedDict({("Spring 2021", 2):[{"name":event.program.programName, "id":event.program.id, "type":"program", "term":event.term}],
+                                       ("Summer 2021", 3):[{"name":course.courseName, "id":course.id, "type":"course", "term":course.term}]})
         
         # get the actual result from getCommunityEngagementByTerm
-        actual_result = dict(getCommunityEngagementByTerm("FINN"))
+        actualResult = dict(getCommunityEngagementByTerm("FINN"))
 
-        assert actual_result == expected_result
+        assert actualResult == expectedResult
         transaction.rollback()
 
 @pytest.mark.integration
-@pytest.mark.integration
 def test_saveOtherEngagementRequest():
     with mainDB.atomic() as transaction:
-        testInfo = {
-            'user': 'ramsayb2',
-            'experience': 'Test Experience',
-            'term': 3,
-            'description': 'Test Description',
-            'company': 'Test Company',
-            'hours': 5,
-            'weeks': 10,
-            'attachment': 'test_file.txt',
-            'status': 'Pending'
-        }
+        testInfo = {'user': 'ramsayb2',
+                    'experience': 'Test Experience',
+                    'term': 3,
+                    'description': 'Test Description',
+                    'company': 'Test Company',
+                    'hours': 5,
+                    'weeks': 10,
+                    'attachment': 'test_file.txt',
+                    'status': 'Pending'
+                   }
 
         # Save the requested event to the database
         saveOtherEngagementRequest(testInfo)
 
-        expected_values = {
-            'user': testInfo['user'],
-            'experienceName': testInfo['experience'],
-            'term': testInfo['term'],
-            'description': testInfo['description'],
-            'company': testInfo['company'],
-            'weeklyHours': testInfo['hours'],
-            'weeks': testInfo['weeks'],
-            'filename': testInfo['attachment'],
-            'status': testInfo['status']
-        }
+        expectedValues = {'user': testInfo['user'],
+                           'experienceName': testInfo['experience'],
+                           'term': testInfo['term'],
+                           'description': testInfo['description'],
+                           'company': testInfo['company'],
+                           'weeklyHours': testInfo['hours'],
+                           'weeks': testInfo['weeks'],
+                           'filename': testInfo['attachment'],
+                           'status': testInfo['status']
+                          }
 
         # Get the actual saved request from the database (the most recent one)
         saved_request = CommunityEngagementRequest.select().order_by(CommunityEngagementRequest.id.desc()).first()
 
         # Check that the saved request matches the expected values
-        for key, expected_value in expected_values.items():
+        for key, expectedValue in expectedValues.items():
             if key == "user":
-                actual_value = 'ramsayb2'
+                actualValue = 'ramsayb2'
             elif key == "term":
-                actual_value = 3
+                actualValue = 3
             else:
-                actual_value = getattr(saved_request, key)
-            assert actual_value == expected_value
+                actualValue = getattr(saved_request, key)
+            assert actualValue == expectedValue
+
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_getMinorInterest():
+    with mainDB.atomic() as transaction: 
+        # set every users minor interest to no interest
+        User.update(minorStatus = 'No interest').where(User.minorStatus != 'No interest').execute()
+
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_getMinorProgress():
+    with mainDB.atomic() as transaction: 
+        # Make sure the individual requirement table is empty. 
+        IndividualRequirement.delete().execute()
+        noMinorProgress = getMinorProgress()
+
+        assert noMinorProgress == []
+        
+        khattsSustainedEngagement = {"username": "khatts",
+                                     "program": 2,
+                                     "course": None,
+                                     "description": None,
+                                     "term": 3,
+                                     "requirement": 14,
+                                     "addedBy": "ramsayb2",
+                                     "addedOn": "",
+                                     }
+
+        IndividualRequirement.create(**khattsSustainedEngagement)
+        khattsProgress = getMinorProgress()
+        
+        assert khattsProgress[0]['engagementCount'] == 1
+        assert khattsProgress[0]['hasSummer'] == 0
+
+        khattsSummerEngagement = {"username": "khatts",
+                                  "program": None,
+                                  "course": None, 
+                                  "description": "Summer engagement",
+                                  "term": 3,
+                                  "requirement": 16,
+                                  "addedBy": "ramsayb2",
+                                  "addedOn": ""
+                                 }
+        
+        IndividualRequirement.create(**khattsSummerEngagement)
+        khattsProgressWithSummer = getMinorProgress()
+
+        assert khattsProgressWithSummer[0]['engagementCount']== 1
+        assert khattsProgressWithSummer[0]['hasSummer'] == 1
+        
 
         transaction.rollback()

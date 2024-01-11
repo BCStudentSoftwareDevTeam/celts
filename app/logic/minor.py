@@ -27,7 +27,7 @@ def getMinorProgress():
     summerCase = Case(None, [(CertificationRequirement.name == "Summer Program", 1)], 0)
 
     engagedStudentsWithCount = (
-        User.select(User.firstName, User.lastName, User.username, fn.COUNT(IndividualRequirement.id).alias('requirementCount'), fn.SUM(summerCase).alias('hasSummer'))
+        User.select(User.firstName, User.lastName, User.username, fn.COUNT(IndividualRequirement.id).alias('engagementCount'), fn.SUM(summerCase).alias('hasSummer'))
             .join(IndividualRequirement, on=(User.username == IndividualRequirement.username))
             .join(CertificationRequirement, on=(IndividualRequirement.requirement_id == CertificationRequirement.id))
             .where(CertificationRequirement.certification_id == Certification.CCE)
@@ -40,7 +40,7 @@ def getMinorProgress():
             'username': student.username,
             'firstName': student.firstName,
             'lastName': student.lastName,
-            'requirementCount': student.requirementCount - student.hasSummer,
+            'engagementCount': student.engagementCount - student.hasSummer,
             'hasSummer': student.hasSummer
         }
         for student in engagedStudentsWithCount
