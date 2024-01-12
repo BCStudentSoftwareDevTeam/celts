@@ -430,12 +430,17 @@ def updatecohort(year, method, username):
     if method == "add":
         try:
             BonnerCohort.create(year=year, user=user)
+            flash(f"Successfully added {user.fullName} to {year} Bonner Cohort.", "success")
         except IntegrityError as e:
             # if they already exist, ignore the error
+            flash(f'Error: {user.fullName} already added.', "danger")
             pass
+        
     elif method == "remove":
         BonnerCohort.delete().where(BonnerCohort.user == user, BonnerCohort.year == year).execute()
+        flash(f"Successfully removed {user.fullName} from {year} Bonner Cohort.", "success")
     else:
+        flash(f"Error: {user.fullName} can't be added.", "danger")
         abort(500)
 
     return ""

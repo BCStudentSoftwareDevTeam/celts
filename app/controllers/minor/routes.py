@@ -1,4 +1,4 @@
-from flask import Flask, g, render_template, request
+from flask import Flask, g, render_template, request, abort
 from app.controllers.minor import minor_bp
 from app.models.user import User
 from app.models.term import Term
@@ -6,13 +6,20 @@ from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.fileHandler import FileHandler
 from app.models.attachmentUpload import AttachmentUpload
 from app.logic.utils import getRedirectTarget, setRedirectTarget
+from app.logic.minor import updateMinorInterest, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
     """
         Load minor management page with community engagements and summer experience
     """
-    pass
+    if not (g.current_user.isAdmin):
+        return abort(403)
+    terms = getCommunityEngagementByTerm(username)
+    user = User.get_by_id(username)
+    return render_template("minor/profile.html",
+                    user=user,
+                    terms=terms)
 
 @minor_bp.route('/cceMinor/<username>/identifyCommunityEngagement/<term>', methods=['GET'])
 def identifyCommunityEngagement(username):
@@ -20,6 +27,18 @@ def identifyCommunityEngagement(username):
         Load all program and course participation records for that term
     """
     pass
+
+@minor_bp.route('/cceMinor/<username>/getEngagementInformation/<type>/<term>/<id>', methods=['GET'])
+def getEngagementInformation(username, type, id, term):
+    """
+        For a particular engagement activity (program or course), get the participation history or course information respectively.
+    """
+    if type == "program":
+        information = getProgramEngagementHistory(id, username, term)
+    else:
+        information = getCourseInformation(id)
+
+    return information
 
 @minor_bp.route('/cceMinor/<username>/addCommunityEngagement', methods=['POST'])
 def addCommunityEngagement(username):
@@ -46,7 +65,6 @@ def requestOtherEngagement(username):
     """
     user = User.get_by_id(username)
     terms = selectSurroundingTerms(g.current_term)
-
     return render_template("/minor/requestOtherEngagement.html",
                             user=user,
                             terms=terms)
@@ -59,7 +77,7 @@ def addSummerExperience(username):
 
 @minor_bp.route('/cceMinor/<username>/indicateInterest', methods=['POST'])
 def indicateMinorInterest(username):
-    pass
+    updateMinorInterest(username)
 
 @minor_bp.route("/deleteRequestFile", methods=["POST"])
 def deleteRequestFile():
