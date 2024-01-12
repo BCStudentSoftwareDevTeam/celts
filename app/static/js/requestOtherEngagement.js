@@ -15,4 +15,10 @@ $(document).ready(function(){
     //
     // })
     handleFileSelection("attachmentObject")
+
+    $('#sendOtherRequest').on("click", function(){
+      if (!validateForm()) return;
+      $('#requestOtherCommEng').attr("action", "/cceMinor/<username>/addCommunityEngagement")
+      $('#requestOtherCommEng').submit()
+    })
 })

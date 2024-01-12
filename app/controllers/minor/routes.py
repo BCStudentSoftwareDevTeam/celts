@@ -5,6 +5,7 @@ from app.models.term import Term
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.fileHandler import FileHandler
 from app.models.attachmentUpload import AttachmentUpload
+from app.logic.utils import getRedirectTarget, setRedirectTarget
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -25,7 +26,11 @@ def addCommunityEngagement(username):
     """
         Saving a term participation/activities for sustained community engagement
     """
-    pass
+    otherExperience = OtherExperience.create(status=CourseStatus.IN_PROGRESS, createdBy=creator)
+    for i in range(1, 7):
+        CourseQuestion.create( course=course, questionNumber=i)
+
+    return course
 
 @minor_bp.route('/cceMinor/<username>/removeCommunityEngagement', methods=['POST'])
 def removeCommunityEngagement(username):
@@ -34,7 +39,7 @@ def removeCommunityEngagement(username):
     """
     pass
 
-@minor_bp.route('/cceMinor/<username>/requestOtherCommunityEngagement', methods=['GET'])
+@minor_bp.route('/cceMinor/<username>/requestOtherCommunityEngagement', methods=['GET', 'POST'])
 def requestOtherEngagement(username):
     """
         Load the "request other" form and submit it.
