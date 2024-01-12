@@ -5,7 +5,7 @@ from app.models.term import Term
 from app.logic.utils import selectSurroundingTerms
 from app.logic.fileHandler import FileHandler
 from app.models.attachmentUpload import AttachmentUpload
-from app.logic.minor import updateMinorInterest, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, saveOtherEngagementRequest
+from app.logic.minor import toggleMinorInterest, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, saveOtherEngagementRequest
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -88,7 +88,7 @@ def addSummerExperience(username):
 
 @minor_bp.route('/cceMinor/<username>/indicateInterest', methods=['POST'])
 def indicateMinorInterest(username):
-    updateMinorInterest(username)
+    toggleMinorInterest(username)
 
 @minor_bp.route("/deleteRequestFile", methods=["POST"])
 def deleteRequestFile():

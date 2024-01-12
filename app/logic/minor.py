@@ -48,16 +48,12 @@ def getMinorProgress():
 
     return engagedStudentsList
    
-def updateMinorInterest(username):
+def toggleMinorInterest(username):
     """
     Given a username, update their minor interest and minor status.
     """
     user = User.get(username=username)
     user.minorInterest = not user.minorInterest
-    if user.minorInterest == True:
-        user.minorStatus = "Interested"
-    else:
-        user.minorStatus = "No interest"
 
     user.save()
 

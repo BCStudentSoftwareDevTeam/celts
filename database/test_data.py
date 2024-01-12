@@ -49,6 +49,7 @@ users = [
         "dietRestriction": "Diary",
         "major": None,
         "classLevel": None,
+        "minorInterest": 0,
 
     },
     {
@@ -64,6 +65,7 @@ users = [
         "isCeltsStudentStaff": False,
         "major": "Computer Science",
         "classLevel": "Senior",
+        "minorInterest": 1,
     },
     {
         "username": "neillz",
@@ -78,6 +80,7 @@ users = [
         "isCeltsStudentStaff": True,
         "major": "Psychology",
         "classLevel": "Sophomore",
+        "minorInterest": 0,
     },
 
     {
@@ -93,6 +96,7 @@ users = [
         "isCeltsStudentStaff": False,
         "major": None,
         "classLevel": None,
+        "minorInterest": 0,
     },
     {
         "username" : "ayisie",
@@ -107,6 +111,7 @@ users = [
         "isCeltsStudentStaff": False,
         "major": "Chemistry",
         "classLevel": "Junior",
+        "minorInterest": 1,
 
     },
     {
@@ -177,6 +182,7 @@ users = [
         "isStaff": True,
         "major": None,
         "classLevel": None,
+        "minorInterest": 0,
     },
      {
         "username": "qasema",
@@ -191,6 +197,7 @@ users = [
         "isStaff": True,
         "major": None,
         "classLevel": None,
+        "minorInterest": 0,
     },
     {
         "username": "stettnera2",
@@ -206,6 +213,7 @@ users = [
         "isCeltsStudentStaff": False,
         "major": None,
         "classLevel": None,
+        "minorInterest": 0,
     },
     {
         "username": "bledsoef",
@@ -218,6 +226,7 @@ users = [
         "isFaculty": True,
         "isCeltsStudentStaff": False,
         "isStaff": True,
+        "minorInterest": 0,
     },
 ]
 

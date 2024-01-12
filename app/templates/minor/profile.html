@@ -17,7 +17,6 @@
         <input id="username" value="{{user.username}}" hidden/>
         <div name="Header" class="row">
             <h1>{{user.firstName}} {{user.lastName}}'s CCE Minor</h2>
-            <div><b>Minor Status:</b> {{user.minorStatus}}</div>
             <div class="py-3 row-auto">
               <input name="expressInterest" id="expressInterest" {{ "checked" if user.minorInterest }} type="checkbox"/>
               <label for="expressInterest">Indicate interest in doing the minor</label>

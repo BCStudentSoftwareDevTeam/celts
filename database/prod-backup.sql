@@ -1116,7 +1116,6 @@ CREATE TABLE `user` (
   `major` varchar(255) DEFAULT NULL,
   `classLevel` varchar(255) DEFAULT NULL,
   `minorInterest` tinyint(1) NOT NULL,
-  `minorStatus` varchar(255) NOT NULL,
   PRIMARY KEY (`username`),
   UNIQUE KEY `user_bnumber` (`bnumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

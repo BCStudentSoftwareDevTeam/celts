@@ -12,7 +12,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
 from app.models.communityEngagementRequest import CommunityEngagementRequest
-from app.logic.minor import getProgramEngagementHistory, getCourseInformation, updateMinorInterest, getCommunityEngagementByTerm, saveOtherEngagementRequest, getMinorInterest, getMinorProgress
+from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, saveOtherEngagementRequest, getMinorInterest, getMinorProgress
 
 @pytest.mark.integration
 def test_getCourseInformation():
@@ -40,7 +40,7 @@ def test_getCourseInformation():
 
 
 @pytest.mark.integration
-def test_updateMinorInterest():
+def test_toggleMinorInterest():
     with mainDB.atomic() as transaction:
         User.create(username="FINN",
                     firstName="Not",
@@ -51,20 +51,17 @@ def test_updateMinorInterest():
         user = User.get_by_id("FINN")
         # make sure users have the default values of false and not interested, respectively
         assert user.minorInterest == False
-        assert user.minorStatus == "No interest"
-        updateMinorInterest("FINN")
+        toggleMinorInterest("FINN")
         
         user = User.get_by_id("FINN")
-        # make sure updateMinorInterest works correctly
+        # make sure toggleMinorInterest works correctly
         assert user.minorInterest == True
-        assert user.minorStatus == "Interested"
         
         # verify unchecking box will restore defaults
-        updateMinorInterest("FINN")
+        toggleMinorInterest("FINN")
         
         user = User.get_by_id("FINN")  
         assert user.minorInterest == False
-        assert user.minorStatus == "No interest"
         transaction.rollback()
 
 @pytest.mark.integration
@@ -207,7 +204,10 @@ def test_saveOtherEngagementRequest():
 def test_getMinorInterest():
     with mainDB.atomic() as transaction: 
         # set every users minor interest to no interest
-        User.update(minorStatus = 'No interest').where(User.minorStatus != 'No interest').execute()
+        User.update(minorInterest = 0).where(User.minorInterest == 1).execute()
+
+        noStudentsInterested = getMinorInterest()
+
 
         transaction.rollback()
 
