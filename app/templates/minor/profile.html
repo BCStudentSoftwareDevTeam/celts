@@ -1,0 +1,95 @@
+{%set title = "Student Minor Page"%}
+{% extends "base.html" %}
+
+{% block scripts %}
+  {{super()}}
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.5.4/bootstrap-select.js"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/studentMinorPage.js') }}?u={{lastStaticUpdate}}"></script>
+{% endblock %}
+
+{% block styles %}
+  {{super()}}
+  <link rel="stylesheet" href="{{url_for('static', filename ='css/minor.css') }}?u={{lastStaticUpdate}}">
+  {% endblock %}
+
+{% block app_content %}
+    <div class="row">
+        <input id="username" value="{{user.username}}" hidden/>
+        <div name="Header" class="row">
+            <h1>{{user.firstName}} {{user.lastName}}'s CCE Minor</h2>
+            <div><b>Minor Status:</b> {{user.minorStatus}}</div>
+            <div class="py-3 row-auto">
+              <input name="expressInterest" id="expressInterest" {{ "checked" if user.minorInterest }} type="checkbox"/>
+              <label for="expressInterest">Indicate interest in doing the minor</label>
+            </div>
+
+            <div>
+                <p class="py-3"><b>
+                    Click 
+                    <a href="https://berea.smartcatalogiq.com/en/current/catalog/departments-of-study/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
+                    for more information on the Community and Civic Engagement minor.</b></p>
+            </div>
+        </div>
+
+        <div name="Sustained Community Engagement Section">
+            <div class="row">
+                <h3 class="col-md-auto">Sustained Community Engagement</h3>
+                <button class="col-md-auto btn btn-primary btn-sm">Request Other Experience</button>
+            </div>
+            <p class="pt-2">Approximately two hours of engagement over about ten weeks of a semester. Only two engagement activities can be credited in a single semester.</p>
+            <div class="accordion" id="communityEngagement">
+              {% for term, engagements in terms.items() %}
+                <div class="accordion-item">
+                  <h3 class="accordion-header" id="headingOne">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{loop.index}}" aria-expanded="true" aria-controls="collapse{{loop.index}}">
+                      {{term[0]}}
+                    </button>
+                  </h3>
+                  <div id="collapse{{loop.index}}" class="accordion-collapse collapse" aria-labelledby="heading{{loop.index}}"+  data-bs-parent="#communityEngagement">
+                    <div class="accordion-body">
+                      <div class="container-fluid col-10">
+                        <div class="row d-flex justify-content-center mb-3">
+                          <div class="col-md-6 mb-3">
+                            <table class="table mb-3">
+                              <thead>
+                                <tr>
+                                  <th scope="col">Engagement Activity</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {% for engagement in engagements %}
+                                   <tr class="show-pointer" id="{{engagement['type']}}{{engagement['id']}}" name="{{engagement['term']}}" onclick="showEngagementInformation(`{{engagement['type']}}`, `{{engagement['id']}}`, `{{engagement['term']}}`)">
+                                        <td>
+                                            <input onclick="stopPropagation(event)" type="checkbox"/>
+                                            <button id="{{engagement['type']}}{{engagement['id']}}" name="{{engagement['term']}}" type="button" class="btn btn-link">{{engagement["name"]}}</button>
+                                        </td>
+                                   </tr>
+                                {% endfor %}
+                              </tbody>
+                              </table>
+                          </div>
+                          <div class="col-md-6 p-3" id="set{{term[1]}}">
+                            Click on an engagement entry to see your event history or course information.
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+        </div>
+
+        <div name="Community-Engaged Summer Experience" class="pt-4">
+            <h3 class="col-md-auto">Community-Engaged Summer Experience</h3>
+
+            <p class="pt-2">Must include at least 300 hours of work over the span of 8 weeks with a public-facing organization with a focus on applied work.</p>
+            <div class="row-auto">
+                <input class="p-1" placeholder="Experience name" type="text"/>
+                <button class="px-3 btn-primary btn-sm">Save</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+

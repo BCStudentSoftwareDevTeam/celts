@@ -23,6 +23,7 @@ from app.models.courseInstructor import CourseInstructor
 from app.models.certification import Certification
 from app.models.emergencyContact import EmergencyContact
 from app.models.insuranceInfo import InsuranceInfo
+from app.models.celtsLabor import CeltsLabor
 
 from app.controllers.main import main_bp
 from app.logic.loginManager import logout
@@ -35,6 +36,7 @@ from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
 from app.logic.utils import selectSurroundingTerms
 from app.logic.certification import getCertRequirementsWithCompletion
 from app.logic.createLogs import createRsvpLog, createAdminLog
+from app.logic.celtsLabor import getCeltsLaborHistory
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
@@ -42,13 +44,21 @@ def redirectToLogout():
 
 @main_bp.route('/', methods=['GET'])
 def landingPage():
-    managerProgramDict = getManagerProgramDict(g.current_user)
-    eventsInTerm = list(Event.select().where(Event.term == g.current_term, Event.isCanceled == False))
-    programsWithEventsList = [event.program for event in eventsInTerm if not event.isPast]
 
-    return render_template("/main/landingPage.html", managerProgramDict = managerProgramDict,
-                                                     term = g.current_term,
-                                                     programsWithEventsList = programsWithEventsList)
+    managerProgramDict = getManagerProgramDict(g.current_user)
+
+    # Optimize the query to fetch programs with non-canceled, non-past events in the current term
+    programsWithEventsList = list(Program.select(Program, Event)
+                                         .join(Event)
+                                         .where((Event.term == g.current_term) and (Event.isCanceled == False) and (Event.isPast == False))
+                                         .distinct()
+                                         .execute())  # Ensure only unique programs are included
+
+    return render_template("/main/landingPage.html", 
+                           managerProgramDict=managerProgramDict,
+                           term=g.current_term,
+                           programsWithEventsList=programsWithEventsList)
+
 
 @main_bp.route('/goToEventsList/<programID>', methods=['GET'])
 def goToEventsList(programID):
@@ -151,7 +161,8 @@ def viewUsersProfile(username):
 
         managersProgramDict = getManagerProgramDict(g.current_user)
         managersList = [id[1] for id in managersProgramDict.items()]
-
+        participatedInLabor = getCeltsLaborHistory(volunteer)
+        
         return render_template ("/main/userProfile.html",
                                 programs = programs,
                                 programsInterested = programsInterested,
@@ -166,7 +177,8 @@ def viewUsersProfile(username):
                                 currentDateTime = datetime.datetime.now(),
                                 profileNotes = profileNotes,
                                 bonnerRequirements = bonnerRequirements,
-                                managersList = managersList                
+                                managersList = managersList,
+                                participatedInLabor = participatedInLabor,
                             )
     abort(403)
 
@@ -428,7 +440,6 @@ def serviceTranscript(username):
     totalHours = getTotalHours(username)
     allEventTranscript = getProgramTranscript(username)
     startDate = getStartYear(username)
-
     return render_template('main/serviceTranscript.html',
                             allEventTranscript = allEventTranscript,
                             slCourses = slCourses.objects(),
