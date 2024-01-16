@@ -177,28 +177,18 @@ def renewEvent(eventId):
             return redirect(url_for('admin.eventDisplay', eventId = eventId))
 
 
-        priorEvent = Event.get_by_id(eventId)
-        newEvent, message = attemptSaveEvent({
-                    'name': priorEvent.name,
-                    'term': priorEvent.term,
-                    'description': priorEvent.description,
+        priorEvent = model_to_dict(Event.get_by_id(eventId))
+        newEventDict = priorEvent.copy()
+        newEventDict.pop('id')
+        newEventDict.update({
                     'timeStart': formData['timeStart'],
                     'timeEnd': formData['timeEnd'],
                     'location': formData['location'],
-                    'isFoodProvided': priorEvent.isFoodProvided,
-                    'isTraining': priorEvent.isTraining,
-                    'isRsvpRequired': priorEvent.isRsvpRequired,
-                    'isService': priorEvent.isService,
-                    'isAllVolunteerTraining': priorEvent.isAllVolunteerTraining,
-                    'rsvpLimit': priorEvent.rsvpLimit,
                     'startDate': f'{formData["startDate"][-4:]}-{formData["startDate"][0:-5]}',
                     'endDate': f'{formData["endDate"][-4:]}-{formData["endDate"][0:-5]}',
-                    'recurringId': priorEvent.recurringId,
-                    'contactEmail': priorEvent.contactEmail,
-                    'contactName': priorEvent.contactName,
-                    'program': priorEvent.program,
                     'isRecurring': (True if priorEvent.recurringId else False)
-            }, renewedEvent = True)
+                        })
+        newEvent, message = attemptSaveEvent(newEventDict, renewedEvent = True)
         if message:
             flash(message, "danger")
             return redirect(url_for('admin.eventDisplay', eventId = priorEvent))
