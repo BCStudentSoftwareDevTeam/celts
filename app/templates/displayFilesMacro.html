@@ -21,7 +21,7 @@
             <td class="py-2 px-3" >
                 {% set filename = key.removeprefix((databaseId|string) + "/")%}
                 {% set shortname = filename[:8] + "..." + filename[-10:] if filename|length > 25 else filename %}
-                <a class="mr-5 fileName" data-filename='{{ key }}' href="{{ value[0] }}" target="_blank" data-toggle="tooltip" data-placement="top" title="{{filename}}">{{ shortname }}</a>
+                <a class="mr-5 fileName" data-filename='{{ filename }}' href="{{ value[0] }}" target="_blank" data-toggle="tooltip" data-placement="top" title="{{filename}}">{{ shortname }}</a>
             </td>
             <td style="text-align:center">
                 <button
