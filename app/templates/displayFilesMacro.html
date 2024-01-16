@@ -5,13 +5,6 @@
         <td class="py-2 px-3"><strong>{{ titleName }}</strong></td>
     </tr>
     {% for key, value in filepaths.items() %}
-    
-    <!-- beans -->
-    {{filepaths.items() | list}} <br>
-    {{databaseId}}
-
-
-
         <tr id="attachment_{{ value[1] }}" class="attachmentRow_{{ key }}" data-id="{{ key }}">
             <td class="py-2 px-3">
                 {% if value[-1].isDisplayed %}
@@ -26,11 +19,9 @@
                 {% endif %}
             </td>
             <td class="py-2 px-3" >
-                {% set filename = key.removeprefix((databaseId|string) + "/")%} <br>
-                {{(databaseId|string) + "/"}} <br>
-                {{filename}} <br>
-                {% set filename = key[:8] + "..." + key[-10:] if key|length > 25 else key %}
-                <a class="mr-5 fileName" data-filename='{{ key }}' href="{{ value[0] }}" target="_blank">{{ filename }}</a>
+                {% set filename = key.removeprefix((databaseId|string) + "/")%}
+                {% set shortname = filename[:8] + "..." + filename[-10:] if filename|length > 25 else filename %}
+                <a class="mr-5 fileName" data-filename='{{ key }}' href="{{ value[0] }}" target="_blank" data-toggle="tooltip" data-placement="top" title="{{filename}}">{{ shortname }}</a>
             </td>
             <td style="text-align:center">
                 <button
