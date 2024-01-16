@@ -205,7 +205,7 @@ def renewEvent(eventId):
 
         copyRsvp(priorEvent, newEvent[0])
 
-        createAdminLog(f"Renewed {priorEvent.name} as {newEvent[0].name}.")
+        createAdminLog(f"Renewed {priorEvent.name} as <a href='event/{newEvent[0].id}/view'>{newEvent[0].name}</a>.")
         flash("Event successfully renewed.", "success")
         return redirect(url_for('admin.eventDisplay', eventId = newEvent[0]))
 

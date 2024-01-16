@@ -357,15 +357,14 @@ def validateNewEventData(data):
     # Validation if we are inserting a new event
     if 'id' not in data:
 
-        sameEventList = list((Event.select()
-                      .where((Event.name == data['name']) &
-                             (Event.location == data['location']) &
-                             (Event.startDate == data['startDate']) &
-                             (Event.timeStart == data['timeStart'])).execute()))
+        sameEventList = list((Event.select().where((Event.name == data['name']) &
+                                                   (Event.location == data['location']) &
+                                                   (Event.startDate == data['startDate']) &
+                                                   (Event.timeStart == data['timeStart'])).execute()))
         
-        for item in sameEventList:
-            if item.isCanceled or item.recurringId:
-                sameEventList.remove(item)
+        for event in sameEventList:
+            if event.isCanceled or event.recurringId:
+                sameEventList.remove(event)
 
         try:
             Term.get_by_id(data['term'])
@@ -521,4 +520,4 @@ def copyRsvp(priorEvent, newEvent):
         rsvpCopies=len(rsvpInfo)
 
     if rsvpCopies:
-        createRsvpLog(newEvent, f"Copied {rsvpCopies} Rsvp's from {priorEvent.name} to {newEvent.name}")
+        createRsvpLog(newEvent, f"Copied {rsvpCopies} Rsvp's from {priorEvent.name} to <a href='event/{newEvent.id}/view'>{newEvent.name}</a>")
