@@ -96,9 +96,9 @@ def volunteerMajorAndClass(column, reorderClassLevel=False):
 
 def repeatVolunteersPerProgram():
     # Get people who participated in events more than once (individual program)
-    repeatPerProgramQuery = (EventParticipant.select(fn.CONCAT(User.firstName, " ", User.lastName),
-                                              Program.programName.alias("programName"),
-                                              fn.Count(EventParticipant.event_id).alias('event_count'))
+    repeatPerProgramQuery = (EventParticipant.select(fn.CONCAT(User.firstName, " ", User.lastName), 
+                                                     Program.programName.alias("programName"), 
+                                                     fn.Count(EventParticipant.event_id).alias('event_count'))
                                              .join(Event, on=(EventParticipant.event_id ==Event.id))
                                              .join(Program, on=(Event.program == Program.id))
                                              .join(User, on=(User.username == EventParticipant.user_id))
@@ -145,9 +145,9 @@ def termParticipation(termDescription):
 
     return programParticipationDict
 
-def removeNullParticipants(participant_list):
+def removeNullParticipants(participant_dict):
     # loop through the dictionary and remove all entries that do not have a participant
-    return list(filter(lambda participant: bool(participant), participant_list))
+    return list(filter(lambda participant: bool(participant), participant_dict))
     
 # function to calculate the retention rate for each program
 def calculateRetentionRate(fall_dict, spring_dict):
