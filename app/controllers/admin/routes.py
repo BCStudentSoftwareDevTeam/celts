@@ -272,8 +272,7 @@ def eventDisplay(eventId):
                                 image = image,
                                 pageViewsCount= pageViewsCount,
                                 days=days, 
-                                hours=hours,
-                                minutes=minutes)
+                                )
 
 
 @admin_bp.route('/event/<eventId>/cancel', methods=['POST'])

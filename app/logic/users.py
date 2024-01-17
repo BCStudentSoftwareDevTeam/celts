@@ -77,10 +77,10 @@ def banUser(program_id, username, note, banEndDate, creator):
     creator: the admin or person with authority who created the ban
     """
     noteForDb = Note.create(createdBy = creator,
-                             createdOn = datetime.datetime.now(),
-                             noteContent = note,
-                             isPrivate = 0,
-                             noteType = "ban")
+                            createdOn = datetime.datetime.now(),
+                            noteContent = note,
+                            isPrivate = 0,
+                            noteType = "ban")
 
     ProgramBan.create(program = program_id,
                       user = username,
@@ -98,14 +98,15 @@ def unbanUser(program_id, username, note, creator):
     creator: the admin or person with authority who removed the ban
     """
     noteForDb = Note.create(createdBy = creator,
-                             createdOn = datetime.datetime.now(),
-                             noteContent = note,
-                             isPrivate = 0,
-                             noteType = "unban")
-    ProgramBan.update(endDate = datetime.datetime.now(),
-                      unbanNote = noteForDb).where(ProgramBan.program == program_id,
-                                                   ProgramBan.user == username,
-                                                   ProgramBan.endDate >  datetime.datetime.now()).execute()
+                            createdOn = datetime.datetime.now(),
+                            noteContent = note,
+                            isPrivate = 0,
+                            noteType = "unban")
+    (ProgramBan.update(endDate = datetime.datetime.now(),
+                       unbanNote = noteForDb)
+               .where(ProgramBan.program == program_id,
+                      ProgramBan.user == username,
+                      ProgramBan.endDate >  datetime.datetime.now())).execute()
 
 def getUserBGCheckHistory(username):
     """
@@ -114,9 +115,9 @@ def getUserBGCheckHistory(username):
     bgHistory = {'CAN': [], 'FBI': [], 'SHS': [], 'BSL': []}
 
     allBackgroundChecks = (BackgroundCheck.select(BackgroundCheck, BackgroundCheckType)
-                                                  .join(BackgroundCheckType)
-                                                  .where(BackgroundCheck.user == username)
-                                                  .order_by(BackgroundCheck.dateCompleted.desc()))
+                                          .join(BackgroundCheckType)
+                                          .where(BackgroundCheck.user == username)
+                                          .order_by(BackgroundCheck.dateCompleted.desc()))
     for row in allBackgroundChecks:
         bgHistory[row.type_id].append(row)
 
