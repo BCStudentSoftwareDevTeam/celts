@@ -54,7 +54,6 @@ function createNewRow(selectedInstructor) {
   
     let phoneInput = newRow.find("td:eq(0) input")
     phoneInput.val(phone);
-    console.log("Phone input is", phoneInput.val(phone))
     phoneInput.attr("id", "inputPhoneNumber-" +username);
     $(phoneInput).inputmask('(999)-999-9999');
   

@@ -74,19 +74,19 @@ def editImportedCourses(courseData, attachments=None):
     with mainDB.atomic() as transaction:
         try:
             course = Course.get_by_id(courseData["courseId"])
-            (Course.update(
-                courseName=courseData["courseName"],
-                courseCredit=courseData["hoursEarned"]
-            ).where(Course.id == course.id).execute())
+            
+            (Course.update(courseName=courseData["courseName"],
+                           courseCredit=courseData["hoursEarned"])
+                   .where(Course.id == course.id).execute()) # Update the data (Course Name) of the course in the database
 
             instructorList = []
             if 'instructor[]' in courseData:
-                instructorList = courseData.getlist('instructor[]')
+                instructorList = courseData.getlist('instructor[]') # Fetch the list of course instructors from CourseData
             
             if instructorList:
-                CourseInstructor.delete().where(CourseInstructor.course == course).execute()
+                CourseInstructor.delete().where(CourseInstructor.course == course).execute() # Delete existing course instructors before rolling up updates 
                 for instructor in instructorList:
-                    if instructor != "":
+                    if instructor != "": # Checks that empty string is not added as a course instructor because some keys in the dictionary are empty string.
                         CourseInstructor.create(course=course, user=instructor)
 
             return Course.get_by_id(course.id)
@@ -136,10 +136,7 @@ def updateCourse(courseData, attachments=None):
             instructorList = []
             if 'instructor[]' in courseData:
                 instructorList = courseData.getlist('instructor[]')
-                print("--------------------------------")
-                print(instructorList)
-                print(courseData)
-                print("--------------------------------")
+
             CourseInstructor.delete().where(CourseInstructor.course == course).execute()
             for instructor in instructorList:
                 CourseInstructor.create(course=course, user=instructor)

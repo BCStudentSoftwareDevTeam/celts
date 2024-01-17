@@ -239,7 +239,6 @@ function getCourseInstructors() { // this function gets usernames out of the tab
   var instructorUsernames = $("#instructorTableBody tr").map(function() {
       return $(this).find('.editButton').data('username');
   }).get();
-  console.log("Mesdames et Messieurs", instructorUsernames)
   return instructorUsernames;
 }
 
