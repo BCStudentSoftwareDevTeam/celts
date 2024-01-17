@@ -245,7 +245,6 @@ def eventDisplay(eventId):
         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
         eventData["startDate"] = event.startDate.strftime("%m/%d/%Y")
         days, hours, minutes = eventCountDown(eventData)
-        print("days:", days, "hours:", hours, "minutes:", minutes )
 
 
         # Identify the next event in a recurring series
@@ -272,7 +271,9 @@ def eventDisplay(eventId):
                                 image = image,
                                 pageViewsCount= pageViewsCount,
                                 days=days, 
-                                )
+                                hours=hours,
+                                minutes=minutes)
+                                
 
 
 @admin_bp.route('/event/<eventId>/cancel', methods=['POST'])

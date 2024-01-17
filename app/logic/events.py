@@ -510,4 +510,4 @@ def eventCountDown(eventData, currentDatetime=None):
     eventStartDatetime = datetime.datetime.strptime(eventData['startDate'] + ' ' + eventData['timeStart'], '%m/%d/%Y %I:%M %p')
     delta = relativedelta(eventStartDatetime, currentDatetime)
 
-    return delta.days
+    return delta.days, delta.hours, delta.minutes  
