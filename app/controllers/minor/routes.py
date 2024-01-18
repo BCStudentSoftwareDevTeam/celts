@@ -5,6 +5,7 @@ from app.models.term import Term
 from app.logic.utils import selectSurroundingTerms
 from app.logic.fileHandler import FileHandler
 from app.models.attachmentUpload import AttachmentUpload
+from app.logic.utils import getFilesFromRequest
 from app.logic.minor import toggleMinorInterest, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, saveOtherEngagementRequest
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
@@ -65,9 +66,9 @@ def requestOtherEngagement(username):
     if request.method == 'POST':
         flash("Something happened and we hit post", "success")
         attachmentName = None
-        attachment = request.files.get("attachment")
+        attachment = request.files.get("attachmentObject")
         if attachment:
-                addFile= FileHandler(attachment)
+                addFile= FileHandler(getFilesFromRequest(request))
                 addFile.saveFiles()
                 attachmentName = attachment.filename
         formData = request.form.copy()

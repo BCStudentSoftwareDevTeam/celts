@@ -68,13 +68,16 @@ class FileHandler:
                     if not isFileInCourse:
                         AttachmentUpload.create(course = self.courseId, fileName = file.filename)
                         saveFileToFilesystem = file.filename
-                
+                else: 
+                    saveFileToFilesystem = file.filename
+
                 if saveFileToFilesystem:
                     self.makeDirectory()
                     file.save(self.getFileFullPath(newfilename = saveFileToFilesystem))        
                         
-        except AttributeError: # will pass if there is no attachment to save
-            pass
+        except AttributeError as e: # will pass if there is no attachment to save
+            print("###########################")
+            print(e)
 
     def retrievePath(self,files):
         pathDict={}

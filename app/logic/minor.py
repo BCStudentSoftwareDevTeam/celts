@@ -133,15 +133,14 @@ def getCommunityEngagementByTerm(username):
     return dict(sorted(terms.items(), key=lambda x: x[0][1]))
 
 def saveOtherEngagementRequest(engagementRequest):
-    requestInfo = engagementRequest
-    requestedThing = {"user": requestInfo['user'],
-                      "experienceName": requestInfo['experience'],
-                      "term": requestInfo['term'],
-                      "description": requestInfo['description'],
-                      "company": requestInfo['company'],
-                      "weeklyHours": requestInfo['hours'],
-                      "weeks": requestInfo['weeks'],
-                      "filename": requestInfo['attachment'],
+    requestedThing = {"user": engagementRequest['user'],
+                      "experienceName": engagementRequest['experience'],
+                      "term": engagementRequest['term'],
+                      "description": engagementRequest['description'],
+                      "company": engagementRequest['company'],
+                      "weeklyHours": engagementRequest['hours'],
+                      "weeks": engagementRequest['weeks'],
+                      "filename": engagementRequest['attachment'],
                       "status": "Pending"}
     
     CommunityEngagementRequest.create(**requestedThing)
