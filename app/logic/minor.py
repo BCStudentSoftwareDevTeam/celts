@@ -56,7 +56,7 @@ def toggleMinorInterest(username):
     user.minorInterest = not user.minorInterest
 
     user.save()
-
+    
 def getCourseInformation(id):
     """
         Given a course ID, return an object containing the course information and 

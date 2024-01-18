@@ -90,6 +90,8 @@ def addSummerExperience(username):
 def indicateMinorInterest(username):
     toggleMinorInterest(username)
 
+    return ""
+
 @minor_bp.route("/deleteRequestFile", methods=["POST"])
 def deleteRequestFile():
 
