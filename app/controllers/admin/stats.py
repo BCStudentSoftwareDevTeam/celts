@@ -26,5 +26,4 @@ def createSpreadsheet():
 
     formData = request.form
     print(formData.get("academicYear"))
-    # create_spreadsheet(formData.get("academicYear"), formData.get("academicTerm"))
     return ""
