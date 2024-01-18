@@ -416,26 +416,19 @@ def removeFromSession():
 @admin_bp.route('/manageServiceLearning/imported/<courseID>', methods = ['POST', 'GET'])
 def alterImportedCourse(courseID):
     """
-    Goals:
-    This route is meant to be called via ajax from the course management page in order to fill out the scanty information
-    we possess on imported courses so that they can edit them in our modal.
-    There are two paths, GET and POST
-    GET: On a get we should return a dictionary containing 
-    - course name, 
-    - course abbreviation, 
-    - hours earned on completion, 
-    - list of the instructors
-    POST: on a post we should update their course entry into our course table and update all of the previously listed information
-    
-    BEANS: This is a big one, we need to abstract most of this functionality into a logic file and test it!!!
+    This route handles a GET and a POST request for the purpose of imported courses. 
+    The GET request provides preexisting information of an imported course in a modal. 
+    The POST request updates a specific imported course (course name, course abbreviation, 
+    hours earned on completion, list of instructors) in the database with new information 
+    coming from the imported courses modal. 
     """
     if request.method == 'GET':
         try:
             targetCourse = Course.get_by_id(courseID)
             targetInstructors = CourseInstructor.select().where(CourseInstructor.course == targetCourse)
             courseData = model_to_dict(targetCourse, recurse=False)
-            instructors = [model_to_dict(ci.user) for ci in targetInstructors]
-            courseData['instructors'] = instructors
+            courseInstructors = [model_to_dict(instructors.user) for instructors in targetInstructors]
+            courseData['instructors'] = courseInstructors
             
             return jsonify(courseData)
         
