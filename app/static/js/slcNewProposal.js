@@ -118,6 +118,7 @@ $(document).ready(function(e) {
       });
 
   // Add course instructor event handlers
+<<<<<<< Updated upstream
       $("#instructorTable").on("click", "#remove", function() {
         let closestRow = $(this).closest("tr");
         let username = closestRow.data('username');
@@ -126,6 +127,22 @@ $(document).ready(function(e) {
         }
         closestRow.remove();
     });
+=======
+  // -----------------------------------------
+  $("#instructorTable").on("click", ".removeButton", function() {
+    let closestRow = $(this).closest("tr");
+    let username = closestRow.data('username');
+
+    // Check if the username is not empty or undefined
+    if (username) {
+        $("#instructorTableNames input[value='" + username + "']").remove();
+        closestRow.remove();
+    }
+});
+
+
+     
+>>>>>>> Stashed changes
       $("#courseInstructor").on('input', function() {
           searchUser("courseInstructor", createNewRow, true, null, "instructor");
       });
