@@ -120,10 +120,9 @@ def attemptSaveEvent(eventData, attachmentFiles = None, renewedEvent = False):
             for event in events:
                 addFile= FileHandler(attachmentFiles, eventId=event.id)
                 addFile.saveFiles(saveOriginalFile=events[0])
-
         return events, ""
     except Exception as e:
-        print(f'Failed attemptSaveEvent() with Exception:{e}')
+        print(f'Failed attemptSaveEvent() with Exception: {e}')
         return False, e
 
 def saveEventToDb(newEventData, renewedEvent = False):
@@ -443,18 +442,18 @@ def preprocessEventData(eventData):
             eventData[date] = parser.parse(eventData[date])
         elif not isinstance(eventData[date], datetime.date):
             eventData[date] = ''
-
+    
     # If we aren't recurring, all of our events are single-day
     if not eventData['isRecurring']:
         eventData['endDate'] = eventData['startDate']
-
+    
     # Process terms
     if 'term' in eventData:
         try:
             eventData['term'] = Term.get_by_id(eventData['term'])
         except DoesNotExist:
             eventData['term'] = ''
-
+    
     # Process requirement
     if 'certRequirement' in eventData:
         try:
@@ -466,7 +465,6 @@ def preprocessEventData(eventData):
         match = RequirementMatch.get_or_none(event=eventData['id'])
         if match:
             eventData['certRequirement'] = match.requirement
-
     if 'timeStart' in eventData:
         eventData['timeStart'] = format24HourTime(eventData['timeStart'])
 

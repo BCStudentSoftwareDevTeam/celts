@@ -181,28 +181,30 @@ def renewEvent(eventId):
         newEventDict = priorEvent.copy()
         newEventDict.pop('id')
         newEventDict.update({
+                    'program': int(priorEvent['program']['id']),
+                    'term': int(priorEvent['term']['id']),
                     'timeStart': formData['timeStart'],
                     'timeEnd': formData['timeEnd'],
                     'location': formData['location'],
                     'startDate': f'{formData["startDate"][-4:]}-{formData["startDate"][0:-5]}',
                     'endDate': f'{formData["endDate"][-4:]}-{formData["endDate"][0:-5]}',
-                    'isRecurring': (True if priorEvent.recurringId else False)
-                        })
+                    'isRecurring': bool(priorEvent['recurringId'])
+                    })
         newEvent, message = attemptSaveEvent(newEventDict, renewedEvent = True)
         if message:
             flash(message, "danger")
-            return redirect(url_for('admin.eventDisplay', eventId = priorEvent))
+            return redirect(url_for('admin.eventDisplay', eventId = eventId))
 
-        copyRsvp(priorEvent, newEvent[0])
-
-        createAdminLog(f"Renewed {priorEvent.name} as <a href='event/{newEvent[0].id}/view'>{newEvent[0].name}</a>.")
+        copyRsvp(priorEvent['id'], newEvent[0].id)
+        createAdminLog(f"Renewed {priorEvent['name']} as <a href='event/{newEvent[0].id}/view'>{newEvent[0].name}</a>.")
         flash("Event successfully renewed.", "success")
-        return redirect(url_for('admin.eventDisplay', eventId = newEvent[0]))
+        return redirect(url_for('admin.eventDisplay', eventId = newEvent[0].id))
 
 
     except Exception as e:
-        flash('Error while renewing event:', e)
-        return "", 500
+        print("Error while trying to renew event:", e)
+        flash("There was an error with your selection. Please try again or contact Systems Support.", 'danger')
+        return redirect(url_for('admin.eventDisplay', eventId = eventId))
             
 
 
