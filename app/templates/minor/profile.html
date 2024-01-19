@@ -59,7 +59,7 @@
                                 {% for engagement in engagements %}
                                 <tr class="engagement-row" data-engagement-data='{{engagement|tojson}}'>
                                         <td>
-                                            <input data-engagement-type="{{engagement['type']}}" data-engagement-id="{{engagement['id']}}" type="checkbox"/>
+                                            <input type="checkbox" {{'checked' if engagement['matched'] else ''}} />
                                             <button type="button" class="btn btn-link">{{engagement["name"]}}</button>
                                         </td>
                                    </tr>

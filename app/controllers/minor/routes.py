@@ -6,7 +6,7 @@ from app.logic.utils import selectSurroundingTerms
 from app.logic.fileHandler import FileHandler
 from app.models.attachmentUpload import AttachmentUpload
 from app.logic.utils import getFilesFromRequest
-from app.logic.minor import toggleMinorInterest, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, saveOtherEngagementRequest
+from app.logic.minor import toggleMinorInterest, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, saveOtherEngagementRequest, setCommunityEngagementForUser
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -40,27 +40,16 @@ def getEngagementInformation(username, type, id, term):
 
     return information
 
-@minor_bp.route('/cceMinor/<username>/addCommunityEngagement', methods=['POST'])
-def addCommunityEngagement(username):
+@minor_bp.route('/cceMinor/<username>/modifyCommunityEngagement', methods=['PUT','DELETE'])
+def modifyCommunityEngagement(username):
     """
         Saving a term participation/activities for sustained community engagement
     """
-    print("###################")
-    print("added community engagement route.")
-    print("###################")
-    print(request.form)
+    if not g.current_user.isCeltsAdmin:
+        abort(403)
 
-    return ""
-
-@minor_bp.route('/cceMinor/<username>/removeCommunityEngagement', methods=['POST'])
-def removeCommunityEngagement(username):
-    """
-        Opposite of above
-    """
-    print("###################")
-    print("removed community engagement route.")
-    print("###################")
-    print(request.form)
+    action = 'add' if request.method == 'PUT' else 'remove'
+    setCommunityEngagementForUser(action, request.form, g.current_user)
 
     return ""
 

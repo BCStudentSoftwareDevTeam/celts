@@ -100,13 +100,28 @@ def getProgramEngagementHistory(program_id, username, term_id):
 
     return participatedEvents
 
-def setCommunityEngagementForUser(action, username, type, id):
+def setCommunityEngagementForUser(action, engagementData, currentUser):
+    if engagementData['type'] not in ['program','course']:
+        raise Exception("Invalid engagement type!")
+
+    # TODO get an open requirement
+    requirement = 1
+
     if action == 'add':
-        # Adding to individualRequirement
-        pass
+        IndividualRequirement.create(**{
+                engagementData['type']: engagementData['id'],
+                "username": engagementData['username'],
+                "term": engagementData['term'],
+                "requirement": requirement,
+                "addedBy": currentUser,
+            })
+
     elif action == 'remove':
-        # Removing from individualRequirement
-        pass
+        IndividualRequirement.delete().where(
+                getattr(IndividualRequirement, engagementData['type']) == engagementData['id'],
+                IndividualRequirement.username == engagementData['username'],
+                IndividualRequirement.term == engagementData['term']
+            ).execute();
     else:
         raise Exception("Invalid action!")
 
@@ -115,6 +130,7 @@ def getCommunityEngagementByTerm(username):
     """
     Given a username, return all of their community engagements (service learning courses and event participations.)
     """
+    # TODO determine if engagement is already mapped to a requirement 
     courses = (Course.select(Course)
                      .join(CourseParticipant, on=(Course.id == CourseParticipant.course))
                      .where(CourseParticipant.user == username)
@@ -124,7 +140,12 @@ def getCommunityEngagementByTerm(username):
     # engagement's respective type, name, id, and term.
     terms = defaultdict(list)
     for course in courses:
-        terms[(course.term.description, course.term.id)].append({"name":course.courseName, "id":course.id, "type":"course", "term":course.term.id})
+        terms[(course.term.description, course.term.id)].append({
+                    "name":course.courseName, 
+                    "id":course.id, 
+                    "type":"course", 
+                    "matched": False,
+                    "term":course.term.id})
 
     events = (Event.select(Event, Program)
                    .join(EventParticipant, on=(Event.id == EventParticipant.event)).switch()
@@ -133,7 +154,13 @@ def getCommunityEngagementByTerm(username):
                    .group_by(Event.program, Event.term))
     
     for event in events:
-        terms[(event.term.description, event.term.id)].append({"name":event.program.programName, "id":event.program.id, "type":"program", "term":event.term.id})
+        terms[(event.term.description, event.term.id)].append({
+                    "name":event.program.programName, 
+                    "id":event.program.id, 
+                    "type":"program", 
+                    "matched": False,
+                    "term":event.term.id
+                })
     
     # sorting the terms by the term id
     return dict(sorted(terms.items(), key=lambda x: x[0][1]))

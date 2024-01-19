@@ -20,33 +20,11 @@ $(document).ready(function(){
         showEngagementInformation($(this).data('engagement-data'));
     });
 
-    $('.engagement-row input').on("click", function() {
-        let username = $("#username").val()
-        let data = {
-            'id': $(this).data('engagement-id'),
-            'type': $(this).data('engagement-type'),
-            'username': username
-        };
-        isChecked = $(this).is(':checked');
-        route = 'removeCommunityEngagement';
-        if(isChecked) {
-            route = 'addCommunityEngagement';
-        }
-        console.log(data)
-        $.ajax({
-              url: "/cceMinor/"+username+"/"+route,
-              type: "POST",
-              data: data,
-              success: function(s) {
-                  // XXX XXX
-                  msgToast("Added!","Successfully did a thing!")
-              },
-              error: function(request, status, error) {
-                console.log(error)
-                msgFlash("Error saving changes!", "danger")
-              }
-        });
+    $('.engagement-row input').on("click", function(e) {
+        e.stopPropagation()
 
+        engagementData = $(this).parents('.engagement-row').data('engagement-data');
+        toggleEngagementCredit($(this).is(':checked'), engagementData)
     });
     
 })
@@ -113,10 +91,23 @@ function showEngagementInformation(dataDict) {
 
 function stopPropagation(event) {
   // prevent the checkbox from displaying the course/program information
-  event.stopPropagation()
   console.log(event.target)
 }
 
-function toggleEngagementCredit(){
-  
+function toggleEngagementCredit(isChecked, engagementData){
+    engagementData['username'] = $("#username").val();
+
+    $.ajax({
+          url: `/cceMinor/${engagementData['username']}/modifyCommunityEngagement`,
+          type: isChecked ? "PUT" : "DELETE",
+          data: engagementData,
+          success: function(s) {
+              let header = isChecked ? 'Added' : 'Removed';
+              msgToast("Success!", header + " engagement for " + engagementData['name'])
+          },
+          error: function(request, status, error) {
+            console.log(error)
+            msgFlash("Error saving changes!", "danger")
+          }
+    });
 }
