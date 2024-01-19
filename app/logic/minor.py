@@ -35,14 +35,11 @@ def getMinorProgress():
             .order_by(fn.COUNT(IndividualRequirement.id).desc())
     )
     
-    engagedStudentsList = [
-        {
-            'username': student.username,
-            'firstName': student.firstName,
-            'lastName': student.lastName,
-            'engagementCount': student.engagementCount - student.hasSummer,
-            'hasSummer': student.hasSummer
-        }
+    engagedStudentsList = [{'username': student.username,
+                            'firstName': student.firstName,
+                            'lastName': student.lastName,
+                            'engagementCount': student.engagementCount - student.hasSummer,
+                            'hasSummer': student.hasSummer}
         for student in engagedStudentsWithCount
     ]
 
@@ -133,14 +130,14 @@ def getCommunityEngagementByTerm(username):
     return dict(sorted(terms.items(), key=lambda x: x[0][1]))
 
 def saveOtherEngagementRequest(engagementRequest):
-    requestedThing = {"user": engagementRequest['user'],
-                      "experienceName": engagementRequest['experience'],
-                      "term": engagementRequest['term'],
-                      "description": engagementRequest['description'],
-                      "company": engagementRequest['company'],
-                      "weeklyHours": engagementRequest['hours'],
-                      "weeks": engagementRequest['weeks'],
-                      "filename": engagementRequest['attachment'],
-                      "status": "Pending"}
+    otherEngagementRequest = {"user": engagementRequest['user'],
+                              "experienceName": engagementRequest['experience'],
+                              "term": engagementRequest['term'],
+                              "description": engagementRequest['description'],
+                              "company": engagementRequest['company'],
+                              "weeklyHours": engagementRequest['hours'],
+                              "weeks": engagementRequest['weeks'],
+                              "filename": engagementRequest['attachment'],
+                              "status": "Pending"}
     
-    CommunityEngagementRequest.create(**requestedThing)
+    CommunityEngagementRequest.create(**otherEngagementRequest)

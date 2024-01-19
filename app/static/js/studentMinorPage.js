@@ -14,8 +14,7 @@ $(document).ready(function(){
             msgFlash("Error saving changes!", "danger")
           }
       });
-    })
-
+    })    
     
 })
 
@@ -80,4 +79,8 @@ function showEngagementInformation(type, id, term) {
 function stopPropagation(event) {
   // prevent the checkbox from displaying the course/program information
   event.stopPropagation()
+}
+
+function toggleEngagementCredit(){
+  
 }

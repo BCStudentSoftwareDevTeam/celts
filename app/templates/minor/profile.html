@@ -59,7 +59,7 @@
                                 {% for engagement in engagements %}
                                    <tr class="show-pointer" id="{{engagement['type']}}{{engagement['id']}}" name="{{engagement['term']}}" onclick="showEngagementInformation(`{{engagement['type']}}`, `{{engagement['id']}}`, `{{engagement['term']}}`)">
                                         <td>
-                                            <input onclick="stopPropagation(event)" type="checkbox"/>
+                                            <input onclick="stopPropagation(event)" data-engagement-type="{{engagement['type']}}" data-engagement-id="{{engagement['id']}}" type="checkbox"/>
                                             <button id="{{engagement['type']}}{{engagement['id']}}" name="{{engagement['term']}}" type="button" class="btn btn-link">{{engagement["name"]}}</button>
                                         </td>
                                    </tr>

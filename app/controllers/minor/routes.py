@@ -45,7 +45,9 @@ def addCommunityEngagement(username):
     """
         Saving a term participation/activities for sustained community engagement
     """
-    pass
+    print("###################")
+    print("added community engagement route.")
+    print("###################")
 
 @minor_bp.route('/cceMinor/<username>/removeCommunityEngagement', methods=['POST'])
 def removeCommunityEngagement(username):
@@ -64,7 +66,7 @@ def requestOtherEngagement(username):
     
 
     if request.method == 'POST':
-        flash("Something happened and we hit post", "success")
+        flash("Other community engagement request submitted.", "success")
         attachmentName = None
         attachment = request.files.get("attachmentObject")
         if attachment:
