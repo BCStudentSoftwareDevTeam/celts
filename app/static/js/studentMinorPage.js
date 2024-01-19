@@ -15,11 +15,46 @@ $(document).ready(function(){
           }
       });
     })    
+
+    $('.engagement-row').on("click", function() {
+        showEngagementInformation($(this).data('engagement-data'));
+    });
+
+    $('.engagement-row input').on("click", function() {
+        let username = $("#username").val()
+        let data = {
+            'id': $(this).data('engagement-id'),
+            'type': $(this).data('engagement-type'),
+            'username': username
+        };
+        isChecked = $(this).is(':checked');
+        route = 'removeCommunityEngagement';
+        if(isChecked) {
+            route = 'addCommunityEngagement';
+        }
+        console.log(data)
+        $.ajax({
+              url: "/cceMinor/"+username+"/"+route,
+              type: "POST",
+              data: data,
+              success: function(s) {
+                  // XXX XXX
+                  msgToast("Added!","Successfully did a thing!")
+              },
+              error: function(request, status, error) {
+                console.log(error)
+                msgFlash("Error saving changes!", "danger")
+              }
+        });
+
+    });
     
 })
 
-function showEngagementInformation(type, id, term) {
-  // get the row object that was clicked on and parse it for the necessary values
+function showEngagementInformation(dataDict) {
+  let type = dataDict['type'],
+      id = dataDict['id'],
+      term= dataDict['term'];
   let username = $("#username").val()
 
   // based on how long the type is, get the remaining characters afterwards that represent the id
@@ -79,6 +114,7 @@ function showEngagementInformation(type, id, term) {
 function stopPropagation(event) {
   // prevent the checkbox from displaying the course/program information
   event.stopPropagation()
+  console.log(event.target)
 }
 
 function toggleEngagementCredit(){

@@ -12,7 +12,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
 from app.models.communityEngagementRequest import CommunityEngagementRequest
-from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, saveOtherEngagementRequest, getMinorInterest, getMinorProgress
+from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, saveOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser
 
 @pytest.mark.integration
 def test_getCourseInformation():
@@ -199,6 +199,24 @@ def test_saveOtherEngagementRequest():
             assert actualValue == expectedValue
 
         transaction.rollback()
+
+@pytest.mark.integration
+def test_setCommunityEngagementForUser():
+    with mainDB.atomic() as transaction: 
+        # Adding requirement
+        # TODO add existing
+        # TODO add nonexisting
+        setCommunityEngagementForUser('add', 'khatts', 'course', 5, current_user='ramsayb2');
+        setCommunityEngagementForUser('add', 'khatts', 'program', 3, current_user='ramsayb2');
+        # Removing requirement
+        # TODO remove existing
+        # TODO remove nonexisting
+        setCommunityEngagementForUser('remove', 'khatts', 'course', 3, current_user='ramsayb2');
+        setCommunityEngagementForUser('remove', 'khatts', 'program', 3, current_user='ramsayb2');
+        
+        pass
+
+
 
 @pytest.mark.integration
 def test_getMinorInterest():

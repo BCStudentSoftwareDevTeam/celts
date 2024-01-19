@@ -100,6 +100,15 @@ def getProgramEngagementHistory(program_id, username, term_id):
 
     return participatedEvents
 
+def setCommunityEngagementForUser(action, username, type, id):
+    if action == 'add':
+        # Adding to individualRequirement
+        pass
+    elif action == 'remove':
+        # Removing from individualRequirement
+        pass
+    else:
+        raise Exception("Invalid action!")
 
 
 def getCommunityEngagementByTerm(username):
@@ -115,7 +124,7 @@ def getCommunityEngagementByTerm(username):
     # engagement's respective type, name, id, and term.
     terms = defaultdict(list)
     for course in courses:
-        terms[(course.term.description, course.term.id)].append({"name":course.courseName, "id":course.id, "type":"course", "term":course.term})
+        terms[(course.term.description, course.term.id)].append({"name":course.courseName, "id":course.id, "type":"course", "term":course.term.id})
 
     events = (Event.select(Event, Program)
                    .join(EventParticipant, on=(Event.id == EventParticipant.event)).switch()
@@ -124,7 +133,7 @@ def getCommunityEngagementByTerm(username):
                    .group_by(Event.program, Event.term))
     
     for event in events:
-        terms[(event.term.description, event.term.id)].append({"name":event.program.programName, "id":event.program.id, "type":"program", "term":event.term})
+        terms[(event.term.description, event.term.id)].append({"name":event.program.programName, "id":event.program.id, "type":"program", "term":event.term.id})
     
     # sorting the terms by the term id
     return dict(sorted(terms.items(), key=lambda x: x[0][1]))

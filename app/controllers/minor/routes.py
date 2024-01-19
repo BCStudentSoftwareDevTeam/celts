@@ -48,13 +48,21 @@ def addCommunityEngagement(username):
     print("###################")
     print("added community engagement route.")
     print("###################")
+    print(request.form)
+
+    return ""
 
 @minor_bp.route('/cceMinor/<username>/removeCommunityEngagement', methods=['POST'])
 def removeCommunityEngagement(username):
     """
         Opposite of above
     """
-    pass
+    print("###################")
+    print("removed community engagement route.")
+    print("###################")
+    print(request.form)
+
+    return ""
 
 @minor_bp.route('/cceMinor/<username>/requestOtherCommunityEngagement', methods=['GET', 'POST'])
 def requestOtherEngagement(username):

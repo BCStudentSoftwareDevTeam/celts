@@ -15,5 +15,3 @@ class IndividualRequirement(baseModel):
     requirement = ForeignKeyField(CertificationRequirement)
     addedBy = ForeignKeyField(User)
     addedOn = DateTimeField()
-
-
