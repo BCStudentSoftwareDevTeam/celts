@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    $("a.fileName").tooltip()
     $(".removeAttachment").on("click", function(){
         let fileId=  $(this).data("id")
         let deleteLink = $(this).data("delete-url")
