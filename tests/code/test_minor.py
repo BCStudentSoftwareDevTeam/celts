@@ -148,8 +148,8 @@ def test_getCommunityEngagementByTerm():
         event = Event.get_by_id(testingEvent)
 
         # write out what we expect the result to be
-        expectedResult = OrderedDict({("Spring 2021", 2):[{"name":event.program.programName, "id":event.program.id, "type":"program", "term":event.term}],
-                                       ("Summer 2021", 3):[{"name":course.courseName, "id":course.id, "type":"course", "term":course.term}]})
+        expectedResult = OrderedDict({("Spring 2021", 2):[{"name":event.program.programName, "id":event.program.id, "type":"program", "term":event.term.id}],
+                                       ("Summer 2021", 3):[{"name":course.courseName, "id":course.id, "type":"course", "term":course.term.id}]})
         
         # get the actual result from getCommunityEngagementByTerm
         actualResult = dict(getCommunityEngagementByTerm("FINN"))
@@ -206,13 +206,13 @@ def test_setCommunityEngagementForUser():
         # Adding requirement
         # TODO add existing
         # TODO add nonexisting
-        setCommunityEngagementForUser('add', 'khatts', 'course', 5, current_user='ramsayb2');
-        setCommunityEngagementForUser('add', 'khatts', 'program', 3, current_user='ramsayb2');
+        setCommunityEngagementForUser('add', 'khatts', 'course', 5, current_user='ramsayb2')
+        setCommunityEngagementForUser('add', 'khatts', 'program', 3, current_user='ramsayb2')
         # Removing requirement
         # TODO remove existing
         # TODO remove nonexisting
-        setCommunityEngagementForUser('remove', 'khatts', 'course', 3, current_user='ramsayb2');
-        setCommunityEngagementForUser('remove', 'khatts', 'program', 3, current_user='ramsayb2');
+        setCommunityEngagementForUser('remove', 'khatts', 'course', 3, current_user='ramsayb2')
+        setCommunityEngagementForUser('remove', 'khatts', 'program', 3, current_user='ramsayb2')
         
         pass
 

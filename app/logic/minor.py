@@ -100,7 +100,7 @@ def getProgramEngagementHistory(program_id, username, term_id):
 
     return participatedEvents
 
-def setCommunityEngagementForUser(action, username, type, id):
+def setCommunityEngagementForUser(action, username, type, id, current_user):
     if action == 'add':
         # Adding to individualRequirement
         pass
