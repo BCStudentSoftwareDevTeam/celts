@@ -174,7 +174,7 @@ function getImportedCourseInfo(courseID, callback) { // This function populates 
         $('#instructorsTable').empty();
         $('#courseName').val(courseDict['courseName']);
         $('#courseAbbreviation').val(courseDict['courseAbbreviation']);
-        $('#courseCredit').val(courseDict['courseCredit']);
+        $('#hoursEarned').val(courseDict['hoursEarned']);
         if (courseDict['instructors'] && courseDict['instructors'].length > 0) {
           updateInstructorsTable(courseDict['instructors']);
         }

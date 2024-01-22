@@ -3,6 +3,7 @@ from peewee import fn, JOIN
 
 from app.models import mainDB
 from app.models.courseInstructor import CourseInstructor
+from app.models.courseParticipant import CourseParticipant
 from app.models.courseQuestion import CourseQuestion
 from app.models.courseStatus import CourseStatus
 from app.logic.createLogs import createAdminLog
@@ -75,10 +76,12 @@ def editImportedCourses(courseData, attachments=None):
         try:
             course = Course.get_by_id(courseData["courseId"])
             
-            (Course.update(courseName=courseData["courseName"],
-                           courseCredit=courseData["hoursEarned"])
+            (Course.update(courseName=courseData["courseName"])
                    .where(Course.id == course.id).execute()) # Update the data (Course Name) of the course in the database
 
+            (CourseParticipant.update(hoursEarned=courseData["hoursEarned"])
+                              .where(CourseParticipant.course_id == course.id).execute())
+            
             instructorList = []
             if 'instructor[]' in courseData:
                 instructorList = courseData.getlist('instructor[]') # Fetch the list of course instructors from CourseData
@@ -90,6 +93,33 @@ def editImportedCourses(courseData, attachments=None):
                         CourseInstructor.create(course=course, user=instructor)
 
             return Course.get_by_id(course.id)
+        
+
+
+            # # Update course table with course name
+            # (Course.update(courseName=courseData["courseName"])
+            #        .where(Course.id == course.id).execute()) # Update the data (Course Name) of the course in the database
+
+            # instructorList = []
+            # if 'instructor[]' in courseData:
+            #     instructorList = courseData.getlist('instructor[]') # Fetch the list of course instructors from CourseData
+            
+
+            # # Update courseinstructors table
+            # if instructorList:
+            #     CourseInstructor.delete().where(CourseInstructor.course == course).execute() 
+            #     for instructor in instructorList:
+            #         if instructor != "": 
+            #             CourseInstructor.create(course=course, user=instructor)
+
+            # participantList = list(CourseParticipant.select(User).where(Course.id == course.id))
+
+
+            # # Update service hours (hours earned) of participants in course participant table
+            # for participant in participantList:
+            #     (CourseParticipant.update(hoursEarned=courseData["hoursEarned"])
+            #                       .where(Course.id == course.id, 
+            #                              User == participant))
 
         except Exception as e:
             print(e)

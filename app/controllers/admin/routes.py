@@ -12,6 +12,7 @@ from app.models.event import Event
 from app.models.user import User
 from app.models.course import Course
 from app.models.courseInstructor import CourseInstructor
+from app.models.courseParticipant import CourseParticipant
 from app.models.eventTemplate import EventTemplate
 from app.models.adminLog import AdminLog
 from app.models.eventRsvpLog import EventRsvpLog
@@ -426,9 +427,15 @@ def alterImportedCourse(courseID):
         try:
             targetCourse = Course.get_by_id(courseID)
             targetInstructors = CourseInstructor.select().where(CourseInstructor.course == targetCourse)
+            
             courseData = model_to_dict(targetCourse, recurse=False)
+            serviceHours = list(CourseParticipant.select()
+                                             .where(CourseParticipant.course_id == targetCourse.id)
+                                             )[0].hoursEarned 
+            
             courseInstructors = [model_to_dict(instructors.user) for instructors in targetInstructors]
             courseData['instructors'] = courseInstructors
+            courseData["hoursEarned"] = serviceHours
             
             return jsonify(courseData)
         
