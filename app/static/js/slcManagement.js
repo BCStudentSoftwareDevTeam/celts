@@ -57,7 +57,7 @@ function changeAction(action){
     $('#withdrawModal').modal('show');
   } else if(courseAction == "Edit"){
     location = '/serviceLearning/editProposal/' + courseID;
-  } else if (courseAction == "Alter"){ 
+  } else if (courseAction == "Modify"){ 
     showAlterModalWithCourse(courseID);
   } else if(courseAction == "Print"){
     printDocument(`/serviceLearning/print/${courseID}`)
