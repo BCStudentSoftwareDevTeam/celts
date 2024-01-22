@@ -1,4 +1,4 @@
-{% macro displayFiles(filepaths, titleName, deleteLink, databaseId)  %}
+{% macro displayFiles(filepaths, titleName, deleteLink, databaseId, prefixToRemove="")  %}
 <table>
     <tr>
         <td class="py-2"><strong>Display</strong></td>
@@ -19,8 +19,9 @@
                 {% endif %}
             </td>
             <td class="py-2 px-3" >
-                {% set filename = key[:8] + "..." + key[-10:] if key|length > 25 else key %}
-                <a class="mr-5 fileName" data-filename='{{ key }}' href="{{ value[0] }}" target="_blank">{{ filename }}</a>
+                {% set filename = key.removeprefix(prefixToRemove) %}
+                {% set shortname = filename[:8] + "..." + filename[-10:] if filename|length > 25 else filename %}
+                <a class="mr-5 fileName" data-filename='{{ filename }}' href="{{ value[0] }}" target="_blank" data-toggle="tooltip" data-placement="top" title="{{filename}}" aria-labelledby="{{filename}}">{{ shortname }}</a>
             </td>
             <td style="text-align:center">
                 <button
