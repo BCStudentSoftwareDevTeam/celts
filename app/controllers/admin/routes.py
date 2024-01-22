@@ -433,7 +433,7 @@ def alterImportedCourse(courseID):
                                              .where(CourseParticipant.course_id == targetCourse.id)
                                              )[0].hoursEarned 
             
-            courseInstructors = [model_to_dict(instructors.user) for instructors in targetInstructors]
+            courseInstructors = [model_to_dict(instructor.user) for instructor in targetInstructors]
             courseData['instructors'] = courseInstructors
             courseData["hoursEarned"] = serviceHours
             
