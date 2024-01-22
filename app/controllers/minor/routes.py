@@ -1,4 +1,5 @@
 from flask import Flask, g, render_template, request, abort, flash, redirect, url_for
+from peewee import DoesNotExist
 from app.controllers.minor import minor_bp
 from app.models.user import User
 from app.models.term import Term
@@ -49,8 +50,12 @@ def modifyCommunityEngagement(username):
         abort(403)
 
     action = 'add' if request.method == 'PUT' else 'remove'
-    setCommunityEngagementForUser(action, request.form, g.current_user)
-
+    try: 
+        setCommunityEngagementForUser(action, request.form, g.current_user)
+    except DoesNotExist:
+        ## TODO: Make this a toast popup 
+        return "There are already 4 Sustained Community Engagement records." 
+    
     return ""
 
 @minor_bp.route('/cceMinor/<username>/requestOtherCommunityEngagement', methods=['GET', 'POST'])

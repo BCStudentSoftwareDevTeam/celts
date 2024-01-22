@@ -204,10 +204,62 @@ def test_saveOtherEngagementRequest():
 @pytest.mark.integration
 def test_setCommunityEngagementForUser():
     with mainDB.atomic() as transaction: 
+        IndividualRequirement.delete().execute()
+
         # Adding requirement
         # TODO add existing
         # TODO add nonexisting
         #setCommunityEngagementForUser('add', engagementData, 'ramsayb2')
+        khattsEngagementData1 = {"id": 2,
+                                "matched": False, 
+                                "name": 'Spanish Help',
+                                'term': 2,
+                                "type": 'course',
+                                'username': 'khatts'}
+        
+        khattsEngagementData2 = {"id": 9,
+                                "matched": False, 
+                                "name": 'CELTS-Sponsored Event',
+                                'term': 3,
+                                "type": 'program',
+                                'username': 'khatts'}
+        
+        khattsEngagementData3 = {"id": 6,
+                                "matched": False, 
+                                "name": 'Habitat For Humanity',
+                                'term': 2,
+                                "type": 'program',
+                                'username': 'khatts'}
+        
+        khattsEngagementData4 = {"id": 4,
+                                "matched": False, 
+                                "name": 'People Who Care',
+                                'term': 3,
+                                "type": 'program',
+                                'username': 'khatts'}
+        
+        khattsEngagementData5 = {"id": 1,
+                                "matched": False, 
+                                "name": 'Databses',
+                                'term': 2,
+                                "type": 'course',
+                                'username': 'khatts'}
+
+        setCommunityEngagementForUser('add', khattsEngagementData1, 'ramsayb2')
+        
+        khattsEngagements = list(IndividualRequirement.select())
+        assert khattsEngagements[0].course == Course.get_by_id(2)
+        assert khattsEngagements[0].program == None
+
+        setCommunityEngagementForUser('add', khattsEngagementData2, 'ramsayb2')
+        setCommunityEngagementForUser('add', khattsEngagementData3, 'ramsayb2')
+        setCommunityEngagementForUser('add', khattsEngagementData4, 'ramsayb2')
+        with pytest.raises(DoesNotExist):
+            setCommunityEngagementForUser('add', khattsEngagementData5, 'ramsayb2')
+
+
+        
+
         # Removing requirement
         # TODO remove existing
         # TODO remove nonexisting

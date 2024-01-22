@@ -1,5 +1,6 @@
+import re
 from playhouse.shortcuts import model_to_dict
-from peewee import JOIN, fn, Case
+from peewee import JOIN, fn, Case, DoesNotExist
 from collections import defaultdict
 
 from app.models.user import User
@@ -104,26 +105,34 @@ def setCommunityEngagementForUser(action, engagementData, currentUser):
     if engagementData['type'] not in ['program','course']:
         raise Exception("Invalid engagement type!")
 
-    # TODO get an open requirement
-    requirement = 1
+    # TODO get an open requirement. What about name changing from "Summer Program"? 
+    # Left join cert req and get where name is community engagement and assign to it. 
 
+    requirement = (CertificationRequirement.select()
+                                           .join(IndividualRequirement, JOIN.LEFT_OUTER, on=((IndividualRequirement.requirement_id == CertificationRequirement.id) & (IndividualRequirement.username_id == engagementData['username'])))
+                                           .where(IndividualRequirement.username_id.is_null(True),
+                                                  CertificationRequirement.certification_id == 2, 
+                                                  CertificationRequirement.name.not_in(['Summer Program'])))
     if action == 'add':
-        IndividualRequirement.create(**{
-                engagementData['type']: engagementData['id'],
-                "username": engagementData['username'],
-                "term": engagementData['term'],
-                "requirement": requirement,
-                "addedBy": currentUser,
-            })
-
+        try: 
+            IndividualRequirement.create(**{
+                    engagementData['type']: engagementData['id'],
+                    "username": engagementData['username'],
+                    "term": engagementData['term'],
+                    "requirement": requirement.get(),
+                    "addedBy": currentUser,
+                })
+        except DoesNotExist as e:
+            raise e 
+        
     elif action == 'remove':
         IndividualRequirement.delete().where(
                 getattr(IndividualRequirement, engagementData['type']) == engagementData['id'],
                 IndividualRequirement.username == engagementData['username'],
                 IndividualRequirement.term == engagementData['term']
-            ).execute();
+            ).execute()
     else:
-        raise Exception("Invalid action!")
+        raise Exception(f"Invalid action '{action}' sent to setCommunityEngagementForUser")
 
 
 def getCommunityEngagementByTerm(username):
