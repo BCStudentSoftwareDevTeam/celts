@@ -46,7 +46,6 @@ def modifyCommunityEngagement(username):
     try: 
         setCommunityEngagementForUser(action, request.form, g.current_user)
     except DoesNotExist:
-        ## TODO: Make this a toast popup 
         return "There are already 4 Sustained Community Engagement records." 
     
     return ""
@@ -83,12 +82,6 @@ def requestOtherEngagement(username):
 @minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
 def addSummerExperience(username):
     pass
-
-@minor_bp.route('/cceMinor/<username>/indicateInterest', methods=['POST'])
-def indicateMinorInterest(username):
-    toggleMinorInterest(username)
-
-    return ""
 
 @minor_bp.route("/deleteRequestFile", methods=["POST"])
 def deleteRequestFile():

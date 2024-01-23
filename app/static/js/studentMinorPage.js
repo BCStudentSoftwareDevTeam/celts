@@ -101,10 +101,14 @@ function toggleEngagementCredit(isChecked, engagementData){
           url: `/cceMinor/${engagementData['username']}/modifyCommunityEngagement`,
           type: isChecked ? "PUT" : "DELETE",
           data: engagementData,
-          success: function(s) {
-              let header = isChecked ? 'Added' : 'Removed';
-              msgToast("Success!", header + " engagement for " + engagementData['name'])
-          },
+          success: function(response) {
+              if (response == ""){ 
+                let header = isChecked ? 'Added' : 'Removed';
+                msgToast("Success!", header + " engagement for " + engagementData['name'])
+              } else {
+                msgToast("Error saving changes!", response)
+              }
+            },
           error: function(request, status, error) {
             console.log(error)
             msgFlash("Error saving changes!", "danger")
