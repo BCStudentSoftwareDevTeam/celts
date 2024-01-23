@@ -109,10 +109,10 @@ def setCommunityEngagementForUser(action, engagementData, currentUser):
     # Left join cert req and get where name is community engagement and assign to it. 
 
     requirement = (CertificationRequirement.select()
-                                           .join(IndividualRequirement, JOIN.LEFT_OUTER, on=((IndividualRequirement.requirement_id == CertificationRequirement.id) & 
-                                                                                             (IndividualRequirement.username_id == engagementData['username'])))
-                                           .where(IndividualRequirement.username_id.is_null(True),
-                                                  CertificationRequirement.certification_id == 2, 
+                                           .join(IndividualRequirement, JOIN.LEFT_OUTER, on=((IndividualRequirement.requirement == CertificationRequirement.id) & 
+                                                                                             (IndividualRequirement.username == engagementData['username'])))
+                                           .where(IndividualRequirement.username.is_null(True),
+                                                  CertificationRequirement.certification == 2, 
                                                   CertificationRequirement.name.not_in(['Summer Program'])))
     if action == 'add':
         try: 
