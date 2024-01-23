@@ -109,7 +109,8 @@ def setCommunityEngagementForUser(action, engagementData, currentUser):
     # Left join cert req and get where name is community engagement and assign to it. 
 
     requirement = (CertificationRequirement.select()
-                                           .join(IndividualRequirement, JOIN.LEFT_OUTER, on=((IndividualRequirement.requirement_id == CertificationRequirement.id) & (IndividualRequirement.username_id == engagementData['username'])))
+                                           .join(IndividualRequirement, JOIN.LEFT_OUTER, on=((IndividualRequirement.requirement_id == CertificationRequirement.id) & 
+                                                                                             (IndividualRequirement.username_id == engagementData['username'])))
                                            .where(IndividualRequirement.username_id.is_null(True),
                                                   CertificationRequirement.certification_id == 2, 
                                                   CertificationRequirement.name.not_in(['Summer Program'])))
@@ -122,6 +123,7 @@ def setCommunityEngagementForUser(action, engagementData, currentUser):
                     "requirement": requirement.get(),
                     "addedBy": currentUser,
                 })
+            
         except DoesNotExist as e:
             raise e 
         
@@ -139,9 +141,13 @@ def getCommunityEngagementByTerm(username):
     """
     Given a username, return all of their community engagements (service learning courses and event participations.)
     """
-    # TODO determine if engagement is already mapped to a requirement 
-    courses = (Course.select(Course)
+    courseMatchCase =  Case(None, [(IndividualRequirement.course.is_null(True) , 0)], 1)
+
+    courses = (Course.select(Course, courseMatchCase.alias("reqMatch"))
                      .join(CourseParticipant, on=(Course.id == CourseParticipant.course))
+                     .join(IndividualRequirement, JOIN.LEFT_OUTER, on=((IndividualRequirement.course == Course.id) & 
+                                                                       (IndividualRequirement.username == CourseParticipant.user) & 
+                                                                       (IndividualRequirement.term == Course.term)))
                      .where(CourseParticipant.user == username)
                      .group_by(Course.courseName, Course.term))
     
@@ -153,12 +159,17 @@ def getCommunityEngagementByTerm(username):
                     "name":course.courseName, 
                     "id":course.id, 
                     "type":"course", 
-                    "matched": False,
+                    "matched": course.reqMatch,
                     "term":course.term.id})
 
-    events = (Event.select(Event, Program)
+    programMatchCase = Case(None, [(IndividualRequirement.program.is_null(True) , 0)], 1)
+
+    events = (Event.select(Event, Program, programMatchCase.alias('reqMatch'))
                    .join(EventParticipant, on=(Event.id == EventParticipant.event)).switch()
                    .join(Program)
+                   .join(IndividualRequirement, JOIN.LEFT_OUTER, on=((IndividualRequirement.program == Program.id) &
+                                                                     (IndividualRequirement.username == EventParticipant.user) &
+                                                                     (IndividualRequirement.term == Event.term)))
                    .where(EventParticipant.user == username)
                    .group_by(Event.program, Event.term))
     
@@ -167,10 +178,10 @@ def getCommunityEngagementByTerm(username):
                     "name":event.program.programName, 
                     "id":event.program.id, 
                     "type":"program", 
-                    "matched": False,
+                    "matched": event.reqMatch,
                     "term":event.term.id
                 })
-    
+
     # sorting the terms by the term id
     return dict(sorted(terms.items(), key=lambda x: x[0][1]))
 

@@ -22,13 +22,6 @@ def viewCceMinor(username):
                     user=user,
                     terms=terms)
 
-@minor_bp.route('/cceMinor/<username>/identifyCommunityEngagement/<term>', methods=['GET'])
-def identifyCommunityEngagement(username):
-    """
-        Load all program and course participation records for that term
-    """
-    pass
-
 @minor_bp.route('/cceMinor/<username>/getEngagementInformation/<type>/<term>/<id>', methods=['GET'])
 def getEngagementInformation(username, type, id, term):
     """
