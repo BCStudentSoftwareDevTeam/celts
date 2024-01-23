@@ -244,28 +244,58 @@ def test_setCommunityEngagementForUser():
                                 'term': 2,
                                 "type": 'course',
                                 'username': 'khatts'}
-
+        
+        neillzEngagementData1 = {"id": 4,
+                                "matched": False, 
+                                "name": 'People Who Care',
+                                'term': 3,
+                                "type": 'program',
+                                'username': 'neillz'}
+        
+        neillzEngagementData2 = {"id": 1,
+                                "matched": False, 
+                                "name": 'Databses',
+                                'term': 2,
+                                "type": 'course',
+                                'username': 'neillz'}
+        
         setCommunityEngagementForUser('add', khattsEngagementData1, 'ramsayb2')
         
         khattsEngagements = list(IndividualRequirement.select())
         assert khattsEngagements[0].course == Course.get_by_id(2)
         assert khattsEngagements[0].program == None
 
+        # add 5 engagements and make sure the 5th raises the expected exception 
         setCommunityEngagementForUser('add', khattsEngagementData2, 'ramsayb2')
         setCommunityEngagementForUser('add', khattsEngagementData3, 'ramsayb2')
         setCommunityEngagementForUser('add', khattsEngagementData4, 'ramsayb2')
+
         with pytest.raises(DoesNotExist):
             setCommunityEngagementForUser('add', khattsEngagementData5, 'ramsayb2')
 
 
-        
+        # add records for another student and make sure it is added correctly. 
+        setCommunityEngagementForUser('add', neillzEngagementData1, 'ramsayb2')
+        neillzEngagements = list(IndividualRequirement.select())
+        assert neillzEngagements[3].username_id == 'khatts'
+        assert neillzEngagements[4].username_id == 'neillz'
+
+        # add a second record for that other student.
+        setCommunityEngagementForUser('add', neillzEngagementData1, 'ramsayb2')
+        neillz2Engagements = list(IndividualRequirement.select())
+        assert neillz2Engagements[3].username_id == 'khatts'
+        assert neillz2Engagements[4].username_id == 'neillz'
+        assert neillz2Engagements[5].username_id == 'neillz'
 
         # Removing requirement
         # TODO remove existing
         # TODO remove nonexisting
-        #setCommunityEngagementForUser('remove', engagementData, 'ramsayb2')
+        setCommunityEngagementForUser('remove', khattsEngagementData1, 'ramsayb2')
+        khattsUpdatedEngagements = list(IndividualRequirement.select())
+        assert khattsUpdatedEngagements[0].course == None
+        assert khattsUpdatedEngagements[0].program == Program.get_by_id(9)
         
-        pass
+        transaction.rollback()
 
 
 
