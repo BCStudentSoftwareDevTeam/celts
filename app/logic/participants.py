@@ -127,7 +127,7 @@ def getEventParticipants(event):
                                          .join(User)
                                          .where(EventParticipant.event == event))
 
-    return {p.user: p.hoursEarned for p in eventParticipants}
+    return {p: p.hoursEarned for p in eventParticipants}
 
 def getParticipationStatusForTrainings(program, userList, term):
     """

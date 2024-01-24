@@ -1,5 +1,4 @@
 from flask import request, render_template, redirect, url_for, request, flash, abort, g, json, jsonify
-from datetime import datetime
 from peewee import DoesNotExist, JOIN
 from playhouse.shortcuts import model_to_dict
 from app.controllers.admin import admin_bp
@@ -9,12 +8,11 @@ from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.emergencyContact import EmergencyContact
 from app.logic.searchUsers import searchUsers
-from app.logic.volunteers import updateEventParticipants, addVolunteerToEventRsvp, getEventLengthInHours, addUserBackgroundCheck, setProgramManager
+from app.logic.volunteers import updateEventParticipants, getEventLengthInHours, addUserBackgroundCheck, setProgramManager
 from app.logic.participants import trainedParticipants, getEventParticipants, addPersonToEvent, getParticipationStatusForTrainings
 from app.logic.events import getPreviousRecurringEventData, getEventRsvpCount
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
-from app.models.programManager import ProgramManager
 from app.logic.createLogs import createAdminLog, createRsvpLog
 from app.logic.users import getBannedUsers, isBannedFromEvent
 
@@ -25,81 +23,66 @@ def getVolunteers(query):
 
     return json.dumps(searchUsers(query))
 
-@admin_bp.route('/event/<eventID>/manage_volunteers', methods=['POST'])
-def updateVolunteerTable(eventID):
-    try:
-        event = Event.get_by_id(eventID)
-    except DoesNotExist as e:
-        print(f"No event found for {eventID}")
-        abort(404)
-
-    volunteerUpdated = updateEventParticipants(request.form)
-    if volunteerUpdated:
-        flash("Volunteer table succesfully updated", "success")
-    else:
-        flash("Error adding volunteer", "danger")
-    return redirect(url_for("admin.manageVolunteersPage", eventID=eventID))
-
-@admin_bp.route('/event/<eventID>/manage_volunteers', methods=['GET'])
+@admin_bp.route('/event/<eventID>/manage_volunteers', methods=['GET', 'POST'])
 def manageVolunteersPage(eventID):
     try:
         event = Event.get_by_id(eventID)
     except DoesNotExist as e:
         print(f"No event found for {eventID}", e)
         abort(404)
-    eventData = model_to_dict(event, recurse=False)
+
+    if request.method =="POST":
+
+        volunteerUpdated = updateEventParticipants(request.form)
+        if volunteerUpdated:
+            flash("Volunteer table succesfully updated", "success")
+        else:
+            flash("Error adding volunteer", "danger")
+        return redirect(url_for("admin.manageVolunteersPage", eventID=eventID))
     
-    eventData["program"] = event.program
-    trainedParticipantsList = trainedParticipants(event.program, event.term)
-    eventParticipants = getEventParticipants(event)
+    elif request.method == "GET":
+        trainedParticipantsList = trainedParticipants(event.program, event.term)
+        eventParticipants = getEventParticipants(event)
 
-    isProgramManager = g.current_user.isProgramManagerForEvent(event)
-    bannedUsers = [row.user for row in getBannedUsers(event.program)]
-    if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
-        abort(403)
+        isProgramManager = g.current_user.isProgramManagerForEvent(event)
+        bannedUsers = [row.user for row in getBannedUsers(event.program)]
+        if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
+            abort(403)
 
-    eventParticipantData = list(EventParticipant.select(EventParticipant, User).join(User).where(EventParticipant.event==event))
-    eventRsvpData = list(EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
-    eventParticipantUsers = [participantDatum.user for participantDatum in eventParticipantData]
-    eventRsvpData = [rsvpDatum for rsvpDatum in eventRsvpData if rsvpDatum.user not in eventParticipantUsers]
+        # eventParticipantData = list(EventParticipant.select(EventParticipant, User).join(User).where(EventParticipant.event==event))
+        eventRsvpData = list(EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
+        # eventParticipantUsers = [participantDatum.user for participantDatum in eventParticipantData]
+        # eventRsvpData = [rsvpDatum for rsvpDatum in eventRsvpData if rsvpDatum.user not in eventParticipantUsers]
+        eventRsvpData = [rsvpDatum for rsvpDatum in eventRsvpData if rsvpDatum.user not in eventParticipants]
 
-    if event.isPast:
-        eventVolunteerData = eventParticipantData
-        eventNonAttendedData = eventRsvpData
-        eventWaitlistData = []
-    else:
-        eventWaitlistData = [volunteer for volunteer in eventParticipantData + eventRsvpData if volunteer.rsvpWaitlist and event.isRsvpRequired]
-        eventVolunteerData = [volunteer for volunteer in eventRsvpData if volunteer not in eventWaitlistData]
-        eventNonAttendedData = []
-        
-    program = event.program
+        if event.isPast:
+            eventVolunteerData = list(eventParticipants.keys())
+            eventNonAttendedData = eventRsvpData
+            eventWaitlistData = []
+        else:
+            eventWaitlistData = [volunteer for volunteer in list(eventParticipants.keys()) + eventRsvpData if volunteer.rsvpWaitlist and event.isRsvpRequired]
+            eventVolunteerData = [volunteer for volunteer in eventRsvpData if volunteer not in eventWaitlistData]
+            eventNonAttendedData = []
+            
+        allRelevantUsers = [participant.user for participant in eventVolunteerData + eventNonAttendedData + eventWaitlistData]
+        completedTrainingInfo = getParticipationStatusForTrainings(event.program, allRelevantUsers, event.term)
 
-    allRelevantUsers = [participant.user for participant in eventVolunteerData + eventNonAttendedData + eventWaitlistData]
-    completedTrainingInfo = getParticipationStatusForTrainings(program, allRelevantUsers, event.term)
+        eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
 
-    eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
+        recurringVolunteers = getPreviousRecurringEventData(event.recurringId)
 
-    recurringEventID = event.recurringId # query Event Table to get recurringId using Event ID.
-    recurringEventStartDate = event.startDate
-    recurringVolunteers = getPreviousRecurringEventData(recurringEventID)
-
-    currentRsvpAmount = getEventRsvpCount(event.id)
-    return render_template("/events/manageVolunteers.html",
-                            eventData = eventData,
-                            eventVolunteerData = eventVolunteerData,
-                            eventNonAttendedData = eventNonAttendedData,
-                            eventWaitlistData = eventWaitlistData,
-                            eventLength = eventLengthInHours,
-                            event = event,
-                            recurringEventID = recurringEventID,
-                            recurringEventStartDate = recurringEventStartDate,
-                            recurringVolunteers = recurringVolunteers,
-                            bannedUsers = bannedUsers,
-                            trainedParticipantsList = trainedParticipantsList,
-                            completedTrainingInfo = completedTrainingInfo,
-                            currentRsvpAmount = currentRsvpAmount)
-
-
+        currentRsvpAmount = getEventRsvpCount(event.id)
+        return render_template("/events/manageVolunteers.html",
+                                eventVolunteerData = eventVolunteerData,
+                                eventNonAttendedData = eventNonAttendedData,
+                                eventWaitlistData = eventWaitlistData,
+                                eventLength = eventLengthInHours,
+                                event = event,
+                                recurringVolunteers = recurringVolunteers,
+                                bannedUsers = bannedUsers,
+                                trainedParticipantsList = trainedParticipantsList,
+                                completedTrainingInfo = completedTrainingInfo,
+                                currentRsvpAmount = currentRsvpAmount)
 
 @admin_bp.route('/event/<eventID>/volunteer_details', methods=['GET'])
 def volunteerDetailsPage(eventID):
@@ -138,7 +121,6 @@ def addVolunteer(eventId):
     event = Event.get_by_id(eventId)
     successfullyAddedVolunteer = False
     usernameList = []
-    eventParticipants = getEventParticipants(eventId)
     usernameList = request.form.getlist("volunteer[]")
 
     successfullyAddedVolunteer = False

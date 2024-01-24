@@ -1,5 +1,5 @@
 {% set title = "Manage Volunteers" %}
-{% set page_title = eventData.name %}
+{% set page_title = event.name %}
 {% set eventPast = event.isPast %}
 {% set tabName = 'manageVolunteers' %}
 {% extends "eventNav.html" %}
@@ -116,10 +116,10 @@
                           type ="number"
                           min="0"
                           step="0.01"
-                            {% if participant.hoursEarned == None %}
+                            {% if hoursEarned == None %}
                               value=""
                             {% else %}
-                              value="{{participant.hoursEarned}}"
+                              value="{{hoursEarned}}"
                             {% endif %}
                         />
                       </td>
