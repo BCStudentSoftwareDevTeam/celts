@@ -26,7 +26,7 @@
         <div class="barcodeSelect bnumber-barcode" nowrap>{{participant.user.bnumber[1:]}}</div>
         <div class="phoneSelect" nowrap>{{ participant.user.phoneNumber if participant.user.phoneNumber else "No phone number"}}</div>
         <div class="emailSelect" nowrap>{{ participant.user.email }}</div>
-        <div class="statusSelect" nowrap>{{ volunteerType|title }}</div>
+        <div class="statusSelect" nowrap>Volunteer Status: {{ volunteerType|title }}</div>
         <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.user.dietRestriction if participant.user.dietRestriction else "None Specified" }}</div>
         <div class="emergencyContactSelect" nowrap>Emergency Contact: {{participant.emergencycontact.name if participant.emergencycontact}} 
           {{participant.emergencycontact.cellPhone or participant.emergencycontact.homePhone or participant.emergencycontact.workPhone if participant.emergencycontact}} 
