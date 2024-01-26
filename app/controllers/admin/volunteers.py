@@ -41,27 +41,23 @@ def manageVolunteersPage(eventID):
         return redirect(url_for("admin.manageVolunteersPage", eventID=eventID))
     
     elif request.method == "GET":
+        if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerForEvent(event))):
+            abort(403)
+
         trainedParticipantsList = trainedParticipants(event.program, event.term)
         eventParticipants = getEventParticipants(event)
 
-        isProgramManager = g.current_user.isProgramManagerForEvent(event)
         bannedUsers = [row.user for row in getBannedUsers(event.program)]
-        if not (g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager)):
-            abort(403)
 
-        # eventParticipantData = list(EventParticipant.select(EventParticipant, User).join(User).where(EventParticipant.event==event))
         eventRsvpData = list(EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
-        # eventParticipantUsers = [participantDatum.user for participantDatum in eventParticipantData]
-        # eventRsvpData = [rsvpDatum for rsvpDatum in eventRsvpData if rsvpDatum.user not in eventParticipantUsers]
-        eventRsvpData = [rsvpDatum for rsvpDatum in eventRsvpData if rsvpDatum.user not in eventParticipants]
+        eventNonAttendedData = [rsvpDatum for rsvpDatum in eventRsvpData if rsvpDatum.user not in eventParticipants]
 
         if event.isPast:
             eventVolunteerData = list(eventParticipants.keys())
-            eventNonAttendedData = eventRsvpData
             eventWaitlistData = []
         else:
-            eventWaitlistData = [volunteer for volunteer in list(eventParticipants.keys()) + eventRsvpData if volunteer.rsvpWaitlist and event.isRsvpRequired]
-            eventVolunteerData = [volunteer for volunteer in eventRsvpData if volunteer not in eventWaitlistData]
+            eventWaitlistData = [volunteer for volunteer in (list(eventParticipants.keys()) + eventRsvpData) if volunteer.rsvpWaitlist and event.isRsvpRequired]
+            eventVolunteerData = [volunteer for volunteer in eventNonAttendedData if volunteer not in eventWaitlistData]
             eventNonAttendedData = []
             
         allRelevantUsers = [participant.user for participant in eventVolunteerData + eventNonAttendedData + eventWaitlistData]
