@@ -52,11 +52,9 @@ $(document).ready(function () {
 	function getCheckBoxes() {
 		$(".displayCheckbox").each(function () {
 			let checkboxId = this.id;
-
 			if ($('#' + checkboxId).is(':checked')) {
 				$("." + checkboxId).show()
-			}
-			else {
+			} else {
 				$("." + checkboxId).hide()
 			}
 		})

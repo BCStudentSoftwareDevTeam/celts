@@ -40,7 +40,7 @@
       <td class="nameSelect" nowrap><b>{{ participant.user.firstName }} {{ participant.user.lastName }}</b></td>
       <td class="phoneSelect" nowrap>{{ participant.user.phoneNumber if participant.user.phoneNumber else "" }}</td>
       <td class="emailSelect" nowrap>{{ participant.user.email }}</td>
-      <td class="statusSelect" nowrap>{{ volunteerType|title }}</div>
+      <td class="statusSelect" nowrap>{{ volunteerType|title }}</td>
       <td class="dietRestrictionSelect">{{ participant.user.dietRestriction if participant.user.dietRestriction else ''}}</td>
       <td class="emergencyContactSelect">{{participant.emergencycontact.name if participant.emergencycontact}} 
         {{participant.emergencycontact.cellPhone or participant.emergencycontact.homePhone or participant.emergencycontact.workPhone if participant.emergencycontact}} </td>
@@ -140,7 +140,6 @@
           <th class="statusSelect">Volunteer Status</th>
           <th class="dietRestrictionSelect">Dietary Restriction</th>
           <th class="emergencyContactSelect">Emergency Contact</th>
-          
         </tr>
       </thead>
       <tbody>
