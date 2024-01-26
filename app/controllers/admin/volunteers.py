@@ -46,21 +46,22 @@ def manageVolunteersPage(eventID):
 
         trainedParticipantsList = trainedParticipants(event.program, event.term)
         eventParticipants = getEventParticipants(event)
+        eventParticipantsKeys = list(eventParticipants.keys())
 
         bannedUsers = [row.user for row in getBannedUsers(event.program)]
 
         eventRsvpData = list(EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
-        eventNonAttendedData = [rsvpDatum for rsvpDatum in eventRsvpData if rsvpDatum.user not in eventParticipants]
+        eventNonAttendedData = [notAttendedRSVP for notAttendedRSVP in eventRsvpData if notAttendedRSVP.user not in eventParticipants]
 
         if event.isPast:
-            eventVolunteerData = list(eventParticipants.keys())
+            eventVolunteerData = eventParticipants
             eventWaitlistData = []
         else:
-            eventWaitlistData = [volunteer for volunteer in (list(eventParticipants.keys()) + eventRsvpData) if volunteer.rsvpWaitlist and event.isRsvpRequired]
+            eventWaitlistData = [volunteer for volunteer in (eventParticipantsKeys + eventRsvpData) if volunteer.rsvpWaitlist and event.isRsvpRequired]
             eventVolunteerData = [volunteer for volunteer in eventNonAttendedData if volunteer not in eventWaitlistData]
             eventNonAttendedData = []
             
-        allRelevantUsers = [participant.user for participant in eventVolunteerData + eventNonAttendedData + eventWaitlistData]
+        allRelevantUsers = [participant.user for participant in (eventParticipantsKeys + eventNonAttendedData + eventWaitlistData)]
         completedTrainingInfo = getParticipationStatusForTrainings(event.program, allRelevantUsers, event.term)
 
         eventLengthInHours = getEventLengthInHours(event.timeStart, event.timeEnd, event.startDate)
