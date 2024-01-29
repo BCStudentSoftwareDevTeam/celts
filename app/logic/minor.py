@@ -197,3 +197,10 @@ def saveOtherEngagementRequest(engagementRequest):
                               "status": "Pending"}
     
     CommunityEngagementRequest.create(**otherEngagementRequest)
+
+def saveSummerExperiance(summerExperiance):
+    # Save a users summer experiance 
+    # TODO: how will we handle someone trying to save a second summer experiance? 
+    
+    
+    pass

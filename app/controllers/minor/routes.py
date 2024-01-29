@@ -77,11 +77,16 @@ def requestOtherEngagement(username):
                             user=user,
                             terms=terms)
 
+@minor_bp.route('/cceMinor/<username>/indicateInterest', methods=['POST'])
+def indicateMinorInterest(username):
+    toggleMinorInterest(username)
 
+    return ""
 
 @minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
-def addSummerExperience(username):
-    pass
+def addSummerExperience():
+    
+    return ""
 
 @minor_bp.route("/deleteRequestFile", methods=["POST"])
 def deleteRequestFile():

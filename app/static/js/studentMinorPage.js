@@ -16,6 +16,23 @@ $(document).ready(function(){
       });
     })    
 
+    $("#summerExperianceSave").click(function(){
+      let data = $("#summerExperiance").val()
+      let username = $("#username").val()
+      $.ajax({
+        type: "POST", 
+        url: "/cceMinor/"+username+"/addSummerExperiance",
+        data: data,
+        success: function(s){
+          console.error("Success:", s);
+        },
+        error: function(error){
+          console.error("Error:", error);
+        }
+      })
+
+    });
+
     $('.engagement-row').on("click", function() {
         showEngagementInformation($(this).data('engagement-data'));
     });
