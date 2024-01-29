@@ -40,7 +40,7 @@
       <td class="nameSelect" nowrap><b>{{ participant.user.firstName }} {{ participant.user.lastName }}</b></td>
       <td class="phoneSelect" nowrap>{{ participant.user.phoneNumber if participant.user.phoneNumber else "" }}</td>
       <td class="emailSelect" nowrap>{{ participant.user.email }}</td>
-      <td class="statusSelect" nowrap>{{ volunteerType|title }}</td>
+      <td class="statusSelect" nowrap>{{ volunteerType|title if volunteerType != 'rsvp' else volunteerType|upper}}</td>
       <td class="dietRestrictionSelect">{{ participant.user.dietRestriction if participant.user.dietRestriction else ''}}</td>
       <td class="emergencyContactSelect">{{participant.emergencycontact.name if participant.emergencycontact}} 
         {{participant.emergencycontact.cellPhone or participant.emergencycontact.homePhone or participant.emergencycontact.workPhone if participant.emergencycontact}} </td>
@@ -63,7 +63,7 @@
 {% endmacro %}
 
 {% macro createCheckbox(checkboxName) %}
-    {% set labelText = "RSVP Information" if checkboxName == 'rsvp' else 'Waitlist' if checkboxName == 'waitlist' else 'Attended' %}
+    {% set labelText = "RSVP" if checkboxName == 'rsvp' else 'Waitlist' if checkboxName == 'waitlist' else 'Attended' %}
     <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="{{checkboxName}}Select" checked>
     <label for="{{checkboxName}}Select">{{labelText}}</label><br>
 {% endmacro %}
