@@ -145,14 +145,10 @@ def createEvent(templateid, programid):
 @admin_bp.route('/event/<eventId>/rsvp', methods=['GET'])
 def rsvpLogDisplay(eventId):
     event = Event.get_by_id(eventId)
-    eventData = model_to_dict(event, recurse=False)
-    eventData['program'] = event.program
-    isProgramManager = g.current_user.isProgramManagerFor(eventData['program'])
-    if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and isProgramManager):
+    if g.current_user.isCeltsAdmin or (g.current_user.isCeltsStudentStaff and g.current_user.isProgramManagerFor(event.program)):
         allLogs = EventRsvpLog.select(EventRsvpLog, User).join(User).where(EventRsvpLog.event_id == eventId).order_by(EventRsvpLog.createdOn.desc())
         return render_template("/events/rsvpLog.html",
                                 event = event,
-                                eventData = eventData,
                                 allLogs = allLogs)
     else:
         abort(403)
