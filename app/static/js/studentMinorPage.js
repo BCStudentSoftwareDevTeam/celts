@@ -21,7 +21,7 @@ $(document).ready(function(){
       let username = $("#username").val()
       $.ajax({
         type: "POST", 
-        url: "/cceMinor/"+username+"/addSummerExperiance",
+        url: "/cceMinor/"+username+"/addSummerExperience",
         data: data,
         success: function(s){
           console.error("Success:", s);
