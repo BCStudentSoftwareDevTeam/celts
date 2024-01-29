@@ -174,6 +174,15 @@ function getImportedCourseInfo(courseID, callback) { // This function populates 
         $('#instructorsTable').empty();
         $('#courseName').val(courseDict['courseName']);
         $('#courseAbbreviation').val(courseDict['courseAbbreviation']);
+        
+        // Find the element with class "modal-header" and "fw-bold" using jQuery
+        var modalHeaderElement = $('.modal-header.fw-bold');
+        
+        if (modalHeaderElement.length > 0) {
+            // Replace the text "EDIT COURSE" with the courseAbbreviation
+            modalHeaderElement.text("EDIT " + courseAbbreviation);
+        }
+
         $('#hoursEarned').val(courseDict['hoursEarned']);
         if (courseDict['instructors'] && courseDict['instructors'].length > 0) {
           updateInstructorsTable(courseDict['instructors']);
