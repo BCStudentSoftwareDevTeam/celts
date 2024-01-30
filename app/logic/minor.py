@@ -116,13 +116,12 @@ def setCommunityEngagementForUser(action, engagementData, currentUser):
                                                   CertificationRequirement.name.not_in(['Summer Program'])))
     if action == 'add':
         try: 
-            IndividualRequirement.create(**{
-                    engagementData['type']: engagementData['id'],
-                    "username": engagementData['username'],
-                    "term": engagementData['term'],
-                    "requirement": requirement.get(),
-                    "addedBy": currentUser,
-                })
+            IndividualRequirement.create(**{engagementData['type']: engagementData['id'],
+                                           "username": engagementData['username'],
+                                           "term": engagementData['term'],
+                                           "requirement": requirement.get(),
+                                           "addedBy": currentUser,
+                                        })
             
         except DoesNotExist as e:
             raise e 
@@ -199,8 +198,13 @@ def saveOtherEngagementRequest(engagementRequest):
     CommunityEngagementRequest.create(**otherEngagementRequest)
 
 def saveSummerExperiance(summerExperiance):
-    # Save a users summer experiance 
+    # TODO: Should the logic of this function be combined with `setCommunityEngagementForUser`
     # TODO: how will we handle someone trying to save a second summer experiance? 
+
+    # unpack summerExperiance (name of experiance and term it took place in)
+    # IndividualRequirement.create(description: name of summer experiance, user: username, term: term,
+    #                              requirement: `requirement` query from `setCommunityEngagementForUser`, 
+    #                              addedBy: addedBy)
     
     
     pass

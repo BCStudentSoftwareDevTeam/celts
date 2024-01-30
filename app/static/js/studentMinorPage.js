@@ -24,7 +24,7 @@ $(document).ready(function(){
         url: "/cceMinor/"+username+"/addSummerExperience",
         data: data,
         success: function(s){
-          console.error("Success:", s);
+          
         },
         error: function(error){
           console.error("Error:", error);

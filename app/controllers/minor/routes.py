@@ -7,7 +7,8 @@ from app.logic.utils import selectSurroundingTerms
 from app.logic.fileHandler import FileHandler
 from app.models.attachmentUpload import AttachmentUpload
 from app.logic.utils import getFilesFromRequest
-from app.logic.minor import toggleMinorInterest, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, saveOtherEngagementRequest, setCommunityEngagementForUser
+from app.logic.minor import toggleMinorInterest, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm
+from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, saveSummerExperiance
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -84,7 +85,8 @@ def indicateMinorInterest(username):
     return ""
 
 @minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
-def addSummerExperience():
+def addSummerExperience(username):
+    saveSummerExperiance(request.form)
     
     return ""
 
