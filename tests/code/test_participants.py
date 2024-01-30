@@ -360,9 +360,10 @@ def test_getEventParticipants():
 
     khatts = User.get_by_id('khatts')
     khatts_participant = EventParticipant.get(event=event, user=khatts)
-    eventParticipantsDict = getEventParticipants(event)
-    assert khatts_participant in eventParticipantsDict
-    assert eventParticipantsDict[khatts_participant] == 2
+    eventParticipants = getEventParticipants(event)
+    assert khatts_participant in eventParticipants
+    khatts_index = eventParticipants.index(khatts_participant)
+    assert eventParticipants[khatts_index].hoursEarned == 2
 
 @pytest.mark.integration
 def test_getEventParticipantsWithWrongParticipant():

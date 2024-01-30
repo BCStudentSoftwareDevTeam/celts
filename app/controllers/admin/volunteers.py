@@ -61,9 +61,6 @@ def manageVolunteersPage(eventID):
         trainedParticipantsForProgramAndTerm = trainedParticipants(event.program, event.term)
         eventParticipants = getEventParticipants(event)
 
-        # convert the eventParticipants dict to a list of keys for later use
-        eventParticipantsUsers = list(eventParticipants.keys())
-
         bannedUsersForProgram = [bannedUser.user for bannedUser in getBannedUsers(event.program)]
 
         # get all RSVPs for event and filter out those that did not attend into separate list
@@ -77,13 +74,13 @@ def manageVolunteersPage(eventID):
             eventWaitlistData = []
         else:
             # if rsvp is required for the event, grab all volunteers that are in the waitlist
-            eventWaitlistData = [volunteer for volunteer in (eventParticipantsUsers + eventRsvpData) if volunteer.rsvpWaitlist and event.isRsvpRequired]
+            eventWaitlistData = [volunteer for volunteer in (eventParticipants + eventRsvpData) if volunteer.rsvpWaitlist and event.isRsvpRequired]
             
             # put the rest of the users that are not on the waitlist into the volunteer data
             eventVolunteerData = [volunteer for volunteer in eventNonAttendedData if volunteer not in eventWaitlistData]
             eventNonAttendedData = []
         
-        allRelevantUsers = [participant.user for participant in (eventParticipantsUsers + eventNonAttendedData + eventWaitlistData)]
+        allRelevantUsers = [participant.user for participant in (eventParticipants + eventNonAttendedData + eventWaitlistData)]
         
         # ----------- Get miscellaneous data -----------
 

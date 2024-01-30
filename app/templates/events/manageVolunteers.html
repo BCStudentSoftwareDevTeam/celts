@@ -82,7 +82,7 @@
             </thead>
             <tbody class="align-middle" id="volunteerTable">
               {% if eventVolunteerData %}
-                {% for participant, hoursEarned in eventVolunteerData.items() %}
+                {% for participant in eventVolunteerData %}
                   <tr>
                     {% if (not event.isPast) and (event.isRsvpRequired)  %}
                       <td>
@@ -116,10 +116,10 @@
                           type ="number"
                           min="0"
                           step="0.01"
-                            {% if hoursEarned == None %}
+                            {% if participant.hoursEarned == None %}
                               value=""
                             {% else %}
-                              value="{{hoursEarned}}"
+                              value={{participant.hoursEarned}}
                             {% endif %}
                         />
                       </td>
