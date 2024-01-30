@@ -447,7 +447,7 @@ def alterImportedCourse(courseID):
         # Update course information in the database
         editImportedCourses(request.form.copy())
 
-    return redirect(url_for("admin.manageServiceLearningCourses"))
+    return redirect(url_for("admin.manageServiceLearningCourses", term=1))
 
 
 @admin_bp.route("/manageBonner")

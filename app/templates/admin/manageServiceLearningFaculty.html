@@ -202,7 +202,7 @@
     <div class="modal fade" id="alterModal">
       <div class="modal-dialog">
         <div class="modal-content">
-          <div class="modal-header fw-bold"> EDIT COURSE </div>
+          <h5 class="modal-header fw-bold" id="importedModalTitle"></h5>
           <form enctype="multipart/form-data" role="form" method="POST">
             <input type="hidden" id="alterCourseId" name="courseId">
             <div class="modal-body"> 
@@ -221,13 +221,13 @@
                     <td><input class="form-control" id="hoursEarned" name="hoursEarned" type="number" min="0" required/></td>
                   </tr>
                   <tr>
-                    <td class="fw-bold">Instructors</td>
+                    <td class="fw-bold">Instructor(s)</td>
                     <td><input id="courseInstructor" class="form-control" type="search" placeholder="Search instructor" value=""/></td>
                     <!-- Start of Instructor Table -->
                     <table class="table mb-3" id="instructorTable" name="instructorTable">
                       <thead>
                         <tr>
-                          <th scope="col">Instructor</th>
+                          <th scope="col">Instructor(s)</th>
                           <th scope="col"></th>
                         </tr>
                       </thead>

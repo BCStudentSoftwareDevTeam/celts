@@ -174,14 +174,11 @@ function getImportedCourseInfo(courseID, callback) { // This function populates 
         $('#instructorsTable').empty();
         $('#courseName').val(courseDict['courseName']);
         $('#courseAbbreviation').val(courseDict['courseAbbreviation']);
+
+        modalTitle = courseDict['courseName'] ? courseDict['courseName'] : courseDict['courseAbbreviation'] 
         
         // Find the element with class "modal-header" and "fw-bold" using jQuery
-        var modalHeaderElement = $('.modal-header.fw-bold');
-        
-        if (modalHeaderElement.length > 0) {
-            // Replace the text "EDIT COURSE" with the courseAbbreviation
-            modalHeaderElement.text("EDIT " + courseAbbreviation);
-        }
+        $("#importedModalTitle").text("Edit " + modalTitle);
 
         $('#hoursEarned').val(courseDict['hoursEarned']);
         if (courseDict['instructors'] && courseDict['instructors'].length > 0) {
@@ -189,7 +186,7 @@ function getImportedCourseInfo(courseID, callback) { // This function populates 
         }
       }
       if (callback) callback();
-    }
+    } 
   });
 }
 
