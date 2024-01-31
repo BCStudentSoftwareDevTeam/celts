@@ -1,6 +1,6 @@
 from pprint import isrecursive
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from peewee import IntegrityError, DoesNotExist
 from app import app
 from flask import g
@@ -15,6 +15,7 @@ from app.models.eventParticipant import EventParticipant
 from app.logic.volunteers import getEventLengthInHours, updateEventParticipants
 from app.logic.participants import unattendedRequiredEvents, addBnumberAsParticipant, getEventParticipants, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, checkUserVolunteer, addPersonToEvent, sortParticipantsByStatus
 from app.models.eventRsvp import EventRsvp
+
 
 @pytest.mark.integration
 def test_getEventLengthInHours():
@@ -440,6 +441,7 @@ def test_getParticipationStatusForTrainings():
                                  isSummer = False,
                                  isCurrentTerm = False,
                                  termOrder = f"{futureYear}-1")
+        
         testingEvent = Event.create(name = "Testing delete event",
                                     term = futureTerm,
                                     description= "This Event is Created to be Deleted.",
@@ -470,21 +472,17 @@ def test_sortParticipantsByStatus():
     non attended, waitlist, and attended groups.
     """
     with mainDB.atomic() as transaction:
-        
-        # creating past event
-        testingEvent = Event.create(name = "Testing event",
-                                    term = 3,
-                                    description = "This Event is Created to be tested.",
-                                    timeStart = "07:00 PM",
-                                    timeEnd = "10:00 PM",
-                                    location = "Somewhere",
-                                    isRsvpRequired = 0,
-                                    isTraining = 0,
-                                    isService = 0,
-                                    startDate = "2021-12-12",
-                                    isCanceled = False,
-                                    program = 2)
-        
+
+        date: int = 9
+        testingEvent = Event.create(name = "Test AGP event to cancel",
+                                        term = 2,
+                                        description = "Test student led (AGP) event that will be canceled.",
+                                        timeStart = time(2, 2, 2),
+                                        timeEnd = "06:00:00",
+                                        location = "The Sun",
+                                        isTraining = False,
+                                        startDate = datetime.strptime("2021-08-02", "%Y-%m-%d"),
+                                        program = 3)
 
         EventParticipant.create(user = "neillz", event = testingEvent)
         EventParticipant.create(user = "khatts", event = testingEvent)
