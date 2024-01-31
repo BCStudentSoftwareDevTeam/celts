@@ -8,8 +8,8 @@ from app.models.user import User
 from app.models.eventParticipant import EventParticipant
 from app.models.emergencyContact import EmergencyContact
 from app.logic.searchUsers import searchUsers
-from app.logic.volunteers import updateEventParticipants, getEventLengthInHours, addUserBackgroundCheck, setProgramManager
-from app.logic.participants import trainedParticipants, getEventParticipants, addPersonToEvent, getParticipationStatusForTrainings
+from app.logic.volunteers import updateEventParticipants, getEventLengthInHours, addUserBackgroundCheck, setProgramManager, sortParticipantsByStatus
+from app.logic.participants import trainedParticipants, addPersonToEvent, getParticipationStatusForTrainings
 from app.logic.events import getPreviousRecurringEventData, getEventRsvpCount
 from app.models.eventRsvp import EventRsvp
 from app.models.backgroundCheck import BackgroundCheck
@@ -59,26 +59,10 @@ def manageVolunteersPage(eventID):
 
         # ------- Grab the different lists of participants -------
         trainedParticipantsForProgramAndTerm = trainedParticipants(event.program, event.term)
-        eventParticipants = getEventParticipants(event)
 
         bannedUsersForProgram = [bannedUser.user for bannedUser in getBannedUsers(event.program)]
-
-        # get all RSVPs for event and filter out those that did not attend into separate list
-        eventRsvpData = list(EventRsvp.select(EventRsvp, User).join(User).where(EventRsvp.event==event).order_by(EventRsvp.rsvpTime))
-        eventNonAttendedData = [rsvp for rsvp in eventRsvpData if rsvp.user not in eventParticipants]
-    
-        if event.isPast:
-            eventVolunteerData = eventParticipants
-            
-            # if the event date has passed disregard the waitlist
-            eventWaitlistData = []
-        else:
-            # if rsvp is required for the event, grab all volunteers that are in the waitlist
-            eventWaitlistData = [volunteer for volunteer in (eventParticipants + eventRsvpData) if volunteer.rsvpWaitlist and event.isRsvpRequired]
-            
-            # put the rest of the users that are not on the waitlist into the volunteer data
-            eventVolunteerData = [volunteer for volunteer in eventNonAttendedData if volunteer not in eventWaitlistData]
-            eventNonAttendedData = []
+  
+        eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventParticipants = sortParticipantsByStatus()
         
         allRelevantUsers = [participant.user for participant in (eventParticipants + eventNonAttendedData + eventWaitlistData)]
         
