@@ -492,10 +492,18 @@ def test_sortParticipantsByStatus():
         EventRsvp.create(event=testingEvent, user="partont")
 
         # get event participants for the event
+        partontRsvp= EventRsvp.get( user = "partont", event=testingEvent)
+
+        neillzParticipant = EventParticipant.get(user = "neillz", event = testingEvent)
+        khattsParticipant = EventParticipant.get(user = "khatts", event = testingEvent)
+        ayisieParticipant = EventParticipant.get(user = "ayisie", event = testingEvent)
+        
+
         eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventParticipants = sortParticipantsByStatus(testingEvent)
-        assert eventNonAttendedData == ["partont"]
+        assert eventNonAttendedData == [partontRsvp] 
+        
         assert eventWaitlistData == []
-        assert eventVolunteerData == ["neillz", "khatts", "ayisie"]
+        assert eventVolunteerData == [ neillzParticipant,khattsParticipant,ayisieParticipant]
 
         assert eventParticipants == getEventParticipants(testingEvent)
 
