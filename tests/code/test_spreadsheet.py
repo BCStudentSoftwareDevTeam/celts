@@ -33,18 +33,17 @@ def test_removeNullParticipants():
     test_input_list = ['khatts', '', 'ayisie']
     assert removeNullParticipants(test_input_list) == ['khatts', 'ayisie']
 
-
 @pytest.mark.integration
 def test_termParticipation():
     with mainDB.atomic() as transaction:    
         assert termParticipation('Fall 2020')=={'Adopt-a-Grandparent': ['khatts'], 'CELTS-Sponsored Event': [None]}
 
-        EventParticipant.create(user = 'partont',  
+        EventParticipant.create(user = 'partont',
                                 event = 10,
                                 hoursEarned = 1)
         assert termParticipation('Fall 2020')=={'Adopt-a-Grandparent': ['khatts', 'partont'], 'CELTS-Sponsored Event': [None]}
 
-        EventParticipant.create(user = 'ayisie',  
+        EventParticipant.create(user = 'ayisie',
                                 event = 14,
                                 hoursEarned = 1)
         assert termParticipation('Fall 2020')=={'Adopt-a-Grandparent': ['khatts', 'partont'], 'CELTS-Sponsored Event': ['ayisie']}
@@ -52,14 +51,24 @@ def test_termParticipation():
 
 @pytest.mark.integration
 def test_getRetentionRate():
-    assert getRetentionRate("2020-2021") == [('Adopt-a-Grandparent', '0.0%'), ('CELTS-Sponsored Event', '0.0%')]
+    with mainDB.atomic() as transaction:
+        assert getRetentionRate("2020-2021") == [('Adopt-a-Grandparent', '0.0%'), ('CELTS-Sponsored Event', '0.0%')]
+        
+        testEvent = Event.create(name="Test Event",
+                                 term=2,
+                                 program=3)
+        EventParticipant.create(user = 'khatts',
+                                event = testEvent,
+                                hoursEarned = 1)
+        assert getRetentionRate("2020-2021") == [('Adopt-a-Grandparent', '100.0%'), ('CELTS-Sponsored Event', '0.0%')]
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_repeatVolunteers():
     with mainDB.atomic() as transaction:
 
         assert list(repeatVolunteers().execute()) == [('Sreynit Khatt', 4), ('Zach Neill', 2)]
-        EventParticipant.create(user = 'partont',  
+        EventParticipant.create(user = 'partont',
                                 event = 2,
                                 hoursEarned = 1)
         assert list(repeatVolunteers().execute()) == [('Sreynit Khatt', 4), ('Zach Neill', 2), ('Tyler Parton', 2)]
@@ -69,7 +78,7 @@ def test_repeatVolunteers():
 def test_repeatVolunteersPerProgram():
     with mainDB.atomic() as transaction:
         assert list(repeatVolunteersPerProgram().execute()) == [('Zach Neill', 'Hunger Initiatives', 2), ('Sreynit Khatt', 'Adopt-a-Grandparent', 3)]
-        EventParticipant.create(user = 'partont',  
+        EventParticipant.create(user = 'partont',
                                 event = 2,
                                 hoursEarned = 1)
         assert list(repeatVolunteersPerProgram().execute()) == [('Zach Neill', 'Hunger Initiatives', 2), ('Tyler Parton', 'Hunger Initiatives', 2),
@@ -90,32 +99,46 @@ def test_volunteerMajorAndClass():
                     isStudent = True,
                     major = 'Agriculture',
                     classLevel = 'Sophomore')
-        EventParticipant.create(user = 'solijonovam',  
+        EventParticipant.create(user = 'solijonovam',
                                 event = 2,
                                 hoursEarned = 2)
         assert list(volunteerMajorAndClass(User.major).execute()) == [('Agriculture', 1), ('Biology', 1), ('Chemistry', 1), ('Computer Science', 2), ('Psychology', 1)]
-
+        assert list(volunteerMajorAndClass(User.classLevel).execute()) == [('Junior', 1), ('Senior', 3), ('Sophomore', 2)]
+        assert list(volunteerMajorAndClass(User.classLevel, True).execute()) == [('Sophomore', 2), ('Junior', 1), ('Senior', 3)]
         transaction.rollback()
 
 @pytest.mark.integration
 def test_volunteerHoursByProgram():
     with mainDB.atomic() as transaction:
         assert list(volunteerHoursByProgram().execute()) == [('Adopt-a-Grandparent', 9.0), ('Berea Buddies', 0.0), ('Hunger Initiatives', 11.0)]
-        EventParticipant.create(user = 'partont',  
+        EventParticipant.create(user = 'partont',
                                 event = 2,
                                 hoursEarned = 1)
         assert list(volunteerHoursByProgram().execute()) == [('Adopt-a-Grandparent', 9.0), ('Berea Buddies', 0.0), ('Hunger Initiatives', 12.0)]
         transaction.rollback()
-        
+
 @pytest.mark.integration
 def test_onlyCompletedAllVolunteer():
     #seems like onlyCompletedAllVolunteer isn't working properly
     with mainDB.atomic() as transaction:
         assert list(onlyCompletedAllVolunteer("2020-2021").execute()) == []
-        EventParticipant.create(user = 'partont',  
+        EventParticipant.create(user = 'partont',
                                 event = 14,
                                 hoursEarned = 1)
-        assert list(onlyCompletedAllVolunteer("2021-2022").execute()) == []
+        assert list(onlyCompletedAllVolunteer("2020-2021").execute()) == []
+        User.create(username = 'solijonovam',
+                    bnumber = 'B00769465',
+                    email = 'solijonovam@berea.edu',
+                    phoneNumber = '732-384-3469',
+                    firstName = 'Madinabonu',
+                    lastName  = 'Solijonova',
+                    isStudent = True,
+                    major = 'Agriculture',
+                    classLevel = 'Sophomore')
+        EventParticipant.create(user = 'solijonovam',
+                                event = 14,
+                                hoursEarned = 1)
+        assert list(onlyCompletedAllVolunteer("2020-2021").execute()) == [('solijonovam', 'Madinabonu Solijonova')]
         transaction.rollback()
 
 @pytest.mark.integration
@@ -127,7 +150,7 @@ def test_volunteerProgramHours():
                                                             ('Adopt-a-Grandparent', 'khatts', 9.0),
                                                             ('Hunger Initiatives', 'ayisie', None),
                                                             ('Hunger Initiatives', 'partont', 5.0)])
-        EventParticipant.create(user = 'qasema',  
+        EventParticipant.create(user = 'qasema',
                                 event = 2,
                                 hoursEarned = 1)
         assert list(volunteerProgramHours().execute()) == ([('Hunger Initiatives', 'neillz', 4.0), 
@@ -138,17 +161,16 @@ def test_volunteerProgramHours():
                                                             ('Hunger Initiatives', 'partont', 5.0),
                                                             ('Hunger Initiatives', 'qasema', 1.0)])
         transaction.rollback()
-    
+
 @pytest.mark.integration
 def test_totalVolunteerHours():
     with mainDB.atomic() as transaction:
         assert list(totalVolunteerHours().execute()) == [(20.0,)]
-        EventParticipant.create(user = 'qasema',  
+        EventParticipant.create(user = 'qasema',
                                 event = 2,
                                 hoursEarned = 1)
         assert list(totalVolunteerHours().execute()) == [(21.0,)]
         transaction.rollback()
-
 
 @pytest.mark.integration
 def test_getVolunteerProgramEventByTerm():
@@ -172,4 +194,3 @@ def test_getUniqueVolunteers():
                                                                  ('khatts', 'Sreynit Khatt', 'B00759107'),
                                                                  ('neillz', 'Zach Neill', 'B00751864'),
                                                                  ('partont', 'Tyler Parton', 'B00751360')])
- 
