@@ -8,7 +8,7 @@ from app.logic.fileHandler import FileHandler
 from app.models.attachmentUpload import AttachmentUpload
 from app.logic.utils import getFilesFromRequest
 from app.logic.minor import toggleMinorInterest, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm
-from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, saveSummerExperiance
+from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, saveSummerExperience, getSummerTerms
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -17,11 +17,13 @@ def viewCceMinor(username):
     """
     if not (g.current_user.isAdmin):
         return abort(403)
-    terms = getCommunityEngagementByTerm(username)
+    summerTerms = getSummerTerms()
+    engagementByTerm = getCommunityEngagementByTerm(username)
     user = User.get_by_id(username)
     return render_template("minor/profile.html",
-                    user=user,
-                    terms=terms)
+                            user=user,
+                            engagementByTerm = engagementByTerm,
+                            summerTerms = summerTerms)
 
 @minor_bp.route('/cceMinor/<username>/getEngagementInformation/<type>/<term>/<id>', methods=['GET'])
 def getEngagementInformation(username, type, id, term):
@@ -86,7 +88,7 @@ def indicateMinorInterest(username):
 
 @minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
 def addSummerExperience(username):
-    saveSummerExperiance(request.form)
+    saveSummerExperience(username ,request.form, g.current_user)
     
     return ""
 

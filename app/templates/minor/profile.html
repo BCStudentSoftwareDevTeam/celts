@@ -37,7 +37,7 @@
             </div>
             <p class="pt-2">Approximately two hours of engagement over about ten weeks of a semester. Only two engagement activities can be credited in a single semester.</p>
             <div class="accordion" id="communityEngagement">
-              {% for term, engagements in terms.items() %}
+              {% for term, engagements in engagementByTerm.items() %}
                 <div class="accordion-item">
                   <h3 class="accordion-header" id="headingOne">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{loop.index}}" aria-expanded="true" aria-controls="collapse{{loop.index}}">
@@ -84,12 +84,19 @@
           <p class="pt-2">Must include at least 300 hours of work over the span of 8 weeks with a public-facing organization with a focus on applied work.</p>
           <div class="row-auto col-md-6">
             <div class="input-group">
-              <input class="form-control" placeholder="Experience name" id="summerExperiance" type="text"/>
-              <button type="button" class="btn btn-primary btn-md" id="summerExperianceSave">Save</button>
+              <input class="form-control" placeholder="Experience name" id="summerExperience" type="text"/>
+              <button type="button" class="btn btn-primary btn-md" id="summerExperienceSave">Save</button>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for='summerExperienceTerm'>Term</label>
+                <select class="form-select" name='term' id='summerExperienceTerm' required>
+                  {% for term in summerTerms %}
+                    <option>{{term.description}}</option>
+                  {% endfor %}
+                </select>
             </div>
           </div>
         </div>
     </div>
 {% endblock %}
-
 

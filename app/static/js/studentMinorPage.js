@@ -16,8 +16,9 @@ $(document).ready(function(){
       });
     })    
 
-    $("#summerExperianceSave").click(function(){
-      let data = $("#summerExperiance").val()
+    $("#summerExperienceSave").click(function(){
+      let data = {'summerExperience': $("#summerExperience").val(),
+                  'selectedSummerTerm': $("#summerExperienceTerm").find(":selected").text()}
       let username = $("#username").val()
       $.ajax({
         type: "POST", 

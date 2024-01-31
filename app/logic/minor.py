@@ -4,6 +4,7 @@ from peewee import JOIN, fn, Case, DoesNotExist
 from collections import defaultdict
 
 from app.models.user import User
+from app.models.term import Term
 from app.models.event import Event
 from app.models.course import Course
 from app.models.program import Program
@@ -197,7 +198,7 @@ def saveOtherEngagementRequest(engagementRequest):
     
     CommunityEngagementRequest.create(**otherEngagementRequest)
 
-def saveSummerExperiance(summerExperiance):
+def saveSummerExperience(username, summerExperience, currentUser):
     # TODO: Should the logic of this function be combined with `setCommunityEngagementForUser`
     # TODO: how will we handle someone trying to save a second summer experiance? 
 
@@ -205,6 +206,22 @@ def saveSummerExperiance(summerExperiance):
     # IndividualRequirement.create(description: name of summer experiance, user: username, term: term,
     #                              requirement: `requirement` query from `setCommunityEngagementForUser`, 
     #                              addedBy: addedBy)
+    requirement = (CertificationRequirement.select()
+                                          .join(IndividualRequirement, JOIN.LEFT_OUTER, on=((IndividualRequirement.requirement == CertificationRequirement.id) & 
+                                                                                            (IndividualRequirement.username == 'username')))
+                                          .where(IndividualRequirement.username.is_null(True),
+                                                 CertificationRequirement.certification == 2, 
+                                                 CertificationRequirement.name << ['Summer Program']))
     
-    
-    pass
+    IndividualRequirement.create(**{'descirption': summerExperience['summerExperience'],
+                                           "username": username,
+                                           "term": summerExperience['selectedSummerTerm'],
+                                           "requirement": requirement.get(),
+                                           "addedBy": currentUser,
+                                        })
+    return ""
+
+def getSummerTerms():
+    summerTerms = list(Term.select().where(Term.isSummer == True))
+
+    return summerTerms
