@@ -265,7 +265,7 @@ def test_setCommunityEngagementForUser():
         assert khattsEngagements[0].course == Course.get_by_id(2)
         assert khattsEngagements[0].program == None
 
-        # add 5 engagements and make sure the 5th raises the expected exception 
+        # add 4 more engagements and make sure the 5th raises the expected exception 
         setCommunityEngagementForUser('add', khattsEngagementData2, 'ramsayb2')
         setCommunityEngagementForUser('add', khattsEngagementData3, 'ramsayb2')
         setCommunityEngagementForUser('add', khattsEngagementData4, 'ramsayb2')
@@ -288,7 +288,6 @@ def test_setCommunityEngagementForUser():
         assert neillz2Engagements[5].username_id == 'neillz'
 
         # Removing requirement
-        # TODO remove existing
         # TODO remove nonexisting
         setCommunityEngagementForUser('remove', khattsEngagementData1, 'ramsayb2')
         khattsUpdatedEngagements = list(IndividualRequirement.select())
@@ -304,9 +303,19 @@ def test_getMinorInterest():
     with mainDB.atomic() as transaction: 
         # set every users minor interest to no interest
         User.update(minorInterest = 0).where(User.minorInterest == 1).execute()
-
         noStudentsInterested = getMinorInterest()
+        assert noStudentsInterested == []
 
+        # Add a student who has progress towards the minor. They should not be in returned list
+        User.update(minorInterest = 1).where(User.username == 'khatts').execute()
+        minorProgress = getMinorInterest()
+        assert minorProgress == []
+       
+       # Add a student will be returned in the list
+        User.update(minorInterest = 1).where(User.username == 'partont').execute()
+        oneStudentInterested = getMinorInterest()
+        assert len(oneStudentInterested) == 1
+        oneStudentInterested[0]['username'] == 'partont'
 
         transaction.rollback()
 
