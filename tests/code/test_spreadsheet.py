@@ -15,19 +15,40 @@ def test_create_spreadsheet():
 
 @pytest.mark.integration
 def test_calculateRetentionRate():
-    fall_Dict=({'Adopt-a-Grandparent': ['khatts'], 'CELTS-Sponsored Event': [None]})
-    spring_dict=({'Hunger Initiatives': ['neillz', 'khatts', 'ayisie', 'neillz', 'partont']})
-    assert calculateRetentionRate(fall_Dict,spring_dict) == {'Adopt-a-Grandparent': 0.0, 'CELTS-Sponsored Event': 0.0}
-	
+    fall_dict=({'Adopt-a-Grandparent': ['khatts'], 'CELTS-Sponsored Event': [None]})
+    spring_dict=({'Hunger Initiatives': ['neillz', 'khatts', 'ayisie', 'partont']})
+    assert calculateRetentionRate(fall_dict,spring_dict) == {'Adopt-a-Grandparent': 0.0, 'CELTS-Sponsored Event': 0.0}
+
+    fall_dict=({'Hunger Initiatives': ['neillz', 'khatts', 'ayisie', 'partont']})
+    assert calculateRetentionRate(fall_dict,spring_dict) == {'Hunger Initiatives': 1.0}
+
+    fall_dict=({'Hunger Initiatives': ['neillz', 'khatts', 'ayisie', 'partont']})
+    spring_dict=({'Hunger Initiatives': ['neillz', 'khatts', 'ayisie']})
+    assert calculateRetentionRate(fall_dict,spring_dict) == {'Hunger Initiatives': 0.75}
+
 @pytest.mark.integration
 def test_removeNullParticipants():
-	# Test case 1: Dictionary with null participants
-    input_dict_1 = ['khatts']
-    assert removeNullParticipants(input_dict_1) == ['khatts']
+    test_input_list = ['khatts']
+    assert removeNullParticipants(test_input_list) == ['khatts']
+    test_input_list = ['khatts', '', 'ayisie']
+    assert removeNullParticipants(test_input_list) == ['khatts', 'ayisie']
+
 
 @pytest.mark.integration
 def test_termParticipation():
-    assert termParticipation('Fall 2020')=={'Adopt-a-Grandparent': ['khatts'], 'CELTS-Sponsored Event': [None]}
+    with mainDB.atomic() as transaction:    
+        assert termParticipation('Fall 2020')=={'Adopt-a-Grandparent': ['khatts'], 'CELTS-Sponsored Event': [None]}
+
+        EventParticipant.create(user = 'partont',  
+                                event = 10,
+                                hoursEarned = 1)
+        assert termParticipation('Fall 2020')=={'Adopt-a-Grandparent': ['khatts', 'partont'], 'CELTS-Sponsored Event': [None]}
+
+        EventParticipant.create(user = 'ayisie',  
+                                event = 14,
+                                hoursEarned = 1)
+        assert termParticipation('Fall 2020')=={'Adopt-a-Grandparent': ['khatts', 'partont'], 'CELTS-Sponsored Event': ['ayisie']}
+        transaction.rollback()
 
 @pytest.mark.integration
 def test_getRetentionRate():
@@ -100,7 +121,7 @@ def test_onlyCompletedAllVolunteer():
 @pytest.mark.integration
 def test_volunteerProgramHours():
     with mainDB.atomic() as transaction:
-        assert list(volunteerProgramHours().execute()) == ([('Hunger Initiatives', 'neillz', 4.0),
+        assert list(volunteerProgramHours().execute()) == ([('Hunger Initiatives', 'neillz', 4.0),  
                                                             ('Hunger Initiatives', 'khatts', 2.0),
                                                             ('Berea Buddies', 'bryanta', 0.0),
                                                             ('Adopt-a-Grandparent', 'khatts', 9.0),
