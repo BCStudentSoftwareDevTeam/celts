@@ -2,7 +2,7 @@ import pytest
 from flask import g
 from werkzeug.datastructures import ImmutableMultiDict
 from app import app
-from app.logic.volunteers import getEventLengthInHours, updateEventParticipants, addUserBackgroundCheck, sortParticipantsByStatus
+from app.logic.volunteers import getEventLengthInHours, updateEventParticipants, addUserBackgroundCheck
 from app.models.eventParticipant import EventParticipant
 from app.models.eventRsvp import EventRsvp
 from app.models.user import User
@@ -150,65 +150,3 @@ def test_backgroundCheck():
 
         transaction.rollback()
 
-@pytest.mark.integration
-def test_sortParticipantsByStatus():
-    """
-    Test the sorting of event participants into the 
-    non attended, waitlist, and attended groups.
-    """
-    with mainDB.atomic() as transaction:
-        
-        # creating past event
-        testingEvent = Event.create(name = "Testing event",
-                                    term = 3,
-                                    description = "This Event is Created to be tested.",
-                                    timeStart = "07:00 PM",
-                                    timeEnd = "10:00 PM",
-                                    location = "Somewhere",
-                                    isRsvpRequired = 0,
-                                    isTraining = 0,
-                                    isService = 0,
-                                    startDate = "2021-12-12",
-                                    endDate = "2022-6-12",
-                                    isCanceled = False,
-                                    program = 2)
-        
-
-        EventParticipant.create(user = "neillz", event = testingEvent)
-        EventParticipant.create(user = "khatts", event = testingEvent)
-        EventParticipant.create(user = "ayisie", event = testingEvent)
-        
-
-        EventRsvp.create(event=testingEvent, user="partont")
-
-        # get event participants for the event
-        eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventParticipants = sortParticipantsByStatus(testingEvent)
-        assert eventNonAttendedData == ["partont"]
-        assert eventWaitlistData == []
-        assert eventVolunteerData == ["neillz", "khatts", "ayisie"]
-
-        # test a past event
-         # add the test data
-            # create an event 
-            # add the event participants(attended)
-            # add the rsvped
-            
-        # verify if the wailist is empty
-        # verify if the list of participants is correct
-        # verify if those who rsvped and did not attend are in non-attended list 
-
-    
-
-        # test a upcoming event
-
-            # add our test data
-                # create an event
-                # add rsvpd users
-                # add users to waitlist
-
-            # verify that non attended is empty
-            # verify that the other lists are sorted properly
-
-        transaction.rollback()
-
-  
