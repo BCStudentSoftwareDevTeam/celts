@@ -1,4 +1,3 @@
-import re
 from playhouse.shortcuts import model_to_dict
 from peewee import JOIN, fn, Case, DoesNotExist
 from collections import defaultdict
@@ -17,6 +16,7 @@ from app.models.certificationRequirement import CertificationRequirement
 from app.models.communityEngagementRequest import CommunityEngagementRequest
 
 def getMinorInterest():
+
     interestedStudents = (User.select(User.firstName, User.lastName, User.username)
                               .join(IndividualRequirement, JOIN.LEFT_OUTER, on=(User.username == IndividualRequirement.username))
                               .where((User.isStudent == 1) & (User.minorInterest == 1) & (IndividualRequirement.username.is_null(True))))
@@ -26,6 +26,7 @@ def getMinorInterest():
     return interestedStudentList
 
 def getMinorProgress():
+
     summerCase = Case(None, [(CertificationRequirement.name == "Summer Program", 1)], 0)
 
     engagedStudentsWithCount = (
@@ -103,6 +104,7 @@ def getProgramEngagementHistory(program_id, username, term_id):
     return participatedEvents
 
 def setCommunityEngagementForUser(action, engagementData, currentUser):
+
     if engagementData['type'] not in ['program','course']:
         raise Exception("Invalid engagement type!")
 
@@ -113,7 +115,7 @@ def setCommunityEngagementForUser(action, engagementData, currentUser):
                                            .join(IndividualRequirement, JOIN.LEFT_OUTER, on=((IndividualRequirement.requirement == CertificationRequirement.id) & 
                                                                                              (IndividualRequirement.username == engagementData['username'])))
                                            .where(IndividualRequirement.username.is_null(True),
-                                                  CertificationRequirement.certification == 2, 
+                                                  CertificationRequirement.certification == Certification.CCE, 
                                                   CertificationRequirement.name.not_in(['Summer Program'])))
     if action == 'add':
         try: 
@@ -174,18 +176,18 @@ def getCommunityEngagementByTerm(username):
                    .group_by(Event.program, Event.term))
     
     for event in events:
-        terms[(event.term.description, event.term.id)].append({
-                    "name":event.program.programName, 
-                    "id":event.program.id, 
-                    "type":"program", 
-                    "matched": event.reqMatch,
-                    "term":event.term.id
-                })
+        terms[(event.term.description, event.term.id)].append({"name":event.program.programName,
+                                                               "id":event.program.id,
+                                                               "type":"program",
+                                                               "matched": event.reqMatch,
+                                                               "term":event.term.id
+                                                            })
 
     # sorting the terms by the term id
     return dict(sorted(terms.items(), key=lambda x: x[0][1]))
 
 def saveOtherEngagementRequest(engagementRequest):
+
     otherEngagementRequest = {"user": engagementRequest['user'],
                               "experienceName": engagementRequest['experience'],
                               "term": engagementRequest['term'],
@@ -199,27 +201,29 @@ def saveOtherEngagementRequest(engagementRequest):
     CommunityEngagementRequest.create(**otherEngagementRequest)
 
 def saveSummerExperience(username, summerExperience, currentUser):
-    # TODO: Should the logic of this function be combined with `setCommunityEngagementForUser`
-    # TODO: how will we handle someone trying to save a second summer experiance? 
 
-    # unpack summerExperiance (name of experiance and term it took place in)
-    # IndividualRequirement.create(description: name of summer experiance, user: username, term: term,
-    #                              requirement: `requirement` query from `setCommunityEngagementForUser`, 
-    #                              addedBy: addedBy)
+    requirementDeleteSubSelect = CertificationRequirement.select().where(CertificationRequirement.certification == Certification.CCE, CertificationRequirement.name << ['Summer Program'])
+    IndividualRequirement.delete().where(IndividualRequirement.username == username, IndividualRequirement.requirement == requirementDeleteSubSelect).execute()
+
     requirement = (CertificationRequirement.select()
-                                          .join(IndividualRequirement, JOIN.LEFT_OUTER, on=((IndividualRequirement.requirement == CertificationRequirement.id) & 
-                                                                                            (IndividualRequirement.username == 'username')))
+                                           .join(IndividualRequirement, JOIN.LEFT_OUTER, on=((IndividualRequirement.requirement == CertificationRequirement.id) & 
+                                                                                             (IndividualRequirement.username == 'username')))
                                           .where(IndividualRequirement.username.is_null(True),
-                                                 CertificationRequirement.certification == 2, 
+                                                 CertificationRequirement.certification == Certification.CCE, 
                                                  CertificationRequirement.name << ['Summer Program']))
     
-    IndividualRequirement.create(**{'descirption': summerExperience['summerExperience'],
-                                           "username": username,
-                                           "term": summerExperience['selectedSummerTerm'],
-                                           "requirement": requirement.get(),
-                                           "addedBy": currentUser,
-                                        })
+    summerTerm = (Term.select().where(Term.description == summerExperience['selectedSummerTerm']))
+
+    IndividualRequirement.create(**{"description": summerExperience['summerExperience'],
+                                    "username": username,
+                                    "term": summerTerm.get(),
+                                    "requirement": requirement.get(),
+                                    "addedBy": currentUser,
+                                })
     return ""
+
+def deleteSummerExperience(): 
+    pass
 
 def getSummerTerms():
     summerTerms = list(Term.select().where(Term.isSummer == True))

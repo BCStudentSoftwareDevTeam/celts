@@ -25,10 +25,10 @@ $(document).ready(function(){
         url: "/cceMinor/"+username+"/addSummerExperience",
         data: data,
         success: function(s){
-          
+          msgToast("Success!", "Summer Experiance successfully added!")
         },
         error: function(error){
-          console.error("Error:", error);
+          msgToast("Error!", "Error adding summer experiance!")
         }
       })
 

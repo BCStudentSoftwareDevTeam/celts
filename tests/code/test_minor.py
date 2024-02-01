@@ -367,3 +367,13 @@ def test_getMinorProgress():
         
 
         transaction.rollback()
+
+@pytest.mark.integration
+def test_saveSummerExperiance():
+    with mainDB.atomic() as transaction: 
+        IndividualRequirement.delete().execute()
+
+        # TODO: add summer experiance for a user and make sure it is added correctly 
+        # TODO: add summer experiance for a user who already has one and make sure it is updated
+
+        transaction.rollback()
