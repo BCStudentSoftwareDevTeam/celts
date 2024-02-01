@@ -187,7 +187,7 @@ def test_saveOtherEngagementRequest():
                           }
 
         # Get the actual saved request from the database (the most recent one)
-        saved_request = CommunityEngagementRequest.select().order_by(CommunityEngagementRequest.id.desc()).first()
+        savedRequest = CommunityEngagementRequest.select().order_by(CommunityEngagementRequest.id.desc()).first()
 
         # Check that the saved request matches the expected values
         for key, expectedValue in expectedValues.items():
@@ -196,7 +196,7 @@ def test_saveOtherEngagementRequest():
             elif key == "term":
                 actualValue = 3
             else:
-                actualValue = getattr(saved_request, key)
+                actualValue = getattr(savedRequest, key)
             assert actualValue == expectedValue
 
         transaction.rollback()
