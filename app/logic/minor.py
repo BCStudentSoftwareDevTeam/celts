@@ -222,6 +222,9 @@ def saveSummerExperience(username, summerExperience, currentUser):
                                 })
     return ""
 
+def getSummerExperrience(username):
+    pass
+
 def deleteSummerExperience(): 
     pass
 
