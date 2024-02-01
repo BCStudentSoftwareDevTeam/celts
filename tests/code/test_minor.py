@@ -12,7 +12,8 @@ from app.models.eventParticipant import EventParticipant
 from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
 from app.models.communityEngagementRequest import CommunityEngagementRequest
-from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, saveOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser
+from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm
+from app.logic.minor import saveSummerExperience, saveOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser
 
 @pytest.mark.integration
 def test_getCourseInformation():
@@ -373,7 +374,42 @@ def test_saveSummerExperiance():
     with mainDB.atomic() as transaction: 
         IndividualRequirement.delete().execute()
 
-        # TODO: add summer experiance for a user and make sure it is added correctly 
-        # TODO: add summer experiance for a user who already has one and make sure it is updated
+        # Add summer experiance for a user 
+        partontSummerExperience = {"summerExperience": "Test Summer Experience for Tyler",
+                                   "selectedSummerTerm": "Summer 2021",
+                                   }
+        
+        saveSummerExperience('partont', partontSummerExperience, 'ramsayb2')
+
+        getPartontSummerExperience = IndividualRequirement.select()
+        assert getPartontSummerExperience.count() == 1
+        assert getPartontSummerExperience[0].username_id == 'partont'
+        assert getPartontSummerExperience[0].description == 'Test Summer Experience for Tyler'
+
+        # Add a second summer engagement for the same user. The expected behavior is the previous engagement should be deleted 
+        # and the only entry is new one
+
+        newPartontSummerExperience = {"summerExperience": "Second Summer Experience for Tyler",
+                                      "selectedSummerTerm": "Summer 2021",
+                                     }
+        
+        saveSummerExperience('partont', newPartontSummerExperience, 'ramsayb2')
+
+        getNewPartontSummerExperience = IndividualRequirement.select()
+        assert getNewPartontSummerExperience.count() == 1
+        assert getNewPartontSummerExperience[0].username_id == 'partont'
+        assert getNewPartontSummerExperience[0].description == 'Second Summer Experience for Tyler'
+
+        # Add a summer experiance for another studnet and verify both students have summer experiance records
+        
+        neillzSummerExperience = {"summerExperience": "Summer Experience for Zach",
+                                  "selectedSummerTerm": "Summer 2021"
+                                  }
+        saveSummerExperience('neillz', neillzSummerExperience, 'ramsayb2')
+        getNeillzSummerExperiance = IndividualRequirement.select()
+        assert getNeillzSummerExperiance.count() == 2
+        assert getNeillzSummerExperiance[0].username_id == 'partont'
+        assert getNeillzSummerExperiance[1].username_id == 'neillz'
+        assert getNeillzSummerExperiance[1].description == "Summer Experience for Zach"
 
         transaction.rollback()
