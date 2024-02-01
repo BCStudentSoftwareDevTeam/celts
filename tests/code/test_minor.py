@@ -281,11 +281,13 @@ def test_setCommunityEngagementForUser():
         assert neillzEngagements[4].username_id == 'neillz'
 
         # add a second record for that other student.
-        setCommunityEngagementForUser('add', neillzEngagementData1, 'ramsayb2')
-        neillz2Engagements = list(IndividualRequirement.select())
+        setCommunityEngagementForUser('add', neillzEngagementData2, 'ramsayb2')
+        neillz2Engagements = IndividualRequirement.select()
         assert neillz2Engagements[3].username_id == 'khatts'
         assert neillz2Engagements[4].username_id == 'neillz'
+        assert neillz2Engagements[4].course == None
         assert neillz2Engagements[5].username_id == 'neillz'
+        assert neillz2Engagements[5].course == Course.get_by_id(1)
 
         # Removing requirement
         # TODO remove nonexisting
