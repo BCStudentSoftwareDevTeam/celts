@@ -261,7 +261,9 @@ def test_setCommunityEngagementForUser():
         
         setCommunityEngagementForUser('add', khattsEngagementData1, 'ramsayb2')
         
-        khattsEngagements = list(IndividualRequirement.select())
+        khattsEngagements = IndividualRequirement.select()
+        # get coutn 
+        khattsEngagements.count() == 1
         assert khattsEngagements[0].course == Course.get_by_id(2)
         assert khattsEngagements[0].program == None
 
@@ -276,13 +278,14 @@ def test_setCommunityEngagementForUser():
 
         # add records for another student and make sure it is added correctly. 
         setCommunityEngagementForUser('add', neillzEngagementData1, 'ramsayb2')
-        neillzEngagements = list(IndividualRequirement.select())
-        assert neillzEngagements[3].username_id == 'khatts'
+        neillzEngagements = IndividualRequirement.select()
+        assert neillzEngagements.count() == 5
         assert neillzEngagements[4].username_id == 'neillz'
 
         # add a second record for that other student.
         setCommunityEngagementForUser('add', neillzEngagementData2, 'ramsayb2')
         neillz2Engagements = IndividualRequirement.select()
+        assert neillz2Engagements.count() == 6
         assert neillz2Engagements[3].username_id == 'khatts'
         assert neillz2Engagements[4].username_id == 'neillz'
         assert neillz2Engagements[4].course == None
