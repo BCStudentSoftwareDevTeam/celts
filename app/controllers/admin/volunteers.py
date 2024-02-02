@@ -62,7 +62,7 @@ def manageVolunteersPage(eventID):
 
         bannedUsersForProgram = [bannedUser.user for bannedUser in getBannedUsers(event.program)]
   
-        eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventParticipants = sortParticipantsByStatus()
+        eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventParticipants = sortParticipantsByStatus(event)
         
         allRelevantUsers = [participant.user for participant in (eventParticipants + eventNonAttendedData + eventWaitlistData)]
         
