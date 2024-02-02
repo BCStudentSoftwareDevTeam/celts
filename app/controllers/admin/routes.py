@@ -413,9 +413,9 @@ def removeFromSession():
 
     return ""
 
-
 @admin_bp.route('/manageServiceLearning/imported/<courseID>', methods = ['POST', 'GET'])
-def alterImportedCourse(courseID):
+@admin_bp.route('/manageServiceLearning/imported/<courseID>/<termId>', methods = ['POST'])
+def alterImportedCourse(courseID, termId=None):
     """
     This route handles a GET and a POST request for the purpose of imported courses. 
     The GET request provides preexisting information of an imported course in a modal. 
@@ -447,7 +447,7 @@ def alterImportedCourse(courseID):
         # Update course information in the database
         editImportedCourses(request.form.copy())
 
-    return redirect(url_for("admin.manageServiceLearningCourses", term=1))
+    return redirect(url_for("admin.manageServiceLearningCourses", term=termId))
 
 
 @admin_bp.route("/manageBonner")

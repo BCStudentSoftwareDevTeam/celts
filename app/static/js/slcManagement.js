@@ -151,11 +151,12 @@ function unapproveProposal(el){
 function showAlterModalWithCourse(courseID) {
   getImportedCourseInfo(courseID, function() {
     $('#alterModal #alterCourseId').val(courseID);
-    var formAction = `/manageServiceLearning/imported/${courseID}`;
+    // var formAction = `/manageServiceLearning/imported/${courseID}`;
 
     $('#alterModal form').on('submit', function(event) {
       updateInstructorList(); // Fetch instructors from tr rows in Instructor Table before sending POST request
-      var dynamicRoute = `/manageServiceLearning/imported/${courseID}`;
+      var termId = $('#alterTermId').val();
+      var dynamicRoute = `/manageServiceLearning/imported/${courseID}/${termId}`;
       $(this).attr('action', dynamicRoute);
     });
 
