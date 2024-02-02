@@ -471,66 +471,66 @@ def test_sortParticipantsByStatus():
     Test the sorting of event participants into the 
     non attended, waitlist, and attended groups.
     """
-    with mainDB.atomic() as transaction:
-
-        date: int = 9
-        testingEvent = Event.create(name = "Test AGP event to cancel",
-                                        term = 2,
-                                        description = "Test student led (AGP) event that will be canceled.",
-                                        timeStart = time(2, 2, 2),
-                                        timeEnd = "06:00:00",
-                                        location = "The Sun",
-                                        isTraining = False,
-                                        startDate = datetime.strptime("2021-08-02", "%Y-%m-%d"),
-                                        program = 3)
+    with mainDB.atomic() as transaction:  
+        testingEvent = Event.create(name = "Test Sorting Participant Event",
+                                    term = 2,
+                                    description = "Test Sorting Participant Event.",
+                                    timeStart = time(2, 2, 2),
+                                    timeEnd = "06:00:00",
+                                    location = "The Sun",
+                                    isTraining = False,
+                                    startDate = datetime.strptime("2021-08-02", "%Y-%m-%d"),
+                                    program = 3)
 
         EventParticipant.create(user = "neillz", event = testingEvent)
         EventParticipant.create(user = "khatts", event = testingEvent)
         EventParticipant.create(user = "ayisie", event = testingEvent)
         
-
-        EventRsvp.create(event=testingEvent, user="partont")
+        EventRsvp.create(event = testingEvent, user = "partont")
 
         # get event participants for the event
-        partontRsvp= EventRsvp.get( user = "partont", event=testingEvent)
+        partontRsvp = EventRsvp.get(user = "partont", event = testingEvent)
 
         neillzParticipant = EventParticipant.get(user = "neillz", event = testingEvent)
         khattsParticipant = EventParticipant.get(user = "khatts", event = testingEvent)
         ayisieParticipant = EventParticipant.get(user = "ayisie", event = testingEvent)
         
-
         eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventParticipants = sortParticipantsByStatus(testingEvent)
         assert eventNonAttendedData == [partontRsvp] 
-        
         assert eventWaitlistData == []
-        assert eventVolunteerData == [ neillzParticipant,khattsParticipant,ayisieParticipant]
-
+        assert eventVolunteerData == [neillzParticipant, khattsParticipant, ayisieParticipant]
         assert eventParticipants == getEventParticipants(testingEvent)
 
         transaction.rollback()
 
-        # test a past event
-         # add the test data
-            # create an event 
-            # add the event participants(attended)
-            # add the rsvped
-            
-        # verify if the wailist is empty
-        # verify if the list of participants is correct
-        # verify if those who rsvped and did not attend are in non-attended list 
-
-    
-
         # test a upcoming event
 
-            # add our test data
-                # create an event
-                # add rsvpd users
-                # add users to waitlist
+        testingFutureEvent = Event.create(name = "Test Sorting Participant Event",
+                                            term = 2,
+                                            description = "Test Sorting Participant Event.",
+                                            timeStart = time(2, 2, 2),
+                                            timeEnd = "06:00:00",
+                                            location = "The Sun",
+                                            isTraining = False,
+                                            startDate = datetime.strptime("2030-08-02", "%Y-%m-%d"),
+                                            program = 3,
+                                            isRsvpRequired = True,
+                                            rsvpLimit = 2)
 
-            # verify that non attended is empty
-            # verify that the other lists are sorted properly
+        EventRsvp.create(user = "agliullovak", event = testingFutureEvent)
+        EventRsvp.create(user = "mupotsal", event = testingFutureEvent)
+        EventRsvp.create(user = "ayisie", event = testingFutureEvent, rsvpWaitlist = True)
 
+        agliullovakRsvp = EventRsvp.get(user = "agliullovak", event = testingFutureEvent)
+        mupotsalRsvp = EventRsvp.get(user = "mupotsal", event = testingFutureEvent)
+        ayisieRsvp = EventRsvp.get(user = "ayisie", event = testingFutureEvent)
+
+        eventNonAttendedData, eventWaitlistData, eventVolunteerData, eventParticipants = sortParticipantsByStatus(testingFutureEvent)
+        assert eventNonAttendedData == []
+        assert eventWaitlistData == [ayisieRsvp]
+        assert eventVolunteerData == [agliullovakRsvp, mupotsalRsvp]
+        assert eventParticipants == []
+           
         transaction.rollback()
 
   
