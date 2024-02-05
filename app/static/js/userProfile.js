@@ -304,3 +304,10 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
   })
 }
 
+function handleCheckbox() {
+  var removeFromTranscript = document.getElementById('removeFromTranscriptCheckbox').checked;
+  // You can now use this variable in your logic or send it to the backend.
+}
+
+
+
