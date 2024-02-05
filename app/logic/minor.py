@@ -17,6 +17,9 @@ from app.models.certificationRequirement import CertificationRequirement
 from app.models.communityEngagementRequest import CommunityEngagementRequest
 
 def getMinorInterest():
+    """
+    Get all students that have indicated interest in the CCE minor and return a list of dicts of all interested students
+    """
 
     interestedStudents = (User.select(User.firstName, User.lastName, User.username)
                               .join(IndividualRequirement, JOIN.LEFT_OUTER, on=(User.username == IndividualRequirement.username))
@@ -27,7 +30,11 @@ def getMinorInterest():
     return interestedStudentList
 
 def getMinorProgress():
-
+    """
+    Get all the users who have an IndividualRequirement record under the CCE certification which 
+    and returns a list of dicts containing the student, how many engagements they have completed, 
+    and if they have completed the summer experience. 
+    """
     summerCase = Case(None, [(CertificationRequirement.name == "Summer Program", 1)], 0)
 
     engagedStudentsWithCount = (
@@ -105,12 +112,20 @@ def getProgramEngagementHistory(program_id, username, term_id):
     return participatedEvents
 
 def setCommunityEngagementForUser(action, engagementData, currentUser):
+    """
+    :param action: add & remove. Used to set what action the function is doing
+    :param engagementData: Contains all the community engagement data: 
+        type: program or course
+        id: program or course id
+        username: the username of the student that is having a community engagement added or removed
+        term: The term the engagement is recorded in
+    :param currentuser: The User (Admin or Student Staff) who is doing the add/remove action 
+
+    Either add or remove an IndividiualRequirement record for Sustained Community Engagement for a student 
+    """
 
     if engagementData['type'] not in ['program','course']:
         raise Exception("Invalid engagement type!")
-
-    # TODO get an open requirement. What about name changing from "Summer Program"? 
-    # Left join cert req and get where name is community engagement and assign to it. 
 
     requirement = (CertificationRequirement.select()
                                            .join(IndividualRequirement, JOIN.LEFT_OUTER, on=((IndividualRequirement.requirement == CertificationRequirement.id) & 
@@ -188,7 +203,9 @@ def getCommunityEngagementByTerm(username):
     return dict(sorted(terms.items(), key=lambda x: x[0][1]))
 
 def saveOtherEngagementRequest(engagementRequest):
-
+    """
+    Create a CommunityEngagementRequest entry based off of the data a user entered for an "Other Engagement Request"
+    """
     otherEngagementRequest = {"user": engagementRequest['user'],
                               "experienceName": engagementRequest['experience'],
                               "term": engagementRequest['term'],
@@ -202,7 +219,16 @@ def saveOtherEngagementRequest(engagementRequest):
     CommunityEngagementRequest.create(**otherEngagementRequest)
 
 def saveSummerExperience(username, summerExperience, currentUser):
+    """
+    :param username: username of the student that the summer experience is for
+    :param summerExperience: dict 
+        summerExperience: string of what the summer experience was (will be written as the 'description' in the IndividualRequirement table)
+        selectedSummerTerm: the term description that the summer experience took place in
+    :param currentUser: the username of the user who added the summer experience record
 
+    Delete any existing IndividualRequirement entry for 'username' if it is for 'Summer Program' and create a new IndividualRequirement entry for 
+    'Summer Program' with the contents of summerExperience. 
+    """
     requirementDeleteSubSelect = CertificationRequirement.select().where(CertificationRequirement.certification == Certification.CCE, CertificationRequirement.name << ['Summer Program'])
     IndividualRequirement.delete().where(IndividualRequirement.username == username, IndividualRequirement.requirement == requirementDeleteSubSelect).execute()
 
@@ -224,7 +250,9 @@ def saveSummerExperience(username, summerExperience, currentUser):
     return ""
 
 def getSummerExperience(username):
-    # select description from individual req where certification req name is summer program 
+    """
+    Get a students summer experience to populate text box if the student has one
+    """ 
     # TODO: we need to get term to set the select dropdown as well. 
     summerExperience = (IndividualRequirement.select()
                                              .join(CertificationRequirement, JOIN.LEFT_OUTER, on=(CertificationRequirement.id == IndividualRequirement.requirement))
@@ -237,11 +265,17 @@ def getSummerExperience(username):
         return "" 
 
 def removeSummerExperience(username): 
+    """
+    Delete IndividualRequirement table entry for 'username'
+    """
     IndividualRequirement.delete().where(IndividualRequirement.username == username, IndividualRequirement.description == getSummerExperience(username)).execute()
 
     return ""
 
 def getSummerTerms():
+    """
+    Return a list of all terms with the isSummer flag that is marked True. Used to populate term dropdown for summer experience
+    """
     summerTerms = list(Term.select().where(Term.isSummer == True))
 
     return summerTerms
