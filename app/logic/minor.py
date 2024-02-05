@@ -225,6 +225,7 @@ def saveSummerExperience(username, summerExperience, currentUser):
 
 def getSummerExperience(username):
     # select description from individual req where certification req name is summer program 
+    # TODO: we need to get term to set the select dropdown as well. 
     summerExperience = (IndividualRequirement.select()
                                              .join(CertificationRequirement, JOIN.LEFT_OUTER, on=(CertificationRequirement.id == IndividualRequirement.requirement))
                                              .where(IndividualRequirement.username == username, 

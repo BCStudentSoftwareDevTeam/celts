@@ -1,9 +1,11 @@
+from webbrowser import get
 import pytest
 from peewee import *
 from playhouse.shortcuts import model_to_dict
 from collections import OrderedDict
 from app.models import mainDB
 from app.models.user import User
+from app.models.term import Term
 from app.models.event import Event
 from app.models.course import Course
 from app.models.program import Program
@@ -12,8 +14,8 @@ from app.models.eventParticipant import EventParticipant
 from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
 from app.models.communityEngagementRequest import CommunityEngagementRequest
-from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm
-from app.logic.minor import saveSummerExperience, saveOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser
+from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getSummerTerms
+from app.logic.minor import saveSummerExperience, saveOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, removeSummerExperience
 
 @pytest.mark.integration
 def test_getCourseInformation():
@@ -386,8 +388,8 @@ def test_saveSummerExperiance():
         assert getPartontSummerExperience[0].username_id == 'partont'
         assert getPartontSummerExperience[0].description == 'Test Summer Experience for Tyler'
 
-        # Add a second summer engagement for the same user. The expected behavior is the previous engagement should be deleted 
-        # and the only entry is new one
+        # Add a second summer engagement for the same user. The expected behavior is the engagement that was put in first 
+        # should be deleted and the only entry is new one
 
         newPartontSummerExperience = {"summerExperience": "Second Summer Experience for Tyler",
                                       "selectedSummerTerm": "Summer 2021",
@@ -411,5 +413,61 @@ def test_saveSummerExperiance():
         assert getNeillzSummerExperiance[0].username_id == 'partont'
         assert getNeillzSummerExperiance[1].username_id == 'neillz'
         assert getNeillzSummerExperiance[1].description == "Summer Experience for Zach"
+
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_getSummerExperience():
+    with mainDB.atomic() as transaction:
+        IndividualRequirement.delete().execute()
+
+        partontSummerEngagement = {"username": "partont",
+                                   "program": None,
+                                   "course": None, 
+                                   "description": "Summer engagement",
+                                   "term": 3,
+                                   "requirement": 16,
+                                   "addedBy": "ramsayb2",
+                                   "addedOn": ""
+                                  }
+        IndividualRequirement.create(**partontSummerEngagement)
+        tylerSummerEngagement = getSummerExperience('partont')
+
+        assert tylerSummerEngagement == "Summer engagement"
+        
+        IndividualRequirement.update(description = "Updated summer engagement").where(IndividualRequirement.username == 'partont').execute()
+        tylerUpdatedSummerEngagement = getSummerExperience('partont')
+
+        assert tylerUpdatedSummerEngagement == "Updated summer engagement"
+
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_removeSummerExperience():
+    with mainDB.atomic() as transaction:
+        # remove the summer experience for khatts that is in test data
+
+        removeSummerExperience('khatts')
+
+        khattsNoSummerExperience = list(IndividualRequirement.select()
+                                                             .where(IndividualRequirement.username == 'khatts',
+                                                                    IndividualRequirement.description.is_null(False)))
+
+        assert khattsNoSummerExperience == []
+
+        transaction.rollback()
+
+@pytest.mark.integration
+def test_getSummerTerms():
+    with mainDB.atomic() as transaction:
+        # get all the terms that have the isSummer flag that are in test data
+        baseSummerTerms = getSummerTerms()
+
+        assert len(list(baseSummerTerms)) == 2
+
+        Term.update(isSummer = 0).where(Term.isSummer == 1).execute()
+        noSummerTerms = getSummerTerms()
+
+        assert len(list(noSummerTerms)) == 0
 
         transaction.rollback()
