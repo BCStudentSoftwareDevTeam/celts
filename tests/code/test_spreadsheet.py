@@ -1,4 +1,3 @@
-import re
 import pytest
 
 from app.models import mainDB
@@ -119,7 +118,6 @@ def test_volunteerHoursByProgram():
 
 @pytest.mark.integration
 def test_onlyCompletedAllVolunteer():
-    #seems like onlyCompletedAllVolunteer isn't working properly
     with mainDB.atomic() as transaction:
         assert list(onlyCompletedAllVolunteer("2020-2021").execute()) == []
         EventParticipant.create(user = 'partont',
