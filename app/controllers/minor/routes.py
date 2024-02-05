@@ -8,7 +8,7 @@ from app.logic.fileHandler import FileHandler
 from app.models.attachmentUpload import AttachmentUpload
 from app.logic.utils import getFilesFromRequest
 from app.logic.minor import toggleMinorInterest, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm
-from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, saveSummerExperience, getSummerTerms
+from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, saveSummerExperience, getSummerTerms, getSummerExperience
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
