@@ -5,9 +5,9 @@ from app.models.partner import Partner
 
 class Program(baseModel):
     programName = CharField()
-    instagramUrl = TextField()
-    facebookUrl = TextField()
-    bereaUrl = TextField()
+    instagramUrl = TextField(null=True)
+    facebookUrl = TextField(null=True)
+    bereaUrl = TextField(null=True)
     programDescription = TextField()
     partner = ForeignKeyField(Partner, null=True)
     isStudentLed = BooleanField(default=False)

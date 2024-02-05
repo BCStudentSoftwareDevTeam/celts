@@ -426,8 +426,8 @@ programs = [
     {
         "id": 5,
         "programName": "Bonner Scholars",
-        "instagramUrl": "https://www.berea.edu/celts/bonner-scholars-program/",
-        "facebookUrl": "https://www.facebook.com/BereaCollegeCELTS",
+        "instagramUrl": None,
+        "facebookUrl": None,
         "bereaUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service/bonner-scholars-program",
         "programDescription": "The Bonner Scholars Program is a unique opportunity for students who want to combine a strong commitment to service with personal growth, teamwork, leadership development, and scholarship. Students who have completed an application for the Berea College class of 2026 may apply to be a Bonner Scholar.",
         "isStudentLed": False,
@@ -478,7 +478,7 @@ programs = [
     {
         "id": 9,
         "programName": "CELTS-Sponsored Event",
-        "instagramUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service",
+        "instagramUrl": 'https://www.instagram.com/bereacollegecelts/',
         "facebookUrl": "https://www.facebook.com/BereaCollegeCELTS",
         "bereaUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service",
         "programDescription": "This program hosts a myriad of different celts sponsored events that are not owned by any other program.",
