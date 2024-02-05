@@ -19,10 +19,12 @@ def viewCceMinor(username):
         return abort(403)
     summerTerms = getSummerTerms()
     engagementByTerm = getCommunityEngagementByTerm(username)
+    summerExperience = getSummerExperience(username)
     user = User.get_by_id(username)
     return render_template("minor/profile.html",
                             user=user,
                             engagementByTerm = engagementByTerm,
+                            summerExperience = summerExperience,
                             summerTerms = summerTerms)
 
 @minor_bp.route('/cceMinor/<username>/getEngagementInformation/<type>/<term>/<id>', methods=['GET'])

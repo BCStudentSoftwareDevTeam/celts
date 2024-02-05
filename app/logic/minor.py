@@ -1,3 +1,4 @@
+from doctest import debug_script
 from playhouse.shortcuts import model_to_dict
 from peewee import JOIN, fn, Case, DoesNotExist
 from collections import defaultdict
@@ -207,7 +208,7 @@ def saveSummerExperience(username, summerExperience, currentUser):
 
     requirement = (CertificationRequirement.select()
                                            .join(IndividualRequirement, JOIN.LEFT_OUTER, on=((IndividualRequirement.requirement == CertificationRequirement.id) & 
-                                                                                             (IndividualRequirement.username == 'username')))
+                                                                                             (IndividualRequirement.username == username)))
                                           .where(IndividualRequirement.username.is_null(True),
                                                  CertificationRequirement.certification == Certification.CCE, 
                                                  CertificationRequirement.name << ['Summer Program']))
@@ -223,7 +224,16 @@ def saveSummerExperience(username, summerExperience, currentUser):
     return ""
 
 def getSummerExperience(username):
-    pass
+    # select description from individual req where certification req name is summer program 
+    summerExperience = (IndividualRequirement.select()
+                                             .join(CertificationRequirement, JOIN.LEFT_OUTER, on=(CertificationRequirement.id == IndividualRequirement.requirement))
+                                             .where(IndividualRequirement.username == username, 
+                                                    CertificationRequirement.certification == Certification.CCE,
+                                                    CertificationRequirement.name << ['Summer Program']))
+    if len(list(summerExperience)) == 1:
+        return summerExperience.get().description
+    else: 
+        return "" 
 
 def deleteSummerExperience(): 
     pass

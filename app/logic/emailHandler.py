@@ -105,13 +105,13 @@ class EmailHandler:
         # - outside participants'
         if recipients_category == "Interested":
             recipients = (User.select()
-                .join(Interest)
-                .join(Program, on=(Program.id==Interest.program))
-                .where(Interest.program == self.program))
+                              .join(Interest)
+                              .join(Program, on=(Program.id==Interest.program))
+                              .where(Interest.program == self.program))
         if recipients_category == "RSVP'd":
             recipients = (User.select()
-                .join(EventRsvp)
-                .where(EventRsvp.event==self.event.id))
+                              .join(EventRsvp)
+                              .where(EventRsvp.event==self.event.id))
 
         if recipients_category == "Eligible Students":
             # all terms with the same accademic year as the current term,
