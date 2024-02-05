@@ -25,10 +25,25 @@ $(document).ready(function(){
         url: "/cceMinor/"+username+"/addSummerExperience",
         data: data,
         success: function(s){
-          msgToast("Success!", "Summer Experiance successfully added!")
+          msgToast("Success!", "Summer Experience successfully added!")
         },
         error: function(error){
-          msgToast("Error!", "Error adding summer experiance!")
+          msgToast("Error!", "Error adding summer experience!")
+        }
+      })
+
+    });
+    $("#removeSummerExperience").click(function(){
+      let username = $("#username").val()
+      $.ajax({
+        type: "POST", 
+        url: "/cceMinor/"+username+"/deleteSummerExperience",
+        success: function(s){
+          $("#summerExperience").val("")
+          msgToast("Success!", "Summer Experience successfully deleted!")
+        },
+        error: function(error){
+          msgToast("Error!", "Error deleting summer experience!")
         }
       })
 

@@ -235,8 +235,10 @@ def getSummerExperience(username):
     else: 
         return "" 
 
-def deleteSummerExperience(): 
-    pass
+def removeSummerExperience(username): 
+    IndividualRequirement.delete().where(IndividualRequirement.username == username, IndividualRequirement.description == getSummerExperience(username)).execute()
+
+    return ""
 
 def getSummerTerms():
     summerTerms = list(Term.select().where(Term.isSummer == True))
