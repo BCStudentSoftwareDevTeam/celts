@@ -124,8 +124,8 @@ def getRetentionRate(academicYear):
     springParticipationDict = termParticipation(f"Spring {spring}")  
 
     # calculate the retention rate using the defined function
-    retention_rate_dict = calculateRetentionRate(fallParticipationDict, springParticipationDict)
-    for program, retention_rate in retention_rate_dict.items():
+    retentionRateDict = calculateRetentionRate(fallParticipationDict, springParticipationDict)
+    for program, retention_rate in retentionRateDict.items():
          retentionDict.append((program, str(round(retention_rate * 100, 2)) + "%"))
 
     return  retentionDict
@@ -139,31 +139,31 @@ def termParticipation(termDescription):
 
     programParticipationDict = defaultdict(list)
     for result in participationQuery.dicts():
-        prog_name = result['progName']
+        progName = result['progName']
         participant = result['participant']
-        programParticipationDict[prog_name].append(participant)
+        programParticipationDict[progName].append(participant)
 
     return programParticipationDict
 
-def removeNullParticipants(participant_list):
+def removeNullParticipants(participantList):
     # loop through the list and remove all entries that do not have a participant
-    return list(filter(lambda participant: bool(participant), participant_list))
+    return list(filter(lambda participant: bool(participant), participantList))
     
 # function to calculate the retention rate for each program
-def calculateRetentionRate(fall_dict, spring_dict):
-    retention_dict = {}
-    for program in fall_dict.keys():
-        fall_participants = set(removeNullParticipants(fall_dict[program]))
-        spring_participants = set(removeNullParticipants(spring_dict.get(program, [])))
-        retention_rate = 0.0
+def calculateRetentionRate(fallDict, springDict):
+    retentionDict = {}
+    for program in fallDict.keys():
+        fallParticipants = set(removeNullParticipants(fallDict[program]))
+        springParticipants = set(removeNullParticipants(springDict.get(program, [])))
+        retentionRate = 0.0
         try: 
-            retention_rate = len(fall_participants & spring_participants) / len(fall_participants)
+            retentionRate = len(fallParticipants & springParticipants) / len(fallParticipants)
         except ZeroDivisionError:
             pass
-        retention_dict[program] = retention_rate
+        retentionDict[program] = retentionRate
 
   
-    return retention_dict
+    return retentionDict
 
 # def halfRetentionRateRecurringEvents():
 
