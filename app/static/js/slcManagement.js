@@ -9,6 +9,9 @@ $(document).ready(function() {
     }
   });
   $("#withdrawBtn").on("click", withdraw);
+
+  $("#alterModal").on("hide.bs.modal", emptyInstructorTable);
+
   $("#renewBtn").on("click", renew);
   var statusKey = $(".status-key");
   statusKey.popover({
@@ -172,7 +175,7 @@ function getImportedCourseInfo(courseID, callback) { // This function populates 
     success: function(courseDict) {
       if (Object.keys(courseDict).length !== 0){
         // update the imported course modal
-        $('#instructorsTable').empty();
+        // $('#instructorTable').empty();
         $('#courseName').val(courseDict['courseName']);
         $('#courseAbbreviation').val(courseDict['courseAbbreviation']);
 
@@ -198,10 +201,10 @@ function getImportedCourseInfo(courseID, callback) { // This function populates 
 function updateInstructorList() { // This function fetches instructor usernames and attached the list of usernames to the form submission
   
   $('#alterModal form input[name="instructor[]"]').remove(); // Clear existing hidden instructor inputs
-  var instructordata = getCourseInstructors(); // Get current instructors from the table
+  var instructorData = getCourseInstructors(); // Get current instructors from the table
 
   // Append new hidden inputs for each instructor
-  instructordata.forEach(function(instructor) {
+  instructorData.forEach(function(instructor) {
       $('<input>').attr({
           type: 'hidden',
           name: 'instructor[]',
@@ -239,6 +242,13 @@ function createInstructorRow(instructor) {
                 </td>
               </tr>`;
   return row;
+}
+
+
+function emptyInstructorTable() {
+  saveRow = $("#instructorTableBody tr")[0];
+  console.log("The saved row is", saveRow)
+  $("#instructorTableBody").empty().html(saveRow);
 }
 
 

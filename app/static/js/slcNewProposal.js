@@ -119,14 +119,30 @@ $(document).ready(function(e) {
 
   // Add course instructor event handlers
   // -----------------------------------------
-      $("#instructorTable").on("click", "#remove", function() {
-        let closestRow =  $(this).closest("tr")
-        $("#instructorTableNames input[value="+closestRow.data('username')+"]").remove()
+
+      $("#instructorTable").on("click", ".removeButton", function() {
+        let closestRow =  $(this).closest("tr");
+        let username = closestRow.data('username');
+
+        $("#instructorTableNames input[value='" + username + "']").remove();
         closestRow.remove();
-        
       });
+
+
+
+      
+      // $("#instructorTable").on("click", "#remove", function() {
+      //   let closestRow =  $(this).closest("tr")
+      //   $("#instructorTableNames input[value="+closestRow.data('username')+"]").remove()
+      //   closestRow.remove();
+        
+      // });
+
       $("#courseInstructor").on('input', function() {
           searchUser("courseInstructor", createNewRow, true, null, "instructor");
+          setTimeout(function() {
+            $(".ui-autocomplete").css("z-index", 9999);
+        }, 500);
       });
 
       // for each row in instructorTable that has an instructor, pass that instructors phone data to setupPhoneNumber
