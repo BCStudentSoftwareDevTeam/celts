@@ -350,7 +350,7 @@ def test_getMinorProgress():
         khattsProgress = getMinorProgress()
         
         assert khattsProgress[0]['engagementCount'] == 1
-        assert khattsProgress[0]['hasSummer'] == 0
+        assert khattsProgress[0]['hasSummer'] == "Incomplete"
 
         khattsSummerEngagement = {"username": "khatts",
                                   "program": None,
@@ -366,7 +366,7 @@ def test_getMinorProgress():
         khattsProgressWithSummer = getMinorProgress()
 
         assert khattsProgressWithSummer[0]['engagementCount']== 1
-        assert khattsProgressWithSummer[0]['hasSummer'] == 1
+        assert khattsProgressWithSummer[0]['hasSummer'] == "Completed"
         
 
         transaction.rollback()
