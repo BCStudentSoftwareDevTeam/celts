@@ -86,10 +86,10 @@
             <div class="input-group">
               <select class="form-select" name='term' id='summerExperienceTerm' required>
                 {% for term in summerTerms %}
-                  <option>{{term.description}}</option>
+                  <option value="{{summerExperience[0]}}" {{"selected" if term.description == summerExperience[0]}}>{{term.description}}</option>
                 {% endfor %}
               </select>
-              <input class="form-control" placeholder="Experience name" id="summerExperience" value='{{summerExperience}}' type="text"/>
+              <input class="form-control" placeholder="Experience name" id="summerExperience" value='{{summerExperience[1]}}' type="text"/>
               <button type="button" class="btn btn-primary btn-md" id="summerExperienceSave">Save</button>
               <button type="button" class="btn btn-danger btn-md" id="removeSummerExperience">Clear</button>
             </div>

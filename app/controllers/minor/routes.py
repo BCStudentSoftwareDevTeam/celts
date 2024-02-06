@@ -21,6 +21,7 @@ def viewCceMinor(username):
     engagementByTerm = getCommunityEngagementByTerm(username)
     summerExperience = getSummerExperience(username)
     user = User.get_by_id(username)
+
     return render_template("minor/profile.html",
                             user=user,
                             engagementByTerm = engagementByTerm,
@@ -95,14 +96,17 @@ def deleteRequestFile():
 @minor_bp.route('/cceMinor/<username>/indicateInterest', methods=['POST'])
 def indicateMinorInterest(username):
     toggleMinorInterest(username)
+    
     return ""
 
 @minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
 def addSummerExperience(username):
     saveSummerExperience(username ,request.form, g.current_user)
+
     return ""
 
 @minor_bp.route('/cceMinor/<username>/deleteSummerExperience', methods=['POST'])
 def deleteSummerExperience(username):
     removeSummerExperience(username)
+
     return ""

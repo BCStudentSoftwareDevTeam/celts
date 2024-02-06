@@ -255,12 +255,13 @@ def getSummerExperience(username):
     """ 
     # TODO: we need to get term to set the select dropdown as well. 
     summerExperience = (IndividualRequirement.select()
-                                             .join(CertificationRequirement, JOIN.LEFT_OUTER, on=(CertificationRequirement.id == IndividualRequirement.requirement))
+                                             .join(CertificationRequirement, JOIN.LEFT_OUTER, on=(CertificationRequirement.id == IndividualRequirement.requirement)).switch()
+                                             .join(Term, on=(IndividualRequirement.term == Term.id))
                                              .where(IndividualRequirement.username == username, 
                                                     CertificationRequirement.certification == Certification.CCE,
                                                     CertificationRequirement.name << ['Summer Program']))
     if len(list(summerExperience)) == 1:
-        return summerExperience.get().description
+        return [summerExperience.get().term.description, summerExperience.get().description]
     else: 
         return "" 
 
@@ -268,9 +269,8 @@ def removeSummerExperience(username):
     """
     Delete IndividualRequirement table entry for 'username'
     """
-    IndividualRequirement.delete().where(IndividualRequirement.username == username, IndividualRequirement.description == getSummerExperience(username)).execute()
-
-    return ""
+    summerExperienceToDelete = getSummerExperience(username)
+    IndividualRequirement.delete().where(IndividualRequirement.username == username, IndividualRequirement.description == summerExperienceToDelete[1]).execute()
 
 def getSummerTerms():
     """
