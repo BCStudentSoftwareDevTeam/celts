@@ -13,17 +13,17 @@
 <div class="d-flex justify-content-center row row-cols-xl-4 row-cols-lg-3 row-cols-md-2 row-cols-1 g-4">
   {% for program, data in managerProgramDict.items() %}
     <div class="card m-2 p-0">
-      <div class="mt-1 mx-1 d-flex" style="height:200px">
+      <div class="mt-1 mx-1 d-flex p-4" style="height:200px">
         <img src="{{data.image}}" class="img-fluid rounded align-self-center m-auto" style="max-height:200px" alt="card-image">
       </div>
-      <div class="card-body">
-        <a class="btn btn-sm m-0 p-0"><h5 class="eventsListButton card-title" data-term="{{term.id}}" data-program_id="{{program.id}}">{{program.programName}}</h5></a>
+      <div class="card-body p-4">
+        <a class="btn btn-sm m-0 px-1 pt-4"><h5 class="eventsListButton card-title" data-term="{{term.id}}" data-program_id="{{program.id}}">{{program.programName}}</h5></a>
           {% if data.managers %}
-            <p class="card-subtitle text-muted">Managed by: {{data.managers}}</p>
+            <p class="px-1 card-subtitle text-muted">Managed by: {{data.managers}}</p>
           {% endif %} 
-          <p class="card-text mb-3">{{program.programDescription}} </p>
+          <p class="card-text mb-3 p-1">{{program.programDescription}} </p>
         </div>
-      <div class="card-footer bg-white">
+      <div class="card-footer bg-white border-0">
         {% if program.bereaUrl %}
           <a type="button" class="float-end link-primary" href="{{program.bereaUrl}}" target="_blank"> Learn More </a>
         {% endif %}
