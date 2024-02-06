@@ -433,12 +433,12 @@ def test_getSummerExperience():
         IndividualRequirement.create(**partontSummerEngagement)
         tylerSummerEngagement = getSummerExperience('partont')
 
-        assert tylerSummerEngagement == "Summer engagement"
+        assert tylerSummerEngagement[1] == "Summer engagement"
         
         IndividualRequirement.update(description = "Updated summer engagement").where(IndividualRequirement.username == 'partont').execute()
         tylerUpdatedSummerEngagement = getSummerExperience('partont')
 
-        assert tylerUpdatedSummerEngagement == "Updated summer engagement"
+        assert tylerUpdatedSummerEngagement[1] == "Updated summer engagement"
 
         transaction.rollback()
 
