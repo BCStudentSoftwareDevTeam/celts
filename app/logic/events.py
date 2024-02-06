@@ -361,8 +361,10 @@ def validateNewEventData(data):
                                                    (Event.startDate == data['startDate']) &
                                                    (Event.timeStart == data['timeStart'])).execute()))
         
-        for event in sameEventList:
-            if event.isCanceled or event.recurringId:
+        copyList = sameEventList.copy()
+
+        for event in copyList:
+            if event.isCanceled or event.recurringId:   
                 sameEventList.remove(event)
 
         try:
