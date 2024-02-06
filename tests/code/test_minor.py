@@ -372,11 +372,11 @@ def test_getMinorProgress():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_saveSummerExperiance():
+def test_saveSummerExperience():
     with mainDB.atomic() as transaction: 
         IndividualRequirement.delete().execute()
 
-        # Add summer experiance for a user 
+        # Add summer Experience for a user 
         partontSummerExperience = {"summerExperience": "Test Summer Experience for Tyler",
                                    "selectedSummerTerm": "Summer 2021",
                                    }
@@ -402,17 +402,17 @@ def test_saveSummerExperiance():
         assert getNewPartontSummerExperience[0].username_id == 'partont'
         assert getNewPartontSummerExperience[0].description == 'Second Summer Experience for Tyler'
 
-        # Add a summer experiance for another studnet and verify both students have summer experiance records
+        # Add a summer experience for another studnet and verify both students have summer experience records
         
         neillzSummerExperience = {"summerExperience": "Summer Experience for Zach",
                                   "selectedSummerTerm": "Summer 2021"
                                   }
         saveSummerExperience('neillz', neillzSummerExperience, 'ramsayb2')
-        getNeillzSummerExperiance = IndividualRequirement.select()
-        assert getNeillzSummerExperiance.count() == 2
-        assert getNeillzSummerExperiance[0].username_id == 'partont'
-        assert getNeillzSummerExperiance[1].username_id == 'neillz'
-        assert getNeillzSummerExperiance[1].description == "Summer Experience for Zach"
+        getNeillzSummerExperience = IndividualRequirement.select()
+        assert getNeillzSummerExperience.count() == 2
+        assert getNeillzSummerExperience[0].username_id == 'partont'
+        assert getNeillzSummerExperience[1].username_id == 'neillz'
+        assert getNeillzSummerExperience[1].description == "Summer Experience for Zach"
 
         transaction.rollback()
 
