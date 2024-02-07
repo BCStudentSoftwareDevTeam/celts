@@ -8,7 +8,7 @@ $(document).ready(function(){
   $(".notifyInput").click(function updateInterest(){
     var programID = $(this).data("programid");
     var username = $(this).data('username');
-  
+
 
     var interest = $(this).is(':checked');
     var routeUrl = interest ? "addInterest" : "removeInterest";
@@ -16,6 +16,26 @@ $(document).ready(function(){
     $.ajax({
       method: "POST",
       url: interestUrl,
+      success: function(response) {
+          reloadWithAccordion("programTable")  //  Reloading page after user clicks on the show interest checkbox
+      },
+      error: function(request, status, error) {
+        console.log(status,error);
+        location.reload();
+      }
+    });
+  });
+
+  $(".removeFromTranscriptCheckbox").click(function updateCheckbox(){
+    var programID = $(this).data("programid");
+    var username = $(this).data('username');
+
+    var removeCheckbox = $(this).is(':checked');
+    var routeUrl = removeCheckbox ? "removeBannedUserFromTranscript" : "removeBannedUserFromTranscript";
+    removeCheckboxUrl = "/" + username + "/" + routeUrl + "/" + programID ;
+    $.ajax({
+      method: "POST",
+      url: removeCheckboxUrl,
       success: function(response) {
           reloadWithAccordion("programTable")  //  Reloading page after user clicks on the show interest checkbox
       },
@@ -131,9 +151,9 @@ $(document).ready(function(){
         $("#noteModal").modal("toggle")
     });
 
-    $("#addVisibility").click(function() { 
+    $("#addVisibility").click(function() {
         var bonnerChecked = $("input[name='bonner']:checked").val()
-    
+
         if (bonnerChecked == 'on') {
             bonnerNoteOn()
         } else {
@@ -181,7 +201,7 @@ $(document).ready(function(){
      * Background Check Functionality
      */
     // Updates the Background check of a volunteer in the database
-    $(".savebtn").click(function () { 
+    $(".savebtn").click(function () {
         $(this).prop("disabled", true);
         let bgCheckType = $(this).data("id")
 
@@ -308,6 +328,3 @@ function handleCheckbox() {
   var removeFromTranscript = document.getElementById('removeFromTranscriptCheckbox').checked;
   // You can now use this variable in your logic or send it to the backend.
 }
-
-
-

@@ -25,7 +25,7 @@
     <div>{{volunteer.major}}</div>
     {% endif %}
     {% if volunteer.classLevel -%}
-    <div>{{volunteer.classLevel}}</div> 
+    <div>{{volunteer.classLevel}}</div>
     {% endif %}
   </div>
   <div class="row pb-2 pe-0">
@@ -51,7 +51,7 @@
       </select>
     </div>
   </div>
-  
+
 </div>
 <div class="accordion" id="userProfile">
 
@@ -220,7 +220,7 @@
             <div class="col-md-6">
               <h5>CELTS Labor History:</h5>
               {% for program, term in participatedInLabor.items() %}
-                <p>{{term}}: {{program}}</p> 
+                <p>{{term}}: {{program}}</p>
               {% endfor %}
             </div>
             {% endif %}
@@ -502,9 +502,9 @@
               <label class="form-label" style="display:none" for='inputEventTerm' id="bonnerStatement"><strong>Bonner notes are visible to {{volunteer.firstName}} and CELTS administrators.</strong></label>
               <label class="form-label {{vis}}" for='inputEventTerm' id="visibilityLabel"><strong>Visibility</strong></label>
               <select class="form-select {{vis}}" name='visibility' id='noteDropdown'>
-              
 
-                
+
+
                   {% if g.current_user.isCeltsAdmin %}
                     <option value='3'>Admins</option>
                   {% endif %}
@@ -513,8 +513,8 @@
                   {% endif %}
                   <option value='1' selected>Everyone</option>
                 </select>
-               
-              <div id="addVisibility"> 
+
+              <div id="addVisibility">
                 {% if g.current_user.isBonnerScholar and volunteer.isBonnerScholar %}
                   <div class="form-check form-switch pt-4">
                     <input class="form-check-input" name="bonner" id="bonnerInput" type="checkbox" />
@@ -522,7 +522,7 @@
                   </div>
                 {% endif %}
               </div>
-              
+
               <br>
             </div>
             <div class="form-group input-group-x form-outline ui-widget">
@@ -561,9 +561,9 @@
             <h6 align="left" class="d-inline-flex" id="unbanVolunteerEndDate">End Date: &nbsp<input id="banEndDatepicker" type="date"></h6>
           </div>
           <div class="form-check">
-            <input class="form-check-input" name="removeFromTranscriptCheckbox" id="removeFromTranscriptCheckbox" type="checkbox" />
+            <input class="form-check-input removeFromTranscriptCheckbox" name="removeFromTranscriptCheckbox" id="removeFromTranscriptCheckbox" type="checkbox" />
             <label class="form-check-label" for="removeFromTranscriptCheckbox">Remove from Transcript</label>
-        </div>        
+        </div>
           <div class="input-group">
             <div class="form-group input-group-x form-outline ui-widget col-xs-10">
               <textarea name="name" rows="8" cols="80" type="input" id="banNoteTxtArea" class="form-control" placeholder="Please add a note for this change" ></textarea>
