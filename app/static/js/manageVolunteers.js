@@ -49,45 +49,47 @@ $(document).ready(function() {
     });
 
     function updateSelectVolunteer(){
-      let checkboxList = $("#addVolunteerModal input[type=checkbox]")
-      let volunteerList = []
-      $.each(checkboxList, function(index, checkbox){
-        if(checkbox["checked"] == true){
-            volunteerList.push(checkbox["value"])
-        }
-      })
-      let addVolunteersButton = $("#addVolunteersButton")
-      if (volunteerList.length > 1) {
-        $("#addVolunteersButton").html(addVolunteersButton.html() + "s")
-      } else if ($("#addVolunteersButton").html().charAt(addVolunteersButton.html().length-1) == "s") {
-        $("#addVolunteersButton").html(addVolunteersButton.html().slice(0, -1))
+      let selectedCheckboxes = getSelectedCheckboxes()
+      let buttonContent = $("#addVolunteersButton").html()
+      if (selectedCheckboxes.length > 1) {
+        // make the button text plural if there are multiple users selected
+        $("#addVolunteersButton").html(buttonContent + "s")
+
+        // check to see if the last character is an s to see if it already plural
+      } else if ($("#addVolunteersButton").html().charAt(buttonContent.length-1) == "s") {
+        $("#addVolunteersButton").html(buttonContent.slice(0, -1))
       }
-      checkboxList.each(function(index, checkbox){
-          if(checkbox["checked"] == true){
-            $("#addVolunteersButton").prop("disabled", false)
-            return false
-          }
-          $("#addVolunteersButton").prop("disabled", true)
-      })
+      // disable the submit button if there are no selectedCheckboxes
+      if (selectedCheckboxes.length > 0) {
+        $("#addVolunteersButton").prop("disabled", false)
+      } else {
+        $("#addVolunteersButton").prop("disabled", true)
+      }
+
     }
     
+    function getSelectedCheckboxes() {
+      // get all the checkboxes and return a list of users who's
+      // checkboxes are selected
+      let checkboxesDisplayedInModal = $("#addVolunteerModal input[type=checkbox]")
+      let selectedCheckboxes = []
+      $.each(checkboxesDisplayedInModal, function(index, checkbox){
+        if(checkbox["checked"] == true){
+          selectedCheckboxes.push(checkbox["value"])
+        }
+      })
+      return selectedCheckboxes
+    }
 
   // Adding the new volunteer to the user database table
     $("#addVolunteersButton").click(function(){
         $("#addVolunteersButton").prop("disabled", true)
-        let user = $("#addVolunteerInput").val()
         let eventId = $("#eventID").val()
-        let checkboxlist = $("#addVolunteerModal input[type=checkbox]")
-        let volunteerList = []
-        $.each(checkboxlist, function(index, checkbox){
-            if(checkbox["checked"] == true){
-                volunteerList.push(checkbox["value"])
-            }
-        })
+        let selectedCheckboxes = getSelectedCheckboxes()
         $.ajax({
           url: `/addVolunteersToEvent/${eventId}`,
           type: "POST",
-          data: {"volunteer": volunteerList, "ajax": true},
+          data: {"volunteer": selectedCheckboxes, "ajax": true},
           success: function(s){
               location.reload()
           },
