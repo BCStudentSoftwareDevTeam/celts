@@ -1,20 +1,5 @@
 $(document).ready(function(){
-    $("#expressInterest").on("click", function() {
-      let username = $("#username").val()
-      let data = {"username":username}
-      $.ajax({
-          url: "/cceMinor/"+username+"/indicateInterest",
-          type: "POST",
-          data: data,
-          success: function(s) {
-            location.reload()
-          },
-          error: function(request, status, error) {
-            console.log(error)
-            msgFlash("Error saving changes!", "danger")
-          }
-      });
-    })    
+    
 
     $("#summerExperienceSave").click(function(){
       let data = {'summerExperience': $("#summerExperience").val(),

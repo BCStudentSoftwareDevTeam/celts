@@ -1,4 +1,21 @@
 $(document).ready(function(){
+  $("#expressInterest").on("click", function() {
+    let username = $(this).data('username')
+    let data = {"username":username}
+    $.ajax({
+        url: "/profile/"+username+"/indicateInterest",
+        type: "POST",
+        data: data,
+        success: function(s) {
+          location.reload()
+        },
+        error: function(request, status, error) {
+          console.log(error)
+          msgFlash("Error saving changes!", "danger")
+        }
+    });
+  })    
+
   $("#printButton").on("click", function() {
         let username = $(this).data('username')
         printDocument(`/profile/${username}/travelForm`)

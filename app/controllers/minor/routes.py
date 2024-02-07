@@ -7,7 +7,7 @@ from app.logic.utils import selectSurroundingTerms
 from app.logic.fileHandler import FileHandler
 from app.models.attachmentUpload import AttachmentUpload
 from app.logic.utils import getFilesFromRequest
-from app.logic.minor import toggleMinorInterest, getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, removeSummerExperience
+from app.logic.minor import getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, removeSummerExperience
 from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, saveSummerExperience, getSummerTerms, getSummerExperience
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
@@ -98,12 +98,6 @@ def deleteRequestFile():
     termFile=FileHandler(termId=fileData["databaseId"])
     termFile.deleteFile(fileData["fileId"])
 
-    return ""
-
-@minor_bp.route('/cceMinor/<username>/indicateInterest', methods=['POST'])
-def indicateMinorInterest(username):
-    toggleMinorInterest(username)
-    
     return ""
 
 @minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])

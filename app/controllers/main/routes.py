@@ -26,6 +26,7 @@ from app.models.insuranceInfo import InsuranceInfo
 from app.models.celtsLabor import CeltsLabor
 
 from app.controllers.main import main_bp
+from app.logic.minor import toggleMinorInterest
 from app.logic.loginManager import logout
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, updateDietInfo
 from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
@@ -495,3 +496,9 @@ def getDietInfo():
 
 
     return " "
+
+@main_bp.route('/profile/<username>/indicateInterest', methods=['POST'])
+def indicateMinorInterest(username):
+    toggleMinorInterest(username)
+    
+    return ""

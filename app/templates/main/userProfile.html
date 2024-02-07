@@ -14,8 +14,19 @@
 {% endblock %}
 
 {% block app_content %}
-<div class="row">
+<div class="float-end same-line">
+<span class="border border-dark rounded">  
+  <input name="expressInterest" id="expressInterest" {{ "checked" if volunteer.minorInterest }} data-username="{{volunteer.username}}" type="checkbox"/>
+  <label for="expressInterest">Did you know we have a Civic and Community Engagement Minor? Click 
+    <a href="https://berea.smartcatalogiq.com/en/current/catalog/departments-of-study/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
+    for more information.
+  </label>
+</span>
+</div>
+<div class="row same-line">
   <h1>{{volunteer.firstName}} {{volunteer.lastName}}</h1>
+</div>
+<div class="row">
   <div class="col-md-6 col-lg-3">
     <div>{{volunteer.bnumber}}</div>
     <div>{{volunteer.email}} </div>
@@ -35,7 +46,7 @@
     </div> &nbsp;
     <div class="col"></div>
     <div class="col-auto pe-0 ">
-      <select data-username="{{volunteer.username}}" id="actions" class=form-select align="right">
+      <select data-username="{{volunteer.username}}" id="actions" class="form-select" align="right">
         <option value="" selected disabled hidden>Choose an Action</option>
         {% if volunteer == g.current_user or g.current_user.isCeltsAdmin %}
             <option value="Emergency Contact"> {{'Edit' if volunteer == g.current_user else 'View'}} Emergency Contact </option>
@@ -51,11 +62,8 @@
       </select>
     </div>
   </div>
-  
 </div>
 <div class="accordion" id="userProfile">
-
-
 
 <!-- ################# Upcoming Events ################ -->
   <div class="accordion-item">

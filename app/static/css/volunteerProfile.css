@@ -20,6 +20,10 @@ dd {
     font-size: 15px;
 }
 
+.same-line {
+    display: inline-block;
+}
+
 .bonnerNotes dd:nth-of-type(even) { background-color:#f2f2f2; } 
 .bonnerNotes dt:nth-of-type(even) { background-color:#f2f2f2; } 
 .bonnerNotes dd:nth-of-type(odd) { background-color:#FFF; } 

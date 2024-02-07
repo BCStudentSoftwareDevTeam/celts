@@ -17,27 +17,14 @@
         <input id="username" value="{{user.username}}" hidden/>
         <div name="Header" class="row">
             <h1>{{user.firstName}} {{user.lastName}}'s CCE Minor</h2>
-            <div class="py-3 row-auto">
-              <input name="expressInterest" id="expressInterest" {{ "checked" if user.minorInterest }} type="checkbox"/>
-              <label for="expressInterest">Indicate interest in doing the minor</label>
-            </div>
-
-            <div>
-                <p class="py-3"><b>
-                    Click 
-                    <a href="https://berea.smartcatalogiq.com/en/current/catalog/departments-of-study/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
-                    for more information on the Community and Civic Engagement minor.</b></p>
-            </div>
         </div>
-
         <div name="Sustained Community Engagement Section">
-            <div class="row">
-                <h3 class="col-md-auto">Sustained Community Engagement</h3>&nbsp
-                <a class="col-md-auto btn btn-primary btn-sm" role="button" href="/cceMinor/{{user.username}}/requestOtherCommunityEngagement" style="margin:5px">Request Other Experience</a>
-                {% if totalSustainedEngagements >= 4 %}
-                  <p>{{user.firstName}} {{user.lastName}} has completed 4 Sustained Community Engagement activities.</p>
-                {% endif %}
-            </div>
+              <h1 class="bi bi-check2 inline-header"></h1>
+              <h3 class="col-md-auto inline-header">Sustained Community Engagement</h3>&nbsp
+              <a class="col-md-auto btn btn-primary btn-sm" role="button" href="/cceMinor/{{user.username}}/requestOtherCommunityEngagement" style="margin:5px">Request Other Experience</a>
+              {% if totalSustainedEngagements >= 4 %}
+                <p>{{user.firstName}} {{user.lastName}} has completed 4 Sustained Community Engagement activities.</p>
+              {% endif %}
             <p class="pt-2">Approximately two hours of engagement over about ten weeks of a semester. Only two engagement activities can be credited in a single semester.</p>
             <div class="accordion" id="communityEngagement">
               {% if sustainedEngagementByTerm %}
