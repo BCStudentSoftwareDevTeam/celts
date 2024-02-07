@@ -5,7 +5,6 @@
   {{super()}}
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
   <script type="module" src="/static/js/manageServiceLearningFaculty.js"></script>
-  <!-- <script type="module" src="{{url_for('static', filename ='js/instructorTable.js') }}"></script> -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
   <script type="module" src="{{url_for('static', filename ='js/slcNewProposal.js') }}"></script>
   <script src="/static/js/slcManagement.js"></script>
@@ -13,7 +12,7 @@
   {% if cpPreview %}
     <script>
       $(document).ready(function () {
-        $("#modalPreview").modal('show')
+        $("#previewImportedCourses").modal('show')
       })
     </script>
   {% endif %}
@@ -300,7 +299,7 @@
       <button class=" btn btn-primary mr" 
               id="modalCourseParticipant" 
               data-bs-toggle="modal"
-              data-bs-target="#modalSubmit">Import Course Participants</button>
+              data-bs-target="#submitImportedCourses">Import Course Participants</button>
   {% endif %}
   </div>
 
@@ -337,7 +336,7 @@
   {############################### Modals #####################################}
 
   <!-- Modal for Uploading Course Participants -->
-  <div class="modal fade float-start col" id="modalSubmit">
+  <div class="modal fade float-start col" id="submitImportedCourses">
     <div class="modal-dialog custom-modal-size">
       <div class="modal-content">
         <div class="modal-header">
@@ -368,7 +367,7 @@
   </div>
 
   <!-- modal for Preview -->
-  <div class="modal fade float-start col" id="modalPreview">
+  <div class="modal fade float-start col" id="previewImportedCourses">
     <form method="POST" action="/manageServiceLearning" enctype="multipart/form-data">
       <div class="modal-dialog {% if cpPreviewErrors|count %} modal-lg {% endif %} custom-modal-size">
         <div class="modal-content">
@@ -427,46 +426,5 @@
       </div>
     </form>
   </div>
-
-  <!-- modal for Preview -->
-  <div class="modal fade float-start col" id="modalPreview">
-    <form method="POST" action="/manageServiceLearning" enctype="multipart/form-data">
-      <div class="modal-dialog {% if previewParticipantsErrorFlag %} modal-lg {% endif %} custom-modal-size">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Course to Import</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body py-0">
-              {% if previewParticipantDisplayList %}
-                {% for line in previewParticipantDisplayList %}
-                  {% set splitRow = line.split("-") %}
-                  {% if splitRow[0] == "TERM" %}
-                    {% if not loop.first %}<hr>{% endif %}
-                    <h3><b>{{splitRow[1]}}</b></h3>
-                  {% endif %}
-                  {% if splitRow[0] == "COURSE" %}
-                    <div><b>{{splitRow[1]}}:</b></div>
-                  {% endif %}
-                  {% if splitRow[0] == "STUDENT" %}
-                    <div>&ensp;&ensp;{{splitRow[1]}}</div>
-                  {% endif %}
-                  {% if splitRow[0] == "ERROR" %}
-                  <div class="text-danger"><b>{{splitRow[1]}}</b></div>
-                  {% endif %}
-                {% endfor %}
-              {% endif %}
-          </div>
-          <br>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal" name="cancelModalPreview" id="cancelModalPreview">Cancel</button>
-            {% set disableSave = "disabled" if previewParticipantsErrorFlag else "" %}
-            <button type="submit" name="submitParticipant" class="btn btn-success" {{disableSave}} id="submitParticipant">Save File</button>
-          </div>
-        </div>
-      </div>
-    </form>
-  </div>
-  <!-- end preview modal  -->
   <div id="review-modal"></div>
 {% endblock %}

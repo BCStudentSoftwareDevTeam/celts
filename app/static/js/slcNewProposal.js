@@ -128,16 +128,6 @@ $(document).ready(function(e) {
         closestRow.remove();
       });
 
-
-
-      
-      // $("#instructorTable").on("click", "#remove", function() {
-      //   let closestRow =  $(this).closest("tr")
-      //   $("#instructorTableNames input[value="+closestRow.data('username')+"]").remove()
-      //   closestRow.remove();
-        
-      // });
-
       $("#courseInstructor").on('input', function() {
           searchUser("courseInstructor", createNewRow, true, null, "instructor");
           setTimeout(function() {

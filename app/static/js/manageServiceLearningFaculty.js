@@ -40,11 +40,11 @@ $(document).ready( function () {
   
 
   /************** Preview Events **************/
-  $('#modalPreview button[data-bs-dismiss="modal"]').click(function () {
-    $('#modalPreview').removeClass('show d-block');
+  $('#previewImportedCourses button[data-bs-dismiss="modal"]').click(function () {
+    $('#previewImportedCourses').removeClass('show d-block');
   });
 
-  $('#modalSubmit').on('hidden.bs.modal', function () {
+  $('#submitImportedCourses').on('hidden.bs.modal', function () {
     $('#addCourseParticipant').val('');
   })
 
@@ -66,7 +66,7 @@ $(document).ready( function () {
 
   /************** Course Participant Stuff **************/
     $("#modalCourseParticipant").on("click", function () {
-      $("#modalSubmit").modal("toggle");
+      $("#submitImportedCourses").modal("toggle");
     });
 
     $('#closeAddCourseParticipants').on('click', function () {

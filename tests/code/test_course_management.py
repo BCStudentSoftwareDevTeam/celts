@@ -9,12 +9,12 @@ from app.models.courseInstructor import CourseInstructor
 def test_course_management():
     with mainDB.atomic() as transaction:
         approvedCourse = Course.create(courseName = "Testing Approved",
-                                        term = 3,
-                                        status = CourseStatus.APPROVED,
-                                        courseCredit = "7",
-                                        createdBy = "ramsayb2",
-                                        isAllSectionsServiceLearning = 0,
-                                        isPermanentlyDesignated = 0)
+                                       term = 3,
+                                       status = CourseStatus.APPROVED,
+                                       courseCredit = "7",
+                                       createdBy = "ramsayb2",
+                                       isAllSectionsServiceLearning = 0,
+                                       isPermanentlyDesignated = 0)
 
         submittedCourse = Course.create(courseName = "Testing Submitted",
                                         term = 3,
@@ -25,20 +25,20 @@ def test_course_management():
                                         isPermanentlyDesignated = 0)
 
         incompleteCourse = Course.create(courseName = "Testing Incomplete",
-                                        term = 3,
-                                        status = CourseStatus.IN_PROGRESS,
-                                        courseCredit = "12",
-                                        createdBy = "heggens",
-                                        isAllSectionsServiceLearning = 0,
-                                        isPermanentlyDesignated = 0)
+                                         term = 3,
+                                         status = CourseStatus.IN_PROGRESS,
+                                         courseCredit = "12",
+                                         createdBy = "heggens",
+                                         isAllSectionsServiceLearning = 0,
+                                         isPermanentlyDesignated = 0)
         
         importedCourse = Course.create(courseName = "Testing Approved",
-                                        term = 3,
-                                        status = CourseStatus.IMPORTED,
-                                        courseCredit = "4",
-                                        createdBy = "ramsayb2",
-                                        isAllSectionsServiceLearning = 0,
-                                        isPermanentlyDesignated = 0)
+                                       term = 3,
+                                       status = CourseStatus.IMPORTED,
+                                       courseCredit = "4",
+                                       createdBy = "ramsayb2",
+                                       isAllSectionsServiceLearning = 0,
+                                       isPermanentlyDesignated = 0)
 
 
         CourseInstructor.create(course = submittedCourse.id,
