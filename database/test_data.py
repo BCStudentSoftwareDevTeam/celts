@@ -373,9 +373,9 @@ programs = [
     {
         "id": 1,
         "programName": "Hunger Initiatives",
-        "instagramUrl": "https://instagram.com/bereacollegecelts?igshid=NzZhOTFlYzFmZQ==",
-        "facebookUrl": "https://www.facebook.com/BereaCollegeCELTS",
-        "bereaUrl": "https://www.berea.edu/centers/center-for-excellence-in-learning-through-service",
+        "instagramUrl": None,
+        "facebookUrl": None,
+        "bereaUrl": None,
         "programDescription": "Each year 200 people stand in line to get into Woods-Penniman for the Annual Empty Bowls Event sponsored by the Berea College ceramics students and CELTS. Students, faculty, staff and community members each pay $10 for a beautiful bowl, soup and the privilege of helping those in need in our community.",
         "isStudentLed": False,
         "isBonnerScholars": False,
