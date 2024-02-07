@@ -49,7 +49,20 @@ $(document).ready(function() {
     });
 
     function updateSelectVolunteer(){
-      $("#addVolunteerModal input[type=checkbox]").each(function(index, checkbox){
+      let checkboxList = $("#addVolunteerModal input[type=checkbox]")
+      let volunteerList = []
+      $.each(checkboxList, function(index, checkbox){
+        if(checkbox["checked"] == true){
+            volunteerList.push(checkbox["value"])
+        }
+      })
+      let addVolunteersButton = $("#addVolunteersButton")
+      if (volunteerList.length > 1) {
+        $("#addVolunteersButton").html(addVolunteersButton.html() + "s")
+      } else if ($("#addVolunteersButton").html().charAt(addVolunteersButton.html().length-1) == "s") {
+        $("#addVolunteersButton").html(addVolunteersButton.html().slice(0, -1))
+      }
+      checkboxList.each(function(index, checkbox){
           if(checkbox["checked"] == true){
             $("#addVolunteersButton").prop("disabled", false)
             return false
