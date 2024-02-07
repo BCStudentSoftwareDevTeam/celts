@@ -20,8 +20,14 @@ dd {
     font-size: 15px;
 }
 
-.same-line {
-    display: inline-block;
+.minorInfoBox {
+    position: absolute;
+    right: 0px;
+    width: 400px;
+    padding: 5px;
+    border: 1px solid #6666bb;
+    background-color: #e8f6ff; 
+    top: 10px;
 }
 
 .bonnerNotes dd:nth-of-type(even) { background-color:#f2f2f2; } 
