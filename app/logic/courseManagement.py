@@ -55,12 +55,12 @@ def importedCourses(termId):
     imported courses.
     '''
     importedCourses = (Course.select(Course, Term, CourseStatus, fn.GROUP_CONCAT(" " ,User.firstName, " ", User.lastName).alias('instructors'))
-                        .join(CourseInstructor, JOIN.LEFT_OUTER)
-                        .join(User, JOIN.LEFT_OUTER).switch(Course)
-                        .join(CourseStatus).switch(Course)
-                        .join(Term)
-                        .where(Term.id == termId, Course.status == CourseStatus.IMPORTED)
-                        .group_by(Course, Term, CourseStatus))
+                             .join(CourseInstructor, JOIN.LEFT_OUTER)
+                             .join(User, JOIN.LEFT_OUTER).switch(Course)
+                             .join(CourseStatus).switch(Course)
+                             .join(Term)
+                             .where(Term.id == termId, Course.status == CourseStatus.IMPORTED)
+                             .group_by(Course, Term, CourseStatus))
 
     return importedCourses
 
@@ -139,7 +139,6 @@ def updateCourse(courseData, attachments=None):
             instructorList = []
             if 'instructor[]' in courseData:
                 instructorList = courseData.getlist('instructor[]')
-
             CourseInstructor.delete().where(CourseInstructor.course == course).execute()
             for instructor in instructorList:
                 CourseInstructor.create(course=course, user=instructor)

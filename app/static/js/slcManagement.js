@@ -9,10 +9,9 @@ $(document).ready(function() {
     }
   });
   $("#withdrawBtn").on("click", withdraw);
-
   $("#alterModal").on("hide.bs.modal", emptyInstructorTable);
-
   $("#renewBtn").on("click", renew);
+  
   var statusKey = $(".status-key");
   statusKey.popover({
     trigger: "hover",
@@ -44,7 +43,6 @@ function updateRenewModal(courseID){
   $("#renewStatus").text($("#status-" + courseID).text())
 }
 
-
 function changeAction(action){
   courseID = action.id;
   courseAction = action.value
@@ -72,6 +70,7 @@ function changeAction(action){
     resetAllSelections()
   }
 }
+
 function renew(){
     courseID = $("#courseID").val();
     termID = $('#renewTerm').find(":selected").val()
@@ -101,7 +100,6 @@ function withdraw(){
     }
   })
 };
-
 
 function changeTerm() {
     $('form').submit();
@@ -148,9 +146,7 @@ function unapproveProposal(el){
     })
 }
 
-
-/************** Imported Courses Modal Stuff **************/
-
+/************** Imported Courses Modal Functions **************/
 function showAlterModalWithCourse(courseID) {
   getImportedCourseInfo(courseID, function() {
     $('#alterModal #alterCourseId').val(courseID);
@@ -165,7 +161,6 @@ function showAlterModalWithCourse(courseID) {
     $('#alterModal').modal('show');
   });
 }
-
 
 function getImportedCourseInfo(courseID, callback) { // This function populates the fields in the modal of a chosen course with preexisting data
   $.ajax({
@@ -192,9 +187,7 @@ function getImportedCourseInfo(courseID, callback) { // This function populates 
   });
 }
 
-
 // Instructor manipulation functions
-// ---------------------------------
 
 function updateInstructorList() { // This function fetches instructor usernames and attached the list of usernames to the form submission
   
@@ -211,7 +204,6 @@ function updateInstructorList() { // This function fetches instructor usernames 
   });
 }
 
-
 function updateInstructorsTable(instructors) { // This function creates row(s) for preexisting instructor(s) in the modal
   // Clear existing table contents except the template row
   $("#instructorTableBody").find("tr:not(:first)").remove();
@@ -222,7 +214,6 @@ function updateInstructorsTable(instructors) { // This function creates row(s) f
     $("#instructorTableBody").append(newRow);
   });
 }
-
 
 function createInstructorRow(instructor) {
   // Create a new row element based on the instructor data
@@ -242,13 +233,11 @@ function createInstructorRow(instructor) {
   return row;
 }
 
-
 function emptyInstructorTable() {
   saveRow = $("#instructorTableBody tr")[0];
   console.log("The saved row is", saveRow)
   $("#instructorTableBody").empty().html(saveRow);
 }
-
 
 function getCourseInstructors() { // this function gets usernames out of the table rows from editButton class and transform the object into an array
   var instructorUsernames = $("#instructorTableBody tr").map(function() {
