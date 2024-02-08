@@ -70,11 +70,7 @@ def slcEditProposal(courseID):
             filepaths = FileHandler(courseId=course.id).retrievePath(associatedAttachments)
 
             terms = selectSurroundingTerms(g.current_term, 0)
-            print("?????????????????????????::::::::::::::::")
-            print(CourseStatus)
-            print("//////////////////////////")
-            print(statusOfCourse)
-            print(":::::::::::::::::::::::::::")
+           
             return render_template('serviceLearning/slcNewProposal.html',
                                         course = course,
                                         questionanswers = questionanswers,
@@ -134,10 +130,9 @@ def slcCreateOrEdit():
             return redirect('/serviceLearning/courseManagement')
 
     terms = Term.select().where(Term.year >= g.current_term.year)
-    courseData = None
     return render_template('serviceLearning/slcNewProposal.html',
                 terms = terms,
-                courseData = courseData,
+                courseData = None,
                 redirectTarget = getRedirectTarget(True))
 
 @serviceLearning_bp.route('/serviceLearning/approveCourse', methods=['POST'])
