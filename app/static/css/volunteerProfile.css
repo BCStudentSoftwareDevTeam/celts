@@ -34,12 +34,12 @@ dd {
     display: none;
   }
 
-.form-check.form-switch .form-check-input + label {
+.form-check.form-switch .for-check-label {
     position: relative;
-    padding-left: 50px; 
+    padding-right: 50px; 
 }
 
-.form-check.form-switch .form-check-input + label:before {
+.form-check.form-switch .for-check-label:before {
     content: 'No';
     display: block;
     width: 40px; 
@@ -49,19 +49,18 @@ dd {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    left: 0;
+    right: 0;
     transition: all 0.3s;
     line-height: 20px;
     text-align: center;
     color: #fff; 
 }
 
-.form-check.form-switch .form-check-input:checked + label:before {
+.form-check.form-switch .form-check-input:checked + .for-check-label:before {
     content: 'Yes';
     background-color: #198754; 
-
+    right: calc(10% - 40px); 
 }
-
 .form-check.form-switch {
     padding-left: 0;
 }
