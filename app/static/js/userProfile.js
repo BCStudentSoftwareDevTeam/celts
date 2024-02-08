@@ -7,11 +7,11 @@ $(document).ready(function(){
         type: "POST",
         data: data,
         success: function(s) {
-          location.reload()
+          msgToast("Success!", "Successfully indicated interest in CCE Minor!")
         },
         error: function(request, status, error) {
           console.log(error)
-          msgFlash("Error saving changes!", "danger")
+          msgToast("Error!", "Failed to saving changes!")
         }
     });
   })    
