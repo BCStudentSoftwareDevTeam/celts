@@ -14,64 +14,61 @@
 
 {% block app_content %}
     <div class="row">
-        <input id="username" value="{{user.username}}" hidden/>
-        <div name="Header" class="row">
-            <h1>{{user.firstName}} {{user.lastName}}'s CCE Minor</h2>
+      <input id="username" value="{{user.username}}" hidden/>
+      <div name="Header" class="row">
+          <h1>{{user.firstName}} {{user.lastName}}'s CCE Minor</h2>
+      </div>
+      <div name="Sustained Community Engagement Section">
+        <div class="row">
+          <h3 class="col-md-auto {% if totalSustainedEngagements >= 4 %}bi bi-check2 {% endif %}">Sustained Community Engagement</h3>&nbsp
+          <a class="col-md-auto btn btn-primary btn-sm" role="button" href="/cceMinor/{{user.username}}/requestOtherCommunityEngagement" style="margin:5px">Request Other Experience</a>              
         </div>
-        <div name="Sustained Community Engagement Section">
-              <h1 class="bi bi-check2 inline-header"></h1>
-              <h3 class="col-md-auto inline-header">Sustained Community Engagement</h3>&nbsp
-              <a class="col-md-auto btn btn-primary btn-sm" role="button" href="/cceMinor/{{user.username}}/requestOtherCommunityEngagement" style="margin:5px">Request Other Experience</a>
-              {% if totalSustainedEngagements >= 4 %}
-                <p>{{user.firstName}} {{user.lastName}} has completed 4 Sustained Community Engagement activities.</p>
-              {% endif %}
-            <p class="pt-2">Approximately two hours of engagement over about ten weeks of a semester. Only two engagement activities can be credited in a single semester.</p>
-            <div class="accordion" id="communityEngagement">
-              {% if sustainedEngagementByTerm %}
-                {% for term, engagements in sustainedEngagementByTerm.items() %}
-                  
-                <div class="accordion-item">
-                  <h3 class="accordion-header" id="headingOne">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{loop.index}}" aria-expanded="true" aria-controls="collapse{{loop.index}}">
-                      {{term[0]}}
-                    </button>
-                    </h3>
-                    <div id="collapse{{loop.index}}" class="accordion-collapse collapse" aria-labelledby="heading{{loop.index}}"+  data-bs-parent="#communityEngagement">
-                      <div class="accordion-body">
-                        <div class="container-fluid col-10">
-                          <div class="row d-flex justify-content-center mb-3">
-                            <div class="col-md-6 mb-3">
-                              <table class="table mb-3">
-                                <thead>
-                                  <tr>
-                                    <th scope="col">Engagement Activity</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {% for engagement in engagements %}
-                                  <tr class="engagement-row" data-engagement-data='{{engagement|tojson}}'>
-                                    <td>
-                                      <input type="checkbox" {{'checked' if engagement['matched'] else ''}} />
-                                      <button type="button" class="btn btn-link">{{engagement["name"]}}</button>
-                                    </td>
-                                  </tr>
-                                  {% endfor %}
-                                </tbody>
-                              </table>
-                            </div>
-                            <div class="col-md-6 p-3" id="set{{term[1]}}">
-                              Click on an engagement entry to see your event history or course information.
-                            </div>
-                          </div>
+        <p class="pt-2">Approximately two hours of engagement over about ten weeks of a semester. Only two engagement activities can be credited in a single semester.</p>
+        <div class="accordion" id="communityEngagement">
+          {% if sustainedEngagementByTerm %}
+            {% for term, engagements in sustainedEngagementByTerm.items() %}
+            <div class="accordion-item">
+              <h3 class="accordion-header" id="headingOne">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{loop.index}}" aria-expanded="true" aria-controls="collapse{{loop.index}}">
+                  {{term[0]}}
+                </button>
+                </h3>
+                <div id="collapse{{loop.index}}" class="accordion-collapse collapse" aria-labelledby="heading{{loop.index}}"+  data-bs-parent="#communityEngagement">
+                  <div class="accordion-body">
+                    <div class="container-fluid col-10">
+                      <div class="row d-flex justify-content-center mb-3">
+                        <div class="col-md-6 mb-3">
+                          <table class="table mb-3">
+                            <thead>
+                              <tr>
+                                <th scope="col">Engagement Activity</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for engagement in engagements %}
+                              <tr class="engagement-row" data-engagement-data='{{engagement|tojson}}'>
+                                <td>
+                                  <input type="checkbox" {{'checked' if engagement['matched'] else ''}} />
+                                  <button type="button" class="btn btn-link">{{engagement["name"]}}</button>
+                                </td>
+                              </tr>
+                              {% endfor %}
+                            </tbody>
+                          </table>
+                        </div>
+                        <div class="col-md-6 p-3" id="set{{term[1]}}">
+                          Click on an engagement entry to see your event history or course information.
                         </div>
                       </div>
                     </div>
                   </div>
-                  {% endfor %}
-                {% else %}
-                  <h2>You have not participated in any service learning events or courses.</h2>
-                {% endif %}
+                </div>
               </div>
+              {% endfor %}
+            {% else %}
+              <h2>You have not participated in any service learning events or courses.</h2>
+            {% endif %}
+          </div>
         </div>
 
         <div name="Community-Engaged Summer Experience" class="pt-4">

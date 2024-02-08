@@ -19,9 +19,10 @@
     <a href="https://berea.smartcatalogiq.com/en/current/catalog/departments-of-study/interdisciplinary-minor/community-and-civic-engagement-minor/" target="_blank">here</a>
     for more information.
   </p>
-  <input name="expressInterest" id="expressInterest" {{ "checked" if volunteer.minorInterest }} data-username="{{volunteer.username}}" type="checkbox"/>
-  <label for="expressInterest">Indicate interest here!</label>
-
+  <div class="form-check form-switch">
+    <input class="form-check-input" name="expressInterest" id="expressInterest" {{ "checked" if volunteer.minorInterest }} data-username="{{volunteer.username}}" type="checkbox"/>
+    <label class="for-check-label" for="expressInterest">Are you interested in persuing the CCE Minor?</label>
+  </div>
 </div>
 <div class="row">
   <h1>{{volunteer.firstName}} {{volunteer.lastName}}</h1>
