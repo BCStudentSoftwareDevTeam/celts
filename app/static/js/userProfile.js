@@ -7,7 +7,7 @@ $(document).ready(function(){
         type: "POST",
         data: data,
         success: function(s) {
-          msgToast("Success!", "Successfully indicated interest in CCE Minor!")
+          msgToast("Success!", "Successfully updated interest in CCE Minor!")
         },
         error: function(request, status, error) {
           console.log(error)

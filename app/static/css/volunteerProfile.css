@@ -35,30 +35,30 @@ dd {
   }
 
 .form-check.form-switch .form-check-input + label {
-position: relative;
-padding-left: 50px; 
+    position: relative;
+    padding-left: 50px; 
 }
 
 .form-check.form-switch .form-check-input + label:before {
-content: 'No';
-display: block;
-width: 40px; 
-height: 20px; 
-background-color: #6c757d; 
-border-radius: 10px; 
-position: absolute;
-top: 50%;
-transform: translateY(-50%);
-left: 0;
-transition: all 0.3s;
-line-height: 20px;
-text-align: center;
-color: #fff; 
+    content: 'No';
+    display: block;
+    width: 40px; 
+    height: 20px; 
+    background-color: #6c757d; 
+    border-radius: 10px; 
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0;
+    transition: all 0.3s;
+    line-height: 20px;
+    text-align: center;
+    color: #fff; 
 }
 
 .form-check.form-switch .form-check-input:checked + label:before {
-content: 'Yes';
-background-color: #198754; 
+    content: 'Yes';
+    background-color: #198754; 
 
 }
 
