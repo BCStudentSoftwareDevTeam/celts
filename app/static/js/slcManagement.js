@@ -154,7 +154,6 @@ function unapproveProposal(el){
 function showAlterModalWithCourse(courseID) {
   getImportedCourseInfo(courseID, function() {
     $('#alterModal #alterCourseId').val(courseID);
-    // var formAction = `/manageServiceLearning/imported/${courseID}`;
 
     $('#alterModal form').on('submit', function(event) {
       updateInstructorList(); // Fetch instructors from tr rows in Instructor Table before sending POST request
@@ -175,7 +174,6 @@ function getImportedCourseInfo(courseID, callback) { // This function populates 
     success: function(courseDict) {
       if (Object.keys(courseDict).length !== 0){
         // update the imported course modal
-        // $('#instructorTable').empty();
         $('#courseName').val(courseDict['courseName']);
         $('#courseAbbreviation').val(courseDict['courseAbbreviation']);
 
