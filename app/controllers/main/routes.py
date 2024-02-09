@@ -447,6 +447,20 @@ def serviceTranscript(username):
                             startDate = startDate,
                             userData = user)
 
+@app.route('/update-transcript', methods=['POST'])
+def update_transcript():
+    # Get the data sent from the client-side JavaScript
+    data = request.json
+
+    # Get the username and removeFromTranscript values from the request data
+    username = data.get('username')
+    removeFromTranscript = data.get('removeFromTranscript')
+
+    # Return username and removeFromTranscript
+    response_data = {'username': username, 'removeFromTranscript': removeFromTranscript}
+    return jsonify(response_data)
+
+
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
 def searchUser(query):
 

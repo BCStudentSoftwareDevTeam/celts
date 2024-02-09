@@ -9,25 +9,54 @@ from app.models.term import Term
 from app.models.eventParticipant import EventParticipant
 from app.models.event import Event
 
-def getProgramTranscript(username):
+from app.logic.users import isEligibleForProgram
+
+
+# def getProgramTranscript(username):
+#     """
+#     Returns a Program query object containing all the programs for
+#     current user.
+#     """
+#     # Add up hours earned in a term for each program they've participated in
+    
+#     EventData = (Event.select(Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
+#                       .join(EventParticipant)
+#                       .where(EventParticipant.user == username)
+#                       .group_by(Event.program, Event.term)
+#                       .order_by(Event.term)
+#                       .having(fn.SUM(EventParticipant.hoursEarned > 0)))
+#     transcriptData = {}
+#     for event in EventData:
+#         if event.program in transcriptData:
+#             transcriptData[event.program].append([event.term.description, event.hoursEarned])
+#         else:
+#             transcriptData[event.program] = [[event.term.description, event.hoursEarned]]
+#     return transcriptData
+
+def getProgramTranscript(username, removeFromTranscript=False):
     """
     Returns a Program query object containing all the programs for
-    current user.
+    current user. Optionally removes programs based on the checkbox status.
     """
-    # Add up hours earned in a term for each program they've participated in
-    
     EventData = (Event.select(Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
                       .join(EventParticipant)
                       .where(EventParticipant.user == username)
                       .group_by(Event.program, Event.term)
                       .order_by(Event.term)
                       .having(fn.SUM(EventParticipant.hoursEarned > 0)))
+    
     transcriptData = {}
     for event in EventData:
         if event.program in transcriptData:
             transcriptData[event.program].append([event.term.description, event.hoursEarned])
         else:
             transcriptData[event.program] = [[event.term.description, event.hoursEarned]]
+    
+    if removeFromTranscript:
+        for program in list(transcriptData.keys()):
+            if not isEligibleForProgram(program, username):
+                transcriptData.pop(program)
+    
     return transcriptData
 
 def getSlCourseTranscript(username):

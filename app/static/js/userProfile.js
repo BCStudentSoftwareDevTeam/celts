@@ -36,6 +36,7 @@ $(document).ready(function(){
     } else if(profileAction == "Print Travel Form"){
       printDocument(`/profile/${username}/travelForm`)
     } else if (profileAction == "View Service Transcript"){
+      handleCheckbox(username);
       window.location.href = `/profile/${username}/serviceTranscript`
     } else if (profileAction == "Manage CCE Minor") {
       window.location.href = `/profile/${username}/cceMinor`
@@ -305,9 +306,23 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
 }
 
 function handleCheckbox() {
-  var removeFromTranscript = document.getElementById('removeFromTranscriptCheckbox').checked;
-  // You can now use this variable in your logic or send it to the backend.
+  var removeFromTranscript = $('#removeFromTranscriptCheckbox').prop('checked'); // Using jQuery to get the checkbox state
+  var username = $(this).data('username');
+  
+  $.ajax({
+    type: "POST",
+    url: "/update-transcript",
+    contentType: "application/json",
+    data: JSON.stringify({ username: username, removeFromTranscript: removeFromTranscript }),
+    success: function(updatedTranscriptData) {
+      console.log(updatedTranscriptData);
+    },
+    error: function(xhr, status, error) {
+      console.error("An error occurred:", error);
+    }
+  });
 }
+
 
 
 
