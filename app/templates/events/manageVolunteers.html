@@ -27,19 +27,15 @@
 
 {% from 'trainingsHoverMacro.html' import trainingsHover %}
 
-{% set rsvpNeeded  = (event.isRsvpRequired) and (not event.isPast) %}
-{% set rsvpFull = rsvpNeeded and (event.rsvpLimit is not none) and (currentRsvpAmount >= event.rsvpLimit) %}
-{% set modalTitle = "Waitlist Volunteers" if rsvpFull else("RSVP Volunteers" if rsvpNeeded else "Add Volunteers") %}
-
 <label class='d-none' id="eventLength">{{eventLength}}</label>
 <input class="form-control" id="event" name="event" value="{{event}}" type='hidden' />
 <div class="flex-container" style="padding: 5px;">
   <div class='form-group d-flex row'>
     <div class="col-6 px-1">
-      <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">{{modalTitle}}</a>
+      <a class="btn btn-success" role="button" href="#" data-bs-toggle="modal" data-bs-target="#addVolunteerModal" style="margin:5px;">Add Volunteers</a>
       <a class="btn btn-warning" role="button" href= "/event/{{event.id}}/kiosk" style="margin:5px;">Kiosk Entry</a>
     </div>
-    {% if rsvpFull %}
+    {% if (not event.isPast) and (event.isRsvpRequired) and (event.rsvpLimit is not none) and (currentRsvpAmount >= event.rsvpLimit) %}
     <div class="col-6 text-end">
       <p class="text-danger">RSVP Limit has been reached! Future RSVPs will be added to the Waitlist!</p>
     </div>
@@ -326,10 +322,13 @@
 </form>
 
 <!-- #################  Modal  ################# -->
+{% set rsvpNeeded  = (event.isRsvpRequired) and (not event.isPast) %}
+{% set rsvpFull = rsvpNeeded and (event.rsvpLimit is not none) and (currentRsvpAmount >= event.rsvpLimit) %}
 <div class="modal fade float-start" id="addVolunteerModal" tabindex="-1" aria-labelledby="addVolunteerModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
+        {% set modalTitle = "Add Volunteers to Waitlist" if rsvpFull else("Add Volunteers to RSVP" if rsvpNeeded else "Add Volunteers") %}
         <h5 class="modal-title">{{modalTitle}}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -361,7 +360,7 @@
         {% if event.isRecurring and recurringVolunteers and not event.isFirstRecurringEvent  %}
         <button type="button" id = "selectAllVolunteers" class="btn btn-primary" >Select All</button>
         {% endif %}
-        {% set buttonName = "Waitlist Volunteer" if rsvpFull else ("RSVP Volunteer" if rsvpNeeded else "Add Volunteer") %}
+        {% set buttonName = "Add to Waitlist" if rsvpFull else ("Add RSVP" if rsvpNeeded else "Add Participant") %}
         <button id="addVolunteersButton" type="button" class="btn btn-success" disabled>{{buttonName}}</button>
       </div>
     </div>
