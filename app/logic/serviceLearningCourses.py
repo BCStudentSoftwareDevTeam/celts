@@ -1,6 +1,10 @@
-from flask import session, g
+from flask import session, g, flash
+from peewee import fn, JOIN
 import re as regex
 from openpyxl import load_workbook
+
+from app.models import mainDB
+from app.models import DoesNotExist
 from app.models.course import Course
 from app.models.user import User
 from app.models.term import Term
@@ -8,11 +12,9 @@ from app.models.courseInstructor import CourseInstructor
 from app.models.courseParticipant import CourseParticipant
 from app.models.courseStatus import CourseStatus
 from app.models.courseQuestion import CourseQuestion
+from app.models.attachmentUpload import AttachmentUpload
 from app.models.questionNote import QuestionNote
 from app.models.note import Note
-from app.models.attachmentUpload import AttachmentUpload
-from app.models.term import Term
-from app.models import DoesNotExist
 from app.logic.createLogs import createAdminLog
 from app.logic.fileHandler import FileHandler
 from app.logic.term import addPastTerm
@@ -29,8 +31,8 @@ def getServiceLearningCoursesData(user):
 
     courseDict = {}
     for course in courses:
-        otherInstructors = (CourseInstructor.select(CourseInstructor, User).join(User).where(CourseInstructor.course==course))
-        faculty = [f"{instructor.user.firstName} {instructor.user.lastName}" for instructor in otherInstructors]
+        courseInstructors = (CourseInstructor.select(CourseInstructor, User).join(User).where(CourseInstructor.course==course))
+        faculty = [f"{instructor.user.firstName} {instructor.user.lastName}" for instructor in courseInstructors]
 
 
         courseDict[course.id] = {"id":course.id,
@@ -40,59 +42,6 @@ def getServiceLearningCoursesData(user):
                                  "term": course.term,
                                  "status": course.status.status}
     return courseDict
-
-def withdrawProposal(courseID):
-    """Withdraws proposal of ID passed in. Removes foreign keys first.
-    Key Dependencies: QuestionNote, CourseQuestion, CourseParticipant,
-    CourseInstructor, Note"""
-
-    # delete syllabus
-    try:
-        syllabi = AttachmentUpload.select().where(AttachmentUpload.course==courseID)
-        for syllabus in syllabi:
-            FileHandler(courseId = courseID).deleteFile(syllabus.id)
-
-    except DoesNotExist:
-        print(f"File, {AttachmentUpload.fileName}, does not exist.")
-
-    # delete course object
-    course = Course.get(Course.id == courseID)
-    courseName = course.courseName
-    questions = CourseQuestion.select().where(CourseQuestion.course == course)
-    notes = list(Note.select(Note.id)
-                     .join(QuestionNote)
-                     .where(QuestionNote.question.in_(questions))
-                     .distinct())
-    course.delete_instance(recursive=True)
-    for note in notes:
-        note.delete_instance()
-
-    createAdminLog(f"Withdrew SLC proposal: {courseName}")
-
-def renewProposal(courseID, term):
-    """
-    Renews proposal of ID passed in for the selected term.
-    Sets status to in progress.
-    """
-    oldCourse = Course.get_by_id(courseID)
-    newCourse = Course.get_by_id(courseID)
-    newCourse.id = None
-    newCourse.term = Term.get_by_id(term)
-    newCourse.status = CourseStatus.IN_PROGRESS
-    newCourse.isPreviouslyApproved = True
-    newCourse.save()
-    questions = CourseQuestion.select().where(CourseQuestion.course==oldCourse)
-    for question in questions:
-        CourseQuestion.create(course=newCourse.id,
-                              questionContent=question.questionContent,
-                              questionNumber=question.questionNumber)
-
-    instructors = CourseInstructor.select().where(CourseInstructor.course==oldCourse.id)
-    for instructor in instructors:
-        CourseInstructor.create(course=newCourse.id,
-                                user=instructor.user)
-
-    return newCourse
 
 def parseUploadedFile(filePath):
     """
@@ -263,3 +212,156 @@ def saveCourseParticipantsToDatabase(cpPreview):
                 CourseParticipant.get_or_create(user=userDict['user'], 
                                                 course=courseObj,
                                                 hoursEarned=20)
+def unapprovedCourses(termId):
+    '''
+    Queries the database to get all the neccessary information for submitted courses.
+    '''
+
+    unapprovedCourses = (Course.select(Course, Term, CourseStatus, fn.GROUP_CONCAT(" " ,User.firstName, " ", User.lastName).alias('instructors'))
+                               .join(CourseInstructor, JOIN.LEFT_OUTER)
+                               .join(User, JOIN.LEFT_OUTER).switch(Course)
+                               .join(CourseStatus).switch(Course)
+                               .join(Term)
+                               .where(Term.id == termId,
+                                      Course.status.in_([CourseStatus.SUBMITTED, CourseStatus.IN_PROGRESS]))
+                               .group_by(Course, Term, CourseStatus)
+                               .order_by(Course.status))
+
+    return unapprovedCourses
+def approvedCourses(termId):
+    '''
+    Queries the database to get all the neccessary information for
+    approved courses.
+    '''
+
+    approvedCourses = (Course.select(Course, Term, CourseStatus, fn.GROUP_CONCAT(" " ,User.firstName, " ", User.lastName).alias('instructors'))
+                             .join(CourseInstructor, JOIN.LEFT_OUTER)
+                             .join(User, JOIN.LEFT_OUTER).switch(Course)
+                             .join(CourseStatus).switch(Course)
+                             .join(Term)
+                             .where(Term.id == termId, Course.status == CourseStatus.APPROVED)
+                             .group_by(Course, Term, CourseStatus))
+
+    return approvedCourses
+
+def createCourse(creator="No user provided"):
+    """ Create an empty, in progress course """
+    course = Course.create(status=CourseStatus.IN_PROGRESS, createdBy=creator)
+    for i in range(1, 7):
+        CourseQuestion.create( course=course, questionNumber=i)
+
+    return course
+
+def updateCourse(courseData, attachments=None):
+    """
+        This function will take in courseData for the SLC proposal page and a dictionary
+        of instuctors assigned to the course and update the information in the db.
+    """
+    with mainDB.atomic() as transaction:
+        try:
+            course = Course.get_by_id(courseData['courseID'])
+            for toggler in ["slSectionsToggle", "permanentDesignation"]:
+                courseData.setdefault(toggler, "off")
+            (Course.update(courseName=courseData["courseName"],
+                           courseAbbreviation=courseData["courseAbbreviation"],
+                           sectionDesignation=courseData["sectionDesignation"],
+                           courseCredit=courseData["credit"],
+                           isRegularlyOccurring=int(courseData["isRegularlyOccurring"]),
+                           term=courseData['term'],
+                           status=CourseStatus.SUBMITTED,
+                           isPreviouslyApproved=int(courseData["isPreviouslyApproved"]),
+                           previouslyApprovedDescription = courseData["previouslyApprovedDescription"],
+                           isAllSectionsServiceLearning=("on" in courseData["slSectionsToggle"]),
+                           serviceLearningDesignatedSections=courseData["slDesignation"],
+                           isPermanentlyDesignated=("on" in courseData["permanentDesignation"]),
+                           hasSlcComponent = int(courseData["hasSlcComponent"]))
+                   .where(Course.id == course.id).execute())
+            for i in range(1, 7):
+                (CourseQuestion.update(questionContent=courseData[f"{i}"])
+                               .where((CourseQuestion.questionNumber == i) &
+                                      (CourseQuestion.course==course)).execute())
+            instructorList = []
+            if 'instructor[]' in courseData:
+                instructorList = courseData.getlist('instructor[]')
+            CourseInstructor.delete().where(CourseInstructor.course == course).execute()
+            for instructor in instructorList:
+                CourseInstructor.create(course=course, user=instructor)
+            createAdminLog(f"Saved SLC proposal: {courseData['courseName']}")
+            if attachments:
+                addFile= FileHandler(attachments, courseId=course.id)
+                addFile.saveFiles()
+            return Course.get_by_id(course.id)
+        except Exception as e:
+            print(e)
+            transaction.rollback()
+            return False
+        
+
+def withdrawProposal(courseID):
+    """Withdraws proposal of ID passed in. Removes foreign keys first.
+    Key Dependencies: QuestionNote, CourseQuestion, CourseParticipant,
+    CourseInstructor, Note"""
+
+    # delete syllabus
+    try:
+        syllabi = AttachmentUpload.select().where(AttachmentUpload.course==courseID)
+        for syllabus in syllabi:
+            FileHandler(courseId = courseID).deleteFile(syllabus.id)
+
+    except DoesNotExist:
+        print(f"File, {AttachmentUpload.fileName}, does not exist.")
+
+    # delete course object
+    course = Course.get(Course.id == courseID)
+    courseName = course.courseName
+    questions = CourseQuestion.select().where(CourseQuestion.course == course)
+    notes = list(Note.select(Note.id)
+                     .join(QuestionNote)
+                     .where(QuestionNote.question.in_(questions))
+                     .distinct())
+    course.delete_instance(recursive=True)
+    for note in notes:
+        note.delete_instance()
+
+    createAdminLog(f"Withdrew SLC proposal: {courseName}")
+
+def renewProposal(courseID, term):
+    """
+    Renews proposal of ID passed in for the selected term.
+    Sets status to in progress.
+    """
+    oldCourse = Course.get_by_id(courseID)
+    newCourse = Course.get_by_id(courseID)
+    newCourse.id = None
+    newCourse.term = Term.get_by_id(term)
+    newCourse.status = CourseStatus.IN_PROGRESS
+    newCourse.isPreviouslyApproved = True
+    newCourse.save()
+    questions = CourseQuestion.select().where(CourseQuestion.course==oldCourse)
+    for question in questions:
+        CourseQuestion.create(course=newCourse.id,
+                              questionContent=question.questionContent,
+                              questionNumber=question.questionNumber)
+
+    instructors = CourseInstructor.select().where(CourseInstructor.course==oldCourse.id)
+    for instructor in instructors:
+        CourseInstructor.create(course=newCourse.id,
+                                user=instructor.user)
+
+    return newCourse
+
+def getInstructorCourses():
+    """
+    This function selects all the Instructors Name and the previous courses
+    """
+    instructors = (CourseInstructor.select(CourseInstructor, User, Course)
+                                   .join(User).switch()
+                                   .join(Course))
+    result = {}
+
+    for instructor in instructors:
+        result.setdefault(instructor.user, [])
+        if instructor.course.courseName not in result[instructor.user]:
+            result[instructor.user].append(instructor.course.courseName)
+
+    return result

@@ -30,9 +30,7 @@ from app.logic.participants import getEventParticipants, getParticipationStatusF
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
 from app.controllers.admin import admin_bp
-from app.logic.manageSLFaculty import getInstructorCourses
-from app.logic.courseManagement import unapprovedCourses, approvedCourses
-from app.logic.serviceLearningCoursesData import parseUploadedFile, saveCourseParticipantsToDatabase
+from app.logic.serviceLearningCourses import parseUploadedFile, saveCourseParticipantsToDatabase, unapprovedCourses, approvedCourses, getInstructorCourses
 
 
 

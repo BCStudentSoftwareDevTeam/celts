@@ -11,15 +11,13 @@ from app.models.courseQuestion import CourseQuestion
 from app.models.attachmentUpload import AttachmentUpload
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.fileHandler import FileHandler
-from app.logic.serviceLearningCoursesData import getServiceLearningCoursesData, withdrawProposal, renewProposal
-from app.logic.courseManagement import updateCourse, createCourse
+from app.logic.serviceLearningCourses import getServiceLearningCoursesData, withdrawProposal, renewProposal, updateCourse, createCourse, approvedCourses
 from app.logic.downloadFile import *
-from app.logic.courseManagement import approvedCourses
 from app.logic.utils import getRedirectTarget, setRedirectTarget
 from app.controllers.serviceLearning import serviceLearning_bp
 
 
-@serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET'])
+@serviceLearning_bp.route('/serviceLearning/courseManagement', methods = ['GET']) # maybe we refactor to remove
 @serviceLearning_bp.route('/serviceLearning/courseManagement/<username>', methods = ['GET'])
 def serviceCourseManagement(username=None):
     try:
@@ -38,7 +36,6 @@ def serviceCourseManagement(username=None):
             termList=termList)
     else:
         abort(403)
-        
 
 @serviceLearning_bp.route('/serviceLearning/viewProposal/<courseID>', methods=['GET'])
 @serviceLearning_bp.route('/serviceLearning/editProposal/upload/<courseID>', methods=['GET'])
@@ -203,6 +200,19 @@ def withdrawCourse(courseID):
         print(e)
         flash("Withdrawal Unsuccessful", 'warning')
     return ""
+
+        
+@serviceLearning_bp.route('/proposalReview/', methods = ['GET', 'POST'])
+def reviewProposal():
+    """
+    this function gets the submitted course id and returns the its data to the review proposal modal
+    """
+    courseID=request.form
+    course=Course.get_by_id(courseID["course_id"])
+    instructors_data=course.courseInstructors
+    return render_template('/main/reviewproposal.html',
+                            course=course,
+                            instructors_data=instructors_data)
 
 @serviceLearning_bp.route('/serviceLearning/renew/<courseID>/<termID>/', methods = ['POST'])
 def renewCourse(courseID, termID):

@@ -467,18 +467,6 @@ def searchUser(query):
 def contributors():
     return render_template("/contributors.html")
 
-@main_bp.route('/proposalReview/', methods = ['GET', 'POST'])
-def reviewProposal():
-    """
-    this function gets the submitted course id and returns the its data to the review proposal modal
-    """
-    courseID=request.form
-    course=Course.get_by_id(courseID["course_id"])
-    instructors_data=course.courseInstructors
-    return render_template('/main/reviewproposal.html',
-                            course=course,
-                            instructors_data=instructors_data)
-
 @main_bp.route('/updateDietInformation', methods = ['GET', 'POST'])
 def getDietInfo():
     dietaryInfo = request.form
