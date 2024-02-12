@@ -16,6 +16,7 @@
       })
     </script>
   {% endif %}
+
 {% endblock %}
 
 {% block styles %}
@@ -42,11 +43,11 @@
     <div class="row pt-3">
       <ul class="nav nav-tabs nav-fill mx-3 mb-3" role="tablist">
         <li class="col-md-3 col-12 nav-item" role="presentation">
-          <button class="nav-link active" id="studentLedEvents"
+          <button class="nav-link {{'' if courseID else 'active'}}" id="studentLedEvents"
           data-bs-toggle="tab" data-bs-target="#nativeCourseTables" type="button" role="tab" aria-controls="nativeCourseTables" aria-selected="true">Native Courses</button>
         </li>
         <li class="col-md-3 col-12 nav-item" role="presentation">
-          <button class="nav-link" id="trainingEvents"
+          <button class="nav-link {{'active' if courseID else ''}}" id="trainingEvents"
           data-bs-toggle="tab" data-bs-target="#importedCourseTables" type="button" role="tab" aria-controls="importedCourseTables" aria-selected="false">Imported Courses</button>
         </li>
       </ul>
@@ -56,7 +57,7 @@
 
 
   <div class="tab-content"> 
-    <div class="tab-pane fade show active" id="nativeCourseTables" role="tabpanel">
+    <div class="tab-pane fade show {{'' if courseID else 'active'}}" id="nativeCourseTables" role="tabpanel">
       <div class="container">
         <div class="row">
           <div class="col">
@@ -151,7 +152,7 @@
     </div>
 
     {########################### Imported Table #################################}
-    <div class="tab-pane fade" id="importedCourseTables" role="tabpanel">
+    <div class="tab-pane fade {{'active show' if courseID else ''}}" id="importedCourseTables" role="tabpanel">
       <div class="container">
         <div class="row">
           <div class="col">
@@ -427,4 +428,10 @@
     </form>
   </div>
   <div id="review-modal"></div>
+
+    {% if courseID %}
+        <script>
+            showAlterModalWithCourse({{courseID}})
+        </script>
+    {% endif %}
 {% endblock %}

@@ -378,6 +378,7 @@ def addCourseFile():
 @admin_bp.route('/manageServiceLearning', methods = ['GET', 'POST'])
 @admin_bp.route('/manageServiceLearning/<term>', methods = ['GET', 'POST'])
 def manageServiceLearningCourses(term=None):
+    
     """
     The SLC management page for admins
     """
@@ -392,17 +393,32 @@ def manageServiceLearningCourses(term=None):
     manageTerm = Term.get_or_none(Term.id == term) or g.current_term
 
     setRedirectTarget(request.full_path)
-
-    return render_template('/admin/manageServiceLearningFaculty.html',
-                            courseInstructors = getInstructorCourses(),
-                            unapprovedCourses = unapprovedCourses(term),
-                            approvedCourses = approvedCourses(term),
-                            importedCourses = importedCourses(term),
-                            terms = selectSurroundingTerms(g.current_term),
-                            term = manageTerm,
-                            cpPreview= session.get('cpPreview',{}),
-                            cpPreviewErrors = session.get('cpErrors',[])
-                           )
+    courseID = session.get("alterCourseId")
+    print(courseID)
+    if courseID:
+        session.pop("alterCourseId")
+        return render_template('/admin/manageServiceLearningFaculty.html',
+                                courseInstructors = getInstructorCourses(),
+                                unapprovedCourses = unapprovedCourses(term),
+                                approvedCourses = approvedCourses(term),
+                                importedCourses = importedCourses(term),
+                                terms = selectSurroundingTerms(g.current_term),
+                                term = manageTerm,
+                                cpPreview= session.get('cpPreview',{}),
+                                cpPreviewErrors = session.get('cpErrors',[]),
+                                courseID = courseID
+                            )
+    else:
+        return render_template('/admin/manageServiceLearningFaculty.html',
+                                courseInstructors = getInstructorCourses(),
+                                unapprovedCourses = unapprovedCourses(term),
+                                approvedCourses = approvedCourses(term),
+                                importedCourses = importedCourses(term),
+                                terms = selectSurroundingTerms(g.current_term),
+                                term = manageTerm,
+                                cpPreview= session.get('cpPreview',{}),
+                                cpPreviewErrors = session.get('cpErrors',[])
+                            )
 
 @admin_bp.route("/deleteUploadedFile", methods= ["POST"])
 def removeFromSession():
@@ -414,8 +430,8 @@ def removeFromSession():
     return ""
 
 @admin_bp.route('/manageServiceLearning/imported/<courseID>', methods = ['POST', 'GET'])
-@admin_bp.route('/manageServiceLearning/imported/<courseID>/<termId>', methods = ['POST'])
-def alterImportedCourse(courseID, termId=None):
+@admin_bp.route('/manageServiceLearning/imported/<courseID>', methods = ['POST'])
+def alterImportedCourse(courseID):
     """
     This route handles a GET and a POST request for the purpose of imported courses. 
     The GET request provides preexisting information of an imported course in a modal. 
@@ -436,6 +452,8 @@ def alterImportedCourse(courseID, termId=None):
             courseInstructors = [model_to_dict(instructor.user) for instructor in targetInstructors]
             courseData['instructors'] = courseInstructors
             courseData["hoursEarned"] = serviceHours
+
+            
             
             return jsonify(courseData)
         
@@ -445,9 +463,11 @@ def alterImportedCourse(courseID, termId=None):
         
     if request.method == 'POST':
         # Update course information in the database
-        editImportedCourses(request.form.copy())
-
-    return redirect(url_for("admin.manageServiceLearningCourses", term=termId))
+        courseData = request.form.copy()
+        editImportedCourses(courseData)
+        session['alterCourseId'] = courseID
+ 
+    return redirect(url_for("admin.manageServiceLearningCourses", term=courseData['termId']))
 
 
 @admin_bp.route("/manageBonner")

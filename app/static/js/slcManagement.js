@@ -11,7 +11,7 @@ $(document).ready(function() {
   $("#withdrawBtn").on("click", withdraw);
   $("#alterModal").on("hide.bs.modal", emptyInstructorTable);
   $("#renewBtn").on("click", renew);
-  
+
   var statusKey = $(".status-key");
   statusKey.popover({
     trigger: "hover",
@@ -154,7 +154,7 @@ function showAlterModalWithCourse(courseID) {
     $('#alterModal form').on('submit', function(event) {
       updateInstructorList(); // Fetch instructors from tr rows in Instructor Table before sending POST request
       var termId = $('#alterTermId').val();
-      var dynamicRoute = `/manageServiceLearning/imported/${courseID}/${termId}`;
+      var dynamicRoute = `/manageServiceLearning/imported/${courseID}`;
       $(this).attr('action', dynamicRoute);
     });
 
