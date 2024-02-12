@@ -65,7 +65,7 @@ def importedCourses(termId):
     return importedCourses
 
 
-def editImportedCourses(courseData, attachments=None):
+def editImportedCourses(courseData):
     """
         This function will take in courseData for the SLC proposal page and a dictionary
         of instructors assigned to the imported course after that one is edited 
