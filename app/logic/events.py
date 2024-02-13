@@ -503,11 +503,37 @@ def getEventRsvpCount(eventId):
     """
     return len(EventRsvp.select().where(EventRsvp.event_id == eventId))
 
-def eventCountDown(eventData, currentDatetime=None):
+def getCountDownToEvent(eventData, currentDatetime=None):
     if currentDatetime is None:
         currentDatetime = datetime.datetime.now()
+        currentMorning = currentDatetime.replace(hour=0, minute=0, second=0)
+
+    
+    timeUntilEvent = relativedelta(eventStartDatetime, currentDatetime).days < 0
+    if eventIsPast:
+        return "Already passed"
+    
 
     eventStartDatetime = datetime.datetime.strptime(eventData['startDate'] + ' ' + eventData['timeStart'], '%m/%d/%Y %I:%M %p')
-    delta = relativedelta(eventStartDatetime, currentDatetime)
+    colloquialDaysUntilEvent = relativedelta(eventStartDatetime, currentMorning).days
 
-    return delta.days, delta.hours, delta.minutes  
+    """
+    The way we talk about dates is interesting... If an event happens tomorrow but less than 24 hours away from us
+    we still say that it happens tomorrow with no mention of the hour. If an event happens tomorrow but more than 24
+    hours away from us, we'll count the number of days and hours in actual time.
+
+    So if the current time of day is greater than the event beginning's time of day, we give a number of days relative 
+    to this morning and exclude all hours and minutes
+
+    On the other hand, if the current time of day is less or equal to the event's start of day we can produce the 
+    real difference in days and hours without the aforementioned simplifying language.
+    """
+
+    
+    if colloquialDaysUntilEvent == 0:
+        return "Happening today"
+    elif colloquialDaysUntilEvent == 1:
+        return "Happening tomorrow"
+    else:
+        return f"{colloquialDaysUntilEvent} days"
+    

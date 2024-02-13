@@ -23,7 +23,7 @@ from app.models.note import Note
 from app.logic.events import preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
 from app.logic.events import attemptSaveEvent, saveEventToDb, cancelEvent, deleteEvent, getParticipatedEventsForUser
 from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser
-from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount, eventCountDown
+from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount, getCountDownToEvent
 from app.logic.volunteers import addVolunteerToEventRsvp, updateEventParticipants
 from app.logic.participants import addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser
@@ -898,7 +898,7 @@ def test_getEventRsvpCount():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_eventCountDownFutureEvent():
+def test_getCountDownToEventFutureEvent():
     # Define a custom datetime representing the current time
     customDatetime = datetime(2023, 10, 25, 8, 0, 0)
     
@@ -908,14 +908,12 @@ def test_eventCountDownFutureEvent():
         'timeStart': '10:30 AM'
     }
     
-    days, hours, minutes = eventCountDown(event_data, currentDatetime=customDatetime)
+    countdown = getCountDownToEvent(event_data, currentDatetime=customDatetime)
     
-    assert days == 1
-    assert hours == 2
-    assert minutes == 30
+    assert countdown == "Happening Tomorrow"
 
 @pytest.mark.integration
-def test_eventCountDownFutureEvent():
+def test_getCountDownToEventFutureEvent():
     customDatetime = datetime(2023, 10, 20, 18, 25, 0)
     
     eventData = {
@@ -923,14 +921,12 @@ def test_eventCountDownFutureEvent():
         'timeStart': '5:00 PM'
     }
     
-    days, hours, minutes = eventCountDown(eventData, currentDatetime=customDatetime)
+    countdown = getCountDownToEvent(eventData, currentDatetime=customDatetime)
     
-    assert days == 31
-    assert hours == 22
-    assert minutes == 35
+    assert countdown == "31 days"
 
 @pytest.mark.integration
-def test_eventCountDownPastEvent():
+def test_getCountDownToEventPastEvent():
     customDatetime = datetime(2023, 10, 27, 8, 0, 0)
     
     eventData = {
@@ -938,9 +934,7 @@ def test_eventCountDownPastEvent():
         'timeStart': '3:00 PM'
     }
     
-    days, hours, minutes = eventCountDown(eventData, currentDatetime=customDatetime)
+    countdown = getCountDownToEvent(eventData, currentDatetime=customDatetime)
     
-    assert days == -2
-    assert hours == 7
-    assert minutes == 0
+    assert countdown == "Already passed"
 

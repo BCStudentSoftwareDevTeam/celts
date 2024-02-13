@@ -25,7 +25,7 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createAdminLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
-from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm, eventCountDown
+from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm, getCountDownToEvent
 from app.logic.participants import getEventParticipants, getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
@@ -243,8 +243,8 @@ def eventDisplay(eventId):
         # get text representations of dates
         eventData['timeStart'] = event.timeStart.strftime("%-I:%M %p")
         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
-        eventData["startDate"] = event.startDate.strftime("%m/%d/%Y")
-        days, hours, minutes = eventCountDown(eventData)
+        eventData['startDate'] = event.startDate.strftime("%m/%d/%Y")
+        eventCountdown = getCountDownToEvent(eventData)
 
 
         # Identify the next event in a recurring series
@@ -261,18 +261,16 @@ def eventDisplay(eventId):
         userParticipatedTrainingEvents = getParticipationStatusForTrainings(eventData['program'], [g.current_user], g.current_term)
 
         return render_template("eventView.html",
-                                eventData = eventData,
-                                event = event,
-                                userHasRSVPed = userHasRSVPed,
-                                programTrainings = userParticipatedTrainingEvents,
-                                currentEventRsvpAmount = currentEventRsvpAmount,
-                                isProgramManager = isProgramManager,
-                                filepaths = filepaths,
-                                image = image,
-                                pageViewsCount= pageViewsCount,
-                                days=days, 
-                                hours=hours,
-                                minutes=minutes)
+                                eventData=eventData,
+                                event=event,
+                                userHasRSVPed=userHasRSVPed,
+                                programTrainings=userParticipatedTrainingEvents,
+                                currentEventRsvpAmount=currentEventRsvpAmount,
+                                isProgramManager=isProgramManager,
+                                filepaths=filepaths,
+                                image=image,
+                                pageViewsCount=pageViewsCount,
+                                eventCountdown=eventCountdown)
                                 
 
 
