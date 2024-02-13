@@ -328,7 +328,7 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
 function handleCheckbox() {
   var removeFromTranscript = $('#removeFromTranscriptCheckbox').prop('checked'); // Using jQuery to get the checkbox state
   var username = $(this).data('username');
-  
+
   $.ajax({
     type: "POST",
     url: "/update-transcript",
@@ -342,10 +342,3 @@ function handleCheckbox() {
     }
   });
 }
-<<<<<<< HEAD
-
-
-
-
-=======
->>>>>>> 6c848b4f6d199940e8a656a2d4771a0a2a02762d
