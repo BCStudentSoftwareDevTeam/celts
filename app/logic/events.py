@@ -529,7 +529,7 @@ def getCountDownToEvent(eventData, currentDatetime=None):
     real difference in days and hours without the aforementioned simplifying language.
     """
 
-    
+    # Beans: Reread the above docstring and adjust this conditional
     if colloquialDaysUntilEvent == 0:
         return "Happening today"
     elif colloquialDaysUntilEvent == 1:
