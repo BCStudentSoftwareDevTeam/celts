@@ -1,8 +1,8 @@
-from webbrowser import get
 import pytest
 from peewee import *
-from playhouse.shortcuts import model_to_dict
 from collections import OrderedDict
+from playhouse.shortcuts import model_to_dict
+
 from app.models import mainDB
 from app.models.user import User
 from app.models.term import Term
@@ -265,7 +265,7 @@ def test_setCommunityEngagementForUser():
         setCommunityEngagementForUser('add', khattsEngagementData1, 'ramsayb2')
         
         khattsEngagements = IndividualRequirement.select()
-        # get coutn 
+        # get count 
         khattsEngagements.count() == 1
         assert khattsEngagements[0].course == Course.get_by_id(2)
         assert khattsEngagements[0].program == None

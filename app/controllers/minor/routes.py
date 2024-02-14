@@ -1,12 +1,13 @@
 from flask import Flask, g, render_template, request, abort, flash, redirect, url_for
 from peewee import DoesNotExist
+
 from app.controllers.minor import minor_bp
 from app.models.user import User
 from app.models.term import Term
-from app.logic.utils import selectSurroundingTerms
-from app.logic.fileHandler import FileHandler
 from app.models.attachmentUpload import AttachmentUpload
-from app.logic.utils import getFilesFromRequest
+
+from app.logic.fileHandler import FileHandler
+from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.minor import getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, removeSummerExperience
 from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, saveSummerExperience, getSummerTerms, getSummerExperience
 

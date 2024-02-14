@@ -197,7 +197,7 @@ def getCommunityEngagementByTerm(username):
                                                                "type":"program",
                                                                "matched": event.reqMatch,
                                                                "term":event.term.id
-                                                            })
+                                                              })
 
     # sorting the terms by the term id
     return dict(sorted(terms.items(), key=lambda x: x[0][1]))

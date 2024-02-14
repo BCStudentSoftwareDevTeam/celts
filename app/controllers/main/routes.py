@@ -1,43 +1,43 @@
-from flask import request, render_template, g, abort, flash, redirect, url_for
-from peewee import JOIN
-from playhouse.shortcuts import model_to_dict
-import datetime
 import json
+import datetime
+from peewee import JOIN
 from http import cookies
-
-from app import app
-from app.models.program import Program
-from app.models.event import Event
-from app.models.backgroundCheck import BackgroundCheck
-from app.models.backgroundCheckType import BackgroundCheckType
-from app.models.user import User
-from app.models.eventParticipant import EventParticipant
-from app.models.interest import Interest
-from app.models.programBan import ProgramBan
-from app.models.term import Term
-from app.models.eventRsvp import EventRsvp
-from app.models.note import Note
-from app.models.profileNote import ProfileNote
-from app.models.programManager import ProgramManager
-from app.models.courseInstructor import CourseInstructor
-from app.models.certification import Certification
-from app.models.emergencyContact import EmergencyContact
-from app.models.insuranceInfo import InsuranceInfo
-from app.models.celtsLabor import CeltsLabor
+from playhouse.shortcuts import model_to_dict
+from flask import request, render_template, g, abort, flash, redirect, url_for
 
 from app.controllers.main import main_bp
-from app.logic.minor import toggleMinorInterest
-from app.logic.loginManager import logout
-from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, updateDietInfo
-from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
+from app import app
+from app.models.term import Term
+from app.models.user import User
+from app.models.note import Note
+from app.models.event import Event
+from app.models.program import Program
+from app.models.interest import Interest
+from app.models.eventRsvp import EventRsvp
+from app.models.celtsLabor import CeltsLabor
+from app.models.programBan import ProgramBan
+from app.models.profileNote import ProfileNote
+from app.models.insuranceInfo import InsuranceInfo
+from app.models.certification import Certification
+from app.models.programManager import ProgramManager
+from app.models.backgroundCheck import BackgroundCheck
+from app.models.emergencyContact import EmergencyContact
+from app.models.eventParticipant import EventParticipant
+from app.models.courseInstructor import CourseInstructor
+from app.models.backgroundCheckType import BackgroundCheckType
+
 from app.logic.events import *
-from app.logic.searchUsers import searchUsers
 from app.logic.transcript import *
-from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
+from app.logic.loginManager import logout
+from app.logic.searchUsers import searchUsers
 from app.logic.utils import selectSurroundingTerms
-from app.logic.certification import getCertRequirementsWithCompletion
-from app.logic.createLogs import createRsvpLog, createAdminLog
 from app.logic.celtsLabor import getCeltsLaborHistory
+from app.logic.createLogs import createRsvpLog, createAdminLog
+from app.logic.certification import getCertRequirementsWithCompletion
+from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
+from app.logic.minor import toggleMinorInterest, getCommunityEngagementByTerm
+from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
+from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, updateDietInfo
 
 @main_bp.route('/logout', methods=['GET'])
 def redirectToLogout():
@@ -163,7 +163,13 @@ def viewUsersProfile(username):
         managersProgramDict = getManagerProgramDict(g.current_user)
         managersList = [id[1] for id in managersProgramDict.items()]
         participatedInLabor = getCeltsLaborHistory(volunteer)
-        
+        cceMinorEngagement = getCommunityEngagementByTerm(volunteer)
+        totalSustainedEngagements = 0
+
+        for key, value in cceMinorEngagement.items():
+            for match in value:
+                totalSustainedEngagements += match['matched']
+
         return render_template ("/main/userProfile.html",
                                 programs = programs,
                                 programsInterested = programsInterested,
@@ -180,6 +186,7 @@ def viewUsersProfile(username):
                                 bonnerRequirements = bonnerRequirements,
                                 managersList = managersList,
                                 participatedInLabor = participatedInLabor,
+                                totalSustainedEngagements = totalSustainedEngagements,
                             )
     abort(403)
 
