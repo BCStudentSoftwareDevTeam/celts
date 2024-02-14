@@ -11,11 +11,13 @@ dt {
     padding: 5px; 
     padding-bottom:0px; 
 }
+
 dd { 
     font-size:.9em;
     padding: 5px; 
     padding-top:0px; 
 }
+
 #printButton{
     font-size: 15px;
 }
@@ -28,41 +30,6 @@ dd {
     border: 1px solid #6666bb;
     background-color: #e8f6ff; 
     top: 10px;
-}
-
-.form-check.form-switch .form-check-input {
-    display: none;
-  }
-
-.form-check.form-switch .for-check-label {
-    position: relative;
-    padding-right: 50px; 
-}
-
-.form-check.form-switch .for-check-label:before {
-    content: 'No';
-    display: block;
-    width: 40px; 
-    height: 20px; 
-    background-color: #6c757d; 
-    border-radius: 10px; 
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    right: 0;
-    transition: all 0.3s;
-    line-height: 20px;
-    text-align: center;
-    color: #fff; 
-}
-
-.form-check.form-switch .form-check-input:checked + .for-check-label:before {
-    content: 'Yes';
-    background-color: #198754; 
-    right: calc(10% - 40px); 
-}
-.form-check.form-switch {
-    padding-left: 0;
 }
 
 .bonnerNotes dd:nth-of-type(even) { background-color:#f2f2f2; } 
