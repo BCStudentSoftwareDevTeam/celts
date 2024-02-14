@@ -393,10 +393,10 @@ def manageServiceLearningCourses(term=None):
     manageTerm = Term.get_or_none(Term.id == term) or g.current_term
 
     setRedirectTarget(request.full_path)
-    courseID = session.get("alterCourseId") # retrieve and store the courseID from session variable if it exists.
+    courseID = session.get("alterCourseId") # retrieve and store the courseID of the imported course from a session variable if it exists. This allows us to export the courseID in the html and use it. 
     
     if courseID:
-        session.pop("alterCourseId") # delete courseID from the session if it was retrieved.
+        session.pop("alterCourseId") # delete courseID from the session if it was retrieved, for storage purposes. 
         return render_template('/admin/manageServiceLearningFaculty.html',
                                 courseInstructors = getInstructorCourses(),
                                 unapprovedCourses = unapprovedCourses(term),
