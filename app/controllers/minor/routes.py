@@ -74,7 +74,6 @@ def requestOtherEngagement(username):
     
 
     if request.method == 'POST':
-        flash("Other community engagement request submitted.", "success")
         attachmentName = None
         attachment = request.files.get("attachmentObject")
         if attachment:
@@ -84,6 +83,7 @@ def requestOtherEngagement(username):
         formData = request.form.copy()
         formData["attachment"] = attachmentName
         saveOtherEngagementRequest(formData)
+        flash("Other community engagement request submitted.", "success")
         return redirect(url_for("minor.viewCceMinor", username=user))
 
 
@@ -103,7 +103,7 @@ def deleteRequestFile():
 
 @minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
 def addSummerExperience(username):
-    saveSummerExperience(username ,request.form, g.current_user)
+    saveSummerExperience(username, request.form, g.current_user)
 
     return ""
 

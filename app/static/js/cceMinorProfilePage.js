@@ -1,6 +1,4 @@
 $(document).ready(function(){
-    
-
     $("#summerExperienceSave").click(function(){
       let data = {'summerExperience': $("#summerExperience").val(),
                   'selectedSummerTerm': $("#summerExperienceTerm").find(":selected").text()}
@@ -13,11 +11,11 @@ $(document).ready(function(){
           msgToast("Success!", "Summer Experience successfully added!")
         },
         error: function(error){
-          msgToast("Error!", "Error adding summer experience!")
+          msgToast("Error!", "Error adding Summer Experience!")
         }
       })
-
     });
+
     $("#removeSummerExperience").click(function(){
       let username = $("#username").val()
       $.ajax({
@@ -28,10 +26,9 @@ $(document).ready(function(){
           msgToast("Success!", "Summer Experience successfully deleted!")
         },
         error: function(error){
-          msgToast("Error!", "Error deleting summer experience!")
+          msgToast("Error!", "Error deleting Summer Experience!")
         }
       })
-
     });
 
     $('.engagement-row').on("click", function() {
@@ -47,10 +44,10 @@ $(document).ready(function(){
     
 })
 
-function showEngagementInformation(dataDict) {
-  let type = dataDict['type'],
-      id = dataDict['id'],
-      term= dataDict['term'];
+function showEngagementInformation(engagementInfoDict) {
+  let type = engagementInfoDict['type'],
+      id = engagementInfoDict['id'],
+      term= engagementInfoDict['term'];
   let username = $("#username").val()
 
   // based on how long the type is, get the remaining characters afterwards that represent the id
@@ -105,11 +102,6 @@ function showEngagementInformation(dataDict) {
       msgFlash("Error displaying information!", "danger")
     }
   });
-}
-
-function stopPropagation(event) {
-  // prevent the checkbox from displaying the course/program information
-  console.log(event.target)
 }
 
 function toggleEngagementCredit(isChecked, engagementData){

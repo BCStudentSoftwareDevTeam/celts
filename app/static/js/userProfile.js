@@ -11,7 +11,7 @@ $(document).ready(function(){
         },
         error: function(request, status, error) {
           console.log(error)
-          msgToast("Error!", "Failed to saving changes!")
+          msgToast("Error!", "Failed to save changes!")
         }
     });
   })    

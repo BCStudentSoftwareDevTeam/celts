@@ -50,9 +50,7 @@ def getMinorProgress():
                             'firstName': student.firstName,
                             'lastName': student.lastName,
                             'engagementCount': student.engagementCount - student.hasSummer,
-                            'hasSummer': "Completed" if student.hasSummer else "Incomplete"}
-        for student in engagedStudentsWithCount
-    ]
+                            'hasSummer': "Completed" if student.hasSummer else "Incomplete"} for student in engagedStudentsWithCount]
 
     return engagedStudentsList
    
@@ -159,9 +157,9 @@ def getCommunityEngagementByTerm(username):
     """
     Given a username, return all of their community engagements (service learning courses and event participations.)
     """
-    courseMatchCase =  Case(None, [(IndividualRequirement.course.is_null(True) , 0)], 1)
+    courseMatchCase = Case(None, [(IndividualRequirement.course.is_null(True) , 0)], 1)
 
-    courses = (Course.select(Course, courseMatchCase.alias("reqMatch"))
+    courses = (Course.select(Course, courseMatchCase.alias("matchedReq"))
                      .join(CourseParticipant, on=(Course.id == CourseParticipant.course))
                      .join(IndividualRequirement, JOIN.LEFT_OUTER, on=((IndividualRequirement.course == Course.id) & 
                                                                        (IndividualRequirement.username == CourseParticipant.user) & 
@@ -171,18 +169,17 @@ def getCommunityEngagementByTerm(username):
     
     # initialize default dict to store term descriptions as keys mapping to each
     # engagement's respective type, name, id, and term.
-    terms = defaultdict(list)
+    communityEngagementByTermDict = defaultdict(list)
     for course in courses:
-        terms[(course.term.description, course.term.id)].append({
-                    "name":course.courseName, 
-                    "id":course.id, 
-                    "type":"course", 
-                    "matched": course.reqMatch,
-                    "term":course.term.id})
+        communityEngagementByTermDict[(course.term.description, course.term.id)].append({"name":course.courseName,
+                                                                 "id":course.id,
+                                                                 "type":"course",
+                                                                 "matched": course.matchedReq,
+                                                                 "term":course.term.id})
 
     programMatchCase = Case(None, [(IndividualRequirement.program.is_null(True) , 0)], 1)
 
-    events = (Event.select(Event, Program, programMatchCase.alias('reqMatch'))
+    events = (Event.select(Event, Program, programMatchCase.alias('matchedReq'))
                    .join(EventParticipant, on=(Event.id == EventParticipant.event)).switch()
                    .join(Program)
                    .join(IndividualRequirement, JOIN.LEFT_OUTER, on=((IndividualRequirement.program == Program.id) &
@@ -192,15 +189,15 @@ def getCommunityEngagementByTerm(username):
                    .group_by(Event.program, Event.term))
     
     for event in events:
-        terms[(event.term.description, event.term.id)].append({"name":event.program.programName,
+        communityEngagementByTermDict[(event.term.description, event.term.id)].append({"name":event.program.programName,
                                                                "id":event.program.id,
                                                                "type":"program",
-                                                               "matched": event.reqMatch,
+                                                               "matched": event.matchedReq,
                                                                "term":event.term.id
                                                               })
 
-    # sorting the terms by the term id
-    return dict(sorted(terms.items(), key=lambda x: x[0][1]))
+    # sorting the communityEngagementByTermDict by the term id
+    return dict(sorted(communityEngagementByTermDict.items(), key=lambda engagement: engagement[0][1]))
 
 def saveOtherEngagementRequest(engagementRequest):
     """
@@ -253,7 +250,6 @@ def getSummerExperience(username):
     """
     Get a students summer experience to populate text box if the student has one
     """ 
-    # TODO: we need to get term to set the select dropdown as well. 
     summerExperience = (IndividualRequirement.select()
                                              .join(CertificationRequirement, JOIN.LEFT_OUTER, on=(CertificationRequirement.id == IndividualRequirement.requirement)).switch()
                                              .join(Term, on=(IndividualRequirement.term == Term.id))
@@ -262,8 +258,8 @@ def getSummerExperience(username):
                                                     CertificationRequirement.name << ['Summer Program']))
     if len(list(summerExperience)) == 1:
         return [summerExperience.get().term.description, summerExperience.get().description]
-    else: 
-        return "" 
+
+    return "" 
 
 def removeSummerExperience(username): 
     """
@@ -276,6 +272,6 @@ def getSummerTerms():
     """
     Return a list of all terms with the isSummer flag that is marked True. Used to populate term dropdown for summer experience
     """
-    summerTerms = list(Term.select().where(Term.isSummer == True))
+    summerTerms = list(Term.select().where(Term.isSummer))
 
     return summerTerms

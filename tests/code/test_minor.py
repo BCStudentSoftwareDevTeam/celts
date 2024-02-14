@@ -48,7 +48,7 @@ def test_toggleMinorInterest():
         User.create(username="FINN",
                     firstName="Not",
                     lastName="Yet",
-                    email=f"FINN@berea.edu",
+                    email="FINN@berea.edu",
                     bnumber="B91111111")
         
         user = User.get_by_id("FINN")
@@ -74,7 +74,7 @@ def test_getProgramEngagementHistory():
         testUser = User.create(username="FINN",
                                 firstName="Not",
                                 lastName="Yet",
-                                email=f"FINN@berea.edu",
+                                email="FINN@berea.edu",
                                 bnumber="B91111111")
         
         testingEvent = Event.create(name = "Testing event",
@@ -116,7 +116,7 @@ def test_getCommunityEngagementByTerm():
         testUser = User.create(username="FINN",
                                firstName="Not",
                                lastName="Yet",
-                               email=f"FINN@berea.edu",
+                               email="FINN@berea.edu",
                                bnumber="B91111111")
         
         testingEvent = Event.create(name = "Testing event",
