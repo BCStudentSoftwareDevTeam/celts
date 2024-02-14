@@ -76,8 +76,7 @@ class FileHandler:
                     file.save(self.getFileFullPath(newfilename = saveFileToFilesystem))        
                         
         except AttributeError as e: # will pass if there is no attachment to save
-            print("###########################")
-            print(e)
+            pass
 
     def retrievePath(self,files):
         pathDict={}
