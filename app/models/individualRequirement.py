@@ -1,10 +1,10 @@
 from datetime import datetime
 
 from app.models import*
-from app.models.program import Program
 from app.models.user import User
 from app.models.term import Term
 from app.models.course import Course
+from app.models.program import Program
 from app.models.certificationRequirement import CertificationRequirement
 
 
