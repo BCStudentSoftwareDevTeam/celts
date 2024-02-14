@@ -52,6 +52,30 @@ def removeUserInterest(program_id, username):
         interestToDelete.delete_instance()
     return True
 
+def addProgramToTranscript(user, programID):
+    try:
+        # Assuming Program is your model for programs
+        program = Program.get(Program.id == programID)
+        if program not in user.transcript_programs:
+            user.transcript_programs.add(program)
+            user.save()
+            return True
+    except Exception as e:
+        print("Error adding program to transcript:", e)
+        return False
+
+def removeProgramFromTranscript(user, programID):
+    try:
+        program = Program.get(Program.id == programID)
+        if program in user.transcript_programs:
+            user.transcript_programs.remove(program)
+            user.save()
+            return True
+    except Exception as e:
+        print("Error removing program from transcript:", e)
+        return False
+
+
 def removeBannedUserFromTranscript(program_id, username):
     """
     This function is used to add an interest to .

@@ -26,25 +26,27 @@ $(document).ready(function(){
     });
   });
 
-  $(".removeFromTranscriptCheckbox").click(function updateCheckbox(){
+  $(".removeFromTranscriptCheckbox").click(function() {
     var programID = $(this).data("programid");
     var username = $(this).data('username');
+    var isChecked = $(this).is(':checked');
+    var action = isChecked ? 'remove' : 'add';
 
-    var removeCheckbox = $(this).is(':checked');
-    var routeUrl = removeCheckbox ? "removeBannedUserFromTranscript" : "removeBannedUserFromTranscript";
-    removeCheckboxUrl = "/" + username + "/" + routeUrl + "/" + programID ;
     $.ajax({
-      method: "POST",
-      url: removeCheckboxUrl,
-      success: function(response) {
-          reloadWithAccordion("programTable")  //  Reloading page after user clicks on the show interest checkbox
-      },
-      error: function(request, status, error) {
-        console.log(status,error);
-        location.reload();
-      }
+        method: "POST",
+        url: `/profile/${username}/serviceTranscript`,
+        data: { programID: programID, action: action },
+        success: function(response) {
+            // Handle success (perhaps update the page without a full reload)
+            console.log(response.message);
+        },
+        error: function(request, status, error) {
+            console.log(status, error);
+            // Handle error
+        }
     });
   });
+
 
   function changeAction(e){
     let profileAction = $(this).val()
@@ -323,22 +325,4 @@ function updateManagers(el, volunteer_username ){// retrieve the data of the stu
           console.log(error, status)
       }
   })
-}
-
-function handleCheckbox() {
-  var removeFromTranscript = $('#removeFromTranscriptCheckbox').prop('checked'); // Using jQuery to get the checkbox state
-  var username = $(this).data('username');
-
-  $.ajax({
-    type: "POST",
-    url: "/update-transcript",
-    contentType: "application/json",
-    data: JSON.stringify({ username: username, removeFromTranscript: removeFromTranscript }),
-    success: function(updatedTranscriptData) {
-      console.log(updatedTranscriptData);
-    },
-    error: function(xhr, status, error) {
-      console.error("An error occurred:", error);
-    }
-  });
 }
