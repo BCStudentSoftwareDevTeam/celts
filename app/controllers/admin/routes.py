@@ -27,7 +27,7 @@ from app.logic.userManagement import getAllowedPrograms, getAllowedTemplates
 from app.logic.createLogs import createAdminLog
 from app.logic.certification import getCertRequirements, updateCertRequirements
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest, getRedirectTarget, setRedirectTarget
-from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm, saveEventToDb, copyRsvp
+from app.logic.events import cancelEvent, deleteEvent, attemptSaveEvent, preprocessEventData, calculateRecurringEventFrequency, deleteEventAndAllFollowing, deleteAllRecurringEvents, getBonnerEvents,addEventView, getEventRsvpCountsForTerm, copyRsvpToNewEvent
 from app.logic.participants import getEventParticipants, getParticipationStatusForTrainings, checkUserRsvp
 from app.logic.fileHandler import FileHandler
 from app.logic.bonner import getBonnerCohorts, makeBonnerXls, rsvpForBonnerCohort
@@ -162,7 +162,7 @@ def rsvpLogDisplay(eventId):
 @admin_bp.route('/event/<eventId>/renew', methods=['POST'])
 def renewEvent(eventId):
     try: 
-        formData=request.form
+        formData = request.form
         try:
             assert formData['timeStart'] < formData['timeEnd']
         except AssertionError:
@@ -195,7 +195,7 @@ def renewEvent(eventId):
             flash(message, "danger")
             return redirect(url_for('admin.eventDisplay', eventId = eventId))
 
-        copyRsvp(priorEvent['id'], newEvent[0].id)
+        copyRsvpToNewEvent(priorEvent, newEvent[0])
         createAdminLog(f"Renewed {priorEvent['name']} as <a href='event/{newEvent[0].id}/view'>{newEvent[0].name}</a>.")
         flash("Event successfully renewed.", "success")
         return redirect(url_for('admin.eventDisplay', eventId = newEvent[0].id))
@@ -203,7 +203,7 @@ def renewEvent(eventId):
 
     except Exception as e:
         print("Error while trying to renew event:", e)
-        flash("There was an error with your selection. Please try again or contact Systems Support.", 'danger')
+        flash("There was an error renewing the event. Please try again or contact Systems Support.", 'danger')
         return redirect(url_for('admin.eventDisplay', eventId = eventId))
             
 

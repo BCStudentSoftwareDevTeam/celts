@@ -23,7 +23,7 @@ from app.models.note import Note
 from app.logic.events import preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
 from app.logic.events import attemptSaveEvent, saveEventToDb, cancelEvent, deleteEvent, getParticipatedEventsForUser
 from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser
-from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount, copyRsvp
+from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount, copyRsvpToNewEvent
 from app.logic.volunteers import addVolunteerToEventRsvp, updateEventParticipants
 from app.logic.participants import addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser
@@ -899,10 +899,10 @@ def test_getEventRsvpCount():
 
 
 @pytest.mark.integration
-def test_copyRsvp():
+def test_copyRsvpToNewEvent():
     with mainDB.atomic() as transaction:
         with app.app_context():
-            g.current_user ="heggens"
+            g.current_user = "heggens"
 
 
             newEvent = Event.create(name = "Req and Limit",
@@ -937,7 +937,7 @@ def test_copyRsvp():
             assert len(EventRsvp.select().where(EventRsvp.event_id == newEvent)) == 2
             assert len(EventRsvp.select().where(EventRsvp.event_id == newEvent2)) == 0
             
-            copyRsvp(newEvent, newEvent2) 
+            copyRsvpToNewEvent(newEvent, newEvent2) 
             assert len(EventRsvp.select().where(EventRsvp.event_id == newEvent2)) == 2
 
             transaction.rollback()

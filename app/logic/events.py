@@ -507,9 +507,12 @@ def getEventRsvpCount(eventId):
     """
     return len(EventRsvp.select().where(EventRsvp.event_id == eventId))
 
-def copyRsvp(priorEvent, newEvent):
-    rsvpInfo = list(EventRsvp.select().where(EventRsvp.event == priorEvent).execute())
-    rsvpCopies = 0
+def copyRsvpToNewEvent(priorEvent, newEvent):
+    """
+        Copies rvsps from priorEvent to newEvent
+    """
+    rsvpInfo = list(EventRsvp.select().where(EventRsvp.event == priorEvent['id']).execute())
+    
     for student in rsvpInfo:
         newRsvp = EventRsvp(
                 user = student.user,
@@ -517,7 +520,6 @@ def copyRsvp(priorEvent, newEvent):
                 rsvpWaitlist = student.rsvpWaitlist
             )
         newRsvp.save()
-        rsvpCopies=len(rsvpInfo)
-
-    if rsvpCopies:
-        createRsvpLog(newEvent, f"Copied {rsvpCopies} Rsvp's from {priorEvent.name} to <a href='event/{newEvent.id}/view'>{newEvent.name}</a>")
+    numRsvps = len(rsvpInfo)
+    if numRsvps:
+        createRsvpLog(newEvent, f"Copied {numRsvps} Rsvp's from {priorEvent['name']} to {newEvent.name}")
