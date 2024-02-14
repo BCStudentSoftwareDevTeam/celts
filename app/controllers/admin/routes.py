@@ -393,10 +393,10 @@ def manageServiceLearningCourses(term=None):
     manageTerm = Term.get_or_none(Term.id == term) or g.current_term
 
     setRedirectTarget(request.full_path)
-    courseID = session.get("alterCourseId")
-    print(courseID)
+    courseID = session.get("alterCourseId") # retrieve and store the courseID from session variable if it exists.
+    
     if courseID:
-        session.pop("alterCourseId")
+        session.pop("alterCourseId") # delete courseID from the session if it was retrieved.
         return render_template('/admin/manageServiceLearningFaculty.html',
                                 courseInstructors = getInstructorCourses(),
                                 unapprovedCourses = unapprovedCourses(term),
@@ -408,17 +408,17 @@ def manageServiceLearningCourses(term=None):
                                 cpPreviewErrors = session.get('cpErrors',[]),
                                 courseID = courseID
                             )
-    else:
-        return render_template('/admin/manageServiceLearningFaculty.html',
-                                courseInstructors = getInstructorCourses(),
-                                unapprovedCourses = unapprovedCourses(term),
-                                approvedCourses = approvedCourses(term),
-                                importedCourses = importedCourses(term),
-                                terms = selectSurroundingTerms(g.current_term),
-                                term = manageTerm,
-                                cpPreview= session.get('cpPreview',{}),
-                                cpPreviewErrors = session.get('cpErrors',[])
-                            )
+    
+    return render_template('/admin/manageServiceLearningFaculty.html',
+                            courseInstructors = getInstructorCourses(),
+                            unapprovedCourses = unapprovedCourses(term),
+                            approvedCourses = approvedCourses(term),
+                            importedCourses = importedCourses(term),
+                            terms = selectSurroundingTerms(g.current_term),
+                            term = manageTerm,
+                            cpPreview= session.get('cpPreview',{}),
+                            cpPreviewErrors = session.get('cpErrors',[])
+                        )
 
 @admin_bp.route("/deleteUploadedFile", methods= ["POST"])
 def removeFromSession():
@@ -453,8 +453,6 @@ def alterImportedCourse(courseID):
             courseData['instructors'] = courseInstructors
             courseData["hoursEarned"] = serviceHours
 
-            
-            
             return jsonify(courseData)
         
         except Exception as e:

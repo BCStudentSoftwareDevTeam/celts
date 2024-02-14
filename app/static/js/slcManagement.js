@@ -235,7 +235,6 @@ function createInstructorRow(instructor) {
 
 function emptyInstructorTable() {
   saveRow = $("#instructorTableBody tr")[0];
-  console.log("The saved row is", saveRow)
   $("#instructorTableBody").empty().html(saveRow);
 }
 
