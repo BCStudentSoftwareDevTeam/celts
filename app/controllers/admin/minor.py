@@ -1,8 +1,7 @@
 from flask import render_template, g, abort
 from app.controllers.admin import admin_bp
 
-from app.logic.minor import getMinorInterest
-from app.logic.minor import getMinorProgress
+from app.logic.minor import getMinorInterest, getMinorProgress
 
 
 @admin_bp.route('/admin/cceMinor', methods=['GET'])

@@ -23,7 +23,7 @@ def getMinorInterest():
 
     interestedStudents = (User.select(User.firstName, User.lastName, User.username)
                               .join(IndividualRequirement, JOIN.LEFT_OUTER, on=(User.username == IndividualRequirement.username))
-                              .where((User.isStudent == 1) & (User.minorInterest == 1) & (IndividualRequirement.username.is_null(True))))
+                              .where(User.isStudent & User.minorInterest & IndividualRequirement.username.is_null(True)))
 
     interestedStudentList = [{'firstName': student.firstName, 'lastName': student.lastName, 'username': student.username} for student in interestedStudents]
 
