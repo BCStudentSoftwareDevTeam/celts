@@ -2,6 +2,7 @@ import pytest
 from flask import g
 from app import app
 from peewee import DoesNotExist, OperationalError, IntegrityError, fn
+from playhouse.shortcuts import model_to_dict
 from datetime import datetime, date, timedelta
 from dateutil import parser
 from werkzeug.datastructures import MultiDict
@@ -905,7 +906,7 @@ def test_copyRsvpToNewEvent():
             g.current_user = "heggens"
 
 
-            newEvent = Event.create(name = "Req and Limit",
+            priorEvent = Event.create(name = "Req and Limit",
                                     term = 2,
                                     description = "Event that requries RSVP and has an RSVP limit set.",
                                     timeStart = "6:00 pm",
@@ -916,13 +917,13 @@ def test_copyRsvpToNewEvent():
                                     endDate = "2022-12-19",
                                     program = 9)
             
-            newEvent.save()
+            priorEvent.save()
             EventRsvp.create(user = "neillz",
-                             event = newEvent).save()
+                             event = priorEvent).save()
             EventRsvp.create(user = "partont",
-                             event = newEvent).save()
+                             event = priorEvent).save()
             
-            newEvent2 = Event.create(name = "Req and Limit",
+            newEvent = Event.create(name = "Req and Limit",
                                      term = 2,
                                      description = "Event that requries RSVP and has an RSVP limit set.",
                                      timeStart = "6:00 pm",
@@ -933,11 +934,11 @@ def test_copyRsvpToNewEvent():
                                      endDate = "2022-12-19",
                                      program = 9)
 
-            newEvent2.save()
-            assert len(EventRsvp.select().where(EventRsvp.event_id == newEvent)) == 2
-            assert len(EventRsvp.select().where(EventRsvp.event_id == newEvent2)) == 0
+            newEvent.save()
+            assert len(EventRsvp.select().where(EventRsvp.event_id == priorEvent)) == 2
+            assert len(EventRsvp.select().where(EventRsvp.event_id == newEvent)) == 0
             
-            copyRsvpToNewEvent(newEvent, newEvent2) 
-            assert len(EventRsvp.select().where(EventRsvp.event_id == newEvent2)) == 2
+            copyRsvpToNewEvent(model_to_dict(priorEvent), newEvent) 
+            assert len(EventRsvp.select().where(EventRsvp.event_id == newEvent)) == 2
 
             transaction.rollback()
