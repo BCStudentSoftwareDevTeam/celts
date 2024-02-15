@@ -31,6 +31,8 @@ $(document).ready(function(){
     var username = $(this).data('username');
     var isChecked = $(this).is(':checked');
     var action = isChecked ? 'remove' : 'add';
+    var isChecked = $(this).is(':checked');
+    console.log("Checkbox status:", isChecked);
 
     $.ajax({
         method: "POST",
@@ -38,10 +40,10 @@ $(document).ready(function(){
         data: { programID: programID, action: action },
         success: function(response) {
             // Handle success (perhaps update the page without a full reload)
-            console.log(response.message);
+            console.log("Response from server:", response);
         },
         error: function(request, status, error) {
-            console.log(status, error);
+            console.error("Error response:", error);
             // Handle error
         }
     });
@@ -58,7 +60,6 @@ $(document).ready(function(){
     } else if(profileAction == "Print Travel Form"){
       printDocument(`/profile/${username}/travelForm`)
     } else if (profileAction == "View Service Transcript"){
-      handleCheckbox(username);
       window.location.href = `/profile/${username}/serviceTranscript`
     } else if (profileAction == "Manage CCE Minor") {
       window.location.href = `/profile/${username}/cceMinor`

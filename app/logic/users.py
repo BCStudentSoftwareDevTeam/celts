@@ -8,7 +8,9 @@ from app.models.profileNote import ProfileNote
 from app.models.programBan import ProgramBan
 from app.models.backgroundCheck import BackgroundCheck
 from app.models.backgroundCheckType import BackgroundCheckType
+from app.models.eventParticipant import EventParticipant
 from app.logic.volunteers import addUserBackgroundCheck
+from app.logic.transcript import getProgramTranscript
 import datetime
 from peewee import JOIN
 from dateutil import parser
@@ -52,19 +54,23 @@ def removeUserInterest(program_id, username):
         interestToDelete.delete_instance()
     return True
 
-def addProgramToTranscript(user, programID):
+def addBannedProgramToTranscript(username, program_id):
     try:
-        # Assuming Program is your model for programs
-        program = Program.get(Program.id == programID)
-        if program not in user.transcript_programs:
-            user.transcript_programs.add(program)
-            user.save()
-            return True
+        # Logic to add the user back to the program's events
+        # This could involve creating new EventParticipant entries
+        # or modifying existing ones.
+        # Example: Re-adding the user to all past and future events of the program
+        events = Event.select().where(Event.program == program_id)
+        for event in events:
+            EventParticipant.get_or_create(user=username, event=event.id)
+        return True
+
     except Exception as e:
-        print("Error adding program to transcript:", e)
+        print("Error re-adding program to user's transcript:", e)
         return False
 
-def removeProgramFromTranscript(user, programID):
+
+def removeBannedProgramFromTranscript(user, programID):
     try:
         program = Program.get(Program.id == programID)
         if program in user.transcript_programs:
@@ -76,17 +82,19 @@ def removeProgramFromTranscript(user, programID):
         return False
 
 
-def removeBannedUserFromTranscript(program_id, username):
-    """
-    This function is used to add an interest to .
-    Parameters:
-    program_id: id of the program the user is interested in
-    username: username of the user showing interest
-    """
-    removeBannedUser = ProgramBan.get_or_none(ProgramBan.user == username)
-    if removeBannedUser:
-        removeBannedUser.delete_instance()
-    return True
+def removeBannedProgramFromTranscript(username, program_id):
+    try:
+        # Logic to remove the user from the program's events
+        # This might involve deleting EventParticipant entries
+        events = Event.select().where(Event.program == program_id)
+        for event in events:
+            EventParticipant.delete().where(EventParticipant.user == username, EventParticipant.event == event.id).execute()
+        return True
+
+    except Exception as e:
+        print("Error removing program from user's transcript:", e)
+        return False
+
 
 def getBannedUsers(program):
     """

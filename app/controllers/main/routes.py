@@ -428,7 +428,7 @@ def RemoveRSVP():
             return ''
     return redirect(url_for("admin.eventDisplay", eventId=event.id))
 
-@main_bp.route('/profile/<username>/serviceTranscript', methods = ['GET'])
+@main_bp.route('/profile/<username>/serviceTranscript', methods = ['GET', 'POST'])
 def serviceTranscript(username):
     user = User.get_or_none(User.username == username)
     if user is None:
@@ -437,17 +437,13 @@ def serviceTranscript(username):
         abort(403)
 
     if request.method == 'POST':
-        # Extract data from the POST request
         programID = request.form.get('programID')
-        action = request.form.get('action')  # 'add' or 'remove'
+        action = request.form.get('action')
 
-        if action == 'add':
-            pass
-        elif action == 'remove':
-            pass
-
-        # Return a JSON response indicating success/failure
-        return jsonify({'status': 'success', 'message': 'Transcript updated'})
+        if action == 'remove':
+            allEventTranscript = getProgramTranscript(username, removeFromTranscript=True, programID=programID)
+        else:
+            allEventTranscript = getProgramTranscript(username)
 
     else:
         slCourses = getSlCourseTranscript(username)
