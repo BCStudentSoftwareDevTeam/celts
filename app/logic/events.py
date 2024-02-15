@@ -505,8 +505,9 @@ def getEventRsvpCount(eventId):
 
 def getCountDownToEvent(event, *, currentDatetime=None):
     if currentDatetime is None:
-        currentDatetime = datetime.datetime.now()
-    currentMorning = currentDatetime.replace(hour=0, minute=0, second=0)
+        # Beans: Need to figure out how to make these times not be inaccurate by a full minute to small
+        currentDatetime = datetime.datetime.now().replace(second=0)  
+    currentMorning = currentDatetime.replace(hour=0, minute=0)
 
     eventStart = datetime.datetime.combine(event.startDate, event.timeStart)
     eventEnd = datetime.datetime.combine(event.endDate, event.timeEnd)
@@ -536,16 +537,18 @@ def getCountDownToEvent(event, *, currentDatetime=None):
     minuteString = f"{timeUntilEvent.minutes} minute{'s' if timeUntilEvent.minutes > 1 else ''}"
     if calendarDaysUntilEvent == 0:
         if timeUntilEvent.hours:
+            if timeUntilEvent.minutes:
+                return f"({hourString} and {minuteString})"
             return f"({hourString})"
-
         elif timeUntilEvent.minutes:
             return f"({minuteString})"
-            
         return "(<1 minute)"
     else:
         if eventStart.time() < currentDatetime.time():
             if calendarDaysUntilEvent == 1:
                 return "(Tomorrow)"
             return f"({dayString})"
-        return f"({timeUntilEvent.days} day{'s' if timeUntilEvent.days > 1 else ''} and {timeUntilEvent.hours} hour{'s' if timeUntilEvent.hours > 1 else ''})"
+        if timeUntilEvent.hours:
+            return f"({dayString} and {hourString})"
+        return f"({dayString})"
     
