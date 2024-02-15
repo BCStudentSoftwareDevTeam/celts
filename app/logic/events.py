@@ -503,22 +503,24 @@ def getEventRsvpCount(eventId):
     """
     return len(EventRsvp.select().where(EventRsvp.event_id == eventId))
 
-def getCountDownToEvent(eventData, currentDatetime=None):
+def getCountDownToEvent(event, *, currentDatetime=None):
     if currentDatetime is None:
         currentDatetime = datetime.datetime.now()
-        currentMorning = currentDatetime.replace(hour=0, minute=0, second=0)
+    currentMorning = currentDatetime.replace(hour=0, minute=0, second=0)
 
+    eventStart = datetime.datetime.combine(event.startDate, event.timeStart)
+    eventEnd = datetime.datetime.combine(event.endDate, event.timeEnd)
     
-    timeUntilEvent = relativedelta(eventStartDatetime, currentDatetime).days < 0
-    if eventIsPast:
+    if eventEnd < currentDatetime:
         return "Already passed"
+    elif eventStart < currentDatetime < eventEnd:
+        return "Happening now"
     
-
-    eventStartDatetime = datetime.datetime.strptime(eventData['startDate'] + ' ' + eventData['timeStart'], '%m/%d/%Y %I:%M %p')
-    colloquialDaysUntilEvent = relativedelta(eventStartDatetime, currentMorning).days
+    timeUntilEvent = relativedelta(eventStart, currentDatetime)
+    callendarDaysUntilEvent = relativedelta(eventStart, currentMorning).days
 
     """
-    The way we talk about dates is interesting... If an event happens tomorrow but less than 24 hours away from us
+    Beans: The way we talk about dates is interesting... If an event happens tomorrow but less than 24 hours away from us
     we still say that it happens tomorrow with no mention of the hour. If an event happens tomorrow but more than 24
     hours away from us, we'll count the number of days and hours in actual time.
 
@@ -529,11 +531,17 @@ def getCountDownToEvent(eventData, currentDatetime=None):
     real difference in days and hours without the aforementioned simplifying language.
     """
 
-    # Beans: Reread the above docstring and adjust this conditional
-    if colloquialDaysUntilEvent == 0:
-        return "Happening today"
-    elif colloquialDaysUntilEvent == 1:
-        return "Happening tomorrow"
+    # Beans: Need to work on the plurality of these units of time
+    if callendarDaysUntilEvent == 0:
+        if timeUntilEvent.hours:
+            return f"({timeUntilEvent.hours} hours)"
+        elif timeUntilEvent.minutes:
+            return f"({timeUntilEvent.minutes} minutes)"
+        return "(<1 minute)"
     else:
-        return f"{colloquialDaysUntilEvent} days"
+        if eventStart.time() < currentDatetime.time():
+            if callendarDaysUntilEvent == 1:
+                return "(Tomorrow)"
+            return f"({callendarDaysUntilEvent} days)"
+        return f"({timeUntilEvent.days} days and {timeUntilEvent.hours} hours)"
     

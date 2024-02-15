@@ -240,11 +240,11 @@ def eventDisplay(eventId):
                                 filepaths = filepaths)
     # Event View
     else:
-        # get text representations of dates
+        # get text representations of dates for html
         eventData['timeStart'] = event.timeStart.strftime("%-I:%M %p")
         eventData['timeEnd'] = event.timeEnd.strftime("%-I:%M %p")
         eventData['startDate'] = event.startDate.strftime("%m/%d/%Y")
-        eventCountdown = getCountDownToEvent(eventData)
+        eventCountdown = getCountDownToEvent(event)
 
 
         # Identify the next event in a recurring series
