@@ -55,8 +55,8 @@ def test_getRetentionRate():
         
         testEvent = Event.create(name="Test Event",
                                  term=2,
-                                 program=3)
-        EventParticipant.create(user = 'khatts',
+                                 program=3) #Adopt a grandparent program
+        EventParticipant.create(user = 'khatts', #Adding khatts to Spring term since they have participated in an ebent in the same program in the Fall term
                                 event = testEvent,
                                 hoursEarned = 1)
         assert getRetentionRate("2020-2021") == [('Adopt-a-Grandparent', '100.0%'), ('CELTS-Sponsored Event', '0.0%')]
@@ -67,7 +67,7 @@ def test_repeatVolunteers():
     with mainDB.atomic() as transaction:
 
         assert list(repeatVolunteers().execute()) == [('Sreynit Khatt', 4), ('Zach Neill', 2)]
-        EventParticipant.create(user = 'partont',
+        EventParticipant.create(user = 'partont', #Has participated in an event in the Fall term, so we add them to the spring term
                                 event = 2,
                                 hoursEarned = 1)
         assert list(repeatVolunteers().execute()) == [('Sreynit Khatt', 4), ('Zach Neill', 2), ('Tyler Parton', 2)]
@@ -77,7 +77,7 @@ def test_repeatVolunteers():
 def test_repeatVolunteersPerProgram():
     with mainDB.atomic() as transaction:
         assert list(repeatVolunteersPerProgram().execute()) == [('Zach Neill', 'Hunger Initiatives', 2), ('Sreynit Khatt', 'Adopt-a-Grandparent', 3)]
-        EventParticipant.create(user = 'partont',
+        EventParticipant.create(user = 'partont', #Has participated in an event in the Fall term, so we add them to the spring term to an event in the hunger initiatives program
                                 event = 2,
                                 hoursEarned = 1)
         assert list(repeatVolunteersPerProgram().execute()) == [('Zach Neill', 'Hunger Initiatives', 2), ('Tyler Parton', 'Hunger Initiatives', 2),
@@ -89,6 +89,8 @@ def test_repeatVolunteersPerProgram():
 def test_volunteerMajorAndClass():
     with mainDB.atomic() as transaction:
         assert list(volunteerMajorAndClass(User.major).execute()) == [('Biology', 1), ('Chemistry', 1), ('Computer Science', 2), ('Psychology', 1)]
+        assert list(volunteerMajorAndClass(User.classLevel).execute()) == [('Junior', 1), ('Senior', 3), ('Sophomore', 1)]
+        assert list(volunteerMajorAndClass(User.classLevel, True).execute()) == [('Sophomore', 1), ('Junior', 1), ('Senior', 3)]
         User.create(username = 'solijonovam',
                     bnumber = 'B00769465',
                     email = 'solijonovam@berea.edu',
@@ -120,8 +122,8 @@ def test_volunteerHoursByProgram():
 def test_onlyCompletedAllVolunteer():
     with mainDB.atomic() as transaction:
         assert list(onlyCompletedAllVolunteer("2020-2021").execute()) == []
-        EventParticipant.create(user = 'partont',
-                                event = 14,
+        EventParticipant.create(user = 'partont', #Already participated in an event
+                                event = 14, #Added to all volunteer training event
                                 hoursEarned = 1)
         assert list(onlyCompletedAllVolunteer("2020-2021").execute()) == []
         User.create(username = 'solijonovam',
@@ -133,8 +135,8 @@ def test_onlyCompletedAllVolunteer():
                     isStudent = True,
                     major = 'Agriculture',
                     classLevel = 'Sophomore')
-        EventParticipant.create(user = 'solijonovam',
-                                event = 14,
+        EventParticipant.create(user = 'solijonovam', #Not participated in event
+                                event = 14, #Added to all volunteer training event
                                 hoursEarned = 1)
         assert list(onlyCompletedAllVolunteer("2020-2021").execute()) == [('solijonovam', 'Madinabonu Solijonova')]
         transaction.rollback()
