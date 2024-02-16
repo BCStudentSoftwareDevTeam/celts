@@ -517,7 +517,7 @@ def getCountDownToEvent(event, *, currentDatetime=None):
         return "Happening now"
     
     timeUntilEvent = relativedelta(eventStart, currentDatetime)
-    callendarDaysUntilEvent = relativedelta(eventStart, currentMorning).days
+    calendarDaysUntilEvent = relativedelta(eventStart, currentMorning).days
 
     """
     Beans: The way we talk about dates is interesting... If an event happens tomorrow but less than 24 hours away from us
@@ -531,17 +531,21 @@ def getCountDownToEvent(event, *, currentDatetime=None):
     real difference in days and hours without the aforementioned simplifying language.
     """
 
-    # Beans: Need to work on the plurality of these units of time
-    if callendarDaysUntilEvent == 0:
+    dayString = f"{calendarDaysUntilEvent} day{'s' if calendarDaysUntilEvent > 1 else ''}"
+    hourString = f"{timeUntilEvent.hours} hour{'s' if timeUntilEvent.hours > 1 else ''}"
+    minuteString = f"{timeUntilEvent.minutes} minute{'s' if timeUntilEvent.minutes > 1 else ''}"
+    if calendarDaysUntilEvent == 0:
         if timeUntilEvent.hours:
-            return f"({timeUntilEvent.hours} hours)"
+            return f"({hourString})"
+
         elif timeUntilEvent.minutes:
-            return f"({timeUntilEvent.minutes} minutes)"
+            return f"({minuteString})"
+            
         return "(<1 minute)"
     else:
         if eventStart.time() < currentDatetime.time():
-            if callendarDaysUntilEvent == 1:
+            if calendarDaysUntilEvent == 1:
                 return "(Tomorrow)"
-            return f"({callendarDaysUntilEvent} days)"
-        return f"({timeUntilEvent.days} days and {timeUntilEvent.hours} hours)"
+            return f"({dayString})"
+        return f"({timeUntilEvent.days} day{'s' if timeUntilEvent.days > 1 else ''} and {timeUntilEvent.hours} hour{'s' if timeUntilEvent.hours > 1 else ''})"
     
