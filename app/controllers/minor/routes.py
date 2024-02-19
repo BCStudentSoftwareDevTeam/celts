@@ -18,23 +18,15 @@ def viewCceMinor(username):
     """
     if not (g.current_user.isAdmin):
         return abort(403)
-    summerTerms = getSummerTerms()
+
     sustainedEngagementByTerm = getCommunityEngagementByTerm(username)
-    summerExperience = getSummerExperience(username)
-    user = User.get_by_id(username)
-
-    totalSustainedEngagements = 0
-
-    for key, value in sustainedEngagementByTerm.items():
-        for match in value:
-            totalSustainedEngagements += match['matched']
 
     return render_template("minor/profile.html",
-                            user=user,
+                            user = User.get_by_id(username),
                             sustainedEngagementByTerm = sustainedEngagementByTerm,
-                            summerExperience = summerExperience,
-                            totalSustainedEngagements = totalSustainedEngagements,
-                            summerTerms = summerTerms)
+                            summerExperience = getSummerExperience(username),
+                            totalSustainedEngagements = getEngagementTotal(sustainedEngagementByTerm),
+                            summerTerms = getSummerTerms())
 
 @minor_bp.route('/cceMinor/<username>/getEngagementInformation/<type>/<term>/<id>', methods=['GET'])
 def getEngagementInformation(username, type, id, term):

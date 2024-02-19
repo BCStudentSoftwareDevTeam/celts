@@ -2,6 +2,7 @@ from doctest import debug_script
 from playhouse.shortcuts import model_to_dict
 from peewee import JOIN, fn, Case, DoesNotExist
 from collections import defaultdict
+import functools
 
 from app.models.user import User
 from app.models.term import Term
@@ -15,6 +16,13 @@ from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
 from app.models.certificationRequirement import CertificationRequirement
 from app.models.communityEngagementRequest import CommunityEngagementRequest
+
+def getEngagementTotal(engagementData):
+    """ Count the number of engagements (from all terms) that have matched with a requirement """
+
+    # map the flattened list of engagements to their matched values, and sum them
+    return sum(map(lambda e: e['matched'], sum(engagementData.values(),[])))
+
 
 def getMinorInterest():
     """

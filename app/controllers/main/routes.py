@@ -162,13 +162,7 @@ def viewUsersProfile(username):
 
         managersProgramDict = getManagerProgramDict(g.current_user)
         managersList = [id[1] for id in managersProgramDict.items()]
-        participatedInLabor = getCeltsLaborHistory(volunteer)
-        cceMinorEngagement = getCommunityEngagementByTerm(volunteer)
-        totalSustainedEngagements = 0
-
-        for term, engagements in cceMinorEngagement.items():
-            for engagement in engagements:
-                totalSustainedEngagements += engagement['matched']
+        totalSustainedEngagements = getEngagementTotal(getCommunityEngagementByTerm(volunteer))
 
         return render_template ("/main/userProfile.html",
                                 programs = programs,
@@ -185,7 +179,7 @@ def viewUsersProfile(username):
                                 profileNotes = profileNotes,
                                 bonnerRequirements = bonnerRequirements,
                                 managersList = managersList,
-                                participatedInLabor = participatedInLabor,
+                                participatedInLabor = getCeltsLaborHistory(volunteer),
                                 totalSustainedEngagements = totalSustainedEngagements,
                             )
     abort(403)

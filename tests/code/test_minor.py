@@ -14,7 +14,7 @@ from app.models.eventParticipant import EventParticipant
 from app.models.courseParticipant import CourseParticipant
 from app.models.individualRequirement import IndividualRequirement
 from app.models.communityEngagementRequest import CommunityEngagementRequest
-from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getSummerTerms
+from app.logic.minor import getProgramEngagementHistory, getCourseInformation, toggleMinorInterest, getCommunityEngagementByTerm, getSummerExperience, getSummerTerms, getEngagementTotal
 from app.logic.minor import saveSummerExperience, saveOtherEngagementRequest, getMinorInterest, getMinorProgress, setCommunityEngagementForUser, removeSummerExperience
 
 @pytest.mark.integration
@@ -156,10 +156,19 @@ def test_getCommunityEngagementByTerm():
                 ("Summer 2021", 3):[{"name":course.courseName, "id":course.id, "type":"course", "matched": False, "term":course.term.id}]})
         
         # get the actual result from getCommunityEngagementByTerm
-        actualResult = dict(getCommunityEngagementByTerm("FINN"))
-
+        actualResult = getCommunityEngagementByTerm("FINN")
         assert actualResult == expectedResult
+
         transaction.rollback()
+
+    # check that our total function works
+    assert 0 == getEngagementTotal(actualResult)
+
+    actualResult[("Spring 2021", 2)][0]["matched"] = True
+    assert 1 == getEngagementTotal(actualResult)
+
+    actualResult[("Summer 2021", 3)].append({"matched":True})
+    assert 2 == getEngagementTotal(actualResult)
 
 @pytest.mark.integration
 def test_saveOtherEngagementRequest():
