@@ -60,7 +60,7 @@ $(document).ready(function() {
         $("#addVolunteersButton").html(buttonContent.slice(0, -1))
       }
       // disable the submit button if there are no selectedCheckboxes
-      if (selectedCheckboxes.length < 0) {
+      if (selectedCheckboxes.length <= 0) {
         $("#addVolunteersButton").prop("disabled", true)
       } else {
         $("#addVolunteersButton").prop("disabled", false)
