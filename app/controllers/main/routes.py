@@ -35,7 +35,7 @@ from app.logic.celtsLabor import getCeltsLaborHistory
 from app.logic.createLogs import createRsvpLog, createAdminLog
 from app.logic.certification import getCertRequirementsWithCompletion
 from app.logic.landingPage import getManagerProgramDict, getActiveEventTab
-from app.logic.minor import toggleMinorInterest, getCommunityEngagementByTerm
+from app.logic.minor import toggleMinorInterest, getCommunityEngagementByTerm, getEngagementTotal
 from app.logic.participants import unattendedRequiredEvents, trainedParticipants, getParticipationStatusForTrainings, checkUserRsvp, addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser, unbanUser, isEligibleForProgram, getUserBGCheckHistory, addProfileNote, deleteProfileNote, updateDietInfo
 

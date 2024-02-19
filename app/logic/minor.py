@@ -119,26 +119,29 @@ def getProgramEngagementHistory(program_id, username, term_id):
 
 def setCommunityEngagementForUser(action, engagementData, currentUser):
     """
-    :param action: add & remove. Used to set what action the function is doing
-    :param engagementData: Contains all the community engagement data: 
+    Either add or remove an IndividualRequirement record for a student's Sustained Community Engagement
+
+    :param action: The behavior of the function. Can be 'add' or 'remove'
+    :param engagementData:
         type: program or course
         id: program or course id
         username: the username of the student that is having a community engagement added or removed
         term: The term the engagement is recorded in
-    :param currentuser: The User (Admin or Student Staff) who is doing the add/remove action 
+    :param currentuser: The user who is performing the add/remove action 
 
-    Either add or remove an IndividiualRequirement record for Sustained Community Engagement for a student 
+    :raises DoesNotExist: if there are no available CertificationRequirement slots remaining for the engagement
     """
 
     if engagementData['type'] not in ['program','course']:
         raise Exception("Invalid engagement type!")
 
     requirement = (CertificationRequirement.select()
-                                           .join(IndividualRequirement, JOIN.LEFT_OUTER, on=((IndividualRequirement.requirement == CertificationRequirement.id) & 
-                                                                                             (IndividualRequirement.username == engagementData['username'])))
-                                           .where(IndividualRequirement.username.is_null(True),
-                                                  CertificationRequirement.certification == Certification.CCE, 
-                                                  CertificationRequirement.name.not_in(['Summer Program'])))
+                       .join(IndividualRequirement, JOIN.LEFT_OUTER, on=(
+                              (IndividualRequirement.requirement == CertificationRequirement.id) & 
+                              (IndividualRequirement.username == engagementData['username']))) 
+                       .where(IndividualRequirement.username.is_null(True),
+                              CertificationRequirement.certification == Certification.CCE, 
+                              CertificationRequirement.name.not_in(['Summer Program'])))
     if action == 'add':
         try: 
             IndividualRequirement.create(**{engagementData['type']: engagementData['id'],
@@ -147,7 +150,7 @@ def setCommunityEngagementForUser(action, engagementData, currentUser):
                                            "requirement": requirement.get(),
                                            "addedBy": currentUser,
                                         })
-            
+        # Thrown if there are no available engagement requirements left. Handled elsewhere.
         except DoesNotExist as e:
             raise e 
         
@@ -169,9 +172,10 @@ def getCommunityEngagementByTerm(username):
 
     courses = (Course.select(Course, courseMatchCase.alias("matchedReq"))
                      .join(CourseParticipant, on=(Course.id == CourseParticipant.course))
-                     .join(IndividualRequirement, JOIN.LEFT_OUTER, on=((IndividualRequirement.course == Course.id) & 
-                                                                       (IndividualRequirement.username == CourseParticipant.user) & 
-                                                                       (IndividualRequirement.term == Course.term)))
+                     .join(IndividualRequirement, JOIN.LEFT_OUTER, on=(
+                                (IndividualRequirement.course == Course.id) & 
+                                (IndividualRequirement.username == CourseParticipant.user) & 
+                                (IndividualRequirement.term == Course.term)))
                      .where(CourseParticipant.user == username)
                      .group_by(Course.courseName, Course.term))
     
@@ -179,11 +183,12 @@ def getCommunityEngagementByTerm(username):
     # engagement's respective type, name, id, and term.
     communityEngagementByTermDict = defaultdict(list)
     for course in courses:
-        communityEngagementByTermDict[(course.term.description, course.term.id)].append({"name":course.courseName,
-                                                                 "id":course.id,
-                                                                 "type":"course",
-                                                                 "matched": course.matchedReq,
-                                                                 "term":course.term.id})
+        communityEngagementByTermDict[(course.term.description, course.term.id)].append(
+                {"name":course.courseName,
+                 "id":course.id,
+                 "type":"course",
+                 "matched": course.matchedReq,
+                 "term":course.term.id})
 
     programMatchCase = Case(None, [(IndividualRequirement.program.is_null(True) , 0)], 1)
 
