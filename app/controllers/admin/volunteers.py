@@ -1,4 +1,4 @@
-from flask import request, render_template, redirect, url_for, request, flash, abort, g, json, jsonify
+from flask import request, render_template, redirect, url_for, flash, abort, g, json, jsonify
 from peewee import DoesNotExist, JOIN
 from playhouse.shortcuts import model_to_dict
 from app.controllers.admin import admin_bp
