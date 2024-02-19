@@ -8,11 +8,12 @@ from app.models.user import User
 from app.models.term import Term
 from app.models.eventParticipant import EventParticipant
 from app.models.event import Event
+from app.models.programBan import ProgramBan
 
 def getProgramTranscript(username):
     """
     Returns a Program query object containing all the programs for
-    current user.
+    the current user.
     """
     # Add up hours earned in a term for each program they've participated in
     
@@ -22,13 +23,53 @@ def getProgramTranscript(username):
                       .group_by(Event.program, Event.term)
                       .order_by(Event.term)
                       .having(fn.SUM(EventParticipant.hoursEarned > 0)))
+
+    # Fetch all ProgramBan objects for the user
+    program_bans = ProgramBan.select().where(ProgramBan.user == username)
+
+    # Create a set of program IDs to remove from transcript
+    programs_to_remove = {program_ban.program_id for program_ban in program_bans if program_ban.removeFromTranscript}
+
+    # Initialize transcriptData dictionary
     transcriptData = {}
+
+    # Iterate through EventData and populate transcriptData
     for event in EventData:
-        if event.program in transcriptData:
-            transcriptData[event.program].append([event.term.description, event.hoursEarned])
-        else:
-            transcriptData[event.program] = [[event.term.description, event.hoursEarned]]
+        if event.program not in programs_to_remove:  # Check if program should be included
+            if event.program in transcriptData:
+                transcriptData[event.program].append([event.term.description, event.hoursEarned])
+            else:
+                transcriptData[event.program] = [[event.term.description, event.hoursEarned]]
+
     return transcriptData
+
+
+# def getProgramTranscript(username):
+#     """
+#     Returns a Program query object containing all the programs for
+#     current user. If removeFromTranscript is True, remove the corresponding program.
+#     """
+#     # Retrieve transcript data as before
+#     EventData = (Event.select(Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
+#                       .join(EventParticipant)
+#                       .where(EventParticipant.user == username)
+#                       .group_by(Event.program, Event.term)
+#                       .order_by(Event.term)
+#                       .having(fn.SUM(EventParticipant.hoursEarned > 0)))
+
+#     transcriptData = {}
+#     for event in EventData:
+#         # Check if removeFromTranscript is True and if the programID matches the current event's program ID
+#         if removeFromTranscript and programID and event.program.id == programID:
+#             continue  # Skip this event if it matches the conditions
+#         # Only include the program if removeFromTranscript is False or if it's eligible
+#         if not removeFromTranscript:
+#             if event.program in transcriptData:
+#                 transcriptData[event.program].append([event.term.description, event.hoursEarned])
+#             else:
+#                 transcriptData[event.program] = [[event.term.description, event.hoursEarned]]
+#     return transcriptData
+
 
 def getSlCourseTranscript(username):
     """

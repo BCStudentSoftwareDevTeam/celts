@@ -447,6 +447,81 @@ def serviceTranscript(username):
                             startDate = startDate,
                             userData = user)
 
+@main_bp.route('/profile/<username>/updateTranscript/<int:program_id>', methods=['POST'])
+def update_transcript(username, program_id):
+    # Check user permissions
+    user = User.get_or_none(User.username == username)
+    if user is None:
+        abort(404)
+    if user != g.current_user and not g.current_user.isAdmin:
+        abort(403)
+
+    # Get the data sent from the client-side JavaScript
+    data = request.json
+
+    # Retrieve removeFromTranscript value from the request data
+    removeFromTranscript = data.get('removeFromTranscript')
+
+    # Update the ProgramBan object matching the program_id and username
+    try:
+        program_ban = ProgramBan.get((ProgramBan.program == program_id) & (ProgramBan.user == user))
+        program_ban.removeFromTranscript = removeFromTranscript
+        program_ban.save()
+        return jsonify({'status': 'success'})
+    except ProgramBan.DoesNotExist:
+        return jsonify({'status': 'error', 'message': 'ProgramBan not found'})
+
+
+
+# @main_bp.route('/profile/<username>/serviceTranscript', methods=['GET', 'POST'])
+# def service_transcript(username):
+#     if request.method == 'GET':
+#         user = User.get_or_none(User.username == username)
+#         if user is None:
+#             abort(404)
+#         if user != g.current_user and not g.current_user.isAdmin:
+#             abort(403)
+
+#         # Retrieve stored values from session
+#         removeFromTranscript = session.get('removeFromTranscript', False)
+#         programID = session.get('programID', None)
+
+#         slCourses = getSlCourseTranscript(username)
+#         totalHours = getTotalHours(username)
+#         startDate = getStartYear(username)
+#         allEventTranscript = getProgramTranscript(username, removeFromTranscript, programID)
+#         return render_template('main/serviceTranscript.html',
+#                                allEventTranscript=allEventTranscript,
+#                                slCourses=slCourses.objects(),
+#                                totalHours=totalHours,
+#                                startDate=startDate,
+#                                userData=user)
+
+#     elif request.method == 'POST':
+#         # Get the data sent from the client-side JavaScript
+#         data = request.json
+
+#         # Set default value for removeFromTranscript
+#         removeFromTranscript = False
+
+#         # Get the removeFromTranscript value from the request data
+#         if data:
+#             removeFromTranscript = data.get('removeFromTranscript')
+#             programID = data.get('programID')  # Retrieve programID from the POST request
+
+#             # Store values in session
+#             session['removeFromTranscript'] = removeFromTranscript
+#             session['programID'] = programID
+
+#         # Call getProgramTranscript with the received data
+#         allEventTranscript = getProgramTranscript(username, removeFromTranscript, programID)
+
+#         # Return any response data if necessary
+#         response_data = {'status': 'success'}
+#         return jsonify(response_data)
+
+
+
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
 def searchUser(query):
 
