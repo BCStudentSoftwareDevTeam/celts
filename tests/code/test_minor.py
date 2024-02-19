@@ -174,28 +174,27 @@ def test_getCommunityEngagementByTerm():
 def test_saveOtherEngagementRequest():
     with mainDB.atomic() as transaction:
         testInfo = {'user': 'ramsayb2',
-                    'experience': 'Test Experience',
+                    'experienceName': 'Test Experience',
                     'term': 3,
                     'description': 'Test Description',
                     'company': 'Test Company',
-                    'hours': 5,
+                    'weeklyHours': 5,
                     'weeks': 10,
-                    'attachment': 'test_file.txt',
-                    'status': 'Pending'
+                    'filename': 'test_file.txt',
                    }
 
         # Save the requested event to the database
         saveOtherEngagementRequest(testInfo)
 
         expectedValues = {'user': testInfo['user'],
-                           'experienceName': testInfo['experience'],
+                           'experienceName': testInfo['experienceName'],
                            'term': testInfo['term'],
                            'description': testInfo['description'],
                            'company': testInfo['company'],
-                           'weeklyHours': testInfo['hours'],
+                           'weeklyHours': testInfo['weeklyHours'],
                            'weeks': testInfo['weeks'],
-                           'filename': testInfo['attachment'],
-                           'status': testInfo['status']
+                           'filename': testInfo['filename'],
+                           'status': "Pending"
                           }
 
         # Get the actual saved request from the database (the most recent one)

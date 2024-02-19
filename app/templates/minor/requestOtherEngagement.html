@@ -31,7 +31,7 @@
 
       <div class="from-group">
         <label class="form-label" for="otherExperience">Other Experience</label>
-        <input class="form-control" id="otherExperience" placeholder="Enter other experience" name="experience" required/>
+        <input class="form-control" id="otherExperience" placeholder="Enter other experience" name="experienceName" required/>
       </div>
 
       <div class="form-group">
@@ -47,7 +47,7 @@
 
       <div class="form-group">
         <label class="form-label" for="weeklyHours">Hours a week</label>
-        <input class="form-control" id="weeklyHours" placeholder="Enter hours worked a week" type="number" name="hours"/>
+        <input class="form-control" id="weeklyHours" placeholder="Enter hours worked a week" type="number" name="weeklyHours"/>
       </div>
 
       <div class="form-group">
@@ -64,6 +64,7 @@
       {% if filepaths %}
         <div class="form-group col-md-4 mb-4">
           {% from 'displayFilesMacro.html' import displayFiles %}
+          {# this call to deleteRequestFiles won't work. Fix when this becomes relevant #}
           {{ displayFiles(filepaths,'RequestOtherEngagement', '/deleteRequestFile', term.id) }}
         </div>
       {% endif %}

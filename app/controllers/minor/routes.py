@@ -9,7 +9,7 @@ from app.models.attachmentUpload import AttachmentUpload
 from app.logic.fileHandler import FileHandler
 from app.logic.utils import selectSurroundingTerms, getFilesFromRequest
 from app.logic.minor import getProgramEngagementHistory, getCourseInformation, getCommunityEngagementByTerm, removeSummerExperience
-from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, saveSummerExperience, getSummerTerms, getSummerExperience
+from app.logic.minor import saveOtherEngagementRequest, setCommunityEngagementForUser, saveSummerExperience, getSummerTerms, getSummerExperience, getEngagementTotal
 
 @minor_bp.route('/profile/<username>/cceMinor', methods=['GET'])
 def viewCceMinor(username):
@@ -66,14 +66,14 @@ def requestOtherEngagement(username):
     
 
     if request.method == 'POST':
-        attachmentName = None
+        filename = None
         attachment = request.files.get("attachmentObject")
         if attachment:
                 addFile= FileHandler(getFilesFromRequest(request))
                 addFile.saveFiles()
-                attachmentName = attachment.filename
+                filename = attachment.filename
         formData = request.form.copy()
-        formData["attachment"] = attachmentName
+        formData["filename"] = filename
         saveOtherEngagementRequest(formData)
         flash("Other community engagement request submitted.", "success")
         return redirect(url_for("minor.viewCceMinor", username=user))
@@ -82,16 +82,6 @@ def requestOtherEngagement(username):
     return render_template("/minor/requestOtherEngagement.html",
                             user=user,
                             terms=terms)
-
-
-@minor_bp.route("/deleteRequestFile", methods=["POST"])
-def deleteRequestFile():
-
-    fileData= request.form
-    termFile=FileHandler(termId=fileData["databaseId"])
-    termFile.deleteFile(fileData["fileId"])
-
-    return ""
 
 @minor_bp.route('/cceMinor/<username>/addSummerExperience', methods=['POST'])
 def addSummerExperience(username):

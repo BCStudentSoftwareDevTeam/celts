@@ -209,19 +209,11 @@ def getCommunityEngagementByTerm(username):
 
 def saveOtherEngagementRequest(engagementRequest):
     """
-    Create a CommunityEngagementRequest entry based off of the data a user entered for an "Other Engagement Request"
+    Create a CommunityEngagementRequest entry based off of the form data
     """
-    otherEngagementRequest = {"user": engagementRequest['user'],
-                              "experienceName": engagementRequest['experience'],
-                              "term": engagementRequest['term'],
-                              "description": engagementRequest['description'],
-                              "company": engagementRequest['company'],
-                              "weeklyHours": engagementRequest['hours'],
-                              "weeks": engagementRequest['weeks'],
-                              "filename": engagementRequest['attachment'],
-                              "status": "Pending"}
     
-    CommunityEngagementRequest.create(**otherEngagementRequest)
+    engagementRequest['status'] = "Pending"
+    CommunityEngagementRequest.create(**engagementRequest)
 
 def saveSummerExperience(username, summerExperience, currentUser):
     """
