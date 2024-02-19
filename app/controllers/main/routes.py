@@ -166,9 +166,9 @@ def viewUsersProfile(username):
         cceMinorEngagement = getCommunityEngagementByTerm(volunteer)
         totalSustainedEngagements = 0
 
-        for key, value in cceMinorEngagement.items():
-            for match in value:
-                totalSustainedEngagements += match['matched']
+        for term, engagements in cceMinorEngagement.items():
+            for engagement in engagements:
+                totalSustainedEngagements += engagement['matched']
 
         return render_template ("/main/userProfile.html",
                                 programs = programs,
