@@ -87,9 +87,10 @@ def editImportedCourses(courseData):
                 instructorList = courseData.getlist('instructor[]') # Fetch the list of course instructors from CourseData
                 CourseInstructor.delete().where(CourseInstructor.course == course).execute() # Delete existing course instructors before rolling up updates 
                 
-                for instructor in instructorList:
-                    if instructor != "": # Checks that empty string is not added as a course instructor because some keys in the dictionary are empty string.
-                        CourseInstructor.create(course=course, user=instructor)
+                for instructor in instructorList: 
+                    # Checks that empty string is not added as a course instructor because some keys in the dictionary are empty string.
+                    if instructor: CourseInstructor.create(course=course, user=instructor)
+                        
 
             return Course.get_by_id(course.id)
 
