@@ -60,10 +60,10 @@ $(document).ready(function() {
         $("#addVolunteersButton").html(buttonContent.slice(0, -1))
       }
       // disable the submit button if there are no selectedCheckboxes
-      if (selectedCheckboxes.length > 0) {
-        $("#addVolunteersButton").prop("disabled", false)
-      } else {
+      if (selectedCheckboxes.length < 0) {
         $("#addVolunteersButton").prop("disabled", true)
+      } else {
+        $("#addVolunteersButton").prop("disabled", false)
       }
 
     }
@@ -74,7 +74,7 @@ $(document).ready(function() {
       let checkboxesDisplayedInModal = $("#addVolunteerModal input[type=checkbox]")
       let selectedCheckboxes = []
       $.each(checkboxesDisplayedInModal, function(index, checkbox){
-        if(checkbox["checked"] == true){
+        if(checkbox["checked"]){
           selectedCheckboxes.push(checkbox["value"])
         }
       })
