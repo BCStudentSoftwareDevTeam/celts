@@ -90,7 +90,7 @@ def addSummerExperience(username):
     return ""
 
 @minor_bp.route('/cceMinor/<username>/deleteSummerExperience', methods=['POST'])
-def deleteSummerExperience(username):
+def deleteSummerExperience(username):        
     removeSummerExperience(username)
 
     return ""

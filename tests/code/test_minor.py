@@ -199,16 +199,14 @@ def test_saveOtherEngagementRequest():
 
         # Get the actual saved request from the database (the most recent one)
         savedRequest = CommunityEngagementRequest.select().order_by(CommunityEngagementRequest.id.desc()).first()
-
         # Check that the saved request matches the expected values
         for key, expectedValue in expectedValues.items():
             if key == "user":
-                actualValue = 'ramsayb2'
+                assert savedRequest.user.username == 'ramsayb2'
             elif key == "term":
-                actualValue = 3
-            else:
-                actualValue = getattr(savedRequest, key)
-            assert actualValue == expectedValue
+                assert savedRequest.term.id == 3
+            else:             
+                assert getattr(savedRequest, key) == expectedValue
 
         transaction.rollback()
 
@@ -218,9 +216,6 @@ def test_setCommunityEngagementForUser():
         IndividualRequirement.delete().execute()
 
         # Adding requirement
-        # TODO add existing
-        # TODO add nonexisting
-        #setCommunityEngagementForUser('add', engagementData, 'ramsayb2')
         khattsEngagementData1 = {"id": 2,
                                 "matched": False, 
                                 "name": 'Spanish Help',
@@ -272,11 +267,11 @@ def test_setCommunityEngagementForUser():
         
         setCommunityEngagementForUser('add', khattsEngagementData1, 'ramsayb2')
         
-        khattsEngagements = IndividualRequirement.select()
+        allStudentReq = IndividualRequirement.select()
         # get count 
-        khattsEngagements.count() == 1
-        assert khattsEngagements[0].course == Course.get_by_id(2)
-        assert khattsEngagements[0].program == None
+        allStudentReq.count() == 1
+        assert allStudentReq[0].course == Course.get_by_id(2)
+        assert allStudentReq[0].program == None
 
         # add 4 more engagements and make sure the 5th raises the expected exception 
         setCommunityEngagementForUser('add', khattsEngagementData2, 'ramsayb2')
@@ -289,26 +284,26 @@ def test_setCommunityEngagementForUser():
 
         # add records for another student and make sure it is added correctly. 
         setCommunityEngagementForUser('add', neillzEngagementData1, 'ramsayb2')
-        neillzEngagements = IndividualRequirement.select()
-        assert neillzEngagements.count() == 5
-        assert neillzEngagements[4].username_id == 'neillz'
+        allStudentReq = IndividualRequirement.select()
+        assert allStudentReq.count() == 5
+        assert allStudentReq[4].username_id == 'neillz'
 
         # add a second record for that other student.
         setCommunityEngagementForUser('add', neillzEngagementData2, 'ramsayb2')
-        neillz2Engagements = IndividualRequirement.select()
-        assert neillz2Engagements.count() == 6
-        assert neillz2Engagements[3].username_id == 'khatts'
-        assert neillz2Engagements[4].username_id == 'neillz'
-        assert neillz2Engagements[4].course == None
-        assert neillz2Engagements[5].username_id == 'neillz'
-        assert neillz2Engagements[5].course == Course.get_by_id(1)
+        allStudentReq = IndividualRequirement.select()
+        assert allStudentReq.count() == 6
+        assert allStudentReq[3].username_id == 'khatts'
+        assert allStudentReq[4].username_id == 'neillz'
+        assert allStudentReq[4].course == None
+        assert allStudentReq[5].username_id == 'neillz'
+        assert allStudentReq[5].course == Course.get_by_id(1)
 
         # Removing requirement
         # TODO remove nonexisting
         setCommunityEngagementForUser('remove', khattsEngagementData1, 'ramsayb2')
-        khattsUpdatedEngagements = list(IndividualRequirement.select())
-        assert khattsUpdatedEngagements[0].course == None
-        assert khattsUpdatedEngagements[0].program == Program.get_by_id(9)
+        allStudentReq = list(IndividualRequirement.select())
+        assert allStudentReq[0].course == None
+        assert allStudentReq[0].program == Program.get_by_id(9)
         
         transaction.rollback()
 
@@ -324,8 +319,8 @@ def test_getMinorInterest():
 
         # Add a student who has progress towards the minor. They should not be in returned list
         User.update(minorInterest = 1).where(User.username == 'khatts').execute()
-        minorProgress = getMinorInterest()
-        assert minorProgress == []
+        minorInterest = getMinorInterest()
+        assert minorInterest == []
        
        # Add a student will be returned in the list
         User.update(minorInterest = 1).where(User.username == 'partont').execute()
@@ -355,10 +350,10 @@ def test_getMinorProgress():
                                      }
 
         IndividualRequirement.create(**khattsSustainedEngagement)
-        khattsProgress = getMinorProgress()
+        minorProgress = getMinorProgress()
         
-        assert khattsProgress[0]['engagementCount'] == 1
-        assert khattsProgress[0]['hasSummer'] == "Incomplete"
+        assert minorProgress[0]['engagementCount'] == 1
+        assert minorProgress[0]['hasSummer'] == "Incomplete"
 
         khattsSummerEngagement = {"username": "khatts",
                                   "program": None,
@@ -371,10 +366,10 @@ def test_getMinorProgress():
                                  }
         
         IndividualRequirement.create(**khattsSummerEngagement)
-        khattsProgressWithSummer = getMinorProgress()
+        minorProgressWithSummer = getMinorProgress()
 
-        assert khattsProgressWithSummer[0]['engagementCount']== 1
-        assert khattsProgressWithSummer[0]['hasSummer'] == "Completed"
+        assert minorProgressWithSummer[0]['engagementCount']== 1
+        assert minorProgressWithSummer[0]['hasSummer'] == "Completed"
         
 
         transaction.rollback()
@@ -385,42 +380,36 @@ def test_saveSummerExperience():
         IndividualRequirement.delete().execute()
 
         # Add summer Experience for a user 
-        partontSummerExperience = {"summerExperience": "Test Summer Experience for Tyler",
-                                   "selectedSummerTerm": "Summer 2021",
-                                   }
+        partontSummerExperience = {"summerExperience": "Test Summer Experience for Tyler", "selectedSummerTerm": "Summer 2021"}
         
         saveSummerExperience('partont', partontSummerExperience, 'ramsayb2')
 
-        getPartontSummerExperience = IndividualRequirement.select()
-        assert getPartontSummerExperience.count() == 1
-        assert getPartontSummerExperience[0].username_id == 'partont'
-        assert getPartontSummerExperience[0].description == 'Test Summer Experience for Tyler'
+        allStudentReq = IndividualRequirement.select()
+        assert allStudentReq.count() == 1
+        assert allStudentReq[0].username_id == 'partont'
+        assert allStudentReq[0].description == 'Test Summer Experience for Tyler'
 
         # Add a second summer engagement for the same user. The expected behavior is the engagement that was put in first 
         # should be deleted and the only entry is new one
 
-        newPartontSummerExperience = {"summerExperience": "Second Summer Experience for Tyler",
-                                      "selectedSummerTerm": "Summer 2021",
-                                     }
+        newPartontSummerExperience = {"summerExperience": "Second Summer Experience for Tyler", "selectedSummerTerm": "Summer 2021"}
         
         saveSummerExperience('partont', newPartontSummerExperience, 'ramsayb2')
 
-        getNewPartontSummerExperience = IndividualRequirement.select()
-        assert getNewPartontSummerExperience.count() == 1
-        assert getNewPartontSummerExperience[0].username_id == 'partont'
-        assert getNewPartontSummerExperience[0].description == 'Second Summer Experience for Tyler'
+        allStudentReq = IndividualRequirement.select()
+        assert allStudentReq.count() == 1
+        assert allStudentReq[0].username_id == 'partont'
+        assert allStudentReq[0].description == 'Second Summer Experience for Tyler'
 
         # Add a summer experience for another studnet and verify both students have summer experience records
         
-        neillzSummerExperience = {"summerExperience": "Summer Experience for Zach",
-                                  "selectedSummerTerm": "Summer 2021"
-                                  }
+        neillzSummerExperience = {"summerExperience": "Summer Experience for Zach", "selectedSummerTerm": "Summer 2021"}
         saveSummerExperience('neillz', neillzSummerExperience, 'ramsayb2')
-        getNeillzSummerExperience = IndividualRequirement.select()
-        assert getNeillzSummerExperience.count() == 2
-        assert getNeillzSummerExperience[0].username_id == 'partont'
-        assert getNeillzSummerExperience[1].username_id == 'neillz'
-        assert getNeillzSummerExperience[1].description == "Summer Experience for Zach"
+        allStudentReq = IndividualRequirement.select()
+        assert allStudentReq.count() == 2
+        assert allStudentReq[0].username_id == 'partont'
+        assert allStudentReq[1].username_id == 'neillz'
+        assert allStudentReq[1].description == "Summer Experience for Zach"
 
         transaction.rollback()
 

@@ -262,21 +262,22 @@ def getSummerExperience(username):
                                                     CertificationRequirement.certification == Certification.CCE,
                                                     CertificationRequirement.name << ['Summer Program']))
     if len(list(summerExperience)) == 1:
-        return [summerExperience.get().term.description, summerExperience.get().description]
+        return (summerExperience.get().term.description, summerExperience.get().description)
 
-    return "" 
+    return (None, None) 
 
 def removeSummerExperience(username): 
     """
     Delete IndividualRequirement table entry for 'username'
     """
-    summerExperienceToDelete = getSummerExperience(username)
-    IndividualRequirement.delete().where(IndividualRequirement.username == username, IndividualRequirement.description == summerExperienceToDelete[1]).execute()
+    term, summerExperienceToDelete = getSummerExperience(username)
+    IndividualRequirement.delete().where(IndividualRequirement.username == username, IndividualRequirement.description == summerExperienceToDelete).execute()
+
 
 def getSummerTerms():
     """
     Return a list of all terms with the isSummer flag that is marked True. Used to populate term dropdown for summer experience
     """
-    summerTerms = list(Term.select().where(Term.isSummer))
+    summerTerms = list(Term.select().where(Term.isSummer).order_by(Term.termOrder))
 
     return summerTerms
