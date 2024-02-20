@@ -457,9 +457,9 @@ def alterImportedCourse(courseID):
 
             return jsonify(courseData)
         
-        except Exception as e:
-            flash("Course not found or something else went wrong")
-            return None
+        except DoesNotExist:
+            flash("Course not found")
+            return jsonify({"error": "Course not found"}), 404
         
     if request.method == 'POST':
         # Update course information in the database
