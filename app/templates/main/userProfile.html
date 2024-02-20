@@ -433,7 +433,7 @@
                   <ul class='ps-1'>
                   {% for event in bonnerEvents %}
                       <li class="d-flex flex-row justify-content-start">
-                        <div class="me-2">{{event.startDate.strftime('%B %-m')}} at {{event.timeStart.strftime('%-I:%M%p')|lower}}:</div>
+                        <div class="me-2">{{event.startDate.strftime('%B %d')}} at {{event.timeStart.strftime('%-I:%M%p')|lower}}:</div>
                         <div><a href= '/event/{{event.id}}/view' class="link-primary">{{event.name}}</a></div>
                       </li>
                   {% endfor %}
