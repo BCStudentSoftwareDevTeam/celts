@@ -23,7 +23,7 @@ from app.models.note import Note
 from app.logic.events import preprocessEventData, validateNewEventData, calculateRecurringEventFrequency
 from app.logic.events import attemptSaveEvent, saveEventToDb, cancelEvent, deleteEvent, getParticipatedEventsForUser
 from app.logic.events import calculateNewrecurringId, getPreviousRecurringEventData, getUpcomingEventsForUser
-from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount, getCountDownToEvent
+from app.logic.events import deleteEventAndAllFollowing, deleteAllRecurringEvents, getEventRsvpCountsForTerm, getEventRsvpCount, getCountdownToEvent
 from app.logic.volunteers import addVolunteerToEventRsvp, updateEventParticipants
 from app.logic.participants import addPersonToEvent
 from app.logic.users import addUserInterest, removeUserInterest, banUser
@@ -898,43 +898,35 @@ def test_getEventRsvpCount():
         transaction.rollback()
 
 @pytest.mark.integration
-def test_getCountDownToEventFutureEvent():
+def test_getCountdownToEvent():
+    """
+    This functions creates events that are different times away from the current time and tests
+    the output of the getCountdown
+    """
     # Define a custom datetime representing the current time
-    customDatetime = datetime(2023, 10, 25, 8, 0, 0)
+    currentTime = datetime.strptime('1/1/2024 12:00 PM', '%m/%d/%Y %I:%M %p')
+    def makeEventIn(timeDifference=None, **kwargs):
+        """
+        Takes in a datetime.relativedelta object or keyword argumentsand creates a 1 hour long event that starts
+        at currentTime + deltatime
+        """
+        if kwargs:
+            timeDifference = timedelta(**kwargs)
+        eventStart = currentTime + timeDifference
+        eventEnd = eventStart + timedelta(hours=1)
+        irrelevantEventData = {'name': 'testing', 'term': 1, 'description': '', 'location': '', 'program': 1}
+        return Event.create(timeStart=eventStart.time(), startDate=eventStart.date(), timeEnd=eventEnd.time(), endDate=eventEnd.date(), **irrelevantEventData)
     
-    # Define event data for a future event
-    event_data = {
-        'startDate': '10/26/2023',
-        'timeStart': '10:30 AM'
-    }
     
-    countdown = getCountDownToEvent(event_data, currentDatetime=customDatetime)
     
-    assert countdown == "Happening Tomorrow"
+    with mainDB.atomic() as transaction:
 
-@pytest.mark.integration
-def test_getCountDownToEventFutureEvent():
-    customDatetime = datetime(2023, 10, 20, 18, 25, 0)
-    
-    eventData = {
-        'startDate': '11/21/2023',
-        'timeStart': '5:00 PM'
-    }
-    
-    countdown = getCountDownToEvent(eventData, currentDatetime=customDatetime)
-    
-    assert countdown == "31 days"
+        pastEvent = makeEventIn(days=-1)
+        countdown = getCountdownToEvent(pastEvent, currentDatetime=currentTime)
+        assert countdown == "Already passed"
+        transaction.rollback()
 
-@pytest.mark.integration
-def test_getCountDownToEventPastEvent():
-    customDatetime = datetime(2023, 10, 27, 8, 0, 0)
-    
-    eventData = {
-        'startDate': '10/25/2023',
-        'timeStart': '3:00 PM'
-    }
-    
-    countdown = getCountDownToEvent(eventData, currentDatetime=customDatetime)
-    
-    assert countdown == "Already passed"
+
+
+        transaction.rollback()
 
