@@ -10,7 +10,7 @@ click==8.0.1
 colorama==0.4.4
 coloredlogs==15.0
 configparser==5.0.2
-coverage==7.2.5
+coverage==7.2.7
 crayons==0.4.0
 cryptography==3.4.7
 deepdiff==5.5.0

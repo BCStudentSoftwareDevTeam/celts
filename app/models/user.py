@@ -1,6 +1,7 @@
 from app.models import *
 
 
+
 class User(baseModel):
     username = CharField(primary_key = True)
     bnumber = CharField(unique = True)
@@ -16,6 +17,8 @@ class User(baseModel):
     isCeltsAdmin = BooleanField(default  =False)
     isCeltsStudentStaff = BooleanField(default = False)
     dietRestriction = TextField(null=True)
+    minorInterest = BooleanField(default=False)
+    minorStatus = CharField(default="No interest")
 
     # override BaseModel's __init__ so that we can set up an instance attribute for cache
     def __init__(self,*args, **kwargs):
@@ -69,3 +72,5 @@ class User(baseModel):
     def isProgramManagerForEvent(self, event):
         # Looks to see who the Program Manager for a specific event is
         return self.isProgramManagerFor(event.program)
+
+    

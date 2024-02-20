@@ -3,55 +3,63 @@
 
 {% block app_content %}
 <div class="w-100 d-print-inline-block">
-<h1 class="text-center mb-3">{{userData.firstName}} {{userData.lastName}}</h1>
-{% if allEventTranscript %}
+  <h1 class="text-center mb-3">{{userData.firstName}} {{userData.lastName}}</h1>
+  {% if studentLabor %}
+    <div class="card-body">
+      <h5 class="card-title">CELTS Labor History:</h5>
+      {% for position, term in studentLabor.items() %}
+        <p class="card-text">{{position}}: {{term|join(", ")}}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+  {% if allEventTranscript %}
     {% for program in allEventTranscript %}
-        {% set programTitle = program.programName %}
-        {% if not programTitle %}
-            {% set programTitle = program %}
-        {% endif %}
-      <div class="card-body">
-            <h5 class="card-title">{{programTitle}}</h5>
-        {% for item in allEventTranscript[program] %}
+      {% set programTitle = program.programName %}
+      {% if not programTitle %}
+        {% set programTitle = program %}
+      {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{programTitle}}</h5>
+          {% for item in allEventTranscript[program] %}
             {% if item[1] != None %}
-                <h6 class="card-subtitle mb-2 text-muted"> {{item[0]}} - {{item[1]|round(2)}} hour(s)</h6>
+              <h6 class="card-subtitle mb-2 text-muted"> {{item[0]}} - {{item[1]|round(2)}} hour(s)</h6>
             {% endif %}
-        {% endfor %}
-        {% if programTitle != "CELTS Sponsored Events" %}
+          {% endfor %}
+          {% if programTitle != "CELTS Sponsored Events" %}
             <p class="card-text">{{program.description}}</p>
-            <a class="d-print-none" href="{{program.url}}" class="card-link">More Information</a>
-        {% endif %}
-      </div>
+            <a class="d-print-none" href="{{program.url}}" target="_blank" class="card-link">More Information</a>
+          {% endif %}
+        </div>
     {% endfor %}
-{% endif %}
+  {% endif %}
 
-{% if totalHours["totalHours"] > 0%}
+  {% if totalHours["totalHours"] > 0%}
     <div class="float-end">
-        <p class="fw-bold pb-3 d-inline">Total Event Hours:</p>
-        <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours["totalEventHours"]|round(2) }}</p>
+      <p class="fw-bold pb-3 d-inline">Total Event Hours:</p>
+      <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours["totalEventHours"]|round(2) }}</p>
     </div>
     {% if slCourses.exists() %}
       <br><h2 class="m-1">Service-Learning Courses</h2>
       <table class="table table-bordered table-striped">
+      <tr>
+      <th>Course Name</th>
+      <th>Term</th>
+      <th class="w-25">Accrued Service Hours</th>
+      </tr>
+      {% for slcourse in slCourses %}
         <tr>
-          <th>Course Name</th>
-          <th>Term</th>
-          <th class="w-25">Accrued Service Hours</th>
+        <td> {{ slcourse.courseName }}</td>
+        <td> {{ slcourse.term.description }}</td>
+        <td class="w-25">{{ slcourse.hoursEarned }}</td>
         </tr>
-        {% for slcourse in slCourses %}
-        <tr>
-          <td> {{ slcourse.courseName }}</td>
-          <td> {{ slcourse.term.description }}</td>
-          <td class="w-25">{{ slcourse.hoursEarned }}</td>
-        </tr>
-        {% endfor %}
+      {% endfor %}
       </table>
     {% endif %}
     <div class="pt-4">
-        <div class="float-end">
-            <p class="fw-bold pb-3 d-inline">Total Service Hours:</p>
-            <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours["totalCourseHours"]|round(2) }}</p>
-        </div>
+      <div class="float-end">
+      <p class="fw-bold pb-3 d-inline">Total Service Hours:</p>
+      <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours["totalCourseHours"]|round(2) }}</p>
+      </div>
     </div>
     <p>*Volunteering since {{ startDate }}</p>
     <div class="float-end">
@@ -59,11 +67,11 @@
       <p class="fw-bold pb-3 d-inline">Total Hours:</p>
       <p class="d-inline bg-light ps-2 pe-5 border-bottom" id="hourTotal">{{ totalHours["totalHours"]|round(2) }}</p>
     </div>
-{% else %}
-    <h5>No Volunteer Record</h5>
-{% endif %}
-<div class="d-print-none pt-5">
-  <br><p>If there are any corrections that need to be made, contact <a href="mailto:cochranea@berea.edu">Ashley Cochrane</a></p>
-</div>
+    {% else %}
+      <h5>No Volunteer Record</h5>
+    {% endif %}
+  <div class="d-print-none pt-5">
+    <br><p>If there are any corrections that need to be made, contact <a href="mailto:cochranea@berea.edu">Ashley Cochrane</a></p>
+  </div>
 </div>
 {% endblock %}

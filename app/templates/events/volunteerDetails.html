@@ -19,23 +19,31 @@
 
 {########################### Display macros ###########################}
 {% macro createCard(participant, volunteerType) %}
-    <div class="{{volunteerType}}Select col-12 col-md-6 volunteerInfoEntries print-column" data-user="{{participant.username}}" nowrap>
-      <h4 class="nameSelect" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></h4>
+  
+    <div class="{{volunteerType}}Select col-12 col-md-6 volunteerInfoEntries print-column" data-user="{{participant.user.username}}" nowrap>
+      <h4 class="nameSelect" nowrap><b>{{ participant.user.firstName }} {{ participant.user.lastName }}</b></h4>
       <ul>
-        <div class="barcodeSelect bnumber-barcode" nowrap>{{participant.bnumber[1:]}}</div>
-        <div class="phoneSelect" nowrap>{{ participant.phoneNumber if participant.phoneNumber else "No phone number"}}</div>
-        <div class="emailSelect" nowrap>{{ participant.email }}</div>
-        <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.dietRestriction if participant.dietRestriction else "None Specified" }}</div>
+        <div class="barcodeSelect bnumber-barcode" nowrap>{{participant.user.bnumber[1:]}}</div>
+        <div class="phoneSelect" nowrap>{{ participant.user.phoneNumber if participant.user.phoneNumber else "No phone number"}}</div>
+        <div class="emailSelect" nowrap>{{ participant.user.email }}</div>
+        <div class="statusSelect" nowrap>Volunteer Status: {{ volunteerType|title }}</div>
+        <div class="dietRestrictionSelect">Dietary Restrictions: {{ participant.user.dietRestriction if participant.user.dietRestriction else "None Specified" }}</div>
+        <div class="emergencyContactSelect" nowrap>Emergency Contact: {{participant.emergencycontact.name if participant.emergencycontact}} 
+          {{participant.emergencycontact.cellPhone or participant.emergencycontact.homePhone or participant.emergencycontact.workPhone if participant.emergencycontact}} 
+          {{"None Specified" if not participant.emergencycontact}}</div>
       </ul>
     </div>
 {% endmacro %}
 
 {% macro createTable(participant, volunteerType) %}
-    <tr class="{{volunteerType}}Select volunteerInfoEntries" data-user="{{participant.username}}">
-      <td class="nameSelect" nowrap><b>{{ participant.firstName }} {{ participant.lastName }}</b></td>
-      <td class="phoneSelect" nowrap>{{ participant.phoneNumber if participant.phoneNumber else "" }}</td>
-      <td class="emailSelect" nowrap>{{ participant.email }}</td>
-      <td class="dietRestrictionSelect">{{ participant.dietRestriction if participant.dietRestriction else ''}}</td>
+    <tr class="{{volunteerType}}Select volunteerInfoEntries" data-user="{{participant.user.username}}">
+      <td class="nameSelect" nowrap><b>{{ participant.user.firstName }} {{ participant.user.lastName }}</b></td>
+      <td class="phoneSelect" nowrap>{{ participant.user.phoneNumber if participant.user.phoneNumber else "" }}</td>
+      <td class="emailSelect" nowrap>{{ participant.user.email }}</td>
+      <td class="statusSelect" nowrap>{{ volunteerType|title if volunteerType != 'rsvp' else volunteerType|upper}}</td>
+      <td class="dietRestrictionSelect">{{ participant.user.dietRestriction if participant.user.dietRestriction else ''}}</td>
+      <td class="emergencyContactSelect">{{participant.emergencycontact.name if participant.emergencycontact}} 
+        {{participant.emergencycontact.cellPhone or participant.emergencycontact.homePhone or participant.emergencycontact.workPhone if participant.emergencycontact}} </td>
     </tr>
 {% endmacro %}
 
@@ -55,7 +63,7 @@
 {% endmacro %}
 
 {% macro createCheckbox(checkboxName) %}
-    {% set labelText = "RSVP Information" if checkboxName == 'rsvp' else 'Waitlist' if checkboxName == 'waitlist' else 'Attended' %}
+    {% set labelText = "RSVP" if checkboxName == 'rsvp' else 'Waitlist' if checkboxName == 'waitlist' else 'Attended' %}
     <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="{{checkboxName}}Select" checked>
     <label for="{{checkboxName}}Select">{{labelText}}</label><br>
 {% endmacro %}
@@ -91,8 +99,12 @@
           <label><b>Included Information:</b></label><br>
           <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="dietRestrictionSelect" checked>
           <label for="dietRestrictionSelect">Dietary Restriction</label><br>
+          <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="emergencyContactSelect" checked>
+          <label for="emergencyContactSelect">Emergency Contact</label><br>
           <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="phoneSelect" checked>
           <label for="phoneSelect">Phone Number</label><br>
+          <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="statusSelect" checked>
+          <label for="statusSelect">Volunteer Status</label><br>
           <input class="displayCheckbox noprint" type="checkbox" name="selected_items" id="emailSelect" checked>
           <label for="emailSelect">Email</label><br>
           <input class="displayCheckbox noprint bNumberSelect" type="checkbox" name="selected_items" id="barcodeSelect" checked>
@@ -125,7 +137,9 @@
           <th class="text-center">Name</th>
           <th class="phoneSelect">Phone Number</th>
           <th class="emailSelect">Email</th>
+          <th class="statusSelect">Volunteer Status</th>
           <th class="dietRestrictionSelect">Dietary Restriction</th>
+          <th class="emergencyContactSelect">Emergency Contact</th>
         </tr>
       </thead>
       <tbody>
