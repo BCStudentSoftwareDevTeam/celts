@@ -538,17 +538,17 @@ def getCountDownToEvent(event, *, currentDatetime=None):
     if calendarDaysUntilEvent == 0:
         if timeUntilEvent.hours:
             if timeUntilEvent.minutes:
-                return f"({hourString} and {minuteString})"
-            return f"({hourString})"
+                return f"{hourString} and {minuteString}"
+            return f"{hourString}"
         elif timeUntilEvent.minutes:
-            return f"({minuteString})"
-        return "(<1 minute)"
+            return f"{minuteString}"
+        return "<1 minute"
     else:
         if eventStart.time() < currentDatetime.time():
             if calendarDaysUntilEvent == 1:
-                return "(Tomorrow)"
-            return f"({dayString})"
+                return "Tomorrow"
+            return f"{dayString}"
         if timeUntilEvent.hours:
-            return f"({dayString} and {hourString})"
-        return f"({dayString})"
+            return f"{dayString} and {hourString}"
+        return f"{dayString}"
     
