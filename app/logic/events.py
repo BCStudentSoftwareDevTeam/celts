@@ -503,7 +503,7 @@ def getEventRsvpCount(eventId):
     """
     return len(EventRsvp.select().where(EventRsvp.event_id == eventId))
 
-def getCountDownToEvent(event, *, currentDatetime=None):
+def getCountdownToEvent(event, *, currentDatetime=None):
     """
     Given an event, this function returns a string that conveys the amount of time left
     until the start of the event.
