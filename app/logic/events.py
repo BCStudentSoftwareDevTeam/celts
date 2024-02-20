@@ -504,9 +504,26 @@ def getEventRsvpCount(eventId):
     return len(EventRsvp.select().where(EventRsvp.event_id == eventId))
 
 def getCountDownToEvent(event, *, currentDatetime=None):
+    """
+    Given an event, this function returns a string that conveys the amount of time left
+    until the start of the event.
+
+    Note about dates:
+    The way dates are communicated is unintuitive. There are two major rules that govern how we discuss dates.
+    - If an event happens tomorrow but less than 24 hours away from us we still say that it happens 
+    tomorrow with no mention of the hour. 
+    - If an event happens tomorrow but more than 24 hours away from us, we'll count the number of days 
+    and hours in actual time.
+
+    E.x. if the current time of day is greater than the event start's time of day, we give a number of days 
+    relative to this morning and exclude all hours and minutes
+
+    On the other hand, if the current time of day is less or equal to the event's start of day we can produce 
+    the real difference in days and hours without the aforementioned simplifying language.
+    """
+
     if currentDatetime is None:
-        # Beans: Need to figure out how to make these times not be inaccurate by a full minute to small
-        currentDatetime = datetime.datetime.now().replace(second=0)  
+        currentDatetime = datetime.datetime.now().replace(second=0, microsecond=0)  
     currentMorning = currentDatetime.replace(hour=0, minute=0)
 
     eventStart = datetime.datetime.combine(event.startDate, event.timeStart)
@@ -514,24 +531,13 @@ def getCountDownToEvent(event, *, currentDatetime=None):
     
     if eventEnd < currentDatetime:
         return "Already passed"
-    elif eventStart < currentDatetime < eventEnd:
+    elif eventStart <= currentDatetime <= eventEnd:
         return "Happening now"
     
     timeUntilEvent = relativedelta(eventStart, currentDatetime)
     calendarDaysUntilEvent = relativedelta(eventStart, currentMorning).days
 
-    """
-    Beans: The way we talk about dates is interesting... If an event happens tomorrow but less than 24 hours away from us
-    we still say that it happens tomorrow with no mention of the hour. If an event happens tomorrow but more than 24
-    hours away from us, we'll count the number of days and hours in actual time.
-
-    So if the current time of day is greater than the event beginning's time of day, we give a number of days relative 
-    to this morning and exclude all hours and minutes
-
-    On the other hand, if the current time of day is less or equal to the event's start of day we can produce the 
-    real difference in days and hours without the aforementioned simplifying language.
-    """
-
+    
     dayString = f"{calendarDaysUntilEvent} day{'s' if calendarDaysUntilEvent > 1 else ''}"
     hourString = f"{timeUntilEvent.hours} hour{'s' if timeUntilEvent.hours > 1 else ''}"
     minuteString = f"{timeUntilEvent.minutes} minute{'s' if timeUntilEvent.minutes > 1 else ''}"
