@@ -299,7 +299,6 @@ def test_setCommunityEngagementForUser():
         assert allStudentReq[5].course == Course.get_by_id(1)
 
         # Removing requirement
-        # TODO remove nonexisting
         setCommunityEngagementForUser('remove', khattsEngagementData1, 'ramsayb2')
         allStudentReq = list(IndividualRequirement.select())
         assert allStudentReq[0].course == None
