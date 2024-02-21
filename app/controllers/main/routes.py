@@ -54,7 +54,7 @@ def landingPage():
                                          .distinct()
                                          .execute())  # Ensure only unique programs are included
 
-    return render_template("/main/landingPage.html", 
+    return render_template("/main/landingPage.html",
                            managerProgramDict=managerProgramDict,
                            term=g.current_term,
                            programsWithEventsList=programsWithEventsList)
@@ -72,20 +72,20 @@ def events(selectedTerm, activeTab, programID):
     if selectedTerm:
         currentTerm = selectedTerm
     currentTime = datetime.datetime.now()
-    
+
     listOfTerms = Term.select()
     participantRSVP = EventRsvp.select(EventRsvp, Event).join(Event).where(EventRsvp.user == g.current_user)
     rsvpedEventsID = [event.event.id for event in participantRSVP]
 
-    term = Term.get_by_id(currentTerm) 
-    
+    term = Term.get_by_id(currentTerm)
+
     currentEventRsvpAmount = getEventRsvpCountsForTerm(term)
     studentLedEvents = getStudentLedEvents(term)
     countUpcomingStudentLedEvents = getUpcomingStudentLedCount(term, currentTime)
     trainingEvents = getTrainingEvents(term, g.current_user)
     bonnerEvents = getBonnerEvents(term)
     otherEvents = getOtherEvents(term)
-    
+
     managersProgramDict = getManagerProgramDict(g.current_user)
 
     return render_template("/events/event_list.html",
@@ -145,7 +145,7 @@ def viewUsersProfile(username):
                                            ProgramBan.program == program,
                                            ProgramBan.endDate > datetime.datetime.now()).execute())
             userParticipatedTrainingEvents = getParticipationStatusForTrainings(program, [volunteer], g.current_term)
-            try: 
+            try:
                 allTrainingsComplete = False not in [attended for event, attended in userParticipatedTrainingEvents[username]] # Did volunteer attend all events
             except KeyError:
                 allTrainingsComplete = False
@@ -162,7 +162,7 @@ def viewUsersProfile(username):
         managersProgramDict = getManagerProgramDict(g.current_user)
         managersList = [id[1] for id in managersProgramDict.items()]
         participatedInLabor = getCeltsLaborHistory(volunteer)
-        
+
         return render_template ("/main/userProfile.html",
                                 programs = programs,
                                 programsInterested = programsInterested,
@@ -199,7 +199,7 @@ def emergencyContactInfo(username):
                                 contactInfo=contactInfo,
                                 readOnly=readOnly
                                 )
-    
+
     elif request.method == 'POST':
         if g.current_user.username != username:
             abort(403)
@@ -208,8 +208,8 @@ def emergencyContactInfo(username):
         if not rowsUpdated:
             EmergencyContact.create(user = username, **request.form)
         createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
-        flash('Emergency contact information saved successfully!', 'success') 
-        
+        flash('Emergency contact information saved successfully!', 'success')
+
         if request.args.get('action') == 'exit':
             return redirect (f"/profile/{username}")
         else:
@@ -241,7 +241,7 @@ def insuranceInfo(username):
         if not rowsUpdated:
             InsuranceInfo.create(user = username, **request.form)
         createAdminLog(f"{g.current_user} updated {username}'s emergency contact information.")
-        flash('Insurance information saved successfully!', 'success') 
+        flash('Insurance information saved successfully!', 'success')
 
         if request.args.get('action') == 'exit':
             return redirect (f"/profile/{username}")
@@ -252,7 +252,7 @@ def insuranceInfo(username):
 def travelForm(username):
     if not (g.current_user.username == username or g.current_user.isCeltsAdmin):
         abort(403)
-   
+
     user = (User.select(User, EmergencyContact, InsuranceInfo)
                 .join(EmergencyContact, JOIN.LEFT_OUTER).switch()
                 .join(InsuranceInfo, JOIN.LEFT_OUTER)
@@ -447,7 +447,7 @@ def serviceTranscript(username):
                             startDate = startDate,
                             userData = user)
 
-@main_bp.route('/profile/<username>/updateTranscript/<int:program_id>', methods=['POST'])
+@main_bp.route('/profile/<username>/updateTranscript/<program_id>', methods=['POST'])
 def update_transcript(username, program_id):
     # Check user permissions
     user = User.get_or_none(User.username == username)
@@ -464,62 +464,12 @@ def update_transcript(username, program_id):
 
     # Update the ProgramBan object matching the program_id and username
     try:
-        program_ban = ProgramBan.get((ProgramBan.program == program_id) & (ProgramBan.user == user))
+        program_ban = ProgramBan.get(ProgramBan.program == program_id, ProgramBan.user == user)
         program_ban.removeFromTranscript = removeFromTranscript
         program_ban.save()
         return jsonify({'status': 'success'})
     except ProgramBan.DoesNotExist:
         return jsonify({'status': 'error', 'message': 'ProgramBan not found'})
-
-
-
-# @main_bp.route('/profile/<username>/serviceTranscript', methods=['GET', 'POST'])
-# def service_transcript(username):
-#     if request.method == 'GET':
-#         user = User.get_or_none(User.username == username)
-#         if user is None:
-#             abort(404)
-#         if user != g.current_user and not g.current_user.isAdmin:
-#             abort(403)
-
-#         # Retrieve stored values from session
-#         removeFromTranscript = session.get('removeFromTranscript', False)
-#         programID = session.get('programID', None)
-
-#         slCourses = getSlCourseTranscript(username)
-#         totalHours = getTotalHours(username)
-#         startDate = getStartYear(username)
-#         allEventTranscript = getProgramTranscript(username, removeFromTranscript, programID)
-#         return render_template('main/serviceTranscript.html',
-#                                allEventTranscript=allEventTranscript,
-#                                slCourses=slCourses.objects(),
-#                                totalHours=totalHours,
-#                                startDate=startDate,
-#                                userData=user)
-
-#     elif request.method == 'POST':
-#         # Get the data sent from the client-side JavaScript
-#         data = request.json
-
-#         # Set default value for removeFromTranscript
-#         removeFromTranscript = False
-
-#         # Get the removeFromTranscript value from the request data
-#         if data:
-#             removeFromTranscript = data.get('removeFromTranscript')
-#             programID = data.get('programID')  # Retrieve programID from the POST request
-
-#             # Store values in session
-#             session['removeFromTranscript'] = removeFromTranscript
-#             session['programID'] = programID
-
-#         # Call getProgramTranscript with the received data
-#         allEventTranscript = getProgramTranscript(username, removeFromTranscript, programID)
-
-#         # Return any response data if necessary
-#         response_data = {'status': 'success'}
-#         return jsonify(response_data)
-
 
 
 @main_bp.route('/searchUser/<query>', methods = ['GET'])
@@ -559,12 +509,12 @@ def getDietInfo():
     dietaryInfo = request.form
     user = dietaryInfo["user"]
     dietInfo = dietaryInfo["dietInfo"]
-    
+
     if (g.current_user.username == user) or g.current_user.isAdmin:
         updateDietInfo(user, dietInfo)
-        userInfo = User.get(User.username == user) 
+        userInfo = User.get(User.username == user)
         if len(dietInfo) > 0:
-            createAdminLog(f"Updated {userInfo.fullName}'s dietary restrictions to {dietInfo}.") if dietInfo.strip() else None 
+            createAdminLog(f"Updated {userInfo.fullName}'s dietary restrictions to {dietInfo}.") if dietInfo.strip() else None
         else:
             createAdminLog(f"Deleted all {userInfo.fullName}'s dietary restrictions dietary restrictions.")
 

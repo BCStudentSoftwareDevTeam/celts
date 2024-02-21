@@ -16,7 +16,7 @@ def getProgramTranscript(username):
     the current user.
     """
     # Add up hours earned in a term for each program they've participated in
-    
+
     EventData = (Event.select(Event, fn.SUM(EventParticipant.hoursEarned).alias("hoursEarned"))
                       .join(EventParticipant)
                       .where(EventParticipant.user == username)
@@ -29,13 +29,16 @@ def getProgramTranscript(username):
 
     # Create a set of program IDs to remove from transcript
     programs_to_remove = {program_ban.program_id for program_ban in program_bans if program_ban.removeFromTranscript}
-
+    print("---------------------------------------", programs_to_remove)
     # Initialize transcriptData dictionary
     transcriptData = {}
 
     # Iterate through EventData and populate transcriptData
     for event in EventData:
-        if event.program not in programs_to_remove:  # Check if program should be included
+        if event.program.id not in programs_to_remove:  # Check if program should be included
+            print(event.program in programs_to_remove, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+            print('+++++++++++++++++++++++++++++++', event.program)
+            print(type(event.program.id), "??????????????????????????????????????????????????")
             if event.program in transcriptData:
                 transcriptData[event.program].append([event.term.description, event.hoursEarned])
             else:
