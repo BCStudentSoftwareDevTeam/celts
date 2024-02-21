@@ -922,7 +922,7 @@ individualReqs = [
           },  
             {
           "username": "ayisie",
-          "program": 2,
+          "program": 1,
           "course": None,
           "description": None,
           "term": 3,
@@ -933,7 +933,7 @@ individualReqs = [
 
         { 
           "username": "khatts",
-          "program": 2,
+          "program": 3,
           "course": None,
           "description": None,
           "term": 3,
@@ -1044,6 +1044,16 @@ courseHoursEarned = [
     {
         "course": 1,
         "user": "khatts",
+        "hoursEarned": 1.0
+    },
+    {
+        "course": 1,
+        "user": "bledsoef",
+        "hoursEarned": 1.0
+    },
+    {
+        "course": 1,
+        "user": "ayisie",
         "hoursEarned": 1.0
     },
 
